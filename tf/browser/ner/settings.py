@@ -6,7 +6,7 @@ NONE = "⌀"
 EMPTY = "␀"
 GENERIC = "PER"
 
-SENTENCE = "sentence"
+BUCKET_TYPE = "chunk"
 
 ENTITY_TYPE = "ent"
 

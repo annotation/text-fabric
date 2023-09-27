@@ -4,7 +4,7 @@
 import collections
 from itertools import chain
 
-from .settings import FEATURES, NONE, SENTENCE, TOOLKEY
+from .settings import FEATURES, NONE, BUCKET_TYPE, TOOLKEY
 from .html import H
 from .wrap import repIdent
 
@@ -39,7 +39,8 @@ def composeE(web, templateData):
     sortKey = templateData.sortkey
     sortDir = templateData.sortdir
 
-    entities = setData.entities
+    hasEnt = activeEntity is not None
+
     entries = setData.entityIdent.items()
     eFirst = setData.entityIdentFirst
 
@@ -57,10 +58,8 @@ def composeE(web, templateData):
     for (vals, es) in entries:
         x = len(es)
         e1 = eFirst[vals]
-        slots = entities[e1][1]
-        (tFirst, tLast) = (slots[0], slots[-1])
 
-        active = " queried " if activeEntity is not None and e1 == activeEntity else ""
+        active = " queried " if hasEnt and e1 == activeEntity else ""
 
         content.append(
             H.p(
@@ -69,20 +68,18 @@ def composeE(web, templateData):
                 repIdent(vals, active=active),
                 cls=f"e {active}",
                 enm=e1,
-                tstart=tFirst,
-                tend=tLast,
             )
         )
 
     templateData.entitytable = H.join(content)
 
 
-def composeS(web, templateData, sentences, asHtml=False):
-    """Compose a table of sentences.
+def composeS(web, templateData, buckets, asHtml=False):
+    """Compose a table of buckets.
 
     In that case, we look up the text between those tokens and including.
-    All sentences that contain that text of those slots will show up,
-    all other sentences will be left out.
+    All buckets that contain that text of those slots will show up,
+    all other buckets will be left out.
     The matching slots will be highlighted.
 
     Parameters
@@ -108,11 +105,13 @@ def composeS(web, templateData, sentences, asHtml=False):
     eFirst = setData.entityIdentFirst
     entitySlotIndex = setData.entitySlotIndex
 
+    activeEntity = templateData.activeentity
     tokenStart = templateData.tokenstart
     tokenEnd = templateData.tokenend
-    hasEntity = tokenStart and tokenEnd
-    activeEntity = templateData.activeentity
-    limited = not hasEntity
+    hasOcc = tokenStart and tokenEnd
+    hasEnt = activeEntity is not None
+
+    limited = not (hasOcc or hasEnt)
     excludedTokens = templateData.excludedtokens
 
     content = []
@@ -129,7 +128,7 @@ def composeS(web, templateData, sentences, asHtml=False):
 
     i = 0
 
-    for (s, sTokens, matches, positions) in sentences:
+    for (b, bTokens, matches, positions) in buckets:
         charPos = 0
         if annoSet:
             allMatches = set()
@@ -142,10 +141,10 @@ def composeS(web, templateData, sentences, asHtml=False):
             allMatches = set(chain.from_iterable(matches))
 
         subContent = [
-            H.span(app.sectionStrFromNode(s), node=s, cls="sh", title="show context")
+            H.span(app.sectionStrFromNode(b), node=b, cls="bh", title="show context")
         ]
 
-        for (t, w) in sTokens:
+        for (t, w) in bTokens:
             info = entitySlotIndex.get(t, None)
             inEntity = False
 
@@ -158,11 +157,7 @@ def composeS(web, templateData, sentences, asHtml=False):
                     e = eFirst[ident]
 
                     if status:
-                        active = (
-                            " queried "
-                            if activeEntity is not None and e == activeEntity
-                            else ""
-                        )
+                        active = " queried " if hasEnt and e == activeEntity else ""
                         subContent.append(
                             H.span(
                                 H.span(abs(lg), cls="lgb"),
@@ -205,40 +200,43 @@ def composeS(web, templateData, sentences, asHtml=False):
 
             charPos += lenWa
 
-        content.append(H.div(subContent, cls="s"))
+        content.append(H.div(subContent, cls="b"))
 
         i += 1
 
         if limited and i > 100:
             content.append(
                 H.div(
-                    "Showing only the first 100 sentences of all {len(sentences)} ones.",
+                    f"Showing only the first 100 {BUCKET_TYPE}s of all "
+                    f"{len(buckets)} ones.",
                     cls="report",
                 )
             )
             break
 
-    templateData.sentences = H.join(content)
+    templateData.buckets = H.join(content)
     if asHtml:
-        return templateData.sentences
+        return templateData.buckets
 
 
 def entityMatch(
     entityIndex,
+    eStarts,
     entitySlotVal,
     entitySlotIndex,
     L,
     F,
     T,
-    s,
+    b,
     sFindRe,
     words,
+    eVals,
     valSelect,
     requireFree,
 ):
-    """Checks whether a sentence matches a sequence of words.
+    """Checks whether a bucket matches a sequence of words.
 
-    When we do the checking, we ignore empty words in the sentence.
+    When we do the checking, we ignore empty words in the bucket.
 
     Parameters
     ----------
@@ -248,124 +246,157 @@ def entityMatch(
     L, F, T: object
         The TF APIs `F` and `L` for feature lookup and level-switching, and text
         extraction
-    s: integer
-        The node of the sentence in question
+    b: integer
+        The node of the bucket in question
     words: list of string
         The sequence of words that must be matched. They are all non-empty and stripped
         from white space.
     valSelect: string
         The entity values that the matched words should have
     """
-    nWords = len(words)
-
     positions = set()
 
     fits = None
 
     if sFindRe:
         fits = False
-        sText = T.text(s)
+        sText = T.text(b)
 
         for match in sFindRe.finditer(sText):
             positions |= set(range(match.start(), match.end()))
             fits = True
 
-    sTokensAll = [(t, F.str.v(t)) or "" for t in L.d(s, otype="t")]
-    sTokens = [x for x in sTokensAll if x[1].strip()]
+    bTokensAll = [(t, F.str.v(t)) or "" for t in L.d(b, otype="t")]
+    bTokens = [x for x in bTokensAll if x[1].strip()]
 
     matches = []
 
     fValStats = {feat: collections.Counter() for feat in ("",) + FEATURES}
 
-    if nWords:
-        sWords = {w for (t, w) in sTokens}
-
-        if any(w not in sWords for w in words):
-            return (fits, fValStats, (sTokensAll, matches, positions), False)
-
-        nSTokens = len(sTokens)
-
-        for (i, (t, w)) in enumerate(sTokens):
-            if w != words[0]:
+    if eVals is not None:
+        for (i, (t, w)) in enumerate(bTokens):
+            lastT = eStarts.get(t, None)
+            if lastT is None:
                 continue
-            if i + nWords - 1 >= nSTokens:
-                return (
-                    fits,
-                    fValStats,
-                    (sTokensAll, matches, positions),
-                    len(matches) != 0,
-                )
 
-            match = True
+            slots = tuple(range(t, lastT + 1))
 
-            for (j, w) in enumerate(words[1:]):
-                if sTokens[i + j + 1][1] != w:
-                    match = False
+            if requireFree is None:
+                freeOK = True
+            else:
+                bound = any(slot in entitySlotIndex for slot in slots)
+                freeOK = requireFree and not bound or not requireFree and bound
+
+            if not freeOK:
+                continue
+
+            for feat in FEATURES:
+                stats = fValStats[feat]
+
+                for val in eVals:
+                    stats[val] += 1
+
+            valOK = True
+
+            for (feat, val) in zip(FEATURES, eVals):
+                selectedVals = valSelect[feat]
+                if val not in selectedVals:
+                    valOK = False
                     break
 
-            if match:
-                lastT = sTokens[i + nWords - 1][0]
-                slots = tuple(range(t, lastT + 1))
+            if valOK:
+                matches.append(slots)
+                fValStats[""][None] += 1
 
-                if requireFree is None:
-                    freeOK = True
-                else:
-                    bound = any(slot in entitySlotIndex for slot in slots)
-                    freeOK = requireFree and not bound or not requireFree and bound
+    elif words is not None:
+        nWords = len(words)
 
-                if not freeOK:
+        if nWords:
+            sWords = {w for (t, w) in bTokens}
+
+            if any(w not in sWords for w in words):
+                return (fits, fValStats, (bTokensAll, matches, positions), False)
+
+            nSTokens = len(bTokens)
+
+            for (i, (t, w)) in enumerate(bTokens):
+                if w != words[0]:
                     continue
+                if i + nWords - 1 >= nSTokens:
+                    return (
+                        fits,
+                        fValStats,
+                        (bTokensAll, matches, positions),
+                        len(matches) != 0,
+                    )
 
-                for feat in FEATURES:
-                    vals = entityIndex[feat].get(slots, set())
-                    stats = fValStats[feat]
+                match = True
 
-                    if len(vals) == 0:
-                        stats[NONE] += 1
+                for (j, w) in enumerate(words[1:]):
+                    if bTokens[i + j + 1][1] != w:
+                        match = False
+                        break
+
+                if match:
+                    lastT = bTokens[i + nWords - 1][0]
+                    slots = tuple(range(t, lastT + 1))
+
+                    if requireFree is None:
+                        freeOK = True
                     else:
-                        for val in vals:
-                            stats[val] += 1
+                        bound = any(slot in entitySlotIndex for slot in slots)
+                        freeOK = requireFree and not bound or not requireFree and bound
 
-                valTuples = entitySlotVal.get(slots, set())
+                    if not freeOK:
+                        continue
 
-                if len(valTuples):
-                    valOK = False
+                    for feat in FEATURES:
+                        vals = entityIndex[feat].get(slots, set())
+                        stats = fValStats[feat]
 
-                    for valTuple in valTuples:
-                        thisOK = True
+                        if len(vals) == 0:
+                            stats[NONE] += 1
+                        else:
+                            for val in vals:
+                                stats[val] += 1
 
-                        for (feat, val) in zip(FEATURES, valTuple):
-                            selectedVals = valSelect[feat]
-                            if val not in selectedVals:
-                                thisOK = False
+                    valTuples = entitySlotVal.get(slots, set())
+
+                    if len(valTuples):
+                        valOK = False
+
+                        for valTuple in valTuples:
+                            thisOK = True
+
+                            for (feat, val) in zip(FEATURES, valTuple):
+                                selectedVals = valSelect[feat]
+                                if val not in selectedVals:
+                                    thisOK = False
+                                    break
+
+                            if thisOK:
+                                valOK = True
                                 break
+                    else:
+                        valOK = all(NONE in valSelect[feat] for feat in FEATURES)
 
-                        if thisOK:
-                            valOK = True
-                            break
-                else:
-                    valOK = all(NONE in valSelect[feat] for feat in FEATURES)
+                    if valOK:
+                        matches.append(slots)
+                        fValStats[""][None] += 1
 
-                if valOK:
-                    matches.append(slots)
-                    fValStats[""][None] += 1
-
-        if len(matches) == 0:
-            return (fits, fValStats, (sTokensAll, matches, positions), False)
-
-    return (fits, fValStats, (sTokensAll, matches, positions), True)
+    return (fits, fValStats, (bTokensAll, matches, positions), len(matches) != 0)
 
 
 def filterS(web, templateData, noFind=False, node=None):
-    """Filter the sentences.
+    """Filter the buckets.
 
-    Will filter the sentences by tokens if the `tokenStart` and `tokenEnd` parameters
+    Will filter the buckets by tokens if the `tokenStart` and `tokenEnd` parameters
     are both filled in.
     In that case, we look up the text between those tokens and including.
-    All sentences that contain that text of those slots will show up,
-    all other sentences will be left out.
+    All buckets that contain that text of those slots will show up,
+    all other buckets will be left out.
     However, if `valSelect` is non-empty, then there is a further filter: only if the
-    text corresponds to an entity with those feature values, the sentence is
+    text corresponds to an entity with those feature values, the bucket is
     passed through.
     The matching slots will be highlighted.
 
@@ -375,13 +406,13 @@ def filterS(web, templateData, noFind=False, node=None):
         The web app object
 
     sFindPattern: string
-        A search string that filters the sentences, before applying the search
+        A search string that filters the buckets, before applying the search
         for a word sequence.
 
     tokenStart, tokenEnd: int or None
         Specify the start slot number and the end slot number of a sequence of tokens.
-        Only sentences that contain this token sentence will be passed through,
-        all other sentences will be filtered out.
+        Only buckets that contain this token bucket will be passed through,
+        all other buckets will be filtered out.
 
     valSelect: set
         The feature values to filter on.
@@ -389,14 +420,15 @@ def filterS(web, templateData, noFind=False, node=None):
     Returns
     -------
     list of tuples
-        For each sentence that passes the filter, a tuple with the following
+        For each bucket that passes the filter, a tuple with the following
         members is added to the list:
 
-        *   tokens: the tokens of the sentence
+        *   tokens: the tokens of the bucket
         *   matches: the match positions of the found text
         *   positions: the token positions where a targeted token sequence starts
     """
     setData = web.toolData[TOOLKEY].sets[web.annoSet]
+    entities = setData.entities
 
     kernelApi = web.kernelApi
     app = kernelApi.app
@@ -406,6 +438,7 @@ def filterS(web, templateData, noFind=False, node=None):
     T = api.T
 
     sFindRe = None if noFind else templateData.sfindre
+    activeEntity = templateData.activeentity
     tokenStart = templateData.tokenstart
     tokenEnd = templateData.tokenend
     valSelect = templateData.valselect
@@ -414,43 +447,59 @@ def filterS(web, templateData, noFind=False, node=None):
     results = []
     words = []
 
-    hasEntity = tokenStart and tokenEnd
+    hasEnt = activeEntity is not None
+    hasOcc = not hasEnt and tokenStart and tokenEnd
 
-    if hasEntity:
-        for t in range(tokenStart, tokenEnd + 1):
-            word = (F.str.v(t) or "").strip()
-            if word:
-                words.append(word)
+    words = (
+        tuple(
+            word
+            for t in range(tokenStart, tokenEnd + 1)
+            if (word := (F.str.v(t) or "").strip())
+        )
+        if hasOcc
+        else None
+    )
+
+    eVals = entities[activeEntity][0] if hasEnt else None
 
     nFind = 0
     nEnt = {feat: collections.Counter() for feat in ("",) + FEATURES}
     nVisible = {feat: collections.Counter() for feat in ("",) + FEATURES}
 
     entityIndex = setData.entityIndex
-    entitySlotIndex = setData.entitySlotIndex
+    entityVal = setData.entityVal
     entitySlotVal = setData.entitySlotVal
+    entitySlotIndex = setData.entitySlotIndex
 
     requireFree = (
         True if freeState == "free" else False if freeState == "bound" else None
     )
 
-    sentences = (
-        setData.sentences
+    buckets = (
+        setData.buckets
         if node is None
-        else L.d(T.sectionTuple(node)[1], otype=SENTENCE)
+        else L.d(T.sectionTuple(node)[1], otype=BUCKET_TYPE)
     )
 
-    for s in sentences:
+    if hasEnt:
+        eSlots = entityVal[eVals]
+        eStarts = {s[0]: s[-1] for s in eSlots}
+    else:
+        eStarts = None
+
+    for b in buckets:
         (fits, fValStats, result, occurs) = entityMatch(
             entityIndex,
+            eStarts,
             entitySlotVal,
             entitySlotIndex,
             L,
             F,
             T,
-            s,
+            b,
             sFindRe,
             words,
+            eVals,
             valSelect,
             requireFree,
         )
@@ -478,6 +527,6 @@ def filterS(web, templateData, noFind=False, node=None):
             if fits is not None and not fits:
                 continue
 
-        results.append((s, *result))
+        results.append((b, *result))
 
     return (results, nFind, nVisible, nEnt)

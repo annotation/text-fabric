@@ -4,6 +4,7 @@
 from .settings import (
     TOOLKEY,
     FEATURES,
+    BUCKET_TYPE,
     KEYWORD_FEATURES,
     SUMMARY_FEATURES,
     STYLES,
@@ -251,11 +252,11 @@ def wrapQuery(web, templateData, nFind, nEnt, nVisible):
 
     wrapAppearance(web, templateData)
     hasFind = wrapFilter(web, templateData, nFind)
-    txt = wrapEntityInit(web, templateData)
-    wrapEntityText(templateData, txt)
-    scope = wrapScope(web, templateData, hasFind, txt)
+    (txt, eTxt) = wrapEntityInit(web, templateData)
+    wrapEntityText(templateData, txt, eTxt)
+    scope = wrapScope(web, templateData, hasFind, txt, eTxt)
     features = wrapEntityFeats(web, templateData, nEnt, nVisible, hasFind, txt, scope)
-    wrapEntityModify(web, templateData, hasFind, txt, features)
+    wrapEntityModify(web, templateData, hasFind, txt, eTxt, features)
 
 
 def wrapAppearance(web, templateData):
@@ -319,7 +320,7 @@ def wrapFilter(web, templateData, nFind):
 
     hasFind = sFindRe is not None
 
-    nSent = len(setData.sentences)
+    nBuckets = len(setData.buckets)
 
     templateData.find = H.join(
         H.input(type="text", name="sfind", id="sfind", value=sFind),
@@ -336,7 +337,7 @@ def wrapFilter(web, templateData, nFind):
             cls="alt",
         ),
         " ",
-        wrapFindStat(nSent, nFind, hasFind),
+        wrapFindStat(nBuckets, nFind, hasFind),
         " ",
         H.button("❌", type="submit", id="findclear", cls="altm"),
         " ",
@@ -348,14 +349,47 @@ def wrapFilter(web, templateData, nFind):
 
 
 def wrapEntityInit(web, templateData):
+    annoSet = web.annoSet
+    setData = web.toolData[TOOLKEY].sets[annoSet]
+    entities = setData.entities
+
     kernelApi = web.kernelApi
     app = kernelApi.app
     api = app.api
     F = api.F
 
+    activeEntity = templateData.activeentity
     tokenStart = templateData.tokenstart
     tokenEnd = templateData.tokenend
-    hasEntity = tokenStart and tokenEnd
+
+    hasEnt = activeEntity is not None
+    hasOcc = tokenStart is not None and tokenEnd is not None
+
+    if hasEnt:
+        eVals = entities[activeEntity][0]
+        templateData.evals = eVals
+        templateData.tokenStart = None
+        templateData.tokenEnd = None
+        txt = ""
+        eTxt = repIdent(eVals, active="active")
+    elif hasOcc:
+        templateData.activeentity = None
+        templateData.evals = None
+        txt = (
+            getText(F, range(tokenStart, tokenEnd + 1))
+            if tokenStart and tokenEnd
+            else ""
+        )
+        eTxt = ""
+    else:
+        templateData.evals = None
+        templateData.activeentity = None
+        templateData.tokenStart = None
+        templateData.tokenEnd = None
+
+    templateData.activeentityrep = "" if activeEntity is None else str(activeEntity)
+    tokenStart = templateData.tokenstart
+    tokenEnd = templateData.tokenend
 
     startRep = H.input(
         type="hidden", name="tokenstart", id="tokenstart", value=tokenStart or ""
@@ -365,27 +399,15 @@ def wrapEntityInit(web, templateData):
     )
     templateData.entityinit = startRep + endRep
 
-    return getText(F, range(tokenStart, tokenEnd + 1)) if hasEntity else ""
+    return (txt, eTxt)
 
 
-def wrapEntityText(templateData, txt):
+def wrapEntityText(templateData, txt, eTxt):
     freeState = templateData.freestate
-    filterBy = templateData.filterby
 
     title = "choose: free, intersecting with other entities, or all"
     templateData.entitytext = H.join(
-        H.button(
-            H.i("occurrence" if filterBy == "t" else "entity"),
-            type="submit",
-            name="filterby",
-            id="filterby",
-            value=filterBy,
-            title="filter by textual occurrence"
-            if filterBy == "t"
-            else "filter by the underlying entities",
-            cls="alt active",
-        ) if txt else "",
-        H.span(txt, id="qwordshow"),
+        H.span(txt if txt else eTxt, id="qtextentshow"),
         " ",
         H.button("❌", type="submit", id="queryclear", cls="altm"),
         " ",
@@ -467,7 +489,7 @@ def wrapEntityFeats(web, templateData, nEnt, nVisible, hasFind, txt, scope):
     templateData.selectentities = H.div(
         H.div(
             H.p(H.b("Select"), scopeInit, scopeFilter),
-            H.p(H.span(f"{total} sentence(s)")),
+            H.p(H.span(f"{total} {BUCKET_TYPE}(s)")),
             scopeExceptions,
         ),
         H.div(content, id="selectsubwidget"),
@@ -476,16 +498,17 @@ def wrapEntityFeats(web, templateData, nEnt, nVisible, hasFind, txt, scope):
     return features
 
 
-def wrapScope(web, templateData, hasFind, txt):
+def wrapScope(web, templateData, hasFind, txt, eTxt):
     annoSet = web.annoSet
     scope = templateData.scope
-    hasEntity = txt != ""
+    hasOcc = txt != ""
+    hasEnt = eTxt != ""
 
     scopeInit = H.input(type="hidden", id="scope", name="scope", value=scope)
     scopeFilter = ""
     scopeExceptions = ""
 
-    if annoSet and hasEntity:
+    if annoSet and (hasOcc or hasEnt):
         # Scope of modification
 
         scopeFilter = (
@@ -494,14 +517,14 @@ def wrapScope(web, templateData, hasFind, txt):
                     "filtered",
                     type="button",
                     id="scopefiltered",
-                    title="act on filtered sentences only",
+                    title=f"act on filtered {BUCKET_TYPE}s only",
                 ),
                 " ",
                 H.button(
                     "all",
                     type="button",
                     id="scopeall",
-                    title="act on all sentences",
+                    title=f"act on all {BUCKET_TYPE}s",
                 ),
             )
             if hasFind
@@ -513,7 +536,7 @@ def wrapScope(web, templateData, hasFind, txt):
                 "✅",
                 type="button",
                 id="selectall",
-                title="select all occurences in filtered sentences",
+                title=f"select all occurences in filtered {BUCKET_TYPE}s",
                 cls="alt",
             ),
             " ",
@@ -521,7 +544,7 @@ def wrapScope(web, templateData, hasFind, txt):
                 "❌",
                 type="button",
                 id="selectnone",
-                title="deselect all occurences in filtered sentences",
+                title=f"deselect all occurences in filtered {BUCKET_TYPE}s",
                 cls="alt",
             ),
         )
@@ -529,7 +552,7 @@ def wrapScope(web, templateData, hasFind, txt):
     return (scopeInit, scopeFilter, scopeExceptions)
 
 
-def wrapEntityModify(web, templateData, hasFind, txt, features):
+def wrapEntityModify(web, templateData, hasFind, txt, eTxt, features):
     kernelApi = web.kernelApi
     app = kernelApi.app
     api = app.api
@@ -539,6 +562,7 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
     setData = web.toolData[TOOLKEY].sets[annoSet]
 
     submitter = templateData.submitter
+    eVals = templateData.evals
     tokenStart = templateData.tokenstart
     tokenEnd = templateData.tokenend
     delData = templateData.adddata
@@ -551,7 +575,8 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
     additions = addData.additions
     freeVals = addData.freeVals
 
-    hasEntity = txt != ""
+    hasOcc = txt != ""
+    hasEnt = eTxt != ""
 
     delButtonHtml = ""
     addButtonHtml = ""
@@ -560,7 +585,7 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
 
     # Assigment of feature values
 
-    if annoSet and hasEntity:
+    if annoSet and (hasOcc or hasEnt):
         for (i, feat) in enumerate(FEATURES):
             theseVals = sorted(setData.entityTextVal[feat].get(txt, set()))
             allVals = (
@@ -577,7 +602,13 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
             freeVal = (
                 freeVals[i] if freeVals is not None and len(freeVals) > i else None
             )
-            default = featureDefault[feat](F, range(tokenStart, tokenEnd + 1))
+            default = (
+                eVals[i]
+                if hasEnt
+                else featureDefault[feat](F, range(tokenStart, tokenEnd + 1))
+                if hasOcc
+                else {}
+            )
 
             titleContent = H.div(
                 H.i(f"{feat}:"),
@@ -737,8 +768,8 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
         )
 
 
-def wrapFindStat(nSent, nFind, hasFind):
-    n = f"{nFind} of {nSent}" if hasFind else nSent
+def wrapFindStat(nBuckets, nFind, hasFind):
+    n = f"{nFind} of {nBuckets}" if hasFind else nBuckets
     return H.span(n, cls="stat")
 
 

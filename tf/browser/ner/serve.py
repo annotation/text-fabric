@@ -49,7 +49,7 @@ class Serve:
         templateData = self.templateData
 
         setSetup(web, templateData)
-        self.getSentences(node=node)
+        self.getBuckets(node=node)
 
     def actionsFull(self):
         web = self.web
@@ -57,15 +57,15 @@ class Serve:
 
         setHandling(web, templateData)
 
-        self.getSentences()
+        self.getBuckets()
         self.updateHandling()
 
     def wrapLean(self):
         web = self.web
         templateData = self.templateData
-        sentences = self.sentences
+        buckets = self.buckets
 
-        return composeS(web, templateData, sentences, asHtml=True)
+        return composeS(web, templateData, buckets, asHtml=True)
 
     def wrapFull(self):
         web = self.web
@@ -73,21 +73,21 @@ class Serve:
         nFind = self.nFind
         nEnt = self.nEnt
         nVisible = self.nVisible
-        sentences = self.sentences
+        buckets = self.buckets
 
         wrapQuery(web, templateData, nFind, nEnt, nVisible)
         composeE(web, templateData)
         wrapEntityOverview(web, templateData)
         wrapEntityHeaders(web, templateData)
-        composeS(web, templateData, sentences)
+        composeS(web, templateData, buckets)
 
         return render_template(f"{TOOLKEY}/index.html", **templateData)
 
-    def getSentences(self, noFind=False, node=None):
+    def getBuckets(self, noFind=False, node=None):
         web = self.web
         templateData = self.templateData
 
-        (self.sentences, self.nFind, self.nVisible, self.nEnt) = filterS(
+        (self.buckets, self.nFind, self.nVisible, self.nEnt) = filterS(
             web, templateData, noFind=noFind, node=node
         )
 
@@ -111,22 +111,22 @@ class Serve:
             and tokenEnd
         ):
             if sFindRe and scope == "a":
-                self.getSentences(noFind=True)
+                self.getBuckets(noFind=True)
 
             if submitter == "delgo" and delData:
                 report = delEntity(
-                    web, delData.deletions, self.sentences, excludedTokens
+                    web, delData.deletions, self.buckets, excludedTokens
                 )
                 wrapReport(templateData, report, "del")
             if submitter == "addgo" and addData:
                 report = addEntity(
-                    web, addData.additions, self.sentences, excludedTokens
+                    web, addData.additions, self.buckets, excludedTokens
                 )
                 wrapReport(templateData, report, "add")
 
             adaptValSelect(templateData)
 
-            self.getSentences()
+            self.getBuckets()
 
 
 def serveNer(web):

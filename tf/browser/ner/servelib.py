@@ -9,7 +9,7 @@ from flask import request
 
 from ...core.generic import AttrDict, deepAttrDict
 from ...core.files import dirContents
-from .settings import TOOLKEY, FEATURES, EMPTY, NONE
+from .settings import TOOLKEY, FEATURES, EMPTY, NONE, BUCKET_TYPE
 
 
 def getFormData(web):
@@ -52,13 +52,6 @@ def getFormData(web):
     form["sfind"] = fget("sfind", "")
     form["sfindc"] = fget("sfindc", "x") == "v"
     form["sfinderror"] = fget("sfinderror", "")
-
-    filterBy = fget("filterby", "t")
-
-    if submitter == "filterby":
-        filterBy = "t" if filterBy == "e" else "e"
-
-    form["filterby"] = filterBy
 
     form["freestate"] = fget("freestate", "all")
     activeEntity = fget("activeentity", "")
@@ -179,6 +172,7 @@ def initTemplate(web):
 
     templateData.appname = appName
     templateData.slottype = slotType
+    templateData.buckettype = BUCKET_TYPE
     templateData.resetform = ""
 
     return templateData

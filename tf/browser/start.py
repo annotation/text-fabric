@@ -50,6 +50,13 @@ prepended with `--`:
 *   `--modules`
 *   `--version`
 
+The following argument does not come from the `use()` function:
+
+*   `--tool`
+
+If you pass `--tool=ner` for example, the TF browser opens navigated to the
+the *ner* tool page (named entity annotator).
+
 ## Implementation notes
 
 Different corpora will use different ports for webserver.
@@ -76,7 +83,14 @@ from .command import argNoweb, argApp, getPort
 from .web import TF_DONE, TF_ERROR
 
 
-HELP = """
+TOOLS = set(
+    """
+    ner
+""".strip().split()
+)
+
+
+HELP = f"""
 USAGE
 
 tf
@@ -98,6 +112,7 @@ text-fabric app:/path/to/app --locations=locations-string [--modules=modules-str
 where all args are optional and args have one of these forms:
 
   -noweb
+  --tool={"|".join(sorted(TOOLS))}
   --checkout=specifier
   --backend=backend name (github, gitlab, gitlab.domain)
   --mod=modules
@@ -138,6 +153,7 @@ CLEAN UP
 If you press Ctrl-C the web server is stopped.
 """
 
+
 FLAGS = set(
     """
     -noweb
@@ -160,6 +176,21 @@ def main(cargs=sys.argv[1:]):
     if "--chrome" in cargs:
         forceChrome = True
         cargs = [c for c in cargs if c != "--chrome"]
+
+    newCargs = []
+    tool = None
+
+    for x in cargs:
+        if x.startswith("--tool="):
+            tool = x[7:]
+            if tool not in TOOLS:
+                console(f'Unrecognized tool: "{tool}"')
+                console(f"""Recognized tools are: {", ".join(sorted(TOOLS))}""")
+                return
+        else:
+            newCargs.append(x)
+
+    cargs = newCargs
 
     portWeb = getPort(argApp(cargs, True))
     noweb = argNoweb(cargs)
@@ -196,6 +227,8 @@ def main(cargs=sys.argv[1:]):
         if not stopped:
             opened = False
             new = 0
+            toolUrl = "" if tool is None else f"/{tool}/index"
+            url = f"{PROTOCOL}{HOST}:{portWeb}{toolUrl}"
             autoraise = True
             title = "Opening corpus in "
             marker = "\no-o-o\n"
@@ -205,11 +238,7 @@ def main(cargs=sys.argv[1:]):
                 try:
                     controller = webbrowser.get("chrome")
                     console(f"{marker}{title}{browser}{marker}")
-                    opened = controller.open(
-                        f"{PROTOCOL}{HOST}:{portWeb}",
-                        new=new,
-                        autoraise=autoraise,
-                    )
+                    opened = controller.open(url, new=new, autoraise=autoraise)
                 except Exception:
                     opened = False
 
@@ -218,11 +247,7 @@ def main(cargs=sys.argv[1:]):
                 extra = " instead" if forceChrome else ""
                 try:
                     console(f"{marker}{title}{browser}{extra}{marker}")
-                    opened = webbrowser.open(
-                        f"{PROTOCOL}{HOST}:{portWeb}",
-                        new=new,
-                        autoraise=autoraise,
-                    )
+                    opened = webbrowser.open(url, new=new, autoraise=autoraise)
                 except Exception:
                     opened = False
 
@@ -231,7 +256,7 @@ def main(cargs=sys.argv[1:]):
                     processWeb.terminate()
                 console("TF web server has stopped")
 
-    stopped = (not portWeb or (processWeb and processWeb.poll()))
+    stopped = not portWeb or (processWeb and processWeb.poll())
 
     if not stopped:
         try:

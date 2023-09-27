@@ -108,7 +108,7 @@ def setHandling(web, templateData):
     loadData(web)
 
 
-def delEntity(web, deletions, sentences, excludedTokens):
+def delEntity(web, deletions, buckets, excludedTokens):
     setData = web.toolData[TOOLKEY].sets[web.annoSet]
 
     oldEntities = setData.entities
@@ -136,7 +136,7 @@ def delEntity(web, deletions, sentences, excludedTokens):
                 delTuples.extend([ft + (val,) for ft in fValTuples])
             fValTuples = delTuples
 
-        for (s, sTokens, allMatches, positions) in sentences:
+        for (b, bTokens, allMatches, positions) in buckets:
             for matches in allMatches:
                 if matches[-1] in excludedTokens:
                     excl += 1
@@ -171,7 +171,7 @@ def delEntity(web, deletions, sentences, excludedTokens):
     return report
 
 
-def addEntity(web, additions, sentences, excludedTokens):
+def addEntity(web, additions, buckets, excludedTokens):
     setData = web.toolData[TOOLKEY].sets[web.annoSet]
 
     oldEntities = setData.entities
@@ -200,7 +200,7 @@ def addEntity(web, additions, sentences, excludedTokens):
 
         stats = collections.Counter()
 
-        for (s, sTokens, allMatches, positions) in sentences:
+        for (b, bTokens, allMatches, positions) in buckets:
             for matches in allMatches:
                 if matches[-1] in excludedTokens:
                     excl += 1

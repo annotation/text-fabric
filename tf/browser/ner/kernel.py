@@ -16,7 +16,7 @@ from .settings import (
     FEATURES,
     SUMMARY_INDICES,
     NF,
-    SENTENCE,
+    BUCKET_TYPE,
     featureDefault,
     getText,
 )
@@ -82,7 +82,7 @@ def loadData(web):
     if annoSet not in setsData:
         setsData[annoSet] = AttrDict()
 
-    # load sentence nodes
+    # load bucket nodes
 
     changed = fromSource(web)
     process(web, changed)
@@ -104,8 +104,8 @@ def fromSource(web):
     annoDir = annotateDir(app, TOOLKEY)
     dataFile = f"{annoDir}/{annoSet}/entities.tsv"
 
-    if "sentences" not in setData:
-        setData.sentences = F.otype.s(SENTENCE)
+    if "buckets" not in setData:
+        setData.buckets = F.otype.s(BUCKET_TYPE)
 
     changed = False
 
@@ -180,6 +180,7 @@ def process(web, changed):
         or "entityIdent" not in setData
         or "entityFreq" not in setData
         or "entityIndex" not in setData
+        or "entityVal" not in setData
         or "entitySlotVal" not in setData
         or "entitySlotIndex" not in setData
         or dateLoaded is not None
@@ -196,6 +197,7 @@ def process(web, changed):
         entityIdentFirst = {}
         entityFreq = {feat: collections.Counter() for feat in FEATURES}
         entityIndex = {feat: {} for feat in FEATURES}
+        entityVal = {}
         entitySlotVal = {}
         entitySlotIndex = {}
 
@@ -205,6 +207,7 @@ def process(web, changed):
             summary = tuple(fVals[i] for i in SUMMARY_INDICES)
 
             entityText[e] = txt
+            entityVal.setdefault(fVals, set()).add(slots)
 
             for (feat, val) in zip(FEATURES, fVals):
                 entityFreq[feat][val] += 1
@@ -245,6 +248,7 @@ def process(web, changed):
             feat: sorted(entityFreq[feat].items()) for feat in FEATURES
         }
         setData.entityIndex = entityIndex
+        setData.entityVal = entityVal
         setData.entitySlotVal = entitySlotVal
         setData.entitySlotIndex = entitySlotIndex
 

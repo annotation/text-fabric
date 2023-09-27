@@ -97,17 +97,17 @@ code.w {
   flex: 1 1 auto;
   overflow: auto;
 }
-#sentencesq {
+#bucketsq {
   flex: 0 0 auto;
 }
 
-#sentences {
+#buckets {
   flex: 2 1 auto;
   overflow: auto;
   padding-left: 2rem;
 }
 
-p.queried,span.queried,#qwordshow {
+p.queried,span.queried,#qtextentshow {
   border-radius: 0.2rem;
   background-color: yellow;
   padding: 0 0.3rem;
@@ -131,7 +131,7 @@ div.viewercontrol {
   height: 0;
   overflow: visible;
 }
-div.s {
+div.b {
   padding: 0.2rem 0.1rem;
   border-bottom: 2pt solid #eeeeee;
   margin-bottom: 0.2rem;
@@ -160,7 +160,7 @@ span.ee {
   padding-right: 0.1em;
   margin-right: 0.2em;
 }
-span.sh {
+span.bh {
   font-family: monospace;
   font-weight: bold;
   font-size: small;
@@ -176,14 +176,14 @@ span.sh {
   background-color: #f2f2f2;
   padding-left: 2rem;
 }
-.viewer span.sh {
+.viewer span.bh {
   color: #888888;
   text-decoration: none;
 }
 .center {
   background-color: #ddddff;
 }
-.viewer div.center span.sh
+.viewer div.center span.bh
   color: #0000ff;
   text-decoration: none;
 }

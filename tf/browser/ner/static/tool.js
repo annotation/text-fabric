@@ -131,11 +131,11 @@ const entityControls = () => {
   const sortDirInput = $("#sortdir")
   const entities = $("p.e")
   const entitiesDiv = $("#entities")
-  const tokenStart = $("#tokenstart")
-  const tokenEnd = $("#tokenend")
   const activeEntity = $("#activeentity")
   const selectAll = $("#selectall")
   const selectNone = $("#selectnone")
+  const tokenStart = $("#tokenstart")
+  const tokenEnd = $("#tokenend")
 
   const gotoFocus = () => {
     const ea = activeEntity.val()
@@ -161,7 +161,7 @@ const entityControls = () => {
 
       let show = false
 
-      if (always) {
+      if (always != "") {
         const enm = el.attr("enm")
         if (enm == always) {
           show = true
@@ -246,12 +246,10 @@ const entityControls = () => {
     const tag = elem[0].localName
     const eEntity = tag == "p" && elem.hasClass("e") ? elem : elem.closest("p.e")
     if (eEntity.length) {
-      const tStart = eEntity.attr("tstart")
-      const tEnd = eEntity.attr("tend")
       const enm = eEntity.attr("enm")
-      tokenStart.val(tStart)
-      tokenEnd.val(tEnd)
       activeEntity.val(enm)
+      tokenStart.val("")
+      tokenEnd.val("")
 
       for (const feat of features) {
         const val = eEntity.find(`span.${feat}`).html()
@@ -267,16 +265,17 @@ const entityControls = () => {
 const tokenControls = () => {
   const form = $("form")
   const subMitter = $("#submitter")
-  const { features, toolkey } = globalThis
-  const sentences = $("#sentences")
+  const { features, toolkey, bucketType } = globalThis
+  const buckets = $("#buckets")
   const findBox = $("#sfind")
   const findC = $("#sfindc")
   const findCButton = $("#sfindb")
   const findClear = $("#findclear")
   const findError = $("#sfinderror")
+  const activeEntity = $("#activeentity")
   const tokenStart = $("#tokenstart")
   const tokenEnd = $("#tokenend")
-  const qWordShow = $("#qwordshow")
+  const qTextEntShow = $("#qtextentshow")
   const lookupf = $("#lookupf")
   const lookupq = $("#lookupq")
   const lookupn = $("#lookupn")
@@ -286,16 +285,17 @@ const tokenControls = () => {
   const scope = $("#scope")
   const scopeFiltered = $("#scopefiltered")
   const scopeAll = $("#scopeall")
+  const activeVal = activeEntity.val()
   const tokenStartVal = tokenStart.val()
   const tokenEndVal = tokenEnd.val()
-  const activeEntity = $("#activeentity")
-  const entitiesDiv = $("#entities")
   const filted = $("span.filted")
 
   let upToDate = true
   let tokenRange = []
 
-  const tokenInit = () => {
+  const setTokenRange = () => {
+    const tokenStartVal = tokenStart.val()
+    const tokenEndVal = tokenEnd.val()
     tokenRange =
       tokenStartVal && tokenEndVal
         ? [parseInt(tokenStartVal), parseInt(tokenEndVal)]
@@ -307,11 +307,18 @@ const tokenControls = () => {
     }
   }
 
+  const queryInit = () => {
+    if (!activeVal && tokenStartVal && tokenEndVal) {
+      setTokenRange()
+    }
+  }
+
   const presentQueryControls = update => {
     if (update) {
-      qWordShow.html("")
+      qTextEntShow.html("")
     }
-    const hasQuery = tokenRange.length
+    const activeVal = activeEntity.val()
+    const hasQuery = activeVal || tokenRange.length
     const hasFind = findBox.val().length
     const findErrorStr = findError.html().length
 
@@ -325,11 +332,11 @@ const tokenControls = () => {
       if (onoff) {
         lookupq.show()
         queryClear.show()
-        qWordShow.show()
+        qTextEntShow.show()
         freeButton.show()
       } else {
         queryClear.hide()
-        qWordShow.hide()
+        qTextEntShow.hide()
         freeButton.hide()
       }
     }
@@ -352,11 +359,14 @@ const tokenControls = () => {
       if (hasQuery) {
         setQueryControls(true)
         if (update) {
-          for (let t = tokenRange[0]; t <= tokenRange[1]; t++) {
-            const elem = $(`span[t="${t}"]`)
-            elem.addClass("queried")
-            const qWord = elem.html()
-            qWordShow.append(`<span>${qWord}</span> `)
+          if (!activeVal) {
+            setTokenRange()
+            for (let t = tokenRange[0]; t <= tokenRange[1]; t++) {
+              const elem = $(`span[t="${t}"]`)
+              elem.addClass("queried")
+              const qWord = elem.html()
+              qTextEntShow.append(`<span>${qWord}</span> `)
+            }
           }
         }
       } else {
@@ -371,7 +381,7 @@ const tokenControls = () => {
     }
   }
 
-  tokenInit()
+  queryInit()
   presentQueryControls(false)
 
   const doAppearance = () => {
@@ -532,7 +542,7 @@ const tokenControls = () => {
     })
   }
 
-  sentences.off("click").click(e => {
+  buckets.off("click").click(e => {
     e.preventDefault()
     const { target } = e
     const elem = $(target)
@@ -554,9 +564,9 @@ const tokenControls = () => {
         ? elem
         : elem.closest("span.es[enm]")
     const eSectionHeading =
-      tag == "span" && elem.hasClass("sh") && node != null && node !== false
+      tag == "span" && elem.hasClass("bh") && node != null && node !== false
         ? elem
-        : elem.closest("span.sh[node]")
+        : elem.closest("span.bh[node]")
 
     if (eToken.length) {
       const tWord = eToken.attr("t")
@@ -596,38 +606,34 @@ const tokenControls = () => {
       const ea = eMarkedEntity.attr("enm")
       activeEntity.val(ea)
 
-      const eEntry = entitiesDiv.find(`p.e[enm="${ea}"]`)
-      tokenStart.val(eEntry.attr("tstart"))
-      tokenEnd.val(eEntry.attr("tend"))
-
       for (const feat of features) {
         const val = eMarkedEntity.find(`span.${feat}`).html()
         $(`#${feat}_active`).val(val)
         $(`#${feat}_select`).val(val)
       }
-      subMitter.val(`entity-in-sentence-${ea}`)
+      subMitter.val(`entity-in-bucket-${ea}`)
       form.trigger("submit")
     }
 
     if (eSectionHeading.length) {
       const nd = eSectionHeading.attr("node")
-      const sent = eSectionHeading.closest("div")
-      let viewerControls = sent.next()
+      const bucket = eSectionHeading.closest("div")
+      let viewerControls = bucket.next()
 
-      if (viewerControls.length == 0 || viewerControls.hasClass("s")) {
+      if (viewerControls.length == 0 || viewerControls.hasClass("b")) {
         eSectionHeading.attr("title", "hide context")
         eSectionHeading.addClass("center")
-        sent.after(`
+        bucket.after(`
         <div class="viewercontrol">
           <button
             type="button"
             name="center"
             class="altv"
-            title="scroll to center sentence in context viewer"
+            title="scroll to center ${bucketType}in context viewer"
           >🔵</button>
         </div>
         `)
-        viewerControls = sent.next()
+        viewerControls = bucket.next()
         viewerControls.after(`<div class="viewer"></div>`)
         const viewer = viewerControls.next()
         viewer.before("<hr>")
@@ -643,15 +649,15 @@ const tokenControls = () => {
           contentType: false,
           success: data => {
             viewer.html(data)
-            const centerViewer = viewer.find(`span.sh[node="${nd}"]`)
-            const centerMain = sentences.find(`span.sh[node="${nd}"]`)
+            const centerViewer = viewer.find(`span.bh[node="${nd}"]`)
+            const centerMain = buckets.find(`span.bh[node="${nd}"]`)
             const targets = [centerViewer, centerMain]
             for (const tgt of targets) {
               if (tgt != null && tgt[0] != null) {
                 tgt[0].scrollIntoView({ block: "center" })
               }
-              const s = tgt.closest("div")
-              s.addClass("center")
+              const b = tgt.closest("div")
+              b.addClass("center")
             }
             viewerControls.find(`button[name="center"]`).click(() => {
               centerViewer[0].scrollIntoView({ block: "center" })
@@ -664,7 +670,7 @@ const tokenControls = () => {
         viewerControls.next().next().remove()
         viewerControls.next().remove()
         viewerControls.remove()
-        sent.removeClass("center")
+        bucket.removeClass("center")
         eSectionHeading.removeClass("center")
       }
     }
@@ -674,7 +680,7 @@ const tokenControls = () => {
     tokenRange.length = 0
     tokenStart.val("")
     tokenEnd.val("")
-    qWordShow.html("")
+    qTextEntShow.html("")
     activeEntity.val("")
     for (const feat of features) {
       $(`#${feat}_active`).val("")
@@ -964,6 +970,8 @@ const initForm = () => {
   storeForm()
   globalThis.toolkey = $("#toolkey").val()
   globalThis.features = $("#featurelist").val().split(",")
+  globalThis.slotType = $("#slottype").val()
+  globalThis.bucketType = $("#buckettype").val()
 }
 
 /* main

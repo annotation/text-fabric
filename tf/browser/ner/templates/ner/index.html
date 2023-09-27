@@ -23,6 +23,7 @@
       <input type="hidden" id="resetf" name="resetform" value="{{resetform}}">
       <input type="hidden" id="appname" name="appname" value="{{appname}}"/>
       <input type="hidden" id="slottype" name="slottype" value="{{slottype}}"/>
+      <input type="hidden" id="buckettype" name="buckettype" value="{{buckettype}}"/>
       <div class="page">
         <div id="col1">
           <p><a href="/">back to TF browser</a></p>
@@ -42,7 +43,7 @@
                 <input type="hidden"
                        id="activeentity"
                        name="activeentity"
-                       value="{{activeentity or ''}}"
+                       value="{{activeentityrep}}"
                 >
                 {{activevalrep|safe}}
             </p>
@@ -53,7 +54,7 @@
           </div>
         </div>
         <div id="col3">
-          <div id="sentencesq">
+          <div id="bucketsq">
             {{entityinit|safe}}
             <p id="appearancewidget">
               <b>Appearance</b>
@@ -70,8 +71,8 @@
             {{modifyentity|safe}}
           </div>
           <hr width="100%">
-          <div id="sentences">
-            {{sentences|safe}}
+          <div id="buckets">
+            {{buckets|safe}}
           </div>
         </div>
       </div>
