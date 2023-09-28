@@ -255,7 +255,9 @@ def wrapQuery(web, templateData, nFind, nEnt, nVisible):
     (txt, eTxt) = wrapEntityInit(web, templateData)
     wrapEntityText(templateData, txt, eTxt)
     scope = wrapScope(web, templateData, hasFind, txt, eTxt)
-    features = wrapEntityFeats(web, templateData, nEnt, nVisible, hasFind, txt, scope)
+    features = wrapEntityFeats(
+        web, templateData, nEnt, nVisible, hasFind, txt, eTxt, scope
+    )
     wrapEntityModify(web, templateData, hasFind, txt, eTxt, features)
 
 
@@ -386,6 +388,8 @@ def wrapEntityInit(web, templateData):
         templateData.activeentity = None
         templateData.tokenStart = None
         templateData.tokenEnd = None
+        txt = ""
+        eTxt = ""
 
     templateData.activeentityrep = "" if activeEntity is None else str(activeEntity)
     tokenStart = templateData.tokenstart
@@ -440,14 +444,20 @@ def wrapEntityText(templateData, txt, eTxt):
     )
 
 
-def wrapEntityFeats(web, templateData, nEnt, nVisible, hasFind, txt, scope):
+def wrapEntityFeats(web, templateData, nEnt, nVisible, hasFind, txt, eTxt, scope):
     annoSet = web.annoSet
     setData = web.toolData[TOOLKEY].sets[annoSet]
 
     valSelect = templateData.valselect
     (scopeInit, scopeFilter, scopeExceptions) = scope
 
-    features = {feat: setData.entityTextVal[feat].get(txt, set()) for feat in FEATURES}
+    hasOcc = txt != ""
+    hasEnt = eTxt != ""
+
+    features = {
+        feat: valSelect[feat] if hasEnt else setData.entityTextVal[feat].get(txt, set())
+        for feat in FEATURES
+    }
     content = []
 
     for (feat, theseVals) in features.items():
@@ -464,7 +474,7 @@ def wrapEntityFeats(web, templateData, nEnt, nVisible, hasFind, txt, scope):
             )
         )
 
-        if txt != "":
+        if hasEnt or hasOcc:
             for val in [NONE] + sorted(theseVals):
                 valuesContent.append(
                     H.button(
@@ -587,7 +597,11 @@ def wrapEntityModify(web, templateData, hasFind, txt, eTxt, features):
 
     if annoSet and (hasOcc or hasEnt):
         for (i, feat) in enumerate(FEATURES):
-            theseVals = sorted(setData.entityTextVal[feat].get(txt, set()))
+            theseVals = (
+                {eVals[i]}
+                if hasEnt
+                else sorted(setData.entityTextVal[feat].get(txt, set()))
+            )
             allVals = (
                 sorted(x[0] for x in setData.entityFreq[feat])
                 if feat in KEYWORD_FEATURES
@@ -620,7 +634,7 @@ def wrapEntityModify(web, templateData, hasFind, txt, eTxt, features):
 
             for val in allVals:
                 occurs = val in theseVals
-                delSt = "minus" if val in delVals else "x"
+                delSt = "minus" if hasEnt or val in delVals else "x"
                 addSt = (
                     "plus"
                     if val in addVals

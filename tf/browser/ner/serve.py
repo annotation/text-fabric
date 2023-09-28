@@ -97,6 +97,7 @@ class Serve:
 
         delData = templateData.deldata
         addData = templateData.adddata
+        activeEntity = templateData.activeentity
         tokenStart = templateData.tokenstart
         tokenEnd = templateData.tokenend
         submitter = templateData.submitter
@@ -104,24 +105,25 @@ class Serve:
         sFindRe = templateData.sfindre
         scope = templateData.scope
 
+        hasEnt = activeEntity is not None
+        hasOcc = tokenStart is not None and tokenEnd is not None
+
         if (
             submitter in {"delgo", "addgo"}
             and (delData or addData)
-            and tokenStart
-            and tokenEnd
+            and (hasEnt or hasOcc)
         ):
             if sFindRe and scope == "a":
                 self.getBuckets(noFind=True)
 
             if submitter == "delgo" and delData:
-                report = delEntity(
-                    web, delData.deletions, self.buckets, excludedTokens
-                )
+                report = delEntity(web, delData.deletions, self.buckets, excludedTokens)
                 wrapReport(templateData, report, "del")
+                if hasEnt:
+                    templateData.activeentity = None
+                    templateData.eVals = None
             if submitter == "addgo" and addData:
-                report = addEntity(
-                    web, addData.additions, self.buckets, excludedTokens
-                )
+                report = addEntity(web, addData.additions, self.buckets, excludedTokens)
                 wrapReport(templateData, report, "add")
 
             adaptValSelect(templateData)

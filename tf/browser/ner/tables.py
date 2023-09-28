@@ -384,6 +384,9 @@ def entityMatch(
                         matches.append(slots)
                         fValStats[""][None] += 1
 
+    else:
+        return (None, fValStats, (bTokensAll, matches, positions), True)
+
     return (fits, fValStats, (bTokensAll, matches, positions), len(matches) != 0)
 
 
