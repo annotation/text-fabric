@@ -6,10 +6,12 @@ the annotation tool.
 
 from flask import render_template
 
+from ...generic import AttrDict
+from ...core.files import initTree
+
 from .settings import TOOLKEY
+from .kernel import Annotate
 from .servelib import initTemplate, findSetup, adaptValSelect
-from .mutate import delEntity, addEntity, setHandling, setSetup
-from .tables import composeE, composeS, filterS
 from .wrap import (
     wrapCss,
     wrapEntityHeaders,
@@ -17,82 +19,117 @@ from .wrap import (
     wrapQuery,
     wrapActive,
     wrapReport,
+    wrapEntityTable,
+    wrapBuckets,
+    wrapMessages,
+    wrapAnnoSets,
 )
 
 
 class Serve:
     def __init__(self, web):
         self.web = web
-        web.console("START controller")
+        kernelApi = web.kernelApi
+        self.app = kernelApi.app
+        self.css = kernelApi.css()
 
-    def setupLean(self):
-        web = self.web
-        templateData = initTemplate(web)
+        if not hasattr(web, "toolData"):
+            setattr(web, "toolData", AttrDict())
+        toolData = web.toolData
+
+        if TOOLKEY not in toolData:
+            toolData[TOOLKEY] = AttrDict()
+
+        self.data = toolData[TOOLKEY]
+
+    def setupAnnotate(self):
+        data = self.data
+        kernelApi = self.kernelApi
+        app = kernelApi.app
+
+        templateData = initTemplate(app)
         self.templateData = templateData
 
-        wrapActive(web, templateData)
+        annoSet = templateData.annoset
+
+        annotate = Annotate(app, data, annoSet)
+        self.annotate = annotate
+        annotate.loadData()
 
     def setupFull(self):
-        web = self.web
-
-        templateData = initTemplate(web)
-        self.templateData = templateData
-
-        findSetup(web, templateData)
-        wrapActive(web, templateData)
-
-        kernelApi = web.kernelApi
-        wrapCss(web, templateData, kernelApi.css())
-
-    def actionsLean(self, node):
-        web = self.web
+        css = self.css
+        self.setupAnnotate()
         templateData = self.templateData
 
-        setSetup(web, templateData)
-        self.getBuckets(node=node)
+        findSetup(templateData)
+        wrapActive(templateData)
 
-    def actionsFull(self):
-        web = self.web
+        wrapCss(templateData, css)
+
+    def setupLean(self):
+        self.setupAnnotate()
         templateData = self.templateData
 
-        setHandling(web, templateData)
+        wrapActive(templateData)
+
+    def actionsAnnotate(self):
+        templateData = self.templateData
+
+        self.setHandling(templateData)
 
         self.getBuckets()
         self.updateHandling()
 
-    def wrapLean(self):
-        web = self.web
-        templateData = self.templateData
-        buckets = self.buckets
+    def actionsLean(self, node):
+        self.getBuckets(node=node)
 
-        return composeS(web, templateData, buckets, asHtml=True)
-
-    def wrapFull(self):
-        web = self.web
+    def wrapAnnotate(self):
+        annotate = self.annotate
         templateData = self.templateData
         nFind = self.nFind
         nEnt = self.nEnt
         nVisible = self.nVisible
         buckets = self.buckets
 
-        wrapQuery(web, templateData, nFind, nEnt, nVisible)
-        composeE(web, templateData)
-        wrapEntityOverview(web, templateData)
-        wrapEntityHeaders(web, templateData)
-        composeS(web, templateData, buckets)
+        wrapQuery(annotate, templateData, nFind, nEnt, nVisible)
+        wrapEntityTable(annotate, templateData)
+        wrapEntityOverview(annotate, templateData)
+        wrapEntityHeaders(templateData)
+        wrapBuckets(annotate, templateData, buckets)
 
         return render_template(f"{TOOLKEY}/index.html", **templateData)
 
+    def wrapLean(self):
+        annotate = self.annotate
+        templateData = self.templateData
+        buckets = self.buckets
+
+        return wrapBuckets(annotate, templateData, buckets, asHtml=True)
+
     def getBuckets(self, noFind=False, node=None):
-        web = self.web
+        annotate = self.annotate
         templateData = self.templateData
 
-        (self.buckets, self.nFind, self.nVisible, self.nEnt) = filterS(
-            web, templateData, noFind=noFind, node=node
+        sFindRe = None if noFind else templateData.sfindre
+        activeEntity = templateData.activeEntity
+        tokenStart = templateData.tokenstart
+        tokenEnd = templateData.tokenend
+        valSelect = templateData.valselect
+        freeState = templateData.freestate
+
+        (self.buckets, self.nFind, self.nVisible, self.nEnt) = annotate.filterBuckets(
+            sFindRe,
+            activeEntity,
+            tokenStart,
+            tokenEnd,
+            valSelect,
+            freeState,
+            noFind=noFind,
+            node=node,
         )
 
     def updateHandling(self):
-        web = self.web
+        annotate = self.annotate
         templateData = self.templateData
 
         delData = templateData.deldata
@@ -117,37 +154,67 @@ class Serve:
                 self.getBuckets(noFind=True)
 
             if submitter == "delgo" and delData:
-                report = delEntity(web, delData.deletions, self.buckets, excludedTokens)
+                report = annotate.delEntity(
+                    delData.deletions, self.buckets, excludedTokens
+                )
+                annotate.loadData()
                 wrapReport(templateData, report, "del")
                 if hasEnt:
                     templateData.activeentity = None
                     templateData.eVals = None
             if submitter == "addgo" and addData:
-                report = addEntity(web, addData.additions, self.buckets, excludedTokens)
+                report = annotate.addEntity(
+                    addData.additions, self.buckets, excludedTokens
+                )
+                annotate.loadData()
                 wrapReport(templateData, report, "add")
 
             adaptValSelect(templateData)
 
             self.getBuckets()
 
+    def setHandling(self, templateData):
+        annoDir = self.annoDir
 
-def serveNer(web):
-    """Serves the NE annotation tool.
+        initTree(annoDir, fresh=False)
 
-    Parameters
-    ----------
-    web: object
-        The flask web app
-    """
+        chosenAnnoSet = templateData.annoset
+        dupAnnoSet = templateData.duannoset
+        renamedAnnoSet = templateData.rannoset
+        deleteAnnoSet = templateData.dannoset
 
-    serve = Serve(web)
-    serve.setupFull()
-    serve.actionsFull()
-    return serve.wrapFull()
+        messages = []
+
+        if deleteAnnoSet:
+            messages.extend(self.setDel(deleteAnnoSet))
+            templateData.dannoset = ""
+
+        if dupAnnoSet:
+            messages.extend(self.setDup(dupAnnoSet))
+            templateData.duannoset = ""
+
+        if renamedAnnoSet and chosenAnnoSet:
+            messages.extend(self.setMove(renamedAnnoSet))
+            templateData.rannoset = ""
+
+        sets = self.sets
+
+        if chosenAnnoSet and chosenAnnoSet not in sets:
+            initTree(f"{annoDir}/{chosenAnnoSet}", fresh=False)
+            sets.add(chosenAnnoSet)
+            self.loadData()
+
+        templateData.annosets = wrapAnnoSets(annoDir, chosenAnnoSet, sets)
+        templateData.messages = wrapMessages(messages)
 
 
-def serveNerContext(web, node):
-    serve = Serve(web)
+def serveNer(serve):
+    serve.setupAnnotate()
+    serve.actionsAnnotate()
+    return serve.wrapAnnotate()
+
+
+def serveNerContext(serve, node):
     serve.setupLean()
     serve.actionsLean(node)
     return serve.wrapLean()

@@ -1,4 +1,4 @@
-"""Auxiliary functions for serving the web page.
+"""Auxiliary functions for serving the page.
 """
 
 import re
@@ -8,22 +8,21 @@ from urllib.parse import unquote
 from flask import request
 
 from ...core.generic import AttrDict, deepAttrDict
-from ...core.files import dirContents
 from .settings import TOOLKEY, FEATURES, EMPTY, NONE, BUCKET_TYPE
 
 
-def getFormData(web):
+def getFormData(annotate):
     """Get form data.
 
-    The TF browser user interacts with the web app by clicking and typing,
+    The TF browser user interacts with the app by clicking and typing,
     as a result of which a HTML form gets filled in.
-    This form as regularly submitted to the web server with a request
+    This form as regularly submitted to the server with a request
     for a new incarnation of the page: a response.
 
     The values that come with a request, must be peeled out of the form,
     and stored as logical values.
 
-    Most of the data has a known function to the web server,
+    Most of the data has a known function to the server,
     but there is also a list of webapp dependent options.
     """
 
@@ -133,33 +132,14 @@ def adaptValSelect(templateData):
     templateData.submitter = ""
 
 
-def annoSets(annoDir):
-    """Get the existing annotation sets.
-
-    Parameters
-    ----------
-    annoDir: string
-        The directory under which the distinct annotation sets can be found.
-        The names of these subdirectories are the names of the annotation sets.
-
-    Returns
-    -------
-    set
-        The annotation sets, sorted by name.
-    """
-    return set(dirContents(annoDir)[1])
-
-
-def initTemplate(web):
-    kernelApi = web.kernelApi
-    app = kernelApi.app
-    aContext = web.context
+def initTemplate(app):
+    aContext = app.context
     appName = aContext.appName.replace("/", " / ")
     api = app.api
     F = api.F
     slotType = F.otype.slotType
 
-    form = getFormData(web)
+    form = getFormData()
     resetForm = form["resetForm"]
 
     templateData = AttrDict()
@@ -178,7 +158,7 @@ def initTemplate(web):
     return templateData
 
 
-def findSetup(web, templateData):
+def findSetup(templateData):
     sFind = templateData.sfind
     sFindC = templateData.sfindc
 

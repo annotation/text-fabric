@@ -84,7 +84,7 @@ from flask import Flask, send_file
 from werkzeug.serving import run_simple
 
 from ..parameters import HOST, GH
-from ..core.helpers import console
+from ..core.helpers import console as cs
 from ..core.files import abspath, fileExists, dirNm
 from ..core.timestamp import AUTO
 from ..advanced.app import findApp
@@ -121,7 +121,7 @@ class Web:
 
     def console(self, msg):
         if self.debug:
-            console(msg)
+            cs(msg)
 
 
 def factory(web):
@@ -213,8 +213,8 @@ def main(cargs=sys.argv[1:]):
             args.append(arg)
 
     if len(args) == 0:
-        console("No port number specified")
-        console(f"{TF_ERROR}")
+        cs("No port number specified")
+        cs(f"{TF_ERROR}")
         return
 
     (portWeb, args) = (args[0], args[1:])
@@ -222,7 +222,7 @@ def main(cargs=sys.argv[1:]):
     appSpecs = argApp(args, False)
 
     if not appSpecs:
-        console("No TF dataset specified")
+        cs("No TF dataset specified")
         return
 
     backend = appSpecs.get("backend", GH) or GH
@@ -240,7 +240,7 @@ def main(cargs=sys.argv[1:]):
         checkout = ""
 
     versionRep = "" if version is None else f" version {version}"
-    console(
+    cs(
         f"Setting up TF browser for {appName} {moduleRefs or ''} "
         f"{setFile or ''}{versionRep}"
     )
@@ -259,12 +259,12 @@ def main(cargs=sys.argv[1:]):
         version=version,
     )
     if app is None:
-        console(f"{TF_ERROR}")
+        cs(f"{TF_ERROR}")
         return
 
     try:
         web = Web(makeTfKernel(app, appName))
-        console(f"{TF_DONE}")
+        cs(f"{TF_DONE}")
 
         webapp = factory(web)
         if debug:
@@ -278,8 +278,8 @@ def main(cargs=sys.argv[1:]):
             use_debugger=False,
         )
     except OSError as e:
-        console(str(e))
-        console(f"{TF_ERROR}")
+        cs(str(e))
+        cs(f"{TF_ERROR}")
         return 1
 
     return 0

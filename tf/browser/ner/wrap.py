@@ -2,7 +2,6 @@
 """
 
 from .settings import (
-    TOOLKEY,
     FEATURES,
     BUCKET_TYPE,
     KEYWORD_FEATURES,
@@ -16,7 +15,7 @@ from .settings import (
 from .html import H
 
 
-def wrapCss(web, templateData, genericCss):
+def wrapCss(templateData, genericCss):
     propMap = dict(
         ff="font-family",
         fz="font-size",
@@ -166,7 +165,7 @@ def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
     return H.p(content1, content2)
 
 
-def wrapEntityOverview(web, templateData):
+def wrapEntityOverview(annotate, templateData):
     """HTML for the feature values of entities.
 
     Parameters
@@ -178,8 +177,7 @@ def wrapEntityOverview(web, templateData):
     -------
     HTML string
     """
-
-    setData = web.toolData[TOOLKEY].sets[web.annoSet]
+    setData = annotate.getCurData()
 
     templateData.entityoverview = H.p(
         H.span(H.code(f"{len(es):>5}"), " x ", H.span(repSummary(fVals))) + H.br()
@@ -189,7 +187,7 @@ def wrapEntityOverview(web, templateData):
     )
 
 
-def wrapEntityHeaders(web, templateData):
+def wrapEntityHeaders(templateData):
     """HTML for the header of the entity table.
 
     Dependent on the state of sorting.
@@ -236,13 +234,71 @@ def wrapEntityHeaders(web, templateData):
     templateData.entityheaders = H.p(content)
 
 
-def wrapQuery(web, templateData, nFind, nEnt, nVisible):
+def wrapEntityTable(annotate, templateData):
+    """Compose a table of entities with selection and sort controls.
+
+    Parameters
+    ----------
+    sortKey: string
+        Indicates how to sort the table:
+
+        *   `freqsort`: by the frequency of the entities
+        *   `sort_{i}`: by the i-th additional feature of the entities
+
+    sortDir: string
+        Indicates the direction of the sort:
+
+        *   `u`: up, i.e. ascending
+        *   `d`: down, i.e. descending
+
+    Returns
+    -------
+    html string
+        The finished HTML of the table, ready to put into the Flask template.
+    """
+    activeEntity = templateData.activeentity
+    sortKey = templateData.sortkey
+    sortDir = templateData.sortdir
+    templateData.entityTable = annotate.entityTable(
+        activeEntity, sortKey, sortDir, H, repIdent
+    )
+
+
+def wrapBuckets(annotate, templateData, buckets, asHtml=False):
+    """Compose a table of buckets.
+
+    In that case, we look up the text between those tokens and including.
+    All buckets that contain that text of those slots will show up,
+    all other buckets will be left out.
+    The matching slots will be highlighted.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+    html string
+        The finished HTML of the table, ready to put into the Flask template.
+    """
+    activeEntity = templateData.activeentity
+    tokenStart = templateData.tokenstart
+    tokenEnd = templateData.tokenend
+    excludedTokens = templateData.excludedtokens
+
+    content = annotate.entityTable(
+        activeEntity, tokenStart, tokenEnd, excludedTokens, H, repIdent
+    )
+    templateData.buckets = H.join(content)
+
+    if asHtml:
+        return templateData.buckets
+
+
+def wrapQuery(annotate, templateData, nFind, nEnt, nVisible):
     """HTML for the query line.
 
     Parameters
     ----------
-    web: object
-        The web app object
 
     Returns
     -------
@@ -250,18 +306,18 @@ def wrapQuery(web, templateData, nFind, nEnt, nVisible):
         The finished HTML of the query parameters
     """
 
-    wrapAppearance(web, templateData)
-    hasFind = wrapFilter(web, templateData, nFind)
-    (txt, eTxt) = wrapEntityInit(web, templateData)
+    wrapAppearance(templateData)
+    hasFind = wrapFilter(annotate, templateData, nFind)
+    (txt, eTxt) = wrapEntityInit(annotate, templateData)
     wrapEntityText(templateData, txt, eTxt)
-    scope = wrapScope(web, templateData, hasFind, txt, eTxt)
+    scope = wrapScope(annotate, templateData, hasFind, txt, eTxt)
     features = wrapEntityFeats(
-        web, templateData, nEnt, nVisible, hasFind, txt, eTxt, scope
+        annotate, templateData, nEnt, nVisible, hasFind, txt, eTxt, scope
     )
-    wrapEntityModify(web, templateData, hasFind, txt, eTxt, features)
+    wrapEntityModify(annotate, templateData, hasFind, txt, eTxt, features)
 
 
-def wrapAppearance(web, templateData):
+def wrapAppearance(templateData):
     formattingDo = templateData.formattingdo
     formattingState = templateData.formattingstate
     templateData.formattingButtons = H.join(
@@ -311,9 +367,8 @@ def wrapAppearance(web, templateData):
     )
 
 
-def wrapFilter(web, templateData, nFind):
-    annoSet = web.annoSet
-    setData = web.toolData[TOOLKEY].sets[annoSet]
+def wrapFilter(annotate, templateData, nFind):
+    setData = annotate.getCurData()
 
     sFind = templateData.sfind
     sFindC = templateData.sfindc
@@ -350,15 +405,10 @@ def wrapFilter(web, templateData, nFind):
     return hasFind
 
 
-def wrapEntityInit(web, templateData):
-    annoSet = web.annoSet
-    setData = web.toolData[TOOLKEY].sets[annoSet]
+def wrapEntityInit(annotate, templateData):
+    F = annotate.F
+    setData = annotate.getCurData()
     entities = setData.entities
-
-    kernelApi = web.kernelApi
-    app = kernelApi.app
-    api = app.api
-    F = api.F
 
     activeEntity = templateData.activeentity
     tokenStart = templateData.tokenstart
@@ -444,9 +494,8 @@ def wrapEntityText(templateData, txt, eTxt):
     )
 
 
-def wrapEntityFeats(web, templateData, nEnt, nVisible, hasFind, txt, eTxt, scope):
-    annoSet = web.annoSet
-    setData = web.toolData[TOOLKEY].sets[annoSet]
+def wrapEntityFeats(annotate, templateData, nEnt, nVisible, hasFind, txt, eTxt, scope):
+    setData = annotate.getCurData()
 
     valSelect = templateData.valselect
     (scopeInit, scopeFilter, scopeExceptions) = scope
@@ -508,8 +557,8 @@ def wrapEntityFeats(web, templateData, nEnt, nVisible, hasFind, txt, eTxt, scope
     return features
 
 
-def wrapScope(web, templateData, hasFind, txt, eTxt):
-    annoSet = web.annoSet
+def wrapScope(annotate, templateData, hasFind, txt, eTxt):
+    annoSet = annotate.annoSet
     scope = templateData.scope
     hasOcc = txt != ""
     hasEnt = eTxt != ""
@@ -562,14 +611,10 @@ def wrapScope(web, templateData, hasFind, txt, eTxt):
     return (scopeInit, scopeFilter, scopeExceptions)
 
 
-def wrapEntityModify(web, templateData, hasFind, txt, eTxt, features):
-    kernelApi = web.kernelApi
-    app = kernelApi.app
-    api = app.api
-    F = api.F
-
-    annoSet = web.annoSet
-    setData = web.toolData[TOOLKEY].sets[annoSet]
+def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt, features):
+    setData = annotate.getCurData()
+    annoSet = annotate.annoSet
+    F = annotate.F
 
     submitter = templateData.submitter
     eVals = templateData.evals
@@ -797,7 +842,7 @@ def wrapEntityStat(val, thisNVisible, thisNEnt, hasFind):
     return H.span(n, cls="stat")
 
 
-def wrapActive(web, templateData):
+def wrapActive(templateData):
     activeVal = templateData.activeval
 
     templateData.activevalrep = H.join(
@@ -809,8 +854,15 @@ def wrapActive(web, templateData):
 
 
 def wrapReport(templateData, report, kind):
+    label = "Deletion" if kind == "del" else "Addition" if kind == "add" else ""
     templateData[f"report{kind}"] = H.join(
-        H.span(line, cls="report") for line in report
+        H.span(
+            H.join(f"{label}: {n} x {valRep(fVals)}" for (fVals, n) in line)
+            if type(line) is tuple
+            else line,
+            cls="report",
+        )
+        for line in report
     )
     report.clear()
 
@@ -830,3 +882,7 @@ def repSummary(vals, active=""):
         ),
         sep=" ",
     )
+
+
+def valRep(fVals):
+    return ", ".join(f"<i>{feat}</i>={val}" for (feat, val) in zip(FEATURES, fVals))
