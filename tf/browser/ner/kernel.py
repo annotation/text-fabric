@@ -6,6 +6,7 @@ and put it in various dedicated data structures.
 
 import collections
 import time
+import re
 from itertools import chain
 
 
@@ -13,6 +14,7 @@ from ...core.helpers import console as cs
 from ...core.generic import AttrDict
 from ...core.files import (
     mTime,
+    initTree,
     fileExists,
     annotateDir,
     dirRemove,
@@ -27,55 +29,81 @@ from .settings import (
     TOOLKEY,
     ENTITY_TYPE,
     FEATURES,
+    SUMMARY_FEATURES,
     SUMMARY_INDICES,
     NF,
     BUCKET_TYPE,
     ERROR,
+    SORTKEY_DEFAULT,
+    SORTDIR_DOWN,
+    SORTDIR_UP,
     featureDefault,
     getText,
 )
 
 from .match import entityMatch
+from .html import H
 
 
 class Annotate:
-    def __init__(self, app, data, annoSet, debug=True):
+    def __init__(self, app, annoSet="", data=None, debug=False, browse=False):
         self.app = app
         self.F = app.api.F
+        if data is None:
+            data = AttrDict()
+            data.sets = AttrDict()
         self.data = data
         self.annoSet = annoSet
         self.debug = debug
+        self.browse = browse
         annoDir = annotateDir(app, TOOLKEY)
         self.annoDir = annoDir
+        initTree(annoDir, fresh=False)
+        self.setNames = set(dirContents(annoDir)[1])
+        app.loadToolCss()
+        if not browse:
+            self.loadData()
 
     def console(self, msg):
         if self.debug:
             cs(msg)
 
-    def getSetsFS(self):
-        """Get the existing annotation sets.
-
-        Parameters
-        ----------
-        annoDir: string
-            The directory under which the distinct annotation sets can be found.
-            The names of these subdirectories are the names of the annotation sets.
-
-        Returns
-        -------
-        set
-            The annotation sets, sorted by name.
-        """
+    def setSet(self, newAnnoSet):
+        browse = self.browse
+        data = self.data
+        setNames = self.setNames
+        setsData = data.sets
+        annoSet = self.annoSet
         annoDir = self.annoDir
-        return set(dirContents(annoDir)[1])
+
+        if newAnnoSet and newAnnoSet not in setNames:
+            initTree(f"{annoDir}/{newAnnoSet}", fresh=False)
+            setNames.add(newAnnoSet)
+
+        if newAnnoSet != annoSet:
+            annoSet = newAnnoSet
+            self.annoSet = annoSet
+            self.loadData()
+
+        if not browse:
+            entities = setsData[annoSet].entities
+            nEntities = len(entities)
+            plural = "" if nEntities == 1 else "s"
+            print(f"Annotation set '{annoSet}' has {nEntities} annotation{plural}")
+
+    def getCurData(self):
+        data = self.data
+        setsData = data.sets
+        annoSet = self.annoSet
+        setData = setsData.setdefault(annoSet, AttrDict())
+        return setData
 
     def setDel(self, delSet):
         data = self.data
+        setNames = self.setNames
         setsData = data.sets
         annoDir = self.annoDir
         annoPath = f"{annoDir}/{delSet}"
-        sets = self.getSetsFS()
-        self.sets = self.sets
 
         messages = []
 
@@ -84,7 +112,7 @@ class Annotate:
         if dirExists(annoPath):
             messages.append((ERROR, f"""Could not remove {delSet}"""))
         else:
-            sets.remove(delSet)
+            setNames.discard(delSet)
             del setsData[delSet]
             self.annoSet = ""
 
@@ -92,17 +120,15 @@ class Annotate:
 
     def setDup(self, dupSet):
         data = self.data
+        setNames = self.setNames
         setsData = data.sets
         annoSet = self.annoSet
         annoDir = self.annoDir
         annoPath = f"{annoDir}/{dupSet}"
 
-        sets = self.getSetsFS()
-        self.sets = sets
-
         messages = []
 
-        if dupSet in sets:
+        if dupSet in setNames:
             messages.append((ERROR, f"""Set {dupSet} already exists"""))
         else:
             if annoSet:
@@ -115,7 +141,7 @@ class Annotate:
                         (ERROR, f"""Could not copy {annoSet} to {dupSet}""")
                     )
                 else:
-                    sets.add(dupSet)
+                    setNames.add(dupSet)
                     setsData[dupSet] = setsData[annoSet]
                     self.annoSet = dupSet
             else:
@@ -126,6 +152,7 @@ class Annotate:
                 else:
                     dirMake(annoPath)
                     self.saveEntitiesAs(dataFile)
+                    setNames.add(dupSet)
                     setsData[dupSet] = setsData[annoSet]
                     self.annoSet = dupSet
 
@@ -133,13 +160,11 @@ class Annotate:
 
     def setMove(self, moveSet):
         data = self.data
+        setNames = self.setNames
         setsData = data.sets
         annoSet = self.annoSet
         annoDir = self.annoDir
         annoPath = f"{annoDir}/{moveSet}"
-
-        sets = self.getSetsFS()
-        self.sets = sets
 
         messages = []
 
@@ -154,8 +179,8 @@ class Annotate:
                     )
                 )
             else:
-                sets.add(moveSet)
-                sets.remove(annoSet)
+                setNames.add(moveSet)
+                setNames.discard(annoSet)
                 setsData[moveSet] = setsData[annoSet]
                 del setsData[annoSet]
                 self.annoSet = moveSet
@@ -199,10 +224,10 @@ class Annotate:
         if "sets" not in data:
             data.sets = AttrDict()
 
-        setsData = data.sets
+        sets = data.sets
 
-        if annoSet not in setsData:
-            setsData[annoSet] = AttrDict()
+        if annoSet not in sets:
+            sets[annoSet] = AttrDict()
 
         # load bucket nodes
 
@@ -378,12 +403,6 @@ class Annotate:
         else:
             self.console(f"PROCESS '{annoSet}' REUSED")
 
-    def getCurData(self):
-        data = self.data
-        setsData = data.sets
-        annoSet = self.annoSet
-        return setsData[annoSet]
-
     def delEntity(self, deletions, buckets, excludedTokens):
         setData = self.getCurData()
 
@@ -541,12 +560,15 @@ class Annotate:
 
     def filterBuckets(
         self,
-        sFindRe,
-        activeEntity,
-        tokenStart,
-        tokenEnd,
-        valSelect,
-        freeState,
+        bFind=None,
+        bFindC=None,
+        bFindRe=None,
+        activeEntity=None,
+        qTokens=None,
+        tokenStart=None,
+        tokenEnd=None,
+        valSelect=None,
+        freeState=None,
         noFind=False,
         node=None,
     ):
@@ -564,9 +586,9 @@ class Annotate:
 
         Parameters
         ----------
-        sFindPattern: string
+        bFindPattern: string
             A search string that filters the buckets, before applying the search
-            for a word sequence.
+            for a token sequence.
 
         tokenStart, tokenEnd: int or None
             Specify the start slot number and the end slot number of a sequence of tokens.
@@ -586,6 +608,7 @@ class Annotate:
             *   matches: the match positions of the found text
             *   positions: the token positions where a targeted token sequence starts
         """
+        browse = self.browse
         app = self.app
         setData = self.getCurData()
         entities = setData.entities
@@ -595,16 +618,19 @@ class Annotate:
         T = api.T
 
         results = []
-        words = []
 
         hasEnt = activeEntity is not None
-        hasOcc = not hasEnt and tokenStart and tokenEnd
+        hasQTokens = qTokens is not None and len(qTokens)
 
-        words = (
-            tuple(
-                word
+        hasOcc = not hasEnt and ((tokenStart and tokenEnd) or hasQTokens)
+
+        useQTokens = (
+            qTokens
+            if hasQTokens
+            else tuple(
+                token
                 for t in range(tokenStart, tokenEnd + 1)
-                if (word := (F.str.v(t) or "").strip())
+                if (token := (F.str.v(t) or "").strip())
             )
             if hasOcc
             else None
@@ -626,7 +652,7 @@ class Annotate:
         )
 
         buckets = (
-            setData.buckets
+            setData.buckets or ()
             if node is None
             else L.d(T.sectionTuple(node)[1], otype=BUCKET_TYPE)
         )
@@ -636,6 +662,12 @@ class Annotate:
             eStarts = {s[0]: s[-1] for s in eSlots}
         else:
             eStarts = None
+
+        if bFindRe is None:
+            if bFind is not None:
+                (bFind, bFindRe, errorMsg) = findCompile(bFind, bFindC)
+                if errorMsg:
+                    app.error(errorMsg)
 
         for b in buckets:
             (fits, fValStats, result, occurs) = entityMatch(
@@ -647,8 +679,8 @@ class Annotate:
                 F,
                 T,
                 b,
-                sFindRe,
-                words,
+                bFindRe,
+                useQTokens,
                 eVals,
                 valSelect,
                 requireFree,
@@ -679,9 +711,26 @@ class Annotate:
 
             results.append((b, *result))
 
+        if not browse:
+            nResults = len(results)
+            pluralF = "" if nFind == 1 else "s"
+            pluralR = "" if nResults == 1 else "s"
+            print(f"{nFind} {BUCKET_TYPE}{pluralF} satisfy the search pattern")
+            for feat in ("",) + FEATURES:
+                if feat == "":
+                    print("Combined features match:")
+                    for (ek, n) in sorted(nEnt[feat].items()):
+                        v = nVisible[feat][ek]
+                        print(f"\t{v:>5} of {n:>5} x")
+                else:
+                    print(f"Feature {feat}: found the following values:")
+                    for (ek, n) in sorted(nEnt[feat].items()):
+                        v = nVisible[feat][ek]
+                        print(f"\t{v:>5} of {n:>5} x {ek}")
+            print(f"{nResults} {BUCKET_TYPE}{pluralR}")
         return (results, nFind, nVisible, nEnt)
 
-    def entityTable(self, activeEntity, sortKey, sortDir, H, repIdent):
+    def entityTable(self, activeEntity, sortKey, sortDir):
         setData = self.getCurData()
 
         hasEnt = activeEntity is not None
@@ -689,13 +738,13 @@ class Annotate:
         entries = setData.entityIdent.items()
         eFirst = setData.entityIdentFirst
 
-        if sortKey == "freqsort":
+        if sortKey is None or sortKey == SORTKEY_DEFAULT:
             entries = sorted(entries, key=lambda x: (len(x[1]), x[0]))
         else:
             index = int(sortKey[5:])
             entries = sorted(entries, key=lambda x: (x[0][index], -len(x[1])))
 
-        if sortDir == "d":
+        if sortDir == SORTDIR_DOWN:
             entries = reversed(entries)
 
         content = []
@@ -718,9 +767,7 @@ class Annotate:
 
         return H.join(content)
 
-    def bucketTable(
-        self, buckets, activeEntity, tokenStart, tokenEnd, excludedTokens, H, repIdent
-    ):
+    def bucketTable(self, buckets, activeEntity, tokenStart, tokenEnd, excludedTokens):
         app = self.app
         setData = self.getCurData()
         annoSet = self.annoSet
@@ -832,4 +879,105 @@ class Annotate:
                 )
                 break
 
-        return content
+        return H.join(content)
+
+    def wrapEntityOverview(self):
+        """HTML for the feature values of entities.
+
+        Parameters
+        ----------
+        setData: dict
+            The entity data for the chosen set.
+
+        Returns
+        -------
+        HTML string
+        """
+        setData = self.getCurData()
+
+        return H.p(
+            H.span(H.code(f"{len(es):>5}"), " x ", H.span(repSummary(fVals))) + H.br()
+            for (fVals, es) in sorted(
+                setData.entitySummary.items(), key=lambda x: (-len(x[1]), x[0])
+            )
+        )
+
+    def wrapEntityHeaders(self, sortKey, sortDir):
+        """HTML for the header of the entity table.
+
+        Dependent on the state of sorting.
+
+        Parameters
+        ----------
+        sortKey: string
+            Indicator of how the table is sorted.
+        sortDir:
+            Indicator of the direction of the sorting.
+
+        Returns
+        -------
+        HTML string
+
+        """
+        sortKeys = ((feat, f"sort_{i}") for (i, feat) in enumerate(FEATURES))
+
+        content = [
+            H.input(type="hidden", name="sortkey", id="sortkey", value=sortKey),
+            H.input(type="hidden", name="sortdir", id="sortdir", value=sortDir),
+        ]
+
+        for (label, key) in (("frequency", "freqsort"), *sortKeys):
+            hl = " active " if key == sortKey else ""
+            theDir = sortDir if key == sortKey else SORTDIR_UP
+            theArrow = "↑" if theDir == SORTDIR_UP else "↓"
+            content.extend(
+                [
+                    H.button(
+                        f"{label} {theArrow}",
+                        type="button",
+                        tp="sort",
+                        sk=key,
+                        sd=theDir,
+                        cls=hl,
+                    ),
+                    " ",
+                ]
+            )
+
+        return H.p(content)
+
+
+def repIdent(vals, active=""):
+    return H.join(
+        (H.span(val, cls=f"{feat} {active}") for (feat, val) in zip(FEATURES, vals)),
+        sep=" ",
+    )
+
+
+def repSummary(vals, active=""):
+    return H.join(
+        (
+            H.span(val, cls=f"{feat} {active}")
+            for (feat, val) in zip(SUMMARY_FEATURES, vals)
+        ),
+        sep=" ",
+    )
+
+
+def valRep(fVals):
+    return ", ".join(f"<i>{feat}</i>={val}" for (feat, val) in zip(FEATURES, fVals))
+
+
+def findCompile(bFind, bFindC):
+    bFind = (bFind or "").strip()
+    bFindFlag = [] if bFindC else [re.I]
+    bFindRe = None
+    errorMsg = ""
+
+    if bFind:
+        try:
+            bFindRe = re.compile(bFind, *bFindFlag)
+        except Exception as e:
+            errorMsg = str(e)
+
+    return (bFind, bFindRe, errorMsg)

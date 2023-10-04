@@ -1,17 +1,25 @@
 """Auxiliary functions for serving the page.
 """
 
-import re
 import json
 from urllib.parse import unquote
 
 from flask import request
 
 from ...core.generic import AttrDict, deepAttrDict
-from .settings import TOOLKEY, FEATURES, EMPTY, NONE, BUCKET_TYPE
+from .settings import (
+    TOOLKEY,
+    FEATURES,
+    EMPTY,
+    NONE,
+    BUCKET_TYPE,
+    SORTKEY_DEFAULT,
+    SORTDIR_DEFAULT,
+)
+from .kernel import findCompile
 
 
-def getFormData(annotate):
+def getFormData():
     """Get form data.
 
     The TF browser user interacts with the app by clicking and typing,
@@ -41,16 +49,16 @@ def getFormData(annotate):
     form["duannoset"] = fget("duannoset", "")
     form["rannoset"] = fget("rannoset", "")
     form["dannoset"] = fget("dannoset", "")
-    form["sortkey"] = fget("sortkey", "") or "freqsort"
-    form["sortdir"] = fget("sortdir", "") or "u"
+    form["sortkey"] = fget("sortkey", "") or SORTKEY_DEFAULT
+    form["sortdir"] = fget("sortdir", "") or SORTDIR_DEFAULT
     form["formattingdo"] = fget("formattingdo", "x") == "v"
     form["formattingstate"] = {
         feat: fget(f"{feat}_appearance", "v") == "v"
         for feat in FEATURES + ("_stat_", "_entity_")
     }
-    form["sfind"] = fget("sfind", "")
-    form["sfindc"] = fget("sfindc", "x") == "v"
-    form["sfinderror"] = fget("sfinderror", "")
+    form["bfind"] = fget("bfind", "")
+    form["bfindc"] = fget("bfindc", "x") == "v"
+    form["bfinderror"] = fget("bfinderror", "")
 
     form["freestate"] = fget("freestate", "all")
     activeEntity = fget("activeentity", "")
@@ -159,20 +167,11 @@ def initTemplate(app):
 
 
 def findSetup(templateData):
-    sFind = templateData.sfind
-    sFindC = templateData.sfindc
+    bFind = templateData.bfind
+    bFindC = templateData.bfindc
 
-    sFind = (sFind or "").strip()
-    sFindFlag = [] if sFindC else [re.I]
-    sFindRe = None
-    errorMsg = ""
+    (bFind, bFindRe, errorMsg) = findCompile(bFind, bFindC)
 
-    if sFind:
-        try:
-            sFindRe = re.compile(sFind, *sFindFlag)
-        except Exception as e:
-            errorMsg = str(e)
-
-    templateData.sfind = sFind
-    templateData.sfindre = sFindRe
+    templateData.bfind = bFind
+    templateData.bfindre = bFindRe
     templateData.errormsg = errorMsg

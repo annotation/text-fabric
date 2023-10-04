@@ -320,6 +320,12 @@ SERVER_DISPLAY_BASE = "/browser/static"
 SERVER_DISPLAY = ("fonts.css", "display.css", "highlight.css")
 """Bunch of TF-generic css files."""
 
+TOOL_DISPLAY_BASE = "/browser/{}/static"
+"""Base of tool css files."""
+
+TOOL_DISPLAY = ("base.css")
+"""Bunch of tool-specific css files."""
+
 TEMP_DIR = "_temp"
 """Name of temporary directories.
 

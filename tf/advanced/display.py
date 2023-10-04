@@ -61,6 +61,8 @@ from ..core.files import (
     DOWNLOADS,
     SERVER_DISPLAY_BASE,
     SERVER_DISPLAY,
+    TOOL_DISPLAY_BASE,
+    TOOL_DISPLAY,
 )
 from ..core.timestamp import SILENT_D, silentConvert
 from .helpers import getHeaderTypes, getRowsX, tupleEnum, RESULT, dh, showDict, _getLtr
@@ -110,7 +112,9 @@ def displayApi(app, silent=SILENT_D):
     app.pretty = types.MethodType(pretty, app)
     app.unravel = types.MethodType(unravel, app)
     app.loadCss = types.MethodType(loadCss, app)
+    app.loadToolCss = types.MethodType(loadCss, app)
     app.getCss = types.MethodType(getCss, app)
+    app.getToolCss = types.MethodType(getToolCss, app)
     app.displayShow = types.MethodType(displayShow, app)
     app.displaySetup = types.MethodType(displaySetup, app)
     app.displayReset = types.MethodType(displayReset, app)
@@ -280,6 +284,60 @@ def getCss(app):
         "tr.tf.rtl, td.tf.rtl, th.tf.rtl { text-align: right ! important;}\n"
     )
     return f"<style>{tableCss}{genericCss}{appCss}</style>"
+
+
+def loadToolCss(app):
+    """Load the Tool CSS for this app.
+
+    If we are in the TF-browser, the generic CSS is already provided, we only
+    need to respond with the app-specific CSS: we return it as string.
+    The flag `app._browse` is used to steer us into this case.
+
+    Otherwise, if we are in a notebook,
+    we collect the complete CSS code from Text-Fabric and the app,
+    and we add a piece to override some of the notebook CSS for tables,
+    which specify a table layout with right aligned cell contents by default.
+
+    We then load the resulting CSS into the notebook.
+
+    Otherwise, we do nothing.
+
+    Returns
+    -------
+    None | string
+        When in the TF browser, the app-dependent CSS is returned.
+        Otherwise, nothing is returned, but the complete CSS is displayed as HTML in the notebook.
+    """
+
+    _browse = app._browse
+
+    if _browse:
+        return
+
+    if not app.inNb:
+        return
+
+    css = getToolCss(app)
+    dh(css)
+
+
+def getToolCss(app, tool):
+    """Export the CSS for a tool of this app.
+
+    Returns
+    -------
+    None | string
+        CSS code, including a surrounding `<style>` element.
+    """
+    thisToolDisplayBase = TOOL_DISPLAY_BASE.format(tool)
+    cssPath = f"{dirNm(dirNm(abspath(__file__)))}" f"{thisToolDisplayBase}"
+    cssPath = normpath(cssPath)
+    toolCss = ""
+    for cssFile in TOOL_DISPLAY:
+        with open(f"{cssPath}/{cssFile}", encoding="utf8") as fh:
+            toolCss += fh.read()
+
+    return f"<style>{toolCss}</style>"
 
 
 def export(app, tuples, toDir=None, toFile="results.tsv", **options):

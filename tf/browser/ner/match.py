@@ -12,15 +12,15 @@ def entityMatch(
     F,
     T,
     b,
-    sFindRe,
-    words,
+    bFindRe,
+    qTokens,
     eVals,
     valSelect,
     requireFree,
 ):
-    """Checks whether a bucket matches a sequence of words.
+    """Checks whether a bucket matches a sequence of tokens.
 
-    When we do the checking, we ignore empty words in the bucket.
+    When we do the checking, we ignore empty tokens in the bucket.
 
     Parameters
     ----------
@@ -32,21 +32,21 @@ def entityMatch(
         extraction
     b: integer
         The node of the bucket in question
-    words: list of string
-        The sequence of words that must be matched. They are all non-empty and stripped
+    qTokens: list of string
+        The sequence of tokens that must be matched. They are all non-empty and stripped
         from white space.
     valSelect: string
-        The entity values that the matched words should have
+        The entity values that the matched tokens should have
     """
     positions = set()
 
     fits = None
 
-    if sFindRe:
+    if bFindRe:
         fits = False
         sText = T.text(b)
 
-        for match in sFindRe.finditer(sText):
+        for match in bFindRe.finditer(sText):
             positions |= set(range(match.start(), match.end()))
             fits = True
 
@@ -83,6 +83,8 @@ def entityMatch(
             valOK = True
 
             for (feat, val) in zip(FEATURES, eVals):
+                if valSelect is None:
+                    continue
                 selectedVals = valSelect[feat]
                 if val not in selectedVals:
                     valOK = False
@@ -92,21 +94,21 @@ def entityMatch(
                 matches.append(slots)
                 fValStats[""][None] += 1
 
-    elif words is not None:
-        nWords = len(words)
+    elif qTokens is not None:
+        nTokens = len(qTokens)
 
-        if nWords:
-            sWords = {w for (t, w) in bTokens}
+        if nTokens:
+            bStrings = {s for (t, s) in bTokens}
 
-            if any(w not in sWords for w in words):
+            if any(s not in bStrings for s in qTokens):
                 return (fits, fValStats, (bTokensAll, matches, positions), False)
 
             nSTokens = len(bTokens)
 
             for (i, (t, w)) in enumerate(bTokens):
-                if w != words[0]:
+                if w != qTokens[0]:
                     continue
-                if i + nWords - 1 >= nSTokens:
+                if i + nTokens - 1 >= nSTokens:
                     return (
                         fits,
                         fValStats,
@@ -116,13 +118,13 @@ def entityMatch(
 
                 match = True
 
-                for (j, w) in enumerate(words[1:]):
+                for (j, w) in enumerate(qTokens[1:]):
                     if bTokens[i + j + 1][1] != w:
                         match = False
                         break
 
                 if match:
-                    lastT = bTokens[i + nWords - 1][0]
+                    lastT = bTokens[i + nTokens - 1][0]
                     slots = tuple(range(t, lastT + 1))
 
                     if requireFree is None:
@@ -153,6 +155,8 @@ def entityMatch(
                             thisOK = True
 
                             for (feat, val) in zip(FEATURES, valTuple):
+                                if valSelect is None:
+                                    continue
                                 selectedVals = valSelect[feat]
                                 if val not in selectedVals:
                                     thisOK = False
@@ -162,7 +166,9 @@ def entityMatch(
                                 valOK = True
                                 break
                     else:
-                        valOK = all(NONE in valSelect[feat] for feat in FEATURES)
+                        valOK = valSelect is None or all(
+                            NONE in valSelect[feat] for feat in FEATURES
+                        )
 
                     if valOK:
                         matches.append(slots)

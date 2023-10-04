@@ -83,6 +83,11 @@ STYLES = dict(
 WHITE_RE = re.compile(r"""\s{2,}""", re.S)
 NON_ALPHA_RE = re.compile(r"""[^\w ]""", re.S)
 
+SORTKEY_DEFAULT = "freqsort"
+SORTDIR_DEFAULT = "d"
+SORTDIR_DOWN = "d"
+SORTDIR_UP = "u"
+
 
 def ucFirst(x):
     return x[0].upper() + x[1:].lower()

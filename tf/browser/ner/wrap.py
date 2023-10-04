@@ -5,7 +5,6 @@ from .settings import (
     FEATURES,
     BUCKET_TYPE,
     KEYWORD_FEATURES,
-    SUMMARY_FEATURES,
     STYLES,
     EMPTY,
     NONE,
@@ -13,6 +12,7 @@ from .settings import (
     featureDefault,
 )
 from .html import H
+from .kernel import repIdent, valRep
 
 
 def wrapCss(templateData, genericCss):
@@ -165,135 +165,6 @@ def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
     return H.p(content1, content2)
 
 
-def wrapEntityOverview(annotate, templateData):
-    """HTML for the feature values of entities.
-
-    Parameters
-    ----------
-    setData: dict
-        The entity data for the chosen set.
-
-    Returns
-    -------
-    HTML string
-    """
-    setData = annotate.getCurData()
-
-    templateData.entityoverview = H.p(
-        H.span(H.code(f"{len(es):>5}"), " x ", H.span(repSummary(fVals))) + H.br()
-        for (fVals, es) in sorted(
-            setData.entitySummary.items(), key=lambda x: (-len(x[1]), x[0])
-        )
-    )
-
-
-def wrapEntityHeaders(templateData):
-    """HTML for the header of the entity table.
-
-    Dependent on the state of sorting.
-
-    Parameters
-    ----------
-    sortKey: string
-        Indicator of how the table is sorted.
-    sortDir:
-        Indicator of the direction of the sorting.
-
-    Returns
-    -------
-    HTML string
-
-    """
-    sortKey = templateData.sortkey
-    sortDir = templateData.sortdir
-    sortKeys = ((feat, f"sort_{i}") for (i, feat) in enumerate(FEATURES))
-
-    content = [
-        H.input(type="hidden", name="sortkey", id="sortkey", value=sortKey),
-        H.input(type="hidden", name="sortdir", id="sortdir", value=sortDir),
-    ]
-
-    for (label, key) in (("frequency", "freqsort"), *sortKeys):
-        hl = " active " if key == sortKey else ""
-        theDir = sortDir if key == sortKey else "u"
-        theArrow = "↑" if theDir == "u" else "↓"
-        content.extend(
-            [
-                H.button(
-                    f"{label} {theArrow}",
-                    type="button",
-                    tp="sort",
-                    sk=key,
-                    sd=theDir,
-                    cls=hl,
-                ),
-                " ",
-            ]
-        )
-
-    templateData.entityheaders = H.p(content)
-
-
-def wrapEntityTable(annotate, templateData):
-    """Compose a table of entities with selection and sort controls.
-
-    Parameters
-    ----------
-    sortKey: string
-        Indicates how to sort the table:
-
-        *   `freqsort`: by the frequency of the entities
-        *   `sort_{i}`: by the i-th additional feature of the entities
-
-    sortDir: string
-        Indicates the direction of the sort:
-
-        *   `u`: up, i.e. ascending
-        *   `d`: down, i.e. descending
-
-    Returns
-    -------
-    html string
-        The finished HTML of the table, ready to put into the Flask template.
-    """
-    activeEntity = templateData.activeentity
-    sortKey = templateData.sortkey
-    sortDir = templateData.sortdir
-    templateData.entityTable = annotate.entityTable(
-        activeEntity, sortKey, sortDir, H, repIdent
-    )
-
-
-def wrapBuckets(annotate, templateData, buckets, asHtml=False):
-    """Compose a table of buckets.
-
-    In that case, we look up the text between those tokens and including.
-    All buckets that contain that text of those slots will show up,
-    all other buckets will be left out.
-    The matching slots will be highlighted.
-
-    Parameters
-    ----------
-
-    Returns
-    -------
-    html string
-        The finished HTML of the table, ready to put into the Flask template.
-    """
-    activeEntity = templateData.activeentity
-    tokenStart = templateData.tokenstart
-    tokenEnd = templateData.tokenend
-    excludedTokens = templateData.excludedtokens
-
-    content = annotate.entityTable(
-        activeEntity, tokenStart, tokenEnd, excludedTokens, H, repIdent
-    )
-    templateData.buckets = H.join(content)
-
-    if asHtml:
-        return templateData.buckets
-
-
 def wrapQuery(annotate, templateData, nFind, nEnt, nVisible):
     """HTML for the query line.
 
@@ -305,7 +176,6 @@ def wrapQuery(annotate, templateData, nFind, nEnt, nVisible):
     html string
         The finished HTML of the query parameters
     """
-
     wrapAppearance(templateData)
     hasFind = wrapFilter(annotate, templateData, nFind)
     (txt, eTxt) = wrapEntityInit(annotate, templateData)
@@ -320,7 +190,7 @@ def wrapQuery(annotate, templateData, nFind, nEnt, nVisible):
 def wrapAppearance(templateData):
     formattingDo = templateData.formattingdo
     formattingState = templateData.formattingstate
-    templateData.formattingButtons = H.join(
+    templateData.formattingbuttons = H.join(
         H.span(
             H.input(
                 type="hidden",
@@ -370,26 +240,26 @@ def wrapAppearance(templateData):
 def wrapFilter(annotate, templateData, nFind):
     setData = annotate.getCurData()
 
-    sFind = templateData.sfind
-    sFindC = templateData.sfindc
-    sFindRe = templateData.sfindre
-    sFindError = templateData.sfinderror
+    bFind = templateData.bfind
+    bFindC = templateData.bfindc
+    bFindRe = templateData.bfindre
+    bFindError = templateData.bfinderror
 
-    hasFind = sFindRe is not None
+    hasFind = bFindRe is not None
 
-    nBuckets = len(setData.buckets)
+    nBuckets = len(setData.buckets or [])
 
     templateData.find = H.join(
-        H.input(type="text", name="sfind", id="sfind", value=sFind),
+        H.input(type="text", name="bfind", id="bfind", value=bFind),
         H.input(
-            type="hidden", name="sfindc", id="sfindc", value="v" if sFindC else "x"
+            type="hidden", name="bfindc", id="bfindc", value="v" if bFindC else "x"
         ),
         H.button(
-            "C" if sFindC else "¢",
+            "C" if bFindC else "¢",
             type="submit",
-            id="sfindb",
+            id="bfindb",
             title="using case SENSITIVE search"
-            if sFindC
+            if bFindC
             else "using case INSENSITIVE search",
             cls="alt",
         ),
@@ -398,7 +268,7 @@ def wrapFilter(annotate, templateData, nFind):
         " ",
         H.button("❌", type="submit", id="findclear", cls="altm"),
         " ",
-        H.span(sFindError, id="sfinderror", cls="error"),
+        H.span(bFindError, id="bfinderror", cls="error"),
         " ",
         H.button("🔎", type="submit", id="lookupf", cls="altm"),
     )
@@ -420,8 +290,8 @@ def wrapEntityInit(annotate, templateData):
     if hasEnt:
         eVals = entities[activeEntity][0]
         templateData.evals = eVals
-        templateData.tokenStart = None
-        templateData.tokenEnd = None
+        templateData.tokenstart = None
+        templateData.tokenend = None
         txt = ""
         eTxt = repIdent(eVals, active="active")
     elif hasOcc:
@@ -436,8 +306,8 @@ def wrapEntityInit(annotate, templateData):
     else:
         templateData.evals = None
         templateData.activeentity = None
-        templateData.tokenStart = None
-        templateData.tokenEnd = None
+        templateData.tokenstart = None
+        templateData.tokenend = None
         txt = ""
         eTxt = ""
 
@@ -865,24 +735,3 @@ def wrapReport(templateData, report, kind):
         for line in report
     )
     report.clear()
-
-
-def repIdent(vals, active=""):
-    return H.join(
-        (H.span(val, cls=f"{feat} {active}") for (feat, val) in zip(FEATURES, vals)),
-        sep=" ",
-    )
-
-
-def repSummary(vals, active=""):
-    return H.join(
-        (
-            H.span(val, cls=f"{feat} {active}")
-            for (feat, val) in zip(SUMMARY_FEATURES, vals)
-        ),
-        sep=" ",
-    )
-
-
-def valRep(fVals):
-    return ", ".join(f"<i>{feat}</i>={val}" for (feat, val) in zip(FEATURES, fVals))

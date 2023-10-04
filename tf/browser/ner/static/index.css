@@ -19,8 +19,6 @@ a:link, a:visited {
 }
 
 :root {
-  --ent-markup-color: #ddbb00;
-  --ent-markup-bg: #ffddbb;
   --button-fg: #ffffff;
   --button-bg: #666666;
   --button-bd: #666666;
@@ -30,10 +28,6 @@ a:link, a:visited {
   --button-disabled-fg: #dddddd;
   --button-disabled-bg: #999999;
   --button-disabled-bd: #999999;
-}
-
-code {
-  white-space: pre-wrap;
 }
 
 div.page {
@@ -85,10 +79,6 @@ div.page {
 }
 /* RIGHT-COL: TABLES */
 
-code.w {
-  white-space: pre;
-}
-
 #entitiesq {
   flex: 0 0 auto;
 }
@@ -107,22 +97,14 @@ code.w {
   padding-left: 2rem;
 }
 
-p.queried,span.queried,#qtextentshow {
+#qtextentshow {
   border-radius: 0.2rem;
   background-color: yellow;
-  padding: 0 0.3rem;
-}
-span.found {
-  background-color: #aaddff;
-  border-radius: 0.2rem;
   padding: 0 0.3rem;
 }
 
 #lookupf,#lookupq,#lookupn {
   display: none;
-}
-#querywords {
-  font-weight: bold;
 }
 
 div.viewercontrol {
@@ -131,104 +113,11 @@ div.viewercontrol {
   height: 0;
   overflow: visible;
 }
-div.b {
-  padding: 0.2rem 0.1rem;
-  border-bottom: 2pt solid #eeeeee;
-  margin-bottom: 0.2rem;
-  line-height: 150%;
-  content-visible: auto;
-  contain-intrinsic-size: 1rem 2rem;
-}
 
-span.ei {
-  border-bottom: 0.3rem solid orange ! important;
-}
-span.ei.noformat {
-  border-bottom: 0 ! important;
-}
-span.es,span.ee {
-  font-family: monospace;
-  font-size: x-small;
-  font-weight: bold;
-  color: var(--ent-markup-color);
-}
-span.es {
-  padding-left: 0.1em;
-  margin-left: 0.2em;
-}
-span.ee {
-  padding-right: 0.1em;
-  margin-right: 0.2em;
-}
-span.bh {
-  font-family: monospace;
-  font-weight: bold;
-  font-size: small;
-  color: #0000ee;
-  text-decoration: underline;
-  margin-left: -2rem;
-}
-.viewer {
-  min-height: 5rem;
-  max-height: 20rem;
-  overflow: auto;
-  font-size:small;
-  background-color: #f2f2f2;
-  padding-left: 2rem;
-}
-.viewer span.bh {
-  color: #888888;
-  text-decoration: none;
-}
-.center {
-  background-color: #ddddff;
-}
-.viewer div.center span.bh
-  color: #0000ff;
-  text-decoration: none;
-}
-span.lgb,span.lge {
-  font-weight: bold;
-  font-size: medium;
-  color: var(--ent-markup-color);
-  background-color: var(--ent-markup-bg);
-  border-radius: 1.5em;
-  padding: 0 0.2em;
-}
-span.lgb {
-  border-right: 0.5em solid white;
-  border-left: 0.2em solid var(--ent-markup-color);
-}
-span.lge {
-  border-left: 0.5em solid white;
-  border-right: 0.2em solid var(--ent-markup-color);
-}
-#sfind,#efind {
+#bfind,#efind {
   font-family: monospace;
   font-size: large;
   background-color: #aaddff;
-}
-.error {
-  font-weight: bold;
-  background-color: #ffaaaa;
-}
-span.stat {
-  font-family: monospace;
-  font-weight: bold;
-  font-size: small;
-  color: #aaaaff;
-  background-color: white;
-  padding-left: 0.5rem;
-}
-p.e {
-  margin: 0.1rem 0;
-  content-visible: auto;
-  contain-intrinsic-size: 1rem 1rem;
-}
-.neutral {
-  font-size: small;
-  border: 0;
-  padding: 0 0.3rem;
 }
 input[st=minus],span[st=minus] {
   border-color: #ffaaaa ! important;

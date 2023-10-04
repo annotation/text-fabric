@@ -267,11 +267,11 @@ const tokenControls = () => {
   const subMitter = $("#submitter")
   const { features, toolkey, bucketType } = globalThis
   const buckets = $("#buckets")
-  const findBox = $("#sfind")
-  const findC = $("#sfindc")
-  const findCButton = $("#sfindb")
+  const findBox = $("#bfind")
+  const findC = $("#bfindc")
+  const findCButton = $("#bfindb")
   const findClear = $("#findclear")
-  const findError = $("#sfinderror")
+  const findError = $("#bfinderror")
   const activeEntity = $("#activeentity")
   const tokenStart = $("#tokenstart")
   const tokenEnd = $("#tokenend")
@@ -364,8 +364,8 @@ const tokenControls = () => {
             for (let t = tokenRange[0]; t <= tokenRange[1]; t++) {
               const elem = $(`span[t="${t}"]`)
               elem.addClass("queried")
-              const qWord = elem.html()
-              qTextEntShow.append(`<span>${qWord}</span> `)
+              const qToken = elem.html()
+              qTextEntShow.append(`<span>${qToken}</span> `)
             }
           }
         }
@@ -401,8 +401,7 @@ const tokenControls = () => {
       if (newState == "v") {
         decorateWidget.show()
         setAll(true)
-      }
-      else {
+      } else {
         decorateWidget.hide()
         setAll(false)
       }
@@ -569,24 +568,24 @@ const tokenControls = () => {
         : elem.closest("span.bh[node]")
 
     if (eToken.length) {
-      const tWord = eToken.attr("t")
-      const tWordInt = parseInt(tWord)
+      const t = eToken.attr("t")
+      const tInt = parseInt(t)
       upToDate = false
       if (tokenRange.length == 0) {
-        tokenRange = [tWordInt, tWordInt]
+        tokenRange = [tInt, tInt]
       } else if (tokenRange.length == 2) {
         const start = tokenRange[0]
         const end = tokenRange[1]
-        if (tWordInt < start - 5 || tWordInt > end + 5) {
-          tokenRange = [tWordInt, tWordInt]
-        } else if (tWordInt <= start) {
-          tokenRange = [tWordInt, tokenRange[1]]
-        } else if (tWordInt >= end) {
-          tokenRange = [tokenRange[0], tWordInt]
-        } else if (end - tWordInt <= tWordInt - start) {
-          tokenRange = [tokenRange[0], tWordInt]
+        if (tInt < start - 5 || tInt > end + 5) {
+          tokenRange = [tInt, tInt]
+        } else if (tInt <= start) {
+          tokenRange = [tInt, tokenRange[1]]
+        } else if (tInt >= end) {
+          tokenRange = [tokenRange[0], tInt]
+        } else if (end - tInt <= tInt - start) {
+          tokenRange = [tokenRange[0], tInt]
         } else {
-          tokenRange = [tWordInt, tokenRange[1]]
+          tokenRange = [tInt, tokenRange[1]]
         }
       }
       tokenStart.val(`${tokenRange[0]}`)

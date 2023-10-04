@@ -6,29 +6,18 @@ the annotation tool.
 
 from flask import render_template
 
-from ...generic import AttrDict
-from ...core.files import initTree
+from ...core.generic import AttrDict
 
 from .settings import TOOLKEY
 from .kernel import Annotate
 from .servelib import initTemplate, findSetup, adaptValSelect
-from .wrap import (
-    wrapCss,
-    wrapEntityHeaders,
-    wrapEntityOverview,
-    wrapQuery,
-    wrapActive,
-    wrapReport,
-    wrapEntityTable,
-    wrapBuckets,
-    wrapMessages,
-    wrapAnnoSets,
-)
+from .wrap import wrapCss, wrapQuery, wrapActive, wrapReport, wrapMessages, wrapAnnoSets
 
 
 class Serve:
     def __init__(self, web):
         self.web = web
+        self.debug = web.debug
         kernelApi = web.kernelApi
         self.app = kernelApi.app
         self.css = kernelApi.css()
@@ -44,15 +33,15 @@ class Serve:
 
     def setupAnnotate(self):
         data = self.data
-        kernelApi = self.kernelApi
-        app = kernelApi.app
+        app = self.app
+        debug = self.debug
 
         templateData = initTemplate(app)
         self.templateData = templateData
 
         annoSet = templateData.annoset
 
-        annotate = Annotate(app, data, annoSet)
+        annotate = Annotate(app, annoSet=annoSet, data=data, debug=debug, browse=True)
         self.annotate = annotate
         annotate.loadData()
 
@@ -63,7 +52,6 @@ class Serve:
 
         findSetup(templateData)
         wrapActive(templateData)
-
         wrapCss(templateData, css)
 
     def setupLean(self):
@@ -86,47 +74,95 @@ class Serve:
     def wrapAnnotate(self):
         annotate = self.annotate
         templateData = self.templateData
+        sortKey = templateData.sortKey
+        sortDir = templateData.sortDir
+        activeEntity = templateData.activeentity
+        tokenStart = templateData.tokenstart
+        tokenEnd = templateData.tokenend
+        excludedTokens = templateData.excludedtokens
+
         nFind = self.nFind
         nEnt = self.nEnt
         nVisible = self.nVisible
         buckets = self.buckets
 
         wrapQuery(annotate, templateData, nFind, nEnt, nVisible)
-        wrapEntityTable(annotate, templateData)
-        wrapEntityOverview(annotate, templateData)
-        wrapEntityHeaders(templateData)
-        wrapBuckets(annotate, templateData, buckets)
+        templateData.entitytable = annotate.entityTable(activeEntity, sortKey, sortDir)
+        templateData.entityoverview = annotate.wrapEntityOverview()
+        templateData.entityheaders = annotate.wrapEntityHeaders(sortKey, sortDir)
+        templateData.buckets = annotate.bucketTable(
+            buckets, activeEntity, tokenStart, tokenEnd, excludedTokens
+        )
 
         return render_template(f"{TOOLKEY}/index.html", **templateData)
 
     def wrapLean(self):
         annotate = self.annotate
         templateData = self.templateData
+        activeEntity = templateData.activeentity
+        tokenStart = templateData.tokenstart
+        tokenEnd = templateData.tokenend
+        excludedTokens = templateData.excludedtokens
         buckets = self.buckets
 
-        return wrapBuckets(annotate, templateData, buckets, asHtml=True)
+        return annotate.bucketTable(
+            buckets, activeEntity, tokenStart, tokenEnd, excludedTokens
+        )
 
     def getBuckets(self, noFind=False, node=None):
         annotate = self.annotate
         templateData = self.templateData
 
-        sFindRe = None if noFind else templateData.sfindre
-        activeEntity = templateData.activeEntity
+        bFindRe = None if noFind else templateData.bfindre
+        activeEntity = templateData.activeentity
         tokenStart = templateData.tokenstart
         tokenEnd = templateData.tokenend
         valSelect = templateData.valselect
         freeState = templateData.freestate
 
         (self.buckets, self.nFind, self.nVisible, self.nEnt) = annotate.filterBuckets(
-            sFindRe,
-            activeEntity,
-            tokenStart,
-            tokenEnd,
-            valSelect,
-            freeState,
+            bFindRe=bFindRe,
+            activeEntity=activeEntity,
+            tokenStart=tokenStart,
+            tokenEnd=tokenEnd,
+            valSelect=valSelect,
+            freeState=freeState,
             noFind=noFind,
             node=node,
         )
+
+    def setHandling(self, templateData):
+        annotate = self.annotate
+        annoDir = annotate.annoDir
+
+        chosenAnnoSet = templateData.annoset
+        dupAnnoSet = templateData.duannoset
+        renamedAnnoSet = templateData.rannoset
+        deleteAnnoSet = templateData.dannoset
+
+        messages = []
+
+        if deleteAnnoSet:
+            messages.extend(annotate.setDel(deleteAnnoSet))
+            templateData.dannoset = ""
+            templateData.annoset = ""
+
+        if dupAnnoSet:
+            messages.extend(annotate.setDup(dupAnnoSet))
+            templateData.annoset = dupAnnoSet
+            templateData.duannoset = ""
+
+        if renamedAnnoSet and chosenAnnoSet:
+            messages.extend(annotate.setMove(renamedAnnoSet))
+            templateData.annoset = renamedAnnoSet
+            templateData.rannoset = ""
+
+        chosenAnnoSet = templateData.annoset
+        annotate.setSet(chosenAnnoSet)
+        setNames = annotate.setNames
+
+        templateData.annosets = wrapAnnoSets(annoDir, chosenAnnoSet, setNames)
+        templateData.messages = wrapMessages(messages)
 
     def updateHandling(self):
         annotate = self.annotate
@@ -139,7 +175,7 @@ class Serve:
         tokenEnd = templateData.tokenend
         submitter = templateData.submitter
         excludedTokens = templateData.excludedtokens
-        sFindRe = templateData.sfindre
+        bFindRe = templateData.bfindre
         scope = templateData.scope
 
         hasEnt = activeEntity is not None
@@ -150,7 +186,7 @@ class Serve:
             and (delData or addData)
             and (hasEnt or hasOcc)
         ):
-            if sFindRe and scope == "a":
+            if bFindRe and scope == "a":
                 self.getBuckets(noFind=True)
 
             if submitter == "delgo" and delData:
@@ -161,7 +197,7 @@ class Serve:
                 wrapReport(templateData, report, "del")
                 if hasEnt:
                     templateData.activeentity = None
-                    templateData.eVals = None
+                    templateData.evals = None
             if submitter == "addgo" and addData:
                 report = annotate.addEntity(
                     addData.additions, self.buckets, excludedTokens
@@ -173,48 +209,16 @@ class Serve:
 
             self.getBuckets()
 
-    def setHandling(self, templateData):
-        annoDir = self.annoDir
 
-        initTree(annoDir, fresh=False)
-
-        chosenAnnoSet = templateData.annoset
-        dupAnnoSet = templateData.duannoset
-        renamedAnnoSet = templateData.rannoset
-        deleteAnnoSet = templateData.dannoset
-
-        messages = []
-
-        if deleteAnnoSet:
-            messages.extend(self.setDel(deleteAnnoSet))
-            templateData.dannoset = ""
-
-        if dupAnnoSet:
-            messages.extend(self.setDup(dupAnnoSet))
-            templateData.duannoset = ""
-
-        if renamedAnnoSet and chosenAnnoSet:
-            messages.extend(self.setMove(renamedAnnoSet))
-            templateData.rannoset = ""
-
-        sets = self.sets
-
-        if chosenAnnoSet and chosenAnnoSet not in sets:
-            initTree(f"{annoDir}/{chosenAnnoSet}", fresh=False)
-            sets.add(chosenAnnoSet)
-            self.loadData()
-
-        templateData.annosets = wrapAnnoSets(annoDir, chosenAnnoSet, sets)
-        templateData.messages = wrapMessages(messages)
-
-
-def serveNer(serve):
-    serve.setupAnnotate()
+def serveNer(web):
+    serve = Serve(web)
+    serve.setupFull()
     serve.actionsAnnotate()
     return serve.wrapAnnotate()
 
 
-def serveNerContext(serve, node):
+def serveNerContext(web, node):
+    serve = Serve(web)
     serve.setupLean()
     serve.actionsLean(node)
     return serve.wrapLean()
