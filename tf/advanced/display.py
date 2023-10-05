@@ -112,7 +112,7 @@ def displayApi(app, silent=SILENT_D):
     app.pretty = types.MethodType(pretty, app)
     app.unravel = types.MethodType(unravel, app)
     app.loadCss = types.MethodType(loadCss, app)
-    app.loadToolCss = types.MethodType(loadCss, app)
+    app.loadToolCss = types.MethodType(loadToolCss, app)
     app.getCss = types.MethodType(getCss, app)
     app.getToolCss = types.MethodType(getToolCss, app)
     app.displayShow = types.MethodType(displayShow, app)
@@ -286,7 +286,7 @@ def getCss(app):
     return f"<style>{tableCss}{genericCss}{appCss}</style>"
 
 
-def loadToolCss(app):
+def loadToolCss(app, tool, css):
     """Load the Tool CSS for this app.
 
     If we are in the TF-browser, the generic CSS is already provided, we only
@@ -317,11 +317,11 @@ def loadToolCss(app):
     if not app.inNb:
         return
 
-    css = getToolCss(app)
-    dh(css)
+    allCss = getToolCss(app, tool, css)
+    dh(allCss)
 
 
-def getToolCss(app, tool):
+def getToolCss(app, tool, css):
     """Export the CSS for a tool of this app.
 
     Returns
@@ -333,11 +333,12 @@ def getToolCss(app, tool):
     cssPath = f"{dirNm(dirNm(abspath(__file__)))}" f"{thisToolDisplayBase}"
     cssPath = normpath(cssPath)
     toolCss = ""
+
     for cssFile in TOOL_DISPLAY:
         with open(f"{cssPath}/{cssFile}", encoding="utf8") as fh:
             toolCss += fh.read()
 
-    return f"<style>{toolCss}</style>"
+    return f"<style>{toolCss}</style>{css}"
 
 
 def export(app, tuples, toDir=None, toFile="results.tsv", **options):

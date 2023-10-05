@@ -323,7 +323,7 @@ SERVER_DISPLAY = ("fonts.css", "display.css", "highlight.css")
 TOOL_DISPLAY_BASE = "/browser/{}/static"
 """Base of tool css files."""
 
-TOOL_DISPLAY = ("base.css")
+TOOL_DISPLAY = ("base.css",)
 """Bunch of tool-specific css files."""
 
 TEMP_DIR = "_temp"

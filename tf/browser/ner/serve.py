@@ -8,10 +8,11 @@ from flask import render_template
 
 from ...core.generic import AttrDict
 
-from .settings import TOOLKEY
-from .kernel import Annotate
+from .settings import TOOLKEY, SC_ALL
+from .helpers import makeCss
+from .annotate import Annotate
 from .servelib import initTemplate, findSetup, adaptValSelect
-from .wrap import wrapCss, wrapQuery, wrapActive, wrapReport, wrapMessages, wrapAnnoSets
+from .browserparts import wrapQuery, wrapActive, wrapReport, wrapMessages, wrapAnnoSets
 
 
 class Serve:
@@ -52,7 +53,7 @@ class Serve:
 
         findSetup(templateData)
         wrapActive(templateData)
-        wrapCss(templateData, css)
+        templateData.css = makeCss(generic=css)
 
     def setupLean(self):
         self.setupAnnotate()
@@ -87,11 +88,16 @@ class Serve:
         buckets = self.buckets
 
         wrapQuery(annotate, templateData, nFind, nEnt, nVisible)
-        templateData.entitytable = annotate.entityTable(activeEntity, sortKey, sortDir)
+        templateData.entitytable = annotate.showEntities(
+            activeEntity=activeEntity, sortKey=sortKey, sortDir=sortDir
+        )
         templateData.entityoverview = annotate.wrapEntityOverview()
         templateData.entityheaders = annotate.wrapEntityHeaders(sortKey, sortDir)
-        templateData.buckets = annotate.bucketTable(
-            buckets, activeEntity, tokenStart, tokenEnd, excludedTokens
+        templateData.buckets = annotate.showContent(
+            buckets,
+            activeEntity=activeEntity,
+            excludedTokens=excludedTokens,
+            mayLimit=not (tokenStart and tokenEnd),
         )
 
         return render_template(f"{TOOLKEY}/index.html", **templateData)
@@ -100,13 +106,14 @@ class Serve:
         annotate = self.annotate
         templateData = self.templateData
         activeEntity = templateData.activeentity
-        tokenStart = templateData.tokenstart
-        tokenEnd = templateData.tokenend
         excludedTokens = templateData.excludedtokens
         buckets = self.buckets
 
-        return annotate.bucketTable(
-            buckets, activeEntity, tokenStart, tokenEnd, excludedTokens
+        return annotate.showContent(
+            buckets,
+            activeEntity=activeEntity,
+            excludedTokens=excludedTokens,
+            mayLimit=False,
         )
 
     def getBuckets(self, noFind=False, node=None):
@@ -119,12 +126,16 @@ class Serve:
         tokenEnd = templateData.tokenend
         valSelect = templateData.valselect
         freeState = templateData.freestate
+        qTokens = (
+            annotate.getStrings(tokenStart, tokenEnd)
+            if tokenStart and tokenEnd
+            else None
+        )
 
-        (self.buckets, self.nFind, self.nVisible, self.nEnt) = annotate.filterBuckets(
+        (self.buckets, self.nFind, self.nVisible, self.nEnt) = annotate.filterContent(
             bFindRe=bFindRe,
             activeEntity=activeEntity,
-            tokenStart=tokenStart,
-            tokenEnd=tokenEnd,
+            qTokens=qTokens,
             valSelect=valSelect,
             freeState=freeState,
             noFind=noFind,
@@ -158,7 +169,7 @@ class Serve:
             templateData.rannoset = ""
 
         chosenAnnoSet = templateData.annoset
-        annotate.setSet(chosenAnnoSet)
+        annotate.setSet(chosenAnnoSet, browse=True)
         setNames = annotate.setNames
 
         templateData.annosets = wrapAnnoSets(annoDir, chosenAnnoSet, setNames)
@@ -186,7 +197,7 @@ class Serve:
             and (delData or addData)
             and (hasEnt or hasOcc)
         ):
-            if bFindRe and scope == "a":
+            if bFindRe and scope == SC_ALL:
                 self.getBuckets(noFind=True)
 
             if submitter == "delgo" and delData:

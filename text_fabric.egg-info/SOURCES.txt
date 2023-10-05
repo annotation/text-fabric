@@ -346,10 +346,12 @@ tf/browser/servelib.py
 tf/browser/start.py
 tf/browser/web.py
 tf/browser/wrap.py
+tf/browser/ner/html.py
 tf/browser/ner/kernel.py
+tf/browser/ner/match.py
 tf/browser/ner/serve.py
 tf/browser/ner/servelib.py
-tf/browser/ner/tables.py
+tf/browser/ner/settings.py
 tf/browser/ner/web.py
 tf/browser/ner/wrap.py
 tf/browser/static/.DS_Store

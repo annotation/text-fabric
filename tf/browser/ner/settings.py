@@ -7,8 +7,11 @@ EMPTY = "␀"
 GENERIC = "PER"
 
 BUCKET_TYPE = "chunk"
+LIMIT_BROWSER = 100
+LIMIT_NB = 20
 
 ENTITY_TYPE = "ent"
+ENT_SET = f"{{nodes of type {ENTITY_TYPE}}}"
 
 FEATURES = ("eid", "kind")
 NF = len(FEATURES)
@@ -83,10 +86,14 @@ STYLES = dict(
 WHITE_RE = re.compile(r"""\s{2,}""", re.S)
 NON_ALPHA_RE = re.compile(r"""[^\w ]""", re.S)
 
+SORTDIR_DESC = "d"
+SORTDIR_ASC = "a"
+SORTDIR_DEFAULT = SORTDIR_ASC
 SORTKEY_DEFAULT = "freqsort"
-SORTDIR_DEFAULT = "d"
-SORTDIR_DOWN = "d"
-SORTDIR_UP = "u"
+SORT_DEFAULT = (SORTKEY_DEFAULT, SORTDIR_DESC)
+
+SC_ALL = "a"
+SC_FILT = "f"
 
 
 def ucFirst(x):

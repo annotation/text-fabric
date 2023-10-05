@@ -1,5 +1,10 @@
 /*eslint-env jquery*/
 
+const sortDirAsc = "a"
+const sortDirDesc = "d"
+const scAll = "a"
+const scFilt = "f"
+
 const suggestName = oldName => {
   let cancelled = false
   let newName = null
@@ -222,7 +227,7 @@ const entityControls = () => {
     const sortKey = elem.attr("sk")
     const sortDir = elem.attr("sd")
     sortKeyInput.val(sortKey)
-    sortDirInput.val(sortDir == "u" ? "d" : "u")
+    sortDirInput.val(sortDir == sortDirAsc ? sortDirDesc : sortDirAsc)
     subMitter.val(`${sortKey}-${sortDir}`)
     form.trigger("submit")
   })
@@ -498,13 +503,13 @@ const tokenControls = () => {
 
   const setScope = val => {
     scope.val(val)
-    if (val == "a") {
+    if (val == scAll) {
       scopeAll.addClass("active")
       scopeFiltered.removeClass("active")
       filted.hide()
     } else {
-      scopeFiltered.addClass("active")
       scopeAll.removeClass("active")
+      scopeFiltered.addClass("active")
       filted.show()
     }
   }
@@ -512,10 +517,10 @@ const tokenControls = () => {
   setScope(scope.val())
 
   scopeFiltered.off("click").click(() => {
-    setScope("f")
+    setScope(scFilt)
   })
   scopeAll.off("click").click(() => {
-    setScope("a")
+    setScope(scAll)
   })
 
   const selectWidget = $("#selectwidget")

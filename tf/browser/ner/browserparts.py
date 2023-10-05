@@ -5,61 +5,14 @@ from .settings import (
     FEATURES,
     BUCKET_TYPE,
     KEYWORD_FEATURES,
-    STYLES,
     EMPTY,
     NONE,
+    SORTDIR_ASC,
     getText,
     featureDefault,
 )
 from .html import H
-from .kernel import repIdent, valRep
-
-
-def wrapCss(templateData, genericCss):
-    propMap = dict(
-        ff="font-family",
-        fz="font-size",
-        fw="font-weight",
-        fg="color",
-        bg="background-color",
-        bw="border-width",
-        bs="border-style",
-        bc="border-color",
-        br="border-radius",
-        p="padding",
-        m="margin",
-    )
-
-    def makeBlock(manner):
-        props = STYLES[manner]
-        defs = [f"\t{propMap[abb]}: {val};\n" for (abb, val) in props.items()]
-        return H.join(defs)
-
-    def makeCssDef(selector, *blocks):
-        return selector + " {\n" + H.join(blocks) + "}\n"
-
-    css = []
-
-    for feat in FEATURES:
-        manner = "keyword" if feat in KEYWORD_FEATURES else "free"
-
-        plain = makeBlock(manner)
-        bordered = makeBlock(f"{manner}_bordered")
-        active = makeBlock(f"{manner}_active")
-        borderedActive = makeBlock(f"{manner}_bordered_active")
-
-        css.extend(
-            [
-                makeCssDef(f".{feat}", plain),
-                makeCssDef(f".{feat}.active", active),
-                makeCssDef(f"span.{feat}_sel,button.{feat}_sel", plain, bordered),
-                makeCssDef(f"button.{feat}_sel[st=v]", borderedActive, active),
-            ]
-        )
-
-    featureCss = H.join(css, sep="\n")
-    allCss = genericCss + H.style(featureCss, type="text/css")
-    templateData.css = allCss
+from .helpers import repIdent, valRep
 
 
 def wrapMessages(messages):
@@ -238,7 +191,7 @@ def wrapAppearance(templateData):
 
 
 def wrapFilter(annotate, templateData, nFind):
-    setData = annotate.getCurData()
+    setData = annotate.getSetData()
 
     bFind = templateData.bfind
     bFindC = templateData.bfindc
@@ -277,7 +230,7 @@ def wrapFilter(annotate, templateData, nFind):
 
 def wrapEntityInit(annotate, templateData):
     F = annotate.F
-    setData = annotate.getCurData()
+    setData = annotate.getSetData()
     entities = setData.entities
 
     activeEntity = templateData.activeentity
@@ -326,6 +279,51 @@ def wrapEntityInit(annotate, templateData):
     return (txt, eTxt)
 
 
+def wrapEntityHeaders(sortKey, sortDir):
+    """HTML for the header of the entity table.
+
+    Dependent on the state of sorting.
+
+    Parameters
+    ----------
+    sortKey: string
+        Indicator of how the table is sorted.
+    sortDir:
+        Indicator of the direction of the sorting.
+
+    Returns
+    -------
+    HTML string
+
+    """
+    sortKeys = ((feat, f"sort_{i}") for (i, feat) in enumerate(FEATURES))
+
+    content = [
+        H.input(type="hidden", name="sortkey", id="sortkey", value=sortKey),
+        H.input(type="hidden", name="sortdir", id="sortdir", value=sortDir),
+    ]
+
+    for (label, key) in (("frequency", "freqsort"), *sortKeys):
+        hl = " active " if key == sortKey else ""
+        theDir = sortDir if key == sortKey else SORTDIR_ASC
+        theArrow = "↑" if theDir == SORTDIR_ASC else "↓"
+        content.extend(
+            [
+                H.button(
+                    f"{label} {theArrow}",
+                    type="button",
+                    tp="sort",
+                    sk=key,
+                    sd=theDir,
+                    cls=hl,
+                ),
+                " ",
+            ]
+        )
+
+    return H.p(content)
+
+
 def wrapEntityText(templateData, txt, eTxt):
     freeState = templateData.freestate
 
@@ -365,7 +363,7 @@ def wrapEntityText(templateData, txt, eTxt):
 
 
 def wrapEntityFeats(annotate, templateData, nEnt, nVisible, hasFind, txt, eTxt, scope):
-    setData = annotate.getCurData()
+    setData = annotate.getSetData()
 
     valSelect = templateData.valselect
     (scopeInit, scopeFilter, scopeExceptions) = scope
@@ -482,7 +480,7 @@ def wrapScope(annotate, templateData, hasFind, txt, eTxt):
 
 
 def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt, features):
-    setData = annotate.getCurData()
+    setData = annotate.getSetData()
     annoSet = annotate.annoSet
     F = annotate.F
 

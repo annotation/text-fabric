@@ -4,6 +4,10 @@
 }
 
 
+.buckets {
+  padding-left: 2rem;
+}
+
 code {
   white-space: pre-wrap;
 }

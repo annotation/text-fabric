@@ -7,11 +7,13 @@ def entityMatch(
     entityIndex,
     eStarts,
     entitySlotVal,
+    entitySlotAll,
     entitySlotIndex,
     L,
     F,
     T,
     b,
+    anyAnno,
     bFindRe,
     qTokens,
     eVals,
@@ -32,6 +34,10 @@ def entityMatch(
         extraction
     b: integer
         The node of the bucket in question
+    anyAnno: boolean or None
+        If `None`: no effect
+        If True: overrides qTokens and eVals: looks for any entity annotation
+        If False: lets the bucket through only if it has no annotations.
     qTokens: list of string
         The sequence of tokens that must be matched. They are all non-empty and stripped
         from white space.
@@ -57,7 +63,14 @@ def entityMatch(
 
     fValStats = {feat: collections.Counter() for feat in ("",) + FEATURES}
 
-    if eVals is not None:
+    if anyAnno is not None:
+        for (i, (t, w)) in enumerate(bTokens):
+            for lastT in entitySlotAll.get(t, set()):
+                slots = tuple(range(t, lastT + 1))
+                matches.append(slots)
+                fValStats[""][None] += 1
+
+    elif eVals is not None:
         for (i, (t, w)) in enumerate(bTokens):
             lastT = eStarts.get(t, None)
             if lastT is None:

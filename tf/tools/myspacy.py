@@ -139,7 +139,7 @@ class Spacy:
                 else:
                     continue
 
-        console(f"NLP with language model {targetLang} {parser=}")
+        console(f"NLP with language model {targetLang} {parser}")
 
         if loaded:
             try:

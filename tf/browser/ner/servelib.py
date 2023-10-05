@@ -15,8 +15,9 @@ from .settings import (
     BUCKET_TYPE,
     SORTKEY_DEFAULT,
     SORTDIR_DEFAULT,
+    SC_ALL,
 )
-from .kernel import findCompile
+from .annotate import findCompile
 
 
 def getFormData():
@@ -51,6 +52,8 @@ def getFormData():
     form["dannoset"] = fget("dannoset", "")
     form["sortkey"] = fget("sortkey", "") or SORTKEY_DEFAULT
     form["sortdir"] = fget("sortdir", "") or SORTDIR_DEFAULT
+    form["sortkey"] = fget("sortkey", "") or SORTKEY_DEFAULT
+    form["sortdir"] = fget("sortdir", "") or SORTDIR_DEFAULT
     form["formattingdo"] = fget("formattingdo", "x") == "v"
     form["formattingstate"] = {
         feat: fget(f"{feat}_appearance", "v") == "v"
@@ -71,7 +74,7 @@ def getFormData():
     form["activeval"] = tuple((feat, fget(f"{feat}_active", "")) for feat in FEATURES)
     makeValSelect(form)
 
-    form["scope"] = fget("scope", "a")
+    form["scope"] = fget("scope", SC_ALL)
     excludedTokens = fget("excludedtokens", "")
     form["excludedtokens"] = (
         {int(t) for t in excludedTokens.split(",")} if excludedTokens else set()
