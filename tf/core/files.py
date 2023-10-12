@@ -1,4 +1,6 @@
 import os
+import yaml
+
 from shutil import rmtree, copytree, copy
 
 from ..parameters import (
@@ -15,6 +17,7 @@ from ..parameters import (
     ORG,
     REPO,
 )
+from .generic import deepAttrDict
 
 
 def normpath(path):
@@ -594,3 +597,24 @@ def chDir(directory):
         The directory to change to.
     """
     return os.chdir(directory)
+
+
+def readYaml(text=None, plain=False, asFile=None):
+    if asFile is None:
+        cfg = yaml.load(text, Loader=yaml.FullLoader)
+    else:
+        if fileExists(asFile):
+            with open(asFile, encoding="utf8") as fh:
+                cfg = yaml.load(fh, Loader=yaml.FullLoader)
+        else:
+            cfg = {}
+
+    return cfg if plain else deepAttrDict(cfg)
+
+
+def writeYaml(data, asFile=None):
+    if asFile is None:
+        return yaml.dump(data, allow_unicode=True)
+
+    with open(asFile, "w", encoding="utf8") as fh:
+        yaml.dump(data, fh, allow_unicode=True)

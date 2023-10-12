@@ -6,6 +6,7 @@ from .helpers import repIdent, repSummary
 from .html import H
 
 from .settings import (
+    FEATURES,
     BUCKET_TYPE,
     SORT_DEFAULT,
     SORTKEY_DEFAULT,
@@ -44,7 +45,9 @@ class Show:
 
         dh(content)
 
-    def showEntities(self, activeEntity=None, sortKey=None, sortDir=None):
+    def showEntities(
+        self, activeEntity=None, sortKey=None, sortDir=None, cutOffFreq=None
+    ):
         browse = self.browse
         setData = self.getSetData()
 
@@ -52,6 +55,7 @@ class Show:
 
         entries = setData.entityIdent.items()
         eFirst = setData.entityIdentFirst
+        sortKeyMap = {feat: i for (i, feat) in enumerate(FEATURES)}
 
         if sortKey is None and sortDir is None:
             (sortKey, sortDir) = SORT_DEFAULT
@@ -64,7 +68,17 @@ class Show:
         if sortKey == SORTKEY_DEFAULT:
             entries = sorted(entries, key=lambda x: (len(x[1]), x[0]))
         else:
-            index = int(sortKey[5:])
+            if sortKey.startswith("sort_"):
+                index = sortKey[5:]
+                if index.isdecimal():
+                    index = int(index)
+                    if index >= len(FEATURES):
+                        index = 0
+                else:
+                    index = sortKeyMap.get(index, 0)
+            else:
+                index = 0
+
             entries = sorted(entries, key=lambda x: (x[0][index], -len(x[1])))
 
         if sortDir == SORTDIR_DESC:
@@ -72,8 +86,11 @@ class Show:
 
         content = []
 
-        for (vals, es) in entries:
+        for vals, es in entries:
             x = len(es)
+
+            if cutOffFreq is not None and x < cutOffFreq:
+                continue
             e1 = eFirst[vals]
 
             active = " queried " if hasEnt and e1 == activeEntity else ""
@@ -124,7 +141,7 @@ class Show:
 
         nB = 0
 
-        for (b, bTokens, matches, positions) in buckets:
+        for b, bTokens, matches, positions in buckets:
             nB += 1
 
             if start is not None and nB < start:
@@ -159,7 +176,7 @@ class Show:
                 )
             ]
 
-            for (t, w) in bTokens:
+            for t, w in bTokens:
                 info = entitySlotIndex.get(t, None)
                 inEntity = False
 

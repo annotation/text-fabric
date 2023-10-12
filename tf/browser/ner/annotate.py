@@ -44,7 +44,7 @@ class Annotate(Sets, Show):
         bFind=None,
         bFindC=None,
         bFindRe=None,
-        activeEntity=None,
+        eVals=None,
         anyAnno=None,
         qTokens=None,
         valSelect=None,
@@ -88,7 +88,6 @@ class Annotate(Sets, Show):
         browse = self.browse
         app = self.app
         setData = self.getSetData()
-        entities = setData.entities
         api = app.api
         L = api.L
         F = api.F
@@ -96,13 +95,11 @@ class Annotate(Sets, Show):
 
         results = []
 
-        hasEnt = activeEntity is not None
+        hasEnt = eVals is not None
         hasQTokens = qTokens is not None and len(qTokens)
         hasOcc = not hasEnt and hasQTokens
 
         useQTokens = qTokens if hasOcc else None
-
-        eVals = entities[activeEntity][0] if hasEnt else None
 
         nFind = 0
         nEnt = {feat: collections.Counter() for feat in ("",) + FEATURES}
@@ -124,7 +121,7 @@ class Annotate(Sets, Show):
             else L.d(T.sectionTuple(node)[1], otype=BUCKET_TYPE)
         )
 
-        if hasEnt:
+        if eVals is not None:
             eSlots = entityVal[eVals]
             eStarts = {s[0]: s[-1] for s in eSlots}
         else:
@@ -147,10 +144,10 @@ class Annotate(Sets, Show):
                 F,
                 T,
                 b,
-                anyAnno,
                 bFindRe,
-                useQTokens,
+                anyAnno,
                 eVals,
+                useQTokens,
                 valSelect,
                 requireFree,
             )
@@ -166,7 +163,7 @@ class Annotate(Sets, Show):
                     theseNEnt = nEnt[feat]
                     theseNVisible = nVisible[feat]
 
-                    for (ek, n) in theseStats.items():
+                    for ek, n in theseStats.items():
                         theseNEnt[ek] += n
                         if not blocked:
                             theseNVisible[ek] += n
@@ -180,28 +177,29 @@ class Annotate(Sets, Show):
 
             results.append((b, *result))
 
-        if not browse:
-            nResults = len(results)
-            if showStats:
-                pluralF = "" if nFind == 1 else "s"
-                print(f"{nFind} {BUCKET_TYPE}{pluralF} satisfy the search pattern")
-                for feat in ("",) + FEATURES:
-                    if feat == "":
-                        print("Combined features match:")
-                        for (ek, n) in sorted(nEnt[feat].items()):
-                            v = nVisible[feat][ek]
-                            print(f"\t{v:>5} of {n:>5} x")
-                    else:
-                        print(f"Feature {feat}: found the following values:")
-                        for (ek, n) in sorted(nEnt[feat].items()):
-                            v = nVisible[feat][ek]
-                            print(f"\t{v:>5} of {n:>5} x {ek}")
-            if showStats or showStats is None:
-                pluralR = "" if nResults == 1 else "s"
-                print(f"{nResults} {BUCKET_TYPE}{pluralR}")
-            return results
+        if browse:
+            return (results, nFind, nVisible, nEnt)
 
-        return (results, nFind, nVisible, nEnt)
+        nResults = len(results)
+
+        if showStats:
+            pluralF = "" if nFind == 1 else "s"
+            self.console(f"{nFind} {BUCKET_TYPE}{pluralF} satisfy the search pattern")
+            for feat in ("",) + (() if anyAnno else FEATURES):
+                if feat == "":
+                    self.console("Combined features match:")
+                    for ek, n in sorted(nEnt[feat].items()):
+                        v = nVisible[feat][ek]
+                        self.console(f"\t{v:>5} of {n:>5} x")
+                else:
+                    self.console(f"Feature {feat}: found the following values:")
+                    for ek, n in sorted(nEnt[feat].items()):
+                        v = nVisible[feat][ek]
+                        self.console(f"\t{v:>5} of {n:>5} x {ek}")
+        if showStats or showStats is None:
+            pluralR = "" if nResults == 1 else "s"
+            self.console(f"{nResults} {BUCKET_TYPE}{pluralR}")
+        return results
 
     def getStrings(self, tokenStart, tokenEnd):
         app = self.app

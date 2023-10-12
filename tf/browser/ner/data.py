@@ -115,7 +115,7 @@ class Data:
 
                 if fileExists(dataFile):
                     with open(dataFile) as df:
-                        for (e, line) in enumerate(df):
+                        for e, line in enumerate(df):
                             fields = tuple(line.rstrip("\n").split("\t"))
                             entities[e] = (
                                 tuple(fields[0:NF]),
@@ -196,7 +196,7 @@ class Data:
             entitySlotAll = {}
             entitySlotIndex = {}
 
-            for (e, (fVals, slots)) in entityItems:
+            for e, (fVals, slots) in entityItems:
                 txt = getText(F, slots)
                 ident = fVals
                 summary = tuple(fVals[i] for i in SUMMARY_INDICES)
@@ -204,7 +204,7 @@ class Data:
                 entityText[e] = txt
                 entityVal.setdefault(fVals, set()).add(slots)
 
-                for (feat, val) in zip(FEATURES, fVals):
+                for feat, val in zip(FEATURES, fVals):
                     entityFreq[feat][val] += 1
                     entityIndex[feat].setdefault(slots, set()).add(val)
                     entityTextVal[feat][txt].add(val)
@@ -256,8 +256,9 @@ class Data:
         else:
             self.console(f"Data of {annoSetRep} already processed.")
 
-    def delEntity(self, deletions, buckets, excludedTokens):
-        setData = self.getCurData()
+    def delEntityRich(self, deletions, buckets, excludedTokens=set()):
+        browse = self.browse
+        setData = self.getSetData()
 
         oldEntities = setData.entities
 
@@ -266,15 +267,15 @@ class Data:
         delEntities = set()
         delEntitiesByE = set()
 
+        deletions = tuple([x] if type(x) is str else x for x in deletions)
+
         if any(len(x) > 0 for x in deletions):
             oldEntitiesBySlots = collections.defaultdict(set)
 
-            for (e, info) in oldEntities.items():
+            for e, info in oldEntities.items():
                 oldEntitiesBySlots[info[1]].add(e)
 
             excl = 0
-
-            stats = collections.Counter()
 
             fValTuples = [()]
 
@@ -284,13 +285,15 @@ class Data:
                     delTuples.extend([ft + (val,) for ft in fValTuples])
                 fValTuples = delTuples
 
-            for (b, bTokens, allMatches, positions) in buckets:
-                for matches in allMatches:
-                    if matches[-1] in excludedTokens:
+            stats = collections.Counter()
+
+            for b, bTokens, allMatches, positions in buckets:
+                for matchedSlots in allMatches:
+                    if matchedSlots[-1] in excludedTokens:
                         excl += 1
                         continue
 
-                    candidates = oldEntitiesBySlots.get(matches, set())
+                    candidates = oldEntitiesBySlots.get(matchedSlots, set())
 
                     for e in candidates:
                         toBeDeleted = False
@@ -302,7 +305,7 @@ class Data:
                         if toBeDeleted:
                             if e not in delEntitiesByE:
                                 delEntitiesByE.add(e)
-                                delEntities.add((fVals, matches))
+                                delEntities.add((fVals, matchedSlots))
                                 stats[fVals] += 1
 
             report.append(
@@ -314,23 +317,104 @@ class Data:
         if len(delEntities):
             self.weedEntities(delEntities)
 
-        return report
+        if browse:
+            return report
 
-    def addEntity(self, additions, buckets, excludedTokens):
+        self.loadData()
+        (stats, *rest) = report
+        if type(stats) is list:
+            self.console("\n".join(stats))
+        else:
+            for vals, freq in stats:
+                repVals = " ".join(
+                    f"{feat}={val}" for (feat, val) in zip(FEATURES, vals)
+                )
+                self.console(f"Deleted {freq:>5} x {repVals}")
+        if len(rest):
+            self.console("\n".join(rest))
+
+    def addEntity(self, vals, allMatches):
+        setData = self.getSetData()
+
+        oldEntities = setData.entities
+
+        addEntities = set()
+
+        oldEntitiesBySlots = set()
+
+        for e, (fVals, slots) in oldEntities.items():
+            if fVals == vals:
+                oldEntitiesBySlots.add(slots)
+
+        present = 0
+        added = 0
+
+        for matchedSlots in allMatches:
+            if matchedSlots in oldEntitiesBySlots:
+                present += 1
+                continue
+
+            info = (vals, matchedSlots)
+            if info not in addEntities:
+                addEntities.add(info)
+                added += 1
+
+        if len(addEntities):
+            self.mergeEntities(addEntities)
+
+        self.loadData()
+        self.console(f"Already present: {present:>5} x")
+        self.console(f"Added:           {added:>5} x")
+
+    def delEntity(self, vals, allMatches=None):
+        setData = self.getSetData()
+
+        oldEntities = setData.entities
+
+        delEntities = set()
+
+        oldEntitiesBySlots = set()
+
+        for e, (fVals, slots) in oldEntities.items():
+            if fVals == vals:
+                oldEntitiesBySlots.add(slots)
+
+        missing = 0
+        deleted = 0
+
+        delSlots = oldEntitiesBySlots if allMatches is None else allMatches
+
+        for matchedSlots in delSlots:
+            if matchedSlots not in oldEntitiesBySlots:
+                missing += 1
+                continue
+
+            delEntities.add((vals, matchedSlots))
+            deleted += 1
+
+        if len(delEntities):
+            self.weedEntities(delEntities)
+
+        self.loadData()
+        self.console(f"Not present: {missing:>5} x")
+        self.console(f"Deleted:     {deleted:>5} x")
+
+    def addEntityRich(self, additions, buckets, excludedTokens=set()):
+        browse = self.browse
         setData = self.getSetData()
 
         oldEntities = setData.entities
 
         report = []
 
-        # additions
-
         addEntities = set()
+
+        additions = tuple([x] if type(x) is str else x for x in additions)
 
         if all(len(x) > 0 for x in additions):
             oldEntitiesBySlots = collections.defaultdict(set)
 
-            for (e, (fVals, slots)) in oldEntities.items():
+            for e, (fVals, slots) in oldEntities.items():
                 oldEntitiesBySlots[slots].add(fVals)
 
             excl = 0
@@ -345,18 +429,18 @@ class Data:
 
             stats = collections.Counter()
 
-            for (b, bTokens, allMatches, positions) in buckets:
-                for matches in allMatches:
-                    if matches[-1] in excludedTokens:
+            for b, bTokens, allMatches, positions in buckets:
+                for matchedSlots in allMatches:
+                    if matchedSlots[-1] in excludedTokens:
                         excl += 1
                         continue
 
-                    existing = oldEntitiesBySlots.get(matches, set())
+                    existing = oldEntitiesBySlots.get(matchedSlots, set())
 
                     for fVals in fValTuples:
                         if fVals in existing:
                             continue
-                        info = (fVals, matches)
+                        info = (fVals, matchedSlots)
                         if info not in addEntities:
                             addEntities.add(info)
                             stats[fVals] += 1
@@ -370,7 +454,21 @@ class Data:
         if len(addEntities):
             self.mergeEntities(addEntities)
 
-        return report
+        if browse:
+            return report
+
+        self.loadData()
+        (stats, *rest) = report
+        if type(stats) is list:
+            self.console("\n".join(stats))
+        else:
+            for vals, freq in stats:
+                repVals = " ".join(
+                    f"{feat}={val}" for (feat, val) in zip(FEATURES, vals)
+                )
+                self.console(f"Added {freq:>5} x {repVals}")
+        if len(rest):
+            self.console("\n".join(rest))
 
     def weedEntities(self, delEntities):
         annoSet = self.annoSet
@@ -384,8 +482,8 @@ class Data:
             for line in fh:
                 fields = tuple(line.rstrip("\n").split("\t"))
                 fVals = tuple(fields[0:NF])
-                matches = tuple(int(f) for f in fields[NF:])
-                info = (fVals, matches)
+                matchedSlots = tuple(int(f) for f in fields[NF:])
+                info = (fVals, matchedSlots)
                 if info in delEntities:
                     continue
                 newEntities.append(line)
@@ -400,13 +498,13 @@ class Data:
         dataFile = f"{annoDir}/{annoSet}/entities.tsv"
 
         with open(dataFile, "a") as fh:
-            for (fVals, matches) in newEntities:
-                fh.write("\t".join(str(x) for x in (*fVals, *matches)) + "\n")
+            for fVals, matchedSlots in newEntities:
+                fh.write("\t".join(str(x) for x in (*fVals, *matchedSlots)) + "\n")
 
     def saveEntitiesAs(self, dataFile):
         setData = self.getSetData()
         entities = setData.entities
 
         with open(dataFile, "a") as fh:
-            for (fVals, matches) in entities.values():
-                fh.write("\t".join(str(x) for x in (*fVals, *matches)) + "\n")
+            for fVals, matchedSlots in entities.values():
+                fh.write("\t".join(str(x) for x in (*fVals, *matchedSlots)) + "\n")

@@ -50,7 +50,6 @@ See  also:
 import sys
 import re
 import types
-import yaml
 import json
 import webbrowser
 
@@ -80,6 +79,8 @@ from tf.core.files import (
     fileCopy,
     chDir,
     scanDir,
+    readYaml,
+    writeYaml,
 )
 from tf.parameters import REPO, ZIP_OPTIONS
 
@@ -285,12 +286,10 @@ class Make:
 
         bUrl = backendRep(backend, "rep")
 
-        with open(versionFile, encoding="utf8") as fh:
-            settings = yaml.load(fh, Loader=yaml.FullLoader)
-            lsVersion = settings["lsVersion"]
+        settings = readYaml(asFile=versionFile, plain=True)
+        lsVersion = settings["lsVersion"]
 
-        with open(CONFIG_FILE, encoding="utf8") as fh:
-            mainConfig = yaml.load(fh, Loader=yaml.FullLoader)
+        mainConfig = readYaml(asFile=CONFIG_FILE, plain=True)
 
         cloneBase = backendRep(backend, "clone")
 
@@ -381,11 +380,10 @@ class Make:
             console(f"No {APP_CONFIG} found for {org}/{repo}: {lsConfig}")
             return None
 
-        with open(lsConfig, encoding="utf8") as fh:
-            settings = yaml.load(fh, Loader=yaml.FullLoader)
-            for (k, v) in settings.items():
-                c[k] = v
-                fillin(c, k, v)
+        settings = readYaml(asFile=lsConfig, plain=True)
+        for (k, v) in settings.items():
+            c[k] = v
+            fillin(c, k, v)
 
         if client is not None:
             clientConfigFile = c["clientConfigFile"]
@@ -395,11 +393,10 @@ class Make:
                 )
                 return None
 
-            with open(clientConfigFile, encoding="utf8") as fh:
-                settings = yaml.load(fh, Loader=yaml.FullLoader)
-                for (k, v) in settings.items():
-                    c[k] = v
-                    fillin(c, k, v)
+            settings = readYaml(asFile=clientConfigFile, plain=True)
+            for (k, v) in settings.items():
+                c[k] = v
+                fillin(c, k, v)
 
             self.importMake(c=c)
 
@@ -967,11 +964,7 @@ class Make:
 
         for thisClient in self.getAllClients():
             thisConfig = f"{C.configDir}/{thisClient}/{APP_CONFIG}"
-            if fileExists(thisConfig):
-                with open(thisConfig, encoding="utf8") as fh:
-                    desc = yaml.load(fh, Loader=yaml.FullLoader).get("short", "")
-            else:
-                desc = ""
+            desc = readYaml(asFile=thisConfig, plain=True).get("short", "")
             clients[thisClient] = desc
 
         with open(C.index, encoding="utf8") as fh:
@@ -1235,8 +1228,7 @@ class Make:
         self.incVersion()
         newVersion = C.lsVersion
 
-        with open(versionFile, "w", encoding="utf8") as fh:
-            yaml.dump(dict(lsVersion=newVersion), fh)
+        writeYaml(dict(lsVersion=newVersion), asFile=versionFile)
 
         console(f"Version went from `{currentVersion}` to `{newVersion}`")
 

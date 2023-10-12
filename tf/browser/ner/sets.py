@@ -28,14 +28,19 @@ class Sets(Data):
 
     def setSet(self, newAnnoSet):
         browse = self.browse
+
+        if not browse:
+            self.loadData()
+
         data = self.data
         setNames = self.setNames
         setsData = data.sets
         annoSet = self.annoSet
         annoDir = self.annoDir
+        newSetDir = f"{annoDir}/{newAnnoSet}"
 
-        if newAnnoSet and newAnnoSet not in setNames:
-            initTree(f"{annoDir}/{newAnnoSet}", fresh=False)
+        if newAnnoSet and (newAnnoSet not in setNames or not dirExists(newSetDir)):
+            initTree(newSetDir)
             setNames.add(newAnnoSet)
 
         if newAnnoSet != annoSet:

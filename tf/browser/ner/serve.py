@@ -12,7 +12,14 @@ from .settings import TOOLKEY, SC_ALL
 from .helpers import makeCss
 from .annotate import Annotate
 from .servelib import initTemplate, findSetup, adaptValSelect
-from .browserparts import wrapQuery, wrapActive, wrapReport, wrapMessages, wrapAnnoSets
+from .browserparts import (
+    wrapEntityHeaders,
+    wrapQuery,
+    wrapActive,
+    wrapReport,
+    wrapMessages,
+    wrapAnnoSets,
+)
 
 
 class Serve:
@@ -42,7 +49,8 @@ class Serve:
 
         annoSet = templateData.annoset
 
-        annotate = Annotate(app, annoSet=annoSet, data=data, debug=debug, browse=True)
+        annotate = Annotate(app, data=data, debug=debug, browse=True)
+        annotate.setSet(annoSet)
         self.annotate = annotate
         annotate.loadData()
 
@@ -91,8 +99,8 @@ class Serve:
         templateData.entitytable = annotate.showEntities(
             activeEntity=activeEntity, sortKey=sortKey, sortDir=sortDir
         )
-        templateData.entityoverview = annotate.wrapEntityOverview()
-        templateData.entityheaders = annotate.wrapEntityHeaders(sortKey, sortDir)
+        templateData.entityoverview = annotate.showEntityOverview()
+        templateData.entityheaders = wrapEntityHeaders(sortKey, sortDir)
         templateData.buckets = annotate.showContent(
             buckets,
             activeEntity=activeEntity,
@@ -126,6 +134,10 @@ class Serve:
         tokenEnd = templateData.tokenend
         valSelect = templateData.valselect
         freeState = templateData.freestate
+
+        setData = annotate.getSetData()
+        entities = setData.entities
+        eVals = None if activeEntity is None else entities[activeEntity][0]
         qTokens = (
             annotate.getStrings(tokenStart, tokenEnd)
             if tokenStart and tokenEnd
@@ -134,7 +146,7 @@ class Serve:
 
         (self.buckets, self.nFind, self.nVisible, self.nEnt) = annotate.filterContent(
             bFindRe=bFindRe,
-            activeEntity=activeEntity,
+            eVals=eVals,
             qTokens=qTokens,
             valSelect=valSelect,
             freeState=freeState,
@@ -169,7 +181,7 @@ class Serve:
             templateData.rannoset = ""
 
         chosenAnnoSet = templateData.annoset
-        annotate.setSet(chosenAnnoSet, browse=True)
+        annotate.setSet(chosenAnnoSet)
         setNames = annotate.setNames
 
         templateData.annosets = wrapAnnoSets(annoDir, chosenAnnoSet, setNames)
@@ -201,8 +213,8 @@ class Serve:
                 self.getBuckets(noFind=True)
 
             if submitter == "delgo" and delData:
-                report = annotate.delEntity(
-                    delData.deletions, self.buckets, excludedTokens
+                report = annotate.delEntityRich(
+                    delData.deletions, self.buckets, excludedTokens=excludedTokens
                 )
                 annotate.loadData()
                 wrapReport(templateData, report, "del")
@@ -210,8 +222,8 @@ class Serve:
                     templateData.activeentity = None
                     templateData.evals = None
             if submitter == "addgo" and addData:
-                report = annotate.addEntity(
-                    addData.additions, self.buckets, excludedTokens
+                report = annotate.addEntityRich(
+                    addData.additions, self.buckets, excludedTokens=excludedTokens
                 )
                 annotate.loadData()
                 wrapReport(templateData, report, "add")

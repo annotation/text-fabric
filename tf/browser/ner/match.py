@@ -13,10 +13,10 @@ def entityMatch(
     F,
     T,
     b,
-    anyAnno,
     bFindRe,
-    qTokens,
+    anyAnno,
     eVals,
+    qTokens,
     valSelect,
     requireFree,
 ):
@@ -188,6 +188,6 @@ def entityMatch(
                         fValStats[""][None] += 1
 
     else:
-        return (None, fValStats, (bTokensAll, matches, positions), True)
+        return (fits, fValStats, (bTokensAll, matches, positions), True)
 
     return (fits, fValStats, (bTokensAll, matches, positions), len(matches) != 0)

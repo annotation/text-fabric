@@ -1,6 +1,5 @@
 import sys
 from importlib import util
-import yaml
 
 from ..parameters import (
     API_VERSION as avTf,
@@ -13,6 +12,7 @@ from ..core.files import (
     prefixSlash,
     fileExists,
     normpath,
+    readYaml,
 )
 from .helpers import getLocalDir
 
@@ -54,11 +54,7 @@ def findAppConfig(
 
     isCompatible = None
 
-    if fileExists(configPath):
-        with open(configPath, encoding="utf8") as fh:
-            cfg = yaml.load(fh, Loader=yaml.FullLoader)
-    else:
-        cfg = None
+    cfg = readYaml(asFile=configPath, plain=True)
 
     if cfg is None or cfg == {}:
         cfg = {}

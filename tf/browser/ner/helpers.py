@@ -1,4 +1,5 @@
 import re
+import unicodedata
 
 from .html import H
 
@@ -8,6 +9,68 @@ from .settings import (
     SUMMARY_FEATURES,
     STYLES,
 )
+
+
+WHITE_RE = re.compile(r"""\s+""", re.S)
+NON_WORD = re.compile(r"""\W+""", re.S)
+
+CUT_OFF = 20
+
+TOKEN_RE = re.compile(r"""\w+|\W""")
+
+
+TO_ASCII_DEF = dict(
+    ñ="n",
+    ø="o",
+    ç="c",
+)
+
+
+TO_ASCII = {}
+
+for u, a in TO_ASCII_DEF.items():
+    TO_ASCII[u] = a
+    TO_ASCII[u.upper()] = a.upper()
+
+
+def normalize(text):
+    return WHITE_RE.sub(" ", text).strip()
+
+
+def toTokens(text):
+    return TOKEN_RE.findall(normalize(text))
+
+
+def toAscii(text):
+    return "".join(
+        TO_ASCII.get(c, c)
+        for c in unicodedata.normalize("NFD", text)
+        if unicodedata.category(c) != "Mn"
+    )
+
+
+def toId(text):
+    return NON_WORD.sub(".", toAscii(text.lower())).strip(".")
+
+
+def toSmallId(text, transform={}):
+    parts = [y for x in toId(text).split(".") if (y := transform.get(x, x))]
+    result = []
+    n = 0
+
+    for part in parts:
+        if len(part) > CUT_OFF:
+            part = part[0:CUT_OFF]
+
+        nPart = len(part)
+
+        if n + nPart > CUT_OFF:
+            break
+
+        result.append(part)
+        n += nPart
+
+    return ".".join(result)
 
 
 def repIdent(vals, active=""):

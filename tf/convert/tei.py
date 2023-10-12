@@ -485,7 +485,6 @@ from io import BytesIO
 from subprocess import run
 from importlib import util
 
-import yaml
 from lxml import etree
 from .helpers import (
     setUp,
@@ -527,6 +526,8 @@ from ..core.files import (
     fileExists,
     fileCopy,
     scanDir,
+    readYaml,
+    writeYaml,
 )
 
 from ..tools.xmlschema import Analysis
@@ -944,11 +945,7 @@ class TEI:
 
         self.schemaDir = schemaDir
 
-        settings = {}
-        if fileExists(convertSpec):
-            with open(convertSpec, encoding="utf8") as fh:
-                text = fh.read()
-            settings = yaml.load(text, Loader=yaml.FullLoader)
+        settings = readYaml(asFile=convertSpec, plain=True)
 
         customKeys = set(
             """
@@ -3814,7 +3811,7 @@ class TEI:
         def createConfig(sourceText, customText):
             text = sourceText.replace("«version»", f'"{version}"')
 
-            settings = yaml.load(text, Loader=yaml.FullLoader)
+            settings = readYaml(text=text, plain=True)
             settings.setdefault("provenanceSpec", {})["branch"] = BRANCH_DEFAULT_NEW
 
             if tokenBased:
@@ -3822,12 +3819,12 @@ class TEI:
                     del settings["typeDisplay"]["word"]
 
             customSettings = (
-                {} if not customText else yaml.load(customText, Loader=yaml.FullLoader)
+                {} if not customText else readYaml(text=customText, plain=True)
             )
 
             mergeDict(settings, customSettings)
 
-            text = yaml.dump(settings, allow_unicode=True)
+            text = writeYaml(settings)
 
             return text
 

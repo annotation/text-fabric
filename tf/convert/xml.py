@@ -149,7 +149,6 @@ import re
 from subprocess import run
 from importlib import util
 
-import yaml
 from lxml import etree
 from .helpers import setUp, FILE
 from .xmlCustom import convertTaskDefault
@@ -174,6 +173,8 @@ from ..core.files import (
     fileCopy,
     fileRemove,
     scanDir,
+    readYaml,
+    writeYaml,
 )
 
 (HELP, TASKS, TASKS_EXCLUDED, PARAMS, FLAGS) = setUp("XML")
@@ -361,11 +362,7 @@ class XML:
         convertSpec = f"{programDir}/xml.yaml"
         convertCustom = f"{programDir}/xml.py"
 
-        settings = {}
-        if fileExists(convertSpec):
-            with open(convertSpec, encoding="utf8") as fh:
-                text = fh.read()
-            settings = yaml.load(text, Loader=yaml.FullLoader)
+        settings = readYaml(asFile=convertSpec, plain=True)
 
         self.transform = None
         if fileExists(convertCustom):
@@ -927,7 +924,7 @@ class XML:
         def createConfig(sourceText, customText):
             text = sourceText.replace("«version»", f'"{version}"')
 
-            settings = yaml.load(text, Loader=yaml.FullLoader)
+            settings = readYaml(text=text, plain=True)
             settings.setdefault("provenanceSpec", {})["branch"] = BRANCH_DEFAULT_NEW
             dataDisplay = settings.setdefault("dataDisplay", {})
             interfaceDefaults = settings.setdefault("interfaceDefaults", {})
@@ -939,12 +936,12 @@ class XML:
             customSettings = (
                 {}
                 if customText is None
-                else yaml.load(customText, Loader=yaml.FullLoader)
+                else readYaml(text=customText, plain=True)
             )
 
             mergeDict(settings, customSettings)
 
-            text = yaml.dump(settings, allow_unicode=True)
+            text = writeYaml(settings)
 
             return text
 

@@ -348,9 +348,7 @@ const tokenControls = () => {
 
     if (hasFind || hasQuery) {
       if (!upToDate) {
-        if (hasFind) {
-          lookupf.show()
-        }
+        lookupf.show()
         if (hasQuery) {
           lookupq.show()
           lookupn.show()
@@ -474,14 +472,11 @@ const tokenControls = () => {
   findBox.off("keyup").keyup(() => {
     const pat = findBox.val()
     upToDate = false
+    lookupf.show()
     if (pat.length) {
       findClear.show()
-      lookupf.show()
     } else {
       findClear.hide()
-      if (tokenRange.length == 0) {
-        lookupf.hide()
-      }
     }
   })
 
