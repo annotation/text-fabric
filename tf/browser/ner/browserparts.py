@@ -1,16 +1,7 @@
 """Wraps various pieces into HTML.
 """
 
-from .settings import (
-    FEATURES,
-    BUCKET_TYPE,
-    KEYWORD_FEATURES,
-    EMPTY,
-    NONE,
-    SORTDIR_ASC,
-    getText,
-    featureDefault,
-)
+from .settings import EMPTY, NONE, SORTDIR_ASC, getText
 from .html import H
 from .helpers import repIdent, valRep
 
@@ -28,7 +19,8 @@ def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
     There is also a control to delete the annoset.
 
     Apart from these buttons there is a button to switch to the entities that are
-    present in the TF dataset as nodes of type `ENTITY_TYPE` with corresponding
+    present in the TF dataset as nodes of the entity type specified
+    in the yaml file with corresponding
     features.
 
     Finally, it is possible to create a new, empty annoset.
@@ -129,18 +121,19 @@ def wrapQuery(annotate, templateData, nFind, nEnt, nVisible):
     html string
         The finished HTML of the query parameters
     """
-    wrapAppearance(templateData)
+    wrapAppearance(annotate, templateData)
     hasFind = wrapFilter(annotate, templateData, nFind)
     (txt, eTxt) = wrapEntityInit(annotate, templateData)
     wrapEntityText(templateData, txt, eTxt)
     scope = wrapScope(annotate, templateData, hasFind, txt, eTxt)
-    features = wrapEntityFeats(
-        annotate, templateData, nEnt, nVisible, hasFind, txt, eTxt, scope
-    )
-    wrapEntityModify(annotate, templateData, hasFind, txt, eTxt, features)
+    wrapEntityFeats(annotate, templateData, nEnt, nVisible, hasFind, txt, eTxt, scope)
+    wrapEntityModify(annotate, templateData, hasFind, txt, eTxt)
 
 
-def wrapAppearance(templateData):
+def wrapAppearance(annotate, templateData):
+    settings = annotate.settings
+    features = settings.features
+
     formattingDo = templateData.formattingdo
     formattingState = templateData.formattingstate
     templateData.formattingbuttons = H.join(
@@ -182,7 +175,7 @@ def wrapAppearance(templateData):
                         cls="alt " + ("active" if formattingState[feat] else ""),
                     ),
                 )
-                for feat in FEATURES + ("_stat_", "_entity_")
+                for feat in features + ("_stat_", "_entity_")
             ],
             id="decoratewidget",
         ),
@@ -229,6 +222,9 @@ def wrapFilter(annotate, templateData, nFind):
 
 
 def wrapEntityInit(annotate, templateData):
+    settings = annotate.settings
+    features = settings.features
+
     F = annotate.F
     setData = annotate.getSetData()
     entities = setData.entities
@@ -246,7 +242,7 @@ def wrapEntityInit(annotate, templateData):
         templateData.tokenstart = None
         templateData.tokenend = None
         txt = ""
-        eTxt = repIdent(eVals, active="active")
+        eTxt = repIdent(features, eVals, active="active")
     elif hasOcc:
         templateData.activeentity = None
         templateData.evals = None
@@ -279,7 +275,7 @@ def wrapEntityInit(annotate, templateData):
     return (txt, eTxt)
 
 
-def wrapEntityHeaders(sortKey, sortDir):
+def wrapEntityHeaders(annotate, sortKey, sortDir):
     """HTML for the header of the entity table.
 
     Dependent on the state of sorting.
@@ -296,14 +292,17 @@ def wrapEntityHeaders(sortKey, sortDir):
     HTML string
 
     """
-    sortKeys = ((feat, f"sort_{i}") for (i, feat) in enumerate(FEATURES))
+    settings = annotate.settings
+    features = settings.features
+
+    sortKeys = ((feat, f"sort_{i}") for (i, feat) in enumerate(features))
 
     content = [
         H.input(type="hidden", name="sortkey", id="sortkey", value=sortKey),
         H.input(type="hidden", name="sortdir", id="sortdir", value=sortDir),
     ]
 
-    for (label, key) in (("frequency", "freqsort"), *sortKeys):
+    for label, key in (("frequency", "freqsort"), *sortKeys):
         hl = " active " if key == sortKey else ""
         theDir = sortDir if key == sortKey else SORTDIR_ASC
         theArrow = "↑" if theDir == SORTDIR_ASC else "↓"
@@ -363,6 +362,10 @@ def wrapEntityText(templateData, txt, eTxt):
 
 
 def wrapEntityFeats(annotate, templateData, nEnt, nVisible, hasFind, txt, eTxt, scope):
+    settings = annotate.settings
+    bucketType = settings.bucketType
+    features = settings.features
+
     setData = annotate.getSetData()
 
     valSelect = templateData.valselect
@@ -371,13 +374,13 @@ def wrapEntityFeats(annotate, templateData, nEnt, nVisible, hasFind, txt, eTxt, 
     hasOcc = txt != ""
     hasEnt = eTxt != ""
 
-    features = {
+    featuresW = {
         feat: valSelect[feat] if hasEnt else setData.entityTextVal[feat].get(txt, set())
-        for feat in FEATURES
+        for feat in features
     }
     content = []
 
-    for (feat, theseVals) in features.items():
+    for feat, theseVals in featuresW.items():
         thisValSelect = valSelect[feat]
 
         valuesContent = []
@@ -416,16 +419,17 @@ def wrapEntityFeats(annotate, templateData, nEnt, nVisible, hasFind, txt, eTxt, 
     templateData.selectentities = H.div(
         H.div(
             H.p(H.b("Select"), scopeInit, scopeFilter),
-            H.p(H.span(f"{total} {BUCKET_TYPE}(s)")),
+            H.p(H.span(f"{total} {bucketType}(s)")),
             scopeExceptions,
         ),
         H.div(content, id="selectsubwidget"),
         id="selectwidget",
     )
-    return features
 
 
 def wrapScope(annotate, templateData, hasFind, txt, eTxt):
+    settings = annotate.settings
+    bucketType = settings.bucketType
     annoSet = annotate.annoSet
     scope = templateData.scope
     hasOcc = txt != ""
@@ -444,14 +448,14 @@ def wrapScope(annotate, templateData, hasFind, txt, eTxt):
                     "filtered",
                     type="button",
                     id="scopefiltered",
-                    title=f"act on filtered {BUCKET_TYPE}s only",
+                    title=f"act on filtered {bucketType}s only",
                 ),
                 " ",
                 H.button(
                     "all",
                     type="button",
                     id="scopeall",
-                    title=f"act on all {BUCKET_TYPE}s",
+                    title=f"act on all {bucketType}s",
                 ),
             )
             if hasFind
@@ -463,7 +467,7 @@ def wrapScope(annotate, templateData, hasFind, txt, eTxt):
                 "✅",
                 type="button",
                 id="selectall",
-                title=f"select all occurences in filtered {BUCKET_TYPE}s",
+                title=f"select all occurences in filtered {bucketType}s",
                 cls="alt",
             ),
             " ",
@@ -471,7 +475,7 @@ def wrapScope(annotate, templateData, hasFind, txt, eTxt):
                 "❌",
                 type="button",
                 id="selectnone",
-                title=f"deselect all occurences in filtered {BUCKET_TYPE}s",
+                title=f"deselect all occurences in filtered {bucketType}s",
                 cls="alt",
             ),
         )
@@ -479,7 +483,11 @@ def wrapScope(annotate, templateData, hasFind, txt, eTxt):
     return (scopeInit, scopeFilter, scopeExceptions)
 
 
-def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt, features):
+def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt):
+    settings = annotate.settings
+    features = settings.features
+    keywordFeatures = settings.keywordFeatures
+
     setData = annotate.getSetData()
     annoSet = annotate.annoSet
     F = annotate.F
@@ -509,7 +517,7 @@ def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt, features):
     # Assigment of feature values
 
     if annoSet and (hasOcc or hasEnt):
-        for (i, feat) in enumerate(FEATURES):
+        for i, feat in enumerate(features):
             theseVals = (
                 {eVals[i]}
                 if hasEnt
@@ -517,7 +525,7 @@ def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt, features):
             )
             allVals = (
                 sorted(x[0] for x in setData.entityFreq[feat])
-                if feat in KEYWORD_FEATURES
+                if feat in keywordFeatures
                 else theseVals
             )
             addVals = (
@@ -532,7 +540,7 @@ def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt, features):
             default = (
                 eVals[i]
                 if hasEnt
-                else featureDefault[feat](F, range(tokenStart, tokenEnd + 1))
+                else annotate.featureDefault[feat](F, range(tokenStart, tokenEnd + 1))
                 if hasOcc
                 else {}
             )
@@ -721,11 +729,14 @@ def wrapActive(templateData):
     )
 
 
-def wrapReport(templateData, report, kind):
+def wrapReport(annotate, templateData, report, kind):
+    settings = annotate.settings
+    features = settings.features
+
     label = "Deletion" if kind == "del" else "Addition" if kind == "add" else ""
     templateData[f"report{kind}"] = H.join(
         H.span(
-            H.join(f"{label}: {n} x {valRep(fVals)}" for (fVals, n) in line)
+            H.join(f"{label}: {n} x {valRep(features, fVals)}" for (fVals, n) in line)
             if type(line) is tuple
             else line,
             cls="report",

@@ -9,16 +9,12 @@ import collections
 
 from ...core.helpers import console as cs
 
-from .settings import (
-    TOOLKEY,
-    FEATURES,
-    BUCKET_TYPE,
-)
+from .settings import TOOLKEY
 
 from .helpers import findCompile, makeCss
 from .sets import Sets
 from .show import Show
-from .match import entityMatch
+from .match import entityMatch, occMatch
 
 
 class Annotate(Sets, Show):
@@ -30,7 +26,11 @@ class Annotate(Sets, Show):
         self.debug = debug
         self.browse = browse
 
-        app.loadToolCss(TOOLKEY, makeCss())
+        settings = self.settings
+        features = settings.features
+        keywordFeatures = settings.keywordFeatures
+
+        app.loadToolCss(TOOLKEY, makeCss(features, keywordFeatures))
 
         if not browse:
             self.loadData()
@@ -38,6 +38,22 @@ class Annotate(Sets, Show):
     def console(self, msg, **kwargs):
         if self.debug or not self.browse:
             cs(msg, **kwargs)
+
+    def findOccs(self, qTokenSet=None):
+        app = self.app
+        setData = self.getSetData()
+        api = app.api
+        L = api.L
+        F = api.F
+
+        buckets = setData.buckets or ()
+
+        results = {}
+
+        for b in buckets:
+            occMatch(L, F, b, qTokenSet, results)
+
+        return results
 
     def filterContent(
         self,
@@ -85,6 +101,10 @@ class Annotate(Sets, Show):
             *   matches: the match positions of the found text
             *   positions: the token positions where a targeted token sequence starts
         """
+        settings = self.settings
+        bucketType = settings.bucketType
+        features = settings.features
+
         browse = self.browse
         app = self.app
         setData = self.getSetData()
@@ -102,8 +122,8 @@ class Annotate(Sets, Show):
         useQTokens = qTokens if hasOcc else None
 
         nFind = 0
-        nEnt = {feat: collections.Counter() for feat in ("",) + FEATURES}
-        nVisible = {feat: collections.Counter() for feat in ("",) + FEATURES}
+        nEnt = {feat: collections.Counter() for feat in ("",) + features}
+        nVisible = {feat: collections.Counter() for feat in ("",) + features}
 
         entityIndex = setData.entityIndex
         entityVal = setData.entityVal
@@ -118,7 +138,7 @@ class Annotate(Sets, Show):
         buckets = (
             setData.buckets or ()
             if node is None
-            else L.d(T.sectionTuple(node)[1], otype=BUCKET_TYPE)
+            else L.d(T.sectionTuple(node)[1], otype=bucketType)
         )
 
         if eVals is not None:
@@ -133,8 +153,10 @@ class Annotate(Sets, Show):
                 if errorMsg:
                     app.error(errorMsg)
 
+        fValStats = {feat: collections.Counter() for feat in ("",) + features}
+
         for b in buckets:
-            (fits, fValStats, result, occurs) = entityMatch(
+            (fits, result, occurs) = entityMatch(
                 entityIndex,
                 eStarts,
                 entitySlotVal,
@@ -150,6 +172,7 @@ class Annotate(Sets, Show):
                 useQTokens,
                 valSelect,
                 requireFree,
+                fValStats,
             )
 
             blocked = fits is not None and not fits
@@ -157,7 +180,7 @@ class Annotate(Sets, Show):
             if not blocked:
                 nFind += 1
 
-            for feat in ("",) + FEATURES:
+            for feat in ("",) + features:
                 theseStats = fValStats[feat]
                 if len(theseStats):
                     theseNEnt = nEnt[feat]
@@ -184,8 +207,8 @@ class Annotate(Sets, Show):
 
         if showStats:
             pluralF = "" if nFind == 1 else "s"
-            self.console(f"{nFind} {BUCKET_TYPE}{pluralF} satisfy the search pattern")
-            for feat in ("",) + (() if anyAnno else FEATURES):
+            self.console(f"{nFind} {bucketType}{pluralF} satisfy the search pattern")
+            for feat in ("",) + (() if anyAnno else features):
                 if feat == "":
                     self.console("Combined features match:")
                     for ek, n in sorted(nEnt[feat].items()):
@@ -198,7 +221,7 @@ class Annotate(Sets, Show):
                         self.console(f"\t{v:>5} of {n:>5} x {ek}")
         if showStats or showStats is None:
             pluralR = "" if nResults == 1 else "s"
-            self.console(f"{nResults} {BUCKET_TYPE}{pluralR}")
+            self.console(f"{nResults} {bucketType}{pluralR}")
         return results
 
     def getStrings(self, tokenStart, tokenEnd):

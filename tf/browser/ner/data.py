@@ -8,20 +8,13 @@ from ...core.files import (
     fileExists,
     initTree,
 )
-from .settings import (
-    TOOLKEY,
-    FEATURES,
-    ENTITY_TYPE,
-    BUCKET_TYPE,
-    NF,
-    SUMMARY_INDICES,
-    getText,
-    featureDefault,
-)
+from .settings import Settings, TOOLKEY, getText
 
 
-class Data:
+class Data(Settings):
     def __init__(self, data=None):
+        super().__init__()
+
         if data is None:
             data = AttrDict()
             data.sets = AttrDict()
@@ -81,12 +74,19 @@ class Data:
         self.process(changed)
 
     def fromSource(self):
+        settings = self.settings
+        bucketType = settings.bucketType
         app = self.app
         data = self.data
         annoSet = self.annoSet
         annoSetRep = self.annoSetRep
         setData = data.sets[annoSet]
         annoDir = self.annoDir
+
+        settings = self.settings
+        entityType = settings.entityType
+        features = settings.features
+        nF = len(features)
 
         api = app.api
         F = api.F
@@ -98,7 +98,7 @@ class Data:
         dataFile = f"{annoDir}/{annoSet}/entities.tsv"
 
         if "buckets" not in setData:
-            setData.buckets = F.otype.s(BUCKET_TYPE)
+            setData.buckets = F.otype.s(bucketType)
 
         changed = False
 
@@ -118,8 +118,8 @@ class Data:
                         for e, line in enumerate(df):
                             fields = tuple(line.rstrip("\n").split("\t"))
                             entities[e] = (
-                                tuple(fields[0:NF]),
-                                tuple(int(f) for f in fields[NF:]),
+                                tuple(fields[0:nF]),
+                                tuple(int(f) for f in fields[nF:]),
                             )
 
                 setData.entities = entities
@@ -132,17 +132,17 @@ class Data:
                 entities = {}
                 hasFeature = {
                     feat: api.isLoaded(feat, pretty=False)[feat] is not None
-                    for feat in FEATURES
+                    for feat in features
                 }
 
-                for e in F.otype.s(ENTITY_TYPE):
+                for e in F.otype.s(entityType):
                     slots = L.d(e, otype=slotType)
                     entities[e] = (
                         tuple(
                             Fs(feat).v(e)
                             if hasFeature[feat]
-                            else featureDefault[feat](F, slots)
-                            for feat in FEATURES
+                            else self.featureDefault[feat](F, slots)
+                            for feat in features
                         ),
                         tuple(slots),
                     )
@@ -152,6 +152,10 @@ class Data:
         return changed
 
     def process(self, changed):
+        settings = self.settings
+        features = settings.features
+        summaryIndices = settings.summaryIndices
+
         app = self.app
         data = self.data
         annoSet = self.annoSet
@@ -185,12 +189,12 @@ class Data:
             entityItems = setData.entities.items()
 
             entityText = {}
-            entityTextVal = {feat: collections.defaultdict(set) for feat in FEATURES}
+            entityTextVal = {feat: collections.defaultdict(set) for feat in features}
             entitySummary = {}
             entityIdent = {}
             entityIdentFirst = {}
-            entityFreq = {feat: collections.Counter() for feat in FEATURES}
-            entityIndex = {feat: {} for feat in FEATURES}
+            entityFreq = {feat: collections.Counter() for feat in features}
+            entityIndex = {feat: {} for feat in features}
             entityVal = {}
             entitySlotVal = {}
             entitySlotAll = {}
@@ -199,12 +203,12 @@ class Data:
             for e, (fVals, slots) in entityItems:
                 txt = getText(F, slots)
                 ident = fVals
-                summary = tuple(fVals[i] for i in SUMMARY_INDICES)
+                summary = tuple(fVals[i] for i in summaryIndices)
 
                 entityText[e] = txt
                 entityVal.setdefault(fVals, set()).add(slots)
 
-                for feat, val in zip(FEATURES, fVals):
+                for feat, val in zip(features, fVals):
                     entityFreq[feat][val] += 1
                     entityIndex[feat].setdefault(slots, set()).add(val)
                     entityTextVal[feat][txt].add(val)
@@ -242,7 +246,7 @@ class Data:
             setData.entityIdent = entityIdent
             setData.entityIdentFirst = entityIdentFirst
             setData.entityFreq = {
-                feat: sorted(entityFreq[feat].items()) for feat in FEATURES
+                feat: sorted(entityFreq[feat].items()) for feat in features
             }
             setData.entityIndex = entityIndex
             setData.entityVal = entityVal
@@ -257,6 +261,8 @@ class Data:
             self.console(f"Data of {annoSetRep} already processed.")
 
     def delEntityRich(self, deletions, buckets, excludedTokens=set()):
+        settings = self.settings
+        features = settings.features
         browse = self.browse
         setData = self.getSetData()
 
@@ -327,7 +333,7 @@ class Data:
         else:
             for vals, freq in stats:
                 repVals = " ".join(
-                    f"{feat}={val}" for (feat, val) in zip(FEATURES, vals)
+                    f"{feat}={val}" for (feat, val) in zip(features, vals)
                 )
                 self.console(f"Deleted {freq:>5} x {repVals}")
         if len(rest):
@@ -400,6 +406,9 @@ class Data:
         self.console(f"Deleted:     {deleted:>5} x")
 
     def addEntityRich(self, additions, buckets, excludedTokens=set()):
+        settings = self.settings
+        features = settings.features
+
         browse = self.browse
         setData = self.getSetData()
 
@@ -464,13 +473,17 @@ class Data:
         else:
             for vals, freq in stats:
                 repVals = " ".join(
-                    f"{feat}={val}" for (feat, val) in zip(FEATURES, vals)
+                    f"{feat}={val}" for (feat, val) in zip(features, vals)
                 )
                 self.console(f"Added {freq:>5} x {repVals}")
         if len(rest):
             self.console("\n".join(rest))
 
     def weedEntities(self, delEntities):
+        settings = self.settings
+        features = settings.features
+        nF = len(features)
+
         annoSet = self.annoSet
         annoDir = self.annoDir
 
@@ -481,8 +494,8 @@ class Data:
         with open(dataFile) as fh:
             for line in fh:
                 fields = tuple(line.rstrip("\n").split("\t"))
-                fVals = tuple(fields[0:NF])
-                matchedSlots = tuple(int(f) for f in fields[NF:])
+                fVals = tuple(fields[0:nF])
+                matchedSlots = tuple(int(f) for f in fields[nF:])
                 info = (fVals, matchedSlots)
                 if info in delEntities:
                     continue

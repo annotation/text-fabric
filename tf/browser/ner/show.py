@@ -6,8 +6,6 @@ from .helpers import repIdent, repSummary
 from .html import H
 
 from .settings import (
-    FEATURES,
-    BUCKET_TYPE,
     SORT_DEFAULT,
     SORTKEY_DEFAULT,
     SORTDIR_DEFAULT,
@@ -30,11 +28,19 @@ class Show:
         -------
         HTML string
         """
+        settings = self.settings
+        summaryFeatures = settings.summaryFeatures
+
         browse = self.browse
         setData = self.getSetData()
 
         content = H.p(
-            H.span(H.code(f"{len(es):>5}"), " x ", H.span(repSummary(fVals))) + H.br()
+            H.span(
+                H.code(f"{len(es):>5}"),
+                " x ",
+                H.span(summaryFeatures, repSummary(fVals)),
+            )
+            + H.br()
             for (fVals, es) in sorted(
                 setData.entitySummary.items(), key=lambda x: (-len(x[1]), x[0])
             )
@@ -48,6 +54,9 @@ class Show:
     def showEntities(
         self, activeEntity=None, sortKey=None, sortDir=None, cutOffFreq=None
     ):
+        settings = self.settings
+        features = settings.features
+
         browse = self.browse
         setData = self.getSetData()
 
@@ -55,7 +64,7 @@ class Show:
 
         entries = setData.entityIdent.items()
         eFirst = setData.entityIdentFirst
-        sortKeyMap = {feat: i for (i, feat) in enumerate(FEATURES)}
+        sortKeyMap = {feat: i for (i, feat) in enumerate(features)}
 
         if sortKey is None and sortDir is None:
             (sortKey, sortDir) = SORT_DEFAULT
@@ -72,7 +81,7 @@ class Show:
                 index = sortKey[5:]
                 if index.isdecimal():
                     index = int(index)
-                    if index >= len(FEATURES):
+                    if index >= len(features):
                         index = 0
                 else:
                     index = sortKeyMap.get(index, 0)
@@ -99,7 +108,7 @@ class Show:
                 H.p(
                     H.code(f"{x:>5}", cls="w"),
                     " x ",
-                    repIdent(vals, active=active),
+                    repIdent(features, vals, active=active),
                     cls=f"e {active}",
                     enm=e1,
                 )
@@ -121,6 +130,10 @@ class Show:
         start=None,
         end=None,
     ):
+        settings = self.settings
+        bucketType = settings.bucketType
+        features = settings.features
+
         browse = self.browse
         app = self.app
         setData = self.getSetData()
@@ -151,7 +164,7 @@ class Show:
             if limited and nB > limit:
                 content.append(
                     H.div(
-                        f"Showing only the first {limit} {BUCKET_TYPE}s of all "
+                        f"Showing only the first {limit} {bucketType}s of all "
                         f"{len(buckets)} ones.",
                         cls="report",
                     )
@@ -193,7 +206,7 @@ class Show:
                             subContent.append(
                                 H.span(
                                     H.span(abs(lg), cls="lgb"),
-                                    repIdent(ident, active=active),
+                                    repIdent(features, ident, active=active),
                                     " ",
                                     H.span(len(entityIdent[ident]), cls="n"),
                                     cls="es",

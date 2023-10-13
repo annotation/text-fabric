@@ -1,6 +1,36 @@
-import collections
+from .settings import NONE
 
-from .settings import FEATURES, NONE
+
+def occMatch(L, F, b, qTokenSet, results):
+    bTokensAll = [(t, F.str.v(t)) or "" for t in L.d(b, otype="t")]
+    bTokens = [x for x in bTokensAll if x[1].strip()]
+    bStrings = {s for (t, s) in bTokens}
+    nBTokens = len(bTokens)
+
+    for qTokens in qTokenSet:
+        if any(s not in bStrings for s in qTokens):
+            continue
+
+        nTokens = len(qTokens)
+
+        for i, (t, w) in enumerate(bTokens):
+            if w != qTokens[0]:
+                continue
+            if i + nTokens - 1 >= nBTokens:
+                break
+
+            match = True
+
+            for j, w in enumerate(qTokens[1:]):
+                if bTokens[i + j + 1][1] != w:
+                    match = False
+                    break
+
+            if match:
+                lastT = bTokens[i + nTokens - 1][0]
+                slots = tuple(range(t, lastT + 1))
+
+                results.setdefault(qTokens, []).append(slots)
 
 
 def entityMatch(
@@ -19,6 +49,7 @@ def entityMatch(
     qTokens,
     valSelect,
     requireFree,
+    fValStats,
 ):
     """Checks whether a bucket matches a sequence of tokens.
 
@@ -61,17 +92,15 @@ def entityMatch(
 
     matches = []
 
-    fValStats = {feat: collections.Counter() for feat in ("",) + FEATURES}
-
     if anyAnno is not None:
-        for (i, (t, w)) in enumerate(bTokens):
+        for i, (t, w) in enumerate(bTokens):
             for lastT in entitySlotAll.get(t, set()):
                 slots = tuple(range(t, lastT + 1))
                 matches.append(slots)
                 fValStats[""][None] += 1
 
     elif eVals is not None:
-        for (i, (t, w)) in enumerate(bTokens):
+        for i, (t, w) in enumerate(bTokens):
             lastT = eStarts.get(t, None)
             if lastT is None:
                 continue
@@ -87,15 +116,13 @@ def entityMatch(
             if not freeOK:
                 continue
 
-            for feat in FEATURES:
-                stats = fValStats[feat]
-
+            for (feat, stats) in fValStats.items():
                 for val in eVals:
                     stats[val] += 1
 
             valOK = True
 
-            for (feat, val) in zip(FEATURES, eVals):
+            for feat, val in zip(fValStats, eVals):
                 if valSelect is None:
                     continue
                 selectedVals = valSelect[feat]
@@ -114,24 +141,19 @@ def entityMatch(
             bStrings = {s for (t, s) in bTokens}
 
             if any(s not in bStrings for s in qTokens):
-                return (fits, fValStats, (bTokensAll, matches, positions), False)
+                return (fits, (bTokensAll, matches, positions), False)
 
-            nSTokens = len(bTokens)
+            nBTokens = len(bTokens)
 
-            for (i, (t, w)) in enumerate(bTokens):
+            for i, (t, w) in enumerate(bTokens):
                 if w != qTokens[0]:
                     continue
-                if i + nTokens - 1 >= nSTokens:
-                    return (
-                        fits,
-                        fValStats,
-                        (bTokensAll, matches, positions),
-                        len(matches) != 0,
-                    )
+                if i + nTokens - 1 >= nBTokens:
+                    return (fits, (bTokensAll, matches, positions), len(matches) != 0)
 
                 match = True
 
-                for (j, w) in enumerate(qTokens[1:]):
+                for j, w in enumerate(qTokens[1:]):
                     if bTokens[i + j + 1][1] != w:
                         match = False
                         break
@@ -149,9 +171,8 @@ def entityMatch(
                     if not freeOK:
                         continue
 
-                    for feat in FEATURES:
+                    for (feat, stats) in fValStats.items():
                         vals = entityIndex[feat].get(slots, set())
-                        stats = fValStats[feat]
 
                         if len(vals) == 0:
                             stats[NONE] += 1
@@ -164,23 +185,24 @@ def entityMatch(
                     if len(valTuples):
                         valOK = False
 
-                        for valTuple in valTuples:
-                            thisOK = True
+                        if valSelect is not None:
+                            for valTuple in valTuples:
+                                thisOK = True
 
-                            for (feat, val) in zip(FEATURES, valTuple):
-                                if valSelect is None:
-                                    continue
-                                selectedVals = valSelect[feat]
-                                if val not in selectedVals:
-                                    thisOK = False
+                                for feat, val in zip(fValStats, valTuple):
+                                    if valSelect is None:
+                                        continue
+                                    selectedVals = valSelect[feat]
+                                    if val not in selectedVals:
+                                        thisOK = False
+                                        break
+
+                                if thisOK:
+                                    valOK = True
                                     break
-
-                            if thisOK:
-                                valOK = True
-                                break
                     else:
                         valOK = valSelect is None or all(
-                            NONE in valSelect[feat] for feat in FEATURES
+                            NONE in valSelect[feat] for feat in fValStats
                         )
 
                     if valOK:
@@ -188,6 +210,6 @@ def entityMatch(
                         fValStats[""][None] += 1
 
     else:
-        return (fits, fValStats, (bTokensAll, matches, positions), True)
+        return (fits, (bTokensAll, matches, positions), True)
 
-    return (fits, fValStats, (bTokensAll, matches, positions), len(matches) != 0)
+    return (fits, (bTokensAll, matches, positions), len(matches) != 0)

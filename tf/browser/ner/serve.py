@@ -44,24 +44,30 @@ class Serve:
         app = self.app
         debug = self.debug
 
-        templateData = initTemplate(app)
+        annotate = Annotate(app, data=data, debug=debug, browse=True)
+
+        templateData = initTemplate(annotate, app)
         self.templateData = templateData
 
         annoSet = templateData.annoset
 
-        annotate = Annotate(app, data=data, debug=debug, browse=True)
         annotate.setSet(annoSet)
         self.annotate = annotate
         annotate.loadData()
 
     def setupFull(self):
         css = self.css
+
         self.setupAnnotate()
+        settings = self.settings
+        features = settings.features
+        keywordFeatures = settings.keywordFeatures
+
         templateData = self.templateData
 
         findSetup(templateData)
         wrapActive(templateData)
-        templateData.css = makeCss(generic=css)
+        templateData.css = makeCss(features, keywordFeatures, generic=css)
 
     def setupLean(self):
         self.setupAnnotate()
@@ -100,7 +106,7 @@ class Serve:
             activeEntity=activeEntity, sortKey=sortKey, sortDir=sortDir
         )
         templateData.entityoverview = annotate.showEntityOverview()
-        templateData.entityheaders = wrapEntityHeaders(sortKey, sortDir)
+        templateData.entityheaders = wrapEntityHeaders(annotate, sortKey, sortDir)
         templateData.buckets = annotate.showContent(
             buckets,
             activeEntity=activeEntity,
@@ -217,7 +223,7 @@ class Serve:
                     delData.deletions, self.buckets, excludedTokens=excludedTokens
                 )
                 annotate.loadData()
-                wrapReport(templateData, report, "del")
+                wrapReport(annotate, templateData, report, "del")
                 if hasEnt:
                     templateData.activeentity = None
                     templateData.evals = None
@@ -226,9 +232,9 @@ class Serve:
                     addData.additions, self.buckets, excludedTokens=excludedTokens
                 )
                 annotate.loadData()
-                wrapReport(templateData, report, "add")
+                wrapReport(annotate, templateData, report, "add")
 
-            adaptValSelect(templateData)
+            adaptValSelect(annotate, templateData)
 
             self.getBuckets()
 

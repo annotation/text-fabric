@@ -3,12 +3,7 @@ import unicodedata
 
 from .html import H
 
-from .settings import (
-    FEATURES,
-    KEYWORD_FEATURES,
-    SUMMARY_FEATURES,
-    STYLES,
-)
+from .settings import STYLES
 
 
 WHITE_RE = re.compile(r"""\s+""", re.S)
@@ -38,7 +33,7 @@ def normalize(text):
 
 
 def toTokens(text):
-    return TOKEN_RE.findall(normalize(text))
+    return tuple(TOKEN_RE.findall(normalize(text)))
 
 
 def toAscii(text):
@@ -73,25 +68,25 @@ def toSmallId(text, transform={}):
     return ".".join(result)
 
 
-def repIdent(vals, active=""):
+def repIdent(features, vals, active=""):
     return H.join(
-        (H.span(val, cls=f"{feat} {active}") for (feat, val) in zip(FEATURES, vals)),
+        (H.span(val, cls=f"{feat} {active}") for (feat, val) in zip(features, vals)),
         sep=" ",
     )
 
 
-def repSummary(vals, active=""):
+def repSummary(summaryFeatures, vals, active=""):
     return H.join(
         (
             H.span(val, cls=f"{feat} {active}")
-            for (feat, val) in zip(SUMMARY_FEATURES, vals)
+            for (feat, val) in zip(summaryFeatures, vals)
         ),
         sep=" ",
     )
 
 
-def valRep(fVals):
-    return ", ".join(f"<i>{feat}</i>={val}" for (feat, val) in zip(FEATURES, fVals))
+def valRep(features, fVals):
+    return ", ".join(f"<i>{feat}</i>={val}" for (feat, val) in zip(features, fVals))
 
 
 def findCompile(bFind, bFindC):
@@ -109,7 +104,7 @@ def findCompile(bFind, bFindC):
     return (bFind, bFindRe, errorMsg)
 
 
-def makeCss(generic=""):
+def makeCss(features, keywordFeatures, generic=""):
     propMap = dict(
         ff="font-family",
         fz="font-size",
@@ -134,8 +129,8 @@ def makeCss(generic=""):
 
     css = []
 
-    for feat in FEATURES:
-        manner = "keyword" if feat in KEYWORD_FEATURES else "free"
+    for feat in features:
+        manner = "keyword" if feat in keywordFeatures else "free"
 
         plain = makeBlock(manner)
         bordered = makeBlock(f"{manner}_bordered")

@@ -13,20 +13,24 @@ from ...core.files import (
     dirMove,
 )
 
-from .settings import ERROR, ENT_SET
+from .settings import ERROR
 
 
 class Sets(Data):
     def __init__(self):
         super().__init__()
+        settings = self.settings
+        entitySet = settings.entitySet
 
         self.annoSet = ""
-        self.annoSetRep = ENT_SET
+        self.annoSetRep = entitySet
 
         annoDir = self.annoDir
         self.setNames = set(dirContents(annoDir)[1])
 
     def setSet(self, newAnnoSet):
+        settings = self.settings
+        entitySet = settings.entitySet
         browse = self.browse
 
         if not browse:
@@ -46,7 +50,7 @@ class Sets(Data):
         if newAnnoSet != annoSet:
             annoSet = newAnnoSet
             self.annoSet = annoSet
-            self.annoSetRep = annoSet if annoSet else ENT_SET
+            self.annoSetRep = annoSet if annoSet else entitySet
             self.loadData()
 
         if not browse:

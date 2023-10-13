@@ -7,20 +7,11 @@ from urllib.parse import unquote
 from flask import request
 
 from ...core.generic import AttrDict, deepAttrDict
-from .settings import (
-    TOOLKEY,
-    FEATURES,
-    EMPTY,
-    NONE,
-    BUCKET_TYPE,
-    SORTKEY_DEFAULT,
-    SORTDIR_DEFAULT,
-    SC_ALL,
-)
+from .settings import TOOLKEY, EMPTY, NONE, SORTKEY_DEFAULT, SORTDIR_DEFAULT, SC_ALL
 from .annotate import findCompile
 
 
-def getFormData():
+def getFormData(annotate):
     """Get form data.
 
     The TF browser user interacts with the app by clicking and typing,
@@ -34,6 +25,8 @@ def getFormData():
     Most of the data has a known function to the server,
     but there is also a list of webapp dependent options.
     """
+    settings = annotate.settings
+    features = settings.features
 
     fget = request.form.get
 
@@ -57,7 +50,7 @@ def getFormData():
     form["formattingdo"] = fget("formattingdo", "x") == "v"
     form["formattingstate"] = {
         feat: fget(f"{feat}_appearance", "v") == "v"
-        for feat in FEATURES + ("_stat_", "_entity_")
+        for feat in features + ("_stat_", "_entity_")
     }
     form["bfind"] = fget("bfind", "")
     form["bfindc"] = fget("bfindc", "x") == "v"
@@ -71,8 +64,8 @@ def getFormData():
     form["tokenstart"] = int(tokenStart) if tokenStart else None
     tokenEnd = fget("tokenend", "")
     form["tokenend"] = int(tokenEnd) if tokenEnd else None
-    form["activeval"] = tuple((feat, fget(f"{feat}_active", "")) for feat in FEATURES)
-    makeValSelect(form)
+    form["activeval"] = tuple((feat, fget(f"{feat}_active", "")) for feat in features)
+    makeValSelect(annotate, form)
 
     form["scope"] = fget("scope", SC_ALL)
     excludedTokens = fget("excludedtokens", "")
@@ -94,16 +87,19 @@ def getFormData():
     return form
 
 
-def makeValSelect(form):
+def makeValSelect(annotate, form):
+    settings = annotate.settings
+    features = settings.features
+
     fget = request.form.get
 
     submitter = form["submitter"]
-    valSelectProto = {feat: fget(f"{feat}_select", "") for feat in FEATURES}
+    valSelectProto = {feat: fget(f"{feat}_select", "") for feat in features}
     valSelect = {}
 
     startSearch = submitter in {"lookupq", "lookupn", "freebutton"}
 
-    for feat in FEATURES:
+    for feat in features:
         valProto = valSelectProto[feat]
         valSelect[feat] = (
             set("" if x == EMPTY else x for x in valProto.split(","))
@@ -116,7 +112,10 @@ def makeValSelect(form):
     form["valselect"] = valSelect
 
 
-def adaptValSelect(templateData):
+def adaptValSelect(annotate, templateData):
+    settings = annotate.settings
+    features = settings.features
+
     submitter = templateData.submitter
     valSelect = templateData.valselect
 
@@ -127,7 +126,7 @@ def adaptValSelect(templateData):
 
         freeState = templateData.freestate
 
-        for (i, (feat, values)) in enumerate(zip(FEATURES, additions)):
+        for i, (feat, values) in enumerate(zip(features, additions)):
             for val in values:
                 valSelect.setdefault(feat, set()).add(val)
                 if val == freeVals[i]:
@@ -137,33 +136,37 @@ def adaptValSelect(templateData):
             templateData.freestate = "all"
 
     elif submitter == "delgo":
-        for feat in FEATURES:
+        for feat in features:
             valSelect.setdefault(feat, set()).add(NONE)
 
     templateData.submitter = ""
 
 
-def initTemplate(app):
+def initTemplate(annotate, app):
+    settings = annotate.settings
+    bucketType = settings.bucketType
+    features = settings.features
+
     aContext = app.context
     appName = aContext.appName.replace("/", " / ")
     api = app.api
     F = api.F
     slotType = F.otype.slotType
 
-    form = getFormData()
+    form = getFormData(annotate)
     resetForm = form["resetForm"]
 
     templateData = AttrDict()
     templateData.toolkey = TOOLKEY
-    templateData.featurelist = ",".join(FEATURES)
+    templateData.buckettype = bucketType
+    templateData.featurelist = ",".join(features)
 
-    for (k, v) in form.items():
+    for k, v in form.items():
         if not resetForm or k not in templateData:
             templateData[k] = v
 
     templateData.appname = appName
     templateData.slottype = slotType
-    templateData.buckettype = BUCKET_TYPE
     templateData.resetform = ""
 
     return templateData
