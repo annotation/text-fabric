@@ -38,7 +38,7 @@ class Show:
             H.span(
                 H.code(f"{len(es):>5}"),
                 " x ",
-                H.span(summaryFeatures, repSummary(fVals)),
+                H.span(repSummary(summaryFeatures, fVals)),
             )
             + H.br()
             for (fVals, es) in sorted(

@@ -89,13 +89,11 @@ class Settings:
         refDir = f"{repoDir}{relative}"
         programDir = f"{refDir}/programs"
         nerSpec = f"{programDir}/ner.yaml"
-        settings = readYaml(asFile=nerSpec, plain=True)
+        settings = readYaml(asFile=nerSpec, preferTuples=True)
         settings.entitySet = settings.entitySet.format(entityType=settings.entityType)
         self.settings = settings
 
         features = self.settings.features
-        feat0 = features[0]
-        feat1 = features[1]
         keywordFeatures = self.settings.keywordFeatures
         self.settings.summaryIndices = tuple(
             i for i in range(len(features)) if features[i] in keywordFeatures
@@ -108,11 +106,11 @@ class Settings:
             return text
 
         def get1(F, slots):
-            return self.settings.defaultValues[feat1]
+            return self.settings.defaultValues[features[1]]
 
         self.featureDefault = {
-            feat0: get0,
-            feat1: get1,
+            features[0]: get0,
+            features[1]: get1,
         }
 
 

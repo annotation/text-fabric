@@ -599,7 +599,7 @@ def chDir(directory):
     return os.chdir(directory)
 
 
-def readYaml(text=None, plain=False, asFile=None):
+def readYaml(text=None, plain=False, asFile=None, preferTuples=True):
     if asFile is None:
         cfg = yaml.load(text, Loader=yaml.FullLoader)
     else:
@@ -609,7 +609,7 @@ def readYaml(text=None, plain=False, asFile=None):
         else:
             cfg = {}
 
-    return cfg if plain else deepAttrDict(cfg)
+    return cfg if plain else deepAttrDict(cfg, preferTuples=preferTuples)
 
 
 def writeYaml(data, asFile=None):

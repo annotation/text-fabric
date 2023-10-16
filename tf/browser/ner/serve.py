@@ -59,7 +59,8 @@ class Serve:
         css = self.css
 
         self.setupAnnotate()
-        settings = self.settings
+        annotate = self.annotate
+        settings = annotate.settings
         features = settings.features
         keywordFeatures = settings.keywordFeatures
 

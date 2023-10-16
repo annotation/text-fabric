@@ -153,10 +153,9 @@ class Annotate(Sets, Show):
                 if errorMsg:
                     app.error(errorMsg)
 
-        fValStats = {feat: collections.Counter() for feat in ("",) + features}
-
         for b in buckets:
-            (fits, result, occurs) = entityMatch(
+            fValStats = {feat: collections.Counter() for feat in features}
+            (fits, result, occurs, thisWhole) = entityMatch(
                 entityIndex,
                 eStarts,
                 entitySlotVal,
@@ -180,7 +179,7 @@ class Annotate(Sets, Show):
             if not blocked:
                 nFind += 1
 
-            for feat in ("",) + features:
+            for feat in features:
                 theseStats = fValStats[feat]
                 if len(theseStats):
                     theseNEnt = nEnt[feat]
@@ -190,6 +189,11 @@ class Annotate(Sets, Show):
                         theseNEnt[ek] += n
                         if not blocked:
                             theseNVisible[ek] += n
+
+            if thisWhole:
+                nEnt[""][None] += thisWhole
+                if not blocked:
+                    nVisible[""][None] += thisWhole
 
             if node is None:
                 if not occurs:

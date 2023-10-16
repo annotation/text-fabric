@@ -91,13 +91,14 @@ def entityMatch(
     bTokens = [x for x in bTokensAll if x[1].strip()]
 
     matches = []
+    thisWhole = 0
 
     if anyAnno is not None:
         for i, (t, w) in enumerate(bTokens):
             for lastT in entitySlotAll.get(t, set()):
                 slots = tuple(range(t, lastT + 1))
                 matches.append(slots)
-                fValStats[""][None] += 1
+                thisWhole += 1
 
     elif eVals is not None:
         for i, (t, w) in enumerate(bTokens):
@@ -116,7 +117,7 @@ def entityMatch(
             if not freeOK:
                 continue
 
-            for (feat, stats) in fValStats.items():
+            for feat, stats in fValStats.items():
                 for val in eVals:
                     stats[val] += 1
 
@@ -132,7 +133,7 @@ def entityMatch(
 
             if valOK:
                 matches.append(slots)
-                fValStats[""][None] += 1
+                thisWhole += 1
 
     elif qTokens is not None:
         nTokens = len(qTokens)
@@ -141,7 +142,7 @@ def entityMatch(
             bStrings = {s for (t, s) in bTokens}
 
             if any(s not in bStrings for s in qTokens):
-                return (fits, (bTokensAll, matches, positions), False)
+                return (fits, (bTokensAll, matches, positions), False, thisWhole)
 
             nBTokens = len(bTokens)
 
@@ -149,7 +150,12 @@ def entityMatch(
                 if w != qTokens[0]:
                     continue
                 if i + nTokens - 1 >= nBTokens:
-                    return (fits, (bTokensAll, matches, positions), len(matches) != 0)
+                    return (
+                        fits,
+                        (bTokensAll, matches, positions),
+                        len(matches) != 0,
+                        thisWhole,
+                    )
 
                 match = True
 
@@ -171,7 +177,7 @@ def entityMatch(
                     if not freeOK:
                         continue
 
-                    for (feat, stats) in fValStats.items():
+                    for feat, stats in fValStats.items():
                         vals = entityIndex[feat].get(slots, set())
 
                         if len(vals) == 0:
@@ -207,9 +213,9 @@ def entityMatch(
 
                     if valOK:
                         matches.append(slots)
-                        fValStats[""][None] += 1
+                        thisWhole += 1
 
     else:
-        return (fits, (bTokensAll, matches, positions), True)
+        return (fits, (bTokensAll, matches, positions), True, thisWhole)
 
-    return (fits, (bTokensAll, matches, positions), len(matches) != 0)
+    return (fits, (bTokensAll, matches, positions), len(matches) != 0, thisWhole)

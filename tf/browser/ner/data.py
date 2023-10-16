@@ -79,7 +79,7 @@ class Data(Settings):
         app = self.app
         data = self.data
         annoSet = self.annoSet
-        annoSetRep = self.annoSetRep
+        # annoSetRep = self.annoSetRep
         setData = data.sets[annoSet]
         annoDir = self.annoDir
 
@@ -109,7 +109,7 @@ class Data(Settings):
                 or (len(setData.entities) > 0 and not fileExists(dataFile))
                 or (fileExists(dataFile) and setData.dateLoaded < mTime(dataFile))
             ):
-                self.console(f"Loading data for {annoSet} ... ", newline=False)
+                # self.console(f"Loading data for {annoSet} ... ", newline=False)
                 changed = True
                 entities = {}
 
@@ -124,9 +124,10 @@ class Data(Settings):
 
                 setData.entities = entities
                 setData.dateLoaded = time.time()
-                self.console("done.")
+                # self.console("done.")
             else:
-                self.console(f"Data for {annoSetRep} already loaded")
+                # self.console(f"Data for {annoSetRep} already loaded")
+                pass
         else:
             if "entities" not in setData:
                 entities = {}
@@ -159,7 +160,7 @@ class Data(Settings):
         app = self.app
         data = self.data
         annoSet = self.annoSet
-        annoSetRep = self.annoSetRep
+        # annoSetRep = self.annoSetRep
         setData = data.sets[annoSet]
 
         api = app.api
@@ -184,7 +185,7 @@ class Data(Settings):
             or dateLoaded is not None
             and dateProcessed < dateLoaded
         ):
-            self.console(f"Processing data of {annoSetRep} ... ", newline=False)
+            # self.console(f"Processing data of {annoSetRep} ... ", newline=False)
 
             entityItems = setData.entities.items()
 
@@ -255,10 +256,11 @@ class Data(Settings):
             setData.entitySlotIndex = entitySlotIndex
 
             setData.dateProcessed = time.time()
-            self.console("done.")
+            # self.console("done.")
 
         else:
-            self.console(f"Data of {annoSetRep} already processed.")
+            # self.console(f"Data of {annoSetRep} already processed.")
+            pass
 
     def delEntityRich(self, deletions, buckets, excludedTokens=set()):
         settings = self.settings
@@ -339,7 +341,7 @@ class Data(Settings):
         if len(rest):
             self.console("\n".join(rest))
 
-    def addEntity(self, vals, allMatches):
+    def addEntity(self, vals, allMatches, silent=True):
         setData = self.getSetData()
 
         oldEntities = setData.entities
@@ -369,10 +371,12 @@ class Data(Settings):
             self.mergeEntities(addEntities)
 
         self.loadData()
-        self.console(f"Already present: {present:>5} x")
-        self.console(f"Added:           {added:>5} x")
+        if not silent:
+            self.console(f"Already present: {present:>5} x")
+            self.console(f"Added:           {added:>5} x")
+        return (present, added)
 
-    def delEntity(self, vals, allMatches=None):
+    def delEntity(self, vals, allMatches=None, silent=True):
         setData = self.getSetData()
 
         oldEntities = setData.entities
@@ -402,8 +406,9 @@ class Data(Settings):
             self.weedEntities(delEntities)
 
         self.loadData()
-        self.console(f"Not present: {missing:>5} x")
-        self.console(f"Deleted:     {deleted:>5} x")
+        if not silent:
+            self.console(f"Not present: {missing:>5} x")
+            self.console(f"Deleted:     {deleted:>5} x")
 
     def addEntityRich(self, additions, buckets, excludedTokens=set()):
         settings = self.settings

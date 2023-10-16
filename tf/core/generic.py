@@ -58,22 +58,24 @@ def deepdict(info):
         An dict containing the same info as the input dict, but where
         each value of type AttrDict is turned into a dict.
     """
+    tp = type(info)
+
     return (
         dict({k: deepdict(v) for (k, v) in info.items()})
-        if type(info) in {dict, AttrDict}
+        if tp in {dict, AttrDict}
         else tuple(deepdict(item) for item in info)
-        if type(info) is tuple
+        if tp is tuple
         else frozenset(deepdict(item) for item in info)
-        if type(info) is frozenset
+        if tp is frozenset
         else [deepdict(item) for item in info]
-        if type(info) is list
+        if tp is list
         else {deepdict(item) for item in info}
-        if type(info) is set
+        if tp is set
         else info
     )
 
 
-def deepAttrDict(info):
+def deepAttrDict(info, preferTuples=False):
     """Turn a dict into an AttrDict, recursively.
 
     Parameters
@@ -83,6 +85,8 @@ def deepAttrDict(info):
         tuple, list, set, frozenset, dict and atomic types such as int, str, bool.
         We assume there are no user defined objects in it,
         and no generators and functions.
+    preferTuples: boolean, optional False
+        Lists are converted to tuples.
 
     Returns
     -------
@@ -90,17 +94,21 @@ def deepAttrDict(info):
         An AttrDict containing the same info as the input dict, but where
         each value of type dict is turned into an AttrDict.
     """
+    tp = type(info)
+
     return (
-        AttrDict({k: deepAttrDict(v) for (k, v) in info.items()})
-        if type(info) in {dict, AttrDict}
-        else tuple(deepAttrDict(item) for item in info)
-        if type(info) is tuple
-        else frozenset(deepAttrDict(item) for item in info)
-        if type(info) is frozenset
-        else [deepAttrDict(item) for item in info]
-        if type(info) is list
-        else {deepAttrDict(item) for item in info}
-        if type(info) is set
+        AttrDict(
+            {k: deepAttrDict(v, preferTuples=preferTuples) for (k, v) in info.items()}
+        )
+        if tp in {dict, AttrDict}
+        else tuple(deepAttrDict(item, preferTuples=preferTuples) for item in info)
+        if tp is tuple or (tp is list and preferTuples)
+        else frozenset(deepAttrDict(item, preferTuples=preferTuples) for item in info)
+        if tp is frozenset
+        else [deepAttrDict(item, preferTuples=preferTuples) for item in info]
+        if tp is list
+        else {deepAttrDict(item, preferTuples=preferTuples) for item in info}
+        if tp is set
         else info
     )
 
