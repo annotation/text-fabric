@@ -57,8 +57,8 @@ def getFormData(annotate):
     form["bfinderror"] = fget("bfinderror", "")
 
     form["freestate"] = fget("freestate", "all")
-    activeEntity = fget("activeentity", "")
-    form["activeentity"] = int(activeEntity) if activeEntity else None
+    activeEntity = fget("activeentity", None)
+    form["activeentity"] = tuple(activeEntity.split("⊙")) if activeEntity else None
     form["efind"] = fget("efind", "")
     tokenStart = fget("tokenstart", "")
     form["tokenstart"] = int(tokenStart) if tokenStart else None

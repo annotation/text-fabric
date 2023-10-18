@@ -90,19 +90,16 @@ class Serve:
     def wrapAnnotate(self):
         annotate = self.annotate
         templateData = self.templateData
-        sortKey = templateData.sortKey
-        sortDir = templateData.sortDir
+        sortKey = templateData.sortkey
+        sortDir = templateData.sortdir
         activeEntity = templateData.activeentity
         tokenStart = templateData.tokenstart
         tokenEnd = templateData.tokenend
         excludedTokens = templateData.excludedtokens
 
-        nFind = self.nFind
-        nEnt = self.nEnt
-        nVisible = self.nVisible
         buckets = self.buckets
 
-        wrapQuery(annotate, templateData, nFind, nEnt, nVisible)
+        wrapQuery(annotate, templateData)
         templateData.entitytable = annotate.showEntities(
             activeEntity=activeEntity, sortKey=sortKey, sortDir=sortDir
         )
@@ -143,17 +140,26 @@ class Serve:
         freeState = templateData.freestate
 
         setData = annotate.getSetData()
-        entities = setData.entities
-        eVals = None if activeEntity is None else entities[activeEntity][0]
+        entityIdent = setData.entityIdent
+
+        if activeEntity not in entityIdent:
+            activeEntity = None
+            templateData.activeentity = None
+
         qTokens = (
             annotate.getStrings(tokenStart, tokenEnd)
             if tokenStart and tokenEnd
             else None
         )
 
-        (self.buckets, self.nFind, self.nVisible, self.nEnt) = annotate.filterContent(
+        (
+            self.buckets,
+            templateData.nfind,
+            templateData.nvisible,
+            templateData.nent,
+        ) = annotate.filterContent(
             bFindRe=bFindRe,
-            eVals=eVals,
+            eVals=activeEntity,
             qTokens=qTokens,
             valSelect=valSelect,
             freeState=freeState,
@@ -226,8 +232,13 @@ class Serve:
                 annotate.loadData()
                 wrapReport(annotate, templateData, report, "del")
                 if hasEnt:
-                    templateData.activeentity = None
-                    templateData.evals = None
+                    setData = annotate.getSetData()
+                    entityIdent = setData.entityIdent
+
+                    stillExists = activeEntity in entityIdent
+                    if not stillExists:
+                        templateData.activeentity = None
+
             if submitter == "addgo" and addData:
                 report = annotate.addEntityRich(
                     addData.additions, self.buckets, excludedTokens=excludedTokens

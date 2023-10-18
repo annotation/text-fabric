@@ -61,7 +61,7 @@ class Annotate(Sets, Show):
         bFindC=None,
         bFindRe=None,
         eVals=None,
-        anyAnno=None,
+        anyEnt=None,
         qTokens=None,
         valSelect=None,
         freeState=None,
@@ -115,6 +115,7 @@ class Annotate(Sets, Show):
 
         results = []
 
+        self.console(f"{eVals=}")
         hasEnt = eVals is not None
         hasQTokens = qTokens is not None and len(qTokens)
         hasOcc = not hasEnt and hasQTokens
@@ -166,7 +167,7 @@ class Annotate(Sets, Show):
                 T,
                 b,
                 bFindRe,
-                anyAnno,
+                anyEnt,
                 eVals,
                 useQTokens,
                 valSelect,
@@ -212,7 +213,7 @@ class Annotate(Sets, Show):
         if showStats:
             pluralF = "" if nFind == 1 else "s"
             self.console(f"{nFind} {bucketType}{pluralF} satisfy the search pattern")
-            for feat in ("",) + (() if anyAnno else features):
+            for feat in ("",) + (() if anyEnt else features):
                 if feat == "":
                     self.console("Combined features match:")
                     for ek, n in sorted(nEnt[feat].items()):

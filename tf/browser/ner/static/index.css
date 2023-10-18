@@ -102,6 +102,11 @@ div.page {
   background-color: yellow;
   padding: 0 0.3rem;
 }
+#qtextentshow.inactive {
+  background-color: #ffddbb;
+  font-style: italic;
+  font-size: small;
+}
 
 #lookupf,#lookupq,#lookupn {
   display: none;
@@ -133,13 +138,22 @@ button.active {
   border: 0.1rem solid var(--button-active-bd);
 }
 button.disabled {
-  color: var(--button-disabled-fg);
-  background-color: var(--button-disabled-bg);
-  border: 0.1rem solid var(--button-disabled-bd);
+  color: var(--button-disabled-fg) ! important;
+  background-color: var(--button-disabled-bg) ! important;
+  border: 0.1rem solid var(--button-disabled-bd) ! important;
+}
+button.notapplicable {
+  border-style: dashed;
 }
 button.altv {
   color: black;
   background-color: white;
+  padding: 0;
+  border: 0;
+}
+button.altt {
+  color: black;
+  background-color: initial;
   padding: 0;
   border: 0;
 }
@@ -214,7 +228,7 @@ span[te][st="v"]::after {
 }
 
 #decoratewidget, #filterwidget,
-#selectwidget,#delwidget,#addwidget {
+#selectwidget,#modwidget {
   border: 0.2rem solid #e8e8e8;
   border-radius: 0.5rem;
   background-color: #eeeeee;
@@ -239,6 +253,9 @@ span[te][st="v"]::after {
   border: 0.2rem solid #dddddd;
   padding: 0.5rem 0.5rem;
   margin: 0 0.5rem;
+}
+#delwidget,#addwidget {
+  margin: 0.5rem 0;
 }
 .assignwidget {
   display: flex;

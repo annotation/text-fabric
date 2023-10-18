@@ -110,7 +110,7 @@ def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
     return H.p(content1, content2)
 
 
-def wrapQuery(annotate, templateData, nFind, nEnt, nVisible):
+def wrapQuery(annotate, templateData):
     """HTML for the query line.
 
     Parameters
@@ -122,11 +122,12 @@ def wrapQuery(annotate, templateData, nFind, nEnt, nVisible):
         The finished HTML of the query parameters
     """
     wrapAppearance(annotate, templateData)
-    hasFind = wrapFilter(annotate, templateData, nFind)
+    hasFind = wrapFilter(annotate, templateData)
     (txt, eTxt) = wrapEntityInit(annotate, templateData)
     wrapEntityText(templateData, txt, eTxt)
     scope = wrapScope(annotate, templateData, hasFind, txt, eTxt)
-    wrapEntityFeats(annotate, templateData, nEnt, nVisible, hasFind, txt, eTxt, scope)
+    wrapEntityFeats(annotate, templateData, hasFind, txt, eTxt, scope)
+    wrapEntityModReport(annotate, templateData)
     wrapEntityModify(annotate, templateData, hasFind, txt, eTxt)
 
 
@@ -183,9 +184,10 @@ def wrapAppearance(annotate, templateData):
     )
 
 
-def wrapFilter(annotate, templateData, nFind):
+def wrapFilter(annotate, templateData):
     setData = annotate.getSetData()
 
+    nFind = templateData.nfind
     bFind = templateData.bfind
     bFindC = templateData.bfindc
     bFindRe = templateData.bfindre
@@ -226,8 +228,6 @@ def wrapEntityInit(annotate, templateData):
     features = settings.features
 
     F = annotate.F
-    setData = annotate.getSetData()
-    entities = setData.entities
 
     activeEntity = templateData.activeentity
     tokenStart = templateData.tokenstart
@@ -237,15 +237,12 @@ def wrapEntityInit(annotate, templateData):
     hasOcc = tokenStart is not None and tokenEnd is not None
 
     if hasEnt:
-        eVals = entities[activeEntity][0]
-        templateData.evals = eVals
         templateData.tokenstart = None
         templateData.tokenend = None
         txt = ""
-        eTxt = repIdent(features, eVals, active="active")
+        eTxt = repIdent(features, activeEntity, active="active")
     elif hasOcc:
         templateData.activeentity = None
-        templateData.evals = None
         txt = (
             getText(F, range(tokenStart, tokenEnd + 1))
             if tokenStart and tokenEnd
@@ -253,14 +250,13 @@ def wrapEntityInit(annotate, templateData):
         )
         eTxt = ""
     else:
-        templateData.evals = None
         templateData.activeentity = None
         templateData.tokenstart = None
         templateData.tokenend = None
         txt = ""
         eTxt = ""
 
-    templateData.activeentityrep = "" if activeEntity is None else str(activeEntity)
+    templateData.activeentityrep = "⊙".join(activeEntity) if activeEntity else ""
     tokenStart = templateData.tokenstart
     tokenEnd = templateData.tokenend
 
@@ -328,7 +324,7 @@ def wrapEntityText(templateData, txt, eTxt):
 
     title = "choose: free, intersecting with other entities, or all"
     templateData.entitytext = H.join(
-        H.span(txt if txt else eTxt, id="qtextentshow"),
+        H.span(txt if txt else eTxt or "", id="qtextentshow"),
         " ",
         H.button("❌", type="submit", id="queryclear", cls="altm"),
         " ",
@@ -361,15 +357,17 @@ def wrapEntityText(templateData, txt, eTxt):
     )
 
 
-def wrapEntityFeats(annotate, templateData, nEnt, nVisible, hasFind, txt, eTxt, scope):
+def wrapEntityFeats(annotate, templateData, hasFind, txt, eTxt, scope):
     settings = annotate.settings
     bucketType = settings.bucketType
     features = settings.features
 
     setData = annotate.getSetData()
 
+    nEnt = templateData.nent
+    nVisible = templateData.nvisible
     valSelect = templateData.valselect
-    (scopeInit, scopeFilter, scopeExceptions) = scope
+    (scopeInit, scopeFilter) = scope
 
     hasOcc = txt != ""
     hasEnt = eTxt != ""
@@ -420,7 +418,6 @@ def wrapEntityFeats(annotate, templateData, nEnt, nVisible, hasFind, txt, eTxt, 
         H.div(
             H.p(H.b("Select"), scopeInit, scopeFilter),
             H.p(H.span(f"{total} {bucketType}(s)")),
-            scopeExceptions,
         ),
         H.div(content, id="selectsubwidget"),
         id="selectwidget",
@@ -437,7 +434,6 @@ def wrapScope(annotate, templateData, hasFind, txt, eTxt):
 
     scopeInit = H.input(type="hidden", id="scope", name="scope", value=scope)
     scopeFilter = ""
-    scopeExceptions = ""
 
     if annoSet and (hasOcc or hasEnt):
         # Scope of modification
@@ -461,6 +457,20 @@ def wrapScope(annotate, templateData, hasFind, txt, eTxt):
             if hasFind
             else ""
         )
+
+    return (scopeInit, scopeFilter)
+
+
+def wrapExceptions(annotate, txt, eTxt):
+    settings = annotate.settings
+    bucketType = settings.bucketType
+    annoSet = annotate.annoSet
+    hasOcc = txt != ""
+    hasEnt = eTxt != ""
+
+    scopeExceptions = ""
+
+    if annoSet and (hasOcc or hasEnt):
         scopeExceptions = H.span(
             H.nb,
             H.button(
@@ -480,7 +490,16 @@ def wrapScope(annotate, templateData, hasFind, txt, eTxt):
             ),
         )
 
-    return (scopeInit, scopeFilter, scopeExceptions)
+    return scopeExceptions
+
+
+def wrapEntityModReport(annotate, templateData):
+    reportDel = templateData.reportdel
+    reportAdd = templateData.reportadd
+    templateData.modifyreport = H.join(
+        H.div(reportDel, id="delreport", cls="report"),
+        H.div(reportAdd, id="addreport", cls="report"),
+    )
 
 
 def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt):
@@ -493,14 +512,13 @@ def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt):
     F = annotate.F
 
     submitter = templateData.submitter
-    eVals = templateData.evals
+    activeEntity = templateData.activeentity
     tokenStart = templateData.tokenstart
     tokenEnd = templateData.tokenend
     delData = templateData.adddata
     addData = templateData.adddata
-    reportDel = templateData.reportdel
-    reportAdd = templateData.reportadd
     modWidgetState = templateData.modwidgetstate
+    excludedTokens = templateData.excludedtokens
 
     deletions = delData.deletions
     additions = addData.additions
@@ -517,15 +535,18 @@ def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt):
     # Assigment of feature values
 
     if annoSet and (hasOcc or hasEnt):
+        instances = wrapExceptions(annotate, txt, eTxt)
+
         for i, feat in enumerate(features):
+            isKeyword = feat in keywordFeatures
             theseVals = (
-                {eVals[i]}
+                {activeEntity[i]}
                 if hasEnt
                 else sorted(setData.entityTextVal[feat].get(txt, set()))
             )
             allVals = (
                 sorted(x[0] for x in setData.entityFreq[feat])
-                if feat in keywordFeatures
+                if isKeyword
                 else theseVals
             )
             addVals = (
@@ -538,7 +559,7 @@ def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt):
                 freeVals[i] if freeVals is not None and len(freeVals) > i else None
             )
             default = (
-                eVals[i]
+                activeEntity[i]
                 if hasEnt
                 else annotate.featureDefault[feat](F, range(tokenStart, tokenEnd + 1))
                 if hasOcc
@@ -591,7 +612,7 @@ def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt):
                 else init
                 if submitter == "lookupq"
                 else freeVal
-                if freeVal is not None and freeVal not in theseVals
+                if freeVal is not None
                 else init
             )
             addSt = (
@@ -605,6 +626,9 @@ def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt):
                 if init and len(theseVals) == 0
                 else "x"
             )
+            if (isKeyword and val in allVals) or val is None:
+                val = ""
+                addSt = "x"
 
             addValuesContent.append(
                 H.div(
@@ -631,75 +655,59 @@ def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt):
             )
 
         delButtonHtml = H.span(
-            H.button("Delete", type="button", id="delgo", value="v", cls="special"),
+            H.button("x", type="button", id="delgo", value="v", cls="special"),
             H.input(type="hidden", id="deldata", name="deldata", value=""),
         )
         addButtonHtml = H.span(
-            H.button("Add", type="button", id="addgo", value="v", cls="special"),
+            H.button("+", type="button", id="addgo", value="v", cls="special"),
             H.input(type="hidden", id="adddata", name="adddata", value=""),
         )
+        delResetHtml = H.button(
+            "⌫",
+            type="button",
+            id="delresetbutton",
+            title="clear values in form",
+            cls="altt",
+        )
+        addResetHtml = H.button(
+            "⌫",
+            type="button",
+            id="addresetbutton",
+            title="clear values in form",
+            cls="altt",
+        )
 
-        templateData.modifyentity = H.join(
+        templateData.modifyentity = H.div(
             H.input(
                 type="hidden",
                 id="modwidgetstate",
                 name="modwidgetstate",
                 value=modWidgetState,
             ),
+            H.input(
+                type="hidden",
+                id="excludedtokens",
+                name="excludedtokens",
+                value=",".join(str(t) for t in excludedTokens),
+            ),
             H.div(
-                H.div(reportDel, id="delreport", cls="report"),
-                H.div(
-                    H.button(
-                        "↓",
-                        type="button",
-                        id="delwidgetswitch",
-                        title="show controls for adding items",
-                        cls="altm",
-                    ),
-                    delButtonHtml,
-                    H.span("", id="delfeedback", cls="feedback"),
-                    H.button(
-                        "⌫",
-                        type="button",
-                        id="delresetbutton",
-                        title="clear values in form",
-                        cls="altm",
-                    ),
-                    id="modifyhead",
+                H.span(
+                    H.span(delButtonHtml, delResetHtml, id="modifyhead"),
+                    H.span(delContentHtml, cls="assignwidget"),
                 ),
-                H.div(
-                    delContentHtml,
-                    cls="assignwidget",
-                ),
+                H.span("", id="delfeedback", cls="feedback"),
                 id="delwidget",
             ),
             H.div(
-                H.div(reportAdd, id="addreport", cls="report"),
-                H.div(
-                    H.button(
-                        "↑",
-                        type="button",
-                        id="addwidgetswitch",
-                        title="show controls for deleting items",
-                        cls="altm",
-                    ),
-                    addButtonHtml,
-                    H.span("", id="addfeedback", cls="feedback"),
-                    H.button(
-                        "⌫",
-                        type="button",
-                        id="addresetbutton",
-                        title="clear values in form",
-                        cls="altm",
-                    ),
-                    id="modifyhead",
+                H.span(
+                    H.span(addButtonHtml, addResetHtml, id="modifyhead"),
+                    H.span(addContentHtml, cls="assignwidget"),
                 ),
-                H.div(
-                    addContentHtml,
-                    cls="assignwidget",
-                ),
+                H.span("", id="addfeedback", cls="feedback"),
                 id="addwidget",
             ),
+            instances,
+            id="modwidget",
         )
 
 
@@ -735,8 +743,11 @@ def wrapReport(annotate, templateData, report, kind):
 
     label = "Deletion" if kind == "del" else "Addition" if kind == "add" else ""
     templateData[f"report{kind}"] = H.join(
-        H.span(
-            H.join(f"{label}: {n} x {valRep(features, fVals)}" for (fVals, n) in line)
+        H.div(
+            H.join(
+                H.div(f"{label}: {n} x {valRep(features, fVals)}")
+                for (fVals, n) in line
+            )
             if type(line) is tuple
             else line,
             cls="report",

@@ -1,5 +1,3 @@
-from itertools import chain
-
 from openpyxl import load_workbook
 
 from ...core.files import mTime, fileExists, readYaml, writeYaml
@@ -52,7 +50,7 @@ class PowerNER(Annotate):
                 (normalize(x) for x in ([] if not synonyms else synonyms.split(";"))),
                 key=lambda x: -len(x),
             )
-            info[eid] = {kindFeature: defaultKind, "occs": occs}
+            info[eid] = {"name": ent, kindFeature: defaultKind, "occs": occs}
 
         writeYaml(info, asFile=fileOut)
 
@@ -120,25 +118,28 @@ class PowerNER(Annotate):
         settings = self.settings
         keywordFeatures = settings.keywordFeatures
         kindFeature = keywordFeatures[0]
-        total = 0
+
+        newEntities = []
+
+        qSets = set()
+        fValsByQTokens = {}
 
         for eid, info in instructions.items():
             kind = info[kindFeature]
-
-            qSets = set()
 
             occs = info.occs
             if not len(occs):
                 continue
 
             for occ in info.occs:
-                qSets.add(toTokens(occ))
+                qTokens = toTokens(occ)
+                fValsByQTokens.setdefault(qTokens, set()).add((eid, kind))
+                qSets.add(qTokens)
 
-            results = self.findOccs(qSets)
-            matches = list(chain.from_iterable(results.values()))
-            if len(matches):
-                (present, added) = self.addEntity((eid, kind), matches)
-                total += added
-                console(f"{eid}: {present} to {present + added} occurrences")
+        results = self.findOccs(qSets)
 
-        console(f"{total} entities marked")
+        for (qTokens, matches) in results.items():
+            for fVals in fValsByQTokens[qTokens]:
+                newEntities.append((fVals, matches))
+
+        self.addEntities(newEntities, silent=False)

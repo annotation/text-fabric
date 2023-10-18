@@ -62,12 +62,43 @@ class Sets(Data):
                 f"Annotation set {annoSetRep} has {nEntities} annotation{plural}"
             )
 
+    def resetSet(self):
+        settings = self.settings
+        annoSet = self.annoSet
+        entitySet = settings.entitySet
+
+        if not annoSet:
+            self.console(f"Resetting the {entitySet} has no effect")
+            return
+
+        browse = self.browse
+
+        data = self.data
+        setsData = data.sets
+        annoDir = self.annoDir
+        setDir = f"{annoDir}/{annoSet}"
+
+        initTree(setDir, fresh=True, gentle=True)
+        self.loadData()
+
+        if not browse:
+            annoSetRep = self.annoSetRep
+            entities = setsData[annoSet].entities
+            nEntities = len(entities)
+            plural = "" if nEntities == 1 else "s"
+            self.console(
+                f"Annotation set {annoSetRep} has {nEntities} annotation{plural}"
+            )
+
     def getSetData(self):
         data = self.data
         setsData = data.sets
         annoSet = self.annoSet
         setData = setsData.setdefault(annoSet, AttrDict())
         return setData
+
+    def getSetEntities(self):
+        return self.getSetData().entities
 
     def setDel(self, delSet):
         data = self.data

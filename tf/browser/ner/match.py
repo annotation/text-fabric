@@ -44,7 +44,7 @@ def entityMatch(
     T,
     b,
     bFindRe,
-    anyAnno,
+    anyEnt,
     eVals,
     qTokens,
     valSelect,
@@ -65,7 +65,7 @@ def entityMatch(
         extraction
     b: integer
         The node of the bucket in question
-    anyAnno: boolean or None
+    anyEnt: boolean or None
         If `None`: no effect
         If True: overrides qTokens and eVals: looks for any entity annotation
         If False: lets the bucket through only if it has no annotations.
@@ -93,7 +93,7 @@ def entityMatch(
     matches = []
     thisWhole = 0
 
-    if anyAnno is not None:
+    if anyEnt is not None:
         for i, (t, w) in enumerate(bTokens):
             for lastT in entitySlotAll.get(t, set()):
                 slots = tuple(range(t, lastT + 1))

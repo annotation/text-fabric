@@ -124,6 +124,22 @@ const updateScope = () => {
   selectAll.html(`✅ ${nv}${labv}`)
 }
 
+const updateModControls = () => {
+  const delGo = $("#delgo")
+  const addGo = $("#addgo")
+  const endTokensV = $(`span[te][st="v"]`)
+  const nv = endTokensV.length
+
+  if (nv) {
+    delGo.removeClass("notapplicable")
+    addGo.removeClass("notapplicable")
+  } else {
+    delGo.addClass("notapplicable")
+    addGo.addClass("notapplicable")
+  }
+  return nv
+}
+
 const entityControls = () => {
   const form = $("form")
   const subMitter = $("#submitter")
@@ -236,12 +252,14 @@ const entityControls = () => {
     const endTokens = $("span[te]")
     endTokens.attr("st", "v")
     updateScope()
+    updateModControls()
   })
 
   selectNone.off("click").click(() => {
     const endTokens = $("span[te]")
     endTokens.attr("st", "x")
     updateScope()
+    updateModControls()
   })
 
   entitiesDiv.off("click").click(e => {
@@ -337,11 +355,14 @@ const tokenControls = () => {
       if (onoff) {
         lookupq.show()
         queryClear.show()
-        qTextEntShow.show()
+        qTextEntShow.removeClass("inactive")
+        //qTextEntShow.show()
         freeButton.show()
       } else {
         queryClear.hide()
-        qTextEntShow.hide()
+        //qTextEntShow.hide()
+        qTextEntShow.html("click a word in the text ...")
+        qTextEntShow.addClass("inactive")
         freeButton.hide()
       }
     }
@@ -599,6 +620,7 @@ const tokenControls = () => {
       const currentValue = eTokenEnd.attr("st")
       eTokenEnd.attr("st", currentValue == "v" ? "x" : "v")
       updateScope()
+      updateModControls()
     }
 
     if (eMarkedEntity.length) {
@@ -705,9 +727,11 @@ const modifyControls = () => {
   const { features } = globalThis
   const form = $("form")
   const subMitter = $("#submitter")
+  /*
   const modWidgetState = $("#modwidgetstate")
   const delWidgetSwitch = $("#delwidgetswitch")
   const addWidgetSwitch = $("#addwidgetswitch")
+  */
   const delWidget = $("#delwidget")
   const delAssign = delWidget.find(".assignwidget")
   const addWidget = $("#addwidget")
@@ -726,6 +750,7 @@ const modifyControls = () => {
   const delData = $("#deldata")
   const addData = $("#adddata")
 
+  /*
   const switchToAddDel = toggle => {
     let val = modWidgetState.val() || "add"
     if (toggle) {
@@ -751,6 +776,7 @@ const modifyControls = () => {
   addWidgetSwitch.off("click").click(() => {
     switchToAddDel(true)
   })
+  */
 
   const makeDelData = () => {
     const deletions = []
@@ -786,6 +812,7 @@ const modifyControls = () => {
         delGo.removeClass("disabled")
         delGo.addClass("del")
         delFeedback.html("")
+        delFeedback.hide()
         good = true
       } else {
         delGo.removeClass("del")
@@ -793,11 +820,13 @@ const modifyControls = () => {
         delFeedback.html(
           `provide at least one red value for ${missingDeletions.join(" and ")}`
         )
+        delFeedback.show()
       }
     } else {
       delGo.addClass("disabled")
       delGo.removeClass("del")
       delFeedback.html("click values ...")
+      delFeedback.show()
     }
     delData.val(encodeURIComponent(JSON.stringify({ deletions })))
     return { good, data: { deletions } }
@@ -849,6 +878,7 @@ const modifyControls = () => {
         addGo.removeClass("disabled")
         addGo.addClass("add")
         addFeedback.html("")
+        addFeedback.hide()
         good = true
       } else {
         addGo.addClass("disabled")
@@ -856,11 +886,13 @@ const modifyControls = () => {
         addFeedback.html(
           `provide at least one green value for ${missingAdditions.join(" and ")}`
         )
+        addFeedback.show()
       }
     } else {
       addGo.addClass("disabled")
       addGo.removeClass("add")
       addFeedback.html("click values ...")
+      addFeedback.show()
     }
     addData.val(encodeURIComponent(JSON.stringify({ additions, freeVals })))
     return { good, data: { additions, freeVals } }
@@ -931,6 +963,9 @@ const modifyControls = () => {
   })
 
   delGo.off("click").click(() => {
+    if (delGo.hasClass("disabled") || delGo.hasClass("notapplicable")) {
+      return
+    }
     const { good, data } = makeDelData()
 
     delReport.html("")
@@ -946,6 +981,9 @@ const modifyControls = () => {
   })
 
   addGo.off("click").click(() => {
+    if (addGo.hasClass("disabled") || addGo.hasClass("notapplicable")) {
+      return
+    }
     const { good, data } = makeAddData()
 
     addReport.html("")
@@ -960,9 +998,10 @@ const modifyControls = () => {
     }
   })
 
-  updateScope()
   makeDelData()
   makeAddData()
+  updateScope()
+  updateModControls()
 }
 
 const initForm = () => {

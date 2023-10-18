@@ -63,7 +63,7 @@ class Show:
         hasEnt = activeEntity is not None
 
         entries = setData.entityIdent.items()
-        eFirst = setData.entityIdentFirst
+        # eFirst = setData.entityIdentFirst
         sortKeyMap = {feat: i for (i, feat) in enumerate(features)}
 
         if sortKey is None and sortDir is None:
@@ -100,9 +100,10 @@ class Show:
 
             if cutOffFreq is not None and x < cutOffFreq:
                 continue
-            e1 = eFirst[vals]
+            # e1 = eFirst[vals]
+            identRep = "⊙".join(vals)
 
-            active = " queried " if hasEnt and e1 == activeEntity else ""
+            active = " queried " if hasEnt and vals == activeEntity else ""
 
             content.append(
                 H.p(
@@ -110,7 +111,7 @@ class Show:
                     " x ",
                     repIdent(features, vals, active=active),
                     cls=f"e {active}",
-                    enm=e1,
+                    enm=identRep,
                 )
             )
 
@@ -142,7 +143,7 @@ class Show:
         F = api.F
 
         entityIdent = setData.entityIdent
-        eFirst = setData.entityIdentFirst
+        # eFirst = setData.entityIdentFirst
         entitySlotIndex = setData.entitySlotIndex
 
         hasEnt = activeEntity is not None
@@ -199,10 +200,11 @@ class Show:
                         (x for x in info if x is not None), key=lambda z: z[1]
                     ):
                         (status, lg, ident) = item
-                        e = eFirst[ident]
+                        # e = eFirst[ident]
+                        identRep = "⊙".join(ident)
 
                         if status:
-                            active = " queried " if hasEnt and e == activeEntity else ""
+                            active = " queried " if hasEnt and ident == activeEntity else ""
                             subContent.append(
                                 H.span(
                                     H.span(abs(lg), cls="lgb"),
@@ -210,7 +212,7 @@ class Show:
                                     " ",
                                     H.span(len(entityIdent[ident]), cls="n"),
                                     cls="es",
-                                    enm=e,
+                                    enm=identRep,
                                 )
                             )
 

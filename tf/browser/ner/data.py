@@ -262,6 +262,40 @@ class Data(Settings):
             # self.console(f"Data of {annoSetRep} already processed.")
             pass
 
+    def delEntity(self, vals, allMatches=None, silent=True):
+        setData = self.getSetData()
+
+        oldEntities = setData.entities
+
+        delEntities = set()
+
+        oldEntitiesBySlots = set()
+
+        for e, (fVals, slots) in oldEntities.items():
+            if fVals == vals:
+                oldEntitiesBySlots.add(slots)
+
+        missing = 0
+        deleted = 0
+
+        delSlots = oldEntitiesBySlots if allMatches is None else allMatches
+
+        for slots in delSlots:
+            if slots not in oldEntitiesBySlots:
+                missing += 1
+                continue
+
+            delEntities.add((vals, slots))
+            deleted += 1
+
+        if len(delEntities):
+            self.weedEntities(delEntities)
+
+        self.loadData()
+        if not silent:
+            self.console(f"Not present: {missing:>5} x")
+            self.console(f"Deleted:     {deleted:>5} x")
+
     def delEntityRich(self, deletions, buckets, excludedTokens=set()):
         settings = self.settings
         features = settings.features
@@ -296,12 +330,12 @@ class Data(Settings):
             stats = collections.Counter()
 
             for b, bTokens, allMatches, positions in buckets:
-                for matchedSlots in allMatches:
-                    if matchedSlots[-1] in excludedTokens:
+                for slots in allMatches:
+                    if slots[-1] in excludedTokens:
                         excl += 1
                         continue
 
-                    candidates = oldEntitiesBySlots.get(matchedSlots, set())
+                    candidates = oldEntitiesBySlots.get(slots, set())
 
                     for e in candidates:
                         toBeDeleted = False
@@ -313,7 +347,7 @@ class Data(Settings):
                         if toBeDeleted:
                             if e not in delEntitiesByE:
                                 delEntitiesByE.add(e)
-                                delEntities.add((fVals, matchedSlots))
+                                delEntities.add((fVals, slots))
                                 stats[fVals] += 1
 
             report.append(
@@ -357,12 +391,12 @@ class Data(Settings):
         present = 0
         added = 0
 
-        for matchedSlots in allMatches:
-            if matchedSlots in oldEntitiesBySlots:
+        for slots in allMatches:
+            if slots in oldEntitiesBySlots:
                 present += 1
                 continue
 
-            info = (vals, matchedSlots)
+            info = (vals, slots)
             if info not in addEntities:
                 addEntities.add(info)
                 added += 1
@@ -376,39 +410,34 @@ class Data(Settings):
             self.console(f"Added:           {added:>5} x")
         return (present, added)
 
-    def delEntity(self, vals, allMatches=None, silent=True):
+    def addEntities(self, newEntities, silent=True):
         setData = self.getSetData()
 
-        oldEntities = setData.entities
+        oldEntities = set(setData.entities.values())
 
-        delEntities = set()
+        addEntities = set()
 
-        oldEntitiesBySlots = set()
+        present = 0
+        added = 0
 
-        for e, (fVals, slots) in oldEntities.items():
-            if fVals == vals:
-                oldEntitiesBySlots.add(slots)
+        for fVals, allMatches in newEntities:
+            for slots in allMatches:
+                if (fVals, slots) in oldEntities:
+                    present += 1
+                elif (fVals, slots) in addEntities:
+                    continue
+                else:
+                    added += 1
+                    addEntities.add((fVals, slots))
 
-        missing = 0
-        deleted = 0
-
-        delSlots = oldEntitiesBySlots if allMatches is None else allMatches
-
-        for matchedSlots in delSlots:
-            if matchedSlots not in oldEntitiesBySlots:
-                missing += 1
-                continue
-
-            delEntities.add((vals, matchedSlots))
-            deleted += 1
-
-        if len(delEntities):
-            self.weedEntities(delEntities)
+        if len(addEntities):
+            self.mergeEntities(addEntities)
 
         self.loadData()
         if not silent:
-            self.console(f"Not present: {missing:>5} x")
-            self.console(f"Deleted:     {deleted:>5} x")
+            self.console(f"Already present: {present:>5} x")
+            self.console(f"Added:           {added:>5} x")
+        return (present, added)
 
     def addEntityRich(self, additions, buckets, excludedTokens=set()):
         settings = self.settings
@@ -444,17 +473,17 @@ class Data(Settings):
             stats = collections.Counter()
 
             for b, bTokens, allMatches, positions in buckets:
-                for matchedSlots in allMatches:
-                    if matchedSlots[-1] in excludedTokens:
+                for slots in allMatches:
+                    if slots[-1] in excludedTokens:
                         excl += 1
                         continue
 
-                    existing = oldEntitiesBySlots.get(matchedSlots, set())
+                    existing = oldEntitiesBySlots.get(slots, set())
 
                     for fVals in fValTuples:
                         if fVals in existing:
                             continue
-                        info = (fVals, matchedSlots)
+                        info = (fVals, slots)
                         if info not in addEntities:
                             addEntities.add(info)
                             stats[fVals] += 1
@@ -500,8 +529,8 @@ class Data(Settings):
             for line in fh:
                 fields = tuple(line.rstrip("\n").split("\t"))
                 fVals = tuple(fields[0:nF])
-                matchedSlots = tuple(int(f) for f in fields[nF:])
-                info = (fVals, matchedSlots)
+                slots = tuple(int(f) for f in fields[nF:])
+                info = (fVals, slots)
                 if info in delEntities:
                     continue
                 newEntities.append(line)
@@ -516,13 +545,13 @@ class Data(Settings):
         dataFile = f"{annoDir}/{annoSet}/entities.tsv"
 
         with open(dataFile, "a") as fh:
-            for fVals, matchedSlots in newEntities:
-                fh.write("\t".join(str(x) for x in (*fVals, *matchedSlots)) + "\n")
+            for fVals, slots in newEntities:
+                fh.write("\t".join(str(x) for x in (*fVals, *slots)) + "\n")
 
     def saveEntitiesAs(self, dataFile):
         setData = self.getSetData()
         entities = setData.entities
 
         with open(dataFile, "a") as fh:
-            for fVals, matchedSlots in entities.values():
-                fh.write("\t".join(str(x) for x in (*fVals, *matchedSlots)) + "\n")
+            for fVals, slots in entities.values():
+                fh.write("\t".join(str(x) for x in (*fVals, *slots)) + "\n")
