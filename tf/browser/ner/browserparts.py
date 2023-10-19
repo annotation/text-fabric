@@ -58,6 +58,7 @@ def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
             type="submit",
             id="anew",
             title="create a new annotation set",
+            cls="mono",
         ),
         " ",
         H.button(
@@ -65,6 +66,7 @@ def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
             type="submit",
             id="adup",
             title="duplicate this annotation set",
+            cls="mono",
         ),
         " ",
         H.select(
@@ -94,6 +96,7 @@ def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
                 type="submit",
                 id="arename",
                 title="rename current annotation set",
+                cls="mono",
             ),
             " ",
             H.button(
@@ -101,6 +104,7 @@ def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
                 type="submit",
                 id="adelete",
                 title="delete current annotation set",
+                cls="mono",
             ),
         ]
         if chosenAnnoSet
@@ -122,13 +126,13 @@ def wrapQuery(annotate, templateData):
         The finished HTML of the query parameters
     """
     wrapAppearance(annotate, templateData)
-    hasFind = wrapFilter(annotate, templateData)
-    (txt, eTxt) = wrapEntityInit(annotate, templateData)
-    wrapEntityText(templateData, txt, eTxt)
-    scope = wrapScope(annotate, templateData, hasFind, txt, eTxt)
-    wrapEntityFeats(annotate, templateData, hasFind, txt, eTxt, scope)
+    wrapFilter(annotate, templateData)
+    wrapEntityInit(annotate, templateData)
+    wrapEntityText(templateData)
+    wrapScope(annotate, templateData)
+    wrapEntityFeats(annotate, templateData)
     wrapEntityModReport(annotate, templateData)
-    wrapEntityModify(annotate, templateData, hasFind, txt, eTxt)
+    wrapEntityModify(annotate, templateData)
 
 
 def wrapAppearance(annotate, templateData):
@@ -149,7 +153,7 @@ def wrapAppearance(annotate, templateData):
                 type="button",
                 main="v",
                 title="toggle plain or decorated formatting of entities",
-                cls="alt active",
+                cls="mono",
             ),
         ),
         H.span(
@@ -173,7 +177,7 @@ def wrapAppearance(annotate, templateData):
                         else "toggle formatting of entities"
                         if feat == "_entity"
                         else f"toggle formatting for feature {feat}",
-                        cls="alt " + ("active" if formattingState[feat] else ""),
+                        cls="active" if formattingState[feat] else "",
                     ),
                 )
                 for feat in features + ("_stat_", "_entity_")
@@ -192,35 +196,63 @@ def wrapFilter(annotate, templateData):
     bFindC = templateData.bfindc
     bFindRe = templateData.bfindre
     bFindError = templateData.bfinderror
+    anyEnt = templateData.anyent
 
-    hasFind = bFindRe is not None
+    hasFilter = bFindRe is not None or anyEnt is not None
 
     nBuckets = len(setData.buckets or [])
 
-    templateData.find = H.join(
-        H.input(type="text", name="bfind", id="bfind", value=bFind),
-        H.input(
-            type="hidden", name="bfindc", id="bfindc", value="v" if bFindC else "x"
+    templateData.filterwidget = H.join(
+        H.span(
+            H.input(type="text", name="bfind", id="bfind", value=bFind),
+            H.input(
+                type="hidden", name="bfindc", id="bfindc", value="v" if bFindC else "x"
+            ),
+            H.button(
+                "C" if bFindC else "¢",
+                type="submit",
+                id="bfindb",
+                title="using case SENSITIVE search"
+                if bFindC
+                else "using case INSENSITIVE search",
+                cls="mono",
+            ),
+            " ",
+            H.button("❌", type="submit", id="findclear", cls="icon"),
+            " ",
+            H.span(bFindError, id="bfinderror", cls="error"),
+            cls="filtercomponent",
         ),
-        H.button(
-            "C" if bFindC else "¢",
-            type="submit",
-            id="bfindb",
-            title="using case SENSITIVE search"
-            if bFindC
-            else "using case INSENSITIVE search",
-            cls="alt",
+        H.span(
+            H.input(
+                type="hidden",
+                name="anyent",
+                id="anyent",
+                value="" if anyEnt is None else "v" if anyEnt else "x",
+            ),
+            H.button(
+                "with or without"
+                if anyEnt is None
+                else "with"
+                if anyEnt
+                else "without",
+                type="submit",
+                id="anyentbutton",
+                cls="mono",
+            ),
+            H.span(" marked entities"),
+            cls="filtercomponent",
         ),
-        " ",
-        wrapFindStat(nBuckets, nFind, hasFind),
-        " ",
-        H.button("❌", type="submit", id="findclear", cls="altm"),
-        " ",
-        H.span(bFindError, id="bfinderror", cls="error"),
-        " ",
-        H.button("🔎", type="submit", id="lookupf", cls="altm"),
+        H.span(
+            H.button("🔎", type="submit", id="lookupf", cls="alt"),
+            cls="filtercomponent",
+        ),
+        H.span(
+            wrapFindStat(nBuckets, nFind, hasFilter),
+            cls="filtercomponent",
+        ),
     )
-    return hasFind
+    templateData.hasfilter = hasFilter
 
 
 def wrapEntityInit(annotate, templateData):
@@ -268,7 +300,8 @@ def wrapEntityInit(annotate, templateData):
     )
     templateData.entityinit = startRep + endRep
 
-    return (txt, eTxt)
+    templateData.txt = txt
+    templateData.etxt = eTxt
 
 
 def wrapEntityHeaders(annotate, sortKey, sortDir):
@@ -310,7 +343,7 @@ def wrapEntityHeaders(annotate, sortKey, sortDir):
                     tp="sort",
                     sk=key,
                     sd=theDir,
-                    cls=hl,
+                    cls=f"alt{hl}",
                 ),
                 " ",
             ]
@@ -319,27 +352,29 @@ def wrapEntityHeaders(annotate, sortKey, sortDir):
     return H.p(content)
 
 
-def wrapEntityText(templateData, txt, eTxt):
+def wrapEntityText(templateData):
     freeState = templateData.freestate
+    txt = templateData.txt
+    eTxt = templateData.etxt
 
     title = "choose: free, intersecting with other entities, or all"
     templateData.entitytext = H.join(
         H.span(txt if txt else eTxt or "", id="qtextentshow"),
         " ",
-        H.button("❌", type="submit", id="queryclear", cls="altm"),
+        H.button("❌", type="submit", id="queryclear", cls="icon"),
         " ",
         H.button(
             "✅",
             type="submit",
             id="lookupq",
-            cls="altm",
+            cls="icon",
             title="look up and fill in green fields",
         ),
         H.button(
             "❎",
             type="submit",
             id="lookupn",
-            cls="altm",
+            cls="icon",
             title="look up and keep green fields as is",
         ),
         H.input(type="hidden", name="freestate", id="freestate", value=freeState),
@@ -351,23 +386,27 @@ def wrapEntityText(templateData, txt, eTxt):
             else "⚬ all",
             type="submit",
             id="freebutton",
-            cls="alt",
+            cls="mono",
             title=title,
         ),
     )
 
 
-def wrapEntityFeats(annotate, templateData, hasFind, txt, eTxt, scope):
+def wrapEntityFeats(annotate, templateData):
     settings = annotate.settings
     bucketType = settings.bucketType
     features = settings.features
 
     setData = annotate.getSetData()
 
+    txt = templateData.txt
+    eTxt = templateData.etxt
+    hasFilter = templateData.hasfilter
     nEnt = templateData.nent
     nVisible = templateData.nvisible
     valSelect = templateData.valselect
-    (scopeInit, scopeFilter) = scope
+    scopeInit = templateData.scopeinit
+    scopeFilter = templateData.scopefilter
 
     hasOcc = txt != ""
     hasEnt = eTxt != ""
@@ -377,13 +416,14 @@ def wrapEntityFeats(annotate, templateData, hasFind, txt, eTxt, scope):
         for feat in features
     }
     content = []
+    inputContent = []
 
     for feat, theseVals in featuresW.items():
         thisValSelect = valSelect[feat]
 
         valuesContent = []
 
-        valuesContent.append(
+        inputContent.append(
             H.input(
                 type="hidden",
                 name=f"{feat}_select",
@@ -397,10 +437,10 @@ def wrapEntityFeats(annotate, templateData, hasFind, txt, eTxt, scope):
                 valuesContent.append(
                     H.button(
                         val,
-                        wrapEntityStat(val, nVisible[feat], nEnt[feat], hasFind),
+                        wrapEntityStat(val, nVisible[feat], nEnt[feat], hasFilter),
                         type="button",
                         name=val or EMPTY,
-                        cls=f"{feat}_sel",
+                        cls=f"{feat}_sel alt",
                         st="v" if val in thisValSelect else "x",
                         title=f"{feat} not marked"
                         if val == NONE
@@ -413,22 +453,35 @@ def wrapEntityFeats(annotate, templateData, hasFind, txt, eTxt, scope):
 
         content.append(H.div(titleContent, valuesContent, cls="featwidget"))
 
-    total = wrapEntityStat(None, nVisible[""], nEnt[""], hasFind)
-    templateData.selectentities = H.div(
+    total = wrapEntityStat(None, nVisible[""], nEnt[""], hasFilter)
+    templateData.selectentities = (
         H.div(
-            H.p(H.b("Select"), scopeInit, scopeFilter),
-            H.p(H.span(f"{total} {bucketType}(s)")),
-        ),
-        H.div(content, id="selectsubwidget"),
-        id="selectwidget",
+            H.join(inputContent),
+            H.div(
+                H.span(H.b("Select"), scopeInit, scopeFilter),
+                H.span(H.span(f"{total} {bucketType}(s)")),
+            )
+            if hasEnt
+            else H.join(
+                H.div(
+                    H.p(H.b("Select"), scopeInit, scopeFilter),
+                    H.p(H.span(f"{total} {bucketType}(s)")),
+                ),
+                H.div(content, id="selectsubwidget"),
+            ),
+            id="selectwidget",
+        )
+        if hasEnt or hasOcc
+        else H.join(inputContent)
     )
 
 
-def wrapScope(annotate, templateData, hasFind, txt, eTxt):
-    settings = annotate.settings
-    bucketType = settings.bucketType
+def wrapScope(annotate, templateData):
     annoSet = annotate.annoSet
     scope = templateData.scope
+    hasFilter = templateData.hasfilter
+    txt = templateData.txt
+    eTxt = templateData.etxt
     hasOcc = txt != ""
     hasEnt = eTxt != ""
 
@@ -439,26 +492,13 @@ def wrapScope(annotate, templateData, hasFind, txt, eTxt):
         # Scope of modification
 
         scopeFilter = (
-            H.span(
-                H.button(
-                    "filtered",
-                    type="button",
-                    id="scopefiltered",
-                    title=f"act on filtered {bucketType}s only",
-                ),
-                " ",
-                H.button(
-                    "all",
-                    type="button",
-                    id="scopeall",
-                    title=f"act on all {bucketType}s",
-                ),
-            )
-            if hasFind
+            H.span(H.button("", type="button", id="scopebutton", title="", cls="alt"))
+            if hasFilter
             else ""
         )
 
-    return (scopeInit, scopeFilter)
+    templateData.scopeinit = scopeInit
+    templateData.scopefilter = scopeFilter
 
 
 def wrapExceptions(annotate, txt, eTxt):
@@ -478,7 +518,7 @@ def wrapExceptions(annotate, txt, eTxt):
                 type="button",
                 id="selectall",
                 title=f"select all occurences in filtered {bucketType}s",
-                cls="alt",
+                cls="icon",
             ),
             " ",
             H.button(
@@ -486,7 +526,7 @@ def wrapExceptions(annotate, txt, eTxt):
                 type="button",
                 id="selectnone",
                 title=f"deselect all occurences in filtered {bucketType}s",
-                cls="alt",
+                cls="icon",
             ),
         )
 
@@ -502,7 +542,7 @@ def wrapEntityModReport(annotate, templateData):
     )
 
 
-def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt):
+def wrapEntityModify(annotate, templateData):
     settings = annotate.settings
     features = settings.features
     keywordFeatures = settings.keywordFeatures
@@ -511,6 +551,8 @@ def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt):
     annoSet = annotate.annoSet
     F = annotate.F
 
+    txt = templateData.txt
+    eTxt = templateData.etxt
     submitter = templateData.submitter
     activeEntity = templateData.activeentity
     tokenStart = templateData.tokenstart
@@ -533,6 +575,8 @@ def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt):
     addContentHtml = []
 
     # Assigment of feature values
+
+    somethingToDelete = True
 
     if annoSet and (hasOcc or hasEnt):
         instances = wrapExceptions(annotate, txt, eTxt)
@@ -574,6 +618,8 @@ def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt):
             delValuesContent = []
             addValuesContent = []
 
+            hasSomeVals = False
+
             for val in allVals:
                 occurs = val in theseVals
                 delSt = "minus" if hasEnt or val in delVals else "x"
@@ -596,6 +642,8 @@ def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt):
                             cls=f"{feat}_w modval",
                         )
                     )
+                    hasSomeVals = True
+
                 addValuesContent.append(
                     H.div(
                         [
@@ -604,6 +652,9 @@ def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt):
                         cls=f"{feat}_w modval",
                     )
                 )
+
+            if not hasSomeVals:
+                somethingToDelete = False
 
             init = "" if default in theseVals else default
             val = (
@@ -655,11 +706,11 @@ def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt):
             )
 
         delButtonHtml = H.span(
-            H.button("x", type="button", id="delgo", value="v", cls="special"),
+            H.button("Delete", type="button", id="delgo", value="v", cls="special"),
             H.input(type="hidden", id="deldata", name="deldata", value=""),
         )
         addButtonHtml = H.span(
-            H.button("+", type="button", id="addgo", value="v", cls="special"),
+            H.button("Add", type="button", id="addgo", value="v", cls="special"),
             H.input(type="hidden", id="adddata", name="adddata", value=""),
         )
         delResetHtml = H.button(
@@ -667,16 +718,28 @@ def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt):
             type="button",
             id="delresetbutton",
             title="clear values in form",
-            cls="altt",
+            cls="icon",
         )
         addResetHtml = H.button(
             "⌫",
             type="button",
             id="addresetbutton",
             title="clear values in form",
-            cls="altt",
+            cls="icon",
         )
 
+        delWidgetContent = (
+            H.div(
+                H.span(
+                    H.span(delButtonHtml, delResetHtml, id="modifyhead"),
+                    H.span(delContentHtml, cls="assignwidget"),
+                ),
+                H.span("", id="delfeedback", cls="feedback"),
+                id="delwidget",
+            )
+            if somethingToDelete
+            else ""
+        )
         templateData.modifyentity = H.div(
             H.input(
                 type="hidden",
@@ -690,14 +753,9 @@ def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt):
                 name="excludedtokens",
                 value=",".join(str(t) for t in excludedTokens),
             ),
-            H.div(
-                H.span(
-                    H.span(delButtonHtml, delResetHtml, id="modifyhead"),
-                    H.span(delContentHtml, cls="assignwidget"),
-                ),
-                H.span("", id="delfeedback", cls="feedback"),
-                id="delwidget",
-            ),
+            H.b("Modify"),
+            instances,
+            delWidgetContent,
             H.div(
                 H.span(
                     H.span(addButtonHtml, addResetHtml, id="modifyhead"),
@@ -706,21 +764,20 @@ def wrapEntityModify(annotate, templateData, hasFind, txt, eTxt):
                 H.span("", id="addfeedback", cls="feedback"),
                 id="addwidget",
             ),
-            instances,
             id="modwidget",
         )
 
 
-def wrapFindStat(nBuckets, nFind, hasFind):
-    n = f"{nFind} of {nBuckets}" if hasFind else nBuckets
+def wrapFindStat(nBuckets, nFind, hasFilter):
+    n = f"{nFind} of {nBuckets}" if hasFilter else nBuckets
     return H.span(n, cls="stat")
 
 
-def wrapEntityStat(val, thisNVisible, thisNEnt, hasFind):
+def wrapEntityStat(val, thisNVisible, thisNEnt, hasFilter):
     na = thisNEnt[val]
     n = (
         (H.span(f"{thisNVisible[val]} of ", cls="filted") + f"{na}")
-        if hasFind
+        if hasFilter
         else f"{na}"
     )
     return H.span(n, cls="stat")

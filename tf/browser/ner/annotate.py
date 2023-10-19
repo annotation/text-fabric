@@ -57,16 +57,16 @@ class Annotate(Sets, Show):
 
     def filterContent(
         self,
+        node=None,
         bFind=None,
         bFindC=None,
         bFindRe=None,
-        eVals=None,
         anyEnt=None,
+        eVals=None,
         qTokens=None,
         valSelect=None,
         freeState=None,
         noFind=False,
-        node=None,
         showStats=None,
     ):
         """Filter the buckets.
@@ -108,33 +108,16 @@ class Annotate(Sets, Show):
         browse = self.browse
         app = self.app
         setData = self.getSetData()
-        api = app.api
-        L = api.L
-        F = api.F
-        T = api.T
-
-        results = []
-
-        self.console(f"{eVals=}")
-        hasEnt = eVals is not None
-        hasQTokens = qTokens is not None and len(qTokens)
-        hasOcc = not hasEnt and hasQTokens
-
-        useQTokens = qTokens if hasOcc else None
-
-        nFind = 0
-        nEnt = {feat: collections.Counter() for feat in ("",) + features}
-        nVisible = {feat: collections.Counter() for feat in ("",) + features}
-
         entityIndex = setData.entityIndex
         entityVal = setData.entityVal
         entitySlotVal = setData.entitySlotVal
         entitySlotAll = setData.entitySlotAll
         entitySlotIndex = setData.entitySlotIndex
 
-        requireFree = (
-            True if freeState == "free" else False if freeState == "bound" else None
-        )
+        api = app.api
+        L = api.L
+        F = api.F
+        T = api.T
 
         buckets = (
             setData.buckets or ()
@@ -142,11 +125,9 @@ class Annotate(Sets, Show):
             else L.d(T.sectionTuple(node)[1], otype=bucketType)
         )
 
-        if eVals is not None:
-            eSlots = entityVal[eVals]
-            eStarts = {s[0]: s[-1] for s in eSlots}
-        else:
-            eStarts = None
+        nFind = 0
+        nEnt = {feat: collections.Counter() for feat in ("",) + features}
+        nVisible = {feat: collections.Counter() for feat in ("",) + features}
 
         if bFindRe is None:
             if bFind is not None:
@@ -154,9 +135,29 @@ class Annotate(Sets, Show):
                 if errorMsg:
                     app.error(errorMsg)
 
+        hasEnt = eVals is not None
+        hasQTokens = qTokens is not None and len(qTokens)
+        hasOcc = not hasEnt and hasQTokens
+
+        if eVals is not None:
+            eSlots = entityVal[eVals]
+            eStarts = {s[0]: s[-1] for s in eSlots}
+        else:
+            eStarts = None
+
+        useQTokens = qTokens if hasOcc else None
+
+        requireFree = (
+            True if freeState == "free" else False if freeState == "bound" else None
+        )
+
+        results = []
+
+        self.console(f"{eVals=} {anyEnt=} {valSelect=}")
+
         for b in buckets:
             fValStats = {feat: collections.Counter() for feat in features}
-            (fits, result, occurs, thisWhole) = entityMatch(
+            (fits, result) = entityMatch(
                 entityIndex,
                 eStarts,
                 entitySlotVal,
@@ -191,17 +192,18 @@ class Annotate(Sets, Show):
                         if not blocked:
                             theseNVisible[ek] += n
 
-            if thisWhole:
-                nEnt[""][None] += thisWhole
+            nMatches = len(result[1])
+
+            if nMatches:
+                nEnt[""][None] += nMatches
                 if not blocked:
-                    nVisible[""][None] += thisWhole
+                    nVisible[""][None] += nMatches
 
-            if node is None:
-                if not occurs:
-                    continue
+            if fits is not None and not fits:
+                continue
 
-                if fits is not None and not fits:
-                    continue
+            if ((hasEnt or hasQTokens) and nMatches == 0):
+                continue
 
             results.append((b, *result))
 
@@ -212,7 +214,7 @@ class Annotate(Sets, Show):
 
         if showStats:
             pluralF = "" if nFind == 1 else "s"
-            self.console(f"{nFind} {bucketType}{pluralF} satisfy the search pattern")
+            self.console(f"{nFind} {bucketType}{pluralF} satisfy the filter")
             for feat in ("",) + (() if anyEnt else features):
                 if feat == "":
                     self.console("Combined features match:")

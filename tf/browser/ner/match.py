@@ -90,17 +90,20 @@ def entityMatch(
     bTokensAll = [(t, F.str.v(t)) or "" for t in L.d(b, otype="t")]
     bTokens = [x for x in bTokensAll if x[1].strip()]
 
+    if fits is None or fits:
+        if anyEnt is not None:
+            containsEntities = False
+
+            for i, (t, w) in enumerate(bTokens):
+                if t in entitySlotAll:
+                    containsEntities = True
+                    break
+
+            fits = anyEnt and containsEntities or not anyEnt and not containsEntities
+
     matches = []
-    thisWhole = 0
 
-    if anyEnt is not None:
-        for i, (t, w) in enumerate(bTokens):
-            for lastT in entitySlotAll.get(t, set()):
-                slots = tuple(range(t, lastT + 1))
-                matches.append(slots)
-                thisWhole += 1
-
-    elif eVals is not None:
+    if eVals is not None:
         for i, (t, w) in enumerate(bTokens):
             lastT = eStarts.get(t, None)
             if lastT is None:
@@ -133,7 +136,6 @@ def entityMatch(
 
             if valOK:
                 matches.append(slots)
-                thisWhole += 1
 
     elif qTokens is not None:
         nTokens = len(qTokens)
@@ -142,7 +144,7 @@ def entityMatch(
             bStrings = {s for (t, s) in bTokens}
 
             if any(s not in bStrings for s in qTokens):
-                return (fits, (bTokensAll, matches, positions), False, thisWhole)
+                return (fits, (bTokensAll, matches, positions))
 
             nBTokens = len(bTokens)
 
@@ -150,12 +152,7 @@ def entityMatch(
                 if w != qTokens[0]:
                     continue
                 if i + nTokens - 1 >= nBTokens:
-                    return (
-                        fits,
-                        (bTokensAll, matches, positions),
-                        len(matches) != 0,
-                        thisWhole,
-                    )
+                    return (fits, (bTokensAll, matches, positions))
 
                 match = True
 
@@ -213,9 +210,8 @@ def entityMatch(
 
                     if valOK:
                         matches.append(slots)
-                        thisWhole += 1
 
     else:
-        return (fits, (bTokensAll, matches, positions), True, thisWhole)
+        return (fits, (bTokensAll, matches, positions))
 
-    return (fits, (bTokensAll, matches, positions), len(matches) != 0, thisWhole)
+    return (fits, (bTokensAll, matches, positions))

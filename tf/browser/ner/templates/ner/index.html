@@ -40,7 +40,7 @@
             {{entityheaders|safe}}
             <p><input type="text" name="efind" id="efind" value="{{efind}}">
                 <span class="stat" id="nentityentries"></span>
-                <button type="button" id="entityclear" class="altm">❌</button>
+                <button type="button" id="entityclear" class="icon">❌</button>
                 <input type="hidden"
                        id="activeentity"
                        name="activeentity"
@@ -57,21 +57,19 @@
         <div id="col3">
           <div id="bucketsq">
             {{entityinit|safe}}
-            <p id="appearancewidget">
+            <div id="appearancewidget">
               <b>Appearance</b>
               {{formattingbuttons|safe}}
-            </p>
-            <p id="filterwidget">
+            </div>
+            <div id="filterwidget">
               <b>Filter</b>
-              <span id="findwidget">{{find|safe}}</span>
-            </p>
-            <p>
-              <b>Mark occurrences</b>
+              {{filterwidget|safe}}
+            </div>
+            <div id="markwidget">
+              <b>Mark</b>
               <span id="etextwidget">{{entitytext|safe}}</span>
-            </p>
-            <p>
-              {{selectentities|safe}}
-            </p>
+            </div>
+            {{selectentities|safe}}
             {{modifyreport|safe}}
             {{modifyentity|safe}}
           </div>

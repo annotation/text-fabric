@@ -133,6 +133,7 @@ class Serve:
         templateData = self.templateData
 
         bFindRe = None if noFind else templateData.bfindre
+        anyEnt = templateData.anyent
         activeEntity = templateData.activeentity
         tokenStart = templateData.tokenstart
         tokenEnd = templateData.tokenend
@@ -158,13 +159,14 @@ class Serve:
             templateData.nvisible,
             templateData.nent,
         ) = annotate.filterContent(
+            node=node,
             bFindRe=bFindRe,
+            anyEnt=anyEnt,
             eVals=activeEntity,
             qTokens=qTokens,
             valSelect=valSelect,
             freeState=freeState,
             noFind=noFind,
-            node=node,
         )
 
     def setHandling(self, templateData):

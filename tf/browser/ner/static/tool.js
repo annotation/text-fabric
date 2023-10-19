@@ -295,6 +295,8 @@ const tokenControls = () => {
   const findCButton = $("#bfindb")
   const findClear = $("#findclear")
   const findError = $("#bfinderror")
+  const anyEntButton = $("#anyentbutton")
+  const anyEntInput = $("#anyent")
   const activeEntity = $("#activeentity")
   const tokenStart = $("#tokenstart")
   const tokenEnd = $("#tokenend")
@@ -306,8 +308,7 @@ const tokenControls = () => {
   const freeButton = $("#freebutton")
   const queryClear = $("#queryclear")
   const scope = $("#scope")
-  const scopeFiltered = $("#scopefiltered")
-  const scopeAll = $("#scopeall")
+  const scopeButton = $("#scopebutton")
   const activeVal = activeEntity.val()
   const tokenStartVal = tokenStart.val()
   const tokenEndVal = tokenEnd.val()
@@ -336,13 +337,22 @@ const tokenControls = () => {
     }
   }
 
+  const setAnyEntControl = () => {
+    anyEntButton.off("click").click(() => {
+      const s = anyEntInput.val()
+      const newS = s == "v" ? "x" : s == "x" ? "" : "v"
+      anyEntInput.val(newS)
+    })
+  }
+
   const presentQueryControls = update => {
     if (update) {
       qTextEntShow.html("")
     }
     const activeVal = activeEntity.val()
+    const anyEntVal = anyEntInput.val()
     const hasQuery = activeVal || tokenRange.length
-    const hasFind = findBox.val().length
+    const hasFilter = findBox.val().length || anyEntVal
     const findErrorStr = findError.html().length
 
     if (findErrorStr) {
@@ -361,21 +371,21 @@ const tokenControls = () => {
       } else {
         queryClear.hide()
         //qTextEntShow.hide()
-        qTextEntShow.html("click a word in the text ...")
+        qTextEntShow.html("click a word in the text or an entity in the list ...")
         qTextEntShow.addClass("inactive")
         freeButton.hide()
       }
     }
 
-    if (hasFind || hasQuery) {
+    if (hasFilter || hasQuery) {
       if (!upToDate) {
-        lookupf.show()
+        lookupf.addClass("active")
         if (hasQuery) {
           lookupq.show()
           lookupn.show()
         }
       }
-      if (hasFind) {
+      if (hasFilter) {
         findClear.show()
       } else {
         findClear.hide()
@@ -398,13 +408,14 @@ const tokenControls = () => {
       }
     } else {
       findClear.hide()
-      lookupf.hide()
+      lookupf.removeClass("active")
       lookupq.hide()
       lookupn.hide()
       setQueryControls(false)
     }
   }
 
+  setAnyEntControl()
   queryInit()
   presentQueryControls(false)
 
@@ -493,7 +504,7 @@ const tokenControls = () => {
   findBox.off("keyup").keyup(() => {
     const pat = findBox.val()
     upToDate = false
-    lookupf.show()
+    lookupf.addClass("active")
     if (pat.length) {
       findClear.show()
     } else {
@@ -517,26 +528,26 @@ const tokenControls = () => {
     freeState.val(newFree)
   })
 
-  const setScope = val => {
-    scope.val(val)
+  const setScope = () => {
+    const val = scope.val()
     if (val == scAll) {
-      scopeAll.addClass("active")
-      scopeFiltered.removeClass("active")
+      scopeButton.html("all")
+      scopeButton.attr("title", `act on filtered ${bucketType}s only`)
       filted.hide()
     } else {
-      scopeAll.removeClass("active")
-      scopeFiltered.addClass("active")
+      scopeButton.html("filtered")
+      scopeButton.attr("title", `act on all ${bucketType}s`)
       filted.show()
     }
   }
 
   setScope(scope.val())
 
-  scopeFiltered.off("click").click(() => {
-    setScope(scFilt)
-  })
-  scopeAll.off("click").click(() => {
-    setScope(scAll)
+  scopeButton.off("click").click(() => {
+    const val = scope.val()
+    const newVal = val == scFilt ? scAll : scFilt
+    scope.val(newVal)
+    setScope()
   })
 
   const selectWidget = $("#selectwidget")

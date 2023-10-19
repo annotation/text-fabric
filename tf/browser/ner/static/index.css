@@ -19,12 +19,12 @@ a:link, a:visited {
 }
 
 :root {
-  --button-fg: #ffffff;
-  --button-bg: #666666;
-  --button-bd: #666666;
+  --button-fg: #888888;
+  --button-bg: #ffffff;
+  --button-bd: #dddddd;
   --button-active-fg: #000000;
-  --button-active-bg: #ccccff;
-  --button-active-bd: #ccccff;
+  --button-active-bg: #ffeedd;
+  --button-active-bd: #000000;
   --button-disabled-fg: #dddddd;
   --button-disabled-bg: #999999;
   --button-disabled-bd: #999999;
@@ -108,7 +108,7 @@ div.page {
   font-size: small;
 }
 
-#lookupf,#lookupq,#lookupn {
+#lookupq,#lookupn {
   display: none;
 }
 
@@ -132,7 +132,27 @@ input[st=plus],span[st=plus] {
   border-color: #aaffaa ! important;
   background-color: #aaffaa ! important;
 }
-button.active {
+button {
+  text-decoration: line-through;
+  border-radius: 0.3rem;
+  color: var(--button-fg);
+  background-color: var(--button-bg);
+  border: 0.1rem solid var(--button-bd);
+  font-size: small;
+  font-weight: medium;
+  margin: 0.1rem;
+  padding: 0.2rem;
+}
+button.alt {
+  text-decoration: none;
+}
+button.icon {
+  text-decoration: none;
+  background-color: inherit;
+  border: 0;
+}
+button.active,button.alt.active {
+  text-decoration: none;
   color: var(--button-active-fg);
   background-color: var(--button-active-bg);
   border: 0.1rem solid var(--button-active-bd);
@@ -145,33 +165,20 @@ button.disabled {
 button.notapplicable {
   border-style: dashed;
 }
+button.mono {
+  text-decoration: none;
+  color: var(--button-active-fg);
+  background-color: var(--button-active-bg);
+  border: 0.1rem solid var(--button-active-bd);
+}
 button.altv {
   color: black;
   background-color: white;
   padding: 0;
   border: 0;
 }
-button.altt {
-  color: black;
-  background-color: initial;
-  padding: 0;
-  border: 0;
-}
-button.altm {
-  color: black;
-  background-color: white;
-  padding: 0.1rem 0.8rem;
-  border: 0;
-}
-button.alt {
-  color: black;
-  background-color: white;
-  padding: 0.1rem 0.8rem;
-}
-button.alt.active {
-  background-color: var(--button-active-bg);
-}
 button.special {
+  text-decoration: none;
   font-size: large;
   font-weight: bold;
   border-width: 0.3rem;
@@ -187,16 +194,6 @@ button.special.del {
   color: black;
   border-color: #ff0000;
   background-color: #ffaaaa;
-}
-button {
-  border-radius: 0.3rem;
-  color: var(--button-fg);
-  background-color: var(--button-bg);
-  border: 0.1rem solid var(--button-bd);
-  font-size: small;
-  font-weight: medium;
-  margin: 0.1rem;
-  padding: 0.2rem;
 }
 #delreport,#addreport {
   margin: 0.1rem 0.5rem;
@@ -227,12 +224,26 @@ span[te][st="v"]::after {
   display: none;
 }
 
-#decoratewidget, #filterwidget,
-#selectwidget,#modwidget {
+#appearancewidget,#filterwidget,
+#markwidget,#selectwidget,#modwidget {
   border: 0.2rem solid #e8e8e8;
   border-radius: 0.5rem;
   background-color: #eeeeee;
   padding: 0.5rem 0.2rem;
+  margin-bottom: 0.4rem;
+}
+#delwidget,#addwidget {
+  border-width: 0.2rem;
+  border-style: solid;
+  border-radius: 0.5rem;
+  background-color: #eaeaea;
+  padding: 0.5rem 0.2rem;
+}
+#delwidget {
+  border-color: #ff0000;
+}
+#addwidget {
+  border-color: #00ff00;
 }
 
 #selectwidget {
@@ -248,7 +259,7 @@ span[te][st="v"]::after {
 	justify-content: start;
 	align-items: flex-start;
 }
-#findwidget,#etextwidget,.featwidget {
+.filtercomponent,#etextwidget,.featwidget {
   border-radius: 0.5rem;
   border: 0.2rem solid #dddddd;
   padding: 0.5rem 0.5rem;

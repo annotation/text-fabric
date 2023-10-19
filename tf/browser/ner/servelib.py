@@ -56,6 +56,9 @@ def getFormData(annotate):
     form["bfindc"] = fget("bfindc", "x") == "v"
     form["bfinderror"] = fget("bfinderror", "")
 
+    anyEnt = fget("anyent", "")
+    form["anyent"] = True if anyEnt == "v" else False if anyEnt == "x" else None
+
     form["freestate"] = fget("freestate", "all")
     activeEntity = fget("activeentity", None)
     form["activeentity"] = tuple(activeEntity.split("⊙")) if activeEntity else None
@@ -95,6 +98,7 @@ def makeValSelect(annotate, form):
 
     submitter = form["submitter"]
     valSelectProto = {feat: fget(f"{feat}_select", "") for feat in features}
+    annotate.console(f"{valSelectProto=}")
     valSelect = {}
 
     startSearch = submitter in {"lookupq", "lookupn", "freebutton"}
@@ -162,6 +166,7 @@ def initTemplate(annotate, app):
     templateData.featurelist = ",".join(features)
 
     for k, v in form.items():
+        annotate.console(f"{k=} {v=}")
         if not resetForm or k not in templateData:
             templateData[k] = v
 
