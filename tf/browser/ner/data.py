@@ -3,12 +3,11 @@ import time
 
 from ...core.generic import AttrDict
 from ...core.files import (
-    annotateDir,
     mTime,
     fileExists,
     initTree,
 )
-from .settings import Settings, TOOLKEY, getText
+from .settings import Settings, getText
 
 
 class Data(Settings):
@@ -20,10 +19,8 @@ class Data(Settings):
             data.sets = AttrDict()
 
         self.data = data
-        app = self.app
 
-        annoDir = annotateDir(app, TOOLKEY)
-        self.annoDir = annoDir
+        annoDir = self.annoDir
         initTree(annoDir, fresh=False)
 
     def loadData(self):

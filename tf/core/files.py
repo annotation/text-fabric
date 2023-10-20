@@ -245,9 +245,11 @@ def backendRep(be, kind, default=None):
 
 
 def annotateDir(app, tool):
-    """Return the working directory for a specific annotation tool.
+    """Return the input and output directories for a specific annotation tool.
 
-    This directory is located under `~/text-fabric-data/local`
+    * The input directory is located next to the tf data of the corpus
+    * The output directory is located in the `_temp` dir next to the tf data of
+      the corpus
 
     Parameters
     ----------
@@ -261,8 +263,10 @@ def annotateDir(app, tool):
     str
         The path of the working directory for that tool and that corpus
     """
-    appName = app.context.appName
-    return f"{_homeDir}/text-fabric-data/local/{appName}/{tool}"
+    context = app.context
+    appPath = context.appPath
+    localDir = context.localDir
+    return (f"{dirNm(appPath)}/{tool}", f"{localDir}/{tool}")
 
 
 URL_TFDOC = f"https://{ORG}.{backendRep(GH, 'pages')}/{REPO}/tf"

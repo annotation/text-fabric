@@ -1,7 +1,9 @@
-"""TF backend processing.
+"""API for rule-based annotation
 
-This module is for functions that extract data from the corpus
-and put it in various dedicated data structures.
+This module contains the top-level methods for applying annotation rules to a corpus.
+
+As a preparation, read `tf.about.annotate` first, since it explains the concepts, and
+guides you to set up the configuration for your corpus.
 """
 
 import collections

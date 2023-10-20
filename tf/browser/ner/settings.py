@@ -1,6 +1,6 @@
 import re
 
-from ...core.files import expanduser as ex, getLocation, readYaml
+from ...core.files import annotateDir, readYaml
 
 TOOLKEY = "ner"
 
@@ -83,12 +83,13 @@ SC_FILT = "f"
 
 class Settings:
     def __init__(self):
-        (backend, org, repo, relative) = getLocation()
-        base = ex(f"~/{backend}")
-        repoDir = f"{base}/{org}/{repo}"
-        refDir = f"{repoDir}{relative}"
-        programDir = f"{refDir}/programs"
-        nerSpec = f"{programDir}/ner.yaml"
+        self.debug = True  # might be overridden by child class Annotate
+        app = self.app
+        (specDir, annoDir) = annotateDir(app, TOOLKEY)
+        self.specDir = specDir
+        self.annoDir = annoDir
+        self.sheetDir = f"{specDir}/sheets"
+        nerSpec = f"{specDir}/config.yaml"
         settings = readYaml(asFile=nerSpec, preferTuples=True)
         settings.entitySet = settings.entitySet.format(entityType=settings.entityType)
         self.settings = settings

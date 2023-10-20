@@ -315,6 +315,16 @@ Default:
 
 ---
 
+### `extraData`
+
+If not `null`, it is the path inside the repo to the directory
+that holds extra data to be distributed alongside the corpus
+
+Default:
+:   string `null`
+
+---
+
 ### `graphicsRelative`
 
 If not `null`, it is the path inside the repo to the directory
@@ -1086,6 +1096,7 @@ PROVENANCE_DEFAULTS = (
     ("org", None),
     ("repo", None),
     ("relative", prefixSlash(RELATIVE_DEFAULT)),
+    ("extraData", None),
     ("graphicsRelative", None),
     ("version", None),
     ("branch", BRANCH_DEFAULT),
@@ -1454,6 +1465,8 @@ def setAppSpecs(app, cfg, reset=False):
     if specs["zip"] is None:
         org = specs["org"]
         repo = specs["repo"]
+        extraData = specs["extraData"]
+        extraModule = [(org, repo, extraData)] if extraData else []
         graphicsRelative = specs["graphicsRelative"]
         graphicsModule = [(org, repo, graphicsRelative)] if graphicsRelative else []
         specs["zip"] = (
@@ -1463,6 +1476,7 @@ def setAppSpecs(app, cfg, reset=False):
                 for m in moduleSpecs
             ]
             + graphicsModule
+            + extraModule
         )
 
     for (dKey, method) in (

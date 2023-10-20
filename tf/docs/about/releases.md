@@ -22,21 +22,23 @@ pip install -e .
 
 #### 12.1 (upcoming)
 
-2023-09-??
+2023-10-??
 
 ##### New stuff
 
-*   In `tf.convert.addnlp` we can now extract more NLP information besides tokens
-    and sentences: part-of-speech, morphological tagging, lemmatisation, named
-    entity recognititon
-
 *   In the Text-Fabric browser there will be a new tab in the vertical sidebar: 
     **Annotate**, which will give access to manual annotation tools. I'm developing
-    the first one, a tool to annotate named entities efficiently.
+    the first one, a tool to annotate named entities efficiently, both in the
+    Text-Fabric browser and in a Jupyter Notebook.
+    Reed more in `tf.about.annotate`.
 
     These tools will let you save your work as files on your own computer, maybe even
     feature files, so that you can explore the result by means of queries in the
     text-fabric browser as you go.
+
+*   In `tf.convert.addnlp` we can now extract more NLP information besides tokens
+    and sentences: part-of-speech, morphological tagging, lemmatisation, named
+    entity recognititon
 
 ##### Fixes
 

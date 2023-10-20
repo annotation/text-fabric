@@ -85,6 +85,7 @@ def zipAll(app):
     *   the main data module
     *   all modules mentioned in the moduleSpecs in the provenanceSpec of the app
     *   all graphics data mentioned in the graphicsRelative of the provenanceSpec
+    *   all extra data mentioned in the extraData of the provenanceSpec
 
     The data will be zipped in a file complete.zip which can be unpacked
     in the ~/text-fabric-data directory.
@@ -119,6 +120,8 @@ def zipAll(app):
 
     graphics = context.graphicsRelative
     graphics = prefixSlash(normpath(graphics))
+    extra = context.extraData
+    extra = prefixSlash(normpath(extra))
 
     prov = context.provenanceSpec
     mods = prov.get("moduleSpecs", [])
@@ -131,6 +134,8 @@ def zipAll(app):
     ]
     if graphics:
         dataItems.append(("graphics", f"{repoDir}{graphics}"))
+    if extra:
+        dataItems.append(("extra", f"{repoDir}{extra}"))
 
     good = True
 

@@ -10,59 +10,11 @@ class PowerNER(Annotate):
     def __init__(self, app):
         super().__init__(app)
 
-    def yamlFromSheet(self, fileIn, fileOut):
-        settings = self.settings
-        transform = settings.transform
-        keywordFeatures = settings.keywordFeatures
-        kindFeature = keywordFeatures[0]
-        defaultValues = settings.defaultValues
+    def readInstructions(self, sheetName):
+        sheetDir = self.sheetDir
 
-        wb = load_workbook(fileIn, data_only=True)
-        ws = wb.active
-
-        (headRow, subHeadRow, *rows) = list(ws.rows)
-        rows = [row for row in rows if any(c.value for c in row)]
-
-        defaultKind = defaultValues.get(kindFeature, "")
-
-        info = {}
-
-        for r, row in enumerate(ws.rows):
-            if r in {0, 1}:
-                continue
-            if not any(c.value for c in row):
-                continue
-
-            (ent, synonyms) = (normalize(row[i].value or "") for i in range(2))
-            eid = toSmallId(ent, transform=transform)
-
-            if not ent:
-                console(f"Row {r:>3}: no entity name")
-                continue
-
-            i = 0
-            while eid in info:
-                i += 1
-                eid = f"{eid}.{i}"
-                console(f"Row {r:>3}: multiple instances ({eid})")
-
-            occs = sorted(
-                (normalize(x) for x in ([] if not synonyms else synonyms.split(";"))),
-                key=lambda x: -len(x),
-            )
-            info[eid] = {"name": ent, kindFeature: defaultKind, "occs": occs}
-
-        writeYaml(info, asFile=fileOut)
-
-        nEid = len(info)
-        nOcc = sum(len(x["occs"]) for x in info.values())
-        noOccs = sum(1 for x in info.values() if len(x["occs"]) == 0)
-        console(f"{nEid} entities with {nOcc} occurrence specs")
-        console(f"{noOccs} entities do not have occurrence specifiers")
-
-    def readInstructions(self, basePath):
-        xlsFile = f"{basePath}.xlsx"
-        yamlFile = f"{basePath}.yaml"
+        xlsFile = f"{sheetDir}/{sheetName}.xlsx"
+        yamlFile = f"{sheetDir}/{sheetName}.yaml"
 
         doConvert = False
 
@@ -77,7 +29,54 @@ class PowerNER(Annotate):
                 doConvert = True
 
         if doConvert:
-            self.yamlFromSheet(xlsFile, yamlFile)
+            settings = self.settings
+            transform = settings.transform
+            keywordFeatures = settings.keywordFeatures
+            kindFeature = keywordFeatures[0]
+            defaultValues = settings.defaultValues
+
+            wb = load_workbook(xlsFile, data_only=True)
+            ws = wb.active
+
+            (headRow, subHeadRow, *rows) = list(ws.rows)
+            rows = [row for row in rows if any(c.value for c in row)]
+
+            defaultKind = defaultValues.get(kindFeature, "")
+
+            info = {}
+
+            for r, row in enumerate(ws.rows):
+                if r in {0, 1}:
+                    continue
+                if not any(c.value for c in row):
+                    continue
+
+                (ent, synonyms) = (normalize(row[i].value or "") for i in range(2))
+                eid = toSmallId(ent, transform=transform)
+
+                if not ent:
+                    console(f"Row {r:>3}: no entity name")
+                    continue
+
+                i = 0
+                while eid in info:
+                    i += 1
+                    eid = f"{eid}.{i}"
+                    console(f"Row {r:>3}: multiple instances ({eid})")
+
+                occs = sorted(
+                    (normalize(x) for x in ([] if not synonyms else synonyms.split(";"))),
+                    key=lambda x: -len(x),
+                )
+                info[eid] = {"name": ent, kindFeature: defaultKind, "occs": occs}
+
+            writeYaml(info, asFile=yamlFile)
+
+            nEid = len(info)
+            nOcc = sum(len(x["occs"]) for x in info.values())
+            noOccs = sum(1 for x in info.values() if len(x["occs"]) == 0)
+            console(f"{nEid} entities with {nOcc} occurrence specs")
+            console(f"{noOccs} entities do not have occurrence specifiers")
 
         self.instructions = readYaml(asFile=yamlFile)
 
