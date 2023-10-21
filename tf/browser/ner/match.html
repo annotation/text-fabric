@@ -26,12 +26,30 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/match.py#L1-L217" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/match.py#L1-L240" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from .settings import NONE
 
 
 def occMatch(L, F, b, qTokenSet, results):
+    &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens in a single bucket.
+
+    Parameters
+    ----------
+    L, F: object
+        The TF APIs `F` and `L` for feature lookup and level-switching, and text
+        extraction, see `tf.cheatsheet`
+    b: integer
+        The node of the bucket in question
+    qTokenSet: set, optional set()
+        A set of sequences of tokens. Each sequence in the set will be used as a
+        search pattern, and it occurrences in the bucket are collected.
+    result: dict
+        A dictionary to collect the results in.
+        Keyed by each member of parameter `qTokenSet` the values are
+        the occurrences of that member in the corpus.
+        A single occurrence is represented as a tuple of slots.
+    &#34;&#34;&#34;
     bTokensAll = [(t, F.str.v(t)) or &#34;&#34; for t in L.d(b, otype=&#34;t&#34;)]
     bTokens = [x for x in bTokensAll if x[1].strip()]
     bStrings = {s for (t, s) in bTokens}
@@ -78,32 +96,39 @@ def entityMatch(
     eVals,
     qTokens,
     valSelect,
-    requireFree,
+    freeState,
     fValStats,
 ):
-    &#34;&#34;&#34;Checks whether a bucket matches a sequence of tokens.
+    &#34;&#34;&#34;Checks whether a bucket satisfies a variety of criteria.
 
     When we do the checking, we ignore empty tokens in the bucket.
 
     Parameters
     ----------
-    entitySlotVal: dict
-        Dictionary from tuples of slots to sets of feature values that such
-        entities can have.
+    entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex: object
+        Various kinds of processed entity data, see `tf.browser.ner.data`
     L, F, T: object
         The TF APIs `F` and `L` for feature lookup and level-switching, and text
-        extraction
+        extraction, see `tf.cheatsheet`
     b: integer
         The node of the bucket in question
-    anyEnt: boolean or None
-        If `None`: no effect
-        If True: overrides qTokens and eVals: looks for any entity annotation
-        If False: lets the bucket through only if it has no annotations.
-    qTokens: list of string
-        The sequence of tokens that must be matched. They are all non-empty and stripped
-        from white space.
-    valSelect: string
-        The entity values that the matched tokens should have
+    bFindRe, anyEnt, eVals, qTokens, valSelect, freeState: object
+        As in `tf.browser.ner.annotate.Annotate.filterContent`
+
+    Returns
+    -------
+    tuple
+        Members:
+
+        *   `fits`: boolean, whether the bucket passes the filter
+        *   `(tokens, matches, positions)`:
+            *   `tokens` all tokens of the bucket, each token is a tuple consisting
+                of its slot number (position) and string value;
+            *   `matches`: a list of the positions of the found occurrences for the
+                `qTokens` and/or `eVals` in the bucket;
+            *   `positions`: a set of positions in the bucket where the
+                `bFindRe` starts to match;
+
     &#34;&#34;&#34;
     positions = set()
 
@@ -141,11 +166,11 @@ def entityMatch(
 
             slots = tuple(range(t, lastT + 1))
 
-            if requireFree is None:
+            if freeState is None:
                 freeOK = True
             else:
                 bound = any(slot in entitySlotIndex for slot in slots)
-                freeOK = requireFree and not bound or not requireFree and bound
+                freeOK = freeState and not bound or not freeState and bound
 
             if not freeOK:
                 continue
@@ -195,11 +220,11 @@ def entityMatch(
                     lastT = bTokens[i + nTokens - 1][0]
                     slots = tuple(range(t, lastT + 1))
 
-                    if requireFree is None:
+                    if freeState is None:
                         freeOK = True
                     else:
                         bound = any(slot in entitySlotIndex for slot in slots)
-                        freeOK = requireFree and not bound or not requireFree and bound
+                        freeOK = freeState and not bound or not freeState and bound
 
                     if not freeOK:
                         continue
@@ -223,8 +248,6 @@ def entityMatch(
                                 thisOK = True
 
                                 for feat, val in zip(fValStats, valTuple):
-                                    if valSelect is None:
-                                        continue
                                     selectedVals = valSelect[feat]
                                     if val not in selectedVals:
                                         thisOK = False
@@ -255,35 +278,46 @@ def entityMatch(
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.browser.ner.match.entityMatch"><code class="name flex">
-<span>def <span class="ident">entityMatch</span></span>(<span>entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex, L, F, T, b, bFindRe, anyEnt, eVals, qTokens, valSelect, requireFree, fValStats)</span>
+<span>def <span class="ident">entityMatch</span></span>(<span>entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex, L, F, T, b, bFindRe, anyEnt, eVals, qTokens, valSelect, freeState, fValStats)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Checks whether a bucket matches a sequence of tokens.</p>
+<div class="desc"><p>Checks whether a bucket satisfies a variety of criteria.</p>
 <p>When we do the checking, we ignore empty tokens in the bucket.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>entitySlotVal</code></strong> :&ensp;<code>dict</code></dt>
-<dd>Dictionary from tuples of slots to sets of feature values that such
-entities can have.</dd>
+<dt><strong><code>entityIndex</code></strong>, <strong><code>eStarts</code></strong>, <strong><code>entitySlotVal</code></strong>, <strong><code>entitySlotAll</code></strong>, <strong><code>entitySlotIndex</code></strong> :&ensp;<code>object</code></dt>
+<dd>Various kinds of processed entity data, see <code><a title="tf.browser.ner.data" href="data.html">tf.browser.ner.data</a></code></dd>
 <dt><strong><code>L</code></strong>, <strong><code>F</code></strong>, <strong><code>T</code></strong> :&ensp;<code>object</code></dt>
 <dd>The TF APIs <code>F</code> and <code>L</code> for feature lookup and level-switching, and text
-extraction</dd>
+extraction, see <code><a title="tf.cheatsheet" href="../../cheatsheet.html">tf.cheatsheet</a></code></dd>
 <dt><strong><code>b</code></strong> :&ensp;<code>integer</code></dt>
 <dd>The node of the bucket in question</dd>
-<dt><strong><code>anyEnt</code></strong> :&ensp;<code>boolean</code> or <code>None</code></dt>
-<dd>If <code>None</code>: no effect
-If True: overrides qTokens and eVals: looks for any entity annotation
-If False: lets the bucket through only if it has no annotations.</dd>
-<dt><strong><code>qTokens</code></strong> :&ensp;<code>list</code> of <code>string</code></dt>
-<dd>The sequence of tokens that must be matched. They are all non-empty and stripped
-from white space.</dd>
-<dt><strong><code>valSelect</code></strong> :&ensp;<code>string</code></dt>
-<dd>The entity values that the matched tokens should have</dd>
+<dt><strong><code>bFindRe</code></strong>, <strong><code>anyEnt</code></strong>, <strong><code>eVals</code></strong>, <strong><code>qTokens</code></strong>, <strong><code>valSelect</code></strong>, <strong><code>freeState</code></strong> :&ensp;<code>object</code></dt>
+<dd>As in <code><a title="tf.browser.ner.annotate.Annotate.filterContent" href="annotate.html#tf.browser.ner.annotate.Annotate.filterContent">Annotate.filterContent()</a></code></dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>
+<p>Members:</p>
+<ul>
+<li><code>fits</code>: boolean, whether the bucket passes the filter</li>
+<li><code>(tokens, matches, positions)</code>:<ul>
+<li><code>tokens</code> all tokens of the bucket, each token is a tuple consisting
+of its slot number (position) and string value;</li>
+<li><code>matches</code>: a list of the positions of the found occurrences for the
+<code>qTokens</code> and/or <code>eVals</code> in the bucket;</li>
+<li><code>positions</code>: a set of positions in the bucket where the
+<code>bFindRe</code> starts to match;</li>
+</ul>
+</li>
+</ul>
+</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/match.py#L36-L217" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/match.py#L54-L240" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def entityMatch(
     entityIndex,
@@ -300,32 +334,39 @@ from white space.</dd>
     eVals,
     qTokens,
     valSelect,
-    requireFree,
+    freeState,
     fValStats,
 ):
-    &#34;&#34;&#34;Checks whether a bucket matches a sequence of tokens.
+    &#34;&#34;&#34;Checks whether a bucket satisfies a variety of criteria.
 
     When we do the checking, we ignore empty tokens in the bucket.
 
     Parameters
     ----------
-    entitySlotVal: dict
-        Dictionary from tuples of slots to sets of feature values that such
-        entities can have.
+    entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex: object
+        Various kinds of processed entity data, see `tf.browser.ner.data`
     L, F, T: object
         The TF APIs `F` and `L` for feature lookup and level-switching, and text
-        extraction
+        extraction, see `tf.cheatsheet`
     b: integer
         The node of the bucket in question
-    anyEnt: boolean or None
-        If `None`: no effect
-        If True: overrides qTokens and eVals: looks for any entity annotation
-        If False: lets the bucket through only if it has no annotations.
-    qTokens: list of string
-        The sequence of tokens that must be matched. They are all non-empty and stripped
-        from white space.
-    valSelect: string
-        The entity values that the matched tokens should have
+    bFindRe, anyEnt, eVals, qTokens, valSelect, freeState: object
+        As in `tf.browser.ner.annotate.Annotate.filterContent`
+
+    Returns
+    -------
+    tuple
+        Members:
+
+        *   `fits`: boolean, whether the bucket passes the filter
+        *   `(tokens, matches, positions)`:
+            *   `tokens` all tokens of the bucket, each token is a tuple consisting
+                of its slot number (position) and string value;
+            *   `matches`: a list of the positions of the found occurrences for the
+                `qTokens` and/or `eVals` in the bucket;
+            *   `positions`: a set of positions in the bucket where the
+                `bFindRe` starts to match;
+
     &#34;&#34;&#34;
     positions = set()
 
@@ -363,11 +404,11 @@ from white space.</dd>
 
             slots = tuple(range(t, lastT + 1))
 
-            if requireFree is None:
+            if freeState is None:
                 freeOK = True
             else:
                 bound = any(slot in entitySlotIndex for slot in slots)
-                freeOK = requireFree and not bound or not requireFree and bound
+                freeOK = freeState and not bound or not freeState and bound
 
             if not freeOK:
                 continue
@@ -417,11 +458,11 @@ from white space.</dd>
                     lastT = bTokens[i + nTokens - 1][0]
                     slots = tuple(range(t, lastT + 1))
 
-                    if requireFree is None:
+                    if freeState is None:
                         freeOK = True
                     else:
                         bound = any(slot in entitySlotIndex for slot in slots)
-                        freeOK = requireFree and not bound or not requireFree and bound
+                        freeOK = freeState and not bound or not freeState and bound
 
                     if not freeOK:
                         continue
@@ -445,8 +486,6 @@ from white space.</dd>
                                 thisOK = True
 
                                 for feat, val in zip(fValStats, valTuple):
-                                    if valSelect is None:
-                                        continue
                                     selectedVals = valSelect[feat]
                                     if val not in selectedVals:
                                         thisOK = False
@@ -473,13 +512,47 @@ from white space.</dd>
 <span>def <span class="ident">occMatch</span></span>(<span>L, F, b, qTokenSet, results)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Finds the occurrences of multiple sequences of tokens in a single bucket.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>L</code></strong>, <strong><code>F</code></strong> :&ensp;<code>object</code></dt>
+<dd>The TF APIs <code>F</code> and <code>L</code> for feature lookup and level-switching, and text
+extraction, see <code><a title="tf.cheatsheet" href="../../cheatsheet.html">tf.cheatsheet</a></code></dd>
+<dt><strong><code>b</code></strong> :&ensp;<code>integer</code></dt>
+<dd>The node of the bucket in question</dd>
+<dt><strong><code>qTokenSet</code></strong> :&ensp;<code>set</code>, optional <code>set()</code></dt>
+<dd>A set of sequences of tokens. Each sequence in the set will be used as a
+search pattern, and it occurrences in the bucket are collected.</dd>
+<dt><strong><code>result</code></strong> :&ensp;<code>dict</code></dt>
+<dd>A dictionary to collect the results in.
+Keyed by each member of parameter <code>qTokenSet</code> the values are
+the occurrences of that member in the corpus.
+A single occurrence is represented as a tuple of slots.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/match.py#L4-L33" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/match.py#L4-L51" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def occMatch(L, F, b, qTokenSet, results):
+    &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens in a single bucket.
+
+    Parameters
+    ----------
+    L, F: object
+        The TF APIs `F` and `L` for feature lookup and level-switching, and text
+        extraction, see `tf.cheatsheet`
+    b: integer
+        The node of the bucket in question
+    qTokenSet: set, optional set()
+        A set of sequences of tokens. Each sequence in the set will be used as a
+        search pattern, and it occurrences in the bucket are collected.
+    result: dict
+        A dictionary to collect the results in.
+        Keyed by each member of parameter `qTokenSet` the values are
+        the occurrences of that member in the corpus.
+        A single occurrence is represented as a tuple of slots.
+    &#34;&#34;&#34;
     bTokensAll = [(t, F.str.v(t)) or &#34;&#34; for t in L.d(b, otype=&#34;t&#34;)]
     bTokens = [x for x in bTokensAll if x[1].strip()]
     bStrings = {s for (t, s) in bTokens}

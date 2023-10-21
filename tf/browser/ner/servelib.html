@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/servelib.py#L1-L188" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/servelib.py#L1-L186" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Auxiliary functions for serving the page.
 &#34;&#34;&#34;
@@ -129,7 +129,6 @@ def makeValSelect(annotate, form):
 
     submitter = form[&#34;submitter&#34;]
     valSelectProto = {feat: fget(f&#34;{feat}_select&#34;, &#34;&#34;) for feat in features}
-    annotate.console(f&#34;{valSelectProto=}&#34;)
     valSelect = {}
 
     startSearch = submitter in {&#34;lookupq&#34;, &#34;lookupn&#34;, &#34;freebutton&#34;}
@@ -197,7 +196,6 @@ def initTemplate(annotate, app):
     templateData.featurelist = &#34;,&#34;.join(features)
 
     for k, v in form.items():
-        annotate.console(f&#34;{k=} {v=}&#34;)
         if not resetForm or k not in templateData:
             templateData[k] = v
 
@@ -234,7 +232,7 @@ def findSetup(templateData):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/servelib.py#L119-L146" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/servelib.py#L118-L145" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def adaptValSelect(annotate, templateData):
     settings = annotate.settings
@@ -274,7 +272,7 @@ def findSetup(templateData):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/servelib.py#L180-L188" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/servelib.py#L178-L186" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findSetup(templateData):
     bFind = templateData.bfind
@@ -392,7 +390,7 @@ but there is also a list of webapp dependent options.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/servelib.py#L149-L177" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/servelib.py#L148-L175" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def initTemplate(annotate, app):
     settings = annotate.settings
@@ -414,7 +412,6 @@ but there is also a list of webapp dependent options.</p></div>
     templateData.featurelist = &#34;,&#34;.join(features)
 
     for k, v in form.items():
-        annotate.console(f&#34;{k=} {v=}&#34;)
         if not resetForm or k not in templateData:
             templateData[k] = v
 
@@ -433,7 +430,7 @@ but there is also a list of webapp dependent options.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/servelib.py#L93-L116" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/servelib.py#L93-L115" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeValSelect(annotate, form):
     settings = annotate.settings
@@ -443,7 +440,6 @@ but there is also a list of webapp dependent options.</p></div>
 
     submitter = form[&#34;submitter&#34;]
     valSelectProto = {feat: fget(f&#34;{feat}_select&#34;, &#34;&#34;) for feat in features}
-    annotate.console(f&#34;{valSelectProto=}&#34;)
     valSelect = {}
 
     startSearch = submitter in {&#34;lookupq&#34;, &#34;lookupn&#34;, &#34;freebutton&#34;}

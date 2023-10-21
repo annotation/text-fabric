@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/settings.py#L1-L125" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/settings.py#L1-L124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 
@@ -113,7 +113,6 @@ SC_FILT = &#34;f&#34;
 
 class Settings:
     def __init__(self):
-        self.debug = True  # might be overridden by child class Annotate
         app = self.app
         (specDir, annoDir) = annotateDir(app, TOOLKEY)
         self.specDir = specDir
@@ -170,7 +169,7 @@ def getText(F, slots):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/settings.py#L122-L125" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/settings.py#L121-L124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getText(F, slots):
     text = &#34;&#34;.join(f&#34;&#34;&#34;{F.str.v(s)}{F.after.v(s) or &#34;&#34;}&#34;&#34;&#34; for s in slots).strip()
@@ -186,7 +185,7 @@ def getText(F, slots):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/settings.py#L118-L119" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/settings.py#L117-L118" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ucFirst(x):
     return x[0].upper() + x[1:].lower()</code></pre>
@@ -205,11 +204,10 @@ def getText(F, slots):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/settings.py#L84-L115" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/settings.py#L84-L114" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Settings:
     def __init__(self):
-        self.debug = True  # might be overridden by child class Annotate
         app = self.app
         (specDir, annoDir) = annotateDir(app, TOOLKEY)
         self.specDir = specDir

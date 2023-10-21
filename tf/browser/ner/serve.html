@@ -29,7 +29,7 @@ the annotation tool.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L1-L271" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L1-L279" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Main controller for Flask
 
@@ -58,7 +58,6 @@ from .browserparts import (
 class Serve:
     def __init__(self, web):
         self.web = web
-        self.debug = web.debug
         kernelApi = web.kernelApi
         self.app = kernelApi.app
         self.css = kernelApi.css()
@@ -75,9 +74,8 @@ class Serve:
     def setupAnnotate(self):
         data = self.data
         app = self.app
-        debug = self.debug
 
-        annotate = Annotate(app, data=data, debug=debug, browse=True)
+        annotate = Annotate(app, data=data, browse=True)
 
         templateData = initTemplate(annotate, app)
         self.templateData = templateData
@@ -161,6 +159,17 @@ class Serve:
             mayLimit=False,
         )
 
+    def getStrings(self, tokenStart, tokenEnd):
+        app = self.app
+        api = app.api
+        F = api.F
+
+        return tuple(
+            token
+            for t in range(tokenStart, tokenEnd + 1)
+            if (token := (F.str.v(t) or &#34;&#34;).strip())
+        )
+
     def getBuckets(self, noFind=False, node=None):
         annotate = self.annotate
         templateData = self.templateData
@@ -181,7 +190,7 @@ class Serve:
             templateData.activeentity = None
 
         qTokens = (
-            annotate.getStrings(tokenStart, tokenEnd)
+            self.getStrings(tokenStart, tokenEnd)
             if tokenStart and tokenEnd
             else None
         )
@@ -199,7 +208,6 @@ class Serve:
             qTokens=qTokens,
             valSelect=valSelect,
             freeState=freeState,
-            noFind=noFind,
         )
 
     def setHandling(self, templateData):
@@ -319,7 +327,7 @@ def serveNerContext(web, node):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L260-L264" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L268-L272" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveNer(web):
     serve = Serve(web)
@@ -336,7 +344,7 @@ def serveNerContext(web, node):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L267-L271" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L275-L279" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveNerContext(web, node):
     serve = Serve(web)
@@ -359,12 +367,11 @@ def serveNerContext(web, node):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L25-L257" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L25-L265" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Serve:
     def __init__(self, web):
         self.web = web
-        self.debug = web.debug
         kernelApi = web.kernelApi
         self.app = kernelApi.app
         self.css = kernelApi.css()
@@ -381,9 +388,8 @@ def serveNerContext(web, node):
     def setupAnnotate(self):
         data = self.data
         app = self.app
-        debug = self.debug
 
-        annotate = Annotate(app, data=data, debug=debug, browse=True)
+        annotate = Annotate(app, data=data, browse=True)
 
         templateData = initTemplate(annotate, app)
         self.templateData = templateData
@@ -467,6 +473,17 @@ def serveNerContext(web, node):
             mayLimit=False,
         )
 
+    def getStrings(self, tokenStart, tokenEnd):
+        app = self.app
+        api = app.api
+        F = api.F
+
+        return tuple(
+            token
+            for t in range(tokenStart, tokenEnd + 1)
+            if (token := (F.str.v(t) or &#34;&#34;).strip())
+        )
+
     def getBuckets(self, noFind=False, node=None):
         annotate = self.annotate
         templateData = self.templateData
@@ -487,7 +504,7 @@ def serveNerContext(web, node):
             templateData.activeentity = None
 
         qTokens = (
-            annotate.getStrings(tokenStart, tokenEnd)
+            self.getStrings(tokenStart, tokenEnd)
             if tokenStart and tokenEnd
             else None
         )
@@ -505,7 +522,6 @@ def serveNerContext(web, node):
             qTokens=qTokens,
             valSelect=valSelect,
             freeState=freeState,
-            noFind=noFind,
         )
 
     def setHandling(self, templateData):
@@ -605,7 +621,7 @@ def serveNerContext(web, node):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L79-L85" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L77-L83" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def actionsAnnotate(self):
     templateData = self.templateData
@@ -624,7 +640,7 @@ def serveNerContext(web, node):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L87-L88" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L85-L86" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def actionsLean(self, node):
     self.getBuckets(node=node)</code></pre>
@@ -638,7 +654,7 @@ def serveNerContext(web, node):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L131-L170" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L140-L178" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getBuckets(self, noFind=False, node=None):
     annotate = self.annotate
@@ -660,7 +676,7 @@ def serveNerContext(web, node):
         templateData.activeentity = None
 
     qTokens = (
-        annotate.getStrings(tokenStart, tokenEnd)
+        self.getStrings(tokenStart, tokenEnd)
         if tokenStart and tokenEnd
         else None
     )
@@ -678,7 +694,28 @@ def serveNerContext(web, node):
         qTokens=qTokens,
         valSelect=valSelect,
         freeState=freeState,
-        noFind=noFind,
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.serve.Serve.getStrings"><code class="name flex">
+<span>def <span class="ident">getStrings</span></span>(<span>self, tokenStart, tokenEnd)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L129-L138" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getStrings(self, tokenStart, tokenEnd):
+    app = self.app
+    api = app.api
+    F = api.F
+
+    return tuple(
+        token
+        for t in range(tokenStart, tokenEnd + 1)
+        if (token := (F.str.v(t) or &#34;&#34;).strip())
     )</code></pre>
 </details>
 </dd>
@@ -690,7 +727,7 @@ def serveNerContext(web, node):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L172-L207" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L180-L215" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setHandling(self, templateData):
     annotate = self.annotate
@@ -738,14 +775,13 @@ def serveNerContext(web, node):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L42-L56" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L41-L54" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setupAnnotate(self):
     data = self.data
     app = self.app
-    debug = self.debug
 
-    annotate = Annotate(app, data=data, debug=debug, browse=True)
+    annotate = Annotate(app, data=data, browse=True)
 
     templateData = initTemplate(annotate, app)
     self.templateData = templateData
@@ -765,7 +801,7 @@ def serveNerContext(web, node):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L58-L71" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L56-L69" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setupFull(self):
     css = self.css
@@ -791,7 +827,7 @@ def serveNerContext(web, node):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L73-L77" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L71-L75" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setupLean(self):
     self.setupAnnotate()
@@ -808,7 +844,7 @@ def serveNerContext(web, node):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L209-L257" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L217-L265" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def updateHandling(self):
     annotate = self.annotate
@@ -869,7 +905,7 @@ def serveNerContext(web, node):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L90-L115" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L88-L113" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapAnnotate(self):
     annotate = self.annotate
@@ -907,7 +943,7 @@ def serveNerContext(web, node):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L117-L129" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L115-L127" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapLean(self):
     annotate = self.annotate
@@ -1005,6 +1041,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.browser.ner.serve.Serve.actionsAnnotate" href="#tf.browser.ner.serve.Serve.actionsAnnotate">actionsAnnotate</a></code></li>
 <li><code><a title="tf.browser.ner.serve.Serve.actionsLean" href="#tf.browser.ner.serve.Serve.actionsLean">actionsLean</a></code></li>
 <li><code><a title="tf.browser.ner.serve.Serve.getBuckets" href="#tf.browser.ner.serve.Serve.getBuckets">getBuckets</a></code></li>
+<li><code><a title="tf.browser.ner.serve.Serve.getStrings" href="#tf.browser.ner.serve.Serve.getStrings">getStrings</a></code></li>
 <li><code><a title="tf.browser.ner.serve.Serve.setHandling" href="#tf.browser.ner.serve.Serve.setHandling">setHandling</a></code></li>
 <li><code><a title="tf.browser.ner.serve.Serve.setupAnnotate" href="#tf.browser.ner.serve.Serve.setupAnnotate">setupAnnotate</a></code></li>
 <li><code><a title="tf.browser.ner.serve.Serve.setupFull" href="#tf.browser.ner.serve.Serve.setupFull">setupFull</a></code></li>

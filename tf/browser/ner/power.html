@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>tf.browser.ner.power API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="API for rule-based entity marking …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -23,12 +23,405 @@
 <h1 class="title">Module <code>tf.browser.ner.power</code></h1>
 </header>
 <section id="section-intro">
+<p>API for rule-based entity marking.</p>
+<p>This module contains the top-level methods for applying annotation rules to a corpus.</p>
+<p>As a preparation, read <code><a title="tf.about.annotate" href="../../about/annotate.html">tf.about.annotate</a></code> first, since it explains the concepts, and
+guides you to set up the configuration for your corpus.</p>
+<h1 id="power-annotation-done-in-a-jupyter-notebook">Power annotation done in a Jupyter Notebook</h1>
+<p>If you have a spreadsheet with named entities, and for each entity a list of surface forms,
+then this module takes care to read that spreadsheet, translate it to yaml,
+and then use the yaml as instructions to add entity annotations to the corpus.</p>
+<p>See this
+<a href="https://nbviewer.jupyter.org/github/HuygensING/suriano/blob/master/programs/powerNer.ipynb">example notebook</a>.</p>
+<p>Here are more details.</p>
+<h2 id="starting-up">Starting up</h2>
+<p>Load the relevant Python modules:</p>
+<pre><code>from tf.app import use
+from tf.browser.ner.power import PowerNER
+</code></pre>
+<p>Load your corpus. There are two ways:</p>
+<ul>
+<li>
+<p>Work with a local GitHub clone of the corpus in <code>~/HuygensING/suriano</code>:</p>
+<p><code>A = use("HuygensING/suriano:clone", checkout="clone")</code></p>
+</li>
+<li>
+<p>Or let Text-Fabric auto-download the latest version and work with that:</p>
+<p><code>A = use("HuygensING/suriano")</code></p>
+</li>
+</ul>
+<p>Load the Power-Annotator module:</p>
+<pre><code>PA = PowerNER(A)
+</code></pre>
+<p>The tool expects some input data to be present: configuration and spreadsheets with
+instructions. They can be found in the <code>ner</code> directory.
+If you work with a local github clone, that data resides in
+<code>~/github/HuygensING/suriano</code>
+and if you work with an auto-downloaded copy of the data, it is in
+<code>~/text-fabric-data/github/HuygensING/suriano</code>.</p>
+<p>The output data of the tool ends up in the <code>_temp</code> directory, which ends up next
+to the <code>ner</code> directory.</p>
+<h2 id="the-entity-spreadsheets">The entity spreadsheets</h2>
+<p>Here is an example:</p>
+<p><img alt="browser" src="../../images/Annotate/spreadsheet.png"></p>
+<p>In our example, the name of the spreadsheet containing this information is
+<code>people.xlsx</code> and it can be found as <code>ner/sheets/people.xlsx</code></p>
+<p>The spreadsheet will be read as follows:</p>
+<ul>
+<li>the first two rows will be skipped</li>
+<li>after that, each row is taken to describe exactly one entity</li>
+<li>the first column has the full and unique name for that entity</li>
+<li>the second column contains the kind of the entity (you may choose your
+keywords freely for this)</li>
+<li>the third column contains a number of surface forms for this entity,
+separated by <code>;</code></li>
+<li>when the surface forms are peeled out, leading and trailing white space will be
+stripped</li>
+<li>all other columns will be ignored for the moment; in later versions we may use
+the information in those columns to fill in extra data about the entities;
+but probably that information will not end up in Text-Fabric features.</li>
+</ul>
+<p>During translation from xlsx to yaml the following happens:</p>
+<ul>
+<li>An identifier is distilled from the name of the entity;</li>
+<li>Missing kind fields are filled with the default kind.</li>
+</ul>
+<p>These steps need some configuration information from the <code>ner/config.yaml</code> file.</p>
+<p>Translation is done by</p>
+<pre><code>PA.readInstructions(&quot;people&quot;)
+</code></pre>
+<p>The resulting yaml ends up next to the
+spreadsheet, and it looks like this:</p>
+<pre><code>christoffel.sticke:
+  kind: PER
+  name: Christoffel Sticke
+  occs: []
+diederik.sticke:
+  kind: PER
+  name: Diederik Sticke
+  occs:
+  - Dierck
+  - Dirk
+dirck.hartog:
+  kind: PER
+  name: Dirck Hartog
+  occs:
+  - Dirich Hartocson
+  - Hertocson
+jan.baptist.roelants:
+  kind: PER
+  name: Jan-Baptist Roelants
+  occs:
+  - Roelans
+  - Rolans
+</code></pre>
+<h2 id="inventory">Inventory</h2>
+<p>A first step is to find out how many occurrences we find in the corpus for these
+surface forms:</p>
+<pre><code>PA.makeInventory()
+PA.showInventory()
+</code></pre>
+<p>and the output looks like this</p>
+<pre><code>...
+
+cornelis.adriaensz       PER   Pach                     7 x Cornelis Adriaensz. Pack
+david.marlot             PER   Morlot                   1 x David de Marlot
+erick.dimmer             PER   Dimer                   11 x Erick Dimmer
+erycius.puteanus         PER   Potiano                  2 x Erycius Puteanus
+francesco.giustiniani    PER   Giustiniano             11 x Francesco Giustiniani
+francois.doubleth        PER   Doublet                  2 x François Doubleth
+
+...
+
+Total 150
+</code></pre>
+<p>Entities that are in the spreadsheet, but not in de corpus are skipped.</p>
+<h2 id="marking-up">Marking up</h2>
+<p>In order to create annotations for these entities, we have to switch to an
+annotation set. Let's start a new set and give it the name <code>power</code>.</p>
+<pre><code>PA.setSet(&quot;power&quot;)
+</code></pre>
+<p>If it turns out that <code>power</code> has already annotations, and you want to clear them, say</p>
+<pre><code>PA.resetSet(&quot;power&quot;)
+</code></pre>
+<p>Now we are ready for the big thing: creating the annotations:</p>
+<pre><code>PA.markEntities()
+</code></pre>
+<p>It outputs this message:</p>
+<pre><code>Already present:     0 x
+Added:             150 x
+</code></pre>
+<h2 id="inspection">Inspection</h2>
+<p>We now revert to lower-level methods from the <code><a title="tf.browser.ner.annotate" href="annotate.html">tf.browser.ner.annotate</a></code> class to
+inspect some of the results.</p>
+<pre><code>results = PA.filterContent(bFind=&quot;pach&quot;, bFindC=False, anyEnt=True, showStats=None)
+</code></pre>
+<p>Here we filtered the chunks (paragraphs) to those that contain the string <code>pach</code>,
+in a case-insensitive way, and that contain at least one entity.</p>
+<p>There 6 of them, and we can show them:</p>
+<pre><code>PA.showContent(results)
+</code></pre>
+<p><img alt="browser" src="../../images/Annotate/pach.png"></p>
+<p>The resulting entities are in <code>_temp/power/entities.tsv</code> and look like this:</p>
+<pre><code>erick.dimmer    PER     160196
+isabella.clara.eugenia  PER     142613
+gaspar.iii.coligny      PER     7877
+isabella.clara.eugenia  PER     210499
+john.vere       PER     94659
+antonio.lando   PER     267755
+isabella.clara.eugenia  PER     107069
+isabella.clara.eugenia  PER     9162
+michiel.pagani  PER     94366
+isabella.clara.eugenia  PER     179208
+isabella.clara.eugenia  PER     258933
+hans.meinhard   PER     75039
+
+...
+</code></pre>
+<p>Each line corresponds to a marked entity occurrence.
+Lines consist of tab separated fields:</p>
+<ul>
+<li>entity identifier</li>
+<li>entity kind</li>
+<li>remaining fields: slots, i.e. the textual positions occupied by the occurrence.
+Some entity occurrences consist of multiple words/tokens, hence have multiple
+slots.</li>
+</ul>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/power.py#L1-L144" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/power.py#L1-L441" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">from openpyxl import load_workbook
+<pre><code class="python">&#34;&#34;&#34;API for rule-based entity marking.
+
+This module contains the top-level methods for applying annotation rules to a corpus.
+
+As a preparation, read `tf.about.annotate` first, since it explains the concepts, and
+guides you to set up the configuration for your corpus.
+
+# Power annotation done in a Jupyter Notebook
+
+If you have a spreadsheet with named entities, and for each entity a list of surface forms,
+then this module takes care to read that spreadsheet, translate it to yaml,
+and then use the yaml as instructions to add entity annotations to the corpus.
+
+See this
+[example notebook](https://nbviewer.jupyter.org/github/HuygensING/suriano/blob/master/programs/powerNer.ipynb).
+
+Here are more details.
+
+## Starting up
+
+Load the relevant Python modules:
+
+```
+from tf.app import use
+from tf.browser.ner.power import PowerNER
+```
+
+Load your corpus. There are two ways:
+
+*   Work with a local GitHub clone of the corpus in `~/HuygensING/suriano`:
+
+    ```
+    A = use(&#34;HuygensING/suriano:clone&#34;, checkout=&#34;clone&#34;)
+    ```
+
+*   Or let Text-Fabric auto-download the latest version and work with that:
+
+    ```
+    A = use(&#34;HuygensING/suriano&#34;)
+    ```
+
+Load the Power-Annotator module:
+
+```
+PA = PowerNER(A)
+```
+
+The tool expects some input data to be present: configuration and spreadsheets with
+instructions. They can be found in the `ner` directory.
+If you work with a local github clone, that data resides in
+`~/github/HuygensING/suriano`
+and if you work with an auto-downloaded copy of the data, it is in
+`~/text-fabric-data/github/HuygensING/suriano`.
+
+The output data of the tool ends up in the `_temp` directory, which ends up next
+to the `ner` directory.
+
+## The entity spreadsheets
+
+Here is an example:
+
+![browser](../../images/Annotate/spreadsheet.png)
+
+In our example, the name of the spreadsheet containing this information is
+`people.xlsx` and it can be found as `ner/sheets/people.xlsx`
+
+The spreadsheet will be read as follows:
+
+*   the first two rows will be skipped
+*   after that, each row is taken to describe exactly one entity
+*   the first column has the full and unique name for that entity
+*   the second column contains the kind of the entity (you may choose your
+    keywords freely for this)
+*   the third column contains a number of surface forms for this entity,
+    separated by `;`
+*   when the surface forms are peeled out, leading and trailing white space will be
+    stripped
+*   all other columns will be ignored for the moment; in later versions we may use
+    the information in those columns to fill in extra data about the entities;
+    but probably that information will not end up in Text-Fabric features.
+
+During translation from xlsx to yaml the following happens:
+
+*   An identifier is distilled from the name of the entity;
+*   Missing kind fields are filled with the default kind.
+
+These steps need some configuration information from the `ner/config.yaml` file.
+
+Translation is done by
+
+```
+PA.readInstructions(&#34;people&#34;)
+```
+
+The resulting yaml ends up next to the
+spreadsheet, and it looks like this:
+
+```
+christoffel.sticke:
+  kind: PER
+  name: Christoffel Sticke
+  occs: []
+diederik.sticke:
+  kind: PER
+  name: Diederik Sticke
+  occs:
+  - Dierck
+  - Dirk
+dirck.hartog:
+  kind: PER
+  name: Dirck Hartog
+  occs:
+  - Dirich Hartocson
+  - Hertocson
+jan.baptist.roelants:
+  kind: PER
+  name: Jan-Baptist Roelants
+  occs:
+  - Roelans
+  - Rolans
+```
+
+## Inventory
+
+A first step is to find out how many occurrences we find in the corpus for these
+surface forms:
+
+```
+PA.makeInventory()
+PA.showInventory()
+```
+
+and the output looks like this
+
+```
+...
+
+cornelis.adriaensz       PER   Pach                     7 x Cornelis Adriaensz. Pack
+david.marlot             PER   Morlot                   1 x David de Marlot
+erick.dimmer             PER   Dimer                   11 x Erick Dimmer
+erycius.puteanus         PER   Potiano                  2 x Erycius Puteanus
+francesco.giustiniani    PER   Giustiniano             11 x Francesco Giustiniani
+francois.doubleth        PER   Doublet                  2 x François Doubleth
+
+...
+
+Total 150
+```
+
+Entities that are in the spreadsheet, but not in de corpus are skipped.
+
+## Marking up
+
+In order to create annotations for these entities, we have to switch to an
+annotation set. Let&#39;s start a new set and give it the name `power`.
+
+```
+PA.setSet(&#34;power&#34;)
+```
+
+If it turns out that `power` has already annotations, and you want to clear them, say
+
+```
+PA.resetSet(&#34;power&#34;)
+```
+
+Now we are ready for the big thing: creating the annotations:
+
+```
+PA.markEntities()
+```
+
+It outputs this message:
+
+```
+Already present:     0 x
+Added:             150 x
+```
+
+## Inspection
+
+We now revert to lower-level methods from the `tf.browser.ner.annotate` class to
+inspect some of the results.
+
+```
+results = PA.filterContent(bFind=&#34;pach&#34;, bFindC=False, anyEnt=True, showStats=None)
+```
+
+Here we filtered the chunks (paragraphs) to those that contain the string `pach`,
+in a case-insensitive way, and that contain at least one entity.
+
+There 6 of them, and we can show them:
+
+```
+PA.showContent(results)
+```
+
+![browser](../../images/Annotate/pach.png)
+
+The resulting entities are in `_temp/power/entities.tsv` and look like this:
+
+```
+erick.dimmer    PER     160196
+isabella.clara.eugenia  PER     142613
+gaspar.iii.coligny      PER     7877
+isabella.clara.eugenia  PER     210499
+john.vere       PER     94659
+antonio.lando   PER     267755
+isabella.clara.eugenia  PER     107069
+isabella.clara.eugenia  PER     9162
+michiel.pagani  PER     94366
+isabella.clara.eugenia  PER     179208
+isabella.clara.eugenia  PER     258933
+hans.meinhard   PER     75039
+
+...
+```
+
+Each line corresponds to a marked entity occurrence.
+Lines consist of tab separated fields:
+
+*   entity identifier
+*   entity kind
+*   remaining fields: slots, i.e. the textual positions occupied by the occurrence.
+    Some entity occurrences consist of multiple words/tokens, hence have multiple
+    slots.
+
+&#34;&#34;&#34;
+
+from openpyxl import load_workbook
 
 from ...core.files import mTime, fileExists, readYaml, writeYaml
 from ...core.helpers import console
@@ -38,9 +431,48 @@ from .annotate import Annotate
 
 class PowerNER(Annotate):
     def __init__(self, app):
+        &#34;&#34;&#34;Bulk entity annotation.
+
+        Contains methods to translate spreadsheets to yaml files with markup
+        instructions; to locate all relevant occurrences; and to mark them up
+        properly.
+
+        It is a high-level class, building on the lower-level tools provided
+        by the Annotate class on which it is based.
+
+        Parameters
+        ----------
+        app: object
+            The object that corresponds to a loaded TF app for a corpus.
+        &#34;&#34;&#34;
         super().__init__(app)
+        self.instructions = None
+        &#34;&#34;&#34;Will contain the information in a spreadsheet for marking up entities.&#34;&#34;&#34;
+
+        self.inventory = None
+        &#34;&#34;&#34;Will contain the locations of all surface forms in the current instructions.
+        &#34;&#34;&#34;
 
     def readInstructions(self, sheetName):
+        &#34;&#34;&#34;Read an Excel spreadsheet with instructions and translates it to YAML.
+
+        It checks the modification dates of the xslx and yaml files.
+        It only performs the translation if the yaml file does not exist or is older
+        than the xslx file.
+
+        The info in the resulting yaml file is stored as attribute
+        `instructions` in this object.
+
+        Reading instructions will invalidate the `inventory` member of this object.
+
+        Parameters
+        ----------
+        sheetName: string
+            The file name without extension of the spreadsheet.
+            The spreadsheet is expected in the `ner/sheets` directory.
+            The yaml file ends up in the same directory, with the same name and
+            extension `.yaml`
+        &#34;&#34;&#34;
         sheetDir = self.sheetDir
 
         xlsFile = f&#34;{sheetDir}/{sheetName}.xlsx&#34;
@@ -81,12 +513,14 @@ class PowerNER(Annotate):
                 if not any(c.value for c in row):
                     continue
 
-                (ent, synonyms) = (normalize(row[i].value or &#34;&#34;) for i in range(2))
+                (ent, kind, synonyms) = (normalize(row[i].value or &#34;&#34;) for i in range(3))
                 eid = toSmallId(ent, transform=transform)
-
                 if not ent:
                     console(f&#34;Row {r:&gt;3}: no entity name&#34;)
                     continue
+
+                if not kind:
+                    kind = defaultKind
 
                 i = 0
                 while eid in info:
@@ -98,7 +532,7 @@ class PowerNER(Annotate):
                     (normalize(x) for x in ([] if not synonyms else synonyms.split(&#34;;&#34;))),
                     key=lambda x: -len(x),
                 )
-                info[eid] = {&#34;name&#34;: ent, kindFeature: defaultKind, &#34;occs&#34;: occs}
+                info[eid] = {&#34;name&#34;: ent, kindFeature: kind, &#34;occs&#34;: occs}
 
             writeYaml(info, asFile=yamlFile)
 
@@ -109,8 +543,19 @@ class PowerNER(Annotate):
             console(f&#34;{noOccs} entities do not have occurrence specifiers&#34;)
 
         self.instructions = readYaml(asFile=yamlFile)
+        self.inventory = None
 
     def makeInventory(self):
+        &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
+
+        The instructions are present in the `instructions` attribute of the object.
+
+        The resulting inventory is stored in the `inventory` member of
+        the object.
+
+        It is a dictionary, keyed by sequences of tokens, whose values are the
+        slot sequences where those token sequences occur in the corpus.
+        &#34;&#34;&#34;
         instructions = self.instructions
 
         qSets = set()
@@ -120,9 +565,13 @@ class PowerNER(Annotate):
                 qSets.add(toTokens(occ))
 
         self.inventory = self.findOccs(qSets)
-        self.showInventory()
 
     def showInventory(self):
+        &#34;&#34;&#34;Shows the inventory.
+
+        The surface forms in the inventory are put into the context of the entities
+        of which they are surface forms.
+        &#34;&#34;&#34;
         instructions = self.instructions
         inventory = self.inventory
 
@@ -130,6 +579,7 @@ class PowerNER(Annotate):
 
         for eid, info in instructions.items():
             name = info.name
+            kind = info.kind
             occs = info.occs
 
             for occ in occs:
@@ -138,11 +588,20 @@ class PowerNER(Annotate):
                     continue
                 n = len(matches)
                 total += n
-                console(f&#34;{eid:&lt;24} {occ:&lt;20} {n:&gt;5} x {name}&#34;)
+                console(f&#34;{eid:&lt;24} {kind:&lt;5} {occ:&lt;20} {n:&gt;5} x {name}&#34;)
 
         console(f&#34;Total {total}&#34;)
 
     def markEntities(self):
+        &#34;&#34;&#34;Marks up the members of the inventory as entities.
+
+        The instructions contain the entity identifier and the entity kind that
+        have to be assigned to the surface forms.
+
+        The inventory knows where the occurrences of the surface forms are.
+        If there is no inventory yet, it will be created.
+        &#34;&#34;&#34;
+        inventory = self.inventory
         instructions = self.instructions
         settings = self.settings
         keywordFeatures = settings.keywordFeatures
@@ -165,9 +624,11 @@ class PowerNER(Annotate):
                 fValsByQTokens.setdefault(qTokens, set()).add((eid, kind))
                 qSets.add(qTokens)
 
-        results = self.findOccs(qSets)
+        if inventory is None:
+            inventory = self.findOccs(qSets)
+            self.inventory = inventory
 
-        for (qTokens, matches) in results.items():
+        for (qTokens, matches) in inventory.items():
             for fVals in fValsByQTokens[qTokens]:
                 newEntities.append((fVals, matches))
 
@@ -188,17 +649,66 @@ class PowerNER(Annotate):
 <span>(</span><span>app)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Bulk entity annotation.</p>
+<p>Contains methods to translate spreadsheets to yaml files with markup
+instructions; to locate all relevant occurrences; and to mark them up
+properly.</p>
+<p>It is a high-level class, building on the lower-level tools provided
+by the Annotate class on which it is based.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
+<dd>The object that corresponds to a loaded TF app for a corpus.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/power.py#L9-L144" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/power.py#L238-L441" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PowerNER(Annotate):
     def __init__(self, app):
+        &#34;&#34;&#34;Bulk entity annotation.
+
+        Contains methods to translate spreadsheets to yaml files with markup
+        instructions; to locate all relevant occurrences; and to mark them up
+        properly.
+
+        It is a high-level class, building on the lower-level tools provided
+        by the Annotate class on which it is based.
+
+        Parameters
+        ----------
+        app: object
+            The object that corresponds to a loaded TF app for a corpus.
+        &#34;&#34;&#34;
         super().__init__(app)
+        self.instructions = None
+        &#34;&#34;&#34;Will contain the information in a spreadsheet for marking up entities.&#34;&#34;&#34;
+
+        self.inventory = None
+        &#34;&#34;&#34;Will contain the locations of all surface forms in the current instructions.
+        &#34;&#34;&#34;
 
     def readInstructions(self, sheetName):
+        &#34;&#34;&#34;Read an Excel spreadsheet with instructions and translates it to YAML.
+
+        It checks the modification dates of the xslx and yaml files.
+        It only performs the translation if the yaml file does not exist or is older
+        than the xslx file.
+
+        The info in the resulting yaml file is stored as attribute
+        `instructions` in this object.
+
+        Reading instructions will invalidate the `inventory` member of this object.
+
+        Parameters
+        ----------
+        sheetName: string
+            The file name without extension of the spreadsheet.
+            The spreadsheet is expected in the `ner/sheets` directory.
+            The yaml file ends up in the same directory, with the same name and
+            extension `.yaml`
+        &#34;&#34;&#34;
         sheetDir = self.sheetDir
 
         xlsFile = f&#34;{sheetDir}/{sheetName}.xlsx&#34;
@@ -239,12 +749,14 @@ class PowerNER(Annotate):
                 if not any(c.value for c in row):
                     continue
 
-                (ent, synonyms) = (normalize(row[i].value or &#34;&#34;) for i in range(2))
+                (ent, kind, synonyms) = (normalize(row[i].value or &#34;&#34;) for i in range(3))
                 eid = toSmallId(ent, transform=transform)
-
                 if not ent:
                     console(f&#34;Row {r:&gt;3}: no entity name&#34;)
                     continue
+
+                if not kind:
+                    kind = defaultKind
 
                 i = 0
                 while eid in info:
@@ -256,7 +768,7 @@ class PowerNER(Annotate):
                     (normalize(x) for x in ([] if not synonyms else synonyms.split(&#34;;&#34;))),
                     key=lambda x: -len(x),
                 )
-                info[eid] = {&#34;name&#34;: ent, kindFeature: defaultKind, &#34;occs&#34;: occs}
+                info[eid] = {&#34;name&#34;: ent, kindFeature: kind, &#34;occs&#34;: occs}
 
             writeYaml(info, asFile=yamlFile)
 
@@ -267,8 +779,19 @@ class PowerNER(Annotate):
             console(f&#34;{noOccs} entities do not have occurrence specifiers&#34;)
 
         self.instructions = readYaml(asFile=yamlFile)
+        self.inventory = None
 
     def makeInventory(self):
+        &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
+
+        The instructions are present in the `instructions` attribute of the object.
+
+        The resulting inventory is stored in the `inventory` member of
+        the object.
+
+        It is a dictionary, keyed by sequences of tokens, whose values are the
+        slot sequences where those token sequences occur in the corpus.
+        &#34;&#34;&#34;
         instructions = self.instructions
 
         qSets = set()
@@ -278,9 +801,13 @@ class PowerNER(Annotate):
                 qSets.add(toTokens(occ))
 
         self.inventory = self.findOccs(qSets)
-        self.showInventory()
 
     def showInventory(self):
+        &#34;&#34;&#34;Shows the inventory.
+
+        The surface forms in the inventory are put into the context of the entities
+        of which they are surface forms.
+        &#34;&#34;&#34;
         instructions = self.instructions
         inventory = self.inventory
 
@@ -288,6 +815,7 @@ class PowerNER(Annotate):
 
         for eid, info in instructions.items():
             name = info.name
+            kind = info.kind
             occs = info.occs
 
             for occ in occs:
@@ -296,11 +824,20 @@ class PowerNER(Annotate):
                     continue
                 n = len(matches)
                 total += n
-                console(f&#34;{eid:&lt;24} {occ:&lt;20} {n:&gt;5} x {name}&#34;)
+                console(f&#34;{eid:&lt;24} {kind:&lt;5} {occ:&lt;20} {n:&gt;5} x {name}&#34;)
 
         console(f&#34;Total {total}&#34;)
 
     def markEntities(self):
+        &#34;&#34;&#34;Marks up the members of the inventory as entities.
+
+        The instructions contain the entity identifier and the entity kind that
+        have to be assigned to the surface forms.
+
+        The inventory knows where the occurrences of the surface forms are.
+        If there is no inventory yet, it will be created.
+        &#34;&#34;&#34;
+        inventory = self.inventory
         instructions = self.instructions
         settings = self.settings
         keywordFeatures = settings.keywordFeatures
@@ -323,9 +860,11 @@ class PowerNER(Annotate):
                 fValsByQTokens.setdefault(qTokens, set()).add((eid, kind))
                 qSets.add(qTokens)
 
-        results = self.findOccs(qSets)
+        if inventory is None:
+            inventory = self.findOccs(qSets)
+            self.inventory = inventory
 
-        for (qTokens, matches) in results.items():
+        for (qTokens, matches) in inventory.items():
             for fVals in fValsByQTokens[qTokens]:
                 newEntities.append((fVals, matches))
 
@@ -339,19 +878,45 @@ class PowerNER(Annotate):
 <li><a title="tf.browser.ner.settings.Settings" href="settings.html#tf.browser.ner.settings.Settings">Settings</a></li>
 <li><a title="tf.browser.ner.show.Show" href="show.html#tf.browser.ner.show.Show">Show</a></li>
 </ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="tf.browser.ner.power.PowerNER.instructions"><code class="name">var <span class="ident">instructions</span></code></dt>
+<dd>
+<div class="desc"><p>Will contain the information in a spreadsheet for marking up entities.</p></div>
+</dd>
+<dt id="tf.browser.ner.power.PowerNER.inventory"><code class="name">var <span class="ident">inventory</span></code></dt>
+<dd>
+<div class="desc"><p>Will contain the locations of all surface forms in the current instructions.</p></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="tf.browser.ner.power.PowerNER.makeInventory"><code class="name flex">
 <span>def <span class="ident">makeInventory</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Explores the corpus for the surface forms mentioned in the instructions.</p>
+<p>The instructions are present in the <code>instructions</code> attribute of the object.</p>
+<p>The resulting inventory is stored in the <code>inventory</code> member of
+the object.</p>
+<p>It is a dictionary, keyed by sequences of tokens, whose values are the
+slot sequences where those token sequences occur in the corpus.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/power.py#L83-L93" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/power.py#L354-L373" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeInventory(self):
+    &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
+
+    The instructions are present in the `instructions` attribute of the object.
+
+    The resulting inventory is stored in the `inventory` member of
+    the object.
+
+    It is a dictionary, keyed by sequences of tokens, whose values are the
+    slot sequences where those token sequences occur in the corpus.
+    &#34;&#34;&#34;
     instructions = self.instructions
 
     qSets = set()
@@ -360,21 +925,33 @@ class PowerNER(Annotate):
         for occ in info.occs:
             qSets.add(toTokens(occ))
 
-    self.inventory = self.findOccs(qSets)
-    self.showInventory()</code></pre>
+    self.inventory = self.findOccs(qSets)</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.power.PowerNER.markEntities"><code class="name flex">
 <span>def <span class="ident">markEntities</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Marks up the members of the inventory as entities.</p>
+<p>The instructions contain the entity identifier and the entity kind that
+have to be assigned to the surface forms.</p>
+<p>The inventory knows where the occurrences of the surface forms are.
+If there is no inventory yet, it will be created.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/power.py#L115-L144" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/power.py#L401-L441" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def markEntities(self):
+    &#34;&#34;&#34;Marks up the members of the inventory as entities.
+
+    The instructions contain the entity identifier and the entity kind that
+    have to be assigned to the surface forms.
+
+    The inventory knows where the occurrences of the surface forms are.
+    If there is no inventory yet, it will be created.
+    &#34;&#34;&#34;
+    inventory = self.inventory
     instructions = self.instructions
     settings = self.settings
     keywordFeatures = settings.keywordFeatures
@@ -397,9 +974,11 @@ class PowerNER(Annotate):
             fValsByQTokens.setdefault(qTokens, set()).add((eid, kind))
             qSets.add(qTokens)
 
-    results = self.findOccs(qSets)
+    if inventory is None:
+        inventory = self.findOccs(qSets)
+        self.inventory = inventory
 
-    for (qTokens, matches) in results.items():
+    for (qTokens, matches) in inventory.items():
         for fVals in fValsByQTokens[qTokens]:
             newEntities.append((fVals, matches))
 
@@ -410,13 +989,46 @@ class PowerNER(Annotate):
 <span>def <span class="ident">readInstructions</span></span>(<span>self, sheetName)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Read an Excel spreadsheet with instructions and translates it to YAML.</p>
+<p>It checks the modification dates of the xslx and yaml files.
+It only performs the translation if the yaml file does not exist or is older
+than the xslx file.</p>
+<p>The info in the resulting yaml file is stored as attribute
+<code>instructions</code> in this object.</p>
+<p>Reading instructions will invalidate the <code>inventory</code> member of this object.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>sheetName</code></strong> :&ensp;<code>string</code></dt>
+<dd>The file name without extension of the spreadsheet.
+The spreadsheet is expected in the <code>ner/sheets</code> directory.
+The yaml file ends up in the same directory, with the same name and
+extension <code>.yaml</code></dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/power.py#L13-L81" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/power.py#L262-L352" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readInstructions(self, sheetName):
+    &#34;&#34;&#34;Read an Excel spreadsheet with instructions and translates it to YAML.
+
+    It checks the modification dates of the xslx and yaml files.
+    It only performs the translation if the yaml file does not exist or is older
+    than the xslx file.
+
+    The info in the resulting yaml file is stored as attribute
+    `instructions` in this object.
+
+    Reading instructions will invalidate the `inventory` member of this object.
+
+    Parameters
+    ----------
+    sheetName: string
+        The file name without extension of the spreadsheet.
+        The spreadsheet is expected in the `ner/sheets` directory.
+        The yaml file ends up in the same directory, with the same name and
+        extension `.yaml`
+    &#34;&#34;&#34;
     sheetDir = self.sheetDir
 
     xlsFile = f&#34;{sheetDir}/{sheetName}.xlsx&#34;
@@ -457,12 +1069,14 @@ class PowerNER(Annotate):
             if not any(c.value for c in row):
                 continue
 
-            (ent, synonyms) = (normalize(row[i].value or &#34;&#34;) for i in range(2))
+            (ent, kind, synonyms) = (normalize(row[i].value or &#34;&#34;) for i in range(3))
             eid = toSmallId(ent, transform=transform)
-
             if not ent:
                 console(f&#34;Row {r:&gt;3}: no entity name&#34;)
                 continue
+
+            if not kind:
+                kind = defaultKind
 
             i = 0
             while eid in info:
@@ -474,7 +1088,7 @@ class PowerNER(Annotate):
                 (normalize(x) for x in ([] if not synonyms else synonyms.split(&#34;;&#34;))),
                 key=lambda x: -len(x),
             )
-            info[eid] = {&#34;name&#34;: ent, kindFeature: defaultKind, &#34;occs&#34;: occs}
+            info[eid] = {&#34;name&#34;: ent, kindFeature: kind, &#34;occs&#34;: occs}
 
         writeYaml(info, asFile=yamlFile)
 
@@ -484,20 +1098,28 @@ class PowerNER(Annotate):
         console(f&#34;{nEid} entities with {nOcc} occurrence specs&#34;)
         console(f&#34;{noOccs} entities do not have occurrence specifiers&#34;)
 
-    self.instructions = readYaml(asFile=yamlFile)</code></pre>
+    self.instructions = readYaml(asFile=yamlFile)
+    self.inventory = None</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.power.PowerNER.showInventory"><code class="name flex">
 <span>def <span class="ident">showInventory</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Shows the inventory.</p>
+<p>The surface forms in the inventory are put into the context of the entities
+of which they are surface forms.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/power.py#L95-L113" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/power.py#L375-L399" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showInventory(self):
+    &#34;&#34;&#34;Shows the inventory.
+
+    The surface forms in the inventory are put into the context of the entities
+    of which they are surface forms.
+    &#34;&#34;&#34;
     instructions = self.instructions
     inventory = self.inventory
 
@@ -505,6 +1127,7 @@ class PowerNER(Annotate):
 
     for eid, info in instructions.items():
         name = info.name
+        kind = info.kind
         occs = info.occs
 
         for occ in occs:
@@ -513,7 +1136,7 @@ class PowerNER(Annotate):
                 continue
             n = len(matches)
             total += n
-            console(f&#34;{eid:&lt;24} {occ:&lt;20} {n:&gt;5} x {name}&#34;)
+            console(f&#34;{eid:&lt;24} {kind:&lt;5} {occ:&lt;20} {n:&gt;5} x {name}&#34;)
 
     console(f&#34;Total {total}&#34;)</code></pre>
 </details>
@@ -523,7 +1146,9 @@ class PowerNER(Annotate):
 <ul class="hlist">
 <li><code><b><a title="tf.browser.ner.annotate.Annotate" href="annotate.html#tf.browser.ner.annotate.Annotate">Annotate</a></b></code>:
 <ul class="hlist">
+<li><code><a title="tf.browser.ner.annotate.Annotate.console" href="annotate.html#tf.browser.ner.annotate.Annotate.console">console</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.filterContent" href="annotate.html#tf.browser.ner.annotate.Annotate.filterContent">filterContent</a></code></li>
+<li><code><a title="tf.browser.ner.annotate.Annotate.findOccs" href="annotate.html#tf.browser.ner.annotate.Annotate.findOccs">findOccs</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.loadData" href="data.html#tf.browser.ner.data.Data.loadData">loadData</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.showEntityOverview" href="show.html#tf.browser.ner.show.Show.showEntityOverview">showEntityOverview</a></code></li>
 </ul>
@@ -587,7 +1212,16 @@ setTimeout(() => input.focus(), 100);
 </script>
 <h1>Index</h1>
 <div class="toc">
-<ul></ul>
+<ul>
+<li><a href="#power-annotation-done-in-a-jupyter-notebook">Power annotation done in a Jupyter Notebook</a><ul>
+<li><a href="#starting-up">Starting up</a></li>
+<li><a href="#the-entity-spreadsheets">The entity spreadsheets</a></li>
+<li><a href="#inventory">Inventory</a></li>
+<li><a href="#marking-up">Marking up</a></li>
+<li><a href="#inspection">Inspection</a></li>
+</ul>
+</li>
+</ul>
 </div>
 <ul id="index">
 <li><h3>Super-module</h3>
@@ -599,7 +1233,9 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li>
 <h4><code><a title="tf.browser.ner.power.PowerNER" href="#tf.browser.ner.power.PowerNER">PowerNER</a></code></h4>
-<ul class="">
+<ul class="two-column">
+<li><code><a title="tf.browser.ner.power.PowerNER.instructions" href="#tf.browser.ner.power.PowerNER.instructions">instructions</a></code></li>
+<li><code><a title="tf.browser.ner.power.PowerNER.inventory" href="#tf.browser.ner.power.PowerNER.inventory">inventory</a></code></li>
 <li><code><a title="tf.browser.ner.power.PowerNER.makeInventory" href="#tf.browser.ner.power.PowerNER.makeInventory">makeInventory</a></code></li>
 <li><code><a title="tf.browser.ner.power.PowerNER.markEntities" href="#tf.browser.ner.power.PowerNER.markEntities">markEntities</a></code></li>
 <li><code><a title="tf.browser.ner.power.PowerNER.readInstructions" href="#tf.browser.ner.power.PowerNER.readInstructions">readInstructions</a></code></li>

@@ -47,8 +47,8 @@ from .settings import ERROR
 
 
 class Sets(Data):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, data=None):
+        super().__init__(data=data)
         settings = self.settings
         entitySet = settings.entitySet
 
@@ -231,6 +231,7 @@ class Sets(Data):
 <dl>
 <dt id="tf.browser.ner.sets.Sets"><code class="flex name class">
 <span>class <span class="ident">Sets</span></span>
+<span>(</span><span>data=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -240,8 +241,8 @@ class Sets(Data):
 <a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/sets.py#L19-L190" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Sets(Data):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, data=None):
+        super().__init__(data=data)
         settings = self.settings
         entitySet = settings.entitySet
 

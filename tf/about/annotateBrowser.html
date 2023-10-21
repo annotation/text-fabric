@@ -179,9 +179,9 @@ can change them.</p>
 That will deselect this occurrence from the <code>add</code> operation.
 More about that below.</p>
 <p>The result looks like this:</p>
-<p><img alt="browser" src="../images/Annotate/result-para1.png"></p>
+<p><img alt="browser" src="../images/Annotate/results-para1.png"></p>
 <p>(the first occurrence is unaffected)</p>
-<p><img alt="browser" src="../images/Annotate/result-para2.png"></p>
+<p><img alt="browser" src="../images/Annotate/results-para2.png"></p>
 <p>(new entity markings show up!).</p>
 <p>Also the control sections look different now:</p>
 <p><img alt="browser" src="../images/Annotate/result-controls.png"></p>
@@ -233,6 +233,10 @@ have a ✅ button after them. If you click it, it turns into a ❌ button,
 and the occurrence becomes deselected. The <code>add</code> operation will forego this
 occurrence and leave it unaffected.
 You can also select or deselect all occurrences in one go.</p>
+<p><strong>N.B.</strong>
+If you have filtered the paragraphs, and under <strong>select</strong> you have chosen to work with
+<code>all</code> results, (de)selecting only works for the occurrences in the filtered paragraphs.
+The other results are not (de)selectable, and will all be affected.</p>
 <p><strong>Several surface forms for one entity</strong></p>
 <p>If you have added an entity, and you mark another one, you'll see a new button next to
 the ✅, namely ❎. It has mostly the same effect, namely marking all occurrences
@@ -249,7 +253,7 @@ Then the work load may not feel doable anymore.</p>
 <p>For that purpose, there is also a <em>power</em> annotate mode, where you run the
 annotator tool in a Jupyter Notebook, driven by a spreadsheet with names and
 surface forms.</p>
-<p>See <code><a title="tf.browser.ner.annotate" href="../browser/ner/annotate.html">tf.browser.ner.annotate</a></code>.</p>
+<p>See <code><a title="tf.browser.ner.power" href="../browser/ner/power.html">tf.browser.ner.power</a></code>.</p>
 <p>You can then still use this tool after the fact to check the entity assignments
 and make fine-tuning corrections.</p>
 <details class="source">
