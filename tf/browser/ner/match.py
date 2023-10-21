@@ -2,6 +2,24 @@ from .settings import NONE
 
 
 def occMatch(L, F, b, qTokenSet, results):
+    """Finds the occurrences of multiple sequences of tokens in a single bucket.
+
+    Parameters
+    ----------
+    L, F: object
+        The TF APIs `F` and `L` for feature lookup and level-switching, and text
+        extraction, see `tf.cheatsheet`
+    b: integer
+        The node of the bucket in question
+    qTokenSet: set, optional set()
+        A set of sequences of tokens. Each sequence in the set will be used as a
+        search pattern, and it occurrences in the bucket are collected.
+    result: dict
+        A dictionary to collect the results in.
+        Keyed by each member of parameter `qTokenSet` the values are
+        the occurrences of that member in the corpus.
+        A single occurrence is represented as a tuple of slots.
+    """
     bTokensAll = [(t, F.str.v(t)) or "" for t in L.d(b, otype="t")]
     bTokens = [x for x in bTokensAll if x[1].strip()]
     bStrings = {s for (t, s) in bTokens}
@@ -48,32 +66,39 @@ def entityMatch(
     eVals,
     qTokens,
     valSelect,
-    requireFree,
+    freeState,
     fValStats,
 ):
-    """Checks whether a bucket matches a sequence of tokens.
+    """Checks whether a bucket satisfies a variety of criteria.
 
     When we do the checking, we ignore empty tokens in the bucket.
 
     Parameters
     ----------
-    entitySlotVal: dict
-        Dictionary from tuples of slots to sets of feature values that such
-        entities can have.
+    entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex: object
+        Various kinds of processed entity data, see `tf.browser.ner.data`
     L, F, T: object
         The TF APIs `F` and `L` for feature lookup and level-switching, and text
-        extraction
+        extraction, see `tf.cheatsheet`
     b: integer
         The node of the bucket in question
-    anyEnt: boolean or None
-        If `None`: no effect
-        If True: overrides qTokens and eVals: looks for any entity annotation
-        If False: lets the bucket through only if it has no annotations.
-    qTokens: list of string
-        The sequence of tokens that must be matched. They are all non-empty and stripped
-        from white space.
-    valSelect: string
-        The entity values that the matched tokens should have
+    bFindRe, anyEnt, eVals, qTokens, valSelect, freeState: object
+        As in `tf.browser.ner.annotate.Annotate.filterContent`
+
+    Returns
+    -------
+    tuple
+        Members:
+
+        *   `fits`: boolean, whether the bucket passes the filter
+        *   `(tokens, matches, positions)`:
+            *   `tokens` all tokens of the bucket, each token is a tuple consisting
+                of its slot number (position) and string value;
+            *   `matches`: a list of the positions of the found occurrences for the
+                `qTokens` and/or `eVals` in the bucket;
+            *   `positions`: a set of positions in the bucket where the
+                `bFindRe` starts to match;
+
     """
     positions = set()
 
@@ -111,11 +136,11 @@ def entityMatch(
 
             slots = tuple(range(t, lastT + 1))
 
-            if requireFree is None:
+            if freeState is None:
                 freeOK = True
             else:
                 bound = any(slot in entitySlotIndex for slot in slots)
-                freeOK = requireFree and not bound or not requireFree and bound
+                freeOK = freeState and not bound or not freeState and bound
 
             if not freeOK:
                 continue
@@ -165,11 +190,11 @@ def entityMatch(
                     lastT = bTokens[i + nTokens - 1][0]
                     slots = tuple(range(t, lastT + 1))
 
-                    if requireFree is None:
+                    if freeState is None:
                         freeOK = True
                     else:
                         bound = any(slot in entitySlotIndex for slot in slots)
-                        freeOK = requireFree and not bound or not requireFree and bound
+                        freeOK = freeState and not bound or not freeState and bound
 
                     if not freeOK:
                         continue
@@ -193,8 +218,6 @@ def entityMatch(
                                 thisOK = True
 
                                 for feat, val in zip(fValStats, valTuple):
-                                    if valSelect is None:
-                                        continue
                                     selectedVals = valSelect[feat]
                                     if val not in selectedVals:
                                         thisOK = False

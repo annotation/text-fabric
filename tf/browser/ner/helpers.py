@@ -75,11 +75,11 @@ def repIdent(features, vals, active=""):
     )
 
 
-def repSummary(summaryFeatures, vals, active=""):
+def repSummary(keywordFeatures, vals, active=""):
     return H.join(
         (
             H.span(val, cls=f"{feat} {active}")
-            for (feat, val) in zip(summaryFeatures, vals)
+            for (feat, val) in zip(keywordFeatures, vals)
         ),
         sep=" ",
     )

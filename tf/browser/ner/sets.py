@@ -17,8 +17,8 @@ from .settings import ERROR
 
 
 class Sets(Data):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, data=None):
+        super().__init__(data=data)
         settings = self.settings
         entitySet = settings.entitySet
 

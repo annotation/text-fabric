@@ -98,7 +98,6 @@ def makeValSelect(annotate, form):
 
     submitter = form["submitter"]
     valSelectProto = {feat: fget(f"{feat}_select", "") for feat in features}
-    annotate.console(f"{valSelectProto=}")
     valSelect = {}
 
     startSearch = submitter in {"lookupq", "lookupn", "freebutton"}
@@ -166,7 +165,6 @@ def initTemplate(annotate, app):
     templateData.featurelist = ",".join(features)
 
     for k, v in form.items():
-        annotate.console(f"{k=} {v=}")
         if not resetForm or k not in templateData:
             templateData[k] = v
 

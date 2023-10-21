@@ -11,7 +11,7 @@ def wrapMessages(messages):
     return H.p((H.span(text, cls=lev) + H.br() for (lev, text) in messages))
 
 
-def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
+def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets, entitySet):
     """HTML for the annoset chooser.
 
     It is a list of buttons, each corresponding to an existing annoset.
@@ -72,7 +72,7 @@ def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
         H.select(
             (
                 H.option(
-                    "generated entities" if annoSet == "" else annoSet,
+                    entitySet if annoSet == "" else annoSet,
                     value=annoSet,
                     selected=annoSet == chosenAnnoSet,
                 )

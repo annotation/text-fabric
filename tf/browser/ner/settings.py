@@ -83,7 +83,6 @@ SC_FILT = "f"
 
 class Settings:
     def __init__(self):
-        self.debug = True  # might be overridden by child class Annotate
         app = self.app
         (specDir, annoDir) = annotateDir(app, TOOLKEY)
         self.specDir = specDir

@@ -1,9 +1,6 @@
-"""API for rule-based annotation
+"""API for marking entities.
 
-This module contains the top-level methods for applying annotation rules to a corpus.
 
-As a preparation, read `tf.about.annotate` first, since it explains the concepts, and
-guides you to set up the configuration for your corpus.
 """
 
 import collections
@@ -20,12 +17,43 @@ from .match import entityMatch, occMatch
 
 
 class Annotate(Sets, Show):
-    def __init__(self, app, data=None, debug=False, browse=False):
+    def __init__(self, app, data=None, browse=False):
+        """Entity annotation.
+
+        Basic methods to handle the various aspects of entity annotation.
+        These methods can be used by code that runs in the Text-Fabric browser
+        and by code that runs in a Jupyter notebook.
+
+        This class handles data, it does not contain code to generate HTML.
+        But it has a parent class, `Show`, that can generate HTML.
+
+        This class works with a fixed annotation set.
+        But it has a parent class, `Sets` that has method to manipulate such sets
+        and switch between them.
+
+        We consider the corpus as a list of buckets (typically level-3 sectional
+        units; in TEI-derived corpora called `chunk`s, being generalizations of
+        `p` (paragraph) elements). What type exactly the buckets are is configured
+        in the `ner/config.yaml` file.
+
+        Parameters
+        ----------
+        app: object
+            The object that corresponds to a loaded TF app for a corpus.
+        data: object, optional None
+            Entity data to start with. If this class is initialized by the browser,
+            the browser hands over the in-memory data that the tool needs.
+            That way, it can maintain access to the same data between requests.
+            If None, no data is habded over, and the in-memory data will be
+            created in this object.
+        browse: boolean, optional False
+            If True, the object is informed that it is run by the Text-Fabric
+            browser. This will influence how results are reported back.
+        """
         self.app = app
-        super().__init__()
+        super().__init__(data=data)
 
         self.F = app.api.F
-        self.debug = debug
         self.browse = browse
 
         settings = self.settings
@@ -38,10 +66,36 @@ class Annotate(Sets, Show):
             self.loadData()
 
     def console(self, msg, **kwargs):
-        if self.debug or not self.browse:
-            cs(msg, **kwargs)
+        """Print something to the output.
 
-    def findOccs(self, qTokenSet=None):
+        This works exactly as `tf.core.helpers.console`
+
+        It is handy to have this as a method on the Annotate object,
+        so that we can issue temporary console statements during development
+        without the need to add an `import` statement to the code.
+        """
+        cs(msg, **kwargs)
+
+    def findOccs(self, qTokenSet=set()):
+        """Finds the occurrences of multiple sequences of tokens.
+
+        This is meant to efficiently list all occurrences of many token
+        sequences in the corpus.
+
+        Parameters
+        ----------
+        qTokenSet: set, optional set()
+            A set of sequences of tokens. Each sequence in the set will be used as a
+            search pattern in the whole corpus, and it occurrences are collected.
+
+        Returns
+        -------
+        dict
+            Keyed by each member of parameter `qTokenSet` the values are
+            the occurrences of that member in the corpus.
+            A single occurrence is represented as a tuple of slots.
+
+        """
         app = self.app
         setData = self.getSetData()
         api = app.api
@@ -68,30 +122,75 @@ class Annotate(Sets, Show):
         qTokens=None,
         valSelect=None,
         freeState=None,
-        noFind=False,
         showStats=None,
     ):
-        """Filter the buckets.
+        """Filter the buckets according to a variety of criteria.
 
-        Will filter the buckets by tokens if the `tokenStart` and `tokenEnd` parameters
-        are both filled in.
-        In that case, we look up the text between those tokens and including.
-        All buckets that contain that text of those slots will show up,
-        all other buckets will be left out.
-        However, if `valSelect` is non-empty, then there is a further filter:
-        only if the
-        text corresponds to an entity with those feature values, the bucket is
-        passed through.
-        The matching slots will be highlighted.
+        Either the buckets of the whole corpus are filtered, or a subset of buckets,
+        namely those contained in a particular node.
+
+        **Bucket filtering**
+
+        The parameters `bFind`, `bFindC`, `bFindRe`  specify a regular expression
+        search on the texts of the buckets.
+
+        The positions of the found occurrences is included in the result.
+
+        The parameter `anyEnt` is a filter on the presence or absence of entities in
+        buckets in general.
+
+        **Entity filtering**
+
+        The parameter `eVals` holds the values of a specific entity to look for.
+
+        **Occurrence filtering**
+
+        The parameter `qTokens` is a sequence of tokens to look for.
+        The occurrences that are found, can be filtered further by `valSelect`
+        and `freeState`.
+
+        In entity filtering and occurrence filtering, the matching occurrences
+        are included in the result.
 
         Parameters
         ----------
-        bFindPattern: string
-            A search string that filters the buckets, before applying the search
+        bFind: string, optional None
+            A search pattern that filters the buckets, before applying the search
             for a token sequence.
+        bFindC: string, optional None
+            Whether the search is case sensitive or not.
+        bFindRe: object, optional None
+            A compiled regular expression.
+            This function searches on `bFindRe`, but if it is None, it compiles
+            `bFind` as regular expression and searches on that. If `bFind` itself
+            is not None, of course.
+        anyEnt: boolean, optional None
+            If True, it wants all buckets that contain at least one already
+            marked entity; if False, it wants all buckets that do not contain any
+            already marked entity.
+        eVals: tuple, optional None
+            A sequence of values corresponding with the entity features `eid`
+            and `kind`. If given, the function wants buckets that contain at least
+            an entity with those properties.
+        qTokens: tuple, optional None
+            A sequence of tokens whose occurrences in the corpus will be looked up.
+        valSelect: dict, optional None
+            If present, the keys are the entity features (`eid` and `kind`),
+            and the values are iterables of values that are allowed.
 
-        valSelect: set
             The feature values to filter on.
+            The results of searching for `eVals` or `qTokens` are filtered further.
+            If a result is also an instance of an already marked entity,
+            the properties of that entity will be compared feature by feature with
+            the allowed values that `valSelect` specifies for that feature.
+        freeState: boolean, optional None
+            If True, found occurrences may not intersect with already marked up
+            features.
+            If False, found occurrences must intersect with already marked up features.
+        showStats: boolean, optional None
+            Whether to show statistics of the find.
+            If None, it only shows gross totals, if False, it shows nothing,
+            if True, it shows totals by feature.
 
         Returns
         -------
@@ -100,8 +199,12 @@ class Annotate(Sets, Show):
             members is added to the list:
 
             *   tokens: the tokens of the bucket
-            *   matches: the match positions of the found text
-            *   positions: the token positions where a targeted token sequence starts
+            *   matches: the match positions of the found occurrences or entity
+            *   positions: the token positions of where the text of the bucket
+                starts matching the `bFindRe`
+
+            If `browse` is True, also some stats are passed next to the list
+            of results.
         """
         settings = self.settings
         bucketType = settings.bucketType
@@ -155,8 +258,6 @@ class Annotate(Sets, Show):
 
         results = []
 
-        self.console(f"{eVals=} {anyEnt=} {valSelect=}")
-
         for b in buckets:
             fValStats = {feat: collections.Counter() for feat in features}
             (fits, result) = entityMatch(
@@ -201,11 +302,12 @@ class Annotate(Sets, Show):
                 if not blocked:
                     nVisible[""][None] += nMatches
 
-            if fits is not None and not fits:
-                continue
+            if node is None:
+                if fits is not None and not fits:
+                    continue
 
-            if ((hasEnt or hasQTokens) and nMatches == 0):
-                continue
+                if (hasEnt or hasQTokens) and nMatches == 0:
+                    continue
 
             results.append((b, *result))
 
@@ -232,14 +334,3 @@ class Annotate(Sets, Show):
             pluralR = "" if nResults == 1 else "s"
             self.console(f"{nResults} {bucketType}{pluralR}")
         return results
-
-    def getStrings(self, tokenStart, tokenEnd):
-        app = self.app
-        api = app.api
-        F = api.F
-
-        return tuple(
-            token
-            for t in range(tokenStart, tokenEnd + 1)
-            if (token := (F.str.v(t) or "").strip())
-        )

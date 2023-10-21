@@ -25,7 +25,6 @@ from .browserparts import (
 class Serve:
     def __init__(self, web):
         self.web = web
-        self.debug = web.debug
         kernelApi = web.kernelApi
         self.app = kernelApi.app
         self.css = kernelApi.css()
@@ -42,9 +41,8 @@ class Serve:
     def setupAnnotate(self):
         data = self.data
         app = self.app
-        debug = self.debug
 
-        annotate = Annotate(app, data=data, debug=debug, browse=True)
+        annotate = Annotate(app, data=data, browse=True)
 
         templateData = initTemplate(annotate, app)
         self.templateData = templateData
@@ -128,6 +126,17 @@ class Serve:
             mayLimit=False,
         )
 
+    def getStrings(self, tokenStart, tokenEnd):
+        app = self.app
+        api = app.api
+        F = api.F
+
+        return tuple(
+            token
+            for t in range(tokenStart, tokenEnd + 1)
+            if (token := (F.str.v(t) or "").strip())
+        )
+
     def getBuckets(self, noFind=False, node=None):
         annotate = self.annotate
         templateData = self.templateData
@@ -148,7 +157,7 @@ class Serve:
             templateData.activeentity = None
 
         qTokens = (
-            annotate.getStrings(tokenStart, tokenEnd)
+            self.getStrings(tokenStart, tokenEnd)
             if tokenStart and tokenEnd
             else None
         )
@@ -166,12 +175,13 @@ class Serve:
             qTokens=qTokens,
             valSelect=valSelect,
             freeState=freeState,
-            noFind=noFind,
         )
 
     def setHandling(self, templateData):
         annotate = self.annotate
         annoDir = annotate.annoDir
+        settings = annotate.settings
+        entitySet = settings.entitySet
 
         chosenAnnoSet = templateData.annoset
         dupAnnoSet = templateData.duannoset
@@ -199,7 +209,9 @@ class Serve:
         annotate.setSet(chosenAnnoSet)
         setNames = annotate.setNames
 
-        templateData.annosets = wrapAnnoSets(annoDir, chosenAnnoSet, setNames)
+        templateData.annosets = wrapAnnoSets(
+            annoDir, chosenAnnoSet, setNames, entitySet
+        )
         templateData.messages = wrapMessages(messages)
 
     def updateHandling(self):

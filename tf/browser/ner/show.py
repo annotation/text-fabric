@@ -29,7 +29,7 @@ class Show:
         HTML string
         """
         settings = self.settings
-        summaryFeatures = settings.summaryFeatures
+        keywordFeatures = settings.keywordFeatures
 
         browse = self.browse
         setData = self.getSetData()
@@ -38,7 +38,7 @@ class Show:
             H.span(
                 H.code(f"{len(es):>5}"),
                 " x ",
-                H.span(repSummary(summaryFeatures, fVals)),
+                H.span(repSummary(keywordFeatures, fVals)),
             )
             + H.br()
             for (fVals, es) in sorted(
