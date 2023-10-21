@@ -64,7 +64,7 @@ following order:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/advanced/display.py#L1-L949" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/display.py#L1-L1008" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Display
@@ -129,6 +129,8 @@ from ..core.files import (
     DOWNLOADS,
     SERVER_DISPLAY_BASE,
     SERVER_DISPLAY,
+    TOOL_DISPLAY_BASE,
+    TOOL_DISPLAY,
 )
 from ..core.timestamp import SILENT_D, silentConvert
 from .helpers import getHeaderTypes, getRowsX, tupleEnum, RESULT, dh, showDict, _getLtr
@@ -178,7 +180,9 @@ def displayApi(app, silent=SILENT_D):
     app.pretty = types.MethodType(pretty, app)
     app.unravel = types.MethodType(unravel, app)
     app.loadCss = types.MethodType(loadCss, app)
+    app.loadToolCss = types.MethodType(loadToolCss, app)
     app.getCss = types.MethodType(getCss, app)
+    app.getToolCss = types.MethodType(getToolCss, app)
     app.displayShow = types.MethodType(displayShow, app)
     app.displaySetup = types.MethodType(displaySetup, app)
     app.displayReset = types.MethodType(displayReset, app)
@@ -348,6 +352,61 @@ def getCss(app):
         &#34;tr.tf.rtl, td.tf.rtl, th.tf.rtl { text-align: right ! important;}\n&#34;
     )
     return f&#34;&lt;style&gt;{tableCss}{genericCss}{appCss}&lt;/style&gt;&#34;
+
+
+def loadToolCss(app, tool, css):
+    &#34;&#34;&#34;Load the Tool CSS for this app.
+
+    If we are in the TF-browser, the generic CSS is already provided, we only
+    need to respond with the app-specific CSS: we return it as string.
+    The flag `app._browse` is used to steer us into this case.
+
+    Otherwise, if we are in a notebook,
+    we collect the complete CSS code from Text-Fabric and the app,
+    and we add a piece to override some of the notebook CSS for tables,
+    which specify a table layout with right aligned cell contents by default.
+
+    We then load the resulting CSS into the notebook.
+
+    Otherwise, we do nothing.
+
+    Returns
+    -------
+    None | string
+        When in the TF browser, the app-dependent CSS is returned.
+        Otherwise, nothing is returned, but the complete CSS is displayed as HTML in the notebook.
+    &#34;&#34;&#34;
+
+    _browse = app._browse
+
+    if _browse:
+        return
+
+    if not app.inNb:
+        return
+
+    allCss = getToolCss(app, tool, css)
+    dh(allCss)
+
+
+def getToolCss(app, tool, css):
+    &#34;&#34;&#34;Export the CSS for a tool of this app.
+
+    Returns
+    -------
+    None | string
+        CSS code, including a surrounding `&lt;style&gt;` element.
+    &#34;&#34;&#34;
+    thisToolDisplayBase = TOOL_DISPLAY_BASE.format(tool)
+    cssPath = f&#34;{dirNm(dirNm(abspath(__file__)))}&#34; f&#34;{thisToolDisplayBase}&#34;
+    cssPath = normpath(cssPath)
+    toolCss = &#34;&#34;
+
+    for cssFile in TOOL_DISPLAY:
+        with open(f&#34;{cssPath}/{cssFile}&#34;, encoding=&#34;utf8&#34;) as fh:
+            toolCss += fh.read()
+
+    return f&#34;&lt;style&gt;{toolCss}&lt;/style&gt;{css}&#34;
 
 
 def export(app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options):
@@ -1050,7 +1109,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/advanced/display.py#L77-L120" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/display.py#L79-L124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayApi(app, silent=SILENT_D):
     &#34;&#34;&#34;Produce the display API.
@@ -1088,7 +1147,9 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
     app.pretty = types.MethodType(pretty, app)
     app.unravel = types.MethodType(unravel, app)
     app.loadCss = types.MethodType(loadCss, app)
+    app.loadToolCss = types.MethodType(loadToolCss, app)
     app.getCss = types.MethodType(getCss, app)
+    app.getToolCss = types.MethodType(getToolCss, app)
     app.displayShow = types.MethodType(displayShow, app)
     app.displaySetup = types.MethodType(displaySetup, app)
     app.displayReset = types.MethodType(displayReset, app)
@@ -1115,7 +1176,7 @@ Otherwise, restore all display settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/advanced/display.py#L183-L200" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/display.py#L187-L204" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayReset(app, *options):
     &#34;&#34;&#34;Restore display parameters to their defaults.
@@ -1173,7 +1234,7 @@ You can show the current values by means of <code><a title="tf.advanced.display.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/advanced/display.py#L147-L180" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/display.py#L151-L184" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displaySetup(app, **options):
     &#34;&#34;&#34;Set up all display parameters.
@@ -1231,7 +1292,7 @@ If no option is passes, all options will be shown.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/advanced/display.py#L123-L144" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/display.py#L127-L148" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayShow(app, *options):
     &#34;&#34;&#34;Show display parameters.
@@ -1364,7 +1425,7 @@ Excel and Numbers will treat it in a special way.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/advanced/display.py#L285-L409" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/display.py#L344-L468" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def export(app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options):
     &#34;&#34;&#34;Exports an iterable of tuples of nodes to an Excel friendly `.tsv` file.
@@ -1509,7 +1570,7 @@ which specify a table layout with right aligned cell contents by default.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/advanced/display.py#L255-L282" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/display.py#L259-L286" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getCss(app):
     &#34;&#34;&#34;Export the CSS for this app.
@@ -1541,6 +1602,41 @@ which specify a table layout with right aligned cell contents by default.</p>
     return f&#34;&lt;style&gt;{tableCss}{genericCss}{appCss}&lt;/style&gt;&#34;</code></pre>
 </details>
 </dd>
+<dt id="tf.advanced.display.getToolCss"><code class="name flex">
+<span>def <span class="ident">getToolCss</span></span>(<span>app, tool, css)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Export the CSS for a tool of this app.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None | string</code></dt>
+<dd>CSS code, including a surrounding <code>&lt;style&gt;</code> element.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/display.py#L324-L341" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getToolCss(app, tool, css):
+    &#34;&#34;&#34;Export the CSS for a tool of this app.
+
+    Returns
+    -------
+    None | string
+        CSS code, including a surrounding `&lt;style&gt;` element.
+    &#34;&#34;&#34;
+    thisToolDisplayBase = TOOL_DISPLAY_BASE.format(tool)
+    cssPath = f&#34;{dirNm(dirNm(abspath(__file__)))}&#34; f&#34;{thisToolDisplayBase}&#34;
+    cssPath = normpath(cssPath)
+    toolCss = &#34;&#34;
+
+    for cssFile in TOOL_DISPLAY:
+        with open(f&#34;{cssPath}/{cssFile}&#34;, encoding=&#34;utf8&#34;) as fh:
+            toolCss += fh.read()
+
+    return f&#34;&lt;style&gt;{toolCss}&lt;/style&gt;{css}&#34;</code></pre>
+</details>
+</dd>
 <dt id="tf.advanced.display.loadCss"><code class="name flex">
 <span>def <span class="ident">loadCss</span></span>(<span>app)</span>
 </code></dt>
@@ -1564,7 +1660,7 @@ Otherwise, nothing is returned, but the complete CSS is displayed as HTML in the
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/advanced/display.py#L203-L252" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/display.py#L207-L256" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadCss(app):
     &#34;&#34;&#34;Load the CSS for this app.
@@ -1618,6 +1714,66 @@ Otherwise, nothing is returned, but the complete CSS is displayed as HTML in the
     )</code></pre>
 </details>
 </dd>
+<dt id="tf.advanced.display.loadToolCss"><code class="name flex">
+<span>def <span class="ident">loadToolCss</span></span>(<span>app, tool, css)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load the Tool CSS for this app.</p>
+<p>If we are in the TF-browser, the generic CSS is already provided, we only
+need to respond with the app-specific CSS: we return it as string.
+The flag <code>app._browse</code> is used to steer us into this case.</p>
+<p>Otherwise, if we are in a notebook,
+we collect the complete CSS code from Text-Fabric and the app,
+and we add a piece to override some of the notebook CSS for tables,
+which specify a table layout with right aligned cell contents by default.</p>
+<p>We then load the resulting CSS into the notebook.</p>
+<p>Otherwise, we do nothing.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None | string</code></dt>
+<dd>When in the TF browser, the app-dependent CSS is returned.
+Otherwise, nothing is returned, but the complete CSS is displayed as HTML in the notebook.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/display.py#L289-L321" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def loadToolCss(app, tool, css):
+    &#34;&#34;&#34;Load the Tool CSS for this app.
+
+    If we are in the TF-browser, the generic CSS is already provided, we only
+    need to respond with the app-specific CSS: we return it as string.
+    The flag `app._browse` is used to steer us into this case.
+
+    Otherwise, if we are in a notebook,
+    we collect the complete CSS code from Text-Fabric and the app,
+    and we add a piece to override some of the notebook CSS for tables,
+    which specify a table layout with right aligned cell contents by default.
+
+    We then load the resulting CSS into the notebook.
+
+    Otherwise, we do nothing.
+
+    Returns
+    -------
+    None | string
+        When in the TF browser, the app-dependent CSS is returned.
+        Otherwise, nothing is returned, but the complete CSS is displayed as HTML in the notebook.
+    &#34;&#34;&#34;
+
+    _browse = app._browse
+
+    if _browse:
+        return
+
+    if not app.inNb:
+        return
+
+    allCss = getToolCss(app, tool, css)
+    dh(allCss)</code></pre>
+</details>
+</dd>
 <dt id="tf.advanced.display.plain"><code class="name flex">
 <span>def <span class="ident">plain</span></span>(<span>app, n, explain=False, **options)</span>
 </code></dt>
@@ -1650,7 +1806,7 @@ Depending on <code>_asString</code> above.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/advanced/display.py#L704-L735" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/display.py#L763-L794" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
     &#34;&#34;&#34;Display the plain text of a node.
@@ -1735,7 +1891,7 @@ Depending on <em>asString</em> above.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/advanced/display.py#L508-L701" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/display.py#L567-L760" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def plainTuple(
     app,
@@ -1976,7 +2132,7 @@ Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/advanced/display.py#L891-L929" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/display.py#L950-L988" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def pretty(app, n, explain=False, _asString=False, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a node in a graphical way.
@@ -2053,7 +2209,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/advanced/display.py#L813-L888" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/display.py#L872-L947" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def prettyTuple(app, tup, seq=None, _asString=False, item=RESULT, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a tuple of nodes in a graphical way.
@@ -2165,7 +2321,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/advanced/display.py#L741-L810" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/display.py#L800-L869" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def show(app, tuples, _asString=False, **options):
     &#34;&#34;&#34;Displays an iterable of tuples of nodes.
@@ -2268,7 +2424,7 @@ HTML string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/advanced/display.py#L415-L505" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/display.py#L474-L564" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def table(app, tuples, _asString=False, **options):
     &#34;&#34;&#34;Plain displays of an iterable of tuples of nodes in a table.
@@ -2445,7 +2601,9 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.advanced.display.displayShow" href="#tf.advanced.display.displayShow">displayShow</a></code></li>
 <li><code><a title="tf.advanced.display.export" href="#tf.advanced.display.export">export</a></code></li>
 <li><code><a title="tf.advanced.display.getCss" href="#tf.advanced.display.getCss">getCss</a></code></li>
+<li><code><a title="tf.advanced.display.getToolCss" href="#tf.advanced.display.getToolCss">getToolCss</a></code></li>
 <li><code><a title="tf.advanced.display.loadCss" href="#tf.advanced.display.loadCss">loadCss</a></code></li>
+<li><code><a title="tf.advanced.display.loadToolCss" href="#tf.advanced.display.loadToolCss">loadToolCss</a></code></li>
 <li><code><a title="tf.advanced.display.plain" href="#tf.advanced.display.plain">plain</a></code></li>
 <li><code><a title="tf.advanced.display.plainTuple" href="#tf.advanced.display.plainTuple">plainTuple</a></code></li>
 <li><code><a title="tf.advanced.display.pretty" href="#tf.advanced.display.pretty">pretty</a></code></li>

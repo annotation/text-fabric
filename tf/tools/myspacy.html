@@ -36,7 +36,7 @@ language modules.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/tools/myspacy.py#L1-L374" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/tools/myspacy.py#L1-L378" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Get words and tokens from a plain text with the help of Spacy.
 
@@ -119,6 +119,10 @@ class Spacy:
         langModels = {}
         languages = {}
 
+        self.canTag = False
+        self.canMorph = False
+        self.canLemma = False
+
         for spec in LANG_MODELS:
             (lng, model, language) = spec.split(maxsplit=2)
             langModels[lng] = f&#34;{lng}_{model}_sm&#34;
@@ -175,7 +179,7 @@ class Spacy:
                 else:
                     continue
 
-        console(f&#34;NLP with language model {targetLang} {parser=}&#34;)
+        console(f&#34;NLP with language model {targetLang} {parser}&#34;)
 
         if loaded:
             try:
@@ -460,7 +464,7 @@ def nlpOutput(text, lang=&#34;en&#34;, ner=False, parser=False):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/tools/myspacy.py#L339-L374" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/tools/myspacy.py#L343-L378" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def nlpOutput(text, lang=&#34;en&#34;, ner=False, parser=False):
     &#34;&#34;&#34;Runs the Spacy NLP pipeline and delivers the results.
@@ -530,7 +534,7 @@ called <code>xx</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/tools/myspacy.py#L57-L336" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/tools/myspacy.py#L57-L340" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Spacy:
     def __init__(self, lang=None, parser=False):
@@ -556,6 +560,10 @@ called <code>xx</code>.</p>
         &#34;&#34;&#34;
         langModels = {}
         languages = {}
+
+        self.canTag = False
+        self.canMorph = False
+        self.canLemma = False
 
         for spec in LANG_MODELS:
             (lng, model, language) = spec.split(maxsplit=2)
@@ -613,7 +621,7 @@ called <code>xx</code>.</p>
                 else:
                     continue
 
-        console(f&#34;NLP with language model {targetLang} {parser=}&#34;)
+        console(f&#34;NLP with language model {targetLang} {parser}&#34;)
 
         if loaded:
             try:
@@ -837,7 +845,7 @@ Character positions start at 0.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/tools/myspacy.py#L301-L336" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/tools/myspacy.py#L305-L340" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getEntities(self):
     &#34;&#34;&#34;Get the resulting named entities.
@@ -898,7 +906,7 @@ Character positions start at 0.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/tools/myspacy.py#L254-L299" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/tools/myspacy.py#L258-L303" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getSentences(self):
     &#34;&#34;&#34;Get the resulting sentences.
@@ -977,7 +985,7 @@ where the tokens themselves are, and spaces do nto belong to the tokens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/tools/myspacy.py#L206-L252" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/tools/myspacy.py#L210-L256" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getTokens(self):
     &#34;&#34;&#34;Get the resulting tokens.
@@ -1044,7 +1052,7 @@ words on a decent laptop.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/tools/myspacy.py#L183-L204" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/tools/myspacy.py#L187-L208" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def read(self, text):
     &#34;&#34;&#34;Process a plain text.

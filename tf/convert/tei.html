@@ -390,7 +390,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/tei.py#L1-L4234" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/tei.py#L1-L4231" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -879,7 +879,6 @@ from io import BytesIO
 from subprocess import run
 from importlib import util
 
-import yaml
 from lxml import etree
 from .helpers import (
     setUp,
@@ -921,6 +920,8 @@ from ..core.files import (
     fileExists,
     fileCopy,
     scanDir,
+    readYaml,
+    writeYaml,
 )
 
 from ..tools.xmlschema import Analysis
@@ -1338,11 +1339,7 @@ class TEI:
 
         self.schemaDir = schemaDir
 
-        settings = {}
-        if fileExists(convertSpec):
-            with open(convertSpec, encoding=&#34;utf8&#34;) as fh:
-                text = fh.read()
-            settings = yaml.load(text, Loader=yaml.FullLoader)
+        settings = readYaml(asFile=convertSpec, plain=True)
 
         customKeys = set(
             &#34;&#34;&#34;
@@ -3461,8 +3458,8 @@ class TEI:
                 )
                 inPage = cur[&#34;inPage&#34;]
 
+                pbAtTop = pageProperties[&#34;pbAtTop&#34;]
                 if isPageContainer:
-                    pbAtTop = pageProperties[&#34;pbAtTop&#34;]
                     cur[&#34;inPage&#34;] = True
 
                     if pbAtTop:
@@ -3561,7 +3558,7 @@ class TEI:
                         cur[NODE][pageType] = cv.node(pageType)
                         cur[&#34;pageAtts&#34;] = atts
 
-            elif tag not in PASS_THROUGH:
+            if tag not in PASS_THROUGH:
                 cur[&#34;afterSpace&#34;] = False
                 cur[NODE][tag] = cv.node(tag)
                 curNode = cur[NODE][tag]
@@ -3650,7 +3647,7 @@ class TEI:
 
             if makePageElems and inPage and tag == &#34;pb&#34;:
                 pass
-            elif tag not in PASS_THROUGH:
+            if tag not in PASS_THROUGH:
                 curNode = cur[TNEST][-1]
                 slots = cv.linked(curNode)
                 empty = len(slots) == 0
@@ -4208,7 +4205,7 @@ class TEI:
         def createConfig(sourceText, customText):
             text = sourceText.replace(&#34;«version»&#34;, f&#39;&#34;{version}&#34;&#39;)
 
-            settings = yaml.load(text, Loader=yaml.FullLoader)
+            settings = readYaml(text=text, plain=True)
             settings.setdefault(&#34;provenanceSpec&#34;, {})[&#34;branch&#34;] = BRANCH_DEFAULT_NEW
 
             if tokenBased:
@@ -4216,12 +4213,12 @@ class TEI:
                     del settings[&#34;typeDisplay&#34;][&#34;word&#34;]
 
             customSettings = (
-                {} if not customText else yaml.load(customText, Loader=yaml.FullLoader)
+                {} if not customText else readYaml(text=customText, plain=True)
             )
 
             mergeDict(settings, customSettings)
 
-            text = yaml.dump(settings, allow_unicode=True)
+            text = writeYaml(settings)
 
             return text
 
@@ -4643,7 +4640,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/tei.py#L748-L765" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/tei.py#L749-L766" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRefs(tag, atts, xmlFile):
     refAtt = REFERENCING.get(tag, None)
@@ -4673,7 +4670,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/tei.py#L4220-L4230" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/tei.py#L4217-L4227" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(
@@ -4696,7 +4693,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/tei.py#L731-L745" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/tei.py#L732-L746" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCssInfo():
     &#34;&#34;&#34;Make the CSS info for the stylesheet.&#34;&#34;&#34;
@@ -4844,7 +4841,7 @@ relevant tf version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/tei.py#L768-L4217" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/tei.py#L769-L4214" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI:
     def __init__(
@@ -5025,11 +5022,7 @@ relevant tf version:</p>
 
         self.schemaDir = schemaDir
 
-        settings = {}
-        if fileExists(convertSpec):
-            with open(convertSpec, encoding=&#34;utf8&#34;) as fh:
-                text = fh.read()
-            settings = yaml.load(text, Loader=yaml.FullLoader)
+        settings = readYaml(asFile=convertSpec, plain=True)
 
         customKeys = set(
             &#34;&#34;&#34;
@@ -7148,8 +7141,8 @@ relevant tf version:</p>
                 )
                 inPage = cur[&#34;inPage&#34;]
 
+                pbAtTop = pageProperties[&#34;pbAtTop&#34;]
                 if isPageContainer:
-                    pbAtTop = pageProperties[&#34;pbAtTop&#34;]
                     cur[&#34;inPage&#34;] = True
 
                     if pbAtTop:
@@ -7248,7 +7241,7 @@ relevant tf version:</p>
                         cur[NODE][pageType] = cv.node(pageType)
                         cur[&#34;pageAtts&#34;] = atts
 
-            elif tag not in PASS_THROUGH:
+            if tag not in PASS_THROUGH:
                 cur[&#34;afterSpace&#34;] = False
                 cur[NODE][tag] = cv.node(tag)
                 curNode = cur[NODE][tag]
@@ -7337,7 +7330,7 @@ relevant tf version:</p>
 
             if makePageElems and inPage and tag == &#34;pb&#34;:
                 pass
-            elif tag not in PASS_THROUGH:
+            if tag not in PASS_THROUGH:
                 curNode = cur[TNEST][-1]
                 slots = cv.linked(curNode)
                 empty = len(slots) == 0
@@ -7895,7 +7888,7 @@ relevant tf version:</p>
         def createConfig(sourceText, customText):
             text = sourceText.replace(&#34;«version»&#34;, f&#39;&#34;{version}&#34;&#39;)
 
-            settings = yaml.load(text, Loader=yaml.FullLoader)
+            settings = readYaml(text=text, plain=True)
             settings.setdefault(&#34;provenanceSpec&#34;, {})[&#34;branch&#34;] = BRANCH_DEFAULT_NEW
 
             if tokenBased:
@@ -7903,12 +7896,12 @@ relevant tf version:</p>
                     del settings[&#34;typeDisplay&#34;][&#34;word&#34;]
 
             customSettings = (
-                {} if not customText else yaml.load(customText, Loader=yaml.FullLoader)
+                {} if not customText else readYaml(text=customText, plain=True)
             )
 
             mergeDict(settings, customSettings)
 
-            text = yaml.dump(settings, allow_unicode=True)
+            text = writeYaml(settings)
 
             return text
 
@@ -8336,7 +8329,7 @@ that code between automatic generation of files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/tei.py#L3745-L4107" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/tei.py#L3742-L4104" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self, tokenBased=False):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -8410,7 +8403,7 @@ that code between automatic generation of files.</p>
     def createConfig(sourceText, customText):
         text = sourceText.replace(&#34;«version»&#34;, f&#39;&#34;{version}&#34;&#39;)
 
-        settings = yaml.load(text, Loader=yaml.FullLoader)
+        settings = readYaml(text=text, plain=True)
         settings.setdefault(&#34;provenanceSpec&#34;, {})[&#34;branch&#34;] = BRANCH_DEFAULT_NEW
 
         if tokenBased:
@@ -8418,12 +8411,12 @@ that code between automatic generation of files.</p>
                 del settings[&#34;typeDisplay&#34;][&#34;word&#34;]
 
         customSettings = (
-            {} if not customText else yaml.load(customText, Loader=yaml.FullLoader)
+            {} if not customText else readYaml(text=customText, plain=True)
         )
 
         mergeDict(settings, customSettings)
 
-        text = yaml.dump(settings, allow_unicode=True)
+        text = writeYaml(settings)
 
         return text
 
@@ -8719,7 +8712,7 @@ There should be a valid TF dataset and app configuration in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/tei.py#L4111-L4144" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/tei.py#L4108-L4141" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def browseTask(self):
     &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
@@ -8784,7 +8777,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/tei.py#L1569-L2234" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/tei.py#L1566-L2231" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -9468,7 +9461,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/tei.py#L3642-L3697" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/tei.py#L3639-L3694" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -9541,7 +9534,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/tei.py#L2238-L2251" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/tei.py#L2235-L2248" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -9582,7 +9575,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/tei.py#L2255-L3640" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/tei.py#L2252-L3637" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -10399,8 +10392,8 @@ that has access to this data.</p>
             )
             inPage = cur[&#34;inPage&#34;]
 
+            pbAtTop = pageProperties[&#34;pbAtTop&#34;]
             if isPageContainer:
-                pbAtTop = pageProperties[&#34;pbAtTop&#34;]
                 cur[&#34;inPage&#34;] = True
 
                 if pbAtTop:
@@ -10499,7 +10492,7 @@ that has access to this data.</p>
                     cur[NODE][pageType] = cv.node(pageType)
                     cur[&#34;pageAtts&#34;] = atts
 
-        elif tag not in PASS_THROUGH:
+        if tag not in PASS_THROUGH:
             cur[&#34;afterSpace&#34;] = False
             cur[NODE][tag] = cv.node(tag)
             curNode = cur[NODE][tag]
@@ -10588,7 +10581,7 @@ that has access to this data.</p>
 
         if makePageElems and inPage and tag == &#34;pb&#34;:
             pass
-        elif tag not in PASS_THROUGH:
+        if tag not in PASS_THROUGH:
             curNode = cur[TNEST][-1]
             slots = cv.linked(curNode)
             empty = len(slots) == 0
@@ -10986,7 +10979,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/tei.py#L1474-L1492" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/tei.py#L1471-L1489" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getParser(self):
     &#34;&#34;&#34;Configure the lxml parser.
@@ -11017,7 +11010,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/tei.py#L1431-L1472" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/tei.py#L1428-L1469" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getSwitches(self, xmlPath):
     verbose = self.verbose
@@ -11084,7 +11077,7 @@ that contains the file names in that folder, sorted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/tei.py#L1494-L1567" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/tei.py#L1491-L1564" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the TEI source files.
@@ -11182,7 +11175,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/tei.py#L3699-L3741" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/tei.py#L3696-L3738" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -11237,7 +11230,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/tei.py#L1388-L1429" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/tei.py#L1385-L1426" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readSchemas(self):
     schemaDir = self.schemaDir
@@ -11321,7 +11314,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/tei.py#L4146-L4217" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/tei.py#L4143-L4214" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,

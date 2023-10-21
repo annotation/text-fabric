@@ -26,21 +26,25 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/ner/web.py#L1-L26" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/web.py#L1-L38" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from flask import Blueprint, send_file
 
 from ...core.files import abspath, fileExists, dirNm
-from .serve import serveNer
+from .settings import TOOLKEY
+from .serve import serveNer, serveNerContext
+
 
 MY_DIR = dirNm(abspath(__file__))
+
+METHODS = [&#34;GET&#34;, &#34;POST&#34;]
 
 
 def factory(web):
     app = Blueprint(
-        &#34;ner&#34;,
+        TOOLKEY,
         __name__,
-        url_prefix=&#34;/ner&#34;,
+        url_prefix=f&#34;/{TOOLKEY}&#34;,
         template_folder=&#34;templates&#34;,
     )
 
@@ -49,9 +53,17 @@ def factory(web):
         theFile = f&#34;{MY_DIR}/static/{filepath}&#34;
         return send_file(theFile) if fileExists(theFile) else &#34;&#34;
 
-    @app.route(&#34;/index&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    @app.route(&#34;/index&#34;, methods=METHODS)
     def serveNerX():
         return serveNer(web)
+
+    @app.route(&#34;/context/&lt;int:node&gt;&#34;, methods=METHODS)
+    def serveNerContextX(node):
+        return serveNerContext(web, node)
+
+    @app.route(&#34;/&lt;path:anything&gt;&#34;, methods=METHODS)
+    def serveAllX(anything=None):
+        return f&#34;path={anything}&#34;
 
     return app</code></pre>
 </details>
@@ -71,13 +83,13 @@ def factory(web):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/ner/web.py#L9-L26" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/web.py#L13-L38" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def factory(web):
     app = Blueprint(
-        &#34;ner&#34;,
+        TOOLKEY,
         __name__,
-        url_prefix=&#34;/ner&#34;,
+        url_prefix=f&#34;/{TOOLKEY}&#34;,
         template_folder=&#34;templates&#34;,
     )
 
@@ -86,9 +98,17 @@ def factory(web):
         theFile = f&#34;{MY_DIR}/static/{filepath}&#34;
         return send_file(theFile) if fileExists(theFile) else &#34;&#34;
 
-    @app.route(&#34;/index&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    @app.route(&#34;/index&#34;, methods=METHODS)
     def serveNerX():
         return serveNer(web)
+
+    @app.route(&#34;/context/&lt;int:node&gt;&#34;, methods=METHODS)
+    def serveNerContextX(node):
+        return serveNerContext(web, node)
+
+    @app.route(&#34;/&lt;path:anything&gt;&#34;, methods=METHODS)
+    def serveAllX(anything=None):
+        return f&#34;path={anything}&#34;
 
     return app</code></pre>
 </details>

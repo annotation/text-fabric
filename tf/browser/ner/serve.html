@@ -29,7 +29,7 @@ the annotation tool.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/ner/serve.py#L1-L204" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L1-L271" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Main controller for Flask
 
@@ -37,204 +37,271 @@ This module contains the main controller that Flask invokes when serving
 the annotation tool.
 &#34;&#34;&#34;
 
-import re
-
 from flask import render_template
 
-from ...core.files import initTree, annotateDir, dirCopy, dirMove, dirRemove, dirExists
+from ...core.generic import AttrDict
 
-from .servelib import getFormData, annoSets
-from .kernel import loadData
-from .tables import (
-    composeE,
-    composeS,
-    composeQ,
-    saveEntity,
-    delEntity,
-    filterS,
+from .settings import TOOLKEY, SC_ALL
+from .helpers import makeCss
+from .annotate import Annotate
+from .servelib import initTemplate, findSetup, adaptValSelect
+from .browserparts import (
+    wrapEntityHeaders,
+    wrapQuery,
+    wrapActive,
+    wrapReport,
+    wrapMessages,
+    wrapAnnoSets,
 )
-from .wrap import wrapAnnoSets, wrapEntityHeaders, wrapEntityFeats, wrapMessages
+
+
+class Serve:
+    def __init__(self, web):
+        self.web = web
+        self.debug = web.debug
+        kernelApi = web.kernelApi
+        self.app = kernelApi.app
+        self.css = kernelApi.css()
+
+        if not hasattr(web, &#34;toolData&#34;):
+            setattr(web, &#34;toolData&#34;, AttrDict())
+        toolData = web.toolData
+
+        if TOOLKEY not in toolData:
+            toolData[TOOLKEY] = AttrDict()
+
+        self.data = toolData[TOOLKEY]
+
+    def setupAnnotate(self):
+        data = self.data
+        app = self.app
+        debug = self.debug
+
+        annotate = Annotate(app, data=data, debug=debug, browse=True)
+
+        templateData = initTemplate(annotate, app)
+        self.templateData = templateData
+
+        annoSet = templateData.annoset
+
+        annotate.setSet(annoSet)
+        self.annotate = annotate
+        annotate.loadData()
+
+    def setupFull(self):
+        css = self.css
+
+        self.setupAnnotate()
+        annotate = self.annotate
+        settings = annotate.settings
+        features = settings.features
+        keywordFeatures = settings.keywordFeatures
+
+        templateData = self.templateData
+
+        findSetup(templateData)
+        wrapActive(templateData)
+        templateData.css = makeCss(features, keywordFeatures, generic=css)
+
+    def setupLean(self):
+        self.setupAnnotate()
+        templateData = self.templateData
+
+        wrapActive(templateData)
+
+    def actionsAnnotate(self):
+        templateData = self.templateData
+
+        self.setHandling(templateData)
+
+        self.getBuckets()
+        self.updateHandling()
+
+    def actionsLean(self, node):
+        self.getBuckets(node=node)
+
+    def wrapAnnotate(self):
+        annotate = self.annotate
+        templateData = self.templateData
+        sortKey = templateData.sortkey
+        sortDir = templateData.sortdir
+        activeEntity = templateData.activeentity
+        tokenStart = templateData.tokenstart
+        tokenEnd = templateData.tokenend
+        excludedTokens = templateData.excludedtokens
+
+        buckets = self.buckets
+
+        wrapQuery(annotate, templateData)
+        templateData.entitytable = annotate.showEntities(
+            activeEntity=activeEntity, sortKey=sortKey, sortDir=sortDir
+        )
+        templateData.entityoverview = annotate.showEntityOverview()
+        templateData.entityheaders = wrapEntityHeaders(annotate, sortKey, sortDir)
+        templateData.buckets = annotate.showContent(
+            buckets,
+            activeEntity=activeEntity,
+            excludedTokens=excludedTokens,
+            mayLimit=not (tokenStart and tokenEnd),
+        )
+
+        return render_template(f&#34;{TOOLKEY}/index.html&#34;, **templateData)
+
+    def wrapLean(self):
+        annotate = self.annotate
+        templateData = self.templateData
+        activeEntity = templateData.activeentity
+        excludedTokens = templateData.excludedtokens
+        buckets = self.buckets
+
+        return annotate.showContent(
+            buckets,
+            activeEntity=activeEntity,
+            excludedTokens=excludedTokens,
+            mayLimit=False,
+        )
+
+    def getBuckets(self, noFind=False, node=None):
+        annotate = self.annotate
+        templateData = self.templateData
+
+        bFindRe = None if noFind else templateData.bfindre
+        anyEnt = templateData.anyent
+        activeEntity = templateData.activeentity
+        tokenStart = templateData.tokenstart
+        tokenEnd = templateData.tokenend
+        valSelect = templateData.valselect
+        freeState = templateData.freestate
+
+        setData = annotate.getSetData()
+        entityIdent = setData.entityIdent
+
+        if activeEntity not in entityIdent:
+            activeEntity = None
+            templateData.activeentity = None
+
+        qTokens = (
+            annotate.getStrings(tokenStart, tokenEnd)
+            if tokenStart and tokenEnd
+            else None
+        )
+
+        (
+            self.buckets,
+            templateData.nfind,
+            templateData.nvisible,
+            templateData.nent,
+        ) = annotate.filterContent(
+            node=node,
+            bFindRe=bFindRe,
+            anyEnt=anyEnt,
+            eVals=activeEntity,
+            qTokens=qTokens,
+            valSelect=valSelect,
+            freeState=freeState,
+            noFind=noFind,
+        )
+
+    def setHandling(self, templateData):
+        annotate = self.annotate
+        annoDir = annotate.annoDir
+        settings = annotate.settings
+        entitySet = settings.entitySet
+
+        chosenAnnoSet = templateData.annoset
+        dupAnnoSet = templateData.duannoset
+        renamedAnnoSet = templateData.rannoset
+        deleteAnnoSet = templateData.dannoset
+
+        messages = []
+
+        if deleteAnnoSet:
+            messages.extend(annotate.setDel(deleteAnnoSet))
+            templateData.dannoset = &#34;&#34;
+            templateData.annoset = &#34;&#34;
+
+        if dupAnnoSet:
+            messages.extend(annotate.setDup(dupAnnoSet))
+            templateData.annoset = dupAnnoSet
+            templateData.duannoset = &#34;&#34;
+
+        if renamedAnnoSet and chosenAnnoSet:
+            messages.extend(annotate.setMove(renamedAnnoSet))
+            templateData.annoset = renamedAnnoSet
+            templateData.rannoset = &#34;&#34;
+
+        chosenAnnoSet = templateData.annoset
+        annotate.setSet(chosenAnnoSet)
+        setNames = annotate.setNames
+
+        templateData.annosets = wrapAnnoSets(
+            annoDir, chosenAnnoSet, setNames, entitySet
+        )
+        templateData.messages = wrapMessages(messages)
+
+    def updateHandling(self):
+        annotate = self.annotate
+        templateData = self.templateData
+
+        delData = templateData.deldata
+        addData = templateData.adddata
+        activeEntity = templateData.activeentity
+        tokenStart = templateData.tokenstart
+        tokenEnd = templateData.tokenend
+        submitter = templateData.submitter
+        excludedTokens = templateData.excludedtokens
+        bFindRe = templateData.bfindre
+        scope = templateData.scope
+
+        hasEnt = activeEntity is not None
+        hasOcc = tokenStart is not None and tokenEnd is not None
+
+        if (
+            submitter in {&#34;delgo&#34;, &#34;addgo&#34;}
+            and (delData or addData)
+            and (hasEnt or hasOcc)
+        ):
+            if bFindRe and scope == SC_ALL:
+                self.getBuckets(noFind=True)
+
+            if submitter == &#34;delgo&#34; and delData:
+                report = annotate.delEntityRich(
+                    delData.deletions, self.buckets, excludedTokens=excludedTokens
+                )
+                annotate.loadData()
+                wrapReport(annotate, templateData, report, &#34;del&#34;)
+                if hasEnt:
+                    setData = annotate.getSetData()
+                    entityIdent = setData.entityIdent
+
+                    stillExists = activeEntity in entityIdent
+                    if not stillExists:
+                        templateData.activeentity = None
+
+            if submitter == &#34;addgo&#34; and addData:
+                report = annotate.addEntityRich(
+                    addData.additions, self.buckets, excludedTokens=excludedTokens
+                )
+                annotate.loadData()
+                wrapReport(annotate, templateData, report, &#34;add&#34;)
+
+            adaptValSelect(annotate, templateData)
+
+            self.getBuckets()
 
 
 def serveNer(web):
-    &#34;&#34;&#34;Serves the NE annotation tool.
+    serve = Serve(web)
+    serve.setupFull()
+    serve.actionsAnnotate()
+    return serve.wrapAnnotate()
 
-    Parameters
-    ----------
-    web: object
-        The flask web app
-    &#34;&#34;&#34;
 
-    web.console(&#34;START controller&#34;)
-    aContext = web.context
-    appName = aContext.appName.replace(&#34;/&#34;, &#34; / &#34;)
-
-    kernelApi = web.kernelApi
-    app = kernelApi.app
-    api = app.api
-    F = api.F
-    slotType = F.otype.slotType
-
-    annoDir = annotateDir(app, &#34;ner&#34;)
-    initTree(annoDir, fresh=False)
-    sets = annoSets(annoDir)
-
-    form = getFormData(web)
-    resetForm = form[&#34;resetForm&#34;]
-
-    css = kernelApi.css()
-
-    templateData = {}
-    messages = []
-
-    for (k, v) in form.items():
-        if not resetForm or k not in templateData:
-            templateData[k] = v
-
-    valSelect = templateData[&#34;valselect&#34;]
-    chosenAnnoSet = templateData[&#34;annoset&#34;]
-    dupAnnoSet = templateData[&#34;duannoset&#34;]
-    renamedAnnoSet = templateData[&#34;rannoset&#34;]
-    deleteAnnoSet = templateData[&#34;dannoset&#34;]
-
-    if deleteAnnoSet:
-        annoPath = f&#34;{annoDir}/{deleteAnnoSet}&#34;
-        dirRemove(annoPath)
-        if dirExists(annoPath):
-            messages.append((&#34;error&#34;, f&#34;&#34;&#34;Could not remove {deleteAnnoSet}&#34;&#34;&#34;))
-        else:
-            chosenAnnoSet = &#34;&#34;
-            sets -= {deleteAnnoSet}
-        templateData[&#34;dannoset&#34;] = &#34;&#34;
-
-    if dupAnnoSet and chosenAnnoSet:
-        if not dirCopy(
-            f&#34;{annoDir}/{chosenAnnoSet}&#34;, f&#34;{annoDir}/{dupAnnoSet}&#34;, noclobber=True
-        ):
-            messages.append(
-                (&#34;error&#34;, f&#34;&#34;&#34;Could not copy {chosenAnnoSet} to {dupAnnoSet}&#34;&#34;&#34;)
-            )
-        else:
-            sets = sets | {dupAnnoSet}
-            chosenAnnoSet = dupAnnoSet
-        templateData[&#34;duannoset&#34;] = &#34;&#34;
-
-    if renamedAnnoSet and chosenAnnoSet:
-        if not dirMove(f&#34;{annoDir}/{chosenAnnoSet}&#34;, f&#34;{annoDir}/{renamedAnnoSet}&#34;):
-            messages.append(
-                (&#34;error&#34;, f&#34;&#34;&#34;Could not rename {chosenAnnoSet} to {renamedAnnoSet}&#34;&#34;&#34;)
-            )
-        else:
-            sets = (sets | {renamedAnnoSet}) - {chosenAnnoSet}
-            chosenAnnoSet = renamedAnnoSet
-        templateData[&#34;rannoset&#34;] = &#34;&#34;
-
-    if chosenAnnoSet and chosenAnnoSet not in sets:
-        initTree(f&#34;{annoDir}/{chosenAnnoSet}&#34;, fresh=False)
-        sets |= {chosenAnnoSet}
-
-    templateData[&#34;annoSets&#34;] = wrapAnnoSets(annoDir, chosenAnnoSet, sets)
-
-    web.annoSet = chosenAnnoSet
-
-    loadData(web)
-
-    sortKey = None
-    sortDir = None
-
-    for key in (&#34;freqsort&#34;, &#34;kindsort&#34;, &#34;etxtsort&#34;):
-        currentState = templateData[key]
-        if currentState:
-            sortDir = &#34;u&#34; if currentState == &#34;d&#34; else &#34;d&#34;
-            sortKey = key
-            break
-
-    sFind = templateData[&#34;sfind&#34;]
-    sFind = (sFind or &#34;&#34;).strip()
-    sFindRe = None
-    errorMsg = &#34;&#34;
-
-    if sFind:
-        try:
-            sFindRe = re.compile(sFind)
-        except Exception as e:
-            errorMsg = str(e)
-
-    activeEntity = templateData[&#34;activeentity&#34;]
-    activeKind = templateData[&#34;activekind&#34;]
-
-    templateData[&#34;appName&#34;] = appName
-    templateData[&#34;slotType&#34;] = slotType
-    templateData[&#34;resetForm&#34;] = &#34;&#34;
-    tokenStart = templateData[&#34;tokenstart&#34;]
-    tokenEnd = templateData[&#34;tokenend&#34;]
-    scope = templateData[&#34;scope&#34;]
-
-    savEKind = templateData[&#34;savEKind&#34;]
-    savEId = templateData[&#34;savEId&#34;]
-    delEKind = templateData[&#34;delEKind&#34;]
-
-    excludedTokens = templateData[&#34;excludedTokens&#34;]
-
-    (sentences, nFind, nVisible, nEnt) = filterS(
-        web, sFindRe, tokenStart, tokenEnd, valSelect
-    )
-
-    report = None
-
-    if (savEKind or delEKind) and tokenStart and tokenEnd:
-        saveSentences = (
-            filterS(web, None, tokenStart, tokenEnd, valSelect)[0]
-            if sFindRe and scope == &#34;a&#34;
-            else sentences
-        )
-        if savEKind or delEKind:
-            report = []
-
-            if savEKind:
-                report.append(saveEntity(web, savEKind, savEId, saveSentences, excludedTokens))
-            if delEKind:
-                report.append(delEntity(web, delEKind, saveSentences, excludedTokens))
-            (sentences, nFind, nVisible, nEnt) = filterS(
-                web, sFindRe, tokenStart, tokenEnd, valSelect
-            )
-
-    composeQ(
-        web,
-        templateData,
-        sFind,
-        sFindRe,
-        errorMsg,
-        valSelect,
-        nFind,
-        nEnt,
-        nVisible,
-        scope,
-        report,
-    )
-
-    hasEntity = tokenStart and tokenEnd
-    limited = not hasEntity
-
-    templateData[&#34;entities&#34;] = composeE(web, activeEntity, activeKind, sortKey, sortDir)
-    templateData[&#34;entityfeats&#34;] = wrapEntityFeats(web)
-    templateData[&#34;entityheaders&#34;] = wrapEntityHeaders(sortKey, sortDir)
-
-    web.console(&#34;start compose sentences&#34;)
-    templateData[&#34;sentences&#34;] = composeS(web, sentences, limited, excludedTokens)
-    web.console(&#34;end compose sentences&#34;)
-    templateData[&#34;messages&#34;] = wrapMessages(messages)
-    messages = []
-
-    result = render_template(
-        &#34;ner/index.html&#34;,
-        css=css,
-        **templateData,
-    )
-    web.console(&#34;END controller&#34;)
-    with open(&#34;/Users/me/Downloads/test.html&#34;, &#34;w&#34;) as fh:
-        fh.write(result)
-    return result</code></pre>
+def serveNerContext(web, node):
+    serve = Serve(web)
+    serve.setupLean()
+    serve.actionsLean(node)
+    return serve.wrapLean()</code></pre>
 </details>
 </section>
 <section>
@@ -248,201 +315,618 @@ def serveNer(web):
 <span>def <span class="ident">serveNer</span></span>(<span>web)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Serves the NE annotation tool.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>web</code></strong> :&ensp;<code>object</code></dt>
-<dd>The flask web app</dd>
-</dl></div>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/ner/serve.py#L26-L204" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L260-L264" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveNer(web):
-    &#34;&#34;&#34;Serves the NE annotation tool.
-
-    Parameters
-    ----------
-    web: object
-        The flask web app
-    &#34;&#34;&#34;
-
-    web.console(&#34;START controller&#34;)
-    aContext = web.context
-    appName = aContext.appName.replace(&#34;/&#34;, &#34; / &#34;)
-
-    kernelApi = web.kernelApi
-    app = kernelApi.app
-    api = app.api
-    F = api.F
-    slotType = F.otype.slotType
-
-    annoDir = annotateDir(app, &#34;ner&#34;)
-    initTree(annoDir, fresh=False)
-    sets = annoSets(annoDir)
-
-    form = getFormData(web)
-    resetForm = form[&#34;resetForm&#34;]
-
-    css = kernelApi.css()
-
-    templateData = {}
-    messages = []
-
-    for (k, v) in form.items():
-        if not resetForm or k not in templateData:
-            templateData[k] = v
-
-    valSelect = templateData[&#34;valselect&#34;]
-    chosenAnnoSet = templateData[&#34;annoset&#34;]
-    dupAnnoSet = templateData[&#34;duannoset&#34;]
-    renamedAnnoSet = templateData[&#34;rannoset&#34;]
-    deleteAnnoSet = templateData[&#34;dannoset&#34;]
-
-    if deleteAnnoSet:
-        annoPath = f&#34;{annoDir}/{deleteAnnoSet}&#34;
-        dirRemove(annoPath)
-        if dirExists(annoPath):
-            messages.append((&#34;error&#34;, f&#34;&#34;&#34;Could not remove {deleteAnnoSet}&#34;&#34;&#34;))
-        else:
-            chosenAnnoSet = &#34;&#34;
-            sets -= {deleteAnnoSet}
-        templateData[&#34;dannoset&#34;] = &#34;&#34;
-
-    if dupAnnoSet and chosenAnnoSet:
-        if not dirCopy(
-            f&#34;{annoDir}/{chosenAnnoSet}&#34;, f&#34;{annoDir}/{dupAnnoSet}&#34;, noclobber=True
-        ):
-            messages.append(
-                (&#34;error&#34;, f&#34;&#34;&#34;Could not copy {chosenAnnoSet} to {dupAnnoSet}&#34;&#34;&#34;)
-            )
-        else:
-            sets = sets | {dupAnnoSet}
-            chosenAnnoSet = dupAnnoSet
-        templateData[&#34;duannoset&#34;] = &#34;&#34;
-
-    if renamedAnnoSet and chosenAnnoSet:
-        if not dirMove(f&#34;{annoDir}/{chosenAnnoSet}&#34;, f&#34;{annoDir}/{renamedAnnoSet}&#34;):
-            messages.append(
-                (&#34;error&#34;, f&#34;&#34;&#34;Could not rename {chosenAnnoSet} to {renamedAnnoSet}&#34;&#34;&#34;)
-            )
-        else:
-            sets = (sets | {renamedAnnoSet}) - {chosenAnnoSet}
-            chosenAnnoSet = renamedAnnoSet
-        templateData[&#34;rannoset&#34;] = &#34;&#34;
-
-    if chosenAnnoSet and chosenAnnoSet not in sets:
-        initTree(f&#34;{annoDir}/{chosenAnnoSet}&#34;, fresh=False)
-        sets |= {chosenAnnoSet}
-
-    templateData[&#34;annoSets&#34;] = wrapAnnoSets(annoDir, chosenAnnoSet, sets)
-
-    web.annoSet = chosenAnnoSet
-
-    loadData(web)
-
-    sortKey = None
-    sortDir = None
-
-    for key in (&#34;freqsort&#34;, &#34;kindsort&#34;, &#34;etxtsort&#34;):
-        currentState = templateData[key]
-        if currentState:
-            sortDir = &#34;u&#34; if currentState == &#34;d&#34; else &#34;d&#34;
-            sortKey = key
-            break
-
-    sFind = templateData[&#34;sfind&#34;]
-    sFind = (sFind or &#34;&#34;).strip()
-    sFindRe = None
-    errorMsg = &#34;&#34;
-
-    if sFind:
-        try:
-            sFindRe = re.compile(sFind)
-        except Exception as e:
-            errorMsg = str(e)
-
-    activeEntity = templateData[&#34;activeentity&#34;]
-    activeKind = templateData[&#34;activekind&#34;]
-
-    templateData[&#34;appName&#34;] = appName
-    templateData[&#34;slotType&#34;] = slotType
-    templateData[&#34;resetForm&#34;] = &#34;&#34;
-    tokenStart = templateData[&#34;tokenstart&#34;]
-    tokenEnd = templateData[&#34;tokenend&#34;]
-    scope = templateData[&#34;scope&#34;]
-
-    savEKind = templateData[&#34;savEKind&#34;]
-    savEId = templateData[&#34;savEId&#34;]
-    delEKind = templateData[&#34;delEKind&#34;]
-
-    excludedTokens = templateData[&#34;excludedTokens&#34;]
-
-    (sentences, nFind, nVisible, nEnt) = filterS(
-        web, sFindRe, tokenStart, tokenEnd, valSelect
-    )
-
-    report = None
-
-    if (savEKind or delEKind) and tokenStart and tokenEnd:
-        saveSentences = (
-            filterS(web, None, tokenStart, tokenEnd, valSelect)[0]
-            if sFindRe and scope == &#34;a&#34;
-            else sentences
-        )
-        if savEKind or delEKind:
-            report = []
-
-            if savEKind:
-                report.append(saveEntity(web, savEKind, savEId, saveSentences, excludedTokens))
-            if delEKind:
-                report.append(delEntity(web, delEKind, saveSentences, excludedTokens))
-            (sentences, nFind, nVisible, nEnt) = filterS(
-                web, sFindRe, tokenStart, tokenEnd, valSelect
-            )
-
-    composeQ(
-        web,
-        templateData,
-        sFind,
-        sFindRe,
-        errorMsg,
-        valSelect,
-        nFind,
-        nEnt,
-        nVisible,
-        scope,
-        report,
-    )
-
-    hasEntity = tokenStart and tokenEnd
-    limited = not hasEntity
-
-    templateData[&#34;entities&#34;] = composeE(web, activeEntity, activeKind, sortKey, sortDir)
-    templateData[&#34;entityfeats&#34;] = wrapEntityFeats(web)
-    templateData[&#34;entityheaders&#34;] = wrapEntityHeaders(sortKey, sortDir)
-
-    web.console(&#34;start compose sentences&#34;)
-    templateData[&#34;sentences&#34;] = composeS(web, sentences, limited, excludedTokens)
-    web.console(&#34;end compose sentences&#34;)
-    templateData[&#34;messages&#34;] = wrapMessages(messages)
-    messages = []
-
-    result = render_template(
-        &#34;ner/index.html&#34;,
-        css=css,
-        **templateData,
-    )
-    web.console(&#34;END controller&#34;)
-    with open(&#34;/Users/me/Downloads/test.html&#34;, &#34;w&#34;) as fh:
-        fh.write(result)
-    return result</code></pre>
+    serve = Serve(web)
+    serve.setupFull()
+    serve.actionsAnnotate()
+    return serve.wrapAnnotate()</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.serve.serveNerContext"><code class="name flex">
+<span>def <span class="ident">serveNerContext</span></span>(<span>web, node)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L267-L271" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def serveNerContext(web, node):
+    serve = Serve(web)
+    serve.setupLean()
+    serve.actionsLean(node)
+    return serve.wrapLean()</code></pre>
 </details>
 </dd>
 </dl>
 </section>
 <section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.browser.ner.serve.Serve"><code class="flex name class">
+<span>class <span class="ident">Serve</span></span>
+<span>(</span><span>web)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L25-L257" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class Serve:
+    def __init__(self, web):
+        self.web = web
+        self.debug = web.debug
+        kernelApi = web.kernelApi
+        self.app = kernelApi.app
+        self.css = kernelApi.css()
+
+        if not hasattr(web, &#34;toolData&#34;):
+            setattr(web, &#34;toolData&#34;, AttrDict())
+        toolData = web.toolData
+
+        if TOOLKEY not in toolData:
+            toolData[TOOLKEY] = AttrDict()
+
+        self.data = toolData[TOOLKEY]
+
+    def setupAnnotate(self):
+        data = self.data
+        app = self.app
+        debug = self.debug
+
+        annotate = Annotate(app, data=data, debug=debug, browse=True)
+
+        templateData = initTemplate(annotate, app)
+        self.templateData = templateData
+
+        annoSet = templateData.annoset
+
+        annotate.setSet(annoSet)
+        self.annotate = annotate
+        annotate.loadData()
+
+    def setupFull(self):
+        css = self.css
+
+        self.setupAnnotate()
+        annotate = self.annotate
+        settings = annotate.settings
+        features = settings.features
+        keywordFeatures = settings.keywordFeatures
+
+        templateData = self.templateData
+
+        findSetup(templateData)
+        wrapActive(templateData)
+        templateData.css = makeCss(features, keywordFeatures, generic=css)
+
+    def setupLean(self):
+        self.setupAnnotate()
+        templateData = self.templateData
+
+        wrapActive(templateData)
+
+    def actionsAnnotate(self):
+        templateData = self.templateData
+
+        self.setHandling(templateData)
+
+        self.getBuckets()
+        self.updateHandling()
+
+    def actionsLean(self, node):
+        self.getBuckets(node=node)
+
+    def wrapAnnotate(self):
+        annotate = self.annotate
+        templateData = self.templateData
+        sortKey = templateData.sortkey
+        sortDir = templateData.sortdir
+        activeEntity = templateData.activeentity
+        tokenStart = templateData.tokenstart
+        tokenEnd = templateData.tokenend
+        excludedTokens = templateData.excludedtokens
+
+        buckets = self.buckets
+
+        wrapQuery(annotate, templateData)
+        templateData.entitytable = annotate.showEntities(
+            activeEntity=activeEntity, sortKey=sortKey, sortDir=sortDir
+        )
+        templateData.entityoverview = annotate.showEntityOverview()
+        templateData.entityheaders = wrapEntityHeaders(annotate, sortKey, sortDir)
+        templateData.buckets = annotate.showContent(
+            buckets,
+            activeEntity=activeEntity,
+            excludedTokens=excludedTokens,
+            mayLimit=not (tokenStart and tokenEnd),
+        )
+
+        return render_template(f&#34;{TOOLKEY}/index.html&#34;, **templateData)
+
+    def wrapLean(self):
+        annotate = self.annotate
+        templateData = self.templateData
+        activeEntity = templateData.activeentity
+        excludedTokens = templateData.excludedtokens
+        buckets = self.buckets
+
+        return annotate.showContent(
+            buckets,
+            activeEntity=activeEntity,
+            excludedTokens=excludedTokens,
+            mayLimit=False,
+        )
+
+    def getBuckets(self, noFind=False, node=None):
+        annotate = self.annotate
+        templateData = self.templateData
+
+        bFindRe = None if noFind else templateData.bfindre
+        anyEnt = templateData.anyent
+        activeEntity = templateData.activeentity
+        tokenStart = templateData.tokenstart
+        tokenEnd = templateData.tokenend
+        valSelect = templateData.valselect
+        freeState = templateData.freestate
+
+        setData = annotate.getSetData()
+        entityIdent = setData.entityIdent
+
+        if activeEntity not in entityIdent:
+            activeEntity = None
+            templateData.activeentity = None
+
+        qTokens = (
+            annotate.getStrings(tokenStart, tokenEnd)
+            if tokenStart and tokenEnd
+            else None
+        )
+
+        (
+            self.buckets,
+            templateData.nfind,
+            templateData.nvisible,
+            templateData.nent,
+        ) = annotate.filterContent(
+            node=node,
+            bFindRe=bFindRe,
+            anyEnt=anyEnt,
+            eVals=activeEntity,
+            qTokens=qTokens,
+            valSelect=valSelect,
+            freeState=freeState,
+            noFind=noFind,
+        )
+
+    def setHandling(self, templateData):
+        annotate = self.annotate
+        annoDir = annotate.annoDir
+        settings = annotate.settings
+        entitySet = settings.entitySet
+
+        chosenAnnoSet = templateData.annoset
+        dupAnnoSet = templateData.duannoset
+        renamedAnnoSet = templateData.rannoset
+        deleteAnnoSet = templateData.dannoset
+
+        messages = []
+
+        if deleteAnnoSet:
+            messages.extend(annotate.setDel(deleteAnnoSet))
+            templateData.dannoset = &#34;&#34;
+            templateData.annoset = &#34;&#34;
+
+        if dupAnnoSet:
+            messages.extend(annotate.setDup(dupAnnoSet))
+            templateData.annoset = dupAnnoSet
+            templateData.duannoset = &#34;&#34;
+
+        if renamedAnnoSet and chosenAnnoSet:
+            messages.extend(annotate.setMove(renamedAnnoSet))
+            templateData.annoset = renamedAnnoSet
+            templateData.rannoset = &#34;&#34;
+
+        chosenAnnoSet = templateData.annoset
+        annotate.setSet(chosenAnnoSet)
+        setNames = annotate.setNames
+
+        templateData.annosets = wrapAnnoSets(
+            annoDir, chosenAnnoSet, setNames, entitySet
+        )
+        templateData.messages = wrapMessages(messages)
+
+    def updateHandling(self):
+        annotate = self.annotate
+        templateData = self.templateData
+
+        delData = templateData.deldata
+        addData = templateData.adddata
+        activeEntity = templateData.activeentity
+        tokenStart = templateData.tokenstart
+        tokenEnd = templateData.tokenend
+        submitter = templateData.submitter
+        excludedTokens = templateData.excludedtokens
+        bFindRe = templateData.bfindre
+        scope = templateData.scope
+
+        hasEnt = activeEntity is not None
+        hasOcc = tokenStart is not None and tokenEnd is not None
+
+        if (
+            submitter in {&#34;delgo&#34;, &#34;addgo&#34;}
+            and (delData or addData)
+            and (hasEnt or hasOcc)
+        ):
+            if bFindRe and scope == SC_ALL:
+                self.getBuckets(noFind=True)
+
+            if submitter == &#34;delgo&#34; and delData:
+                report = annotate.delEntityRich(
+                    delData.deletions, self.buckets, excludedTokens=excludedTokens
+                )
+                annotate.loadData()
+                wrapReport(annotate, templateData, report, &#34;del&#34;)
+                if hasEnt:
+                    setData = annotate.getSetData()
+                    entityIdent = setData.entityIdent
+
+                    stillExists = activeEntity in entityIdent
+                    if not stillExists:
+                        templateData.activeentity = None
+
+            if submitter == &#34;addgo&#34; and addData:
+                report = annotate.addEntityRich(
+                    addData.additions, self.buckets, excludedTokens=excludedTokens
+                )
+                annotate.loadData()
+                wrapReport(annotate, templateData, report, &#34;add&#34;)
+
+            adaptValSelect(annotate, templateData)
+
+            self.getBuckets()</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.browser.ner.serve.Serve.actionsAnnotate"><code class="name flex">
+<span>def <span class="ident">actionsAnnotate</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L79-L85" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def actionsAnnotate(self):
+    templateData = self.templateData
+
+    self.setHandling(templateData)
+
+    self.getBuckets()
+    self.updateHandling()</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.serve.Serve.actionsLean"><code class="name flex">
+<span>def <span class="ident">actionsLean</span></span>(<span>self, node)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L87-L88" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def actionsLean(self, node):
+    self.getBuckets(node=node)</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.serve.Serve.getBuckets"><code class="name flex">
+<span>def <span class="ident">getBuckets</span></span>(<span>self, noFind=False, node=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L131-L170" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getBuckets(self, noFind=False, node=None):
+    annotate = self.annotate
+    templateData = self.templateData
+
+    bFindRe = None if noFind else templateData.bfindre
+    anyEnt = templateData.anyent
+    activeEntity = templateData.activeentity
+    tokenStart = templateData.tokenstart
+    tokenEnd = templateData.tokenend
+    valSelect = templateData.valselect
+    freeState = templateData.freestate
+
+    setData = annotate.getSetData()
+    entityIdent = setData.entityIdent
+
+    if activeEntity not in entityIdent:
+        activeEntity = None
+        templateData.activeentity = None
+
+    qTokens = (
+        annotate.getStrings(tokenStart, tokenEnd)
+        if tokenStart and tokenEnd
+        else None
+    )
+
+    (
+        self.buckets,
+        templateData.nfind,
+        templateData.nvisible,
+        templateData.nent,
+    ) = annotate.filterContent(
+        node=node,
+        bFindRe=bFindRe,
+        anyEnt=anyEnt,
+        eVals=activeEntity,
+        qTokens=qTokens,
+        valSelect=valSelect,
+        freeState=freeState,
+        noFind=noFind,
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.serve.Serve.setHandling"><code class="name flex">
+<span>def <span class="ident">setHandling</span></span>(<span>self, templateData)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L172-L207" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def setHandling(self, templateData):
+    annotate = self.annotate
+    annoDir = annotate.annoDir
+    settings = annotate.settings
+    entitySet = settings.entitySet
+
+    chosenAnnoSet = templateData.annoset
+    dupAnnoSet = templateData.duannoset
+    renamedAnnoSet = templateData.rannoset
+    deleteAnnoSet = templateData.dannoset
+
+    messages = []
+
+    if deleteAnnoSet:
+        messages.extend(annotate.setDel(deleteAnnoSet))
+        templateData.dannoset = &#34;&#34;
+        templateData.annoset = &#34;&#34;
+
+    if dupAnnoSet:
+        messages.extend(annotate.setDup(dupAnnoSet))
+        templateData.annoset = dupAnnoSet
+        templateData.duannoset = &#34;&#34;
+
+    if renamedAnnoSet and chosenAnnoSet:
+        messages.extend(annotate.setMove(renamedAnnoSet))
+        templateData.annoset = renamedAnnoSet
+        templateData.rannoset = &#34;&#34;
+
+    chosenAnnoSet = templateData.annoset
+    annotate.setSet(chosenAnnoSet)
+    setNames = annotate.setNames
+
+    templateData.annosets = wrapAnnoSets(
+        annoDir, chosenAnnoSet, setNames, entitySet
+    )
+    templateData.messages = wrapMessages(messages)</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.serve.Serve.setupAnnotate"><code class="name flex">
+<span>def <span class="ident">setupAnnotate</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L42-L56" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def setupAnnotate(self):
+    data = self.data
+    app = self.app
+    debug = self.debug
+
+    annotate = Annotate(app, data=data, debug=debug, browse=True)
+
+    templateData = initTemplate(annotate, app)
+    self.templateData = templateData
+
+    annoSet = templateData.annoset
+
+    annotate.setSet(annoSet)
+    self.annotate = annotate
+    annotate.loadData()</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.serve.Serve.setupFull"><code class="name flex">
+<span>def <span class="ident">setupFull</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L58-L71" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def setupFull(self):
+    css = self.css
+
+    self.setupAnnotate()
+    annotate = self.annotate
+    settings = annotate.settings
+    features = settings.features
+    keywordFeatures = settings.keywordFeatures
+
+    templateData = self.templateData
+
+    findSetup(templateData)
+    wrapActive(templateData)
+    templateData.css = makeCss(features, keywordFeatures, generic=css)</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.serve.Serve.setupLean"><code class="name flex">
+<span>def <span class="ident">setupLean</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L73-L77" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def setupLean(self):
+    self.setupAnnotate()
+    templateData = self.templateData
+
+    wrapActive(templateData)</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.serve.Serve.updateHandling"><code class="name flex">
+<span>def <span class="ident">updateHandling</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L209-L257" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def updateHandling(self):
+    annotate = self.annotate
+    templateData = self.templateData
+
+    delData = templateData.deldata
+    addData = templateData.adddata
+    activeEntity = templateData.activeentity
+    tokenStart = templateData.tokenstart
+    tokenEnd = templateData.tokenend
+    submitter = templateData.submitter
+    excludedTokens = templateData.excludedtokens
+    bFindRe = templateData.bfindre
+    scope = templateData.scope
+
+    hasEnt = activeEntity is not None
+    hasOcc = tokenStart is not None and tokenEnd is not None
+
+    if (
+        submitter in {&#34;delgo&#34;, &#34;addgo&#34;}
+        and (delData or addData)
+        and (hasEnt or hasOcc)
+    ):
+        if bFindRe and scope == SC_ALL:
+            self.getBuckets(noFind=True)
+
+        if submitter == &#34;delgo&#34; and delData:
+            report = annotate.delEntityRich(
+                delData.deletions, self.buckets, excludedTokens=excludedTokens
+            )
+            annotate.loadData()
+            wrapReport(annotate, templateData, report, &#34;del&#34;)
+            if hasEnt:
+                setData = annotate.getSetData()
+                entityIdent = setData.entityIdent
+
+                stillExists = activeEntity in entityIdent
+                if not stillExists:
+                    templateData.activeentity = None
+
+        if submitter == &#34;addgo&#34; and addData:
+            report = annotate.addEntityRich(
+                addData.additions, self.buckets, excludedTokens=excludedTokens
+            )
+            annotate.loadData()
+            wrapReport(annotate, templateData, report, &#34;add&#34;)
+
+        adaptValSelect(annotate, templateData)
+
+        self.getBuckets()</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.serve.Serve.wrapAnnotate"><code class="name flex">
+<span>def <span class="ident">wrapAnnotate</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L90-L115" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapAnnotate(self):
+    annotate = self.annotate
+    templateData = self.templateData
+    sortKey = templateData.sortkey
+    sortDir = templateData.sortdir
+    activeEntity = templateData.activeentity
+    tokenStart = templateData.tokenstart
+    tokenEnd = templateData.tokenend
+    excludedTokens = templateData.excludedtokens
+
+    buckets = self.buckets
+
+    wrapQuery(annotate, templateData)
+    templateData.entitytable = annotate.showEntities(
+        activeEntity=activeEntity, sortKey=sortKey, sortDir=sortDir
+    )
+    templateData.entityoverview = annotate.showEntityOverview()
+    templateData.entityheaders = wrapEntityHeaders(annotate, sortKey, sortDir)
+    templateData.buckets = annotate.showContent(
+        buckets,
+        activeEntity=activeEntity,
+        excludedTokens=excludedTokens,
+        mayLimit=not (tokenStart and tokenEnd),
+    )
+
+    return render_template(f&#34;{TOOLKEY}/index.html&#34;, **templateData)</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.serve.Serve.wrapLean"><code class="name flex">
+<span>def <span class="ident">wrapLean</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/serve.py#L117-L129" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapLean(self):
+    annotate = self.annotate
+    templateData = self.templateData
+    activeEntity = templateData.activeentity
+    excludedTokens = templateData.excludedtokens
+    buckets = self.buckets
+
+    return annotate.showContent(
+        buckets,
+        activeEntity=activeEntity,
+        excludedTokens=excludedTokens,
+        mayLimit=False,
+    )</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -510,6 +994,26 @@ setTimeout(() => input.focus(), 100);
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="tf.browser.ner.serve.serveNer" href="#tf.browser.ner.serve.serveNer">serveNer</a></code></li>
+<li><code><a title="tf.browser.ner.serve.serveNerContext" href="#tf.browser.ner.serve.serveNerContext">serveNerContext</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.browser.ner.serve.Serve" href="#tf.browser.ner.serve.Serve">Serve</a></code></h4>
+<ul class="two-column">
+<li><code><a title="tf.browser.ner.serve.Serve.actionsAnnotate" href="#tf.browser.ner.serve.Serve.actionsAnnotate">actionsAnnotate</a></code></li>
+<li><code><a title="tf.browser.ner.serve.Serve.actionsLean" href="#tf.browser.ner.serve.Serve.actionsLean">actionsLean</a></code></li>
+<li><code><a title="tf.browser.ner.serve.Serve.getBuckets" href="#tf.browser.ner.serve.Serve.getBuckets">getBuckets</a></code></li>
+<li><code><a title="tf.browser.ner.serve.Serve.setHandling" href="#tf.browser.ner.serve.Serve.setHandling">setHandling</a></code></li>
+<li><code><a title="tf.browser.ner.serve.Serve.setupAnnotate" href="#tf.browser.ner.serve.Serve.setupAnnotate">setupAnnotate</a></code></li>
+<li><code><a title="tf.browser.ner.serve.Serve.setupFull" href="#tf.browser.ner.serve.Serve.setupFull">setupFull</a></code></li>
+<li><code><a title="tf.browser.ner.serve.Serve.setupLean" href="#tf.browser.ner.serve.Serve.setupLean">setupLean</a></code></li>
+<li><code><a title="tf.browser.ner.serve.Serve.updateHandling" href="#tf.browser.ner.serve.Serve.updateHandling">updateHandling</a></code></li>
+<li><code><a title="tf.browser.ner.serve.Serve.wrapAnnotate" href="#tf.browser.ner.serve.Serve.wrapAnnotate">wrapAnnotate</a></code></li>
+<li><code><a title="tf.browser.ner.serve.Serve.wrapLean" href="#tf.browser.ner.serve.Serve.wrapLean">wrapLean</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

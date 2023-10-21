@@ -130,7 +130,7 @@ conversion code is demonstrated in the Greek New Testament:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/xml.py#L1-L1215" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/xml.py#L1-L1212" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # XML import
@@ -283,7 +283,6 @@ import re
 from subprocess import run
 from importlib import util
 
-import yaml
 from lxml import etree
 from .helpers import setUp, FILE
 from .xmlCustom import convertTaskDefault
@@ -308,6 +307,8 @@ from ..core.files import (
     fileCopy,
     fileRemove,
     scanDir,
+    readYaml,
+    writeYaml,
 )
 
 (HELP, TASKS, TASKS_EXCLUDED, PARAMS, FLAGS) = setUp(&#34;XML&#34;)
@@ -495,11 +496,7 @@ class XML:
         convertSpec = f&#34;{programDir}/xml.yaml&#34;
         convertCustom = f&#34;{programDir}/xml.py&#34;
 
-        settings = {}
-        if fileExists(convertSpec):
-            with open(convertSpec, encoding=&#34;utf8&#34;) as fh:
-                text = fh.read()
-            settings = yaml.load(text, Loader=yaml.FullLoader)
+        settings = readYaml(asFile=convertSpec, plain=True)
 
         self.transform = None
         if fileExists(convertCustom):
@@ -1061,7 +1058,7 @@ class XML:
         def createConfig(sourceText, customText):
             text = sourceText.replace(&#34;«version»&#34;, f&#39;&#34;{version}&#34;&#39;)
 
-            settings = yaml.load(text, Loader=yaml.FullLoader)
+            settings = readYaml(text=text, plain=True)
             settings.setdefault(&#34;provenanceSpec&#34;, {})[&#34;branch&#34;] = BRANCH_DEFAULT_NEW
             dataDisplay = settings.setdefault(&#34;dataDisplay&#34;, {})
             interfaceDefaults = settings.setdefault(&#34;interfaceDefaults&#34;, {})
@@ -1073,12 +1070,12 @@ class XML:
             customSettings = (
                 {}
                 if customText is None
-                else yaml.load(customText, Loader=yaml.FullLoader)
+                else readYaml(text=customText, plain=True)
             )
 
             mergeDict(settings, customSettings)
 
-            text = yaml.dump(settings, allow_unicode=True)
+            text = writeYaml(settings)
 
             return text
 
@@ -1364,7 +1361,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/xml.py#L1201-L1211" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/xml.py#L1198-L1208" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(
@@ -1504,7 +1501,7 @@ relevant tf version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/xml.py#L191-L1198" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/xml.py#L192-L1195" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class XML:
     def __init__(
@@ -1679,11 +1676,7 @@ relevant tf version:</p>
         convertSpec = f&#34;{programDir}/xml.yaml&#34;
         convertCustom = f&#34;{programDir}/xml.py&#34;
 
-        settings = {}
-        if fileExists(convertSpec):
-            with open(convertSpec, encoding=&#34;utf8&#34;) as fh:
-                text = fh.read()
-            settings = yaml.load(text, Loader=yaml.FullLoader)
+        settings = readYaml(asFile=convertSpec, plain=True)
 
         self.transform = None
         if fileExists(convertCustom):
@@ -2245,7 +2238,7 @@ relevant tf version:</p>
         def createConfig(sourceText, customText):
             text = sourceText.replace(&#34;«version»&#34;, f&#39;&#34;{version}&#34;&#39;)
 
-            settings = yaml.load(text, Loader=yaml.FullLoader)
+            settings = readYaml(text=text, plain=True)
             settings.setdefault(&#34;provenanceSpec&#34;, {})[&#34;branch&#34;] = BRANCH_DEFAULT_NEW
             dataDisplay = settings.setdefault(&#34;dataDisplay&#34;, {})
             interfaceDefaults = settings.setdefault(&#34;interfaceDefaults&#34;, {})
@@ -2257,12 +2250,12 @@ relevant tf version:</p>
             customSettings = (
                 {}
                 if customText is None
-                else yaml.load(customText, Loader=yaml.FullLoader)
+                else readYaml(text=customText, plain=True)
             )
 
             mergeDict(settings, customSettings)
 
-            text = yaml.dump(settings, allow_unicode=True)
+            text = writeYaml(settings)
 
             return text
 
@@ -2547,7 +2540,7 @@ that code between automatic generation of files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/xml.py#L874-L1101" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/xml.py#L871-L1098" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self, tokenBased=False):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -2605,7 +2598,7 @@ that code between automatic generation of files.</p>
     def createConfig(sourceText, customText):
         text = sourceText.replace(&#34;«version»&#34;, f&#39;&#34;{version}&#34;&#39;)
 
-        settings = yaml.load(text, Loader=yaml.FullLoader)
+        settings = readYaml(text=text, plain=True)
         settings.setdefault(&#34;provenanceSpec&#34;, {})[&#34;branch&#34;] = BRANCH_DEFAULT_NEW
         dataDisplay = settings.setdefault(&#34;dataDisplay&#34;, {})
         interfaceDefaults = settings.setdefault(&#34;interfaceDefaults&#34;, {})
@@ -2617,12 +2610,12 @@ that code between automatic generation of files.</p>
         customSettings = (
             {}
             if customText is None
-            else yaml.load(customText, Loader=yaml.FullLoader)
+            else readYaml(text=customText, plain=True)
         )
 
         mergeDict(settings, customSettings)
 
-        text = yaml.dump(settings, allow_unicode=True)
+        text = writeYaml(settings)
 
         return text
 
@@ -2795,7 +2788,7 @@ There should be a valid TF dataset and app configuraiton in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/xml.py#L1105-L1138" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/xml.py#L1102-L1135" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def browseTask(self):
     &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
@@ -2858,7 +2851,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/xml.py#L570-L794" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/xml.py#L567-L791" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -3101,7 +3094,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/xml.py#L798-L811" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/xml.py#L795-L808" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -3132,7 +3125,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/xml.py#L813-L826" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/xml.py#L810-L823" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -3164,7 +3157,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/xml.py#L513-L531" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/xml.py#L510-L528" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getParser(self):
     &#34;&#34;&#34;Configure the lxml parser.
@@ -3203,7 +3196,7 @@ that contains the file names in that folder, sorted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/xml.py#L533-L568" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/xml.py#L530-L565" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the XML source files.
@@ -3263,7 +3256,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/xml.py#L828-L870" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/xml.py#L825-L867" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -3344,7 +3337,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/convert/xml.py#L1140-L1198" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/convert/xml.py#L1137-L1195" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,

@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/advanced/zipdata.py#L1-L417" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/zipdata.py#L1-L422" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 import types
@@ -115,6 +115,7 @@ def zipAll(app):
     *   the main data module
     *   all modules mentioned in the moduleSpecs in the provenanceSpec of the app
     *   all graphics data mentioned in the graphicsRelative of the provenanceSpec
+    *   all extra data mentioned in the extraData of the provenanceSpec
 
     The data will be zipped in a file complete.zip which can be unpacked
     in the ~/text-fabric-data directory.
@@ -149,6 +150,8 @@ def zipAll(app):
 
     graphics = context.graphicsRelative
     graphics = prefixSlash(normpath(graphics))
+    extra = context.extraData
+    extra = prefixSlash(normpath(extra))
 
     prov = context.provenanceSpec
     mods = prov.get(&#34;moduleSpecs&#34;, [])
@@ -161,6 +164,8 @@ def zipAll(app):
     ]
     if graphics:
         dataItems.append((&#34;graphics&#34;, f&#34;{repoDir}{graphics}&#34;))
+    if extra:
+        dataItems.append((&#34;extra&#34;, f&#34;{repoDir}{extra}&#34;))
 
     good = True
 
@@ -462,7 +467,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/advanced/zipdata.py#L200-L226" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/zipdata.py#L205-L231" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addCheckout(path):
     release = None
@@ -501,7 +506,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/advanced/zipdata.py#L229-L244" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/zipdata.py#L234-L249" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def collectFiles(base, path, results, zipBase=None):
     if zipBase is None:
@@ -522,7 +527,7 @@ if __name__ == &#34;__main__&#34;:
 </details>
 </dd>
 <dt id="tf.advanced.zipdata.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.11/bin/pdoc3', '--force', '--html', '--output-dir', 'site', '--template-dir', 'tf/docs/templates', 'tf'])</span>
+<span>def <span class="ident">main</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.12/bin/pdoc3', '--force', '--html', '--output-dir', 'site', '--template-dir', 'tf/docs/templates', 'tf'])</span>
 </code></dt>
 <dd>
 <div class="desc"><h3 id="usage">USAGE</h3>
@@ -549,7 +554,7 @@ and the are named <em>relative</em>-<em>version</em>.zip
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/advanced/zipdata.py#L374-L410" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/zipdata.py#L379-L415" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     if len(cargs) &lt; 2 or any(
@@ -601,6 +606,7 @@ and the are named <em>relative</em>-<em>version</em>.zip
 <li>the main data module</li>
 <li>all modules mentioned in the moduleSpecs in the provenanceSpec of the app</li>
 <li>all graphics data mentioned in the graphicsRelative of the provenanceSpec</li>
+<li>all extra data mentioned in the extraData of the provenanceSpec</li>
 </ul>
 <p>The data will be zipped in a file complete.zip which can be unpacked
 in the ~/text-fabric-data directory.</p>
@@ -628,7 +634,7 @@ coming.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/advanced/zipdata.py#L79-L197" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/zipdata.py#L79-L202" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipAll(app):
     &#34;&#34;&#34;Gathers all data for a TF resource and zips it into one file.
@@ -639,6 +645,7 @@ coming.</p>
     *   the main data module
     *   all modules mentioned in the moduleSpecs in the provenanceSpec of the app
     *   all graphics data mentioned in the graphicsRelative of the provenanceSpec
+    *   all extra data mentioned in the extraData of the provenanceSpec
 
     The data will be zipped in a file complete.zip which can be unpacked
     in the ~/text-fabric-data directory.
@@ -673,6 +680,8 @@ coming.</p>
 
     graphics = context.graphicsRelative
     graphics = prefixSlash(normpath(graphics))
+    extra = context.extraData
+    extra = prefixSlash(normpath(extra))
 
     prov = context.provenanceSpec
     mods = prov.get(&#34;moduleSpecs&#34;, [])
@@ -685,6 +694,8 @@ coming.</p>
     ]
     if graphics:
         dataItems.append((&#34;graphics&#34;, f&#34;{repoDir}{graphics}&#34;))
+    if extra:
+        dataItems.append((&#34;extra&#34;, f&#34;{repoDir}{extra}&#34;))
 
     good = True
 
@@ -764,7 +775,7 @@ coming.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/advanced/zipdata.py#L67-L76" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/zipdata.py#L67-L76" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipApi(app):
     &#34;&#34;&#34;Produce the zip creation API.
@@ -810,7 +821,7 @@ the backend: <code>~/Downloads/github</code>, <code>~/Downloads/gitlab</code>, e
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/advanced/zipdata.py#L255-L371" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/zipdata.py#L260-L376" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipData(
     backend,
@@ -939,7 +950,7 @@ the backend: <code>~/Downloads/github</code>, <code>~/Downloads/gitlab</code>, e
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/advanced/zipdata.py#L247-L252" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/advanced/zipdata.py#L252-L257" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipDataPart(source, results):
     if not dirExists(source):

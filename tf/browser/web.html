@@ -109,7 +109,7 @@ browsers, not even Edge.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/web.py#L1-L289" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/web.py#L1-L289" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Web interface
@@ -197,7 +197,7 @@ from flask import Flask, send_file
 from werkzeug.serving import run_simple
 
 from ..parameters import HOST, GH
-from ..core.helpers import console
+from ..core.helpers import console as cs
 from ..core.files import abspath, fileExists, dirNm
 from ..core.timestamp import AUTO
 from ..advanced.app import findApp
@@ -234,7 +234,7 @@ class Web:
 
     def console(self, msg):
         if self.debug:
-            console(msg)
+            cs(msg)
 
 
 def factory(web):
@@ -326,8 +326,8 @@ def main(cargs=sys.argv[1:]):
             args.append(arg)
 
     if len(args) == 0:
-        console(&#34;No port number specified&#34;)
-        console(f&#34;{TF_ERROR}&#34;)
+        cs(&#34;No port number specified&#34;)
+        cs(f&#34;{TF_ERROR}&#34;)
         return
 
     (portWeb, args) = (args[0], args[1:])
@@ -335,7 +335,7 @@ def main(cargs=sys.argv[1:]):
     appSpecs = argApp(args, False)
 
     if not appSpecs:
-        console(&#34;No TF dataset specified&#34;)
+        cs(&#34;No TF dataset specified&#34;)
         return
 
     backend = appSpecs.get(&#34;backend&#34;, GH) or GH
@@ -353,7 +353,7 @@ def main(cargs=sys.argv[1:]):
         checkout = &#34;&#34;
 
     versionRep = &#34;&#34; if version is None else f&#34; version {version}&#34;
-    console(
+    cs(
         f&#34;Setting up TF browser for {appName} {moduleRefs or &#39;&#39;} &#34;
         f&#34;{setFile or &#39;&#39;}{versionRep}&#34;
     )
@@ -372,12 +372,12 @@ def main(cargs=sys.argv[1:]):
         version=version,
     )
     if app is None:
-        console(f&#34;{TF_ERROR}&#34;)
+        cs(f&#34;{TF_ERROR}&#34;)
         return
 
     try:
         web = Web(makeTfKernel(app, appName))
-        console(f&#34;{TF_DONE}&#34;)
+        cs(f&#34;{TF_DONE}&#34;)
 
         webapp = factory(web)
         if debug:
@@ -391,8 +391,8 @@ def main(cargs=sys.argv[1:]):
             use_debugger=False,
         )
     except OSError as e:
-        console(str(e))
-        console(f&#34;{TF_ERROR}&#34;)
+        cs(str(e))
+        cs(f&#34;{TF_ERROR}&#34;)
         return 1
 
     return 0
@@ -417,7 +417,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/web.py#L127-L202" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/web.py#L127-L202" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def factory(web):
     app = Flask(__name__)
@@ -505,7 +505,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/web.py#L205-L285" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/web.py#L205-L285" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv[1:]):
     args = []
@@ -518,8 +518,8 @@ if __name__ == &#34;__main__&#34;:
             args.append(arg)
 
     if len(args) == 0:
-        console(&#34;No port number specified&#34;)
-        console(f&#34;{TF_ERROR}&#34;)
+        cs(&#34;No port number specified&#34;)
+        cs(f&#34;{TF_ERROR}&#34;)
         return
 
     (portWeb, args) = (args[0], args[1:])
@@ -527,7 +527,7 @@ if __name__ == &#34;__main__&#34;:
     appSpecs = argApp(args, False)
 
     if not appSpecs:
-        console(&#34;No TF dataset specified&#34;)
+        cs(&#34;No TF dataset specified&#34;)
         return
 
     backend = appSpecs.get(&#34;backend&#34;, GH) or GH
@@ -545,7 +545,7 @@ if __name__ == &#34;__main__&#34;:
         checkout = &#34;&#34;
 
     versionRep = &#34;&#34; if version is None else f&#34; version {version}&#34;
-    console(
+    cs(
         f&#34;Setting up TF browser for {appName} {moduleRefs or &#39;&#39;} &#34;
         f&#34;{setFile or &#39;&#39;}{versionRep}&#34;
     )
@@ -564,12 +564,12 @@ if __name__ == &#34;__main__&#34;:
         version=version,
     )
     if app is None:
-        console(f&#34;{TF_ERROR}&#34;)
+        cs(f&#34;{TF_ERROR}&#34;)
         return
 
     try:
         web = Web(makeTfKernel(app, appName))
-        console(f&#34;{TF_DONE}&#34;)
+        cs(f&#34;{TF_DONE}&#34;)
 
         webapp = factory(web)
         if debug:
@@ -583,8 +583,8 @@ if __name__ == &#34;__main__&#34;:
             use_debugger=False,
         )
     except OSError as e:
-        console(str(e))
-        console(f&#34;{TF_ERROR}&#34;)
+        cs(str(e))
+        cs(f&#34;{TF_ERROR}&#34;)
         return 1
 
     return 0</code></pre>
@@ -604,7 +604,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/web.py#L114-L124" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/web.py#L114-L124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Web:
     def __init__(self, kernelApi):
@@ -616,7 +616,7 @@ if __name__ == &#34;__main__&#34;:
 
     def console(self, msg):
         if self.debug:
-            console(msg)</code></pre>
+            cs(msg)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -628,11 +628,11 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/web.py#L122-L124" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/web.py#L122-L124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(self, msg):
     if self.debug:
-        console(msg)</code></pre>
+        cs(msg)</code></pre>
 </details>
 </dd>
 </dl>

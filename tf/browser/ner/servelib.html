@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>tf.browser.ner.servelib API documentation</title>
-<meta name="description" content="Auxiliary functions for serving the web page." />
+<meta name="description" content="Auxiliary functions for serving the page." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -23,113 +23,200 @@
 <h1 class="title">Module <code>tf.browser.ner.servelib</code></h1>
 </header>
 <section id="section-intro">
-<p>Auxiliary functions for serving the web page.</p>
+<p>Auxiliary functions for serving the page.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/ner/servelib.py#L1-L101" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/servelib.py#L1-L188" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">&#34;&#34;&#34;Auxiliary functions for serving the web page.
+<pre><code class="python">&#34;&#34;&#34;Auxiliary functions for serving the page.
 &#34;&#34;&#34;
+
+import json
+from urllib.parse import unquote
 
 from flask import request
 
-from ...core.files import dirContents
-from .kernel import FEATURES
+from ...core.generic import AttrDict, deepAttrDict
+from .settings import TOOLKEY, EMPTY, NONE, SORTKEY_DEFAULT, SORTDIR_DEFAULT, SC_ALL
+from .annotate import findCompile
 
 
-def getFormData(web):
+def getFormData(annotate):
     &#34;&#34;&#34;Get form data.
 
-    The TF browser user interacts with the web app by clicking and typing,
+    The TF browser user interacts with the app by clicking and typing,
     as a result of which a HTML form gets filled in.
-    This form as regularly submitted to the web server with a request
+    This form as regularly submitted to the server with a request
     for a new incarnation of the page: a response.
 
     The values that come with a request, must be peeled out of the form,
     and stored as logical values.
 
-    Most of the data has a known function to the web server,
+    Most of the data has a known function to the server,
     but there is also a list of webapp dependent options.
     &#34;&#34;&#34;
+    settings = annotate.settings
+    features = settings.features
+
+    fget = request.form.get
 
     form = {}
 
-    form[&#34;resetForm&#34;] = request.form.get(&#34;resetForm&#34;, &#34;&#34;)
-    submitter = request.form.get(&#34;submitter&#34;, &#34;&#34;)
+    form[&#34;resetForm&#34;] = fget(&#34;resetForm&#34;, &#34;&#34;)
+    submitter = fget(&#34;submitter&#34;, &#34;&#34;)
     form[&#34;submitter&#34;] = submitter
 
-    form[&#34;sec0&#34;] = request.form.get(&#34;sec0&#34;, &#34;&#34;)
-    form[&#34;sec1&#34;] = request.form.get(&#34;sec1&#34;, &#34;&#34;)
-    form[&#34;sec2&#34;] = request.form.get(&#34;sec2&#34;, &#34;&#34;)
-    form[&#34;annoset&#34;] = request.form.get(&#34;annoset&#34;, &#34;&#34;)
-    form[&#34;duannoset&#34;] = request.form.get(&#34;duannoset&#34;, &#34;&#34;)
-    form[&#34;rannoset&#34;] = request.form.get(&#34;rannoset&#34;, &#34;&#34;)
-    form[&#34;dannoset&#34;] = request.form.get(&#34;dannoset&#34;, &#34;&#34;)
-    form[&#34;freqsort&#34;] = request.form.get(&#34;freqsort&#34;, &#34;&#34;)
-    form[&#34;kindsort&#34;] = request.form.get(&#34;kindsort&#34;, &#34;&#34;)
-    form[&#34;etxtsort&#34;] = request.form.get(&#34;etxtsort&#34;, &#34;&#34;)
-    form[&#34;sfind&#34;] = request.form.get(&#34;sfind&#34;, &#34;&#34;)
-    form[&#34;sfinderror&#34;] = request.form.get(&#34;sfinderror&#34;, &#34;&#34;)
-    activeEntity = request.form.get(&#34;activeentity&#34;, &#34;&#34;)
-    form[&#34;activeentity&#34;] = int(activeEntity) if activeEntity else None
-    form[&#34;activekind&#34;] = request.form.get(&#34;activekind&#34;, &#34;&#34;)
-    form[&#34;efind&#34;] = request.form.get(&#34;efind&#34;, &#34;&#34;)
-    tokenStart = request.form.get(&#34;tokenstart&#34;, &#34;&#34;)
-    form[&#34;tokenstart&#34;] = int(tokenStart) if tokenStart else None
-    tokenEnd = request.form.get(&#34;tokenend&#34;, &#34;&#34;)
-    form[&#34;tokenend&#34;] = int(tokenEnd) if tokenEnd else None
-    valSelectProto = {feat: request.form.get(f&#34;{feat}_select&#34;, &#34;&#34;) for feat in FEATURES}
-    valSelect = {}
-    for (feat, valProto) in valSelectProto.items():
-        valSelect[feat] = (
-            set(valProto.split(&#34;,&#34;))
-            if valProto
-            else {&#34;⌀&#34;}
-            if submitter == &#34;lookupq&#34;
-            else set()
-        )
+    form[&#34;sec0&#34;] = fget(&#34;sec0&#34;, &#34;&#34;)
+    form[&#34;sec1&#34;] = fget(&#34;sec1&#34;, &#34;&#34;)
+    form[&#34;sec2&#34;] = fget(&#34;sec2&#34;, &#34;&#34;)
+    form[&#34;annoset&#34;] = fget(&#34;annoset&#34;, &#34;&#34;)
+    form[&#34;duannoset&#34;] = fget(&#34;duannoset&#34;, &#34;&#34;)
+    form[&#34;rannoset&#34;] = fget(&#34;rannoset&#34;, &#34;&#34;)
+    form[&#34;dannoset&#34;] = fget(&#34;dannoset&#34;, &#34;&#34;)
+    form[&#34;sortkey&#34;] = fget(&#34;sortkey&#34;, &#34;&#34;) or SORTKEY_DEFAULT
+    form[&#34;sortdir&#34;] = fget(&#34;sortdir&#34;, &#34;&#34;) or SORTDIR_DEFAULT
+    form[&#34;sortkey&#34;] = fget(&#34;sortkey&#34;, &#34;&#34;) or SORTKEY_DEFAULT
+    form[&#34;sortdir&#34;] = fget(&#34;sortdir&#34;, &#34;&#34;) or SORTDIR_DEFAULT
+    form[&#34;formattingdo&#34;] = fget(&#34;formattingdo&#34;, &#34;x&#34;) == &#34;v&#34;
+    form[&#34;formattingstate&#34;] = {
+        feat: fget(f&#34;{feat}_appearance&#34;, &#34;v&#34;) == &#34;v&#34;
+        for feat in features + (&#34;_stat_&#34;, &#34;_entity_&#34;)
+    }
+    form[&#34;bfind&#34;] = fget(&#34;bfind&#34;, &#34;&#34;)
+    form[&#34;bfindc&#34;] = fget(&#34;bfindc&#34;, &#34;x&#34;) == &#34;v&#34;
+    form[&#34;bfinderror&#34;] = fget(&#34;bfinderror&#34;, &#34;&#34;)
 
-    form[&#34;valselect&#34;] = valSelect
-    # eKindSelect
-    eKindPButton = request.form.get(&#34;ekindpbutton&#34;, &#34;&#34;)
-    eIdPButton = request.form.get(&#34;eidpbutton&#34;, &#34;&#34;)
-    eKindXButton = request.form.get(&#34;ekindxbutton&#34;, &#34;&#34;)
-    eIdXButton = request.form.get(&#34;eidxbutton&#34;, &#34;&#34;)
-    eKindSave = request.form.get(&#34;ekindsave&#34;, &#34;&#34;)
-    eIdSave = request.form.get(&#34;eidsave&#34;, &#34;&#34;)
-    eKindV = request.form.get(&#34;ekindv&#34;, &#34;&#34;)
-    eIdV = request.form.get(&#34;eidv&#34;, &#34;&#34;)
-    savEKind = eKindV if eKindSave else eKindPButton
-    savEId = eIdV if eIdSave else eIdPButton
-    form[&#34;savEKind&#34;] = savEKind
-    form[&#34;savEId&#34;] = savEId
-    form[&#34;delEKind&#34;] = eKindXButton
-    form[&#34;delEId&#34;] = eIdXButton
-    form[&#34;scope&#34;] = request.form.get(&#34;scope&#34;, &#34;a&#34;)
-    excludedTokens = request.form.get(&#34;excludedtokens&#34;, &#34;&#34;)
-    form[&#34;excludedTokens&#34;] = (
+    anyEnt = fget(&#34;anyent&#34;, &#34;&#34;)
+    form[&#34;anyent&#34;] = True if anyEnt == &#34;v&#34; else False if anyEnt == &#34;x&#34; else None
+
+    form[&#34;freestate&#34;] = fget(&#34;freestate&#34;, &#34;all&#34;)
+    activeEntity = fget(&#34;activeentity&#34;, None)
+    form[&#34;activeentity&#34;] = tuple(activeEntity.split(&#34;⊙&#34;)) if activeEntity else None
+    form[&#34;efind&#34;] = fget(&#34;efind&#34;, &#34;&#34;)
+    tokenStart = fget(&#34;tokenstart&#34;, &#34;&#34;)
+    form[&#34;tokenstart&#34;] = int(tokenStart) if tokenStart else None
+    tokenEnd = fget(&#34;tokenend&#34;, &#34;&#34;)
+    form[&#34;tokenend&#34;] = int(tokenEnd) if tokenEnd else None
+    form[&#34;activeval&#34;] = tuple((feat, fget(f&#34;{feat}_active&#34;, &#34;&#34;)) for feat in features)
+    makeValSelect(annotate, form)
+
+    form[&#34;scope&#34;] = fget(&#34;scope&#34;, SC_ALL)
+    excludedTokens = fget(&#34;excludedtokens&#34;, &#34;&#34;)
+    form[&#34;excludedtokens&#34;] = (
         {int(t) for t in excludedTokens.split(&#34;,&#34;)} if excludedTokens else set()
     )
+    addData = fget(&#34;adddata&#34;, &#34;&#34;)
+    form[&#34;adddata&#34;] = (
+        AttrDict() if addData == &#34;&#34; else deepAttrDict(json.loads(unquote(addData)))
+    )
+    delData = fget(&#34;deldata&#34;, &#34;&#34;)
+    form[&#34;deldata&#34;] = (
+        AttrDict() if delData == &#34;&#34; else deepAttrDict(json.loads(unquote(delData)))
+    )
+    form[&#34;reportdel&#34;] = fget(&#34;reportdel&#34;, &#34;&#34;)
+    form[&#34;reportadd&#34;] = fget(&#34;reportadd&#34;, &#34;&#34;)
+    form[&#34;modwidgetstate&#34;] = fget(&#34;modwidgetstate&#34;, &#34;add&#34;)
 
     return form
 
 
-def annoSets(annoDir):
-    &#34;&#34;&#34;Get the existing annotation sets.
+def makeValSelect(annotate, form):
+    settings = annotate.settings
+    features = settings.features
 
-    Parameters
-    ----------
-    annoDir: string
-        The directory under which the distinct annotation sets can be found.
-        The names of these subdirectories are the names of the annotation sets.
+    fget = request.form.get
 
-    Returns
-    -------
-    set
-        The annotation sets, sorted by name.
-    &#34;&#34;&#34;
-    return set(dirContents(annoDir)[1])</code></pre>
+    submitter = form[&#34;submitter&#34;]
+    valSelectProto = {feat: fget(f&#34;{feat}_select&#34;, &#34;&#34;) for feat in features}
+    annotate.console(f&#34;{valSelectProto=}&#34;)
+    valSelect = {}
+
+    startSearch = submitter in {&#34;lookupq&#34;, &#34;lookupn&#34;, &#34;freebutton&#34;}
+
+    for feat in features:
+        valProto = valSelectProto[feat]
+        valSelect[feat] = (
+            set(&#34;&#34; if x == EMPTY else x for x in valProto.split(&#34;,&#34;))
+            if valProto
+            else set()
+        )
+        if startSearch:
+            valSelect[feat].add(NONE)
+
+    form[&#34;valselect&#34;] = valSelect
+
+
+def adaptValSelect(annotate, templateData):
+    settings = annotate.settings
+    features = settings.features
+
+    submitter = templateData.submitter
+    valSelect = templateData.valselect
+
+    if submitter == &#34;addgo&#34;:
+        addData = templateData.adddata
+        additions = addData.additions
+        freeVals = addData.freeVals
+
+        freeState = templateData.freestate
+
+        for i, (feat, values) in enumerate(zip(features, additions)):
+            for val in values:
+                valSelect.setdefault(feat, set()).add(val)
+                if val == freeVals[i]:
+                    freeVals[i] = None
+
+        if freeState == &#34;free&#34;:
+            templateData.freestate = &#34;all&#34;
+
+    elif submitter == &#34;delgo&#34;:
+        for feat in features:
+            valSelect.setdefault(feat, set()).add(NONE)
+
+    templateData.submitter = &#34;&#34;
+
+
+def initTemplate(annotate, app):
+    settings = annotate.settings
+    bucketType = settings.bucketType
+    features = settings.features
+
+    aContext = app.context
+    appName = aContext.appName.replace(&#34;/&#34;, &#34; / &#34;)
+    api = app.api
+    F = api.F
+    slotType = F.otype.slotType
+
+    form = getFormData(annotate)
+    resetForm = form[&#34;resetForm&#34;]
+
+    templateData = AttrDict()
+    templateData.toolkey = TOOLKEY
+    templateData.buckettype = bucketType
+    templateData.featurelist = &#34;,&#34;.join(features)
+
+    for k, v in form.items():
+        annotate.console(f&#34;{k=} {v=}&#34;)
+        if not resetForm or k not in templateData:
+            templateData[k] = v
+
+    templateData.appname = appName
+    templateData.slottype = slotType
+    templateData.resetform = &#34;&#34;
+
+    return templateData
+
+
+def findSetup(templateData):
+    bFind = templateData.bfind
+    bFindC = templateData.bfindc
+
+    (bFind, bFindRe, errorMsg) = findCompile(bFind, bFindC)
+
+    templateData.bfind = bFind
+    templateData.bfindre = bFindRe
+    templateData.errormsg = errorMsg</code></pre>
 </details>
 </section>
 <section>
@@ -139,137 +226,239 @@ def annoSets(annoDir):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.browser.ner.servelib.annoSets"><code class="name flex">
-<span>def <span class="ident">annoSets</span></span>(<span>annoDir)</span>
+<dt id="tf.browser.ner.servelib.adaptValSelect"><code class="name flex">
+<span>def <span class="ident">adaptValSelect</span></span>(<span>annotate, templateData)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Get the existing annotation sets.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>annoDir</code></strong> :&ensp;<code>string</code></dt>
-<dd>The directory under which the distinct annotation sets can be found.
-The names of these subdirectories are the names of the annotation sets.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>set</code></dt>
-<dd>The annotation sets, sorted by name.</dd>
-</dl></div>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/ner/servelib.py#L87-L101" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/servelib.py#L119-L146" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def annoSets(annoDir):
-    &#34;&#34;&#34;Get the existing annotation sets.
+<pre><code class="python">def adaptValSelect(annotate, templateData):
+    settings = annotate.settings
+    features = settings.features
 
-    Parameters
-    ----------
-    annoDir: string
-        The directory under which the distinct annotation sets can be found.
-        The names of these subdirectories are the names of the annotation sets.
+    submitter = templateData.submitter
+    valSelect = templateData.valselect
 
-    Returns
-    -------
-    set
-        The annotation sets, sorted by name.
-    &#34;&#34;&#34;
-    return set(dirContents(annoDir)[1])</code></pre>
+    if submitter == &#34;addgo&#34;:
+        addData = templateData.adddata
+        additions = addData.additions
+        freeVals = addData.freeVals
+
+        freeState = templateData.freestate
+
+        for i, (feat, values) in enumerate(zip(features, additions)):
+            for val in values:
+                valSelect.setdefault(feat, set()).add(val)
+                if val == freeVals[i]:
+                    freeVals[i] = None
+
+        if freeState == &#34;free&#34;:
+            templateData.freestate = &#34;all&#34;
+
+    elif submitter == &#34;delgo&#34;:
+        for feat in features:
+            valSelect.setdefault(feat, set()).add(NONE)
+
+    templateData.submitter = &#34;&#34;</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.servelib.findSetup"><code class="name flex">
+<span>def <span class="ident">findSetup</span></span>(<span>templateData)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/servelib.py#L180-L188" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def findSetup(templateData):
+    bFind = templateData.bfind
+    bFindC = templateData.bfindc
+
+    (bFind, bFindRe, errorMsg) = findCompile(bFind, bFindC)
+
+    templateData.bfind = bFind
+    templateData.bfindre = bFindRe
+    templateData.errormsg = errorMsg</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.servelib.getFormData"><code class="name flex">
-<span>def <span class="ident">getFormData</span></span>(<span>web)</span>
+<span>def <span class="ident">getFormData</span></span>(<span>annotate)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get form data.</p>
-<p>The TF browser user interacts with the web app by clicking and typing,
+<p>The TF browser user interacts with the app by clicking and typing,
 as a result of which a HTML form gets filled in.
-This form as regularly submitted to the web server with a request
+This form as regularly submitted to the server with a request
 for a new incarnation of the page: a response.</p>
 <p>The values that come with a request, must be peeled out of the form,
 and stored as logical values.</p>
-<p>Most of the data has a known function to the web server,
+<p>Most of the data has a known function to the server,
 but there is also a list of webapp dependent options.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/ner/servelib.py#L10-L84" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/servelib.py#L14-L90" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def getFormData(web):
+<pre><code class="python">def getFormData(annotate):
     &#34;&#34;&#34;Get form data.
 
-    The TF browser user interacts with the web app by clicking and typing,
+    The TF browser user interacts with the app by clicking and typing,
     as a result of which a HTML form gets filled in.
-    This form as regularly submitted to the web server with a request
+    This form as regularly submitted to the server with a request
     for a new incarnation of the page: a response.
 
     The values that come with a request, must be peeled out of the form,
     and stored as logical values.
 
-    Most of the data has a known function to the web server,
+    Most of the data has a known function to the server,
     but there is also a list of webapp dependent options.
     &#34;&#34;&#34;
+    settings = annotate.settings
+    features = settings.features
+
+    fget = request.form.get
 
     form = {}
 
-    form[&#34;resetForm&#34;] = request.form.get(&#34;resetForm&#34;, &#34;&#34;)
-    submitter = request.form.get(&#34;submitter&#34;, &#34;&#34;)
+    form[&#34;resetForm&#34;] = fget(&#34;resetForm&#34;, &#34;&#34;)
+    submitter = fget(&#34;submitter&#34;, &#34;&#34;)
     form[&#34;submitter&#34;] = submitter
 
-    form[&#34;sec0&#34;] = request.form.get(&#34;sec0&#34;, &#34;&#34;)
-    form[&#34;sec1&#34;] = request.form.get(&#34;sec1&#34;, &#34;&#34;)
-    form[&#34;sec2&#34;] = request.form.get(&#34;sec2&#34;, &#34;&#34;)
-    form[&#34;annoset&#34;] = request.form.get(&#34;annoset&#34;, &#34;&#34;)
-    form[&#34;duannoset&#34;] = request.form.get(&#34;duannoset&#34;, &#34;&#34;)
-    form[&#34;rannoset&#34;] = request.form.get(&#34;rannoset&#34;, &#34;&#34;)
-    form[&#34;dannoset&#34;] = request.form.get(&#34;dannoset&#34;, &#34;&#34;)
-    form[&#34;freqsort&#34;] = request.form.get(&#34;freqsort&#34;, &#34;&#34;)
-    form[&#34;kindsort&#34;] = request.form.get(&#34;kindsort&#34;, &#34;&#34;)
-    form[&#34;etxtsort&#34;] = request.form.get(&#34;etxtsort&#34;, &#34;&#34;)
-    form[&#34;sfind&#34;] = request.form.get(&#34;sfind&#34;, &#34;&#34;)
-    form[&#34;sfinderror&#34;] = request.form.get(&#34;sfinderror&#34;, &#34;&#34;)
-    activeEntity = request.form.get(&#34;activeentity&#34;, &#34;&#34;)
-    form[&#34;activeentity&#34;] = int(activeEntity) if activeEntity else None
-    form[&#34;activekind&#34;] = request.form.get(&#34;activekind&#34;, &#34;&#34;)
-    form[&#34;efind&#34;] = request.form.get(&#34;efind&#34;, &#34;&#34;)
-    tokenStart = request.form.get(&#34;tokenstart&#34;, &#34;&#34;)
-    form[&#34;tokenstart&#34;] = int(tokenStart) if tokenStart else None
-    tokenEnd = request.form.get(&#34;tokenend&#34;, &#34;&#34;)
-    form[&#34;tokenend&#34;] = int(tokenEnd) if tokenEnd else None
-    valSelectProto = {feat: request.form.get(f&#34;{feat}_select&#34;, &#34;&#34;) for feat in FEATURES}
-    valSelect = {}
-    for (feat, valProto) in valSelectProto.items():
-        valSelect[feat] = (
-            set(valProto.split(&#34;,&#34;))
-            if valProto
-            else {&#34;⌀&#34;}
-            if submitter == &#34;lookupq&#34;
-            else set()
-        )
+    form[&#34;sec0&#34;] = fget(&#34;sec0&#34;, &#34;&#34;)
+    form[&#34;sec1&#34;] = fget(&#34;sec1&#34;, &#34;&#34;)
+    form[&#34;sec2&#34;] = fget(&#34;sec2&#34;, &#34;&#34;)
+    form[&#34;annoset&#34;] = fget(&#34;annoset&#34;, &#34;&#34;)
+    form[&#34;duannoset&#34;] = fget(&#34;duannoset&#34;, &#34;&#34;)
+    form[&#34;rannoset&#34;] = fget(&#34;rannoset&#34;, &#34;&#34;)
+    form[&#34;dannoset&#34;] = fget(&#34;dannoset&#34;, &#34;&#34;)
+    form[&#34;sortkey&#34;] = fget(&#34;sortkey&#34;, &#34;&#34;) or SORTKEY_DEFAULT
+    form[&#34;sortdir&#34;] = fget(&#34;sortdir&#34;, &#34;&#34;) or SORTDIR_DEFAULT
+    form[&#34;sortkey&#34;] = fget(&#34;sortkey&#34;, &#34;&#34;) or SORTKEY_DEFAULT
+    form[&#34;sortdir&#34;] = fget(&#34;sortdir&#34;, &#34;&#34;) or SORTDIR_DEFAULT
+    form[&#34;formattingdo&#34;] = fget(&#34;formattingdo&#34;, &#34;x&#34;) == &#34;v&#34;
+    form[&#34;formattingstate&#34;] = {
+        feat: fget(f&#34;{feat}_appearance&#34;, &#34;v&#34;) == &#34;v&#34;
+        for feat in features + (&#34;_stat_&#34;, &#34;_entity_&#34;)
+    }
+    form[&#34;bfind&#34;] = fget(&#34;bfind&#34;, &#34;&#34;)
+    form[&#34;bfindc&#34;] = fget(&#34;bfindc&#34;, &#34;x&#34;) == &#34;v&#34;
+    form[&#34;bfinderror&#34;] = fget(&#34;bfinderror&#34;, &#34;&#34;)
 
-    form[&#34;valselect&#34;] = valSelect
-    # eKindSelect
-    eKindPButton = request.form.get(&#34;ekindpbutton&#34;, &#34;&#34;)
-    eIdPButton = request.form.get(&#34;eidpbutton&#34;, &#34;&#34;)
-    eKindXButton = request.form.get(&#34;ekindxbutton&#34;, &#34;&#34;)
-    eIdXButton = request.form.get(&#34;eidxbutton&#34;, &#34;&#34;)
-    eKindSave = request.form.get(&#34;ekindsave&#34;, &#34;&#34;)
-    eIdSave = request.form.get(&#34;eidsave&#34;, &#34;&#34;)
-    eKindV = request.form.get(&#34;ekindv&#34;, &#34;&#34;)
-    eIdV = request.form.get(&#34;eidv&#34;, &#34;&#34;)
-    savEKind = eKindV if eKindSave else eKindPButton
-    savEId = eIdV if eIdSave else eIdPButton
-    form[&#34;savEKind&#34;] = savEKind
-    form[&#34;savEId&#34;] = savEId
-    form[&#34;delEKind&#34;] = eKindXButton
-    form[&#34;delEId&#34;] = eIdXButton
-    form[&#34;scope&#34;] = request.form.get(&#34;scope&#34;, &#34;a&#34;)
-    excludedTokens = request.form.get(&#34;excludedtokens&#34;, &#34;&#34;)
-    form[&#34;excludedTokens&#34;] = (
+    anyEnt = fget(&#34;anyent&#34;, &#34;&#34;)
+    form[&#34;anyent&#34;] = True if anyEnt == &#34;v&#34; else False if anyEnt == &#34;x&#34; else None
+
+    form[&#34;freestate&#34;] = fget(&#34;freestate&#34;, &#34;all&#34;)
+    activeEntity = fget(&#34;activeentity&#34;, None)
+    form[&#34;activeentity&#34;] = tuple(activeEntity.split(&#34;⊙&#34;)) if activeEntity else None
+    form[&#34;efind&#34;] = fget(&#34;efind&#34;, &#34;&#34;)
+    tokenStart = fget(&#34;tokenstart&#34;, &#34;&#34;)
+    form[&#34;tokenstart&#34;] = int(tokenStart) if tokenStart else None
+    tokenEnd = fget(&#34;tokenend&#34;, &#34;&#34;)
+    form[&#34;tokenend&#34;] = int(tokenEnd) if tokenEnd else None
+    form[&#34;activeval&#34;] = tuple((feat, fget(f&#34;{feat}_active&#34;, &#34;&#34;)) for feat in features)
+    makeValSelect(annotate, form)
+
+    form[&#34;scope&#34;] = fget(&#34;scope&#34;, SC_ALL)
+    excludedTokens = fget(&#34;excludedtokens&#34;, &#34;&#34;)
+    form[&#34;excludedtokens&#34;] = (
         {int(t) for t in excludedTokens.split(&#34;,&#34;)} if excludedTokens else set()
     )
+    addData = fget(&#34;adddata&#34;, &#34;&#34;)
+    form[&#34;adddata&#34;] = (
+        AttrDict() if addData == &#34;&#34; else deepAttrDict(json.loads(unquote(addData)))
+    )
+    delData = fget(&#34;deldata&#34;, &#34;&#34;)
+    form[&#34;deldata&#34;] = (
+        AttrDict() if delData == &#34;&#34; else deepAttrDict(json.loads(unquote(delData)))
+    )
+    form[&#34;reportdel&#34;] = fget(&#34;reportdel&#34;, &#34;&#34;)
+    form[&#34;reportadd&#34;] = fget(&#34;reportadd&#34;, &#34;&#34;)
+    form[&#34;modwidgetstate&#34;] = fget(&#34;modwidgetstate&#34;, &#34;add&#34;)
 
     return form</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.servelib.initTemplate"><code class="name flex">
+<span>def <span class="ident">initTemplate</span></span>(<span>annotate, app)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/servelib.py#L149-L177" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def initTemplate(annotate, app):
+    settings = annotate.settings
+    bucketType = settings.bucketType
+    features = settings.features
+
+    aContext = app.context
+    appName = aContext.appName.replace(&#34;/&#34;, &#34; / &#34;)
+    api = app.api
+    F = api.F
+    slotType = F.otype.slotType
+
+    form = getFormData(annotate)
+    resetForm = form[&#34;resetForm&#34;]
+
+    templateData = AttrDict()
+    templateData.toolkey = TOOLKEY
+    templateData.buckettype = bucketType
+    templateData.featurelist = &#34;,&#34;.join(features)
+
+    for k, v in form.items():
+        annotate.console(f&#34;{k=} {v=}&#34;)
+        if not resetForm or k not in templateData:
+            templateData[k] = v
+
+    templateData.appname = appName
+    templateData.slottype = slotType
+    templateData.resetform = &#34;&#34;
+
+    return templateData</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.servelib.makeValSelect"><code class="name flex">
+<span>def <span class="ident">makeValSelect</span></span>(<span>annotate, form)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/browser/ner/servelib.py#L93-L116" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def makeValSelect(annotate, form):
+    settings = annotate.settings
+    features = settings.features
+
+    fget = request.form.get
+
+    submitter = form[&#34;submitter&#34;]
+    valSelectProto = {feat: fget(f&#34;{feat}_select&#34;, &#34;&#34;) for feat in features}
+    annotate.console(f&#34;{valSelectProto=}&#34;)
+    valSelect = {}
+
+    startSearch = submitter in {&#34;lookupq&#34;, &#34;lookupn&#34;, &#34;freebutton&#34;}
+
+    for feat in features:
+        valProto = valSelectProto[feat]
+        valSelect[feat] = (
+            set(&#34;&#34; if x == EMPTY else x for x in valProto.split(&#34;,&#34;))
+            if valProto
+            else set()
+        )
+        if startSearch:
+            valSelect[feat].add(NONE)
+
+    form[&#34;valselect&#34;] = valSelect</code></pre>
 </details>
 </dd>
 </dl>
@@ -341,8 +530,11 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="tf.browser.ner.servelib.annoSets" href="#tf.browser.ner.servelib.annoSets">annoSets</a></code></li>
+<li><code><a title="tf.browser.ner.servelib.adaptValSelect" href="#tf.browser.ner.servelib.adaptValSelect">adaptValSelect</a></code></li>
+<li><code><a title="tf.browser.ner.servelib.findSetup" href="#tf.browser.ner.servelib.findSetup">findSetup</a></code></li>
 <li><code><a title="tf.browser.ner.servelib.getFormData" href="#tf.browser.ner.servelib.getFormData">getFormData</a></code></li>
+<li><code><a title="tf.browser.ner.servelib.initTemplate" href="#tf.browser.ner.servelib.initTemplate">initTemplate</a></code></li>
+<li><code><a title="tf.browser.ner.servelib.makeValSelect" href="#tf.browser.ner.servelib.makeValSelect">makeValSelect</a></code></li>
 </ul>
 </li>
 </ul>
