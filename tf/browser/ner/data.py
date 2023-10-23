@@ -7,11 +7,41 @@ from ...core.files import (
     fileExists,
     initTree,
 )
-from .settings import Settings, getText
+from .settings import Settings
 
 
 class Data(Settings):
     def __init__(self, data=None):
+        """Manages annotation data.
+
+        Annotation data is either the set of pre-existing data in the corpus or the
+        result of actions by the user of this tool.
+
+        Annotation data must be stored on file, must be read from file,
+        and must be represented in memory in various ways in order to make the
+        API functions of the tool efficient.
+
+        We have set up the functions in such a way that data is only loaded and
+        processed if it is needed and out of date.
+
+        Parameters
+        ----------
+        data: object, optional None
+            Entity data to start with.
+            If None, a fresh data store will be created.
+
+            When the tool runs in browser context, each request will create a
+            `Data` object from scratch. If no data is provided to the initializer,
+            it will need to load the required data from file.
+            This is wasteful.
+
+            We have set up the web server in such a way that it incorporates the
+            annotation data. The webserver will pass it to the
+            `tf.browser.ner.annotate.Annotate` object initializer, which passes
+            it to the initializer here.
+
+            In that way, the `Data` object can start with the data already in memory.
+        """
         super().__init__()
 
         if data is None:
@@ -24,35 +54,12 @@ class Data(Settings):
         initTree(annoDir, fresh=False)
 
     def loadData(self):
-        """Loads data of the given annotation set from disk into memory.
+        """Loads data of the current annotation set into memory.
 
-        The data of an annotation set consists of:
+        It has two phases:
 
-        *   a dict of entities, keyed by nodes or line numbers;
-            each entity specifies a tuple of feature values and a list of slots
-            that are part of the entity.
-
-        If `annoSet` is empty, the annotation data is already in the TF data, and we do not
-        do anything.
-
-        After loading we process the data into derived datastructures.
-
-        We try to be lazy. We only load data from disk if the data is not already in memory,
-        or the data on disk has been updated since the last load.
-
-        Likewise, we only process the data if the data has been loaded again.
-
-        The resulting data is stored on the object
-        and then under the key `sets` and then the name of the annotation set.
-
-        For each such set we produce the following keys:
-
-        *   `dateLoaded`: datetime when the data was last loaded from disk
-        *   `dateProcessed`: datetime when the data was last processed
-        *   `entities`: the list of entities as loaded from a tsv file
-
-        We then process this into several data structures, each identified
-        by a different key.
+        *   loading the source data (see `Data.fromSource()`)
+        *   processing the loaded source data (see `Data.process()`)
         """
         data = self.data
         annoSet = self.annoSet
@@ -71,6 +78,24 @@ class Data(Settings):
         self.process(changed)
 
     def fromSource(self):
+        """Loads annotation data from source.
+
+        If the current annotation set is`""`, the annotation data is already in
+        the TF data,
+        and we compile that data into a dict of entity data keyed by entity node.
+
+        Otherwise, we read the corresponding TSV file from disk and compile that
+        data into a dict of entity data keyed by line number.
+
+        After collection of this data it is stored in the set data; in fact we store
+        data under the following keys:
+
+        *   `dateLoaded`: datetime when the data was last loaded from disk;
+        *   `entities`: the list of entities as loaded from the source;
+            it is a dict of entities, keyed by nodes or line numbers;
+            each entity specifies a tuple of feature values and a list of slots
+            that are part of the entity.
+        """
         settings = self.settings
         bucketType = settings.bucketType
         app = self.app
@@ -150,8 +175,62 @@ class Data(Settings):
         return changed
 
     def process(self, changed):
+        """Generated derived data structures out of the source data.
+
+        After loading we process the data into derived datastructures.
+
+        We try to be lazy. We only load data from disk if the data is not
+        already in memory, or the data on disk has been updated since the last load.
+
+        The resulting data is stored in current set under the various keys.
+
+        For each such set we produce several data structures, which we store
+        under the following keys:
+
+        *   `dateProcessed`: datetime when the data was last processed
+        *   `entityText`: dict, text of entity by entity node or line number in
+            tsv file;
+        *   `entityTextVal`: dict of dict, set of feature values of entity, keyed by
+            feature name and then by text of the entity;
+        *   `entitySummary`: dict, list of entity nodes/line numbers, keyed by value
+            of entity kind;
+        *   `entityIdent`: dict, list of entity nodes./line numbers, keyed by tuple of
+            entity feature values (these tuples are identifying for an entity);
+        *   `entityFreq`: dict of counters, a counter for each feature name; the
+            counter gives the number of times each value of that feature occurs in an
+            entity;
+        *   `entityIndex`: dict of dict, a dict for each feature name; the sub-dict
+            gives for each position the values that entities occupying that position
+            can have; positions are tuples of slots;
+        *   `entityVal`: dict, keyed by value tuples gives the set of positions
+            that entities with that value tuple occupy;
+        *   `entitySlotVal`: dict, keyed by positions gives the set of values
+            that entities occupying that position can have;
+        *   `entitySlotAll`: dict, keyed by single first slots gives the set of
+            ending slots that entities starting at that first slot have;
+        *   `entitySlotIndex`: dict, keyed by single slot gives list of items
+            corresponding to entities that occupy that slot;
+
+            *   if an entity starts there, an entry `[True, -n, values]` is made;
+            *   if an entity ends there, an entry `[False, n, values]` is made;
+            *   if an entity occupies that slot without starting or ending there,
+                an entry `None` is made;
+
+            Above, `n` is the length of the entity in tokens and `values` is the
+            tuple of feature values of that entity.
+
+            This is precisely the information we need if we want to mark up a set of
+            entities in the surrounding context of tokens.
+
+        Parameters
+        ----------
+        changed: boolean
+            Whether the data has changed since last processing.
+        """
         settings = self.settings
         features = settings.features
+        featureDefault = self.featureDefault
+        getText = featureDefault[""]
         summaryIndices = settings.summaryIndices
 
         app = self.app
@@ -260,6 +339,8 @@ class Data(Settings):
             pass
 
     def delEntity(self, vals, allMatches=None, silent=True):
+        """Delete entity occurrences from a set.
+        """
         setData = self.getSetData()
 
         oldEntities = setData.entities

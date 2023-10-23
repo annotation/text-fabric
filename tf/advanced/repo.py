@@ -2118,7 +2118,7 @@ def checkoutRepo(
 
     Returns
     -------
-        (commitOffline, releaseOffline, kindLocal, localBase, localDir)
+    (commitOffline, releaseOffline, kindLocal, localBase, localDir)
 
     *   *commitOffline* is the commit hash of the data you have offline afterwards
     *   *releaseOffline* is the release tag of the data you have offline afterwards

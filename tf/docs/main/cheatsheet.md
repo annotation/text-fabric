@@ -663,7 +663,7 @@ T.down(node)
 
 ## `S.` Search (low level)
 
-[searchRough](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/searchRough.ipynb)
+[searchRough](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/searchRough.ipynb)
 
 ### Preparation
 

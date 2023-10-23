@@ -88,9 +88,38 @@ Go to the manual for annotating in the Text-Fabric browser:
 Go to the manual for power-annotating in in a Jupyter Notebook, using the API:
 `tf.browser.ner.power`
 Or see this
-[example notebook](https://nbviewer.jupyter.org/github/HuygensING/suriano/blob/master/programs/powerNer.ipynb).
+[example notebook](https://nbviewer.jupyter.org/github/HuygensING/suriano/blob/main/programs/powerNer.ipynb).
 
 ## For corpus maintainers
+
+This tool needs additional input data and produces additional output data.
+
+The *input* data can be found in the directory `ner` next to the actual `tf` directory
+from where the program has loaded the corpus data.
+
+Depending on houw you invoke Text-Fabric, this can be in a clone of the
+repository of the corpus, or an auto-downloaded copy of the data.
+
+or under your `~/text-fabric-data` repository.
+
+If you work with the corpus in a local clone, you'll find it under
+`~/github/HuygensING/suriano` (in this example).
+
+If you work in an auto-downloaded copy of the corpus, it is under
+`~/text-fabric-data/github/HuygensING/suriano` (in this example).
+
+Note that
+
+*   the part `github` may be another backend in your situation, e.g. `gitlab` or 
+    `gitlab.huc.di.nl`;
+*   the part `HuygensING` may be another organization, e.g. `annotation`, or wherever
+    your corpus is located;
+*   `suriano` might also be another repo such as `descartes`, or whererever
+    your corpus is located.
+
+The *output* data can be found a directory `_temp/ner` where the `_temp`
+directory is located next to the `ner` directory that holds the input data.
+
 
 ### Input data
 
@@ -147,16 +176,7 @@ Concerning the Excel sheets in `ner/sheets`:
     surface forms that trigger the marking of an entity with this name, separated
     by semicolons.
 
-### Output data
-
-The results of all your annotation actions will end up in the
-`_temp/ner` folder.
-
-If you work with the corpus in a local clone, you'll find it
-directly in the top-level of the clone.
-
-If you work in an auto-downloaded copy of the corpus, it is in your
-`~/text-fabric-data/github/HuygensING/suriano` directory.
+### Good practice
 
 All NER input data (config file and Excel sheets) should reside in the repository.
 The corresponding TF-app should specify in its `app/config.yaml`,
@@ -181,11 +201,29 @@ A = use("HuygensING/suriano")
 ```
 
 without the need to clone the repository first.
-Text-Fabric will auto-download the corpus, including the `ner` specifications.
+Text-Fabric will auto-download the corpus, including the `ner` input data.
 
 Then multiple people can work on annotation tasks on their local computers.
 
-When they are done, you need to ask them to dig out their data files and send
+### Output data
+
+The results of all your annotation actions will end up in the
+`_temp/ner/`*version* folder in your corpus, where *version* is the
+TF-version of your corpus.
+The output data is tightly coupled to a specific version of the corpus.
+
+!!! caution "Versioning"
+    If a new versions of the corpus is published, the generated annotations
+    do not autmatically migrate to the new version.
+    Text-Fabric has tools to perform those migrations, but they are not fully automatic.
+    Whenever a new version of the corpus is produced, the producer should also
+    generate a mapping file from the nodes of the new corpus to the old corpus.
+    That will enable the migration of the annotations.
+    See `tf.dataset.nodemaps` .
+
+### Recommended practice
+
+When the annotators are done, you need to ask them to dig out their data files and send
 them to you.
 
 Then you can turn that data into new entity nodes and features and merge

@@ -18,7 +18,7 @@ text-fabric-zip
 to make a distribution of your own features.
 
 For an example of all the steps of data sharing, see the
-[share](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/share.ipynb)
+[share](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/share.ipynb)
 tutorial.
 
 ## Using new data
@@ -464,6 +464,6 @@ Now that we get the hang of it, we would like to use multiple modules
 added to a main data source.
 
 This we do for the
-[BHSA](https://github.com/etcbc/bhsa) in the
-[share](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/share.ipynb)
+[BHSA](https://github.com/ETCBC/bhsa) in the
+[share](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/share.ipynb)
 tutorial.

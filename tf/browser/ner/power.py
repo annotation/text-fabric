@@ -12,7 +12,7 @@ then this module takes care to read that spreadsheet, translate it to yaml,
 and then use the yaml as instructions to add entity annotations to the corpus.
 
 See this
-[example notebook](https://nbviewer.jupyter.org/github/HuygensING/suriano/blob/master/programs/powerNer.ipynb).
+[example notebook](https://nbviewer.jupyter.org/github/HuygensING/suriano/blob/main/programs/powerNer.ipynb).
 
 Here are more details.
 

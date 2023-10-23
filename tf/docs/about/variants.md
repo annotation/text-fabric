@@ -174,7 +174,7 @@ horizontal row represent a witness, the top row represents the base text. Not
 all slots belong to all witnesses, hence many sentence nodes will have gaps,
 but that is not a problem for Text-Fabric. We have dealt with gaps extensively
 in the Hebrew Bible, see the [gaps
-tutorial](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/searchGaps.ipynb).
+tutorial](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/searchGaps.ipynb).
 
 ![](../images/variants/result.png)
 

@@ -6,8 +6,6 @@
 import collections
 
 
-from ...core.helpers import console as cs
-
 from .settings import TOOLKEY
 
 from .helpers import findCompile, makeCss
@@ -44,8 +42,8 @@ class Annotate(Sets, Show):
             Entity data to start with. If this class is initialized by the browser,
             the browser hands over the in-memory data that the tool needs.
             That way, it can maintain access to the same data between requests.
-            If None, no data is habded over, and the in-memory data will be
-            created in this object.
+            If None, no data is handed over, and a fresh data store will be
+            created by an ancestor class (Data)
         browse: boolean, optional False
             If True, the object is informed that it is run by the Text-Fabric
             browser. This will influence how results are reported back.
@@ -64,17 +62,6 @@ class Annotate(Sets, Show):
 
         if not browse:
             self.loadData()
-
-    def console(self, msg, **kwargs):
-        """Print something to the output.
-
-        This works exactly as `tf.core.helpers.console`
-
-        It is handy to have this as a method on the Annotate object,
-        so that we can issue temporary console statements during development
-        without the need to add an `import` statement to the code.
-        """
-        cs(msg, **kwargs)
 
     def findOccs(self, qTokenSet=set()):
         """Finds the occurrences of multiple sequences of tokens.
@@ -198,10 +185,12 @@ class Annotate(Sets, Show):
             For each bucket that passes the filter, a tuple with the following
             members is added to the list:
 
-            *   tokens: the tokens of the bucket
-            *   matches: the match positions of the found occurrences or entity
+            *   the TF node of the bucket;
+            *   tokens: the tokens of the bucket, each token is a tuple consisting
+                of the TF-slot of the token and its string value;
+            *   matches: the match positions of the found occurrences or entity;
             *   positions: the token positions of where the text of the bucket
-                starts matching the `bFindRe`
+                starts matching the `bFindRe`;
 
             If `browse` is True, also some stats are passed next to the list
             of results.

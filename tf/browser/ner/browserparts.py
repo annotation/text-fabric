@@ -1,7 +1,7 @@
 """Wraps various pieces into HTML.
 """
 
-from .settings import EMPTY, NONE, SORTDIR_ASC, getText
+from .settings import EMPTY, NONE, SORTDIR_ASC
 from .html import H
 from .helpers import repIdent, valRep
 
@@ -258,6 +258,8 @@ def wrapFilter(annotate, templateData):
 def wrapEntityInit(annotate, templateData):
     settings = annotate.settings
     features = settings.features
+    featureDefault = annotate.featureDefault
+    getText = featureDefault[""]
 
     F = annotate.F
 

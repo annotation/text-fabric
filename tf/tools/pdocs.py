@@ -214,6 +214,10 @@ def pdoc3(pkg):
     copyfile(f"{pkg}/docs/index.html", f"{SITE}/index.html")
 
 
+def servePdocs(pkg):
+    run("python -m http.server 9000", cwd=SITE, shell=True)
+
+
 def shipDocs(org, repo, pkg, pdoc=True):
     """Build the docs into site and ship them."""
 

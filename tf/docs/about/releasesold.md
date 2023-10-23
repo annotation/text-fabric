@@ -2226,12 +2226,12 @@ The performance of the machinery has been tuned with new parameters, and all BHS
 queries in the tutorials have been tested.
 
 There was a pair of queries in
-[searchGaps](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/searchGaps.ipynb)
+[searchGaps](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/searchGaps.ipynb)
 that
 either took 9 seconds or 40, randomly. Now it is consistently 9 seconds.
 
 See
-[searchRough](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/searchRough.ipynb)
+[searchRough](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/searchRough.ipynb)
 at the end where the performance parameters are tweaked.
 
 #### 7.7.6-8
@@ -2839,7 +2839,7 @@ Now you can also export to Excel from a notebook,
 using `A.export(results)`.
 
 Jump to the tutorial:
-[exportExcel](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/exportExcel.ipynb)
+[exportExcel](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/exportExcel.ipynb)
 
 For more info: see [#38](https://github.com/annotation/text-fabric/issues/38) 
 
@@ -2896,7 +2896,7 @@ For more info: see [#38](https://github.com/annotation/text-fabric/issues/38)
     * The function `A.plain()` now responds to the `highlights` parameter:
       you can highlight material inside plain displays.
       and
-      **[display tutorial](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/display.ipynb)**
+      **[display tutorial](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/display.ipynb)**
     * New function `T.sectionTuple(n)` which gives the tuple of section nodes in which `n`
       is embedded
     * **Modified function `T.sectionFromNode(n, fillup=False)`**
@@ -2992,7 +2992,7 @@ Under the hood:
 * a lot of repeated code inside apps has been factored out
 * it is easier to turn corpora into new text-fabric apps.
 
-Quick start: the new [share](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/share.ipynb)
+Quick start: the new [share](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/share.ipynb)
 
 See the `tf.about.datasharing`
 for concrete and detailed hints how to make most of this version.
@@ -3190,7 +3190,7 @@ But if you have the etcbc/phono and etcbc/parallels repos in your `~/github` fol
 a `git pull origin master` on those repos.
 
 **N.B.**: I am contemplating to have the Text-Fabric browser always use data from `~/text-fabric-data` and no longer
-from `~/github/etcbc`. Then the TF browser always controls its own data, and it will not occur that
+from `~/github/ETCBC`. Then the TF browser always controls its own data, and it will not occur that
 the version of the TF browser is not compatible with the version of the TF data in your github repos, or that
 the main data and the related data are out of synch.
 
@@ -3254,11 +3254,11 @@ the github version. Probably you have run the tutorials in place. Best thing to 
 
 If not: you're done, and TF will download automatically the data it needs.
 
-If you still need it: move one directory up (into the `etcbc` directory) and do `git clone https://github.com/etcbc/bhsa`.
+If you still need it: move one directory up (into the `etcbc` directory) and do `git clone https://github.com/ETCBC/bhsa`.
 
 If you want to consult the tutorials, either:
 
-* view them on [nbviewer](https://nbviewer.jupyter.org/github/etcbc/bhsa/tree/master/tutorial/); or
+* view them on [nbviewer](https://nbviewer.jupyter.org/github/ETCBC/bhsa/tree/master/tutorial/); or
 * run them in a directory outside the BHSA repo (where you have copied it a minute ago).
 
 ---
@@ -4090,7 +4090,7 @@ Edges with edge values did not allow for the absence of values. Now they do.
 
 A major tweak in the `tf.convert.mql.importMQL` function so that it can
 handle gaps in the monad sequence. The issue arose when converting MQL for
-version 3 of the [BHSA](https://github.com/etcbc/bhsa). In that version there
+version 3 of the [BHSA](https://github.com/ETCBC/bhsa). In that version there
 are somewhat arbitrary gaps in the monad sequence between the books of the
 Hebrew Bible. I transform a gapped sequence of monads into a continuous sequence
 of slots.
@@ -4101,7 +4101,7 @@ of slots.
 
 Another little tweak in the `tf.convert.mql.importMQL` function so that it
 can handle more patterns in the MQL dump file. The issue arose when converting
-MQL for version 3 of the [BHSA](https://github.com/etcbc/bhsa).
+MQL for version 3 of the [BHSA](https://github.com/ETCBC/bhsa).
 
 #### 3.0.4
 
@@ -4109,14 +4109,14 @@ MQL for version 3 of the [BHSA](https://github.com/etcbc/bhsa).
 
 Little tweak in the `tf.convert.mql.importMQL` function so that it can handle
 more patterns in the MQL dump file. The issue arose when converting MQL for
-[extrabiblical](https://github.com/etcbc/extrabiblical) material.
+[extrabiblical](https://github.com/ETCBC/extrabiblical) material.
 
 #### 3.0.2, 3.0.3
 
 2017-10-03
 
 No changes, only an update of the package metadata, to reflect that Text-Fabric
-has moved from [ETCBC](https://github.com/etcbc) to
+has moved from [ETCBC](https://github.com/ETCBC) to
 [Dans-labs](https://github.com/Dans-labs).
 
 #### 3.0.1

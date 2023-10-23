@@ -17,16 +17,17 @@ from .settings import (
 
 class Show:
     def showEntityOverview(self):
-        """HTML for the feature values of entities.
+        """Generates HTML for an overview of the entities.
 
-        Parameters
-        ----------
-        setData: dict
-            The entity data for the chosen set.
+        The entity overview consists of a listing of the possible
+        entity kinds with for each kind how many entities there are of that kind.
 
         Returns
         -------
-        HTML string
+        string or void
+            If called by the browser, it returns the HTML string.
+            Otherwise, it displays the HTML string in the output, assuming
+            it is a cell in a Jupyter Notebook.
         """
         settings = self.settings
         keywordFeatures = settings.keywordFeatures
@@ -54,6 +55,55 @@ class Show:
     def showEntities(
         self, activeEntity=None, sortKey=None, sortDir=None, cutOffFreq=None
     ):
+        """Generates HTML for a sorted list of the entities.
+
+        The entity list consists of a table of entity identifiers, with the columns for
+        the kind and frequency of the entities.
+
+        There may be one active entity, and that one will be highlighted.
+
+        Parameters
+        ----------
+        activeEntity: tuple, optional None
+            The entity that must be highlighted.
+
+        sortKey: string, optional None
+            The key by which the entity list is sorted.
+
+            Possible values:
+
+            *   `freqsort`: by frequency
+            *   `sort_0` or `sort_eid`: by entity identifier
+            *   `sort_1` or `sort_kind`: by entity kind
+
+            If `None` is passed, `freqsort` is filled in.
+
+        sortDir: string, optional None
+            The direction of the sort.
+
+            Possible values:
+
+            *   `a`: ascending
+            *   `d`: descending
+
+            If `None` is passed, `a` is filled in.
+            However, if `None` is passed for both `sortKey` and `sortDir`,
+            a `d` is filled in.
+
+            As a consequence, the default sort order is by frequency, most
+            frequent on top.
+
+        cutOffFreq: integer, optional None
+            If passed, it is a lower limit on the frequency of the entities that
+            will be shown. Every entity with a lower frequency will be skipped.
+
+        Returns
+        -------
+        string or void
+            If called by the browser, it returns the HTML string.
+            Otherwise, it displays the HTML string in the output, assuming
+            it is a cell in a Jupyter Notebook.
+        """
         settings = self.settings
         features = settings.features
 
@@ -63,7 +113,6 @@ class Show:
         hasEnt = activeEntity is not None
 
         entries = setData.entityIdent.items()
-        # eFirst = setData.entityIdentFirst
         sortKeyMap = {feat: i for (i, feat) in enumerate(features)}
 
         if sortKey is None and sortDir is None:
@@ -100,7 +149,6 @@ class Show:
 
             if cutOffFreq is not None and x < cutOffFreq:
                 continue
-            # e1 = eFirst[vals]
             identRep = "⊙".join(vals)
 
             active = " queried " if hasEnt and vals == activeEntity else ""
@@ -131,6 +179,63 @@ class Show:
         start=None,
         end=None,
     ):
+        """Generates HTML for a given portion of the corpus.
+
+        The corpus text will be marked up with entities, the positions of
+        these entities are present in the input parameter `buckets`.
+
+        It is recommended to apply this function to the outcome of
+        `tf.browser.ner.annotate.Annotate.filterContent`
+
+        !!! caution "Truncated"
+            Unless the user has selected an entity or forced a start and end
+            boundary to the list of buckets, the display may be truncated.
+            See the parameter `mayLimit` below.
+
+        Parameters
+        ----------
+        buckets: iterable of tuple
+            A selection of buckets (chunks/paragraphs) of the corpus.
+            Each bucket is given as a tuple.
+            The exact form is this datastructure is equal to what the
+            function `tf.browser.ner.annotate.Annotate.filterContent`
+            returns.
+
+        activeEntity: tuple, optional None
+            The entity that must be highlighted.
+
+        excludedTokens: set, optional None
+            If passed, it is a set of tokens where a ❌ has been placed by the
+            user. They correspond to occurrences that have been deselected from
+            being subject to add/delete operations.
+
+        mayLimit: boolean, optional False
+            It is possible that the buckets make up the whole corpus.
+            Although we have optimized things in such a way that the browser can handle
+            a webpage with thousands of pages of material in it, such large pages
+            may compromise the performance.
+            If the bucket set is potentially very large, and the `start` and `end`
+            parameters are not both specified, we will truncate the list of buckets
+            to a smallish value (see `settings.LIMIT_BROWSER` and `settings.LIMIT_NB`).
+
+            However, when there is an `activeEntity`, we assume the buckets are those
+            containing that entity, and that it is a limited set anyway, and in that
+            case we do not truncate.
+
+        start: integer, optional None
+            If passed, start rendering the buckets at this position.
+
+        end: integer, optional None
+            If passed, stop rendering the buckets at this position.
+
+        Returns
+        -------
+        string or void
+            If called by the browser, it returns the HTML string.
+            Otherwise, it displays the HTML string in the output, assuming
+            it is a cell in a Jupyter Notebook.
+        """
+
         settings = self.settings
         bucketType = settings.bucketType
         features = settings.features
@@ -204,7 +309,9 @@ class Show:
                         identRep = "⊙".join(ident)
 
                         if status:
-                            active = " queried " if hasEnt and ident == activeEntity else ""
+                            active = (
+                                " queried " if hasEnt and ident == activeEntity else ""
+                            )
                             subContent.append(
                                 H.span(
                                     H.span(abs(lg), cls="lgb"),

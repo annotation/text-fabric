@@ -73,7 +73,7 @@ h1.chars {
     The phonetic representation is meant as a
     tentative 1-1 correspondence with pronunciation, not with the script.
     See
-    [phono.ipynb](https://nbviewer.jupyter.org/github/etcbc/phono/blob/master/programs/phono.ipynb),
+    [phono.ipynb](https://nbviewer.jupyter.org/github/ETCBC/phono/blob/master/programs/phono.ipynb),
     where the phonetic transcription is computed and thoroughly documented.
 
 ## Consonants
@@ -696,7 +696,7 @@ h1.chars {
     can also influence the nature of some accents occurring in the word before.
     Such a character is a hybrid between punctuation and accent.
     See also the documentation of the BHSA about
-    [cantillation](https://etcbc.github.io/bhsa/cantillation/).
+    [cantillation](https://ETCBC.github.io/bhsa/cantillation/).
 
 <table class="chars" summary="accents">
     <thead>

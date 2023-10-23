@@ -96,7 +96,7 @@ in terms of organization and size, see `tf.about.code`.
 ## History
 
 The foundational ideas derive from work done in and around the
-[ETCBC](http://etcbc.nl) avant-la-lettre from 1970 onwards
+[ETCBC](http://ETCBC.nl) avant-la-lettre from 1970 onwards
 by Eep Talstra,
 Crist-Jan Doedens, ([Ph.D. thesis](https://books.google.nl/books?id=9ggOBRz1dO4C)),
 Henk Harmsen, Ulrik Sandborg-Petersen ([Emdros](https://emdros.org)),

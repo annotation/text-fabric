@@ -19,7 +19,7 @@ class TfApp(App):
         )
         app.isFeatures = tuple(f for f in app.api.Fall() if f.startswith("is_"))
 
-# INSERT init
+    # INSERT init
 
     def _wrapHtml(app, n):
         rendFeatures = app.rendFeatures
@@ -38,4 +38,4 @@ class TfApp(App):
             material = f'<span class="{rClses} {iClses}">{material}</span>'
         return material
 
-# INSERT extra
+    # INSERT extra

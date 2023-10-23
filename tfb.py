@@ -6,7 +6,7 @@ from glob import glob
 from shutil import rmtree
 from subprocess import run
 
-from tf.tools.pdocs import console, pdoc3serve, pdoc3, shipDocs
+from tf.tools.pdocs import console, pdoc3serve, pdoc3, servePdocs, shipDocs
 
 ORG = "annotation"
 REPO = "text-fabric"
@@ -62,6 +62,7 @@ command:
 
 docs  : serve docs locally
 pdocs : build docs
+pdocsv: serve the built pdocs
 sdocs : ship docs
 clean : clean local develop build
 l     : local develop build
@@ -99,6 +100,7 @@ def readArgs():
         "t",
         "docs",
         "pdocs",
+        "pdocsv",
         "sdocs",
         "clean",
         "l",
@@ -288,6 +290,8 @@ def main():
         pdoc3serve(PKG)
     elif task == "pdocs":
         pdoc3(PKG)
+    elif task == "pdocsv":
+        servePdocs(PKG)
     elif task == "sdocs":
         shipDocs(ORG, REPO, PKG)
     elif task == "clean":

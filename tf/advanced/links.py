@@ -990,8 +990,8 @@ def flexLink(app, kind):
 
     Returns
     -------
-        string
-            The complete url.
+    string
+        The complete url.
     """
     backend = app.backend
     aContext = app.context

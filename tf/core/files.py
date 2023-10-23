@@ -181,7 +181,7 @@ def backendRep(be, kind, default=None):
 
     Returns
     -------
-        string
+    string
     """
 
     be = (be or "").lower()

@@ -966,7 +966,7 @@ class XML:
 
             hookStartRe = re.compile(r"^# DEF (import|init|extra)\s*$", re.S)
             hookEndRe = re.compile(r"^# END DEF\s*$", re.S)
-            hookInsertRe = re.compile(r"^# INSERT (import|init|extra)\s*$", re.S)
+            hookInsertRe = re.compile(r"^\t# INSERT (import|init|extra)\s*$", re.S)
 
             custom = {}
             section = None

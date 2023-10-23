@@ -18,17 +18,61 @@ from .settings import ERROR
 
 class Sets(Data):
     def __init__(self, data=None):
+        """Annotation set management.
+
+        Methods to create, duplicate, rename and delete annotation sets.
+        Annotation sets contain the annotations that the user generates by using
+        the tool.
+
+        Annotation sets have names, given by the user.
+
+        There is one special annotation set, whose name is the empty string,
+        and whose content are the pre-existing entities, i.e. the entities that
+        are present in the tf data as nodes and features.
+
+        There is always one current annotation set, whose data is loaded into
+        memory.
+
+        Parameters
+        ----------
+        data: object, optional None
+            Entity data to start with.
+            If None, a fresh data store will be created by a parent class (Data).
+        """
         super().__init__(data=data)
         settings = self.settings
         entitySet = settings.entitySet
 
         self.annoSet = ""
+        """The current annotation set."""
+
         self.annoSetRep = entitySet
+        """The name representation of the current annotation set."""
 
         annoDir = self.annoDir
         self.setNames = set(dirContents(annoDir)[1])
+        """The set of names of annotation sets that are present on the file system."""
+
+    def getSetData(self):
+        """Deliver the data of the current set.
+        """
+        data = self.data
+        setsData = data.sets
+        annoSet = self.annoSet
+        setData = setsData.setdefault(annoSet, AttrDict())
+        return setData
 
     def setSet(self, newAnnoSet):
+        """Switch to a named annotation set.
+
+        If the new set does not exist, it will be created.
+        After the switch, the data of the new set will be loaded into memory.
+
+        Parameters
+        ----------
+        newAnnoSet: string
+            The name of the new annotation set to switch to.
+        """
         settings = self.settings
         entitySet = settings.entitySet
         browse = self.browse
@@ -63,6 +107,10 @@ class Sets(Data):
             )
 
     def resetSet(self):
+        """Clear the current annotation set.
+
+        The special set `""` cannot be reset, because it is readonly.
+        """
         settings = self.settings
         annoSet = self.annoSet
         entitySet = settings.entitySet
@@ -90,37 +138,22 @@ class Sets(Data):
                 f"Annotation set {annoSetRep} has {nEntities} annotation{plural}"
             )
 
-    def getSetData(self):
-        data = self.data
-        setsData = data.sets
-        annoSet = self.annoSet
-        setData = setsData.setdefault(annoSet, AttrDict())
-        return setData
-
-    def getSetEntities(self):
-        return self.getSetData().entities
-
-    def setDel(self, delSet):
-        data = self.data
-        setNames = self.setNames
-        setsData = data.sets
-        annoDir = self.annoDir
-        annoPath = f"{annoDir}/{delSet}"
-
-        messages = []
-
-        dirRemove(annoPath)
-
-        if dirExists(annoPath):
-            messages.append((ERROR, f"""Could not remove {delSet}"""))
-        else:
-            setNames.discard(delSet)
-            del setsData[delSet]
-            self.annoSet = ""
-
-        return messages
-
     def setDup(self, dupSet):
+        """Duplicates the current set to a set with a new name.
+
+        !!! hint "The special set can be duplicated"
+            After duplication of the special readonly set, the duplicate
+            copy is modifiable.
+            In this way you can make corrections to the set of pre-existing,
+            tool-generated annotations.
+
+        The current set changes to the result of the duplication.
+
+        Parameters
+        ----------
+        dupSet: string
+            The name of new set that is the result of the duplication.
+        """
         data = self.data
         setNames = self.setNames
         setsData = data.sets
@@ -160,15 +193,71 @@ class Sets(Data):
 
         return messages
 
-    def setMove(self, moveSet):
+    def setDel(self, delSet):
+        """Remove a named set.
+
+        If the removed set happens to be the current set, the current set changes
+        to the special set named `""`.
+
+        Parameters
+        ----------
+        delSet: string
+            The name of the set to be removed.
+            It is not allowed to remove the special set named `""`.
+        """
+        messages = []
+
+        if delSet == "":
+            messages.append("""Cannot remove set "" because it is readonly""")
+            return messages
+
         data = self.data
         setNames = self.setNames
         setsData = data.sets
+        annoDir = self.annoDir
+        annoPath = f"{annoDir}/{delSet}"
+
+        dirRemove(annoPath)
+
+        if dirExists(annoPath):
+            messages.append((ERROR, f"""Could not remove {delSet}"""))
+        else:
+            setNames.discard(delSet)
+            del setsData[delSet]
+            if self.annotSet == delSet:
+                self.annoSet = ""
+
+        return messages
+
+    def setMove(self, moveSet):
+        """Renames a named set.
+
+        The current set changes to the renamed set.
+        It is not possible to rename the special set named `""`.
+        It is also forbidden to rename another set to the special set.
+
+        Parameters
+        ----------
+        moveSet: string
+            The new name of the current set.
+        """
+        messages = []
+
+        if moveSet == "":
+            messages.append("""Cannot rename a set to "".""")
+            return messages
+
         annoSet = self.annoSet
+
+        if annoSet == "":
+            messages.append("""Cannot rename set "".""")
+            return messages
+
+        data = self.data
+        setNames = self.setNames
+        setsData = data.sets
         annoDir = self.annoDir
         annoPath = f"{annoDir}/{moveSet}"
-
-        messages = []
 
         if dirExists(annoPath):
             messages.append((ERROR, f"""Set {moveSet} already exists"""))
