@@ -6,8 +6,8 @@
 <meta name="generator" content="pdoc 0.10.0" />
 <title>tf.about.releasesold API documentation</title>
 <meta name="description" content="Newer releases …" />
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
 <style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
 <style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
@@ -1793,11 +1793,11 @@ Especially the ones with <code>==</code> (same slots), <code>&amp;&amp;</code> (
 <p>The performance of the machinery has been tuned with new parameters, and all BHSA
 queries in the tutorials have been tested.</p>
 <p>There was a pair of queries in
-<a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/searchGaps.ipynb">searchGaps</a>
+<a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/searchGaps.ipynb">searchGaps</a>
 that
 either took 9 seconds or 40, randomly. Now it is consistently 9 seconds.</p>
 <p>See
-<a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/searchRough.ipynb">searchRough</a>
+<a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/searchRough.ipynb">searchRough</a>
 at the end where the performance parameters are tweaked.</p>
 <h4 id="776-8">7.7.6-8</h4>
 <p>2019-05-20</p>
@@ -2193,7 +2193,7 @@ to the <code>app</code>-<em>xxxx</em> repositories.</li>
 Now you can also export to Excel from a notebook,
 using <code>A.export(results)</code>.</p>
 <p>Jump to the tutorial:
-<a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/exportExcel.ipynb">exportExcel</a></p>
+<a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/exportExcel.ipynb">exportExcel</a></p>
 <p>For more info: see <a href="https://github.com/annotation/text-fabric/issues/38">#38</a> </p>
 <h4 id="722">7.2.2</h4>
 <p>2018-12-12</p>
@@ -2249,7 +2249,7 @@ which give the passage string of any kind of node, if possible.</li>
 <li>The function <code>A.plain()</code> now responds to the <code>highlights</code> parameter:
 you can highlight material inside plain displays.
 and
-<strong><a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/display.ipynb">display tutorial</a></strong></li>
+<strong><a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/display.ipynb">display tutorial</a></strong></li>
 <li>New function <code>T.sectionTuple(n)</code> which gives the tuple of section nodes in which <code>n</code>
 is embedded</li>
 <li><strong>Modified function <code>T.sectionFromNode(n, fillup=False)</code></strong>
@@ -2338,7 +2338,7 @@ also the foreign features;</li>
 <li>a lot of repeated code inside apps has been factored out</li>
 <li>it is easier to turn corpora into new text-fabric apps.</li>
 </ul>
-<p>Quick start: the new <a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/share.ipynb">share</a></p>
+<p>Quick start: the new <a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/share.ipynb">share</a></p>
 <p>See the <code><a title="tf.about.datasharing" href="datasharing.html">tf.about.datasharing</a></code>
 for concrete and detailed hints how to make most of this version.</p>
 <hr>
@@ -2482,7 +2482,7 @@ A new release has been made of the related data, and they are now in sync with t
 <p>But if you have the etcbc/phono and etcbc/parallels repos in your <code>~/github</code> folder, you should do
 a <code>git pull origin master</code> on those repos.</p>
 <p><strong>N.B.</strong>: I am contemplating to have the Text-Fabric browser always use data from <code>~/text-fabric-data</code> and no longer
-from <code>~/github/etcbc</code>. Then the TF browser always controls its own data, and it will not occur that
+from <code>~/github/ETCBC</code>. Then the TF browser always controls its own data, and it will not occur that
 the version of the TF browser is not compatible with the version of the TF data in your github repos, or that
 the main data and the related data are out of synch.</p>
 <p>The disadvantage is that if you have the github repos on your system, you get redundant data in <code>~/text-fabric-data</code>.
@@ -2536,10 +2536,10 @@ the github version. Probably you have run the tutorials in place. Best thing to 
 <li>decide whether you really want the whole repo back (nearly 4 GB).</li>
 </ul>
 <p>If not: you're done, and TF will download automatically the data it needs.</p>
-<p>If you still need it: move one directory up (into the <code>etcbc</code> directory) and do <code>git clone https://github.com/etcbc/bhsa</code>.</p>
+<p>If you still need it: move one directory up (into the <code>etcbc</code> directory) and do <code>git clone https://github.com/ETCBC/bhsa</code>.</p>
 <p>If you want to consult the tutorials, either:</p>
 <ul>
-<li>view them on <a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/tree/master/tutorial/">nbviewer</a>; or</li>
+<li>view them on <a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/tree/master/tutorial/">nbviewer</a>; or</li>
 <li>run them in a directory outside the BHSA repo (where you have copied it a minute ago).</li>
 </ul>
 <hr>
@@ -3110,7 +3110,7 @@ with the <code>IN</code> relationship of MQL, like <code>[chapter book IN (Genes
 <p>2017-10-05</p>
 <p>A major tweak in the <code><a title="tf.convert.mql.importMQL" href="../convert/mql.html#tf.convert.mql.importMQL">importMQL()</a></code> function so that it can
 handle gaps in the monad sequence. The issue arose when converting MQL for
-version 3 of the <a href="https://github.com/etcbc/bhsa">BHSA</a>. In that version there
+version 3 of the <a href="https://github.com/ETCBC/bhsa">BHSA</a>. In that version there
 are somewhat arbitrary gaps in the monad sequence between the books of the
 Hebrew Bible. I transform a gapped sequence of monads into a continuous sequence
 of slots.</p>
@@ -3118,16 +3118,16 @@ of slots.</p>
 <p>2017-10-05</p>
 <p>Another little tweak in the <code><a title="tf.convert.mql.importMQL" href="../convert/mql.html#tf.convert.mql.importMQL">importMQL()</a></code> function so that it
 can handle more patterns in the MQL dump file. The issue arose when converting
-MQL for version 3 of the <a href="https://github.com/etcbc/bhsa">BHSA</a>.</p>
+MQL for version 3 of the <a href="https://github.com/ETCBC/bhsa">BHSA</a>.</p>
 <h4 id="304">3.0.4</h4>
 <p>2017-10-04</p>
 <p>Little tweak in the <code><a title="tf.convert.mql.importMQL" href="../convert/mql.html#tf.convert.mql.importMQL">importMQL()</a></code> function so that it can handle
 more patterns in the MQL dump file. The issue arose when converting MQL for
-<a href="https://github.com/etcbc/extrabiblical">extrabiblical</a> material.</p>
+<a href="https://github.com/ETCBC/extrabiblical">extrabiblical</a> material.</p>
 <h4 id="302-303">3.0.2, 3.0.3</h4>
 <p>2017-10-03</p>
 <p>No changes, only an update of the package metadata, to reflect that Text-Fabric
-has moved from <a href="https://github.com/etcbc">ETCBC</a> to
+has moved from <a href="https://github.com/ETCBC">ETCBC</a> to
 <a href="https://github.com/Dans-labs">Dans-labs</a>.</p>
 <h4 id="301">3.0.1</h4>
 <p>2017-10-02</p>
@@ -3345,7 +3345,7 @@ see in TF if they want to use it in MQL and vice versa.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20bf0897d3b01627067fb68739f1d7ae0f0aad84/tf/about/releasesold.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/about/releasesold.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releasesold.md
