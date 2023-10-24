@@ -1,6 +1,45 @@
-"""API for marking entities.
+"""Central Annotation object.
 
+The main task of this module is to find occurrences of annotations
+on the basis of criteria.
 
+As a preparation, read `tf.about.annotate` first, since it explains the concepts, and
+guides you to set up the configuration for your corpus.
+
+But this is just the tip of the iceberg, since this module inherits
+from a number of other modules that inherit form yet other modules:
+
+*   `tf.browser.ner.show`: generate HTML for annotated buckets of the corpus;
+*   `tf.browser.ner.sets`: manage annotation sets;
+*   `tf.browser.ner.data`: manage annotation data: loading, adding/deleting
+    annotations;
+*   `tf.browser.ner.settings`: manage the specifics of a TF corpus and have
+    access to its data.
+
+It also uses
+
+*   `tf.browser.ner.match`: to filter individual buckets on the basis of
+    criteria.
+
+Hence, `Annotation` is the central class of this tools, whose methods are relevant
+for:
+
+*   `tf.browser.ner.web`: Flask app that routes urls to controller functions.
+*   `tf.browser.ner.power`: the API for users to manipulate annotations in their
+    own programs, especially in a Juyter notebook.
+
+`web` makes use of the following modules that are not needed by `power`:
+
+*   `tf.browser.ner.serve`: define the controllers of the web app
+*   `tf.browser.ner.servelib`: manage the data of a request;
+*   `tf.browser.ner.fragments`: generate HTML for widgets on the page;
+
+Both `web` and `power` make use of the following modules in as far as they are not
+already mentioned under `annotate` and its parent classes:
+
+*   `tf.browser.ner.helpers`: a variety of context-free data jugglers;
+*   `tf.browser.ner.html`: a generic library to generate HTML using Pythonesque
+    syntax.
 """
 
 import collections
@@ -51,7 +90,6 @@ class Annotate(Sets, Show):
         self.app = app
         super().__init__(data=data)
 
-        self.F = app.api.F
         self.browse = browse
 
         settings = self.settings

@@ -1,4 +1,7 @@
-"""Auxiliary functions for serving the page.
+"""Auxiliary functions for managing request data.
+
+To see how this fits among all the modules of this package, see
+`tf.browser.ner.annotate` .
 """
 
 import json
@@ -8,10 +11,10 @@ from flask import request
 
 from ...core.generic import AttrDict, deepAttrDict
 from .settings import TOOLKEY, EMPTY, NONE, SORTKEY_DEFAULT, SORTDIR_DEFAULT, SC_ALL
-from .annotate import findCompile
+from .helpers import findCompile
 
 
-def getFormData(annotate):
+def getFormData(self):
     """Get form data.
 
     The TF browser user interacts with the app by clicking and typing,
@@ -22,10 +25,12 @@ def getFormData(annotate):
     The values that come with a request, must be peeled out of the form,
     and stored as logical values.
 
-    Most of the data has a known function to the server,
-    but there is also a list of webapp dependent options.
+    Parameters
+    ----------
+    self: object
+        A `tf.browser.ner.annotate.Annotate` object is expected.
     """
-    settings = annotate.settings
+    settings = self.settings
     features = settings.features
 
     fget = request.form.get
@@ -68,7 +73,7 @@ def getFormData(annotate):
     tokenEnd = fget("tokenend", "")
     form["tokenend"] = int(tokenEnd) if tokenEnd else None
     form["activeval"] = tuple((feat, fget(f"{feat}_active", "")) for feat in features)
-    makeValSelect(annotate, form)
+    makeValSelect(self, form)
 
     form["scope"] = fget("scope", SC_ALL)
     excludedTokens = fget("excludedtokens", "")
@@ -90,8 +95,26 @@ def getFormData(annotate):
     return form
 
 
-def makeValSelect(annotate, form):
-    settings = annotate.settings
+def makeValSelect(self, form):
+    """Set values for the entity features, based on the request.
+
+    On the web page, there are hidden input fields for these values.
+    These values are picked up and put in the form, under key `valselect`.
+    Depending on which button caused the submit, the NONE value is added
+    to each feature.
+
+    The idea is that when the user is still engaged in filtering buckets,
+    and there is an occurrence selected, the user should have the option
+    to sub-select occurrences that do not yet have an entity assigned.
+
+    Parameters
+    ----------
+    self: object
+        A `tf.browser.ner.annotate.Annotate` object is expected.
+    form: dict
+        Contains the fields of the request data, in logical form.
+    """
+    settings = self.settings
     features = settings.features
 
     fget = request.form.get
@@ -115,8 +138,22 @@ def makeValSelect(annotate, form):
     form["valselect"] = valSelect
 
 
-def adaptValSelect(annotate, templateData):
-    settings = annotate.settings
+def adaptValSelect(self, templateData):
+    """Adapts the values contained in `valSelect` after a modification action.
+
+    After the addition or deletion of an entity, the values contained in `valSelect`
+    may have become obsolete or inconvenient for further actions.
+
+    This function adapts those values before having them rendered on the page.
+
+    Parameters
+    ----------
+    self: object
+        A `tf.browser.ner.annotate.Annotate` object is expected.
+    templateData: dict
+        Contains the intermediate results of computing the new page.
+    """
+    settings = self.settings
     features = settings.features
 
     submitter = templateData.submitter
@@ -145,8 +182,25 @@ def adaptValSelect(annotate, templateData):
     templateData.submitter = ""
 
 
-def initTemplate(annotate, app):
-    settings = annotate.settings
+def initTemplate(self, app):
+    """Initializes the computation of the new page.
+
+    It collects the request data, gleans some info from the configuration
+    settings and the TF app, and initializes some data structures that
+    will collect further information for the page.
+
+    All bits and pieces that are needed during processing
+    the request and filling in the final HTML template find a place under
+    some key in the `templateData` dict which is stored in `self`.
+
+    Parameters
+    ----------
+    self: object
+        A `tf.browser.ner.annotate.Annotate` object is expected.
+    app: object
+        The TF app that represents the loaded corpus.
+    """
+    settings = self.settings
     bucketType = settings.bucketType
     features = settings.features
 
@@ -156,7 +210,7 @@ def initTemplate(annotate, app):
     F = api.F
     slotType = F.otype.slotType
 
-    form = getFormData(annotate)
+    form = getFormData(self)
     resetForm = form["resetForm"]
 
     templateData = AttrDict()
@@ -172,10 +226,22 @@ def initTemplate(annotate, app):
     templateData.slottype = slotType
     templateData.resetform = ""
 
-    return templateData
+    self.templateData = templateData
 
 
 def findSetup(templateData):
+    """Compiles the filter pattern into a regular expression.
+
+    When the user enters a search pattern in the box meant to filter the buckets,
+    the pattern will be interpreted as a regular expression.
+
+    We do the compilation here.
+    If there are errors in the pattern they will be reported.
+    Whether or not the search is case sensitive or not is under user control,
+    and it will influence the compilation of the pattern.
+
+    All input and output data is in `templateData` .
+    """
     bFind = templateData.bfind
     bFindC = templateData.bfindc
 

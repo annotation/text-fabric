@@ -2,8 +2,8 @@
 
 This module contains the top-level methods for applying annotation rules to a corpus.
 
-As a preparation, read `tf.about.annotate` first, since it explains the concepts, and
-guides you to set up the configuration for your corpus.
+To see how this fits among all the modules of this package, see
+`tf.browser.ner.annotate` .
 
 # Power annotation done in a Jupyter Notebook
 

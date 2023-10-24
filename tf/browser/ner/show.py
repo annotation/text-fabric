@@ -1,3 +1,9 @@
+"""Rendering of corpus extracts with annotations.
+
+To see how this fits among all the modules of this package, see
+`tf.browser.ner.annotate` .
+"""
+
 from itertools import chain
 
 from ...advanced.helpers import dh

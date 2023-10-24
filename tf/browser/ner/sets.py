@@ -1,3 +1,12 @@
+"""Annotation set management.
+
+Annotation sets contain the annotations that the user generates by using
+the tool.
+
+To see how this fits among all the modules of this package, see
+`tf.browser.ner.annotate` .
+"""
+
 from .data import Data
 
 
@@ -18,11 +27,7 @@ from .settings import ERROR
 
 class Sets(Data):
     def __init__(self, data=None):
-        """Annotation set management.
-
-        Methods to create, duplicate, rename and delete annotation sets.
-        Annotation sets contain the annotations that the user generates by using
-        the tool.
+        """Methods to create, duplicate, rename and delete annotation sets.
 
         Annotation sets have names, given by the user.
 

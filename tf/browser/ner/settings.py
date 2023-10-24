@@ -1,15 +1,72 @@
+"""Corpus dependent setup of the annotation tool.
+
+To see how this fits among all the modules of this package, see
+`tf.browser.ner.annotate` .
+"""
+
 import re
 
 from ...core.helpers import console as cs
 from ...core.files import annotateDir, readYaml
 
 TOOLKEY = "ner"
+"""The name of this annotation tool.
+
+This name is used
+
+*   in directory paths on the file system to find the data that is managed by this tool;
+*   as a key to address the in-memory data that belongs to this tool;
+*   as a prefix to modularize the Flask app for this tool within the encompassing
+    TF browser Flask app and also it CSS files.
+"""
 
 NONE = "⌀"
+"""GUI representiation of an empty value.
+
+Used to mark the fact that an occurrence does not have a value for an entity feature.
+That happens when an occurrence is not part of an entity.
+"""
+
 EMPTY = "␀"
+"""GUI representation of the empty string.
+
+If an entity feature has the empty string as value, and we want to create a button for
+it, this is the label we draw on that button.
+"""
 
 LIMIT_BROWSER = 100
+"""Limit of amount of buckets to load on one page when in the TF browser.
+
+This is not a hard limit. We only use it if the page contains the whole corpus or
+a filtered subset of it.
+
+But as soon we have selected a token string or an entity, we show all buckets
+that contain it, no matter how many there are.
+
+!!! note "Performance"
+    We use the
+    [CSS device *content-visibility*](https://developer.mozilla.org/en-US/docs/Web/CSS/content-visibility)
+    to restrict rendering to the material that is visible in the viewport. However,
+    this is not supported in Safari, so the performance may suffer in Safari if we load
+    the whole corpus on a single page.
+
+    In practice, even in browsers that support this device are not happy with a big
+    chunk of HTML on the page, since they do have to build a large DOM, including
+    event listeners.
+
+    That's why we restrict the page to a limited amount of buckets.
+
+    But when a selection has been made, it is more important to show the whole,
+    untruncated result set, than to incur a performance penalty.
+    Moreover, it is hardly the case that a selected entity of occurrence occurs in a
+    very large number of buckets.
+"""
+
 LIMIT_NB = 20
+"""Limit of amount of buckets to load on one page when in a Jupyter notebook.
+
+See also `LIMIT_BROWSER` .
+"""
 
 ERROR = "error"
 
@@ -68,18 +125,48 @@ STYLES = dict(
         bc="yellow",
     ),
 )
+"""CSS style configuration for entity features.
+
+Here we define properties of the styling of the entity features and their
+values.
+Since these features are defined in configuration, we cannot work with a fixed
+style sheet.
+
+We divide entity features in *keyword* features and *free* features.
+The typical keyword feature is `kind`, it has a limited set of values.
+The typical free feature is `eid`, it has an unbounded number of values.
+
+As it is now, we could have expressed this in a fixed stylesheet.
+But if we open up to allowing for more entity features, we can use this setup
+to easily configure the formatting of them.
+
+However, we should move these definitions to the `ner.yaml` file then, so that the
+only place of configuration is that yaml file, and not this file.
+"""
 
 WHITE_RE = re.compile(r"""\s{2,}""", re.S)
 NON_ALPHA_RE = re.compile(r"""[^\w ]""", re.S)
 
 SORTDIR_DESC = "d"
+"""Value that indicates the descending sort direction."""
+
 SORTDIR_ASC = "a"
+"""Value that indicates the ascending sort direction."""
+
 SORTDIR_DEFAULT = SORTDIR_ASC
+"""Default sort direction."""
+
 SORTKEY_DEFAULT = "freqsort"
+"""Default sort key."""
+
 SORT_DEFAULT = (SORTKEY_DEFAULT, SORTDIR_DESC)
+"""Default sort key plus sort direction combination."""
 
 SC_ALL = "a"
+"""Value that indicates *all* buckets."""
+
 SC_FILT = "f"
+"""Value that indicates *filtered* buckets."""
 
 
 class Settings:
@@ -96,6 +183,9 @@ class Settings:
         `ner` next to the `tf` data of the corpus.
         """
         app = self.app
+        api = app.api
+        F = api.F
+
         version = app.context.version
         (specDir, annoDir) = annotateDir(app, TOOLKEY)
         self.specDir = specDir
@@ -112,7 +202,7 @@ class Settings:
             i for i in range(len(features)) if features[i] in keywordFeatures
         )
 
-        def getText(F, slots):
+        def getText(slots):
             """Get the text for a number of slots.
 
             Leading and trailing whitespace is stripped, and inner whitespace is
@@ -124,7 +214,7 @@ class Settings:
             text = WHITE_RE.sub(" ", text)
             return text
 
-        def get0(F, slots):
+        def get0(slots):
             """Makes an identifier value out of a number of slots.
 
             This acts as the default value for the `eid` feature of new
@@ -134,12 +224,12 @@ class Settings:
             the string is lowercased, non-alphanumeric characters are stripped,
             and spaces are replaced by dots.
             """
-            text = getText(F, slots)
+            text = getText(slots)
             text = NON_ALPHA_RE.sub("", text)
             text = text.replace(" ", ".").strip(".").lower()
             return text
 
-        def get1(F, slots):
+        def get1(slots):
             """Return a fixed value specified in the corpus-dependent settings.
 
             This acts as the default value ofr the `kind` feature of new
@@ -152,6 +242,33 @@ class Settings:
             features[0]: get0,
             features[1]: get1,
         }
+
+    def getStrings(self, tokenStart, tokenEnd):
+        """Gets the text of the tokens occupying a sequence of slots.
+
+        Parameters
+        ----------
+        tokenStart: integer
+            The position of the starting token.
+        tokenEnd: integer
+            The position of the ending token.
+
+        Returns
+        -------
+        tuple
+            The members consist of the string values of the tokens in question,
+            as far as these values are not purely whitespace.
+            Also, the string values are stripped from leading and trailing whitespace.
+        """
+        app = self.app
+        api = app.api
+        F = api.F
+
+        return tuple(
+            token
+            for t in range(tokenStart, tokenEnd + 1)
+            if (token := (F.str.v(t) or "").strip())
+        )
 
     def console(self, msg, **kwargs):
         """Print something to the output.

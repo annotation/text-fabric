@@ -1,3 +1,9 @@
+"""Flask sub web app in the TF browser.
+
+To see how this fits among all the modules of this package, see
+`tf.browser.ner.annotate` .
+"""
+
 from flask import Blueprint, send_file
 
 from ...core.files import abspath, fileExists, dirNm

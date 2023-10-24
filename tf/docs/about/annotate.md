@@ -26,6 +26,45 @@ Here is what the browser interface looks like:
 
 ![browser](../images/Annotate/browser.png)
 
+# Work-in-progess
+
+This is a tool where you can add entity annotations to a corpus.
+These annotations consist of a new nodes of a new type (`ent`, or `entity`) and
+features that give information about those nodes.
+
+But how exactly are those new nodes and features delivered?
+
+This is work in progress!
+
+Currently, Text-Fabric supports data modules on top of a corpus, provided the modules
+consist of features that annotate the existing nodes in the corpus.
+
+Here we have a new situation: we not only have new features, but also a new node type.
+
+TF has not (yet) a module system by which you can invoke such data modules on top of
+an existing TF dataset.
+
+What do we have, though?
+
+Text-Fabric has already functions to *add* new types with their features to a dataset:
+`tf.dataset.modify`. This will create a completely new and separate data set out of
+the existing dataset and the new nodes and features.
+
+We deliver the annotation data as `.tsv` files, where each line specifies
+a new (entity) node, and the columns specify the values of the entity features for
+that node, plus the slots that are linked to that node.
+
+With this information in hand, it is possible
+
+*   to call the `tf.dataset.modify` function **or**
+*   work in a Jupyter notebook and use the entity data in whatever way you like.
+
+In the futureI intend to broaden the concept of data module to modules that introduce
+new node types. In order to do that I have to write code for Text-Fabric to include
+the module data in the existing `otype` and `oslots` features and, most of all,
+to generate adapted computed features such as `__levup__` and `__levdown__`.
+See `tf.core.prepare` .
+
 # Concepts
 
 ## Entities

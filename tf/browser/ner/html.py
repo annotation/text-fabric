@@ -1,3 +1,8 @@
+"""HTML generation done in the Pythonesque way.
+
+To see how this fits among all the modules of this package, see
+`tf.browser.ner.annotate` .
+"""
 from ...core.generic import isIterable
 
 

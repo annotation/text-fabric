@@ -1,4 +1,9 @@
 """Wraps various pieces into HTML.
+
+This module generates HTML for various controls that appear in the TF browser.
+
+To see how this fits among all the modules of this package, see
+`tf.browser.ner.annotate` .
 """
 
 from .settings import EMPTY, NONE, SORTDIR_ASC
@@ -114,7 +119,7 @@ def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets, entitySet):
     return H.p(content1, content2)
 
 
-def wrapQuery(annotate, templateData):
+def wrapQuery(self, templateData):
     """HTML for the query line.
 
     Parameters
@@ -125,18 +130,18 @@ def wrapQuery(annotate, templateData):
     html string
         The finished HTML of the query parameters
     """
-    wrapAppearance(annotate, templateData)
-    wrapFilter(annotate, templateData)
-    wrapEntityInit(annotate, templateData)
+    wrapAppearance(self, templateData)
+    wrapFilter(self, templateData)
+    wrapEntityInit(self, templateData)
     wrapEntityText(templateData)
-    wrapScope(annotate, templateData)
-    wrapEntityFeats(annotate, templateData)
-    wrapEntityModReport(annotate, templateData)
-    wrapEntityModify(annotate, templateData)
+    wrapScope(self, templateData)
+    wrapEntityFeats(self, templateData)
+    wrapEntityModReport(self, templateData)
+    wrapEntityModify(self, templateData)
 
 
-def wrapAppearance(annotate, templateData):
-    settings = annotate.settings
+def wrapAppearance(self, templateData):
+    settings = self.settings
     features = settings.features
 
     formattingDo = templateData.formattingdo
@@ -188,8 +193,8 @@ def wrapAppearance(annotate, templateData):
     )
 
 
-def wrapFilter(annotate, templateData):
-    setData = annotate.getSetData()
+def wrapFilter(self, templateData):
+    setData = self.getSetData()
 
     nFind = templateData.nfind
     bFind = templateData.bfind
@@ -255,13 +260,11 @@ def wrapFilter(annotate, templateData):
     templateData.hasfilter = hasFilter
 
 
-def wrapEntityInit(annotate, templateData):
-    settings = annotate.settings
+def wrapEntityInit(self, templateData):
+    settings = self.settings
     features = settings.features
-    featureDefault = annotate.featureDefault
+    featureDefault = self.featureDefault
     getText = featureDefault[""]
-
-    F = annotate.F
 
     activeEntity = templateData.activeentity
     tokenStart = templateData.tokenstart
@@ -278,7 +281,7 @@ def wrapEntityInit(annotate, templateData):
     elif hasOcc:
         templateData.activeentity = None
         txt = (
-            getText(F, range(tokenStart, tokenEnd + 1))
+            getText(range(tokenStart, tokenEnd + 1))
             if tokenStart and tokenEnd
             else ""
         )
@@ -306,7 +309,7 @@ def wrapEntityInit(annotate, templateData):
     templateData.etxt = eTxt
 
 
-def wrapEntityHeaders(annotate, sortKey, sortDir):
+def wrapEntityHeaders(self, sortKey, sortDir):
     """HTML for the header of the entity table.
 
     Dependent on the state of sorting.
@@ -323,7 +326,7 @@ def wrapEntityHeaders(annotate, sortKey, sortDir):
     HTML string
 
     """
-    settings = annotate.settings
+    settings = self.settings
     features = settings.features
 
     sortKeys = ((feat, f"sort_{i}") for (i, feat) in enumerate(features))
@@ -394,12 +397,12 @@ def wrapEntityText(templateData):
     )
 
 
-def wrapEntityFeats(annotate, templateData):
-    settings = annotate.settings
+def wrapEntityFeats(self, templateData):
+    settings = self.settings
     bucketType = settings.bucketType
     features = settings.features
 
-    setData = annotate.getSetData()
+    setData = self.getSetData()
 
     txt = templateData.txt
     eTxt = templateData.etxt
@@ -478,8 +481,8 @@ def wrapEntityFeats(annotate, templateData):
     )
 
 
-def wrapScope(annotate, templateData):
-    annoSet = annotate.annoSet
+def wrapScope(self, templateData):
+    annoSet = self.annoSet
     scope = templateData.scope
     hasFilter = templateData.hasfilter
     txt = templateData.txt
@@ -503,10 +506,10 @@ def wrapScope(annotate, templateData):
     templateData.scopefilter = scopeFilter
 
 
-def wrapExceptions(annotate, txt, eTxt):
-    settings = annotate.settings
+def wrapExceptions(self, txt, eTxt):
+    settings = self.settings
     bucketType = settings.bucketType
-    annoSet = annotate.annoSet
+    annoSet = self.annoSet
     hasOcc = txt != ""
     hasEnt = eTxt != ""
 
@@ -535,7 +538,7 @@ def wrapExceptions(annotate, txt, eTxt):
     return scopeExceptions
 
 
-def wrapEntityModReport(annotate, templateData):
+def wrapEntityModReport(self, templateData):
     reportDel = templateData.reportdel
     reportAdd = templateData.reportadd
     templateData.modifyreport = H.join(
@@ -544,14 +547,13 @@ def wrapEntityModReport(annotate, templateData):
     )
 
 
-def wrapEntityModify(annotate, templateData):
-    settings = annotate.settings
+def wrapEntityModify(self, templateData):
+    settings = self.settings
     features = settings.features
     keywordFeatures = settings.keywordFeatures
 
-    setData = annotate.getSetData()
-    annoSet = annotate.annoSet
-    F = annotate.F
+    setData = self.getSetData()
+    annoSet = self.annoSet
 
     txt = templateData.txt
     eTxt = templateData.etxt
@@ -581,7 +583,7 @@ def wrapEntityModify(annotate, templateData):
     somethingToDelete = True
 
     if annoSet and (hasOcc or hasEnt):
-        instances = wrapExceptions(annotate, txt, eTxt)
+        instances = wrapExceptions(self, txt, eTxt)
 
         for i, feat in enumerate(features):
             isKeyword = feat in keywordFeatures
@@ -607,7 +609,7 @@ def wrapEntityModify(annotate, templateData):
             default = (
                 activeEntity[i]
                 if hasEnt
-                else annotate.featureDefault[feat](F, range(tokenStart, tokenEnd + 1))
+                else self.featureDefault[feat](range(tokenStart, tokenEnd + 1))
                 if hasOcc
                 else {}
             )
@@ -796,8 +798,8 @@ def wrapActive(templateData):
     )
 
 
-def wrapReport(annotate, templateData, report, kind):
-    settings = annotate.settings
+def wrapReport(self, templateData, report, kind):
+    settings = self.settings
     features = settings.features
 
     label = "Deletion" if kind == "del" else "Addition" if kind == "add" else ""

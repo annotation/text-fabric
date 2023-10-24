@@ -1,3 +1,9 @@
+"""Match functions.
+
+To see how this fits among all the modules of this package, see
+`tf.browser.ner.annotate` .
+"""
+
 from .settings import NONE
 
 
@@ -7,7 +13,7 @@ def occMatch(L, F, b, qTokenSet, results):
     Parameters
     ----------
     L, F: object
-        The TF APIs `F` and `L` for feature lookup and level-switching, and text
+        The TF APIs `F` and `L` for feature annotate and level-switching, and text
         extraction, see `tf.cheatsheet`
     b: integer
         The node of the bucket in question
@@ -78,7 +84,7 @@ def entityMatch(
     entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex: object
         Various kinds of processed entity data, see `tf.browser.ner.data`
     L, F, T: object
-        The TF APIs `F` and `L` for feature lookup and level-switching, and text
+        The TF APIs `F` and `L` for feature annotate and level-switching, and text
         extraction, see `tf.cheatsheet`
     b: integer
         The node of the bucket in question

@@ -1,7 +1,10 @@
 """Main controller for Flask
 
-This module contains the main controller that Flask invokes when serving
-the annotation tool.
+This module contains the controllers that Flask invokes when serving
+the annotation tool in the TF browser.
+
+To see how this fits among all the modules of this package, see
+`tf.browser.ner.annotate` .
 """
 
 from flask import render_template
@@ -12,7 +15,7 @@ from .settings import TOOLKEY, SC_ALL
 from .helpers import makeCss
 from .annotate import Annotate
 from .servelib import initTemplate, findSetup, adaptValSelect
-from .browserparts import (
+from .fragments import (
     wrapEntityHeaders,
     wrapQuery,
     wrapActive,
@@ -24,6 +27,26 @@ from .browserparts import (
 
 class Serve:
     def __init__(self, web):
+        """Object that implements the controller functions for the annotatation tool.
+
+        Parameters
+        ----------
+        web: object
+            This represents the Flask website that is the TF browser.
+            It has access to the TF-app that represents a loaded TF corpus.
+            See `tf.browser.ner.web.factory` and `tf.browser.web.factory`.
+
+            It picks up a handle to the loaded TF corpus, stores it in the `Serve`
+            object, and uses it to fetch the CSS code for this tool, which is
+            also stored in the `Serve` object.
+
+            Finally, it creates a pointer to the annotation data in memory, as stored
+            in the `web` object, if there is already such data from a previous request.
+            If not, it initializes an empty dict in the `web` object, with the purpose
+            of storing incoming annotation data there.
+
+            This way, the annotation data is preserved between requests.
+        """
         self.web = web
         kernelApi = web.kernelApi
         self.app = kernelApi.app
@@ -39,13 +62,36 @@ class Serve:
         self.data = toolData[TOOLKEY]
 
     def setupAnnotate(self):
+        """Initialize the Annotate object.
+
+        Before doing anything else, we create a
+        `tf.browser.ner.annotate.Annotate` object and store it for use
+        by the actual controllers.
+
+        Based on the information in the request, we switch to a particular annotation
+        set and load its data.
+
+        This method will be invoked via two routes:
+
+        *   `Serve.setupFull()`: for the main page, after a normal request;
+        *   `Serve.setupLean()`: in response to an Ajax call when context to a
+            specific line in the corpus is needed.
+
+        !!! note "`templateData`"
+            We use the dict `templateData` as the collector of
+
+            *   the request information;
+            *   selections of corpus material;
+            *   HTML fragments under construction;
+            *   template variables.
+        """
         data = self.data
         app = self.app
 
         annotate = Annotate(app, data=data, browse=True)
 
-        templateData = initTemplate(annotate, app)
-        self.templateData = templateData
+        initTemplate(annotate, app)
+        templateData = annotate.templateData
 
         annoSet = templateData.annoset
 
@@ -54,6 +100,13 @@ class Serve:
         annotate.loadData()
 
     def setupFull(self):
+        """Prepares to serve a complete page.
+
+        *   Creates an `tf.browser.ner.annotate.Annotate` object;
+        *   Sets up the find widget;
+        *   Encodes the active entity in hidden `input` elements;
+        *   Collects and generates the specific CSS styles needed for this corpus.
+        """
         css = self.css
 
         self.setupAnnotate()
@@ -69,12 +122,23 @@ class Serve:
         templateData.css = makeCss(features, keywordFeatures, generic=css)
 
     def setupLean(self):
+        """Prepares to update a portion of the page.
+
+        *   Creates an `tf.browser.ner.annotate.Annotate` object;
+        *   Encodes the active entity in hidden `input` elements.
+        """
         self.setupAnnotate()
         templateData = self.templateData
 
         wrapActive(templateData)
 
-    def actionsAnnotate(self):
+    def actionsFull(self):
+        """Carries out requested actions before building the full page.
+
+        *   annotation set management actions;
+        *   fetch selected buckets from the whole corpus;
+        *   modification actions in the selected set.
+        """
         templateData = self.templateData
 
         self.setHandling(templateData)
@@ -83,9 +147,18 @@ class Serve:
         self.updateHandling()
 
     def actionsLean(self, node):
+        """Carries out requested actions before building a portion of the page.
+
+        *   fetch all buckets from a section of the corpus.
+        """
         self.getBuckets(node=node)
 
-    def wrapAnnotate(self):
+    def wrapFull(self):
+        """Builds the full page.
+
+        This includes the controls by which the user makes selections and triggers
+        axctions.
+        """
         annotate = self.annotate
         templateData = self.templateData
         sortKey = templateData.sortkey
@@ -113,6 +186,14 @@ class Serve:
         return render_template(f"{TOOLKEY}/index.html", **templateData)
 
     def wrapLean(self):
+        """Builds a portion of the page.
+
+        No need to build user controls, because they are already on the page.
+
+        Returns
+        -------
+        The generated HTML for the portion of the page.
+        """
         annotate = self.annotate
         templateData = self.templateData
         activeEntity = templateData.activeentity
@@ -126,18 +207,35 @@ class Serve:
             mayLimit=False,
         )
 
-    def getStrings(self, tokenStart, tokenEnd):
-        app = self.app
-        api = app.api
-        F = api.F
-
-        return tuple(
-            token
-            for t in range(tokenStart, tokenEnd + 1)
-            if (token := (F.str.v(t) or "").strip())
-        )
-
     def getBuckets(self, noFind=False, node=None):
+        """Fetch a selection of buckets from the corpus.
+
+        The selection is defined in the `templateData`.
+
+        We further modify the selection by two additional parameters.
+
+        The resulting list of buckets is obtained by
+        `tf.browser.ner.annotate.Annotate.filterContent`, and each member in the bucket
+        list is a tuple as indicated in the `filterContent` function.
+        The list is stored in the `Serve` object.
+        Additionally, statistics about these buckets and how many entity values
+        occur in het, are delivered in the `templateData`.
+
+        Parameters
+        ----------
+        noFind: boolean, optional False
+            If `noFind` we override the filtering by the filter widget on the interface.
+
+            We use this when the user has indicated that he wants to apply an action
+            on all buckets instead of the filtered ones.
+
+        node: integer, optional None
+            If passed, it is a TF node, probably for a top-level section.
+            The effect is that it restricts the result to those buttons that fall
+            under that TF node.
+
+            We use this when we retrieve the context for a given bucket.
+        """
         annotate = self.annotate
         templateData = self.templateData
 
@@ -157,9 +255,7 @@ class Serve:
             templateData.activeentity = None
 
         qTokens = (
-            self.getStrings(tokenStart, tokenEnd)
-            if tokenStart and tokenEnd
-            else None
+            self.getStrings(tokenStart, tokenEnd) if tokenStart and tokenEnd else None
         )
 
         (
@@ -177,12 +273,26 @@ class Serve:
             freeState=freeState,
         )
 
-    def setHandling(self, templateData):
+    def setHandling(self):
+        """Carries out the set-related actions before composing the page.
+
+        These actions are:
+
+        *   switch to an other set than the current set
+            and create it if it does not yet exist;
+        *   duplicate the current set;
+        *   rename the current set;
+        *   delete a set.
+
+        The results of the actions are wrapped in messages and stored in the
+        `templateData`.
+        """
         annotate = self.annotate
         annoDir = annotate.annoDir
         settings = annotate.settings
         entitySet = settings.entitySet
 
+        templateData = self.templateData
         chosenAnnoSet = templateData.annoset
         dupAnnoSet = templateData.duannoset
         renamedAnnoSet = templateData.rannoset
@@ -215,6 +325,16 @@ class Serve:
         templateData.messages = wrapMessages(messages)
 
     def updateHandling(self):
+        """Carries out modification actions in the current annotation set.
+
+        Modification actions are:
+
+        *   deletion of an entity;
+        *   addition of an entity.
+
+        The results of the actions are wrapped in a report and stored in the
+        `templateData`.
+        """
         annotate = self.annotate
         templateData = self.templateData
 
@@ -266,13 +386,31 @@ class Serve:
 
 
 def serveNer(web):
+    """Main controller to render a full page.
+
+    Parameters
+    ----------
+    web: object
+        The TF browser object, a Flask web app.
+    """
     serve = Serve(web)
     serve.setupFull()
-    serve.actionsAnnotate()
-    return serve.wrapAnnotate()
+    serve.actionsFull()
+    return serve.wrapFull()
 
 
 def serveNerContext(web, node):
+    """Controller to render a portion of a page.
+
+    More specifically: the context around a single bucket.
+
+    Parameters
+    ----------
+    web: object
+        The TF browser object, a Flask web app.
+    node: integer
+        The TF node that contain the bucket nodes that form the context.
+    """
     serve = Serve(web)
     serve.setupLean()
     serve.actionsLean(node)

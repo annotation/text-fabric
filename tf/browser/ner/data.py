@@ -1,3 +1,22 @@
+"""Annotation data module.
+
+This module manages the data of annotations.
+
+To see how this fits among all the modules of this package, see
+`tf.browser.ner.annotate` .
+
+Annotation data is either the set of pre-existing data in the corpus or the
+result of actions by the user of this tool, whether he uses the TF browser, or the API
+in his own programs.
+
+Annotation data must be stored on file, must be read from file,
+and must be represented in memory in various ways in order to make the
+API functions of the tool efficient.
+
+We have set up the functions in such a way that data is only loaded and
+processed if it is needed and out of date.
+"""
+
 import collections
 import time
 
@@ -14,15 +33,12 @@ class Data(Settings):
     def __init__(self, data=None):
         """Manages annotation data.
 
-        Annotation data is either the set of pre-existing data in the corpus or the
-        result of actions by the user of this tool.
+        This class is also responsible for adding entities to a set and deleting
+        entities from them.
 
-        Annotation data must be stored on file, must be read from file,
-        and must be represented in memory in various ways in order to make the
-        API functions of the tool efficient.
-
-        We have set up the functions in such a way that data is only loaded and
-        processed if it is needed and out of date.
+        Both addition and deletion is implemented by first figuring out what has to be
+        done, and then applying it to the entity data on disk; after that we
+        perform a data load from the update file.
 
         Parameters
         ----------
@@ -164,7 +180,7 @@ class Data(Settings):
                         tuple(
                             Fs(feat).v(e)
                             if hasFeature[feat]
-                            else self.featureDefault[feat](F, slots)
+                            else self.featureDefault[feat](slots)
                             for feat in features
                         ),
                         tuple(slots),
@@ -183,6 +199,10 @@ class Data(Settings):
         already in memory, or the data on disk has been updated since the last load.
 
         The resulting data is stored in current set under the various keys.
+
+        After processing, the time of processing is recorded, so that it can be
+        observed if the processed data is no longer up to date w.r.t. the data as
+        loaded from source.
 
         For each such set we produce several data structures, which we store
         under the following keys:
@@ -233,14 +253,10 @@ class Data(Settings):
         getText = featureDefault[""]
         summaryIndices = settings.summaryIndices
 
-        app = self.app
         data = self.data
         annoSet = self.annoSet
         # annoSetRep = self.annoSetRep
         setData = data.sets[annoSet]
-
-        api = app.api
-        F = api.F
 
         dateLoaded = setData.dateLoaded
         dateProcessed = setData.dateProcessed
@@ -278,7 +294,7 @@ class Data(Settings):
             entitySlotIndex = {}
 
             for e, (fVals, slots) in entityItems:
-                txt = getText(F, slots)
+                txt = getText(slots)
                 ident = fVals
                 summary = tuple(fVals[i] for i in summaryIndices)
 
@@ -340,6 +356,32 @@ class Data(Settings):
 
     def delEntity(self, vals, allMatches=None, silent=True):
         """Delete entity occurrences from a set.
+
+        The entities to delete are selected by their feature values.
+        So you can use this function to delete all entities with a certain
+        entity id and kind.
+
+        Moreover, you can also specify a set of locations and restrict the entity
+        removal to the entities that occupy those locations.
+
+        Parameters
+        ----------
+        vals: tuple
+            For each entity feature it has a value of that feature. This specifies
+            which entities have to go.
+        allMatches: iterable of tuple of int, optional None
+            A number of slot tuples. They are the locations from which the candidate
+            entities will be deleted.
+            If it is None, the entity candidates will be removed wherever they occur.
+        silent: boolean, optional False
+            Reports how many entities have been deleted and how many were not present
+            in the specified locations.
+
+        Returns
+        -------
+        (int, int) or void
+            If `silent`, it returns the number of non-existing entities that were
+            asked to be deleted and the number of actually deleted entities.
         """
         setData = self.getSetData()
 
@@ -370,11 +412,42 @@ class Data(Settings):
             self.weedEntities(delEntities)
 
         self.loadData()
-        if not silent:
-            self.console(f"Not present: {missing:>5} x")
-            self.console(f"Deleted:     {deleted:>5} x")
+
+        if silent:
+            return (missing, deleted)
+
+        self.console(f"Not present: {missing:>5} x")
+        self.console(f"Deleted:     {deleted:>5} x")
 
     def delEntityRich(self, deletions, buckets, excludedTokens=set()):
+        """Delete specified entity occurrences from a set.
+
+        This function has more detailed instructions as to which entities
+        should be deleted than `Data.delEntity()` .
+
+        It is a handy function for the TF browser to call, but not so much when you
+        are manipulating entities yourself in a Jupyter notebook.
+
+        Parameters
+        ----------
+        deletions: tuple of tuple or string
+            Each member of the tuple corresponds to an entity feature.
+            It is either a single value of such a feature, or an iterable
+            of such values.
+            The tuple together specifies a set of entities whose entity features
+            have values that are either equal to the corresponding member of
+            `deletions` or contained in it.
+        buckets: iterable of list
+            This is typically the result of
+            `tf.browser.ner.annotate.Annotate.filterContent()`.
+            The only important thing is that member 2 of each bucket is the list
+            of entity matches in that bucket.
+            Only entities that occupy these places will be removed.
+        excludedTokens: set, optional set()
+            This is the set of token positions that define the entities that must be
+            skipped from deletion. If the last slot of an entity is in this set,
+            the entity will not be deleted.
+        """
         settings = self.settings
         features = settings.features
         browse = self.browse
@@ -407,7 +480,9 @@ class Data(Settings):
 
             stats = collections.Counter()
 
-            for b, bTokens, allMatches, positions in buckets:
+            for bucket in buckets:
+                allMatches = bucket[2]
+
                 for slots in allMatches:
                     if slots[-1] in excludedTokens:
                         excl += 1
@@ -454,6 +529,32 @@ class Data(Settings):
             self.console("\n".join(rest))
 
     def addEntity(self, vals, allMatches, silent=True):
+        """Add entity occurrences to a set.
+
+        The entities to add are specified by their feature values.
+        So you can use this function to add entities with a certain
+        entity id and kind.
+
+        You also have to specify a set of locations where the entities should be added.
+
+        Parameters
+        ----------
+        vals: tuple
+            For each entity feature it has a value of that feature. This specifies
+            which entities have will be added.
+        allMatches: iterable of tuple of int
+            A number of slot tuples. They are the locations where the entities will be
+            added.
+        silent: boolean, optional False
+            Reports how many entities have been added and how many were already present
+            in the specified locations.
+
+        Returns
+        -------
+        (int, int) or void
+            If `silent`, it returns the number of already existing entities that were
+            asked to be deleted and the number of actually deleted entities.
+        """
         setData = self.getSetData()
 
         oldEntities = setData.entities
@@ -483,12 +584,41 @@ class Data(Settings):
             self.mergeEntities(addEntities)
 
         self.loadData()
-        if not silent:
-            self.console(f"Already present: {present:>5} x")
-            self.console(f"Added:           {added:>5} x")
-        return (present, added)
+
+        if silent:
+            return (present, added)
+
+        self.console(f"Already present: {present:>5} x")
+        self.console(f"Added:           {added:>5} x")
 
     def addEntities(self, newEntities, silent=True):
+        """Add multiple entites efficiently.
+
+        If you have multiple entities to add, it is wasteful to do multiple passes over
+        the corpus to find them.
+
+        This method does them all in one fell swoop.
+        It is used by the power method
+        `tf.browser.ner.power.powerNER.markEntities()`.
+
+        Parameters
+        ----------
+        newEntites: iterable of tuples of tuples
+            each new entity consists of
+
+            *   a tuple of entity feature values, specifying the entity to add
+            *   a list of slot tuples, specifying where to add this entity
+
+        silent: boolean, optional False
+            Reports how many entities have been added and how many were already present
+            in the specified locations.
+
+        Returns
+        -------
+        (int, int) or void
+            If `silent`, it returns the number of already existing entities that were
+            asked to be deleted and the number of actually deleted entities.
+        """
         setData = self.getSetData()
 
         oldEntities = set(setData.entities.values())
@@ -512,12 +642,41 @@ class Data(Settings):
             self.mergeEntities(addEntities)
 
         self.loadData()
-        if not silent:
-            self.console(f"Already present: {present:>5} x")
-            self.console(f"Added:           {added:>5} x")
-        return (present, added)
+        if silent:
+            return (present, added)
+
+        self.console(f"Already present: {present:>5} x")
+        self.console(f"Added:           {added:>5} x")
 
     def addEntityRich(self, additions, buckets, excludedTokens=set()):
+        """Add specified entity occurrences to a set.
+
+        This function has more detailed instructions as to which entities
+        should be added than `Data.addEntity()` .
+
+        It is a handy function for the TF browser to call, but not so much when you
+        are manipulating entities yourself in a Jupyter notebook.
+
+        Parameters
+        ----------
+        additions: tuple of tuple or string
+            Each member of the tuple corresponds to an entity feature.
+            It is either a single value of such a feature, or an iterable
+            of such values.
+            The tuple together specifies a set of entities whose entity features
+            have values that are either equal to the corresponding member of
+            `additions` or contained in it.
+        buckets: iterable of list
+            This is typically the result of
+            `tf.browser.ner.annotate.Annotate.filterContent()`.
+            The only important thing is that member 2 of each bucket is the list
+            of entity matches in that bucket.
+            Entities will only be added at these places.
+        excludedTokens: set, optional set()
+            This is the set of token positions that define the locations that must not
+            receive new entities. If the last slot of an entity is in this set,
+            no entity will be added there.
+        """
         settings = self.settings
         features = settings.features
 
@@ -550,7 +709,8 @@ class Data(Settings):
 
             stats = collections.Counter()
 
-            for b, bTokens, allMatches, positions in buckets:
+            for bucket in buckets:
+                allMatches = bucket[2]
                 for slots in allMatches:
                     if slots[-1] in excludedTokens:
                         excl += 1
@@ -592,6 +752,14 @@ class Data(Settings):
             self.console("\n".join(rest))
 
     def weedEntities(self, delEntities):
+        """Performs deletions to an annotation set.
+
+        Parameters
+        ----------
+        delEntities: set
+            The set consists of entity specs: a tuple of values of entity features,
+            and an iterable of slot tuples where the entity is located.
+        """
         settings = self.settings
         features = settings.features
         nF = len(features)
@@ -617,6 +785,14 @@ class Data(Settings):
             fh.write("".join(newEntities))
 
     def mergeEntities(self, newEntities):
+        """Performs additions to an annotation set.
+
+        Parameters
+        ----------
+        newEntities: set
+            The set consists of entity specs: a tuple of values of entity features,
+            and an iterable of slot tuples where the entity is located.
+        """
         annoSet = self.annoSet
         annoDir = self.annoDir
 
@@ -627,6 +803,16 @@ class Data(Settings):
                 fh.write("\t".join(str(x) for x in (*fVals, *slots)) + "\n")
 
     def saveEntitiesAs(self, dataFile):
+        """Export the data of an annotation set to a file.
+
+        This function is used when a set has to be duplicated:
+        `tf.browser.ner.sets.Sets.setDup()`.
+
+        Parameters
+        ----------
+        dataFile: string
+            The path of the file to write to.
+        """
         setData = self.getSetData()
         entities = setData.entities
 
