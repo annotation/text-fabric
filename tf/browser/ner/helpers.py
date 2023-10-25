@@ -16,6 +16,7 @@ WHITE_RE = re.compile(r"""\s+""", re.S)
 NON_WORD = re.compile(r"""\W+""", re.S)
 
 CUT_OFF = 20
+"""Maximum length of parts of entity identifiers."""
 
 TOKEN_RE = re.compile(r"""\w+|\W""")
 
@@ -25,6 +26,7 @@ TO_ASCII_DEF = dict(
     ø="o",
     ç="c",
 )
+"""Undecomposable UNICODE characters mapped to their related ASCII characters."""
 
 
 TO_ASCII = {}
@@ -35,14 +37,28 @@ for u, a in TO_ASCII_DEF.items():
 
 
 def normalize(text):
+    """Normalize white space in a text."""
     return WHITE_RE.sub(" ", text).strip()
 
 
 def toTokens(text):
+    """Split a text into tokens.
+
+    The text is split on white space.
+    Tokens are further split into maximal segments of word characters
+    and individual non-word characters.
+    """
     return tuple(TOKEN_RE.findall(normalize(text)))
 
 
 def toAscii(text):
+    """Transforms a text with diacritical marks into a plain ASCII text.
+
+    Characters with diacritics are replaced by their base character.
+    Some characters with diacritics are considered by Unicode to be undecomposable
+    characters, such as `` and ``.
+    We use a table (`TO_ASCII_DEF`) to map these on their related ASCII characters.
+    """
     return "".join(
         TO_ASCII.get(c, c)
         for c in unicodedata.normalize("NFD", text)
@@ -51,10 +67,23 @@ def toAscii(text):
 
 
 def toId(text):
+    """Transforms text to an identifier string.
+
+    Tokens are lower-cased, separated by `.`, reduced to ASCII.
+    """
     return NON_WORD.sub(".", toAscii(text.lower())).strip(".")
 
 
 def toSmallId(text, transform={}):
+    """Transforms text to a smaller identifier string.
+
+    As `toId()`, but now certain parts of the resulting identifier are
+    either left out or replaced by shorter strings.
+
+    This transformation is defined by the `transform` dictionary,
+    which ultimately is provided in the corpus-dependent
+    `ner/config.yaml` .
+    """
     parts = [y for x in toId(text).split(".") if (y := transform.get(x, x))]
     result = []
     n = 0
@@ -75,6 +104,16 @@ def toSmallId(text, transform={}):
 
 
 def repIdent(features, vals, active=""):
+    """Represents an identifier in HTML.
+
+    Parameters
+    ----------
+    vals: iterable
+        The material is given as a list of feature values.
+    active: string, optional ""
+        A CSS class name to add to the HTML representation.
+        Can be used to mark the entity as active.
+    """
     return H.join(
         (H.span(val, cls=f"{feat} {active}") for (feat, val) in zip(features, vals)),
         sep=" ",
@@ -82,6 +121,16 @@ def repIdent(features, vals, active=""):
 
 
 def repSummary(keywordFeatures, vals, active=""):
+    """Represents an keyword value in HTML.
+
+    Parameters
+    ----------
+    vals: iterable
+        The material is given as a list of values of keyword features.
+    active: string, optional ""
+        A CSS class name to add to the HTML representation.
+        Can be used to mark the entity as active.
+    """
     return H.join(
         (
             H.span(val, cls=f"{feat} {active}")
@@ -92,10 +141,27 @@ def repSummary(keywordFeatures, vals, active=""):
 
 
 def valRep(features, fVals):
+    """HTML representation of an entity as a sequence of `feat=val` strings."""
     return ", ".join(f"<i>{feat}</i>={val}" for (feat, val) in zip(features, fVals))
 
 
 def findCompile(bFind, bFindC):
+    """Compiles a regular expression out of a search pattern.
+
+    Parameters
+    ----------
+    bFind: string
+        The search pattern as a plain string.
+    bFindC: boolean
+        Whether the search is case-sensitive.
+
+    Returns
+    -------
+    tuple
+        the whitespace-stripped search pattern;
+        the regular expression object, if successful, otherwise None;
+        the error message if the re-compilation was not successful.
+    """
     bFind = (bFind or "").strip()
     bFindFlag = [] if bFindC else [re.I]
     bFindRe = None
@@ -111,6 +177,18 @@ def findCompile(bFind, bFindC):
 
 
 def makeCss(features, keywordFeatures, generic=""):
+    """Generates CSS for the tool.
+
+    The CSS for this tool has a part that depends on the choice of entity features.
+    For now, the dependency is mild: keyword features such as `kind` are formatted
+    differently than features with an unbounded set of values, such as `eid`.
+
+    Parameters
+    ----------
+    features, keywordFeatures: iterable
+        What the features are and what the keyword features are.
+        These derive ultimately from the corpus-dependent `ner/config.yaml`.
+    """
     propMap = dict(
         ff="font-family",
         fz="font-size",

@@ -26,9 +26,24 @@ H_ELEMENT_DEFS = """
 H_ELEMENTS = tuple(
     (x[0:-1], False) if x.endswith(">") else (x, True) for x in H_ELEMENT_DEFS
 )
+"""The HTML elements used in this tool."""
 
 
 def dig(*content, sep=""):
+    """A method to join nested iterables of strings into a string.
+
+    Parameters
+    ----------
+    content: iterable or string
+        Arbitrarily ested iterable of strings.
+    sep: string, optional ""
+        The string by which the individual strings from the iterables are to be joined.
+
+    Returns
+    -------
+    string
+        The fully joined string corresponding to the orginal iterables.
+    """
     if len(content) == 0:
         return ""
     if len(content) == 1:
@@ -43,13 +58,32 @@ def dig(*content, sep=""):
 
 
 def generate(close, tag, *content, **atts):
+    """Transform the logical information for an HTML element into an HTML string.
+
+    Parameters
+    ----------
+    close: boolean
+        Whether the element must be closed with an end tag.
+    tag: string
+        The name of the tag.
+    content: iterable
+        The content of the element. This may be an arbitrarily nested iterable of
+        strings.
+    atts: dict
+        The attributes of the element.
+
+    Returns
+    -------
+    string
+        The HTML string representation of an element.
+    """
     endRep = f"""</{tag}>""" if close else ""
 
     attsRep = " ".join(
-        (k if v else "")
-        if type(v) is bool
-        else f'''{"class" if k == "cls" else k}="{v}"'''
-        for (k, v) in atts.items()
+        (k if vl else "")
+        if type(vl) is bool
+        else f'''{"class" if k == "cls" else k}="{vl}"'''
+        for (k, vl) in atts.items()
     )
     if attsRep:
         attsRep = f" {attsRep}"
@@ -60,6 +94,21 @@ def generate(close, tag, *content, **atts):
 
 
 def elemFunc(close, elem):
+    """Generates a function to serialize a specific HTML element.
+
+    Parameters
+    ----------
+    close: boolean
+        Whether the element needs an end tag.
+    elem: string
+        The name of the element.
+
+    Returns
+    -------
+    function
+        The function has the same signature as `generate()` except it does not
+        take the parameters `close` and `tag`.
+    """
     if close:
 
         def result(*content, **atts):
@@ -74,6 +123,13 @@ def elemFunc(close, elem):
 
 
 class H:
+    """Provider of HTML serializing functions per element type.
+
+    Also has a class attribute `nb`: the non-breaking space.
+
+    For each HTML element in the specs (`H_ELEMENTS`) a corresponding
+    generating function is added as method.
+    """
     nb = "\u00a0"
 
 

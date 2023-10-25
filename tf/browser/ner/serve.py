@@ -14,18 +14,11 @@ from ...core.generic import AttrDict
 from .settings import TOOLKEY, SC_ALL
 from .helpers import makeCss
 from .annotate import Annotate
-from .servelib import initTemplate, findSetup, adaptValSelect
-from .fragments import (
-    wrapEntityHeaders,
-    wrapQuery,
-    wrapActive,
-    wrapReport,
-    wrapMessages,
-    wrapAnnoSets,
-)
+from .servelib import ServeLib
+from .fragments import Fragments
 
 
-class Serve:
+class Serve(ServeLib, Fragments):
     def __init__(self, web):
         """Object that implements the controller functions for the annotatation tool.
 
@@ -49,7 +42,8 @@ class Serve:
         """
         self.web = web
         kernelApi = web.kernelApi
-        self.app = kernelApi.app
+        app = kernelApi.app
+        self.app = app
         self.css = kernelApi.css()
 
         if not hasattr(web, "toolData"):
@@ -59,78 +53,49 @@ class Serve:
         if TOOLKEY not in toolData:
             toolData[TOOLKEY] = AttrDict()
 
-        self.data = toolData[TOOLKEY]
-
-    def setupAnnotate(self):
-        """Initialize the Annotate object.
-
-        Before doing anything else, we create a
-        `tf.browser.ner.annotate.Annotate` object and store it for use
-        by the actual controllers.
-
-        Based on the information in the request, we switch to a particular annotation
-        set and load its data.
-
-        This method will be invoked via two routes:
-
-        *   `Serve.setupFull()`: for the main page, after a normal request;
-        *   `Serve.setupLean()`: in response to an Ajax call when context to a
-            specific line in the corpus is needed.
-
-        !!! note "`templateData`"
-            We use the dict `templateData` as the collector of
-
-            *   the request information;
-            *   selections of corpus material;
-            *   HTML fragments under construction;
-            *   template variables.
-        """
-        data = self.data
-        app = self.app
+        data = toolData[TOOLKEY]
+        self.data = data
 
         annotate = Annotate(app, data=data, browse=True)
+        self.annotate = annotate
 
-        initTemplate(annotate, app)
-        templateData = annotate.templateData
+        super().__init__()
 
-        annoSet = templateData.annoset
+        self.initVars()
+
+        v = self.v
+        annoSet = v.annoset
 
         annotate.setSet(annoSet)
-        self.annotate = annotate
         annotate.loadData()
 
     def setupFull(self):
         """Prepares to serve a complete page.
 
-        *   Creates an `tf.browser.ner.annotate.Annotate` object;
         *   Sets up the find widget;
         *   Encodes the active entity in hidden `input` elements;
         *   Collects and generates the specific CSS styles needed for this corpus.
         """
         css = self.css
 
-        self.setupAnnotate()
         annotate = self.annotate
         settings = annotate.settings
         features = settings.features
         keywordFeatures = settings.keywordFeatures
 
-        templateData = self.templateData
+        v = self.v
 
-        findSetup(templateData)
-        wrapActive(templateData)
-        templateData.css = makeCss(features, keywordFeatures, generic=css)
+        self.findSetup()
+        self.wrapActive()
+
+        v.css = makeCss(features, keywordFeatures, generic=css)
 
     def setupLean(self):
         """Prepares to update a portion of the page.
 
-        *   Creates an `tf.browser.ner.annotate.Annotate` object;
         *   Encodes the active entity in hidden `input` elements.
         """
-        self.setupAnnotate()
-        templateData = self.templateData
-
-        wrapActive(templateData)
+        self.wrapActive()
 
     def actionsFull(self):
         """Carries out requested actions before building the full page.
@@ -139,9 +104,7 @@ class Serve:
         *   fetch selected buckets from the whole corpus;
         *   modification actions in the selected set.
         """
-        templateData = self.templateData
-
-        self.setHandling(templateData)
+        self.setHandling()
 
         self.getBuckets()
         self.updateHandling()
@@ -160,30 +123,30 @@ class Serve:
         axctions.
         """
         annotate = self.annotate
-        templateData = self.templateData
-        sortKey = templateData.sortkey
-        sortDir = templateData.sortdir
-        activeEntity = templateData.activeentity
-        tokenStart = templateData.tokenstart
-        tokenEnd = templateData.tokenend
-        excludedTokens = templateData.excludedtokens
+        v = self.v
+        sortKey = v.sortkey
+        sortDir = v.sortdir
+        activeEntity = v.activeentity
+        tokenStart = v.tokenstart
+        tokenEnd = v.tokenend
+        excludedTokens = v.excludedtokens
 
         buckets = self.buckets
 
-        wrapQuery(annotate, templateData)
-        templateData.entitytable = annotate.showEntities(
+        self.wrapQuery()
+        v.entitytable = annotate.showEntities(
             activeEntity=activeEntity, sortKey=sortKey, sortDir=sortDir
         )
-        templateData.entityoverview = annotate.showEntityOverview()
-        templateData.entityheaders = wrapEntityHeaders(annotate, sortKey, sortDir)
-        templateData.buckets = annotate.showContent(
+        v.entityoverview = annotate.showEntityOverview()
+        v.entityheaders = self.wrapEntityHeaders()
+        v.buckets = annotate.showContent(
             buckets,
             activeEntity=activeEntity,
             excludedTokens=excludedTokens,
             mayLimit=not (tokenStart and tokenEnd),
         )
 
-        return render_template(f"{TOOLKEY}/index.html", **templateData)
+        return render_template(f"{TOOLKEY}/index.html", **v)
 
     def wrapLean(self):
         """Builds a portion of the page.
@@ -195,9 +158,9 @@ class Serve:
         The generated HTML for the portion of the page.
         """
         annotate = self.annotate
-        templateData = self.templateData
-        activeEntity = templateData.activeentity
-        excludedTokens = templateData.excludedtokens
+        v = self.v
+        activeEntity = v.activeentity
+        excludedTokens = v.excludedtokens
         buckets = self.buckets
 
         return annotate.showContent(
@@ -210,7 +173,7 @@ class Serve:
     def getBuckets(self, noFind=False, node=None):
         """Fetch a selection of buckets from the corpus.
 
-        The selection is defined in the `templateData`.
+        The selection is defined in the `v`.
 
         We further modify the selection by two additional parameters.
 
@@ -219,7 +182,7 @@ class Serve:
         list is a tuple as indicated in the `filterContent` function.
         The list is stored in the `Serve` object.
         Additionally, statistics about these buckets and how many entity values
-        occur in het, are delivered in the `templateData`.
+        occur in het, are delivered in the `v`.
 
         Parameters
         ----------
@@ -237,22 +200,22 @@ class Serve:
             We use this when we retrieve the context for a given bucket.
         """
         annotate = self.annotate
-        templateData = self.templateData
+        v = self.v
 
-        bFindRe = None if noFind else templateData.bfindre
-        anyEnt = templateData.anyent
-        activeEntity = templateData.activeentity
-        tokenStart = templateData.tokenstart
-        tokenEnd = templateData.tokenend
-        valSelect = templateData.valselect
-        freeState = templateData.freestate
+        bFindRe = None if noFind else v.bfindre
+        anyEnt = v.anyent
+        activeEntity = v.activeentity
+        tokenStart = v.tokenstart
+        tokenEnd = v.tokenend
+        valSelect = v.valselect
+        freeState = v.freestate
 
         setData = annotate.getSetData()
         entityIdent = setData.entityIdent
 
         if activeEntity not in entityIdent:
             activeEntity = None
-            templateData.activeentity = None
+            v.activeentity = None
 
         qTokens = (
             self.getStrings(tokenStart, tokenEnd) if tokenStart and tokenEnd else None
@@ -260,9 +223,9 @@ class Serve:
 
         (
             self.buckets,
-            templateData.nfind,
-            templateData.nvisible,
-            templateData.nent,
+            v.nfind,
+            v.nvisible,
+            v.nent,
         ) = annotate.filterContent(
             node=node,
             bFindRe=bFindRe,
@@ -285,44 +248,40 @@ class Serve:
         *   delete a set.
 
         The results of the actions are wrapped in messages and stored in the
-        `templateData`.
+        `v`.
         """
         annotate = self.annotate
-        annoDir = annotate.annoDir
-        settings = annotate.settings
-        entitySet = settings.entitySet
 
-        templateData = self.templateData
-        chosenAnnoSet = templateData.annoset
-        dupAnnoSet = templateData.duannoset
-        renamedAnnoSet = templateData.rannoset
-        deleteAnnoSet = templateData.dannoset
+        v = self.v
+        chosenAnnoSet = v.annoset
+        dupAnnoSet = v.duannoset
+        renamedAnnoSet = v.rannoset
+        deleteAnnoSet = v.dannoset
 
         messages = []
 
         if deleteAnnoSet:
             messages.extend(annotate.setDel(deleteAnnoSet))
-            templateData.dannoset = ""
-            templateData.annoset = ""
+            v.dannoset = ""
+            v.annoset = ""
 
         if dupAnnoSet:
             messages.extend(annotate.setDup(dupAnnoSet))
-            templateData.annoset = dupAnnoSet
-            templateData.duannoset = ""
+            v.annoset = dupAnnoSet
+            v.duannoset = ""
 
         if renamedAnnoSet and chosenAnnoSet:
             messages.extend(annotate.setMove(renamedAnnoSet))
-            templateData.annoset = renamedAnnoSet
-            templateData.rannoset = ""
+            v.annoset = renamedAnnoSet
+            v.rannoset = ""
 
-        chosenAnnoSet = templateData.annoset
+        v.messagesrc = messages
+
+        chosenAnnoSet = v.annoset
         annotate.setSet(chosenAnnoSet)
-        setNames = annotate.setNames
 
-        templateData.annosets = wrapAnnoSets(
-            annoDir, chosenAnnoSet, setNames, entitySet
-        )
-        templateData.messages = wrapMessages(messages)
+        self.wrapAnnoSets()
+        self.wrapMessages()
 
     def updateHandling(self):
         """Carries out modification actions in the current annotation set.
@@ -333,20 +292,20 @@ class Serve:
         *   addition of an entity.
 
         The results of the actions are wrapped in a report and stored in the
-        `templateData`.
+        `v`.
         """
         annotate = self.annotate
-        templateData = self.templateData
+        v = self.v
 
-        delData = templateData.deldata
-        addData = templateData.adddata
-        activeEntity = templateData.activeentity
-        tokenStart = templateData.tokenstart
-        tokenEnd = templateData.tokenend
-        submitter = templateData.submitter
-        excludedTokens = templateData.excludedtokens
-        bFindRe = templateData.bfindre
-        scope = templateData.scope
+        delData = v.deldata
+        addData = v.adddata
+        activeEntity = v.activeentity
+        tokenStart = v.tokenstart
+        tokenEnd = v.tokenend
+        submitter = v.submitter
+        excludedTokens = v.excludedtokens
+        bFindRe = v.bfindre
+        scope = v.scope
 
         hasEnt = activeEntity is not None
         hasOcc = tokenStart is not None and tokenEnd is not None
@@ -364,23 +323,23 @@ class Serve:
                     delData.deletions, self.buckets, excludedTokens=excludedTokens
                 )
                 annotate.loadData()
-                wrapReport(annotate, templateData, report, "del")
+                self.wrapReport(report, "del")
                 if hasEnt:
                     setData = annotate.getSetData()
                     entityIdent = setData.entityIdent
 
                     stillExists = activeEntity in entityIdent
                     if not stillExists:
-                        templateData.activeentity = None
+                        v.activeentity = None
 
             if submitter == "addgo" and addData:
                 report = annotate.addEntityRich(
                     addData.additions, self.buckets, excludedTokens=excludedTokens
                 )
                 annotate.loadData()
-                wrapReport(annotate, templateData, report, "add")
+                self.wrapReport(report, "add")
 
-            adaptValSelect(annotate, templateData)
+            self.adaptValSelect()
 
             self.getBuckets()
 

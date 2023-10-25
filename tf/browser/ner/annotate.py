@@ -1,10 +1,10 @@
 """Central Annotation object.
 
-The main task of this module is to find occurrences of annotations
-on the basis of criteria.
-
 As a preparation, read `tf.about.annotate` first, since it explains the concepts, and
 guides you to set up the configuration for your corpus.
+
+The main task of this module is to find occurrences of annotations
+on the basis of criteria.
 
 But this is just the tip of the iceberg, since this module inherits
 from a number of other modules that inherit form yet other modules:
@@ -24,15 +24,20 @@ It also uses
 Hence, `Annotation` is the central class of this tools, whose methods are relevant
 for:
 
-*   `tf.browser.ner.web`: Flask app that routes urls to controller functions.
 *   `tf.browser.ner.power`: the API for users to manipulate annotations in their
     own programs, especially in a Juyter notebook.
+*   `tf.browser.ner.web`: Flask app that routes urls to controller functions.
 
 `web` makes use of the following modules that are not needed by `power`:
 
 *   `tf.browser.ner.serve`: define the controllers of the web app
+
+Again, this is a top of an iceberg, since it inherits from:
+
 *   `tf.browser.ner.servelib`: manage the data of a request;
 *   `tf.browser.ner.fragments`: generate HTML for widgets on the page;
+
+`servelib` also uses `form` to retrieve form values into typed and structured values.
 
 Both `web` and `power` make use of the following modules in as far as they are not
 already mentioned under `annotate` and its parent classes:
@@ -40,6 +45,33 @@ already mentioned under `annotate` and its parent classes:
 *   `tf.browser.ner.helpers`: a variety of context-free data jugglers;
 *   `tf.browser.ner.html`: a generic library to generate HTML using Pythonesque
     syntax.
+
+!!! note "Class hierarchy"
+    The classes `Settings`, `Data`, `Sets`, `Show`, `Annotate`, `PowerNER` form one
+    hierarchy. So an object of class `PowerNER` has access to all methods of these classes.
+
+    The classes `Serve`, `ServeLib`, `Fragments`, `From` form a separate hierarchy.
+    It will create an `Annotate` instance which will be stored in a `Serve` instance.
+
+Here is an overview how the modules hang together.
+
+A `|` denotes inheritance, parent classes above child classes.
+
+A `<-<` arrow denotes dependency by importing code.
+
+```
+Browser                           |   Api-hierarchy
+---------------------------------------------------------
+                                  |   PowerNER
+                                  |     |
+web <-----< Serve <-----------------< Annotate  <-< match
+            |   |                 |     |   |
+      ServeLib Fragments <-< html |   Sets Show <-< html
+          |                       |     |
+        Form                      |   Data
+                                  |     |
+                                  |   Settings
+```
 """
 
 import collections

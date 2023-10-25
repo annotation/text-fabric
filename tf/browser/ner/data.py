@@ -599,7 +599,7 @@ class Data(Settings):
 
         This method does them all in one fell swoop.
         It is used by the power method
-        `tf.browser.ner.power.powerNER.markEntities()`.
+        `tf.browser.ner.power.PowerNER.markEntities()`.
 
         Parameters
         ----------
