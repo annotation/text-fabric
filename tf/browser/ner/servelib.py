@@ -208,17 +208,14 @@ class ServeLib(Form):
         So, this function makes the transition from information that is in the
         `form` dictionary to values that are stored in the `v` dictionary.
         """
-        app = self.app
         annotate = self.annotate
         settings = annotate.settings
         bucketType = settings.bucketType
         features = settings.features
 
-        aContext = app.context
-        appName = aContext.appName.replace("/", " / ")
-        api = app.api
-        F = api.F
-        slotType = F.otype.slotType
+        appName = annotate.appName
+        appName = appName.replace("/", " / ")
+        slotType = annotate.slotType
 
         form = self.getFormData()
         resetForm = form["resetForm"]

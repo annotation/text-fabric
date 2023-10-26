@@ -46,6 +46,7 @@ def render(app, isPretty, n, _inTuple, _asString, explain, **options):
     _browse = app._browse
 
     dContext = display.distill(options)
+
     if isPretty:
         tupleFeatures = dContext.tupleFeatures
         extraFeatures = dContext.extraFeatures

@@ -245,16 +245,16 @@ class Show:
         settings = self.settings
         bucketType = settings.bucketType
         features = settings.features
+        style = self.style
+        ltr = self.ltr
 
         browse = self.browse
-        app = self.app
         setData = self.getSetData()
         annoSet = self.annoSet
-        api = app.api
-        F = api.F
+        afterv = self.getAfter()
+        sectionHead = self.sectionHead
 
         entityIdent = setData.entityIdent
-        # eFirst = setData.entityIdentFirst
         entitySlotIndex = setData.entitySlotIndex
 
         hasEnt = activeEntity is not None
@@ -295,11 +295,11 @@ class Show:
             else:
                 allMatches = set(chain.from_iterable(matches))
 
-            subContent = [
-                H.span(
-                    app.sectionStrFromNode(b), node=b, cls="bh", title="show context"
-                )
-            ]
+            headContent = H.span(
+                H.span(sectionHead(b), node=b, cls="bhl ltr", title="show context"),
+                cls=f"bh {ltr}",
+            )
+            subContent = []
 
             for t, w in bTokens:
                 info = entitySlotIndex.get(t, None)
@@ -329,7 +329,7 @@ class Show:
                                 )
                             )
 
-                after = F.after.v(t) or ""
+                after = afterv(t) or ""
                 lenW = len(w)
                 lenWa = len(w) + len(after)
                 found = any(charPos + i in positions for i in range(lenW))
@@ -339,6 +339,7 @@ class Show:
                     " queried " if queried else ""
                 )
                 hlClasses += " ei " if inEntity else ""
+                hlClasses += f" {style} " if style else ""
                 hlClass = dict(cls=hlClasses) if hlClasses else {}
 
                 endQueried = annoSet and t in endMatches
@@ -364,9 +365,11 @@ class Show:
 
                 charPos += lenWa
 
-            content.append(H.div(subContent, cls="b"))
+            content.append(
+                H.div(headContent, H.nb, H.span(subContent, cls=ltr), cls=f"b {ltr}")
+            )
 
         if browse:
-            return H.join(content)
+            return H.div(content, id="buckets", cls=f"buckets {ltr}")
 
-        dh(H.div(content, cls="buckets"))
+        dh(H.div(content, cls=f"buckets {ltr}"))

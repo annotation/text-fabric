@@ -7,14 +7,13 @@ To see how this fits among all the modules of this package, see
 from .settings import NONE
 
 
-def occMatch(L, F, b, qTokenSet, results):
+def occMatch(getTokens, b, qTokenSet, results):
     """Finds the occurrences of multiple sequences of tokens in a single bucket.
 
     Parameters
     ----------
-    L, F: object
-        The TF APIs `F` and `L` for feature annotate and level-switching, and text
-        extraction, see `tf.cheatsheet`
+    getTokens: function
+        See `tf.browser.ner.corpus.Corpus.getTokens`
     b: integer
         The node of the bucket in question
     qTokenSet: set, optional set()
@@ -26,7 +25,7 @@ def occMatch(L, F, b, qTokenSet, results):
         the occurrences of that member in the corpus.
         A single occurrence is represented as a tuple of slots.
     """
-    bTokensAll = [(t, F.str.v(t)) or "" for t in L.d(b, otype="t")]
+    bTokensAll = getTokens(b)
     bTokens = [x for x in bTokensAll if x[1].strip()]
     bStrings = {s for (t, s) in bTokens}
     nBTokens = len(bTokens)
@@ -63,9 +62,8 @@ def entityMatch(
     entitySlotVal,
     entitySlotAll,
     entitySlotIndex,
-    L,
-    F,
-    T,
+    getTextR,
+    getTokens,
     b,
     bFindRe,
     anyEnt,
@@ -83,9 +81,10 @@ def entityMatch(
     ----------
     entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex: object
         Various kinds of processed entity data, see `tf.browser.ner.data`
-    L, F, T: object
-        The TF APIs `F` and `L` for feature annotate and level-switching, and text
-        extraction, see `tf.cheatsheet`
+    getTextR: function
+        See `tf.browser.ner.corpus.Corpus.getTextR`
+    getTokens: function
+        See `tf.browser.ner.corpus.Corpus.getTokens`
     b: integer
         The node of the bucket in question
     bFindRe, anyEnt, eVals, qTokens, valSelect, freeState: object
@@ -112,13 +111,13 @@ def entityMatch(
 
     if bFindRe:
         fits = False
-        sText = T.text(b)
+        sText = getTextR(b)
 
         for match in bFindRe.finditer(sText):
             positions |= set(range(match.start(), match.end()))
             fits = True
 
-    bTokensAll = [(t, F.str.v(t)) or "" for t in L.d(b, otype="t")]
+    bTokensAll = getTokens(b)
     bTokens = [x for x in bTokensAll if x[1].strip()]
 
     if fits is None or fits:

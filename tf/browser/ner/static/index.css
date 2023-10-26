@@ -94,7 +94,13 @@ div.page {
 #buckets {
   flex: 2 1 auto;
   overflow: auto;
-  padding-left: 2rem;
+}
+
+.buckets,#buckets {
+  padding-inline-start: 2rem;
+}
+.buckets.rtl,#buckets.rtl {
+  padding-inline-start: 4rem;
 }
 
 #qtextentshow {

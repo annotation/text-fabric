@@ -203,14 +203,14 @@ def factory(web):
 
 
 def main(cargs=sys.argv[1:]):
-    args = []
     debug = False
 
-    for arg in cargs:
-        if arg == "debug":
-            debug = True
-        else:
-            args.append(arg)
+    if len(cargs) == 0:
+        args = []
+    else:
+        debugRep = cargs[0]
+        debug = debugRep == "debug"
+        args = cargs[1:]
 
     if len(args) == 0:
         cs("No port number specified")

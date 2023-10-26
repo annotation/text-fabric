@@ -47,8 +47,9 @@ already mentioned under `annotate` and its parent classes:
     syntax.
 
 !!! note "Class hierarchy"
-    The classes `Settings`, `Data`, `Sets`, `Show`, `Annotate`, `PowerNER` form one
-    hierarchy. So an object of class `PowerNER` has access to all methods of these classes.
+    The classes ``Settings`, `Corpus`, `Data`, `Sets`, `Show`, `Annotate`,
+    `PowerNER` form one hierarchy.
+    So an object of class `PowerNER` has access to all methods of these classes.
 
     The classes `Serve`, `ServeLib`, `Fragments`, `From` form a separate hierarchy.
     It will create an `Annotate` instance which will be stored in a `Serve` instance.
@@ -70,6 +71,8 @@ web <-----< Serve <-----------------< Annotate  <-< match
           |                       |     |
         Form                      |   Data
                                   |     |
+                                  |   Corpus
+                                  |     |
                                   |   Settings
 ```
 """
@@ -77,9 +80,7 @@ web <-----< Serve <-----------------< Annotate  <-< match
 import collections
 
 
-from .settings import TOOLKEY
-
-from .helpers import findCompile, makeCss
+from .helpers import findCompile
 from .sets import Sets
 from .show import Show
 from .match import entityMatch, occMatch
@@ -124,12 +125,6 @@ class Annotate(Sets, Show):
 
         self.browse = browse
 
-        settings = self.settings
-        features = settings.features
-        keywordFeatures = settings.keywordFeatures
-
-        app.loadToolCss(TOOLKEY, makeCss(features, keywordFeatures))
-
         if not browse:
             self.loadData()
 
@@ -153,18 +148,15 @@ class Annotate(Sets, Show):
             A single occurrence is represented as a tuple of slots.
 
         """
-        app = self.app
         setData = self.getSetData()
-        api = app.api
-        L = api.L
-        F = api.F
+        getTokens = self.getTokens
 
         buckets = setData.buckets or ()
 
         results = {}
 
         for b in buckets:
-            occMatch(L, F, b, qTokenSet, results)
+            occMatch(getTokens, b, qTokenSet, results)
 
         return results
 
@@ -269,8 +261,10 @@ class Annotate(Sets, Show):
         bucketType = settings.bucketType
         features = settings.features
 
+        getTextR = self.getTextR
+        getTokens = self.getTokens
+
         browse = self.browse
-        app = self.app
         setData = self.getSetData()
         entityIndex = setData.entityIndex
         entityVal = setData.entityVal
@@ -278,15 +272,10 @@ class Annotate(Sets, Show):
         entitySlotAll = setData.entitySlotAll
         entitySlotIndex = setData.entitySlotIndex
 
-        api = app.api
-        L = api.L
-        F = api.F
-        T = api.T
-
         buckets = (
             setData.buckets or ()
             if node is None
-            else L.d(T.sectionTuple(node)[1], otype=bucketType)
+            else self.getContext(node)
         )
 
         nFind = 0
@@ -297,7 +286,7 @@ class Annotate(Sets, Show):
             if bFind is not None:
                 (bFind, bFindRe, errorMsg) = findCompile(bFind, bFindC)
                 if errorMsg:
-                    app.error(errorMsg)
+                    self.console(errorMsg, error=True)
 
         hasEnt = eVals is not None
         hasQTokens = qTokens is not None and len(qTokens)
@@ -325,9 +314,8 @@ class Annotate(Sets, Show):
                 entitySlotVal,
                 entitySlotAll,
                 entitySlotIndex,
-                L,
-                F,
-                T,
+                getTextR,
+                getTokens,
                 b,
                 bFindRe,
                 anyEnt,

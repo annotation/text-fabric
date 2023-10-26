@@ -26,10 +26,10 @@ from ...core.files import (
     fileExists,
     initTree,
 )
-from .settings import Settings
+from .corpus import Corpus
 
 
-class Data(Settings):
+class Data(Corpus):
     def __init__(self, data=None):
         """Manages annotation data.
 
@@ -113,30 +113,25 @@ class Data(Settings):
             that are part of the entity.
         """
         settings = self.settings
-        bucketType = settings.bucketType
-        app = self.app
         data = self.data
         annoSet = self.annoSet
-        # annoSetRep = self.annoSetRep
         setData = data.sets[annoSet]
         annoDir = self.annoDir
 
         settings = self.settings
-        entityType = settings.entityType
         features = settings.features
+
+        featureDefault = self.featureDefault
         nF = len(features)
 
-        api = app.api
-        F = api.F
-        Fs = api.Fs
-        L = api.L
-
-        slotType = F.otype.slotType
+        checkFeature = self.checkFeature
+        getFVal = self.getFVal
+        getSlots = self.getSlots
 
         dataFile = f"{annoDir}/{annoSet}/entities.tsv"
 
         if "buckets" not in setData:
-            setData.buckets = F.otype.s(bucketType)
+            setData.buckets = self.getBucketNodes()
 
         changed = False
 
@@ -169,18 +164,15 @@ class Data(Settings):
         else:
             if "entities" not in setData:
                 entities = {}
-                hasFeature = {
-                    feat: api.isLoaded(feat, pretty=False)[feat] is not None
-                    for feat in features
-                }
+                hasFeature = {feat: checkFeature(feat) for feat in features}
 
-                for e in F.otype.s(entityType):
-                    slots = L.d(e, otype=slotType)
+                for e in self.getEntityNodes():
+                    slots = getSlots(e)
                     entities[e] = (
                         tuple(
-                            Fs(feat).v(e)
+                            getFVal(feat, e)
                             if hasFeature[feat]
-                            else self.featureDefault[feat](slots)
+                            else featureDefault[feat](slots)
                             for feat in features
                         ),
                         tuple(slots),
@@ -249,8 +241,7 @@ class Data(Settings):
         """
         settings = self.settings
         features = settings.features
-        featureDefault = self.featureDefault
-        getText = featureDefault[""]
+        getText = self.getText
         summaryIndices = settings.summaryIndices
 
         data = self.data

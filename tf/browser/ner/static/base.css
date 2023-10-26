@@ -4,10 +4,6 @@
 }
 
 
-.buckets {
-  padding-left: 2rem;
-}
-
 code {
   white-space: pre-wrap;
 }
@@ -57,13 +53,20 @@ span.ee {
   padding-right: 0.1em;
   margin-right: 0.2em;
 }
-span.bh {
+span.bhl {
   font-family: monospace;
   font-weight: bold;
   font-size: small;
   color: #0000ee;
   text-decoration: underline;
-  margin-left: -2rem;
+  unicode-bidi: embed;
+}
+span.bh {
+  text-align: start;
+  margin-inline-start: -2rem;
+}
+span.bh.rtl {
+  margin-inline-start: -4rem;
 }
 .viewer {
   min-height: 5rem;
@@ -71,7 +74,7 @@ span.bh {
   overflow: auto;
   font-size:small;
   background-color: #f2f2f2;
-  padding-left: 2rem;
+  padding-inline-start: 2rem;
 }
 .viewer span.bh {
   color: #888888;

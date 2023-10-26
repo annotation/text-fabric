@@ -176,7 +176,7 @@ def findCompile(bFind, bFindC):
     return (bFind, bFindRe, errorMsg)
 
 
-def makeCss(features, keywordFeatures, generic=""):
+def makeCss(features, keywordFeatures):
     """Generates CSS for the tool.
 
     The CSS for this tool has a part that depends on the choice of entity features.
@@ -231,5 +231,5 @@ def makeCss(features, keywordFeatures, generic=""):
         )
 
     featureCss = H.join(css, sep="\n")
-    allCss = generic + H.style(featureCss, type="text/css")
+    allCss = H.style(featureCss, type="text/css")
     return allCss

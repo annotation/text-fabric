@@ -4,7 +4,6 @@ To see how this fits among all the modules of this package, see
 `tf.browser.ner.annotate` .
 """
 
-import re
 
 from ...core.helpers import console as cs
 from ...core.files import annotateDir, readYaml
@@ -144,8 +143,6 @@ However, we should move these definitions to the `ner.yaml` file then, so that t
 only place of configuration is that yaml file, and not this file.
 """
 
-WHITE_RE = re.compile(r"""\s{2,}""", re.S)
-NON_ALPHA_RE = re.compile(r"""[^\w ]""", re.S)
 
 SORTDIR_DESC = "d"
 """Value that indicates the descending sort direction."""
@@ -183,10 +180,14 @@ class Settings:
         `ner` next to the `tf` data of the corpus.
         """
         app = self.app
-        api = app.api
-        F = api.F
+        context = app.context
 
-        version = app.context.version
+        version = context.version
+        self.version = version
+
+        appName = context.appName
+        self.appName = appName
+
         (specDir, annoDir) = annotateDir(app, TOOLKEY)
         self.specDir = specDir
         self.annoDir = f"{annoDir}/{version}"
@@ -200,74 +201,6 @@ class Settings:
         keywordFeatures = self.settings.keywordFeatures
         self.settings.summaryIndices = tuple(
             i for i in range(len(features)) if features[i] in keywordFeatures
-        )
-
-        def getText(slots):
-            """Get the text for a number of slots.
-
-            Leading and trailing whitespace is stripped, and inner whitespace is
-            normalized to a single space.
-            """
-            text = "".join(
-                f"""{F.str.v(s)}{F.after.v(s) or ""}""" for s in slots
-            ).strip()
-            text = WHITE_RE.sub(" ", text)
-            return text
-
-        def get0(slots):
-            """Makes an identifier value out of a number of slots.
-
-            This acts as the default value for the `eid` feature of new
-            entities.
-
-            Starting with the whitespace-normalized text of a number of slots,
-            the string is lowercased, non-alphanumeric characters are stripped,
-            and spaces are replaced by dots.
-            """
-            text = getText(slots)
-            text = NON_ALPHA_RE.sub("", text)
-            text = text.replace(" ", ".").strip(".").lower()
-            return text
-
-        def get1(slots):
-            """Return a fixed value specified in the corpus-dependent settings.
-
-            This acts as the default value ofr the `kind` feature of new
-            entities.
-            """
-            return self.settings.defaultValues[features[1]]
-
-        self.featureDefault = {
-            "": getText,
-            features[0]: get0,
-            features[1]: get1,
-        }
-
-    def getStrings(self, tokenStart, tokenEnd):
-        """Gets the text of the tokens occupying a sequence of slots.
-
-        Parameters
-        ----------
-        tokenStart: integer
-            The position of the starting token.
-        tokenEnd: integer
-            The position of the ending token.
-
-        Returns
-        -------
-        tuple
-            The members consist of the string values of the tokens in question,
-            as far as these values are not purely whitespace.
-            Also, the string values are stripped from leading and trailing whitespace.
-        """
-        app = self.app
-        api = app.api
-        F = api.F
-
-        return tuple(
-            token
-            for t in range(tokenStart, tokenEnd + 1)
-            if (token := (F.str.v(t) or "").strip())
         )
 
     def console(self, msg, **kwargs):

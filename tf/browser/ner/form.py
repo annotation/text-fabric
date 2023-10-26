@@ -42,7 +42,7 @@ class Form:
             nothing has to be specified. Only if the default is a specific
             meaningful value, it needs to be specified.
         keys[Str,Bool,Tri,Int,Tup,SetInt,Json]: list
-            See `tf.browse.ner.servelib.ServeLib`.
+            See `tf.browser.ner.servelib.ServeLib`.
         """
         self.features = features
         self.defaults = defaults

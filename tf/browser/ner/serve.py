@@ -9,11 +9,7 @@ To see how this fits among all the modules of this package, see
 
 from flask import render_template
 
-from ...core.generic import AttrDict
-
 from .settings import TOOLKEY, SC_ALL
-from .helpers import makeCss
-from .annotate import Annotate
 from .servelib import ServeLib
 from .fragments import Fragments
 
@@ -26,37 +22,14 @@ class Serve(ServeLib, Fragments):
         ----------
         web: object
             This represents the Flask website that is the TF browser.
-            It has access to the TF-app that represents a loaded TF corpus.
+            It has initialized a `tf.browser.ner.annotate.Annotate` object,
+            and has stored it under attribute `annotate`.
             See `tf.browser.ner.web.factory` and `tf.browser.web.factory`.
 
-            It picks up a handle to the loaded TF corpus, stores it in the `Serve`
-            object, and uses it to fetch the CSS code for this tool, which is
-            also stored in the `Serve` object.
-
-            Finally, it creates a pointer to the annotation data in memory, as stored
-            in the `web` object, if there is already such data from a previous request.
-            If not, it initializes an empty dict in the `web` object, with the purpose
-            of storing incoming annotation data there.
-
-            This way, the annotation data is preserved between requests.
         """
         self.web = web
-        kernelApi = web.kernelApi
-        app = kernelApi.app
-        self.app = app
-        self.css = kernelApi.css()
 
-        if not hasattr(web, "toolData"):
-            setattr(web, "toolData", AttrDict())
-        toolData = web.toolData
-
-        if TOOLKEY not in toolData:
-            toolData[TOOLKEY] = AttrDict()
-
-        data = toolData[TOOLKEY]
-        self.data = data
-
-        annotate = Annotate(app, data=data, browse=True)
+        annotate = web.annotate
         self.annotate = annotate
 
         super().__init__()
@@ -76,19 +49,13 @@ class Serve(ServeLib, Fragments):
         *   Encodes the active entity in hidden `input` elements;
         *   Collects and generates the specific CSS styles needed for this corpus.
         """
-        css = self.css
-
         annotate = self.annotate
-        settings = annotate.settings
-        features = settings.features
-        keywordFeatures = settings.keywordFeatures
-
         v = self.v
 
         self.findSetup()
         self.wrapActive()
 
-        v.css = makeCss(features, keywordFeatures, generic=css)
+        v.css = annotate.css
 
     def setupLean(self):
         """Prepares to update a portion of the page.
@@ -218,7 +185,7 @@ class Serve(ServeLib, Fragments):
             v.activeentity = None
 
         qTokens = (
-            self.getStrings(tokenStart, tokenEnd) if tokenStart and tokenEnd else None
+            annotate.getStrings(tokenStart, tokenEnd) if tokenStart and tokenEnd else None
         )
 
         (

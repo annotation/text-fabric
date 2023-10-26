@@ -172,10 +172,15 @@ def main(cargs=sys.argv[1:]):
         return
 
     forceChrome = False
+    debugRep = "nodebug"
 
     if "--chrome" in cargs:
         forceChrome = True
-        cargs = [c for c in cargs if c != "--chrome"]
+
+    if "debug" in cargs:
+        debugRep = "debug"
+
+    cargs = [c for c in cargs if c not in {"debug", "--chrome"}]
 
     newCargs = []
     tool = None
@@ -203,6 +208,7 @@ def main(cargs=sys.argv[1:]):
             pythonExe,
             "-m",
             "tf.browser.web",
+            debugRep,
             str(portWeb),
             *cargs,
         ],

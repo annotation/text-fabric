@@ -275,8 +275,6 @@ class Fragments:
         annotate = self.annotate
         settings = annotate.settings
         features = settings.features
-        featureDefault = annotate.featureDefault
-        getText = featureDefault[""]
 
         activeEntity = v.activeentity
         tokenStart = v.tokenstart
@@ -293,7 +291,7 @@ class Fragments:
         elif hasOcc:
             v.activeentity = None
             txt = (
-                getText(range(tokenStart, tokenEnd + 1))
+                annotate.getText(range(tokenStart, tokenEnd + 1))
                 if tokenStart and tokenEnd
                 else ""
             )
@@ -321,8 +319,7 @@ class Fragments:
         v.etxt = eTxt
 
     def wrapEntityHeaders(self):
-        """HTML for the header of the entity table, dependent on the state of sorting.
-        """
+        """HTML for the header of the entity table, dependent on the state of sorting."""
         v = self.v
         sortKey = v.sortkey
         sortDir = v.sortdir
@@ -579,6 +576,8 @@ class Fragments:
         features = settings.features
         keywordFeatures = settings.keywordFeatures
 
+        featureDefault = annotate.featureDefault
+
         setData = annotate.getSetData()
         annoSet = annotate.annoSet
 
@@ -640,7 +639,7 @@ class Fragments:
                 default = (
                     activeEntity[i]
                     if hasEnt
-                    else annotate.featureDefault[feat](range(tokenStart, tokenEnd + 1))
+                    else featureDefault[feat](range(tokenStart, tokenEnd + 1))
                     if hasOcc
                     else {}
                 )
