@@ -29,7 +29,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/match.py#L1-L246" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/match.py#L1-L245" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Match functions.
 
@@ -40,14 +40,13 @@ To see how this fits among all the modules of this package, see
 from .settings import NONE
 
 
-def occMatch(L, F, b, qTokenSet, results):
+def occMatch(getTokens, b, qTokenSet, results):
     &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens in a single bucket.
 
     Parameters
     ----------
-    L, F: object
-        The TF APIs `F` and `L` for feature annotate and level-switching, and text
-        extraction, see `tf.cheatsheet`
+    getTokens: function
+        See `tf.browser.ner.corpus.Corpus.getTokens`
     b: integer
         The node of the bucket in question
     qTokenSet: set, optional set()
@@ -59,7 +58,7 @@ def occMatch(L, F, b, qTokenSet, results):
         the occurrences of that member in the corpus.
         A single occurrence is represented as a tuple of slots.
     &#34;&#34;&#34;
-    bTokensAll = [(t, F.str.v(t)) or &#34;&#34; for t in L.d(b, otype=&#34;t&#34;)]
+    bTokensAll = getTokens(b)
     bTokens = [x for x in bTokensAll if x[1].strip()]
     bStrings = {s for (t, s) in bTokens}
     nBTokens = len(bTokens)
@@ -96,9 +95,8 @@ def entityMatch(
     entitySlotVal,
     entitySlotAll,
     entitySlotIndex,
-    L,
-    F,
-    T,
+    getTextR,
+    getTokens,
     b,
     bFindRe,
     anyEnt,
@@ -116,9 +114,10 @@ def entityMatch(
     ----------
     entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex: object
         Various kinds of processed entity data, see `tf.browser.ner.data`
-    L, F, T: object
-        The TF APIs `F` and `L` for feature annotate and level-switching, and text
-        extraction, see `tf.cheatsheet`
+    getTextR: function
+        See `tf.browser.ner.corpus.Corpus.getTextR`
+    getTokens: function
+        See `tf.browser.ner.corpus.Corpus.getTokens`
     b: integer
         The node of the bucket in question
     bFindRe, anyEnt, eVals, qTokens, valSelect, freeState: object
@@ -145,13 +144,13 @@ def entityMatch(
 
     if bFindRe:
         fits = False
-        sText = T.text(b)
+        sText = getTextR(b)
 
         for match in bFindRe.finditer(sText):
             positions |= set(range(match.start(), match.end()))
             fits = True
 
-    bTokensAll = [(t, F.str.v(t)) or &#34;&#34; for t in L.d(b, otype=&#34;t&#34;)]
+    bTokensAll = getTokens(b)
     bTokens = [x for x in bTokensAll if x[1].strip()]
 
     if fits is None or fits:
@@ -287,7 +286,7 @@ def entityMatch(
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.browser.ner.match.entityMatch"><code class="name flex">
-<span>def <span class="ident">entityMatch</span></span>(<span>entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex, L, F, T, b, bFindRe, anyEnt, eVals, qTokens, valSelect, freeState, fValStats)</span>
+<span>def <span class="ident">entityMatch</span></span>(<span>entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex, getTextR, getTokens, b, bFindRe, anyEnt, eVals, qTokens, valSelect, freeState, fValStats)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Checks whether a bucket satisfies a variety of criteria.</p>
@@ -296,9 +295,10 @@ def entityMatch(
 <dl>
 <dt><strong><code>entityIndex</code></strong>, <strong><code>eStarts</code></strong>, <strong><code>entitySlotVal</code></strong>, <strong><code>entitySlotAll</code></strong>, <strong><code>entitySlotIndex</code></strong> :&ensp;<code>object</code></dt>
 <dd>Various kinds of processed entity data, see <code><a title="tf.browser.ner.data" href="data.html">tf.browser.ner.data</a></code></dd>
-<dt><strong><code>L</code></strong>, <strong><code>F</code></strong>, <strong><code>T</code></strong> :&ensp;<code>object</code></dt>
-<dd>The TF APIs <code>F</code> and <code>L</code> for feature annotate and level-switching, and text
-extraction, see <code><a title="tf.cheatsheet" href="../../cheatsheet.html">tf.cheatsheet</a></code></dd>
+<dt><strong><code>getTextR</code></strong> :&ensp;<code>function</code></dt>
+<dd>See <code><a title="tf.browser.ner.corpus.Corpus.getTextR" href="corpus.html#tf.browser.ner.corpus.Corpus.getTextR">Corpus.getTextR</a></code></dd>
+<dt><strong><code>getTokens</code></strong> :&ensp;<code>function</code></dt>
+<dd>See <code><a title="tf.browser.ner.corpus.Corpus.getTokens" href="corpus.html#tf.browser.ner.corpus.Corpus.getTokens">Corpus.getTokens</a></code></dd>
 <dt><strong><code>b</code></strong> :&ensp;<code>integer</code></dt>
 <dd>The node of the bucket in question</dd>
 <dt><strong><code>bFindRe</code></strong>, <strong><code>anyEnt</code></strong>, <strong><code>eVals</code></strong>, <strong><code>qTokens</code></strong>, <strong><code>valSelect</code></strong>, <strong><code>freeState</code></strong> :&ensp;<code>object</code></dt>
@@ -326,7 +326,7 @@ of its slot number (position) and string value;</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/match.py#L60-L246" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/match.py#L59-L245" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def entityMatch(
     entityIndex,
@@ -334,9 +334,8 @@ of its slot number (position) and string value;</li>
     entitySlotVal,
     entitySlotAll,
     entitySlotIndex,
-    L,
-    F,
-    T,
+    getTextR,
+    getTokens,
     b,
     bFindRe,
     anyEnt,
@@ -354,9 +353,10 @@ of its slot number (position) and string value;</li>
     ----------
     entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex: object
         Various kinds of processed entity data, see `tf.browser.ner.data`
-    L, F, T: object
-        The TF APIs `F` and `L` for feature annotate and level-switching, and text
-        extraction, see `tf.cheatsheet`
+    getTextR: function
+        See `tf.browser.ner.corpus.Corpus.getTextR`
+    getTokens: function
+        See `tf.browser.ner.corpus.Corpus.getTokens`
     b: integer
         The node of the bucket in question
     bFindRe, anyEnt, eVals, qTokens, valSelect, freeState: object
@@ -383,13 +383,13 @@ of its slot number (position) and string value;</li>
 
     if bFindRe:
         fits = False
-        sText = T.text(b)
+        sText = getTextR(b)
 
         for match in bFindRe.finditer(sText):
             positions |= set(range(match.start(), match.end()))
             fits = True
 
-    bTokensAll = [(t, F.str.v(t)) or &#34;&#34; for t in L.d(b, otype=&#34;t&#34;)]
+    bTokensAll = getTokens(b)
     bTokens = [x for x in bTokensAll if x[1].strip()]
 
     if fits is None or fits:
@@ -518,15 +518,14 @@ of its slot number (position) and string value;</li>
 </details>
 </dd>
 <dt id="tf.browser.ner.match.occMatch"><code class="name flex">
-<span>def <span class="ident">occMatch</span></span>(<span>L, F, b, qTokenSet, results)</span>
+<span>def <span class="ident">occMatch</span></span>(<span>getTokens, b, qTokenSet, results)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Finds the occurrences of multiple sequences of tokens in a single bucket.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>L</code></strong>, <strong><code>F</code></strong> :&ensp;<code>object</code></dt>
-<dd>The TF APIs <code>F</code> and <code>L</code> for feature annotate and level-switching, and text
-extraction, see <code><a title="tf.cheatsheet" href="../../cheatsheet.html">tf.cheatsheet</a></code></dd>
+<dt><strong><code>getTokens</code></strong> :&ensp;<code>function</code></dt>
+<dd>See <code><a title="tf.browser.ner.corpus.Corpus.getTokens" href="corpus.html#tf.browser.ner.corpus.Corpus.getTokens">Corpus.getTokens</a></code></dd>
 <dt><strong><code>b</code></strong> :&ensp;<code>integer</code></dt>
 <dd>The node of the bucket in question</dd>
 <dt><strong><code>qTokenSet</code></strong> :&ensp;<code>set</code>, optional <code>set()</code></dt>
@@ -541,16 +540,15 @@ A single occurrence is represented as a tuple of slots.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/match.py#L10-L57" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/match.py#L10-L56" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def occMatch(L, F, b, qTokenSet, results):
+<pre><code class="python">def occMatch(getTokens, b, qTokenSet, results):
     &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens in a single bucket.
 
     Parameters
     ----------
-    L, F: object
-        The TF APIs `F` and `L` for feature annotate and level-switching, and text
-        extraction, see `tf.cheatsheet`
+    getTokens: function
+        See `tf.browser.ner.corpus.Corpus.getTokens`
     b: integer
         The node of the bucket in question
     qTokenSet: set, optional set()
@@ -562,7 +560,7 @@ A single occurrence is represented as a tuple of slots.</dd>
         the occurrences of that member in the corpus.
         A single occurrence is represented as a tuple of slots.
     &#34;&#34;&#34;
-    bTokensAll = [(t, F.str.v(t)) or &#34;&#34; for t in L.d(b, otype=&#34;t&#34;)]
+    bTokensAll = getTokens(b)
     bTokens = [x for x in bTokensAll if x[1].strip()]
     bStrings = {s for (t, s) in bTokens}
     nBTokens = len(bTokens)

@@ -29,7 +29,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/html.py#L1-L94" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/html.py#L1-L150" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;HTML generation done in the Pythonesque way.
 
@@ -59,9 +59,24 @@ H_ELEMENT_DEFS = &#34;&#34;&#34;
 H_ELEMENTS = tuple(
     (x[0:-1], False) if x.endswith(&#34;&gt;&#34;) else (x, True) for x in H_ELEMENT_DEFS
 )
+&#34;&#34;&#34;The HTML elements used in this tool.&#34;&#34;&#34;
 
 
 def dig(*content, sep=&#34;&#34;):
+    &#34;&#34;&#34;A method to join nested iterables of strings into a string.
+
+    Parameters
+    ----------
+    content: iterable or string
+        Arbitrarily ested iterable of strings.
+    sep: string, optional &#34;&#34;
+        The string by which the individual strings from the iterables are to be joined.
+
+    Returns
+    -------
+    string
+        The fully joined string corresponding to the orginal iterables.
+    &#34;&#34;&#34;
     if len(content) == 0:
         return &#34;&#34;
     if len(content) == 1:
@@ -76,13 +91,32 @@ def dig(*content, sep=&#34;&#34;):
 
 
 def generate(close, tag, *content, **atts):
+    &#34;&#34;&#34;Transform the logical information for an HTML element into an HTML string.
+
+    Parameters
+    ----------
+    close: boolean
+        Whether the element must be closed with an end tag.
+    tag: string
+        The name of the tag.
+    content: iterable
+        The content of the element. This may be an arbitrarily nested iterable of
+        strings.
+    atts: dict
+        The attributes of the element.
+
+    Returns
+    -------
+    string
+        The HTML string representation of an element.
+    &#34;&#34;&#34;
     endRep = f&#34;&#34;&#34;&lt;/{tag}&gt;&#34;&#34;&#34; if close else &#34;&#34;
 
     attsRep = &#34; &#34;.join(
-        (k if v else &#34;&#34;)
-        if type(v) is bool
-        else f&#39;&#39;&#39;{&#34;class&#34; if k == &#34;cls&#34; else k}=&#34;{v}&#34;&#39;&#39;&#39;
-        for (k, v) in atts.items()
+        (k if vl else &#34;&#34;)
+        if type(vl) is bool
+        else f&#39;&#39;&#39;{&#34;class&#34; if k == &#34;cls&#34; else k}=&#34;{vl}&#34;&#39;&#39;&#39;
+        for (k, vl) in atts.items()
     )
     if attsRep:
         attsRep = f&#34; {attsRep}&#34;
@@ -93,6 +127,21 @@ def generate(close, tag, *content, **atts):
 
 
 def elemFunc(close, elem):
+    &#34;&#34;&#34;Generates a function to serialize a specific HTML element.
+
+    Parameters
+    ----------
+    close: boolean
+        Whether the element needs an end tag.
+    elem: string
+        The name of the element.
+
+    Returns
+    -------
+    function
+        The function has the same signature as `generate()` except it does not
+        take the parameters `close` and `tag`.
+    &#34;&#34;&#34;
     if close:
 
         def result(*content, **atts):
@@ -107,6 +156,13 @@ def elemFunc(close, elem):
 
 
 class H:
+    &#34;&#34;&#34;Provider of HTML serializing functions per element type.
+
+    Also has a class attribute `nb`: the non-breaking space.
+
+    For each HTML element in the specs (`H_ELEMENTS`) a corresponding
+    generating function is added as method.
+    &#34;&#34;&#34;
     nb = &#34;\u00a0&#34;
 
 
@@ -130,6 +186,13 @@ if __name__ == &#34;__main__&#34;:
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-variables">Global variables</h2>
+<dl>
+<dt id="tf.browser.ner.html.H_ELEMENTS"><code class="name">var <span class="ident">H_ELEMENTS</span></code></dt>
+<dd>
+<div class="desc"><p>The HTML elements used in this tool.</p></div>
+</dd>
+</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
@@ -138,13 +201,39 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">dig</span></span>(<span>*content, sep='')</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>A method to join nested iterables of strings into a string.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>content</code></strong> :&ensp;<code>iterable</code> or <code>string</code></dt>
+<dd>Arbitrarily ested iterable of strings.</dd>
+<dt><strong><code>sep</code></strong> :&ensp;<code>string</code>, optional <code>""</code></dt>
+<dd>The string by which the individual strings from the iterables are to be joined.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>string</code></dt>
+<dd>The fully joined string corresponding to the orginal iterables.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/html.py#L31-L42" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/html.py#L32-L57" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dig(*content, sep=&#34;&#34;):
+    &#34;&#34;&#34;A method to join nested iterables of strings into a string.
+
+    Parameters
+    ----------
+    content: iterable or string
+        Arbitrarily ested iterable of strings.
+    sep: string, optional &#34;&#34;
+        The string by which the individual strings from the iterables are to be joined.
+
+    Returns
+    -------
+    string
+        The fully joined string corresponding to the orginal iterables.
+    &#34;&#34;&#34;
     if len(content) == 0:
         return &#34;&#34;
     if len(content) == 1:
@@ -162,13 +251,41 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">elemFunc</span></span>(<span>close, elem)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Generates a function to serialize a specific HTML element.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>close</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>Whether the element needs an end tag.</dd>
+<dt><strong><code>elem</code></strong> :&ensp;<code>string</code></dt>
+<dd>The name of the element.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>function</code></dt>
+<dd>The function has the same signature as <code><a title="tf.browser.ner.html.generate" href="#tf.browser.ner.html.generate">generate()</a></code> except it does not
+take the parameters <code>close</code> and <code>tag</code>.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/html.py#L62-L73" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/html.py#L96-L122" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def elemFunc(close, elem):
+    &#34;&#34;&#34;Generates a function to serialize a specific HTML element.
+
+    Parameters
+    ----------
+    close: boolean
+        Whether the element needs an end tag.
+    elem: string
+        The name of the element.
+
+    Returns
+    -------
+    function
+        The function has the same signature as `generate()` except it does not
+        take the parameters `close` and `tag`.
+    &#34;&#34;&#34;
     if close:
 
         def result(*content, **atts):
@@ -186,20 +303,56 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">generate</span></span>(<span>close, tag, *content, **atts)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Transform the logical information for an HTML element into an HTML string.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>close</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>Whether the element must be closed with an end tag.</dd>
+<dt><strong><code>tag</code></strong> :&ensp;<code>string</code></dt>
+<dd>The name of the tag.</dd>
+<dt><strong><code>content</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>The content of the element. This may be an arbitrarily nested iterable of
+strings.</dd>
+<dt><strong><code>atts</code></strong> :&ensp;<code>dict</code></dt>
+<dd>The attributes of the element.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>string</code></dt>
+<dd>The HTML string representation of an element.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/html.py#L45-L59" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/html.py#L60-L93" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def generate(close, tag, *content, **atts):
+    &#34;&#34;&#34;Transform the logical information for an HTML element into an HTML string.
+
+    Parameters
+    ----------
+    close: boolean
+        Whether the element must be closed with an end tag.
+    tag: string
+        The name of the tag.
+    content: iterable
+        The content of the element. This may be an arbitrarily nested iterable of
+        strings.
+    atts: dict
+        The attributes of the element.
+
+    Returns
+    -------
+    string
+        The HTML string representation of an element.
+    &#34;&#34;&#34;
     endRep = f&#34;&#34;&#34;&lt;/{tag}&gt;&#34;&#34;&#34; if close else &#34;&#34;
 
     attsRep = &#34; &#34;.join(
-        (k if v else &#34;&#34;)
-        if type(v) is bool
-        else f&#39;&#39;&#39;{&#34;class&#34; if k == &#34;cls&#34; else k}=&#34;{v}&#34;&#39;&#39;&#39;
-        for (k, v) in atts.items()
+        (k if vl else &#34;&#34;)
+        if type(vl) is bool
+        else f&#39;&#39;&#39;{&#34;class&#34; if k == &#34;cls&#34; else k}=&#34;{vl}&#34;&#39;&#39;&#39;
+        for (k, vl) in atts.items()
     )
     if attsRep:
         attsRep = f&#34; {attsRep}&#34;
@@ -218,13 +371,23 @@ if __name__ == &#34;__main__&#34;:
 <span>class <span class="ident">H</span></span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Provider of HTML serializing functions per element type.</p>
+<p>Also has a class attribute <code>nb</code>: the non-breaking space.</p>
+<p>For each HTML element in the specs (<code><a title="tf.browser.ner.html.H_ELEMENTS" href="#tf.browser.ner.html.H_ELEMENTS">H_ELEMENTS</a></code>) a corresponding
+generating function is added as method.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/html.py#L76-L77" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/html.py#L125-L133" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class H:
+    &#34;&#34;&#34;Provider of HTML serializing functions per element type.
+
+    Also has a class attribute `nb`: the non-breaking space.
+
+    For each HTML element in the specs (`H_ELEMENTS`) a corresponding
+    generating function is added as method.
+    &#34;&#34;&#34;
     nb = &#34;\u00a0&#34;</code></pre>
 </details>
 <h3>Class variables</h3>
@@ -244,7 +407,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/html.py#L65-L66" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/html.py#L114-L115" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -258,7 +421,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/html.py#L70-L71" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/html.py#L119-L120" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(**atts):
     return generate(close, elem, **atts)</code></pre>
@@ -272,7 +435,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/html.py#L65-L66" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/html.py#L114-L115" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -286,7 +449,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/html.py#L65-L66" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/html.py#L114-L115" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -300,7 +463,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/html.py#L65-L66" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/html.py#L114-L115" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -314,7 +477,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/html.py#L65-L66" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/html.py#L114-L115" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -328,7 +491,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/html.py#L65-L66" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/html.py#L114-L115" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -342,7 +505,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/html.py#L70-L71" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/html.py#L119-L120" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(**atts):
     return generate(close, elem, **atts)</code></pre>
@@ -352,13 +515,39 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">join</span></span>(<span>*content, sep='')</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>A method to join nested iterables of strings into a string.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>content</code></strong> :&ensp;<code>iterable</code> or <code>string</code></dt>
+<dd>Arbitrarily ested iterable of strings.</dd>
+<dt><strong><code>sep</code></strong> :&ensp;<code>string</code>, optional <code>""</code></dt>
+<dd>The string by which the individual strings from the iterables are to be joined.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>string</code></dt>
+<dd>The fully joined string corresponding to the orginal iterables.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/html.py#L31-L42" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/html.py#L32-L57" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dig(*content, sep=&#34;&#34;):
+    &#34;&#34;&#34;A method to join nested iterables of strings into a string.
+
+    Parameters
+    ----------
+    content: iterable or string
+        Arbitrarily ested iterable of strings.
+    sep: string, optional &#34;&#34;
+        The string by which the individual strings from the iterables are to be joined.
+
+    Returns
+    -------
+    string
+        The fully joined string corresponding to the orginal iterables.
+    &#34;&#34;&#34;
     if len(content) == 0:
         return &#34;&#34;
     if len(content) == 1:
@@ -380,7 +569,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/html.py#L65-L66" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/html.py#L114-L115" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -394,7 +583,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/html.py#L65-L66" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/html.py#L114-L115" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -408,7 +597,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/html.py#L65-L66" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/html.py#L114-L115" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -422,7 +611,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/html.py#L65-L66" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/html.py#L114-L115" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -436,7 +625,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/html.py#L65-L66" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/html.py#L114-L115" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -450,7 +639,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/html.py#L65-L66" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/html.py#L114-L115" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -521,6 +710,11 @@ setTimeout(() => input.focus(), 100);
 <li><h3>Super-module</h3>
 <ul>
 <li><code><a title="tf.browser.ner" href="index.html">tf.browser.ner</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-variables">Global variables</a></h3>
+<ul class="">
+<li><code><a title="tf.browser.ner.html.H_ELEMENTS" href="#tf.browser.ner.html.H_ELEMENTS">H_ELEMENTS</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>

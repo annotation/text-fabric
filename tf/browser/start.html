@@ -83,7 +83,7 @@ provided the previous invocation has been terminated.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/start.py#L1-L274" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/start.py#L1-L280" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Start the TF browser
@@ -259,10 +259,15 @@ def main(cargs=sys.argv[1:]):
         return
 
     forceChrome = False
+    debugRep = &#34;nodebug&#34;
 
     if &#34;--chrome&#34; in cargs:
         forceChrome = True
-        cargs = [c for c in cargs if c != &#34;--chrome&#34;]
+
+    if &#34;debug&#34; in cargs:
+        debugRep = &#34;debug&#34;
+
+    cargs = [c for c in cargs if c not in {&#34;debug&#34;, &#34;--chrome&#34;}]
 
     newCargs = []
     tool = None
@@ -290,6 +295,7 @@ def main(cargs=sys.argv[1:]):
             pythonExe,
             &#34;-m&#34;,
             &#34;tf.browser.web&#34;,
+            debugRep,
             str(portWeb),
             *cargs,
         ],
@@ -376,7 +382,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/start.py#L164-L270" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/start.py#L164-L276" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv[1:]):
     console(BANNER)
@@ -389,10 +395,15 @@ if __name__ == &#34;__main__&#34;:
         return
 
     forceChrome = False
+    debugRep = &#34;nodebug&#34;
 
     if &#34;--chrome&#34; in cargs:
         forceChrome = True
-        cargs = [c for c in cargs if c != &#34;--chrome&#34;]
+
+    if &#34;debug&#34; in cargs:
+        debugRep = &#34;debug&#34;
+
+    cargs = [c for c in cargs if c not in {&#34;debug&#34;, &#34;--chrome&#34;}]
 
     newCargs = []
     tool = None
@@ -420,6 +431,7 @@ if __name__ == &#34;__main__&#34;:
             pythonExe,
             &#34;-m&#34;,
             &#34;tf.browser.web&#34;,
+            debugRep,
             str(portWeb),
             *cargs,
         ],

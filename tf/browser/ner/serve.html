@@ -31,7 +31,7 @@ the annotation tool in the TF browser.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/serve.py#L1-L417" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/serve.py#L1-L343" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Main controller for Flask
 
@@ -44,23 +44,12 @@ To see how this fits among all the modules of this package, see
 
 from flask import render_template
 
-from ...core.generic import AttrDict
-
 from .settings import TOOLKEY, SC_ALL
-from .helpers import makeCss
-from .annotate import Annotate
-from .servelib import initTemplate, findSetup, adaptValSelect
-from .fragments import (
-    wrapEntityHeaders,
-    wrapQuery,
-    wrapActive,
-    wrapReport,
-    wrapMessages,
-    wrapAnnoSets,
-)
+from .servelib import ServeLib
+from .fragments import Fragments
 
 
-class Serve:
+class Serve(ServeLib, Fragments):
     def __init__(self, web):
         &#34;&#34;&#34;Object that implements the controller functions for the annotatation tool.
 
@@ -68,104 +57,47 @@ class Serve:
         ----------
         web: object
             This represents the Flask website that is the TF browser.
-            It has access to the TF-app that represents a loaded TF corpus.
+            It has initialized a `tf.browser.ner.annotate.Annotate` object,
+            and has stored it under attribute `annotate`.
             See `tf.browser.ner.web.factory` and `tf.browser.web.factory`.
 
-            It picks up a handle to the loaded TF corpus, stores it in the `Serve`
-            object, and uses it to fetch the CSS code for this tool, which is
-            also stored in the `Serve` object.
-
-            Finally, it creates a pointer to the annotation data in memory, as stored
-            in the `web` object, if there is already such data from a previous request.
-            If not, it initializes an empty dict in the `web` object, with the purpose
-            of storing incoming annotation data there.
-
-            This way, the annotation data is preserved between requests.
         &#34;&#34;&#34;
         self.web = web
-        kernelApi = web.kernelApi
-        self.app = kernelApi.app
-        self.css = kernelApi.css()
 
-        if not hasattr(web, &#34;toolData&#34;):
-            setattr(web, &#34;toolData&#34;, AttrDict())
-        toolData = web.toolData
+        annotate = web.annotate
+        self.annotate = annotate
 
-        if TOOLKEY not in toolData:
-            toolData[TOOLKEY] = AttrDict()
+        super().__init__()
 
-        self.data = toolData[TOOLKEY]
+        self.initVars()
 
-    def setupAnnotate(self):
-        &#34;&#34;&#34;Initialize the Annotate object.
-
-        Before doing anything else, we create a
-        `tf.browser.ner.annotate.Annotate` object and store it for use
-        by the actual controllers.
-
-        Based on the information in the request, we switch to a particular annotation
-        set and load its data.
-
-        This method will be invoked via two routes:
-
-        *   `Serve.setupFull()`: for the main page, after a normal request;
-        *   `Serve.setupLean()`: in response to an Ajax call when context to a
-            specific line in the corpus is needed.
-
-        !!! note &#34;`templateData`&#34;
-            We use the dict `templateData` as the collector of
-
-            *   the request information;
-            *   selections of corpus material;
-            *   HTML fragments under construction;
-            *   template variables.
-        &#34;&#34;&#34;
-        data = self.data
-        app = self.app
-
-        annotate = Annotate(app, data=data, browse=True)
-
-        initTemplate(annotate, app)
-        templateData = annotate.templateData
-
-        annoSet = templateData.annoset
+        v = self.v
+        annoSet = v.annoset
 
         annotate.setSet(annoSet)
-        self.annotate = annotate
         annotate.loadData()
 
     def setupFull(self):
         &#34;&#34;&#34;Prepares to serve a complete page.
 
-        *   Creates an `tf.browser.ner.annotate.Annotate` object;
         *   Sets up the find widget;
         *   Encodes the active entity in hidden `input` elements;
         *   Collects and generates the specific CSS styles needed for this corpus.
         &#34;&#34;&#34;
-        css = self.css
-
-        self.setupAnnotate()
         annotate = self.annotate
-        settings = annotate.settings
-        features = settings.features
-        keywordFeatures = settings.keywordFeatures
+        v = self.v
 
-        templateData = self.templateData
+        self.findSetup()
+        self.wrapActive()
 
-        findSetup(templateData)
-        wrapActive(templateData)
-        templateData.css = makeCss(features, keywordFeatures, generic=css)
+        v.css = annotate.css
 
     def setupLean(self):
         &#34;&#34;&#34;Prepares to update a portion of the page.
 
-        *   Creates an `tf.browser.ner.annotate.Annotate` object;
         *   Encodes the active entity in hidden `input` elements.
         &#34;&#34;&#34;
-        self.setupAnnotate()
-        templateData = self.templateData
-
-        wrapActive(templateData)
+        self.wrapActive()
 
     def actionsFull(self):
         &#34;&#34;&#34;Carries out requested actions before building the full page.
@@ -174,9 +106,7 @@ class Serve:
         *   fetch selected buckets from the whole corpus;
         *   modification actions in the selected set.
         &#34;&#34;&#34;
-        templateData = self.templateData
-
-        self.setHandling(templateData)
+        self.setHandling()
 
         self.getBuckets()
         self.updateHandling()
@@ -195,30 +125,30 @@ class Serve:
         axctions.
         &#34;&#34;&#34;
         annotate = self.annotate
-        templateData = self.templateData
-        sortKey = templateData.sortkey
-        sortDir = templateData.sortdir
-        activeEntity = templateData.activeentity
-        tokenStart = templateData.tokenstart
-        tokenEnd = templateData.tokenend
-        excludedTokens = templateData.excludedtokens
+        v = self.v
+        sortKey = v.sortkey
+        sortDir = v.sortdir
+        activeEntity = v.activeentity
+        tokenStart = v.tokenstart
+        tokenEnd = v.tokenend
+        excludedTokens = v.excludedtokens
 
         buckets = self.buckets
 
-        wrapQuery(annotate, templateData)
-        templateData.entitytable = annotate.showEntities(
+        self.wrapQuery()
+        v.entitytable = annotate.showEntities(
             activeEntity=activeEntity, sortKey=sortKey, sortDir=sortDir
         )
-        templateData.entityoverview = annotate.showEntityOverview()
-        templateData.entityheaders = wrapEntityHeaders(annotate, sortKey, sortDir)
-        templateData.buckets = annotate.showContent(
+        v.entityoverview = annotate.showEntityOverview()
+        v.entityheaders = self.wrapEntityHeaders()
+        v.buckets = annotate.showContent(
             buckets,
             activeEntity=activeEntity,
             excludedTokens=excludedTokens,
             mayLimit=not (tokenStart and tokenEnd),
         )
 
-        return render_template(f&#34;{TOOLKEY}/index.html&#34;, **templateData)
+        return render_template(f&#34;{TOOLKEY}/index.html&#34;, **v)
 
     def wrapLean(self):
         &#34;&#34;&#34;Builds a portion of the page.
@@ -230,9 +160,9 @@ class Serve:
         The generated HTML for the portion of the page.
         &#34;&#34;&#34;
         annotate = self.annotate
-        templateData = self.templateData
-        activeEntity = templateData.activeentity
-        excludedTokens = templateData.excludedtokens
+        v = self.v
+        activeEntity = v.activeentity
+        excludedTokens = v.excludedtokens
         buckets = self.buckets
 
         return annotate.showContent(
@@ -245,7 +175,7 @@ class Serve:
     def getBuckets(self, noFind=False, node=None):
         &#34;&#34;&#34;Fetch a selection of buckets from the corpus.
 
-        The selection is defined in the `templateData`.
+        The selection is defined in the `v`.
 
         We further modify the selection by two additional parameters.
 
@@ -254,7 +184,7 @@ class Serve:
         list is a tuple as indicated in the `filterContent` function.
         The list is stored in the `Serve` object.
         Additionally, statistics about these buckets and how many entity values
-        occur in het, are delivered in the `templateData`.
+        occur in het, are delivered in the `v`.
 
         Parameters
         ----------
@@ -272,32 +202,32 @@ class Serve:
             We use this when we retrieve the context for a given bucket.
         &#34;&#34;&#34;
         annotate = self.annotate
-        templateData = self.templateData
+        v = self.v
 
-        bFindRe = None if noFind else templateData.bfindre
-        anyEnt = templateData.anyent
-        activeEntity = templateData.activeentity
-        tokenStart = templateData.tokenstart
-        tokenEnd = templateData.tokenend
-        valSelect = templateData.valselect
-        freeState = templateData.freestate
+        bFindRe = None if noFind else v.bfindre
+        anyEnt = v.anyent
+        activeEntity = v.activeentity
+        tokenStart = v.tokenstart
+        tokenEnd = v.tokenend
+        valSelect = v.valselect
+        freeState = v.freestate
 
         setData = annotate.getSetData()
         entityIdent = setData.entityIdent
 
         if activeEntity not in entityIdent:
             activeEntity = None
-            templateData.activeentity = None
+            v.activeentity = None
 
         qTokens = (
-            self.getStrings(tokenStart, tokenEnd) if tokenStart and tokenEnd else None
+            annotate.getStrings(tokenStart, tokenEnd) if tokenStart and tokenEnd else None
         )
 
         (
             self.buckets,
-            templateData.nfind,
-            templateData.nvisible,
-            templateData.nent,
+            v.nfind,
+            v.nvisible,
+            v.nent,
         ) = annotate.filterContent(
             node=node,
             bFindRe=bFindRe,
@@ -320,44 +250,40 @@ class Serve:
         *   delete a set.
 
         The results of the actions are wrapped in messages and stored in the
-        `templateData`.
+        `v`.
         &#34;&#34;&#34;
         annotate = self.annotate
-        annoDir = annotate.annoDir
-        settings = annotate.settings
-        entitySet = settings.entitySet
 
-        templateData = self.templateData
-        chosenAnnoSet = templateData.annoset
-        dupAnnoSet = templateData.duannoset
-        renamedAnnoSet = templateData.rannoset
-        deleteAnnoSet = templateData.dannoset
+        v = self.v
+        chosenAnnoSet = v.annoset
+        dupAnnoSet = v.duannoset
+        renamedAnnoSet = v.rannoset
+        deleteAnnoSet = v.dannoset
 
         messages = []
 
         if deleteAnnoSet:
             messages.extend(annotate.setDel(deleteAnnoSet))
-            templateData.dannoset = &#34;&#34;
-            templateData.annoset = &#34;&#34;
+            v.dannoset = &#34;&#34;
+            v.annoset = &#34;&#34;
 
         if dupAnnoSet:
             messages.extend(annotate.setDup(dupAnnoSet))
-            templateData.annoset = dupAnnoSet
-            templateData.duannoset = &#34;&#34;
+            v.annoset = dupAnnoSet
+            v.duannoset = &#34;&#34;
 
         if renamedAnnoSet and chosenAnnoSet:
             messages.extend(annotate.setMove(renamedAnnoSet))
-            templateData.annoset = renamedAnnoSet
-            templateData.rannoset = &#34;&#34;
+            v.annoset = renamedAnnoSet
+            v.rannoset = &#34;&#34;
 
-        chosenAnnoSet = templateData.annoset
+        v.messagesrc = messages
+
+        chosenAnnoSet = v.annoset
         annotate.setSet(chosenAnnoSet)
-        setNames = annotate.setNames
 
-        templateData.annosets = wrapAnnoSets(
-            annoDir, chosenAnnoSet, setNames, entitySet
-        )
-        templateData.messages = wrapMessages(messages)
+        self.wrapAnnoSets()
+        self.wrapMessages()
 
     def updateHandling(self):
         &#34;&#34;&#34;Carries out modification actions in the current annotation set.
@@ -368,20 +294,20 @@ class Serve:
         *   addition of an entity.
 
         The results of the actions are wrapped in a report and stored in the
-        `templateData`.
+        `v`.
         &#34;&#34;&#34;
         annotate = self.annotate
-        templateData = self.templateData
+        v = self.v
 
-        delData = templateData.deldata
-        addData = templateData.adddata
-        activeEntity = templateData.activeentity
-        tokenStart = templateData.tokenstart
-        tokenEnd = templateData.tokenend
-        submitter = templateData.submitter
-        excludedTokens = templateData.excludedtokens
-        bFindRe = templateData.bfindre
-        scope = templateData.scope
+        delData = v.deldata
+        addData = v.adddata
+        activeEntity = v.activeentity
+        tokenStart = v.tokenstart
+        tokenEnd = v.tokenend
+        submitter = v.submitter
+        excludedTokens = v.excludedtokens
+        bFindRe = v.bfindre
+        scope = v.scope
 
         hasEnt = activeEntity is not None
         hasOcc = tokenStart is not None and tokenEnd is not None
@@ -399,23 +325,23 @@ class Serve:
                     delData.deletions, self.buckets, excludedTokens=excludedTokens
                 )
                 annotate.loadData()
-                wrapReport(annotate, templateData, report, &#34;del&#34;)
+                self.wrapReport(report, &#34;del&#34;)
                 if hasEnt:
                     setData = annotate.getSetData()
                     entityIdent = setData.entityIdent
 
                     stillExists = activeEntity in entityIdent
                     if not stillExists:
-                        templateData.activeentity = None
+                        v.activeentity = None
 
             if submitter == &#34;addgo&#34; and addData:
                 report = annotate.addEntityRich(
                     addData.additions, self.buckets, excludedTokens=excludedTokens
                 )
                 annotate.loadData()
-                wrapReport(annotate, templateData, report, &#34;add&#34;)
+                self.wrapReport(report, &#34;add&#34;)
 
-            adaptValSelect(annotate, templateData)
+            self.adaptValSelect()
 
             self.getBuckets()
 
@@ -472,7 +398,7 @@ def serveNerContext(web, node):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/serve.py#L388-L399" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/serve.py#L314-L325" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveNer(web):
     &#34;&#34;&#34;Main controller to render a full page.
@@ -504,7 +430,7 @@ def serveNerContext(web, node):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/serve.py#L402-L417" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/serve.py#L328-L343" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveNerContext(web, node):
     &#34;&#34;&#34;Controller to render a portion of a page.
@@ -538,26 +464,17 @@ def serveNerContext(web, node):
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>web</code></strong> :&ensp;<code>object</code></dt>
-<dd>
-<p>This represents the Flask website that is the TF browser.
-It has access to the TF-app that represents a loaded TF corpus.
-See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.web.factory">factory()</a></code> and <code><a title="tf.browser.web.factory" href="../web.html#tf.browser.web.factory">factory()</a></code>.</p>
-<p>It picks up a handle to the loaded TF corpus, stores it in the <code><a title="tf.browser.ner.serve.Serve" href="#tf.browser.ner.serve.Serve">Serve</a></code>
-object, and uses it to fetch the CSS code for this tool, which is
-also stored in the <code><a title="tf.browser.ner.serve.Serve" href="#tf.browser.ner.serve.Serve">Serve</a></code> object.</p>
-<p>Finally, it creates a pointer to the annotation data in memory, as stored
-in the <code>web</code> object, if there is already such data from a previous request.
-If not, it initializes an empty dict in the <code>web</code> object, with the purpose
-of storing incoming annotation data there.</p>
-<p>This way, the annotation data is preserved between requests.</p>
-</dd>
+<dd>This represents the Flask website that is the TF browser.
+It has initialized a <code><a title="tf.browser.ner.annotate.Annotate" href="annotate.html#tf.browser.ner.annotate.Annotate">Annotate</a></code> object,
+and has stored it under attribute <code>annotate</code>.
+See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.web.factory">factory()</a></code> and <code><a title="tf.browser.web.factory" href="../web.html#tf.browser.web.factory">factory()</a></code>.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/serve.py#L28-L385" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/serve.py#L17-L311" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">class Serve:
+<pre><code class="python">class Serve(ServeLib, Fragments):
     def __init__(self, web):
         &#34;&#34;&#34;Object that implements the controller functions for the annotatation tool.
 
@@ -565,104 +482,47 @@ of storing incoming annotation data there.</p>
         ----------
         web: object
             This represents the Flask website that is the TF browser.
-            It has access to the TF-app that represents a loaded TF corpus.
+            It has initialized a `tf.browser.ner.annotate.Annotate` object,
+            and has stored it under attribute `annotate`.
             See `tf.browser.ner.web.factory` and `tf.browser.web.factory`.
 
-            It picks up a handle to the loaded TF corpus, stores it in the `Serve`
-            object, and uses it to fetch the CSS code for this tool, which is
-            also stored in the `Serve` object.
-
-            Finally, it creates a pointer to the annotation data in memory, as stored
-            in the `web` object, if there is already such data from a previous request.
-            If not, it initializes an empty dict in the `web` object, with the purpose
-            of storing incoming annotation data there.
-
-            This way, the annotation data is preserved between requests.
         &#34;&#34;&#34;
         self.web = web
-        kernelApi = web.kernelApi
-        self.app = kernelApi.app
-        self.css = kernelApi.css()
 
-        if not hasattr(web, &#34;toolData&#34;):
-            setattr(web, &#34;toolData&#34;, AttrDict())
-        toolData = web.toolData
+        annotate = web.annotate
+        self.annotate = annotate
 
-        if TOOLKEY not in toolData:
-            toolData[TOOLKEY] = AttrDict()
+        super().__init__()
 
-        self.data = toolData[TOOLKEY]
+        self.initVars()
 
-    def setupAnnotate(self):
-        &#34;&#34;&#34;Initialize the Annotate object.
-
-        Before doing anything else, we create a
-        `tf.browser.ner.annotate.Annotate` object and store it for use
-        by the actual controllers.
-
-        Based on the information in the request, we switch to a particular annotation
-        set and load its data.
-
-        This method will be invoked via two routes:
-
-        *   `Serve.setupFull()`: for the main page, after a normal request;
-        *   `Serve.setupLean()`: in response to an Ajax call when context to a
-            specific line in the corpus is needed.
-
-        !!! note &#34;`templateData`&#34;
-            We use the dict `templateData` as the collector of
-
-            *   the request information;
-            *   selections of corpus material;
-            *   HTML fragments under construction;
-            *   template variables.
-        &#34;&#34;&#34;
-        data = self.data
-        app = self.app
-
-        annotate = Annotate(app, data=data, browse=True)
-
-        initTemplate(annotate, app)
-        templateData = annotate.templateData
-
-        annoSet = templateData.annoset
+        v = self.v
+        annoSet = v.annoset
 
         annotate.setSet(annoSet)
-        self.annotate = annotate
         annotate.loadData()
 
     def setupFull(self):
         &#34;&#34;&#34;Prepares to serve a complete page.
 
-        *   Creates an `tf.browser.ner.annotate.Annotate` object;
         *   Sets up the find widget;
         *   Encodes the active entity in hidden `input` elements;
         *   Collects and generates the specific CSS styles needed for this corpus.
         &#34;&#34;&#34;
-        css = self.css
-
-        self.setupAnnotate()
         annotate = self.annotate
-        settings = annotate.settings
-        features = settings.features
-        keywordFeatures = settings.keywordFeatures
+        v = self.v
 
-        templateData = self.templateData
+        self.findSetup()
+        self.wrapActive()
 
-        findSetup(templateData)
-        wrapActive(templateData)
-        templateData.css = makeCss(features, keywordFeatures, generic=css)
+        v.css = annotate.css
 
     def setupLean(self):
         &#34;&#34;&#34;Prepares to update a portion of the page.
 
-        *   Creates an `tf.browser.ner.annotate.Annotate` object;
         *   Encodes the active entity in hidden `input` elements.
         &#34;&#34;&#34;
-        self.setupAnnotate()
-        templateData = self.templateData
-
-        wrapActive(templateData)
+        self.wrapActive()
 
     def actionsFull(self):
         &#34;&#34;&#34;Carries out requested actions before building the full page.
@@ -671,9 +531,7 @@ of storing incoming annotation data there.</p>
         *   fetch selected buckets from the whole corpus;
         *   modification actions in the selected set.
         &#34;&#34;&#34;
-        templateData = self.templateData
-
-        self.setHandling(templateData)
+        self.setHandling()
 
         self.getBuckets()
         self.updateHandling()
@@ -692,30 +550,30 @@ of storing incoming annotation data there.</p>
         axctions.
         &#34;&#34;&#34;
         annotate = self.annotate
-        templateData = self.templateData
-        sortKey = templateData.sortkey
-        sortDir = templateData.sortdir
-        activeEntity = templateData.activeentity
-        tokenStart = templateData.tokenstart
-        tokenEnd = templateData.tokenend
-        excludedTokens = templateData.excludedtokens
+        v = self.v
+        sortKey = v.sortkey
+        sortDir = v.sortdir
+        activeEntity = v.activeentity
+        tokenStart = v.tokenstart
+        tokenEnd = v.tokenend
+        excludedTokens = v.excludedtokens
 
         buckets = self.buckets
 
-        wrapQuery(annotate, templateData)
-        templateData.entitytable = annotate.showEntities(
+        self.wrapQuery()
+        v.entitytable = annotate.showEntities(
             activeEntity=activeEntity, sortKey=sortKey, sortDir=sortDir
         )
-        templateData.entityoverview = annotate.showEntityOverview()
-        templateData.entityheaders = wrapEntityHeaders(annotate, sortKey, sortDir)
-        templateData.buckets = annotate.showContent(
+        v.entityoverview = annotate.showEntityOverview()
+        v.entityheaders = self.wrapEntityHeaders()
+        v.buckets = annotate.showContent(
             buckets,
             activeEntity=activeEntity,
             excludedTokens=excludedTokens,
             mayLimit=not (tokenStart and tokenEnd),
         )
 
-        return render_template(f&#34;{TOOLKEY}/index.html&#34;, **templateData)
+        return render_template(f&#34;{TOOLKEY}/index.html&#34;, **v)
 
     def wrapLean(self):
         &#34;&#34;&#34;Builds a portion of the page.
@@ -727,9 +585,9 @@ of storing incoming annotation data there.</p>
         The generated HTML for the portion of the page.
         &#34;&#34;&#34;
         annotate = self.annotate
-        templateData = self.templateData
-        activeEntity = templateData.activeentity
-        excludedTokens = templateData.excludedtokens
+        v = self.v
+        activeEntity = v.activeentity
+        excludedTokens = v.excludedtokens
         buckets = self.buckets
 
         return annotate.showContent(
@@ -742,7 +600,7 @@ of storing incoming annotation data there.</p>
     def getBuckets(self, noFind=False, node=None):
         &#34;&#34;&#34;Fetch a selection of buckets from the corpus.
 
-        The selection is defined in the `templateData`.
+        The selection is defined in the `v`.
 
         We further modify the selection by two additional parameters.
 
@@ -751,7 +609,7 @@ of storing incoming annotation data there.</p>
         list is a tuple as indicated in the `filterContent` function.
         The list is stored in the `Serve` object.
         Additionally, statistics about these buckets and how many entity values
-        occur in het, are delivered in the `templateData`.
+        occur in het, are delivered in the `v`.
 
         Parameters
         ----------
@@ -769,32 +627,32 @@ of storing incoming annotation data there.</p>
             We use this when we retrieve the context for a given bucket.
         &#34;&#34;&#34;
         annotate = self.annotate
-        templateData = self.templateData
+        v = self.v
 
-        bFindRe = None if noFind else templateData.bfindre
-        anyEnt = templateData.anyent
-        activeEntity = templateData.activeentity
-        tokenStart = templateData.tokenstart
-        tokenEnd = templateData.tokenend
-        valSelect = templateData.valselect
-        freeState = templateData.freestate
+        bFindRe = None if noFind else v.bfindre
+        anyEnt = v.anyent
+        activeEntity = v.activeentity
+        tokenStart = v.tokenstart
+        tokenEnd = v.tokenend
+        valSelect = v.valselect
+        freeState = v.freestate
 
         setData = annotate.getSetData()
         entityIdent = setData.entityIdent
 
         if activeEntity not in entityIdent:
             activeEntity = None
-            templateData.activeentity = None
+            v.activeentity = None
 
         qTokens = (
-            self.getStrings(tokenStart, tokenEnd) if tokenStart and tokenEnd else None
+            annotate.getStrings(tokenStart, tokenEnd) if tokenStart and tokenEnd else None
         )
 
         (
             self.buckets,
-            templateData.nfind,
-            templateData.nvisible,
-            templateData.nent,
+            v.nfind,
+            v.nvisible,
+            v.nent,
         ) = annotate.filterContent(
             node=node,
             bFindRe=bFindRe,
@@ -817,44 +675,40 @@ of storing incoming annotation data there.</p>
         *   delete a set.
 
         The results of the actions are wrapped in messages and stored in the
-        `templateData`.
+        `v`.
         &#34;&#34;&#34;
         annotate = self.annotate
-        annoDir = annotate.annoDir
-        settings = annotate.settings
-        entitySet = settings.entitySet
 
-        templateData = self.templateData
-        chosenAnnoSet = templateData.annoset
-        dupAnnoSet = templateData.duannoset
-        renamedAnnoSet = templateData.rannoset
-        deleteAnnoSet = templateData.dannoset
+        v = self.v
+        chosenAnnoSet = v.annoset
+        dupAnnoSet = v.duannoset
+        renamedAnnoSet = v.rannoset
+        deleteAnnoSet = v.dannoset
 
         messages = []
 
         if deleteAnnoSet:
             messages.extend(annotate.setDel(deleteAnnoSet))
-            templateData.dannoset = &#34;&#34;
-            templateData.annoset = &#34;&#34;
+            v.dannoset = &#34;&#34;
+            v.annoset = &#34;&#34;
 
         if dupAnnoSet:
             messages.extend(annotate.setDup(dupAnnoSet))
-            templateData.annoset = dupAnnoSet
-            templateData.duannoset = &#34;&#34;
+            v.annoset = dupAnnoSet
+            v.duannoset = &#34;&#34;
 
         if renamedAnnoSet and chosenAnnoSet:
             messages.extend(annotate.setMove(renamedAnnoSet))
-            templateData.annoset = renamedAnnoSet
-            templateData.rannoset = &#34;&#34;
+            v.annoset = renamedAnnoSet
+            v.rannoset = &#34;&#34;
 
-        chosenAnnoSet = templateData.annoset
+        v.messagesrc = messages
+
+        chosenAnnoSet = v.annoset
         annotate.setSet(chosenAnnoSet)
-        setNames = annotate.setNames
 
-        templateData.annosets = wrapAnnoSets(
-            annoDir, chosenAnnoSet, setNames, entitySet
-        )
-        templateData.messages = wrapMessages(messages)
+        self.wrapAnnoSets()
+        self.wrapMessages()
 
     def updateHandling(self):
         &#34;&#34;&#34;Carries out modification actions in the current annotation set.
@@ -865,20 +719,20 @@ of storing incoming annotation data there.</p>
         *   addition of an entity.
 
         The results of the actions are wrapped in a report and stored in the
-        `templateData`.
+        `v`.
         &#34;&#34;&#34;
         annotate = self.annotate
-        templateData = self.templateData
+        v = self.v
 
-        delData = templateData.deldata
-        addData = templateData.adddata
-        activeEntity = templateData.activeentity
-        tokenStart = templateData.tokenstart
-        tokenEnd = templateData.tokenend
-        submitter = templateData.submitter
-        excludedTokens = templateData.excludedtokens
-        bFindRe = templateData.bfindre
-        scope = templateData.scope
+        delData = v.deldata
+        addData = v.adddata
+        activeEntity = v.activeentity
+        tokenStart = v.tokenstart
+        tokenEnd = v.tokenend
+        submitter = v.submitter
+        excludedTokens = v.excludedtokens
+        bFindRe = v.bfindre
+        scope = v.scope
 
         hasEnt = activeEntity is not None
         hasOcc = tokenStart is not None and tokenEnd is not None
@@ -896,26 +750,32 @@ of storing incoming annotation data there.</p>
                     delData.deletions, self.buckets, excludedTokens=excludedTokens
                 )
                 annotate.loadData()
-                wrapReport(annotate, templateData, report, &#34;del&#34;)
+                self.wrapReport(report, &#34;del&#34;)
                 if hasEnt:
                     setData = annotate.getSetData()
                     entityIdent = setData.entityIdent
 
                     stillExists = activeEntity in entityIdent
                     if not stillExists:
-                        templateData.activeentity = None
+                        v.activeentity = None
 
             if submitter == &#34;addgo&#34; and addData:
                 report = annotate.addEntityRich(
                     addData.additions, self.buckets, excludedTokens=excludedTokens
                 )
                 annotate.loadData()
-                wrapReport(annotate, templateData, report, &#34;add&#34;)
+                self.wrapReport(report, &#34;add&#34;)
 
-            adaptValSelect(annotate, templateData)
+            self.adaptValSelect()
 
             self.getBuckets()</code></pre>
 </details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="tf.browser.ner.servelib.ServeLib" href="servelib.html#tf.browser.ner.servelib.ServeLib">ServeLib</a></li>
+<li><a title="tf.browser.ner.form.Form" href="form.html#tf.browser.ner.form.Form">Form</a></li>
+<li><a title="tf.browser.ner.fragments.Fragments" href="fragments.html#tf.browser.ner.fragments.Fragments">Fragments</a></li>
+</ul>
 <h3>Methods</h3>
 <dl>
 <dt id="tf.browser.ner.serve.Serve.actionsFull"><code class="name flex">
@@ -931,7 +791,7 @@ of storing incoming annotation data there.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/serve.py#L135-L147" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/serve.py#L67-L77" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def actionsFull(self):
     &#34;&#34;&#34;Carries out requested actions before building the full page.
@@ -940,9 +800,7 @@ of storing incoming annotation data there.</p>
     *   fetch selected buckets from the whole corpus;
     *   modification actions in the selected set.
     &#34;&#34;&#34;
-    templateData = self.templateData
-
-    self.setHandling(templateData)
+    self.setHandling()
 
     self.getBuckets()
     self.updateHandling()</code></pre>
@@ -959,7 +817,7 @@ of storing incoming annotation data there.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/serve.py#L149-L154" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/serve.py#L79-L84" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def actionsLean(self, node):
     &#34;&#34;&#34;Carries out requested actions before building a portion of the page.
@@ -974,14 +832,14 @@ of storing incoming annotation data there.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Fetch a selection of buckets from the corpus.</p>
-<p>The selection is defined in the <code>templateData</code>.</p>
+<p>The selection is defined in the <code>v</code>.</p>
 <p>We further modify the selection by two additional parameters.</p>
 <p>The resulting list of buckets is obtained by
 <code><a title="tf.browser.ner.annotate.Annotate.filterContent" href="annotate.html#tf.browser.ner.annotate.Annotate.filterContent">Annotate.filterContent()</a></code>, and each member in the bucket
 list is a tuple as indicated in the <code>filterContent</code> function.
 The list is stored in the <code><a title="tf.browser.ner.serve.Serve" href="#tf.browser.ner.serve.Serve">Serve</a></code> object.
 Additionally, statistics about these buckets and how many entity values
-occur in het, are delivered in the <code>templateData</code>.</p>
+occur in het, are delivered in the <code>v</code>.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>noFind</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
@@ -1001,12 +859,12 @@ under that TF node.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/serve.py#L210-L274" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/serve.py#L140-L204" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getBuckets(self, noFind=False, node=None):
     &#34;&#34;&#34;Fetch a selection of buckets from the corpus.
 
-    The selection is defined in the `templateData`.
+    The selection is defined in the `v`.
 
     We further modify the selection by two additional parameters.
 
@@ -1015,7 +873,7 @@ under that TF node.</p>
     list is a tuple as indicated in the `filterContent` function.
     The list is stored in the `Serve` object.
     Additionally, statistics about these buckets and how many entity values
-    occur in het, are delivered in the `templateData`.
+    occur in het, are delivered in the `v`.
 
     Parameters
     ----------
@@ -1033,32 +891,32 @@ under that TF node.</p>
         We use this when we retrieve the context for a given bucket.
     &#34;&#34;&#34;
     annotate = self.annotate
-    templateData = self.templateData
+    v = self.v
 
-    bFindRe = None if noFind else templateData.bfindre
-    anyEnt = templateData.anyent
-    activeEntity = templateData.activeentity
-    tokenStart = templateData.tokenstart
-    tokenEnd = templateData.tokenend
-    valSelect = templateData.valselect
-    freeState = templateData.freestate
+    bFindRe = None if noFind else v.bfindre
+    anyEnt = v.anyent
+    activeEntity = v.activeentity
+    tokenStart = v.tokenstart
+    tokenEnd = v.tokenend
+    valSelect = v.valselect
+    freeState = v.freestate
 
     setData = annotate.getSetData()
     entityIdent = setData.entityIdent
 
     if activeEntity not in entityIdent:
         activeEntity = None
-        templateData.activeentity = None
+        v.activeentity = None
 
     qTokens = (
-        self.getStrings(tokenStart, tokenEnd) if tokenStart and tokenEnd else None
+        annotate.getStrings(tokenStart, tokenEnd) if tokenStart and tokenEnd else None
     )
 
     (
         self.buckets,
-        templateData.nfind,
-        templateData.nvisible,
-        templateData.nent,
+        v.nfind,
+        v.nvisible,
+        v.nent,
     ) = annotate.filterContent(
         node=node,
         bFindRe=bFindRe,
@@ -1084,11 +942,11 @@ and create it if it does not yet exist;</li>
 <li>delete a set.</li>
 </ul>
 <p>The results of the actions are wrapped in messages and stored in the
-<code>templateData</code>.</p></div>
+<code>v</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/serve.py#L276-L325" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/serve.py#L206-L251" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setHandling(self):
     &#34;&#34;&#34;Carries out the set-related actions before composing the page.
@@ -1102,114 +960,40 @@ and create it if it does not yet exist;</li>
     *   delete a set.
 
     The results of the actions are wrapped in messages and stored in the
-    `templateData`.
+    `v`.
     &#34;&#34;&#34;
     annotate = self.annotate
-    annoDir = annotate.annoDir
-    settings = annotate.settings
-    entitySet = settings.entitySet
 
-    templateData = self.templateData
-    chosenAnnoSet = templateData.annoset
-    dupAnnoSet = templateData.duannoset
-    renamedAnnoSet = templateData.rannoset
-    deleteAnnoSet = templateData.dannoset
+    v = self.v
+    chosenAnnoSet = v.annoset
+    dupAnnoSet = v.duannoset
+    renamedAnnoSet = v.rannoset
+    deleteAnnoSet = v.dannoset
 
     messages = []
 
     if deleteAnnoSet:
         messages.extend(annotate.setDel(deleteAnnoSet))
-        templateData.dannoset = &#34;&#34;
-        templateData.annoset = &#34;&#34;
+        v.dannoset = &#34;&#34;
+        v.annoset = &#34;&#34;
 
     if dupAnnoSet:
         messages.extend(annotate.setDup(dupAnnoSet))
-        templateData.annoset = dupAnnoSet
-        templateData.duannoset = &#34;&#34;
+        v.annoset = dupAnnoSet
+        v.duannoset = &#34;&#34;
 
     if renamedAnnoSet and chosenAnnoSet:
         messages.extend(annotate.setMove(renamedAnnoSet))
-        templateData.annoset = renamedAnnoSet
-        templateData.rannoset = &#34;&#34;
+        v.annoset = renamedAnnoSet
+        v.rannoset = &#34;&#34;
 
-    chosenAnnoSet = templateData.annoset
+    v.messagesrc = messages
+
+    chosenAnnoSet = v.annoset
     annotate.setSet(chosenAnnoSet)
-    setNames = annotate.setNames
 
-    templateData.annosets = wrapAnnoSets(
-        annoDir, chosenAnnoSet, setNames, entitySet
-    )
-    templateData.messages = wrapMessages(messages)</code></pre>
-</details>
-</dd>
-<dt id="tf.browser.ner.serve.Serve.setupAnnotate"><code class="name flex">
-<span>def <span class="ident">setupAnnotate</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Initialize the Annotate object.</p>
-<p>Before doing anything else, we create a
-<code><a title="tf.browser.ner.annotate.Annotate" href="annotate.html#tf.browser.ner.annotate.Annotate">Annotate</a></code> object and store it for use
-by the actual controllers.</p>
-<p>Based on the information in the request, we switch to a particular annotation
-set and load its data.</p>
-<p>This method will be invoked via two routes:</p>
-<ul>
-<li><code><a title="tf.browser.ner.serve.Serve.setupFull" href="#tf.browser.ner.serve.Serve.setupFull">Serve.setupFull()</a></code>: for the main page, after a normal request;</li>
-<li><code><a title="tf.browser.ner.serve.Serve.setupLean" href="#tf.browser.ner.serve.Serve.setupLean">Serve.setupLean()</a></code>: in response to an Ajax call when context to a
-specific line in the corpus is needed.</li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title"><code>templateData</code></p>
-<p>We use the dict <code>templateData</code> as the collector of</p>
-<ul>
-<li>the request information;</li>
-<li>selections of corpus material;</li>
-<li>HTML fragments under construction;</li>
-<li>template variables.</li>
-</ul>
-</div></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/serve.py#L64-L100" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def setupAnnotate(self):
-    &#34;&#34;&#34;Initialize the Annotate object.
-
-    Before doing anything else, we create a
-    `tf.browser.ner.annotate.Annotate` object and store it for use
-    by the actual controllers.
-
-    Based on the information in the request, we switch to a particular annotation
-    set and load its data.
-
-    This method will be invoked via two routes:
-
-    *   `Serve.setupFull()`: for the main page, after a normal request;
-    *   `Serve.setupLean()`: in response to an Ajax call when context to a
-        specific line in the corpus is needed.
-
-    !!! note &#34;`templateData`&#34;
-        We use the dict `templateData` as the collector of
-
-        *   the request information;
-        *   selections of corpus material;
-        *   HTML fragments under construction;
-        *   template variables.
-    &#34;&#34;&#34;
-    data = self.data
-    app = self.app
-
-    annotate = Annotate(app, data=data, browse=True)
-
-    initTemplate(annotate, app)
-    templateData = annotate.templateData
-
-    annoSet = templateData.annoset
-
-    annotate.setSet(annoSet)
-    self.annotate = annotate
-    annotate.loadData()</code></pre>
+    self.wrapAnnoSets()
+    self.wrapMessages()</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.serve.Serve.setupFull"><code class="name flex">
@@ -1218,7 +1002,6 @@ specific line in the corpus is needed.</li>
 <dd>
 <div class="desc"><p>Prepares to serve a complete page.</p>
 <ul>
-<li>Creates an <code><a title="tf.browser.ner.annotate.Annotate" href="annotate.html#tf.browser.ner.annotate.Annotate">Annotate</a></code> object;</li>
 <li>Sets up the find widget;</li>
 <li>Encodes the active entity in hidden <code>input</code> elements;</li>
 <li>Collects and generates the specific CSS styles needed for this corpus.</li>
@@ -1226,29 +1009,22 @@ specific line in the corpus is needed.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/serve.py#L102-L122" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/serve.py#L45-L58" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setupFull(self):
     &#34;&#34;&#34;Prepares to serve a complete page.
 
-    *   Creates an `tf.browser.ner.annotate.Annotate` object;
     *   Sets up the find widget;
     *   Encodes the active entity in hidden `input` elements;
     *   Collects and generates the specific CSS styles needed for this corpus.
     &#34;&#34;&#34;
-    css = self.css
-
-    self.setupAnnotate()
     annotate = self.annotate
-    settings = annotate.settings
-    features = settings.features
-    keywordFeatures = settings.keywordFeatures
+    v = self.v
 
-    templateData = self.templateData
+    self.findSetup()
+    self.wrapActive()
 
-    findSetup(templateData)
-    wrapActive(templateData)
-    templateData.css = makeCss(features, keywordFeatures, generic=css)</code></pre>
+    v.css = annotate.css</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.serve.Serve.setupLean"><code class="name flex">
@@ -1257,24 +1033,19 @@ specific line in the corpus is needed.</li>
 <dd>
 <div class="desc"><p>Prepares to update a portion of the page.</p>
 <ul>
-<li>Creates an <code><a title="tf.browser.ner.annotate.Annotate" href="annotate.html#tf.browser.ner.annotate.Annotate">Annotate</a></code> object;</li>
 <li>Encodes the active entity in hidden <code>input</code> elements.</li>
 </ul></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/serve.py#L124-L133" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/serve.py#L60-L65" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setupLean(self):
     &#34;&#34;&#34;Prepares to update a portion of the page.
 
-    *   Creates an `tf.browser.ner.annotate.Annotate` object;
     *   Encodes the active entity in hidden `input` elements.
     &#34;&#34;&#34;
-    self.setupAnnotate()
-    templateData = self.templateData
-
-    wrapActive(templateData)</code></pre>
+    self.wrapActive()</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.serve.Serve.updateHandling"><code class="name flex">
@@ -1288,11 +1059,11 @@ specific line in the corpus is needed.</li>
 <li>addition of an entity.</li>
 </ul>
 <p>The results of the actions are wrapped in a report and stored in the
-<code>templateData</code>.</p></div>
+<code>v</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/serve.py#L327-L385" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/serve.py#L253-L311" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def updateHandling(self):
     &#34;&#34;&#34;Carries out modification actions in the current annotation set.
@@ -1303,20 +1074,20 @@ specific line in the corpus is needed.</li>
     *   addition of an entity.
 
     The results of the actions are wrapped in a report and stored in the
-    `templateData`.
+    `v`.
     &#34;&#34;&#34;
     annotate = self.annotate
-    templateData = self.templateData
+    v = self.v
 
-    delData = templateData.deldata
-    addData = templateData.adddata
-    activeEntity = templateData.activeentity
-    tokenStart = templateData.tokenstart
-    tokenEnd = templateData.tokenend
-    submitter = templateData.submitter
-    excludedTokens = templateData.excludedtokens
-    bFindRe = templateData.bfindre
-    scope = templateData.scope
+    delData = v.deldata
+    addData = v.adddata
+    activeEntity = v.activeentity
+    tokenStart = v.tokenstart
+    tokenEnd = v.tokenend
+    submitter = v.submitter
+    excludedTokens = v.excludedtokens
+    bFindRe = v.bfindre
+    scope = v.scope
 
     hasEnt = activeEntity is not None
     hasOcc = tokenStart is not None and tokenEnd is not None
@@ -1334,23 +1105,23 @@ specific line in the corpus is needed.</li>
                 delData.deletions, self.buckets, excludedTokens=excludedTokens
             )
             annotate.loadData()
-            wrapReport(annotate, templateData, report, &#34;del&#34;)
+            self.wrapReport(report, &#34;del&#34;)
             if hasEnt:
                 setData = annotate.getSetData()
                 entityIdent = setData.entityIdent
 
                 stillExists = activeEntity in entityIdent
                 if not stillExists:
-                    templateData.activeentity = None
+                    v.activeentity = None
 
         if submitter == &#34;addgo&#34; and addData:
             report = annotate.addEntityRich(
                 addData.additions, self.buckets, excludedTokens=excludedTokens
             )
             annotate.loadData()
-            wrapReport(annotate, templateData, report, &#34;add&#34;)
+            self.wrapReport(report, &#34;add&#34;)
 
-        adaptValSelect(annotate, templateData)
+        self.adaptValSelect()
 
         self.getBuckets()</code></pre>
 </details>
@@ -1365,7 +1136,7 @@ axctions.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/serve.py#L156-L186" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/serve.py#L86-L116" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapFull(self):
     &#34;&#34;&#34;Builds the full page.
@@ -1374,30 +1145,30 @@ axctions.</p></div>
     axctions.
     &#34;&#34;&#34;
     annotate = self.annotate
-    templateData = self.templateData
-    sortKey = templateData.sortkey
-    sortDir = templateData.sortdir
-    activeEntity = templateData.activeentity
-    tokenStart = templateData.tokenstart
-    tokenEnd = templateData.tokenend
-    excludedTokens = templateData.excludedtokens
+    v = self.v
+    sortKey = v.sortkey
+    sortDir = v.sortdir
+    activeEntity = v.activeentity
+    tokenStart = v.tokenstart
+    tokenEnd = v.tokenend
+    excludedTokens = v.excludedtokens
 
     buckets = self.buckets
 
-    wrapQuery(annotate, templateData)
-    templateData.entitytable = annotate.showEntities(
+    self.wrapQuery()
+    v.entitytable = annotate.showEntities(
         activeEntity=activeEntity, sortKey=sortKey, sortDir=sortDir
     )
-    templateData.entityoverview = annotate.showEntityOverview()
-    templateData.entityheaders = wrapEntityHeaders(annotate, sortKey, sortDir)
-    templateData.buckets = annotate.showContent(
+    v.entityoverview = annotate.showEntityOverview()
+    v.entityheaders = self.wrapEntityHeaders()
+    v.buckets = annotate.showContent(
         buckets,
         activeEntity=activeEntity,
         excludedTokens=excludedTokens,
         mayLimit=not (tokenStart and tokenEnd),
     )
 
-    return render_template(f&#34;{TOOLKEY}/index.html&#34;, **templateData)</code></pre>
+    return render_template(f&#34;{TOOLKEY}/index.html&#34;, **v)</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.serve.Serve.wrapLean"><code class="name flex">
@@ -1411,7 +1182,7 @@ axctions.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/serve.py#L188-L208" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/serve.py#L118-L138" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapLean(self):
     &#34;&#34;&#34;Builds a portion of the page.
@@ -1423,9 +1194,9 @@ axctions.</p></div>
     The generated HTML for the portion of the page.
     &#34;&#34;&#34;
     annotate = self.annotate
-    templateData = self.templateData
-    activeEntity = templateData.activeentity
-    excludedTokens = templateData.excludedtokens
+    v = self.v
+    activeEntity = v.activeentity
+    excludedTokens = v.excludedtokens
     buckets = self.buckets
 
     return annotate.showContent(
@@ -1437,6 +1208,46 @@ axctions.</p></div>
 </details>
 </dd>
 </dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="tf.browser.ner.servelib.ServeLib" href="servelib.html#tf.browser.ner.servelib.ServeLib">ServeLib</a></b></code>:
+<ul class="hlist">
+<li><code><a title="tf.browser.ner.servelib.ServeLib.adaptValSelect" href="servelib.html#tf.browser.ner.servelib.ServeLib.adaptValSelect">adaptValSelect</a></code></li>
+<li><code><a title="tf.browser.ner.servelib.ServeLib.fget2" href="form.html#tf.browser.ner.form.Form.fget2">fget2</a></code></li>
+<li><code><a title="tf.browser.ner.servelib.ServeLib.fget3" href="form.html#tf.browser.ner.form.Form.fget3">fget3</a></code></li>
+<li><code><a title="tf.browser.ner.servelib.ServeLib.fgeti" href="form.html#tf.browser.ner.form.Form.fgeti">fgeti</a></code></li>
+<li><code><a title="tf.browser.ner.servelib.ServeLib.fgetj" href="form.html#tf.browser.ner.form.Form.fgetj">fgetj</a></code></li>
+<li><code><a title="tf.browser.ner.servelib.ServeLib.fgets" href="form.html#tf.browser.ner.form.Form.fgets">fgets</a></code></li>
+<li><code><a title="tf.browser.ner.servelib.ServeLib.fgetsi" href="form.html#tf.browser.ner.form.Form.fgetsi">fgetsi</a></code></li>
+<li><code><a title="tf.browser.ner.servelib.ServeLib.fgettu" href="form.html#tf.browser.ner.form.Form.fgettu">fgettu</a></code></li>
+<li><code><a title="tf.browser.ner.servelib.ServeLib.fill" href="form.html#tf.browser.ner.form.Form.fill">fill</a></code></li>
+<li><code><a title="tf.browser.ner.servelib.ServeLib.findSetup" href="servelib.html#tf.browser.ner.servelib.ServeLib.findSetup">findSetup</a></code></li>
+<li><code><a title="tf.browser.ner.servelib.ServeLib.getFormData" href="servelib.html#tf.browser.ner.servelib.ServeLib.getFormData">getFormData</a></code></li>
+<li><code><a title="tf.browser.ner.servelib.ServeLib.initVars" href="servelib.html#tf.browser.ner.servelib.ServeLib.initVars">initVars</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="tf.browser.ner.fragments.Fragments" href="fragments.html#tf.browser.ner.fragments.Fragments">Fragments</a></b></code>:
+<ul class="hlist">
+<li><code><a title="tf.browser.ner.fragments.Fragments.wrapActive" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapActive">wrapActive</a></code></li>
+<li><code><a title="tf.browser.ner.fragments.Fragments.wrapAnnoSets" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapAnnoSets">wrapAnnoSets</a></code></li>
+<li><code><a title="tf.browser.ner.fragments.Fragments.wrapAppearance" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapAppearance">wrapAppearance</a></code></li>
+<li><code><a title="tf.browser.ner.fragments.Fragments.wrapEntity" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapEntity">wrapEntity</a></code></li>
+<li><code><a title="tf.browser.ner.fragments.Fragments.wrapEntityFeats" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapEntityFeats">wrapEntityFeats</a></code></li>
+<li><code><a title="tf.browser.ner.fragments.Fragments.wrapEntityHeaders" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapEntityHeaders">wrapEntityHeaders</a></code></li>
+<li><code><a title="tf.browser.ner.fragments.Fragments.wrapEntityModReport" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapEntityModReport">wrapEntityModReport</a></code></li>
+<li><code><a title="tf.browser.ner.fragments.Fragments.wrapEntityModify" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapEntityModify">wrapEntityModify</a></code></li>
+<li><code><a title="tf.browser.ner.fragments.Fragments.wrapEntityStat" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapEntityStat">wrapEntityStat</a></code></li>
+<li><code><a title="tf.browser.ner.fragments.Fragments.wrapEntityText" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapEntityText">wrapEntityText</a></code></li>
+<li><code><a title="tf.browser.ner.fragments.Fragments.wrapExceptions" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapExceptions">wrapExceptions</a></code></li>
+<li><code><a title="tf.browser.ner.fragments.Fragments.wrapFilter" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapFilter">wrapFilter</a></code></li>
+<li><code><a title="tf.browser.ner.fragments.Fragments.wrapFindStat" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapFindStat">wrapFindStat</a></code></li>
+<li><code><a title="tf.browser.ner.fragments.Fragments.wrapMessages" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapMessages">wrapMessages</a></code></li>
+<li><code><a title="tf.browser.ner.fragments.Fragments.wrapQuery" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapQuery">wrapQuery</a></code></li>
+<li><code><a title="tf.browser.ner.fragments.Fragments.wrapReport" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapReport">wrapReport</a></code></li>
+<li><code><a title="tf.browser.ner.fragments.Fragments.wrapScope" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapScope">wrapScope</a></code></li>
+</ul>
+</li>
+</ul>
 </dd>
 </dl>
 </section>
@@ -1518,7 +1329,6 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.browser.ner.serve.Serve.actionsLean" href="#tf.browser.ner.serve.Serve.actionsLean">actionsLean</a></code></li>
 <li><code><a title="tf.browser.ner.serve.Serve.getBuckets" href="#tf.browser.ner.serve.Serve.getBuckets">getBuckets</a></code></li>
 <li><code><a title="tf.browser.ner.serve.Serve.setHandling" href="#tf.browser.ner.serve.Serve.setHandling">setHandling</a></code></li>
-<li><code><a title="tf.browser.ner.serve.Serve.setupAnnotate" href="#tf.browser.ner.serve.Serve.setupAnnotate">setupAnnotate</a></code></li>
 <li><code><a title="tf.browser.ner.serve.Serve.setupFull" href="#tf.browser.ner.serve.Serve.setupFull">setupFull</a></code></li>
 <li><code><a title="tf.browser.ner.serve.Serve.setupLean" href="#tf.browser.ner.serve.Serve.setupLean">setupLean</a></code></li>
 <li><code><a title="tf.browser.ner.serve.Serve.updateHandling" href="#tf.browser.ner.serve.Serve.updateHandling">updateHandling</a></code></li>

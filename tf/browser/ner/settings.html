@@ -29,7 +29,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/settings.py#L1-L282" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/settings.py#L1-L215" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Corpus dependent setup of the annotation tool.
 
@@ -37,7 +37,6 @@ To see how this fits among all the modules of this package, see
 `tf.browser.ner.annotate` .
 &#34;&#34;&#34;
 
-import re
 
 from ...core.helpers import console as cs
 from ...core.files import annotateDir, readYaml
@@ -177,8 +176,6 @@ However, we should move these definitions to the `ner.yaml` file then, so that t
 only place of configuration is that yaml file, and not this file.
 &#34;&#34;&#34;
 
-WHITE_RE = re.compile(r&#34;&#34;&#34;\s{2,}&#34;&#34;&#34;, re.S)
-NON_ALPHA_RE = re.compile(r&#34;&#34;&#34;[^\w ]&#34;&#34;&#34;, re.S)
 
 SORTDIR_DESC = &#34;d&#34;
 &#34;&#34;&#34;Value that indicates the descending sort direction.&#34;&#34;&#34;
@@ -216,10 +213,14 @@ class Settings:
         `ner` next to the `tf` data of the corpus.
         &#34;&#34;&#34;
         app = self.app
-        api = app.api
-        F = api.F
+        context = app.context
 
-        version = app.context.version
+        version = context.version
+        self.version = version
+
+        appName = context.appName
+        self.appName = appName
+
         (specDir, annoDir) = annotateDir(app, TOOLKEY)
         self.specDir = specDir
         self.annoDir = f&#34;{annoDir}/{version}&#34;
@@ -233,74 +234,6 @@ class Settings:
         keywordFeatures = self.settings.keywordFeatures
         self.settings.summaryIndices = tuple(
             i for i in range(len(features)) if features[i] in keywordFeatures
-        )
-
-        def getText(slots):
-            &#34;&#34;&#34;Get the text for a number of slots.
-
-            Leading and trailing whitespace is stripped, and inner whitespace is
-            normalized to a single space.
-            &#34;&#34;&#34;
-            text = &#34;&#34;.join(
-                f&#34;&#34;&#34;{F.str.v(s)}{F.after.v(s) or &#34;&#34;}&#34;&#34;&#34; for s in slots
-            ).strip()
-            text = WHITE_RE.sub(&#34; &#34;, text)
-            return text
-
-        def get0(slots):
-            &#34;&#34;&#34;Makes an identifier value out of a number of slots.
-
-            This acts as the default value for the `eid` feature of new
-            entities.
-
-            Starting with the whitespace-normalized text of a number of slots,
-            the string is lowercased, non-alphanumeric characters are stripped,
-            and spaces are replaced by dots.
-            &#34;&#34;&#34;
-            text = getText(slots)
-            text = NON_ALPHA_RE.sub(&#34;&#34;, text)
-            text = text.replace(&#34; &#34;, &#34;.&#34;).strip(&#34;.&#34;).lower()
-            return text
-
-        def get1(slots):
-            &#34;&#34;&#34;Return a fixed value specified in the corpus-dependent settings.
-
-            This acts as the default value ofr the `kind` feature of new
-            entities.
-            &#34;&#34;&#34;
-            return self.settings.defaultValues[features[1]]
-
-        self.featureDefault = {
-            &#34;&#34;: getText,
-            features[0]: get0,
-            features[1]: get1,
-        }
-
-    def getStrings(self, tokenStart, tokenEnd):
-        &#34;&#34;&#34;Gets the text of the tokens occupying a sequence of slots.
-
-        Parameters
-        ----------
-        tokenStart: integer
-            The position of the starting token.
-        tokenEnd: integer
-            The position of the ending token.
-
-        Returns
-        -------
-        tuple
-            The members consist of the string values of the tokens in question,
-            as far as these values are not purely whitespace.
-            Also, the string values are stripped from leading and trailing whitespace.
-        &#34;&#34;&#34;
-        app = self.app
-        api = app.api
-        F = api.F
-
-        return tuple(
-            token
-            for t in range(tokenStart, tokenEnd + 1)
-            if (token := (F.str.v(t) or &#34;&#34;).strip())
         )
 
     def console(self, msg, **kwargs):
@@ -438,7 +371,7 @@ Those configuration values are read from a yaml file, located in a directory
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/settings.py#L172-L282" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/settings.py#L169-L215" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Settings:
     def __init__(self):
@@ -454,10 +387,14 @@ Those configuration values are read from a yaml file, located in a directory
         `ner` next to the `tf` data of the corpus.
         &#34;&#34;&#34;
         app = self.app
-        api = app.api
-        F = api.F
+        context = app.context
 
-        version = app.context.version
+        version = context.version
+        self.version = version
+
+        appName = context.appName
+        self.appName = appName
+
         (specDir, annoDir) = annotateDir(app, TOOLKEY)
         self.specDir = specDir
         self.annoDir = f&#34;{annoDir}/{version}&#34;
@@ -473,74 +410,6 @@ Those configuration values are read from a yaml file, located in a directory
             i for i in range(len(features)) if features[i] in keywordFeatures
         )
 
-        def getText(slots):
-            &#34;&#34;&#34;Get the text for a number of slots.
-
-            Leading and trailing whitespace is stripped, and inner whitespace is
-            normalized to a single space.
-            &#34;&#34;&#34;
-            text = &#34;&#34;.join(
-                f&#34;&#34;&#34;{F.str.v(s)}{F.after.v(s) or &#34;&#34;}&#34;&#34;&#34; for s in slots
-            ).strip()
-            text = WHITE_RE.sub(&#34; &#34;, text)
-            return text
-
-        def get0(slots):
-            &#34;&#34;&#34;Makes an identifier value out of a number of slots.
-
-            This acts as the default value for the `eid` feature of new
-            entities.
-
-            Starting with the whitespace-normalized text of a number of slots,
-            the string is lowercased, non-alphanumeric characters are stripped,
-            and spaces are replaced by dots.
-            &#34;&#34;&#34;
-            text = getText(slots)
-            text = NON_ALPHA_RE.sub(&#34;&#34;, text)
-            text = text.replace(&#34; &#34;, &#34;.&#34;).strip(&#34;.&#34;).lower()
-            return text
-
-        def get1(slots):
-            &#34;&#34;&#34;Return a fixed value specified in the corpus-dependent settings.
-
-            This acts as the default value ofr the `kind` feature of new
-            entities.
-            &#34;&#34;&#34;
-            return self.settings.defaultValues[features[1]]
-
-        self.featureDefault = {
-            &#34;&#34;: getText,
-            features[0]: get0,
-            features[1]: get1,
-        }
-
-    def getStrings(self, tokenStart, tokenEnd):
-        &#34;&#34;&#34;Gets the text of the tokens occupying a sequence of slots.
-
-        Parameters
-        ----------
-        tokenStart: integer
-            The position of the starting token.
-        tokenEnd: integer
-            The position of the ending token.
-
-        Returns
-        -------
-        tuple
-            The members consist of the string values of the tokens in question,
-            as far as these values are not purely whitespace.
-            Also, the string values are stripped from leading and trailing whitespace.
-        &#34;&#34;&#34;
-        app = self.app
-        api = app.api
-        F = api.F
-
-        return tuple(
-            token
-            for t in range(tokenStart, tokenEnd + 1)
-            if (token := (F.str.v(t) or &#34;&#34;).strip())
-        )
-
     def console(self, msg, **kwargs):
         &#34;&#34;&#34;Print something to the output.
 
@@ -554,7 +423,7 @@ Those configuration values are read from a yaml file, located in a directory
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
-<li><a title="tf.browser.ner.data.Data" href="data.html#tf.browser.ner.data.Data">Data</a></li>
+<li><a title="tf.browser.ner.corpus.Corpus" href="corpus.html#tf.browser.ner.corpus.Corpus">Corpus</a></li>
 </ul>
 <h3>Methods</h3>
 <dl>
@@ -570,7 +439,7 @@ without the need to add an <code>import</code> statement to the code.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/settings.py#L273-L282" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/settings.py#L206-L215" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(self, msg, **kwargs):
     &#34;&#34;&#34;Print something to the output.
@@ -582,58 +451,6 @@ without the need to add an <code>import</code> statement to the code.</p></div>
     without the need to add an `import` statement to the code.
     &#34;&#34;&#34;
     cs(msg, **kwargs)</code></pre>
-</details>
-</dd>
-<dt id="tf.browser.ner.settings.Settings.getStrings"><code class="name flex">
-<span>def <span class="ident">getStrings</span></span>(<span>self, tokenStart, tokenEnd)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Gets the text of the tokens occupying a sequence of slots.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>tokenStart</code></strong> :&ensp;<code>integer</code></dt>
-<dd>The position of the starting token.</dd>
-<dt><strong><code>tokenEnd</code></strong> :&ensp;<code>integer</code></dt>
-<dd>The position of the ending token.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>tuple</code></dt>
-<dd>The members consist of the string values of the tokens in question,
-as far as these values are not purely whitespace.
-Also, the string values are stripped from leading and trailing whitespace.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/settings.py#L246-L271" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def getStrings(self, tokenStart, tokenEnd):
-    &#34;&#34;&#34;Gets the text of the tokens occupying a sequence of slots.
-
-    Parameters
-    ----------
-    tokenStart: integer
-        The position of the starting token.
-    tokenEnd: integer
-        The position of the ending token.
-
-    Returns
-    -------
-    tuple
-        The members consist of the string values of the tokens in question,
-        as far as these values are not purely whitespace.
-        Also, the string values are stripped from leading and trailing whitespace.
-    &#34;&#34;&#34;
-    app = self.app
-    api = app.api
-    F = api.F
-
-    return tuple(
-        token
-        for t in range(tokenStart, tokenEnd + 1)
-        if (token := (F.str.v(t) or &#34;&#34;).strip())
-    )</code></pre>
 </details>
 </dd>
 </dl>
@@ -726,7 +543,6 @@ setTimeout(() => input.focus(), 100);
 <h4><code><a title="tf.browser.ner.settings.Settings" href="#tf.browser.ner.settings.Settings">Settings</a></code></h4>
 <ul class="">
 <li><code><a title="tf.browser.ner.settings.Settings.console" href="#tf.browser.ner.settings.Settings.console">console</a></code></li>
-<li><code><a title="tf.browser.ner.settings.Settings.getStrings" href="#tf.browser.ner.settings.Settings.getStrings">getStrings</a></code></li>
 </ul>
 </li>
 </ul>

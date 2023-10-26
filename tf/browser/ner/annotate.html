@@ -24,10 +24,10 @@
 </header>
 <section id="section-intro">
 <p>Central Annotation object.</p>
-<p>The main task of this module is to find occurrences of annotations
-on the basis of criteria.</p>
 <p>As a preparation, read <code><a title="tf.about.annotate" href="../../about/annotate.html">tf.about.annotate</a></code> first, since it explains the concepts, and
 guides you to set up the configuration for your corpus.</p>
+<p>The main task of this module is to find occurrences of annotations
+on the basis of criteria.</p>
 <p>But this is just the tip of the iceberg, since this module inherits
 from a number of other modules that inherit form yet other modules:</p>
 <ul>
@@ -46,16 +46,20 @@ criteria.</li>
 <p>Hence, <code>Annotation</code> is the central class of this tools, whose methods are relevant
 for:</p>
 <ul>
-<li><code><a title="tf.browser.ner.web" href="web.html">tf.browser.ner.web</a></code>: Flask app that routes urls to controller functions.</li>
 <li><code><a title="tf.browser.ner.power" href="power.html">tf.browser.ner.power</a></code>: the API for users to manipulate annotations in their
 own programs, especially in a Juyter notebook.</li>
+<li><code><a title="tf.browser.ner.web" href="web.html">tf.browser.ner.web</a></code>: Flask app that routes urls to controller functions.</li>
 </ul>
 <p><code>web</code> makes use of the following modules that are not needed by <code>power</code>:</p>
 <ul>
 <li><code><a title="tf.browser.ner.serve" href="serve.html">tf.browser.ner.serve</a></code>: define the controllers of the web app</li>
+</ul>
+<p>Again, this is a top of an iceberg, since it inherits from:</p>
+<ul>
 <li><code><a title="tf.browser.ner.servelib" href="servelib.html">tf.browser.ner.servelib</a></code>: manage the data of a request;</li>
 <li><code><a title="tf.browser.ner.fragments" href="fragments.html">tf.browser.ner.fragments</a></code>: generate HTML for widgets on the page;</li>
 </ul>
+<p><code>servelib</code> also uses <code>form</code> to retrieve form values into typed and structured values.</p>
 <p>Both <code>web</code> and <code>power</code> make use of the following modules in as far as they are not
 already mentioned under <code>annotate</code> and its parent classes:</p>
 <ul>
@@ -63,18 +67,43 @@ already mentioned under <code>annotate</code> and its parent classes:</p>
 <li><code><a title="tf.browser.ner.html" href="html.html">tf.browser.ner.html</a></code>: a generic library to generate HTML using Pythonesque
 syntax.</li>
 </ul>
+<div class="admonition note">
+<p class="admonition-title">Class hierarchy</p>
+<p>The classes <code>`Settings</code>, <code>Corpus</code>, <code>Data</code>, <code>Sets</code>, <code>Show</code>, <code><a title="tf.browser.ner.annotate.Annotate" href="#tf.browser.ner.annotate.Annotate">Annotate</a></code>,
+<code>PowerNER</code> form one hierarchy.
+So an object of class <code>PowerNER</code> has access to all methods of these classes.</p>
+<p>The classes <code>Serve</code>, <code>ServeLib</code>, <code>Fragments</code>, <code>From</code> form a separate hierarchy.
+It will create an <code><a title="tf.browser.ner.annotate.Annotate" href="#tf.browser.ner.annotate.Annotate">Annotate</a></code> instance which will be stored in a <code>Serve</code> instance.</p>
+</div>
+<p>Here is an overview how the modules hang together.</p>
+<p>A <code>|</code> denotes inheritance, parent classes above child classes.</p>
+<p>A <code>&lt;-&lt;</code> arrow denotes dependency by importing code.</p>
+<pre><code>Browser                           |   Api-hierarchy
+---------------------------------------------------------
+                                  |   PowerNER
+                                  |     |
+web &lt;-----&lt; Serve &lt;-----------------&lt; Annotate  &lt;-&lt; match
+            |   |                 |     |   |
+      ServeLib Fragments &lt;-&lt; html |   Sets Show &lt;-&lt; html
+          |                       |     |
+        Form                      |   Data
+                                  |     |
+                                  |   Corpus
+                                  |     |
+                                  |   Settings
+</code></pre>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/annotate.py#L1-L363" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/annotate.py#L1-L383" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Central Annotation object.
 
-The main task of this module is to find occurrences of annotations
-on the basis of criteria.
-
 As a preparation, read `tf.about.annotate` first, since it explains the concepts, and
 guides you to set up the configuration for your corpus.
+
+The main task of this module is to find occurrences of annotations
+on the basis of criteria.
 
 But this is just the tip of the iceberg, since this module inherits
 from a number of other modules that inherit form yet other modules:
@@ -94,15 +123,20 @@ It also uses
 Hence, `Annotation` is the central class of this tools, whose methods are relevant
 for:
 
-*   `tf.browser.ner.web`: Flask app that routes urls to controller functions.
 *   `tf.browser.ner.power`: the API for users to manipulate annotations in their
     own programs, especially in a Juyter notebook.
+*   `tf.browser.ner.web`: Flask app that routes urls to controller functions.
 
 `web` makes use of the following modules that are not needed by `power`:
 
 *   `tf.browser.ner.serve`: define the controllers of the web app
+
+Again, this is a top of an iceberg, since it inherits from:
+
 *   `tf.browser.ner.servelib`: manage the data of a request;
 *   `tf.browser.ner.fragments`: generate HTML for widgets on the page;
+
+`servelib` also uses `form` to retrieve form values into typed and structured values.
 
 Both `web` and `power` make use of the following modules in as far as they are not
 already mentioned under `annotate` and its parent classes:
@@ -110,14 +144,42 @@ already mentioned under `annotate` and its parent classes:
 *   `tf.browser.ner.helpers`: a variety of context-free data jugglers;
 *   `tf.browser.ner.html`: a generic library to generate HTML using Pythonesque
     syntax.
+
+!!! note &#34;Class hierarchy&#34;
+    The classes ``Settings`, `Corpus`, `Data`, `Sets`, `Show`, `Annotate`,
+    `PowerNER` form one hierarchy.
+    So an object of class `PowerNER` has access to all methods of these classes.
+
+    The classes `Serve`, `ServeLib`, `Fragments`, `From` form a separate hierarchy.
+    It will create an `Annotate` instance which will be stored in a `Serve` instance.
+
+Here is an overview how the modules hang together.
+
+A `|` denotes inheritance, parent classes above child classes.
+
+A `&lt;-&lt;` arrow denotes dependency by importing code.
+
+```
+Browser                           |   Api-hierarchy
+---------------------------------------------------------
+                                  |   PowerNER
+                                  |     |
+web &lt;-----&lt; Serve &lt;-----------------&lt; Annotate  &lt;-&lt; match
+            |   |                 |     |   |
+      ServeLib Fragments &lt;-&lt; html |   Sets Show &lt;-&lt; html
+          |                       |     |
+        Form                      |   Data
+                                  |     |
+                                  |   Corpus
+                                  |     |
+                                  |   Settings
+```
 &#34;&#34;&#34;
 
 import collections
 
 
-from .settings import TOOLKEY
-
-from .helpers import findCompile, makeCss
+from .helpers import findCompile
 from .sets import Sets
 from .show import Show
 from .match import entityMatch, occMatch
@@ -162,12 +224,6 @@ class Annotate(Sets, Show):
 
         self.browse = browse
 
-        settings = self.settings
-        features = settings.features
-        keywordFeatures = settings.keywordFeatures
-
-        app.loadToolCss(TOOLKEY, makeCss(features, keywordFeatures))
-
         if not browse:
             self.loadData()
 
@@ -191,18 +247,15 @@ class Annotate(Sets, Show):
             A single occurrence is represented as a tuple of slots.
 
         &#34;&#34;&#34;
-        app = self.app
         setData = self.getSetData()
-        api = app.api
-        L = api.L
-        F = api.F
+        getTokens = self.getTokens
 
         buckets = setData.buckets or ()
 
         results = {}
 
         for b in buckets:
-            occMatch(L, F, b, qTokenSet, results)
+            occMatch(getTokens, b, qTokenSet, results)
 
         return results
 
@@ -307,8 +360,10 @@ class Annotate(Sets, Show):
         bucketType = settings.bucketType
         features = settings.features
 
+        getTextR = self.getTextR
+        getTokens = self.getTokens
+
         browse = self.browse
-        app = self.app
         setData = self.getSetData()
         entityIndex = setData.entityIndex
         entityVal = setData.entityVal
@@ -316,15 +371,10 @@ class Annotate(Sets, Show):
         entitySlotAll = setData.entitySlotAll
         entitySlotIndex = setData.entitySlotIndex
 
-        api = app.api
-        L = api.L
-        F = api.F
-        T = api.T
-
         buckets = (
             setData.buckets or ()
             if node is None
-            else L.d(T.sectionTuple(node)[1], otype=bucketType)
+            else self.getContext(node)
         )
 
         nFind = 0
@@ -335,7 +385,7 @@ class Annotate(Sets, Show):
             if bFind is not None:
                 (bFind, bFindRe, errorMsg) = findCompile(bFind, bFindC)
                 if errorMsg:
-                    app.error(errorMsg)
+                    self.console(errorMsg, error=True)
 
         hasEnt = eVals is not None
         hasQTokens = qTokens is not None and len(qTokens)
@@ -363,9 +413,8 @@ class Annotate(Sets, Show):
                 entitySlotVal,
                 entitySlotAll,
                 entitySlotIndex,
-                L,
-                F,
-                T,
+                getTextR,
+                getTokens,
                 b,
                 bFindRe,
                 anyEnt,
@@ -477,7 +526,7 @@ browser. This will influence how results are reported back.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/annotate.py#L56-L363" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/annotate.py#L89-L383" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Annotate(Sets, Show):
     def __init__(self, app, data=None, browse=False):
@@ -518,12 +567,6 @@ browser. This will influence how results are reported back.</dd>
 
         self.browse = browse
 
-        settings = self.settings
-        features = settings.features
-        keywordFeatures = settings.keywordFeatures
-
-        app.loadToolCss(TOOLKEY, makeCss(features, keywordFeatures))
-
         if not browse:
             self.loadData()
 
@@ -547,18 +590,15 @@ browser. This will influence how results are reported back.</dd>
             A single occurrence is represented as a tuple of slots.
 
         &#34;&#34;&#34;
-        app = self.app
         setData = self.getSetData()
-        api = app.api
-        L = api.L
-        F = api.F
+        getTokens = self.getTokens
 
         buckets = setData.buckets or ()
 
         results = {}
 
         for b in buckets:
-            occMatch(L, F, b, qTokenSet, results)
+            occMatch(getTokens, b, qTokenSet, results)
 
         return results
 
@@ -663,8 +703,10 @@ browser. This will influence how results are reported back.</dd>
         bucketType = settings.bucketType
         features = settings.features
 
+        getTextR = self.getTextR
+        getTokens = self.getTokens
+
         browse = self.browse
-        app = self.app
         setData = self.getSetData()
         entityIndex = setData.entityIndex
         entityVal = setData.entityVal
@@ -672,15 +714,10 @@ browser. This will influence how results are reported back.</dd>
         entitySlotAll = setData.entitySlotAll
         entitySlotIndex = setData.entitySlotIndex
 
-        api = app.api
-        L = api.L
-        F = api.F
-        T = api.T
-
         buckets = (
             setData.buckets or ()
             if node is None
-            else L.d(T.sectionTuple(node)[1], otype=bucketType)
+            else self.getContext(node)
         )
 
         nFind = 0
@@ -691,7 +728,7 @@ browser. This will influence how results are reported back.</dd>
             if bFind is not None:
                 (bFind, bFindRe, errorMsg) = findCompile(bFind, bFindC)
                 if errorMsg:
-                    app.error(errorMsg)
+                    self.console(errorMsg, error=True)
 
         hasEnt = eVals is not None
         hasQTokens = qTokens is not None and len(qTokens)
@@ -719,9 +756,8 @@ browser. This will influence how results are reported back.</dd>
                 entitySlotVal,
                 entitySlotAll,
                 entitySlotIndex,
-                L,
-                F,
-                T,
+                getTextR,
+                getTokens,
                 b,
                 bFindRe,
                 anyEnt,
@@ -792,6 +828,7 @@ browser. This will influence how results are reported back.</dd>
 <ul class="hlist">
 <li><a title="tf.browser.ner.sets.Sets" href="sets.html#tf.browser.ner.sets.Sets">Sets</a></li>
 <li><a title="tf.browser.ner.data.Data" href="data.html#tf.browser.ner.data.Data">Data</a></li>
+<li><a title="tf.browser.ner.corpus.Corpus" href="corpus.html#tf.browser.ner.corpus.Corpus">Corpus</a></li>
 <li><a title="tf.browser.ner.settings.Settings" href="settings.html#tf.browser.ner.settings.Settings">Settings</a></li>
 <li><a title="tf.browser.ner.show.Show" href="show.html#tf.browser.ner.show.Show">Show</a></li>
 </ul>
@@ -885,7 +922,7 @@ of results.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/annotate.py#L139-L363" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/annotate.py#L163-L383" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def filterContent(
     self,
@@ -988,8 +1025,10 @@ of results.</p>
     bucketType = settings.bucketType
     features = settings.features
 
+    getTextR = self.getTextR
+    getTokens = self.getTokens
+
     browse = self.browse
-    app = self.app
     setData = self.getSetData()
     entityIndex = setData.entityIndex
     entityVal = setData.entityVal
@@ -997,15 +1036,10 @@ of results.</p>
     entitySlotAll = setData.entitySlotAll
     entitySlotIndex = setData.entitySlotIndex
 
-    api = app.api
-    L = api.L
-    F = api.F
-    T = api.T
-
     buckets = (
         setData.buckets or ()
         if node is None
-        else L.d(T.sectionTuple(node)[1], otype=bucketType)
+        else self.getContext(node)
     )
 
     nFind = 0
@@ -1016,7 +1050,7 @@ of results.</p>
         if bFind is not None:
             (bFind, bFindRe, errorMsg) = findCompile(bFind, bFindC)
             if errorMsg:
-                app.error(errorMsg)
+                self.console(errorMsg, error=True)
 
     hasEnt = eVals is not None
     hasQTokens = qTokens is not None and len(qTokens)
@@ -1044,9 +1078,8 @@ of results.</p>
             entitySlotVal,
             entitySlotAll,
             entitySlotIndex,
-            L,
-            F,
-            T,
+            getTextR,
+            getTokens,
             b,
             bFindRe,
             anyEnt,
@@ -1137,7 +1170,7 @@ A single occurrence is represented as a tuple of slots.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/annotate.py#L104-L137" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/annotate.py#L131-L161" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findOccs(self, qTokenSet=set()):
     &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens.
@@ -1159,18 +1192,15 @@ A single occurrence is represented as a tuple of slots.</dd>
         A single occurrence is represented as a tuple of slots.
 
     &#34;&#34;&#34;
-    app = self.app
     setData = self.getSetData()
-    api = app.api
-    L = api.L
-    F = api.F
+    getTokens = self.getTokens
 
     buckets = setData.buckets or ()
 
     results = {}
 
     for b in buckets:
-        occMatch(L, F, b, qTokenSet, results)
+        occMatch(getTokens, b, qTokenSet, results)
 
     return results</code></pre>
 </details>
@@ -1185,22 +1215,38 @@ A single occurrence is represented as a tuple of slots.</dd>
 <li><code><a title="tf.browser.ner.sets.Sets.addEntityRich" href="data.html#tf.browser.ner.data.Data.addEntityRich">addEntityRich</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.annoSet" href="sets.html#tf.browser.ner.sets.Sets.annoSet">annoSet</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.annoSetRep" href="sets.html#tf.browser.ner.sets.Sets.annoSetRep">annoSetRep</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.checkFeature" href="corpus.html#tf.browser.ner.corpus.Corpus.checkFeature">checkFeature</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.console" href="settings.html#tf.browser.ner.settings.Settings.console">console</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.delEntity" href="data.html#tf.browser.ner.data.Data.delEntity">delEntity</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.delEntityRich" href="data.html#tf.browser.ner.data.Data.delEntityRich">delEntityRich</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.featureDefault" href="corpus.html#tf.browser.ner.corpus.Corpus.featureDefault">featureDefault</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.fromSource" href="data.html#tf.browser.ner.data.Data.fromSource">fromSource</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.get0" href="corpus.html#tf.browser.ner.corpus.Corpus.get0">get0</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.get1" href="corpus.html#tf.browser.ner.corpus.Corpus.get1">get1</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getAfter" href="corpus.html#tf.browser.ner.corpus.Corpus.getAfter">getAfter</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getBucketNodes" href="corpus.html#tf.browser.ner.corpus.Corpus.getBucketNodes">getBucketNodes</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getContext" href="corpus.html#tf.browser.ner.corpus.Corpus.getContext">getContext</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getEntityNodes" href="corpus.html#tf.browser.ner.corpus.Corpus.getEntityNodes">getEntityNodes</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getFVal" href="corpus.html#tf.browser.ner.corpus.Corpus.getFVal">getFVal</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.getSetData" href="sets.html#tf.browser.ner.sets.Sets.getSetData">getSetData</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.getStrings" href="settings.html#tf.browser.ner.settings.Settings.getStrings">getStrings</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getSlots" href="corpus.html#tf.browser.ner.corpus.Corpus.getSlots">getSlots</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getStr" href="corpus.html#tf.browser.ner.corpus.Corpus.getStr">getStr</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getStrings" href="corpus.html#tf.browser.ner.corpus.Corpus.getStrings">getStrings</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getText" href="corpus.html#tf.browser.ner.corpus.Corpus.getText">getText</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getTextR" href="corpus.html#tf.browser.ner.corpus.Corpus.getTextR">getTextR</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getTokens" href="corpus.html#tf.browser.ner.corpus.Corpus.getTokens">getTokens</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.loadData" href="data.html#tf.browser.ner.data.Data.loadData">loadData</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.mergeEntities" href="data.html#tf.browser.ner.data.Data.mergeEntities">mergeEntities</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.process" href="data.html#tf.browser.ner.data.Data.process">process</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.resetSet" href="sets.html#tf.browser.ner.sets.Sets.resetSet">resetSet</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.saveEntitiesAs" href="data.html#tf.browser.ner.data.Data.saveEntitiesAs">saveEntitiesAs</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.sectionHead" href="corpus.html#tf.browser.ner.corpus.Corpus.sectionHead">sectionHead</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.setDel" href="sets.html#tf.browser.ner.sets.Sets.setDel">setDel</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.setDup" href="sets.html#tf.browser.ner.sets.Sets.setDup">setDup</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.setMove" href="sets.html#tf.browser.ner.sets.Sets.setMove">setMove</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.setNames" href="sets.html#tf.browser.ner.sets.Sets.setNames">setNames</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.setSet" href="sets.html#tf.browser.ner.sets.Sets.setSet">setSet</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.slotType" href="corpus.html#tf.browser.ner.corpus.Corpus.slotType">slotType</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.weedEntities" href="data.html#tf.browser.ner.data.Data.weedEntities">weedEntities</a></code></li>
 </ul>
 </li>

@@ -29,7 +29,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/show.py#L1-L372" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/show.py#L1-L375" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Rendering of corpus extracts with annotations.
 
@@ -278,16 +278,16 @@ class Show:
         settings = self.settings
         bucketType = settings.bucketType
         features = settings.features
+        style = self.style
+        ltr = self.ltr
 
         browse = self.browse
-        app = self.app
         setData = self.getSetData()
         annoSet = self.annoSet
-        api = app.api
-        F = api.F
+        afterv = self.getAfter()
+        sectionHead = self.sectionHead
 
         entityIdent = setData.entityIdent
-        # eFirst = setData.entityIdentFirst
         entitySlotIndex = setData.entitySlotIndex
 
         hasEnt = activeEntity is not None
@@ -328,11 +328,11 @@ class Show:
             else:
                 allMatches = set(chain.from_iterable(matches))
 
-            subContent = [
-                H.span(
-                    app.sectionStrFromNode(b), node=b, cls=&#34;bh&#34;, title=&#34;show context&#34;
-                )
-            ]
+            headContent = H.span(
+                H.span(sectionHead(b), node=b, cls=&#34;bhl ltr&#34;, title=&#34;show context&#34;),
+                cls=f&#34;bh {ltr}&#34;,
+            )
+            subContent = []
 
             for t, w in bTokens:
                 info = entitySlotIndex.get(t, None)
@@ -362,7 +362,7 @@ class Show:
                                 )
                             )
 
-                after = F.after.v(t) or &#34;&#34;
+                after = afterv(t) or &#34;&#34;
                 lenW = len(w)
                 lenWa = len(w) + len(after)
                 found = any(charPos + i in positions for i in range(lenW))
@@ -372,6 +372,7 @@ class Show:
                     &#34; queried &#34; if queried else &#34;&#34;
                 )
                 hlClasses += &#34; ei &#34; if inEntity else &#34;&#34;
+                hlClasses += f&#34; {style} &#34; if style else &#34;&#34;
                 hlClass = dict(cls=hlClasses) if hlClasses else {}
 
                 endQueried = annoSet and t in endMatches
@@ -397,12 +398,14 @@ class Show:
 
                 charPos += lenWa
 
-            content.append(H.div(subContent, cls=&#34;b&#34;))
+            content.append(
+                H.div(headContent, H.nb, H.span(subContent, cls=ltr), cls=f&#34;b {ltr}&#34;)
+            )
 
         if browse:
-            return H.join(content)
+            return H.div(content, id=&#34;buckets&#34;, cls=f&#34;buckets {ltr}&#34;)
 
-        dh(H.div(content, cls=&#34;buckets&#34;))</code></pre>
+        dh(H.div(content, cls=f&#34;buckets {ltr}&#34;))</code></pre>
 </details>
 </section>
 <section>
@@ -422,7 +425,7 @@ class Show:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/show.py#L24-L372" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/show.py#L24-L375" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Show:
     def showEntityOverview(self):
@@ -648,16 +651,16 @@ class Show:
         settings = self.settings
         bucketType = settings.bucketType
         features = settings.features
+        style = self.style
+        ltr = self.ltr
 
         browse = self.browse
-        app = self.app
         setData = self.getSetData()
         annoSet = self.annoSet
-        api = app.api
-        F = api.F
+        afterv = self.getAfter()
+        sectionHead = self.sectionHead
 
         entityIdent = setData.entityIdent
-        # eFirst = setData.entityIdentFirst
         entitySlotIndex = setData.entitySlotIndex
 
         hasEnt = activeEntity is not None
@@ -698,11 +701,11 @@ class Show:
             else:
                 allMatches = set(chain.from_iterable(matches))
 
-            subContent = [
-                H.span(
-                    app.sectionStrFromNode(b), node=b, cls=&#34;bh&#34;, title=&#34;show context&#34;
-                )
-            ]
+            headContent = H.span(
+                H.span(sectionHead(b), node=b, cls=&#34;bhl ltr&#34;, title=&#34;show context&#34;),
+                cls=f&#34;bh {ltr}&#34;,
+            )
+            subContent = []
 
             for t, w in bTokens:
                 info = entitySlotIndex.get(t, None)
@@ -732,7 +735,7 @@ class Show:
                                 )
                             )
 
-                after = F.after.v(t) or &#34;&#34;
+                after = afterv(t) or &#34;&#34;
                 lenW = len(w)
                 lenWa = len(w) + len(after)
                 found = any(charPos + i in positions for i in range(lenW))
@@ -742,6 +745,7 @@ class Show:
                     &#34; queried &#34; if queried else &#34;&#34;
                 )
                 hlClasses += &#34; ei &#34; if inEntity else &#34;&#34;
+                hlClasses += f&#34; {style} &#34; if style else &#34;&#34;
                 hlClass = dict(cls=hlClasses) if hlClasses else {}
 
                 endQueried = annoSet and t in endMatches
@@ -767,12 +771,14 @@ class Show:
 
                 charPos += lenWa
 
-            content.append(H.div(subContent, cls=&#34;b&#34;))
+            content.append(
+                H.div(headContent, H.nb, H.span(subContent, cls=ltr), cls=f&#34;b {ltr}&#34;)
+            )
 
         if browse:
-            return H.join(content)
+            return H.div(content, id=&#34;buckets&#34;, cls=f&#34;buckets {ltr}&#34;)
 
-        dh(H.div(content, cls=&#34;buckets&#34;))</code></pre>
+        dh(H.div(content, cls=f&#34;buckets {ltr}&#34;))</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -837,7 +843,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/show.py#L179-L372" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/show.py#L179-L375" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showContent(
     self,
@@ -908,16 +914,16 @@ it is a cell in a Jupyter Notebook.</dd>
     settings = self.settings
     bucketType = settings.bucketType
     features = settings.features
+    style = self.style
+    ltr = self.ltr
 
     browse = self.browse
-    app = self.app
     setData = self.getSetData()
     annoSet = self.annoSet
-    api = app.api
-    F = api.F
+    afterv = self.getAfter()
+    sectionHead = self.sectionHead
 
     entityIdent = setData.entityIdent
-    # eFirst = setData.entityIdentFirst
     entitySlotIndex = setData.entitySlotIndex
 
     hasEnt = activeEntity is not None
@@ -958,11 +964,11 @@ it is a cell in a Jupyter Notebook.</dd>
         else:
             allMatches = set(chain.from_iterable(matches))
 
-        subContent = [
-            H.span(
-                app.sectionStrFromNode(b), node=b, cls=&#34;bh&#34;, title=&#34;show context&#34;
-            )
-        ]
+        headContent = H.span(
+            H.span(sectionHead(b), node=b, cls=&#34;bhl ltr&#34;, title=&#34;show context&#34;),
+            cls=f&#34;bh {ltr}&#34;,
+        )
+        subContent = []
 
         for t, w in bTokens:
             info = entitySlotIndex.get(t, None)
@@ -992,7 +998,7 @@ it is a cell in a Jupyter Notebook.</dd>
                             )
                         )
 
-            after = F.after.v(t) or &#34;&#34;
+            after = afterv(t) or &#34;&#34;
             lenW = len(w)
             lenWa = len(w) + len(after)
             found = any(charPos + i in positions for i in range(lenW))
@@ -1002,6 +1008,7 @@ it is a cell in a Jupyter Notebook.</dd>
                 &#34; queried &#34; if queried else &#34;&#34;
             )
             hlClasses += &#34; ei &#34; if inEntity else &#34;&#34;
+            hlClasses += f&#34; {style} &#34; if style else &#34;&#34;
             hlClass = dict(cls=hlClasses) if hlClasses else {}
 
             endQueried = annoSet and t in endMatches
@@ -1027,12 +1034,14 @@ it is a cell in a Jupyter Notebook.</dd>
 
             charPos += lenWa
 
-        content.append(H.div(subContent, cls=&#34;b&#34;))
+        content.append(
+            H.div(headContent, H.nb, H.span(subContent, cls=ltr), cls=f&#34;b {ltr}&#34;)
+        )
 
     if browse:
-        return H.join(content)
+        return H.div(content, id=&#34;buckets&#34;, cls=f&#34;buckets {ltr}&#34;)
 
-    dh(H.div(content, cls=&#34;buckets&#34;))</code></pre>
+    dh(H.div(content, cls=f&#34;buckets {ltr}&#34;))</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.show.Show.showEntities"><code class="name flex">
@@ -1086,7 +1095,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/show.py#L61-L177" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/show.py#L61-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showEntities(
     self, activeEntity=None, sortKey=None, sortDir=None, cutOffFreq=None
@@ -1224,7 +1233,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/show.py#L25-L59" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/show.py#L25-L59" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showEntityOverview(self):
     &#34;&#34;&#34;Generates HTML for an overview of the entities.

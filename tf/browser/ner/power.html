@@ -190,7 +190,7 @@ slots.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/power.py#L1-L441" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/power.py#L1-L441" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;API for rule-based entity marking.
 
@@ -663,7 +663,7 @@ by the Annotate class on which it is based.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/power.py#L238-L441" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/power.py#L238-L441" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PowerNER(Annotate):
     def __init__(self, app):
@@ -875,6 +875,7 @@ by the Annotate class on which it is based.</p>
 <li><a title="tf.browser.ner.annotate.Annotate" href="annotate.html#tf.browser.ner.annotate.Annotate">Annotate</a></li>
 <li><a title="tf.browser.ner.sets.Sets" href="sets.html#tf.browser.ner.sets.Sets">Sets</a></li>
 <li><a title="tf.browser.ner.data.Data" href="data.html#tf.browser.ner.data.Data">Data</a></li>
+<li><a title="tf.browser.ner.corpus.Corpus" href="corpus.html#tf.browser.ner.corpus.Corpus">Corpus</a></li>
 <li><a title="tf.browser.ner.settings.Settings" href="settings.html#tf.browser.ner.settings.Settings">Settings</a></li>
 <li><a title="tf.browser.ner.show.Show" href="show.html#tf.browser.ner.show.Show">Show</a></li>
 </ul>
@@ -904,7 +905,7 @@ slot sequences where those token sequences occur in the corpus.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/power.py#L354-L373" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/power.py#L354-L373" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeInventory(self):
     &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
@@ -940,7 +941,7 @@ If there is no inventory yet, it will be created.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/power.py#L401-L441" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/power.py#L401-L441" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def markEntities(self):
     &#34;&#34;&#34;Marks up the members of the inventory as entities.
@@ -1007,7 +1008,7 @@ extension <code>.yaml</code></dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/power.py#L262-L352" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/power.py#L262-L352" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readInstructions(self, sheetName):
     &#34;&#34;&#34;Read an Excel spreadsheet with instructions and translates it to YAML.
@@ -1112,7 +1113,7 @@ of which they are surface forms.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/power.py#L375-L399" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/power.py#L375-L399" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showInventory(self):
     &#34;&#34;&#34;Shows the inventory.
@@ -1151,19 +1152,34 @@ of which they are surface forms.</p></div>
 <li><code><a title="tf.browser.ner.annotate.Annotate.addEntityRich" href="data.html#tf.browser.ner.data.Data.addEntityRich">addEntityRich</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.annoSet" href="sets.html#tf.browser.ner.sets.Sets.annoSet">annoSet</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.annoSetRep" href="sets.html#tf.browser.ner.sets.Sets.annoSetRep">annoSetRep</a></code></li>
+<li><code><a title="tf.browser.ner.annotate.Annotate.checkFeature" href="corpus.html#tf.browser.ner.corpus.Corpus.checkFeature">checkFeature</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.console" href="settings.html#tf.browser.ner.settings.Settings.console">console</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.delEntity" href="data.html#tf.browser.ner.data.Data.delEntity">delEntity</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.delEntityRich" href="data.html#tf.browser.ner.data.Data.delEntityRich">delEntityRich</a></code></li>
+<li><code><a title="tf.browser.ner.annotate.Annotate.featureDefault" href="corpus.html#tf.browser.ner.corpus.Corpus.featureDefault">featureDefault</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.filterContent" href="annotate.html#tf.browser.ner.annotate.Annotate.filterContent">filterContent</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.findOccs" href="annotate.html#tf.browser.ner.annotate.Annotate.findOccs">findOccs</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.fromSource" href="data.html#tf.browser.ner.data.Data.fromSource">fromSource</a></code></li>
+<li><code><a title="tf.browser.ner.annotate.Annotate.get0" href="corpus.html#tf.browser.ner.corpus.Corpus.get0">get0</a></code></li>
+<li><code><a title="tf.browser.ner.annotate.Annotate.get1" href="corpus.html#tf.browser.ner.corpus.Corpus.get1">get1</a></code></li>
+<li><code><a title="tf.browser.ner.annotate.Annotate.getAfter" href="corpus.html#tf.browser.ner.corpus.Corpus.getAfter">getAfter</a></code></li>
+<li><code><a title="tf.browser.ner.annotate.Annotate.getBucketNodes" href="corpus.html#tf.browser.ner.corpus.Corpus.getBucketNodes">getBucketNodes</a></code></li>
+<li><code><a title="tf.browser.ner.annotate.Annotate.getContext" href="corpus.html#tf.browser.ner.corpus.Corpus.getContext">getContext</a></code></li>
+<li><code><a title="tf.browser.ner.annotate.Annotate.getEntityNodes" href="corpus.html#tf.browser.ner.corpus.Corpus.getEntityNodes">getEntityNodes</a></code></li>
+<li><code><a title="tf.browser.ner.annotate.Annotate.getFVal" href="corpus.html#tf.browser.ner.corpus.Corpus.getFVal">getFVal</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.getSetData" href="sets.html#tf.browser.ner.sets.Sets.getSetData">getSetData</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.getStrings" href="settings.html#tf.browser.ner.settings.Settings.getStrings">getStrings</a></code></li>
+<li><code><a title="tf.browser.ner.annotate.Annotate.getSlots" href="corpus.html#tf.browser.ner.corpus.Corpus.getSlots">getSlots</a></code></li>
+<li><code><a title="tf.browser.ner.annotate.Annotate.getStr" href="corpus.html#tf.browser.ner.corpus.Corpus.getStr">getStr</a></code></li>
+<li><code><a title="tf.browser.ner.annotate.Annotate.getStrings" href="corpus.html#tf.browser.ner.corpus.Corpus.getStrings">getStrings</a></code></li>
+<li><code><a title="tf.browser.ner.annotate.Annotate.getText" href="corpus.html#tf.browser.ner.corpus.Corpus.getText">getText</a></code></li>
+<li><code><a title="tf.browser.ner.annotate.Annotate.getTextR" href="corpus.html#tf.browser.ner.corpus.Corpus.getTextR">getTextR</a></code></li>
+<li><code><a title="tf.browser.ner.annotate.Annotate.getTokens" href="corpus.html#tf.browser.ner.corpus.Corpus.getTokens">getTokens</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.loadData" href="data.html#tf.browser.ner.data.Data.loadData">loadData</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.mergeEntities" href="data.html#tf.browser.ner.data.Data.mergeEntities">mergeEntities</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.process" href="data.html#tf.browser.ner.data.Data.process">process</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.resetSet" href="sets.html#tf.browser.ner.sets.Sets.resetSet">resetSet</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.saveEntitiesAs" href="data.html#tf.browser.ner.data.Data.saveEntitiesAs">saveEntitiesAs</a></code></li>
+<li><code><a title="tf.browser.ner.annotate.Annotate.sectionHead" href="corpus.html#tf.browser.ner.corpus.Corpus.sectionHead">sectionHead</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.setDel" href="sets.html#tf.browser.ner.sets.Sets.setDel">setDel</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.setDup" href="sets.html#tf.browser.ner.sets.Sets.setDup">setDup</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.setMove" href="sets.html#tf.browser.ner.sets.Sets.setMove">setMove</a></code></li>
@@ -1172,6 +1188,7 @@ of which they are surface forms.</p></div>
 <li><code><a title="tf.browser.ner.annotate.Annotate.showContent" href="show.html#tf.browser.ner.show.Show.showContent">showContent</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.showEntities" href="show.html#tf.browser.ner.show.Show.showEntities">showEntities</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.showEntityOverview" href="show.html#tf.browser.ner.show.Show.showEntityOverview">showEntityOverview</a></code></li>
+<li><code><a title="tf.browser.ner.annotate.Annotate.slotType" href="corpus.html#tf.browser.ner.corpus.Corpus.slotType">slotType</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.weedEntities" href="data.html#tf.browser.ner.data.Data.weedEntities">weedEntities</a></code></li>
 </ul>
 </li>

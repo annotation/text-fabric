@@ -29,7 +29,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/servelib.py#L1-L252" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/servelib.py#L1-L302" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Auxiliary functions for managing request data.
 
@@ -37,17 +37,770 @@ To see how this fits among all the modules of this package, see
 `tf.browser.ner.annotate` .
 &#34;&#34;&#34;
 
-import json
-from urllib.parse import unquote
 
-from flask import request
-
-from ...core.generic import AttrDict, deepAttrDict
+from ...core.generic import AttrDict
 from .settings import TOOLKEY, EMPTY, NONE, SORTKEY_DEFAULT, SORTDIR_DEFAULT, SC_ALL
+from .form import Form
 from .helpers import findCompile
 
 
-def getFormData(self):
+class ServeLib(Form):
+    def __init__(self):
+        &#34;&#34;&#34;Calculate important values based on form data.
+
+        We define specifications as to how to read form values and which defaults
+        should be supplied.
+
+        We categorize the keys in the request form into categories based on their
+        interpreted type and organization.
+
+        We provide appropriate empty values as defaults, but it is possible to specify
+        other defaults.
+
+        The categories are:
+
+        *   `Str` values are strings;
+        *   `Bool` values are booleans (2 possible values);
+        *   `Tri` values are booleans (3 possible values, a none value is included);
+        *   `Int` values are positive integers;
+        *   `Tup` values are tuples of strings;
+        *   `SetInt` values are sets of integers;
+        *   `Json` values are arbitrary structures encoded in json strings;
+
+        We also define a few composed values, where we store the values of
+        several related keys in the form as a dictionary value under a new key.
+        &#34;&#34;&#34;
+        annotate = self.annotate
+        settings = annotate.settings
+        features = settings.features
+
+        keysStr = &#34;&#34;&#34;
+            resetForm
+            submitter
+            sec0
+            sec1
+            sec2
+            annoset
+            duannoset
+            rannoset
+            dannoset
+            sortkey
+            sortdir
+            bfind
+            bfinderror
+            freestate
+            efind
+            scope
+            reportdel
+            reportadd
+            modwidgetstate
+        &#34;&#34;&#34;.strip().split()
+
+        keysBool = &#34;&#34;&#34;
+            formattingdo
+            bfindc
+        &#34;&#34;&#34;.strip().split()
+
+        keysTri = &#34;&#34;&#34;
+            anyent
+        &#34;&#34;&#34;.strip().split()
+
+        keysInt = &#34;&#34;&#34;
+            tokenstart
+            tokenend
+        &#34;&#34;&#34;.strip().split()
+
+        keysTup = &#34;&#34;&#34;
+            activeentity
+        &#34;&#34;&#34;.strip().split()
+
+        keysSetInt = &#34;&#34;&#34;
+            excludedtokens
+        &#34;&#34;&#34;.strip().split()
+
+        keysJson = &#34;&#34;&#34;
+            adddata
+            deldata
+        &#34;&#34;&#34;.strip().split()
+
+        defaults = dict(
+            sortkey=SORTKEY_DEFAULT,
+            sortdir=SORTDIR_DEFAULT,
+            freestate=&#34;all&#34;,
+            scope=SC_ALL,
+            modwidgetstate=&#34;add&#34;,
+        )
+
+        formattingState = {
+            feat: f&#34;{feat}_appearance&#34; for feat in features + (&#34;_stat_&#34;, &#34;_entity_&#34;)
+        }
+        self.formattingState = formattingState
+
+        for feat, featStr in formattingState.items():
+            keysBool.append(featStr)
+            defaults[featStr] = &#34;v&#34;
+
+        activeVal = {feat: f&#34;{feat}_active&#34; for feat in features}
+        self.activeVal = activeVal
+
+        for feat, featStr in activeVal.items():
+            keysStr.append(featStr)
+
+        valSelectProto = {feat: f&#34;{feat}_select&#34; for feat in features}
+        self.valSelectProto = valSelectProto
+
+        for feat, featStr in valSelectProto.items():
+            keysStr.append(featStr)
+
+        super().__init__(
+            features,
+            defaults,
+            keysStr=keysStr,
+            keysBool=keysBool,
+            keysTri=keysTri,
+            keysInt=keysInt,
+            keysTup=keysTup,
+            keysSetInt=keysSetInt,
+            keysJson=keysJson,
+        )
+
+    def getFormData(self):
+        &#34;&#34;&#34;Get form data.
+
+        The TF browser user interacts with the app by clicking and typing,
+        as a result of which a HTML form gets filled in.
+        This form as regularly submitted to the server with a request
+        for a new incarnation of the page: a response.
+
+        The values that come with a request, must be peeled out of the form,
+        and stored as logical values.
+
+        Additionally, some business logic is carried out:
+        we set values for the entity features, based on the form, especially the
+        keys ending in `_active`. We build a value under key `valselect`
+        based on the value for key `submitter`.
+        Depending on which button caused the submit, the NONE value is added
+        to each feature.
+
+        The idea is that when the user is still engaged in filtering buckets,
+        and there is an occurrence selected, the user should have the option
+        to sub-select occurrences that do not yet have an entity assigned.
+        &#34;&#34;&#34;
+        annotate = self.annotate
+        settings = annotate.settings
+        features = settings.features
+        formattingState = self.formattingState
+        activeVal = self.activeVal
+        valSelectProto = self.valSelectProto
+
+        form = self.fill()
+
+        form[&#34;formattingstate&#34;] = {
+            feat: self.fget2(featStr) for (feat, featStr) in formattingState.items()
+        }
+
+        form[&#34;activeval&#34;] = {
+            feat: self.fgets(featStr) for (feat, featStr) in activeVal.items()
+        }
+
+        valSelectProto = {
+            feat: self.fgets(featStr) for (feat, featStr) in valSelectProto.items()
+        }
+
+        submitter = form[&#34;submitter&#34;]
+
+        valSelect = {}
+
+        startSearch = submitter in {&#34;lookupq&#34;, &#34;lookupn&#34;, &#34;freebutton&#34;}
+
+        for feat in features:
+            valProto = valSelectProto[feat]
+            valSelect[feat] = (
+                set(&#34;&#34; if x == EMPTY else x for x in valProto.split(&#34;,&#34;))
+                if valProto
+                else set()
+            )
+            if startSearch:
+                valSelect[feat].add(NONE)
+
+        form[&#34;valselect&#34;] = valSelect
+
+        return form
+
+    def initVars(self):
+        &#34;&#34;&#34;Initializes the computation of the new page.
+
+        It collects the request data, gleans some info from the configuration
+        settings and the TF app, and initializes some data structures that
+        will collect further information for the page.
+
+        All bits and pieces that are needed during processing
+        the request and filling in the final HTML template find a place under
+        some key in the `v` dict which is stored in `self`.
+
+        So, this function makes the transition from information that is in the
+        `form` dictionary to values that are stored in the `v` dictionary.
+        &#34;&#34;&#34;
+        annotate = self.annotate
+        settings = annotate.settings
+        bucketType = settings.bucketType
+        features = settings.features
+
+        appName = annotate.appName
+        appName = appName.replace(&#34;/&#34;, &#34; / &#34;)
+        slotType = annotate.slotType
+
+        form = self.getFormData()
+        resetForm = form[&#34;resetForm&#34;]
+
+        v = AttrDict()
+        v.toolkey = TOOLKEY
+        v.buckettype = bucketType
+        v.featurelist = &#34;,&#34;.join(features)
+
+        for k, vl in form.items():
+            if not resetForm or k not in v:
+                v[k] = vl
+
+        v.appname = appName
+        v.slottype = slotType
+        v.resetform = &#34;&#34;
+
+        self.v = v
+
+    def adaptValSelect(self):
+        &#34;&#34;&#34;Adapts the values contained in `valSelect` after a modification action.
+
+        After the addition or deletion of an entity, the values contained in `valSelect`
+        may have become obsolete or inconvenient for further actions.
+
+        This function adapts those values before having them rendered on the page.
+
+        Parameters
+        ----------
+        v: dict
+            Contains the intermediate results of computing the new page.
+        &#34;&#34;&#34;
+        v = self.v
+        annotate = self.annotate
+        settings = annotate.settings
+        features = settings.features
+
+        submitter = v.submitter
+        valSelect = v.valselect
+
+        if submitter == &#34;addgo&#34;:
+            addData = v.adddata
+            additions = addData.additions
+            freeVals = addData.freeVals
+
+            freeState = v.freestate
+
+            for i, (feat, values) in enumerate(zip(features, additions)):
+                for val in values:
+                    valSelect.setdefault(feat, set()).add(val)
+                    if val == freeVals[i]:
+                        freeVals[i] = None
+
+            if freeState == &#34;free&#34;:
+                v.freestate = &#34;all&#34;
+
+        elif submitter == &#34;delgo&#34;:
+            for feat in features:
+                valSelect.setdefault(feat, set()).add(NONE)
+
+        v.submitter = &#34;&#34;
+
+    def findSetup(self):
+        &#34;&#34;&#34;Compiles the filter pattern into a regular expression.
+
+        When the user enters a search pattern in the box meant to filter the buckets,
+        the pattern will be interpreted as a regular expression.
+
+        We do the compilation here.
+        If there are errors in the pattern they will be reported.
+        Whether or not the search is case sensitive or not is under user control,
+        and it will influence the compilation of the pattern.
+
+        All input and output data is in `v` .
+        &#34;&#34;&#34;
+        v = self.v
+        bFind = v.bfind
+        bFindC = v.bfindc
+
+        (bFind, bFindRe, errorMsg) = findCompile(bFind, bFindC)
+
+        v.bfind = bFind
+        v.bfindre = bFindRe
+        v.errormsg = errorMsg</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.browser.ner.servelib.ServeLib"><code class="flex name class">
+<span>class <span class="ident">ServeLib</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Calculate important values based on form data.</p>
+<p>We define specifications as to how to read form values and which defaults
+should be supplied.</p>
+<p>We categorize the keys in the request form into categories based on their
+interpreted type and organization.</p>
+<p>We provide appropriate empty values as defaults, but it is possible to specify
+other defaults.</p>
+<p>The categories are:</p>
+<ul>
+<li><code>Str</code> values are strings;</li>
+<li><code>Bool</code> values are booleans (2 possible values);</li>
+<li><code>Tri</code> values are booleans (3 possible values, a none value is included);</li>
+<li><code>Int</code> values are positive integers;</li>
+<li><code>Tup</code> values are tuples of strings;</li>
+<li><code>SetInt</code> values are sets of integers;</li>
+<li><code>Json</code> values are arbitrary structures encoded in json strings;</li>
+</ul>
+<p>We also define a few composed values, where we store the values of
+several related keys in the form as a dictionary value under a new key.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/servelib.py#L14-L302" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class ServeLib(Form):
+    def __init__(self):
+        &#34;&#34;&#34;Calculate important values based on form data.
+
+        We define specifications as to how to read form values and which defaults
+        should be supplied.
+
+        We categorize the keys in the request form into categories based on their
+        interpreted type and organization.
+
+        We provide appropriate empty values as defaults, but it is possible to specify
+        other defaults.
+
+        The categories are:
+
+        *   `Str` values are strings;
+        *   `Bool` values are booleans (2 possible values);
+        *   `Tri` values are booleans (3 possible values, a none value is included);
+        *   `Int` values are positive integers;
+        *   `Tup` values are tuples of strings;
+        *   `SetInt` values are sets of integers;
+        *   `Json` values are arbitrary structures encoded in json strings;
+
+        We also define a few composed values, where we store the values of
+        several related keys in the form as a dictionary value under a new key.
+        &#34;&#34;&#34;
+        annotate = self.annotate
+        settings = annotate.settings
+        features = settings.features
+
+        keysStr = &#34;&#34;&#34;
+            resetForm
+            submitter
+            sec0
+            sec1
+            sec2
+            annoset
+            duannoset
+            rannoset
+            dannoset
+            sortkey
+            sortdir
+            bfind
+            bfinderror
+            freestate
+            efind
+            scope
+            reportdel
+            reportadd
+            modwidgetstate
+        &#34;&#34;&#34;.strip().split()
+
+        keysBool = &#34;&#34;&#34;
+            formattingdo
+            bfindc
+        &#34;&#34;&#34;.strip().split()
+
+        keysTri = &#34;&#34;&#34;
+            anyent
+        &#34;&#34;&#34;.strip().split()
+
+        keysInt = &#34;&#34;&#34;
+            tokenstart
+            tokenend
+        &#34;&#34;&#34;.strip().split()
+
+        keysTup = &#34;&#34;&#34;
+            activeentity
+        &#34;&#34;&#34;.strip().split()
+
+        keysSetInt = &#34;&#34;&#34;
+            excludedtokens
+        &#34;&#34;&#34;.strip().split()
+
+        keysJson = &#34;&#34;&#34;
+            adddata
+            deldata
+        &#34;&#34;&#34;.strip().split()
+
+        defaults = dict(
+            sortkey=SORTKEY_DEFAULT,
+            sortdir=SORTDIR_DEFAULT,
+            freestate=&#34;all&#34;,
+            scope=SC_ALL,
+            modwidgetstate=&#34;add&#34;,
+        )
+
+        formattingState = {
+            feat: f&#34;{feat}_appearance&#34; for feat in features + (&#34;_stat_&#34;, &#34;_entity_&#34;)
+        }
+        self.formattingState = formattingState
+
+        for feat, featStr in formattingState.items():
+            keysBool.append(featStr)
+            defaults[featStr] = &#34;v&#34;
+
+        activeVal = {feat: f&#34;{feat}_active&#34; for feat in features}
+        self.activeVal = activeVal
+
+        for feat, featStr in activeVal.items():
+            keysStr.append(featStr)
+
+        valSelectProto = {feat: f&#34;{feat}_select&#34; for feat in features}
+        self.valSelectProto = valSelectProto
+
+        for feat, featStr in valSelectProto.items():
+            keysStr.append(featStr)
+
+        super().__init__(
+            features,
+            defaults,
+            keysStr=keysStr,
+            keysBool=keysBool,
+            keysTri=keysTri,
+            keysInt=keysInt,
+            keysTup=keysTup,
+            keysSetInt=keysSetInt,
+            keysJson=keysJson,
+        )
+
+    def getFormData(self):
+        &#34;&#34;&#34;Get form data.
+
+        The TF browser user interacts with the app by clicking and typing,
+        as a result of which a HTML form gets filled in.
+        This form as regularly submitted to the server with a request
+        for a new incarnation of the page: a response.
+
+        The values that come with a request, must be peeled out of the form,
+        and stored as logical values.
+
+        Additionally, some business logic is carried out:
+        we set values for the entity features, based on the form, especially the
+        keys ending in `_active`. We build a value under key `valselect`
+        based on the value for key `submitter`.
+        Depending on which button caused the submit, the NONE value is added
+        to each feature.
+
+        The idea is that when the user is still engaged in filtering buckets,
+        and there is an occurrence selected, the user should have the option
+        to sub-select occurrences that do not yet have an entity assigned.
+        &#34;&#34;&#34;
+        annotate = self.annotate
+        settings = annotate.settings
+        features = settings.features
+        formattingState = self.formattingState
+        activeVal = self.activeVal
+        valSelectProto = self.valSelectProto
+
+        form = self.fill()
+
+        form[&#34;formattingstate&#34;] = {
+            feat: self.fget2(featStr) for (feat, featStr) in formattingState.items()
+        }
+
+        form[&#34;activeval&#34;] = {
+            feat: self.fgets(featStr) for (feat, featStr) in activeVal.items()
+        }
+
+        valSelectProto = {
+            feat: self.fgets(featStr) for (feat, featStr) in valSelectProto.items()
+        }
+
+        submitter = form[&#34;submitter&#34;]
+
+        valSelect = {}
+
+        startSearch = submitter in {&#34;lookupq&#34;, &#34;lookupn&#34;, &#34;freebutton&#34;}
+
+        for feat in features:
+            valProto = valSelectProto[feat]
+            valSelect[feat] = (
+                set(&#34;&#34; if x == EMPTY else x for x in valProto.split(&#34;,&#34;))
+                if valProto
+                else set()
+            )
+            if startSearch:
+                valSelect[feat].add(NONE)
+
+        form[&#34;valselect&#34;] = valSelect
+
+        return form
+
+    def initVars(self):
+        &#34;&#34;&#34;Initializes the computation of the new page.
+
+        It collects the request data, gleans some info from the configuration
+        settings and the TF app, and initializes some data structures that
+        will collect further information for the page.
+
+        All bits and pieces that are needed during processing
+        the request and filling in the final HTML template find a place under
+        some key in the `v` dict which is stored in `self`.
+
+        So, this function makes the transition from information that is in the
+        `form` dictionary to values that are stored in the `v` dictionary.
+        &#34;&#34;&#34;
+        annotate = self.annotate
+        settings = annotate.settings
+        bucketType = settings.bucketType
+        features = settings.features
+
+        appName = annotate.appName
+        appName = appName.replace(&#34;/&#34;, &#34; / &#34;)
+        slotType = annotate.slotType
+
+        form = self.getFormData()
+        resetForm = form[&#34;resetForm&#34;]
+
+        v = AttrDict()
+        v.toolkey = TOOLKEY
+        v.buckettype = bucketType
+        v.featurelist = &#34;,&#34;.join(features)
+
+        for k, vl in form.items():
+            if not resetForm or k not in v:
+                v[k] = vl
+
+        v.appname = appName
+        v.slottype = slotType
+        v.resetform = &#34;&#34;
+
+        self.v = v
+
+    def adaptValSelect(self):
+        &#34;&#34;&#34;Adapts the values contained in `valSelect` after a modification action.
+
+        After the addition or deletion of an entity, the values contained in `valSelect`
+        may have become obsolete or inconvenient for further actions.
+
+        This function adapts those values before having them rendered on the page.
+
+        Parameters
+        ----------
+        v: dict
+            Contains the intermediate results of computing the new page.
+        &#34;&#34;&#34;
+        v = self.v
+        annotate = self.annotate
+        settings = annotate.settings
+        features = settings.features
+
+        submitter = v.submitter
+        valSelect = v.valselect
+
+        if submitter == &#34;addgo&#34;:
+            addData = v.adddata
+            additions = addData.additions
+            freeVals = addData.freeVals
+
+            freeState = v.freestate
+
+            for i, (feat, values) in enumerate(zip(features, additions)):
+                for val in values:
+                    valSelect.setdefault(feat, set()).add(val)
+                    if val == freeVals[i]:
+                        freeVals[i] = None
+
+            if freeState == &#34;free&#34;:
+                v.freestate = &#34;all&#34;
+
+        elif submitter == &#34;delgo&#34;:
+            for feat in features:
+                valSelect.setdefault(feat, set()).add(NONE)
+
+        v.submitter = &#34;&#34;
+
+    def findSetup(self):
+        &#34;&#34;&#34;Compiles the filter pattern into a regular expression.
+
+        When the user enters a search pattern in the box meant to filter the buckets,
+        the pattern will be interpreted as a regular expression.
+
+        We do the compilation here.
+        If there are errors in the pattern they will be reported.
+        Whether or not the search is case sensitive or not is under user control,
+        and it will influence the compilation of the pattern.
+
+        All input and output data is in `v` .
+        &#34;&#34;&#34;
+        v = self.v
+        bFind = v.bfind
+        bFindC = v.bfindc
+
+        (bFind, bFindRe, errorMsg) = findCompile(bFind, bFindC)
+
+        v.bfind = bFind
+        v.bfindre = bFindRe
+        v.errormsg = errorMsg</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="tf.browser.ner.form.Form" href="form.html#tf.browser.ner.form.Form">Form</a></li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="tf.browser.ner.serve.Serve" href="serve.html#tf.browser.ner.serve.Serve">Serve</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.browser.ner.servelib.ServeLib.adaptValSelect"><code class="name flex">
+<span>def <span class="ident">adaptValSelect</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Adapts the values contained in <code>valSelect</code> after a modification action.</p>
+<p>After the addition or deletion of an entity, the values contained in <code>valSelect</code>
+may have become obsolete or inconvenient for further actions.</p>
+<p>This function adapts those values before having them rendered on the page.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>v</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Contains the intermediate results of computing the new page.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/servelib.py#L238-L279" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def adaptValSelect(self):
+    &#34;&#34;&#34;Adapts the values contained in `valSelect` after a modification action.
+
+    After the addition or deletion of an entity, the values contained in `valSelect`
+    may have become obsolete or inconvenient for further actions.
+
+    This function adapts those values before having them rendered on the page.
+
+    Parameters
+    ----------
+    v: dict
+        Contains the intermediate results of computing the new page.
+    &#34;&#34;&#34;
+    v = self.v
+    annotate = self.annotate
+    settings = annotate.settings
+    features = settings.features
+
+    submitter = v.submitter
+    valSelect = v.valselect
+
+    if submitter == &#34;addgo&#34;:
+        addData = v.adddata
+        additions = addData.additions
+        freeVals = addData.freeVals
+
+        freeState = v.freestate
+
+        for i, (feat, values) in enumerate(zip(features, additions)):
+            for val in values:
+                valSelect.setdefault(feat, set()).add(val)
+                if val == freeVals[i]:
+                    freeVals[i] = None
+
+        if freeState == &#34;free&#34;:
+            v.freestate = &#34;all&#34;
+
+    elif submitter == &#34;delgo&#34;:
+        for feat in features:
+            valSelect.setdefault(feat, set()).add(NONE)
+
+    v.submitter = &#34;&#34;</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.servelib.ServeLib.findSetup"><code class="name flex">
+<span>def <span class="ident">findSetup</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Compiles the filter pattern into a regular expression.</p>
+<p>When the user enters a search pattern in the box meant to filter the buckets,
+the pattern will be interpreted as a regular expression.</p>
+<p>We do the compilation here.
+If there are errors in the pattern they will be reported.
+Whether or not the search is case sensitive or not is under user control,
+and it will influence the compilation of the pattern.</p>
+<p>All input and output data is in <code>v</code> .</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/servelib.py#L281-L302" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def findSetup(self):
+    &#34;&#34;&#34;Compiles the filter pattern into a regular expression.
+
+    When the user enters a search pattern in the box meant to filter the buckets,
+    the pattern will be interpreted as a regular expression.
+
+    We do the compilation here.
+    If there are errors in the pattern they will be reported.
+    Whether or not the search is case sensitive or not is under user control,
+    and it will influence the compilation of the pattern.
+
+    All input and output data is in `v` .
+    &#34;&#34;&#34;
+    v = self.v
+    bFind = v.bfind
+    bFindC = v.bfindc
+
+    (bFind, bFindRe, errorMsg) = findCompile(bFind, bFindC)
+
+    v.bfind = bFind
+    v.bfindre = bFindRe
+    v.errormsg = errorMsg</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.servelib.ServeLib.getFormData"><code class="name flex">
+<span>def <span class="ident">getFormData</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get form data.</p>
+<p>The TF browser user interacts with the app by clicking and typing,
+as a result of which a HTML form gets filled in.
+This form as regularly submitted to the server with a request
+for a new incarnation of the page: a response.</p>
+<p>The values that come with a request, must be peeled out of the form,
+and stored as logical values.</p>
+<p>Additionally, some business logic is carried out:
+we set values for the entity features, based on the form, especially the
+keys ending in <code>_active</code>. We build a value under key <code>valselect</code>
+based on the value for key <code>submitter</code>.
+Depending on which button caused the submit, the NONE value is added
+to each feature.</p>
+<p>The idea is that when the user is still engaged in filtering buckets,
+and there is an occurrence selected, the user should have the option
+to sub-select occurrences that do not yet have an entity assigned.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/servelib.py#L134-L195" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getFormData(self):
     &#34;&#34;&#34;Get form data.
 
     The TF browser user interacts with the app by clicking and typing,
@@ -58,102 +811,40 @@ def getFormData(self):
     The values that come with a request, must be peeled out of the form,
     and stored as logical values.
 
-    Parameters
-    ----------
-    self: object
-        A `tf.browser.ner.annotate.Annotate` object is expected.
-    &#34;&#34;&#34;
-    settings = self.settings
-    features = settings.features
-
-    fget = request.form.get
-
-    form = {}
-
-    form[&#34;resetForm&#34;] = fget(&#34;resetForm&#34;, &#34;&#34;)
-    submitter = fget(&#34;submitter&#34;, &#34;&#34;)
-    form[&#34;submitter&#34;] = submitter
-
-    form[&#34;sec0&#34;] = fget(&#34;sec0&#34;, &#34;&#34;)
-    form[&#34;sec1&#34;] = fget(&#34;sec1&#34;, &#34;&#34;)
-    form[&#34;sec2&#34;] = fget(&#34;sec2&#34;, &#34;&#34;)
-    form[&#34;annoset&#34;] = fget(&#34;annoset&#34;, &#34;&#34;)
-    form[&#34;duannoset&#34;] = fget(&#34;duannoset&#34;, &#34;&#34;)
-    form[&#34;rannoset&#34;] = fget(&#34;rannoset&#34;, &#34;&#34;)
-    form[&#34;dannoset&#34;] = fget(&#34;dannoset&#34;, &#34;&#34;)
-    form[&#34;sortkey&#34;] = fget(&#34;sortkey&#34;, &#34;&#34;) or SORTKEY_DEFAULT
-    form[&#34;sortdir&#34;] = fget(&#34;sortdir&#34;, &#34;&#34;) or SORTDIR_DEFAULT
-    form[&#34;sortkey&#34;] = fget(&#34;sortkey&#34;, &#34;&#34;) or SORTKEY_DEFAULT
-    form[&#34;sortdir&#34;] = fget(&#34;sortdir&#34;, &#34;&#34;) or SORTDIR_DEFAULT
-    form[&#34;formattingdo&#34;] = fget(&#34;formattingdo&#34;, &#34;x&#34;) == &#34;v&#34;
-    form[&#34;formattingstate&#34;] = {
-        feat: fget(f&#34;{feat}_appearance&#34;, &#34;v&#34;) == &#34;v&#34;
-        for feat in features + (&#34;_stat_&#34;, &#34;_entity_&#34;)
-    }
-    form[&#34;bfind&#34;] = fget(&#34;bfind&#34;, &#34;&#34;)
-    form[&#34;bfindc&#34;] = fget(&#34;bfindc&#34;, &#34;x&#34;) == &#34;v&#34;
-    form[&#34;bfinderror&#34;] = fget(&#34;bfinderror&#34;, &#34;&#34;)
-
-    anyEnt = fget(&#34;anyent&#34;, &#34;&#34;)
-    form[&#34;anyent&#34;] = True if anyEnt == &#34;v&#34; else False if anyEnt == &#34;x&#34; else None
-
-    form[&#34;freestate&#34;] = fget(&#34;freestate&#34;, &#34;all&#34;)
-    activeEntity = fget(&#34;activeentity&#34;, None)
-    form[&#34;activeentity&#34;] = tuple(activeEntity.split(&#34;⊙&#34;)) if activeEntity else None
-    form[&#34;efind&#34;] = fget(&#34;efind&#34;, &#34;&#34;)
-    tokenStart = fget(&#34;tokenstart&#34;, &#34;&#34;)
-    form[&#34;tokenstart&#34;] = int(tokenStart) if tokenStart else None
-    tokenEnd = fget(&#34;tokenend&#34;, &#34;&#34;)
-    form[&#34;tokenend&#34;] = int(tokenEnd) if tokenEnd else None
-    form[&#34;activeval&#34;] = tuple((feat, fget(f&#34;{feat}_active&#34;, &#34;&#34;)) for feat in features)
-    makeValSelect(self, form)
-
-    form[&#34;scope&#34;] = fget(&#34;scope&#34;, SC_ALL)
-    excludedTokens = fget(&#34;excludedtokens&#34;, &#34;&#34;)
-    form[&#34;excludedtokens&#34;] = (
-        {int(t) for t in excludedTokens.split(&#34;,&#34;)} if excludedTokens else set()
-    )
-    addData = fget(&#34;adddata&#34;, &#34;&#34;)
-    form[&#34;adddata&#34;] = (
-        AttrDict() if addData == &#34;&#34; else deepAttrDict(json.loads(unquote(addData)))
-    )
-    delData = fget(&#34;deldata&#34;, &#34;&#34;)
-    form[&#34;deldata&#34;] = (
-        AttrDict() if delData == &#34;&#34; else deepAttrDict(json.loads(unquote(delData)))
-    )
-    form[&#34;reportdel&#34;] = fget(&#34;reportdel&#34;, &#34;&#34;)
-    form[&#34;reportadd&#34;] = fget(&#34;reportadd&#34;, &#34;&#34;)
-    form[&#34;modwidgetstate&#34;] = fget(&#34;modwidgetstate&#34;, &#34;add&#34;)
-
-    return form
-
-
-def makeValSelect(self, form):
-    &#34;&#34;&#34;Set values for the entity features, based on the request.
-
-    On the web page, there are hidden input fields for these values.
-    These values are picked up and put in the form, under key `valselect`.
+    Additionally, some business logic is carried out:
+    we set values for the entity features, based on the form, especially the
+    keys ending in `_active`. We build a value under key `valselect`
+    based on the value for key `submitter`.
     Depending on which button caused the submit, the NONE value is added
     to each feature.
 
     The idea is that when the user is still engaged in filtering buckets,
     and there is an occurrence selected, the user should have the option
     to sub-select occurrences that do not yet have an entity assigned.
-
-    Parameters
-    ----------
-    self: object
-        A `tf.browser.ner.annotate.Annotate` object is expected.
-    form: dict
-        Contains the fields of the request data, in logical form.
     &#34;&#34;&#34;
-    settings = self.settings
+    annotate = self.annotate
+    settings = annotate.settings
     features = settings.features
+    formattingState = self.formattingState
+    activeVal = self.activeVal
+    valSelectProto = self.valSelectProto
 
-    fget = request.form.get
+    form = self.fill()
+
+    form[&#34;formattingstate&#34;] = {
+        feat: self.fget2(featStr) for (feat, featStr) in formattingState.items()
+    }
+
+    form[&#34;activeval&#34;] = {
+        feat: self.fgets(featStr) for (feat, featStr) in activeVal.items()
+    }
+
+    valSelectProto = {
+        feat: self.fgets(featStr) for (feat, featStr) in valSelectProto.items()
+    }
 
     submitter = form[&#34;submitter&#34;]
-    valSelectProto = {feat: fget(f&#34;{feat}_select&#34;, &#34;&#34;) for feat in features}
+
     valSelect = {}
 
     startSearch = submitter in {&#34;lookupq&#34;, &#34;lookupn&#34;, &#34;freebutton&#34;}
@@ -170,336 +861,11 @@ def makeValSelect(self, form):
 
     form[&#34;valselect&#34;] = valSelect
 
-
-def adaptValSelect(self, templateData):
-    &#34;&#34;&#34;Adapts the values contained in `valSelect` after a modification action.
-
-    After the addition or deletion of an entity, the values contained in `valSelect`
-    may have become obsolete or inconvenient for further actions.
-
-    This function adapts those values before having them rendered on the page.
-
-    Parameters
-    ----------
-    self: object
-        A `tf.browser.ner.annotate.Annotate` object is expected.
-    templateData: dict
-        Contains the intermediate results of computing the new page.
-    &#34;&#34;&#34;
-    settings = self.settings
-    features = settings.features
-
-    submitter = templateData.submitter
-    valSelect = templateData.valselect
-
-    if submitter == &#34;addgo&#34;:
-        addData = templateData.adddata
-        additions = addData.additions
-        freeVals = addData.freeVals
-
-        freeState = templateData.freestate
-
-        for i, (feat, values) in enumerate(zip(features, additions)):
-            for val in values:
-                valSelect.setdefault(feat, set()).add(val)
-                if val == freeVals[i]:
-                    freeVals[i] = None
-
-        if freeState == &#34;free&#34;:
-            templateData.freestate = &#34;all&#34;
-
-    elif submitter == &#34;delgo&#34;:
-        for feat in features:
-            valSelect.setdefault(feat, set()).add(NONE)
-
-    templateData.submitter = &#34;&#34;
-
-
-def initTemplate(self, app):
-    &#34;&#34;&#34;Initializes the computation of the new page.
-
-    It collects the request data, gleans some info from the configuration
-    settings and the TF app, and initializes some data structures that
-    will collect further information for the page.
-
-    All bits and pieces that are needed during processing
-    the request and filling in the final HTML template find a place under
-    some key in the `templateData` dict which is stored in `self`.
-
-    Parameters
-    ----------
-    self: object
-        A `tf.browser.ner.annotate.Annotate` object is expected.
-    app: object
-        The TF app that represents the loaded corpus.
-    &#34;&#34;&#34;
-    settings = self.settings
-    bucketType = settings.bucketType
-    features = settings.features
-
-    aContext = app.context
-    appName = aContext.appName.replace(&#34;/&#34;, &#34; / &#34;)
-    api = app.api
-    F = api.F
-    slotType = F.otype.slotType
-
-    form = getFormData(self)
-    resetForm = form[&#34;resetForm&#34;]
-
-    templateData = AttrDict()
-    templateData.toolkey = TOOLKEY
-    templateData.buckettype = bucketType
-    templateData.featurelist = &#34;,&#34;.join(features)
-
-    for k, v in form.items():
-        if not resetForm or k not in templateData:
-            templateData[k] = v
-
-    templateData.appname = appName
-    templateData.slottype = slotType
-    templateData.resetform = &#34;&#34;
-
-    self.templateData = templateData
-
-
-def findSetup(templateData):
-    &#34;&#34;&#34;Compiles the filter pattern into a regular expression.
-
-    When the user enters a search pattern in the box meant to filter the buckets,
-    the pattern will be interpreted as a regular expression.
-
-    We do the compilation here.
-    If there are errors in the pattern they will be reported.
-    Whether or not the search is case sensitive or not is under user control,
-    and it will influence the compilation of the pattern.
-
-    All input and output data is in `templateData` .
-    &#34;&#34;&#34;
-    bFind = templateData.bfind
-    bFindC = templateData.bfindc
-
-    (bFind, bFindRe, errorMsg) = findCompile(bFind, bFindC)
-
-    templateData.bfind = bFind
-    templateData.bfindre = bFindRe
-    templateData.errormsg = errorMsg</code></pre>
-</details>
-</section>
-<section>
-</section>
-<section>
-</section>
-<section>
-<h2 class="section-title" id="header-functions">Functions</h2>
-<dl>
-<dt id="tf.browser.ner.servelib.adaptValSelect"><code class="name flex">
-<span>def <span class="ident">adaptValSelect</span></span>(<span>self, templateData)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Adapts the values contained in <code>valSelect</code> after a modification action.</p>
-<p>After the addition or deletion of an entity, the values contained in <code>valSelect</code>
-may have become obsolete or inconvenient for further actions.</p>
-<p>This function adapts those values before having them rendered on the page.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>self</code></strong> :&ensp;<code>object</code></dt>
-<dd>A <code><a title="tf.browser.ner.annotate.Annotate" href="annotate.html#tf.browser.ner.annotate.Annotate">Annotate</a></code> object is expected.</dd>
-<dt><strong><code>templateData</code></strong> :&ensp;<code>dict</code></dt>
-<dd>Contains the intermediate results of computing the new page.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/servelib.py#L141-L182" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def adaptValSelect(self, templateData):
-    &#34;&#34;&#34;Adapts the values contained in `valSelect` after a modification action.
-
-    After the addition or deletion of an entity, the values contained in `valSelect`
-    may have become obsolete or inconvenient for further actions.
-
-    This function adapts those values before having them rendered on the page.
-
-    Parameters
-    ----------
-    self: object
-        A `tf.browser.ner.annotate.Annotate` object is expected.
-    templateData: dict
-        Contains the intermediate results of computing the new page.
-    &#34;&#34;&#34;
-    settings = self.settings
-    features = settings.features
-
-    submitter = templateData.submitter
-    valSelect = templateData.valselect
-
-    if submitter == &#34;addgo&#34;:
-        addData = templateData.adddata
-        additions = addData.additions
-        freeVals = addData.freeVals
-
-        freeState = templateData.freestate
-
-        for i, (feat, values) in enumerate(zip(features, additions)):
-            for val in values:
-                valSelect.setdefault(feat, set()).add(val)
-                if val == freeVals[i]:
-                    freeVals[i] = None
-
-        if freeState == &#34;free&#34;:
-            templateData.freestate = &#34;all&#34;
-
-    elif submitter == &#34;delgo&#34;:
-        for feat in features:
-            valSelect.setdefault(feat, set()).add(NONE)
-
-    templateData.submitter = &#34;&#34;</code></pre>
-</details>
-</dd>
-<dt id="tf.browser.ner.servelib.findSetup"><code class="name flex">
-<span>def <span class="ident">findSetup</span></span>(<span>templateData)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Compiles the filter pattern into a regular expression.</p>
-<p>When the user enters a search pattern in the box meant to filter the buckets,
-the pattern will be interpreted as a regular expression.</p>
-<p>We do the compilation here.
-If there are errors in the pattern they will be reported.
-Whether or not the search is case sensitive or not is under user control,
-and it will influence the compilation of the pattern.</p>
-<p>All input and output data is in <code>templateData</code> .</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/servelib.py#L232-L252" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def findSetup(templateData):
-    &#34;&#34;&#34;Compiles the filter pattern into a regular expression.
-
-    When the user enters a search pattern in the box meant to filter the buckets,
-    the pattern will be interpreted as a regular expression.
-
-    We do the compilation here.
-    If there are errors in the pattern they will be reported.
-    Whether or not the search is case sensitive or not is under user control,
-    and it will influence the compilation of the pattern.
-
-    All input and output data is in `templateData` .
-    &#34;&#34;&#34;
-    bFind = templateData.bfind
-    bFindC = templateData.bfindc
-
-    (bFind, bFindRe, errorMsg) = findCompile(bFind, bFindC)
-
-    templateData.bfind = bFind
-    templateData.bfindre = bFindRe
-    templateData.errormsg = errorMsg</code></pre>
-</details>
-</dd>
-<dt id="tf.browser.ner.servelib.getFormData"><code class="name flex">
-<span>def <span class="ident">getFormData</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Get form data.</p>
-<p>The TF browser user interacts with the app by clicking and typing,
-as a result of which a HTML form gets filled in.
-This form as regularly submitted to the server with a request
-for a new incarnation of the page: a response.</p>
-<p>The values that come with a request, must be peeled out of the form,
-and stored as logical values.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>self</code></strong> :&ensp;<code>object</code></dt>
-<dd>A <code><a title="tf.browser.ner.annotate.Annotate" href="annotate.html#tf.browser.ner.annotate.Annotate">Annotate</a></code> object is expected.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/servelib.py#L17-L95" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def getFormData(self):
-    &#34;&#34;&#34;Get form data.
-
-    The TF browser user interacts with the app by clicking and typing,
-    as a result of which a HTML form gets filled in.
-    This form as regularly submitted to the server with a request
-    for a new incarnation of the page: a response.
-
-    The values that come with a request, must be peeled out of the form,
-    and stored as logical values.
-
-    Parameters
-    ----------
-    self: object
-        A `tf.browser.ner.annotate.Annotate` object is expected.
-    &#34;&#34;&#34;
-    settings = self.settings
-    features = settings.features
-
-    fget = request.form.get
-
-    form = {}
-
-    form[&#34;resetForm&#34;] = fget(&#34;resetForm&#34;, &#34;&#34;)
-    submitter = fget(&#34;submitter&#34;, &#34;&#34;)
-    form[&#34;submitter&#34;] = submitter
-
-    form[&#34;sec0&#34;] = fget(&#34;sec0&#34;, &#34;&#34;)
-    form[&#34;sec1&#34;] = fget(&#34;sec1&#34;, &#34;&#34;)
-    form[&#34;sec2&#34;] = fget(&#34;sec2&#34;, &#34;&#34;)
-    form[&#34;annoset&#34;] = fget(&#34;annoset&#34;, &#34;&#34;)
-    form[&#34;duannoset&#34;] = fget(&#34;duannoset&#34;, &#34;&#34;)
-    form[&#34;rannoset&#34;] = fget(&#34;rannoset&#34;, &#34;&#34;)
-    form[&#34;dannoset&#34;] = fget(&#34;dannoset&#34;, &#34;&#34;)
-    form[&#34;sortkey&#34;] = fget(&#34;sortkey&#34;, &#34;&#34;) or SORTKEY_DEFAULT
-    form[&#34;sortdir&#34;] = fget(&#34;sortdir&#34;, &#34;&#34;) or SORTDIR_DEFAULT
-    form[&#34;sortkey&#34;] = fget(&#34;sortkey&#34;, &#34;&#34;) or SORTKEY_DEFAULT
-    form[&#34;sortdir&#34;] = fget(&#34;sortdir&#34;, &#34;&#34;) or SORTDIR_DEFAULT
-    form[&#34;formattingdo&#34;] = fget(&#34;formattingdo&#34;, &#34;x&#34;) == &#34;v&#34;
-    form[&#34;formattingstate&#34;] = {
-        feat: fget(f&#34;{feat}_appearance&#34;, &#34;v&#34;) == &#34;v&#34;
-        for feat in features + (&#34;_stat_&#34;, &#34;_entity_&#34;)
-    }
-    form[&#34;bfind&#34;] = fget(&#34;bfind&#34;, &#34;&#34;)
-    form[&#34;bfindc&#34;] = fget(&#34;bfindc&#34;, &#34;x&#34;) == &#34;v&#34;
-    form[&#34;bfinderror&#34;] = fget(&#34;bfinderror&#34;, &#34;&#34;)
-
-    anyEnt = fget(&#34;anyent&#34;, &#34;&#34;)
-    form[&#34;anyent&#34;] = True if anyEnt == &#34;v&#34; else False if anyEnt == &#34;x&#34; else None
-
-    form[&#34;freestate&#34;] = fget(&#34;freestate&#34;, &#34;all&#34;)
-    activeEntity = fget(&#34;activeentity&#34;, None)
-    form[&#34;activeentity&#34;] = tuple(activeEntity.split(&#34;⊙&#34;)) if activeEntity else None
-    form[&#34;efind&#34;] = fget(&#34;efind&#34;, &#34;&#34;)
-    tokenStart = fget(&#34;tokenstart&#34;, &#34;&#34;)
-    form[&#34;tokenstart&#34;] = int(tokenStart) if tokenStart else None
-    tokenEnd = fget(&#34;tokenend&#34;, &#34;&#34;)
-    form[&#34;tokenend&#34;] = int(tokenEnd) if tokenEnd else None
-    form[&#34;activeval&#34;] = tuple((feat, fget(f&#34;{feat}_active&#34;, &#34;&#34;)) for feat in features)
-    makeValSelect(self, form)
-
-    form[&#34;scope&#34;] = fget(&#34;scope&#34;, SC_ALL)
-    excludedTokens = fget(&#34;excludedtokens&#34;, &#34;&#34;)
-    form[&#34;excludedtokens&#34;] = (
-        {int(t) for t in excludedTokens.split(&#34;,&#34;)} if excludedTokens else set()
-    )
-    addData = fget(&#34;adddata&#34;, &#34;&#34;)
-    form[&#34;adddata&#34;] = (
-        AttrDict() if addData == &#34;&#34; else deepAttrDict(json.loads(unquote(addData)))
-    )
-    delData = fget(&#34;deldata&#34;, &#34;&#34;)
-    form[&#34;deldata&#34;] = (
-        AttrDict() if delData == &#34;&#34; else deepAttrDict(json.loads(unquote(delData)))
-    )
-    form[&#34;reportdel&#34;] = fget(&#34;reportdel&#34;, &#34;&#34;)
-    form[&#34;reportadd&#34;] = fget(&#34;reportadd&#34;, &#34;&#34;)
-    form[&#34;modwidgetstate&#34;] = fget(&#34;modwidgetstate&#34;, &#34;add&#34;)
-
     return form</code></pre>
 </details>
 </dd>
-<dt id="tf.browser.ner.servelib.initTemplate"><code class="name flex">
-<span>def <span class="ident">initTemplate</span></span>(<span>self, app)</span>
+<dt id="tf.browser.ner.servelib.ServeLib.initVars"><code class="name flex">
+<span>def <span class="ident">initVars</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Initializes the computation of the new page.</p>
@@ -508,20 +874,15 @@ settings and the TF app, and initializes some data structures that
 will collect further information for the page.</p>
 <p>All bits and pieces that are needed during processing
 the request and filling in the final HTML template find a place under
-some key in the <code>templateData</code> dict which is stored in <code>self</code>.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>self</code></strong> :&ensp;<code>object</code></dt>
-<dd>A <code><a title="tf.browser.ner.annotate.Annotate" href="annotate.html#tf.browser.ner.annotate.Annotate">Annotate</a></code> object is expected.</dd>
-<dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
-<dd>The TF app that represents the loaded corpus.</dd>
-</dl></div>
+some key in the <code>v</code> dict which is stored in <code>self</code>.</p>
+<p>So, this function makes the transition from information that is in the
+<code>form</code> dictionary to values that are stored in the <code>v</code> dictionary.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/servelib.py#L185-L229" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/servelib.py#L197-L236" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def initTemplate(self, app):
+<pre><code class="python">def initVars(self):
     &#34;&#34;&#34;Initializes the computation of the new page.
 
     It collects the request data, gleans some info from the configuration
@@ -530,114 +891,57 @@ some key in the <code>templateData</code> dict which is stored in <code>self</co
 
     All bits and pieces that are needed during processing
     the request and filling in the final HTML template find a place under
-    some key in the `templateData` dict which is stored in `self`.
+    some key in the `v` dict which is stored in `self`.
 
-    Parameters
-    ----------
-    self: object
-        A `tf.browser.ner.annotate.Annotate` object is expected.
-    app: object
-        The TF app that represents the loaded corpus.
+    So, this function makes the transition from information that is in the
+    `form` dictionary to values that are stored in the `v` dictionary.
     &#34;&#34;&#34;
-    settings = self.settings
+    annotate = self.annotate
+    settings = annotate.settings
     bucketType = settings.bucketType
     features = settings.features
 
-    aContext = app.context
-    appName = aContext.appName.replace(&#34;/&#34;, &#34; / &#34;)
-    api = app.api
-    F = api.F
-    slotType = F.otype.slotType
+    appName = annotate.appName
+    appName = appName.replace(&#34;/&#34;, &#34; / &#34;)
+    slotType = annotate.slotType
 
-    form = getFormData(self)
+    form = self.getFormData()
     resetForm = form[&#34;resetForm&#34;]
 
-    templateData = AttrDict()
-    templateData.toolkey = TOOLKEY
-    templateData.buckettype = bucketType
-    templateData.featurelist = &#34;,&#34;.join(features)
+    v = AttrDict()
+    v.toolkey = TOOLKEY
+    v.buckettype = bucketType
+    v.featurelist = &#34;,&#34;.join(features)
 
-    for k, v in form.items():
-        if not resetForm or k not in templateData:
-            templateData[k] = v
+    for k, vl in form.items():
+        if not resetForm or k not in v:
+            v[k] = vl
 
-    templateData.appname = appName
-    templateData.slottype = slotType
-    templateData.resetform = &#34;&#34;
+    v.appname = appName
+    v.slottype = slotType
+    v.resetform = &#34;&#34;
 
-    self.templateData = templateData</code></pre>
-</details>
-</dd>
-<dt id="tf.browser.ner.servelib.makeValSelect"><code class="name flex">
-<span>def <span class="ident">makeValSelect</span></span>(<span>self, form)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Set values for the entity features, based on the request.</p>
-<p>On the web page, there are hidden input fields for these values.
-These values are picked up and put in the form, under key <code>valselect</code>.
-Depending on which button caused the submit, the NONE value is added
-to each feature.</p>
-<p>The idea is that when the user is still engaged in filtering buckets,
-and there is an occurrence selected, the user should have the option
-to sub-select occurrences that do not yet have an entity assigned.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>self</code></strong> :&ensp;<code>object</code></dt>
-<dd>A <code><a title="tf.browser.ner.annotate.Annotate" href="annotate.html#tf.browser.ner.annotate.Annotate">Annotate</a></code> object is expected.</dd>
-<dt><strong><code>form</code></strong> :&ensp;<code>dict</code></dt>
-<dd>Contains the fields of the request data, in logical form.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/servelib.py#L98-L138" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def makeValSelect(self, form):
-    &#34;&#34;&#34;Set values for the entity features, based on the request.
-
-    On the web page, there are hidden input fields for these values.
-    These values are picked up and put in the form, under key `valselect`.
-    Depending on which button caused the submit, the NONE value is added
-    to each feature.
-
-    The idea is that when the user is still engaged in filtering buckets,
-    and there is an occurrence selected, the user should have the option
-    to sub-select occurrences that do not yet have an entity assigned.
-
-    Parameters
-    ----------
-    self: object
-        A `tf.browser.ner.annotate.Annotate` object is expected.
-    form: dict
-        Contains the fields of the request data, in logical form.
-    &#34;&#34;&#34;
-    settings = self.settings
-    features = settings.features
-
-    fget = request.form.get
-
-    submitter = form[&#34;submitter&#34;]
-    valSelectProto = {feat: fget(f&#34;{feat}_select&#34;, &#34;&#34;) for feat in features}
-    valSelect = {}
-
-    startSearch = submitter in {&#34;lookupq&#34;, &#34;lookupn&#34;, &#34;freebutton&#34;}
-
-    for feat in features:
-        valProto = valSelectProto[feat]
-        valSelect[feat] = (
-            set(&#34;&#34; if x == EMPTY else x for x in valProto.split(&#34;,&#34;))
-            if valProto
-            else set()
-        )
-        if startSearch:
-            valSelect[feat].add(NONE)
-
-    form[&#34;valselect&#34;] = valSelect</code></pre>
+    self.v = v</code></pre>
 </details>
 </dd>
 </dl>
-</section>
-<section>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="tf.browser.ner.form.Form" href="form.html#tf.browser.ner.form.Form">Form</a></b></code>:
+<ul class="hlist">
+<li><code><a title="tf.browser.ner.form.Form.fget2" href="form.html#tf.browser.ner.form.Form.fget2">fget2</a></code></li>
+<li><code><a title="tf.browser.ner.form.Form.fget3" href="form.html#tf.browser.ner.form.Form.fget3">fget3</a></code></li>
+<li><code><a title="tf.browser.ner.form.Form.fgeti" href="form.html#tf.browser.ner.form.Form.fgeti">fgeti</a></code></li>
+<li><code><a title="tf.browser.ner.form.Form.fgetj" href="form.html#tf.browser.ner.form.Form.fgetj">fgetj</a></code></li>
+<li><code><a title="tf.browser.ner.form.Form.fgets" href="form.html#tf.browser.ner.form.Form.fgets">fgets</a></code></li>
+<li><code><a title="tf.browser.ner.form.Form.fgetsi" href="form.html#tf.browser.ner.form.Form.fgetsi">fgetsi</a></code></li>
+<li><code><a title="tf.browser.ner.form.Form.fgettu" href="form.html#tf.browser.ner.form.Form.fgettu">fgettu</a></code></li>
+<li><code><a title="tf.browser.ner.form.Form.fill" href="form.html#tf.browser.ner.form.Form.fill">fill</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -702,13 +1006,17 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.browser.ner" href="index.html">tf.browser.ner</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-functions">Functions</a></h3>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.browser.ner.servelib.ServeLib" href="#tf.browser.ner.servelib.ServeLib">ServeLib</a></code></h4>
 <ul class="">
-<li><code><a title="tf.browser.ner.servelib.adaptValSelect" href="#tf.browser.ner.servelib.adaptValSelect">adaptValSelect</a></code></li>
-<li><code><a title="tf.browser.ner.servelib.findSetup" href="#tf.browser.ner.servelib.findSetup">findSetup</a></code></li>
-<li><code><a title="tf.browser.ner.servelib.getFormData" href="#tf.browser.ner.servelib.getFormData">getFormData</a></code></li>
-<li><code><a title="tf.browser.ner.servelib.initTemplate" href="#tf.browser.ner.servelib.initTemplate">initTemplate</a></code></li>
-<li><code><a title="tf.browser.ner.servelib.makeValSelect" href="#tf.browser.ner.servelib.makeValSelect">makeValSelect</a></code></li>
+<li><code><a title="tf.browser.ner.servelib.ServeLib.adaptValSelect" href="#tf.browser.ner.servelib.ServeLib.adaptValSelect">adaptValSelect</a></code></li>
+<li><code><a title="tf.browser.ner.servelib.ServeLib.findSetup" href="#tf.browser.ner.servelib.ServeLib.findSetup">findSetup</a></code></li>
+<li><code><a title="tf.browser.ner.servelib.ServeLib.getFormData" href="#tf.browser.ner.servelib.ServeLib.getFormData">getFormData</a></code></li>
+<li><code><a title="tf.browser.ner.servelib.ServeLib.initVars" href="#tf.browser.ner.servelib.ServeLib.initVars">initVars</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

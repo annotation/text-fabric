@@ -38,7 +38,7 @@ processed if it is needed and out of date.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/data.py#L1-L821" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/data.py#L1-L812" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Annotation data module.
 
@@ -68,10 +68,10 @@ from ...core.files import (
     fileExists,
     initTree,
 )
-from .settings import Settings
+from .corpus import Corpus
 
 
-class Data(Settings):
+class Data(Corpus):
     def __init__(self, data=None):
         &#34;&#34;&#34;Manages annotation data.
 
@@ -155,30 +155,25 @@ class Data(Settings):
             that are part of the entity.
         &#34;&#34;&#34;
         settings = self.settings
-        bucketType = settings.bucketType
-        app = self.app
         data = self.data
         annoSet = self.annoSet
-        # annoSetRep = self.annoSetRep
         setData = data.sets[annoSet]
         annoDir = self.annoDir
 
         settings = self.settings
-        entityType = settings.entityType
         features = settings.features
+
+        featureDefault = self.featureDefault
         nF = len(features)
 
-        api = app.api
-        F = api.F
-        Fs = api.Fs
-        L = api.L
-
-        slotType = F.otype.slotType
+        checkFeature = self.checkFeature
+        getFVal = self.getFVal
+        getSlots = self.getSlots
 
         dataFile = f&#34;{annoDir}/{annoSet}/entities.tsv&#34;
 
         if &#34;buckets&#34; not in setData:
-            setData.buckets = F.otype.s(bucketType)
+            setData.buckets = self.getBucketNodes()
 
         changed = False
 
@@ -211,18 +206,15 @@ class Data(Settings):
         else:
             if &#34;entities&#34; not in setData:
                 entities = {}
-                hasFeature = {
-                    feat: api.isLoaded(feat, pretty=False)[feat] is not None
-                    for feat in features
-                }
+                hasFeature = {feat: checkFeature(feat) for feat in features}
 
-                for e in F.otype.s(entityType):
-                    slots = L.d(e, otype=slotType)
+                for e in self.getEntityNodes():
+                    slots = getSlots(e)
                     entities[e] = (
                         tuple(
-                            Fs(feat).v(e)
+                            getFVal(feat, e)
                             if hasFeature[feat]
-                            else self.featureDefault[feat](slots)
+                            else featureDefault[feat](slots)
                             for feat in features
                         ),
                         tuple(slots),
@@ -291,8 +283,7 @@ class Data(Settings):
         &#34;&#34;&#34;
         settings = self.settings
         features = settings.features
-        featureDefault = self.featureDefault
-        getText = featureDefault[&#34;&#34;]
+        getText = self.getText
         summaryIndices = settings.summaryIndices
 
         data = self.data
@@ -641,7 +632,7 @@ class Data(Settings):
 
         This method does them all in one fell swoop.
         It is used by the power method
-        `tf.browser.ner.power.powerNER.markEntities()`.
+        `tf.browser.ner.power.PowerNER.markEntities()`.
 
         Parameters
         ----------
@@ -903,9 +894,9 @@ it to the initializer here.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/data.py#L32-L821" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/data.py#L32-L812" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">class Data(Settings):
+<pre><code class="python">class Data(Corpus):
     def __init__(self, data=None):
         &#34;&#34;&#34;Manages annotation data.
 
@@ -989,30 +980,25 @@ it to the initializer here.</p>
             that are part of the entity.
         &#34;&#34;&#34;
         settings = self.settings
-        bucketType = settings.bucketType
-        app = self.app
         data = self.data
         annoSet = self.annoSet
-        # annoSetRep = self.annoSetRep
         setData = data.sets[annoSet]
         annoDir = self.annoDir
 
         settings = self.settings
-        entityType = settings.entityType
         features = settings.features
+
+        featureDefault = self.featureDefault
         nF = len(features)
 
-        api = app.api
-        F = api.F
-        Fs = api.Fs
-        L = api.L
-
-        slotType = F.otype.slotType
+        checkFeature = self.checkFeature
+        getFVal = self.getFVal
+        getSlots = self.getSlots
 
         dataFile = f&#34;{annoDir}/{annoSet}/entities.tsv&#34;
 
         if &#34;buckets&#34; not in setData:
-            setData.buckets = F.otype.s(bucketType)
+            setData.buckets = self.getBucketNodes()
 
         changed = False
 
@@ -1045,18 +1031,15 @@ it to the initializer here.</p>
         else:
             if &#34;entities&#34; not in setData:
                 entities = {}
-                hasFeature = {
-                    feat: api.isLoaded(feat, pretty=False)[feat] is not None
-                    for feat in features
-                }
+                hasFeature = {feat: checkFeature(feat) for feat in features}
 
-                for e in F.otype.s(entityType):
-                    slots = L.d(e, otype=slotType)
+                for e in self.getEntityNodes():
+                    slots = getSlots(e)
                     entities[e] = (
                         tuple(
-                            Fs(feat).v(e)
+                            getFVal(feat, e)
                             if hasFeature[feat]
-                            else self.featureDefault[feat](slots)
+                            else featureDefault[feat](slots)
                             for feat in features
                         ),
                         tuple(slots),
@@ -1125,8 +1108,7 @@ it to the initializer here.</p>
         &#34;&#34;&#34;
         settings = self.settings
         features = settings.features
-        featureDefault = self.featureDefault
-        getText = featureDefault[&#34;&#34;]
+        getText = self.getText
         summaryIndices = settings.summaryIndices
 
         data = self.data
@@ -1475,7 +1457,7 @@ it to the initializer here.</p>
 
         This method does them all in one fell swoop.
         It is used by the power method
-        `tf.browser.ner.power.powerNER.markEntities()`.
+        `tf.browser.ner.power.PowerNER.markEntities()`.
 
         Parameters
         ----------
@@ -1698,6 +1680,7 @@ it to the initializer here.</p>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
+<li><a title="tf.browser.ner.corpus.Corpus" href="corpus.html#tf.browser.ner.corpus.Corpus">Corpus</a></li>
 <li><a title="tf.browser.ner.settings.Settings" href="settings.html#tf.browser.ner.settings.Settings">Settings</a></li>
 </ul>
 <h3>Subclasses</h3>
@@ -1715,7 +1698,7 @@ it to the initializer here.</p>
 the corpus to find them.</p>
 <p>This method does them all in one fell swoop.
 It is used by the power method
-<code>tf.browser.ner.power.powerNER.markEntities()</code>.</p>
+<code><a title="tf.browser.ner.power.PowerNER.markEntities" href="power.html#tf.browser.ner.power.PowerNER.markEntities">PowerNER.markEntities()</a></code>.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>newEntites</code></strong> :&ensp;<code>iterable</code> of <code>tuples</code> of <code>tuples</code></dt>
@@ -1737,7 +1720,7 @@ asked to be deleted and the number of actually deleted entities.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/data.py#L594-L649" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/data.py#L585-L640" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addEntities(self, newEntities, silent=True):
     &#34;&#34;&#34;Add multiple entites efficiently.
@@ -1747,7 +1730,7 @@ asked to be deleted and the number of actually deleted entities.</p></div>
 
     This method does them all in one fell swoop.
     It is used by the power method
-    `tf.browser.ner.power.powerNER.markEntities()`.
+    `tf.browser.ner.power.PowerNER.markEntities()`.
 
     Parameters
     ----------
@@ -1825,7 +1808,7 @@ asked to be deleted and the number of actually deleted entities.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/data.py#L531-L592" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/data.py#L522-L583" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addEntity(self, vals, allMatches, silent=True):
     &#34;&#34;&#34;Add entity occurrences to a set.
@@ -1923,7 +1906,7 @@ no entity will be added there.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/data.py#L651-L752" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/data.py#L642-L743" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addEntityRich(self, additions, buckets, excludedTokens=set()):
     &#34;&#34;&#34;Add specified entity occurrences to a set.
@@ -2059,7 +2042,7 @@ asked to be deleted and the number of actually deleted entities.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/data.py#L357-L420" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/data.py#L348-L411" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def delEntity(self, vals, allMatches=None, silent=True):
     &#34;&#34;&#34;Delete entity occurrences from a set.
@@ -2159,7 +2142,7 @@ the entity will not be deleted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/data.py#L422-L529" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/data.py#L413-L520" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def delEntityRich(self, deletions, buckets, excludedTokens=set()):
     &#34;&#34;&#34;Delete specified entity occurrences from a set.
@@ -2293,7 +2276,7 @@ that are part of the entity.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/data.py#L96-L191" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/data.py#L96-L183" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fromSource(self):
     &#34;&#34;&#34;Loads annotation data from source.
@@ -2315,30 +2298,25 @@ that are part of the entity.</li>
         that are part of the entity.
     &#34;&#34;&#34;
     settings = self.settings
-    bucketType = settings.bucketType
-    app = self.app
     data = self.data
     annoSet = self.annoSet
-    # annoSetRep = self.annoSetRep
     setData = data.sets[annoSet]
     annoDir = self.annoDir
 
     settings = self.settings
-    entityType = settings.entityType
     features = settings.features
+
+    featureDefault = self.featureDefault
     nF = len(features)
 
-    api = app.api
-    F = api.F
-    Fs = api.Fs
-    L = api.L
-
-    slotType = F.otype.slotType
+    checkFeature = self.checkFeature
+    getFVal = self.getFVal
+    getSlots = self.getSlots
 
     dataFile = f&#34;{annoDir}/{annoSet}/entities.tsv&#34;
 
     if &#34;buckets&#34; not in setData:
-        setData.buckets = F.otype.s(bucketType)
+        setData.buckets = self.getBucketNodes()
 
     changed = False
 
@@ -2371,18 +2349,15 @@ that are part of the entity.</li>
     else:
         if &#34;entities&#34; not in setData:
             entities = {}
-            hasFeature = {
-                feat: api.isLoaded(feat, pretty=False)[feat] is not None
-                for feat in features
-            }
+            hasFeature = {feat: checkFeature(feat) for feat in features}
 
-            for e in F.otype.s(entityType):
-                slots = L.d(e, otype=slotType)
+            for e in self.getEntityNodes():
+                slots = getSlots(e)
                 entities[e] = (
                     tuple(
-                        Fs(feat).v(e)
+                        getFVal(feat, e)
                         if hasFeature[feat]
-                        else self.featureDefault[feat](slots)
+                        else featureDefault[feat](slots)
                         for feat in features
                     ),
                     tuple(slots),
@@ -2406,7 +2381,7 @@ that are part of the entity.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/data.py#L72-L94" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/data.py#L72-L94" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadData(self):
     &#34;&#34;&#34;Loads data of the current annotation set into memory.
@@ -2447,7 +2422,7 @@ and an iterable of slot tuples where the entity is located.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/data.py#L787-L803" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/data.py#L778-L794" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mergeEntities(self, newEntities):
     &#34;&#34;&#34;Performs additions to an annotation set.
@@ -2527,7 +2502,7 @@ entities in the surrounding context of tokens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/data.py#L193-L355" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/data.py#L185-L346" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def process(self, changed):
     &#34;&#34;&#34;Generated derived data structures out of the source data.
@@ -2588,8 +2563,7 @@ entities in the surrounding context of tokens.</p>
     &#34;&#34;&#34;
     settings = self.settings
     features = settings.features
-    featureDefault = self.featureDefault
-    getText = featureDefault[&#34;&#34;]
+    getText = self.getText
     summaryIndices = settings.summaryIndices
 
     data = self.data
@@ -2709,7 +2683,7 @@ entities in the surrounding context of tokens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/data.py#L805-L821" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/data.py#L796-L812" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def saveEntitiesAs(self, dataFile):
     &#34;&#34;&#34;Export the data of an annotation set to a file.
@@ -2744,7 +2718,7 @@ and an iterable of slot tuples where the entity is located.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/23cf5da9dec27afb7a27c0b45bb902eec9f4bfcf/tf/browser/ner/data.py#L754-L785" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/data.py#L745-L776" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def weedEntities(self, delEntities):
     &#34;&#34;&#34;Performs deletions to an annotation set.
@@ -2783,10 +2757,26 @@ and an iterable of slot tuples where the entity is located.</dd>
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="tf.browser.ner.settings.Settings" href="settings.html#tf.browser.ner.settings.Settings">Settings</a></b></code>:
+<li><code><b><a title="tf.browser.ner.corpus.Corpus" href="corpus.html#tf.browser.ner.corpus.Corpus">Corpus</a></b></code>:
 <ul class="hlist">
-<li><code><a title="tf.browser.ner.settings.Settings.console" href="settings.html#tf.browser.ner.settings.Settings.console">console</a></code></li>
-<li><code><a title="tf.browser.ner.settings.Settings.getStrings" href="settings.html#tf.browser.ner.settings.Settings.getStrings">getStrings</a></code></li>
+<li><code><a title="tf.browser.ner.corpus.Corpus.checkFeature" href="corpus.html#tf.browser.ner.corpus.Corpus.checkFeature">checkFeature</a></code></li>
+<li><code><a title="tf.browser.ner.corpus.Corpus.console" href="settings.html#tf.browser.ner.settings.Settings.console">console</a></code></li>
+<li><code><a title="tf.browser.ner.corpus.Corpus.featureDefault" href="corpus.html#tf.browser.ner.corpus.Corpus.featureDefault">featureDefault</a></code></li>
+<li><code><a title="tf.browser.ner.corpus.Corpus.get0" href="corpus.html#tf.browser.ner.corpus.Corpus.get0">get0</a></code></li>
+<li><code><a title="tf.browser.ner.corpus.Corpus.get1" href="corpus.html#tf.browser.ner.corpus.Corpus.get1">get1</a></code></li>
+<li><code><a title="tf.browser.ner.corpus.Corpus.getAfter" href="corpus.html#tf.browser.ner.corpus.Corpus.getAfter">getAfter</a></code></li>
+<li><code><a title="tf.browser.ner.corpus.Corpus.getBucketNodes" href="corpus.html#tf.browser.ner.corpus.Corpus.getBucketNodes">getBucketNodes</a></code></li>
+<li><code><a title="tf.browser.ner.corpus.Corpus.getContext" href="corpus.html#tf.browser.ner.corpus.Corpus.getContext">getContext</a></code></li>
+<li><code><a title="tf.browser.ner.corpus.Corpus.getEntityNodes" href="corpus.html#tf.browser.ner.corpus.Corpus.getEntityNodes">getEntityNodes</a></code></li>
+<li><code><a title="tf.browser.ner.corpus.Corpus.getFVal" href="corpus.html#tf.browser.ner.corpus.Corpus.getFVal">getFVal</a></code></li>
+<li><code><a title="tf.browser.ner.corpus.Corpus.getSlots" href="corpus.html#tf.browser.ner.corpus.Corpus.getSlots">getSlots</a></code></li>
+<li><code><a title="tf.browser.ner.corpus.Corpus.getStr" href="corpus.html#tf.browser.ner.corpus.Corpus.getStr">getStr</a></code></li>
+<li><code><a title="tf.browser.ner.corpus.Corpus.getStrings" href="corpus.html#tf.browser.ner.corpus.Corpus.getStrings">getStrings</a></code></li>
+<li><code><a title="tf.browser.ner.corpus.Corpus.getText" href="corpus.html#tf.browser.ner.corpus.Corpus.getText">getText</a></code></li>
+<li><code><a title="tf.browser.ner.corpus.Corpus.getTextR" href="corpus.html#tf.browser.ner.corpus.Corpus.getTextR">getTextR</a></code></li>
+<li><code><a title="tf.browser.ner.corpus.Corpus.getTokens" href="corpus.html#tf.browser.ner.corpus.Corpus.getTokens">getTokens</a></code></li>
+<li><code><a title="tf.browser.ner.corpus.Corpus.sectionHead" href="corpus.html#tf.browser.ner.corpus.Corpus.sectionHead">sectionHead</a></code></li>
+<li><code><a title="tf.browser.ner.corpus.Corpus.slotType" href="corpus.html#tf.browser.ner.corpus.Corpus.slotType">slotType</a></code></li>
 </ul>
 </li>
 </ul>
