@@ -17,6 +17,7 @@ import re
 
 from .settings import Settings, TOOLKEY
 from .helpers import makeCss
+from ...core.files import annotateDir
 
 
 WHITE_RE = re.compile(r"""\s{2,}""", re.S)
@@ -25,9 +26,20 @@ NON_ALPHA_RE = re.compile(r"""[^\w ]""", re.S)
 
 class Corpus(Settings):
     def __init__(self):
+        app = self.app
+        context = app.context
+        appName = context.appName
+        version = context.version
+
+        self.appName = appName
+        self.version = version
+        (specDir, annoDir) = annotateDir(app, TOOLKEY)
+        self.specDir = specDir
+        self.annoDir = f"{annoDir}/{version}"
+        self.sheetDir = f"{specDir}/sheets"
+
         super().__init__()
 
-        app = self.app
         api = app.api
         F = api.F
         Fs = api.Fs

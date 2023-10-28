@@ -6,7 +6,7 @@ To see how this fits among all the modules of this package, see
 
 
 from ...core.helpers import console as cs
-from ...core.files import annotateDir, readYaml
+from ...core.files import readYaml
 
 TOOLKEY = "ner"
 """The name of this annotation tool.
@@ -179,19 +179,8 @@ class Settings:
         Those configuration values are read from a yaml file, located in a directory
         `ner` next to the `tf` data of the corpus.
         """
-        app = self.app
-        context = app.context
+        specDir = self.specDir
 
-        version = context.version
-        self.version = version
-
-        appName = context.appName
-        self.appName = appName
-
-        (specDir, annoDir) = annotateDir(app, TOOLKEY)
-        self.specDir = specDir
-        self.annoDir = f"{annoDir}/{version}"
-        self.sheetDir = f"{specDir}/sheets"
         nerSpec = f"{specDir}/config.yaml"
         settings = readYaml(asFile=nerSpec, preferTuples=True)
         settings.entitySet = settings.entitySet.format(entityType=settings.entityType)

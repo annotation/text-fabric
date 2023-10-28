@@ -20,9 +20,9 @@ pip install -e .
 
 ### 12.0
 
-#### 12.1 (upcoming)
+#### 12.1
 
-2023-10-??
+2023-10-28
 
 ##### New stuff
 
@@ -32,9 +32,7 @@ pip install -e .
     Text-Fabric browser and in a Jupyter Notebook.
     Reed more in `tf.about.annotate`.
 
-    These tools will let you save your work as files on your own computer, maybe even
-    feature files, so that you can explore the result by means of queries in the
-    text-fabric browser as you go.
+    These tools will let you save your work as files on your own computer.
 
 *   In `tf.convert.addnlp` we can now extract more NLP information besides tokens
     and sentences: part-of-speech, morphological tagging, lemmatisation, named

@@ -32,6 +32,46 @@ This is a tool where you can add entity annotations to a corpus.
 These annotations consist of a new nodes of a new type (`ent`, or `entity`) and
 features that give information about those nodes.
 
+## Supported corpora
+
+This tool is being developed against the
+[HuygensING/suriano corpus](https://github.com/HuygensING/suriano).
+Yet it is meant to be usable for all TF corpora. No corpus knowledge is baked in.
+If corpus specifics are needed, it will be fetched from the already present TF
+configuration of that corpus.
+And where that is not sufficient, details are put in `ner/config.yaml`, which 
+can be put next to the corpus.
+
+I have tested it for the
+[ETCBC/bhsa (Hebrew Bible) corpus](https://github.com/ETCBC/bhsa), and the
+machinery works.
+But it remains to be seen whether the tools is sufficiently *ergonomic* for that
+corpus.
+
+See also the following Jupyter Notebooks that show the work-in-progress:
+
+*   Suriano
+    *   [basic annotation API](https://nbviewer.org/github/HuygensING/suriano/blob/main/programs/nerTest.ipynb)
+    *   [using a spreadsheet with instructions](https://nbviewer.org/github/HuygensING/suriano/blob/main/programs/powerNer.ipynb)
+
+*   BHSA
+    *   [basic annotation API](https://nbviewer.org/github/ETCBC/bhsa/blob/master/programs/nerTest.ipynb)
+    *   [using a spreadsheet with instructions](https://nbviewer.org/github/ETCBC/bhsa/blob/master/programs/nerPower.ipynb)
+
+## Ergonomics of annotation
+
+We try to reduce the work of manual annotations as much as possible.
+It is a balancing act between automating as much as possible, but not so much that
+you miss the fine points in your corpus.
+
+We need to gather experience in order to arrive at a truly usable tool.
+
+We are going to mark up the 
+[HuygensING/suriano corpus](https://github.com/HuygensING/suriano) in this way and hope
+to acquire a lot of experience in the process.
+
+## Delivery of annotation data
+
 But how exactly are those new nodes and features delivered?
 
 This is work in progress!
@@ -196,6 +236,10 @@ Concerning `ner/config.yaml`: it has the following information:
     The tool also provides a default for the first feature, the entity
     identifier, basically a lower case version of the full name where
     the parts of the name are separated by dots.
+
+*   `spaceEscaped`: set this to True if your corpus as tokens with spaces in it.
+    You can then escape spaces with `_`, for example in spreadsheets where you
+    specify annotation instructions.
 
 *   `transform`: the tool can read a spreadsheet with full names and per name
     a list of occurrences that should be marked as entities for that name.

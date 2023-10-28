@@ -41,14 +41,20 @@ def normalize(text):
     return WHITE_RE.sub(" ", text).strip()
 
 
-def toTokens(text):
+def toTokens(text, spaceEscaped=False):
     """Split a text into tokens.
 
     The text is split on white space.
     Tokens are further split into maximal segments of word characters
     and individual non-word characters.
+
+    Parameters
+    ----------
+    spaceEscaped: boolean, optional False
+        If True, it is assumed that if a `_` occurs in a token string, a space is meant.
     """
-    return tuple(TOKEN_RE.findall(normalize(text)))
+    result = TOKEN_RE.findall(normalize(text))
+    return tuple((t.replace("_", " ") for t in result) if spaceEscaped else result)
 
 
 def toAscii(text):

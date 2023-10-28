@@ -99,23 +99,23 @@ spreadsheet, and it looks like this:
 christoffel.sticke:
   kind: PER
   name: Christoffel Sticke
-  occs: []
+  occSpecs: []
 diederik.sticke:
   kind: PER
   name: Diederik Sticke
-  occs:
+  occSpecs:
   - Dierck
   - Dirk
 dirck.hartog:
   kind: PER
   name: Dirck Hartog
-  occs:
+  occSpecs:
   - Dirich Hartocson
   - Hertocson
 jan.baptist.roelants:
   kind: PER
   name: Jan-Baptist Roelants
-  occs:
+  occSpecs:
   - Roelans
   - Rolans
 ```
@@ -259,17 +259,21 @@ class PowerNER(Annotate):
         """Will contain the locations of all surface forms in the current instructions.
         """
 
-    def readInstructions(self, sheetName):
-        """Read an Excel spreadsheet with instructions and translates it to YAML.
+    def readInstructions(self, sheetName, force=False):
+        """Reads an Excel or YAML file with entity recognition instructions.
 
-        It checks the modification dates of the xslx and yaml files.
-        It only performs the translation if the yaml file does not exist or is older
-        than the xslx file.
+        If an Excel spreadsheet is present and no corresponding YAML file is present,
+        or if the corresponding YAML file is out of data, the spreadsheet will be
+        converted to YAML.
 
         The info in the resulting yaml file is stored as attribute
         `instructions` in this object.
 
-        Reading instructions will invalidate the `inventory` member of this object.
+        A report of the instructions will be shown in the output.
+
+        Reading instructions will invalidate the `inventory` member of this object,
+        which is the result of looking up all entities in the corpus on the basis
+        of the instructions.
 
         Parameters
         ----------
@@ -278,6 +282,9 @@ class PowerNER(Annotate):
             The spreadsheet is expected in the `ner/sheets` directory.
             The yaml file ends up in the same directory, with the same name and
             extension `.yaml`
+        force: boolean, optional False
+            If True, the conversion from Excel to YAML will take place anyhow, provided
+            the Excel sheet exists.
         """
         sheetDir = self.sheetDir
 
@@ -293,7 +300,7 @@ class PowerNER(Annotate):
 
             doConvert = True
         else:
-            if fileExists(xlsFile) and mTime(yamlFile) < mTime(xlsFile):
+            if fileExists(xlsFile) and force or (mTime(yamlFile) < mTime(xlsFile)):
                 doConvert = True
 
         if doConvert:
@@ -312,6 +319,8 @@ class PowerNER(Annotate):
             defaultKind = defaultValues.get(kindFeature, "")
 
             info = {}
+            namesByOrigEid = {}
+            eidByName = {}
 
             for r, row in enumerate(ws.rows):
                 if r in {0, 1}:
@@ -319,34 +328,84 @@ class PowerNER(Annotate):
                 if not any(c.value for c in row):
                     continue
 
-                (ent, kind, synonyms) = (normalize(row[i].value or "") for i in range(3))
-                eid = toSmallId(ent, transform=transform)
-                if not ent:
-                    console(f"Row {r:>3}: no entity name")
-                    continue
+                (name, kind, synonymStr) = (
+                    normalize(row[i].value or "") for i in range(3)
+                )
+                synonyms = sorted(
+                    set()
+                    if not synonymStr
+                    else {normalize(x) for x in synonymStr.split(";")}
+                )
+                if not name:
+                    name = synonyms[0] if synonyms else ""
+                    if name == "":
+                        console(f"Row {r:>3}: no entity name and no synonyms")
+                        continue
+                    else:
+                        console(f"Row {r:>3}: no entity name, supplied {name}")
 
                 if not kind:
                     kind = defaultKind
 
                 i = 0
+                while name in eidByName:
+                    i += 1
+                    name = f"{name} ({i})"
+
+                eid = toSmallId(name, transform=transform)
+                namesByOrigEid.setdefault(eid, []).append(name)
+
+                i = 0
                 while eid in info:
                     i += 1
                     eid = f"{eid}.{i}"
-                    console(f"Row {r:>3}: multiple instances ({eid})")
 
-                occs = sorted(
-                    (normalize(x) for x in ([] if not synonyms else synonyms.split(";"))),
-                    key=lambda x: -len(x),
-                )
-                info[eid] = {"name": ent, kindFeature: kind, "occs": occs}
+                eidByName[name] = eid
 
+                occSpecs = sorted(synonyms, key=lambda x: -len(x))
+                info[eid] = {"name": name, kindFeature: kind, "occSpecs": occSpecs}
+
+            for origEid, names in sorted(namesByOrigEid.items()):
+                if len(names) == 1:
+                    continue
+                console(f"Multiple names for candidate identifier {origEid}:")
+                for name in names:
+                    newEid = eidByName[name]
+                    console(f"""\tIdentifier {newEid} assigned to name "{name}" """)
             writeYaml(info, asFile=yamlFile)
 
-            nEid = len(info)
-            nOcc = sum(len(x["occs"]) for x in info.values())
-            noOccs = sum(1 for x in info.values() if len(x["occs"]) == 0)
-            console(f"{nEid} entities with {nOcc} occurrence specs")
-            console(f"{noOccs} entities do not have occurrence specifiers")
+        else:
+            info = readYaml(asFile=yamlFile)
+
+        namesByOcc = {}
+
+        for eInfo in info.values():
+            name = eInfo["name"]
+            occSpecs = eInfo["occSpecs"]
+            for occSpec in occSpecs:
+                namesByOcc.setdefault(occSpec, []).append(name)
+
+        nEid = len(info)
+        nOcc = sum(len(x["occSpecs"]) for x in info.values())
+        noOccs = sum(1 for x in info.values() if len(x["occSpecs"]) == 0)
+        console(f"{nEid} entities with {nOcc} occurrence specs")
+        console(f"{noOccs} entities do not have occurrence specifiers")
+
+        nm = 0
+
+        for occSpec, names in sorted(namesByOcc.items()):
+            if len(names) == 1:
+                continue
+
+            console(f""""{occSpec}" used for:""")
+            for name in names:
+                console(f"\t{name}")
+            nm += 1
+
+        if nm == 0:
+            console("All occurrence specifiers are unambiguous")
+        else:
+            console(f"{nm} occurrence specifiers are ambiguous")
 
         self.instructions = readYaml(asFile=yamlFile)
         self.inventory = None
@@ -363,12 +422,14 @@ class PowerNER(Annotate):
         slot sequences where those token sequences occur in the corpus.
         """
         instructions = self.instructions
+        settings = self.settings
+        spaceEscaped = settings.spaceEscaped
 
         qSets = set()
 
         for info in instructions.values():
-            for occ in info.occs:
-                qSets.add(toTokens(occ))
+            for occSpec in info.occSpecs:
+                qSets.add(toTokens(occSpec, spaceEscaped=spaceEscaped))
 
         self.inventory = self.findOccs(qSets)
 
@@ -380,21 +441,23 @@ class PowerNER(Annotate):
         """
         instructions = self.instructions
         inventory = self.inventory
+        settings = self.settings
+        spaceEscaped = settings.spaceEscaped
 
         total = 0
 
         for eid, info in instructions.items():
             name = info.name
             kind = info.kind
-            occs = info.occs
+            occSpecs = info.occSpecs
 
-            for occ in occs:
-                matches = inventory.get(toTokens(occ), None)
+            for occSpec in occSpecs:
+                matches = inventory.get(toTokens(occSpec, spaceEscaped=spaceEscaped), None)
                 if matches is None:
                     continue
                 n = len(matches)
                 total += n
-                console(f"{eid:<24} {kind:<5} {occ:<20} {n:>5} x {name}")
+                console(f"{eid:<24} {kind:<5} {occSpec:<20} {n:>5} x {name}")
 
         console(f"Total {total}")
 
@@ -410,6 +473,7 @@ class PowerNER(Annotate):
         inventory = self.inventory
         instructions = self.instructions
         settings = self.settings
+        spaceEscaped = settings.spaceEscaped
         keywordFeatures = settings.keywordFeatures
         kindFeature = keywordFeatures[0]
 
@@ -421,12 +485,12 @@ class PowerNER(Annotate):
         for eid, info in instructions.items():
             kind = info[kindFeature]
 
-            occs = info.occs
-            if not len(occs):
+            occSpecs = info.occSpecs
+            if not len(occSpecs):
                 continue
 
-            for occ in info.occs:
-                qTokens = toTokens(occ)
+            for occSpec in info.occSpecs:
+                qTokens = toTokens(occSpec, spaceEscaped=spaceEscaped)
                 fValsByQTokens.setdefault(qTokens, set()).add((eid, kind))
                 qSets.add(qTokens)
 
@@ -434,7 +498,7 @@ class PowerNER(Annotate):
             inventory = self.findOccs(qSets)
             self.inventory = inventory
 
-        for (qTokens, matches) in inventory.items():
+        for qTokens, matches in inventory.items():
             for fVals in fValsByQTokens[qTokens]:
                 newEntities.append((fVals, matches))
 
