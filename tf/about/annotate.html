@@ -47,6 +47,45 @@ You can prepare a spreadsheet with entities and surface forms and have the tool
 <p>This is a tool where you can add entity annotations to a corpus.
 These annotations consist of a new nodes of a new type (<code>ent</code>, or <code>entity</code>) and
 features that give information about those nodes.</p>
+<h2 id="supported-corpora">Supported corpora</h2>
+<p>This tool is being developed against the
+<a href="https://github.com/HuygensING/suriano">HuygensING/suriano corpus</a>.
+Yet it is meant to be usable for all TF corpora. No corpus knowledge is baked in.
+If corpus specifics are needed, it will be fetched from the already present TF
+configuration of that corpus.
+And where that is not sufficient, details are put in <code>ner/config.yaml</code>, which
+can be put next to the corpus.</p>
+<p>I have tested it for the
+<a href="https://github.com/ETCBC/bhsa">ETCBC/bhsa (Hebrew Bible) corpus</a>, and the
+machinery works.
+But it remains to be seen whether the tools is sufficiently <em>ergonomic</em> for that
+corpus.</p>
+<p>See also the following Jupyter Notebooks that show the work-in-progress:</p>
+<ul>
+<li>
+<p>Suriano</p>
+<ul>
+<li><a href="https://nbviewer.org/github/HuygensING/suriano/blob/main/programs/nerTest.ipynb">basic annotation API</a></li>
+<li><a href="https://nbviewer.org/github/HuygensING/suriano/blob/main/programs/powerNer.ipynb">using a spreadsheet with instructions</a></li>
+</ul>
+</li>
+<li>
+<p>BHSA</p>
+<ul>
+<li><a href="https://nbviewer.org/github/ETCBC/bhsa/blob/master/programs/nerTest.ipynb">basic annotation API</a></li>
+<li><a href="https://nbviewer.org/github/ETCBC/bhsa/blob/master/programs/nerPower.ipynb">using a spreadsheet with instructions</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="ergonomics-of-annotation">Ergonomics of annotation</h2>
+<p>We try to reduce the work of manual annotations as much as possible.
+It is a balancing act between automating as much as possible, but not so much that
+you miss the fine points in your corpus.</p>
+<p>We need to gather experience in order to arrive at a truly usable tool.</p>
+<p>We are going to mark up the
+<a href="https://github.com/HuygensING/suriano">HuygensING/suriano corpus</a> in this way and hope
+to acquire a lot of experience in the process.</p>
+<h2 id="delivery-of-annotation-data">Delivery of annotation data</h2>
 <p>But how exactly are those new nodes and features delivered?</p>
 <p>This is work in progress!</p>
 <p>Currently, Text-Fabric supports data modules on top of a corpus, provided the modules
@@ -181,6 +220,11 @@ identifier, basically a lower case version of the full name where
 the parts of the name are separated by dots.</p>
 </li>
 <li>
+<p><code>spaceEscaped</code>: set this to True if your corpus as tokens with spaces in it.
+You can then escape spaces with <code>_</code>, for example in spreadsheets where you
+specify annotation instructions.</p>
+</li>
+<li>
 <p><code>transform</code>: the tool can read a spreadsheet with full names and per name
 a list of occurrences that should be marked as entities for that name.
 When the full name is turned into an identifier, the identifier might
@@ -248,7 +292,7 @@ I intend to write functions to make this task easier.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/about/annotate.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/97f0e0c8b3bfd8999f2ad64648d401f2e7e7865e/tf/about/annotate.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/annotate.md
@@ -320,7 +364,12 @@ setTimeout(() => input.focus(), 100);
 <div class="toc">
 <ul>
 <li><a href="#manual-annotation">Manual Annotation</a></li>
-<li><a href="#work-in-progess">Work-in-progess</a></li>
+<li><a href="#work-in-progess">Work-in-progess</a><ul>
+<li><a href="#supported-corpora">Supported corpora</a></li>
+<li><a href="#ergonomics-of-annotation">Ergonomics of annotation</a></li>
+<li><a href="#delivery-of-annotation-data">Delivery of annotation data</a></li>
+</ul>
+</li>
 <li><a href="#concepts">Concepts</a><ul>
 <li><a href="#entities">Entities</a></li>
 <li><a href="#how-entities-exist-in-a-corpus">How entities exist in a corpus</a></li>

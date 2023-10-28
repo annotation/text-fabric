@@ -34,7 +34,7 @@ control over how to customize the annotator for different corpora.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/corpus.py#L1-L302" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/97f0e0c8b3bfd8999f2ad64648d401f2e7e7865e/tf/browser/ner/corpus.py#L1-L314" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Access to the corpus.
 
@@ -55,6 +55,7 @@ import re
 
 from .settings import Settings, TOOLKEY
 from .helpers import makeCss
+from ...core.files import annotateDir
 
 
 WHITE_RE = re.compile(r&#34;&#34;&#34;\s{2,}&#34;&#34;&#34;, re.S)
@@ -63,9 +64,20 @@ NON_ALPHA_RE = re.compile(r&#34;&#34;&#34;[^\w ]&#34;&#34;&#34;, re.S)
 
 class Corpus(Settings):
     def __init__(self):
+        app = self.app
+        context = app.context
+        appName = context.appName
+        version = context.version
+
+        self.appName = appName
+        self.version = version
+        (specDir, annoDir) = annotateDir(app, TOOLKEY)
+        self.specDir = specDir
+        self.annoDir = f&#34;{annoDir}/{version}&#34;
+        self.sheetDir = f&#34;{specDir}/sheets&#34;
+
         super().__init__()
 
-        app = self.app
         api = app.api
         F = api.F
         Fs = api.Fs
@@ -364,13 +376,24 @@ Those configuration values are read from a yaml file, located in a directory
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/corpus.py#L26-L302" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/97f0e0c8b3bfd8999f2ad64648d401f2e7e7865e/tf/browser/ner/corpus.py#L27-L314" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Corpus(Settings):
     def __init__(self):
+        app = self.app
+        context = app.context
+        appName = context.appName
+        version = context.version
+
+        self.appName = appName
+        self.version = version
+        (specDir, annoDir) = annotateDir(app, TOOLKEY)
+        self.specDir = specDir
+        self.annoDir = f&#34;{annoDir}/{version}&#34;
+        self.sheetDir = f&#34;{specDir}/sheets&#34;
+
         super().__init__()
 
-        app = self.app
         api = app.api
         F = api.F
         Fs = api.Fs

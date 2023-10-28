@@ -29,7 +29,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/settings.py#L1-L215" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/97f0e0c8b3bfd8999f2ad64648d401f2e7e7865e/tf/browser/ner/settings.py#L1-L204" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Corpus dependent setup of the annotation tool.
 
@@ -39,7 +39,7 @@ To see how this fits among all the modules of this package, see
 
 
 from ...core.helpers import console as cs
-from ...core.files import annotateDir, readYaml
+from ...core.files import readYaml
 
 TOOLKEY = &#34;ner&#34;
 &#34;&#34;&#34;The name of this annotation tool.
@@ -212,19 +212,8 @@ class Settings:
         Those configuration values are read from a yaml file, located in a directory
         `ner` next to the `tf` data of the corpus.
         &#34;&#34;&#34;
-        app = self.app
-        context = app.context
+        specDir = self.specDir
 
-        version = context.version
-        self.version = version
-
-        appName = context.appName
-        self.appName = appName
-
-        (specDir, annoDir) = annotateDir(app, TOOLKEY)
-        self.specDir = specDir
-        self.annoDir = f&#34;{annoDir}/{version}&#34;
-        self.sheetDir = f&#34;{specDir}/sheets&#34;
         nerSpec = f&#34;{specDir}/config.yaml&#34;
         settings = readYaml(asFile=nerSpec, preferTuples=True)
         settings.entitySet = settings.entitySet.format(entityType=settings.entityType)
@@ -371,7 +360,7 @@ Those configuration values are read from a yaml file, located in a directory
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/settings.py#L169-L215" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/97f0e0c8b3bfd8999f2ad64648d401f2e7e7865e/tf/browser/ner/settings.py#L169-L204" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Settings:
     def __init__(self):
@@ -386,19 +375,8 @@ Those configuration values are read from a yaml file, located in a directory
         Those configuration values are read from a yaml file, located in a directory
         `ner` next to the `tf` data of the corpus.
         &#34;&#34;&#34;
-        app = self.app
-        context = app.context
+        specDir = self.specDir
 
-        version = context.version
-        self.version = version
-
-        appName = context.appName
-        self.appName = appName
-
-        (specDir, annoDir) = annotateDir(app, TOOLKEY)
-        self.specDir = specDir
-        self.annoDir = f&#34;{annoDir}/{version}&#34;
-        self.sheetDir = f&#34;{specDir}/sheets&#34;
         nerSpec = f&#34;{specDir}/config.yaml&#34;
         settings = readYaml(asFile=nerSpec, preferTuples=True)
         settings.entitySet = settings.entitySet.format(entityType=settings.entityType)
@@ -439,7 +417,7 @@ without the need to add an <code>import</code> statement to the code.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/settings.py#L206-L215" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/97f0e0c8b3bfd8999f2ad64648d401f2e7e7865e/tf/browser/ner/settings.py#L195-L204" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(self, msg, **kwargs):
     &#34;&#34;&#34;Print something to the output.

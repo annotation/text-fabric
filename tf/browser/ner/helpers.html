@@ -29,7 +29,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/helpers.py#L1-L235" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/97f0e0c8b3bfd8999f2ad64648d401f2e7e7865e/tf/browser/ner/helpers.py#L1-L241" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Auxiliary functions.
 
@@ -74,14 +74,20 @@ def normalize(text):
     return WHITE_RE.sub(&#34; &#34;, text).strip()
 
 
-def toTokens(text):
+def toTokens(text, spaceEscaped=False):
     &#34;&#34;&#34;Split a text into tokens.
 
     The text is split on white space.
     Tokens are further split into maximal segments of word characters
     and individual non-word characters.
+
+    Parameters
+    ----------
+    spaceEscaped: boolean, optional False
+        If True, it is assumed that if a `_` occurs in a token string, a space is meant.
     &#34;&#34;&#34;
-    return tuple(TOKEN_RE.findall(normalize(text)))
+    result = TOKEN_RE.findall(normalize(text))
+    return tuple((t.replace(&#34;_&#34;, &#34; &#34;) for t in result) if spaceEscaped else result)
 
 
 def toAscii(text):
@@ -308,7 +314,7 @@ the error message if the re-compilation was not successful.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/helpers.py#L148-L176" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/97f0e0c8b3bfd8999f2ad64648d401f2e7e7865e/tf/browser/ner/helpers.py#L154-L182" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findCompile(bFind, bFindC):
     &#34;&#34;&#34;Compiles a regular expression out of a search pattern.
@@ -358,7 +364,7 @@ These derive ultimately from the corpus-dependent <code>ner/config.yaml</code>.<
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/helpers.py#L179-L235" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/97f0e0c8b3bfd8999f2ad64648d401f2e7e7865e/tf/browser/ner/helpers.py#L185-L241" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCss(features, keywordFeatures):
     &#34;&#34;&#34;Generates CSS for the tool.
@@ -427,7 +433,7 @@ These derive ultimately from the corpus-dependent <code>ner/config.yaml</code>.<
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/helpers.py#L39-L41" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/97f0e0c8b3bfd8999f2ad64648d401f2e7e7865e/tf/browser/ner/helpers.py#L39-L41" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def normalize(text):
     &#34;&#34;&#34;Normalize white space in a text.&#34;&#34;&#34;
@@ -450,7 +456,7 @@ Can be used to mark the entity as active.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/helpers.py#L106-L120" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/97f0e0c8b3bfd8999f2ad64648d401f2e7e7865e/tf/browser/ner/helpers.py#L112-L126" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def repIdent(features, vals, active=&#34;&#34;):
     &#34;&#34;&#34;Represents an identifier in HTML.
@@ -485,7 +491,7 @@ Can be used to mark the entity as active.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/helpers.py#L123-L140" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/97f0e0c8b3bfd8999f2ad64648d401f2e7e7865e/tf/browser/ner/helpers.py#L129-L146" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def repSummary(keywordFeatures, vals, active=&#34;&#34;):
     &#34;&#34;&#34;Represents an keyword value in HTML.
@@ -519,7 +525,7 @@ We use a table (<code><a title="tf.browser.ner.helpers.TO_ASCII_DEF" href="#tf.b
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/helpers.py#L54-L66" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/97f0e0c8b3bfd8999f2ad64648d401f2e7e7865e/tf/browser/ner/helpers.py#L60-L72" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def toAscii(text):
     &#34;&#34;&#34;Transforms a text with diacritical marks into a plain ASCII text.
@@ -545,7 +551,7 @@ We use a table (<code><a title="tf.browser.ner.helpers.TO_ASCII_DEF" href="#tf.b
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/helpers.py#L69-L74" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/97f0e0c8b3bfd8999f2ad64648d401f2e7e7865e/tf/browser/ner/helpers.py#L75-L80" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def toId(text):
     &#34;&#34;&#34;Transforms text to an identifier string.
@@ -568,7 +574,7 @@ which ultimately is provided in the corpus-dependent
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/helpers.py#L77-L103" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/97f0e0c8b3bfd8999f2ad64648d401f2e7e7865e/tf/browser/ner/helpers.py#L83-L109" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def toSmallId(text, transform={}):
     &#34;&#34;&#34;Transforms text to a smaller identifier string.
@@ -600,26 +606,37 @@ which ultimately is provided in the corpus-dependent
 </details>
 </dd>
 <dt id="tf.browser.ner.helpers.toTokens"><code class="name flex">
-<span>def <span class="ident">toTokens</span></span>(<span>text)</span>
+<span>def <span class="ident">toTokens</span></span>(<span>text, spaceEscaped=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Split a text into tokens.</p>
 <p>The text is split on white space.
 Tokens are further split into maximal segments of word characters
-and individual non-word characters.</p></div>
+and individual non-word characters.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>spaceEscaped</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, it is assumed that if a <code>_</code> occurs in a token string, a space is meant.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/helpers.py#L44-L51" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/97f0e0c8b3bfd8999f2ad64648d401f2e7e7865e/tf/browser/ner/helpers.py#L44-L57" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def toTokens(text):
+<pre><code class="python">def toTokens(text, spaceEscaped=False):
     &#34;&#34;&#34;Split a text into tokens.
 
     The text is split on white space.
     Tokens are further split into maximal segments of word characters
     and individual non-word characters.
+
+    Parameters
+    ----------
+    spaceEscaped: boolean, optional False
+        If True, it is assumed that if a `_` occurs in a token string, a space is meant.
     &#34;&#34;&#34;
-    return tuple(TOKEN_RE.findall(normalize(text)))</code></pre>
+    result = TOKEN_RE.findall(normalize(text))
+    return tuple((t.replace(&#34;_&#34;, &#34; &#34;) for t in result) if spaceEscaped else result)</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.helpers.valRep"><code class="name flex">
@@ -630,7 +647,7 @@ and individual non-word characters.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3ce35a3d12aeb51019c957791a78d7fdbf58244/tf/browser/ner/helpers.py#L143-L145" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/97f0e0c8b3bfd8999f2ad64648d401f2e7e7865e/tf/browser/ner/helpers.py#L149-L151" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def valRep(features, fVals):
     &#34;&#34;&#34;HTML representation of an entity as a sequence of `feat=val` strings.&#34;&#34;&#34;
