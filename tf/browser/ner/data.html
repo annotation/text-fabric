@@ -38,7 +38,7 @@ processed if it is needed and out of date.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/data.py#L1-L812" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/data.py#L1-L900" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Annotation data module.
 
@@ -388,7 +388,10 @@ class Data(Corpus):
             pass
 
     def delEntity(self, vals, allMatches=None, silent=True):
-        &#34;&#34;&#34;Delete entity occurrences from a set.
+        &#34;&#34;&#34;Delete entity occurrences from the current set.
+
+        This operation is not allowed if the current set is the readonly set with the
+        empty name.
 
         The entities to delete are selected by their feature values.
         So you can use this function to delete all entities with a certain
@@ -415,7 +418,18 @@ class Data(Corpus):
         (int, int) or void
             If `silent`, it returns the number of non-existing entities that were
             asked to be deleted and the number of actually deleted entities.
+
+            If the operation is not allowed, both integers above are set to -1.
         &#34;&#34;&#34;
+        annoSet = self.annoSet
+        annoSetRep = self.annoSetRep
+
+        if not annoSet:
+            if silent:
+                return (-1, -1)
+            self.console(f&#34;Entity deletion not allowed on {annoSetRep}&#34;, error=True)
+            return
+
         setData = self.getSetData()
 
         oldEntities = setData.entities
@@ -453,7 +467,10 @@ class Data(Corpus):
         self.console(f&#34;Deleted:     {deleted:&gt;5} x&#34;)
 
     def delEntityRich(self, deletions, buckets, excludedTokens=set()):
-        &#34;&#34;&#34;Delete specified entity occurrences from a set.
+        &#34;&#34;&#34;Delete specified entity occurrences from the current set.
+
+        This operation is not allowed if the current set is the readonly set with the
+        empty name.
 
         This function has more detailed instructions as to which entities
         should be deleted than `Data.delEntity()` .
@@ -481,9 +498,20 @@ class Data(Corpus):
             skipped from deletion. If the last slot of an entity is in this set,
             the entity will not be deleted.
         &#34;&#34;&#34;
+        annoSet = self.annoSet
+        annoSetRep = self.annoSetRep
+        browse = self.browse
+
+        if not annoSet:
+            msg = f&#34;Entity deletion not allowed on {annoSetRep}&#34;
+            if browse:
+                return [[msg]]
+            else:
+                self.console(msg, error=True)
+                return
+
         settings = self.settings
         features = settings.features
-        browse = self.browse
         setData = self.getSetData()
 
         oldEntities = setData.entities
@@ -562,7 +590,10 @@ class Data(Corpus):
             self.console(&#34;\n&#34;.join(rest))
 
     def addEntity(self, vals, allMatches, silent=True):
-        &#34;&#34;&#34;Add entity occurrences to a set.
+        &#34;&#34;&#34;Add entity occurrences to the current set.
+
+        This operation is not allowed if the current set is the readonly set with the
+        empty name.
 
         The entities to add are specified by their feature values.
         So you can use this function to add entities with a certain
@@ -587,7 +618,18 @@ class Data(Corpus):
         (int, int) or void
             If `silent`, it returns the number of already existing entities that were
             asked to be deleted and the number of actually deleted entities.
+
+            If the operation is not allowed, both integers above are set to -1.
         &#34;&#34;&#34;
+        annoSet = self.annoSet
+        annoSetRep = self.annoSetRep
+
+        if not annoSet:
+            if silent:
+                return (-1, -1)
+            self.console(f&#34;Entity addition not allowed on {annoSetRep}&#34;, error=True)
+            return
+
         setData = self.getSetData()
 
         oldEntities = setData.entities
@@ -625,7 +667,10 @@ class Data(Corpus):
         self.console(f&#34;Added:           {added:&gt;5} x&#34;)
 
     def addEntities(self, newEntities, silent=True):
-        &#34;&#34;&#34;Add multiple entites efficiently.
+        &#34;&#34;&#34;Add multiple entities efficiently to the current set.
+
+        This operation is not allowed if the current set is the readonly set with the
+        empty name.
 
         If you have multiple entities to add, it is wasteful to do multiple passes over
         the corpus to find them.
@@ -651,7 +696,18 @@ class Data(Corpus):
         (int, int) or void
             If `silent`, it returns the number of already existing entities that were
             asked to be deleted and the number of actually deleted entities.
+
+            If the operation is not allowed, both integers above are set to -1.
         &#34;&#34;&#34;
+        annoSet = self.annoSet
+        annoSetRep = self.annoSetRep
+
+        if not annoSet:
+            if silent:
+                return (-1, -1)
+            self.console(f&#34;Entities addition not allowed on {annoSetRep}&#34;, error=True)
+            return
+
         setData = self.getSetData()
 
         oldEntities = set(setData.entities.values())
@@ -682,7 +738,10 @@ class Data(Corpus):
         self.console(f&#34;Added:           {added:&gt;5} x&#34;)
 
     def addEntityRich(self, additions, buckets, excludedTokens=set()):
-        &#34;&#34;&#34;Add specified entity occurrences to a set.
+        &#34;&#34;&#34;Add specified entity occurrences to the current set.
+
+        This operation is not allowed if the current set is the readonly set with the
+        empty name.
 
         This function has more detailed instructions as to which entities
         should be added than `Data.addEntity()` .
@@ -710,10 +769,21 @@ class Data(Corpus):
             receive new entities. If the last slot of an entity is in this set,
             no entity will be added there.
         &#34;&#34;&#34;
+        annoSet = self.annoSet
+        annoSetRep = self.annoSetRep
+        browse = self.browse
+
+        if not annoSet:
+            msg = f&#34;Entity addition not allowed on {annoSetRep}&#34;
+            if browse:
+                return [[msg]]
+            else:
+                self.console(msg, error=True)
+                return
+
         settings = self.settings
         features = settings.features
 
-        browse = self.browse
         setData = self.getSetData()
 
         oldEntities = setData.entities
@@ -785,7 +855,10 @@ class Data(Corpus):
             self.console(&#34;\n&#34;.join(rest))
 
     def weedEntities(self, delEntities):
-        &#34;&#34;&#34;Performs deletions to an annotation set.
+        &#34;&#34;&#34;Performs deletions to the current annotation set.
+
+        This operation is not allowed if the current set is the readonly set with the
+        empty name.
 
         Parameters
         ----------
@@ -793,11 +866,17 @@ class Data(Corpus):
             The set consists of entity specs: a tuple of values of entity features,
             and an iterable of slot tuples where the entity is located.
         &#34;&#34;&#34;
+        annoSet = self.annoSet
+        annoSetRep = self.annoSetRep
+
+        if not annoSet:
+            self.console(f&#34;Entity weeding not allowed on {annoSetRep}&#34;, error=True)
+            return
+
         settings = self.settings
         features = settings.features
         nF = len(features)
 
-        annoSet = self.annoSet
         annoDir = self.annoDir
 
         dataFile = f&#34;{annoDir}/{annoSet}/entities.tsv&#34;
@@ -818,7 +897,10 @@ class Data(Corpus):
             fh.write(&#34;&#34;.join(newEntities))
 
     def mergeEntities(self, newEntities):
-        &#34;&#34;&#34;Performs additions to an annotation set.
+        &#34;&#34;&#34;Performs additions to the current annotation set.
+
+        This operation is not allowed if the current set is the readonly set with the
+        empty name.
 
         Parameters
         ----------
@@ -827,6 +909,12 @@ class Data(Corpus):
             and an iterable of slot tuples where the entity is located.
         &#34;&#34;&#34;
         annoSet = self.annoSet
+        annoSetRep = self.annoSetRep
+
+        if not annoSet:
+            self.console(f&#34;Entity merging not allowed on {annoSetRep}&#34;, error=True)
+            return
+
         annoDir = self.annoDir
 
         dataFile = f&#34;{annoDir}/{annoSet}/entities.tsv&#34;
@@ -894,7 +982,7 @@ it to the initializer here.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/data.py#L32-L812" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/data.py#L32-L900" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Data(Corpus):
     def __init__(self, data=None):
@@ -1213,7 +1301,10 @@ it to the initializer here.</p>
             pass
 
     def delEntity(self, vals, allMatches=None, silent=True):
-        &#34;&#34;&#34;Delete entity occurrences from a set.
+        &#34;&#34;&#34;Delete entity occurrences from the current set.
+
+        This operation is not allowed if the current set is the readonly set with the
+        empty name.
 
         The entities to delete are selected by their feature values.
         So you can use this function to delete all entities with a certain
@@ -1240,7 +1331,18 @@ it to the initializer here.</p>
         (int, int) or void
             If `silent`, it returns the number of non-existing entities that were
             asked to be deleted and the number of actually deleted entities.
+
+            If the operation is not allowed, both integers above are set to -1.
         &#34;&#34;&#34;
+        annoSet = self.annoSet
+        annoSetRep = self.annoSetRep
+
+        if not annoSet:
+            if silent:
+                return (-1, -1)
+            self.console(f&#34;Entity deletion not allowed on {annoSetRep}&#34;, error=True)
+            return
+
         setData = self.getSetData()
 
         oldEntities = setData.entities
@@ -1278,7 +1380,10 @@ it to the initializer here.</p>
         self.console(f&#34;Deleted:     {deleted:&gt;5} x&#34;)
 
     def delEntityRich(self, deletions, buckets, excludedTokens=set()):
-        &#34;&#34;&#34;Delete specified entity occurrences from a set.
+        &#34;&#34;&#34;Delete specified entity occurrences from the current set.
+
+        This operation is not allowed if the current set is the readonly set with the
+        empty name.
 
         This function has more detailed instructions as to which entities
         should be deleted than `Data.delEntity()` .
@@ -1306,9 +1411,20 @@ it to the initializer here.</p>
             skipped from deletion. If the last slot of an entity is in this set,
             the entity will not be deleted.
         &#34;&#34;&#34;
+        annoSet = self.annoSet
+        annoSetRep = self.annoSetRep
+        browse = self.browse
+
+        if not annoSet:
+            msg = f&#34;Entity deletion not allowed on {annoSetRep}&#34;
+            if browse:
+                return [[msg]]
+            else:
+                self.console(msg, error=True)
+                return
+
         settings = self.settings
         features = settings.features
-        browse = self.browse
         setData = self.getSetData()
 
         oldEntities = setData.entities
@@ -1387,7 +1503,10 @@ it to the initializer here.</p>
             self.console(&#34;\n&#34;.join(rest))
 
     def addEntity(self, vals, allMatches, silent=True):
-        &#34;&#34;&#34;Add entity occurrences to a set.
+        &#34;&#34;&#34;Add entity occurrences to the current set.
+
+        This operation is not allowed if the current set is the readonly set with the
+        empty name.
 
         The entities to add are specified by their feature values.
         So you can use this function to add entities with a certain
@@ -1412,7 +1531,18 @@ it to the initializer here.</p>
         (int, int) or void
             If `silent`, it returns the number of already existing entities that were
             asked to be deleted and the number of actually deleted entities.
+
+            If the operation is not allowed, both integers above are set to -1.
         &#34;&#34;&#34;
+        annoSet = self.annoSet
+        annoSetRep = self.annoSetRep
+
+        if not annoSet:
+            if silent:
+                return (-1, -1)
+            self.console(f&#34;Entity addition not allowed on {annoSetRep}&#34;, error=True)
+            return
+
         setData = self.getSetData()
 
         oldEntities = setData.entities
@@ -1450,7 +1580,10 @@ it to the initializer here.</p>
         self.console(f&#34;Added:           {added:&gt;5} x&#34;)
 
     def addEntities(self, newEntities, silent=True):
-        &#34;&#34;&#34;Add multiple entites efficiently.
+        &#34;&#34;&#34;Add multiple entities efficiently to the current set.
+
+        This operation is not allowed if the current set is the readonly set with the
+        empty name.
 
         If you have multiple entities to add, it is wasteful to do multiple passes over
         the corpus to find them.
@@ -1476,7 +1609,18 @@ it to the initializer here.</p>
         (int, int) or void
             If `silent`, it returns the number of already existing entities that were
             asked to be deleted and the number of actually deleted entities.
+
+            If the operation is not allowed, both integers above are set to -1.
         &#34;&#34;&#34;
+        annoSet = self.annoSet
+        annoSetRep = self.annoSetRep
+
+        if not annoSet:
+            if silent:
+                return (-1, -1)
+            self.console(f&#34;Entities addition not allowed on {annoSetRep}&#34;, error=True)
+            return
+
         setData = self.getSetData()
 
         oldEntities = set(setData.entities.values())
@@ -1507,7 +1651,10 @@ it to the initializer here.</p>
         self.console(f&#34;Added:           {added:&gt;5} x&#34;)
 
     def addEntityRich(self, additions, buckets, excludedTokens=set()):
-        &#34;&#34;&#34;Add specified entity occurrences to a set.
+        &#34;&#34;&#34;Add specified entity occurrences to the current set.
+
+        This operation is not allowed if the current set is the readonly set with the
+        empty name.
 
         This function has more detailed instructions as to which entities
         should be added than `Data.addEntity()` .
@@ -1535,10 +1682,21 @@ it to the initializer here.</p>
             receive new entities. If the last slot of an entity is in this set,
             no entity will be added there.
         &#34;&#34;&#34;
+        annoSet = self.annoSet
+        annoSetRep = self.annoSetRep
+        browse = self.browse
+
+        if not annoSet:
+            msg = f&#34;Entity addition not allowed on {annoSetRep}&#34;
+            if browse:
+                return [[msg]]
+            else:
+                self.console(msg, error=True)
+                return
+
         settings = self.settings
         features = settings.features
 
-        browse = self.browse
         setData = self.getSetData()
 
         oldEntities = setData.entities
@@ -1610,7 +1768,10 @@ it to the initializer here.</p>
             self.console(&#34;\n&#34;.join(rest))
 
     def weedEntities(self, delEntities):
-        &#34;&#34;&#34;Performs deletions to an annotation set.
+        &#34;&#34;&#34;Performs deletions to the current annotation set.
+
+        This operation is not allowed if the current set is the readonly set with the
+        empty name.
 
         Parameters
         ----------
@@ -1618,11 +1779,17 @@ it to the initializer here.</p>
             The set consists of entity specs: a tuple of values of entity features,
             and an iterable of slot tuples where the entity is located.
         &#34;&#34;&#34;
+        annoSet = self.annoSet
+        annoSetRep = self.annoSetRep
+
+        if not annoSet:
+            self.console(f&#34;Entity weeding not allowed on {annoSetRep}&#34;, error=True)
+            return
+
         settings = self.settings
         features = settings.features
         nF = len(features)
 
-        annoSet = self.annoSet
         annoDir = self.annoDir
 
         dataFile = f&#34;{annoDir}/{annoSet}/entities.tsv&#34;
@@ -1643,7 +1810,10 @@ it to the initializer here.</p>
             fh.write(&#34;&#34;.join(newEntities))
 
     def mergeEntities(self, newEntities):
-        &#34;&#34;&#34;Performs additions to an annotation set.
+        &#34;&#34;&#34;Performs additions to the current annotation set.
+
+        This operation is not allowed if the current set is the readonly set with the
+        empty name.
 
         Parameters
         ----------
@@ -1652,6 +1822,12 @@ it to the initializer here.</p>
             and an iterable of slot tuples where the entity is located.
         &#34;&#34;&#34;
         annoSet = self.annoSet
+        annoSetRep = self.annoSetRep
+
+        if not annoSet:
+            self.console(f&#34;Entity merging not allowed on {annoSetRep}&#34;, error=True)
+            return
+
         annoDir = self.annoDir
 
         dataFile = f&#34;{annoDir}/{annoSet}/entities.tsv&#34;
@@ -1693,7 +1869,9 @@ it to the initializer here.</p>
 <span>def <span class="ident">addEntities</span></span>(<span>self, newEntities, silent=True)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Add multiple entites efficiently.</p>
+<div class="desc"><p>Add multiple entities efficiently to the current set.</p>
+<p>This operation is not allowed if the current set is the readonly set with the
+empty name.</p>
 <p>If you have multiple entities to add, it is wasteful to do multiple passes over
 the corpus to find them.</p>
 <p>This method does them all in one fell swoop.
@@ -1716,14 +1894,19 @@ in the specified locations.</dd>
 <h2 id="returns">Returns</h2>
 <p>(int, int) or void
 If <code>silent</code>, it returns the number of already existing entities that were
-asked to be deleted and the number of actually deleted entities.</p></div>
+asked to be deleted and the number of actually deleted entities.</p>
+<pre><code>If the operation is not allowed, both integers above are set to -1.
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/data.py#L585-L640" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/data.py#L627-L696" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addEntities(self, newEntities, silent=True):
-    &#34;&#34;&#34;Add multiple entites efficiently.
+    &#34;&#34;&#34;Add multiple entities efficiently to the current set.
+
+    This operation is not allowed if the current set is the readonly set with the
+    empty name.
 
     If you have multiple entities to add, it is wasteful to do multiple passes over
     the corpus to find them.
@@ -1749,7 +1932,18 @@ asked to be deleted and the number of actually deleted entities.</p></div>
     (int, int) or void
         If `silent`, it returns the number of already existing entities that were
         asked to be deleted and the number of actually deleted entities.
+
+        If the operation is not allowed, both integers above are set to -1.
     &#34;&#34;&#34;
+    annoSet = self.annoSet
+    annoSetRep = self.annoSetRep
+
+    if not annoSet:
+        if silent:
+            return (-1, -1)
+        self.console(f&#34;Entities addition not allowed on {annoSetRep}&#34;, error=True)
+        return
+
     setData = self.getSetData()
 
     oldEntities = set(setData.entities.values())
@@ -1784,7 +1978,9 @@ asked to be deleted and the number of actually deleted entities.</p></div>
 <span>def <span class="ident">addEntity</span></span>(<span>self, vals, allMatches, silent=True)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Add entity occurrences to a set.</p>
+<div class="desc"><p>Add entity occurrences to the current set.</p>
+<p>This operation is not allowed if the current set is the readonly set with the
+empty name.</p>
 <p>The entities to add are specified by their feature values.
 So you can use this function to add entities with a certain
 entity id and kind.</p>
@@ -1804,14 +2000,19 @@ in the specified locations.</dd>
 <h2 id="returns">Returns</h2>
 <p>(int, int) or void
 If <code>silent</code>, it returns the number of already existing entities that were
-asked to be deleted and the number of actually deleted entities.</p></div>
+asked to be deleted and the number of actually deleted entities.</p>
+<pre><code>If the operation is not allowed, both integers above are set to -1.
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/data.py#L522-L583" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/data.py#L550-L625" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addEntity(self, vals, allMatches, silent=True):
-    &#34;&#34;&#34;Add entity occurrences to a set.
+    &#34;&#34;&#34;Add entity occurrences to the current set.
+
+    This operation is not allowed if the current set is the readonly set with the
+    empty name.
 
     The entities to add are specified by their feature values.
     So you can use this function to add entities with a certain
@@ -1836,7 +2037,18 @@ asked to be deleted and the number of actually deleted entities.</p></div>
     (int, int) or void
         If `silent`, it returns the number of already existing entities that were
         asked to be deleted and the number of actually deleted entities.
+
+        If the operation is not allowed, both integers above are set to -1.
     &#34;&#34;&#34;
+    annoSet = self.annoSet
+    annoSetRep = self.annoSetRep
+
+    if not annoSet:
+        if silent:
+            return (-1, -1)
+        self.console(f&#34;Entity addition not allowed on {annoSetRep}&#34;, error=True)
+        return
+
     setData = self.getSetData()
 
     oldEntities = setData.entities
@@ -1878,7 +2090,9 @@ asked to be deleted and the number of actually deleted entities.</p></div>
 <span>def <span class="ident">addEntityRich</span></span>(<span>self, additions, buckets, excludedTokens=set())</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Add specified entity occurrences to a set.</p>
+<div class="desc"><p>Add specified entity occurrences to the current set.</p>
+<p>This operation is not allowed if the current set is the readonly set with the
+empty name.</p>
 <p>This function has more detailed instructions as to which entities
 should be added than <code><a title="tf.browser.ner.data.Data.addEntity" href="#tf.browser.ner.data.Data.addEntity">Data.addEntity()</a></code> .</p>
 <p>It is a handy function for the TF browser to call, but not so much when you
@@ -1906,10 +2120,13 @@ no entity will be added there.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/data.py#L642-L743" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/data.py#L698-L813" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addEntityRich(self, additions, buckets, excludedTokens=set()):
-    &#34;&#34;&#34;Add specified entity occurrences to a set.
+    &#34;&#34;&#34;Add specified entity occurrences to the current set.
+
+    This operation is not allowed if the current set is the readonly set with the
+    empty name.
 
     This function has more detailed instructions as to which entities
     should be added than `Data.addEntity()` .
@@ -1937,10 +2154,21 @@ no entity will be added there.</dd>
         receive new entities. If the last slot of an entity is in this set,
         no entity will be added there.
     &#34;&#34;&#34;
+    annoSet = self.annoSet
+    annoSetRep = self.annoSetRep
+    browse = self.browse
+
+    if not annoSet:
+        msg = f&#34;Entity addition not allowed on {annoSetRep}&#34;
+        if browse:
+            return [[msg]]
+        else:
+            self.console(msg, error=True)
+            return
+
     settings = self.settings
     features = settings.features
 
-    browse = self.browse
     setData = self.getSetData()
 
     oldEntities = setData.entities
@@ -2016,7 +2244,9 @@ no entity will be added there.</dd>
 <span>def <span class="ident">delEntity</span></span>(<span>self, vals, allMatches=None, silent=True)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Delete entity occurrences from a set.</p>
+<div class="desc"><p>Delete entity occurrences from the current set.</p>
+<p>This operation is not allowed if the current set is the readonly set with the
+empty name.</p>
 <p>The entities to delete are selected by their feature values.
 So you can use this function to delete all entities with a certain
 entity id and kind.</p>
@@ -2038,14 +2268,19 @@ in the specified locations.</dd>
 <h2 id="returns">Returns</h2>
 <p>(int, int) or void
 If <code>silent</code>, it returns the number of non-existing entities that were
-asked to be deleted and the number of actually deleted entities.</p></div>
+asked to be deleted and the number of actually deleted entities.</p>
+<pre><code>If the operation is not allowed, both integers above are set to -1.
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/data.py#L348-L411" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/data.py#L348-L425" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def delEntity(self, vals, allMatches=None, silent=True):
-    &#34;&#34;&#34;Delete entity occurrences from a set.
+    &#34;&#34;&#34;Delete entity occurrences from the current set.
+
+    This operation is not allowed if the current set is the readonly set with the
+    empty name.
 
     The entities to delete are selected by their feature values.
     So you can use this function to delete all entities with a certain
@@ -2072,7 +2307,18 @@ asked to be deleted and the number of actually deleted entities.</p></div>
     (int, int) or void
         If `silent`, it returns the number of non-existing entities that were
         asked to be deleted and the number of actually deleted entities.
+
+        If the operation is not allowed, both integers above are set to -1.
     &#34;&#34;&#34;
+    annoSet = self.annoSet
+    annoSetRep = self.annoSetRep
+
+    if not annoSet:
+        if silent:
+            return (-1, -1)
+        self.console(f&#34;Entity deletion not allowed on {annoSetRep}&#34;, error=True)
+        return
+
     setData = self.getSetData()
 
     oldEntities = setData.entities
@@ -2114,7 +2360,9 @@ asked to be deleted and the number of actually deleted entities.</p></div>
 <span>def <span class="ident">delEntityRich</span></span>(<span>self, deletions, buckets, excludedTokens=set())</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Delete specified entity occurrences from a set.</p>
+<div class="desc"><p>Delete specified entity occurrences from the current set.</p>
+<p>This operation is not allowed if the current set is the readonly set with the
+empty name.</p>
 <p>This function has more detailed instructions as to which entities
 should be deleted than <code><a title="tf.browser.ner.data.Data.delEntity" href="#tf.browser.ner.data.Data.delEntity">Data.delEntity()</a></code> .</p>
 <p>It is a handy function for the TF browser to call, but not so much when you
@@ -2142,10 +2390,13 @@ the entity will not be deleted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/data.py#L413-L520" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/data.py#L427-L548" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def delEntityRich(self, deletions, buckets, excludedTokens=set()):
-    &#34;&#34;&#34;Delete specified entity occurrences from a set.
+    &#34;&#34;&#34;Delete specified entity occurrences from the current set.
+
+    This operation is not allowed if the current set is the readonly set with the
+    empty name.
 
     This function has more detailed instructions as to which entities
     should be deleted than `Data.delEntity()` .
@@ -2173,9 +2424,20 @@ the entity will not be deleted.</dd>
         skipped from deletion. If the last slot of an entity is in this set,
         the entity will not be deleted.
     &#34;&#34;&#34;
+    annoSet = self.annoSet
+    annoSetRep = self.annoSetRep
+    browse = self.browse
+
+    if not annoSet:
+        msg = f&#34;Entity deletion not allowed on {annoSetRep}&#34;
+        if browse:
+            return [[msg]]
+        else:
+            self.console(msg, error=True)
+            return
+
     settings = self.settings
     features = settings.features
-    browse = self.browse
     setData = self.getSetData()
 
     oldEntities = setData.entities
@@ -2276,7 +2538,7 @@ that are part of the entity.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/data.py#L96-L183" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/data.py#L96-L183" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fromSource(self):
     &#34;&#34;&#34;Loads annotation data from source.
@@ -2381,7 +2643,7 @@ that are part of the entity.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/data.py#L72-L94" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/data.py#L72-L94" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadData(self):
     &#34;&#34;&#34;Loads data of the current annotation set into memory.
@@ -2412,7 +2674,9 @@ that are part of the entity.</li>
 <span>def <span class="ident">mergeEntities</span></span>(<span>self, newEntities)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Performs additions to an annotation set.</p>
+<div class="desc"><p>Performs additions to the current annotation set.</p>
+<p>This operation is not allowed if the current set is the readonly set with the
+empty name.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>newEntities</code></strong> :&ensp;<code>set</code></dt>
@@ -2422,10 +2686,13 @@ and an iterable of slot tuples where the entity is located.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/data.py#L778-L794" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/data.py#L857-L882" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mergeEntities(self, newEntities):
-    &#34;&#34;&#34;Performs additions to an annotation set.
+    &#34;&#34;&#34;Performs additions to the current annotation set.
+
+    This operation is not allowed if the current set is the readonly set with the
+    empty name.
 
     Parameters
     ----------
@@ -2434,6 +2701,12 @@ and an iterable of slot tuples where the entity is located.</dd>
         and an iterable of slot tuples where the entity is located.
     &#34;&#34;&#34;
     annoSet = self.annoSet
+    annoSetRep = self.annoSetRep
+
+    if not annoSet:
+        self.console(f&#34;Entity merging not allowed on {annoSetRep}&#34;, error=True)
+        return
+
     annoDir = self.annoDir
 
     dataFile = f&#34;{annoDir}/{annoSet}/entities.tsv&#34;
@@ -2502,7 +2775,7 @@ entities in the surrounding context of tokens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/data.py#L185-L346" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/data.py#L185-L346" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def process(self, changed):
     &#34;&#34;&#34;Generated derived data structures out of the source data.
@@ -2683,7 +2956,7 @@ entities in the surrounding context of tokens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/data.py#L796-L812" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/data.py#L884-L900" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def saveEntitiesAs(self, dataFile):
     &#34;&#34;&#34;Export the data of an annotation set to a file.
@@ -2708,7 +2981,9 @@ entities in the surrounding context of tokens.</p>
 <span>def <span class="ident">weedEntities</span></span>(<span>self, delEntities)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Performs deletions to an annotation set.</p>
+<div class="desc"><p>Performs deletions to the current annotation set.</p>
+<p>This operation is not allowed if the current set is the readonly set with the
+empty name.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>delEntities</code></strong> :&ensp;<code>set</code></dt>
@@ -2718,10 +2993,13 @@ and an iterable of slot tuples where the entity is located.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/data.py#L745-L776" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/data.py#L815-L855" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def weedEntities(self, delEntities):
-    &#34;&#34;&#34;Performs deletions to an annotation set.
+    &#34;&#34;&#34;Performs deletions to the current annotation set.
+
+    This operation is not allowed if the current set is the readonly set with the
+    empty name.
 
     Parameters
     ----------
@@ -2729,11 +3007,17 @@ and an iterable of slot tuples where the entity is located.</dd>
         The set consists of entity specs: a tuple of values of entity features,
         and an iterable of slot tuples where the entity is located.
     &#34;&#34;&#34;
+    annoSet = self.annoSet
+    annoSetRep = self.annoSetRep
+
+    if not annoSet:
+        self.console(f&#34;Entity weeding not allowed on {annoSetRep}&#34;, error=True)
+        return
+
     settings = self.settings
     features = settings.features
     nF = len(features)
 
-    annoSet = self.annoSet
     annoDir = self.annoDir
 
     dataFile = f&#34;{annoDir}/{annoSet}/entities.tsv&#34;
@@ -2759,6 +3043,7 @@ and an iterable of slot tuples where the entity is located.</dd>
 <ul class="hlist">
 <li><code><b><a title="tf.browser.ner.corpus.Corpus" href="corpus.html#tf.browser.ner.corpus.Corpus">Corpus</a></b></code>:
 <ul class="hlist">
+<li><code><a title="tf.browser.ner.corpus.Corpus.checkBuckets" href="corpus.html#tf.browser.ner.corpus.Corpus.checkBuckets">checkBuckets</a></code></li>
 <li><code><a title="tf.browser.ner.corpus.Corpus.checkFeature" href="corpus.html#tf.browser.ner.corpus.Corpus.checkFeature">checkFeature</a></code></li>
 <li><code><a title="tf.browser.ner.corpus.Corpus.console" href="settings.html#tf.browser.ner.settings.Settings.console">console</a></code></li>
 <li><code><a title="tf.browser.ner.corpus.Corpus.featureDefault" href="corpus.html#tf.browser.ner.corpus.Corpus.featureDefault">featureDefault</a></code></li>

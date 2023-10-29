@@ -95,7 +95,7 @@ web &lt;-----&lt; Serve &lt;-----------------&lt; Annotate  &lt;-&lt; match
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/annotate.py#L1-L383" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/annotate.py#L1-L399" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Central Annotation object.
 
@@ -261,6 +261,7 @@ class Annotate(Sets, Show):
 
     def filterContent(
         self,
+        buckets=None,
         node=None,
         bFind=None,
         bFindC=None,
@@ -274,8 +275,9 @@ class Annotate(Sets, Show):
     ):
         &#34;&#34;&#34;Filter the buckets according to a variety of criteria.
 
-        Either the buckets of the whole corpus are filtered, or a subset of buckets,
-        namely those contained in a particular node.
+        Either the buckets of the whole corpus are filtered, or a given subset
+        of buckets, or a subset of buckets, namely those contained in a
+        particular node, see parameters `node`, and `buckets`.
 
         **Bucket filtering**
 
@@ -302,6 +304,15 @@ class Annotate(Sets, Show):
 
         Parameters
         ----------
+        buckets: set of integer, optional None
+            The set of buckets to filter, instead of the whole corpus.
+            Works also if the parameter `node` is specified, which also restricts
+            the buckets to filter. If both are specified, their effect will be
+            combined.
+        node: integer, optional None
+            Gets the context of the node, typically the intermediate-level section
+            in which the node occurs. Then restricts the filtering to the buckets
+            contained in the context, instead of the whole corpus.
         bFind: string, optional None
             A search pattern that filters the buckets, before applying the search
             for a token sequence.
@@ -371,10 +382,15 @@ class Annotate(Sets, Show):
         entitySlotAll = setData.entitySlotAll
         entitySlotIndex = setData.entitySlotIndex
 
+        bucketUniverse = (
+            setData.buckets
+            if buckets is None
+            else tuple(sorted(self.checkBuckets(buckets)))
+        )
         buckets = (
-            setData.buckets or ()
+            bucketUniverse
             if node is None
-            else self.getContext(node)
+            else tuple(sorted(set(bucketUniverse) &amp; set(self.getContext(node))))
         )
 
         nFind = 0
@@ -391,11 +407,11 @@ class Annotate(Sets, Show):
         hasQTokens = qTokens is not None and len(qTokens)
         hasOcc = not hasEnt and hasQTokens
 
-        if eVals is not None:
+        if eVals is not None and eVals in entityVal:
             eSlots = entityVal[eVals]
             eStarts = {s[0]: s[-1] for s in eSlots}
         else:
-            eStarts = None
+            eStarts = {}
 
         useQTokens = qTokens if hasOcc else None
 
@@ -526,7 +542,7 @@ browser. This will influence how results are reported back.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/annotate.py#L89-L383" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/annotate.py#L89-L399" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Annotate(Sets, Show):
     def __init__(self, app, data=None, browse=False):
@@ -604,6 +620,7 @@ browser. This will influence how results are reported back.</dd>
 
     def filterContent(
         self,
+        buckets=None,
         node=None,
         bFind=None,
         bFindC=None,
@@ -617,8 +634,9 @@ browser. This will influence how results are reported back.</dd>
     ):
         &#34;&#34;&#34;Filter the buckets according to a variety of criteria.
 
-        Either the buckets of the whole corpus are filtered, or a subset of buckets,
-        namely those contained in a particular node.
+        Either the buckets of the whole corpus are filtered, or a given subset
+        of buckets, or a subset of buckets, namely those contained in a
+        particular node, see parameters `node`, and `buckets`.
 
         **Bucket filtering**
 
@@ -645,6 +663,15 @@ browser. This will influence how results are reported back.</dd>
 
         Parameters
         ----------
+        buckets: set of integer, optional None
+            The set of buckets to filter, instead of the whole corpus.
+            Works also if the parameter `node` is specified, which also restricts
+            the buckets to filter. If both are specified, their effect will be
+            combined.
+        node: integer, optional None
+            Gets the context of the node, typically the intermediate-level section
+            in which the node occurs. Then restricts the filtering to the buckets
+            contained in the context, instead of the whole corpus.
         bFind: string, optional None
             A search pattern that filters the buckets, before applying the search
             for a token sequence.
@@ -714,10 +741,15 @@ browser. This will influence how results are reported back.</dd>
         entitySlotAll = setData.entitySlotAll
         entitySlotIndex = setData.entitySlotIndex
 
+        bucketUniverse = (
+            setData.buckets
+            if buckets is None
+            else tuple(sorted(self.checkBuckets(buckets)))
+        )
         buckets = (
-            setData.buckets or ()
+            bucketUniverse
             if node is None
-            else self.getContext(node)
+            else tuple(sorted(set(bucketUniverse) &amp; set(self.getContext(node))))
         )
 
         nFind = 0
@@ -734,11 +766,11 @@ browser. This will influence how results are reported back.</dd>
         hasQTokens = qTokens is not None and len(qTokens)
         hasOcc = not hasEnt and hasQTokens
 
-        if eVals is not None:
+        if eVals is not None and eVals in entityVal:
             eSlots = entityVal[eVals]
             eStarts = {s[0]: s[-1] for s in eSlots}
         else:
-            eStarts = None
+            eStarts = {}
 
         useQTokens = qTokens if hasOcc else None
 
@@ -839,12 +871,13 @@ browser. This will influence how results are reported back.</dd>
 <h3>Methods</h3>
 <dl>
 <dt id="tf.browser.ner.annotate.Annotate.filterContent"><code class="name flex">
-<span>def <span class="ident">filterContent</span></span>(<span>self, node=None, bFind=None, bFindC=None, bFindRe=None, anyEnt=None, eVals=None, qTokens=None, valSelect=None, freeState=None, showStats=None)</span>
+<span>def <span class="ident">filterContent</span></span>(<span>self, buckets=None, node=None, bFind=None, bFindC=None, bFindRe=None, anyEnt=None, eVals=None, qTokens=None, valSelect=None, freeState=None, showStats=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Filter the buckets according to a variety of criteria.</p>
-<p>Either the buckets of the whole corpus are filtered, or a subset of buckets,
-namely those contained in a particular node.</p>
+<p>Either the buckets of the whole corpus are filtered, or a given subset
+of buckets, or a subset of buckets, namely those contained in a
+particular node, see parameters <code>node</code>, and <code>buckets</code>.</p>
 <p><strong>Bucket filtering</strong></p>
 <p>The parameters <code>bFind</code>, <code>bFindC</code>, <code>bFindRe</code>
 specify a regular expression
@@ -862,6 +895,15 @@ and <code>freeState</code>.</p>
 are included in the result.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
+<dt><strong><code>buckets</code></strong> :&ensp;<code>set</code> of <code>integer</code>, optional <code>None</code></dt>
+<dd>The set of buckets to filter, instead of the whole corpus.
+Works also if the parameter <code>node</code> is specified, which also restricts
+the buckets to filter. If both are specified, their effect will be
+combined.</dd>
+<dt><strong><code>node</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>Gets the context of the node, typically the intermediate-level section
+in which the node occurs. Then restricts the filtering to the buckets
+contained in the context, instead of the whole corpus.</dd>
 <dt><strong><code>bFind</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
 <dd>A search pattern that filters the buckets, before applying the search
 for a token sequence.</dd>
@@ -922,10 +964,11 @@ of results.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/annotate.py#L163-L383" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/annotate.py#L163-L399" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def filterContent(
     self,
+    buckets=None,
     node=None,
     bFind=None,
     bFindC=None,
@@ -939,8 +982,9 @@ of results.</p>
 ):
     &#34;&#34;&#34;Filter the buckets according to a variety of criteria.
 
-    Either the buckets of the whole corpus are filtered, or a subset of buckets,
-    namely those contained in a particular node.
+    Either the buckets of the whole corpus are filtered, or a given subset
+    of buckets, or a subset of buckets, namely those contained in a
+    particular node, see parameters `node`, and `buckets`.
 
     **Bucket filtering**
 
@@ -967,6 +1011,15 @@ of results.</p>
 
     Parameters
     ----------
+    buckets: set of integer, optional None
+        The set of buckets to filter, instead of the whole corpus.
+        Works also if the parameter `node` is specified, which also restricts
+        the buckets to filter. If both are specified, their effect will be
+        combined.
+    node: integer, optional None
+        Gets the context of the node, typically the intermediate-level section
+        in which the node occurs. Then restricts the filtering to the buckets
+        contained in the context, instead of the whole corpus.
     bFind: string, optional None
         A search pattern that filters the buckets, before applying the search
         for a token sequence.
@@ -1036,10 +1089,15 @@ of results.</p>
     entitySlotAll = setData.entitySlotAll
     entitySlotIndex = setData.entitySlotIndex
 
+    bucketUniverse = (
+        setData.buckets
+        if buckets is None
+        else tuple(sorted(self.checkBuckets(buckets)))
+    )
     buckets = (
-        setData.buckets or ()
+        bucketUniverse
         if node is None
-        else self.getContext(node)
+        else tuple(sorted(set(bucketUniverse) &amp; set(self.getContext(node))))
     )
 
     nFind = 0
@@ -1056,11 +1114,11 @@ of results.</p>
     hasQTokens = qTokens is not None and len(qTokens)
     hasOcc = not hasEnt and hasQTokens
 
-    if eVals is not None:
+    if eVals is not None and eVals in entityVal:
         eSlots = entityVal[eVals]
         eStarts = {s[0]: s[-1] for s in eSlots}
     else:
-        eStarts = None
+        eStarts = {}
 
     useQTokens = qTokens if hasOcc else None
 
@@ -1170,7 +1228,7 @@ A single occurrence is represented as a tuple of slots.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/annotate.py#L131-L161" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/annotate.py#L131-L161" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findOccs(self, qTokenSet=set()):
     &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens.
@@ -1215,6 +1273,7 @@ A single occurrence is represented as a tuple of slots.</dd>
 <li><code><a title="tf.browser.ner.sets.Sets.addEntityRich" href="data.html#tf.browser.ner.data.Data.addEntityRich">addEntityRich</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.annoSet" href="sets.html#tf.browser.ner.sets.Sets.annoSet">annoSet</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.annoSetRep" href="sets.html#tf.browser.ner.sets.Sets.annoSetRep">annoSetRep</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.checkBuckets" href="corpus.html#tf.browser.ner.corpus.Corpus.checkBuckets">checkBuckets</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.checkFeature" href="corpus.html#tf.browser.ner.corpus.Corpus.checkFeature">checkFeature</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.console" href="settings.html#tf.browser.ner.settings.Settings.console">console</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.delEntity" href="data.html#tf.browser.ner.data.Data.delEntity">delEntity</a></code></li>

@@ -29,7 +29,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/show.py#L1-L375" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/show.py#L1-L377" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Rendering of corpus extracts with annotations.
 
@@ -298,6 +298,7 @@ class Show:
         content = []
 
         nB = 0
+        nBshown = 0
 
         for b, bTokens, matches, positions in buckets:
             nB += 1
@@ -306,7 +307,7 @@ class Show:
                 continue
             if end is not None and nB &gt; end:
                 break
-            if limited and nB &gt; limit:
+            if limited and nBshown &gt; limit:
                 content.append(
                     H.div(
                         f&#34;Showing only the first {limit} {bucketType}s of all &#34;
@@ -316,6 +317,7 @@ class Show:
                 )
                 break
 
+            nBshown += 1
             charPos = 0
 
             if annoSet:
@@ -425,7 +427,7 @@ class Show:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/show.py#L24-L375" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/show.py#L24-L377" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Show:
     def showEntityOverview(self):
@@ -671,6 +673,7 @@ class Show:
         content = []
 
         nB = 0
+        nBshown = 0
 
         for b, bTokens, matches, positions in buckets:
             nB += 1
@@ -679,7 +682,7 @@ class Show:
                 continue
             if end is not None and nB &gt; end:
                 break
-            if limited and nB &gt; limit:
+            if limited and nBshown &gt; limit:
                 content.append(
                     H.div(
                         f&#34;Showing only the first {limit} {bucketType}s of all &#34;
@@ -689,6 +692,7 @@ class Show:
                 )
                 break
 
+            nBshown += 1
             charPos = 0
 
             if annoSet:
@@ -843,7 +847,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/show.py#L179-L375" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/show.py#L179-L377" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showContent(
     self,
@@ -934,6 +938,7 @@ it is a cell in a Jupyter Notebook.</dd>
     content = []
 
     nB = 0
+    nBshown = 0
 
     for b, bTokens, matches, positions in buckets:
         nB += 1
@@ -942,7 +947,7 @@ it is a cell in a Jupyter Notebook.</dd>
             continue
         if end is not None and nB &gt; end:
             break
-        if limited and nB &gt; limit:
+        if limited and nBshown &gt; limit:
             content.append(
                 H.div(
                     f&#34;Showing only the first {limit} {bucketType}s of all &#34;
@@ -952,6 +957,7 @@ it is a cell in a Jupyter Notebook.</dd>
             )
             break
 
+        nBshown += 1
         charPos = 0
 
         if annoSet:
@@ -1095,7 +1101,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/show.py#L61-L177" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/show.py#L61-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showEntities(
     self, activeEntity=None, sortKey=None, sortDir=None, cutOffFreq=None
@@ -1233,7 +1239,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/show.py#L25-L59" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/show.py#L25-L59" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showEntityOverview(self):
     &#34;&#34;&#34;Generates HTML for an overview of the entities.

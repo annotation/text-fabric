@@ -34,7 +34,7 @@ control over how to customize the annotator for different corpora.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/corpus.py#L1-L314" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/corpus.py#L1-L337" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Access to the corpus.
 
@@ -163,6 +163,9 @@ class Corpus(Settings):
         def sectionHead(node):
             return app.sectionStrFromNode(node)
 
+        def checkBuckets(nodes):
+            return {node for node in nodes if F.otype.v(node) == bucketType}
+
         self.checkFeature = checkFeature
         &#34;&#34;&#34;Checks whether a feature is loaded in the corpus.
 
@@ -306,6 +309,14 @@ class Corpus(Settings):
         We start from a node and find the section node of intermediate level
         that contains that node. Then we return all buckets contained in that
         section.
+
+        Parameters
+        ----------
+        node: int
+
+        Returns
+        -------
+        tuple of int
         &#34;&#34;&#34;
 
         self.get0 = get0
@@ -345,6 +356,18 @@ class Corpus(Settings):
         string
         &#34;&#34;&#34;
 
+        self.checkBuckets = checkBuckets
+        &#34;&#34;&#34;Given a set of nodes, return the set of only its bucket nodes.
+
+        Parameters
+        ----------
+        nodes: set of int
+
+        Returns
+        -------
+        set of int
+        &#34;&#34;&#34;
+
         self.featureDefault = {
             features[0]: get0,
             features[1]: get1,
@@ -376,7 +399,7 @@ Those configuration values are read from a yaml file, located in a directory
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/corpus.py#L27-L314" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/corpus.py#L27-L337" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Corpus(Settings):
     def __init__(self):
@@ -479,6 +502,9 @@ Those configuration values are read from a yaml file, located in a directory
         def sectionHead(node):
             return app.sectionStrFromNode(node)
 
+        def checkBuckets(nodes):
+            return {node for node in nodes if F.otype.v(node) == bucketType}
+
         self.checkFeature = checkFeature
         &#34;&#34;&#34;Checks whether a feature is loaded in the corpus.
 
@@ -622,6 +648,14 @@ Those configuration values are read from a yaml file, located in a directory
         We start from a node and find the section node of intermediate level
         that contains that node. Then we return all buckets contained in that
         section.
+
+        Parameters
+        ----------
+        node: int
+
+        Returns
+        -------
+        tuple of int
         &#34;&#34;&#34;
 
         self.get0 = get0
@@ -661,6 +695,18 @@ Those configuration values are read from a yaml file, located in a directory
         string
         &#34;&#34;&#34;
 
+        self.checkBuckets = checkBuckets
+        &#34;&#34;&#34;Given a set of nodes, return the set of only its bucket nodes.
+
+        Parameters
+        ----------
+        nodes: set of int
+
+        Returns
+        -------
+        set of int
+        &#34;&#34;&#34;
+
         self.featureDefault = {
             features[0]: get0,
             features[1]: get1,
@@ -677,6 +723,20 @@ Those configuration values are read from a yaml file, located in a directory
 </ul>
 <h3>Instance variables</h3>
 <dl>
+<dt id="tf.browser.ner.corpus.Corpus.checkBuckets"><code class="name">var <span class="ident">checkBuckets</span></code></dt>
+<dd>
+<div class="desc"><p>Given a set of nodes, return the set of only its bucket nodes.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>nodes</code></strong> :&ensp;<code>set</code> of <code>int</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>set</code> of <code>int</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+</dd>
 <dt id="tf.browser.ner.corpus.Corpus.checkFeature"><code class="name">var <span class="ident">checkFeature</span></code></dt>
 <dd>
 <div class="desc"><p>Checks whether a feature is loaded in the corpus.</p>
@@ -730,7 +790,17 @@ under key <code>afterFeature</code> .</dd>
 <div class="desc"><p>Gets the context buckets around a node.</p>
 <p>We start from a node and find the section node of intermediate level
 that contains that node. Then we return all buckets contained in that
-section.</p></div>
+section.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node</code></strong> :&ensp;<code>int</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code> of <code>int</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
 </dd>
 <dt id="tf.browser.ner.corpus.Corpus.getEntityNodes"><code class="name">var <span class="ident">getEntityNodes</span></code></dt>
 <dd>
@@ -950,6 +1020,7 @@ setTimeout(() => input.focus(), 100);
 <li>
 <h4><code><a title="tf.browser.ner.corpus.Corpus" href="#tf.browser.ner.corpus.Corpus">Corpus</a></code></h4>
 <ul class="two-column">
+<li><code><a title="tf.browser.ner.corpus.Corpus.checkBuckets" href="#tf.browser.ner.corpus.Corpus.checkBuckets">checkBuckets</a></code></li>
 <li><code><a title="tf.browser.ner.corpus.Corpus.checkFeature" href="#tf.browser.ner.corpus.Corpus.checkFeature">checkFeature</a></code></li>
 <li><code><a title="tf.browser.ner.corpus.Corpus.featureDefault" href="#tf.browser.ner.corpus.Corpus.featureDefault">featureDefault</a></code></li>
 <li><code><a title="tf.browser.ner.corpus.Corpus.get0" href="#tf.browser.ner.corpus.Corpus.get0">get0</a></code></li>
