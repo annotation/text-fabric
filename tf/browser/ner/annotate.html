@@ -56,10 +56,10 @@ own programs, especially in a Juyter notebook.</li>
 </ul>
 <p>Again, this is a top of an iceberg, since it inherits from:</p>
 <ul>
-<li><code><a title="tf.browser.ner.servelib" href="servelib.html">tf.browser.ner.servelib</a></code>: manage the data of a request;</li>
+<li><code><a title="tf.browser.ner.request" href="request.html">tf.browser.ner.request</a></code>: manage the data of a request;</li>
 <li><code><a title="tf.browser.ner.fragments" href="fragments.html">tf.browser.ner.fragments</a></code>: generate HTML for widgets on the page;</li>
 </ul>
-<p><code>servelib</code> also uses <code>form</code> to retrieve form values into typed and structured values.</p>
+<p><code>request</code> also uses <code>form</code> to retrieve form values into typed and structured values.</p>
 <p>Both <code>web</code> and <code>power</code> make use of the following modules in as far as they are not
 already mentioned under <code>annotate</code> and its parent classes:</p>
 <ul>
@@ -72,7 +72,7 @@ syntax.</li>
 <p>The classes <code>`Settings</code>, <code>Corpus</code>, <code>Data</code>, <code>Sets</code>, <code>Show</code>, <code><a title="tf.browser.ner.annotate.Annotate" href="#tf.browser.ner.annotate.Annotate">Annotate</a></code>,
 <code>PowerNER</code> form one hierarchy.
 So an object of class <code>PowerNER</code> has access to all methods of these classes.</p>
-<p>The classes <code>Serve</code>, <code>ServeLib</code>, <code>Fragments</code>, <code>From</code> form a separate hierarchy.
+<p>The classes <code>Serve</code>, <code>Request</code>, <code>Fragments</code>, <code>From</code> form a separate hierarchy.
 It will create an <code><a title="tf.browser.ner.annotate.Annotate" href="#tf.browser.ner.annotate.Annotate">Annotate</a></code> instance which will be stored in a <code>Serve</code> instance.</p>
 </div>
 <p>Here is an overview how the modules hang together.</p>
@@ -84,7 +84,7 @@ It will create an <code><a title="tf.browser.ner.annotate.Annotate" href="#tf.br
                                   |     |
 web &lt;-----&lt; Serve &lt;-----------------&lt; Annotate  &lt;-&lt; match
             |   |                 |     |   |
-      ServeLib Fragments &lt;-&lt; html |   Sets Show &lt;-&lt; html
+       Request Fragments &lt;-&lt; html |   Sets Show &lt;-&lt; html
           |                       |     |
         Form                      |   Data
                                   |     |
@@ -95,7 +95,7 @@ web &lt;-----&lt; Serve &lt;-----------------&lt; Annotate  &lt;-&lt; match
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ecd99df1ebadcdbd70fb7ee3b34b22973d478799/tf/browser/ner/annotate.py#L1-L383" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/annotate.py#L1-L383" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Central Annotation object.
 
@@ -133,10 +133,10 @@ for:
 
 Again, this is a top of an iceberg, since it inherits from:
 
-*   `tf.browser.ner.servelib`: manage the data of a request;
+*   `tf.browser.ner.request`: manage the data of a request;
 *   `tf.browser.ner.fragments`: generate HTML for widgets on the page;
 
-`servelib` also uses `form` to retrieve form values into typed and structured values.
+`request` also uses `form` to retrieve form values into typed and structured values.
 
 Both `web` and `power` make use of the following modules in as far as they are not
 already mentioned under `annotate` and its parent classes:
@@ -150,7 +150,7 @@ already mentioned under `annotate` and its parent classes:
     `PowerNER` form one hierarchy.
     So an object of class `PowerNER` has access to all methods of these classes.
 
-    The classes `Serve`, `ServeLib`, `Fragments`, `From` form a separate hierarchy.
+    The classes `Serve`, `Request`, `Fragments`, `From` form a separate hierarchy.
     It will create an `Annotate` instance which will be stored in a `Serve` instance.
 
 Here is an overview how the modules hang together.
@@ -166,7 +166,7 @@ Browser                           |   Api-hierarchy
                                   |     |
 web &lt;-----&lt; Serve &lt;-----------------&lt; Annotate  &lt;-&lt; match
             |   |                 |     |   |
-      ServeLib Fragments &lt;-&lt; html |   Sets Show &lt;-&lt; html
+       Request Fragments &lt;-&lt; html |   Sets Show &lt;-&lt; html
           |                       |     |
         Form                      |   Data
                                   |     |
@@ -526,7 +526,7 @@ browser. This will influence how results are reported back.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ecd99df1ebadcdbd70fb7ee3b34b22973d478799/tf/browser/ner/annotate.py#L89-L383" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/annotate.py#L89-L383" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Annotate(Sets, Show):
     def __init__(self, app, data=None, browse=False):
@@ -922,7 +922,7 @@ of results.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ecd99df1ebadcdbd70fb7ee3b34b22973d478799/tf/browser/ner/annotate.py#L163-L383" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/annotate.py#L163-L383" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def filterContent(
     self,
@@ -1170,7 +1170,7 @@ A single occurrence is represented as a tuple of slots.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ecd99df1ebadcdbd70fb7ee3b34b22973d478799/tf/browser/ner/annotate.py#L131-L161" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/browser/ner/annotate.py#L131-L161" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findOccs(self, qTokenSet=set()):
     &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens.

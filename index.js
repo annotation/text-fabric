@@ -96,9 +96,9 @@ URLS=[
 "tf/browser/ner/index.html",
 "tf/browser/ner/show.html",
 "tf/browser/ner/web.html",
-"tf/browser/ner/servelib.html",
-"tf/browser/ner/form.html",
 "tf/browser/ner/html.html",
+"tf/browser/ner/request.html",
+"tf/browser/ner/form.html",
 "tf/browser/ner/serve.html",
 "tf/browser/ner/fragments.html",
 "tf/browser/ner/annotate.html",
@@ -3486,7 +3486,7 @@ INDEX=[
 {
 "ref":"tf.about.releases",
 "url":70,
-"doc":" Release notes  ! hint \"Consult the tutorials after changes\" When we change the API, we make sure that the tutorials show off all possibilities. See the app-specific tutorials via  tf.about.corpora .  -  The TEI converter is still in active development. If you need the latest version, clone the Text-Fabric repo and in its top-level directory run the command:   pip install -e .    12  12.0  12.1 2023-10-28  New stuff  In the Text-Fabric browser there will be a new tab in the vertical sidebar:  Annotate , which will give access to manual annotation tools. I'm developing the first one, a tool to annotate named entities efficiently, both in the Text-Fabric browser and in a Jupyter Notebook. Reed more in  tf.about.annotate . These tools will let you save your work as files on your own computer.  In  tf.convert.addnlp we can now extract more NLP information besides tokens and sentences: part-of-speech, morphological tagging, lemmatisation, named entity recognititon  Fixes  in the TEI converter.  12.0.6,7 2023-09-13 Trivial fix in code that exports the data from a job in the Text-Fabric browser. In the meanwhile there is unfinished business in the  Annotate tab in the TF-browser, that will come into production in the upcoming 12.1 release. The Chrome browser has an attractive feature that other browsers such as Safari lack: It supports the CSS property [content-visibility](https: developer.mozilla.org/en-US/docs/Web/CSS/content-visibility). With this property you can prevent the browser to do the expensive rendering of content that is not visible on the screen. That makes it possible to load a lot of content in a single page without tripping up the browser. You also need the [IntersectionObserver API])https: developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API), but that is generally supported by browsers. With the help of that API you can restrict the binding of event listeners to elements that are visible on the screen. So, you can open the Text-Fabric browser in Chrome by passing the option   chrome . But if Chrome is not installed, it will open in the default browser anyway. Also, when the opening of the browser fails somehow, the webserver is stopped.  12.0.5 2023-07-10 Fixed references to static files that still went to  /server instead of  /browser . This has to do with the new approach to the Text-Fabric browser.  12.0.0-4 2023-07-05  Simplification  The Text-Fabric browser no longer works with a separate process that holds the TF corpus data. Instead, the webserver (flask) loads the corpus itself. This will restrict the usage of the TF browser to local-single-user scenarios.  Text-Fabric no longer exposes the installation options  [browser, pandas]  pip install 'text-fabric[browser]' pip install 'text-fabric[pandas]'  If you work with Pandas (like exporting to Pandas) you have to install it yourself:  pip install pandas pyarrow  The TF browser is always supported. The reason to have these distinct capabilities was that there are python libraries involved that do not install on the iPad. The simplification of the TF browser makes it possible to be no longer dependent on these modules. Hence, TF can be installed on the iPad, although the TF browser works is not working there yet. But the autoloading of data from GitHub/GitLab works.  Minor things  Header. After loading a dataset, a header is shown with shows all kinds of information about the corpus. But so far, it did not show the TF app settings. Now they are included in the header. There are two kinds: the explicitly given settings and the derived and computed settings. The latter ones will be suppressed when loading a dataset in a Jupyter notebook, because these settings can become quite big. You can still get them with  A.showContext() . In the TF browser they will be always included, you find it in the  Corpus tab.  -  Older releases See  tf.about.releasesold ."
+"doc":" Release notes  ! hint \"Consult the tutorials after changes\" When we change the API, we make sure that the tutorials show off all possibilities. See the app-specific tutorials via  tf.about.corpora .  -  The TEI converter is still in active development. If you need the latest version, clone the Text-Fabric repo and in its top-level directory run the command:   pip install -e .    12  12.1  12.1.1 2023-10-29  Bug fix: the mechanism to make individual exceptions when adding named entities in the  tf.browser.ner.annotate tool was broken. Thanks to Daniel Swanson for spotting it.  12.1.0 2023-10-28  New stuff  In the Text-Fabric browser there will be a new tab in the vertical sidebar:  Annotate , which will give access to manual annotation tools. I'm developing the first one, a tool to annotate named entities efficiently, both in the Text-Fabric browser and in a Jupyter Notebook. Reed more in  tf.about.annotate . These tools will let you save your work as files on your own computer.  In  tf.convert.addnlp we can now extract more NLP information besides tokens and sentences: part-of-speech, morphological tagging, lemmatisation, named entity recognititon  Fixes  in the TEI converter.  12.0  12.0.6,7 2023-09-13 Trivial fix in code that exports the data from a job in the Text-Fabric browser. In the meanwhile there is unfinished business in the  Annotate tab in the TF-browser, that will come into production in the upcoming 12.1 release. The Chrome browser has an attractive feature that other browsers such as Safari lack: It supports the CSS property [content-visibility](https: developer.mozilla.org/en-US/docs/Web/CSS/content-visibility). With this property you can prevent the browser to do the expensive rendering of content that is not visible on the screen. That makes it possible to load a lot of content in a single page without tripping up the browser. You also need the [IntersectionObserver API])https: developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API), but that is generally supported by browsers. With the help of that API you can restrict the binding of event listeners to elements that are visible on the screen. So, you can open the Text-Fabric browser in Chrome by passing the option   chrome . But if Chrome is not installed, it will open in the default browser anyway. Also, when the opening of the browser fails somehow, the webserver is stopped.  12.0.5 2023-07-10 Fixed references to static files that still went to  /server instead of  /browser . This has to do with the new approach to the Text-Fabric browser.  12.0.0-4 2023-07-05  Simplification  The Text-Fabric browser no longer works with a separate process that holds the TF corpus data. Instead, the webserver (flask) loads the corpus itself. This will restrict the usage of the TF browser to local-single-user scenarios.  Text-Fabric no longer exposes the installation options  [browser, pandas]  pip install 'text-fabric[browser]' pip install 'text-fabric[pandas]'  If you work with Pandas (like exporting to Pandas) you have to install it yourself:  pip install pandas pyarrow  The TF browser is always supported. The reason to have these distinct capabilities was that there are python libraries involved that do not install on the iPad. The simplification of the TF browser makes it possible to be no longer dependent on these modules. Hence, TF can be installed on the iPad, although the TF browser works is not working there yet. But the autoloading of data from GitHub/GitLab works.  Minor things  Header. After loading a dataset, a header is shown with shows all kinds of information about the corpus. But so far, it did not show the TF app settings. Now they are included in the header. There are two kinds: the explicitly given settings and the derived and computed settings. The latter ones will be suppressed when loading a dataset in a Jupyter notebook, because these settings can become quite big. You can still get them with  A.showContext() . In the TF browser they will be always included, you find it in the  Corpus tab.  -  Older releases See  tf.about.releasesold ."
 },
 {
 "ref":"tf.about.clientmanual",
@@ -3966,213 +3966,213 @@ INDEX=[
 "func":1
 },
 {
-"ref":"tf.browser.ner.servelib",
-"url":97,
-"doc":"Auxiliary functions for managing request data. To see how this fits among all the modules of this package, see  tf.browser.ner.annotate ."
-},
-{
-"ref":"tf.browser.ner.servelib.ServeLib",
-"url":97,
-"doc":"Calculate important values based on form data. We define specifications as to how to read form values and which defaults should be supplied. We categorize the keys in the request form into categories based on their interpreted type and organization. We provide appropriate empty values as defaults, but it is possible to specify other defaults. The categories are:   Str values are strings;   Bool values are booleans (2 possible values);   Tri values are booleans (3 possible values, a none value is included);   Int values are positive integers;   Tup values are tuples of strings;   SetInt values are sets of integers;   Json values are arbitrary structures encoded in json strings; We also define a few composed values, where we store the values of several related keys in the form as a dictionary value under a new key."
-},
-{
-"ref":"tf.browser.ner.servelib.ServeLib.getFormData",
-"url":97,
-"doc":"Get form data. The TF browser user interacts with the app by clicking and typing, as a result of which a HTML form gets filled in. This form as regularly submitted to the server with a request for a new incarnation of the page: a response. The values that come with a request, must be peeled out of the form, and stored as logical values. Additionally, some business logic is carried out: we set values for the entity features, based on the form, especially the keys ending in  _active . We build a value under key  valselect based on the value for key  submitter . Depending on which button caused the submit, the NONE value is added to each feature. The idea is that when the user is still engaged in filtering buckets, and there is an occurrence selected, the user should have the option to sub-select occurrences that do not yet have an entity assigned.",
-"func":1
-},
-{
-"ref":"tf.browser.ner.servelib.ServeLib.initVars",
-"url":97,
-"doc":"Initializes the computation of the new page. It collects the request data, gleans some info from the configuration settings and the TF app, and initializes some data structures that will collect further information for the page. All bits and pieces that are needed during processing the request and filling in the final HTML template find a place under some key in the  v dict which is stored in  self . So, this function makes the transition from information that is in the  form dictionary to values that are stored in the  v dictionary.",
-"func":1
-},
-{
-"ref":"tf.browser.ner.servelib.ServeLib.adaptValSelect",
-"url":97,
-"doc":"Adapts the values contained in  valSelect after a modification action. After the addition or deletion of an entity, the values contained in  valSelect may have become obsolete or inconvenient for further actions. This function adapts those values before having them rendered on the page. Parameters      v: dict Contains the intermediate results of computing the new page.",
-"func":1
-},
-{
-"ref":"tf.browser.ner.servelib.ServeLib.findSetup",
-"url":97,
-"doc":"Compiles the filter pattern into a regular expression. When the user enters a search pattern in the box meant to filter the buckets, the pattern will be interpreted as a regular expression. We do the compilation here. If there are errors in the pattern they will be reported. Whether or not the search is case sensitive or not is under user control, and it will influence the compilation of the pattern. All input and output data is in  v .",
-"func":1
-},
-{
-"ref":"tf.browser.ner.servelib.ServeLib.fgets",
-"url":98,
-"doc":"Makes form value under key  k or its default into an string.",
-"func":1
-},
-{
-"ref":"tf.browser.ner.servelib.ServeLib.fget2",
-"url":98,
-"doc":"Makes form value under key  k or its default into an boolean.",
-"func":1
-},
-{
-"ref":"tf.browser.ner.servelib.ServeLib.fget3",
-"url":98,
-"doc":"Makes form value under key  k or its default into a 3-way boolean.",
-"func":1
-},
-{
-"ref":"tf.browser.ner.servelib.ServeLib.fgeti",
-"url":98,
-"doc":"Makes form value under key  k or its default into an integer.",
-"func":1
-},
-{
-"ref":"tf.browser.ner.servelib.ServeLib.fgettu",
-"url":98,
-"doc":"Makes form value under key  k or its default into a tuple. The values in the tuples are strings. The values are retrieved by splitting the original string value on  \u2299 .",
-"func":1
-},
-{
-"ref":"tf.browser.ner.servelib.ServeLib.fgetsi",
-"url":98,
-"doc":"Makes form value under key  k or its default into a set. The values in the set are integers. The values are retrieved by splitting the original string value on  , . Parts that do not form valid integers are skipped.",
-"func":1
-},
-{
-"ref":"tf.browser.ner.servelib.ServeLib.fgetj",
-"url":98,
-"doc":"Makes form value under key  k or its default into a data structure. The datastructure is retrieved by interpreting the original string as quoted json.",
-"func":1
-},
-{
-"ref":"tf.browser.ner.servelib.ServeLib.fill",
-"url":98,
-"doc":"Fill a dictionary with interpreted form values. The input data is the request data from Flask, the output data are the logical values derived from them by the methods in this class. Returns    - dict The filled in form.",
-"func":1
-},
-{
 "ref":"tf.browser.ner.html",
-"url":99,
+"url":97,
 "doc":"HTML generation done in the Pythonesque way. To see how this fits among all the modules of this package, see  tf.browser.ner.annotate ."
 },
 {
 "ref":"tf.browser.ner.html.H_ELEMENTS",
-"url":99,
+"url":97,
 "doc":"The HTML elements used in this tool."
 },
 {
 "ref":"tf.browser.ner.html.dig",
-"url":99,
+"url":97,
 "doc":"A method to join nested iterables of strings into a string. Parameters      content: iterable or string Arbitrarily ested iterable of strings. sep: string, optional  The string by which the individual strings from the iterables are to be joined. Returns    - string The fully joined string corresponding to the orginal iterables.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.html.generate",
-"url":99,
+"url":97,
 "doc":"Transform the logical information for an HTML element into an HTML string. Parameters      close: boolean Whether the element must be closed with an end tag. tag: string The name of the tag. content: iterable The content of the element. This may be an arbitrarily nested iterable of strings. atts: dict The attributes of the element. Returns    - string The HTML string representation of an element.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.html.elemFunc",
-"url":99,
+"url":97,
 "doc":"Generates a function to serialize a specific HTML element. Parameters      close: boolean Whether the element needs an end tag. elem: string The name of the element. Returns    - function The function has the same signature as  generate() except it does not take the parameters  close and  tag .",
 "func":1
 },
 {
 "ref":"tf.browser.ner.html.H",
-"url":99,
+"url":97,
 "doc":"Provider of HTML serializing functions per element type. Also has a class attribute  nb : the non-breaking space. For each HTML element in the specs ( H_ELEMENTS ) a corresponding generating function is added as method."
 },
 {
 "ref":"tf.browser.ner.html.H.nb",
-"url":99,
+"url":97,
 "doc":""
 },
 {
 "ref":"tf.browser.ner.html.H.join",
-"url":99,
+"url":97,
 "doc":"A method to join nested iterables of strings into a string. Parameters      content: iterable or string Arbitrarily ested iterable of strings. sep: string, optional  The string by which the individual strings from the iterables are to be joined. Returns    - string The fully joined string corresponding to the orginal iterables.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.html.H.b",
-"url":99,
+"url":97,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.browser.ner.html.H.br",
-"url":99,
+"url":97,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.browser.ner.html.H.button",
-"url":99,
+"url":97,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.browser.ner.html.H.code",
-"url":99,
+"url":97,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.browser.ner.html.H.details",
-"url":99,
+"url":97,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.browser.ner.html.H.div",
-"url":99,
+"url":97,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.browser.ner.html.H.i",
-"url":99,
+"url":97,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.browser.ner.html.H.input",
-"url":99,
+"url":97,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.browser.ner.html.H.option",
-"url":99,
+"url":97,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.browser.ner.html.H.p",
-"url":99,
+"url":97,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.browser.ner.html.H.select",
-"url":99,
+"url":97,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.browser.ner.html.H.span",
-"url":99,
+"url":97,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.browser.ner.html.H.style",
-"url":99,
+"url":97,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.browser.ner.html.H.summary",
-"url":99,
+"url":97,
 "doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.ner.request",
+"url":98,
+"doc":"Auxiliary functions for managing request data. To see how this fits among all the modules of this package, see  tf.browser.ner.annotate ."
+},
+{
+"ref":"tf.browser.ner.request.Request",
+"url":98,
+"doc":"Calculate important values based on form data. We define specifications as to how to read form values and which defaults should be supplied. We categorize the keys in the request form into categories based on their interpreted type and organization. We provide appropriate empty values as defaults, but it is possible to specify other defaults. The categories are:   Str values are strings;   Bool values are booleans (2 possible values);   Tri values are booleans (3 possible values, a none value is included);   Int values are positive integers;   Tup values are tuples of strings;   SetInt values are sets of integers;   Json values are arbitrary structures encoded in json strings; We also define a few composed values, where we store the values of several related keys in the form as a dictionary value under a new key."
+},
+{
+"ref":"tf.browser.ner.request.Request.getFormData",
+"url":98,
+"doc":"Get form data. The TF browser user interacts with the app by clicking and typing, as a result of which a HTML form gets filled in. This form as regularly submitted to the server with a request for a new incarnation of the page: a response. The values that come with a request, must be peeled out of the form, and stored as logical values. Additionally, some business logic is carried out: we set values for the entity features, based on the form, especially the keys ending in  _active . We build a value under key  valselect based on the value for key  submitter . Depending on which button caused the submit, the NONE value is added to each feature. The idea is that when the user is still engaged in filtering buckets, and there is an occurrence selected, the user should have the option to sub-select occurrences that do not yet have an entity assigned.",
+"func":1
+},
+{
+"ref":"tf.browser.ner.request.Request.initVars",
+"url":98,
+"doc":"Initializes the computation of the new page. It collects the request data, gleans some info from the configuration settings and the TF app, and initializes some data structures that will collect further information for the page. All bits and pieces that are needed during processing the request and filling in the final HTML template find a place under some key in the  v dict which is stored in  self . So, this function makes the transition from information that is in the  form dictionary to values that are stored in the  v dictionary.",
+"func":1
+},
+{
+"ref":"tf.browser.ner.request.Request.adaptValSelect",
+"url":98,
+"doc":"Adapts the values contained in  valSelect after a modification action. After the addition or deletion of an entity, the values contained in  valSelect may have become obsolete or inconvenient for further actions. This function adapts those values before having them rendered on the page. Parameters      v: dict Contains the intermediate results of computing the new page.",
+"func":1
+},
+{
+"ref":"tf.browser.ner.request.Request.findSetup",
+"url":98,
+"doc":"Compiles the filter pattern into a regular expression. When the user enters a search pattern in the box meant to filter the buckets, the pattern will be interpreted as a regular expression. We do the compilation here. If there are errors in the pattern they will be reported. Whether or not the search is case sensitive or not is under user control, and it will influence the compilation of the pattern. All input and output data is in  v .",
+"func":1
+},
+{
+"ref":"tf.browser.ner.request.Request.fgets",
+"url":99,
+"doc":"Makes form value under key  k or its default into an string.",
+"func":1
+},
+{
+"ref":"tf.browser.ner.request.Request.fget2",
+"url":99,
+"doc":"Makes form value under key  k or its default into an boolean.",
+"func":1
+},
+{
+"ref":"tf.browser.ner.request.Request.fget3",
+"url":99,
+"doc":"Makes form value under key  k or its default into a 3-way boolean.",
+"func":1
+},
+{
+"ref":"tf.browser.ner.request.Request.fgeti",
+"url":99,
+"doc":"Makes form value under key  k or its default into an integer.",
+"func":1
+},
+{
+"ref":"tf.browser.ner.request.Request.fgettu",
+"url":99,
+"doc":"Makes form value under key  k or its default into a tuple. The values in the tuples are strings. The values are retrieved by splitting the original string value on  \u2299 .",
+"func":1
+},
+{
+"ref":"tf.browser.ner.request.Request.fgetsi",
+"url":99,
+"doc":"Makes form value under key  k or its default into a set. The values in the set are integers. The values are retrieved by splitting the original string value on  , . Parts that do not form valid integers are skipped.",
+"func":1
+},
+{
+"ref":"tf.browser.ner.request.Request.fgetj",
+"url":99,
+"doc":"Makes form value under key  k or its default into a data structure. The datastructure is retrieved by interpreting the original string as quoted json.",
+"func":1
+},
+{
+"ref":"tf.browser.ner.request.Request.fill",
+"url":99,
+"doc":"Fill a dictionary with interpreted form values. The input data is the request data from Flask, the output data are the logical values derived from them by the methods in this class. Returns    - dict The filled in form.",
 "func":1
 },
 {
@@ -4241,73 +4241,73 @@ INDEX=[
 },
 {
 "ref":"tf.browser.ner.serve.Serve.getFormData",
-"url":97,
+"url":98,
 "doc":"Get form data. The TF browser user interacts with the app by clicking and typing, as a result of which a HTML form gets filled in. This form as regularly submitted to the server with a request for a new incarnation of the page: a response. The values that come with a request, must be peeled out of the form, and stored as logical values. Additionally, some business logic is carried out: we set values for the entity features, based on the form, especially the keys ending in  _active . We build a value under key  valselect based on the value for key  submitter . Depending on which button caused the submit, the NONE value is added to each feature. The idea is that when the user is still engaged in filtering buckets, and there is an occurrence selected, the user should have the option to sub-select occurrences that do not yet have an entity assigned.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.initVars",
-"url":97,
+"url":98,
 "doc":"Initializes the computation of the new page. It collects the request data, gleans some info from the configuration settings and the TF app, and initializes some data structures that will collect further information for the page. All bits and pieces that are needed during processing the request and filling in the final HTML template find a place under some key in the  v dict which is stored in  self . So, this function makes the transition from information that is in the  form dictionary to values that are stored in the  v dictionary.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.adaptValSelect",
-"url":97,
+"url":98,
 "doc":"Adapts the values contained in  valSelect after a modification action. After the addition or deletion of an entity, the values contained in  valSelect may have become obsolete or inconvenient for further actions. This function adapts those values before having them rendered on the page. Parameters      v: dict Contains the intermediate results of computing the new page.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.findSetup",
-"url":97,
+"url":98,
 "doc":"Compiles the filter pattern into a regular expression. When the user enters a search pattern in the box meant to filter the buckets, the pattern will be interpreted as a regular expression. We do the compilation here. If there are errors in the pattern they will be reported. Whether or not the search is case sensitive or not is under user control, and it will influence the compilation of the pattern. All input and output data is in  v .",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.fgets",
-"url":98,
+"url":99,
 "doc":"Makes form value under key  k or its default into an string.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.fget2",
-"url":98,
+"url":99,
 "doc":"Makes form value under key  k or its default into an boolean.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.fget3",
-"url":98,
+"url":99,
 "doc":"Makes form value under key  k or its default into a 3-way boolean.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.fgeti",
-"url":98,
+"url":99,
 "doc":"Makes form value under key  k or its default into an integer.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.fgettu",
-"url":98,
+"url":99,
 "doc":"Makes form value under key  k or its default into a tuple. The values in the tuples are strings. The values are retrieved by splitting the original string value on  \u2299 .",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.fgetsi",
-"url":98,
+"url":99,
 "doc":"Makes form value under key  k or its default into a set. The values in the set are integers. The values are retrieved by splitting the original string value on  , . Parts that do not form valid integers are skipped.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.fgetj",
-"url":98,
+"url":99,
 "doc":"Makes form value under key  k or its default into a data structure. The datastructure is retrieved by interpreting the original string as quoted json.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.fill",
-"url":98,
+"url":99,
 "doc":"Fill a dictionary with interpreted form values. The input data is the request data from Flask, the output data are the logical values derived from them by the methods in this class. Returns    - dict The filled in form.",
 "func":1
 },
@@ -4428,7 +4428,7 @@ INDEX=[
 {
 "ref":"tf.browser.ner.annotate",
 "url":102,
-"doc":"Central Annotation object. As a preparation, read  tf.about.annotate first, since it explains the concepts, and guides you to set up the configuration for your corpus. The main task of this module is to find occurrences of annotations on the basis of criteria. But this is just the tip of the iceberg, since this module inherits from a number of other modules that inherit form yet other modules:   tf.browser.ner.show : generate HTML for annotated buckets of the corpus;   tf.browser.ner.sets : manage annotation sets;   tf.browser.ner.data : manage annotation data: loading, adding/deleting annotations;   tf.browser.ner.settings : manage the specifics of a TF corpus and have access to its data. It also uses   tf.browser.ner.match : to filter individual buckets on the basis of criteria. Hence,  Annotation is the central class of this tools, whose methods are relevant for:   tf.browser.ner.power : the API for users to manipulate annotations in their own programs, especially in a Juyter notebook.   tf.browser.ner.web : Flask app that routes urls to controller functions.  web makes use of the following modules that are not needed by  power :   tf.browser.ner.serve : define the controllers of the web app Again, this is a top of an iceberg, since it inherits from:   tf.browser.ner.servelib : manage the data of a request;   tf.browser.ner.fragments : generate HTML for widgets on the page;  servelib also uses  form to retrieve form values into typed and structured values. Both  web and  power make use of the following modules in as far as they are not already mentioned under  annotate and its parent classes:   tf.browser.ner.helpers : a variety of context-free data jugglers;   tf.browser.ner.html : a generic library to generate HTML using Pythonesque syntax.  ! note \"Class hierarchy\" The classes  Settings ,  Corpus ,  Data ,  Sets ,  Show ,  Annotate ,  PowerNER form one hierarchy. So an object of class  PowerNER has access to all methods of these classes. The classes  Serve ,  ServeLib ,  Fragments ,  From form a separate hierarchy. It will create an  Annotate instance which will be stored in a  Serve instance. Here is an overview how the modules hang together. A  | denotes inheritance, parent classes above child classes. A  <-< arrow denotes dependency by importing code.   Browser | Api-hierarchy                             - | PowerNER | | web <  -< Serve <        -< Annotate <-< match | | | | | ServeLib Fragments <-< html | Sets Show <-< html | | | Form | Data | | | Corpus | | | Settings  "
+"doc":"Central Annotation object. As a preparation, read  tf.about.annotate first, since it explains the concepts, and guides you to set up the configuration for your corpus. The main task of this module is to find occurrences of annotations on the basis of criteria. But this is just the tip of the iceberg, since this module inherits from a number of other modules that inherit form yet other modules:   tf.browser.ner.show : generate HTML for annotated buckets of the corpus;   tf.browser.ner.sets : manage annotation sets;   tf.browser.ner.data : manage annotation data: loading, adding/deleting annotations;   tf.browser.ner.settings : manage the specifics of a TF corpus and have access to its data. It also uses   tf.browser.ner.match : to filter individual buckets on the basis of criteria. Hence,  Annotation is the central class of this tools, whose methods are relevant for:   tf.browser.ner.power : the API for users to manipulate annotations in their own programs, especially in a Juyter notebook.   tf.browser.ner.web : Flask app that routes urls to controller functions.  web makes use of the following modules that are not needed by  power :   tf.browser.ner.serve : define the controllers of the web app Again, this is a top of an iceberg, since it inherits from:   tf.browser.ner.request : manage the data of a request;   tf.browser.ner.fragments : generate HTML for widgets on the page;  request also uses  form to retrieve form values into typed and structured values. Both  web and  power make use of the following modules in as far as they are not already mentioned under  annotate and its parent classes:   tf.browser.ner.helpers : a variety of context-free data jugglers;   tf.browser.ner.html : a generic library to generate HTML using Pythonesque syntax.  ! note \"Class hierarchy\" The classes  Settings ,  Corpus ,  Data ,  Sets ,  Show ,  Annotate ,  PowerNER form one hierarchy. So an object of class  PowerNER has access to all methods of these classes. The classes  Serve ,  Request ,  Fragments ,  From form a separate hierarchy. It will create an  Annotate instance which will be stored in a  Serve instance. Here is an overview how the modules hang together. A  | denotes inheritance, parent classes above child classes. A  <-< arrow denotes dependency by importing code.   Browser | Api-hierarchy                             - | PowerNER | | web <  -< Serve <        -< Annotate <-< match | | | | | Request Fragments <-< html | Sets Show <-< html | | | Form | Data | | | Corpus | | | Settings  "
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate",
@@ -4675,59 +4675,59 @@ INDEX=[
 },
 {
 "ref":"tf.browser.ner.form",
-"url":98,
+"url":99,
 "doc":"Machinery for request reading. All form data comes as key value pairs where the values are strings. We need more streamlined values, in several data types and organizations. Also we need defaults for missing and/or empty values. To see how this fits among all the modules of this package, see  tf.browser.ner.annotate ."
 },
 {
 "ref":"tf.browser.ner.form.Form",
-"url":98,
-"doc":"Remember the specification of data types and organization for form values. Parameters      features: list The entity features in the tool; derives ultimately from  tf.browser.ner.settings.Settings , which reads the  ner/config.yaml file. defaults: dict Provides default values for form keys with a missing or empty value. If the default should be a  None ,  False or empty string value, nothing has to be specified. Only if the default is a specific meaningful value, it needs to be specified. keys[Str,Bool,Tri,Int,Tup,SetInt,Json]: list See  tf.browser.ner.servelib.ServeLib ."
+"url":99,
+"doc":"Remember the specification of data types and organization for form values. Parameters      features: list The entity features in the tool; derives ultimately from  tf.browser.ner.settings.Settings , which reads the  ner/config.yaml file. defaults: dict Provides default values for form keys with a missing or empty value. If the default should be a  None ,  False or empty string value, nothing has to be specified. Only if the default is a specific meaningful value, it needs to be specified. keys[Str,Bool,Tri,Int,Tup,SetInt,Json]: list See  tf.browser.ner.request.Request ."
 },
 {
 "ref":"tf.browser.ner.form.Form.fgets",
-"url":98,
+"url":99,
 "doc":"Makes form value under key  k or its default into an string.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.form.Form.fget2",
-"url":98,
+"url":99,
 "doc":"Makes form value under key  k or its default into an boolean.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.form.Form.fget3",
-"url":98,
+"url":99,
 "doc":"Makes form value under key  k or its default into a 3-way boolean.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.form.Form.fgeti",
-"url":98,
+"url":99,
 "doc":"Makes form value under key  k or its default into an integer.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.form.Form.fgettu",
-"url":98,
+"url":99,
 "doc":"Makes form value under key  k or its default into a tuple. The values in the tuples are strings. The values are retrieved by splitting the original string value on  \u2299 .",
 "func":1
 },
 {
 "ref":"tf.browser.ner.form.Form.fgetsi",
-"url":98,
+"url":99,
 "doc":"Makes form value under key  k or its default into a set. The values in the set are integers. The values are retrieved by splitting the original string value on  , . Parts that do not form valid integers are skipped.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.form.Form.fgetj",
-"url":98,
+"url":99,
 "doc":"Makes form value under key  k or its default into a data structure. The datastructure is retrieved by interpreting the original string as quoted json.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.form.Form.fill",
-"url":98,
+"url":99,
 "doc":"Fill a dictionary with interpreted form values. The input data is the request data from Flask, the output data are the logical values derived from them by the methods in this class. Returns    - dict The filled in form.",
 "func":1
 },

@@ -37,8 +37,15 @@ and in its top-level directory run the command:</strong></p>
 <pre><code>pip install -e .
 </code></pre>
 <h2 id="12">12</h2>
-<h3 id="120">12.0</h3>
-<h4 id="121">12.1</h4>
+<h3 id="121">12.1</h3>
+<h4 id="1211">12.1.1</h4>
+<p>2023-10-29</p>
+<ul>
+<li>Bug fix: the mechanism to make individual exceptions when adding named entities
+in the <code><a title="tf.browser.ner.annotate" href="../browser/ner/annotate.html">tf.browser.ner.annotate</a></code> tool was broken. Thanks to Daniel Swanson for
+spotting it.</li>
+</ul>
+<h3 id="1210">12.1.0</h3>
 <p>2023-10-28</p>
 <h5 id="new-stuff">New stuff</h5>
 <ul>
@@ -60,6 +67,7 @@ entity recognititon</p>
 <ul>
 <li>in the TEI converter.</li>
 </ul>
+<h3 id="120">12.0</h3>
 <h4 id="12067">12.0.6,7</h4>
 <p>2023-09-13</p>
 <p>Trivial fix in code that exports the data from a job in the Text-Fabric browser.
@@ -124,7 +132,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ecd99df1ebadcdbd70fb7ee3b34b22973d478799/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/262f80e5ca3a623a6c82a2221db6322d1318ad15/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -197,12 +205,16 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
-<li><a href="#120">12.0</a><ul>
 <li><a href="#121">12.1</a><ul>
+<li><a href="#1211">12.1.1</a></li>
+</ul>
+</li>
+<li><a href="#1210">12.1.0</a><ul>
 <li><a href="#new-stuff">New stuff</a></li>
 <li><a href="#fixes">Fixes</a></li>
 </ul>
 </li>
+<li><a href="#120">12.0</a><ul>
 <li><a href="#12067">12.0.6,7</a></li>
 <li><a href="#1205">12.0.5</a></li>
 <li><a href="#1200-4">12.0.0-4</a><ul>
