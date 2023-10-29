@@ -307,7 +307,7 @@ The TF data is fairly compact.
 
 ### Manually
 
-TF data of corpora reside in a backend repo.
+TF data of corpora reside in a back-end repo.
 You can manually clone such a data repository and point Text-Fabric to that data.
 
 First, take care that your clone ends up in `github/`*orgName* or `gitlab/`*orgName*

@@ -34,7 +34,7 @@ system, or from GitHub/GitLab:
 text-fabric bhsa --mod=etcbc/valence/tf
 ```
 
-or, if the module resides at a different backend than the main data:
+or, if the module resides at a different back-end than the main data:
 
 ```sh
 text-fabric bhsa --mod=<gitlab>yourgroup/yourrepo/tf
@@ -102,9 +102,9 @@ local GitHub or GitLab
 
     `annotation/banks/sim/tf`
 
-synchronized with the backend
+synchronized with the back-end
 :   You must have your local repo contents synchronized with that on the
-    GitHub/GitLab backend.
+    GitHub/GitLab back-end.
 
     Now other people can use your data.
     Whenever you push updates, users may fetch the updated data, depending

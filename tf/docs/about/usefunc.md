@@ -115,12 +115,13 @@ The *checkout specifier* part is a keyword:
 
 *   `local` under your local directory `~/text-fabric-data`
 *   `clone` under your local directory `~/github`
-*   `latest` under the latest release, to be checked with online backend
-*   `hot` under the latest commit, to be checked with online backend
-*   `v1.2.3` under release `v1.2.3`, to be fetched from online backend
-*   `123aef` under commit `123aef`, to be fetched from online backend
+*   `latest` under the latest release, to be checked with online back-end
+*   `hot` under the latest commit, to be checked with online back-end
+*   `v1.2.3` under release `v1.2.3`, to be fetched from online back-end
+*   `123aef` under commit `123aef`, to be fetched from online back-end
 *   *absent* under your local directory `~/text-fabric-data` if present,
-    otherwise the latest release on backend, if present, otherwise the latest commit on backend
+    otherwise the latest release on back-end, if present, otherwise the latest
+    commit on back-end.
 
 For a demo, see
 [banks/repo](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb).
@@ -226,7 +227,7 @@ or
 ```
 
 All features of all those modules will be loaded.
-If they are not yet present, they will be downloaded from a backend first.
+If they are not yet present, they will be downloaded from a back-end first.
 For example, there is an easter egg module on GitHub,
 and you can obtain it by
 

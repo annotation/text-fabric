@@ -25,7 +25,7 @@ Hence, `Annotation` is the central class of this tools, whose methods are releva
 for:
 
 *   `tf.browser.ner.power`: the API for users to manipulate annotations in their
-    own programs, especially in a Juyter notebook.
+    own programs, especially in a Jupyter notebook.
 *   `tf.browser.ner.web`: Flask app that routes urls to controller functions.
 
 `web` makes use of the following modules that are not needed by `power`:
@@ -43,7 +43,7 @@ Both `web` and `power` make use of the following modules in as far as they are n
 already mentioned under `annotate` and its parent classes:
 
 *   `tf.browser.ner.helpers`: a variety of context-free data jugglers;
-*   `tf.browser.ner.html`: a generic library to generate HTML using Pythonesque
+*   `tf.browser.ner.html`: a generic library to generate HTML using Pythonic
     syntax.
 
 !!! note "Class hierarchy"

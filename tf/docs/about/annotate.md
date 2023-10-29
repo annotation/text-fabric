@@ -1,16 +1,16 @@
 # Manual Annotation
 
 Named Entity Recognition is a task for which automated tools exist.
-But in a smallish, well-known corpus, such tools tend to created more noise than signal.
+But in a smallish, well-known corpus, such tools tend to create more noise than signal.
 If you know which names to expect and in what forms they occur in the corpus,
 it might be easier to mark them by hand.
 
 Text-Fabric contains a tool to help you with that. The basic thing it does is
-to find all occurrences of a pattern you specifiy, and then assign an identifier and
+to find all occurrences of a pattern you specify, and then assign an identifier and
 a kind to all those occurrences.
 
 For example, it finds all `Ernesto di Nassau` occurrences and it assigns
-identiy `ernesto.di.nassau` and kind `PER` to them.
+identity `ernesto.di.nassau` and kind `PER` to them.
 
 There are two interfaces. One runs inside the Text-Fabric browser, and it
 enables you to search and mark repeatedly, to apply additions and
@@ -26,7 +26,7 @@ Here is what the browser interface looks like:
 
 ![browser](../images/Annotate/browser.png)
 
-# Work-in-progess
+# Work-in-progress
 
 This is a tool where you can add entity annotations to a corpus.
 These annotations consist of a new nodes of a new type (`ent`, or `entity`) and
@@ -100,7 +100,7 @@ With this information in hand, it is possible
 *   to call the `tf.dataset.modify` function **or**
 *   work in a Jupyter notebook and use the entity data in whatever way you like.
 
-In the futureI intend to broaden the concept of data module to modules that introduce
+In the future I intend to broaden the concept of data module to modules that introduce
 new node types. In order to do that I have to write code for Text-Fabric to include
 the module data in the existing `otype` and `oslots` features and, most of all,
 to generate adapted computed features such as `__levup__` and `__levdown__`.
@@ -177,10 +177,8 @@ This tool needs additional input data and produces additional output data.
 The *input* data can be found in the directory `ner` next to the actual `tf` directory
 from where the program has loaded the corpus data.
 
-Depending on houw you invoke Text-Fabric, this can be in a clone of the
+Depending on how you invoke Text-Fabric, this can be in a clone of the
 repository of the corpus, or an auto-downloaded copy of the data.
-
-or under your `~/text-fabric-data` repository.
 
 If you work with the corpus in a local clone, you'll find it under
 `~/github/HuygensING/suriano` (in this example).
@@ -190,11 +188,11 @@ If you work in an auto-downloaded copy of the corpus, it is under
 
 Note that
 
-*   the part `github` may be another backend in your situation, e.g. `gitlab` or 
+*   the part `github` may be another back-end in your situation, e.g. `gitlab` or 
     `gitlab.huc.di.nl`;
 *   the part `HuygensING` may be another organization, e.g. `annotation`, or wherever
     your corpus is located;
-*   `suriano` might also be another repo such as `descartes`, or whererever
+*   `suriano` might also be another repo such as `descartes`, or where ever
     your corpus is located.
 
 The *output* data can be found a directory `_temp/ner` where the `_temp`
@@ -204,7 +202,7 @@ directory is located next to the `ner` directory that holds the input data.
 ### Input data
 
 There are several bits of information needed to set up the annotation tool.
-They are corpus specific, so they must be specified in a yaml file in the corpus
+They are corpus specific, so they must be specified in a YAML file in the corpus
 repository.
 
 As an example, we refer to the
@@ -275,7 +273,7 @@ A = use("HuygensING/suriano:clone", checkout="clone")
 A.zipAll()
 ```
 
-and pick up the new `~/Downloads/github/HuygensING/suriano/complete.zip`
+Then pick up the new `~/Downloads/github/HuygensING/suriano/complete.zip`
 and attach it to your new release on GitHub.
 
 Then other users can invoke the corpus by
@@ -284,7 +282,7 @@ Then other users can invoke the corpus by
 A = use("HuygensING/suriano")
 ```
 
-without the need to clone the repository first.
+This way there is no need to clone the repository first.
 Text-Fabric will auto-download the corpus, including the `ner` input data.
 
 Then multiple people can work on annotation tasks on their local computers.
@@ -298,7 +296,7 @@ The output data is tightly coupled to a specific version of the corpus.
 
 !!! caution "Versioning"
     If a new versions of the corpus is published, the generated annotations
-    do not autmatically migrate to the new version.
+    do not automatically migrate to the new version.
     Text-Fabric has tools to perform those migrations, but they are not fully automatic.
     Whenever a new version of the corpus is produced, the producer should also
     generate a mapping file from the nodes of the new corpus to the old corpus.

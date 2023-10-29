@@ -36,13 +36,13 @@ The tool opens in a new window in the Chrome browser.
 Currently the tool works best in Chrome, but it is not required.
 If you leave out the `--chrome` bit, the tool starts in your default browser.
 
-If you have the tool open, and you want/need to restart it, say
+You can restart the tool without navigating away from the web page as follows:
 
 ```
 tf HuygensING/suriano --tool=ner --chrome -noweb
 ```
 
-then it will not open a new browser window and you can continue in the
+Because of `-noweb` it will not open a new browser window and you can continue in the
 already open browser tab.
 
 The start-up window looks like this:
@@ -51,7 +51,7 @@ The start-up window looks like this:
 
 *   **Left column**:
 
-    manage annotation *sets*. Your work ends up in an annotation set.
+    Manage annotation *sets*. Your work ends up in an annotation set.
     Here you can choose in which set.
 
     You can create a new, empty set or duplicate an existing set.
@@ -68,7 +68,7 @@ The start-up window looks like this:
 
 *   **Entities column**:
     
-    see the entities in the chosen set.
+    See the entities in the chosen set.
 
     At the top you see an overview of the kinds of entities and how many entities
     there are of each kind.
@@ -84,7 +84,7 @@ The start-up window looks like this:
 
 *   **Right column**:
 
-    see a list of buckets (i.e. paragrpahs in this corpus).
+    See a list of buckets (i.e. paragraphs in this corpus).
 
     If you have clicked on an entity, you see the buckets that contain an occurrence
     of that entity.
@@ -116,7 +116,7 @@ Below, in the text, you see that something has changed:
     many tokens the occurrence has.
 *   right before each occurrence there is a small number: it indicates how many
     occurrences there are of that entity;
-*   reading to the right, you see `LOC` or `PER` orv`MISC`: the kind of the entity;
+*   reading to the right, you see `LOC` or `PER` or `MISC`: the kind of the entity;
 *   further to the right you see the identifier of the entity;
     if you click on the identifier, you load all of its occurrences, to the same
     effect as when you had it clicked it from the Entities column.
@@ -132,7 +132,7 @@ occurs.
 
 ![browser](../images/Annotate/context.png)
 
-The paragraph you started from is in the center. You can scroll up and down the
+The paragraph you started from is in the centre. You can scroll up and down the
 whole letter that the paragraph is contained in.
 If you want to return to the paragraph you started from, click the blue dot.
 If you want to remove the context, click the blue section indicator again.
@@ -295,7 +295,7 @@ The other results are not (de)selectable, and will all be affected.
 If you have added an entity, and you mark another one, you'll see a new button next to
 the ✅, namely ❎. It has mostly the same effect, namely marking all occurrences
 in the corpus, but the differences are in what happens below the `add` button.
-Whereas the ✅ button fills the eid field with a value derived from the occurrence,
+Whereas the ✅ button fills the `eid` field with a value derived from the occurrence,
 the ❎ leaves the previous value unchanged. So you can just click `add` to mark
 the new occurrences with the values of the same entity as before.
 
@@ -306,7 +306,7 @@ not too many distinct named entities in the corpus.
 
 Probably you soon discover that there are quite a bit of distinct named entities,
 and each entity has quite a bit of surface forms.
-Then the work load may not feel doable anymore.
+Then the work load may not feel doable any more.
 
 For that purpose, there is also a *power* annotate mode, where you run the
 annotator tool in a Jupyter Notebook, driven by a spreadsheet with names and

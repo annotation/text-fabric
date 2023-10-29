@@ -547,7 +547,7 @@ See `tf.advanced.links.flexLink`
 #### Other improvements
 
 Various app-configuration improvements under the hood, solving all kinds of edge
-cases, mostly having to do with on-premiss GitLab backends.
+cases, mostly having to do with on-premiss GitLab back-ends.
 
 ### 11.1
 
@@ -640,7 +640,7 @@ Thanks to [Seth Howell](https://github.com/sethbam9) for reporting this.
 
 **Backends**
 
-Small fixes for problems encountered when using gitlab backends.
+Small fixes for problems encountered when using gitlab back-ends.
 
 **Search**
 
@@ -700,7 +700,7 @@ So we have bumped the Python requirement for Text-Fabric from 3.6.3 to 3.7.0.
 Text-Fabric can be installed with different capabilities.
 
 On some platforms not all requirements for Text-Fabric can be met, e.g.
-the Github or GitLab backends, or the Text-Fabric browser.
+the Github or GitLab back-ends, or the Text-Fabric browser.
 
 You can now install a bare Text-Fabric, without those capabilities,
 or a more capable Text-Fabric with additional capabilities.
@@ -829,22 +829,22 @@ Bug fix in the Text-Fabric browser.
 Spotted by Jorik Groen.
 
 The Text-Fabric browser was not able to download data correctly, because
-it communicated the name of the backend incorrectly to the TF-kernel.
+it communicated the name of the back-end incorrectly to the TF-kernel.
 
 #### 10.0.2
 
 2022-06-20
 
 It is now also possible to have datasets and modules of datasets coming 
-from different backends.
+from different back-ends.
 
 Refactoring:
 
 *   ditched the word `host`. Used `backend` instead.
 *   the `~/text-fabric-data` cache dir now first has a layer of subdirectories
-    according to the backend that the data comes from: `github`, `gitlab` and
+    according to the back-end that the data comes from: `github`, `gitlab` and
     whatever server is serving a GitLab instance.
-*   subfolder download for GitLab is supported if the gitlab backend supports it.
+*   subfolder download for GitLab is supported if the gitlab back-end supports it.
     If not, we fall back on downloading the whole repo and then discarding what we
     do not need. Gitlabs with versions at least 14.4.0 support downloading of subfolders.
 
@@ -865,18 +865,18 @@ So I work around it.
 
 *Backend support*: see `tf.advanced.repo.checkoutRepo()` and `tf.advanced.app.App`.
 
-A backend is an online repository where TF apps/data can be stored.
+A back-end is an online repository where TF apps/data can be stored.
 
-Up till now, Text-Fabric worked with a single backend: **GitHub**.
+Up till now, Text-Fabric worked with a single back-end: **GitHub**.
 It uses the API of GitHub to find releases and commits and to download
 required data on demand.
 
 With this version, Text-Fabric can also talk to GitLab instances.
 
-The most prominent calls on the backend are the `use()` function
+The most prominent calls on the back-end are the `use()` function
 and the start of the Text-Fabric browser.
 
-They will work with a GitLab backend if you pass the instance address
+They will work with a GitLab back-end if you pass the instance address
 with the optional parameter `backend`:
 
 ``` python
@@ -900,7 +900,7 @@ or
 text-fabric annotation/banks --backend=gitlab.com
 ```
 
-When `backend` is omitted or is `None`, the backend defaults to `github`.
+When `backend` is omitted or is `None`, the back-end defaults to `github`.
 
 **Limitations**
 
