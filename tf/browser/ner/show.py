@@ -265,6 +265,7 @@ class Show:
         content = []
 
         nB = 0
+        nBshown = 0
 
         for b, bTokens, matches, positions in buckets:
             nB += 1
@@ -273,7 +274,7 @@ class Show:
                 continue
             if end is not None and nB > end:
                 break
-            if limited and nB > limit:
+            if limited and nBshown > limit:
                 content.append(
                     H.div(
                         f"Showing only the first {limit} {bucketType}s of all "
@@ -283,6 +284,7 @@ class Show:
                 )
                 break
 
+            nBshown += 1
             charPos = 0
 
             if annoSet:

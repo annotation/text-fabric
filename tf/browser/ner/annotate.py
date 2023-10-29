@@ -162,6 +162,7 @@ class Annotate(Sets, Show):
 
     def filterContent(
         self,
+        buckets=None,
         node=None,
         bFind=None,
         bFindC=None,
@@ -175,8 +176,9 @@ class Annotate(Sets, Show):
     ):
         """Filter the buckets according to a variety of criteria.
 
-        Either the buckets of the whole corpus are filtered, or a subset of buckets,
-        namely those contained in a particular node.
+        Either the buckets of the whole corpus are filtered, or a given subset
+        of buckets, or a subset of buckets, namely those contained in a
+        particular node, see parameters `node`, and `buckets`.
 
         **Bucket filtering**
 
@@ -203,6 +205,15 @@ class Annotate(Sets, Show):
 
         Parameters
         ----------
+        buckets: set of integer, optional None
+            The set of buckets to filter, instead of the whole corpus.
+            Works also if the parameter `node` is specified, which also restricts
+            the buckets to filter. If both are specified, their effect will be
+            combined.
+        node: integer, optional None
+            Gets the context of the node, typically the intermediate-level section
+            in which the node occurs. Then restricts the filtering to the buckets
+            contained in the context, instead of the whole corpus.
         bFind: string, optional None
             A search pattern that filters the buckets, before applying the search
             for a token sequence.
@@ -272,10 +283,15 @@ class Annotate(Sets, Show):
         entitySlotAll = setData.entitySlotAll
         entitySlotIndex = setData.entitySlotIndex
 
+        bucketUniverse = (
+            setData.buckets
+            if buckets is None
+            else tuple(sorted(self.checkBuckets(buckets)))
+        )
         buckets = (
-            setData.buckets or ()
+            bucketUniverse
             if node is None
-            else self.getContext(node)
+            else tuple(sorted(set(bucketUniverse) & set(self.getContext(node))))
         )
 
         nFind = 0
@@ -292,11 +308,11 @@ class Annotate(Sets, Show):
         hasQTokens = qTokens is not None and len(qTokens)
         hasOcc = not hasEnt and hasQTokens
 
-        if eVals is not None:
+        if eVals is not None and eVals in entityVal:
             eSlots = entityVal[eVals]
             eStarts = {s[0]: s[-1] for s in eSlots}
         else:
-            eStarts = None
+            eStarts = {}
 
         useQTokens = qTokens if hasOcc else None
 

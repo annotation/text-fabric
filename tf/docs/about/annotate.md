@@ -57,6 +57,7 @@ See also the following Jupyter Notebooks that show the work-in-progress:
 *   BHSA
     *   [basic annotation API](https://nbviewer.org/github/ETCBC/bhsa/blob/master/programs/nerTest.ipynb)
     *   [using a spreadsheet with instructions](https://nbviewer.org/github/ETCBC/bhsa/blob/master/programs/nerPower.ipynb)
+    *   [cookbook recipe](https://nbviewer.org/github/ETCBC/bhsa/blob/master/tutorial/cookbook/nerByTheBook.ipynb)
 
 ## Ergonomics of annotation
 

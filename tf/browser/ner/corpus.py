@@ -125,6 +125,9 @@ class Corpus(Settings):
         def sectionHead(node):
             return app.sectionStrFromNode(node)
 
+        def checkBuckets(nodes):
+            return {node for node in nodes if F.otype.v(node) == bucketType}
+
         self.checkFeature = checkFeature
         """Checks whether a feature is loaded in the corpus.
 
@@ -268,6 +271,14 @@ class Corpus(Settings):
         We start from a node and find the section node of intermediate level
         that contains that node. Then we return all buckets contained in that
         section.
+
+        Parameters
+        ----------
+        node: int
+
+        Returns
+        -------
+        tuple of int
         """
 
         self.get0 = get0
@@ -305,6 +316,18 @@ class Corpus(Settings):
         Returns
         -------
         string
+        """
+
+        self.checkBuckets = checkBuckets
+        """Given a set of nodes, return the set of only its bucket nodes.
+
+        Parameters
+        ----------
+        nodes: set of int
+
+        Returns
+        -------
+        set of int
         """
 
         self.featureDefault = {

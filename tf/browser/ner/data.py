@@ -346,7 +346,10 @@ class Data(Corpus):
             pass
 
     def delEntity(self, vals, allMatches=None, silent=True):
-        """Delete entity occurrences from a set.
+        """Delete entity occurrences from the current set.
+
+        This operation is not allowed if the current set is the readonly set with the
+        empty name.
 
         The entities to delete are selected by their feature values.
         So you can use this function to delete all entities with a certain
@@ -373,7 +376,18 @@ class Data(Corpus):
         (int, int) or void
             If `silent`, it returns the number of non-existing entities that were
             asked to be deleted and the number of actually deleted entities.
+
+            If the operation is not allowed, both integers above are set to -1.
         """
+        annoSet = self.annoSet
+        annoSetRep = self.annoSetRep
+
+        if not annoSet:
+            if silent:
+                return (-1, -1)
+            self.console(f"Entity deletion not allowed on {annoSetRep}", error=True)
+            return
+
         setData = self.getSetData()
 
         oldEntities = setData.entities
@@ -411,7 +425,10 @@ class Data(Corpus):
         self.console(f"Deleted:     {deleted:>5} x")
 
     def delEntityRich(self, deletions, buckets, excludedTokens=set()):
-        """Delete specified entity occurrences from a set.
+        """Delete specified entity occurrences from the current set.
+
+        This operation is not allowed if the current set is the readonly set with the
+        empty name.
 
         This function has more detailed instructions as to which entities
         should be deleted than `Data.delEntity()` .
@@ -439,9 +456,20 @@ class Data(Corpus):
             skipped from deletion. If the last slot of an entity is in this set,
             the entity will not be deleted.
         """
+        annoSet = self.annoSet
+        annoSetRep = self.annoSetRep
+        browse = self.browse
+
+        if not annoSet:
+            msg = f"Entity deletion not allowed on {annoSetRep}"
+            if browse:
+                return [[msg]]
+            else:
+                self.console(msg, error=True)
+                return
+
         settings = self.settings
         features = settings.features
-        browse = self.browse
         setData = self.getSetData()
 
         oldEntities = setData.entities
@@ -520,7 +548,10 @@ class Data(Corpus):
             self.console("\n".join(rest))
 
     def addEntity(self, vals, allMatches, silent=True):
-        """Add entity occurrences to a set.
+        """Add entity occurrences to the current set.
+
+        This operation is not allowed if the current set is the readonly set with the
+        empty name.
 
         The entities to add are specified by their feature values.
         So you can use this function to add entities with a certain
@@ -545,7 +576,18 @@ class Data(Corpus):
         (int, int) or void
             If `silent`, it returns the number of already existing entities that were
             asked to be deleted and the number of actually deleted entities.
+
+            If the operation is not allowed, both integers above are set to -1.
         """
+        annoSet = self.annoSet
+        annoSetRep = self.annoSetRep
+
+        if not annoSet:
+            if silent:
+                return (-1, -1)
+            self.console(f"Entity addition not allowed on {annoSetRep}", error=True)
+            return
+
         setData = self.getSetData()
 
         oldEntities = setData.entities
@@ -583,7 +625,10 @@ class Data(Corpus):
         self.console(f"Added:           {added:>5} x")
 
     def addEntities(self, newEntities, silent=True):
-        """Add multiple entites efficiently.
+        """Add multiple entities efficiently to the current set.
+
+        This operation is not allowed if the current set is the readonly set with the
+        empty name.
 
         If you have multiple entities to add, it is wasteful to do multiple passes over
         the corpus to find them.
@@ -609,7 +654,18 @@ class Data(Corpus):
         (int, int) or void
             If `silent`, it returns the number of already existing entities that were
             asked to be deleted and the number of actually deleted entities.
+
+            If the operation is not allowed, both integers above are set to -1.
         """
+        annoSet = self.annoSet
+        annoSetRep = self.annoSetRep
+
+        if not annoSet:
+            if silent:
+                return (-1, -1)
+            self.console(f"Entities addition not allowed on {annoSetRep}", error=True)
+            return
+
         setData = self.getSetData()
 
         oldEntities = set(setData.entities.values())
@@ -640,7 +696,10 @@ class Data(Corpus):
         self.console(f"Added:           {added:>5} x")
 
     def addEntityRich(self, additions, buckets, excludedTokens=set()):
-        """Add specified entity occurrences to a set.
+        """Add specified entity occurrences to the current set.
+
+        This operation is not allowed if the current set is the readonly set with the
+        empty name.
 
         This function has more detailed instructions as to which entities
         should be added than `Data.addEntity()` .
@@ -668,10 +727,21 @@ class Data(Corpus):
             receive new entities. If the last slot of an entity is in this set,
             no entity will be added there.
         """
+        annoSet = self.annoSet
+        annoSetRep = self.annoSetRep
+        browse = self.browse
+
+        if not annoSet:
+            msg = f"Entity addition not allowed on {annoSetRep}"
+            if browse:
+                return [[msg]]
+            else:
+                self.console(msg, error=True)
+                return
+
         settings = self.settings
         features = settings.features
 
-        browse = self.browse
         setData = self.getSetData()
 
         oldEntities = setData.entities
@@ -743,7 +813,10 @@ class Data(Corpus):
             self.console("\n".join(rest))
 
     def weedEntities(self, delEntities):
-        """Performs deletions to an annotation set.
+        """Performs deletions to the current annotation set.
+
+        This operation is not allowed if the current set is the readonly set with the
+        empty name.
 
         Parameters
         ----------
@@ -751,11 +824,17 @@ class Data(Corpus):
             The set consists of entity specs: a tuple of values of entity features,
             and an iterable of slot tuples where the entity is located.
         """
+        annoSet = self.annoSet
+        annoSetRep = self.annoSetRep
+
+        if not annoSet:
+            self.console(f"Entity weeding not allowed on {annoSetRep}", error=True)
+            return
+
         settings = self.settings
         features = settings.features
         nF = len(features)
 
-        annoSet = self.annoSet
         annoDir = self.annoDir
 
         dataFile = f"{annoDir}/{annoSet}/entities.tsv"
@@ -776,7 +855,10 @@ class Data(Corpus):
             fh.write("".join(newEntities))
 
     def mergeEntities(self, newEntities):
-        """Performs additions to an annotation set.
+        """Performs additions to the current annotation set.
+
+        This operation is not allowed if the current set is the readonly set with the
+        empty name.
 
         Parameters
         ----------
@@ -785,6 +867,12 @@ class Data(Corpus):
             and an iterable of slot tuples where the entity is located.
         """
         annoSet = self.annoSet
+        annoSetRep = self.annoSetRep
+
+        if not annoSet:
+            self.console(f"Entity merging not allowed on {annoSetRep}", error=True)
+            return
+
         annoDir = self.annoDir
 
         dataFile = f"{annoDir}/{annoSet}/entities.tsv"

@@ -20,13 +20,14 @@ pip install -e .
 
 ### 12.1
 
-#### 12.1.1
+#### 12.1.1,2
 
 2023-10-29
 
 *   Bug fix: the mechanism to make individual exceptions when adding named entities
     in the `tf.browser.ner.annotate` tool was broken. Thanks to Daniel Swanson for
     spotting it.
+*   Additional fixes and enhancements.
 
 ### 12.1.0
 
