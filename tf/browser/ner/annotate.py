@@ -34,10 +34,10 @@ for:
 
 Again, this is a top of an iceberg, since it inherits from:
 
-*   `tf.browser.ner.servelib`: manage the data of a request;
+*   `tf.browser.ner.request`: manage the data of a request;
 *   `tf.browser.ner.fragments`: generate HTML for widgets on the page;
 
-`servelib` also uses `form` to retrieve form values into typed and structured values.
+`request` also uses `form` to retrieve form values into typed and structured values.
 
 Both `web` and `power` make use of the following modules in as far as they are not
 already mentioned under `annotate` and its parent classes:
@@ -51,7 +51,7 @@ already mentioned under `annotate` and its parent classes:
     `PowerNER` form one hierarchy.
     So an object of class `PowerNER` has access to all methods of these classes.
 
-    The classes `Serve`, `ServeLib`, `Fragments`, `From` form a separate hierarchy.
+    The classes `Serve`, `Request`, `Fragments`, `From` form a separate hierarchy.
     It will create an `Annotate` instance which will be stored in a `Serve` instance.
 
 Here is an overview how the modules hang together.
@@ -67,7 +67,7 @@ Browser                           |   Api-hierarchy
                                   |     |
 web <-----< Serve <-----------------< Annotate  <-< match
             |   |                 |     |   |
-      ServeLib Fragments <-< html |   Sets Show <-< html
+       Request Fragments <-< html |   Sets Show <-< html
           |                       |     |
         Form                      |   Data
                                   |     |

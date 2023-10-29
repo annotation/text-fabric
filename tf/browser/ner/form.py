@@ -42,7 +42,7 @@ class Form:
             nothing has to be specified. Only if the default is a specific
             meaningful value, it needs to be specified.
         keys[Str,Bool,Tri,Int,Tup,SetInt,Json]: list
-            See `tf.browser.ner.servelib.ServeLib`.
+            See `tf.browser.ner.request.Request`.
         """
         self.features = features
         self.defaults = defaults
@@ -92,7 +92,7 @@ class Form:
         """
         formValue = self.fgets(k)
         return (
-            {i for s in formValue.split(",") if (i := s.strip()).isdecimal()}
+            {int(i) for s in formValue.split(",") if (i := s.strip()).isdecimal()}
             if formValue
             else set()
         )

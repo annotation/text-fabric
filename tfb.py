@@ -52,7 +52,7 @@ apps = sorted(apps)
 appStr = ", ".join(apps)
 
 HELP = f"""
-python3 build.py command
+python3 tfb.py command
 
 command:
 

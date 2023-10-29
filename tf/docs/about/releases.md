@@ -18,9 +18,17 @@ pip install -e .
 
 ## 12
 
-### 12.0
+### 12.1
 
-#### 12.1
+#### 12.1.1
+
+2023-10-29
+
+*   Bug fix: the mechanism to make individual exceptions when adding named entities
+    in the `tf.browser.ner.annotate` tool was broken. Thanks to Daniel Swanson for
+    spotting it.
+
+### 12.1.0
 
 2023-10-28
 
@@ -41,6 +49,8 @@ pip install -e .
 ##### Fixes
 
 *   in the TEI converter.
+
+### 12.0
 
 #### 12.0.6,7
 

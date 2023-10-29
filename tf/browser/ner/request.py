@@ -11,7 +11,7 @@ from .form import Form
 from .helpers import findCompile
 
 
-class ServeLib(Form):
+class Request(Form):
     def __init__(self):
         """Calculate important values based on form data.
 

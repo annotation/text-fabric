@@ -10,11 +10,11 @@ To see how this fits among all the modules of this package, see
 from flask import render_template
 
 from .settings import TOOLKEY, SC_ALL
-from .servelib import ServeLib
+from .request import Request
 from .fragments import Fragments
 
 
-class Serve(ServeLib, Fragments):
+class Serve(Request, Fragments):
     def __init__(self, web):
         """Object that implements the controller functions for the annotatation tool.
 
