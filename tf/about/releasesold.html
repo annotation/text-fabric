@@ -572,7 +572,7 @@ to a tutorial or document served via the Pages of GitHub or GitLab.</p>
 <p>See <code><a title="tf.advanced.links.flexLink" href="../advanced/links.html#tf.advanced.links.flexLink">flexLink()</a></code></p>
 <h4 id="other-improvements">Other improvements</h4>
 <p>Various app-configuration improvements under the hood, solving all kinds of edge
-cases, mostly having to do with on-premiss GitLab backends.</p>
+cases, mostly having to do with on-premiss GitLab back-ends.</p>
 <h3 id="111">11.1</h3>
 <h4 id="1114">11.1.4</h4>
 <p>2023-02-12</p>
@@ -634,7 +634,7 @@ tab in the side bar: <strong>Corpus</strong>.</li>
 <h4 id="1103">11.0.3</h4>
 <p>2022-12-17</p>
 <p><strong>Backends</strong></p>
-<p>Small fixes for problems encountered when using gitlab backends.</p>
+<p>Small fixes for problems encountered when using gitlab back-ends.</p>
 <p><strong>Search</strong></p>
 <p>Fixed a problem spotted by Camil Staps: in the Text-Fabric browser valid queries
 with a quantifier gave error-like messages and no results.</p>
@@ -678,7 +678,7 @@ which in turns requires a Python version of at least 3.7.0.</p>
 <p>2022-11-11</p>
 <p>Text-Fabric can be installed with different capabilities.</p>
 <p>On some platforms not all requirements for Text-Fabric can be met, e.g.
-the Github or GitLab backends, or the Text-Fabric browser.</p>
+the Github or GitLab back-ends, or the Text-Fabric browser.</p>
 <p>You can now install a bare Text-Fabric, without those capabilities,
 or a more capable Text-Fabric with additional capabilities.</p>
 <p>Text-Fabric will detect what its capabilities are, and issue warnings
@@ -767,18 +767,18 @@ to existing slots instead of relying on the automatic linking.</p>
 <p>Bug fix in the Text-Fabric browser.
 Spotted by Jorik Groen.</p>
 <p>The Text-Fabric browser was not able to download data correctly, because
-it communicated the name of the backend incorrectly to the TF-kernel.</p>
+it communicated the name of the back-end incorrectly to the TF-kernel.</p>
 <h4 id="1002">10.0.2</h4>
 <p>2022-06-20</p>
 <p>It is now also possible to have datasets and modules of datasets coming
-from different backends.</p>
+from different back-ends.</p>
 <p>Refactoring:</p>
 <ul>
 <li>ditched the word <code>host</code>. Used <code>backend</code> instead.</li>
 <li>the <code>~/text-fabric-data</code> cache dir now first has a layer of subdirectories
-according to the backend that the data comes from: <code>github</code>, <code>gitlab</code> and
+according to the back-end that the data comes from: <code>github</code>, <code>gitlab</code> and
 whatever server is serving a GitLab instance.</li>
-<li>subfolder download for GitLab is supported if the gitlab backend supports it.
+<li>subfolder download for GitLab is supported if the gitlab back-end supports it.
 If not, we fall back on downloading the whole repo and then discarding what we
 do not need. Gitlabs with versions at least 14.4.0 support downloading of subfolders.</li>
 </ul>
@@ -792,14 +792,14 @@ So I work around it.</p>
 <p>2022-06-17</p>
 <p><strong>Additions</strong></p>
 <p><em>Backend support</em>: see <code><a title="tf.advanced.repo.checkoutRepo" href="../advanced/repo.html#tf.advanced.repo.checkoutRepo">checkoutRepo()</a></code> and <code><a title="tf.advanced.app.App" href="../advanced/app.html#tf.advanced.app.App">App</a></code>.</p>
-<p>A backend is an online repository where TF apps/data can be stored.</p>
-<p>Up till now, Text-Fabric worked with a single backend: <strong>GitHub</strong>.
+<p>A back-end is an online repository where TF apps/data can be stored.</p>
+<p>Up till now, Text-Fabric worked with a single back-end: <strong>GitHub</strong>.
 It uses the API of GitHub to find releases and commits and to download
 required data on demand.</p>
 <p>With this version, Text-Fabric can also talk to GitLab instances.</p>
-<p>The most prominent calls on the backend are the <code>use()</code> function
+<p>The most prominent calls on the back-end are the <code>use()</code> function
 and the start of the Text-Fabric browser.</p>
-<p>They will work with a GitLab backend if you pass the instance address
+<p>They will work with a GitLab back-end if you pass the instance address
 with the optional parameter <code>backend</code>:</p>
 <pre><code class="language-python">A = use(&quot;annotation/banks&quot;, backend=&quot;gitlab.huc.knaw.nl&quot;)
 </code></pre>
@@ -812,7 +812,7 @@ with the optional parameter <code>backend</code>:</p>
 <p>or</p>
 <pre><code class="language-sh">text-fabric annotation/banks --backend=gitlab.com
 </code></pre>
-<p>When <code>backend</code> is omitted or is <code>None</code>, the backend defaults to <code>github</code>.</p>
+<p>When <code>backend</code> is omitted or is <code>None</code>, the back-end defaults to <code>github</code>.</p>
 <p><strong>Limitations</strong></p>
 <p>GitLab does not support Jupyter Notebooks.
 And even if you converted them to HTML, GitLab does not offer a rendered view on HTML pages,
@@ -3345,7 +3345,7 @@ see in TF if they want to use it in MQL and vice versa.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/about/releasesold.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/about/releasesold.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releasesold.md

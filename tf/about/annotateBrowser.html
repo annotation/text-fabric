@@ -49,17 +49,17 @@ Give the command</p>
 <p>The tool opens in a new window in the Chrome browser.
 Currently the tool works best in Chrome, but it is not required.
 If you leave out the <code>--chrome</code> bit, the tool starts in your default browser.</p>
-<p>If you have the tool open, and you want/need to restart it, say</p>
+<p>You can restart the tool without navigating away from the web page as follows:</p>
 <pre><code>tf HuygensING/suriano --tool=ner --chrome -noweb
 </code></pre>
-<p>then it will not open a new browser window and you can continue in the
+<p>Because of <code>-noweb</code> it will not open a new browser window and you can continue in the
 already open browser tab.</p>
 <p>The start-up window looks like this:</p>
 <p><img alt="browser" src="../images/Annotate/browser-start.png"></p>
 <ul>
 <li>
 <p><strong>Left column</strong>:</p>
-<p>manage annotation <em>sets</em>. Your work ends up in an annotation set.
+<p>Manage annotation <em>sets</em>. Your work ends up in an annotation set.
 Here you can choose in which set.</p>
 <p>You can create a new, empty set or duplicate an existing set.
 You can also rename a set or delete it.</p>
@@ -73,7 +73,7 @@ this is a good way to start.</p>
 </li>
 <li>
 <p><strong>Entities column</strong>:</p>
-<p>see the entities in the chosen set.</p>
+<p>See the entities in the chosen set.</p>
 <p>At the top you see an overview of the kinds of entities and how many entities
 there are of each kind.</p>
 <p>At the bottom is the list of all entities, which you can filter and sort by the
@@ -84,7 +84,7 @@ controls in between.</p>
 </li>
 <li>
 <p><strong>Right column</strong>:</p>
-<p>see a list of buckets (i.e. paragrpahs in this corpus).</p>
+<p>See a list of buckets (i.e. paragraphs in this corpus).</p>
 <p>If you have clicked on an entity, you see the buckets that contain an occurrence
 of that entity.</p>
 <p>If you have not clicked on anything, you see the whole corpus, truncated to the
@@ -107,7 +107,7 @@ Click that button. It changes to <code>decorated</code> plus a row of buttons ne
 many tokens the occurrence has.</li>
 <li>right before each occurrence there is a small number: it indicates how many
 occurrences there are of that entity;</li>
-<li>reading to the right, you see <code>LOC</code> or <code>PER</code> orv<code>MISC</code>: the kind of the entity;</li>
+<li>reading to the right, you see <code>LOC</code> or <code>PER</code> or <code>MISC</code>: the kind of the entity;</li>
 <li>further to the right you see the identifier of the entity;
 if you click on the identifier, you load all of its occurrences, to the same
 effect as when you had it clicked it from the Entities column.</li>
@@ -120,7 +120,7 @@ at the left of the relevant paragraph.</p>
 <p>You will get a scrollable view of the whole section (letter) in which that paragraph
 occurs. </p>
 <p><img alt="browser" src="../images/Annotate/context.png"></p>
-<p>The paragraph you started from is in the center. You can scroll up and down the
+<p>The paragraph you started from is in the centre. You can scroll up and down the
 whole letter that the paragraph is contained in.
 If you want to return to the paragraph you started from, click the blue dot.
 If you want to remove the context, click the blue section indicator again.</p>
@@ -241,7 +241,7 @@ The other results are not (de)selectable, and will all be affected.</p>
 <p>If you have added an entity, and you mark another one, you'll see a new button next to
 the ✅, namely ❎. It has mostly the same effect, namely marking all occurrences
 in the corpus, but the differences are in what happens below the <code>add</code> button.
-Whereas the ✅ button fills the eid field with a value derived from the occurrence,
+Whereas the ✅ button fills the <code>eid</code> field with a value derived from the occurrence,
 the ❎ leaves the previous value unchanged. So you can just click <code>add</code> to mark
 the new occurrences with the values of the same entity as before.</p>
 <h1 id="more-power">More power</h1>
@@ -249,7 +249,7 @@ the new occurrences with the values of the same entity as before.</p>
 not too many distinct named entities in the corpus.</p>
 <p>Probably you soon discover that there are quite a bit of distinct named entities,
 and each entity has quite a bit of surface forms.
-Then the work load may not feel doable anymore.</p>
+Then the work load may not feel doable any more.</p>
 <p>For that purpose, there is also a <em>power</em> annotate mode, where you run the
 annotator tool in a Jupyter Notebook, driven by a spreadsheet with names and
 surface forms.</p>
@@ -259,7 +259,7 @@ and make fine-tuning corrections.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/about/annotateBrowser.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/about/annotateBrowser.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/annotateBrowser.md

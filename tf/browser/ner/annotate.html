@@ -47,7 +47,7 @@ criteria.</li>
 for:</p>
 <ul>
 <li><code><a title="tf.browser.ner.power" href="power.html">tf.browser.ner.power</a></code>: the API for users to manipulate annotations in their
-own programs, especially in a Juyter notebook.</li>
+own programs, especially in a Jupyter notebook.</li>
 <li><code><a title="tf.browser.ner.web" href="web.html">tf.browser.ner.web</a></code>: Flask app that routes urls to controller functions.</li>
 </ul>
 <p><code>web</code> makes use of the following modules that are not needed by <code>power</code>:</p>
@@ -64,7 +64,7 @@ own programs, especially in a Juyter notebook.</li>
 already mentioned under <code>annotate</code> and its parent classes:</p>
 <ul>
 <li><code><a title="tf.browser.ner.helpers" href="helpers.html">tf.browser.ner.helpers</a></code>: a variety of context-free data jugglers;</li>
-<li><code><a title="tf.browser.ner.html" href="html.html">tf.browser.ner.html</a></code>: a generic library to generate HTML using Pythonesque
+<li><code><a title="tf.browser.ner.html" href="html.html">tf.browser.ner.html</a></code>: a generic library to generate HTML using Pythonic
 syntax.</li>
 </ul>
 <div class="admonition note">
@@ -95,7 +95,7 @@ web &lt;-----&lt; Serve &lt;-----------------&lt; Annotate  &lt;-&lt; match
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/annotate.py#L1-L399" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/annotate.py#L1-L399" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Central Annotation object.
 
@@ -124,7 +124,7 @@ Hence, `Annotation` is the central class of this tools, whose methods are releva
 for:
 
 *   `tf.browser.ner.power`: the API for users to manipulate annotations in their
-    own programs, especially in a Juyter notebook.
+    own programs, especially in a Jupyter notebook.
 *   `tf.browser.ner.web`: Flask app that routes urls to controller functions.
 
 `web` makes use of the following modules that are not needed by `power`:
@@ -142,7 +142,7 @@ Both `web` and `power` make use of the following modules in as far as they are n
 already mentioned under `annotate` and its parent classes:
 
 *   `tf.browser.ner.helpers`: a variety of context-free data jugglers;
-*   `tf.browser.ner.html`: a generic library to generate HTML using Pythonesque
+*   `tf.browser.ner.html`: a generic library to generate HTML using Pythonic
     syntax.
 
 !!! note &#34;Class hierarchy&#34;
@@ -542,7 +542,7 @@ browser. This will influence how results are reported back.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/annotate.py#L89-L399" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/annotate.py#L89-L399" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Annotate(Sets, Show):
     def __init__(self, app, data=None, browse=False):
@@ -964,7 +964,7 @@ of results.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/annotate.py#L163-L399" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/annotate.py#L163-L399" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def filterContent(
     self,
@@ -1228,7 +1228,7 @@ A single occurrence is represented as a tuple of slots.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/browser/ner/annotate.py#L131-L161" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/annotate.py#L131-L161" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findOccs(self, qTokenSet=set()):
     &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens.

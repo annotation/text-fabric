@@ -25,14 +25,14 @@
 <section id="section-intro">
 <h1 id="manual-annotation">Manual Annotation</h1>
 <p>Named Entity Recognition is a task for which automated tools exist.
-But in a smallish, well-known corpus, such tools tend to created more noise than signal.
+But in a smallish, well-known corpus, such tools tend to create more noise than signal.
 If you know which names to expect and in what forms they occur in the corpus,
 it might be easier to mark them by hand.</p>
 <p>Text-Fabric contains a tool to help you with that. The basic thing it does is
-to find all occurrences of a pattern you specifiy, and then assign an identifier and
+to find all occurrences of a pattern you specify, and then assign an identifier and
 a kind to all those occurrences.</p>
 <p>For example, it finds all <code>Ernesto di Nassau</code> occurrences and it assigns
-identiy <code>ernesto.di.nassau</code> and kind <code>PER</code> to them.</p>
+identity <code>ernesto.di.nassau</code> and kind <code>PER</code> to them.</p>
 <p>There are two interfaces. One runs inside the Text-Fabric browser, and it
 enables you to search and mark repeatedly, to apply additions and
 deletions of named entities to restricted sets of occurrences, so that you can
@@ -43,7 +43,7 @@ You can prepare a spreadsheet with entities and surface forms and have the tool
 <em>execute</em> that spreadsheet against the corpus.</p>
 <p>Here is what the browser interface looks like:</p>
 <p><img alt="browser" src="../images/Annotate/browser.png"></p>
-<h1 id="work-in-progess">Work-in-progess</h1>
+<h1 id="work-in-progress">Work-in-progress</h1>
 <p>This is a tool where you can add entity annotations to a corpus.
 These annotations consist of a new nodes of a new type (<code>ent</code>, or <code>entity</code>) and
 features that give information about those nodes.</p>
@@ -106,7 +106,7 @@ that node, plus the slots that are linked to that node.</p>
 <li>to call the <code><a title="tf.dataset.modify" href="../dataset/modify.html">tf.dataset.modify</a></code> function <strong>or</strong></li>
 <li>work in a Jupyter notebook and use the entity data in whatever way you like.</li>
 </ul>
-<p>In the futureI intend to broaden the concept of data module to modules that introduce
+<p>In the future I intend to broaden the concept of data module to modules that introduce
 new node types. In order to do that I have to write code for Text-Fabric to include
 the module data in the existing <code>otype</code> and <code>oslots</code> features and, most of all,
 to generate adapted computed features such as <code>__levup__</code> and <code>__levdown__</code>.
@@ -161,27 +161,26 @@ Or see this
 <p>This tool needs additional input data and produces additional output data.</p>
 <p>The <em>input</em> data can be found in the directory <code>ner</code> next to the actual <code><a title="tf" href="../index.html">tf</a></code> directory
 from where the program has loaded the corpus data.</p>
-<p>Depending on houw you invoke Text-Fabric, this can be in a clone of the
+<p>Depending on how you invoke Text-Fabric, this can be in a clone of the
 repository of the corpus, or an auto-downloaded copy of the data.</p>
-<p>or under your <code>~/text-fabric-data</code> repository.</p>
 <p>If you work with the corpus in a local clone, you'll find it under
 <code>~/github/HuygensING/suriano</code> (in this example).</p>
 <p>If you work in an auto-downloaded copy of the corpus, it is under
 <code>~/text-fabric-data/github/HuygensING/suriano</code> (in this example).</p>
 <p>Note that</p>
 <ul>
-<li>the part <code>github</code> may be another backend in your situation, e.g. <code>gitlab</code> or
+<li>the part <code>github</code> may be another back-end in your situation, e.g. <code>gitlab</code> or
 <code>gitlab.huc.di.nl</code>;</li>
 <li>the part <code>HuygensING</code> may be another organization, e.g. <code>annotation</code>, or wherever
 your corpus is located;</li>
-<li><code>suriano</code> might also be another repo such as <code>descartes</code>, or whererever
+<li><code>suriano</code> might also be another repo such as <code>descartes</code>, or where ever
 your corpus is located.</li>
 </ul>
 <p>The <em>output</em> data can be found a directory <code>_temp/ner</code> where the <code>_temp</code>
 directory is located next to the <code>ner</code> directory that holds the input data.</p>
 <h3 id="input-data">Input data</h3>
 <p>There are several bits of information needed to set up the annotation tool.
-They are corpus specific, so they must be specified in a yaml file in the corpus
+They are corpus specific, so they must be specified in a YAML file in the corpus
 repository.</p>
 <p>As an example, we refer to the
 <a href="https://github.com/HuygensING/suriano">Suriano corpus</a>.</p>
@@ -260,12 +259,12 @@ under <code>provenanceSpecs</code>:</p>
 <pre><code>A = use(&quot;HuygensING/suriano:clone&quot;, checkout=&quot;clone&quot;)
 A.zipAll()
 </code></pre>
-<p>and pick up the new <code>~/Downloads/github/HuygensING/suriano/complete.zip</code>
+<p>Then pick up the new <code>~/Downloads/github/HuygensING/suriano/complete.zip</code>
 and attach it to your new release on GitHub.</p>
 <p>Then other users can invoke the corpus by</p>
 <pre><code>A = use(&quot;HuygensING/suriano&quot;)
 </code></pre>
-<p>without the need to clone the repository first.
+<p>This way there is no need to clone the repository first.
 Text-Fabric will auto-download the corpus, including the <code>ner</code> input data.</p>
 <p>Then multiple people can work on annotation tasks on their local computers.</p>
 <h3 id="output-data">Output data</h3>
@@ -276,7 +275,7 @@ The output data is tightly coupled to a specific version of the corpus.</p>
 <div class="admonition caution">
 <p class="admonition-title">Versioning</p>
 <p>If a new versions of the corpus is published, the generated annotations
-do not autmatically migrate to the new version.
+do not automatically migrate to the new version.
 Text-Fabric has tools to perform those migrations, but they are not fully automatic.
 Whenever a new version of the corpus is produced, the producer should also
 generate a mapping file from the nodes of the new corpus to the old corpus.
@@ -293,7 +292,7 @@ I intend to write functions to make this task easier.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/about/annotate.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/about/annotate.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/annotate.md
@@ -365,7 +364,7 @@ setTimeout(() => input.focus(), 100);
 <div class="toc">
 <ul>
 <li><a href="#manual-annotation">Manual Annotation</a></li>
-<li><a href="#work-in-progess">Work-in-progess</a><ul>
+<li><a href="#work-in-progress">Work-in-progress</a><ul>
 <li><a href="#supported-corpora">Supported corpora</a></li>
 <li><a href="#ergonomics-of-annotation">Ergonomics of annotation</a></li>
 <li><a href="#delivery-of-annotation-data">Delivery of annotation data</a></li>

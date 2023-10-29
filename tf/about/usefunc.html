@@ -116,12 +116,13 @@ The <em>checkout specifier</em> part is a keyword:</p>
 <ul>
 <li><code>local</code> under your local directory <code>~/text-fabric-data</code></li>
 <li><code>clone</code> under your local directory <code>~/github</code></li>
-<li><code>latest</code> under the latest release, to be checked with online backend</li>
-<li><code>hot</code> under the latest commit, to be checked with online backend</li>
-<li><code>v1.2.3</code> under release <code>v1.2.3</code>, to be fetched from online backend</li>
-<li><code>123aef</code> under commit <code>123aef</code>, to be fetched from online backend</li>
+<li><code>latest</code> under the latest release, to be checked with online back-end</li>
+<li><code>hot</code> under the latest commit, to be checked with online back-end</li>
+<li><code>v1.2.3</code> under release <code>v1.2.3</code>, to be fetched from online back-end</li>
+<li><code>123aef</code> under commit <code>123aef</code>, to be fetched from online back-end</li>
 <li><em>absent</em> under your local directory <code>~/text-fabric-data</code> if present,
-otherwise the latest release on backend, if present, otherwise the latest commit on backend</li>
+otherwise the latest release on back-end, if present, otherwise the latest
+commit on back-end.</li>
 </ul>
 <p>For a demo, see
 <a href="https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb">banks/repo</a>.</p>
@@ -210,7 +211,7 @@ or an iterable of modules in one of the forms</p>
 <pre><code>{org}/{repo}/{path}:data-checkout-specifier
 </code></pre>
 <p>All features of all those modules will be loaded.
-If they are not yet present, they will be downloaded from a backend first.
+If they are not yet present, they will be downloaded from a back-end first.
 For example, there is an easter egg module on GitHub,
 and you can obtain it by</p>
 <pre><code>mod='etcbc/lingo/easter/tf'
@@ -401,7 +402,7 @@ the corpus app under <code>provenanceSpec &gt; moduleSpecs</code>:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0e529a23aa60f36366ab9625a19068fbd75e658/tf/about/usefunc.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/about/usefunc.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/usefunc.md
