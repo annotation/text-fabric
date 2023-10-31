@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>tf.fabric API documentation</title>
-<meta name="description" content="Fabric …" />
+<meta name="description" content="`Fabric` …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -23,34 +23,34 @@
 <h1 class="title">Module <code>tf.fabric</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="fabric">Fabric</h1>
+<h1 id="fabric"><code><a title="tf.fabric.Fabric" href="#tf.fabric.Fabric">Fabric</a></code></h1>
 <p>The main class that works the core API is <code><a title="tf.fabric.Fabric" href="#tf.fabric.Fabric">Fabric</a></code>.</p>
 <p>It is responsible for feature data loading and saving.</p>
 <div class="admonition note">
 <p class="admonition-title">Tutorial</p>
 <p>The tutorials for specific annotated corpora (see <code><a title="tf.about.corpora" href="about/corpora.html">tf.about.corpora</a></code>)
-put the Text-Fabric API on show for vastly different corpora.</p>
+put the TF API on show for vastly different corpora.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Generic API versus apps</p>
-<p>This is the API of Text-Fabric in general.
-Text-Fabric has no baked in knowledge of particular corpora.</p>
-<p>However, Text-Fabric comes with several <em>apps</em> that make working
+<p>This is the API of TF in general.
+TF has no baked in knowledge of particular corpora.</p>
+<p>However, TF comes with several <em>apps</em> that make working
 with specific <code><a title="tf.about.corpora" href="about/corpora.html">tf.about.corpora</a></code> easier.
 Such an app may be as simple as a <em>config.yaml</em> file, even an empty one.
 The extra functions of those apps
 are available through the advanced API: <code>A</code>, see <code><a title="tf.app" href="app.html">tf.app</a></code>.</p>
 </div>
-<p>Fabric has built-in volume support: it can load volumes of a work and it can
+<p><code><a title="tf.fabric.Fabric" href="#tf.fabric.Fabric">Fabric</a></code> has built-in volume support: it can load volumes of a work and it can
 collect volumes into a new work.</p>
-<p>Fabric is an extension of <code><a title="tf.core.fabric" href="core/fabric.html">tf.core.fabric</a></code> where volume support is added.</p>
+<p><code><a title="tf.fabric.Fabric" href="#tf.fabric.Fabric">Fabric</a></code> is an extension of <code><a title="tf.core.fabric" href="core/fabric.html">tf.core.fabric</a></code> where volume support is added.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/fabric.py#L1-L246" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/fabric.py#L1-L246" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-# Fabric
+# `Fabric`
 
 The main class that works the core API is `tf.fabric.Fabric`.
 
@@ -58,22 +58,22 @@ It is responsible for feature data loading and saving.
 
 !!! note &#34;Tutorial&#34;
     The tutorials for specific annotated corpora (see `tf.about.corpora`)
-    put the Text-Fabric API on show for vastly different corpora.
+    put the TF API on show for vastly different corpora.
 
 !!! note &#34;Generic API versus apps&#34;
-    This is the API of Text-Fabric in general.
-    Text-Fabric has no baked in knowledge of particular corpora.
+    This is the API of TF in general.
+    TF has no baked in knowledge of particular corpora.
 
-    However, Text-Fabric comes with several *apps* that make working
+    However, TF comes with several *apps* that make working
     with specific `tf.about.corpora` easier.
     Such an app may be as simple as a *config.yaml* file, even an empty one.
     The extra functions of those apps
     are available through the advanced API: `A`, see `tf.app`.
 
-Fabric has built-in volume support: it can load volumes of a work and it can
+`Fabric` has built-in volume support: it can load volumes of a work and it can
 collect volumes into a new work.
 
-Fabric is an extension of `tf.core.fabric` where volume support is added.
+`Fabric` is an extension of `tf.core.fabric` where volume support is added.
 &#34;&#34;&#34;
 
 import types
@@ -99,9 +99,9 @@ class Fabric(FabricCore):
     &#34;&#34;&#34;Initialize the core API for a corpus.
 
     !!! note &#34;Implementation&#34;
-        Fabric is implemented as a subclass of `tf.core.fabric.FabricCore`
+        `Fabric` is implemented as a subclass of `tf.core.fabric.FabricCore`
 
-    See `tf.core.fabric.FabricCore for most of the functionality.
+    See `tf.core.fabric.FabricCore` for most of the functionality.
     Here we document the volume support only.
 
     Parameters
@@ -118,7 +118,7 @@ class Fabric(FabricCore):
     and `modules` will be used.
     There the volumes reside under a directory `_local`.
     You may want to add `_local` to your `.gitignore`, so that volumes generated
-    in a backend directory will not be pushed.
+    in a back-end directory will not be pushed.
 
     !!! caution &#34;Volumes and collections&#34;
         It is an error to load a volume as a collection and vice-versa
@@ -314,9 +314,9 @@ class Fabric(FabricCore):
 <div class="desc"><p>Initialize the core API for a corpus.</p>
 <div class="admonition note">
 <p class="admonition-title">Implementation</p>
-<p>Fabric is implemented as a subclass of <code><a title="tf.core.fabric.FabricCore" href="core/fabric.html#tf.core.fabric.FabricCore">FabricCore</a></code></p>
+<p><code><a title="tf.fabric.Fabric" href="#tf.fabric.Fabric">Fabric</a></code> is implemented as a subclass of <code><a title="tf.core.fabric.FabricCore" href="core/fabric.html#tf.core.fabric.FabricCore">FabricCore</a></code></p>
 </div>
-<p>See `tf.core.fabric.FabricCore for most of the functionality.
+<p>See <code><a title="tf.core.fabric.FabricCore" href="core/fabric.html#tf.core.fabric.FabricCore">FabricCore</a></code> for most of the functionality.
 Here we document the volume support only.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
@@ -331,7 +331,7 @@ If the volume does not exist an error will be generated.</dd>
 and <code>modules</code> will be used.
 There the volumes reside under a directory <code>_local</code>.
 You may want to add <code>_local</code> to your <code>.gitignore</code>, so that volumes generated
-in a backend directory will not be pushed.</p>
+in a back-end directory will not be pushed.</p>
 <div class="admonition caution">
 <p class="admonition-title">Volumes and collections</p>
 <p>It is an error to load a volume as a collection and vice-versa</p>
@@ -341,15 +341,15 @@ The collection takes precedence, and the volume is ignored in that case.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/fabric.py#L47-L246" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/fabric.py#L47-L246" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Fabric(FabricCore):
     &#34;&#34;&#34;Initialize the core API for a corpus.
 
     !!! note &#34;Implementation&#34;
-        Fabric is implemented as a subclass of `tf.core.fabric.FabricCore`
+        `Fabric` is implemented as a subclass of `tf.core.fabric.FabricCore`
 
-    See `tf.core.fabric.FabricCore for most of the functionality.
+    See `tf.core.fabric.FabricCore` for most of the functionality.
     Here we document the volume support only.
 
     Parameters
@@ -366,7 +366,7 @@ The collection takes precedence, and the volume is ignored in that case.</p>
     and `modules` will be used.
     There the volumes reside under a directory `_local`.
     You may want to add `_local` to your `.gitignore`, so that volumes generated
-    in a backend directory will not be pushed.
+    in a back-end directory will not be pushed.
 
     !!! caution &#34;Volumes and collections&#34;
         It is an error to load a volume as a collection and vice-versa
@@ -567,7 +567,7 @@ The collection takes precedence, and the volume is ignored in that case.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/fabric.py#L209-L246" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/fabric.py#L209-L246" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def collect(
     self,
@@ -623,7 +623,7 @@ will be supplied automatically.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/fabric.py#L174-L207" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/fabric.py#L174-L207" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def extract(
     self, volumes=True, byTitle=True, silent=SILENT_D, overwrite=None, show=False
@@ -670,7 +670,7 @@ will be supplied automatically.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/fabric.py#L165-L172" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/fabric.py#L165-L172" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getVolumes(self):
     &#34;&#34;&#34;Lists available volumes within the dataset.

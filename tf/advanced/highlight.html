@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/highlight.py#L1-L218" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/highlight.py#L1-L218" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from .search import runSearch
 
@@ -42,20 +42,20 @@ def getHlAtt(app, n, highlights, isSlot):
         The node to be highlighted
     highlights: set|dict
         The nodes to be highlighted.
-        Keys/elements are the nodes to be highlighted.
+        Keys / elements are the nodes to be highlighted.
         This function is only interested in whether `n` is in it,
         and if so, what the value is (in case of a dict).
         If given as set: use the default highlight color.
         If given as dict: use the value as color.
     isSlot: boolean
-        Whether the node has the slotType
+        Whether the node has the slot type
 
     Returns
     -------
     hlCls: dict
         Highlight attribute, keyed by boolean &#39;is pretty&#39;
     hlStyle: dict
-        Highlight color as css style, keyed by boolean &#39;is pretty&#39;
+        Highlight color as CSS style, keyed by boolean &#39;is pretty&#39;
     &#34;&#34;&#34;
 
     noResult = ({True: &#34;&#34;, False: &#34;&#34;}, {True: &#34;&#34;, False: &#34;&#34;})
@@ -90,7 +90,7 @@ def getEdgeHlAtt(e, pair, highlights):
 
     Parameters
     ----------
-    e: str
+    e: string
         The edge feature to be highlighted
     pair: tuple
         The *from* node of the edge to be highlighted and
@@ -105,10 +105,10 @@ def getEdgeHlAtt(e, pair, highlights):
 
     Returns
     -------
-    hlCls: str
+    hlCls: string
         Highlight attribute
-    hlStyle: str
-        Highlight color as css style
+    hlStyle: string
+        Highlight color as CSS style
     &#34;&#34;&#34;
 
     if highlights is None:
@@ -155,7 +155,7 @@ def getTupleHighlights(api, tup, highlights, colorMap, condenseType):
         `condenseType` as they occur in.
     highlights: set|dict
         The nodes to be highlighted.
-        Keys/elements are the nodes to be highlighted.
+        Keys / elements are the nodes to be highlighted.
         This function is only interested in whether the members of `tup` are in it,
         and if so, what the values are (in case of a dict).
         If given as set: use the default highlight color.
@@ -262,7 +262,7 @@ def getPassageHighlights(app, node, query, colorMap, cache):
 <div class="desc"><p>Get the edge highlight attribute and style for an edge, only for pretty mode.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>e</code></strong> :&ensp;<code>str</code></dt>
+<dt><strong><code>e</code></strong> :&ensp;<code>string</code></dt>
 <dd>The edge feature to be highlighted</dd>
 <dt><strong><code>pair</code></strong> :&ensp;<code>tuple</code></dt>
 <dd>The <em>from</em> node of the edge to be highlighted and
@@ -277,22 +277,22 @@ If given as dict: use the value as color.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><strong><code>hlCls</code></strong> :&ensp;<code>str</code></dt>
+<dt><strong><code>hlCls</code></strong> :&ensp;<code>string</code></dt>
 <dd>Highlight attribute</dd>
-<dt><strong><code>hlStyle</code></strong> :&ensp;<code>str</code></dt>
-<dd>Highlight color as css style</dd>
+<dt><strong><code>hlStyle</code></strong> :&ensp;<code>string</code></dt>
+<dd>Highlight color as CSS style</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/highlight.py#L58-L102" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/highlight.py#L58-L102" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getEdgeHlAtt(e, pair, highlights):
     &#34;&#34;&#34;Get the edge highlight attribute and style for an edge, only for pretty mode.
 
     Parameters
     ----------
-    e: str
+    e: string
         The edge feature to be highlighted
     pair: tuple
         The *from* node of the edge to be highlighted and
@@ -307,10 +307,10 @@ If given as dict: use the value as color.</dd>
 
     Returns
     -------
-    hlCls: str
+    hlCls: string
         Highlight attribute
-    hlStyle: str
-        Highlight color as css style
+    hlStyle: string
+        Highlight color as CSS style
     &#34;&#34;&#34;
 
     if highlights is None:
@@ -347,25 +347,25 @@ If given as dict: use the value as color.</dd>
 <dd>The node to be highlighted</dd>
 <dt><strong><code>highlights</code></strong> :&ensp;<code>set|dict</code></dt>
 <dd>The nodes to be highlighted.
-Keys/elements are the nodes to be highlighted.
+Keys / elements are the nodes to be highlighted.
 This function is only interested in whether <code>n</code> is in it,
 and if so, what the value is (in case of a dict).
 If given as set: use the default highlight color.
 If given as dict: use the value as color.</dd>
 <dt><strong><code>isSlot</code></strong> :&ensp;<code>boolean</code></dt>
-<dd>Whether the node has the slotType</dd>
+<dd>Whether the node has the slot type</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><strong><code>hlCls</code></strong> :&ensp;<code>dict</code></dt>
 <dd>Highlight attribute, keyed by boolean 'is pretty'</dd>
 <dt><strong><code>hlStyle</code></strong> :&ensp;<code>dict</code></dt>
-<dd>Highlight color as css style, keyed by boolean 'is pretty'</dd>
+<dd>Highlight color as CSS style, keyed by boolean 'is pretty'</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/highlight.py#L4-L55" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/highlight.py#L4-L55" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getHlAtt(app, n, highlights, isSlot):
     &#34;&#34;&#34;Get the highlight attribute and style for a node for both pretty and plain modes.
@@ -378,20 +378,20 @@ If given as dict: use the value as color.</dd>
         The node to be highlighted
     highlights: set|dict
         The nodes to be highlighted.
-        Keys/elements are the nodes to be highlighted.
+        Keys / elements are the nodes to be highlighted.
         This function is only interested in whether `n` is in it,
         and if so, what the value is (in case of a dict).
         If given as set: use the default highlight color.
         If given as dict: use the value as color.
     isSlot: boolean
-        Whether the node has the slotType
+        Whether the node has the slot type
 
     Returns
     -------
     hlCls: dict
         Highlight attribute, keyed by boolean &#39;is pretty&#39;
     hlStyle: dict
-        Highlight color as css style, keyed by boolean &#39;is pretty&#39;
+        Highlight color as CSS style, keyed by boolean &#39;is pretty&#39;
     &#34;&#34;&#34;
 
     noResult = ({True: &#34;&#34;, False: &#34;&#34;}, {True: &#34;&#34;, False: &#34;&#34;})
@@ -452,7 +452,7 @@ the same query.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/highlight.py#L162-L218" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/highlight.py#L162-L218" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getPassageHighlights(app, node, query, colorMap, cache):
     &#34;&#34;&#34;Get the highlights for a whole passage.
@@ -536,7 +536,7 @@ The nodes in the given <code>tup</code> will be distributed over as many nodes o
 <code>condenseType</code> as they occur in.</dd>
 <dt><strong><code>highlights</code></strong> :&ensp;<code>set|dict</code></dt>
 <dd>The nodes to be highlighted.
-Keys/elements are the nodes to be highlighted.
+Keys / elements are the nodes to be highlighted.
 This function is only interested in whether the members of <code>tup</code> are in it,
 and if so, what the values are (in case of a dict).
 If given as set: use the default highlight color.
@@ -545,7 +545,7 @@ If given as dict: use the value as color.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/highlight.py#L105-L159" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/highlight.py#L105-L159" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getTupleHighlights(api, tup, highlights, colorMap, condenseType):
     &#34;&#34;&#34;Get the highlights for a tuple of nodes.
@@ -570,7 +570,7 @@ If given as dict: use the value as color.</dd>
         `condenseType` as they occur in.
     highlights: set|dict
         The nodes to be highlighted.
-        Keys/elements are the nodes to be highlighted.
+        Keys / elements are the nodes to be highlighted.
         This function is only interested in whether the members of `tup` are in it,
         and if so, what the values are (in case of a dict).
         If given as set: use the default highlight color.

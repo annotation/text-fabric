@@ -27,16 +27,16 @@
 <p>This module supposes that you have installed Spacy and the necessary
 language modules.</p>
 <p>To get <a href="https://spacy.io">Spacy</a>, do</p>
-<pre><code>pip install spacy
+<pre><code class="language-sh">pip install spacy
 </code></pre>
-<p>The Enlish language module can then be installed by</p>
-<pre><code>python -m spacy download en_core_web_sm
+<p>The English language module can then be installed by</p>
+<pre><code class="language-sh">python -m spacy download en_core_web_sm
 </code></pre>
 <p>You can install many more <a href="https://spacy.io/usage/models">language models</a>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/myspacy.py#L1-L378" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/myspacy.py#L1-L378" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Get words and tokens from a plain text with the help of Spacy.
 
@@ -45,13 +45,13 @@ language modules.
 
 To get [Spacy](https://spacy.io), do
 
-```
+``` sh
 pip install spacy
 ```
 
-The Enlish language module can then be installed by
+The English language module can then be installed by
 
-```
+``` sh
 python -m spacy download en_core_web_sm
 ```
 
@@ -111,7 +111,7 @@ class Spacy:
             The language to be used; Spacy may need to download it, if so, it will
             happen automatically.
 
-            If the language is not supported by Spacy, we switch to the multilanguage
+            If the language is not supported by Spacy, we switch to the multi-language
             called `xx`.
 
             See `tf.tools.myspacy.LANG_MODELS` about the language models that Spacy supports.
@@ -256,15 +256,15 @@ class Spacy:
             Character positions start at 0.
         *   *end*: last character position that the token occupies in the text
             *plus one*.
-        *   *text*: text of the token, **excluding any trailing whitespace**.
-        *   *space*: any white space behind the token, if present, otherwise
+        *   *text*: text of the token, **excluding any trailing white-space**.
+        *   *space*: any white-space behind the token, if present, otherwise
             the empty string.
 
 
         !!! note &#34;End position and space&#34;
             If there is a space behind the token, it will not add to the end position
             of the token. So the start and end positions of the tokens reflect
-            where the tokens themselves are, and spaces do nto belong to the tokens.
+            where the tokens themselves are, and spaces do not belong to the tokens.
 
         Returns
         -------
@@ -464,7 +464,7 @@ def nlpOutput(text, lang=&#34;en&#34;, ner=False, parser=False):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/myspacy.py#L343-L378" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/myspacy.py#L343-L378" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def nlpOutput(text, lang=&#34;en&#34;, ner=False, parser=False):
     &#34;&#34;&#34;Runs the Spacy NLP pipeline and delivers the results.
@@ -526,7 +526,7 @@ We do not need the parser for this.</p>
 <dd>
 <p>The language to be used; Spacy may need to download it, if so, it will
 happen automatically.</p>
-<p>If the language is not supported by Spacy, we switch to the multilanguage
+<p>If the language is not supported by Spacy, we switch to the multi-language
 called <code>xx</code>.</p>
 <p>See <code><a title="tf.tools.myspacy.LANG_MODELS" href="#tf.tools.myspacy.LANG_MODELS">LANG_MODELS</a></code> about the language models that Spacy supports.</p>
 </dd>
@@ -534,7 +534,7 @@ called <code>xx</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/myspacy.py#L57-L340" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/myspacy.py#L57-L340" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Spacy:
     def __init__(self, lang=None, parser=False):
@@ -553,7 +553,7 @@ called <code>xx</code>.</p>
             The language to be used; Spacy may need to download it, if so, it will
             happen automatically.
 
-            If the language is not supported by Spacy, we switch to the multilanguage
+            If the language is not supported by Spacy, we switch to the multi-language
             called `xx`.
 
             See `tf.tools.myspacy.LANG_MODELS` about the language models that Spacy supports.
@@ -698,15 +698,15 @@ called <code>xx</code>.</p>
             Character positions start at 0.
         *   *end*: last character position that the token occupies in the text
             *plus one*.
-        *   *text*: text of the token, **excluding any trailing whitespace**.
-        *   *space*: any white space behind the token, if present, otherwise
+        *   *text*: text of the token, **excluding any trailing white-space**.
+        *   *space*: any white-space behind the token, if present, otherwise
             the empty string.
 
 
         !!! note &#34;End position and space&#34;
             If there is a space behind the token, it will not add to the end position
             of the token. So the start and end positions of the tokens reflect
-            where the tokens themselves are, and spaces do nto belong to the tokens.
+            where the tokens themselves are, and spaces do not belong to the tokens.
 
         Returns
         -------
@@ -845,7 +845,7 @@ Character positions start at 0.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/myspacy.py#L305-L340" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/myspacy.py#L305-L340" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getEntities(self):
     &#34;&#34;&#34;Get the resulting named entities.
@@ -906,7 +906,7 @@ Character positions start at 0.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/myspacy.py#L258-L303" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/myspacy.py#L258-L303" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getSentences(self):
     &#34;&#34;&#34;Get the resulting sentences.
@@ -967,15 +967,15 @@ Character positions start at 0.</li>
 Character positions start at 0.</li>
 <li><em>end</em>: last character position that the token occupies in the text
 <em>plus one</em>.</li>
-<li><em>text</em>: text of the token, <strong>excluding any trailing whitespace</strong>.</li>
-<li><em>space</em>: any white space behind the token, if present, otherwise
+<li><em>text</em>: text of the token, <strong>excluding any trailing white-space</strong>.</li>
+<li><em>space</em>: any white-space behind the token, if present, otherwise
 the empty string.</li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">End position and space</p>
 <p>If there is a space behind the token, it will not add to the end position
 of the token. So the start and end positions of the tokens reflect
-where the tokens themselves are, and spaces do nto belong to the tokens.</p>
+where the tokens themselves are, and spaces do not belong to the tokens.</p>
 </div>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -985,7 +985,7 @@ where the tokens themselves are, and spaces do nto belong to the tokens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/myspacy.py#L210-L256" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/myspacy.py#L210-L256" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getTokens(self):
     &#34;&#34;&#34;Get the resulting tokens.
@@ -996,15 +996,15 @@ where the tokens themselves are, and spaces do nto belong to the tokens.</p>
         Character positions start at 0.
     *   *end*: last character position that the token occupies in the text
         *plus one*.
-    *   *text*: text of the token, **excluding any trailing whitespace**.
-    *   *space*: any white space behind the token, if present, otherwise
+    *   *text*: text of the token, **excluding any trailing white-space**.
+    *   *space*: any white-space behind the token, if present, otherwise
         the empty string.
 
 
     !!! note &#34;End position and space&#34;
         If there is a space behind the token, it will not add to the end position
         of the token. So the start and end positions of the tokens reflect
-        where the tokens themselves are, and spaces do nto belong to the tokens.
+        where the tokens themselves are, and spaces do not belong to the tokens.
 
     Returns
     -------
@@ -1052,7 +1052,7 @@ words on a decent laptop.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/myspacy.py#L187-L208" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/myspacy.py#L187-L208" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def read(self, text):
     &#34;&#34;&#34;Process a plain text.

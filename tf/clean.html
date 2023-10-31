@@ -24,10 +24,10 @@
 </header>
 <section id="section-intro">
 <h1 id="clean">Clean</h1>
-<p>From version 7.7.7 onwards, Text-Fabric uses a parameter <code><a title="tf.parameters.PACK_VERSION" href="parameters.html#tf.parameters.PACK_VERSION">PACK_VERSION</a></code>
+<p>From version 7.7.7 onward, TF uses a parameter <code><a title="tf.parameters.PACK_VERSION" href="parameters.html#tf.parameters.PACK_VERSION">PACK_VERSION</a></code>
 to mark the stored pre-computed data.
 Whenever there are incompatible changes in the packed data format, this
-version number will be increased and Text-Fabric will not attempt to load
+version number will be increased and TF will not attempt to load
 the older pre-computed data.</p>
 <p>The older data will not be removed, however.
 Use the function <code><a title="tf.clean.clean" href="#tf.clean.clean">clean()</a></code> to get rid of pre-computed data
@@ -35,15 +35,15 @@ that you no longer need.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/clean.py#L1-L118" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/clean.py#L1-L118" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Clean
 
-From version 7.7.7 onwards, Text-Fabric uses a parameter `tf.parameters.PACK_VERSION`
+From version 7.7.7 onward, TF uses a parameter `tf.parameters.PACK_VERSION`
 to mark the stored pre-computed data.
 Whenever there are incompatible changes in the packed data format, this
-version number will be increased and Text-Fabric will not attempt to load
+version number will be increased and TF will not attempt to load
 the older pre-computed data.
 
 The older data will not be removed, however.
@@ -82,13 +82,13 @@ def err(msg):
 
 
 def clean(tfd=True, backend=None, dry=True, specific=None, current=False):
-    &#34;&#34;&#34;Clean up older compressed .tfx files.
+    &#34;&#34;&#34;Clean up older compressed `.tfx` files.
 
     Parameters
     ----------
 
-    Removes all precomputed data resulting from other `PACK_VERSION`s
-    than the one currently used by Text-Fabric.
+    Removes all pre-computed data resulting from other `PACK_VERSION`
+    than the one currently used by TF.
 
     You find the current pack version in
     `tf.parameters`
@@ -98,9 +98,9 @@ def clean(tfd=True, backend=None, dry=True, specific=None, current=False):
         but if you pass `tfd=False` it will be skipped.
     backend: string, optional, `None`
         If None, only material in `text-fabric-data` will be cleaned.
-        But you can also clean clones of GitHub/GitLab.
+        But you can also clean clones of GitHub / GitLab.
 
-        To clean GitHub/GitLab clones, pass `github` / `gitlab`.
+        To clean GitHub / GitLab clones, pass `github` / `gitlab`.
 
         To clean the clones from a specific GitLab server,
         pass its server name.
@@ -109,7 +109,7 @@ def clean(tfd=True, backend=None, dry=True, specific=None, current=False):
         `~/github` and `~/text-fabric-data` will not be used, only
         the directory you pass here. `~` will be expanded to your home directory.
     current: boolean, optional, `False`
-        If current=True, also the precomputed results of the current version will
+        If current=True, also the pre-computed results of the current version will
         be removed.
     dry: boolean, optional, `False`
         By default, nothing will be deleted, and you only get a list of
@@ -168,10 +168,10 @@ def clean(tfd=True, backend=None, dry=True, specific=None, current=False):
 <span>def <span class="ident">clean</span></span>(<span>tfd=True, backend=None, dry=True, specific=None, current=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Clean up older compressed .tfx files.</p>
+<div class="desc"><p>Clean up older compressed <code>.tfx</code> files.</p>
 <h2 id="parameters">Parameters</h2>
-<p>Removes all precomputed data resulting from other <code>PACK_VERSION</code>s
-than the one currently used by Text-Fabric.</p>
+<p>Removes all pre-computed data resulting from other <code>PACK_VERSION</code>
+than the one currently used by TF.</p>
 <p>You find the current pack version in
 <code><a title="tf.parameters" href="parameters.html">tf.parameters</a></code></p>
 <dl>
@@ -182,8 +182,8 @@ but if you pass <code>tfd=False</code> it will be skipped.</dd>
 <dt><strong><code>backend</code></strong> :&ensp;<code>string</code>, optional<code>, </code>None``</dt>
 <dd>
 <p>If None, only material in <code>text-fabric-data</code> will be cleaned.
-But you can also clean clones of GitHub/GitLab.</p>
-<p>To clean GitHub/GitLab clones, pass <code>github</code> / <code>gitlab</code>.</p>
+But you can also clean clones of GitHub / GitLab.</p>
+<p>To clean GitHub / GitLab clones, pass <code>github</code> / <code>gitlab</code>.</p>
 <p>To clean the clones from a specific GitLab server,
 pass its server name.</p>
 </dd>
@@ -192,7 +192,7 @@ pass its server name.</p>
 <code>~/github</code> and <code>~/text-fabric-data</code> will not be used, only
 the directory you pass here. <code>~</code> will be expanded to your home directory.</dd>
 <dt><strong><code>current</code></strong> :&ensp;<code>boolean</code>, optional<code>, </code>False``</dt>
-<dd>If current=True, also the precomputed results of the current version will
+<dd>If current=True, also the pre-computed results of the current version will
 be removed.</dd>
 <dt><strong><code>dry</code></strong> :&ensp;<code>boolean</code>, optional<code>, </code>False``</dt>
 <dd>By default, nothing will be deleted, and you only get a list of
@@ -202,16 +202,16 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/clean.py#L45-L118" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/clean.py#L45-L118" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clean(tfd=True, backend=None, dry=True, specific=None, current=False):
-    &#34;&#34;&#34;Clean up older compressed .tfx files.
+    &#34;&#34;&#34;Clean up older compressed `.tfx` files.
 
     Parameters
     ----------
 
-    Removes all precomputed data resulting from other `PACK_VERSION`s
-    than the one currently used by Text-Fabric.
+    Removes all pre-computed data resulting from other `PACK_VERSION`
+    than the one currently used by TF.
 
     You find the current pack version in
     `tf.parameters`
@@ -221,9 +221,9 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
         but if you pass `tfd=False` it will be skipped.
     backend: string, optional, `None`
         If None, only material in `text-fabric-data` will be cleaned.
-        But you can also clean clones of GitHub/GitLab.
+        But you can also clean clones of GitHub / GitLab.
 
-        To clean GitHub/GitLab clones, pass `github` / `gitlab`.
+        To clean GitHub / GitLab clones, pass `github` / `gitlab`.
 
         To clean the clones from a specific GitLab server,
         pass its server name.
@@ -232,7 +232,7 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
         `~/github` and `~/text-fabric-data` will not be used, only
         the directory you pass here. `~` will be expanded to your home directory.
     current: boolean, optional, `False`
-        If current=True, also the precomputed results of the current version will
+        If current=True, also the pre-computed results of the current version will
         be removed.
     dry: boolean, optional, `False`
         By default, nothing will be deleted, and you only get a list of
@@ -288,7 +288,7 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/clean.py#L39-L42" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/clean.py#L39-L42" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def err(msg):
     &#34;&#34;&#34;Write to standard error output immediately.&#34;&#34;&#34;
@@ -304,7 +304,7 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/clean.py#L33-L36" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/clean.py#L33-L36" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def out(msg):
     &#34;&#34;&#34;Write to standard normal output immediately.&#34;&#34;&#34;

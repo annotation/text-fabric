@@ -29,7 +29,7 @@ with a time indication.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/timestamp.py#L1-L337" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/timestamp.py#L1-L337" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Timed messages
@@ -90,9 +90,9 @@ class Timestamp:
         in this class, but can also affects messages emitted
         by other parts of the application, such as:
 
-        * the display of the number of results in searches
-        * the header that is displayed after the incantation
-          of text-fabric.
+        *   the display of the number of results in searches
+        *   the header that is displayed after the incantation
+            of TF.
 
         Parameters
         ----------
@@ -192,7 +192,7 @@ class Timestamp:
         cache: integer, optional 0
             Whether the message should be cached.
         force: boolean, optional False
-            If True, any silent condition is overriden.
+            If True, any silent condition is overridden.
 
         !!! caution &#34;Silence&#34;
             Informational messages are not displayed in silent mode.
@@ -218,7 +218,7 @@ class Timestamp:
         cache: integer, optional 0
             Whether the message should be cached.
         force: boolean, optional False
-            If True, any silent condition is overriden.
+            If True, any silent condition is overridden.
 
         !!! caution &#34;Silence&#34;
             Informational messages are not displayed in silent mode.
@@ -244,7 +244,7 @@ class Timestamp:
         cache: integer, optional 0
             Whether the message should be cached.
         force: boolean, optional False
-            If True, any silent condition is overriden.
+            If True, any silent condition is overridden.
 
         !!! caution &#34;Silence&#34;
             Warning messages are not displayed if silent mode is `deep`.
@@ -257,7 +257,7 @@ class Timestamp:
         &#34;&#34;&#34;Sends an warning message to the standard error.
 
         In a Jupyter notebook, the standard error is displayed with
-        a reddish background colour.
+        a reddish background color.
 
         Parameters
         ----------
@@ -409,7 +409,7 @@ class Timestamp:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/timestamp.py#L37-L46" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/timestamp.py#L37-L46" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def silentConvert(arg):
     if arg is None:
@@ -443,7 +443,7 @@ by other parts of the application, such as:</p>
 <ul>
 <li>the display of the number of results in searches</li>
 <li>the header that is displayed after the incantation
-of text-fabric.</li>
+of TF.</li>
 </ul>
 <h2 id="parameters">Parameters</h2>
 <dl>
@@ -471,7 +471,7 @@ Do not show the number of results after searches.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/timestamp.py#L49-L337" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/timestamp.py#L49-L337" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Timestamp:
     def __init__(self, silent=SILENT_D, level=None):
@@ -484,9 +484,9 @@ Do not show the number of results after searches.</p>
         in this class, but can also affects messages emitted
         by other parts of the application, such as:
 
-        * the display of the number of results in searches
-        * the header that is displayed after the incantation
-          of text-fabric.
+        *   the display of the number of results in searches
+        *   the header that is displayed after the incantation
+            of TF.
 
         Parameters
         ----------
@@ -586,7 +586,7 @@ Do not show the number of results after searches.</p>
         cache: integer, optional 0
             Whether the message should be cached.
         force: boolean, optional False
-            If True, any silent condition is overriden.
+            If True, any silent condition is overridden.
 
         !!! caution &#34;Silence&#34;
             Informational messages are not displayed in silent mode.
@@ -612,7 +612,7 @@ Do not show the number of results after searches.</p>
         cache: integer, optional 0
             Whether the message should be cached.
         force: boolean, optional False
-            If True, any silent condition is overriden.
+            If True, any silent condition is overridden.
 
         !!! caution &#34;Silence&#34;
             Informational messages are not displayed in silent mode.
@@ -638,7 +638,7 @@ Do not show the number of results after searches.</p>
         cache: integer, optional 0
             Whether the message should be cached.
         force: boolean, optional False
-            If True, any silent condition is overriden.
+            If True, any silent condition is overridden.
 
         !!! caution &#34;Silence&#34;
             Warning messages are not displayed if silent mode is `deep`.
@@ -651,7 +651,7 @@ Do not show the number of results after searches.</p>
         &#34;&#34;&#34;Sends an warning message to the standard error.
 
         In a Jupyter notebook, the standard error is displayed with
-        a reddish background colour.
+        a reddish background color.
 
         Parameters
         ----------
@@ -773,7 +773,7 @@ Do not show the number of results after searches.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/timestamp.py#L129-L143" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/timestamp.py#L129-L143" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cache(self, _asString=False):
     if _asString:
@@ -810,7 +810,7 @@ nothing happens.</p>
 <dt><strong><code>cache</code></strong> :&ensp;<code>integer</code>, optional <code>0</code></dt>
 <dd>Whether the message should be cached.</dd>
 <dt><strong><code>force</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>If True, any silent condition is overriden.</dd>
+<dd>If True, any silent condition is overridden.</dd>
 </dl>
 <div class="admonition caution">
 <p class="admonition-title">Silence</p>
@@ -819,7 +819,7 @@ nothing happens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/timestamp.py#L145-L169" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/timestamp.py#L145-L169" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def debug(self, msg, tm=True, nl=True, cache=0, force=False):
     &#34;&#34;&#34;Sends a debug message to the standard output.
@@ -838,7 +838,7 @@ nothing happens.</p>
     cache: integer, optional 0
         Whether the message should be cached.
     force: boolean, optional False
-        If True, any silent condition is overriden.
+        If True, any silent condition is overridden.
 
     !!! caution &#34;Silence&#34;
         Informational messages are not displayed in silent mode.
@@ -854,7 +854,7 @@ nothing happens.</p>
 <dd>
 <div class="desc"><p>Sends an warning message to the standard error.</p>
 <p>In a Jupyter notebook, the standard error is displayed with
-a reddish background colour.</p>
+a reddish background color.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>msg</code></strong> :&ensp;<code>string</code></dt>
@@ -874,13 +874,13 @@ silent mode.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/timestamp.py#L223-L244" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/timestamp.py#L223-L244" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def error(self, msg, tm=True, nl=True, cache=0, force=True):
     &#34;&#34;&#34;Sends an warning message to the standard error.
 
     In a Jupyter notebook, the standard error is displayed with
-    a reddish background colour.
+    a reddish background color.
 
     Parameters
     ----------
@@ -923,7 +923,7 @@ but not below zero. <code>True</code> increases the indent with one level,
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/timestamp.py#L246-L282" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/timestamp.py#L246-L282" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def indent(self, level=None, reset=False, _verbose=None):
     &#34;&#34;&#34;Changes the indentation and timing of forthcoming messages.
@@ -982,7 +982,7 @@ nothing happens.</p>
 <dt><strong><code>cache</code></strong> :&ensp;<code>integer</code>, optional <code>0</code></dt>
 <dd>Whether the message should be cached.</dd>
 <dt><strong><code>force</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>If True, any silent condition is overriden.</dd>
+<dd>If True, any silent condition is overridden.</dd>
 </dl>
 <div class="admonition caution">
 <p class="admonition-title">Silence</p>
@@ -991,7 +991,7 @@ nothing happens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/timestamp.py#L171-L195" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/timestamp.py#L171-L195" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def info(self, msg, tm=True, nl=True, cache=0, force=False):
     &#34;&#34;&#34;Sends an informational message to the standard output.
@@ -1010,7 +1010,7 @@ nothing happens.</p>
     cache: integer, optional 0
         Whether the message should be cached.
     force: boolean, optional False
-        If True, any silent condition is overriden.
+        If True, any silent condition is overridden.
 
     !!! caution &#34;Silence&#34;
         Informational messages are not displayed in silent mode.
@@ -1033,7 +1033,7 @@ nothing happens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/timestamp.py#L284-L292" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/timestamp.py#L284-L292" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isSilent(self):
     &#34;&#34;&#34;The current verbosity.
@@ -1054,7 +1054,7 @@ nothing happens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/timestamp.py#L100-L124" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/timestamp.py#L100-L124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def raw_msg(self, msg, tm=True, nl=True, cache=0, error=False):
     # cache is a list: append to cache, do not output anything
@@ -1091,7 +1091,7 @@ nothing happens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/timestamp.py#L126-L127" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/timestamp.py#L126-L127" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reset(self):
     self.log = []</code></pre>
@@ -1110,7 +1110,7 @@ nothing happens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/timestamp.py#L294-L304" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/timestamp.py#L294-L304" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setSilent(self, silent):
     &#34;&#34;&#34;Set the verbosity.
@@ -1133,7 +1133,7 @@ nothing happens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/timestamp.py#L319-L323" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/timestamp.py#L319-L323" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def silentOff(self):
     &#34;&#34;&#34;Enable informational messages.&#34;&#34;&#34;
@@ -1155,7 +1155,7 @@ nothing happens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/timestamp.py#L306-L317" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/timestamp.py#L306-L317" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def silentOn(self, deep=False):
     &#34;&#34;&#34;Suppress informational messages.
@@ -1189,7 +1189,7 @@ nothing happens.</p>
 <dt><strong><code>cache</code></strong> :&ensp;<code>integer</code>, optional <code>0</code></dt>
 <dd>Whether the message should be cached.</dd>
 <dt><strong><code>force</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>If True, any silent condition is overriden.</dd>
+<dd>If True, any silent condition is overridden.</dd>
 </dl>
 <div class="admonition caution">
 <p class="admonition-title">Silence</p>
@@ -1198,7 +1198,7 @@ nothing happens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/timestamp.py#L197-L221" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/timestamp.py#L197-L221" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def warning(self, msg, tm=True, nl=True, cache=0, force=False):
     &#34;&#34;&#34;Sends an warning message to the standard output.
@@ -1217,7 +1217,7 @@ nothing happens.</p>
     cache: integer, optional 0
         Whether the message should be cached.
     force: boolean, optional False
-        If True, any silent condition is overriden.
+        If True, any silent condition is overridden.
 
     !!! caution &#34;Silence&#34;
         Warning messages are not displayed if silent mode is `deep`.

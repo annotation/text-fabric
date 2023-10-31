@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>tf.advanced.repo API documentation</title>
-<meta name="description" content="Auto downloading from a backend repository …" />
+<meta name="description" content="Auto downloading from a back-end repository …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -23,16 +23,16 @@
 <h1 class="title">Module <code>tf.advanced.repo</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="auto-downloading-from-a-backend-repository">Auto downloading from a backend repository</h1>
+<h1 id="auto-downloading-from-a-back-end-repository">Auto downloading from a back-end repository</h1>
 <h2 id="description">Description</h2>
-<p>Text-Fabric maintains local copies of subfolders of backend repositories,
+<p>TF maintains local copies of subdirectories of back-end repositories,
 where it stores the feature data of corpora that the user is working with.</p>
-<p>Currently GitHub and GitLab are supported as backends.
+<p>Currently GitHub and GitLab are supported as back-ends.
 In case of GitLab, not only <a href="https://gitlab.com">gitlab.com</a> is supported,
 but also GitLab instances on other servers that support the GitLab API.</p>
 <p>There is some bookkeeping to account for which release and commit the
 feature files come from.</p>
-<p>Users can request data from any repo according to any release and/or commit.</p>
+<p>Users can request data from any repo according to any release and / or commit.</p>
 <h2 id="rate-limiting">Rate limiting</h2>
 <p>The <code>checkRepo()</code> function uses the GitHub and GitLab APIs.
 GitHub has a rate limiting policy for its API.
@@ -44,7 +44,7 @@ This can be too restrictive, and here are two ways to keep working nevertheless.
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>If you are a dataset provider, use <code><a title="tf.advanced.zipdata.zipAll" href="zipdata.html#tf.advanced.zipdata.zipAll">zipAll()</a></code> to
-produce a zipfile of your complete dataset, and then attach it to the latest
+produce a zip file of your complete dataset, and then attach it to the latest
 release on GitHub.
 Then TF will find this file and download it automatically if needed, without ever
 using the GitHub API, so your users do not have to do the things described below!</p>
@@ -68,13 +68,13 @@ increase the rate.</li>
 </ul>
 <h1 id="gitlab">GitLab</h1>
 <p>In order to reach an on-premise GitLab and have access to the repository in
-question, you may need to have a VPN connection with the GitLab backend.</p>
+question, you may need to have a VPN connection with the GitLab back-end.</p>
 <p>Additionally, you may need to make your identity known.
 If you have an account on the GitLab instance, go to your settings and request
 a personal token with <em>api</em> privileges.</p>
-<p>On your own system, make an environment variable named GL_<em>BACKEND</em><code>_PERS</code> whose
+<p>On your own system, make an environment variable named <code>GL_BACKEND_PERS</code> whose
 content is exactly the value of this token.</p>
-<p>And <em>BACKEND</em> should be the uppercase variant of the name of the GitLab backend,
+<p>And <code>BACKEND</code> should be the uppercase variant of the name of the GitLab back-end,
 where every character that is not a letter or digit or <code>_</code> is replaced by a <code>_</code>.</p>
 <p>For example, for <code>gitlab.huc.knaw.nl</code> use <code>GL_GITLAB_HUC_KNAW_NL_PERS</code>
 and for <code>gitlab.com</code> use <code>GL_GITLAB_COM_PERS</code>.</p>
@@ -83,13 +83,13 @@ and for <code>gitlab.com</code> use <code>GL_GITLAB_COM_PERS</code>.</p>
 <p>How to put your personal access token into an environment variable?</p>
 <div class="admonition note">
 <p class="admonition-title">What is an environment variable?</p>
-<p>It is a setting on your system that various programs/processes can read.
+<p>It is a setting on your system that various programs / processes can read.
 On Windows it is part of the <code>Registry</code>.</p>
 <p>In this particular case, you put a personal token
-that you obtain from GitHub/GitLab
+that you obtain from GitHub / GitLab
 in such an environment variable.
-When Text-Fabric accesses the backend, it will look up this token
-first, and pass it to the backend API. The backend then knows who you are and
+When TF accesses the back-end, it will look up this token
+first, and pass it to the back-end API. The back-end then knows who you are and
 will give you more privileges.</p>
 </div>
 <h3 id="on-mac-and-linux">On Mac and Linux</h3>
@@ -108,14 +108,13 @@ you already know how to do it.</p>
 <p>If not, <code>nano</code> is simple editor that is useful for tasks like this.
 Assuming that you want to edit the <code>.zshrc</code> in your home directory,
 go to your terminal and say this:</p>
-<pre><code>nano ~/.zshrc
-</code></pre>
+<p><code>nano ~/.zshrc</code></p>
 <p>Then you get a view on your file. Then</p>
 <ul>
 <li>press <code>Ctrl V</code> a number of times till you are at the end of the file,</li>
 <li>type the two lines lines of text (specified in the next step), or
 copy them from the clipboard</li>
-<li>type <code>Ctrl X</code> to exit; nano will ask you to save changes, type <code>Y</code>,
+<li>type <code>Ctrl X</code> to exit; <code>nano</code> will ask you to save changes, type <code>Y</code>,
 it will then verify the file name, type <code>Enter</code> and you're done</li>
 </ul>
 </div>
@@ -133,13 +132,13 @@ export GL_BACKEND_PERS
 <ul>
 <li><code>xxx</code> is replaced by your actual token.</li>
 <li>
-<p><code>BACKEND</code> is replaced by the uppercase GitLab backend
+<p><code>BACKEND</code> is replaced by the uppercase GitLab back-end
 e.g.</p>
 <ul>
 <li><code>gitlab.com</code> becomes <code>GL_GITLAB_COM_PERS</code></li>
 <li><code>gitlab.huc.knaw.nl</code> becomes <code>GL_GITLAB_HUC_KNAW_NL_PERS</code></li>
 </ul>
-<p>In this way you can store tokens for multiple GitLab backends.</p>
+<p>In this way you can store tokens for multiple GitLab back-ends.</p>
 </li>
 </ul>
 <p>Then restart your terminal or say in an existing terminal</p>
@@ -159,21 +158,21 @@ under <em>name</em> and the token string under <em>value</em>.</p>
 <h3 id="result">Result</h3>
 <p><strong>GitHub</strong></p>
 <p>With this done, you will automatically get the good rate limit,
-whenever you fire up Text-Fabric in the future.</p>
+whenever you fire up TF in the future.</p>
 <p><strong>GitLab</strong></p>
-<p>You are now known to the GitLab backend, and you have the same access to its
+<p>You are now known to the GitLab back-end, and you have the same access to its
 repository as when you log in via the web interface.</p>
 <h2 id="minimize-accessing-github">Minimize accessing GitHub</h2>
-<p>Another way te avoid being bitten by the rate limit is to reduce the number
+<p>Another way to avoid being bitten by the rate limit is to reduce the number
 of your access actions to GitHub.</p>
-<p>There are two instances where Text-Fabric wants to access GitHub:</p>
+<p>There are two instances where TF wants to access GitHub:</p>
 <ol>
-<li>when you start the Text-Fabric browser from the command line</li>
+<li>when you start the TF browser from the command-line</li>
 <li>when you give the <code>use()</code> command in your Python program (or in a Jupyter Notebook).</li>
 </ol>
 <h3 id="using-a-corpus-for-the-first-time-within-the-rate-limit">Using a corpus for the first time, within the rate limit</h3>
 <p>If you are still within the rate limit, just give the usual commands, such as</p>
-<pre><code class="language-sh">text-fabric org/repo
+<pre><code class="language-sh">tf org/repo
 </code></pre>
 <p>or</p>
 <pre><code class="language-python">use('org/repo', hoist=globals())
@@ -183,7 +182,7 @@ of your access actions to GitHub.</p>
 <code>~/text-fabric-data</code> directory tree.</p>
 <h3 id="using-a-corpus-for-the-first-time-after-hitting-the-rate-limit">Using a corpus for the first time, after hitting the rate limit</h3>
 <p>If you want to load a new corpus after having passed the rate limit, and not
-wanting to wait an hour, you could directly clone the repos from GitHub/GitLab:</p>
+wanting to wait an hour, you could directly clone the repos from GitHub / GitLab:</p>
 <p>Open your terminal, and go to (or create) directory <code>~/github</code> or <code>~/gitlab</code>
 (in your home directory).</p>
 <p>Inside that directory, go to or create directory <code>org</code>
@@ -195,18 +194,18 @@ Go to that directory.</p>
 <pre><code class="language-sh">git clone https://gitlab.com/org/repo
 </code></pre>
 <p>(replacing <code>org</code> and <code>repo</code> with the values that apply to your corpus).</p>
-<p>This will fetch the Text-Fabric <em>data</em>, <em>app</em>, and <em>tutorials</em> for that corpus.</p>
+<p>This will fetch the TF <em>data</em>, <em>app</em>, and <em>tutorials</em> for that corpus.</p>
 <p>Now you have all data you need on your system.</p>
 <p>If you want to see by example how to use this data, have a look at
 <a href="https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb">repo</a>,
 especially when it discusses <code>clone</code>.</p>
-<p>In order to run Text-Fabric without further access to the backend, say</p>
-<pre><code class="language-sh">text-fabric corpus:clone checkout=clone
+<p>In order to run TF without further access to the back-end, say</p>
+<pre><code class="language-sh">tf corpus:clone checkout=clone
 </code></pre>
 <p>or, in a program,</p>
 <pre><code class="language-python">A = use('org/repo:clone', checkout='clone', hoist=globals())
 </code></pre>
-<p>This will instruct Text-Fabric to use the app and data from within your <code>~/github</code>
+<p>This will instruct TF to use the app and data from within your <code>~/github</code>
 or <code>~/gitlab</code> directory tree.</p>
 <h3 id="using-a-corpus-that-you-already-have">Using a corpus that you already have</h3>
 <p>Depending on how you got the corpus, it is in your
@@ -216,22 +215,22 @@ or <code>~/gitlab</code> directory tree.</p>
 <li>if you cloned it from GitLab, it is in your <code>~/gitlab</code> tree;</li>
 <li>if you cloned it from an other instance of GitLab, say hosted at
 <code>gitlab.huc.knaw.nl</code>, it is in your <code>~/gitlab.huc.knaw.nl</code> tree;</li>
-<li>if you used the autoload of Text-Fabric it is in your <code>~/text-fabric-data</code>.</li>
+<li>if you used the auto-download of TF it is in your <code>~/text-fabric-data</code>.</li>
 </ol>
 <p>In the first case, do this:</p>
-<pre><code class="language-sh">text-fabric corpus:clone checkout=clone
+<pre><code class="language-sh">tf corpus:clone checkout=clone
 </code></pre>
 <p>or, in a program,</p>
 <pre><code class="language-python">A = use('org/repo:clone', checkout='clone', hoist=globals())
 </code></pre>
 <p>In the second case, do this:</p>
-<pre><code class="language-sh">text-fabric corpus:clone checkout=clone --backend=gitlab
+<pre><code class="language-sh">tf corpus:clone checkout=clone --backend=gitlab
 </code></pre>
 <p>or, in a program,</p>
 <pre><code class="language-python">A = use('org/repo:clone', checkout='clone', backend=&quot;gitlab&quot;, hoist=globals())
 </code></pre>
 <p>In the third case, do this:</p>
-<pre><code class="language-sh">text-fabric corpus:clone checkout=clone --backend=gitlab.huc.knaw.nl
+<pre><code class="language-sh">tf corpus:clone checkout=clone --backend=gitlab.huc.knaw.nl
 </code></pre>
 <p>or, in a program,</p>
 <pre><code class="language-python">A = use(
@@ -242,14 +241,14 @@ or <code>~/gitlab</code> directory tree.</p>
     )
 </code></pre>
 <p>In the fourth case, do just this:</p>
-<pre><code class="language-sh">text-fabric corpus
+<pre><code class="language-sh">tf corpus
 </code></pre>
 <p>or, in a program,</p>
 <pre><code class="language-python">A = use('org/repo', hoist=globals())
 </code></pre>
 <p>See also <code><a title="tf.advanced.app.App" href="app.html#tf.advanced.app.App">App</a></code>.</p>
 <h3 id="updating-a-corpus-that-you-already-have">Updating a corpus that you already have</h3>
-<p>If you cloned it from GitHub/GitLab:</p>
+<p>If you cloned it from GitHub / GitLab:</p>
 <p>In your terminal:</p>
 <pre><code class="language-sh">cd ~/github/organization/repo
 </code></pre>
@@ -259,21 +258,19 @@ or <code>~/gitlab</code> directory tree.</p>
 <p>(replacing <code>organization</code> with the name of the organization where the corpus resides
 and <code>corpus</code> with the name of your corpus).</p>
 <p>And then:</p>
-<p>git pull origin master</p>
-<pre><code>
-Now you have the newest corpus data on your system.
+<pre><code>git pull origin master
+</code></pre>
+<p>Now you have the newest corpus data on your system.
 and you can use it as follows
-(we show the example for `github`):
-
-``` sh
-text-fabric corpus:clone checkout=clone
+(we show the example for <code>github</code>):</p>
+<pre><code class="language-sh">tf corpus:clone checkout=clone
 </code></pre>
 <p>or, in a program,</p>
 <pre><code class="language-python">A = use('org/repo:clone', checkout='clone', hoist=globals())
 </code></pre>
-<p>If you have autoloaded it from the backend,
+<p>If you have auto-downloaded it from the back-end,
 you have to add the <code>latest</code> or <code>hot</code> specifier:</p>
-<pre><code class="language-sh">text-fabric corpus:latest checkout=latest
+<pre><code class="language-sh">tf corpus:latest checkout=latest
 </code></pre>
 <p>or, in a program,</p>
 <pre><code class="language-python">A = use('org/repo:latest', checkout='latest', hoist=globals())
@@ -292,24 +289,24 @@ is being obtained.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1-L2196" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1-L2199" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-# Auto downloading from a backend repository
+# Auto downloading from a back-end repository
 
 ## Description
 
-Text-Fabric maintains local copies of subfolders of backend repositories,
+TF maintains local copies of subdirectories of back-end repositories,
 where it stores the feature data of corpora that the user is working with.
 
-Currently GitHub and GitLab are supported as backends.
+Currently GitHub and GitLab are supported as back-ends.
 In case of GitLab, not only [gitlab.com](https://gitlab.com) is supported,
 but also GitLab instances on other servers that support the GitLab API.
 
 There is some bookkeeping to account for which release and commit the
 feature files come from.
 
-Users can request data from any repo according to any release and/or commit.
+Users can request data from any repo according to any release and / or commit.
 
 ## Rate limiting
 
@@ -326,7 +323,7 @@ This can be too restrictive, and here are two ways to keep working nevertheless.
 
 !!! hint
     If you are a dataset provider, use `tf.advanced.zipdata.zipAll()` to
-    produce a zipfile of your complete dataset, and then attach it to the latest
+    produce a zip file of your complete dataset, and then attach it to the latest
     release on GitHub.
     Then TF will find this file and download it automatically if needed, without ever
     using the GitHub API, so your users do not have to do the things described below!
@@ -336,32 +333,32 @@ This can be too restrictive, and here are two ways to keep working nevertheless.
 If you use this function in an application of yours that uses it very often,
 you can increase the limit to 5000 calls per hour by making yourself known.
 
-* [create a personal access token](https://github.com/settings/tokens)
-* Copy your token and put it in an environment variable named `GHPERS`
-  on the system where your app runs.
-  See below how to do that.
-* If `checkoutRepo` finds this variable, it will add the
-  token to every GitHub API call it makes, and that will
-  increase the rate.
-* Never pass your personal credentials on to others, let them obtain their own!
+*   [create a personal access token](https://github.com/settings/tokens)
+*   Copy your token and put it in an environment variable named `GHPERS`
+    on the system where your app runs.
+    See below how to do that.
+*   If `checkoutRepo` finds this variable, it will add the
+    token to every GitHub API call it makes, and that will
+    increase the rate.
+*   Never pass your personal credentials on to others, let them obtain their own!
 
 You might want to read this:
 
-* [Read more about rate limiting on GitHub](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting)
+*   [Read more about rate limiting on GitHub](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting)
 
 # GitLab
 
 In order to reach an on-premise GitLab and have access to the repository in
-question, you may need to have a VPN connection with the GitLab backend.
+question, you may need to have a VPN connection with the GitLab back-end.
 
 Additionally, you may need to make your identity known.
 If you have an account on the GitLab instance, go to your settings and request
 a personal token with *api* privileges.
 
-On your own system, make an environment variable named GL_*BACKEND*`_PERS` whose
+On your own system, make an environment variable named `GL_BACKEND_PERS` whose
 content is exactly the value of this token.
 
-And *BACKEND* should be the uppercase variant of the name of the GitLab backend,
+And `BACKEND` should be the uppercase variant of the name of the GitLab back-end,
 where every character that is not a letter or digit or `_` is replaced by a `_`.
 
 For example, for `gitlab.huc.knaw.nl` use `GL_GITLAB_HUC_KNAW_NL_PERS`
@@ -374,14 +371,14 @@ See below how to put this in an environment variable.
 How to put your personal access token into an environment variable?
 
 !!! note &#34;What is an environment variable?&#34;
-    It is a setting on your system that various programs/processes can read.
+    It is a setting on your system that various programs / processes can read.
     On Windows it is part of the `Registry`.
 
     In this particular case, you put a personal token
-    that you obtain from GitHub/GitLab
+    that you obtain from GitHub / GitLab
     in such an environment variable.
-    When Text-Fabric accesses the backend, it will look up this token
-    first, and pass it to the backend API. The backend then knows who you are and
+    When TF accesses the back-end, it will look up this token
+    first, and pass it to the back-end API. The back-end then knows who you are and
     will give you more privileges.
 
 ### On Mac and Linux
@@ -406,14 +403,16 @@ Whatever is your case, pick the file indicated above and edit it.
     Assuming that you want to edit the `.zshrc` in your home directory,
     go to your terminal and say this:
 
-        nano ~/.zshrc
+    ```
+    nano ~/.zshrc
+    ```
 
     Then you get a view on your file. Then
 
     *   press `Ctrl V` a number of times till you are at the end of the file,
     *   type the two lines lines of text (specified in the next step), or
         copy them from the clipboard
-    *   type `Ctrl X` to exit; nano will ask you to save changes, type `Y`,
+    *   type `Ctrl X` to exit; `nano` will ask you to save changes, type `Y`,
         it will then verify the file name, type `Enter` and you&#39;re done
 
 
@@ -436,12 +435,12 @@ export GL_BACKEND_PERS
 where
 
 *   `xxx` is replaced by your actual token.
-*   `BACKEND` is replaced by the uppercase GitLab backend
+*   `BACKEND` is replaced by the uppercase GitLab back-end
     e.g.
     *   `gitlab.com` becomes `GL_GITLAB_COM_PERS`
     *   `gitlab.huc.knaw.nl` becomes `GL_GITLAB_HUC_KNAW_NL_PERS`
 
-    In this way you can store tokens for multiple GitLab backends.
+    In this way you can store tokens for multiple GitLab back-ends.
 
 Then restart your terminal or say in an existing terminal
 
@@ -473,29 +472,29 @@ Then quit the command prompt and start a new one.
 **GitHub**
 
 With this done, you will automatically get the good rate limit,
-whenever you fire up Text-Fabric in the future.
+whenever you fire up TF in the future.
 
 **GitLab**
 
-You are now known to the GitLab backend, and you have the same access to its
+You are now known to the GitLab back-end, and you have the same access to its
 repository as when you log in via the web interface.
 
 ## Minimize accessing GitHub
 
-Another way te avoid being bitten by the rate limit is to reduce the number
+Another way to avoid being bitten by the rate limit is to reduce the number
 of your access actions to GitHub.
 
-There are two instances where Text-Fabric wants to access GitHub:
+There are two instances where TF wants to access GitHub:
 
-1. when you start the Text-Fabric browser from the command line
-2. when you give the `use()` command in your Python program (or in a Jupyter Notebook).
+1.  when you start the TF browser from the command-line
+1.  when you give the `use()` command in your Python program (or in a Jupyter Notebook).
 
 ### Using a corpus for the first time, within the rate limit
 
 If you are still within the rate limit, just give the usual commands, such as
 
 ``` sh
-text-fabric org/repo
+tf org/repo
 ```
 
 or
@@ -512,7 +511,7 @@ The data will be downloaded to your computer and stored in your
 ### Using a corpus for the first time, after hitting the rate limit
 
 If you want to load a new corpus after having passed the rate limit, and not
-wanting to wait an hour, you could directly clone the repos from GitHub/GitLab:
+wanting to wait an hour, you could directly clone the repos from GitHub / GitLab:
 
 Open your terminal, and go to (or create) directory `~/github` or `~/gitlab`
 (in your home directory).
@@ -534,7 +533,7 @@ git clone https://gitlab.com/org/repo
 
 (replacing `org` and `repo` with the values that apply to your corpus).
 
-This will fetch the Text-Fabric *data*, *app*, and *tutorials* for that corpus.
+This will fetch the TF *data*, *app*, and *tutorials* for that corpus.
 
 Now you have all data you need on your system.
 
@@ -542,10 +541,10 @@ If you want to see by example how to use this data, have a look at
 [repo](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb),
 especially when it discusses `clone`.
 
-In order to run Text-Fabric without further access to the backend, say
+In order to run TF without further access to the back-end, say
 
 ``` sh
-text-fabric corpus:clone checkout=clone
+tf corpus:clone checkout=clone
 ```
 
 or, in a program,
@@ -554,7 +553,7 @@ or, in a program,
 A = use(&#39;org/repo:clone&#39;, checkout=&#39;clone&#39;, hoist=globals())
 ```
 
-This will instruct Text-Fabric to use the app and data from within your `~/github`
+This will instruct TF to use the app and data from within your `~/github`
 or `~/gitlab` directory tree.
 
 ### Using a corpus that you already have
@@ -563,15 +562,15 @@ Depending on how you got the corpus, it is in your
 `~/github`, `~/gitlab` or in your `~/text-fabric-data` directory tree:
 
 1.   if you cloned it from GitHub, it is in your `~/github` tree;
-2.   if you cloned it from GitLab, it is in your `~/gitlab` tree;
-3.   if you cloned it from an other instance of GitLab, say hosted at
+1.   if you cloned it from GitLab, it is in your `~/gitlab` tree;
+1.   if you cloned it from an other instance of GitLab, say hosted at
     `gitlab.huc.knaw.nl`, it is in your `~/gitlab.huc.knaw.nl` tree;
-4.   if you used the autoload of Text-Fabric it is in your `~/text-fabric-data`.
+1.   if you used the auto-download of TF it is in your `~/text-fabric-data`.
 
 In the first case, do this:
 
 ``` sh
-text-fabric corpus:clone checkout=clone
+tf corpus:clone checkout=clone
 ```
 
 or, in a program,
@@ -583,7 +582,7 @@ A = use(&#39;org/repo:clone&#39;, checkout=&#39;clone&#39;, hoist=globals())
 In the second case, do this:
 
 ``` sh
-text-fabric corpus:clone checkout=clone --backend=gitlab
+tf corpus:clone checkout=clone --backend=gitlab
 ```
 
 or, in a program,
@@ -595,7 +594,7 @@ A = use(&#39;org/repo:clone&#39;, checkout=&#39;clone&#39;, backend=&#34;gitlab&
 In the third case, do this:
 
 ``` sh
-text-fabric corpus:clone checkout=clone --backend=gitlab.huc.knaw.nl
+tf corpus:clone checkout=clone --backend=gitlab.huc.knaw.nl
 ```
 
 or, in a program,
@@ -612,7 +611,7 @@ A = use(
 In the fourth case, do just this:
 
 ``` sh
-text-fabric corpus
+tf corpus
 ```
 
 or, in a program,
@@ -625,7 +624,7 @@ See also `tf.advanced.app.App`.
 
 ### Updating a corpus that you already have
 
-If you cloned it from GitHub/GitLab:
+If you cloned it from GitHub / GitLab:
 
 In your terminal:
 
@@ -644,6 +643,7 @@ and `corpus` with the name of your corpus).
 
 And then:
 
+```
 git pull origin master
 ```
 
@@ -652,7 +652,7 @@ and you can use it as follows
 (we show the example for `github`):
 
 ``` sh
-text-fabric corpus:clone checkout=clone
+tf corpus:clone checkout=clone
 ```
 
 or, in a program,
@@ -661,11 +661,11 @@ or, in a program,
 A = use(&#39;org/repo:clone&#39;, checkout=&#39;clone&#39;, hoist=globals())
 ```
 
-If you have autoloaded it from the backend,
+If you have auto-downloaded it from the back-end,
 you have to add the `latest` or `hot` specifier:
 
 ``` sh
-text-fabric corpus:latest checkout=latest
+tf corpus:latest checkout=latest
 ```
 
 or, in a program,
@@ -1010,7 +1010,7 @@ class Repo:
             )
             console(f&#34;{dataFile} attached to release {newTag}&#34;)
         except Exception as e:
-            self.error(&#34;\tcannot attach zipfile to release&#34;, newline=True)
+            self.error(&#34;\tcannot attach zip file to release&#34;, newline=True)
             catchRemaining(e)
             return False
 
@@ -1102,8 +1102,8 @@ def releaseData(
     repo: string
         The name of the repo
     folder: string
-        The subfolder in the repo that contains the text-fabric files.
-        If the tf files are versioned, it is the directory that
+        The subdirectory in the repo that contains the TF files.
+        If the TF files are versioned, it is the directory that
         contains the version directories.
         In most cases it is `tf` or it ends in `/tf`.
     version: string
@@ -1115,7 +1115,7 @@ def releaseData(
             2 = bump intermediate version;
             3 = bump minor version
 
-    source: string, optional None`
+    source: string, optional None
         Path to where the local GitHub clones are stored
     dest: string, optional DOWNLOADS
         Path to where the zipped data should be stored
@@ -1155,13 +1155,13 @@ def publishRelease(app, increase, message=None, description=None):
     release on GitHub.
 
     For an example, see
-    [annotation/mondriaan](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/publish.ipynb)
+    [`annotation/mondriaan`](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/publish.ipynb)
 
     Parameters
     ----------
     app: object
         A loaded TF app.
-        Only if the TF app is working with backend GitHub
+        Only if the TF app is working with back-end GitHub
     increase: integer
         The way in which the release version should be increased:
 
@@ -1174,7 +1174,7 @@ def publishRelease(app, increase, message=None, description=None):
         If None, a boiler plate text, based on the `increase` parameter, is provided.
 
     description: string, optional None
-        Documentaiton of the release. May be a multiline (markdown) string.
+        Documentation of the release. May be a multiline (markdown) string.
         If None, the `message` parameter will be used.
     &#34;&#34;&#34;
     repoLocation = app.repoLocation
@@ -1422,7 +1422,7 @@ class Checkout:
                 try:
                     conn = Github(person)
                 except Exception as e:
-                    self.error(f&#34;Can&#39;t make connection to Github because of {e}&#34;)
+                    self.error(f&#34;Can&#39;t make connection to GitHub because of {e}&#34;)
                     self.conn = None
                     catchRemaining(e)
                     return None
@@ -2339,7 +2339,7 @@ def checkoutRepo(
     silent=SILENT_D,
     label=&#34;data&#34;,
 ):
-    &#34;&#34;&#34;Checks out text-fabric data from an (online) repository.
+    &#34;&#34;&#34;Checks out TF data from an (online) repository.
 
     The copy may be taken from any point in the commit history of the online repo.
 
@@ -2360,13 +2360,13 @@ def checkoutRepo(
         The *repo* on GitHub or the project on GitLab
 
     folder: string, optional /tf
-        The subfolder in the repo that contains the text-fabric files.
-        If the tf files are versioned, it is the directory that
+        The subdirectory in the repo that contains the TF files.
+        If the TF files are versioned, it is the directory that
         contains the version directories.
         In most cases it is `tf` or it ends in `/tf`.
 
     version: string, optional, the empty string
-        The version of the tf feature data
+        The version of the TF feature data
 
     checkout: string, optional the mepty string
         From which version/release/local copy we should extract the data.
@@ -2375,7 +2375,7 @@ def checkoutRepo(
             If there is no data there, data will be downloaded.
         *   `local`: whatever you have locally in `~/text-fabric-data`.
             If there is no data there, you get an error message.
-        *   `clone`: whatever you have locally as a GitHub/GitLab clone
+        *   `clone`: whatever you have locally as a GitHub / GitLab clone
             If there is no data there, you get an error message.
         *   `latest`: make sure the latest release has been fetched from online
         *   `hot`: make sure the latest commit has been fetched from online
@@ -2392,7 +2392,7 @@ def checkoutRepo(
         If given, it overrides the semi-baked in `~/github` value.
 
     dest: string, optional empty string
-        The base of your local cache of downloaded tf feature files.
+        The base of your local cache of downloaded TF feature files.
         If given, it overrides the semi-baked in `~/text-fabric-data` value.
 
     withPaths: boolean, optional True
@@ -2414,34 +2414,34 @@ def checkoutRepo(
 
     Returns
     -------
-    (commitOffline, releaseOffline, kindLocal, localBase, localDir)
+    tuple
 
-    *   *commitOffline* is the commit hash of the data you have offline afterwards
-    *   *releaseOffline* is the release tag of the data you have offline afterwards
-    *   *kindLocal* indicates whether an online check has been performed:
+    *   `commitOffline` is the commit hash of the data you have offline afterwards
+    *   `releaseOffline` is the release tag of the data you have offline afterwards
+    *   `kindLocal` indicates whether an online check has been performed:
         it is `None` if there has been an online check. Otherwise it is
         `clone` if the data is in your `~/github` directory else it is `local`.
-    *   *localBase* where the data is under: `~/github` or `~/text-fabric-data`,
-        or whatever you have passed as *source* and *dest*.
-    *   *localDir* releative path from *localBase* to your data.
-        If your data has versions, *localDir* points to directory that has the versions,
+    *   `localBase` where the data is under: `~/github` or `~/text-fabric-data`,
+        or whatever you have passed as `source` and `dest`.
+    *   `localDir` relative path from `localBase` to your data.
+        If your data has versions, `localDir` points to directory that has the versions,
         not to a specific version.
 
     Your local copy can be found:
 
     *   in the cache under your `~/text-fabric-data`, and from
-        there under *backend*/*org/repo* where *backend* is github or gitlab or
-        the server name of a gitlab instance.
+        there under `backend/org/repo` where `backend` is `github` or `gitlab` or
+        the server name of a GitLab instance.
 
     or
 
-    *   in the place where you store your clones from GitHub/GitLab:
-        `~/github` or `~/gitlab` or `~/`*backend*
-        (whatever the value of the *backend* parameter is.
-        From there it is under *org/repo*.
+    *   in the place where you store your clones from GitHub / GitLab:
+        `~/github` or `~/gitlab` or `~/backend`
+        (whatever the value of the `backend` parameter is.
+        From there it is under `org/repo`.
 
-    The actual feature files are in *folder/version* if there is a *version*,
-    else *folder*.
+    The actual feature files are in `folder/version` if there is a `version`,
+    else `folder`.
 
     &#34;&#34;&#34;
 
@@ -2507,7 +2507,7 @@ def checkoutRepo(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L453-L454" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L456-L457" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def GLPERS(backend):
     return f&#34;GL_{SHELL_VAR_RE.sub(&#39;_&#39;, backend.upper())}_PERS&#34;</code></pre>
@@ -2521,7 +2521,7 @@ def checkoutRepo(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L480-L505" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L483-L508" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def bumpRelease(latestR, increase):
     if latestR:
@@ -2559,7 +2559,7 @@ def checkoutRepo(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L457-L464" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L460-L467" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def catchRemaining(e):
     eType = type(e)
@@ -2575,7 +2575,7 @@ def checkoutRepo(
 <span>def <span class="ident">checkoutRepo</span></span>(<span>backend, org='annotation', repo='banks', folder='/tf', version='', checkout='', source=None, dest=None, withPaths=True, keep=True, silent='auto', label='data')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Checks out text-fabric data from an (online) repository.</p>
+<div class="desc"><p>Checks out TF data from an (online) repository.</p>
 <p>The copy may be taken from any point in the commit history of the online repo.</p>
 <p>If you call this function, it will check whether the requested data is already
 on your computer in the expected location.
@@ -2590,12 +2590,12 @@ expected location.</p>
 <dt><strong><code>repo</code></strong> :&ensp;<code>string</code>, optional <code>"banks"</code></dt>
 <dd>The <em>repo</em> on GitHub or the project on GitLab</dd>
 <dt><strong><code>folder</code></strong> :&ensp;<code>string</code>, optional <code>/tf</code></dt>
-<dd>The subfolder in the repo that contains the text-fabric files.
-If the tf files are versioned, it is the directory that
+<dd>The subdirectory in the repo that contains the TF files.
+If the TF files are versioned, it is the directory that
 contains the version directories.
 In most cases it is <code><a title="tf" href="../index.html">tf</a></code> or it ends in <code>/tf</code>.</dd>
 <dt><strong><code>version</code></strong> :&ensp;<code>string</code>, optional<code>, the empty string</code></dt>
-<dd>The version of the tf feature data</dd>
+<dd>The version of the TF feature data</dd>
 <dt><strong><code>checkout</code></strong> :&ensp;<code>string</code>, optional <code>the mepty string</code></dt>
 <dd>
 <p>From which version/release/local copy we should extract the data.</p>
@@ -2604,7 +2604,7 @@ In most cases it is <code><a title="tf" href="../index.html">tf</a></code> or it
 If there is no data there, data will be downloaded.</li>
 <li><code>local</code>: whatever you have locally in <code>~/text-fabric-data</code>.
 If there is no data there, you get an error message.</li>
-<li><code>clone</code>: whatever you have locally as a GitHub/GitLab clone
+<li><code>clone</code>: whatever you have locally as a GitHub / GitLab clone
 If there is no data there, you get an error message.</li>
 <li><code>latest</code>: make sure the latest release has been fetched from online</li>
 <li><code>hot</code>: make sure the latest commit has been fetched from online</li>
@@ -2620,7 +2620,7 @@ notebook for an exhaustive demo of all the checkout options.</p>
 <dd>The base of your local repository clones.
 If given, it overrides the semi-baked in <code>~/github</code> value.</dd>
 <dt><strong><code>dest</code></strong> :&ensp;<code>string</code>, optional <code>empty string</code></dt>
-<dd>The base of your local cache of downloaded tf feature files.
+<dd>The base of your local cache of downloaded TF feature files.
 If given, it overrides the semi-baked in <code>~/text-fabric-data</code> value.</dd>
 <dt><strong><code>withPaths</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
 <dd>The data will be saved without the directory structure
@@ -2637,17 +2637,20 @@ We use <code>label='app'</code> when we use this function to checkout the code
 of a corpus app.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>(commitOffline, releaseOffline, kindLocal, localBase, localDir)</p>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>&nbsp;</dd>
+</dl>
 <ul>
-<li><em>commitOffline</em> is the commit hash of the data you have offline afterwards</li>
-<li><em>releaseOffline</em> is the release tag of the data you have offline afterwards</li>
-<li><em>kindLocal</em> indicates whether an online check has been performed:
+<li><code>commitOffline</code> is the commit hash of the data you have offline afterwards</li>
+<li><code>releaseOffline</code> is the release tag of the data you have offline afterwards</li>
+<li><code>kindLocal</code> indicates whether an online check has been performed:
 it is <code>None</code> if there has been an online check. Otherwise it is
 <code>clone</code> if the data is in your <code>~/github</code> directory else it is <code>local</code>.</li>
-<li><em>localBase</em> where the data is under: <code>~/github</code> or <code>~/text-fabric-data</code>,
-or whatever you have passed as <em>source</em> and <em>dest</em>.</li>
-<li><em>localDir</em> releative path from <em>localBase</em> to your data.
-If your data has versions, <em>localDir</em> points to directory that has the versions,
+<li><code>localBase</code> where the data is under: <code>~/github</code> or <code>~/text-fabric-data</code>,
+or whatever you have passed as <code>source</code> and <code>dest</code>.</li>
+<li><code>localDir</code> relative path from <code>localBase</code> to your data.
+If your data has versions, <code>localDir</code> points to directory that has the versions,
 not to a specific version.</li>
 </ul>
 <dl>
@@ -2656,25 +2659,25 @@ not to a specific version.</li>
 </dl>
 <ul>
 <li>in the cache under your <code>~/text-fabric-data</code>, and from
-there under <em>backend</em>/<em>org/repo</em> where <em>backend</em> is github or gitlab or
-the server name of a gitlab instance.</li>
+there under <code>backend/org/repo</code> where <code>backend</code> is <code>github</code> or <code>gitlab</code> or
+the server name of a GitLab instance.</li>
 </ul>
 <dl>
 <dt><code>or</code></dt>
 <dd>&nbsp;</dd>
 </dl>
 <ul>
-<li>in the place where you store your clones from GitHub/GitLab:
-<code>~/github</code> or <code>~/gitlab</code> or <code>~/</code><em>backend</em>
-(whatever the value of the <em>backend</em> parameter is.
-From there it is under <em>org/repo</em>.</li>
+<li>in the place where you store your clones from GitHub / GitLab:
+<code>~/github</code> or <code>~/gitlab</code> or <code>~/backend</code>
+(whatever the value of the <code>backend</code> parameter is.
+From there it is under <code>org/repo</code>.</li>
 </ul>
-<p>The actual feature files are in <em>folder/version</em> if there is a <em>version</em>,
-else <em>folder</em>.</p></div>
+<p>The actual feature files are in <code>folder/version</code> if there is a <code>version</code>,
+else <code>folder</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L2031-L2196" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L2034-L2199" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkoutRepo(
     backend,
@@ -2691,7 +2694,7 @@ else <em>folder</em>.</p></div>
     silent=SILENT_D,
     label=&#34;data&#34;,
 ):
-    &#34;&#34;&#34;Checks out text-fabric data from an (online) repository.
+    &#34;&#34;&#34;Checks out TF data from an (online) repository.
 
     The copy may be taken from any point in the commit history of the online repo.
 
@@ -2712,13 +2715,13 @@ else <em>folder</em>.</p></div>
         The *repo* on GitHub or the project on GitLab
 
     folder: string, optional /tf
-        The subfolder in the repo that contains the text-fabric files.
-        If the tf files are versioned, it is the directory that
+        The subdirectory in the repo that contains the TF files.
+        If the TF files are versioned, it is the directory that
         contains the version directories.
         In most cases it is `tf` or it ends in `/tf`.
 
     version: string, optional, the empty string
-        The version of the tf feature data
+        The version of the TF feature data
 
     checkout: string, optional the mepty string
         From which version/release/local copy we should extract the data.
@@ -2727,7 +2730,7 @@ else <em>folder</em>.</p></div>
             If there is no data there, data will be downloaded.
         *   `local`: whatever you have locally in `~/text-fabric-data`.
             If there is no data there, you get an error message.
-        *   `clone`: whatever you have locally as a GitHub/GitLab clone
+        *   `clone`: whatever you have locally as a GitHub / GitLab clone
             If there is no data there, you get an error message.
         *   `latest`: make sure the latest release has been fetched from online
         *   `hot`: make sure the latest commit has been fetched from online
@@ -2744,7 +2747,7 @@ else <em>folder</em>.</p></div>
         If given, it overrides the semi-baked in `~/github` value.
 
     dest: string, optional empty string
-        The base of your local cache of downloaded tf feature files.
+        The base of your local cache of downloaded TF feature files.
         If given, it overrides the semi-baked in `~/text-fabric-data` value.
 
     withPaths: boolean, optional True
@@ -2766,34 +2769,34 @@ else <em>folder</em>.</p></div>
 
     Returns
     -------
-    (commitOffline, releaseOffline, kindLocal, localBase, localDir)
+    tuple
 
-    *   *commitOffline* is the commit hash of the data you have offline afterwards
-    *   *releaseOffline* is the release tag of the data you have offline afterwards
-    *   *kindLocal* indicates whether an online check has been performed:
+    *   `commitOffline` is the commit hash of the data you have offline afterwards
+    *   `releaseOffline` is the release tag of the data you have offline afterwards
+    *   `kindLocal` indicates whether an online check has been performed:
         it is `None` if there has been an online check. Otherwise it is
         `clone` if the data is in your `~/github` directory else it is `local`.
-    *   *localBase* where the data is under: `~/github` or `~/text-fabric-data`,
-        or whatever you have passed as *source* and *dest*.
-    *   *localDir* releative path from *localBase* to your data.
-        If your data has versions, *localDir* points to directory that has the versions,
+    *   `localBase` where the data is under: `~/github` or `~/text-fabric-data`,
+        or whatever you have passed as `source` and `dest`.
+    *   `localDir` relative path from `localBase` to your data.
+        If your data has versions, `localDir` points to directory that has the versions,
         not to a specific version.
 
     Your local copy can be found:
 
     *   in the cache under your `~/text-fabric-data`, and from
-        there under *backend*/*org/repo* where *backend* is github or gitlab or
-        the server name of a gitlab instance.
+        there under `backend/org/repo` where `backend` is `github` or `gitlab` or
+        the server name of a GitLab instance.
 
     or
 
-    *   in the place where you store your clones from GitHub/GitLab:
-        `~/github` or `~/gitlab` or `~/`*backend*
-        (whatever the value of the *backend* parameter is.
-        From there it is under *org/repo*.
+    *   in the place where you store your clones from GitHub / GitLab:
+        `~/github` or `~/gitlab` or `~/backend`
+        (whatever the value of the `backend` parameter is.
+        From there it is under `org/repo`.
 
-    The actual feature files are in *folder/version* if there is a *version*,
-    else *folder*.
+    The actual feature files are in `folder/version` if there is a `version`,
+    else `folder`.
 
     &#34;&#34;&#34;
 
@@ -2852,7 +2855,7 @@ else <em>folder</em>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L467-L477" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L470-L480" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getFinalUrl(url):
     finalUrl = None
@@ -2887,12 +2890,12 @@ title and a description.</p>
 <p>Finally, we zip all essential data of the TF dataset and upload it to the
 release on GitHub.</p>
 <p>For an example, see
-<a href="https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/publish.ipynb">annotation/mondriaan</a></p>
+<a href="https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/publish.ipynb"><code>annotation/mondriaan</code></a></p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
 <dd>A loaded TF app.
-Only if the TF app is working with backend GitHub</dd>
+Only if the TF app is working with back-end GitHub</dd>
 <dt><strong><code>increase</code></strong> :&ensp;<code>integer</code></dt>
 <dd>The way in which the release version should be increased:<pre><code>1 = bump major version;
 2 = bump intermediate version;
@@ -2903,13 +2906,13 @@ Only if the TF app is working with backend GitHub</dd>
 <dd>Commit message.
 If None, a boiler plate text, based on the <code>increase</code> parameter, is provided.</dd>
 <dt><strong><code>description</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
-<dd>Documentaiton of the release. May be a multiline (markdown) string.
+<dd>Documentation of the release. May be a multiline (markdown) string.
 If None, the <code>message</code> parameter will be used.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L835-L962" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L838-L965" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def publishRelease(app, increase, message=None, description=None):
     &#34;&#34;&#34;Publishes a new data release for a TF dataset to GitHub.
@@ -2938,13 +2941,13 @@ If None, the <code>message</code> parameter will be used.</dd>
     release on GitHub.
 
     For an example, see
-    [annotation/mondriaan](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/publish.ipynb)
+    [`annotation/mondriaan`](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/publish.ipynb)
 
     Parameters
     ----------
     app: object
         A loaded TF app.
-        Only if the TF app is working with backend GitHub
+        Only if the TF app is working with back-end GitHub
     increase: integer
         The way in which the release version should be increased:
 
@@ -2957,7 +2960,7 @@ If None, the <code>message</code> parameter will be used.</dd>
         If None, a boiler plate text, based on the `increase` parameter, is provided.
 
     description: string, optional None
-        Documentaiton of the release. May be a multiline (markdown) string.
+        Documentation of the release. May be a multiline (markdown) string.
         If None, the `message` parameter will be used.
     &#34;&#34;&#34;
     repoLocation = app.repoLocation
@@ -3060,8 +3063,8 @@ GitLab support will be implemented if there is a need for it.</p>
 <dt><strong><code>repo</code></strong> :&ensp;<code>string</code></dt>
 <dd>The name of the repo</dd>
 <dt><strong><code>folder</code></strong> :&ensp;<code>string</code></dt>
-<dd>The subfolder in the repo that contains the text-fabric files.
-If the tf files are versioned, it is the directory that
+<dd>The subdirectory in the repo that contains the TF files.
+If the TF files are versioned, it is the directory that
 contains the version directories.
 In most cases it is <code><a title="tf" href="../index.html">tf</a></code> or it ends in <code>/tf</code>.</dd>
 <dt><strong><code>version</code></strong> :&ensp;<code>string</code></dt>
@@ -3074,7 +3077,7 @@ The way in which the release version should be increased:</p>
     3 = bump minor version
 </code></pre>
 <dl>
-<dt><strong><code>source</code></strong> :&ensp;<code>string</code>, optional `None``</dt>
+<dt><strong><code>source</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
 <dd>Path to where the local GitHub clones are stored</dd>
 <dt><strong><code>dest</code></strong> :&ensp;<code>string</code>, optional <code>DOWNLOADS</code></dt>
 <dd>Path to where the zipped data should be stored</dd>
@@ -3082,7 +3085,7 @@ The way in which the release version should be increased:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L784-L832" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L787-L835" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def releaseData(
     backend,
@@ -3109,8 +3112,8 @@ The way in which the release version should be increased:</p>
     repo: string
         The name of the repo
     folder: string
-        The subfolder in the repo that contains the text-fabric files.
-        If the tf files are versioned, it is the directory that
+        The subdirectory in the repo that contains the TF files.
+        If the TF files are versioned, it is the directory that
         contains the version directories.
         In most cases it is `tf` or it ends in `/tf`.
     version: string
@@ -3122,7 +3125,7 @@ The way in which the release version should be increased:</p>
             2 = bump intermediate version;
             3 = bump minor version
 
-    source: string, optional None`
+    source: string, optional None
         Path to where the local GitHub clones are stored
     dest: string, optional DOWNLOADS
         Path to where the zipped data should be stored
@@ -3149,7 +3152,7 @@ The way in which the release version should be increased:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L965-L2028" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L968-L2031" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Checkout:
     &#34;&#34;&#34;Auxiliary class for `checkoutRepo`&#34;&#34;&#34;
@@ -3315,7 +3318,7 @@ The way in which the release version should be increased:</p>
                 try:
                     conn = Github(person)
                 except Exception as e:
-                    self.error(f&#34;Can&#39;t make connection to Github because of {e}&#34;)
+                    self.error(f&#34;Can&#39;t make connection to GitHub because of {e}&#34;)
                     self.conn = None
                     catchRemaining(e)
                     return None
@@ -4226,7 +4229,7 @@ The way in which the release version should be increased:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L968-L992" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L971-L995" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def fromString(string):
@@ -4263,7 +4266,7 @@ def fromString(string):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1471-L1489" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1474-L1492" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def retrieve(url):
@@ -4294,7 +4297,7 @@ def retrieve(url):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L994-L1021" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L997-L1024" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def toString(commit, release, local, backend, source=None, dest=None):
@@ -4337,7 +4340,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1181-L1242" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1184-L1245" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def connect(self):
     conn = self.conn
@@ -4411,7 +4414,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1257-L1264" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1260-L1267" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def display(self, msg, msgPlain):
     inNb = self.inNb
@@ -4431,7 +4434,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1569-L1581" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1572-L1584" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def download(self):
     cChk = self.commitChk
@@ -4456,7 +4459,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1626-L1637" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1629-L1640" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def downloadCommit(self, commit, showErrors=True):
     c = self.getCommitObj(commit)
@@ -4480,7 +4483,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1491-L1567" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1494-L1570" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def downloadComplete(self):
     ssl._create_default_https_context = ssl._create_unverified_context
@@ -4569,7 +4572,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1768-L1849" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1771-L1852" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def downloadDir(self, commit, exclude=None, showErrors=False):
     g = self.repoOnline
@@ -4663,7 +4666,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1583-L1624" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1586-L1627" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def downloadRelease(self, release, showErrors=True):
     cChk = self.commitChk
@@ -4717,7 +4720,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1639-L1766" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1642-L1769" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def downloadZip(self, where, shiftUp=False, commit=None, showErrors=True):
     # commit parameter only supported for GitLab
@@ -4857,7 +4860,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1254-L1255" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1257-L1258" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def error(self, msg, newline=True):
     console(msg, error=True, newline=newline)</code></pre>
@@ -4871,7 +4874,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1969-L1994" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1972-L1997" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fetchInfo(self):
     if self.isOffline():
@@ -4909,7 +4912,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1996-L2007" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1999-L2010" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fixInfo(self):
     sDir = self.dirPathLocal
@@ -4933,7 +4936,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1857-L1861" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1860-L1864" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getCommit(self, commit):
     c = self.getCommitObj(commit)
@@ -4950,7 +4953,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1960-L1967" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1963-L1970" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getCommitFromObj(self, c):
     g = self.repoOnline
@@ -4970,7 +4973,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1902-L1942" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1905-L1945" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getCommitObj(self, commit):
     g = self.repoOnline
@@ -5023,7 +5026,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1851-L1855" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1854-L1858" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRelease(self, release, showErrors=True):
     r = self.getReleaseObj(release, showErrors=showErrors)
@@ -5040,7 +5043,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1944-L1958" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1947-L1961" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getReleaseFromObj(self, r):
     g = self.repoOnline
@@ -5067,7 +5070,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1863-L1900" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1866-L1903" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getReleaseObj(self, release, showErrors=True):
     g = self.repoOnline
@@ -5117,7 +5120,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1244-L1247" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1247-L1250" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def info(self, msg, newline=True):
     silent = self.silent
@@ -5133,7 +5136,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1023-L1024" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1026-L1027" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isClone(self):
     return self.local == &#34;clone&#34;</code></pre>
@@ -5147,7 +5150,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1029-L1030" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1032-L1033" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isExpress(self):
     return self.local is None and not self.commitChk and self.releaseChk == &#34;&#34;</code></pre>
@@ -5161,7 +5164,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1026-L1027" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1029-L1030" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isOffline(self):
     return self.local in {&#34;clone&#34;, &#34;local&#34;}</code></pre>
@@ -5175,7 +5178,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1110-L1179" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1113-L1182" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def login(self):
     onGithub = self.onGithub
@@ -5196,7 +5199,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
             try:
                 conn = Github(person)
             except Exception as e:
-                self.error(f&#34;Can&#39;t make connection to Github because of {e}&#34;)
+                self.error(f&#34;Can&#39;t make connection to GitHub because of {e}&#34;)
                 self.conn = None
                 catchRemaining(e)
                 return None
@@ -5257,7 +5260,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1274-L1469" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1277-L1472" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeSureLocal(self, attempt=False):
     _browse = self._browse
@@ -5465,7 +5468,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1266-L1272" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1269-L1275" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def possibleError(self, msg, showErrors, again=False, indent=&#34;\t&#34;, newline=False):
     if showErrors:
@@ -5484,7 +5487,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L2009-L2018" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L2012-L2021" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readInfo(self):
     if fileExists(self.filePathLocal):
@@ -5506,7 +5509,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L1249-L1252" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L1252-L1255" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def warning(self, msg, newline=True):
     silent = self.silent
@@ -5522,7 +5525,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L2020-L2028" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L2023-L2031" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeInfo(self, release=None, commit=None):
     releaseOff = self.releaseOff if release is None else release
@@ -5546,7 +5549,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L508-L781" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L511-L784" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Repo:
     &#34;&#34;&#34;Auxiliary class for `releaseData`&#34;&#34;&#34;
@@ -5757,7 +5760,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
             )
             console(f&#34;{dataFile} attached to release {newTag}&#34;)
         except Exception as e:
-            self.error(&#34;\tcannot attach zipfile to release&#34;, newline=True)
+            self.error(&#34;\tcannot attach zip file to release&#34;, newline=True)
             catchRemaining(e)
             return False
 
@@ -5833,7 +5836,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L660-L665" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L663-L668" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def bumpRelease(self):
     increase = self.increase
@@ -5851,7 +5854,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L589-L643" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L592-L646" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def connect(self):
     backend = self.backend
@@ -5918,7 +5921,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L780-L781" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L783-L784" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def error(self, msg, newline=True):
     console(msg, error=True, newline=newline)</code></pre>
@@ -5932,7 +5935,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L645-L658" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L648-L661" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fetchInfo(self):
     g = self.repoOnline
@@ -5958,7 +5961,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L746-L750" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L749-L753" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getCommit(self):
     c = self.getCommitObj()
@@ -5975,7 +5978,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L752-L768" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L755-L771" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getCommitObj(self):
     g = self.repoOnline
@@ -6004,7 +6007,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L723-L727" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L726-L730" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRelease(self):
     r = self.getReleaseObj()
@@ -6021,7 +6024,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L729-L744" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L732-L747" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getReleaseObj(self):
     g = self.repoOnline
@@ -6049,7 +6052,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L770-L773" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L773-L776" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def info(self, msg, newline=True):
     silent = self.silent
@@ -6065,7 +6068,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L667-L693" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L670-L696" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeRelease(self):
     g = self.repoOnline
@@ -6104,7 +6107,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L563-L587" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L566-L590" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeZip(self):
     source = self.source
@@ -6141,7 +6144,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L538-L561" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L541-L564" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def newRelease(self):
     if not self.makeZip():
@@ -6177,7 +6180,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L695-L721" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L698-L724" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def uploadZip(self):
     newTag = self.newTag
@@ -6201,7 +6204,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
         )
         console(f&#34;{dataFile} attached to release {newTag}&#34;)
     except Exception as e:
-        self.error(&#34;\tcannot attach zipfile to release&#34;, newline=True)
+        self.error(&#34;\tcannot attach zip file to release&#34;, newline=True)
         catchRemaining(e)
         return False
 
@@ -6216,7 +6219,7 @@ def toString(commit, release, local, backend, source=None, dest=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/repo.py#L775-L778" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/repo.py#L778-L781" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def warning(self, msg, newline=True):
     silent = self.silent
@@ -6284,7 +6287,7 @@ setTimeout(() => input.focus(), 100);
 <h1>Index</h1>
 <div class="toc">
 <ul>
-<li><a href="#auto-downloading-from-a-backend-repository">Auto downloading from a backend repository</a><ul>
+<li><a href="#auto-downloading-from-a-back-end-repository">Auto downloading from a back-end repository</a><ul>
 <li><a href="#description">Description</a></li>
 <li><a href="#rate-limiting">Rate limiting</a></li>
 </ul>

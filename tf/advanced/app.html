@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/app.py#L1-L721" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/app.py#L1-L721" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import types
 import traceback
@@ -129,7 +129,7 @@ class App:
         silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
         hoist: dict, optional False
-        configOverrides: key value pairs
+        configOverrides: list of tuple
 
         _withGc: boolean, optional True
             If False, it disables the Python garbage collector before
@@ -215,7 +215,7 @@ class App:
                     console(
                         &#34;&#34;&#34;
 No data has been loaded.
-Most of the Text-Fabric API has not been loaded.
+Most of the TF API has not been loaded.
 &#34;&#34;&#34;
                     )
             else:
@@ -258,7 +258,7 @@ Most of the Text-Fabric API has not been loaded.
                 console(
                     f&#34;&#34;&#34;
 There were problems with loading data.
-The Text-Fabric API has not been loaded!
+The TF API has not been loaded!
 The app &#34;{appName}&#34; will not work!
 &#34;&#34;&#34;,
                     error=True,
@@ -293,7 +293,7 @@ The app &#34;{appName}&#34; will not work!
             if silent in {VERBOSE, AUTO, TERSE}:
                 if self.inNb:
                     dh(
-                        &#34;&lt;div&gt;&lt;b&gt;Text-Fabric API:&lt;/b&gt; names &#34;
+                        &#34;&lt;div&gt;&lt;b&gt;TF API:&lt;/b&gt; names &#34;
                         + outLink(
                             &#34;N F E L T S C TF Fs Fall Es Eall Cs Call&#34;,
                             APIREF,
@@ -332,7 +332,7 @@ The app &#34;{appName}&#34; will not work!
         return TF.load(features, add=True, silent=silent)
 
     def reinit(self):
-        &#34;&#34;&#34;TF-Apps may override this method.
+        &#34;&#34;&#34;TF Apps may override this method.
         It is called by `reuse`. Hence it needs to be present.
         &#34;&#34;&#34;
 
@@ -421,22 +421,22 @@ def findApp(
     appName: string or None
         Either:
 
-        * None, but then dataLoc should have a value
-        * `app:`*path/to/tf/app*
-        * *org*/*repo*
-        * *org*/*repo* *relative*
-        * *app*, i.e. the plain name of an official TF app
-          (e.g. `bhsa`, `oldbabylonian`)
+        *   None, but then `dataLoc` should have a value
+        *   `app:path/to/tf/app` (not literally)
+        *   `org/repo` (not literally)
+        *   `org/repo/relative` (not literally)
+        *   `app`, i.e. the plain name of an official TF app
+            (e.g. `bhsa`, `oldbabylonian`)
 
-        The last case is legacy: instead of *app*, pass *org*/*repo*.
+        The last case is legacy: instead of `app`, pass `org/repo`.
 
     dataLoc: string or None
         Either:
 
-        * None, but then appName should have a value
-        * path to a local directory
-        * *org*/*repo*
-        * *org*/*repo* *relative*
+        *   None, but then `appName` should have a value
+        *   path to a local directory
+        *   `org/repo`
+        *   `org/repo/relative`
 
         Except for the first two cases, a trailing checkout specifier
         is allowed, like `:clone`, `:local`, `:latest`, `:hot`
@@ -445,7 +445,7 @@ def findApp(
         a vanilla app without extra configuration is initialized.
 
     checkoutApp: string
-        The checkout specifier for the TF-app. See `tf.advanced.app.App`.
+        The checkout specifier for the TF app. See `tf.advanced.app.App`.
 
     args: mixed
         Arguments that will be passed to the initializer of the `tf.advanced.app.App`
@@ -473,11 +473,11 @@ def findApp(
         appName = normpath(appName)
 
     if dataLoc is None and appName is None:
-        console(&#34;No TF-app and no data location specified&#34;, error=True)
+        console(&#34;No TF app and no data location specified&#34;, error=True)
         return None
 
     if dataLoc is not None and appName is not None:
-        console(&#34;Both a TF-app and a data location are specified&#34;, error=True)
+        console(&#34;Both a TF app and a data location are specified&#34;, error=True)
         return None
 
     dataOrg = None
@@ -664,7 +664,7 @@ def findApp(
             )
             console(repr(e), error=True)
         traceback.print_exc()
-        console(&#34;Text-Fabric is not loaded&#34;, error=True)
+        console(&#34;TF is not loaded&#34;, error=True)
         return None
     return app
 
@@ -683,10 +683,10 @@ def useApp(appName, backend):
         or a GitLab instance such as `gitlab.huc.knaw.nl`.
         If absent, `None` or empty, it is `github`.
 
-    args:
+    args: mixed
         Do not pass any other positional argument!
 
-    kwargs:
+    kwargs: mixed
         Used to initialize the corpus app that we use.
         That is either an uncustomized `tf.advanced.app.App` or
         a customization of it.
@@ -723,7 +723,7 @@ def useApp(appName, backend):
 def loadApp(silent=DEEP):
     &#34;&#34;&#34;Loads a given TF app or loads the TF app based on the working directory.
 
-    It assumes that the dataset sits in a clone from a backend (github/gitlab),
+    It assumes that the dataset sits in a clone from a back-end (`github` / `gitlab`),
     and it will load this data.
 
     Parameters
@@ -769,23 +769,23 @@ def loadApp(silent=DEEP):
 <dd>
 <p>Either:</p>
 <ul>
-<li>None, but then dataLoc should have a value</li>
-<li><code>app:</code><em>path/to/tf/app</em></li>
-<li><em>org</em>/<em>repo</em></li>
-<li><em>org</em>/<em>repo</em> <em>relative</em></li>
-<li><em>app</em>, i.e. the plain name of an official TF app
+<li>None, but then <code>dataLoc</code> should have a value</li>
+<li><code>app:path/to/tf/app</code> (not literally)</li>
+<li><code>org/repo</code> (not literally)</li>
+<li><code>org/repo/relative</code> (not literally)</li>
+<li><code>app</code>, i.e. the plain name of an official TF app
 (e.g. <code>bhsa</code>, <code>oldbabylonian</code>)</li>
 </ul>
-<p>The last case is legacy: instead of <em>app</em>, pass <em>org</em>/<em>repo</em>.</p>
+<p>The last case is legacy: instead of <code>app</code>, pass <code>org/repo</code>.</p>
 </dd>
 <dt><strong><code>dataLoc</code></strong> :&ensp;<code>string</code> or <code>None</code></dt>
 <dd>
 <p>Either:</p>
 <ul>
-<li>None, but then appName should have a value</li>
+<li>None, but then <code>appName</code> should have a value</li>
 <li>path to a local directory</li>
-<li><em>org</em>/<em>repo</em></li>
-<li><em>org</em>/<em>repo</em> <em>relative</em></li>
+<li><code>org/repo</code></li>
+<li><code>org/repo/relative</code></li>
 </ul>
 <p>Except for the first two cases, a trailing checkout specifier
 is allowed, like <code>:clone</code>, <code>:local</code>, <code>:latest</code>, <code>:hot</code></p>
@@ -793,7 +793,7 @@ is allowed, like <code>:clone</code>, <code>:local</code>, <code>:latest</code>,
 a vanilla app without extra configuration is initialized.</p>
 </dd>
 <dt><strong><code>checkoutApp</code></strong> :&ensp;<code>string</code></dt>
-<dd>The checkout specifier for the TF-app. See <code><a title="tf.advanced.app.App" href="#tf.advanced.app.App">App</a></code>.</dd>
+<dd>The checkout specifier for the TF app. See <code><a title="tf.advanced.app.App" href="#tf.advanced.app.App">App</a></code>.</dd>
 <dt><strong><code>args</code></strong> :&ensp;<code>mixed</code></dt>
 <dd>Arguments that will be passed to the initializer of the <code><a title="tf.advanced.app.App" href="#tf.advanced.app.App">App</a></code>
 class.</dd>
@@ -809,7 +809,7 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/app.py#L375-L639" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/app.py#L375-L639" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findApp(
     appName,
@@ -830,22 +830,22 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
     appName: string or None
         Either:
 
-        * None, but then dataLoc should have a value
-        * `app:`*path/to/tf/app*
-        * *org*/*repo*
-        * *org*/*repo* *relative*
-        * *app*, i.e. the plain name of an official TF app
-          (e.g. `bhsa`, `oldbabylonian`)
+        *   None, but then `dataLoc` should have a value
+        *   `app:path/to/tf/app` (not literally)
+        *   `org/repo` (not literally)
+        *   `org/repo/relative` (not literally)
+        *   `app`, i.e. the plain name of an official TF app
+            (e.g. `bhsa`, `oldbabylonian`)
 
-        The last case is legacy: instead of *app*, pass *org*/*repo*.
+        The last case is legacy: instead of `app`, pass `org/repo`.
 
     dataLoc: string or None
         Either:
 
-        * None, but then appName should have a value
-        * path to a local directory
-        * *org*/*repo*
-        * *org*/*repo* *relative*
+        *   None, but then `appName` should have a value
+        *   path to a local directory
+        *   `org/repo`
+        *   `org/repo/relative`
 
         Except for the first two cases, a trailing checkout specifier
         is allowed, like `:clone`, `:local`, `:latest`, `:hot`
@@ -854,7 +854,7 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
         a vanilla app without extra configuration is initialized.
 
     checkoutApp: string
-        The checkout specifier for the TF-app. See `tf.advanced.app.App`.
+        The checkout specifier for the TF app. See `tf.advanced.app.App`.
 
     args: mixed
         Arguments that will be passed to the initializer of the `tf.advanced.app.App`
@@ -882,11 +882,11 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
         appName = normpath(appName)
 
     if dataLoc is None and appName is None:
-        console(&#34;No TF-app and no data location specified&#34;, error=True)
+        console(&#34;No TF app and no data location specified&#34;, error=True)
         return None
 
     if dataLoc is not None and appName is not None:
-        console(&#34;Both a TF-app and a data location are specified&#34;, error=True)
+        console(&#34;Both a TF app and a data location are specified&#34;, error=True)
         return None
 
     dataOrg = None
@@ -1073,7 +1073,7 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
             )
             console(repr(e), error=True)
         traceback.print_exc()
-        console(&#34;Text-Fabric is not loaded&#34;, error=True)
+        console(&#34;TF is not loaded&#34;, error=True)
         return None
     return app</code></pre>
 </details>
@@ -1083,7 +1083,7 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
 </code></dt>
 <dd>
 <div class="desc"><p>Loads a given TF app or loads the TF app based on the working directory.</p>
-<p>It assumes that the dataset sits in a clone from a backend (github/gitlab),
+<p>It assumes that the dataset sits in a clone from a back-end (<code>github</code> / <code>gitlab</code>),
 and it will load this data.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
@@ -1099,12 +1099,12 @@ The default is as silent as possible.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/app.py#L693-L721" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/app.py#L693-L721" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadApp(silent=DEEP):
     &#34;&#34;&#34;Loads a given TF app or loads the TF app based on the working directory.
 
-    It assumes that the dataset sits in a clone from a backend (github/gitlab),
+    It assumes that the dataset sits in a clone from a back-end (`github` / `gitlab`),
     and it will load this data.
 
     Parameters
@@ -1146,13 +1146,13 @@ The default is as silent as possible.</dd>
 <dd>If present, it is <code>github</code> or <code>gitlab</code>
 or a GitLab instance such as <code>gitlab.huc.knaw.nl</code>.
 If absent, <code>None</code> or empty, it is <code>github</code>.</dd>
-</dl>
-<p>args:
-Do not pass any other positional argument!</p>
-<p>kwargs:
-Used to initialize the corpus app that we use.
+<dt><strong><code>args</code></strong> :&ensp;<code>mixed</code></dt>
+<dd>Do not pass any other positional argument!</dd>
+<dt><strong><code>kwargs</code></strong> :&ensp;<code>mixed</code></dt>
+<dd>Used to initialize the corpus app that we use.
 That is either an uncustomized <code><a title="tf.advanced.app.App" href="#tf.advanced.app.App">App</a></code> or
-a customization of it.</p>
+a customization of it.</dd>
+</dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><strong><code>A</code></strong> :&ensp;<code>object</code></dt>
@@ -1163,7 +1163,7 @@ a customization of it.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/app.py#L642-L690" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/app.py#L642-L690" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def useApp(appName, backend):
     &#34;&#34;&#34;Make use of a corpus.
@@ -1179,10 +1179,10 @@ a customization of it.</p>
         or a GitLab instance such as `gitlab.huc.knaw.nl`.
         If absent, `None` or empty, it is `github`.
 
-    args:
+    args: mixed
         Do not pass any other positional argument!
 
-    kwargs:
+    kwargs: mixed
         Used to initialize the corpus app that we use.
         That is either an uncustomized `tf.advanced.app.App` or
         a customization of it.
@@ -1254,7 +1254,7 @@ a customization of it.</p>
 <dd>See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code></dd>
 <dt><strong><code>hoist</code></strong> :&ensp;<code>dict</code>, optional <code>False</code></dt>
 <dd>&nbsp;</dd>
-<dt><strong><code>configOverrides</code></strong> :&ensp;<code>key value pairs</code></dt>
+<dt><strong><code>configOverrides</code></strong> :&ensp;<code>list</code> of <code>tuple</code></dt>
 <dd>&nbsp;</dd>
 <dt><strong><code>_withGc</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
 <dd>If False, it disables the Python garbage collector before
@@ -1263,7 +1263,7 @@ loading features. Used to experiment with performance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/app.py#L57-L372" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/app.py#L57-L372" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class App:
     def __init__(
@@ -1310,7 +1310,7 @@ loading features. Used to experiment with performance.</dd>
         silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
         hoist: dict, optional False
-        configOverrides: key value pairs
+        configOverrides: list of tuple
 
         _withGc: boolean, optional True
             If False, it disables the Python garbage collector before
@@ -1396,7 +1396,7 @@ loading features. Used to experiment with performance.</dd>
                     console(
                         &#34;&#34;&#34;
 No data has been loaded.
-Most of the Text-Fabric API has not been loaded.
+Most of the TF API has not been loaded.
 &#34;&#34;&#34;
                     )
             else:
@@ -1439,7 +1439,7 @@ Most of the Text-Fabric API has not been loaded.
                 console(
                     f&#34;&#34;&#34;
 There were problems with loading data.
-The Text-Fabric API has not been loaded!
+The TF API has not been loaded!
 The app &#34;{appName}&#34; will not work!
 &#34;&#34;&#34;,
                     error=True,
@@ -1474,7 +1474,7 @@ The app &#34;{appName}&#34; will not work!
             if silent in {VERBOSE, AUTO, TERSE}:
                 if self.inNb:
                     dh(
-                        &#34;&lt;div&gt;&lt;b&gt;Text-Fabric API:&lt;/b&gt; names &#34;
+                        &#34;&lt;div&gt;&lt;b&gt;TF API:&lt;/b&gt; names &#34;
                         + outLink(
                             &#34;N F E L T S C TF Fs Fall Es Eall Cs Call&#34;,
                             APIREF,
@@ -1513,7 +1513,7 @@ The app &#34;{appName}&#34; will not work!
         return TF.load(features, add=True, silent=silent)
 
     def reinit(self):
-        &#34;&#34;&#34;TF-Apps may override this method.
+        &#34;&#34;&#34;TF Apps may override this method.
         It is called by `reuse`. Hence it needs to be present.
         &#34;&#34;&#34;
 
@@ -1619,7 +1619,7 @@ from <code>self</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/app.py#L237-L276" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/app.py#L237-L276" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def hoist(self, hoist, silent=None):
     &#34;&#34;&#34;Hoist the API handles of this TF app to the global scope.
@@ -1650,7 +1650,7 @@ from <code>self</code>.</dd>
         if silent in {VERBOSE, AUTO, TERSE}:
             if self.inNb:
                 dh(
-                    &#34;&lt;div&gt;&lt;b&gt;Text-Fabric API:&lt;/b&gt; names &#34;
+                    &#34;&lt;div&gt;&lt;b&gt;TF API:&lt;/b&gt; names &#34;
                     + outLink(
                         &#34;N F E L T S C TF Fs Fall Es Eall Cs Call&#34;,
                         APIREF,
@@ -1687,7 +1687,7 @@ without directory information and without extension.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/app.py#L278-L302" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/app.py#L278-L302" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, silent=SILENT_D):
     &#34;&#34;&#34;Loads extra features in addition to the main dataset.
@@ -1720,15 +1720,15 @@ without directory information and without extension.</dd>
 <span>def <span class="ident">reinit</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>TF-Apps may override this method.
+<div class="desc"><p>TF Apps may override this method.
 It is called by <code>reuse</code>. Hence it needs to be present.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/app.py#L304-L309" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/app.py#L304-L309" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reinit(self):
-    &#34;&#34;&#34;TF-Apps may override this method.
+    &#34;&#34;&#34;TF Apps may override this method.
     It is called by `reuse`. Hence it needs to be present.
     &#34;&#34;&#34;
 
@@ -1760,7 +1760,7 @@ call <code>reuse</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/app.py#L311-L372" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/app.py#L311-L372" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reuse(self, hoist=False):
     &#34;&#34;&#34;Re-initialize the app.

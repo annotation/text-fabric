@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L1-L624" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L1-L663" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import yaml
@@ -109,7 +109,7 @@ def prefixSlash(path):
 
 
 def getLocation(targetDir=None):
-    &#34;&#34;&#34;Get backend, org, repo, relative of directory.
+    &#34;&#34;&#34;Get back-end, org, repo, relative of directory.
 
     Parameters
     ----------
@@ -133,8 +133,8 @@ def getLocation(targetDir=None):
     Returns
     -------
     tuple
-        backend, org, repo, relative.
-        Relative is either empty or it starts with a &#34;/&#34; plus a non-empty path.
+        Consisting of `backend`, `org`, `repo`, `relative`.
+        `relative` is either empty or it starts with a &#34;/&#34; plus a non-empty path.
     &#34;&#34;&#34;
     curDir = normpath(os.getcwd())
     if targetDir is not None:
@@ -167,15 +167,15 @@ def getLocation(targetDir=None):
 
 
 def backendRep(be, kind, default=None):
-    &#34;&#34;&#34;Various backend dependent values.
+    &#34;&#34;&#34;Various back-end dependent values.
 
-    First of all, the backend value is
+    First of all, the back-end value is
     normalized. Then related values are computed.
 
     Parameters
     ----------
     be: string or None
-        The raw backend value.
+        The raw back-end value.
         It will be normalized first, where missing, undefined, empty values are
         converted to the string `github`, and other values will be lower-cased.
         Also, `github.com` and `gitlab.com` will be shortened to `github` and `gitlab`.
@@ -183,31 +183,32 @@ def backendRep(be, kind, default=None):
     kind: string
         Indicates what kind of related value should be returned:
 
-        * `norm`: the normalized value as described above
-        * `tech`: technology of the backend: either `github` or `gitlab` or None;
-          we assume that there is only one GitHub; that there are many Gitlabs;
-          any backend that is not `github` is an instance of `gitlab`.
-        * `name`: lowercase shortest name of the backend: `github` or `gitlab`
-          or a server name like `gitlab.huc.knaw.nl`
-        * `machine`: lowercase machine name of the backend: `github.com` or `gitlab.com`
-          or a server name like `gitlab.huc.knaw.nl`
-        * `spec`: enclosed in `&lt;` and `&gt;`. Depending on the parameter `default`
-          the empty string is returned instead.
-        * `clone`: base directory where clones of repos in this backend are stored
-          `~/github`, etc.
-        * `cache`: base directory where data downloads from this backend are stored:
-          `~/text-fabric-data/github`, etc.
-        * `url`: url of the online backend
-        * `urlnb`: url of notebooks from the online backend, rendered on NB-Viewer
-        * `pages`: base url of the Pages service of the backend
+        *   `norm`: the normalized value as described above
+        *   `tech`: technology of the back-end: either `github` or `gitlab` or None;
+            we assume that there is only one GitHub; that there are many GitLabs;
+            any back-end that is not `github` is an instance of `gitlab`.
+        *   `name`: lowercase shortest name of the back-end: `github` or `gitlab`
+            or a server name like `gitlab.huc.knaw.nl`
+        *   `machine`: lowercase machine name of the back-end: `github.com` or
+            `gitlab.com`
+            or a server name like `gitlab.huc.knaw.nl`
+        *   `spec`: enclosed in `&lt;` and `&gt;`. Depending on the parameter `default`
+            the empty string is returned instead.
+        *   `clone`: base directory where clones of repos in this back-end are stored
+            `~/github`, etc.
+        *   `cache`: base directory where data downloads from this back-end are stored:
+            `~/text-fabric-data/github`, etc.
+        *   `url`: URL of the online back-end
+        *   `urlnb`: URL of notebooks from the online back-end, rendered on NB-Viewer
+        *   `pages`: base URL of the Pages service of the back-end
 
     default: boolean, optional False
         Only relevant for `kind` = `rep`.
         If `default` is passed and not None and `be` is equal to `default`,
         then the empty string is returned.
 
-        Explanation: this is used to supply a backend specifier to a module
-        but only if that module has a different backend than the main module.
+        Explanation: this is used to supply a back-end specifier to a module
+        but only if that module has a different back-end than the main module.
 
     Returns
     -------
@@ -277,20 +278,20 @@ def backendRep(be, kind, default=None):
 def annotateDir(app, tool):
     &#34;&#34;&#34;Return the input and output directories for a specific annotation tool.
 
-    * The input directory is located next to the tf data of the corpus
-    * The output directory is located in the `_temp` dir next to the tf data of
-      the corpus
+    *   The input directory is located next to the TF data of the corpus
+    *   The output directory is located in the `_temp` directory next to the TF data of
+        the corpus
 
     Parameters
     ----------
     app: object
-        the Text-Fabric app
+        the TF app
     tool: string
         The name of the annotation tool
 
     Returns
     -------
-    str
+    string
         The path of the working directory for that tool and that corpus
     &#34;&#34;&#34;
     context = app.context
@@ -300,14 +301,14 @@ def annotateDir(app, tool):
 
 
 URL_TFDOC = f&#34;https://{ORG}.{backendRep(GH, &#39;pages&#39;)}/{REPO}/tf&#34;
-&#34;&#34;&#34;Base url of the online Text-Fabric documentation.&#34;&#34;&#34;
+&#34;&#34;&#34;Base URL of the online TF documentation.&#34;&#34;&#34;
 
 
 APIREF = f&#34;https://{ORG}.{backendRep(GH, &#39;pages&#39;)}/{REPO}/tf/cheatsheet.html&#34;
-&#34;&#34;&#34;Link to the Api docs of Text-Fabric.&#34;&#34;&#34;
+&#34;&#34;&#34;Link to the Api docs of TF.&#34;&#34;&#34;
 
 SEARCHREF = f&#34;https://{ORG}.{backendRep(GH, &#39;pages&#39;)}/{REPO}/tf/about/searchusage.html&#34;
-&#34;&#34;&#34;Link to the Search docs of Text-Fabric.&#34;&#34;&#34;
+&#34;&#34;&#34;Link to the Search docs of TF.&#34;&#34;&#34;
 
 
 DOWNLOADS = f&#34;{_homeDir}/Downloads&#34;
@@ -318,7 +319,7 @@ EXPRESS_SYNC = &#34;__checkout__.txt&#34;
 &#34;&#34;&#34;Name of cache indicator file.
 
 When a dataset is stored in the cache,
-information about the release/commit is stored in a file
+information about the release / commit is stored in a file
 with this name.
 &#34;&#34;&#34;
 
@@ -349,19 +350,19 @@ APP_APP = &#34;app&#34;
 &#34;&#34;&#34;Name of the top-level directory of a TF app.&#34;&#34;&#34;
 
 APP_DISPLAY = &#34;static/display.css&#34;
-&#34;&#34;&#34;Relative path of the css file of a TF app.&#34;&#34;&#34;
+&#34;&#34;&#34;Relative path of the CSS file of a TF app.&#34;&#34;&#34;
 
 SERVER_DISPLAY_BASE = &#34;/browser/static&#34;
-&#34;&#34;&#34;Base of server css files.&#34;&#34;&#34;
+&#34;&#34;&#34;Base of server CSS files.&#34;&#34;&#34;
 
 SERVER_DISPLAY = (&#34;fonts.css&#34;, &#34;display.css&#34;, &#34;highlight.css&#34;)
-&#34;&#34;&#34;Bunch of TF-generic css files.&#34;&#34;&#34;
+&#34;&#34;&#34;Bunch of TF generic CSS files.&#34;&#34;&#34;
 
 TOOL_DISPLAY_BASE = &#34;/browser/{}/static&#34;
-&#34;&#34;&#34;Base of tool css files.&#34;&#34;&#34;
+&#34;&#34;&#34;Base of tool CSS files.&#34;&#34;&#34;
 
 TOOL_DISPLAY = (&#34;base.css&#34;,)
-&#34;&#34;&#34;Bunch of tool-specific css files.&#34;&#34;&#34;
+&#34;&#34;&#34;Bunch of tool-specific CSS files.&#34;&#34;&#34;
 
 TEMP_DIR = &#34;_temp&#34;
 &#34;&#34;&#34;Name of temporary directories.
@@ -376,11 +377,11 @@ TEMP_DIR = &#34;_temp&#34;
 &#34;&#34;&#34;
 
 LOCATIONS = [&#34;~/text-fabric-data&#34;]
-&#34;&#34;&#34;Default locations for tf data files.
+&#34;&#34;&#34;Default locations for TF data files.
 
 If the `locations` parameter for the `tf.fabric.Fabric` call is omitted,
 this is the default.
-Text-Fabric will search all these directories as for `.tf` modules of files.
+TF will search all these directories as for `.tf` modules of files.
 &#34;&#34;&#34;
 
 LOCAL = &#34;_local&#34;
@@ -396,8 +397,8 @@ LS = &#34;layeredsearch&#34;
 &#34;&#34;&#34;Directory where layered search code is stored.
 
 Layered search is client-side search, generated in a dedicated search repo.
-If the main data resides in org/repo, then the layered search code resides
-in org/repo-search/layeredsearch.
+If the main data resides in `org/repo`, then the layered search code resides
+in `org/repo-search/layeredsearch`.
 &#34;&#34;&#34;
 
 
@@ -407,7 +408,7 @@ def dirEmpty(target):
 
 
 def clearTree(path):
-    &#34;&#34;&#34;Remove all files from a directory, recursively, but leave subdirs.
+    &#34;&#34;&#34;Remove all files from a directory, recursively, but leave subdirectories.
 
     Reason: we want to inspect output in an editor.
     But if we remove the directories, the editor looses its current directory
@@ -480,7 +481,7 @@ def baseNm(path):
 
 
 def splitPath(path):
-    &#34;&#34;&#34;Split a filename in a directory part and a file part.&#34;&#34;&#34;
+    &#34;&#34;&#34;Split a file name in a directory part and a file part.&#34;&#34;&#34;
     return os.path.split(path)
 
 
@@ -611,6 +612,44 @@ def dirContents(path):
     return (tuple(files), tuple(dirs))
 
 
+def dirAllFiles(path):
+    &#34;&#34;&#34;Gets all the files found by `path`.
+
+    The result is just `[path]` if `path` is a file, otherwise the list of files under
+    `path`, recursively.
+
+    The files are sorted alphabetically by path name.
+
+    Parameters
+    ----------
+    path: string
+        The path to the file or directory on the file system.
+
+    Returns
+    -------
+    tuple of string
+        The names of the files under `path`, starting with `path`, followed
+        by the bit relative to `path`.
+    &#34;&#34;&#34;
+    if fileExists(path):
+        return [path]
+
+    if not dirExists(path):
+        return []
+
+    files = []
+
+    for entry in os.listdir(path):
+        name = f&#34;{path}/{entry}&#34;
+
+        if os.path.isfile(name):
+            files.append(name)
+        elif os.path.isdir(name):
+            files.extend(dirAllFiles(name))
+
+    return tuple(sorted(files))
+
+
 def getCwd():
     &#34;&#34;&#34;Get current directory.
 
@@ -661,7 +700,7 @@ def writeYaml(data, asFile=None):
 <dl>
 <dt id="tf.core.files.APIREF"><code class="name">var <span class="ident">APIREF</span></code></dt>
 <dd>
-<div class="desc"><p>Link to the Api docs of Text-Fabric.</p></div>
+<div class="desc"><p>Link to the Api docs of TF.</p></div>
 </dd>
 <dt id="tf.core.files.APP_APP"><code class="name">var <span class="ident">APP_APP</span></code></dt>
 <dd>
@@ -681,7 +720,7 @@ def writeYaml(data, asFile=None):
 </dd>
 <dt id="tf.core.files.APP_DISPLAY"><code class="name">var <span class="ident">APP_DISPLAY</span></code></dt>
 <dd>
-<div class="desc"><p>Relative path of the css file of a TF app.</p></div>
+<div class="desc"><p>Relative path of the CSS file of a TF app.</p></div>
 </dd>
 <dt id="tf.core.files.APP_EXPRESS_ZIP"><code class="name">var <span class="ident">APP_EXPRESS_ZIP</span></code></dt>
 <dd>
@@ -697,7 +736,7 @@ and a part of the corpus is not locally available.</p></div>
 <dd>
 <div class="desc"><p>Name of cache indicator file.</p>
 <p>When a dataset is stored in the cache,
-information about the release/commit is stored in a file
+information about the release / commit is stored in a file
 with this name.</p></div>
 </dd>
 <dt id="tf.core.files.EXPRESS_SYNC_LEGACY"><code class="name">var <span class="ident">EXPRESS_SYNC_LEGACY</span></code></dt>
@@ -715,29 +754,29 @@ volumes of that dataset</li>
 </dd>
 <dt id="tf.core.files.LOCATIONS"><code class="name">var <span class="ident">LOCATIONS</span></code></dt>
 <dd>
-<div class="desc"><p>Default locations for tf data files.</p>
+<div class="desc"><p>Default locations for TF data files.</p>
 <p>If the <code>locations</code> parameter for the <code><a title="tf.fabric.Fabric" href="../fabric.html#tf.fabric.Fabric">Fabric</a></code> call is omitted,
 this is the default.
-Text-Fabric will search all these directories as for <code>.<a title="tf" href="../index.html">tf</a></code> modules of files.</p></div>
+TF will search all these directories as for <code>.<a title="tf" href="../index.html">tf</a></code> modules of files.</p></div>
 </dd>
 <dt id="tf.core.files.LS"><code class="name">var <span class="ident">LS</span></code></dt>
 <dd>
 <div class="desc"><p>Directory where layered search code is stored.</p>
 <p>Layered search is client-side search, generated in a dedicated search repo.
-If the main data resides in org/repo, then the layered search code resides
-in org/repo-search/layeredsearch.</p></div>
+If the main data resides in <code>org/repo</code>, then the layered search code resides
+in <code>org/repo-search/layeredsearch</code>.</p></div>
 </dd>
 <dt id="tf.core.files.SEARCHREF"><code class="name">var <span class="ident">SEARCHREF</span></code></dt>
 <dd>
-<div class="desc"><p>Link to the Search docs of Text-Fabric.</p></div>
+<div class="desc"><p>Link to the Search docs of TF.</p></div>
 </dd>
 <dt id="tf.core.files.SERVER_DISPLAY"><code class="name">var <span class="ident">SERVER_DISPLAY</span></code></dt>
 <dd>
-<div class="desc"><p>Bunch of TF-generic css files.</p></div>
+<div class="desc"><p>Bunch of TF generic CSS files.</p></div>
 </dd>
 <dt id="tf.core.files.SERVER_DISPLAY_BASE"><code class="name">var <span class="ident">SERVER_DISPLAY_BASE</span></code></dt>
 <dd>
-<div class="desc"><p>Base of server css files.</p></div>
+<div class="desc"><p>Base of server CSS files.</p></div>
 </dd>
 <dt id="tf.core.files.TEMP_DIR"><code class="name">var <span class="ident">TEMP_DIR</span></code></dt>
 <dd>
@@ -753,15 +792,15 @@ Put a line</p>
 </dd>
 <dt id="tf.core.files.TOOL_DISPLAY"><code class="name">var <span class="ident">TOOL_DISPLAY</span></code></dt>
 <dd>
-<div class="desc"><p>Bunch of tool-specific css files.</p></div>
+<div class="desc"><p>Bunch of tool-specific CSS files.</p></div>
 </dd>
 <dt id="tf.core.files.TOOL_DISPLAY_BASE"><code class="name">var <span class="ident">TOOL_DISPLAY_BASE</span></code></dt>
 <dd>
-<div class="desc"><p>Base of tool css files.</p></div>
+<div class="desc"><p>Base of tool CSS files.</p></div>
 </dd>
 <dt id="tf.core.files.URL_TFDOC"><code class="name">var <span class="ident">URL_TFDOC</span></code></dt>
 <dd>
-<div class="desc"><p>Base url of the online Text-Fabric documentation.</p></div>
+<div class="desc"><p>Base URL of the online TF documentation.</p></div>
 </dd>
 </dl>
 </section>
@@ -776,7 +815,7 @@ Put a line</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L40-L41" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L40-L41" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def abspath(path):
     return normpath(os.path.abspath(path))</code></pre>
@@ -788,44 +827,44 @@ Put a line</p>
 <dd>
 <div class="desc"><p>Return the input and output directories for a specific annotation tool.</p>
 <ul>
-<li>The input directory is located next to the tf data of the corpus</li>
-<li>The output directory is located in the <code>_temp</code> dir next to the tf data of
+<li>The input directory is located next to the TF data of the corpus</li>
+<li>The output directory is located in the <code>_temp</code> directory next to the TF data of
 the corpus</li>
 </ul>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
-<dd>the Text-Fabric app</dd>
+<dd>the TF app</dd>
 <dt><strong><code>tool</code></strong> :&ensp;<code>string</code></dt>
 <dd>The name of the annotation tool</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>str</code></dt>
+<dt><code>string</code></dt>
 <dd>The path of the working directory for that tool and that corpus</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L247-L269" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L248-L270" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def annotateDir(app, tool):
     &#34;&#34;&#34;Return the input and output directories for a specific annotation tool.
 
-    * The input directory is located next to the tf data of the corpus
-    * The output directory is located in the `_temp` dir next to the tf data of
-      the corpus
+    *   The input directory is located next to the TF data of the corpus
+    *   The output directory is located in the `_temp` directory next to the TF data of
+        the corpus
 
     Parameters
     ----------
     app: object
-        the Text-Fabric app
+        the TF app
     tool: string
         The name of the annotation tool
 
     Returns
     -------
-    str
+    string
         The path of the working directory for that tool and that corpus
     &#34;&#34;&#34;
     context = app.context
@@ -838,13 +877,13 @@ the corpus</li>
 <span>def <span class="ident">backendRep</span></span>(<span>be, kind, default=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Various backend dependent values.</p>
-<p>First of all, the backend value is
+<div class="desc"><p>Various back-end dependent values.</p>
+<p>First of all, the back-end value is
 normalized. Then related values are computed.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>be</code></strong> :&ensp;<code>string</code> or <code>None</code></dt>
-<dd>The raw backend value.
+<dd>The raw back-end value.
 It will be normalized first, where missing, undefined, empty values are
 converted to the string <code>github</code>, and other values will be lower-cased.
 Also, <code>github.com</code> and <code>gitlab.com</code> will be shortened to <code>github</code> and <code>gitlab</code>.</dd>
@@ -853,22 +892,23 @@ Also, <code>github.com</code> and <code>gitlab.com</code> will be shortened to <
 <p>Indicates what kind of related value should be returned:</p>
 <ul>
 <li><code>norm</code>: the normalized value as described above</li>
-<li><code>tech</code>: technology of the backend: either <code>github</code> or <code>gitlab</code> or None;
-we assume that there is only one GitHub; that there are many Gitlabs;
-any backend that is not <code>github</code> is an instance of <code>gitlab</code>.</li>
-<li><code>name</code>: lowercase shortest name of the backend: <code>github</code> or <code>gitlab</code>
+<li><code>tech</code>: technology of the back-end: either <code>github</code> or <code>gitlab</code> or None;
+we assume that there is only one GitHub; that there are many GitLabs;
+any back-end that is not <code>github</code> is an instance of <code>gitlab</code>.</li>
+<li><code>name</code>: lowercase shortest name of the back-end: <code>github</code> or <code>gitlab</code>
 or a server name like <code>gitlab.huc.knaw.nl</code></li>
-<li><code>machine</code>: lowercase machine name of the backend: <code>github.com</code> or <code>gitlab.com</code>
+<li><code>machine</code>: lowercase machine name of the back-end: <code>github.com</code> or
+<code>gitlab.com</code>
 or a server name like <code>gitlab.huc.knaw.nl</code></li>
 <li><code>spec</code>: enclosed in <code>&lt;</code> and <code>&gt;</code>. Depending on the parameter <code>default</code>
 the empty string is returned instead.</li>
-<li><code>clone</code>: base directory where clones of repos in this backend are stored
+<li><code>clone</code>: base directory where clones of repos in this back-end are stored
 <code>~/github</code>, etc.</li>
-<li><code>cache</code>: base directory where data downloads from this backend are stored:
+<li><code>cache</code>: base directory where data downloads from this back-end are stored:
 <code>~/text-fabric-data/github</code>, etc.</li>
-<li><code>url</code>: url of the online backend</li>
-<li><code>urlnb</code>: url of notebooks from the online backend, rendered on NB-Viewer</li>
-<li><code>pages</code>: base url of the Pages service of the backend</li>
+<li><code>url</code>: URL of the online back-end</li>
+<li><code>urlnb</code>: URL of notebooks from the online back-end, rendered on NB-Viewer</li>
+<li><code>pages</code>: base URL of the Pages service of the back-end</li>
 </ul>
 </dd>
 <dt><strong><code>default</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
@@ -876,8 +916,8 @@ the empty string is returned instead.</li>
 <p>Only relevant for <code>kind</code> = <code>rep</code>.
 If <code>default</code> is passed and not None and <code>be</code> is equal to <code>default</code>,
 then the empty string is returned.</p>
-<p>Explanation: this is used to supply a backend specifier to a module
-but only if that module has a different backend than the main module.</p>
+<p>Explanation: this is used to supply a back-end specifier to a module
+but only if that module has a different back-end than the main module.</p>
 </dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -888,18 +928,18 @@ but only if that module has a different backend than the main module.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L139-L244" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L139-L245" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def backendRep(be, kind, default=None):
-    &#34;&#34;&#34;Various backend dependent values.
+    &#34;&#34;&#34;Various back-end dependent values.
 
-    First of all, the backend value is
+    First of all, the back-end value is
     normalized. Then related values are computed.
 
     Parameters
     ----------
     be: string or None
-        The raw backend value.
+        The raw back-end value.
         It will be normalized first, where missing, undefined, empty values are
         converted to the string `github`, and other values will be lower-cased.
         Also, `github.com` and `gitlab.com` will be shortened to `github` and `gitlab`.
@@ -907,31 +947,32 @@ but only if that module has a different backend than the main module.</p>
     kind: string
         Indicates what kind of related value should be returned:
 
-        * `norm`: the normalized value as described above
-        * `tech`: technology of the backend: either `github` or `gitlab` or None;
-          we assume that there is only one GitHub; that there are many Gitlabs;
-          any backend that is not `github` is an instance of `gitlab`.
-        * `name`: lowercase shortest name of the backend: `github` or `gitlab`
-          or a server name like `gitlab.huc.knaw.nl`
-        * `machine`: lowercase machine name of the backend: `github.com` or `gitlab.com`
-          or a server name like `gitlab.huc.knaw.nl`
-        * `spec`: enclosed in `&lt;` and `&gt;`. Depending on the parameter `default`
-          the empty string is returned instead.
-        * `clone`: base directory where clones of repos in this backend are stored
-          `~/github`, etc.
-        * `cache`: base directory where data downloads from this backend are stored:
-          `~/text-fabric-data/github`, etc.
-        * `url`: url of the online backend
-        * `urlnb`: url of notebooks from the online backend, rendered on NB-Viewer
-        * `pages`: base url of the Pages service of the backend
+        *   `norm`: the normalized value as described above
+        *   `tech`: technology of the back-end: either `github` or `gitlab` or None;
+            we assume that there is only one GitHub; that there are many GitLabs;
+            any back-end that is not `github` is an instance of `gitlab`.
+        *   `name`: lowercase shortest name of the back-end: `github` or `gitlab`
+            or a server name like `gitlab.huc.knaw.nl`
+        *   `machine`: lowercase machine name of the back-end: `github.com` or
+            `gitlab.com`
+            or a server name like `gitlab.huc.knaw.nl`
+        *   `spec`: enclosed in `&lt;` and `&gt;`. Depending on the parameter `default`
+            the empty string is returned instead.
+        *   `clone`: base directory where clones of repos in this back-end are stored
+            `~/github`, etc.
+        *   `cache`: base directory where data downloads from this back-end are stored:
+            `~/text-fabric-data/github`, etc.
+        *   `url`: URL of the online back-end
+        *   `urlnb`: URL of notebooks from the online back-end, rendered on NB-Viewer
+        *   `pages`: base URL of the Pages service of the back-end
 
     default: boolean, optional False
         Only relevant for `kind` = `rep`.
         If `default` is passed and not None and `be` is equal to `default`,
         then the empty string is returned.
 
-        Explanation: this is used to supply a backend specifier to a module
-        but only if that module has a different backend than the main module.
+        Explanation: this is used to supply a back-end specifier to a module
+        but only if that module has a different back-end than the main module.
 
     Returns
     -------
@@ -1006,7 +1047,7 @@ but only if that module has a different backend than the main module.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L447-L449" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L448-L450" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def baseNm(path):
     &#34;&#34;&#34;Get the file part of a file name.&#34;&#34;&#34;
@@ -1026,7 +1067,7 @@ but only if that module has a different backend than the main module.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L595-L603" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L634-L642" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def chDir(directory):
     &#34;&#34;&#34;Change to other directory.
@@ -1043,7 +1084,7 @@ but only if that module has a different backend than the main module.</p>
 <span>def <span class="ident">clearTree</span></span>(<span>path)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Remove all files from a directory, recursively, but leave subdirs.</p>
+<div class="desc"><p>Remove all files from a directory, recursively, but leave subdirectories.</p>
 <p>Reason: we want to inspect output in an editor.
 But if we remove the directories, the editor looses its current directory
 all the time.</p>
@@ -1054,10 +1095,10 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L379-L407" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L380-L408" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clearTree(path):
-    &#34;&#34;&#34;Remove all files from a directory, recursively, but leave subdirs.
+    &#34;&#34;&#34;Remove all files from a directory, recursively, but leave subdirectories.
 
     Reason: we want to inspect output in an editor.
     But if we remove the directories, the editor looses its current directory
@@ -1087,6 +1128,68 @@ home directory.</p></div>
         clearTree(f&#34;{path}/{subdir}&#34;)</code></pre>
 </details>
 </dd>
+<dt id="tf.core.files.dirAllFiles"><code class="name flex">
+<span>def <span class="ident">dirAllFiles</span></span>(<span>path)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets all the files found by <code>path</code>.</p>
+<p>The result is just <code>[path]</code> if <code>path</code> is a file, otherwise the list of files under
+<code>path</code>, recursively.</p>
+<p>The files are sorted alphabetically by path name.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>path</code></strong> :&ensp;<code>string</code></dt>
+<dd>The path to the file or directory on the file system.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code> of <code>string</code></dt>
+<dd>The names of the files under <code>path</code>, starting with <code>path</code>, followed
+by the bit relative to <code>path</code>.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L585-L620" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def dirAllFiles(path):
+    &#34;&#34;&#34;Gets all the files found by `path`.
+
+    The result is just `[path]` if `path` is a file, otherwise the list of files under
+    `path`, recursively.
+
+    The files are sorted alphabetically by path name.
+
+    Parameters
+    ----------
+    path: string
+        The path to the file or directory on the file system.
+
+    Returns
+    -------
+    tuple of string
+        The names of the files under `path`, starting with `path`, followed
+        by the bit relative to `path`.
+    &#34;&#34;&#34;
+    if fileExists(path):
+        return [path]
+
+    if not dirExists(path):
+        return []
+
+    files = []
+
+    for entry in os.listdir(path):
+        name = f&#34;{path}/{entry}&#34;
+
+        if os.path.isfile(name):
+            files.append(name)
+        elif os.path.isdir(name):
+            files.extend(dirAllFiles(name))
+
+    return tuple(sorted(files))</code></pre>
+</details>
+</dd>
 <dt id="tf.core.files.dirContents"><code class="name flex">
 <span>def <span class="ident">dirContents</span></span>(<span>path)</span>
 </code></dt>
@@ -1109,7 +1212,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L550-L581" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L551-L582" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirContents(path):
     &#34;&#34;&#34;Gets the contents of a directory.
@@ -1154,7 +1257,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L528-L541" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L529-L542" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirCopy(pathSrc, pathDst, noclobber=False):
     &#34;&#34;&#34;Copies a directory if it exists as directory.
@@ -1180,7 +1283,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L374-L376" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L375-L377" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirEmpty(target):
     target = normpath(target)
@@ -1195,7 +1298,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L498-L508" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L499-L509" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirExists(path):
     &#34;&#34;&#34;Whether a path exists as directory on the file system.&#34;&#34;&#34;
@@ -1218,7 +1321,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L544-L547" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L545-L548" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirMake(path):
     &#34;&#34;&#34;Creates a directory if it does not already exist as directory.&#34;&#34;&#34;
@@ -1235,7 +1338,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L517-L525" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L518-L526" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirMove(pathSrc, pathDst):
     &#34;&#34;&#34;Moves a directory if it exists as directory.
@@ -1256,7 +1359,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L442-L444" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L443-L445" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirNm(path):
     &#34;&#34;&#34;Get the directory part of a file name.&#34;&#34;&#34;
@@ -1271,7 +1374,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L511-L514" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L512-L515" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirRemove(path):
     &#34;&#34;&#34;Removes a directory if it exists as directory.&#34;&#34;&#34;
@@ -1287,7 +1390,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L66-L73" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L66-L73" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def expandDir(obj, dirName):
     if dirName.startswith(&#34;~&#34;):
@@ -1307,7 +1410,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L44-L49" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L44-L49" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def expanduser(path):
     nPath = normpath(path)
@@ -1326,7 +1429,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L478-L485" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L479-L486" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fileCopy(pathSrc, pathDst):
     &#34;&#34;&#34;Copies a file if it exists as file.
@@ -1346,7 +1449,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L467-L469" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L468-L470" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fileExists(path):
     &#34;&#34;&#34;Whether a path exists as file on the file system.&#34;&#34;&#34;
@@ -1362,7 +1465,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L488-L495" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L489-L496" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fileMove(pathSrc, pathDst):
     &#34;&#34;&#34;Moves a file if it exists as file.
@@ -1382,7 +1485,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L472-L475" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L473-L476" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fileRemove(path):
     &#34;&#34;&#34;Removes a file if it exists as file.&#34;&#34;&#34;
@@ -1403,7 +1506,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L584-L592" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L623-L631" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getCwd():
     &#34;&#34;&#34;Get current directory.
@@ -1420,7 +1523,7 @@ There is no attempt to sort the files.</p>
 <span>def <span class="ident">getLocation</span></span>(<span>targetDir=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Get backend, org, repo, relative of directory.</p>
+<div class="desc"><p>Get back-end, org, repo, relative of directory.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>targetDir</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
@@ -1439,16 +1542,16 @@ goes into the <code>relative</code> component, preceded with a backslash if it i
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>tuple</code></dt>
-<dd>backend, org, repo, relative.
-Relative is either empty or it starts with a "/" plus a non-empty path.</dd>
+<dd>Consisting of <code>backend</code>, <code>org</code>, <code>repo</code>, <code>relative</code>.
+<code>relative</code> is either empty or it starts with a "/" plus a non-empty path.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L81-L136" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L81-L136" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getLocation(targetDir=None):
-    &#34;&#34;&#34;Get backend, org, repo, relative of directory.
+    &#34;&#34;&#34;Get back-end, org, repo, relative of directory.
 
     Parameters
     ----------
@@ -1472,8 +1575,8 @@ Relative is either empty or it starts with a "/" plus a non-empty path.</dd>
     Returns
     -------
     tuple
-        backend, org, repo, relative.
-        Relative is either empty or it starts with a &#34;/&#34; plus a non-empty path.
+        Consisting of `backend`, `org`, `repo`, `relative`.
+        `relative` is either empty or it starts with a &#34;/&#34; plus a non-empty path.
     &#34;&#34;&#34;
     curDir = normpath(os.getcwd())
     if targetDir is not None:
@@ -1526,7 +1629,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L410-L439" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L411-L440" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def initTree(path, fresh=False, gentle=False):
     &#34;&#34;&#34;Make sure a directory exists, optionally clean it.
@@ -1568,7 +1671,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L462-L464" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L463-L465" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isDir(path):
     &#34;&#34;&#34;Whether path exists and is a directory.&#34;&#34;&#34;
@@ -1583,7 +1686,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L457-L459" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L458-L460" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isFile(path):
     &#34;&#34;&#34;Whether path exists and is a file.&#34;&#34;&#34;
@@ -1598,7 +1701,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L23-L27" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L23-L27" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def normpath(path):
     if path is None:
@@ -1615,7 +1718,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L76-L78" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L76-L78" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def prefixSlash(path):
     &#34;&#34;&#34;Prefix a / before a path if it is non-empty and not already starts with it.&#34;&#34;&#34;
@@ -1630,7 +1733,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L606-L616" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L645-L655" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readYaml(text=None, plain=False, asFile=None, preferTuples=True):
     if asFile is None:
@@ -1653,7 +1756,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L60-L63" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L60-L63" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setDir(obj):
     obj.homeDir = expanduser(&#34;~&#34;)
@@ -1665,14 +1768,14 @@ subdirectories.</dd>
 <span>def <span class="ident">splitPath</span></span>(<span>path)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Split a filename in a directory part and a file part.</p></div>
+<div class="desc"><p>Split a file name in a directory part and a file part.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L452-L454" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L453-L455" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def splitPath(path):
-    &#34;&#34;&#34;Split a filename in a directory part and a file part.&#34;&#34;&#34;
+    &#34;&#34;&#34;Split a file name in a directory part and a file part.&#34;&#34;&#34;
     return os.path.split(path)</code></pre>
 </details>
 </dd>
@@ -1684,7 +1787,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L52-L57" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L52-L57" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def unexpanduser(path):
     nPath = normpath(path)
@@ -1702,7 +1805,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/files.py#L619-L624" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/files.py#L658-L663" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeYaml(data, asFile=None):
     if asFile is None:
@@ -1811,6 +1914,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.core.files.baseNm" href="#tf.core.files.baseNm">baseNm</a></code></li>
 <li><code><a title="tf.core.files.chDir" href="#tf.core.files.chDir">chDir</a></code></li>
 <li><code><a title="tf.core.files.clearTree" href="#tf.core.files.clearTree">clearTree</a></code></li>
+<li><code><a title="tf.core.files.dirAllFiles" href="#tf.core.files.dirAllFiles">dirAllFiles</a></code></li>
 <li><code><a title="tf.core.files.dirContents" href="#tf.core.files.dirContents">dirContents</a></code></li>
 <li><code><a title="tf.core.files.dirCopy" href="#tf.core.files.dirCopy">dirCopy</a></code></li>
 <li><code><a title="tf.core.files.dirEmpty" href="#tf.core.files.dirEmpty">dirEmpty</a></code></li>

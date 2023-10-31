@@ -24,16 +24,14 @@
 </header>
 <section id="section-intro">
 <h1 id="display-settings">Display Settings.</h1>
-<p>Display options are used by</p>
-<pre><code>tf.advanced.display.plain
-</code></pre>
-<p>and</p>
-<pre><code>tf.advanced.display.pretty
-</code></pre>
-<p>and other display functions.</p>
+<p>Display options are used by
+<code><a title="tf.advanced.display.plain" href="display.html#tf.advanced.display.plain">plain()</a></code>
+and
+<code><a title="tf.advanced.display.pretty" href="display.html#tf.advanced.display.pretty">pretty()</a></code>
+and other display functions.</p>
 <p>This class manages</p>
 <ul>
-<li>the provisining of options with defaults,</li>
+<li>the provisioning of options with defaults,</li>
 <li>the overriding options by passing options as arguments to display functions</li>
 <li>the retrieval of option values by the rest of the application.</li>
 </ul>
@@ -47,7 +45,7 @@ to display functions</li>
 </div>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>baseTypes</code></strong> :&ensp;<code>string | iterable</code>, optional `None``</dt>
+<dt><strong><code>baseTypes</code></strong> :&ensp;<code>string | iterable</code>, optional <code>None</code></dt>
 <dd><strong>interface option</strong>
 Node types at the bottom of pretty displays.
 The default is app dependent, usually the slot type of the corpus.</dd>
@@ -70,7 +68,7 @@ to a color.</p>
 <p>The link above points to a series of handy color names and their previews.</p>
 </div>
 <div class="admonition note">
-<p class="admonition-title">highlights takes precedence over colorMap</p>
+<p class="admonition-title"><code>highlights</code> takes precedence over <code>colorMap</code></p>
 <p>If both <code>highlights</code> and <code>colorMap</code> are given, <code>colorMap</code> is ignored.</p>
 <p>If you need to micro-manage, <code>highlights</code> is your thing.
 Whenever possible, use <code>colorMap</code>.</p>
@@ -139,7 +137,7 @@ qualifies.</p>
 If <code>None</code>, displaying will stop after the end of the iterable.</dd>
 <dt><strong><code>extraFeatures</code></strong> :&ensp;<code>string | iterable</code>, optional <code>()</code></dt>
 <dd>
-<p>A string or iterable of (node-/edge-) feature names.
+<p>A string or iterable of (node- / edge-) feature names.
 These features will be loaded automatically.
 In pretty displays these features will show up as <code>feature=value</code>,
 provided the value is not <code>None</code>, or something like None.</p>
@@ -153,7 +151,7 @@ necessary.</p>
 <p>Suppose you want to display a value from a related node, e.g. a <code>gloss</code>
 that is available on <code>lex</code> nodes but not on <code>word</code> nodes, and you
 want to show it on the word nodes.
-Then you may specifiy <code>lex:gloss</code>, meaning that Text-Fabric will
+Then you may specify <code>lex:gloss</code>, meaning that TF will
 look up a <code>lex</code> node from the current node (by means of <code>L.u(w, otype='lex')</code>,
 and if it finds one, it will read the <code>gloss</code> feature from it.</p>
 </div>
@@ -219,7 +217,7 @@ Any color that is a valid
 qualifies.</p>
 <p>If you map a node to the empty string, it will get the default highlight color.</p>
 <p>Highlights in plain display will be done, also for nodes deeply buried in the top node.
-Slots are higlighted by coloring the background,
+Slots are highlighted by coloring the background,
 all other nodes by colored frames around their material.</p>
 <div class="admonition note">
 <p class="admonition-title">one big highlights dictionary</p>
@@ -238,7 +236,7 @@ indicates whether line numbers should be displayed.</p>
 <div class="admonition note">
 <p class="admonition-title">source data</p>
 <p>Line numbers are with respect to the source data file that is contains the
-origin material of the node in question, if a datasource provides
+origin material of the node in question, if a data source provides
 a feature that contains line numbers.</p>
 </div>
 <div class="admonition caution">
@@ -260,14 +258,13 @@ The default set is <code>None</code> and the strings <code>NA</code>, <code>none
 <p class="admonition-title">None is useful</p>
 <p>Keep <code>None</code> in the set. If not, all custom features will be displayed
 for all kinds of nodes. So you will see clause types on words,
-and part of speech on clause atoms, al with value <code>None</code>.</p>
+and part of speech on clause atoms, all with value <code>None</code>.</p>
 </div>
 <div class="admonition hint">
 <p class="admonition-title">Suppress common values</p>
 <p>You can use <code>noneValues</code> also to suppress the normal values of a feature,
 in order to attract attention to the more special values, e.g.</p>
-<pre><code>noneValues={None, 'NA', 'unknown', 'm', 'sg', 'p3'}
-</code></pre>
+<p><code>noneValues={None, 'NA', 'unknown', 'm', 'sg', 'p3'}</code></p>
 </div>
 <div class="admonition caution">
 <p class="admonition-title">None values affect all features</p>
@@ -297,7 +294,7 @@ indicates whether plain and pretty displays should include associated
 graphic elements.</p>
 <div class="admonition caution">
 <p class="admonition-title">configuration</p>
-<p>Whether a corpus has graphics for some nodetypes and how to get them is
+<p>Whether a corpus has graphics for some node types and how to get them is
 configured in a corpus dependent app.</p>
 <p>If the corpus has no graphics, the default is <code>None</code>.</p>
 </div>
@@ -341,7 +338,7 @@ If you find they clutter the display, you can turn them off
 selectively.</dd>
 <dt><strong><code>tupleFeatures</code></strong> :&ensp;<code>iterable</code> of <code>2-tuples</code>, optional <code>()</code></dt>
 <dd>
-<p>A bit like "extraFeatures" above, but more intricate.
+<p>A bit like <code>extraFeatures</code> above, but more intricate.
 Only meant to steer the
 <code>A.export()</code> function below into outputting the
 features you choose.</p>
@@ -373,10 +370,10 @@ its node number, and you can use the following APIs
 to look up all information
 about each node that the corpus has to offer:</p>
 <ul>
-<li><strong>F</strong>: <code><a title="tf.core.nodefeature.NodeFeature" href="../core/nodefeature.html#tf.core.nodefeature.NodeFeature">NodeFeature</a></code></li>
-<li><strong>E</strong>: <code><a title="tf.core.edgefeature.EdgeFeature" href="../core/edgefeature.html#tf.core.edgefeature.EdgeFeature">EdgeFeature</a></code></li>
-<li><strong>L</strong>: <code><a title="tf.core.locality.Locality" href="../core/locality.html#tf.core.locality.Locality">Locality</a></code></li>
-<li><strong>T</strong>: <code><a title="tf.core.text.Text" href="../core/text.html#tf.core.text.Text">Text</a></code></li>
+<li><code>F</code>: <code><a title="tf.core.nodefeature.NodeFeature" href="../core/nodefeature.html#tf.core.nodefeature.NodeFeature">NodeFeature</a></code></li>
+<li><code>E</code>: <code><a title="tf.core.edgefeature.EdgeFeature" href="../core/edgefeature.html#tf.core.edgefeature.EdgeFeature">EdgeFeature</a></code></li>
+<li><code>L</code>: <code><a title="tf.core.locality.Locality" href="../core/locality.html#tf.core.locality.Locality">Locality</a></code></li>
+<li><code>T</code>: <code><a title="tf.core.text.Text" href="../core/text.html#tf.core.text.Text">Text</a></code></li>
 </ul>
 </div>
 </dd>
@@ -388,35 +385,31 @@ The node type of slot nodes is never displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/options.py#L1-L711" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/options.py#L1-L709" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Display Settings.
 
 Display options are used by
-
-    tf.advanced.display.plain
-
+`tf.advanced.display.plain`
 and
-
-    tf.advanced.display.pretty
-
+`tf.advanced.display.pretty`
 and other display functions.
 
 This class manages
 
-* the provisining of options with defaults,
-* the overriding options by passing options as arguments to display functions
-* the retrieval of option values by the rest of the application.
+*   the provisioning of options with defaults,
+*   the overriding options by passing options as arguments to display functions
+*   the retrieval of option values by the rest of the application.
 
 !!! note &#34;distinction between interface options and display options&#34;
-    * all interface options are also display options and can be passed as arguments
-      to display functions
-    * interface options have a checkbox in the TF browser
+    *   all interface options are also display options and can be passed as arguments
+        to display functions
+    *   interface options have a checkbox in the TF browser
 
 Parameters
 ----------
-baseTypes: string | iterable, optional None`
+baseTypes: string | iterable, optional None
     **interface option**
     Node types at the bottom of pretty displays.
     The default is app dependent, usually the slot type of the corpus.
@@ -438,7 +431,7 @@ colorMap: dict, optional None
     !!! hint &#34;color names&#34;
         The link above points to a series of handy color names and their previews.
 
-    !!! note &#34;highlights takes precedence over colorMap&#34;
+    !!! note &#34;`highlights` takes precedence over `colorMap`&#34;
         If both `highlights` and `colorMap` are given, `colorMap` is ignored.
 
         If you need to micro-manage, `highlights` is your thing.
@@ -510,7 +503,7 @@ end: int, optional None
     If `None`, displaying will stop after the end of the iterable.
 
 extraFeatures: string | iterable, optional ()
-    A string or iterable of (node-/edge-) feature names.
+    A string or iterable of (node- / edge-) feature names.
     These features will be loaded automatically.
     In pretty displays these features will show up as `feature=value`,
     provided the value is not `None`, or something like None.
@@ -523,7 +516,7 @@ extraFeatures: string | iterable, optional ()
         Suppose you want to display a value from a related node, e.g. a `gloss`
         that is available on `lex` nodes but not on `word` nodes, and you
         want to show it on the word nodes.
-        Then you may specifiy `lex:gloss`, meaning that Text-Fabric will
+        Then you may specify `lex:gloss`, meaning that TF will
         look up a `lex` node from the current node (by means of `L.u(w, otype=&#39;lex&#39;)`,
         and if it finds one, it will read the `gloss` feature from it.
 
@@ -589,7 +582,7 @@ highlights: dict | set, optional {}
     If you map a node to the empty string, it will get the default highlight color.
 
     Highlights in plain display will be done, also for nodes deeply buried in the top node.
-    Slots are higlighted by coloring the background,
+    Slots are highlighted by coloring the background,
     all other nodes by colored frames around their material.
 
     !!! note &#34;one big highlights dictionary&#34;
@@ -606,7 +599,7 @@ lineNumbers: boolean, optional False
 
     !!! note &#34;source data&#34;
         Line numbers are with respect to the source data file that is contains the
-        origin material of the node in question, if a datasource provides
+        origin material of the node in question, if a data source provides
         a feature that contains line numbers.
 
     !!! caution &#34;configuration&#34;
@@ -627,13 +620,15 @@ noneValues: set, optional None
     !!! hint &#34;None is useful&#34;
         Keep `None` in the set. If not, all custom features will be displayed
         for all kinds of nodes. So you will see clause types on words,
-        and part of speech on clause atoms, al with value `None`.
+        and part of speech on clause atoms, all with value `None`.
 
     !!! hint &#34;Suppress common values&#34;
         You can use `noneValues` also to suppress the normal values of a feature,
         in order to attract attention to the more special values, e.g.
 
-            noneValues={None, &#39;NA&#39;, &#39;unknown&#39;, &#39;m&#39;, &#39;sg&#39;, &#39;p3&#39;}
+        ```
+        noneValues={None, &#39;NA&#39;, &#39;unknown&#39;, &#39;m&#39;, &#39;sg&#39;, &#39;p3&#39;}
+        ```
 
     !!! caution &#34;None values affect all features&#34;
         Beware of putting to much in `noneValues`.
@@ -663,7 +658,7 @@ showGraphics: boolean, optional True
     graphic elements.
 
     !!! caution &#34;configuration&#34;
-        Whether a corpus has graphics for some nodetypes and how to get them is
+        Whether a corpus has graphics for some node types and how to get them is
         configured in a corpus dependent app.
 
         If the corpus has no graphics, the default is `None`.
@@ -709,7 +704,7 @@ suppress: set, optional set()
     selectively.
 
 tupleFeatures: iterable of 2-tuples, optional ()
-    A bit like &#34;extraFeatures&#34; above, but more intricate.
+    A bit like `extraFeatures` above, but more intricate.
     Only meant to steer the
     `A.export()` function below into outputting the
     features you choose.
@@ -745,10 +740,10 @@ withNodes: boolean, optional False
         to look up all information
         about each node that the corpus has to offer:
 
-        * **F**: `tf.core.nodefeature.NodeFeature`
-        * **E**: `tf.core.edgefeature.EdgeFeature`
-        * **L**: `tf.core.locality.Locality`
-        * **T**: `tf.core.text.Text`
+        *   `F`: `tf.core.nodefeature.NodeFeature`
+        *   `E`: `tf.core.edgefeature.EdgeFeature`
+        *   `L`: `tf.core.locality.Locality`
+        *   `T`: `tf.core.text.Text`
 
 withTypes: boolean, optional False
     **interface option**
@@ -783,7 +778,7 @@ INTERFACE_OPTIONS = (
         &#34;forceEdges&#34;,
         False,
         &#34;forcee&#34;,
-        &#34;show/hide the selected edge features&#34;,
+        &#34;show / hide the selected edge features&#34;,
         &#34;Show selected edge features in pretty displays, hide the unselected ones. &#34;
         &#34;If this is off, only the edge features that occur in the query are shown.&#34;,
         True,
@@ -882,13 +877,13 @@ INTERFACE_OPTIONS = (
         False,
     ),
 )
-&#34;&#34;&#34;Options that can be set on the interface of the text-fabric browser.
+&#34;&#34;&#34;Options that can be set on the interface of the TF browser.
 
 Every option is a tuple with members
 
 *   *option*: the name by which you can control this option in API functions;
 *   *default*: the value that is used if this option is nowhere explicitly given;
-*   *acro*: acronym for this option, used in the html as value for an id attribute;
+*   *acro*: acronym for this option, used in the HTML as value for an id attribute;
 *   *desc*: short description;
 *   *long*: long description;
 *   *move*: whether to move this option into a separate box in the text-fabric
@@ -1110,12 +1105,12 @@ class Options:
 <dl>
 <dt id="tf.advanced.options.INTERFACE_OPTIONS"><code class="name">var <span class="ident">INTERFACE_OPTIONS</span></code></dt>
 <dd>
-<div class="desc"><p>Options that can be set on the interface of the text-fabric browser.</p>
+<div class="desc"><p>Options that can be set on the interface of the TF browser.</p>
 <p>Every option is a tuple with members</p>
 <ul>
 <li><em>option</em>: the name by which you can control this option in API functions;</li>
 <li><em>default</em>: the value that is used if this option is nowhere explicitly given;</li>
-<li><em>acro</em>: acronym for this option, used in the html as value for an id attribute;</li>
+<li><em>acro</em>: acronym for this option, used in the HTML as value for an id attribute;</li>
 <li><em>desc</em>: short description;</li>
 <li><em>long</em>: long description;</li>
 <li><em>move</em>: whether to move this option into a separate box in the text-fabric
@@ -1138,7 +1133,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/options.py#L547-L711" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/options.py#L545-L709" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Options:
     def __init__(self, app):
@@ -1316,7 +1311,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/options.py#L645-L694" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/options.py#L643-L692" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def check(self, msg, options):
     app = self.app
@@ -1378,7 +1373,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/options.py#L710-L711" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/options.py#L708-L709" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def consume(self, options, *remove):
     return {o: options[o] for o in options if o not in remove}</code></pre>
@@ -1392,7 +1387,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/options.py#L696-L708" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/options.py#L694-L706" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def distill(self, options):
     defaults = self.defaults
@@ -1417,7 +1412,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/options.py#L591-L643" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/options.py#L589-L641" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def normalize(self, option, value):
     app = self.app
@@ -1482,7 +1477,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/options.py#L565-L580" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/options.py#L563-L578" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reset(self, *options):
     app = self.app
@@ -1510,7 +1505,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/options.py#L582-L589" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/options.py#L580-L587" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setup(self, *options, **overrides):
     current = self.current
@@ -1533,7 +1528,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/options.py#L533-L544" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/options.py#L531-L542" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class OptionsCurrent:
     def __init__(self, options):
@@ -1558,7 +1553,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/options.py#L539-L540" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/options.py#L537-L538" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, k, v=None):
     return getattr(self, k, v)</code></pre>
@@ -1572,7 +1567,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/options.py#L542-L544" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/options.py#L540-L542" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set(self, k, v):
     self.allKeys.add(k)

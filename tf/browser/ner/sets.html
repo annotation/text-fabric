@@ -31,7 +31,7 @@ the tool.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/sets.py#L1-L284" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/sets.py#L1-L284" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Annotation set management.
 
@@ -68,7 +68,7 @@ class Sets(Data):
 
         There is one special annotation set, whose name is the empty string,
         and whose content are the pre-existing entities, i.e. the entities that
-        are present in the tf data as nodes and features.
+        are present in the TF data as nodes and features.
 
         There is always one current annotation set, whose data is loaded into
         memory.
@@ -149,7 +149,7 @@ class Sets(Data):
     def resetSet(self):
         &#34;&#34;&#34;Clear the current annotation set.
 
-        The special set `&#34;&#34;` cannot be reset, because it is readonly.
+        The special set `&#34;&#34;` cannot be reset, because it is read-only.
         &#34;&#34;&#34;
         settings = self.settings
         annoSet = self.annoSet
@@ -182,7 +182,7 @@ class Sets(Data):
         &#34;&#34;&#34;Duplicates the current set to a set with a new name.
 
         !!! hint &#34;The special set can be duplicated&#34;
-            After duplication of the special readonly set, the duplicate
+            After duplication of the special read-only set, the duplicate
             copy is modifiable.
             In this way you can make corrections to the set of pre-existing,
             tool-generated annotations.
@@ -248,7 +248,7 @@ class Sets(Data):
         messages = []
 
         if delSet == &#34;&#34;:
-            messages.append(&#34;&#34;&#34;Cannot remove set &#34;&#34; because it is readonly&#34;&#34;&#34;)
+            messages.append(&#34;&#34;&#34;Cannot remove set &#34;&#34; because it is read-only&#34;&#34;&#34;)
             return messages
 
         data = self.data
@@ -264,7 +264,7 @@ class Sets(Data):
         else:
             setNames.discard(delSet)
             del setsData[delSet]
-            if self.annotSet == delSet:
+            if self.annoSet == delSet:
                 self.annoSet = &#34;&#34;
 
         return messages
@@ -337,7 +337,7 @@ class Sets(Data):
 <p>Annotation sets have names, given by the user.</p>
 <p>There is one special annotation set, whose name is the empty string,
 and whose content are the pre-existing entities, i.e. the entities that
-are present in the tf data as nodes and features.</p>
+are present in the TF data as nodes and features.</p>
 <p>There is always one current annotation set, whose data is loaded into
 memory.</p>
 <h2 id="parameters">Parameters</h2>
@@ -349,7 +349,7 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/sets.py#L28-L284" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/sets.py#L28-L284" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Sets(Data):
     def __init__(self, data=None):
@@ -359,7 +359,7 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
 
         There is one special annotation set, whose name is the empty string,
         and whose content are the pre-existing entities, i.e. the entities that
-        are present in the tf data as nodes and features.
+        are present in the TF data as nodes and features.
 
         There is always one current annotation set, whose data is loaded into
         memory.
@@ -440,7 +440,7 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
     def resetSet(self):
         &#34;&#34;&#34;Clear the current annotation set.
 
-        The special set `&#34;&#34;` cannot be reset, because it is readonly.
+        The special set `&#34;&#34;` cannot be reset, because it is read-only.
         &#34;&#34;&#34;
         settings = self.settings
         annoSet = self.annoSet
@@ -473,7 +473,7 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
         &#34;&#34;&#34;Duplicates the current set to a set with a new name.
 
         !!! hint &#34;The special set can be duplicated&#34;
-            After duplication of the special readonly set, the duplicate
+            After duplication of the special read-only set, the duplicate
             copy is modifiable.
             In this way you can make corrections to the set of pre-existing,
             tool-generated annotations.
@@ -539,7 +539,7 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
         messages = []
 
         if delSet == &#34;&#34;:
-            messages.append(&#34;&#34;&#34;Cannot remove set &#34;&#34; because it is readonly&#34;&#34;&#34;)
+            messages.append(&#34;&#34;&#34;Cannot remove set &#34;&#34; because it is read-only&#34;&#34;&#34;)
             return messages
 
         data = self.data
@@ -555,7 +555,7 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
         else:
             setNames.discard(delSet)
             del setsData[delSet]
-            if self.annotSet == delSet:
+            if self.annoSet == delSet:
                 self.annoSet = &#34;&#34;
 
         return messages
@@ -644,7 +644,7 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/sets.py#L61-L68" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/sets.py#L61-L68" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getSetData(self):
     &#34;&#34;&#34;Deliver the data of the current set.
@@ -661,16 +661,16 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
 </code></dt>
 <dd>
 <div class="desc"><p>Clear the current annotation set.</p>
-<p>The special set <code>""</code> cannot be reset, because it is readonly.</p></div>
+<p>The special set <code>""</code> cannot be reset, because it is read-only.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/sets.py#L114-L144" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/sets.py#L114-L144" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resetSet(self):
     &#34;&#34;&#34;Clear the current annotation set.
 
-    The special set `&#34;&#34;` cannot be reset, because it is readonly.
+    The special set `&#34;&#34;` cannot be reset, because it is read-only.
     &#34;&#34;&#34;
     settings = self.settings
     annoSet = self.annoSet
@@ -716,7 +716,7 @@ It is not allowed to remove the special set named <code>""</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/sets.py#L201-L235" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/sets.py#L201-L235" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setDel(self, delSet):
     &#34;&#34;&#34;Remove a named set.
@@ -733,7 +733,7 @@ It is not allowed to remove the special set named <code>""</code>.</dd>
     messages = []
 
     if delSet == &#34;&#34;:
-        messages.append(&#34;&#34;&#34;Cannot remove set &#34;&#34; because it is readonly&#34;&#34;&#34;)
+        messages.append(&#34;&#34;&#34;Cannot remove set &#34;&#34; because it is read-only&#34;&#34;&#34;)
         return messages
 
     data = self.data
@@ -749,7 +749,7 @@ It is not allowed to remove the special set named <code>""</code>.</dd>
     else:
         setNames.discard(delSet)
         del setsData[delSet]
-        if self.annotSet == delSet:
+        if self.annoSet == delSet:
             self.annoSet = &#34;&#34;
 
     return messages</code></pre>
@@ -762,7 +762,7 @@ It is not allowed to remove the special set named <code>""</code>.</dd>
 <div class="desc"><p>Duplicates the current set to a set with a new name.</p>
 <div class="admonition hint">
 <p class="admonition-title">The special set can be duplicated</p>
-<p>After duplication of the special readonly set, the duplicate
+<p>After duplication of the special read-only set, the duplicate
 copy is modifiable.
 In this way you can make corrections to the set of pre-existing,
 tool-generated annotations.</p>
@@ -776,13 +776,13 @@ tool-generated annotations.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/sets.py#L146-L199" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/sets.py#L146-L199" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setDup(self, dupSet):
     &#34;&#34;&#34;Duplicates the current set to a set with a new name.
 
     !!! hint &#34;The special set can be duplicated&#34;
-        After duplication of the special readonly set, the duplicate
+        After duplication of the special read-only set, the duplicate
         copy is modifiable.
         In this way you can make corrections to the set of pre-existing,
         tool-generated annotations.
@@ -850,7 +850,7 @@ It is also forbidden to rename another set to the special set.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/sets.py#L237-L284" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/sets.py#L237-L284" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setMove(self, moveSet):
     &#34;&#34;&#34;Renames a named set.
@@ -917,7 +917,7 @@ After the switch, the data of the new set will be loaded into memory.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/sets.py#L70-L112" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/sets.py#L70-L112" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setSet(self, newAnnoSet):
     &#34;&#34;&#34;Switch to a named annotation set.

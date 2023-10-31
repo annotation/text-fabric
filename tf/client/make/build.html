@@ -24,23 +24,23 @@
 </header>
 <section id="section-intro">
 <h1 id="usage">Usage</h1>
-<p>After installing Text-Fabric, you have a new command <code>text-fabric-make</code>.
-You can use this on the command line to build new search interfaces for existing
-Text-Fabric apps.</p>
-<p>Such a search interface is a static HTML page, powered by a Javascript program
-that reads the corpus data from Javascript variables.</p>
+<p>After installing TF, you have a new command <code>text-fabric-make</code>.
+You can use this on the command-line to build new search interfaces for existing
+TF apps.</p>
+<p>Such a search interface is a static HTML page, powered by a JavaScript program
+that reads the corpus data from JavaScript variables.</p>
 <p>You can build the interface and deploy the HTML page to GitHub Pages
 (GitLab pages not yet supported),
 after which it is usable for everyone.</p>
 <h2 id="prerequisites">Prerequisites</h2>
 <ol>
-<li>A Text-Fabric dataset that has a TF-App, e.g. <code>CambridgeSemiticsLab/nena_tf</code>
+<li>A TF dataset that has a TF App, e.g. <code>CambridgeSemiticsLab/nena_tf</code>
 <a href="https://github.com/CambridgeSemiticsLab/nena_tf">github.com/CambridgeSemiticsLab/nena_tf</a>.
 This is the normative example for now.</li>
 <li>An accompanying repository in the same organization, with the same name
 but with <code>-search</code> appended to the name.</li>
 <li>Within that <code>-search</code> repo, a subdirectory
-<a href="https://github.com/CambridgeSemiticsLab/nena_tf-search/tree/master/layeredsearch">layeredsearch</a>
+<a href="https://github.com/CambridgeSemiticsLab/nena_tf-search/tree/master/layeredsearch"><code>layeredsearch</code></a>
 with definitions of search interfaces
 (you can define multiple search interfaces for one dataset).
 Within this directory:<ol>
@@ -52,14 +52,14 @@ whose name is the name of the search interface, containing<ol>
 <li><code>custom.css</code>: additional styling (may be empty)</li>
 <li>
 <p><code>mkdata.py</code>: a module containing a few functions that wrap the
-corpus data into Javascript variables:</p>
+corpus data into JavaScript variables:</p>
 <ol>
 <li><code>makeLegends(maker)</code>: produce abbreviation lists for some layers</li>
 <li><code>record(maker)</code>: produce all the search data: full texts of layers and
 mappings between nodes and positions in those texts</li>
 </ol>
 <p>The <code>maker</code> argument is passed by the builder, and contains
-the definition of the layers and the api of a loaded Text-Fabric dataset.</p>
+the definition of the layers and the api of a loaded TF dataset.</p>
 </li>
 </ol>
 </li>
@@ -76,17 +76,17 @@ also:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L1-L1396" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L1-L1396" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Usage
 
-After installing Text-Fabric, you have a new command `text-fabric-make`.
-You can use this on the command line to build new search interfaces for existing
-Text-Fabric apps.
+After installing TF, you have a new command `text-fabric-make`.
+You can use this on the command-line to build new search interfaces for existing
+TF apps.
 
-Such a search interface is a static HTML page, powered by a Javascript program
-that reads the corpus data from Javascript variables.
+Such a search interface is a static HTML page, powered by a JavaScript program
+that reads the corpus data from JavaScript variables.
 
 You can build the interface and deploy the HTML page to GitHub Pages
 (GitLab pages not yet supported),
@@ -94,13 +94,13 @@ after which it is usable for everyone.
 
 ## Prerequisites
 
-1.  A Text-Fabric dataset that has a TF-App, e.g. `CambridgeSemiticsLab/nena_tf`
+1.  A TF dataset that has a TF App, e.g. `CambridgeSemiticsLab/nena_tf`
     [github.com/CambridgeSemiticsLab/nena_tf](https://github.com/CambridgeSemiticsLab/nena_tf).
     This is the normative example for now.
 1.  An accompanying repository in the same organization, with the same name
     but with `-search` appended to the name.
 1.  Within that `-search` repo, a subdirectory
-    [layeredsearch](https://github.com/CambridgeSemiticsLab/nena_tf-search/tree/master/layeredsearch)
+    [`layeredsearch`](https://github.com/CambridgeSemiticsLab/nena_tf-search/tree/master/layeredsearch)
     with definitions of search interfaces
     (you can define multiple search interfaces for one dataset).
     Within this directory:
@@ -111,13 +111,13 @@ after which it is usable for everyone.
         1.  `logo.png`: a logo
         1.  `custom.css`: additional styling (may be empty)
         1.  `mkdata.py`: a module containing a few functions that wrap the
-            corpus data into Javascript variables:
+            corpus data into JavaScript variables:
             1.  `makeLegends(maker)`: produce abbreviation lists for some layers
-            2.  `record(maker)`: produce all the search data: full texts of layers and
+            1.  `record(maker)`: produce all the search data: full texts of layers and
                 mappings between nodes and positions in those texts
 
             The `maker` argument is passed by the builder, and contains
-            the definition of the layers and the api of a loaded Text-Fabric dataset.
+            the definition of the layers and the api of a loaded TF dataset.
 
 ## Commands
 
@@ -486,12 +486,12 @@ class Make:
                 writingUrl=f&#34;{URL_TFDOC}/writing/«writing».html&#34;,
                 urls=dict(
                     cheatsheet=(
-                        &#34;regexp cheatsheet&#34;,
+                        &#34;regexp cheat sheet&#34;,
                         (
                             &#34;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/&#34;
                             &#34;Regular_Expressions/Cheatsheet&#34;
                         ),
-                        &#34;cheatsheet of regular expressions&#34;,
+                        &#34;cheat sheet of regular expressions&#34;,
                     ),
                     license=(
                         &#34;MIT&#34;,
@@ -531,7 +531,7 @@ class Make:
                     tf=(
                         None,
                         URL_TFDOC,
-                        &#34;Text-Fabric documentation website&#34;,
+                        &#34;TF documentation website&#34;,
                     ),
                     lsdoc=(
                         &#34;user manual (full)&#34;,
@@ -549,9 +549,9 @@ class Make:
                         &#34;explanation of the features in the dataset&#34;,
                     ),
                     data=(
-                        &#34;based on text-fabric data version «data.version»&#34;,
+                        &#34;based on TF data version «data.version»&#34;,
                         &#34;«dataUrl»&#34;,
-                        &#34;online repository of the underlying text-fabric data&#34;,
+                        &#34;online repository of the underlying TF data&#34;,
                     ),
                     generator=(
                         f&#34;{REPO}/client&#34;,
@@ -662,9 +662,9 @@ class Make:
         urls = C.urls
         tutUrl = self.A.flexLink(&#34;tut&#34;)
         urls[&#34;related&#34;] = (
-            f&#34;text-fabric {org}/{repo}&#34;,
+            f&#34;tf {org}/{repo}&#34;,
             tutUrl,
-            &#34;using Text-Fabric on the same corpus&#34;,
+            &#34;using TF on the same corpus&#34;,
         )
 
         clientConfig = dict(
@@ -1108,7 +1108,7 @@ class Make:
         &#34;&#34;&#34;
         We create a client app in the target directory.
 
-        The client consists of HTML/CSS/PNG files plus a modular Javascript program.
+        The client consists of HTML/CSS/PNG files plus a modular JavaScript program.
 
         Module loading does not work when you open the HTML file locally
         (i.e. when the HTML is not served by a server).
@@ -1116,20 +1116,20 @@ class Make:
         N.B. There is a difference between a local web server serving at `localhost`
         and opening the file directly into your browser by double clicking on it.
 
-        In the first case, you see in your un the URL bar of your browser
+        In the first case, you see in the URL bar of your browser
         something that starts with
         `http://` or `https://`, in the second case you see `file://` instead.
 
-        Modular Javascript does not work with `file://` origins.
+        Modular JavaScript does not work with `file://` origins.
 
         For that case, we bundle the modules into one,
         and let a «client»-local.html include it
 
         We also zip the client into {C.client}.zip so that users can download it easily
 
-        However, if the debugState is on, we skip all steps that are unneccesary
+        However, if the `debugState` is on, we skip all steps that are unnecessary
         to see the updated client working.
-        But we do save an extra copy of the texts to the local dir in such a way
+        But we do save an extra copy of the texts to the local directory in such a way
         that they can be easily inspected.
         &#34;&#34;&#34;
 
@@ -1167,7 +1167,7 @@ class Make:
 
         console(&#34;Copied static files&#34;)
 
-        # create combined javascript file
+        # create combined JavaScript file
 
         if not debug:
             self.makeCombined()
@@ -1491,7 +1491,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L97-L100" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L97-L100" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(*args, error=False):
     device = sys.stderr if error else sys.stdout
@@ -1507,7 +1507,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L103-L110" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L103-L110" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def invertMap(legend):
     return (
@@ -1527,7 +1527,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L1344-L1392" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L1344-L1392" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     Args = readArgsLegacy()
@@ -1588,7 +1588,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L1308-L1341" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L1308-L1341" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeSearchClients(dataset, folder, appFolder, backend=None, dataDir=None):
     DEBUG_STATE = &#34;off&#34;
@@ -1634,7 +1634,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L113-L207" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L113-L207" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readArgsLegacy():
     class Args:
@@ -1747,7 +1747,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L210-L1305" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L210-L1305" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Make:
     def __init__(
@@ -1948,12 +1948,12 @@ if __name__ == &#34;__main__&#34;:
                 writingUrl=f&#34;{URL_TFDOC}/writing/«writing».html&#34;,
                 urls=dict(
                     cheatsheet=(
-                        &#34;regexp cheatsheet&#34;,
+                        &#34;regexp cheat sheet&#34;,
                         (
                             &#34;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/&#34;
                             &#34;Regular_Expressions/Cheatsheet&#34;
                         ),
-                        &#34;cheatsheet of regular expressions&#34;,
+                        &#34;cheat sheet of regular expressions&#34;,
                     ),
                     license=(
                         &#34;MIT&#34;,
@@ -1993,7 +1993,7 @@ if __name__ == &#34;__main__&#34;:
                     tf=(
                         None,
                         URL_TFDOC,
-                        &#34;Text-Fabric documentation website&#34;,
+                        &#34;TF documentation website&#34;,
                     ),
                     lsdoc=(
                         &#34;user manual (full)&#34;,
@@ -2011,9 +2011,9 @@ if __name__ == &#34;__main__&#34;:
                         &#34;explanation of the features in the dataset&#34;,
                     ),
                     data=(
-                        &#34;based on text-fabric data version «data.version»&#34;,
+                        &#34;based on TF data version «data.version»&#34;,
                         &#34;«dataUrl»&#34;,
-                        &#34;online repository of the underlying text-fabric data&#34;,
+                        &#34;online repository of the underlying TF data&#34;,
                     ),
                     generator=(
                         f&#34;{REPO}/client&#34;,
@@ -2124,9 +2124,9 @@ if __name__ == &#34;__main__&#34;:
         urls = C.urls
         tutUrl = self.A.flexLink(&#34;tut&#34;)
         urls[&#34;related&#34;] = (
-            f&#34;text-fabric {org}/{repo}&#34;,
+            f&#34;tf {org}/{repo}&#34;,
             tutUrl,
-            &#34;using Text-Fabric on the same corpus&#34;,
+            &#34;using TF on the same corpus&#34;,
         )
 
         clientConfig = dict(
@@ -2570,7 +2570,7 @@ if __name__ == &#34;__main__&#34;:
         &#34;&#34;&#34;
         We create a client app in the target directory.
 
-        The client consists of HTML/CSS/PNG files plus a modular Javascript program.
+        The client consists of HTML/CSS/PNG files plus a modular JavaScript program.
 
         Module loading does not work when you open the HTML file locally
         (i.e. when the HTML is not served by a server).
@@ -2578,20 +2578,20 @@ if __name__ == &#34;__main__&#34;:
         N.B. There is a difference between a local web server serving at `localhost`
         and opening the file directly into your browser by double clicking on it.
 
-        In the first case, you see in your un the URL bar of your browser
+        In the first case, you see in the URL bar of your browser
         something that starts with
         `http://` or `https://`, in the second case you see `file://` instead.
 
-        Modular Javascript does not work with `file://` origins.
+        Modular JavaScript does not work with `file://` origins.
 
         For that case, we bundle the modules into one,
         and let a «client»-local.html include it
 
         We also zip the client into {C.client}.zip so that users can download it easily
 
-        However, if the debugState is on, we skip all steps that are unneccesary
+        However, if the `debugState` is on, we skip all steps that are unnecessary
         to see the updated client working.
-        But we do save an extra copy of the texts to the local dir in such a way
+        But we do save an extra copy of the texts to the local directory in such a way
         that they can be easily inspected.
         &#34;&#34;&#34;
 
@@ -2629,7 +2629,7 @@ if __name__ == &#34;__main__&#34;:
 
         console(&#34;Copied static files&#34;)
 
-        # create combined javascript file
+        # create combined JavaScript file
 
         if not debug:
             self.makeCombined()
@@ -2856,7 +2856,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L1272-L1291" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L1272-L1291" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def adjustDebug(self):
     C = self.C
@@ -2888,7 +2888,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L1223-L1233" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L1223-L1233" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def adjustVersion(self):
     C = self.C
@@ -2911,7 +2911,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L764-L778" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L764-L778" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def compress(self, data):
     sets = {}
@@ -2938,7 +2938,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L268-L531" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L268-L531" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def config(self):
     C = self.C
@@ -3081,12 +3081,12 @@ if __name__ == &#34;__main__&#34;:
             writingUrl=f&#34;{URL_TFDOC}/writing/«writing».html&#34;,
             urls=dict(
                 cheatsheet=(
-                    &#34;regexp cheatsheet&#34;,
+                    &#34;regexp cheat sheet&#34;,
                     (
                         &#34;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/&#34;
                         &#34;Regular_Expressions/Cheatsheet&#34;
                     ),
-                    &#34;cheatsheet of regular expressions&#34;,
+                    &#34;cheat sheet of regular expressions&#34;,
                 ),
                 license=(
                     &#34;MIT&#34;,
@@ -3126,7 +3126,7 @@ if __name__ == &#34;__main__&#34;:
                 tf=(
                     None,
                     URL_TFDOC,
-                    &#34;Text-Fabric documentation website&#34;,
+                    &#34;TF documentation website&#34;,
                 ),
                 lsdoc=(
                     &#34;user manual (full)&#34;,
@@ -3144,9 +3144,9 @@ if __name__ == &#34;__main__&#34;:
                     &#34;explanation of the features in the dataset&#34;,
                 ),
                 data=(
-                    &#34;based on text-fabric data version «data.version»&#34;,
+                    &#34;based on TF data version «data.version»&#34;,
                     &#34;«dataUrl»&#34;,
-                    &#34;online repository of the underlying text-fabric data&#34;,
+                    &#34;online repository of the underlying TF data&#34;,
                 ),
                 generator=(
                     f&#34;{REPO}/client&#34;,
@@ -3214,7 +3214,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L242-L266" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L242-L266" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def doCommand(self, command):
     if command == &#34;serve&#34;:
@@ -3251,7 +3251,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L749-L762" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L749-L762" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dumpConfig(self):
     C = self.C
@@ -3277,7 +3277,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L780-L896" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L780-L896" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dumpCorpus(self):
     C = self.C
@@ -3406,7 +3406,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L1293-L1305" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L1293-L1305" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getAllClients(self):
     C = self.C
@@ -3431,7 +3431,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L1241-L1261" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L1241-L1261" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDebugs(self):
     C = self.C
@@ -3464,7 +3464,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L533-L560" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L533-L560" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importMake(self, c=None):
     client = self.client
@@ -3504,7 +3504,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L1208-L1215" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L1208-L1215" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def incVersion(self):
     C = self.C
@@ -3524,7 +3524,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L695-L704" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L695-L704" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTf(self):
     C = self.C
@@ -3546,7 +3546,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L1169-L1174" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L1169-L1174" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def make(self):
     self.makeConfig()
@@ -3561,32 +3561,32 @@ if __name__ == &#34;__main__&#34;:
 </code></dt>
 <dd>
 <div class="desc"><p>We create a client app in the target directory.</p>
-<p>The client consists of HTML/CSS/PNG files plus a modular Javascript program.</p>
+<p>The client consists of HTML/CSS/PNG files plus a modular JavaScript program.</p>
 <p>Module loading does not work when you open the HTML file locally
 (i.e. when the HTML is not served by a server).</p>
 <p>N.B. There is a difference between a local web server serving at <code>localhost</code>
 and opening the file directly into your browser by double clicking on it.</p>
-<p>In the first case, you see in your un the URL bar of your browser
+<p>In the first case, you see in the URL bar of your browser
 something that starts with
 <code>http://</code> or <code>https://</code>, in the second case you see <code>file://</code> instead.</p>
-<p>Modular Javascript does not work with <code>file://</code> origins.</p>
+<p>Modular JavaScript does not work with <code>file://</code> origins.</p>
 <p>For that case, we bundle the modules into one,
 and let a «client»-local.html include it</p>
 <p>We also zip the client into {C.client}.zip so that users can download it easily</p>
-<p>However, if the debugState is on, we skip all steps that are unneccesary
+<p>However, if the <code>debugState</code> is on, we skip all steps that are unnecessary
 to see the updated client working.
-But we do save an extra copy of the texts to the local dir in such a way
+But we do save an extra copy of the texts to the local directory in such a way
 that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L1027-L1098" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L1027-L1098" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeClient(self):
     &#34;&#34;&#34;
     We create a client app in the target directory.
 
-    The client consists of HTML/CSS/PNG files plus a modular Javascript program.
+    The client consists of HTML/CSS/PNG files plus a modular JavaScript program.
 
     Module loading does not work when you open the HTML file locally
     (i.e. when the HTML is not served by a server).
@@ -3594,20 +3594,20 @@ that they can be easily inspected.</p></div>
     N.B. There is a difference between a local web server serving at `localhost`
     and opening the file directly into your browser by double clicking on it.
 
-    In the first case, you see in your un the URL bar of your browser
+    In the first case, you see in the URL bar of your browser
     something that starts with
     `http://` or `https://`, in the second case you see `file://` instead.
 
-    Modular Javascript does not work with `file://` origins.
+    Modular JavaScript does not work with `file://` origins.
 
     For that case, we bundle the modules into one,
     and let a «client»-local.html include it
 
     We also zip the client into {C.client}.zip so that users can download it easily
 
-    However, if the debugState is on, we skip all steps that are unneccesary
+    However, if the `debugState` is on, we skip all steps that are unnecessary
     to see the updated client working.
-    But we do save an extra copy of the texts to the local dir in such a way
+    But we do save an extra copy of the texts to the local directory in such a way
     that they can be easily inspected.
     &#34;&#34;&#34;
 
@@ -3645,7 +3645,7 @@ that they can be easily inspected.</p></div>
 
     console(&#34;Copied static files&#34;)
 
-    # create combined javascript file
+    # create combined JavaScript file
 
     if not debug:
         self.makeCombined()
@@ -3664,7 +3664,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L562-L693" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L562-L693" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeClientSettings(self):
     C = self.C
@@ -3689,9 +3689,9 @@ that they can be easily inspected.</p></div>
     urls = C.urls
     tutUrl = self.A.flexLink(&#34;tut&#34;)
     urls[&#34;related&#34;] = (
-        f&#34;text-fabric {org}/{repo}&#34;,
+        f&#34;tf {org}/{repo}&#34;,
         tutUrl,
-        &#34;using Text-Fabric on the same corpus&#34;,
+        &#34;using TF on the same corpus&#34;,
     )
 
     clientConfig = dict(
@@ -3808,7 +3808,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L898-L955" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L898-L955" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCombined(self):
     C = self.C
@@ -3878,7 +3878,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L706-L711" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L706-L711" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeConfig(self):
     if not getattr(self, &#34;A&#34;, None):
@@ -3896,7 +3896,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L733-L747" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L733-L747" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCorpus(self):
     if not getattr(self, &#34;A&#34;, None):
@@ -3923,7 +3923,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L957-L1025" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L957-L1025" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeHtml(self):
     C = self.C
@@ -4004,7 +4004,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L713-L731" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L713-L731" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeLinks(self):
     C = self.C
@@ -4035,7 +4035,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L1137-L1157" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L1137-L1157" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def publish(self, allClients=True):
     C = self.C
@@ -4068,7 +4068,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L1235-L1239" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L1235-L1239" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def replaceDebug(self, mask, value):
     def subVersion(match):
@@ -4085,7 +4085,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L1176-L1206" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L1176-L1206" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serve(self):
     dataset = self.dataset
@@ -4128,7 +4128,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L1159-L1167" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L1159-L1167" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ship(self, publish=True):
     self.adjustVersion()
@@ -4149,7 +4149,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L1263-L1270" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L1263-L1270" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showDebug(self):
     debugInfo = self.getDebugs()
@@ -4169,7 +4169,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L1217-L1221" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L1217-L1221" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showVersion(self):
     C = self.C
@@ -4186,7 +4186,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/client/make/build.py#L1100-L1135" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/client/make/build.py#L1100-L1135" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipApp(self):
     C = self.C

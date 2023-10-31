@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>tf.core.fabric API documentation</title>
-<meta name="description" content="FabricCore …" />
+<meta name="description" content="`FabricCore` …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -23,23 +23,23 @@
 <h1 class="title">Module <code>tf.core.fabric</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="fabriccore">FabricCore</h1>
+<h1 id="fabriccore"><code><a title="tf.core.fabric.FabricCore" href="#tf.core.fabric.FabricCore">FabricCore</a></code></h1>
 <p>The main class that works the core API is <code><a title="tf.fabric.Fabric" href="../fabric.html#tf.fabric.Fabric">Fabric</a></code>.
 In this module we define <code><a title="tf.core.fabric.FabricCore" href="#tf.core.fabric.FabricCore">FabricCore</a></code>, which contains most of the
 functionality of <code>Fabric</code>.</p>
 <p>It does not contain the volume support.
 Volume support requires <code><a title="tf.volumes.extract" href="../volumes/extract.html">tf.volumes.extract</a></code> and <code><a title="tf.volumes.collect" href="../volumes/collect.html">tf.volumes.collect</a></code> which
-need to load and save Text-Fabric datasets, and loading and saving are Fabric
+need to load and save TF datasets, and loading and saving are Fabric
 functionalities.</p>
 <p>Hence a Fabric with volume support would lead to circular imports.
-By leaving out volume support, volume support can use FabricCore instead of Fabric.</p>
+By leaving out volume support, volume support can use <code><a title="tf.core.fabric.FabricCore" href="#tf.core.fabric.FabricCore">FabricCore</a></code> instead of Fabric.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/fabric.py#L1-L1052" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/fabric.py#L1-L1052" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-# FabricCore
+# `FabricCore`
 
 The main class that works the core API is `tf.fabric.Fabric`.
 In this module we define `FabricCore`, which contains most of the
@@ -47,11 +47,11 @@ functionality of `Fabric`.
 
 It does not contain the volume support.
 Volume support requires `tf.volumes.extract` and `tf.volumes.collect` which
-need to load and save Text-Fabric datasets, and loading and saving are Fabric
+need to load and save TF datasets, and loading and saving are Fabric
 functionalities.
 
 Hence a Fabric with volume support would lead to circular imports.
-By leaving out volume support, volume support can use FabricCore instead of Fabric.
+By leaving out volume support, volume support can use `FabricCore` instead of Fabric.
 &#34;&#34;&#34;
 
 import collections
@@ -139,9 +139,9 @@ PRECOMPUTE = (
         ),
     ),
 )
-&#34;&#34;&#34;Precomputation steps.
+&#34;&#34;&#34;Pre-computation steps.
 
-Each step corresponds to a precomputation task.
+Each step corresponds to a pre-computation task.
 
 A task is specified by a tuple containing:
 
@@ -149,18 +149,18 @@ Parameters
 ----------
 dep: boolean
     Whether the step is dependent on the presence of additional features.
-    Only relevant for the precomputation of section structure:
+    Only relevant for the pre-computation of section structure:
     that should only happen if there are section features.
 name: string
-    The name of the result of a precomputed task.
+    The name of the result of a pre-computed task.
     The result is a blob of data that can be loaded and compressed just as ordinary features.
 function: function
-    The function that performs the precomputation task.
+    The function that performs the pre-computation task.
     These functions are defined in `tf.core.prepare`.
 dependencies: strings
-    The remaining parts of the tuple are the names of precomputed features
+    The remaining parts of the tuple are the names of pre-computed features
     that must be coomputed before and whose results are passed as argument
-    to the function that executes the precomputation.
+    to the function that executes the pre-computation.
 
 For a description of what the steps are for, see the functions
 in `tf.core.prepare`.
@@ -173,12 +173,12 @@ class FabricCore:
 
     Top level management of
 
-    *   locating tf feature files
+    *   locating TF feature files
     *   loading and saving feature data
-    *   precomputing auxiliary data
-    *   caching precomputed and compressed data
+    *   pre-computing auxiliary data
+    *   caching pre-computed and compressed data
 
-    Text-Fabric is initialized for a corpus.
+    TF is initialized for a corpus.
     It will search a set of directories and catalog all `.tf` files it finds there.
     These are the features you can subsequently load.
 
@@ -189,7 +189,7 @@ class FabricCore:
     ----------
     locations: string | iterable of strings, optional
         The directories specified here are used as base locations
-        in searching for tf feature files.
+        in searching for TF feature files.
         In general, they will not searched directly, but certain subdirectories
         of them will be searched, specified by the `modules` parameter.
 
@@ -199,7 +199,7 @@ class FabricCore:
             ~/text-fabric-data
             ~/github/text-fabric-data
 
-        So if you have stored your main Text-Fabric dataset in
+        So if you have stored your main TF dataset in
         `text-fabric-data` in one of these directories
         you do not have to pass a location to Fabric.
 
@@ -216,7 +216,7 @@ class FabricCore:
 
         Default: `[&#39;&#39;]`
 
-        So if you leave it out, Text-Fabric will just search the paths specified
+        So if you leave it out, TF will just search the paths specified
         in `locations`.
 
     silent: string, optional tf.core.timestamp.SILENT_D
@@ -249,13 +249,13 @@ class FabricCore:
         setSilent = tmObj.setSilent
         setSilent(silent)
         self.banner = BANNER
-        &#34;&#34;&#34;The banner the Text-Fabric.
+        &#34;&#34;&#34;The banner Text-Fabric.
 
         Will be shown just after start up, if the silence is not `deep`.
         &#34;&#34;&#34;
 
         self.version = VERSION
-        &#34;&#34;&#34;The version number of the Text-Fabric library.
+        &#34;&#34;&#34;The version number of the TF library.
         &#34;&#34;&#34;
 
         (on32, warn, msg) = check32()
@@ -455,7 +455,7 @@ class FabricCore:
                 if not self.good:
                     indent(level=0)
                     cache()
-                    error(&#34;Not all features could be loaded/computed&#34;)
+                    error(&#34;Not all features could be loaded / computed&#34;)
                     result = False
                     break
                 reset()
@@ -500,11 +500,11 @@ class FabricCore:
 
         Notes
         -----
-        !!! explanation &#34;configs&#34;
+        !!! explanation &#34;`configs`&#34;
             These are config features, with metadata only, no data. E.g. `otext`.
 
-        !!! explanation &#34;computeds&#34;
-            These are blocks of precomputed data, available under the `C` API,
+        !!! explanation &#34;`computeds`&#34;
+            These are blocks of pre-computed data, available under the `C` API,
             see `tf.core.computed.Computeds`.
 
         The sets do not indicate whether a feature is loaded or not.
@@ -575,13 +575,13 @@ class FabricCore:
     def clearCache(self):
         &#34;&#34;&#34;Clears the cache of compiled TF data.
 
-        Text-Fabric precomputes data for you, so that it can be loaded faster.
-        If the original data is updated, Text-Fabric detects it,
+        TF pre-computes data for you, so that it can be loaded faster.
+        If the original data is updated, TF detects it,
         and will recompute that data.
 
-        But there are cases, when the algorithms of Text-Fabric have changed,
+        But there are cases, when the algorithms of TF have changed,
         without any changes in the data, where you might want to clear the cache
-        of precomputed results.
+        of pre-computed results.
 
         Calling this function just does it, and it is equivalent with manually removing
         all `.tfx` files inside the hidden `.tf` directory inside your dataset.
@@ -606,7 +606,7 @@ class FabricCore:
         module=None,
         silent=SILENT_D,
     ):
-        &#34;&#34;&#34;Saves newly generated data to disk as TF features, nodes and/or edges.
+        &#34;&#34;&#34;Saves newly generated data to disk as TF features, nodes and / or edges.
 
         If you have collected feature data in dictionaries, keyed by the
         names of the features, and valued by their feature data,
@@ -635,7 +635,7 @@ class FabricCore:
             This parameter holds all those dictionaries, keyed by feature name.
 
             !!! explanation &#34;value types&#34;
-                The type of the feature values (&#39;int&#39; or &#39;str&#39;) should be specified
+                The type of the feature values (`int` or `str`) should be specified
                 under key `valueType`.
 
             !!! explanation &#34;edge values&#34;
@@ -1045,7 +1045,7 @@ class FabricCore:
             addText(api)
             addSearch(api, silent)
         indent(level=0)
-        debug(&#34;All features loaded/computed - for details use TF.isLoaded()&#34;)
+        debug(&#34;All features loaded / computed - for details use TF.isLoaded()&#34;)
         self.api = api
         setattr(self, &#34;isLoaded&#34;, self.api.isLoaded)
         return api
@@ -1099,25 +1099,25 @@ class FabricCore:
 <dl>
 <dt id="tf.core.fabric.PRECOMPUTE"><code class="name">var <span class="ident">PRECOMPUTE</span></code></dt>
 <dd>
-<div class="desc"><p>Precomputation steps.</p>
-<p>Each step corresponds to a precomputation task.</p>
+<div class="desc"><p>Pre-computation steps.</p>
+<p>Each step corresponds to a pre-computation task.</p>
 <p>A task is specified by a tuple containing:</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>dep</code></strong> :&ensp;<code>boolean</code></dt>
 <dd>Whether the step is dependent on the presence of additional features.
-Only relevant for the precomputation of section structure:
+Only relevant for the pre-computation of section structure:
 that should only happen if there are section features.</dd>
 <dt><strong><code>name</code></strong> :&ensp;<code>string</code></dt>
-<dd>The name of the result of a precomputed task.
+<dd>The name of the result of a pre-computed task.
 The result is a blob of data that can be loaded and compressed just as ordinary features.</dd>
 <dt><strong><code>function</code></strong> :&ensp;<code>function</code></dt>
-<dd>The function that performs the precomputation task.
+<dd>The function that performs the pre-computation task.
 These functions are defined in <code><a title="tf.core.prepare" href="prepare.html">tf.core.prepare</a></code>.</dd>
 <dt><strong><code>dependencies</code></strong> :&ensp;<code>strings</code></dt>
-<dd>The remaining parts of the tuple are the names of precomputed features
+<dd>The remaining parts of the tuple are the names of pre-computed features
 that must be coomputed before and whose results are passed as argument
-to the function that executes the precomputation.</dd>
+to the function that executes the pre-computation.</dd>
 </dl>
 <p>For a description of what the steps are for, see the functions
 in <code><a title="tf.core.prepare" href="prepare.html">tf.core.prepare</a></code>.</p></div>
@@ -1137,12 +1137,12 @@ in <code><a title="tf.core.prepare" href="prepare.html">tf.core.prepare</a></cod
 <div class="desc"><p>Initialize the core API for a corpus.</p>
 <p>Top level management of</p>
 <ul>
-<li>locating tf feature files</li>
+<li>locating TF feature files</li>
 <li>loading and saving feature data</li>
-<li>precomputing auxiliary data</li>
-<li>caching precomputed and compressed data</li>
+<li>pre-computing auxiliary data</li>
+<li>caching pre-computed and compressed data</li>
 </ul>
-<p>Text-Fabric is initialized for a corpus.
+<p>TF is initialized for a corpus.
 It will search a set of directories and catalog all <code>.<a title="tf" href="../index.html">tf</a></code> files it finds there.
 These are the features you can subsequently load.</p>
 <p>Here <code>directories</code> and <code>subdirectories</code> are strings with directory names
@@ -1152,7 +1152,7 @@ separated by newlines, or iterables of directories.</p>
 <dt><strong><code>locations</code></strong> :&ensp;<code>string | iterable</code> of <code>strings</code>, optional</dt>
 <dd>
 <p>The directories specified here are used as base locations
-in searching for tf feature files.
+in searching for TF feature files.
 In general, they will not searched directly, but certain subdirectories
 of them will be searched, specified by the <code>modules</code> parameter.</p>
 <p>Defaults:</p>
@@ -1160,7 +1160,7 @@ of them will be searched, specified by the <code>modules</code> parameter.</p>
 ~/text-fabric-data
 ~/github/text-fabric-data
 </code></pre>
-<p>So if you have stored your main Text-Fabric dataset in
+<p>So if you have stored your main TF dataset in
 <code>text-fabric-data</code> in one of these directories
 you do not have to pass a location to Fabric.</p>
 </dd>
@@ -1175,7 +1175,7 @@ multiple modules, the last one will be chosen.
 In this way you can easily override certain features in one module
 by features in an other module of your choice.</p>
 <p>Default: <code>['']</code></p>
-<p>So if you leave it out, Text-Fabric will just search the paths specified
+<p>So if you leave it out, TF will just search the paths specified
 in <code>locations</code>.</p>
 </dd>
 <dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code><a title="tf.core.timestamp.SILENT_D" href="timestamp.html#tf.core.timestamp.SILENT_D">SILENT_D</a></code></dt>
@@ -1200,19 +1200,19 @@ also can add new formats to the Text-API.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/fabric.py#L131-L1052" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/fabric.py#L131-L1052" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FabricCore:
     &#34;&#34;&#34;Initialize the core API for a corpus.
 
     Top level management of
 
-    *   locating tf feature files
+    *   locating TF feature files
     *   loading and saving feature data
-    *   precomputing auxiliary data
-    *   caching precomputed and compressed data
+    *   pre-computing auxiliary data
+    *   caching pre-computed and compressed data
 
-    Text-Fabric is initialized for a corpus.
+    TF is initialized for a corpus.
     It will search a set of directories and catalog all `.tf` files it finds there.
     These are the features you can subsequently load.
 
@@ -1223,7 +1223,7 @@ also can add new formats to the Text-API.</p>
     ----------
     locations: string | iterable of strings, optional
         The directories specified here are used as base locations
-        in searching for tf feature files.
+        in searching for TF feature files.
         In general, they will not searched directly, but certain subdirectories
         of them will be searched, specified by the `modules` parameter.
 
@@ -1233,7 +1233,7 @@ also can add new formats to the Text-API.</p>
             ~/text-fabric-data
             ~/github/text-fabric-data
 
-        So if you have stored your main Text-Fabric dataset in
+        So if you have stored your main TF dataset in
         `text-fabric-data` in one of these directories
         you do not have to pass a location to Fabric.
 
@@ -1250,7 +1250,7 @@ also can add new formats to the Text-API.</p>
 
         Default: `[&#39;&#39;]`
 
-        So if you leave it out, Text-Fabric will just search the paths specified
+        So if you leave it out, TF will just search the paths specified
         in `locations`.
 
     silent: string, optional tf.core.timestamp.SILENT_D
@@ -1283,13 +1283,13 @@ also can add new formats to the Text-API.</p>
         setSilent = tmObj.setSilent
         setSilent(silent)
         self.banner = BANNER
-        &#34;&#34;&#34;The banner the Text-Fabric.
+        &#34;&#34;&#34;The banner Text-Fabric.
 
         Will be shown just after start up, if the silence is not `deep`.
         &#34;&#34;&#34;
 
         self.version = VERSION
-        &#34;&#34;&#34;The version number of the Text-Fabric library.
+        &#34;&#34;&#34;The version number of the TF library.
         &#34;&#34;&#34;
 
         (on32, warn, msg) = check32()
@@ -1489,7 +1489,7 @@ also can add new formats to the Text-API.</p>
                 if not self.good:
                     indent(level=0)
                     cache()
-                    error(&#34;Not all features could be loaded/computed&#34;)
+                    error(&#34;Not all features could be loaded / computed&#34;)
                     result = False
                     break
                 reset()
@@ -1534,11 +1534,11 @@ also can add new formats to the Text-API.</p>
 
         Notes
         -----
-        !!! explanation &#34;configs&#34;
+        !!! explanation &#34;`configs`&#34;
             These are config features, with metadata only, no data. E.g. `otext`.
 
-        !!! explanation &#34;computeds&#34;
-            These are blocks of precomputed data, available under the `C` API,
+        !!! explanation &#34;`computeds`&#34;
+            These are blocks of pre-computed data, available under the `C` API,
             see `tf.core.computed.Computeds`.
 
         The sets do not indicate whether a feature is loaded or not.
@@ -1609,13 +1609,13 @@ also can add new formats to the Text-API.</p>
     def clearCache(self):
         &#34;&#34;&#34;Clears the cache of compiled TF data.
 
-        Text-Fabric precomputes data for you, so that it can be loaded faster.
-        If the original data is updated, Text-Fabric detects it,
+        TF pre-computes data for you, so that it can be loaded faster.
+        If the original data is updated, TF detects it,
         and will recompute that data.
 
-        But there are cases, when the algorithms of Text-Fabric have changed,
+        But there are cases, when the algorithms of TF have changed,
         without any changes in the data, where you might want to clear the cache
-        of precomputed results.
+        of pre-computed results.
 
         Calling this function just does it, and it is equivalent with manually removing
         all `.tfx` files inside the hidden `.tf` directory inside your dataset.
@@ -1640,7 +1640,7 @@ also can add new formats to the Text-API.</p>
         module=None,
         silent=SILENT_D,
     ):
-        &#34;&#34;&#34;Saves newly generated data to disk as TF features, nodes and/or edges.
+        &#34;&#34;&#34;Saves newly generated data to disk as TF features, nodes and / or edges.
 
         If you have collected feature data in dictionaries, keyed by the
         names of the features, and valued by their feature data,
@@ -1669,7 +1669,7 @@ also can add new formats to the Text-API.</p>
             This parameter holds all those dictionaries, keyed by feature name.
 
             !!! explanation &#34;value types&#34;
-                The type of the feature values (&#39;int&#39; or &#39;str&#39;) should be specified
+                The type of the feature values (`int` or `str`) should be specified
                 under key `valueType`.
 
             !!! explanation &#34;edge values&#34;
@@ -2079,7 +2079,7 @@ also can add new formats to the Text-API.</p>
             addText(api)
             addSearch(api, silent)
         indent(level=0)
-        debug(&#34;All features loaded/computed - for details use TF.isLoaded()&#34;)
+        debug(&#34;All features loaded / computed - for details use TF.isLoaded()&#34;)
         self.api = api
         setattr(self, &#34;isLoaded&#34;, self.api.isLoaded)
         return api
@@ -2133,7 +2133,7 @@ also can add new formats to the Text-API.</p>
 <dl>
 <dt id="tf.core.fabric.FabricCore.banner"><code class="name">var <span class="ident">banner</span></code></dt>
 <dd>
-<div class="desc"><p>The banner the Text-Fabric.</p>
+<div class="desc"><p>The banner Text-Fabric.</p>
 <p>Will be shown just after start up, if the silence is not <code>deep</code>.</p></div>
 </dd>
 <dt id="tf.core.fabric.FabricCore.features"><code class="name">var <span class="ident">features</span></code></dt>
@@ -2157,7 +2157,7 @@ overwhelm your notebook if you print it.</p>
 </dd>
 <dt id="tf.core.fabric.FabricCore.version"><code class="name">var <span class="ident">version</span></code></dt>
 <dd>
-<div class="desc"><p>The version number of the Text-Fabric library.</p></div>
+<div class="desc"><p>The version number of the TF library.</p></div>
 </dd>
 </dl>
 <h3>Methods</h3>
@@ -2167,12 +2167,12 @@ overwhelm your notebook if you print it.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Clears the cache of compiled TF data.</p>
-<p>Text-Fabric precomputes data for you, so that it can be loaded faster.
-If the original data is updated, Text-Fabric detects it,
+<p>TF pre-computes data for you, so that it can be loaded faster.
+If the original data is updated, TF detects it,
 and will recompute that data.</p>
-<p>But there are cases, when the algorithms of Text-Fabric have changed,
+<p>But there are cases, when the algorithms of TF have changed,
 without any changes in the data, where you might want to clear the cache
-of precomputed results.</p>
+of pre-computed results.</p>
 <p>Calling this function just does it, and it is equivalent with manually removing
 all <code>.tfx</code> files inside the hidden <code>.<a title="tf" href="../index.html">tf</a></code> directory inside your dataset.</p>
 <div class="admonition hint">
@@ -2184,18 +2184,18 @@ all <code>.tfx</code> files inside the hidden <code>.<a title="tf" href="../inde
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/fabric.py#L535-L558" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/fabric.py#L535-L558" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clearCache(self):
     &#34;&#34;&#34;Clears the cache of compiled TF data.
 
-    Text-Fabric precomputes data for you, so that it can be loaded faster.
-    If the original data is updated, Text-Fabric detects it,
+    TF pre-computes data for you, so that it can be loaded faster.
+    If the original data is updated, TF detects it,
     and will recompute that data.
 
-    But there are cases, when the algorithms of Text-Fabric have changed,
+    But there are cases, when the algorithms of TF have changed,
     without any changes in the data, where you might want to clear the cache
-    of precomputed results.
+    of pre-computed results.
 
     Calling this function just does it, and it is equivalent with manually removing
     all `.tfx` files inside the hidden `.tf` directory inside your dataset.
@@ -2235,12 +2235,12 @@ How this dictionary is delivered, depends on the parameter <em>show</em>.</dd>
 </dl>
 <h2 id="notes">Notes</h2>
 <div class="admonition explanation">
-<p class="admonition-title">configs</p>
+<p class="admonition-title"><code>configs</code></p>
 <p>These are config features, with metadata only, no data. E.g. <code>otext</code>.</p>
 </div>
 <div class="admonition explanation">
-<p class="admonition-title">computeds</p>
-<p>These are blocks of precomputed data, available under the <code>C</code> API,
+<p class="admonition-title"><code>computeds</code></p>
+<p>These are blocks of pre-computed data, available under the <code>C</code> API,
 see <code><a title="tf.core.computed.Computeds" href="computed.html#tf.core.computed.Computeds">Computeds</a></code>.</p>
 </div>
 <p>The sets do not indicate whether a feature is loaded or not.
@@ -2249,7 +2249,7 @@ There are other functions that give you the loaded features:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/fabric.py#L443-L517" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/fabric.py#L443-L517" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def explore(self, silent=SILENT_D, show=True):
     &#34;&#34;&#34;Makes categorization of all features in the dataset.
@@ -2271,11 +2271,11 @@ There are other functions that give you the loaded features:
 
     Notes
     -----
-    !!! explanation &#34;configs&#34;
+    !!! explanation &#34;`configs`&#34;
         These are config features, with metadata only, no data. E.g. `otext`.
 
-    !!! explanation &#34;computeds&#34;
-        These are blocks of precomputed data, available under the `C` API,
+    !!! explanation &#34;`computeds`&#34;
+        These are blocks of pre-computed data, available under the `C` API,
         see `tf.core.computed.Computeds`.
 
     The sets do not indicate whether a feature is loaded or not.
@@ -2358,7 +2358,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/fabric.py#L281-L441" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/fabric.py#L281-L441" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, add=False, silent=SILENT_D):
     &#34;&#34;&#34;Loads features from disk into RAM memory.
@@ -2497,7 +2497,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
             if not self.good:
                 indent(level=0)
                 cache()
-                error(&#34;Not all features could be loaded/computed&#34;)
+                error(&#34;Not all features could be loaded / computed&#34;)
                 result = False
                 break
             reset()
@@ -2536,7 +2536,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/fabric.py#L519-L533" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/fabric.py#L519-L533" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadAll(self, silent=SILENT_D):
     &#34;&#34;&#34;Load all loadable features.
@@ -2559,7 +2559,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
 <span>def <span class="ident">save</span></span>(<span>self, nodeFeatures: Dict[str, Dict[int, Union[str, int]]] = {}, edgeFeatures: Dict[str, Dict[int, Union[Set[int], Dict[int, Union[str, int]]]]] = {}, metaData: Dict[str, Dict[str, str]] = {}, location=None, module=None, silent='auto')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Saves newly generated data to disk as TF features, nodes and/or edges.</p>
+<div class="desc"><p>Saves newly generated data to disk as TF features, nodes and / or edges.</p>
 <p>If you have collected feature data in dictionaries, keyed by the
 names of the features, and valued by their feature data,
 then you can save that data to <code>.<a title="tf" href="../index.html">tf</a></code> feature files on disk.</p>
@@ -2585,7 +2585,7 @@ This parameter holds all those dictionaries, keyed by feature name.</dd>
 This parameter holds all those dictionaries, keyed by feature name.</p>
 <div class="admonition explanation">
 <p class="admonition-title">value types</p>
-<p>The type of the feature values ('int' or 'str') should be specified
+<p>The type of the feature values (<code>int</code> or <code>str</code>) should be specified
 under key <code>valueType</code>.</p>
 </div>
 <div class="admonition explanation">
@@ -2637,7 +2637,7 @@ TF will save in <code>path1/path2</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/fabric.py#L560-L785" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/fabric.py#L560-L785" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def save(
     self,
@@ -2648,7 +2648,7 @@ TF will save in <code>path1/path2</code>.</p>
     module=None,
     silent=SILENT_D,
 ):
-    &#34;&#34;&#34;Saves newly generated data to disk as TF features, nodes and/or edges.
+    &#34;&#34;&#34;Saves newly generated data to disk as TF features, nodes and / or edges.
 
     If you have collected feature data in dictionaries, keyed by the
     names of the features, and valued by their feature data,
@@ -2677,7 +2677,7 @@ TF will save in <code>path1/path2</code>.</p>
         This parameter holds all those dictionaries, keyed by feature name.
 
         !!! explanation &#34;value types&#34;
-            The type of the feature values (&#39;int&#39; or &#39;str&#39;) should be specified
+            The type of the feature values (`int` or `str`) should be specified
             under key `valueType`.
 
         !!! explanation &#34;edge values&#34;

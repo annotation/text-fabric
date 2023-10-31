@@ -30,7 +30,7 @@ There is a separate manual for the simplified interface:
 <p><img alt="interface" src="../images/ls/ls.001.png"></p>
 <dl>
 <dt><mark>1. about</mark></dt>
-<dd>Read the colofon, with provenance and license information.</dd>
+<dd>Read the colophon, with provenance and license information.</dd>
 <dt><mark>2. jobs</mark></dt>
 <dd>
 <p>Manage your search tasks. They are remembered by your browser. You can start new jobs,
@@ -56,14 +56,14 @@ section <strong>Meaning</strong> below.</p>
 <p>Read
 <a href="https://en.wikipedia.org/wiki/Regular_expression">background on regexes</a>
 and
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet">cheatsheet</a>.</p>
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet">cheat sheet</a>.</p>
 </div>
 </dd>
 <dt><mark>3a. legend</mark></dt>
 <dd>
 <p>Some layers have a triangle in front of their names.
 These are layers that consist of a limited amount of keywords.
-If they are acronymns, you can see their legend here.
+If they are acronyms, you can see their legend here.
 Otherwise, you see a frequency list of there values here.</p>
 <p><img alt="values" src="../images/ls/ls.008.png"></p>
 </dd>
@@ -80,7 +80,7 @@ So that you know the material in which you are searching.</dd>
 <li><code>s</code>: single-string: <code>.</code> also matches newlines.</li>
 </ul>
 </dd>
-<dt><mark>5. on/off</mark></dt>
+<dt><mark>5. on / off</mark></dt>
 <dd>
 <p>Regexes can be switched off and on.</p>
 <div class="admonition hint">
@@ -91,7 +91,7 @@ So that you know the material in which you are searching.</dd>
 <dt><mark>6. focus</mark></dt>
 <dd>The level that corresponds with a single row in the results table.
 Think of result rows as <em>observations</em> with <em>features</em>.</dd>
-<dt><mark>7. hide/show</mark></dt>
+<dt><mark>7. hide / show</mark></dt>
 <dd>
 <p>Whether a layer/level should show up in the results.
 Showing a level means showing their objects by their identifying numbers.
@@ -116,7 +116,7 @@ whenever you have changed something in the search criteria.</p>
 compared to the statistics of the whole corpus.</dd>
 <dt><mark>10. options</mark></dt>
 <dd>
-<p>Modify the behaviour of search/export.
+<p>Modify the behavior of search/export.
 See <strong>Options</strong> below.</p>
 <div class="admonition hint">
 <p class="admonition-title">Special characters</p>
@@ -139,7 +139,7 @@ This file can be opened in Excel.
 All
 results are exported, not only the ones that show on the current page.
 The level of detail depends on the currently selected <strong>focus</strong> level
-and the visible layers as set by <strong>hide/show</strong>.</p>
+and the visible layers as set by <strong>hide / show</strong>.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>The precise organization of the export may depend on some of the options.
@@ -225,32 +225,32 @@ please copy and paste the version of this app in any issue you file.</dd>
 </tr>
 <tr>
 <td><code>n</code></td>
-<td><strong>n</strong>ext</td>
+<td>next</td>
 <td>one</td>
 </tr>
 <tr>
 <td><code>p</code></td>
-<td><strong>p</strong>revious</td>
+<td>previous</td>
 <td>one</td>
 </tr>
 <tr>
 <td><code>b</code></td>
-<td><strong>b</strong>ack</td>
+<td>back</td>
 <td>a batch (half a screenful)</td>
 </tr>
 <tr>
 <td><code>f</code></td>
-<td><strong>f</strong>orward</td>
+<td>forward</td>
 <td>a batch (half a screen)</td>
 </tr>
 <tr>
 <td><code>s</code></td>
-<td><strong>s</strong>tart</td>
+<td>start</td>
 <td>all the way</td>
 </tr>
 <tr>
 <td><code>e</code></td>
-<td><strong>e</strong>nd</td>
+<td>end</td>
 <td>all the way</td>
 </tr>
 </tbody>
@@ -290,8 +290,8 @@ For the BHSA it is <a href="https://shebanq.ancient-data.org">SHEBANQ</a>.</dd>
 </ul>
 <h3 id="layers">Layers</h3>
 <p>Per level, there may be more than one way to represent the objects.
-For example, at the word level, you may have representations in the original script in unicode,
-but also various transliterations in ascii.</p>
+For example, at the word level, you may have representations in the original script in UNICODE,
+but also various transliterations in ASCII.</p>
 <p>All these representations are <em>layers</em> that you can search.
 For example, the
 <a href="https://github.com/CambridgeSemiticsLab/nena_tf">NENA corpus</a>
@@ -315,7 +315,7 @@ in those results.
 We take all nodes that are involved in the results of one layer as a set.
 We do the same for the other layer.
 Then we take the intersection of those sets.
-The resulting set is the nodeset defined by the combined results in the two layers.
+The resulting set is the node set defined by the combined results in the two layers.
 When we display them, we show the results in both layers, by showing the material
 of the result nodes according to the layer and we highlight the portions that match
 the regular expression in that layer.</p>
@@ -329,7 +329,7 @@ by using the notion of embedding.</p>
 <p>We project a node <em>upward</em> by mapping it to the node that embeds it.</p>
 <p>We project a node <em>downward</em> by mapping it to all nodes that are embedded in it.</p>
 <p>By projecting the result nodes of one level to another level,
-we end up with two nodesets at the same level that we can intersect.</p>
+we end up with two node sets at the same level that we can intersect.</p>
 <div class="admonition caution">
 <p class="admonition-title">Beware of complicated criteria</p>
 <p>Before you devise sophisticated criteria, note that this search engine
@@ -349,7 +349,7 @@ but intersected with matches in an order layer.</p>
 intention of the search which degree of strictness is desirable.</p>
 <p>For now, that is becoming way to complex, both to be usable and to be implementable.
 That is why we have opted for the lax interpretation.</p>
-<p>The bottomline is: use the search tool to grab the things that are potentially of interest.
+<p>The bottom-line is: use the search tool to grab the things that are potentially of interest.
 If you need to pinpoint further, export the results to Excel and use other tools/methods
 to achieve that.</p>
 </div>
@@ -400,7 +400,7 @@ When we represent the <em>content</em> of an object, we call it a <em>deep</em> 
 </div>
 <p>All objects are represented ultimately by their material in the layers.
 When we display results or export them,
-we present all layers that you have selected by means of <strong>hide/show</strong>.</p>
+we present all layers that you have selected by means of <strong>hide / show</strong>.</p>
 <div class="admonition note">
 <p class="admonition-title">Multiple layers</p>
 <p>If multiple layers have been selected for some levels,
@@ -411,13 +411,13 @@ we can use extra columns or extra rows for multiple layers.
 Both have advantages and disadvantages.</p>
 <p><strong>layers to columns</strong>:</p>
 <ul>
-<li><code>+</code>: one result, one row, good for postprocessing</li>
+<li><code>+</code>: one result, one row, good for post-processing</li>
 <li><code>-</code>: the layers
 of one object do not line up, difficult visual inspection</li>
 </ul>
 <p><strong>layers to rows</strong>:</p>
 <ul>
-<li><code>-</code>: one result, multiple rows, complicates postprocessing</li>
+<li><code>-</code>: one result, multiple rows, complicates post-processing</li>
 <li><code>+</code>: the layers
 of one object line up, comfortable visual inspection</li>
 </ul>
@@ -435,10 +435,10 @@ Also updates the results when you have modified the focus and visibility of laye
 <p>Each object in the corpus has a unique number: its <em>node</em> number.
 Within a level, we can also enumerate all its objects, starting with 1.
 The ordinals identify objects uniquely within their level.
-You can choose wich of these numbers you want displayed.</p>
+You can choose which of these numbers you want displayed.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
-<p>Use nodes for interoperability with Text-Fabric;
+<p>Use nodes for interoperability with TF;
 otherwise ordinals are more intuitive.</p>
 </div>
 </dd>
@@ -446,7 +446,7 @@ otherwise ordinals are more intuitive.</p>
 <dd>Highlighted matches are a valuable outcome of a search.
 But in exports, the highlight characters « » may hinder further processing.
 So you can omit them.</dd>
-<dt><mark>4. organisation of exports</mark></dt>
+<dt><mark>4. organization of exports</mark></dt>
 <dd>
 <p>When several layers are visible for a level, the question arises:
 how should we organize them in exported results?
@@ -461,14 +461,14 @@ The difference is shown in section <strong>Exports</strong> above.</p>
 <p class="admonition-title">Hint</p>
 <p>Use extra rows if you rely on visual inspection of the exported file in Excel.
 Use extra columns if you want to process the exported file by means of other tools,
-such as Pandas or R.</p>
+such as <code>pandas</code> or <code>R</code>.</p>
 </div>
 </dd>
 <dt><mark>5. single or multiple highlights</mark></dt>
 <dd>
 <p>If you use <code>( )</code> for grouping in your regexes,
 the parts of the results that match these groups
-can be highlighted with different colours.</p>
+can be highlighted with different colors.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>Not all browsers support this;
@@ -479,7 +479,7 @@ and which other browsers support it.</p>
 <p class="admonition-title">Hint</p>
 <p>This is handy for cases where you search for twice the same thing in a sentence,
 for instance.
-You can have both matches coloured differently.</p>
+You can have both matches colored differently.</p>
 </div>
 </dd>
 </dl>
@@ -490,22 +490,22 @@ but with a twist:
 you can search in several layers of the corpus by means of several regexes in parallel.
 It is a method to make good use of the annotations that exist in the corpus at various levels.</p>
 <p>Regular expressions are a key tool for specifying sophisticated search patterns.
-Their theoretical foundation was layed in the 1950s,
+Their theoretical foundation was laid in the 1950s,
 and by now they have been implemented in all major
 programming languages and in all powerful text-editors.</p>
 <p>If this is the first time you encounter them, it will pay off to get to know them well,
 because it is very likely that you encounter them again.</p>
 <p>For more background,
-read <a href="https://en.wikipedia.org/wiki/Regular_expression">wikipedia</a>.</p>
+read <a href="https://en.wikipedia.org/wiki/Regular_expression">Wikipedia</a>.</p>
 <h1 id="the-search-interface-as-app">The search interface as app</h1>
 <p>We have implemented layered search as an offline Single Page Application.</p>
 <p>The app consists of a single HTML file (<em>app</em><code>.html</code>),
-a CSS file, PNG files (logos) and Javascript files.
-The corpus data is in a big Javascript file, the corpus configuration in a small one.
-The remaining Javascript files are the modules of the program.</p>
-<p>Modern browsers can take in modular Javascript, except when you have the HTML file
+a CSS file, PNG files (logos) and JavaScript files.
+The corpus data is in a big JavaScript file, the corpus configuration in a small one.
+The remaining JavaScript files are the modules of the program.</p>
+<p>Modern browsers can take in modular JavaScript, except when you have the HTML file
 locally on your computer and you open it with a double click.
-Your browser has then <code>file://</code> in its URL bar, and in that case modular Javascript does
+Your browser has then <code>file://</code> in its URL bar, and in that case modular JavaScript does
 not work.</p>
 <p>To overcome that, we have also bundled the program in a single file, and that is included by
 <em>app</em>-<code>local.html</code>.</p>
@@ -523,34 +523,34 @@ without further internet connection (except when you navigate to external links)
 </ul>
 <p>When the browser remembers your previous jobs,
 it does not use cookies for it but
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage">localStorage</a>,
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage"><code>localStorage</code></a>,
 which other sites cannot read.</p>
 <h1 id="making-this-app">Making this app</h1>
 <p>The construction of this app relies very much of the organization of the corpus
-as a Text-Fabric dataset.</p>
+as a TF dataset.</p>
 <p>The process of creating a layered search functionality
-is baked into Text-Fabric.</p>
+is baked into TF.</p>
 <p>The designer needs to specify the layers in a <code>.yaml</code> file
 and write a small piece of code to generate the data for the layers
-from the corresponding Text-Fabric dataset.</p>
+from the corresponding TF dataset.</p>
 <p>See e.g.
-<a href="https://github.com/CambridgeSemiticsLab/nena_tf/tree/master/app">app-nena/layeredsearch</a>.</p>
+<a href="https://github.com/CambridgeSemiticsLab/nena_tf/tree/master/app"><code>app-nena/layeredsearch</code></a>.</p>
 <p>All the rest (building, shipping, and deploying the app) is then automatic,
 See <code><a title="tf.client.make.build" href="../client/make/build.html">tf.client.make.build</a></code>.</p>
 <p>The first layered search interface created this way is one for the
 <a href="https://github.com/CambridgeSemiticsLab/nena_tf">NENA</a> corpus.</p>
-<p>We intend to make more interfaces for other Text-Fabric corpora,
+<p>We intend to make more interfaces for other TF corpora,
 reducing and streamlining the preparation effort in the process.</p>
 <h1 id="credits">Credits</h1>
 <p>The idea for this app came out of a discussion of
 <a href="https://www.linkedin.com/in/cody-kingham-1135018a">Cody Kingham</a>
 and me about how we could make a simple but usable search interface
-for people that need to get hands on with a Text-Fabric corpus.</p>
-<p>Given that we have the corpus data at our finger tips through Text-Fabric,
-but that TF-Query (<code><a title="tf.about.searchusage" href="searchusage.html">tf.about.searchusage</a></code>) does not cover over all use cases,
+for people that need to get hands on with a TF corpus.</p>
+<p>Given that we have the corpus data at our finger tips through TF,
+but that TF Query (<code><a title="tf.about.searchusage" href="searchusage.html">tf.about.searchusage</a></code>) does not cover over all use cases,
 and requires installing Python,
 we adopted the approach to assemble data
-and power a simple Javascript program with it.</p>
+and power a simple JavaScript program with it.</p>
 <p>The first implementation of these idea was funded by
 <a href="https://www.ames.cam.ac.uk/people/professor-geoffrey-khan">Prof. Geoffrey Khan</a>,
 reviewed by Cody Kingham and the people of
@@ -560,7 +560,7 @@ and eventually written by
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/about/clientmanual.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/about/clientmanual.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/clientmanual.md

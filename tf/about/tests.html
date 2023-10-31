@@ -24,24 +24,24 @@
 </header>
 <section id="section-intro">
 <h1 id="unit-tests">Unit tests</h1>
-<p>The Text-Fabric program code implements a combinatorical explosion.
+<p>The TF program code implements a combinatorial explosion.
 There are many environments in which the core engine operates, there
 are several apps that make use of it, and there is a built in query language.</p>
 <p>One way of mastering the complexity and safeguarding the correctness of it all,
 is by employing <a href="https://en.wikipedia.org/wiki/Unit_testing">unit tests</a>.</p>
-<p>To my embarrassment, most parts of Text-Fabric are not covered by unit tests.</p>
+<p>To my embarrassment, most parts of TF are not covered by unit tests.</p>
 <p>Here we describe the parts that are covered.
 But first a few words about the machinery of unit testing.</p>
 <h2 id="corpus">Corpus</h2>
 <p>We build a
 <a href="https://github.com/annotation/text-fabric/tree/master/test/generic/tf">test corpus</a>,
-wich contains only 10 slots, with node type <code>sign</code> and one other node type <code>part</code>.</p>
+which contains only 10 slots, with node type <code>sign</code> and one other node type <code>part</code>.</p>
 <p>The code to build it is in
 <a href="https://github.com/annotation/text-fabric/blob/master/test/generic/makeTestTf.py">makeTestTf.py</a>.</p>
 <p>Probably the corpus will be enlarged when new tests are being implemented.</p>
 <h2 id="framework">Framework</h2>
 <p>We use the
-<a href="https://docs.python.org/3/library/unittest.html#module-unittest">unittest</a>
+<a href="https://docs.python.org/3/library/unittest.html#module-unittest"><code>unittest</code></a>
 framework that comes with Python.</p>
 <p>It is just a few lines to setup a test class, hence we have not yet separated the code
 for setting up the tests and the data for the specific test suites.
@@ -66,7 +66,7 @@ leading to 2500 queries, which will all be tested against expected answers.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/about/tests.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/about/tests.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/tests.md

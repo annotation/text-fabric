@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/xmlCustom.py#L1-L326" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/xmlCustom.py#L1-L326" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 from lxml import etree
@@ -76,7 +76,7 @@ def convertTaskDefault(self):
         empty=dict(description=&#34;whether a slot has been inserted in an empty element&#34;),
     )
 
-    featureMeta[&#34;ch&#34;] = dict(description=&#34;the unicode character of a slot&#34;)
+    featureMeta[&#34;ch&#34;] = dict(description=&#34;the UNICODE character of a slot&#34;)
     featureMeta[FOLDER] = dict(description=f&#34;name of source {FOLDER}&#34;)
     featureMeta[FILE] = dict(description=f&#34;name of source {FILE}&#34;)
 
@@ -156,12 +156,12 @@ def getDirector(self):
         Parameters
         ----------
         cv: object
-            The convertor object, needed to issue actions.
+            The converter object, needed to issue actions.
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
         xnode: object
-            An lxml element node.
+            An LXML element node.
         &#34;&#34;&#34;
         if procins and isinstance(xnode, etree._ProcessingInstruction):
             target = xnode.target
@@ -191,12 +191,12 @@ def getDirector(self):
         &#34;&#34;&#34;Add a slot.
 
         Whenever we encounter a character, we add it as a new slot.
-        If needed, we start/terminate word nodes as well.
+        If needed, we start / terminate word nodes as well.
 
         Parameters
         ----------
         cv: object
-            The convertor object, needed to issue actions.
+            The converter object, needed to issue actions.
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
@@ -212,16 +212,16 @@ def getDirector(self):
         Parameters
         ----------
         cv: object
-            The convertor object, needed to issue actions.
+            The converter object, needed to issue actions.
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
         xnode: object
-            An lxml element node.
+            An LXML element node.
         tag: string
-            The tag of the lxml node.
+            The tag of the LXML node.
         atts: dict
-            The attributes of the lxml node, possibly renamed.
+            The attributes of the LXML node, possibly renamed.
         &#34;&#34;&#34;
         if tag not in PASS_THROUGH:
             curNode = cv.node(tag)
@@ -243,16 +243,16 @@ def getDirector(self):
         Parameters
         ----------
         cv: object
-            The convertor object, needed to issue actions.
+            The converter object, needed to issue actions.
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
         xnode: object
-            An lxml element node.
+            An LXML element node.
         tag: string
-            The tag of the lxml node.
+            The tag of the LXML node.
         atts: dict
-            The attributes of the lxml node, possibly renamed.
+            The attributes of the LXML node, possibly renamed.
         &#34;&#34;&#34;
         if tag not in PASS_THROUGH:
             curNode = cur[TNEST].pop()
@@ -266,23 +266,23 @@ def getDirector(self):
     def afterTag(cv, cur, xnode, tag, atts):
         &#34;&#34;&#34;Node actions after dealing with the children and after the end tag.
 
-        This is the place where we proces the `tail` of an lxml node: the
+        This is the place where we process the `tail` of an LXML node: the
         text material after the element and before the next open/close
         tag of any element.
 
         Parameters
         ----------
         cv: object
-            The convertor object, needed to issue actions.
+            The converter object, needed to issue actions.
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
         xnode: object
-            An lxml element node.
+            An LXML element node.
         tag: string
-            The tag of the lxml node.
+            The tag of the LXML node.
         atts: dict
-            The attributes of the lxml node, possibly renamed.
+            The attributes of the LXML node, possibly renamed.
         &#34;&#34;&#34;
         if xnode.tail:
             tailMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, xnode.tail)
@@ -302,7 +302,7 @@ def getDirector(self):
         Parameters
         ----------
         cv: object
-            The convertor object, needed to issue actions.
+            The converter object, needed to issue actions.
         &#34;&#34;&#34;
         cur = {}
 
@@ -377,7 +377,7 @@ def getDirector(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/xmlCustom.py#L11-L75" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/xmlCustom.py#L11-L75" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTaskDefault(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -417,7 +417,7 @@ def getDirector(self):
         empty=dict(description=&#34;whether a slot has been inserted in an empty element&#34;),
     )
 
-    featureMeta[&#34;ch&#34;] = dict(description=&#34;the unicode character of a slot&#34;)
+    featureMeta[&#34;ch&#34;] = dict(description=&#34;the UNICODE character of a slot&#34;)
     featureMeta[FOLDER] = dict(description=f&#34;name of source {FOLDER}&#34;)
     featureMeta[FILE] = dict(description=f&#34;name of source {FILE}&#34;)
 
@@ -466,7 +466,7 @@ object. If you then tweak it, you can pass it to the XML() object constructor.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/xmlCustom.py#L78-L326" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/xmlCustom.py#L78-L326" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -519,12 +519,12 @@ object. If you then tweak it, you can pass it to the XML() object constructor.</
         Parameters
         ----------
         cv: object
-            The convertor object, needed to issue actions.
+            The converter object, needed to issue actions.
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
         xnode: object
-            An lxml element node.
+            An LXML element node.
         &#34;&#34;&#34;
         if procins and isinstance(xnode, etree._ProcessingInstruction):
             target = xnode.target
@@ -554,12 +554,12 @@ object. If you then tweak it, you can pass it to the XML() object constructor.</
         &#34;&#34;&#34;Add a slot.
 
         Whenever we encounter a character, we add it as a new slot.
-        If needed, we start/terminate word nodes as well.
+        If needed, we start / terminate word nodes as well.
 
         Parameters
         ----------
         cv: object
-            The convertor object, needed to issue actions.
+            The converter object, needed to issue actions.
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
@@ -575,16 +575,16 @@ object. If you then tweak it, you can pass it to the XML() object constructor.</
         Parameters
         ----------
         cv: object
-            The convertor object, needed to issue actions.
+            The converter object, needed to issue actions.
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
         xnode: object
-            An lxml element node.
+            An LXML element node.
         tag: string
-            The tag of the lxml node.
+            The tag of the LXML node.
         atts: dict
-            The attributes of the lxml node, possibly renamed.
+            The attributes of the LXML node, possibly renamed.
         &#34;&#34;&#34;
         if tag not in PASS_THROUGH:
             curNode = cv.node(tag)
@@ -606,16 +606,16 @@ object. If you then tweak it, you can pass it to the XML() object constructor.</
         Parameters
         ----------
         cv: object
-            The convertor object, needed to issue actions.
+            The converter object, needed to issue actions.
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
         xnode: object
-            An lxml element node.
+            An LXML element node.
         tag: string
-            The tag of the lxml node.
+            The tag of the LXML node.
         atts: dict
-            The attributes of the lxml node, possibly renamed.
+            The attributes of the LXML node, possibly renamed.
         &#34;&#34;&#34;
         if tag not in PASS_THROUGH:
             curNode = cur[TNEST].pop()
@@ -629,23 +629,23 @@ object. If you then tweak it, you can pass it to the XML() object constructor.</
     def afterTag(cv, cur, xnode, tag, atts):
         &#34;&#34;&#34;Node actions after dealing with the children and after the end tag.
 
-        This is the place where we proces the `tail` of an lxml node: the
+        This is the place where we process the `tail` of an LXML node: the
         text material after the element and before the next open/close
         tag of any element.
 
         Parameters
         ----------
         cv: object
-            The convertor object, needed to issue actions.
+            The converter object, needed to issue actions.
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
         xnode: object
-            An lxml element node.
+            An LXML element node.
         tag: string
-            The tag of the lxml node.
+            The tag of the LXML node.
         atts: dict
-            The attributes of the lxml node, possibly renamed.
+            The attributes of the LXML node, possibly renamed.
         &#34;&#34;&#34;
         if xnode.tail:
             tailMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, xnode.tail)
@@ -665,7 +665,7 @@ object. If you then tweak it, you can pass it to the XML() object constructor.</
         Parameters
         ----------
         cv: object
-            The convertor object, needed to issue actions.
+            The converter object, needed to issue actions.
         &#34;&#34;&#34;
         cur = {}
 

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>tf.advanced.links API documentation</title>
-<meta name="description" content="Produce links to Text-Fabric data and links from nodes to web resources." />
+<meta name="description" content="Produce links to TF data and links from nodes to web resources." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -23,14 +23,14 @@
 <h1 class="title">Module <code>tf.advanced.links</code></h1>
 </header>
 <section id="section-intro">
-<p>Produce links to Text-Fabric data and links from nodes to web resources.</p>
+<p>Produce links to TF data and links from nodes to web resources.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/links.py#L1-L1015" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/links.py#L1-L1015" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-Produce links to Text-Fabric data and links from nodes to web resources.
+Produce links to TF data and links from nodes to web resources.
 &#34;&#34;&#34;
 
 import re
@@ -66,7 +66,7 @@ UNSUPPORTED = &#34;&#34;
 def linksApi(app, silent=SILENT_D):
     &#34;&#34;&#34;Produce the link API.
 
-    The link API provides methods to maps nodes to urls of web resources.
+    The link API provides methods to maps nodes to URLs of web resources.
     It also computes several provenance and documentation links from the
     configuration settings of the corpus.
 
@@ -80,7 +80,7 @@ def linksApi(app, silent=SILENT_D):
     ----------
     app: obj
         The high-level API object
-    silent: string, optional tf.core.timestamp.SILENT_D`
+    silent: string, optional `tf.core.timestamp.SILENT_D`
         See `tf.core.timestamp.Timestamp`
         Normally the silent parameter is taken from the app,
         but when we do an `A.reuse()` we force `silent=&#34;deep&#34;`.
@@ -173,7 +173,7 @@ def linksApi(app, silent=SILENT_D):
         else &#34;no app configured&#34;
     )
     tfLink = outLink(
-        f&#34;Text-Fabric API {app.TF.version}&#34;,
+        f&#34;TF API {app.TF.version}&#34;,
         APIREF,
         &#34;text-fabric-api&#34;,
         asHtml=inNb or _browse,
@@ -213,16 +213,16 @@ def linksApi(app, silent=SILENT_D):
 
 
 def header(app, allMeta=False):
-    &#34;&#34;&#34;Generate a colofon of the app.
+    &#34;&#34;&#34;Generate a colophon of the app.
 
-    This colofon will be displayed after initializing the advanced API,
+    This colophon will be displayed after initializing the advanced API,
     and it is packed with provenance and documentation links.
 
     Parameters
     ----------
     allMeta: boolean, optional False
         If True, includes all metadata of all features. This leads to big
-        stretches of largely redundant information in html details elements.
+        stretches of largely redundant information in HTML details elements.
         It is not visually cumbersome, but notebooks may grow excessively
         if you load many datasets many times. So, if False, it will suppress
         all that metadata except the description keys.
@@ -239,7 +239,7 @@ def header(app, allMeta=False):
     _browse = app._browse
 
     if _browse:
-        colofon = dedent(
+        colophon = dedent(
             f&#34;&#34;&#34;
             &lt;div class=&#34;hdlinks&#34;&gt;
               {dataLink}
@@ -251,7 +251,7 @@ def header(app, allMeta=False):
             &#34;&#34;&#34;
         )
     else:
-        colofon = &#34;&#34;
+        colophon = &#34;&#34;
 
     nodeInfo = _nodeTypeInfo(app)
     featureInfo = _featuresPerModule(app, allMeta=allMeta or _browse)
@@ -267,7 +267,7 @@ def header(app, allMeta=False):
         )
         commonHeader = dedent(
             f&#34;&#34;&#34;
-            &lt;b&gt;Text-Fabric:&lt;/b&gt; {tfLine}&lt;br&gt;
+            &lt;b&gt;TF:&lt;/b&gt; {tfLine}&lt;br&gt;
             &lt;b&gt;Data:&lt;/b&gt; {dataLine}&lt;br&gt;
             {nodeInfo}
             &lt;b&gt;Sets:&lt;/b&gt; {setLine}&lt;br&gt;
@@ -279,7 +279,7 @@ def header(app, allMeta=False):
             dh(commonHeader)
         else:
             return (
-                colofon,
+                colophon,
                 commonHeader,
                 &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/data/static/logo.png&#34;/&gt;&#39;,
                 &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/browser/static/icon.png&#34;/&gt;&#39;,
@@ -289,7 +289,7 @@ def header(app, allMeta=False):
         dataLine = &#34;\n\t&#34;.join(x for x in (dataLink, charLink, featureLink) if x)
         setLine = &#34;, &#34;.join(x for x in (app.sets or {}))
         console(
-            f&#34;Text-Fabric:\n\t{tfLine}\n&#34; f&#34;Data:\n\t{dataLine}\n&#34; f&#34;{nodeInfo}&#34;,
+            f&#34;TF:\n\t{tfLine}\n&#34; f&#34;Data:\n\t{dataLine}\n&#34; f&#34;{nodeInfo}&#34;,
             f&#34;Sets: {setLine}\n&#34;,
             f&#34;Features:\n{featureInfo}\n&#34;,
             newline=False,
@@ -308,7 +308,7 @@ def webLink(
     the app&#39;s `config.yaml`.
 
     !!! hint &#34;Customizable&#34;
-        You can customize the behaviour of `webLink()` to the needs of your corpus
+        You can customize the behavior of `webLink()` to the needs of your corpus
         by providing appropriate values in its `config.yaml`, especially for
         `webBase`, `webLang`, `webOffset`, `webFeature`, `webUrl`, `webUrlLex`, and `webHint`.
 
@@ -316,19 +316,19 @@ def webLink(
     ----------
     n: int
         A node
-    text: string/HTML, optional default `None`
+    text: string, optional default `None`
         The text of the link. If left out, a suitable text will be derived from
         the node.
     clsName: string, optional default `None`
         A CSS class name to add to the resulting link element
     urlOnly: boolean, optional False
-        If True, only the url will be returned.
+        If True, only the URL will be returned.
     _asString: boolean, optional False
         Whether to deliver the result as a piece of HTML or to display the link
         on the (Jupyter) interface.
     _noUrl: boolean, optional False
-        Whether to put the generated url in the `href` attribute.
-        It can be inhibited. This is useful for the TF-browser, which may want
+        Whether to put the generated URL in the `href` attribute.
+        It can be inhibited. This is useful for the TF browser, which may want
         to attach an action to the link and navigate to a location based on
         other attributes.
 
@@ -448,7 +448,7 @@ def showProvenance(app, jobName=&#34;program code&#34;, author=&#34;program auth
     ----------
     jobName: string, optional program code
         E.g. the name of program in which you call this function.
-        In the Text-Fabric browser the name of the job will be entered here.
+        In the TF browser the name of the job will be entered here.
         This item will be displayed together with the rest of the provenance.
 
     author: string, optional program author
@@ -547,16 +547,16 @@ def outLink(
     text: string/HTML
         The text of the link.
     href: string/URL
-        The url of the link.
+        The URL of the link.
     title: string, optional None
         The hint of the link.
     target: string, optional _blank
-        The target window/tab of the link.
+        The target window / tab of the link.
     clsName: string, optional default `None`
         A CSS class name to add to the resulting link element
     passage: string, optional None
         A passage indicator, which will end up in the `sec` attribute of the
-        link element. Used by the TF-browser.
+        link element. Used by the TF browser.
     asHtml: boolean, optional True
         Whether we are in a notebook or in the browser.
         If not, a plain text representation of the link will be made.
@@ -600,7 +600,7 @@ def _nodeTypeInfo(app):
                 &lt;tr&gt;
                     &lt;th&gt;Name&lt;/th&gt;
                     &lt;th&gt;# of nodes&lt;/th&gt;
-                    &lt;th&gt;# slots/node&lt;/th&gt;
+                    &lt;th&gt;# slots / node&lt;/th&gt;
                     &lt;th&gt;% coverage&lt;/th&gt;
                 &lt;/tr&gt;
             &#34;&#34;&#34;
@@ -906,7 +906,7 @@ def _getSettings(app, inNb):
 
     Returns
     -------
-    html
+    string
         An expandable list of the key-value pair for the requested keys.
 
     See Also
@@ -933,7 +933,7 @@ def provenanceLink(
 ):
     &#34;&#34;&#34;Generate a provenance link for a data source.
 
-    We assume the data source resides somewhere inside a backend repository.
+    We assume the data source resides somewhere inside a back-end repository.
 
     Parameters
     ----------
@@ -948,12 +948,12 @@ def provenanceLink(
         This is not the release or commit of a repo, but the subdirectory
         corresponding with a data version under a `tf` directory with feature files.
     branch: string
-        The branch on the backend of the repository (typically `master` or `main`)
+        The branch on the back-end of the repository (typically `master` or `main`)
     commit: string
         The commit hash of the repository
     local: boolean
         Whether the data is on the local computer and not necessarily backed up
-        by a backend repository
+        by a back-end repository
     release: string
         The release tag of the repository
     &#34;&#34;&#34;
@@ -993,36 +993,36 @@ def provenanceLink(
 
 
 def flexLink(app, kind):
-    &#34;&#34;&#34;Produce documentation links that are heavily dependent on the backend.
+    &#34;&#34;&#34;Produce documentation links that are heavily dependent on the back-end.
 
     These are links to tutorials and other documentation.
 
-    If the backend is GitLab or GitHub, notebooks can be viewed on NBviewer.
-    But if the backend is on-premiss, we assume that notebooks are
-    converted to html and then published on the Pages of the on-premiss GitLab.
+    If the back-end is GitLab or GitHub, notebooks can be viewed on NBViewer.
+    But if the back-end is on-premise, we assume that notebooks are
+    converted to HTML and then published on the Pages of the on-premise GitLab.
 
-    What exactly the link to such an on-premiss Pages service is, may depend on
+    What exactly the link to such an on-premise Pages service is, may depend on
     a config setting.
 
     This function resolves all that.
 
     !!! note &#34;Converting notebooks to HTML&#34;
-        There is now a tool in text-fabric to convert a directory of notebooks to
+        There is now a tool in TF to convert a directory of notebooks to
         HTML. See `tf.tools.nbconvert`.
 
     Parameters
     ----------
     kind: string
-        Indicates what kind of url value should be returned:
+        Indicates what kind of URL value should be returned:
 
-        *   `pages`: url of the repo in the Pages service of the backend;
-        *   `tut`: url of the start tutorial, either on NB viewer or in the Pages
-            service of the backend.
+        *   `pages`: URL of the repo in the Pages service of the back-end;
+        *   `tut`: URL of the start tutorial, either on NB viewer or in the Pages
+            service of the back-end.
 
     Returns
     -------
     string
-        The complete url.
+        The complete URL.
     &#34;&#34;&#34;
     backend = app.backend
     aContext = app.context
@@ -1057,72 +1057,72 @@ def flexLink(app, kind):
 <span>def <span class="ident">flexLink</span></span>(<span>app, kind)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Produce documentation links that are heavily dependent on the backend.</p>
+<div class="desc"><p>Produce documentation links that are heavily dependent on the back-end.</p>
 <p>These are links to tutorials and other documentation.</p>
-<p>If the backend is GitLab or GitHub, notebooks can be viewed on NBviewer.
-But if the backend is on-premiss, we assume that notebooks are
-converted to html and then published on the Pages of the on-premiss GitLab.</p>
-<p>What exactly the link to such an on-premiss Pages service is, may depend on
+<p>If the back-end is GitLab or GitHub, notebooks can be viewed on NBViewer.
+But if the back-end is on-premise, we assume that notebooks are
+converted to HTML and then published on the Pages of the on-premise GitLab.</p>
+<p>What exactly the link to such an on-premise Pages service is, may depend on
 a config setting.</p>
 <p>This function resolves all that.</p>
 <div class="admonition note">
 <p class="admonition-title">Converting notebooks to HTML</p>
-<p>There is now a tool in text-fabric to convert a directory of notebooks to
+<p>There is now a tool in TF to convert a directory of notebooks to
 HTML. See <code><a title="tf.tools.nbconvert" href="../tools/nbconvert.html">tf.tools.nbconvert</a></code>.</p>
 </div>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>kind</code></strong> :&ensp;<code>string</code></dt>
 <dd>
-<p>Indicates what kind of url value should be returned:</p>
+<p>Indicates what kind of URL value should be returned:</p>
 <ul>
-<li><code>pages</code>: url of the repo in the Pages service of the backend;</li>
-<li><code>tut</code>: url of the start tutorial, either on NB viewer or in the Pages
-service of the backend.</li>
+<li><code>pages</code>: URL of the repo in the Pages service of the back-end;</li>
+<li><code>tut</code>: URL of the start tutorial, either on NB viewer or in the Pages
+service of the back-end.</li>
 </ul>
 </dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>string</code></dt>
-<dd>The complete url.</dd>
+<dd>The complete URL.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/links.py#L964-L1015" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/links.py#L964-L1015" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def flexLink(app, kind):
-    &#34;&#34;&#34;Produce documentation links that are heavily dependent on the backend.
+    &#34;&#34;&#34;Produce documentation links that are heavily dependent on the back-end.
 
     These are links to tutorials and other documentation.
 
-    If the backend is GitLab or GitHub, notebooks can be viewed on NBviewer.
-    But if the backend is on-premiss, we assume that notebooks are
-    converted to html and then published on the Pages of the on-premiss GitLab.
+    If the back-end is GitLab or GitHub, notebooks can be viewed on NBViewer.
+    But if the back-end is on-premise, we assume that notebooks are
+    converted to HTML and then published on the Pages of the on-premise GitLab.
 
-    What exactly the link to such an on-premiss Pages service is, may depend on
+    What exactly the link to such an on-premise Pages service is, may depend on
     a config setting.
 
     This function resolves all that.
 
     !!! note &#34;Converting notebooks to HTML&#34;
-        There is now a tool in text-fabric to convert a directory of notebooks to
+        There is now a tool in TF to convert a directory of notebooks to
         HTML. See `tf.tools.nbconvert`.
 
     Parameters
     ----------
     kind: string
-        Indicates what kind of url value should be returned:
+        Indicates what kind of URL value should be returned:
 
-        *   `pages`: url of the repo in the Pages service of the backend;
-        *   `tut`: url of the start tutorial, either on NB viewer or in the Pages
-            service of the backend.
+        *   `pages`: URL of the repo in the Pages service of the back-end;
+        *   `tut`: URL of the start tutorial, either on NB viewer or in the Pages
+            service of the back-end.
 
     Returns
     -------
     string
-        The complete url.
+        The complete URL.
     &#34;&#34;&#34;
     backend = app.backend
     aContext = app.context
@@ -1150,14 +1150,14 @@ service of the backend.</li>
 <span>def <span class="ident">header</span></span>(<span>app, allMeta=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Generate a colofon of the app.</p>
-<p>This colofon will be displayed after initializing the advanced API,
+<div class="desc"><p>Generate a colophon of the app.</p>
+<p>This colophon will be displayed after initializing the advanced API,
 and it is packed with provenance and documentation links.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>allMeta</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>If True, includes all metadata of all features. This leads to big
-stretches of largely redundant information in html details elements.
+stretches of largely redundant information in HTML details elements.
 It is not visually cumbersome, but notebooks may grow excessively
 if you load many datasets many times. So, if False, it will suppress
 all that metadata except the description keys.</dd>
@@ -1165,19 +1165,19 @@ all that metadata except the description keys.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/links.py#L184-L265" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/links.py#L184-L265" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def header(app, allMeta=False):
-    &#34;&#34;&#34;Generate a colofon of the app.
+    &#34;&#34;&#34;Generate a colophon of the app.
 
-    This colofon will be displayed after initializing the advanced API,
+    This colophon will be displayed after initializing the advanced API,
     and it is packed with provenance and documentation links.
 
     Parameters
     ----------
     allMeta: boolean, optional False
         If True, includes all metadata of all features. This leads to big
-        stretches of largely redundant information in html details elements.
+        stretches of largely redundant information in HTML details elements.
         It is not visually cumbersome, but notebooks may grow excessively
         if you load many datasets many times. So, if False, it will suppress
         all that metadata except the description keys.
@@ -1194,7 +1194,7 @@ all that metadata except the description keys.</dd>
     _browse = app._browse
 
     if _browse:
-        colofon = dedent(
+        colophon = dedent(
             f&#34;&#34;&#34;
             &lt;div class=&#34;hdlinks&#34;&gt;
               {dataLink}
@@ -1206,7 +1206,7 @@ all that metadata except the description keys.</dd>
             &#34;&#34;&#34;
         )
     else:
-        colofon = &#34;&#34;
+        colophon = &#34;&#34;
 
     nodeInfo = _nodeTypeInfo(app)
     featureInfo = _featuresPerModule(app, allMeta=allMeta or _browse)
@@ -1222,7 +1222,7 @@ all that metadata except the description keys.</dd>
         )
         commonHeader = dedent(
             f&#34;&#34;&#34;
-            &lt;b&gt;Text-Fabric:&lt;/b&gt; {tfLine}&lt;br&gt;
+            &lt;b&gt;TF:&lt;/b&gt; {tfLine}&lt;br&gt;
             &lt;b&gt;Data:&lt;/b&gt; {dataLine}&lt;br&gt;
             {nodeInfo}
             &lt;b&gt;Sets:&lt;/b&gt; {setLine}&lt;br&gt;
@@ -1234,7 +1234,7 @@ all that metadata except the description keys.</dd>
             dh(commonHeader)
         else:
             return (
-                colofon,
+                colophon,
                 commonHeader,
                 &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/data/static/logo.png&#34;/&gt;&#39;,
                 &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/browser/static/icon.png&#34;/&gt;&#39;,
@@ -1244,7 +1244,7 @@ all that metadata except the description keys.</dd>
         dataLine = &#34;\n\t&#34;.join(x for x in (dataLink, charLink, featureLink) if x)
         setLine = &#34;, &#34;.join(x for x in (app.sets or {}))
         console(
-            f&#34;Text-Fabric:\n\t{tfLine}\n&#34; f&#34;Data:\n\t{dataLine}\n&#34; f&#34;{nodeInfo}&#34;,
+            f&#34;TF:\n\t{tfLine}\n&#34; f&#34;Data:\n\t{dataLine}\n&#34; f&#34;{nodeInfo}&#34;,
             f&#34;Sets: {setLine}\n&#34;,
             f&#34;Features:\n{featureInfo}\n&#34;,
             newline=False,
@@ -1256,7 +1256,7 @@ all that metadata except the description keys.</dd>
 </code></dt>
 <dd>
 <div class="desc"><p>Produce the link API.</p>
-<p>The link API provides methods to maps nodes to urls of web resources.
+<p>The link API provides methods to maps nodes to URLs of web resources.
 It also computes several provenance and documentation links from the
 configuration settings of the corpus.</p>
 <p>If a single volume has been loaded, there will be added a provenance notice
@@ -1267,7 +1267,7 @@ sections of the work are part of it.</p>
 <dl>
 <dt><strong><code>app</code></strong> :&ensp;<code>obj</code></dt>
 <dd>The high-level API object</dd>
-<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional `tf.core.timestamp.SILENT_D``</dt>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code><a title="tf.core.timestamp.SILENT_D" href="../core/timestamp.html#tf.core.timestamp.SILENT_D">SILENT_D</a></code></dt>
 <dd>See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code>
 Normally the silent parameter is taken from the app,
 but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</dd>
@@ -1275,12 +1275,12 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/links.py#L35-L181" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/links.py#L35-L181" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linksApi(app, silent=SILENT_D):
     &#34;&#34;&#34;Produce the link API.
 
-    The link API provides methods to maps nodes to urls of web resources.
+    The link API provides methods to maps nodes to URLs of web resources.
     It also computes several provenance and documentation links from the
     configuration settings of the corpus.
 
@@ -1294,7 +1294,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
     ----------
     app: obj
         The high-level API object
-    silent: string, optional tf.core.timestamp.SILENT_D`
+    silent: string, optional `tf.core.timestamp.SILENT_D`
         See `tf.core.timestamp.Timestamp`
         Normally the silent parameter is taken from the app,
         but when we do an `A.reuse()` we force `silent=&#34;deep&#34;`.
@@ -1387,7 +1387,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
         else &#34;no app configured&#34;
     )
     tfLink = outLink(
-        f&#34;Text-Fabric API {app.TF.version}&#34;,
+        f&#34;TF API {app.TF.version}&#34;,
         APIREF,
         &#34;text-fabric-api&#34;,
         asHtml=inNb or _browse,
@@ -1436,16 +1436,16 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
 <dt><strong><code>text</code></strong> :&ensp;<code>string/HTML</code></dt>
 <dd>The text of the link.</dd>
 <dt><strong><code>href</code></strong> :&ensp;<code>string/URL</code></dt>
-<dd>The url of the link.</dd>
+<dd>The URL of the link.</dd>
 <dt><strong><code>title</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
 <dd>The hint of the link.</dd>
 <dt><strong><code>target</code></strong> :&ensp;<code>string</code>, optional <code>_blank</code></dt>
-<dd>The target window/tab of the link.</dd>
+<dd>The target window / tab of the link.</dd>
 <dt><strong><code>clsName</code></strong> :&ensp;<code>string</code>, optional <code>default </code>None``</dt>
 <dd>A CSS class name to add to the resulting link element</dd>
 <dt><strong><code>passage</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
 <dd>A passage indicator, which will end up in the <code>sec</code> attribute of the
-link element. Used by the TF-browser.</dd>
+link element. Used by the TF browser.</dd>
 <dt><strong><code>asHtml</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
 <dd>Whether we are in a notebook or in the browser.
 If not, a plain text representation of the link will be made.</dd>
@@ -1453,7 +1453,7 @@ If not, a plain text representation of the link will be made.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/links.py#L509-L545" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/links.py#L509-L545" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def outLink(
     text, href, title=None, passage=None, clsName=None, target=&#34;_blank&#34;, asHtml=True
@@ -1465,16 +1465,16 @@ If not, a plain text representation of the link will be made.</dd>
     text: string/HTML
         The text of the link.
     href: string/URL
-        The url of the link.
+        The URL of the link.
     title: string, optional None
         The hint of the link.
     target: string, optional _blank
-        The target window/tab of the link.
+        The target window / tab of the link.
     clsName: string, optional default `None`
         A CSS class name to add to the resulting link element
     passage: string, optional None
         A passage indicator, which will end up in the `sec` attribute of the
-        link element. Used by the TF-browser.
+        link element. Used by the TF browser.
     asHtml: boolean, optional True
         Whether we are in a notebook or in the browser.
         If not, a plain text representation of the link will be made.
@@ -1499,7 +1499,7 @@ If not, a plain text representation of the link will be made.</dd>
 </code></dt>
 <dd>
 <div class="desc"><p>Generate a provenance link for a data source.</p>
-<p>We assume the data source resides somewhere inside a backend repository.</p>
+<p>We assume the data source resides somewhere inside a back-end repository.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>backend</code></strong> :&ensp;<code>string</code></dt>
@@ -1513,26 +1513,26 @@ If not, a plain text representation of the link will be made.</dd>
 This is not the release or commit of a repo, but the subdirectory
 corresponding with a data version under a <code><a title="tf" href="../index.html">tf</a></code> directory with feature files.</dd>
 <dt><strong><code>branch</code></strong> :&ensp;<code>string</code></dt>
-<dd>The branch on the backend of the repository (typically <code>master</code> or <code>main</code>)</dd>
+<dd>The branch on the back-end of the repository (typically <code>master</code> or <code>main</code>)</dd>
 <dt><strong><code>commit</code></strong> :&ensp;<code>string</code></dt>
 <dd>The commit hash of the repository</dd>
 <dt><strong><code>local</code></strong> :&ensp;<code>boolean</code></dt>
 <dd>Whether the data is on the local computer and not necessarily backed up
-by a backend repository</dd>
+by a back-end repository</dd>
 <dt><strong><code>release</code></strong> :&ensp;<code>string</code></dt>
 <dd>The release tag of the repository</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/links.py#L900-L961" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/links.py#L900-L961" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def provenanceLink(
     backend, org, repo, version, branch, commit, local, release, relative
 ):
     &#34;&#34;&#34;Generate a provenance link for a data source.
 
-    We assume the data source resides somewhere inside a backend repository.
+    We assume the data source resides somewhere inside a back-end repository.
 
     Parameters
     ----------
@@ -1547,12 +1547,12 @@ by a backend repository</dd>
         This is not the release or commit of a repo, but the subdirectory
         corresponding with a data version under a `tf` directory with feature files.
     branch: string
-        The branch on the backend of the repository (typically `master` or `main`)
+        The branch on the back-end of the repository (typically `master` or `main`)
     commit: string
         The commit hash of the repository
     local: boolean
         Whether the data is on the local computer and not necessarily backed up
-        by a backend repository
+        by a back-end repository
     release: string
         The release tag of the repository
     &#34;&#34;&#34;
@@ -1603,7 +1603,7 @@ Moreover, the provenance is shown in a formatted way.</p>
 <dl>
 <dt><strong><code>jobName</code></strong> :&ensp;<code>string</code>, optional <code>program code</code></dt>
 <dd>E.g. the name of program in which you call this function.
-In the Text-Fabric browser the name of the job will be entered here.
+In the TF browser the name of the job will be entered here.
 This item will be displayed together with the rest of the provenance.</dd>
 <dt><strong><code>author</code></strong> :&ensp;<code>string</code>, optional <code>program author</code></dt>
 <dd>E.g. your own name.
@@ -1612,7 +1612,7 @@ This item will be displayed together with the rest of the provenance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/links.py#L409-L444" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/links.py#L409-L444" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showProvenance(app, jobName=&#34;program code&#34;, author=&#34;program author&#34;):
     &#34;&#34;&#34;Shows the provenance that is normally displayed during data loading.
@@ -1625,7 +1625,7 @@ This item will be displayed together with the rest of the provenance.</dd>
     ----------
     jobName: string, optional program code
         E.g. the name of program in which you call this function.
-        In the Text-Fabric browser the name of the job will be entered here.
+        In the TF browser the name of the job will be entered here.
         This item will be displayed together with the rest of the provenance.
 
     author: string, optional program author
@@ -1663,7 +1663,7 @@ section nodes and lexeme nodes, dependent on how they are configured in
 the app's <code>config.yaml</code>.</p>
 <div class="admonition hint">
 <p class="admonition-title">Customizable</p>
-<p>You can customize the behaviour of <code><a title="tf.advanced.links.webLink" href="#tf.advanced.links.webLink">webLink()</a></code> to the needs of your corpus
+<p>You can customize the behavior of <code><a title="tf.advanced.links.webLink" href="#tf.advanced.links.webLink">webLink()</a></code> to the needs of your corpus
 by providing appropriate values in its <code>config.yaml</code>, especially for
 <code>webBase</code>, <code>webLang</code>, <code>webOffset</code>, <code>webFeature</code>, <code>webUrl</code>, <code>webUrlLex</code>, and <code>webHint</code>.</p>
 </div>
@@ -1671,19 +1671,19 @@ by providing appropriate values in its <code>config.yaml</code>, especially for
 <dl>
 <dt><strong><code>n</code></strong> :&ensp;<code>int</code></dt>
 <dd>A node</dd>
-<dt><strong><code>text</code></strong> :&ensp;<code>string/HTML</code>, optional <code>default </code>None``</dt>
+<dt><strong><code>text</code></strong> :&ensp;<code>string</code>, optional <code>default </code>None``</dt>
 <dd>The text of the link. If left out, a suitable text will be derived from
 the node.</dd>
 <dt><strong><code>clsName</code></strong> :&ensp;<code>string</code>, optional <code>default </code>None``</dt>
 <dd>A CSS class name to add to the resulting link element</dd>
 <dt><strong><code>urlOnly</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>If True, only the url will be returned.</dd>
+<dd>If True, only the URL will be returned.</dd>
 <dt><strong><code>_asString</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>Whether to deliver the result as a piece of HTML or to display the link
 on the (Jupyter) interface.</dd>
 <dt><strong><code>_noUrl</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>Whether to put the generated url in the <code>href</code> attribute.
-It can be inhibited. This is useful for the TF-browser, which may want
+<dd>Whether to put the generated URL in the <code>href</code> attribute.
+It can be inhibited. This is useful for the TF browser, which may want
 to attach an action to the link and navigate to a location based on
 other attributes.</dd>
 </dl>
@@ -1695,7 +1695,7 @@ other attributes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/links.py#L268-L406" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/links.py#L268-L406" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def webLink(
     app, n, text=None, clsName=None, urlOnly=False, _asString=False, _noUrl=False
@@ -1709,7 +1709,7 @@ other attributes.</dd>
     the app&#39;s `config.yaml`.
 
     !!! hint &#34;Customizable&#34;
-        You can customize the behaviour of `webLink()` to the needs of your corpus
+        You can customize the behavior of `webLink()` to the needs of your corpus
         by providing appropriate values in its `config.yaml`, especially for
         `webBase`, `webLang`, `webOffset`, `webFeature`, `webUrl`, `webUrlLex`, and `webHint`.
 
@@ -1717,19 +1717,19 @@ other attributes.</dd>
     ----------
     n: int
         A node
-    text: string/HTML, optional default `None`
+    text: string, optional default `None`
         The text of the link. If left out, a suitable text will be derived from
         the node.
     clsName: string, optional default `None`
         A CSS class name to add to the resulting link element
     urlOnly: boolean, optional False
-        If True, only the url will be returned.
+        If True, only the URL will be returned.
     _asString: boolean, optional False
         Whether to deliver the result as a piece of HTML or to display the link
         on the (Jupyter) interface.
     _noUrl: boolean, optional False
-        Whether to put the generated url in the `href` attribute.
-        It can be inhibited. This is useful for the TF-browser, which may want
+        Whether to put the generated URL in the `href` attribute.
+        It can be inhibited. This is useful for the TF browser, which may want
         to attach an action to the link and navigate to a location based on
         other attributes.
 

@@ -30,7 +30,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/fragments.py#L1-L891" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/fragments.py#L1-L891" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Wraps various pieces into HTML.
 
@@ -54,18 +54,18 @@ class Fragments:
         v.messages = H.p((H.span(text, cls=lev) + H.br() for (lev, text) in messageSrc))
 
     def wrapAnnoSets(self):
-        &#34;&#34;&#34;HTML for the annoset chooser.
+        &#34;&#34;&#34;HTML for the annotation set chooser.
 
-        It is a list of buttons, each corresponding to an existing annoset.
-        A click on the button selects that annoset.
-        There is also a control to delete the annoset.
+        It is a list of buttons, each corresponding to an existing annotation set.
+        A click on the button selects that set.
+        There is also a control to delete the set.
 
         Apart from these buttons there is a button to switch to the entities that are
         present in the TF dataset as nodes of the entity type specified
-        in the yaml file with corresponding
+        in the YAML file with corresponding
         features.
 
-        Finally, it is possible to create a new, empty annoset.
+        Finally, it is possible to create a new, empty annotation set.
         &#34;&#34;&#34;
         annotate = self.annotate
         setNames = annotate.setNames
@@ -523,7 +523,7 @@ class Fragments:
     def wrapScope(self):
         &#34;&#34;&#34;HTML for the scope widget.
 
-        The scope widget lets the user choose whether the add/del actions should
+        The scope widget lets the user choose whether the add / del actions should
         be applied to all relevant buckets, or only to the filtered buckets.
         &#34;&#34;&#34;
         v = self.v
@@ -554,12 +554,12 @@ class Fragments:
         v.scopefilter = scopeFilter
 
     def wrapExceptions(self):
-        &#34;&#34;&#34;HTML for the select/deselect buttons.
+        &#34;&#34;&#34;HTML for the select / deselect buttons.
 
         These buttons appear at the end of selected occurrences in the text displayed
         in the buckets.
         The user can select or deselect individual entities for the application of
-        the add/del operations.
+        the add / del operations.
         &#34;&#34;&#34;
         v = self.v
         txt = v.txt
@@ -580,7 +580,7 @@ class Fragments:
                     &#34;✅&#34;,
                     type=&#34;button&#34;,
                     id=&#34;selectall&#34;,
-                    title=f&#34;select all occurences in filtered {bucketType}s&#34;,
+                    title=f&#34;select all occurrences in filtered {bucketType}s&#34;,
                     cls=&#34;icon&#34;,
                 ),
                 &#34; &#34;,
@@ -588,7 +588,7 @@ class Fragments:
                     &#34;❌&#34;,
                     type=&#34;button&#34;,
                     id=&#34;selectnone&#34;,
-                    title=f&#34;deselect all occurences in filtered {bucketType}s&#34;,
+                    title=f&#34;deselect all occurrences in filtered {bucketType}s&#34;,
                     cls=&#34;icon&#34;,
                 ),
             )
@@ -596,7 +596,7 @@ class Fragments:
         return scopeExceptions
 
     def wrapEntityModify(self):
-        &#34;&#34;&#34;HTML for the add/del widget.
+        &#34;&#34;&#34;HTML for the add / del widget.
 
         This widget contains controls to specify which entity feature values
         should be added or deleted.
@@ -893,7 +893,7 @@ class Fragments:
         )
 
     def wrapEntityModReport(self):
-        &#34;&#34;&#34;HTML for the combined report of add/del actions.&#34;&#34;&#34;
+        &#34;&#34;&#34;HTML for the combined report of add / del actions.&#34;&#34;&#34;
         v = self.v
         reportDel = v.reportdel
         reportAdd = v.reportadd
@@ -903,7 +903,7 @@ class Fragments:
         )
 
     def wrapReport(self, report, kind):
-        &#34;&#34;&#34;HTML for the report of add/del actions.&#34;&#34;&#34;
+        &#34;&#34;&#34;HTML for the report of add / del actions.&#34;&#34;&#34;
         v = self.v
         annotate = self.annotate
         settings = annotate.settings
@@ -942,7 +942,7 @@ class Fragments:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/fragments.py#L14-L891" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/fragments.py#L14-L891" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Fragments:
     def wrapMessages(self):
@@ -953,18 +953,18 @@ class Fragments:
         v.messages = H.p((H.span(text, cls=lev) + H.br() for (lev, text) in messageSrc))
 
     def wrapAnnoSets(self):
-        &#34;&#34;&#34;HTML for the annoset chooser.
+        &#34;&#34;&#34;HTML for the annotation set chooser.
 
-        It is a list of buttons, each corresponding to an existing annoset.
-        A click on the button selects that annoset.
-        There is also a control to delete the annoset.
+        It is a list of buttons, each corresponding to an existing annotation set.
+        A click on the button selects that set.
+        There is also a control to delete the set.
 
         Apart from these buttons there is a button to switch to the entities that are
         present in the TF dataset as nodes of the entity type specified
-        in the yaml file with corresponding
+        in the YAML file with corresponding
         features.
 
-        Finally, it is possible to create a new, empty annoset.
+        Finally, it is possible to create a new, empty annotation set.
         &#34;&#34;&#34;
         annotate = self.annotate
         setNames = annotate.setNames
@@ -1422,7 +1422,7 @@ class Fragments:
     def wrapScope(self):
         &#34;&#34;&#34;HTML for the scope widget.
 
-        The scope widget lets the user choose whether the add/del actions should
+        The scope widget lets the user choose whether the add / del actions should
         be applied to all relevant buckets, or only to the filtered buckets.
         &#34;&#34;&#34;
         v = self.v
@@ -1453,12 +1453,12 @@ class Fragments:
         v.scopefilter = scopeFilter
 
     def wrapExceptions(self):
-        &#34;&#34;&#34;HTML for the select/deselect buttons.
+        &#34;&#34;&#34;HTML for the select / deselect buttons.
 
         These buttons appear at the end of selected occurrences in the text displayed
         in the buckets.
         The user can select or deselect individual entities for the application of
-        the add/del operations.
+        the add / del operations.
         &#34;&#34;&#34;
         v = self.v
         txt = v.txt
@@ -1479,7 +1479,7 @@ class Fragments:
                     &#34;✅&#34;,
                     type=&#34;button&#34;,
                     id=&#34;selectall&#34;,
-                    title=f&#34;select all occurences in filtered {bucketType}s&#34;,
+                    title=f&#34;select all occurrences in filtered {bucketType}s&#34;,
                     cls=&#34;icon&#34;,
                 ),
                 &#34; &#34;,
@@ -1487,7 +1487,7 @@ class Fragments:
                     &#34;❌&#34;,
                     type=&#34;button&#34;,
                     id=&#34;selectnone&#34;,
-                    title=f&#34;deselect all occurences in filtered {bucketType}s&#34;,
+                    title=f&#34;deselect all occurrences in filtered {bucketType}s&#34;,
                     cls=&#34;icon&#34;,
                 ),
             )
@@ -1495,7 +1495,7 @@ class Fragments:
         return scopeExceptions
 
     def wrapEntityModify(self):
-        &#34;&#34;&#34;HTML for the add/del widget.
+        &#34;&#34;&#34;HTML for the add / del widget.
 
         This widget contains controls to specify which entity feature values
         should be added or deleted.
@@ -1792,7 +1792,7 @@ class Fragments:
         )
 
     def wrapEntityModReport(self):
-        &#34;&#34;&#34;HTML for the combined report of add/del actions.&#34;&#34;&#34;
+        &#34;&#34;&#34;HTML for the combined report of add / del actions.&#34;&#34;&#34;
         v = self.v
         reportDel = v.reportdel
         reportAdd = v.reportadd
@@ -1802,7 +1802,7 @@ class Fragments:
         )
 
     def wrapReport(self, report, kind):
-        &#34;&#34;&#34;HTML for the report of add/del actions.&#34;&#34;&#34;
+        &#34;&#34;&#34;HTML for the report of add / del actions.&#34;&#34;&#34;
         v = self.v
         annotate = self.annotate
         settings = annotate.settings
@@ -1837,7 +1837,7 @@ class Fragments:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/fragments.py#L845-L859" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/fragments.py#L845-L859" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapActive(self):
     &#34;&#34;&#34;HTML for the active entity.&#34;&#34;&#34;
@@ -1860,33 +1860,33 @@ class Fragments:
 <span>def <span class="ident">wrapAnnoSets</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>HTML for the annoset chooser.</p>
-<p>It is a list of buttons, each corresponding to an existing annoset.
-A click on the button selects that annoset.
-There is also a control to delete the annoset.</p>
+<div class="desc"><p>HTML for the annotation set chooser.</p>
+<p>It is a list of buttons, each corresponding to an existing annotation set.
+A click on the button selects that set.
+There is also a control to delete the set.</p>
 <p>Apart from these buttons there is a button to switch to the entities that are
 present in the TF dataset as nodes of the entity type specified
-in the yaml file with corresponding
+in the YAML file with corresponding
 features.</p>
-<p>Finally, it is possible to create a new, empty annoset.</p></div>
+<p>Finally, it is possible to create a new, empty annotation set.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/fragments.py#L22-L121" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/fragments.py#L22-L121" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapAnnoSets(self):
-    &#34;&#34;&#34;HTML for the annoset chooser.
+    &#34;&#34;&#34;HTML for the annotation set chooser.
 
-    It is a list of buttons, each corresponding to an existing annoset.
-    A click on the button selects that annoset.
-    There is also a control to delete the annoset.
+    It is a list of buttons, each corresponding to an existing annotation set.
+    A click on the button selects that set.
+    There is also a control to delete the set.
 
     Apart from these buttons there is a button to switch to the entities that are
     present in the TF dataset as nodes of the entity type specified
-    in the yaml file with corresponding
+    in the YAML file with corresponding
     features.
 
-    Finally, it is possible to create a new, empty annoset.
+    Finally, it is possible to create a new, empty annotation set.
     &#34;&#34;&#34;
     annotate = self.annotate
     setNames = annotate.setNames
@@ -1986,7 +1986,7 @@ appear: with or without underlining, identifier, kind, frequency.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/fragments.py#L134-L191" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/fragments.py#L134-L191" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapAppearance(self):
     &#34;&#34;&#34;HTML for the appearance widget.
@@ -2059,7 +2059,7 @@ hidden input elements.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/fragments.py#L267-L319" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/fragments.py#L267-L319" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntity(self):
     &#34;&#34;&#34;Basic data for the selected entity widget.
@@ -2127,7 +2127,7 @@ thereby selecting a subset of the original set of occurrences.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/fragments.py#L399-L487" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/fragments.py#L399-L487" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityFeats(self):
     &#34;&#34;&#34;HTML for the entity feature value selection.
@@ -2228,7 +2228,7 @@ thereby selecting a subset of the original set of occurrences.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/fragments.py#L321-L355" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/fragments.py#L321-L355" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityHeaders(self):
     &#34;&#34;&#34;HTML for the header of the entity table, dependent on the state of sorting.&#34;&#34;&#34;
@@ -2271,14 +2271,14 @@ thereby selecting a subset of the original set of occurrences.</p></div>
 <span>def <span class="ident">wrapEntityModReport</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>HTML for the combined report of add/del actions.</p></div>
+<div class="desc"><p>HTML for the combined report of add / del actions.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/fragments.py#L861-L869" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/fragments.py#L861-L869" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityModReport(self):
-    &#34;&#34;&#34;HTML for the combined report of add/del actions.&#34;&#34;&#34;
+    &#34;&#34;&#34;HTML for the combined report of add / del actions.&#34;&#34;&#34;
     v = self.v
     reportDel = v.reportdel
     reportAdd = v.reportadd
@@ -2292,7 +2292,7 @@ thereby selecting a subset of the original set of occurrences.</p></div>
 <span>def <span class="ident">wrapEntityModify</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>HTML for the add/del widget.</p>
+<div class="desc"><p>HTML for the add / del widget.</p>
 <p>This widget contains controls to specify which entity feature values
 should be added or deleted.</p>
 <p>Considerable effort is made to prefill these components with ergonomic
@@ -2300,10 +2300,10 @@ values.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/fragments.py#L564-L807" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/fragments.py#L564-L807" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityModify(self):
-    &#34;&#34;&#34;HTML for the add/del widget.
+    &#34;&#34;&#34;HTML for the add / del widget.
 
     This widget contains controls to specify which entity feature values
     should be added or deleted.
@@ -2558,7 +2558,7 @@ versus in filtered buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/fragments.py#L823-L843" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/fragments.py#L823-L843" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityStat(self, val, feat):
     &#34;&#34;&#34;HTML for statistics of feature values.
@@ -2591,7 +2591,7 @@ versus in filtered buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/fragments.py#L357-L397" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/fragments.py#L357-L397" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityText(self):
     &#34;&#34;&#34;HTML for the selected entity widget.&#34;&#34;&#34;
@@ -2640,23 +2640,23 @@ versus in filtered buckets.</p></div>
 <span>def <span class="ident">wrapExceptions</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>HTML for the select/deselect buttons.</p>
+<div class="desc"><p>HTML for the select / deselect buttons.</p>
 <p>These buttons appear at the end of selected occurrences in the text displayed
 in the buckets.
 The user can select or deselect individual entities for the application of
-the add/del operations.</p></div>
+the add / del operations.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/fragments.py#L522-L562" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/fragments.py#L522-L562" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapExceptions(self):
-    &#34;&#34;&#34;HTML for the select/deselect buttons.
+    &#34;&#34;&#34;HTML for the select / deselect buttons.
 
     These buttons appear at the end of selected occurrences in the text displayed
     in the buckets.
     The user can select or deselect individual entities for the application of
-    the add/del operations.
+    the add / del operations.
     &#34;&#34;&#34;
     v = self.v
     txt = v.txt
@@ -2677,7 +2677,7 @@ the add/del operations.</p></div>
                 &#34;✅&#34;,
                 type=&#34;button&#34;,
                 id=&#34;selectall&#34;,
-                title=f&#34;select all occurences in filtered {bucketType}s&#34;,
+                title=f&#34;select all occurrences in filtered {bucketType}s&#34;,
                 cls=&#34;icon&#34;,
             ),
             &#34; &#34;,
@@ -2685,7 +2685,7 @@ the add/del operations.</p></div>
                 &#34;❌&#34;,
                 type=&#34;button&#34;,
                 id=&#34;selectnone&#34;,
-                title=f&#34;deselect all occurences in filtered {bucketType}s&#34;,
+                title=f&#34;deselect all occurrences in filtered {bucketType}s&#34;,
                 cls=&#34;icon&#34;,
             ),
         )
@@ -2704,7 +2704,7 @@ condition that the buckets do <em>not</em> contain entities).</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/fragments.py#L193-L265" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/fragments.py#L193-L265" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapFilter(self):
     &#34;&#34;&#34;HTML for the filter widget.
@@ -2791,7 +2791,7 @@ buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/fragments.py#L809-L821" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/fragments.py#L809-L821" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapFindStat(self):
     &#34;&#34;&#34;HTML for statistics.
@@ -2816,7 +2816,7 @@ buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/fragments.py#L15-L20" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/fragments.py#L15-L20" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapMessages(self):
     &#34;&#34;&#34;HTML for messages.&#34;&#34;&#34;
@@ -2834,7 +2834,7 @@ buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/fragments.py#L123-L132" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/fragments.py#L123-L132" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapQuery(self):
     &#34;&#34;&#34;HTML for all control widgets on the page.&#34;&#34;&#34;
@@ -2852,14 +2852,14 @@ buckets.</p></div>
 <span>def <span class="ident">wrapReport</span></span>(<span>self, report, kind)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>HTML for the report of add/del actions.</p></div>
+<div class="desc"><p>HTML for the report of add / del actions.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/fragments.py#L871-L891" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/fragments.py#L871-L891" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapReport(self, report, kind):
-    &#34;&#34;&#34;HTML for the report of add/del actions.&#34;&#34;&#34;
+    &#34;&#34;&#34;HTML for the report of add / del actions.&#34;&#34;&#34;
     v = self.v
     annotate = self.annotate
     settings = annotate.settings
@@ -2886,17 +2886,17 @@ buckets.</p></div>
 </code></dt>
 <dd>
 <div class="desc"><p>HTML for the scope widget.</p>
-<p>The scope widget lets the user choose whether the add/del actions should
+<p>The scope widget lets the user choose whether the add / del actions should
 be applied to all relevant buckets, or only to the filtered buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/fragments.py#L489-L520" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/fragments.py#L489-L520" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapScope(self):
     &#34;&#34;&#34;HTML for the scope widget.
 
-    The scope widget lets the user choose whether the add/del actions should
+    The scope widget lets the user choose whether the add / del actions should
     be applied to all relevant buckets, or only to the filtered buckets.
     &#34;&#34;&#34;
     v = self.v

@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/search.py#L1-L542" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/search.py#L1-L546" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Search (top-level)
@@ -57,7 +57,7 @@ class Search:
             Before the search engine retrieves result tuples of nodes,
             there is a process to narrow down the search space.
 
-            See `tf.about.searchdesign` and and remember that we use the term *yarn* for
+            See `tf.about.searchdesign` and remember that we use the term *yarn* for
             the sets of candidate nodes from which we stitch our results together.
 
             *Edge spinning* is the process of
@@ -122,11 +122,11 @@ class Search:
             by a sample.
 
             !!! example &#34;Example&#34;
-                Suppose we set the yarnRatio to 1.5.
+                Suppose we set the `yarnRatio` to 1.5.
                 Then, if we have yarns of 100,000 and 10,000 members,
                 with a relation between them with spread 5,
                 then 100,000 / 10,000 / 5 = 2.
-                This is higher than the yarnRatio of 1.5,
+                This is higher than the `yarnRatio` of 1.5,
                 so the search engine decides that edge spinning is worth it.
 
                 The reasoning is that the 10,000 nodes in the smallest yarn are expected
@@ -134,10 +134,10 @@ class Search:
                 and so we can achieve a significant reduction.
 
             If you have a very slow query, and you think that a bit more edge spinning
-            helps, decrease the yarnRatio towards 0.
+            helps, decrease the `yarnRatio` towards 0.
 
             If you find that a lot of queries spend too much time in edge spinning,
-            increase the yarnRatio.
+            increase the `yarnRatio`.
 
         tryLimitFrom: integer
             In order to determine the spreads of the relations, TF takes
@@ -212,8 +212,8 @@ class Search:
             If `True` or `1`, the result is a set of things that match the
             top-level element of the `query`.
 
-            If `2` or a bigger number *n*, return the set of truncated result tuples:
-            only the first *n* members of each tuple is retained.
+            If `2` or a bigger number `n`, return the set of truncated result tuples:
+            only the first `n` members of each tuple is retained.
 
             If `False` or `0`, a sorted list of all result tuples will be returned.
 
@@ -234,7 +234,7 @@ class Search:
         -------
         generator | tuple
             Each result is a tuple of nodes, where each node corresponds to an
-            *atom*-line in your search template.about.searchusage`).
+            *atom*-line in your search template (see `tf.about.searchusage`).
 
             If `limit` is not `None`, a *generator* is returned,
             which yields the results one by one.
@@ -288,10 +288,10 @@ class Search:
         The search space will be narrowed down and a plan for retrieving the results
         will be set up.
 
-        If the search template query has quantifiers, the asscociated search templates
+        If the search template query has quantifiers, the associated search templates
         will be constructed and executed. These searches will be reported clearly.
 
-        The resulting plan can be viewd by `tf.search.search.Search.showPlan`.
+        The resulting plan can be viewed by `tf.search.search.Search.showPlan`.
 
         Parameters
         ----------
@@ -314,8 +314,8 @@ class Search:
             If `True` or `1`, the result is a set of things that match the
             top-level element of the search template.
 
-            If `2` or a bigger number *n*, return the set of truncated result tuples:
-            only the first *n* members of each tuple is retained.
+            If `2` or a bigger number `n`, return the set of truncated result tuples:
+            only the first `n` members of each tuple is retained.
 
             If `False` or `0`, a sorted list of all result tuples will be returned.
 
@@ -374,7 +374,7 @@ class Search:
         -------
         generator | tuple
             Each result is a tuple of nodes, where each node corresponds to an
-            *atom*-line in your search template.about.searchusage`).
+            *atom*-line in your search template (see `tf.about.searchusage`).
 
             If `limit` is not `None`, a *generator* is returned,
             which yields the results one by one.
@@ -387,10 +387,12 @@ class Search:
         !!! example &#34;Iterating over the `fetch()` generator&#34;
             You typically fetch results by saying:
 
-                i = 0
-                for tup in S.results():
-                    do_something(tup[0])
-                    do_something_else(tup[1])
+            ```
+            i = 0
+            for tup in S.results():
+                do_something(tup[0])
+                do_something_else(tup[1])
+            ```
 
             Alternatively, you can set the `limit` parameter, to ask for just so many
             results. They will be fetched, and when they are all collected,
@@ -399,7 +401,9 @@ class Search:
         !!! example &#34;Fetching a limited amount of results&#34;
             This
 
-                S.fetch(limit=10)
+            ```
+            S.fetch(limit=10)
+            ```
 
             gives you the first 10 results without further ado.
         &#34;&#34;&#34;
@@ -520,7 +524,7 @@ class Search:
         Returns
         -------
         string
-            The result indicats where the tuple occurs in terms of sections,
+            The result indicates where the tuple occurs in terms of sections,
             and what text is associated with the tuple.
 
         Notes
@@ -591,7 +595,7 @@ class Search:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/search.py#L10-L542" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/search.py#L10-L546" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Search:
     &#34;&#34;&#34; &#34;&#34;&#34;
@@ -612,7 +616,7 @@ class Search:
             Before the search engine retrieves result tuples of nodes,
             there is a process to narrow down the search space.
 
-            See `tf.about.searchdesign` and and remember that we use the term *yarn* for
+            See `tf.about.searchdesign` and remember that we use the term *yarn* for
             the sets of candidate nodes from which we stitch our results together.
 
             *Edge spinning* is the process of
@@ -677,11 +681,11 @@ class Search:
             by a sample.
 
             !!! example &#34;Example&#34;
-                Suppose we set the yarnRatio to 1.5.
+                Suppose we set the `yarnRatio` to 1.5.
                 Then, if we have yarns of 100,000 and 10,000 members,
                 with a relation between them with spread 5,
                 then 100,000 / 10,000 / 5 = 2.
-                This is higher than the yarnRatio of 1.5,
+                This is higher than the `yarnRatio` of 1.5,
                 so the search engine decides that edge spinning is worth it.
 
                 The reasoning is that the 10,000 nodes in the smallest yarn are expected
@@ -689,10 +693,10 @@ class Search:
                 and so we can achieve a significant reduction.
 
             If you have a very slow query, and you think that a bit more edge spinning
-            helps, decrease the yarnRatio towards 0.
+            helps, decrease the `yarnRatio` towards 0.
 
             If you find that a lot of queries spend too much time in edge spinning,
-            increase the yarnRatio.
+            increase the `yarnRatio`.
 
         tryLimitFrom: integer
             In order to determine the spreads of the relations, TF takes
@@ -767,8 +771,8 @@ class Search:
             If `True` or `1`, the result is a set of things that match the
             top-level element of the `query`.
 
-            If `2` or a bigger number *n*, return the set of truncated result tuples:
-            only the first *n* members of each tuple is retained.
+            If `2` or a bigger number `n`, return the set of truncated result tuples:
+            only the first `n` members of each tuple is retained.
 
             If `False` or `0`, a sorted list of all result tuples will be returned.
 
@@ -789,7 +793,7 @@ class Search:
         -------
         generator | tuple
             Each result is a tuple of nodes, where each node corresponds to an
-            *atom*-line in your search template.about.searchusage`).
+            *atom*-line in your search template (see `tf.about.searchusage`).
 
             If `limit` is not `None`, a *generator* is returned,
             which yields the results one by one.
@@ -843,10 +847,10 @@ class Search:
         The search space will be narrowed down and a plan for retrieving the results
         will be set up.
 
-        If the search template query has quantifiers, the asscociated search templates
+        If the search template query has quantifiers, the associated search templates
         will be constructed and executed. These searches will be reported clearly.
 
-        The resulting plan can be viewd by `tf.search.search.Search.showPlan`.
+        The resulting plan can be viewed by `tf.search.search.Search.showPlan`.
 
         Parameters
         ----------
@@ -869,8 +873,8 @@ class Search:
             If `True` or `1`, the result is a set of things that match the
             top-level element of the search template.
 
-            If `2` or a bigger number *n*, return the set of truncated result tuples:
-            only the first *n* members of each tuple is retained.
+            If `2` or a bigger number `n`, return the set of truncated result tuples:
+            only the first `n` members of each tuple is retained.
 
             If `False` or `0`, a sorted list of all result tuples will be returned.
 
@@ -929,7 +933,7 @@ class Search:
         -------
         generator | tuple
             Each result is a tuple of nodes, where each node corresponds to an
-            *atom*-line in your search template.about.searchusage`).
+            *atom*-line in your search template (see `tf.about.searchusage`).
 
             If `limit` is not `None`, a *generator* is returned,
             which yields the results one by one.
@@ -942,10 +946,12 @@ class Search:
         !!! example &#34;Iterating over the `fetch()` generator&#34;
             You typically fetch results by saying:
 
-                i = 0
-                for tup in S.results():
-                    do_something(tup[0])
-                    do_something_else(tup[1])
+            ```
+            i = 0
+            for tup in S.results():
+                do_something(tup[0])
+                do_something_else(tup[1])
+            ```
 
             Alternatively, you can set the `limit` parameter, to ask for just so many
             results. They will be fetched, and when they are all collected,
@@ -954,7 +960,9 @@ class Search:
         !!! example &#34;Fetching a limited amount of results&#34;
             This
 
-                S.fetch(limit=10)
+            ```
+            S.fetch(limit=10)
+            ```
 
             gives you the first 10 results without further ado.
         &#34;&#34;&#34;
@@ -1075,7 +1083,7 @@ class Search:
         Returns
         -------
         string
-            The result indicats where the tuple occurs in terms of sections,
+            The result indicates where the tuple occurs in terms of sections,
             and what text is associated with the tuple.
 
         Notes
@@ -1171,7 +1179,7 @@ on the screen in a series of timed messages.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/search.py#L389-L431" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/search.py#L393-L435" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def count(self, progress=None, limit=None):
     &#34;&#34;&#34;Counts the results, with progress messages, optionally up to a limit.
@@ -1243,7 +1251,7 @@ has been passed, you get a warning message.</p>
 <dt><code>generator | tuple</code></dt>
 <dd>
 <p>Each result is a tuple of nodes, where each node corresponds to an
-<em>atom</em>-line in your search template.about.searchusage`).</p>
+<em>atom</em>-line in your search template (see <code><a title="tf.about.searchusage" href="../about/searchusage.html">tf.about.searchusage</a></code>).</p>
 <p>If <code>limit</code> is not <code>None</code>, a <em>generator</em> is returned,
 which yields the results one by one.</p>
 <p>Otherwise, the results will be fetched up till <code>limit</code>
@@ -1254,11 +1262,10 @@ and delivered as a tuple.</p>
 <div class="admonition example">
 <p class="admonition-title">Iterating over the <code>fetch()</code> generator</p>
 <p>You typically fetch results by saying:</p>
-<pre><code>i = 0
+<p><code>i = 0
 for tup in S.results():
-    do_something(tup[0])
-    do_something_else(tup[1])
-</code></pre>
+do_something(tup[0])
+do_something_else(tup[1])</code></p>
 <p>Alternatively, you can set the <code>limit</code> parameter, to ask for just so many
 results. They will be fetched, and when they are all collected,
 returned as a tuple.</p>
@@ -1266,14 +1273,13 @@ returned as a tuple.</p>
 <div class="admonition example">
 <p class="admonition-title">Fetching a limited amount of results</p>
 <p>This</p>
-<pre><code>S.fetch(limit=10)
-</code></pre>
+<p><code>S.fetch(limit=10)</code></p>
 <p>gives you the first 10 results without further ado.</p>
 </div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/search.py#L322-L387" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/search.py#L322-L391" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fetch(self, limit=None, _msgCache=False):
     &#34;&#34;&#34;Retrieves query results, up to a limit.
@@ -1299,7 +1305,7 @@ returned as a tuple.</p>
     -------
     generator | tuple
         Each result is a tuple of nodes, where each node corresponds to an
-        *atom*-line in your search template.about.searchusage`).
+        *atom*-line in your search template (see `tf.about.searchusage`).
 
         If `limit` is not `None`, a *generator* is returned,
         which yields the results one by one.
@@ -1312,10 +1318,12 @@ returned as a tuple.</p>
     !!! example &#34;Iterating over the `fetch()` generator&#34;
         You typically fetch results by saying:
 
-            i = 0
-            for tup in S.results():
-                do_something(tup[0])
-                do_something_else(tup[1])
+        ```
+        i = 0
+        for tup in S.results():
+            do_something(tup[0])
+            do_something_else(tup[1])
+        ```
 
         Alternatively, you can set the `limit` parameter, to ask for just so many
         results. They will be fetched, and when they are all collected,
@@ -1324,7 +1332,9 @@ returned as a tuple.</p>
     !!! example &#34;Fetching a limited amount of results&#34;
         This
 
-            S.fetch(limit=10)
+        ```
+        S.fetch(limit=10)
+        ```
 
         gives you the first 10 results without further ado.
     &#34;&#34;&#34;
@@ -1360,7 +1370,7 @@ corpus has about it.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>string</code></dt>
-<dd>The result indicats where the tuple occurs in terms of sections,
+<dd>The result indicates where the tuple occurs in terms of sections,
 and what text is associated with the tuple.</dd>
 </dl>
 <h2 id="notes">Notes</h2>
@@ -1385,7 +1395,7 @@ See <code><a title="tf.advanced.display.show" href="../advanced/display.html#tf.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/search.py#L475-L542" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/search.py#L479-L546" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def glean(self, tup):
     &#34;&#34;&#34;Renders a single result into something human readable.
@@ -1404,7 +1414,7 @@ See <code><a title="tf.advanced.display.show" href="../advanced/display.html#tf.
     Returns
     -------
     string
-        The result indicats where the tuple occurs in terms of sections,
+        The result indicates where the tuple occurs in terms of sections,
         and what text is associated with the tuple.
 
     Notes
@@ -1471,7 +1481,7 @@ See <code><a title="tf.advanced.display.show" href="../advanced/display.html#tf.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/search.py#L459-L473" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/search.py#L463-L477" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def relationsLegend(self):
     &#34;&#34;&#34;Dynamic info about the basic relations that can be used in templates.
@@ -1504,8 +1514,8 @@ See <code><a title="tf.advanced.display.show" href="../advanced/display.html#tf.
 <dd>
 <p>If <code>True</code> or <code>1</code>, the result is a set of things that match the
 top-level element of the <code>query</code>.</p>
-<p>If <code>2</code> or a bigger number <em>n</em>, return the set of truncated result tuples:
-only the first <em>n</em> members of each tuple is retained.</p>
+<p>If <code>2</code> or a bigger number <code>n</code>, return the set of truncated result tuples:
+only the first <code>n</code> members of each tuple is retained.</p>
 <p>If <code>False</code> or <code>0</code>, a sorted list of all result tuples will be returned.</p>
 </dd>
 <dt><strong><code>sets</code></strong> :&ensp;<code>dict</code></dt>
@@ -1526,7 +1536,7 @@ has been passed, you get a warning message.</p>
 <dt><code>generator | tuple</code></dt>
 <dd>
 <p>Each result is a tuple of nodes, where each node corresponds to an
-<em>atom</em>-line in your search template.about.searchusage`).</p>
+<em>atom</em>-line in your search template (see <code><a title="tf.about.searchusage" href="../about/searchusage.html">tf.about.searchusage</a></code>).</p>
 <p>If <code>limit</code> is not <code>None</code>, a <em>generator</em> is returned,
 which yields the results one by one.</p>
 <p>Otherwise, the results will be fetched up till <code>limit</code>
@@ -1542,7 +1552,7 @@ and translated into a search plan. See <code><a title="tf.search.search.Search.s
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/search.py#L161-L244" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/search.py#L161-L244" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def search(
     self,
@@ -1567,8 +1577,8 @@ and translated into a search plan. See <code><a title="tf.search.search.Search.s
         If `True` or `1`, the result is a set of things that match the
         top-level element of the `query`.
 
-        If `2` or a bigger number *n*, return the set of truncated result tuples:
-        only the first *n* members of each tuple is retained.
+        If `2` or a bigger number `n`, return the set of truncated result tuples:
+        only the first `n` members of each tuple is retained.
 
         If `False` or `0`, a sorted list of all result tuples will be returned.
 
@@ -1589,7 +1599,7 @@ and translated into a search plan. See <code><a title="tf.search.search.Search.s
     -------
     generator | tuple
         Each result is a tuple of nodes, where each node corresponds to an
-        *atom*-line in your search template.about.searchusage`).
+        *atom*-line in your search template (see `tf.about.searchusage`).
 
         If `limit` is not `None`, a *generator* is returned,
         which yields the results one by one.
@@ -1652,7 +1662,7 @@ will be retrieved.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/search.py#L433-L457" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/search.py#L437-L461" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showPlan(self, details=False):
     &#34;&#34;&#34;Show the result of the latest study of a template.
@@ -1688,9 +1698,9 @@ will be retrieved.</dd>
 <div class="desc"><p>Studies a template to prepare for searching with it.</p>
 <p>The search space will be narrowed down and a plan for retrieving the results
 will be set up.</p>
-<p>If the search template query has quantifiers, the asscociated search templates
+<p>If the search template query has quantifiers, the associated search templates
 will be constructed and executed. These searches will be reported clearly.</p>
-<p>The resulting plan can be viewd by <code><a title="tf.search.search.Search.showPlan" href="#tf.search.search.Search.showPlan">Search.showPlan()</a></code>.</p>
+<p>The resulting plan can be viewed by <code><a title="tf.search.search.Search.showPlan" href="#tf.search.search.Search.showPlan">Search.showPlan()</a></code>.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>searchTemplate</code></strong> :&ensp;<code>string</code></dt>
@@ -1711,8 +1721,8 @@ code in <code><a title="tf.search.stitch" href="stitch.html">tf.search.stitch</a
 <dd>
 <p>If <code>True</code> or <code>1</code>, the result is a set of things that match the
 top-level element of the search template.</p>
-<p>If <code>2</code> or a bigger number <em>n</em>, return the set of truncated result tuples:
-only the first <em>n</em> members of each tuple is retained.</p>
+<p>If <code>2</code> or a bigger number <code>n</code>, return the set of truncated result tuples:
+only the first <code>n</code> members of each tuple is retained.</p>
 <p>If <code>False</code> or <code>0</code>, a sorted list of all result tuples will be returned.</p>
 </dd>
 <dt><strong><code>sets</code></strong> :&ensp;<code>dict</code></dt>
@@ -1729,7 +1739,7 @@ In the search template you can refer to those names to invoke those sets.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/search.py#L246-L320" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/search.py#L246-L320" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def study(
     self,
@@ -1745,10 +1755,10 @@ In the search template you can refer to those names to invoke those sets.</dd>
     The search space will be narrowed down and a plan for retrieving the results
     will be set up.
 
-    If the search template query has quantifiers, the asscociated search templates
+    If the search template query has quantifiers, the associated search templates
     will be constructed and executed. These searches will be reported clearly.
 
-    The resulting plan can be viewd by `tf.search.search.Search.showPlan`.
+    The resulting plan can be viewed by `tf.search.search.Search.showPlan`.
 
     Parameters
     ----------
@@ -1771,8 +1781,8 @@ In the search template you can refer to those names to invoke those sets.</dd>
         If `True` or `1`, the result is a set of things that match the
         top-level element of the search template.
 
-        If `2` or a bigger number *n*, return the set of truncated result tuples:
-        only the first *n* members of each tuple is retained.
+        If `2` or a bigger number `n`, return the set of truncated result tuples:
+        only the first `n` members of each tuple is retained.
 
         If `False` or `0`, a sorted list of all result tuples will be returned.
 
@@ -1817,7 +1827,7 @@ In the search template you can refer to those names to invoke those sets.</dd>
 <p class="admonition-title">Theory</p>
 <p>Before the search engine retrieves result tuples of nodes,
 there is a process to narrow down the search space.</p>
-<p>See <code><a title="tf.about.searchdesign" href="../about/searchdesign.html">tf.about.searchdesign</a></code> and and remember that we use the term <em>yarn</em> for
+<p>See <code><a title="tf.about.searchdesign" href="../about/searchdesign.html">tf.about.searchdesign</a></code> and remember that we use the term <em>yarn</em> for
 the sets of candidate nodes from which we stitch our results together.</p>
 <p><em>Edge spinning</em> is the process of
 transferring constraints on one node via edges to constraints on
@@ -1876,20 +1886,20 @@ the edge. And that divided by the spread of the relation as estimated
 by a sample.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<p>Suppose we set the yarnRatio to 1.5.
+<p>Suppose we set the <code>yarnRatio</code> to 1.5.
 Then, if we have yarns of 100,000 and 10,000 members,
 with a relation between them with spread 5,
 then 100,000 / 10,000 / 5 = 2.
-This is higher than the yarnRatio of 1.5,
+This is higher than the <code>yarnRatio</code> of 1.5,
 so the search engine decides that edge spinning is worth it.</p>
 <p>The reasoning is that the 10,000 nodes in the smallest yarn are expected
 to reach only 10,000 * 5 nodes in the other yarn by the relation,
 and so we can achieve a significant reduction.</p>
 </div>
 <p>If you have a very slow query, and you think that a bit more edge spinning
-helps, decrease the yarnRatio towards 0.</p>
+helps, decrease the <code>yarnRatio</code> towards 0.</p>
 <p>If you find that a lot of queries spend too much time in edge spinning,
-increase the yarnRatio.</p>
+increase the <code>yarnRatio</code>.</p>
 </dd>
 <dt><strong><code>tryLimitFrom</code></strong> :&ensp;<code>integer</code></dt>
 <dd>
@@ -1912,7 +1922,7 @@ increase these values to 10000.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/search.py#L22-L159" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/search.py#L22-L159" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tweakPerformance(self, silent=SILENT_D, **kwargs):
     &#34;&#34;&#34;Tweak parameters that influence the search process.
@@ -1921,7 +1931,7 @@ increase these values to 10000.</p>
         Before the search engine retrieves result tuples of nodes,
         there is a process to narrow down the search space.
 
-        See `tf.about.searchdesign` and and remember that we use the term *yarn* for
+        See `tf.about.searchdesign` and remember that we use the term *yarn* for
         the sets of candidate nodes from which we stitch our results together.
 
         *Edge spinning* is the process of
@@ -1986,11 +1996,11 @@ increase these values to 10000.</p>
         by a sample.
 
         !!! example &#34;Example&#34;
-            Suppose we set the yarnRatio to 1.5.
+            Suppose we set the `yarnRatio` to 1.5.
             Then, if we have yarns of 100,000 and 10,000 members,
             with a relation between them with spread 5,
             then 100,000 / 10,000 / 5 = 2.
-            This is higher than the yarnRatio of 1.5,
+            This is higher than the `yarnRatio` of 1.5,
             so the search engine decides that edge spinning is worth it.
 
             The reasoning is that the 10,000 nodes in the smallest yarn are expected
@@ -1998,10 +2008,10 @@ increase these values to 10000.</p>
             and so we can achieve a significant reduction.
 
         If you have a very slow query, and you think that a bit more edge spinning
-        helps, decrease the yarnRatio towards 0.
+        helps, decrease the `yarnRatio` towards 0.
 
         If you find that a lot of queries spend too much time in edge spinning,
-        increase the yarnRatio.
+        increase the `yarnRatio`.
 
     tryLimitFrom: integer
         In order to determine the spreads of the relations, TF takes

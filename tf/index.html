@@ -25,19 +25,24 @@
 <section id="section-intro">
 <p><img alt="logo" src="images/tf.png"></p>
 <h1 id="text-fabric">Text-Fabric</h1>
-<p>A corpus of ancient texts and (linguistic) annotations represents a large body of knowledge.
-Text-Fabric makes that knowledge accessible to programmers and non-programmers.</p>
-<p>Text-Fabric is machinery for processing such corpora as annotated graphs.
+<p>A corpus of ancient texts and (linguistic) annotations represents a large body
+of knowledge.
+Text-Fabric (TF) makes that knowledge accessible to programmers and non-programmers.</p>
+<p>TF is machinery for processing such corpora as annotated graphs.
 It treats corpora and annotations as data, much like big tables, but without
 losing the rich structure of text, such as embedding and multiple representations.
 It deals with text in a state where all markup is gone, but where the complete logical
 structure still sits in the data.</p>
-<p>Whether a corpus comes from plain texts, OCR output, databases, XML, TEI: Text-Fabric has support
-to convert it to single column files, where each file corresponds with a <em>feature</em> of the text.</p>
-<p>The Python library <code><a title="tf" href="#tf">tf</a></code> can be used to collect a bunch of features and display it as an annotated text.
-What ties the features together are natural numbers, that serve to anchor the elementary positions
-in the text as well as the relevant structures within the text.</p>
-<p>When Text-Fabric loads a dataset of features, you can instruct it to get the features from anywhere.
+<p>Whether a corpus comes from plain texts, OCR output, databases, XML, TEI: TF has support
+to convert it to single column files, where each file corresponds with a
+<em>feature</em> of the text.</p>
+<p>The Python library <code><a title="tf" href="#tf">tf</a></code> can be used to collect a bunch of features and display
+it as an annotated text.
+What ties the features together are natural numbers, that serve to anchor the
+elementary positions in the text as well as the relevant structures within the
+text.</p>
+<p>When TF loads a dataset of features, you can instruct it to get the features
+from anywhere.
 That means it supports workflows where annotations are produced by third parties
 and can be used against the original corpus, <em>without additional work</em>.
 It also facilitates mappings between ongoing versions of the corpus,
@@ -61,20 +66,20 @@ redoing the annotation creation.</p>
 (<code><a title="tf.about.datamodel" href="about/datamodel.html">tf.about.datamodel</a></code>, <code><a title="tf.about.searchdesign" href="about/searchdesign.html">tf.about.searchdesign</a></code>, <code><a title="tf.about.displaydesign" href="about/displaydesign.html">tf.about.displaydesign</a></code>)</li>
 <li>File Format (<code><a title="tf.about.fileformats" href="about/fileformats.html">tf.about.fileformats</a></code>, <code><a title="tf.about.optimizations" href="about/optimizations.html">tf.about.optimizations</a></code>)</li>
 <li>Converting to TF (<code><a title="tf.convert.walker" href="convert/walker.html">tf.convert.walker</a></code>, <code><a title="tf.convert.mql" href="convert/mql.html">tf.convert.mql</a></code>)</li>
-<li>Exporting data and reimporting it with enrichments (<code><a title="tf.convert.recorder" href="convert/recorder.html">tf.convert.recorder</a></code>)</li>
+<li>Exporting data and re-importing it with enrichments (<code><a title="tf.convert.recorder" href="convert/recorder.html">tf.convert.recorder</a></code>)</li>
 <li>Dataset manipulation (<code><a title="tf.dataset.modify" href="dataset/modify.html">tf.dataset.modify</a></code> and <code><a title="tf.dataset.nodemaps.Versions" href="dataset/nodemaps.html#tf.dataset.nodemaps.Versions">Versions</a></code>)</li>
 <li>Crossing versions of datasets (<code><a title="tf.dataset.nodemaps" href="dataset/nodemaps.html">tf.dataset.nodemaps</a></code>)</li>
-<li>Code Organisation (<code><a title="tf.about.code" href="about/code.html">tf.about.code</a></code>)</li>
+<li>Code Organization (<code><a title="tf.about.code" href="about/code.html">tf.about.code</a></code>)</li>
 </ul>
 <h2 id="author">Author</h2>
 <p><strong>Author</strong>:
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a></p>
-<p>Cite Text-Fabric as
+<p>Cite TF as
 <a href="https://doi.org/10.5281/zenodo.592193">DOI: 10.5281/zenodo.592193</a>.</p>
-<h2 id="acknowledgements">Acknowledgements</h2>
-<p>Text-Fabric is a matter of putting a few good ideas by others into practice.</p>
+<h2 id="acknowledgments">Acknowledgments</h2>
+<p>TF is a matter of putting a few good ideas by others into practice.</p>
 <p>While I wrote most of the code,
-a product like Text-Fabric is unthinkable without the contributions
+a product like TF is unthinkable without the contributions
 of avid users that take the trouble to give feedback and file issues,
 and have the zeal and stamina to hold on
 when things are frustrating and bugs overwhelming,
@@ -83,7 +88,7 @@ and give encouragement when they are happy.</p>
 <ul>
 <li>Cale Johnson</li>
 <li>Camil Staps</li>
-<li>Christian Høygaard-Jensen</li>
+<li>Christian Højgaard-Jensen</li>
 <li>Christiaan Erwich</li>
 <li>Cody Kingham</li>
 <li>Ernst Boogert</li>
@@ -111,7 +116,7 @@ there for almost longer than could be defended.</p>
 <li><a href="https://nbviewer.jupyter.org/github/Nino-cunei/oldbabylonian/blob/master/tutorial/start.ipynb">OldBabylonian</a></li>
 <li><a href="https://nbviewer.jupyter.org/github/Nino-cunei/oldassyrian/blob/master/tutorial/start.ipynb">OldAssyrian</a></li>
 <li><a href="https://nbviewer.jupyter.org/github/Nino-cunei/uruk/blob/master/tutorial/start.ipynb">Uruk</a></li>
-<li><a href="https://nbviewer.jupyter.org/github/q-ran/quran/blob/master/tutorial/start.ipynb">Q'uran</a></li>
+<li><a href="https://nbviewer.jupyter.org/github/q-ran/quran/blob/master/tutorial/start.ipynb">Quran</a></li>
 <li>and more via <code><a title="tf.about.corpora" href="about/corpora.html">tf.about.corpora</a></code>.</li>
 </ul>
 <hr>
@@ -126,17 +131,25 @@ there for almost longer than could be defended.</p>
 </ul>
 <hr>
 <p>Presentations:</p>
-<p><a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/lorentz2020/start.ipynb">Hands on with Dead Sea Scrolls, Old Babylonian Tablets, and the Q'uran</a>
+<p><a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/lorentz2020/start.ipynb">Hands on with Dead Sea Scrolls, Old Babylonian Tablets, and the Quran</a>
 (Lorentz Leiden 2020)</p>
-<p><a href="https://www.slideshare.net/dirkroorda/tf-incontext">Text-Fabric in Context</a> (Lorentz Leiden 2020)</p>
-<p><a href="https://www.slideshare.net/dirkroorda/ancient-corpora-analysis">Data Analysis in Ancient Corpora</a> (Cambridge 2019, with Cody Kingham)</p>
-<p><a href="https://nbviewer.jupyter.org/github/ETCBC/lingo/blob/master/presentations/Copenhagen2018.ipynb">Text-Fabric as IKEA logistics</a> (Copenhagen 2017)</p>
-<p>Here is a motivational <a href="http://www.slideshare.net/dirkroorda/text-fabric">presentation</a>, given just before <a href="https://global-learning.org/mod/forum/discuss.php?d=22">SBL 2016</a>
+<p><a href="https://www.slideshare.net/dirkroorda/tf-incontext">Text-Fabric in Context</a>
+(Lorentz Leiden 2020)</p>
+<p><a href="https://www.slideshare.net/dirkroorda/ancient-corpora-analysis">Data Analysis in Ancient
+Corpora</a>
+(Cambridge 2019, with Cody Kingham)</p>
+<p><a href="https://nbviewer.jupyter.org/github/ETCBC/lingo/blob/master/presentations/Copenhagen2018.ipynb">Text-Fabric as IKEA
+logistics</a>
+(Copenhagen 2017)</p>
+<p>Here is a motivational
+<a href="http://www.slideshare.net/dirkroorda/text-fabric">presentation</a>,
+given just before
+<a href="https://global-learning.org/mod/forum/discuss.php?d=22">SBL 2016</a>
 in the Lutheran Church of San Antonio.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/__init__.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/__init__.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: docs/main/top.md
@@ -160,7 +173,7 @@ in the Lutheran Church of San Antonio.</p>
 </dd>
 <dt><code class="name"><a title="tf.browser" href="browser/index.html">tf.browser</a></code></dt>
 <dd>
-<div class="desc"><p>Local TF-data and web server</p></div>
+<div class="desc"><p>Local TF data and web server</p></div>
 </dd>
 <dt><code class="name"><a title="tf.capable" href="capable.html">tf.capable</a></code></dt>
 <dd>
@@ -192,11 +205,11 @@ in the Lutheran Church of San Antonio.</p>
 </dd>
 <dt><code class="name"><a title="tf.fabric" href="fabric.html">tf.fabric</a></code></dt>
 <dd>
-<div class="desc"><p>Fabric …</p></div>
+<div class="desc"><p><code>Fabric</code> …</p></div>
 </dd>
 <dt><code class="name"><a title="tf.lib" href="lib.html">tf.lib</a></code></dt>
 <dd>
-<div class="desc"><p>Uitility functions …</p></div>
+<div class="desc"><p>Utility functions …</p></div>
 </dd>
 <dt><code class="name"><a title="tf.parameters" href="parameters.html">tf.parameters</a></code></dt>
 <dd>
@@ -208,7 +221,7 @@ in the Lutheran Church of San Antonio.</p>
 </dd>
 <dt><code class="name"><a title="tf.tools" href="tools/index.html">tf.tools</a></code></dt>
 <dd>
-<div class="desc"><p>Various tools for workflows around Text-Fabric.</p></div>
+<div class="desc"><p>Various tools for workflows around TF.</p></div>
 </dd>
 <dt><code class="name"><a title="tf.volumes" href="volumes/index.html">tf.volumes</a></code></dt>
 <dd>
@@ -289,7 +302,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#text-fabric">Text-Fabric</a><ul>
 <li><a href="#straight-to">Straight to &hellip;</a></li>
 <li><a href="#author">Author</a></li>
-<li><a href="#acknowledgements">Acknowledgements</a></li>
+<li><a href="#acknowledgments">Acknowledgments</a></li>
 <li><a href="#more-resources">More resources</a></li>
 </ul>
 </li>

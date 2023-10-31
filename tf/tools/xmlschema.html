@@ -34,52 +34,52 @@ of the second element part of the same word?</p>
 they are separate words (the XML-elements are used as data containers);
 otherwise they belong to the same word (the XML-elements annotate a piece
 of string).</p>
-<p>This module can perform several analysis tasks of xml schemas.</p>
-<p><strong>fromrelax</strong> task:</p>
-<p>Transforms a RelaxNG schema into an equivalent xsd schema using James Clark's
-trang library.
+<p>This module can perform several analysis tasks of XML schemas.</p>
+<p><code>fromrelax</code> task:</p>
+<p>Transforms a RelaxNG schema into an equivalent XSD schema using James Clark's
+TRANG library.
 For this, you must have java installed.</p>
-<p><strong>analyse</strong> task:</p>
+<p><code>analyze</code> task:</p>
 <p>Given an XML schema file, produces a tab-separated list of elements defined in
 the schema, with columns</p>
 <pre><code>(element name) (simple or complex) (mixed or pure content)
 </code></pre>
-<p><strong>tei</strong> task:</p>
+<p><code>tei</code> task:</p>
 <p>Analyses the complete TEI schema plus optional customizations on top of it.
 If
-you pass an optional customized TEI schema, it will be analysed separately, and
-the result will be used to override the result of analysing the complete TEI
+you pass an optional customized TEI schema, it will be analyzed separately, and
+the result will be used to override the result of analyzing the complete TEI
 schema.
 The complete TEI schema is part of this package, you do not have to
 provide it.
 It has been generated on with the online
-<a href="https://roma.tei-c.org/startroma.php">TEI-Roma tool</a>.</p>
+<a href="https://roma.tei-c.org/startroma.php"><code>TEI-Roma</code> tool</a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Caution</p>
-<p>This code has only been tested on a single xsd, converted from a relaxRNG
-file produced by a customisation of TEI.</p>
+<p>This code has only been tested on a single XSD, converted from a RelaxNG
+file produced by a customization of TEI.</p>
 <p>It could very well be that I have missed parts of the semantics of XML-Schema.</p>
 </div>
 <h2 id="usage">Usage</h2>
-<p>This program can be used as a library or as a command line tool.</p>
+<p>This program can be used as a library or as a command-line tool.</p>
 <h3 id="as-command-line-tool">As command-line tool</h3>
 <pre><code class="language-sh">xmlschema validate schema.rng/xsd doc1.xml doc2.xml ...
 xmlschema fromrelax schema.rng
-xmlschema analyse schema.xsd
+xmlschema analyze schema.xsd
 xmlschema tei customschema.xsd
 xmlschema tei
 </code></pre>
 <p>Here <code>customschema</code> and <code>schema</code> are variable arguments.</p>
-<p>The result is written to the console and/or a file in the current directory
+<p>The result is written to the console and / or a file in the current directory
 (from where the command <code>xmlschema</code> is called):</p>
 <ul>
 <li>output from task <code>validate</code> is written to the standard output/error</li>
-<li>output from task <code>fromrelax</code> is a file <em>schema</em><code>.xsd</code>;</li>
-<li>output from task <code>analysis</code> is written to <em>schema</em>`.tsv;</li>
-<li>output from task <code>tei</code> is written to <em>customschema</em>`.tsv.</li>
+<li>output from task <code>fromrelax</code> is a file <code>schema.xsd</code>;</li>
+<li>output from task <code>analysis</code> is written to <code>schema.tsv</code>;</li>
+<li>output from task <code>tei</code> is written to <code>customschema.tsv</code>.</li>
 </ul>
 <h3 id="as-library">As library</h3>
-<p>You can write a script with exactly the same behaviour as the <code>xmlschema</code> command
+<p>You can write a script with exactly the same behavior as the <code>xmlschema</code> command
 as follows:</p>
 <pre><code class="language-python">from tf.tools.xmlschema import Analysis
 A = Analysis()
@@ -102,7 +102,7 @@ good = A.task(&quot;validate&quot;, &quot;schema.rng&quot;, &quot;doc1.xml&quot;
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L1-L1014" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L1-L1017" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 ## Meaningful information from XML schemas.
@@ -121,62 +121,64 @@ they are separate words (the XML-elements are used as data containers);
 otherwise they belong to the same word (the XML-elements annotate a piece
 of string).
 
-This module can perform several analysis tasks of xml schemas.
+This module can perform several analysis tasks of XML schemas.
 
-**fromrelax** task:
+`fromrelax` task:
 
-Transforms a RelaxNG schema into an equivalent xsd schema using James Clark&#39;s
-trang library.  For this, you must have java installed.
+Transforms a RelaxNG schema into an equivalent XSD schema using James Clark&#39;s
+TRANG library.  For this, you must have java installed.
 
-**analyse** task:
+`analyze` task:
 
 Given an XML schema file, produces a tab-separated list of elements defined in
 the schema, with columns
 
-    (element name) (simple or complex) (mixed or pure content)
+```
+(element name) (simple or complex) (mixed or pure content)
+```
 
-**tei** task:
+`tei` task:
 
 Analyses the complete TEI schema plus optional customizations on top of it.  If
-you pass an optional customized TEI schema, it will be analysed separately, and
-the result will be used to override the result of analysing the complete TEI
+you pass an optional customized TEI schema, it will be analyzed separately, and
+the result will be used to override the result of analyzing the complete TEI
 schema.  The complete TEI schema is part of this package, you do not have to
 provide it.  It has been generated on with the online
-[TEI-Roma tool](https://roma.tei-c.org/startroma.php).
+[`TEI-Roma` tool](https://roma.tei-c.org/startroma.php).
 
 !!! note &#34;Caution&#34;
-    This code has only been tested on a single xsd, converted from a relaxRNG
-    file produced by a customisation of TEI.
+    This code has only been tested on a single XSD, converted from a RelaxNG
+    file produced by a customization of TEI.
 
     It could very well be that I have missed parts of the semantics of XML-Schema.
 
 ## Usage
 
-This program can be used as a library or as a command line tool.
+This program can be used as a library or as a command-line tool.
 
 ### As command-line tool
 
 ``` sh
 xmlschema validate schema.rng/xsd doc1.xml doc2.xml ...
 xmlschema fromrelax schema.rng
-xmlschema analyse schema.xsd
+xmlschema analyze schema.xsd
 xmlschema tei customschema.xsd
 xmlschema tei
 ```
 
 Here `customschema` and `schema` are variable arguments.
 
-The result is written to the console and/or a file in the current directory
+The result is written to the console and / or a file in the current directory
 (from where the command `xmlschema` is called):
 
 *   output from task `validate` is written to the standard output/error
-*   output from task `fromrelax` is a file *schema*`.xsd`;
-*   output from task `analysis` is written to *schema*`.tsv;
-*   output from task `tei` is written to *customschema*`.tsv.
+*   output from task `fromrelax` is a file `schema.xsd`;
+*   output from task `analysis` is written to `schema.tsv`;
+*   output from task `tei` is written to `customschema.tsv`.
 
 ### As library
 
-You can write a script with exactly the same behaviour as the `xmlschema` command
+You can write a script with exactly the same behavior as the `xmlschema` command
 as follows:
 
 ``` python
@@ -247,7 +249,7 @@ class Elements:
             Whether to run in debug mode or not.
             In debug mode more information is shown on the console.
         verbose: integer, optional -1
-            Produce no (-1), some (0) or many (1) orprogress and reporting messages
+            Produce no (-1), some (0) or many (1) progress and reporting messages
         &#34;&#34;&#34;
 
         self.verbose = verbose
@@ -260,13 +262,13 @@ class Elements:
         Parameters
         ----------
         baseSchema: string
-            The path of the xsd file that acts as the base schema that we want
-            to analyse.
+            The path of the XSD file that acts as the base schema that we want
+            to analyze.
         override: string, optional None
-            The path of another schema intended to override parts of the baseSchema.
+            The path of another schema intended to override parts of the `baseSchema`.
         roots: list, optional None
             If passed, it should be the list of root elements of the schema, resulting
-            from another configure call with the same baseSchema, but not necessarily
+            from another configure call with the same `baseSchema`, but not necessarily
             the same override).
         &#34;&#34;&#34;
 
@@ -285,7 +287,7 @@ class Elements:
         )
 
         def findImports(node):
-            &#34;&#34;&#34;Inner function to walk through the xsd and get the import statements.
+            &#34;&#34;&#34;Inner function to walk through the XSD and get the import statements.
 
             This function is called recursively for child nodes.
 
@@ -367,18 +369,19 @@ class Elements:
 
     @staticmethod
     def eKey(x):
-        &#34;&#34;&#34;Sort the dict with element definitions.
+        &#34;&#34;&#34;Sort the dictionary with element definitions.
 
         Parameters
         ----------
-        x: (str, dict)
+        x: tuple
             The element name and the element info.
 
         Returns
         -------
         tuple
-            The members are such that definitions from other than xs:element come first,
-            and within xs:element those that are &#34;abstract&#34; come first.
+            The members are such that definitions from other than `xs:element`
+            come first, and within `xs:element` those that are &#34;abstract&#34; come
+            first.
         &#34;&#34;&#34;
         name = x[0]
         tag = x[1][&#34;tag&#34;]
@@ -391,16 +394,16 @@ class Elements:
         )
 
     def interpret(self):
-        &#34;&#34;&#34;Reads the xsd and interprets the element definitions.
+        &#34;&#34;&#34;Reads the XSD and interprets the element definitions.
 
-        The definitions are read with the module `lxml`.
+        The definitions are read with the module LXML.
 
         For each definition of a name certain attributes are remembered, e.g.
-        the *kind*, the presence of a *mixed* attribute, whether it is a
-        *substitutionGroup* or *extension*, and whether it is *abstract*.
+        the `kind`, the presence of a `mixed` attribute, whether it is a
+        `substitutionGroup` or `extension`, and whether it is `abstract`.
 
-        When elements refer to a *substitutionGroup*, they need to get
-        the *kind* and *mixed* attributes of that group.
+        When elements refer to a `substitutionGroup`, they need to get
+        the `kind` and `mixed` attributes of that group.
 
         When elements refer to a *base*, they need to get
         the *kind* and *mixed* attributes of an extension with that *base*.
@@ -431,7 +434,7 @@ class Elements:
         redefinitions = collections.Counter()
 
         def findDefs(node, definingName, topDef):
-            &#34;&#34;&#34;Inner function to walk through the xsd and get definitions.
+            &#34;&#34;&#34;Inner function to walk through the XSD and get definitions.
 
             This function is called recursively for child nodes.
 
@@ -569,8 +572,8 @@ class Elements:
 
         Returns
         -------
-        str | list
-            One line/item per element.
+        string | list
+            One line / item per element.
             Each line has: element name, element kind, mixed status.
 
             The absence of the element *kind* and *mixed* status are indicated
@@ -706,10 +709,10 @@ class Analysis:
             &#34;&#34;&#34;
             USAGE
 
-            Command line:
+            Command-line:
 
             xmlschema tei [customschemafile.xsd]
-            xmlschema analyse {schemafile.xsd}
+            xmlschema analyze {schemafile.xsd}
             xmlschema fromrelax {schemafile.rng}
             xmlschema validate {schemafile.rng} {docfile1.xml} {docfile2.xml} ...
 
@@ -725,7 +728,7 @@ class Analysis:
             Whether to run in debug mode or not.
             In debug mode more information is shown on the console.
         verbose: integer, optional -1
-            Produce no (-1), some (0) or many (1) orprogress and reporting messages
+            Produce no (-1), some (0) or many (1) progress and reporting messages
         &#34;&#34;&#34;
 
         self.verbose = verbose
@@ -733,7 +736,7 @@ class Analysis:
         self.myDir = dirNm(abspath(__file__))
         self.setModes(debug=debug, verbose=verbose)
         self.schemaRoots = {}
-        self.analysers = {}
+        self.analyzers = {}
         self.modelRe = re.compile(r&#34;&lt;\?xml-model\b.*?\?&gt;&#34;, re.S)
         self.modelSnsRe = re.compile(r&#34;&#34;&#34;schematypens=([&#39;&#34;])(.*?)\1&#34;&#34;&#34;, re.S)
         self.modelHrefRe = re.compile(r&#34;&#34;&#34;href=([&#39;&#34;])(.*?)\1&#34;&#34;&#34;, re.S)
@@ -752,7 +755,7 @@ class Analysis:
         -------
         dict
             A dictionary with keys `rng` and `xsd` and values the paths of the
-            rng and xsd files of the base schema.
+            RNG and XSD files of the base schema.
         &#34;&#34;&#34;
         myDir = self.myDir
 
@@ -786,12 +789,12 @@ class Analysis:
         self.verbose = verbose
 
     def fromrelax(self, baseSchema, schemaOut):
-        &#34;&#34;&#34;Converts a RELAX NG schema to an XSD schema.
+        &#34;&#34;&#34;Converts a RelaxNG schema to an XSD schema.
 
         Parameters
         ----------
         baseSchema: string
-            The RELAX NG schema to convert.
+            The RelaxNG schema to convert.
         schemaOut: string
             The XSD schema to write to.
 
@@ -871,10 +874,10 @@ class Analysis:
 
         return (good, info, errors)
 
-    def analyser(self, baseSchema, override):
-        &#34;&#34;&#34;Initializes an analyser for a schema.
+    def analyzer(self, baseSchema, override):
+        &#34;&#34;&#34;Initializes an analyzer for a schema.
         &#34;&#34;&#34;
-        if (baseSchema, override) in self.analysers:
+        if (baseSchema, override) in self.analyzers:
             return True
 
         debug = self.debug
@@ -892,25 +895,25 @@ class Analysis:
             return False
 
         self.schemaRoots[baseSchema] = E.roots
-        self.analysers[(baseSchema, override)] = E
+        self.analyzers[(baseSchema, override)] = E
         return True
 
     def elements(self, baseSchema, override):
         &#34;&#34;&#34;Makes a list of elements and their properties.
 
-        The elements of baseSchema are analysed and their properties are
+        The elements of `baseSchema` are analyzed and their properties are
         determined. If there is an overriding schema, the elements of that
-        schema are analysed as well and the properties of the elements are
+        schema are analyzed as well and the properties of the elements are
         updated with the properties of the overriding elements.
         The properties in question are whether an element is simple or complex,
-        and whether its conten is mixed or pure.
+        and whether its content is mixed or pure.
 
         Parameters
         ----------
         baseSchema: string
-            The base schema to analyse.
+            The base schema to analyze.
         override: string | None
-            The overriding schema to analyse.
+            The overriding schema to analyze.
         write: boolean, optional True
             Whether to write the results to a file.
 
@@ -922,10 +925,10 @@ class Analysis:
             - the name of the output file
             - the list of elements with their properties
         &#34;&#34;&#34;
-        if not self.analyser(baseSchema, override):
+        if not self.analyzer(baseSchema, override):
             return (False, None)
 
-        E = self.analysers[(baseSchema, override)]
+        E = self.analyzers[(baseSchema, override)]
 
         E.interpret()
         if not E.good:
@@ -936,7 +939,7 @@ class Analysis:
         return result
 
     def getElementInfo(self, baseSchema, overrides, verbose=None):
-        &#34;&#34;&#34;Analyse the schema and its overrides.
+        &#34;&#34;&#34;Analyze the schema and its overrides.
 
         The XML schema has useful information about the XML elements that
         occur in the source. Here we extract that information and make it
@@ -987,7 +990,7 @@ class Analysis:
         Parameters
         ----------
         task: string
-            The task to execute: `&#34;fromrelax&#34;`, `&#34;analyse&#34;`, `&#34;tei&#34;`, or `&#34;validate&#34;`.
+            The task to execute: `&#34;fromrelax&#34;`, `&#34;analyze&#34;`, `&#34;tei&#34;`, or `&#34;validate&#34;`.
 
         ask: list
             Any arguments for the task.
@@ -1010,7 +1013,7 @@ class Analysis:
 
         result = True
 
-        if task in {&#34;tei&#34;, &#34;analyse&#34;}:
+        if task in {&#34;tei&#34;, &#34;analyze&#34;}:
             if task == &#34;tei&#34;:
                 baseSchema = self.getBaseSchema()[&#34;xsd&#34;]
                 override = args[0] if len(args) else None
@@ -1051,7 +1054,7 @@ class Analysis:
         return result
 
     def run(self):
-        &#34;&#34;&#34;Run a task specified by arguments on the command line.
+        &#34;&#34;&#34;Run a task specified by arguments on the command-line.
 
         Returns
         -------
@@ -1062,7 +1065,7 @@ class Analysis:
         &#34;&#34;&#34;
         tasks = dict(
             tei={0, 1},
-            analyse={1},
+            analyze={1},
             fromrelax={1},
             validate=True,
         )
@@ -1135,7 +1138,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L1007-L1009" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L1010-L1012" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     A = Analysis()
@@ -1159,12 +1162,12 @@ if __name__ == &#34;__main__&#34;:
 <dd>Whether to run in debug mode or not.
 In debug mode more information is shown on the console.</dd>
 <dt><strong><code>verbose</code></strong> :&ensp;<code>integer</code>, optional <code>-1</code></dt>
-<dd>Produce no (-1), some (0) or many (1) orprogress and reporting messages</dd>
+<dd>Produce no (-1), some (0) or many (1) progress and reporting messages</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L596-L1004" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L599-L1007" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Analysis:
     @staticmethod
@@ -1173,10 +1176,10 @@ In debug mode more information is shown on the console.</dd>
             &#34;&#34;&#34;
             USAGE
 
-            Command line:
+            Command-line:
 
             xmlschema tei [customschemafile.xsd]
-            xmlschema analyse {schemafile.xsd}
+            xmlschema analyze {schemafile.xsd}
             xmlschema fromrelax {schemafile.rng}
             xmlschema validate {schemafile.rng} {docfile1.xml} {docfile2.xml} ...
 
@@ -1192,7 +1195,7 @@ In debug mode more information is shown on the console.</dd>
             Whether to run in debug mode or not.
             In debug mode more information is shown on the console.
         verbose: integer, optional -1
-            Produce no (-1), some (0) or many (1) orprogress and reporting messages
+            Produce no (-1), some (0) or many (1) progress and reporting messages
         &#34;&#34;&#34;
 
         self.verbose = verbose
@@ -1200,7 +1203,7 @@ In debug mode more information is shown on the console.</dd>
         self.myDir = dirNm(abspath(__file__))
         self.setModes(debug=debug, verbose=verbose)
         self.schemaRoots = {}
-        self.analysers = {}
+        self.analyzers = {}
         self.modelRe = re.compile(r&#34;&lt;\?xml-model\b.*?\?&gt;&#34;, re.S)
         self.modelSnsRe = re.compile(r&#34;&#34;&#34;schematypens=([&#39;&#34;])(.*?)\1&#34;&#34;&#34;, re.S)
         self.modelHrefRe = re.compile(r&#34;&#34;&#34;href=([&#39;&#34;])(.*?)\1&#34;&#34;&#34;, re.S)
@@ -1219,7 +1222,7 @@ In debug mode more information is shown on the console.</dd>
         -------
         dict
             A dictionary with keys `rng` and `xsd` and values the paths of the
-            rng and xsd files of the base schema.
+            RNG and XSD files of the base schema.
         &#34;&#34;&#34;
         myDir = self.myDir
 
@@ -1253,12 +1256,12 @@ In debug mode more information is shown on the console.</dd>
         self.verbose = verbose
 
     def fromrelax(self, baseSchema, schemaOut):
-        &#34;&#34;&#34;Converts a RELAX NG schema to an XSD schema.
+        &#34;&#34;&#34;Converts a RelaxNG schema to an XSD schema.
 
         Parameters
         ----------
         baseSchema: string
-            The RELAX NG schema to convert.
+            The RelaxNG schema to convert.
         schemaOut: string
             The XSD schema to write to.
 
@@ -1338,10 +1341,10 @@ In debug mode more information is shown on the console.</dd>
 
         return (good, info, errors)
 
-    def analyser(self, baseSchema, override):
-        &#34;&#34;&#34;Initializes an analyser for a schema.
+    def analyzer(self, baseSchema, override):
+        &#34;&#34;&#34;Initializes an analyzer for a schema.
         &#34;&#34;&#34;
-        if (baseSchema, override) in self.analysers:
+        if (baseSchema, override) in self.analyzers:
             return True
 
         debug = self.debug
@@ -1359,25 +1362,25 @@ In debug mode more information is shown on the console.</dd>
             return False
 
         self.schemaRoots[baseSchema] = E.roots
-        self.analysers[(baseSchema, override)] = E
+        self.analyzers[(baseSchema, override)] = E
         return True
 
     def elements(self, baseSchema, override):
         &#34;&#34;&#34;Makes a list of elements and their properties.
 
-        The elements of baseSchema are analysed and their properties are
+        The elements of `baseSchema` are analyzed and their properties are
         determined. If there is an overriding schema, the elements of that
-        schema are analysed as well and the properties of the elements are
+        schema are analyzed as well and the properties of the elements are
         updated with the properties of the overriding elements.
         The properties in question are whether an element is simple or complex,
-        and whether its conten is mixed or pure.
+        and whether its content is mixed or pure.
 
         Parameters
         ----------
         baseSchema: string
-            The base schema to analyse.
+            The base schema to analyze.
         override: string | None
-            The overriding schema to analyse.
+            The overriding schema to analyze.
         write: boolean, optional True
             Whether to write the results to a file.
 
@@ -1389,10 +1392,10 @@ In debug mode more information is shown on the console.</dd>
             - the name of the output file
             - the list of elements with their properties
         &#34;&#34;&#34;
-        if not self.analyser(baseSchema, override):
+        if not self.analyzer(baseSchema, override):
             return (False, None)
 
-        E = self.analysers[(baseSchema, override)]
+        E = self.analyzers[(baseSchema, override)]
 
         E.interpret()
         if not E.good:
@@ -1403,7 +1406,7 @@ In debug mode more information is shown on the console.</dd>
         return result
 
     def getElementInfo(self, baseSchema, overrides, verbose=None):
-        &#34;&#34;&#34;Analyse the schema and its overrides.
+        &#34;&#34;&#34;Analyze the schema and its overrides.
 
         The XML schema has useful information about the XML elements that
         occur in the source. Here we extract that information and make it
@@ -1454,7 +1457,7 @@ In debug mode more information is shown on the console.</dd>
         Parameters
         ----------
         task: string
-            The task to execute: `&#34;fromrelax&#34;`, `&#34;analyse&#34;`, `&#34;tei&#34;`, or `&#34;validate&#34;`.
+            The task to execute: `&#34;fromrelax&#34;`, `&#34;analyze&#34;`, `&#34;tei&#34;`, or `&#34;validate&#34;`.
 
         ask: list
             Any arguments for the task.
@@ -1477,7 +1480,7 @@ In debug mode more information is shown on the console.</dd>
 
         result = True
 
-        if task in {&#34;tei&#34;, &#34;analyse&#34;}:
+        if task in {&#34;tei&#34;, &#34;analyze&#34;}:
             if task == &#34;tei&#34;:
                 baseSchema = self.getBaseSchema()[&#34;xsd&#34;]
                 override = args[0] if len(args) else None
@@ -1518,7 +1521,7 @@ In debug mode more information is shown on the console.</dd>
         return result
 
     def run(self):
-        &#34;&#34;&#34;Run a task specified by arguments on the command line.
+        &#34;&#34;&#34;Run a task specified by arguments on the command-line.
 
         Returns
         -------
@@ -1529,7 +1532,7 @@ In debug mode more information is shown on the console.</dd>
         &#34;&#34;&#34;
         tasks = dict(
             tei={0, 1},
-            analyse={1},
+            analyze={1},
             fromrelax={1},
             validate=True,
         )
@@ -1586,7 +1589,7 @@ In debug mode more information is shown on the console.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L597-L611" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L600-L614" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def help():
@@ -1594,10 +1597,10 @@ def help():
         &#34;&#34;&#34;
         USAGE
 
-        Command line:
+        Command-line:
 
         xmlschema tei [customschemafile.xsd]
-        xmlschema analyse {schemafile.xsd}
+        xmlschema analyze {schemafile.xsd}
         xmlschema fromrelax {schemafile.rng}
         xmlschema validate {schemafile.rng} {docfile1.xml} {docfile2.xml} ...
 
@@ -1619,20 +1622,20 @@ schematypens="http://relaxng.org/ns/structure/1.0"
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="tf.tools.xmlschema.Analysis.analyser"><code class="name flex">
-<span>def <span class="ident">analyser</span></span>(<span>self, baseSchema, override)</span>
+<dt id="tf.tools.xmlschema.Analysis.analyzer"><code class="name flex">
+<span>def <span class="ident">analyzer</span></span>(<span>self, baseSchema, override)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Initializes an analyser for a schema.</p></div>
+<div class="desc"><p>Initializes an analyzer for a schema.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L768-L790" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L771-L793" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def analyser(self, baseSchema, override):
-    &#34;&#34;&#34;Initializes an analyser for a schema.
+<pre><code class="python">def analyzer(self, baseSchema, override):
+    &#34;&#34;&#34;Initializes an analyzer for a schema.
     &#34;&#34;&#34;
-    if (baseSchema, override) in self.analysers:
+    if (baseSchema, override) in self.analyzers:
         return True
 
     debug = self.debug
@@ -1650,7 +1653,7 @@ schematypens="http://relaxng.org/ns/structure/1.0"
         return False
 
     self.schemaRoots[baseSchema] = E.roots
-    self.analysers[(baseSchema, override)] = E
+    self.analyzers[(baseSchema, override)] = E
     return True</code></pre>
 </details>
 </dd>
@@ -1659,18 +1662,18 @@ schematypens="http://relaxng.org/ns/structure/1.0"
 </code></dt>
 <dd>
 <div class="desc"><p>Makes a list of elements and their properties.</p>
-<p>The elements of baseSchema are analysed and their properties are
+<p>The elements of <code>baseSchema</code> are analyzed and their properties are
 determined. If there is an overriding schema, the elements of that
-schema are analysed as well and the properties of the elements are
+schema are analyzed as well and the properties of the elements are
 updated with the properties of the overriding elements.
 The properties in question are whether an element is simple or complex,
-and whether its conten is mixed or pure.</p>
+and whether its content is mixed or pure.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>baseSchema</code></strong> :&ensp;<code>string</code></dt>
-<dd>The base schema to analyse.</dd>
+<dd>The base schema to analyze.</dd>
 <dt><strong><code>override</code></strong> :&ensp;<code>string | None</code></dt>
-<dd>The overriding schema to analyse.</dd>
+<dd>The overriding schema to analyze.</dd>
 <dt><strong><code>write</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
 <dd>Whether to write the results to a file.</dd>
 </dl>
@@ -1683,24 +1686,24 @@ A tuple with three elements:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L792-L830" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L795-L833" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def elements(self, baseSchema, override):
     &#34;&#34;&#34;Makes a list of elements and their properties.
 
-    The elements of baseSchema are analysed and their properties are
+    The elements of `baseSchema` are analyzed and their properties are
     determined. If there is an overriding schema, the elements of that
-    schema are analysed as well and the properties of the elements are
+    schema are analyzed as well and the properties of the elements are
     updated with the properties of the overriding elements.
     The properties in question are whether an element is simple or complex,
-    and whether its conten is mixed or pure.
+    and whether its content is mixed or pure.
 
     Parameters
     ----------
     baseSchema: string
-        The base schema to analyse.
+        The base schema to analyze.
     override: string | None
-        The overriding schema to analyse.
+        The overriding schema to analyze.
     write: boolean, optional True
         Whether to write the results to a file.
 
@@ -1712,10 +1715,10 @@ A tuple with three elements:
         - the name of the output file
         - the list of elements with their properties
     &#34;&#34;&#34;
-    if not self.analyser(baseSchema, override):
+    if not self.analyzer(baseSchema, override):
         return (False, None)
 
-    E = self.analysers[(baseSchema, override)]
+    E = self.analyzers[(baseSchema, override)]
 
     E.interpret()
     if not E.good:
@@ -1730,11 +1733,11 @@ A tuple with three elements:
 <span>def <span class="ident">fromrelax</span></span>(<span>self, baseSchema, schemaOut)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Converts a RELAX NG schema to an XSD schema.</p>
+<div class="desc"><p>Converts a RelaxNG schema to an XSD schema.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>baseSchema</code></strong> :&ensp;<code>string</code></dt>
-<dd>The RELAX NG schema to convert.</dd>
+<dd>The RelaxNG schema to convert.</dd>
 <dt><strong><code>schemaOut</code></strong> :&ensp;<code>string</code></dt>
 <dd>The XSD schema to write to.</dd>
 </dl>
@@ -1746,15 +1749,15 @@ A tuple with three elements:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L682-L710" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L685-L713" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fromrelax(self, baseSchema, schemaOut):
-    &#34;&#34;&#34;Converts a RELAX NG schema to an XSD schema.
+    &#34;&#34;&#34;Converts a RelaxNG schema to an XSD schema.
 
     Parameters
     ----------
     baseSchema: string
-        The RELAX NG schema to convert.
+        The RelaxNG schema to convert.
     schemaOut: string
         The XSD schema to write to.
 
@@ -1788,12 +1791,12 @@ A tuple with three elements:
 <dl>
 <dt><code>dict</code></dt>
 <dd>A dictionary with keys <code>rng</code> and <code>xsd</code> and values the paths of the
-rng and xsd files of the base schema.</dd>
+RNG and XSD files of the base schema.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L642-L653" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L645-L656" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getBaseSchema(self):
     &#34;&#34;&#34;Get the base schema.
@@ -1802,7 +1805,7 @@ rng and xsd files of the base schema.</dd>
     -------
     dict
         A dictionary with keys `rng` and `xsd` and values the paths of the
-        rng and xsd files of the base schema.
+        RNG and XSD files of the base schema.
     &#34;&#34;&#34;
     myDir = self.myDir
 
@@ -1813,7 +1816,7 @@ rng and xsd files of the base schema.</dd>
 <span>def <span class="ident">getElementInfo</span></span>(<span>self, baseSchema, overrides, verbose=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Analyse the schema and its overrides.</p>
+<div class="desc"><p>Analyze the schema and its overrides.</p>
 <p>The XML schema has useful information about the XML elements that
 occur in the source. Here we extract that information and make it
 fast-accessible.</p>
@@ -1835,10 +1838,10 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L832-L876" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L835-L879" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getElementInfo(self, baseSchema, overrides, verbose=None):
-    &#34;&#34;&#34;Analyse the schema and its overrides.
+    &#34;&#34;&#34;Analyze the schema and its overrides.
 
     The XML schema has useful information about the XML elements that
     occur in the source. Here we extract that information and make it
@@ -1892,7 +1895,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L655-L672" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L658-L675" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModel(self, xmlContent):
     modelRe = self.modelRe
@@ -1918,7 +1921,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <span>def <span class="ident">run</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Run a task specified by arguments on the command line.</p>
+<div class="desc"><p>Run a task specified by arguments on the command-line.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>integer</code></dt>
@@ -1929,10 +1932,10 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L947-L1004" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L950-L1007" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def run(self):
-    &#34;&#34;&#34;Run a task specified by arguments on the command line.
+    &#34;&#34;&#34;Run a task specified by arguments on the command-line.
 
     Returns
     -------
@@ -1943,7 +1946,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
     &#34;&#34;&#34;
     tasks = dict(
         tei={0, 1},
-        analyse={1},
+        analyze={1},
         fromrelax={1},
         validate=True,
     )
@@ -2000,7 +2003,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L674-L680" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L677-L683" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setModes(self, debug=False, verbose=-1):
     &#34;&#34;&#34;Sets debug and verbose modes.
@@ -2019,7 +2022,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>task</code></strong> :&ensp;<code>string</code></dt>
-<dd>The task to execute: <code>"fromrelax"</code>, <code>"analyse"</code>, <code>"tei"</code>, or <code>"validate"</code>.</dd>
+<dd>The task to execute: <code>"fromrelax"</code>, <code>"analyze"</code>, <code>"tei"</code>, or <code>"validate"</code>.</dd>
 <dt><strong><code>ask</code></strong> :&ensp;<code>list</code></dt>
 <dd>Any arguments for the task.
 That could be a base schema and an override.
@@ -2033,7 +2036,7 @@ Not all tasks require both.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L878-L945" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L881-L948" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(self, task, *args, verbose=None):
     &#34;&#34;&#34;Implements a higher level task.
@@ -2041,7 +2044,7 @@ Not all tasks require both.</dd>
     Parameters
     ----------
     task: string
-        The task to execute: `&#34;fromrelax&#34;`, `&#34;analyse&#34;`, `&#34;tei&#34;`, or `&#34;validate&#34;`.
+        The task to execute: `&#34;fromrelax&#34;`, `&#34;analyze&#34;`, `&#34;tei&#34;`, or `&#34;validate&#34;`.
 
     ask: list
         Any arguments for the task.
@@ -2064,7 +2067,7 @@ Not all tasks require both.</dd>
 
     result = True
 
-    if task in {&#34;tei&#34;, &#34;analyse&#34;}:
+    if task in {&#34;tei&#34;, &#34;analyze&#34;}:
         if task == &#34;tei&#34;:
             baseSchema = self.getBaseSchema()[&#34;xsd&#34;]
             override = args[0] if len(args) else None
@@ -2121,7 +2124,7 @@ Not all tasks require both.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L712-L766" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L715-L769" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def validate(self, schema, instances):
     &#34;&#34;&#34;Validates an instance against a schema.
@@ -2195,12 +2198,12 @@ Not all tasks require both.</dd>
 <dd>Whether to run in debug mode or not.
 In debug mode more information is shown on the console.</dd>
 <dt><strong><code>verbose</code></strong> :&ensp;<code>integer</code>, optional <code>-1</code></dt>
-<dd>Produce no (-1), some (0) or many (1) orprogress and reporting messages</dd>
+<dd>Produce no (-1), some (0) or many (1) progress and reporting messages</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L117-L593" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L119-L596" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Elements:
     types = set(
@@ -2229,7 +2232,7 @@ In debug mode more information is shown on the console.</dd>
             Whether to run in debug mode or not.
             In debug mode more information is shown on the console.
         verbose: integer, optional -1
-            Produce no (-1), some (0) or many (1) orprogress and reporting messages
+            Produce no (-1), some (0) or many (1) progress and reporting messages
         &#34;&#34;&#34;
 
         self.verbose = verbose
@@ -2242,13 +2245,13 @@ In debug mode more information is shown on the console.</dd>
         Parameters
         ----------
         baseSchema: string
-            The path of the xsd file that acts as the base schema that we want
-            to analyse.
+            The path of the XSD file that acts as the base schema that we want
+            to analyze.
         override: string, optional None
-            The path of another schema intended to override parts of the baseSchema.
+            The path of another schema intended to override parts of the `baseSchema`.
         roots: list, optional None
             If passed, it should be the list of root elements of the schema, resulting
-            from another configure call with the same baseSchema, but not necessarily
+            from another configure call with the same `baseSchema`, but not necessarily
             the same override).
         &#34;&#34;&#34;
 
@@ -2267,7 +2270,7 @@ In debug mode more information is shown on the console.</dd>
         )
 
         def findImports(node):
-            &#34;&#34;&#34;Inner function to walk through the xsd and get the import statements.
+            &#34;&#34;&#34;Inner function to walk through the XSD and get the import statements.
 
             This function is called recursively for child nodes.
 
@@ -2349,18 +2352,19 @@ In debug mode more information is shown on the console.</dd>
 
     @staticmethod
     def eKey(x):
-        &#34;&#34;&#34;Sort the dict with element definitions.
+        &#34;&#34;&#34;Sort the dictionary with element definitions.
 
         Parameters
         ----------
-        x: (str, dict)
+        x: tuple
             The element name and the element info.
 
         Returns
         -------
         tuple
-            The members are such that definitions from other than xs:element come first,
-            and within xs:element those that are &#34;abstract&#34; come first.
+            The members are such that definitions from other than `xs:element`
+            come first, and within `xs:element` those that are &#34;abstract&#34; come
+            first.
         &#34;&#34;&#34;
         name = x[0]
         tag = x[1][&#34;tag&#34;]
@@ -2373,16 +2377,16 @@ In debug mode more information is shown on the console.</dd>
         )
 
     def interpret(self):
-        &#34;&#34;&#34;Reads the xsd and interprets the element definitions.
+        &#34;&#34;&#34;Reads the XSD and interprets the element definitions.
 
-        The definitions are read with the module `lxml`.
+        The definitions are read with the module LXML.
 
         For each definition of a name certain attributes are remembered, e.g.
-        the *kind*, the presence of a *mixed* attribute, whether it is a
-        *substitutionGroup* or *extension*, and whether it is *abstract*.
+        the `kind`, the presence of a `mixed` attribute, whether it is a
+        `substitutionGroup` or `extension`, and whether it is `abstract`.
 
-        When elements refer to a *substitutionGroup*, they need to get
-        the *kind* and *mixed* attributes of that group.
+        When elements refer to a `substitutionGroup`, they need to get
+        the `kind` and `mixed` attributes of that group.
 
         When elements refer to a *base*, they need to get
         the *kind* and *mixed* attributes of an extension with that *base*.
@@ -2413,7 +2417,7 @@ In debug mode more information is shown on the console.</dd>
         redefinitions = collections.Counter()
 
         def findDefs(node, definingName, topDef):
-            &#34;&#34;&#34;Inner function to walk through the xsd and get definitions.
+            &#34;&#34;&#34;Inner function to walk through the XSD and get definitions.
 
             This function is called recursively for child nodes.
 
@@ -2551,8 +2555,8 @@ In debug mode more information is shown on the console.</dd>
 
         Returns
         -------
-        str | list
-            One line/item per element.
+        string | list
+            One line / item per element.
             Each line has: element name, element kind, mixed status.
 
             The absence of the element *kind* and *mixed* status are indicated
@@ -2697,37 +2701,39 @@ In debug mode more information is shown on the console.</dd>
 <span>def <span class="ident">eKey</span></span>(<span>x)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Sort the dict with element definitions.</p>
+<div class="desc"><p>Sort the dictionary with element definitions.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>x</code></strong> :&ensp;<code>(str, dict)</code></dt>
+<dt><strong><code>x</code></strong> :&ensp;<code>tuple</code></dt>
 <dd>The element name and the element info.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>tuple</code></dt>
-<dd>The members are such that definitions from other than xs:element come first,
-and within xs:element those that are "abstract" come first.</dd>
+<dd>The members are such that definitions from other than <code>xs:element</code>
+come first, and within <code>xs:element</code> those that are "abstract" come
+first.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L262-L285" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L264-L288" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def eKey(x):
-    &#34;&#34;&#34;Sort the dict with element definitions.
+    &#34;&#34;&#34;Sort the dictionary with element definitions.
 
     Parameters
     ----------
-    x: (str, dict)
+    x: tuple
         The element name and the element info.
 
     Returns
     -------
     tuple
-        The members are such that definitions from other than xs:element come first,
-        and within xs:element those that are &#34;abstract&#34; come first.
+        The members are such that definitions from other than `xs:element`
+        come first, and within `xs:element` those that are &#34;abstract&#34; come
+        first.
     &#34;&#34;&#34;
     name = x[0]
     tag = x[1][&#34;tag&#34;]
@@ -2748,7 +2754,7 @@ def eKey(x):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L489-L491" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L492-L494" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def repKind(k):
@@ -2763,7 +2769,7 @@ def repKind(k):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L485-L487" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L488-L490" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def repMixed(m):
@@ -2781,19 +2787,19 @@ def repMixed(m):
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>baseSchema</code></strong> :&ensp;<code>string</code></dt>
-<dd>The path of the xsd file that acts as the base schema that we want
-to analyse.</dd>
+<dd>The path of the XSD file that acts as the base schema that we want
+to analyze.</dd>
 <dt><strong><code>override</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
-<dd>The path of another schema intended to override parts of the baseSchema.</dd>
+<dd>The path of another schema intended to override parts of the <code>baseSchema</code>.</dd>
 <dt><strong><code>roots</code></strong> :&ensp;<code>list</code>, optional <code>None</code></dt>
 <dd>If passed, it should be the list of root elements of the schema, resulting
-from another configure call with the same baseSchema, but not necessarily
+from another configure call with the same <code>baseSchema</code>, but not necessarily
 the same override).</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L151-L260" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L153-L262" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def configure(self, baseSchema, override=None, roots=None):
     &#34;&#34;&#34;Configure for an XML schema and overrides
@@ -2801,13 +2807,13 @@ the same override).</dd>
     Parameters
     ----------
     baseSchema: string
-        The path of the xsd file that acts as the base schema that we want
-        to analyse.
+        The path of the XSD file that acts as the base schema that we want
+        to analyze.
     override: string, optional None
-        The path of another schema intended to override parts of the baseSchema.
+        The path of another schema intended to override parts of the `baseSchema`.
     roots: list, optional None
         If passed, it should be the list of root elements of the schema, resulting
-        from another configure call with the same baseSchema, but not necessarily
+        from another configure call with the same `baseSchema`, but not necessarily
         the same override).
     &#34;&#34;&#34;
 
@@ -2826,7 +2832,7 @@ the same override).</dd>
     )
 
     def findImports(node):
-        &#34;&#34;&#34;Inner function to walk through the xsd and get the import statements.
+        &#34;&#34;&#34;Inner function to walk through the XSD and get the import statements.
 
         This function is called recursively for child nodes.
 
@@ -2920,9 +2926,9 @@ otherwise as a list.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>str | list</code></dt>
+<dt><code>string | list</code></dt>
 <dd>
-<p>One line/item per element.
+<p>One line / item per element.
 Each line has: element name, element kind, mixed status.</p>
 <p>The absence of the element <em>kind</em> and <em>mixed</em> status are indicated
 with <code>---</code> in the TSV and with the <code>None</code> value in the list.
@@ -2932,7 +2938,7 @@ If all went well, there are n such absences!</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L455-L483" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L458-L486" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDefs(self, asTsv=False):
     &#34;&#34;&#34;Delivers the analysis results.
@@ -2945,8 +2951,8 @@ If all went well, there are n such absences!</p>
 
     Returns
     -------
-    str | list
-        One line/item per element.
+    string | list
+        One line / item per element.
         Each line has: element name, element kind, mixed status.
 
         The absence of the element *kind* and *mixed* status are indicated
@@ -2969,13 +2975,13 @@ If all went well, there are n such absences!</p>
 <span>def <span class="ident">interpret</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Reads the xsd and interprets the element definitions.</p>
-<p>The definitions are read with the module <code>lxml</code>.</p>
+<div class="desc"><p>Reads the XSD and interprets the element definitions.</p>
+<p>The definitions are read with the module LXML.</p>
 <p>For each definition of a name certain attributes are remembered, e.g.
-the <em>kind</em>, the presence of a <em>mixed</em> attribute, whether it is a
-<em>substitutionGroup</em> or <em>extension</em>, and whether it is <em>abstract</em>.</p>
-<p>When elements refer to a <em>substitutionGroup</em>, they need to get
-the <em>kind</em> and <em>mixed</em> attributes of that group.</p>
+the <code>kind</code>, the presence of a <code>mixed</code> attribute, whether it is a
+<code>substitutionGroup</code> or <code>extension</code>, and whether it is <code>abstract</code>.</p>
+<p>When elements refer to a <code>substitutionGroup</code>, they need to get
+the <code>kind</code> and <code>mixed</code> attributes of that group.</p>
 <p>When elements refer to a <em>base</em>, they need to get
 the <em>kind</em> and <em>mixed</em> attributes of an extension with that <em>base</em>.</p>
 <p>After an initial parse of the XSD file, we do a variable number of
@@ -2991,19 +2997,19 @@ If all went well, there are no such absences!</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L287-L437" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L290-L440" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def interpret(self):
-    &#34;&#34;&#34;Reads the xsd and interprets the element definitions.
+    &#34;&#34;&#34;Reads the XSD and interprets the element definitions.
 
-    The definitions are read with the module `lxml`.
+    The definitions are read with the module LXML.
 
     For each definition of a name certain attributes are remembered, e.g.
-    the *kind*, the presence of a *mixed* attribute, whether it is a
-    *substitutionGroup* or *extension*, and whether it is *abstract*.
+    the `kind`, the presence of a `mixed` attribute, whether it is a
+    `substitutionGroup` or `extension`, and whether it is `abstract`.
 
-    When elements refer to a *substitutionGroup*, they need to get
-    the *kind* and *mixed* attributes of that group.
+    When elements refer to a `substitutionGroup`, they need to get
+    the `kind` and `mixed` attributes of that group.
 
     When elements refer to a *base*, they need to get
     the *kind* and *mixed* attributes of an extension with that *base*.
@@ -3034,7 +3040,7 @@ If all went well, there are no such absences!</p></div>
     redefinitions = collections.Counter()
 
     def findDefs(node, definingName, topDef):
-        &#34;&#34;&#34;Inner function to walk through the xsd and get definitions.
+        &#34;&#34;&#34;Inner function to walk through the XSD and get definitions.
 
         This function is called recursively for child nodes.
 
@@ -3157,7 +3163,7 @@ in places where the names occur.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L493-L548" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L496-L551" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resolve(self, definitions):
     &#34;&#34;&#34;Resolve indirections in the definitions.
@@ -3226,7 +3232,7 @@ in places where the names occur.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L550-L574" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L553-L577" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showElems(self):
     &#34;&#34;&#34;Shows the current state of definitions.
@@ -3263,7 +3269,7 @@ in places where the names occur.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L576-L593" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L579-L596" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showOverrides(self):
     &#34;&#34;&#34;Shows the overriding definitions.&#34;&#34;&#34;
@@ -3296,7 +3302,7 @@ extension is <code>.tsv</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/xmlschema.py#L439-L453" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/xmlschema.py#L442-L456" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeDefs(self, outputDir):
     &#34;&#34;&#34;Writes the definitions of the elements to a file.
@@ -3399,7 +3405,7 @@ setTimeout(() => input.focus(), 100);
 <li>
 <h4><code><a title="tf.tools.xmlschema.Analysis" href="#tf.tools.xmlschema.Analysis">Analysis</a></code></h4>
 <ul class="two-column">
-<li><code><a title="tf.tools.xmlschema.Analysis.analyser" href="#tf.tools.xmlschema.Analysis.analyser">analyser</a></code></li>
+<li><code><a title="tf.tools.xmlschema.Analysis.analyzer" href="#tf.tools.xmlschema.Analysis.analyzer">analyzer</a></code></li>
 <li><code><a title="tf.tools.xmlschema.Analysis.elements" href="#tf.tools.xmlschema.Analysis.elements">elements</a></code></li>
 <li><code><a title="tf.tools.xmlschema.Analysis.fromrelax" href="#tf.tools.xmlschema.Analysis.fromrelax">fromrelax</a></code></li>
 <li><code><a title="tf.tools.xmlschema.Analysis.getBaseSchema" href="#tf.tools.xmlschema.Analysis.getBaseSchema">getBaseSchema</a></code></li>

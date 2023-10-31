@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>tf.dataset.nodemaps API documentation</title>
-<meta name="description" content="Nodemaps …" />
+<meta name="description" content="Node maps …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -23,7 +23,7 @@
 <h1 class="title">Module <code>tf.dataset.nodemaps</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="nodemaps">Nodemaps</h1>
+<h1 id="node-maps">Node maps</h1>
 <p>When different versions of a TF dataset exist, it makes sense to map the nodes from the
 older version to nodes of the newer version.</p>
 <p>If we have annotations on the older version
@@ -33,14 +33,14 @@ redoing all the work.</p>
 <p>Mapping the nodes consists of two stages:</p>
 <ol>
 <li><strong>slot mapping</strong> This is very dependent on what happened between versions.</li>
-<li><strong>node mappings per node type</strong> These can be generically constructed
-once we have a slot mapping.</li>
+<li><strong>node mappings per node type</strong> These can be generically constructed once
+we have a slot mapping.</li>
 </ol>
 <p>This module contains the function <code>makeVersionMapping</code> which is a function to furnish node mappings
 for node types given a slot mapping exists.</p>
 <h1 id="nodes-in-general">Nodes in general</h1>
 <p>The basic idea we use for the general case is that that nodes are linked to slots.
-In text-fabric, the standard <code>oslots</code> edge feature lists for each non-slot node
+In TF, the standard <code>oslots</code> edge feature lists for each non-slot node
 the slots it is linked to.</p>
 <p>Combining the just created slot mappings between versions and the <code>oslots</code> feature,
 we can extend the slot mapping into a general node mapping.</p>
@@ -52,8 +52,8 @@ They are good candidates for the mapping.</p>
 <p><img alt="5" src="../images/diffs.005.png"></p>
 <h1 id="refinements">Refinements</h1>
 <p>When we try to match nodes across versions, based on slot containment, we also respect
-their <code>otype</code>s. So we will not try to match a <code>clause</code> to a <code>phrase</code>.
-We make implicit use of the fact that for most <code>otype</code>s, the members
+their <code>otype</code>. So we will not try to match a <code>clause</code> to a <code>phrase</code>.
+We make implicit use of the fact that for most <code>otype</code>, the members
 contain disjoint slots.</p>
 <h1 id="multiple-candidates">Multiple candidates</h1>
 <p>Of course, things are not always as neat as in the diagram.
@@ -133,10 +133,10 @@ V.makeVersionMapping()
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/dataset/nodemaps.py#L1-L706" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/dataset/nodemaps.py#L1-L706" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-# Nodemaps
+# Node maps
 
 When different versions of a TF dataset exist, it makes sense to map the nodes from the
 older version to nodes of the newer version.
@@ -148,16 +148,16 @@ redoing all the work.
 
 Mapping the nodes consists of two stages:
 
-1. **slot mapping** This is very dependent on what happened between versions.
-2. **node mappings per node type** These can be generically constructed
-once we have a slot mapping.
+1.  **slot mapping** This is very dependent on what happened between versions.
+1.  **node mappings per node type** These can be generically constructed once
+    we have a slot mapping.
 
 This module contains the function `makeVersionMapping` which is a function to furnish node mappings
 for node types given a slot mapping exists.
 
 # Nodes in general
 The basic idea we use for the general case is that that nodes are linked to slots.
-In text-fabric, the standard `oslots` edge feature lists for each non-slot node
+In TF, the standard `oslots` edge feature lists for each non-slot node
 the slots it is linked to.
 
 Combining the just created slot mappings between versions and the `oslots` feature,
@@ -174,8 +174,8 @@ They are good candidates for the mapping.
 # Refinements
 
 When we try to match nodes across versions, based on slot containment, we also respect
-their `otype`s. So we will not try to match a `clause` to a `phrase`.
-We make implicit use of the fact that for most `otype`s, the members
+their `otype`. So we will not try to match a `clause` to a `phrase`.
+We make implicit use of the fact that for most `otype`, the members
 contain disjoint slots.
 
 # Multiple candidates
@@ -204,8 +204,8 @@ minus the number of slots in their intersection.
 
 In other words: \\(m_1\\) gets a penalty for
 
-* each slot \\(s\\in m_1\\) that is not in the mapped slots \\(m\\);
-* each mapped slot \\(t\\in m\\) that is not in \\(m_1\\).
+*   each slot \\(s\\in m_1\\) that is not in the mapped slots \\(m\\);
+*   each mapped slot \\(t\\in m\\) that is not in \\(m_1\\).
 
 If a candidate occupies exactly the mapped slots, the dissimilarity is 0.
 If there is only one such candidate of the right type, the case is completely clear,
@@ -262,7 +262,7 @@ A simpler example, using this code is
 
 ## Usage
 
-```python
+``` python
 from tf.dataset import Versions
 
 V = Versions(api, va, vb, slotMap)
@@ -290,7 +290,7 @@ TIMESTAMP = None
 
 class Versions:
     def __init__(self, api, va, vb, silent=SILENT_D, slotMap=None):
-        &#34;&#34;&#34;Map the nodes of a nodetype between two versions of a TF dataset.
+        &#34;&#34;&#34;Map the nodes of a node type between two versions of a TF dataset.
 
         There are two scenarios in which you can use this object:
 
@@ -300,7 +300,7 @@ class Versions:
         extend that mapping to a complete node mapping and save the mapping
         as an `f&#34;omap@{va}-{vb}&#34;` edge feature in the dataset version `vb`.
 
-        In this use case, the apis for both `va` and `vb` should be full TF APIs,
+        In this use case, the APIs for both `va` and `vb` should be full TF APIs,
         in particular, they should provide the `tf.core.locality` API.
 
         **Use an existing node map to upgrade features from one version to another**.
@@ -309,14 +309,14 @@ class Versions:
         but in the `vb` dataset there should be an `omap@a-b` feature,
         i.e. a node map from the nodes of `va` to those of `vb`.
 
-        The apis for both `va` and `vb` may be partial TF APIs, which means that they
+        The APIs for both `va` and `vb` may be partial TF APIs, which means that they
         only have to provide the `tf.core.nodefeature.NodeFeatures` (`F`) and
-        `tf.core.edgefeature.EdgeFeatures` (`E`) apis.
+        `tf.core.edgefeature.EdgeFeatures` (`E`) APIs.
 
         Parameters
         ----------
         api: dict
-            TF-API objects to several versions of a dataset, keyed by version label
+            TF API objects to several versions of a dataset, keyed by version label
         va: string
             version label of the version whose nodes are the source of the mapping
         vb: string
@@ -335,7 +335,7 @@ class Versions:
         for v in (va, vb):
             if v not in api:
                 sys.stderr.write(
-                    f&#34;No TF-API for version {va} in the `api` parameter.\n&#34;
+                    f&#34;No TF API for version {va} in the `api` parameter.\n&#34;
                 )
                 self.good = False
 
@@ -568,7 +568,7 @@ class Versions:
                 &#34;about&#34;: &#34;Mapping from the slots of version {} to version {}&#34;.format(
                     va, vb
                 ),
-                &#34;encoder&#34;: &#34;Text-Fabric tf.dataset.nodemaps&#34;,
+                &#34;encoder&#34;: &#34;TF tf.dataset.nodemaps&#34;,
                 &#34;valueType&#34;: &#34;int&#34;,
                 &#34;edgeValues&#34;: True,
             }
@@ -613,10 +613,10 @@ class Versions:
         Suppose the value is `v`. Then the feature assignment will assign
         `v` to nodes `p` and `q`.
 
-        But there could very wel be a later node `m` with value `w` in the old version
+        But there could very well be a later node `m` with value `w` in the old version
         that also maps to `p`, and with a lower quality.
         Then later the node `p` in the new version will be assigned the value `w`
-        because of this, and this is sub otpimal.
+        because of this, and this is sub optimal.
 
         So we make sure that for each feature and each node in the new version
         the value assigned to it is the value of the node in the old version that
@@ -857,25 +857,25 @@ class Versions:
 <span>(</span><span>api, va, vb, silent='auto', slotMap=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Map the nodes of a nodetype between two versions of a TF dataset.</p>
+<div class="desc"><p>Map the nodes of a node type between two versions of a TF dataset.</p>
 <p>There are two scenarios in which you can use this object:</p>
 <p><strong>Extend a slot map to a node mapping</strong>.</p>
 <p>If this object is initialized with a <code>slotMap</code>, it can
 extend that mapping to a complete node mapping and save the mapping
 as an <code>f"omap@{va}-{vb}"</code> edge feature in the dataset version <code>vb</code>.</p>
-<p>In this use case, the apis for both <code>va</code> and <code>vb</code> should be full TF APIs,
+<p>In this use case, the APIs for both <code>va</code> and <code>vb</code> should be full TF APIs,
 in particular, they should provide the <code><a title="tf.core.locality" href="../core/locality.html">tf.core.locality</a></code> API.</p>
 <p><strong>Use an existing node map to upgrade features from one version to another</strong>.</p>
 <p>In this use case, you do not have to pass a <code>slotMap</code>,
 but in the <code>vb</code> dataset there should be an <code>omap@a-b</code> feature,
 i.e. a node map from the nodes of <code>va</code> to those of <code>vb</code>.</p>
-<p>The apis for both <code>va</code> and <code>vb</code> may be partial TF APIs, which means that they
+<p>The APIs for both <code>va</code> and <code>vb</code> may be partial TF APIs, which means that they
 only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href="../core/nodefeature.html#tf.core.nodefeature.NodeFeatures">NodeFeatures</a></code> (<code>F</code>) and
-<code><a title="tf.core.edgefeature.EdgeFeatures" href="../core/edgefeature.html#tf.core.edgefeature.EdgeFeatures">EdgeFeatures</a></code> (<code>E</code>) apis.</p>
+<code><a title="tf.core.edgefeature.EdgeFeatures" href="../core/edgefeature.html#tf.core.edgefeature.EdgeFeatures">EdgeFeatures</a></code> (<code>E</code>) APIs.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>api</code></strong> :&ensp;<code>dict</code></dt>
-<dd>TF-API objects to several versions of a dataset, keyed by version label</dd>
+<dd>TF API objects to several versions of a dataset, keyed by version label</dd>
 <dt><strong><code>va</code></strong> :&ensp;<code>string</code></dt>
 <dd>version label of the version whose nodes are the source of the mapping</dd>
 <dt><strong><code>vb</code></strong> :&ensp;<code>string</code></dt>
@@ -888,11 +888,11 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/dataset/nodemaps.py#L154-L706" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/dataset/nodemaps.py#L154-L706" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Versions:
     def __init__(self, api, va, vb, silent=SILENT_D, slotMap=None):
-        &#34;&#34;&#34;Map the nodes of a nodetype between two versions of a TF dataset.
+        &#34;&#34;&#34;Map the nodes of a node type between two versions of a TF dataset.
 
         There are two scenarios in which you can use this object:
 
@@ -902,7 +902,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
         extend that mapping to a complete node mapping and save the mapping
         as an `f&#34;omap@{va}-{vb}&#34;` edge feature in the dataset version `vb`.
 
-        In this use case, the apis for both `va` and `vb` should be full TF APIs,
+        In this use case, the APIs for both `va` and `vb` should be full TF APIs,
         in particular, they should provide the `tf.core.locality` API.
 
         **Use an existing node map to upgrade features from one version to another**.
@@ -911,14 +911,14 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
         but in the `vb` dataset there should be an `omap@a-b` feature,
         i.e. a node map from the nodes of `va` to those of `vb`.
 
-        The apis for both `va` and `vb` may be partial TF APIs, which means that they
+        The APIs for both `va` and `vb` may be partial TF APIs, which means that they
         only have to provide the `tf.core.nodefeature.NodeFeatures` (`F`) and
-        `tf.core.edgefeature.EdgeFeatures` (`E`) apis.
+        `tf.core.edgefeature.EdgeFeatures` (`E`) APIs.
 
         Parameters
         ----------
         api: dict
-            TF-API objects to several versions of a dataset, keyed by version label
+            TF API objects to several versions of a dataset, keyed by version label
         va: string
             version label of the version whose nodes are the source of the mapping
         vb: string
@@ -937,7 +937,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
         for v in (va, vb):
             if v not in api:
                 sys.stderr.write(
-                    f&#34;No TF-API for version {va} in the `api` parameter.\n&#34;
+                    f&#34;No TF API for version {va} in the `api` parameter.\n&#34;
                 )
                 self.good = False
 
@@ -1170,7 +1170,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
                 &#34;about&#34;: &#34;Mapping from the slots of version {} to version {}&#34;.format(
                     va, vb
                 ),
-                &#34;encoder&#34;: &#34;Text-Fabric tf.dataset.nodemaps&#34;,
+                &#34;encoder&#34;: &#34;TF tf.dataset.nodemaps&#34;,
                 &#34;valueType&#34;: &#34;int&#34;,
                 &#34;edgeValues&#34;: True,
             }
@@ -1215,10 +1215,10 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
         Suppose the value is `v`. Then the feature assignment will assign
         `v` to nodes `p` and `q`.
 
-        But there could very wel be a later node `m` with value `w` in the old version
+        But there could very well be a later node `m` with value `w` in the old version
         that also maps to `p`, and with a lower quality.
         Then later the node `p` in the new version will be assigned the value `w`
-        because of this, and this is sub otpimal.
+        because of this, and this is sub optimal.
 
         So we make sure that for each feature and each node in the new version
         the value assigned to it is the value of the node in the old version that
@@ -1454,7 +1454,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/dataset/nodemaps.py#L643-L706" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/dataset/nodemaps.py#L643-L706" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def caption(self, level, heading, good=None, newLine=True, continuation=False):
         silent = self.silent
@@ -1530,7 +1530,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/dataset/nodemaps.py#L307-L333" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/dataset/nodemaps.py#L307-L333" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exploreNodeMapping(self, nodeType):
     va = self.va
@@ -1599,7 +1599,7 @@ by diagnostic label but now for all nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/dataset/nodemaps.py#L335-L398" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/dataset/nodemaps.py#L335-L398" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDiagnosis(self, node=None, label=None):
     &#34;&#34;&#34;Show the diagnosis of a mapping.
@@ -1679,7 +1679,7 @@ See also <code><a title="tf.dataset.nodemaps" href="#tf.dataset.nodemaps">tf.dat
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/dataset/nodemaps.py#L400-L411" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/dataset/nodemaps.py#L400-L411" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def legend(self):
     &#34;&#34;&#34;Show the labels and descriptions of the diagnosis classes.
@@ -1703,7 +1703,7 @@ See also <code><a title="tf.dataset.nodemaps" href="#tf.dataset.nodemaps">tf.dat
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/dataset/nodemaps.py#L227-L305" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/dataset/nodemaps.py#L227-L305" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeNodeMapping(self, nodeType):
     edge = self.edge
@@ -1794,7 +1794,7 @@ See also <code><a title="tf.dataset.nodemaps" href="#tf.dataset.nodemaps">tf.dat
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/dataset/nodemaps.py#L446-L457" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/dataset/nodemaps.py#L446-L457" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeVersionMapping(self):
     Fa = self.Fa
@@ -1827,10 +1827,10 @@ Then give all those nodes the value found on the node in the old set.</p>
 new version, but not with the same quality.
 Suppose the value is <code>v</code>. Then the feature assignment will assign
 <code>v</code> to nodes <code>p</code> and <code>q</code>.</p>
-<p>But there could very wel be a later node <code>m</code> with value <code>w</code> in the old version
+<p>But there could very well be a later node <code>m</code> with value <code>w</code> in the old version
 that also maps to <code>p</code>, and with a lower quality.
 Then later the node <code>p</code> in the new version will be assigned the value <code>w</code>
-because of this, and this is sub otpimal.</p>
+because of this, and this is sub optimal.</p>
 <p>So we make sure that for each feature and each node in the new version
 the value assigned to it is the value of the node in the old version that
 maps with the highest quality to the new node.</p>
@@ -1850,7 +1850,7 @@ that has been used when creating the <code><a title="tf.dataset.nodemaps.Version
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/dataset/nodemaps.py#L459-L641" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/dataset/nodemaps.py#L459-L641" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def migrateFeatures(self, featureNames, silent=None, location=None):
     &#34;&#34;&#34;Migrate features from one version to another based on a node map.
@@ -1872,10 +1872,10 @@ that has been used when creating the <code><a title="tf.dataset.nodemaps.Version
     Suppose the value is `v`. Then the feature assignment will assign
     `v` to nodes `p` and `q`.
 
-    But there could very wel be a later node `m` with value `w` in the old version
+    But there could very well be a later node `m` with value `w` in the old version
     that also maps to `p`, and with a lower quality.
     Then later the node `p` in the new version will be assigned the value `w`
-    because of this, and this is sub otpimal.
+    because of this, and this is sub optimal.
 
     So we make sure that for each feature and each node in the new version
     the value assigned to it is the value of the node in the old version that
@@ -2045,7 +2045,7 @@ that has been used when creating the <code><a title="tf.dataset.nodemaps.Version
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/dataset/nodemaps.py#L413-L416" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/dataset/nodemaps.py#L413-L416" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def omapName(self):
     va = self.va
@@ -2061,7 +2061,7 @@ that has been used when creating the <code><a title="tf.dataset.nodemaps.Version
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/dataset/nodemaps.py#L418-L444" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/dataset/nodemaps.py#L418-L444" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeMap(self):
     TFb = self.TFb
@@ -2079,7 +2079,7 @@ that has been used when creating the <code><a title="tf.dataset.nodemaps.Version
             &#34;about&#34;: &#34;Mapping from the slots of version {} to version {}&#34;.format(
                 va, vb
             ),
-            &#34;encoder&#34;: &#34;Text-Fabric tf.dataset.nodemaps&#34;,
+            &#34;encoder&#34;: &#34;TF tf.dataset.nodemaps&#34;,
             &#34;valueType&#34;: &#34;int&#34;,
             &#34;edgeValues&#34;: True,
         }
@@ -2152,7 +2152,7 @@ setTimeout(() => input.focus(), 100);
 <h1>Index</h1>
 <div class="toc">
 <ul>
-<li><a href="#nodemaps">Nodemaps</a></li>
+<li><a href="#node-maps">Node maps</a></li>
 <li><a href="#nodes-in-general">Nodes in general</a></li>
 <li><a href="#refinements">Refinements</a></li>
 <li><a href="#multiple-candidates">Multiple candidates</a></li>

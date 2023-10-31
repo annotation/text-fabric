@@ -24,19 +24,19 @@
 </header>
 <section id="section-intro">
 <h1 id="start-the-tf-browser">Start the TF browser</h1>
-<p>What the <code>text-fabric</code> script does is the same as:</p>
+<p>What the <code><a title="tf" href="../index.html">tf</a></code> script does is the same as:</p>
 <pre><code class="language-sh">python -m tf.browser.start
 </code></pre>
 <p>During start up the following happens:</p>
 <dl>
 <dt>Load TF corpus data.</dt>
 <dd>This can take a while.
-When it has loaded the data, it hands the TF API over to the webserver.</dd>
+When it has loaded the data, it hands the TF API over to the web server.</dd>
 <dt>Start TF web server</dt>
 <dd>With the TF data in hand the TF web server is started.</dd>
 <dt>Load web page</dt>
 <dd>After a short while, the default web browser will be started
-with a url and port at which the
+with a URL and port at which the
 web server will listen. You see your browser being started up
 and the TF page being loaded.</dd>
 <dt>Wait</dt>
@@ -55,7 +55,7 @@ first argument of the <code>use()</code> function:</p>
 <li><code>app:path/to/app</code></li>
 <li><code>data:path/to/data</code></li>
 </ul>
-<p>The following arguments of the <code>use()</code> function can be used on the command line,
+<p>The following arguments of the <code>use()</code> function can be used on the command-line,
 prepended with <code>--</code>:</p>
 <ul>
 <li><code>--checkout</code></li>
@@ -70,27 +70,27 @@ prepended with <code>--</code>:</p>
 <li><code>--tool</code></li>
 </ul>
 <p>If you pass <code>--tool=ner</code> for example, the TF browser opens navigated to the
-the <em>ner</em> tool page (named entity annotator).</p>
+<code>ner</code> tool page (named entity annotator).</p>
 <h2 id="implementation-notes">Implementation notes</h2>
-<p>Different corpora will use different ports for webserver.</p>
+<p>Different corpora will use different ports for web server.</p>
 <p>The ports are computed from the <code>org</code>, <code>repo</code> and <code>path</code> arguments with which
-text-fabric is called.</p>
+<code><a title="tf" href="../index.html">tf</a></code> is called.</p>
 <ul>
-<li>Invocations of text-fabric with different corpora lead to different ports</li>
-<li>Repeated invocations of text-fabric with the same corpus lead to the same port,
+<li>Invocations of <code><a title="tf" href="../index.html">tf</a></code> with different corpora lead to different ports</li>
+<li>Repeated invocations of <code><a title="tf" href="../index.html">tf</a></code> with the same corpus lead to the same port,
 provided the previous invocation has been terminated.</li>
 </ul>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/start.py#L1-L280" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/start.py#L1-L285" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Start the TF browser
 
-What the `text-fabric` script does is the same as:
+What the `tf` script does is the same as:
 
-```sh
+``` sh
 python -m tf.browser.start
 ```
 
@@ -98,14 +98,14 @@ During start up the following happens:
 
 Load TF corpus data.
 :    This can take a while.
-    When it has loaded the data, it hands the TF API over to the webserver.
+    When it has loaded the data, it hands the TF API over to the web server.
 
 Start TF web server
 :   With the TF data in hand the TF web server is started.
 
 Load web page
 :   After a short while, the default web browser will be started
-    with a url and port at which the
+    with a URL and port at which the
     web server will listen. You see your browser being started up
     and the TF page being loaded.
 
@@ -127,7 +127,7 @@ first argument of the `use()` function:
 *   `app:path/to/app`
 *   `data:path/to/data`
 
-The following arguments of the `use()` function can be used on the command line,
+The following arguments of the `use()` function can be used on the command-line,
 prepended with `--`:
 
 *   `--checkout`
@@ -142,17 +142,17 @@ The following argument does not come from the `use()` function:
 *   `--tool`
 
 If you pass `--tool=ner` for example, the TF browser opens navigated to the
-the *ner* tool page (named entity annotator).
+`ner` tool page (named entity annotator).
 
 ## Implementation notes
 
-Different corpora will use different ports for webserver.
+Different corpora will use different ports for web server.
 
 The ports are computed from the `org`, `repo` and `path` arguments with which
-text-fabric is called.
+`tf` is called.
 
-*   Invocations of text-fabric with different corpora lead to different ports
-*   Repeated invocations of text-fabric with the same corpus lead to the same port,
+*   Invocations of `tf` with different corpora lead to different ports
+*   Repeated invocations of `tf` with the same corpus lead to the same port,
     provided the previous invocation has been terminated.
 &#34;&#34;&#34;
 
@@ -190,11 +190,11 @@ tf app:/path/to/app --locations=locations-string [--modules=modules-string]
 The following ones do the same but are deprecated:
 
 text-fabric
-text-fabric --help
-text-fabric -v
+tf --help
+tf -v
 
-text-fabric org/repo
-text-fabric app:/path/to/app --locations=locations-string [--modules=modules-string]
+tf org/repo
+tf app:/path/to/app --locations=locations-string [--modules=modules-string]
 
 where all args are optional and args have one of these forms:
 
@@ -215,7 +215,7 @@ Additional options
     installed, it opens in the default browser.
     If this option is not passed, the interface opens in the default browser.
   debug
-    The webserver runs in debug mode: if the TF code is modified, the webserver
+    The web server runs in debug mode: if the TF code is modified, the web server
     reloads itself automatically.
     Only relevant for TF developers.
 
@@ -223,11 +223,16 @@ EFFECT
 
 See https://annotation.github.io/text-fabric/tf/browser/start.html
 
-If called without org/repo, --backend=xxx, --checkout=yyy,
+If called without
+
+```
+org/repo, --backend=xxx, --checkout=yyy,
+```
+
 the current directory is used to determine a clone of a repo containing a TF dataset.
 If that is found, the TF browser will be started for that dataset.
 
-If an org/repo is given, a TF browser for that org/repo is started.
+If an `org/repo` is given, a TF browser for that `org/repo` is started.
 
 The default browser will be opened, except when -noweb is passed.
 
@@ -382,7 +387,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/start.py#L164-L276" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/start.py#L169-L281" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv[1:]):
     console(BANNER)

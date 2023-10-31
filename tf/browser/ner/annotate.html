@@ -48,7 +48,7 @@ for:</p>
 <ul>
 <li><code><a title="tf.browser.ner.power" href="power.html">tf.browser.ner.power</a></code>: the API for users to manipulate annotations in their
 own programs, especially in a Jupyter notebook.</li>
-<li><code><a title="tf.browser.ner.web" href="web.html">tf.browser.ner.web</a></code>: Flask app that routes urls to controller functions.</li>
+<li><code><a title="tf.browser.ner.web" href="web.html">tf.browser.ner.web</a></code>: Flask app that routes URLs to controller functions.</li>
 </ul>
 <p><code>web</code> makes use of the following modules that are not needed by <code>power</code>:</p>
 <ul>
@@ -69,7 +69,7 @@ syntax.</li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Class hierarchy</p>
-<p>The classes <code>`Settings</code>, <code>Corpus</code>, <code>Data</code>, <code>Sets</code>, <code>Show</code>, <code><a title="tf.browser.ner.annotate.Annotate" href="#tf.browser.ner.annotate.Annotate">Annotate</a></code>,
+<p>The classes <code>Settings</code>, <code>Corpus</code>, <code>Data</code>, <code>Sets</code>, <code>Show</code>, <code><a title="tf.browser.ner.annotate.Annotate" href="#tf.browser.ner.annotate.Annotate">Annotate</a></code>,
 <code>PowerNER</code> form one hierarchy.
 So an object of class <code>PowerNER</code> has access to all methods of these classes.</p>
 <p>The classes <code>Serve</code>, <code>Request</code>, <code>Fragments</code>, <code>From</code> form a separate hierarchy.
@@ -95,7 +95,7 @@ web &lt;-----&lt; Serve &lt;-----------------&lt; Annotate  &lt;-&lt; match
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/annotate.py#L1-L399" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/annotate.py#L1-L399" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Central Annotation object.
 
@@ -125,7 +125,7 @@ for:
 
 *   `tf.browser.ner.power`: the API for users to manipulate annotations in their
     own programs, especially in a Jupyter notebook.
-*   `tf.browser.ner.web`: Flask app that routes urls to controller functions.
+*   `tf.browser.ner.web`: Flask app that routes URLs to controller functions.
 
 `web` makes use of the following modules that are not needed by `power`:
 
@@ -146,7 +146,7 @@ already mentioned under `annotate` and its parent classes:
     syntax.
 
 !!! note &#34;Class hierarchy&#34;
-    The classes ``Settings`, `Corpus`, `Data`, `Sets`, `Show`, `Annotate`,
+    The classes `Settings`, `Corpus`, `Data`, `Sets`, `Show`, `Annotate`,
     `PowerNER` form one hierarchy.
     So an object of class `PowerNER` has access to all methods of these classes.
 
@@ -190,7 +190,7 @@ class Annotate(Sets, Show):
         &#34;&#34;&#34;Entity annotation.
 
         Basic methods to handle the various aspects of entity annotation.
-        These methods can be used by code that runs in the Text-Fabric browser
+        These methods can be used by code that runs in the TF browser
         and by code that runs in a Jupyter notebook.
 
         This class handles data, it does not contain code to generate HTML.
@@ -201,7 +201,7 @@ class Annotate(Sets, Show):
         and switch between them.
 
         We consider the corpus as a list of buckets (typically level-3 sectional
-        units; in TEI-derived corpora called `chunk`s, being generalizations of
+        units; in TEI-derived corpora called `chunk`, being generalizations of
         `p` (paragraph) elements). What type exactly the buckets are is configured
         in the `ner/config.yaml` file.
 
@@ -216,7 +216,7 @@ class Annotate(Sets, Show):
             If None, no data is handed over, and a fresh data store will be
             created by an ancestor class (Data)
         browse: boolean, optional False
-            If True, the object is informed that it is run by the Text-Fabric
+            If True, the object is informed that it is run by the TF
             browser. This will influence how results are reported back.
         &#34;&#34;&#34;
         self.app = app
@@ -359,7 +359,7 @@ class Annotate(Sets, Show):
 
             *   the TF node of the bucket;
             *   tokens: the tokens of the bucket, each token is a tuple consisting
-                of the TF-slot of the token and its string value;
+                of the TF slot of the token and its string value;
             *   matches: the match positions of the found occurrences or entity;
             *   positions: the token positions of where the text of the bucket
                 starts matching the `bFindRe`;
@@ -514,7 +514,7 @@ class Annotate(Sets, Show):
 <dd>
 <div class="desc"><p>Entity annotation.</p>
 <p>Basic methods to handle the various aspects of entity annotation.
-These methods can be used by code that runs in the Text-Fabric browser
+These methods can be used by code that runs in the TF browser
 and by code that runs in a Jupyter notebook.</p>
 <p>This class handles data, it does not contain code to generate HTML.
 But it has a parent class, <code>Show</code>, that can generate HTML.</p>
@@ -522,7 +522,7 @@ But it has a parent class, <code>Show</code>, that can generate HTML.</p>
 But it has a parent class, <code>Sets</code> that has method to manipulate such sets
 and switch between them.</p>
 <p>We consider the corpus as a list of buckets (typically level-3 sectional
-units; in TEI-derived corpora called <code>chunk</code>s, being generalizations of
+units; in TEI-derived corpora called <code>chunk</code>, being generalizations of
 <code>p</code> (paragraph) elements). What type exactly the buckets are is configured
 in the <code>ner/config.yaml</code> file.</p>
 <h2 id="parameters">Parameters</h2>
@@ -536,20 +536,20 @@ That way, it can maintain access to the same data between requests.
 If None, no data is handed over, and a fresh data store will be
 created by an ancestor class (Data)</dd>
 <dt><strong><code>browse</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>If True, the object is informed that it is run by the Text-Fabric
+<dd>If True, the object is informed that it is run by the TF
 browser. This will influence how results are reported back.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/annotate.py#L89-L399" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/annotate.py#L89-L399" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Annotate(Sets, Show):
     def __init__(self, app, data=None, browse=False):
         &#34;&#34;&#34;Entity annotation.
 
         Basic methods to handle the various aspects of entity annotation.
-        These methods can be used by code that runs in the Text-Fabric browser
+        These methods can be used by code that runs in the TF browser
         and by code that runs in a Jupyter notebook.
 
         This class handles data, it does not contain code to generate HTML.
@@ -560,7 +560,7 @@ browser. This will influence how results are reported back.</dd>
         and switch between them.
 
         We consider the corpus as a list of buckets (typically level-3 sectional
-        units; in TEI-derived corpora called `chunk`s, being generalizations of
+        units; in TEI-derived corpora called `chunk`, being generalizations of
         `p` (paragraph) elements). What type exactly the buckets are is configured
         in the `ner/config.yaml` file.
 
@@ -575,7 +575,7 @@ browser. This will influence how results are reported back.</dd>
             If None, no data is handed over, and a fresh data store will be
             created by an ancestor class (Data)
         browse: boolean, optional False
-            If True, the object is informed that it is run by the Text-Fabric
+            If True, the object is informed that it is run by the TF
             browser. This will influence how results are reported back.
         &#34;&#34;&#34;
         self.app = app
@@ -718,7 +718,7 @@ browser. This will influence how results are reported back.</dd>
 
             *   the TF node of the bucket;
             *   tokens: the tokens of the bucket, each token is a tuple consisting
-                of the TF-slot of the token and its string value;
+                of the TF slot of the token and its string value;
             *   matches: the match positions of the found occurrences or entity;
             *   positions: the token positions of where the text of the bucket
                 starts matching the `bFindRe`;
@@ -952,7 +952,7 @@ members is added to the list:</p>
 <ul>
 <li>the TF node of the bucket;</li>
 <li>tokens: the tokens of the bucket, each token is a tuple consisting
-of the TF-slot of the token and its string value;</li>
+of the TF slot of the token and its string value;</li>
 <li>matches: the match positions of the found occurrences or entity;</li>
 <li>positions: the token positions of where the text of the bucket
 starts matching the <code>bFindRe</code>;</li>
@@ -964,7 +964,7 @@ of results.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/annotate.py#L163-L399" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/annotate.py#L163-L399" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def filterContent(
     self,
@@ -1066,7 +1066,7 @@ of results.</p>
 
         *   the TF node of the bucket;
         *   tokens: the tokens of the bucket, each token is a tuple consisting
-            of the TF-slot of the token and its string value;
+            of the TF slot of the token and its string value;
         *   matches: the match positions of the found occurrences or entity;
         *   positions: the token positions of where the text of the bucket
             starts matching the `bFindRe`;
@@ -1228,7 +1228,7 @@ A single occurrence is represented as a tuple of slots.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/annotate.py#L131-L161" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/annotate.py#L131-L161" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findOccs(self, qTokenSet=set()):
     &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens.

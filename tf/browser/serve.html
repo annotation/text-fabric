@@ -32,7 +32,7 @@ functions for composing tables and passages.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/serve.py#L1-L473" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/serve.py#L1-L473" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Dress TF nodes up for serving on the web
@@ -249,7 +249,7 @@ def serveExport(web):
 
     form = getFormData(interfaceDefaults)
 
-    (colofon, header, appLogo, tfLogo) = app.header()
+    (colophon, header, appLogo, tfLogo) = app.header()
     css = kernelApi.css()
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
@@ -293,7 +293,7 @@ def serveExport(web):
         queryTable=(
             queryMessages if queryMessages or queryTable is None else queryTable
         ),
-        colofon=f&#34;{appLogo}{colofon}{tfLogo}&#34;,
+        colophon=f&#34;{appLogo}{colophon}{tfLogo}&#34;,
         provenance=provenanceHtml,
         setNames=setNameHtml,
         **form,
@@ -370,12 +370,12 @@ def serveDownload(web, jobOnly):
         redirect(&#34;/&#34;)
         return jsonify(status=queryStatus, messages=queryMessages)
 
-    (colofon, header, appLogo, tfLogo) = app.header()
+    (colophon, header, appLogo, tfLogo) = app.header()
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
     (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
 
-    about = getAbout(colofon, header, provenanceMd, form)
+    about = getAbout(colophon, header, provenanceMd, form)
     (fileName, zipBuffer) = zipTables(csvs, tupleResultsX, queryResultsX, about, form)
 
     headers = {
@@ -430,7 +430,7 @@ def serveAll(web, anything):
     pages = &#34;&#34;
     passages = &#34;&#34;
 
-    (colofon, header, appLogo, tfLogo) = app.header()
+    (colophon, header, appLogo, tfLogo) = app.header()
     css = kernelApi.css()
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
@@ -469,7 +469,7 @@ def serveAll(web, anything):
         characters=characters,
         colorMapHtml=colorMapHtml,
         eColorMapHtml=eColorMapHtml,
-        colofon=f&#34;{appLogo}{colofon}{tfLogo}&#34;,
+        colophon=f&#34;{appLogo}{colophon}{tfLogo}&#34;,
         header=header,
         setNames=setNameHtml,
         options=options,
@@ -524,7 +524,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/serve.py#L355-L473" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/serve.py#L355-L473" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveAll(web, anything):
     aContext = web.context
@@ -568,7 +568,7 @@ def serveAll(web, anything):
     pages = &#34;&#34;
     passages = &#34;&#34;
 
-    (colofon, header, appLogo, tfLogo) = app.header()
+    (colophon, header, appLogo, tfLogo) = app.header()
     css = kernelApi.css()
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
@@ -607,7 +607,7 @@ def serveAll(web, anything):
         characters=characters,
         colorMapHtml=colorMapHtml,
         eColorMapHtml=eColorMapHtml,
-        colofon=f&#34;{appLogo}{colofon}{tfLogo}&#34;,
+        colophon=f&#34;{appLogo}{colophon}{tfLogo}&#34;,
         header=header,
         setNames=setNameHtml,
         options=options,
@@ -655,7 +655,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/serve.py#L267-L352" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/serve.py#L267-L352" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveDownload(web, jobOnly):
     aContext = web.context
@@ -727,12 +727,12 @@ def serveAll(web, anything):
         redirect(&#34;/&#34;)
         return jsonify(status=queryStatus, messages=queryMessages)
 
-    (colofon, header, appLogo, tfLogo) = app.header()
+    (colophon, header, appLogo, tfLogo) = app.header()
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
     (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
 
-    about = getAbout(colofon, header, provenanceMd, form)
+    about = getAbout(colophon, header, provenanceMd, form)
     (fileName, zipBuffer) = zipTables(csvs, tupleResultsX, queryResultsX, about, form)
 
     headers = {
@@ -753,7 +753,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/serve.py#L203-L264" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/serve.py#L203-L264" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveExport(web):
     aContext = web.context
@@ -768,7 +768,7 @@ def serveAll(web, anything):
 
     form = getFormData(interfaceDefaults)
 
-    (colofon, header, appLogo, tfLogo) = app.header()
+    (colophon, header, appLogo, tfLogo) = app.header()
     css = kernelApi.css()
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
@@ -812,7 +812,7 @@ def serveAll(web, anything):
         queryTable=(
             queryMessages if queryMessages or queryTable is None else queryTable
         ),
-        colofon=f&#34;{appLogo}{colofon}{tfLogo}&#34;,
+        colophon=f&#34;{appLogo}{colophon}{tfLogo}&#34;,
         provenance=provenanceHtml,
         setNames=setNameHtml,
         **form,
@@ -827,7 +827,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/serve.py#L163-L200" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/serve.py#L163-L200" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def servePassage(web, getx):
     kernelApi = web.kernelApi
@@ -877,7 +877,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/serve.py#L80-L160" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/serve.py#L80-L160" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveQuery(web, getx, asDict=False):
     kernelApi = web.kernelApi
@@ -970,7 +970,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/serve.py#L37-L77" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/serve.py#L37-L77" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveTable(web, kind, getx=None, asDict=False):
     kernelApi = web.kernelApi

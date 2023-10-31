@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/graph.py#L1-L239" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/graph.py#L1-L239" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Graph oriented functions needed for search
@@ -113,7 +113,7 @@ def multiEdges(searchExe):
     error = api.TF.error
 
     medgesIndex = {}
-    # will be a dict keyed by edge destination, then by upper/lower bound
+    # will be a dict keyed by edge destination, then by upper / lower bound
     # and then the values are directed edges
     for (e, (f, rela, t)) in enumerate(qedges):
         relInfo = relations[rela]
@@ -285,7 +285,7 @@ def displayEdge(searchExe, e, dir, nodesSeen):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/graph.py#L35-L74" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/graph.py#L35-L74" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def connectedness(searchExe):
     error = searchExe.api.TF.error
@@ -337,7 +337,7 @@ def displayEdge(searchExe, e, dir, nodesSeen):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/graph.py#L198-L239" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/graph.py#L198-L239" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayEdge(searchExe, e, dir, nodesSeen):
     info = searchExe.api.TF.info
@@ -391,7 +391,7 @@ def displayEdge(searchExe, e, dir, nodesSeen):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/graph.py#L180-L195" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/graph.py#L180-L195" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayNode(searchExe, q, pos2=False):
     info = searchExe.api.TF.info
@@ -419,7 +419,7 @@ def displayEdge(searchExe, e, dir, nodesSeen):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/graph.py#L117-L177" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/graph.py#L117-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayPlan(searchExe, details=False):
     if not searchExe.good:
@@ -492,7 +492,7 @@ def displayEdge(searchExe, e, dir, nodesSeen):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/graph.py#L77-L114" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/graph.py#L77-L114" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def multiEdges(searchExe):
     relations = searchExe.relations
@@ -502,7 +502,7 @@ def displayEdge(searchExe, e, dir, nodesSeen):
     error = api.TF.error
 
     medgesIndex = {}
-    # will be a dict keyed by edge destination, then by upper/lower bound
+    # will be a dict keyed by edge destination, then by upper / lower bound
     # and then the values are directed edges
     for (e, (f, rela, t)) in enumerate(qedges):
         relInfo = relations[rela]

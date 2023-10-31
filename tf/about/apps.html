@@ -24,11 +24,11 @@
 </header>
 <section id="section-intro">
 <h1 id="advanced-api">Advanced API</h1>
-<p>Text-Fabric is a generic engine to process text and annotations.</p>
+<p>TF is a generic engine to process text and annotations.</p>
 <p>When working with specific corpora, we want to have more power at our fingertips.</p>
 <p>We need extra power on top of the core TF engine.</p>
 <p>The way we have chosen to do it is via <em>apps</em>.
-An app is a bunch of extra settings and/or functions and/or styles
+An app is a bunch of extra settings and / or functions and / or styles
 that feed the advance API.</p>
 <p>The advanced API will do its best to generate sensible default settings from
 the corpus data, but a bit of nudging will usually improve the results of displaying
@@ -37,10 +37,10 @@ structures of the corpus.</p>
 <h2 id="components">Components</h2>
 <p>Apps usually reside in a subdirectory <code>app</code> of a repository that holds the corpus data.
 Apps can be trivial, completely empty even.</p>
-<p>Each TF-<em>app</em> consists of a folder with these items, all optional:</p>
+<p>Each TF <em>app</em> consists of a folder with these items, all optional:</p>
 <h3 id="static">static</h3>
-<p>A folder with styles, fonts and logos, to be used by web servers such as the the
-text-fabric browser, see <code><a title="tf.browser.web" href="../browser/web.html">tf.browser.web</a></code>.</p>
+<p>A folder with styles, fonts and logos, to be used by web servers such as the
+TF browser, see <code><a title="tf.browser.web" href="../browser/web.html">tf.browser.web</a></code>.</p>
 <p>In particular, <code>display.css</code> contains additional styles used for pretty displays.
 These styles will be programmatically combined with other styles,
 to deliver them to the TF browser on the one hand, and to Jupyter notebooks
@@ -65,7 +65,7 @@ dynamically load these modules. They will be given an app-dependent internal
 name, so the Python importer will not conflate them.</p>
 </div>
 <div class="admonition explanation">
-<p class="admonition-title">loadModule()</p>
+<p class="admonition-title"><code>loadModule()</code></p>
 <p>Here is how you load auxiliary modules in your <code>app.py</code>.
 The example is taken from the <code>uruk</code> app, which loads
 two modules, <code>atf</code> and <code>image</code>.</p>
@@ -83,8 +83,8 @@ but we pass it all <code>*args</code>, received by <code>__init__()</code>.</p>
 <p>The result of loading the module is a code object,
 from which you can get all the names defined by the module and their semantics.</p>
 <p>In the <code>atf</code> case, we use the <code>atfApi()</code> function of the module to add
-a bunch of functions defined in that module as methods to the TfApp object.</p>
-<p>In the <code>image</code> case, we add the code object as an attribute to the TfApp object,
+a bunch of functions defined in that module as methods to the <code>TfApp</code> object.</p>
+<p>In the <code>image</code> case, we add the code object as an attribute to the <code>TfApp</code> object,
 so that all its methods can retrieve all names defined by the <code>image</code> module.</p>
 <h2 id="implementation">Implementation</h2>
 <p>Most parts of the advanced API are implemented in the
@@ -106,11 +106,11 @@ or for the purposes of the web app.</p>
 if we use the <code>app</code> in the web app context, otherwise in a programming context.</p>
 <p>Most of the code in most functions is independent of <code>_browse</code>.
 The main difference is how to deliver the result:
-by a call to an IPython display method, or by returning raw HTML.</p>
+by a call to an <code>IPython</code> display method, or by returning raw HTML.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/about/apps.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/about/apps.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/apps.md

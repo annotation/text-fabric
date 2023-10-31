@@ -27,14 +27,14 @@
 <p>Contains a bunch of instant methods to access corpus material.</p>
 <p>To see how this fits among all the modules of this package, see
 <code><a title="tf.browser.ner.annotate" href="annotate.html">tf.browser.ner.annotate</a></code> .</p>
-<p>All access to the TF-API should happen through methods in this class.</p>
+<p>All access to the TF API should happen through methods in this class.</p>
 <p>At this point we have the information from the settings and from the corpus.
 By collecting all corpus access methods in one class, we have good conceptual
 control over how to customize the annotator for different corpora.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/corpus.py#L1-L337" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/corpus.py#L1-L337" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Access to the corpus.
 
@@ -43,7 +43,7 @@ Contains a bunch of instant methods to access corpus material.
 To see how this fits among all the modules of this package, see
 `tf.browser.ner.annotate` .
 
-All access to the TF-API should happen through methods in this class.
+All access to the TF API should happen through methods in this class.
 
 At this point we have the information from the settings and from the corpus.
 By collecting all corpus access methods in one class, we have good conceptual
@@ -176,7 +176,7 @@ class Corpus(Settings):
 
         Returns
         -------
-        bool
+        boolean
             Whether the feature is loaded in this corpus.
         &#34;&#34;&#34;
 
@@ -248,10 +248,10 @@ class Corpus(Settings):
             of them.
 
             !!! caution &#34;Space between slots&#34;
-                Leading and trailing whitespace is stripped, and inner whitespace is
+                Leading and trailing white-space is stripped, and inner white-space is
                 normalized to a single space.
                 The text of the individual slots is joined by means of a single
-                white space, also in corpora that may have zero space between words.
+                white-space, also in corpora that may have zero space between words.
         &#34;&#34;&#34;
 
         self.getTextR = getTextR
@@ -299,8 +299,8 @@ class Corpus(Settings):
         -------
         tuple
             The members consist of the string values of the tokens in question,
-            as far as these values are not purely whitespace.
-            Also, the string values are stripped from leading and trailing whitespace.
+            as far as these values are not purely white-space.
+            Also, the string values are stripped from leading and trailing white-space.
         &#34;&#34;&#34;
 
         self.getContext = getContext
@@ -325,7 +325,7 @@ class Corpus(Settings):
         This acts as the default value for the `eid` feature of new
         entities.
 
-        Starting with the whitespace-normalized text of a number of slots,
+        Starting with the white-space-normalized text of a number of slots,
         the string is lowercased, non-alphanumeric characters are stripped,
         and spaces are replaced by dots.
         &#34;&#34;&#34;
@@ -394,12 +394,12 @@ These configuration values are put in variables in this module, which
 other modules can import.</p>
 <p>There is also customizable configuration, meant to adapt the tool to the
 specifics of a corpus.
-Those configuration values are read from a yaml file, located in a directory
+Those configuration values are read from a YAML file, located in a directory
 <code>ner</code> next to the <code><a title="tf" href="../../index.html">tf</a></code> data of the corpus.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/corpus.py#L27-L337" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/corpus.py#L27-L337" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Corpus(Settings):
     def __init__(self):
@@ -515,7 +515,7 @@ Those configuration values are read from a yaml file, located in a directory
 
         Returns
         -------
-        bool
+        boolean
             Whether the feature is loaded in this corpus.
         &#34;&#34;&#34;
 
@@ -587,10 +587,10 @@ Those configuration values are read from a yaml file, located in a directory
             of them.
 
             !!! caution &#34;Space between slots&#34;
-                Leading and trailing whitespace is stripped, and inner whitespace is
+                Leading and trailing white-space is stripped, and inner white-space is
                 normalized to a single space.
                 The text of the individual slots is joined by means of a single
-                white space, also in corpora that may have zero space between words.
+                white-space, also in corpora that may have zero space between words.
         &#34;&#34;&#34;
 
         self.getTextR = getTextR
@@ -638,8 +638,8 @@ Those configuration values are read from a yaml file, located in a directory
         -------
         tuple
             The members consist of the string values of the tokens in question,
-            as far as these values are not purely whitespace.
-            Also, the string values are stripped from leading and trailing whitespace.
+            as far as these values are not purely white-space.
+            Also, the string values are stripped from leading and trailing white-space.
         &#34;&#34;&#34;
 
         self.getContext = getContext
@@ -664,7 +664,7 @@ Those configuration values are read from a yaml file, located in a directory
         This acts as the default value for the `eid` feature of new
         entities.
 
-        Starting with the whitespace-normalized text of a number of slots,
+        Starting with the white-space-normalized text of a number of slots,
         the string is lowercased, non-alphanumeric characters are stripped,
         and spaces are replaced by dots.
         &#34;&#34;&#34;
@@ -747,7 +747,7 @@ Those configuration values are read from a yaml file, located in a directory
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>bool</code></dt>
+<dt><code>boolean</code></dt>
 <dd>Whether the feature is loaded in this corpus.</dd>
 </dl></div>
 </dd>
@@ -760,7 +760,7 @@ Those configuration values are read from a yaml file, located in a directory
 <div class="desc"><p>Makes an identifier value out of a number of slots.</p>
 <p>This acts as the default value for the <code>eid</code> feature of new
 entities.</p>
-<p>Starting with the whitespace-normalized text of a number of slots,
+<p>Starting with the white-space-normalized text of a number of slots,
 the string is lowercased, non-alphanumeric characters are stripped,
 and spaces are replaced by dots.</p></div>
 </dd>
@@ -861,8 +861,8 @@ under key <code>strFeature</code> .</dd>
 <dl>
 <dt><code>tuple</code></dt>
 <dd>The members consist of the string values of the tokens in question,
-as far as these values are not purely whitespace.
-Also, the string values are stripped from leading and trailing whitespace.</dd>
+as far as these values are not purely white-space.
+Also, the string values are stripped from leading and trailing white-space.</dd>
 </dl></div>
 </dd>
 <dt id="tf.browser.ner.corpus.Corpus.getText"><code class="name">var <span class="ident">getText</span></code></dt>
@@ -883,10 +883,10 @@ and the concatenation adds a single space between each adjacent pair
 of them.</p>
 <div class="admonition caution">
 <p class="admonition-title">Space between slots</p>
-<p>Leading and trailing whitespace is stripped, and inner whitespace is
+<p>Leading and trailing white-space is stripped, and inner white-space is
 normalized to a single space.
 The text of the individual slots is joined by means of a single
-white space, also in corpora that may have zero space between words.</p>
+white-space, also in corpora that may have zero space between words.</p>
 </div>
 </dd>
 </dl></div>

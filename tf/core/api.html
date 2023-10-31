@@ -28,7 +28,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/api.py#L1-L586" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/api.py#L1-L586" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # The core API of TF.
@@ -245,7 +245,7 @@ class Api:
         features: iterable | string, optional None
             The features to get info for.
             If absent or None: all features seen by TF.
-            If a string, it is a comma and/or space spearated list of feature names.
+            If a string, it is a comma and / or space separated list of feature names.
             Otherwise the items of the iterable are feature names.
 
         pretty: boolean, optional True
@@ -272,7 +272,7 @@ class Api:
             It it is the boolean value True: all metadata will be printed.
 
             If it is a list of key names or a string with key names
-            separated by white space and/or commas, only these metadata keys
+            separated by white-space and / or commas, only these metadata keys
             will be printed.
 
         Returns
@@ -531,7 +531,7 @@ class Api:
     def footprint(self, recompute=False, bySize=True):
         &#34;&#34;&#34;Computes the memory footprint in RAM of the loaded TF data.
 
-        This includes the precomputed data.
+        This includes the pre-computed data.
 
         Parameters
         ----------
@@ -633,7 +633,7 @@ def addSearch(api, silent=SILENT_D):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/api.py#L568-L570" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/api.py#L568-L570" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addLocality(api):
     api.L = Locality(api)
@@ -648,7 +648,7 @@ def addSearch(api, silent=SILENT_D):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/api.py#L573-L575" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/api.py#L573-L575" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addNodes(api):
     api.N = Nodes(api)
@@ -663,7 +663,7 @@ def addSearch(api, silent=SILENT_D):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/api.py#L561-L565" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/api.py#L561-L565" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addOtype(api):
     setattr(api.F.otype, &#34;all&#34;, tuple(o[0] for o in api.C.levels.data))
@@ -680,7 +680,7 @@ def addSearch(api, silent=SILENT_D):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/api.py#L583-L586" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/api.py#L583-L586" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addSearch(api, silent=SILENT_D):
     silent = silentConvert(silent)
@@ -696,7 +696,7 @@ def addSearch(api, silent=SILENT_D):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/api.py#L578-L580" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/api.py#L578-L580" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addText(api):
     api.T = Text(api)
@@ -717,7 +717,7 @@ def addSearch(api, silent=SILENT_D):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/api.py#L54-L558" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/api.py#L54-L558" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Api:
     def __init__(self, TF):
@@ -881,7 +881,7 @@ def addSearch(api, silent=SILENT_D):
         features: iterable | string, optional None
             The features to get info for.
             If absent or None: all features seen by TF.
-            If a string, it is a comma and/or space spearated list of feature names.
+            If a string, it is a comma and / or space separated list of feature names.
             Otherwise the items of the iterable are feature names.
 
         pretty: boolean, optional True
@@ -908,7 +908,7 @@ def addSearch(api, silent=SILENT_D):
             It it is the boolean value True: all metadata will be printed.
 
             If it is a list of key names or a string with key names
-            separated by white space and/or commas, only these metadata keys
+            separated by white-space and / or commas, only these metadata keys
             will be printed.
 
         Returns
@@ -1167,7 +1167,7 @@ def addSearch(api, silent=SILENT_D):
     def footprint(self, recompute=False, bySize=True):
         &#34;&#34;&#34;Computes the memory footprint in RAM of the loaded TF data.
 
-        This includes the precomputed data.
+        This includes the pre-computed data.
 
         Parameters
         ----------
@@ -1244,7 +1244,7 @@ that is loaded later.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/api.py#L201-L204" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/api.py#L201-L204" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Call(self):
     &#34;&#34;&#34;Returns a sorted list of all usable, loaded computed data names.&#34;&#34;&#34;
@@ -1273,7 +1273,7 @@ you can not use <code>C.component</code>, but you should use
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/api.py#L153-L177" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/api.py#L153-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Cs(self, fName, warn=True):
     &#34;&#34;&#34;Get the computed data sub API.
@@ -1315,7 +1315,7 @@ you can not use <code>C.component</code>, but you should use
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/api.py#L190-L199" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/api.py#L190-L199" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Eall(self, warp=True):
     &#34;&#34;&#34;Returns a sorted list of all usable, loaded edge feature names.
@@ -1350,7 +1350,7 @@ you can not use <code>E.feature</code>, but you should use
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/api.py#L127-L151" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/api.py#L127-L151" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Es(self, fName, warn=True):
     &#34;&#34;&#34;Get the edge feature sub API.
@@ -1392,7 +1392,7 @@ you can not use <code>E.feature</code>, but you should use
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/api.py#L179-L188" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/api.py#L179-L188" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Fall(self, warp=True):
     &#34;&#34;&#34;Returns a sorted list of all usable, loaded node feature names.
@@ -1427,7 +1427,7 @@ you can not use <code>F.feature</code>, but you should use
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/api.py#L101-L125" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/api.py#L101-L125" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Fs(self, fName, warn=True):
     &#34;&#34;&#34;Get the node feature sub API.
@@ -1478,7 +1478,7 @@ without directory information and without extension.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/api.py#L454-L497" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/api.py#L454-L497" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ensureLoaded(self, features):
     &#34;&#34;&#34;Checks if features are loaded and if not loads them.
@@ -1531,7 +1531,7 @@ without directory information and without extension.</dd>
 </code></dt>
 <dd>
 <div class="desc"><p>Computes the memory footprint in RAM of the loaded TF data.</p>
-<p>This includes the precomputed data.</p>
+<p>This includes the pre-computed data.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>recompute</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
@@ -1546,12 +1546,12 @@ If False, the features will be sorted alphabetically.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/api.py#L499-L558" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/api.py#L499-L558" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def footprint(self, recompute=False, bySize=True):
     &#34;&#34;&#34;Computes the memory footprint in RAM of the loaded TF data.
 
-    This includes the precomputed data.
+    This includes the pre-computed data.
 
     Parameters
     ----------
@@ -1620,7 +1620,7 @@ If False, the features will be sorted alphabetically.</dd>
 <dt><strong><code>features</code></strong> :&ensp;<code>iterable | string</code>, optional <code>None</code></dt>
 <dd>The features to get info for.
 If absent or None: all features seen by TF.
-If a string, it is a comma and/or space spearated list of feature names.
+If a string, it is a comma and / or space separated list of feature names.
 Otherwise the items of the iterable are feature names.</dd>
 <dt><strong><code>pretty</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
 <dd>If True, it prints an overview of all features seen by TF with
@@ -1641,7 +1641,7 @@ should be printed.</p>
 no metadata will be printed.</p>
 <p>It it is the boolean value True: all metadata will be printed.</p>
 <p>If it is a list of key names or a string with key names
-separated by white space and/or commas, only these metadata keys
+separated by white-space and / or commas, only these metadata keys
 will be printed.</p>
 </dd>
 </dl>
@@ -1667,7 +1667,7 @@ the edges have values. Otherwise <code>None</code>.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/api.py#L206-L378" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/api.py#L206-L378" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isLoaded(
     self, features=None, pretty=True, valueType=True, path=False, meta=&#34;description&#34;
@@ -1679,7 +1679,7 @@ the edges have values. Otherwise <code>None</code>.</li>
     features: iterable | string, optional None
         The features to get info for.
         If absent or None: all features seen by TF.
-        If a string, it is a comma and/or space spearated list of feature names.
+        If a string, it is a comma and / or space separated list of feature names.
         Otherwise the items of the iterable are feature names.
 
     pretty: boolean, optional True
@@ -1706,7 +1706,7 @@ the edges have values. Otherwise <code>None</code>.</li>
         It it is the boolean value True: all metadata will be printed.
 
         If it is a list of key names or a string with key names
-        separated by white space and/or commas, only these metadata keys
+        separated by white-space and / or commas, only these metadata keys
         will be printed.
 
     Returns
@@ -1945,7 +1945,7 @@ So we have to pass it on.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/api.py#L380-L449" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/api.py#L380-L449" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeAvailableIn(self, scope):
     &#34;&#34;&#34;Exports members of the API to the global namespace.

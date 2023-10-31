@@ -33,8 +33,8 @@ that you can enumerate all nodes in the order you encounter them if you
 walk through your corpus.</p>
 <dl>
 <dt>Formally</dt>
-<dd>A node <em>A</em> comes before a node <em>B</em> if <em>A</em> contains the smallest slot
-that occurs in only one of <em>A</em> and <em>B</em>.</dd>
+<dd>A node <code>A</code> comes before a node <code>B</code> if <code>A</code> contains the smallest slot
+that occurs in only one of <code>A</code> and <code>B</code>.</dd>
 </dl>
 <p>Briefly this means:</p>
 <ul>
@@ -67,16 +67,16 @@ nodes in the slot set order, you will walk the tree in pre-order.</p>
 <p>Doedens, Crist-Jan (1994), <em>Text Databases. One Database Model and Several
 Retrieval Languages</em>, number 14 in Language and Computers, Editions Rodopi,
 Amsterdam, Netherlands and Atlanta, USA. ISBN: 90-5183-729-1,
-<a href="https://books.google.nl/books?id=9ggOBRz1dO4C.">https://books.google.nl/books?id=9ggOBRz1dO4C.</a> The order as defined by
-Doedens corresponds to walking trees in post-order.</p>
+<a href="https://books.google.nl/books?id=9ggOBRz1dO4C">Google books</a>.
+The order as defined by Doedens corresponds to walking trees in post-order.</p>
 </blockquote>
-<p>For a lot of processing, it is handy to have a the stack of embedding elements
+<p>For a lot of processing, it is handy to have the stack of embedding elements
 available when working with an element. That is the advantage of pre-order over
 post-order. It is very much like SAX parsing in the XML world.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/nodes.py#L1-L296" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/nodes.py#L1-L296" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Node organization
@@ -93,8 +93,8 @@ that you can enumerate all nodes in the order you encounter them if you
 walk through your corpus.
 
 Formally
-:   A node *A* comes before a node *B* if *A* contains the smallest slot
-    that occurs in only one of *A* and *B*.
+:   A node `A` comes before a node `B` if `A` contains the smallest slot
+    that occurs in only one of `A` and `B`.
 
 Briefly this means:
 
@@ -128,10 +128,10 @@ This order is a modification of the one as described in (Doedens 1994, 3.6.3).
 &gt; Doedens, Crist-Jan (1994), *Text Databases. One Database Model and Several
 &gt; Retrieval Languages*, number 14 in Language and Computers, Editions Rodopi,
 &gt; Amsterdam, Netherlands and Atlanta, USA. ISBN: 90-5183-729-1,
-&gt; https://books.google.nl/books?id=9ggOBRz1dO4C. The order as defined by
-&gt; Doedens corresponds to walking trees in post-order.
+&gt; [Google books](https://books.google.nl/books?id=9ggOBRz1dO4C).
+&gt; The order as defined by Doedens corresponds to walking trees in post-order.
 
-For a lot of processing, it is handy to have a the stack of embedding elements
+For a lot of processing, it is handy to have the stack of embedding elements
 available when working with an element. That is the advantage of pre-order over
 post-order. It is very much like SAX parsing in the XML world.
 &#34;&#34;&#34;
@@ -151,7 +151,7 @@ class Nodes:
         The node types are ordered in `C.levels.data`, and if you reverse that list,
         you get the rank of a type by looking at the position in which that type occurs.
 
-        The *slotType* has rank 0 (`otypeRank[F.otype.slotType] == 0`),
+        The `slotType` has rank 0 (`otypeRank[F.otype.slotType] == 0`),
         and the more comprehensive a type is, the higher its rank.
         &#34;&#34;&#34;
 
@@ -196,7 +196,7 @@ class Nodes:
         Mostly, this subset of slots is contiguous (no gaps), and mostly it is
         maximal: the slots immediately before and after the chunk do not belong to the node.
 
-        But the sortkey also works if these conditions are not met.
+        But the sort key also works if these conditions are not met.
 
         Notes
         -----
@@ -394,7 +394,7 @@ class Nodes:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/nodes.py#L62-L296" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/nodes.py#L62-L296" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Nodes:
     def __init__(self, api):
@@ -408,7 +408,7 @@ class Nodes:
         The node types are ordered in `C.levels.data`, and if you reverse that list,
         you get the rank of a type by looking at the position in which that type occurs.
 
-        The *slotType* has rank 0 (`otypeRank[F.otype.slotType] == 0`),
+        The `slotType` has rank 0 (`otypeRank[F.otype.slotType] == 0`),
         and the more comprehensive a type is, the higher its rank.
         &#34;&#34;&#34;
 
@@ -453,7 +453,7 @@ class Nodes:
         Mostly, this subset of slots is contiguous (no gaps), and mostly it is
         maximal: the slots immediately before and after the chunk do not belong to the node.
 
-        But the sortkey also works if these conditions are not met.
+        But the sort key also works if these conditions are not met.
 
         Notes
         -----
@@ -639,7 +639,7 @@ class Nodes:
 <div class="desc"><p>Dictionary that provides a ranking of the node types.</p>
 <p>The node types are ordered in <code>C.levels.data</code>, and if you reverse that list,
 you get the rank of a type by looking at the position in which that type occurs.</p>
-<p>The <em>slotType</em> has rank 0 (<code>otypeRank[F.otype.slotType] == 0</code>),
+<p>The <code>slotType</code> has rank 0 (<code>otypeRank[F.otype.slotType] == 0</code>),
 and the more comprehensive a type is, the higher its rank.</p></div>
 </dd>
 <dt id="tf.core.nodes.Nodes.sortKey"><code class="name">var <span class="ident">sortKey</span></code></dt>
@@ -666,7 +666,7 @@ and the more comprehensive a type is, the higher its rank.</p></div>
 <p>A chunk is a tuple consisting of a node and a subset of its slots.
 Mostly, this subset of slots is contiguous (no gaps), and mostly it is
 maximal: the slots immediately before and after the chunk do not belong to the node.</p>
-<p>But the sortkey also works if these conditions are not met.</p>
+<p>But the sort key also works if these conditions are not met.</p>
 <h2 id="notes">Notes</h2>
 <p>The use case for this function is that we have a bunch of nodes,
 each linked to a set of slots.
@@ -705,7 +705,7 @@ Handy to sort search results. We can sort them in canonical order like this:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/nodes.py#L135-L199" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/nodes.py#L135-L199" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeSortKeyChunk(self):
     api = self.api
@@ -797,7 +797,7 @@ Handy to sort search results. We can sort them in canonical order like this:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/nodes.py#L201-L222" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/nodes.py#L201-L222" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sortNodes(self, nodeSet):
     &#34;&#34;&#34;Delivers a tuple of nodes sorted by the *canonical ordering*.
@@ -866,7 +866,7 @@ Otherwise, walks through the given nodes in canonical order.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/nodes.py#L224-L296" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/nodes.py#L224-L296" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def walk(self, nodes=None, events=False):
     &#34;&#34;&#34;Generates all nodes in the *canonical order*.

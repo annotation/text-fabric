@@ -32,9 +32,9 @@ all possibilities.</p>
 <p>See the app-specific tutorials via <code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code>.</p>
 <hr>
 <p><strong>The TEI converter is still in active development.
-If you need the latest version, clone the Text-Fabric repo
+If you need the latest version, clone the TF repo
 and in its top-level directory run the command:</strong></p>
-<pre><code>pip install -e .
+<pre><code class="language-sh">pip install -e .
 </code></pre>
 <h2 id="12">12</h2>
 <h3 id="121">12.1</h3>
@@ -51,17 +51,17 @@ spotting it.</li>
 <h5 id="new-stuff">New stuff</h5>
 <ul>
 <li>
-<p>In the Text-Fabric browser there will be a new tab in the vertical sidebar:
+<p>In the TF browser there will be a new tab in the vertical sidebar:
 <strong>Annotate</strong>, which will give access to manual annotation tools. I'm developing
 the first one, a tool to annotate named entities efficiently, both in the
-Text-Fabric browser and in a Jupyter Notebook.
+TF browser and in a Jupyter Notebook.
 Reed more in <code><a title="tf.about.annotate" href="annotate.html">tf.about.annotate</a></code>.</p>
 <p>These tools will let you save your work as files on your own computer.</p>
 </li>
 <li>
 <p>In <code><a title="tf.convert.addnlp" href="../convert/addnlp.html">tf.convert.addnlp</a></code> we can now extract more NLP information besides tokens
-and sentences: part-of-speech, morphological tagging, lemmatisation, named
-entity recognititon</p>
+and sentences: part-of-speech, morphological tagging, lemmatization, named
+entity recognition</p>
 </li>
 </ul>
 <h5 id="fixes">Fixes</h5>
@@ -71,8 +71,8 @@ entity recognititon</p>
 <h3 id="120">12.0</h3>
 <h4 id="12067">12.0.6,7</h4>
 <p>2023-09-13</p>
-<p>Trivial fix in code that exports the data from a job in the Text-Fabric browser.
-In the meanwhile there is unfinished business in the <code>Annotate</code> tab in the TF-browser,
+<p>Trivial fix in code that exports the data from a job in the TF browser.
+In the meanwhile there is unfinished business in the <code>Annotate</code> tab in the TF browser,
 that will come into production in the upcoming 12.1 release.</p>
 <p>The Chrome browser has an attractive feature that other browsers such as Safari lack:
 It supports the CSS property
@@ -81,27 +81,27 @@ With this property you can prevent
 the browser to do the expensive rendering of content that is not visible on the screen.
 That makes it possible to load a lot of content in a single page without tripping up
 the browser. You also need the
-[IntersectionObserver API])<a href="https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API">https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API</a>),
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API"><code>IntersectionObserver</code> API</a>,
 but that is generally supported by browsers. With the help of that API you can
 restrict the binding of event listeners to elements that are visible on the screen.</p>
-<p>So, you can open the Text-Fabric browser in Chrome by passing the option <code>--chrome</code>.
+<p>So, you can open the TF browser in Chrome by passing the option <code>--chrome</code>.
 But if Chrome is not installed, it will open in the default browser anyway.
-Also, when the opening of the browser fails somehow, the webserver is stopped.</p>
+Also, when the opening of the browser fails somehow, the web server is stopped.</p>
 <h4 id="1205">12.0.5</h4>
 <p>2023-07-10</p>
 <p>Fixed references to static files that still went to <code>/server</code> instead of <code>/browser</code>.
-This has to do with the new approach to the Text-Fabric browser.</p>
+This has to do with the new approach to the TF browser.</p>
 <h4 id="1200-4">12.0.0-4</h4>
 <p>2023-07-05</p>
 <h5 id="simplification">Simplification</h5>
 <ul>
 <li>
-<p>The Text-Fabric browser no longer works with a separate process that holds the
-TF corpus data. Instead, the webserver (flask) loads the corpus itself.
+<p>The TF browser no longer works with a separate process that holds the
+TF corpus data. Instead, the web server (flask) loads the corpus itself.
 This will restrict the usage of the TF browser to local-single-user scenarios.</p>
 </li>
 <li>
-<p>Text-Fabric no longer exposes the installation options <code>[browser, pandas]</code></p>
+<p>TF no longer exposes the installation options <code>[browser, pandas]</code></p>
 <p><code>pip install 'text-fabric[browser]'
 pip install 'text-fabric[pandas]'</code></p>
 <p>If you work with Pandas (like exporting to Pandas) you have to install it yourself:</p>
@@ -113,7 +113,7 @@ The simplification of the TF browser makes it possible to be no longer dependent
 on these modules.</p>
 <p>Hence, TF can be installed on the iPad, although the
 TF browser works is not working there yet.
-But the autoloading of data from GitHub/GitLab works.</p>
+But the auto-downloading of data from GitHub / GitLab works.</p>
 </li>
 </ul>
 <h5 id="minor-things">Minor things</h5>
@@ -133,7 +133,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md

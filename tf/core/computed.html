@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>tf.core.computed API documentation</title>
-<meta name="description" content="Precomputed data components …" />
+<meta name="description" content="Pre-computed data components …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -23,8 +23,8 @@
 <h1 class="title">Module <code>tf.core.computed</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="precomputed-data-components">Precomputed data components</h1>
-<p>In order to make the API work, Text-Fabric prepares some data and saves it in
+<h1 id="pre-computed-data-components">Pre-computed data components</h1>
+<p>In order to make the API work, TF prepares some data and saves it in
 quick-load format. Most of this data are the features, but there is some extra
 data needed for the special functions of the <code><a title="tf.parameters.WARP" href="../parameters.html#tf.parameters.WARP">WARP</a></code> features and the
 <code><a title="tf.core.locality.Locality" href="locality.html#tf.core.locality.Locality">Locality</a></code> API.</p>
@@ -34,25 +34,25 @@ so we have made it accessible in the <code><a title="tf.core.computed.Computeds"
 <p class="admonition-title">Pre-computed data storage</p>
 <p>Pre-computed data is stored in cache directories in a directory <code>.<a title="tf" href="../index.html">tf</a></code>
 inside the directory where the <code>otype</code> feature is encountered.</p>
-<p>After precomputation the result is pickled and gzipped and written to a
+<p>After pre-computation the result is <code>pickled</code> and <code>gzipped</code> and written to a
 <code>.tfx</code> file with the same name as the name of the feature.
-This is done for nromal features and pre-computed features likewise.</p>
-<p>After version 7.7.7 version the memory footprint of some precomputed features
-has been reduced. Because the precomputed features on disk are exact replicas
-of the precomputed features in RAM, older precomputed data does not work with
+This is done for normal features and pre-computed features likewise.</p>
+<p>After version 7.7.7 version the memory footprint of some pre-computed features
+has been reduced. Because the pre-computed features on disk are exact replicas
+of the pre-computed features in RAM, older pre-computed data does not work with
 versions of TF after 7.7.7.</p>
-<p>But from that version onwards, there is a parameter,
+<p>But from that version onward, there is a parameter,
 <code><a title="tf.parameters.PACK_VERSION" href="../parameters.html#tf.parameters.PACK_VERSION">PACK_VERSION</a></code> to detect incompatibilities.</p>
 </div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/computed.py#L1-L42" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/computed.py#L1-L42" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-# Precomputed data components
+# Pre-computed data components
 
-In order to make the API work, Text-Fabric prepares some data and saves it in
+In order to make the API work, TF prepares some data and saves it in
 quick-load format. Most of this data are the features, but there is some extra
 data needed for the special functions of the `tf.parameters.WARP` features and the
 `tf.core.locality.Locality` API.
@@ -64,16 +64,16 @@ so we have made it accessible in the `tf.core.computed.Computeds`-api.
     Pre-computed data is stored in cache directories in a directory `.tf`
     inside the directory where the `otype` feature is encountered.
 
-    After precomputation the result is pickled and gzipped and written to a
+    After pre-computation the result is `pickled` and `gzipped` and written to a
     `.tfx` file with the same name as the name of the feature.
-    This is done for nromal features and pre-computed features likewise.
+    This is done for normal features and pre-computed features likewise.
 
-    After version 7.7.7 version the memory footprint of some precomputed features
-    has been reduced. Because the precomputed features on disk are exact replicas
-    of the precomputed features in RAM, older precomputed data does not work with
+    After version 7.7.7 version the memory footprint of some pre-computed features
+    has been reduced. Because the pre-computed features on disk are exact replicas
+    of the pre-computed features in RAM, older pre-computed data does not work with
     versions of TF after 7.7.7.
 
-    But from that version onwards, there is a parameter,
+    But from that version onward, there is a parameter,
     `tf.parameters.PACK_VERSION` to detect incompatibilities.
 &#34;&#34;&#34;
 
@@ -83,7 +83,7 @@ class Computeds:
 
 
 class Computed:
-    &#34;&#34;&#34;Provides access to precomputed data.
+    &#34;&#34;&#34;Provides access to pre-computed data.
 
     For component `ccc` it is the result of `C.ccc` or `Cs(&#39;ccc&#39;)`.
     &#34;&#34;&#34;
@@ -107,15 +107,15 @@ class Computed:
 <span>(</span><span>api, data)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Provides access to precomputed data.</p>
+<div class="desc"><p>Provides access to pre-computed data.</p>
 <p>For component <code>ccc</code> it is the result of <code>C.ccc</code> or <code>Cs('ccc')</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/computed.py#L34-L42" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/computed.py#L34-L42" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Computed:
-    &#34;&#34;&#34;Provides access to precomputed data.
+    &#34;&#34;&#34;Provides access to pre-computed data.
 
     For component `ccc` it is the result of `C.ccc` or `Cs(&#39;ccc&#39;)`.
     &#34;&#34;&#34;
@@ -133,7 +133,7 @@ class Computed:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/computed.py#L30-L31" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/computed.py#L30-L31" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Computeds:
     pass</code></pre>
@@ -197,7 +197,7 @@ setTimeout(() => input.focus(), 100);
 <h1>Index</h1>
 <div class="toc">
 <ul>
-<li><a href="#precomputed-data-components">Precomputed data components</a></li>
+<li><a href="#pre-computed-data-components">Pre-computed data components</a></li>
 </ul>
 </div>
 <ul id="index">

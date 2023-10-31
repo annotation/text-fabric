@@ -24,7 +24,7 @@
 </header>
 <section id="section-intro">
 <h1 id="transcription">Transcription</h1>
-<p>Text-Fabric has support for several writing systems, by means of
+<p>TF has support for several writing systems, by means of
 transcription tables and fonts that will be invoked when displaying the main text.</p>
 <p>It also calls functions to use these tables for converting Hebrew and Syriac
 text material to transliterated representations and back.</p>
@@ -49,12 +49,12 @@ text material to transliterated representations and back.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/writing/transcription.py#L1-L997" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/writing/transcription.py#L1-L1059" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Transcription
 
-Text-Fabric has support for several writing systems, by means of
+TF has support for several writing systems, by means of
 transcription tables and fonts that will be invoked when displaying the main text.
 
 It also calls functions to use these tables for converting Hebrew and Syriac
@@ -100,7 +100,7 @@ import re
 
 
 class Transcription:
-    &#34;&#34;&#34;Conversion between unicode and various transcriptions.
+    &#34;&#34;&#34;Conversion between UNICODE and various transcriptions.
 
     Usage notes:
 
@@ -225,7 +225,7 @@ class Transcription:
         &#39;&#34;&#39;: &#34;\u05f4&#34;,  # punctuation gershayim
     }
     &#34;&#34;&#34;
-    Maps all ETCBC transliteration character combinations for Hebrew to Unicode.
+    Maps all ETCBC transliteration character combinations for Hebrew to UNICODE.
 
     Example: sof-pasuq:
 
@@ -436,7 +436,7 @@ class Transcription:
         &#34;o&#34;: &#34;\u2022&#34;,  # large dot in caesuras
     }
     &#34;&#34;&#34;
-    Maps all ETCBC transliteration character combinations for Syriac to Unicode.
+    Maps all ETCBC transliteration character combinations for Syriac to UNICODE.
 
     Example: semkath-final:
 
@@ -513,7 +513,7 @@ class Transcription:
         &#34;]&#34;: &#34;\u06ed&#34;,  # ARABIC SMALL LOW MEEM
     }
     &#34;&#34;&#34;
-    Maps an Arabic transliteration character to Unicode.
+    Maps an Arabic transliteration character to UNICODE.
     This is the mapping used in the Quran representation on tanzil.net.
 
     Example: beh
@@ -522,9 +522,11 @@ class Transcription:
 
     Output:
 
+    ```
         ب
+    ```
 
-    Maps an Arabic letter in unicode to its transliteration
+    Maps an Arabic letter in UNICODE to its transliteration
 
     Example: beh transliteration
 
@@ -538,99 +540,104 @@ class Transcription:
     arabic_mappingi = {v: k for (k, v) in arabic_mapping.items()}
 
     arabicTrans = {
-        &#34;\u0020&#34;: (&#34; &#34;, &#34; &#34;, &#34; &#34;, &#34; &#34;),      # SPACE
-        &#34;\u060c&#34;: (&#34;‚&#34;, &#34;,&#34;, &#34;,&#34;, &#34;,&#34;),      # ARABIC COMMA
-        &#34;\u061b&#34;: (&#34;„&#34;, &#34;;&#34;, &#34;;&#34;, &#34;;&#34;),      # ARABIC SEMICOLON
-        &#34;\u061f&#34;: (&#34;?&#34;, &#34;?&#34;, &#34;?&#34;, &#34;?&#34;),      # ARABIC QUESTION MARK
-        &#34;\u0621&#34;: (&#34;&#39;&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;&#39;&#34;),      # ARABIC LETTER HAMZA
-        &#34;\u0622&#34;: (&#34;»&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),     # ARABIC LETTER ALEF WITH MADDA ABOVE
-        &#34;\u0623&#34;: (&#34;&gt;&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),     # ARABIC LETTER ALEF WITH HAMZA ABOVE
-        &#34;\u0624&#34;: (&#34;&amp;&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;&#39;&#34;),      # ARABIC LETTER WAW WITH HAMZA ABOVE
-        &#34;\u0625&#34;: (&#34;&lt;&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),     # ARABIC LETTER ALEF WITH HAMZA BELOW
-        &#34;\u0626&#34;: (&#34;}&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;y&#34;),      # ARABIC LETTER YEH WITH HAMZA ABOVE
-        &#34;\u0627&#34;: (&#34;A&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),     # ARABIC LETTER ALEF
-        &#34;\u0628&#34;: (&#34;b&#34;, &#34;b&#34;, &#34;b&#34;, &#34;b&#34;),      # ARABIC LETTER BEH
-        &#34;\u0629&#34;: (&#34;p&#34;, &#34;=t&#34;, &#34;ŧ&#34;, &#34;t&#34;),     # ARABIC LETTER TEH MARBUTA
-        &#34;\u062a&#34;: (&#34;t&#34;, &#34;t&#34;, &#34;t&#34;, &#34;t&#34;),      # ARABIC LETTER TEH
-        &#34;\u062b&#34;: (&#34;v&#34;, &#34;_t&#34;, &#34;ṯ&#34;, &#34;th&#34;),    # ARABIC LETTER THEH
-        &#34;\u062c&#34;: (&#34;j&#34;, &#34;j&#34;, &#34;ǧ&#34;, &#34;j&#34;),      # ARABIC LETTER JEEM
-        &#34;\u062d&#34;: (&#34;H&#34;, &#34;*h&#34;, &#34;ḥ&#34;, &#34;ḥ&#34;),     # ARABIC LETTER HAH
-        &#34;\u062e&#34;: (&#34;x&#34;, &#34;_h&#34;, &#34;ḫ&#34;, &#34;kh&#34;),    # ARABIC LETTER KHAH
-        &#34;\u062f&#34;: (&#34;d&#34;, &#34;d&#34;, &#34;d&#34;, &#34;d&#34;),      # ARABIC LETTER DAL
-        &#34;\u0630&#34;: (&#34;*&#34;, &#34;_d&#34;, &#34;ḏ&#34;, &#34;dh&#34;),    # ARABIC LETTER THAL
-        &#34;\u0631&#34;: (&#34;r&#34;, &#34;r&#34;, &#34;r&#34;, &#34;r&#34;),      # ARABIC LETTER REH
-        &#34;\u0632&#34;: (&#34;z&#34;, &#34;z&#34;, &#34;z&#34;, &#34;z&#34;),      # ARABIC LETTER ZAIN
-        &#34;\u0633&#34;: (&#34;s&#34;, &#34;s&#34;, &#34;s&#34;, &#34;s&#34;),      # ARABIC LETTER SEEN
-        &#34;\u0634&#34;: (&#34;$&#34;, &#34;^s&#34;, &#34;š&#34;, &#34;sh&#34;),    # ARABIC LETTER SHEEN
-        &#34;\u0635&#34;: (&#34;S&#34;, &#34;*s&#34;, &#34;ṣ&#34;, &#34;ṣ&#34;),     # ARABIC LETTER SAD
-        &#34;\u0636&#34;: (&#34;D&#34;, &#34;*d&#34;, &#34;ḍ&#34;, &#34;ḍ&#34;),     # ARABIC LETTER DAD
-        &#34;\u0637&#34;: (&#34;T&#34;, &#34;*t&#34;, &#34;ṭ&#34;, &#34;ṭ&#34;),     # ARABIC LETTER TAH
-        &#34;\u0638&#34;: (&#34;Z&#34;, &#34;*z&#34;, &#34;ẓ&#34;, &#34;ẓ&#34;),     # ARABIC LETTER ZAH
-        &#34;\u0639&#34;: (&#34;E&#34;, &#34;`&#34;, &#34;ʿ&#34;, &#34;`&#34;),      # ARABIC LETTER AIN
-        &#34;\u063a&#34;: (&#34;g&#34;, &#34;*g&#34;, &#34;ġ&#34;, &#34;gh&#34;),    # ARABIC LETTER GHAIN
-        &#34;\u0640&#34;: (&#34;_&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),         # ARABIC TATWEEL
-        &#34;\u0641&#34;: (&#34;f&#34;, &#34;f&#34;, &#34;f&#34;, &#34;f&#34;),      # ARABIC LETTER FEH
-        &#34;\u0642&#34;: (&#34;q&#34;, &#34;*k&#34;, &#34;ḳ&#34;, &#34;q&#34;),     # ARABIC LETTER QAF
-        &#34;\u0643&#34;: (&#34;k&#34;, &#34;k&#34;, &#34;k&#34;, &#34;k&#34;),      # ARABIC LETTER KAF
-        &#34;\u0644&#34;: (&#34;l&#34;, &#34;l&#34;, &#34;l&#34;, &#34;l&#34;),      # ARABIC LETTER LAM
-        &#34;\u0645&#34;: (&#34;m&#34;, &#34;m&#34;, &#34;m&#34;, &#34;m&#34;),      # ARABIC LETTER MEEM
-        &#34;\u0646&#34;: (&#34;n&#34;, &#34;n&#34;, &#34;n&#34;, &#34;n&#34;),      # ARABIC LETTER NOON
-        &#34;\u0647&#34;: (&#34;h&#34;, &#34;h&#34;, &#34;h&#34;, &#34;h&#34;),      # ARABIC LETTER HEH
-        &#34;\u0648&#34;: (&#34;w&#34;, &#34;w&#34;, &#34;w&#34;, &#34;w&#34;),      # ARABIC LETTER WAW
-        &#34;\u0649&#34;: (&#34;Y&#34;, &#34;/a&#34;, &#34;á&#34;, &#34;ā&#34;),     # ARABIC LETTER ALEF MAKSURA
-        &#34;\u064a&#34;: (&#34;y&#34;, &#34;y&#34;, &#34;y&#34;, &#34;y&#34;),      # ARABIC LETTER YEH
+        &#34;\u0020&#34;: (&#34; &#34;, &#34; &#34;, &#34; &#34;, &#34; &#34;),  # SPACE
+        &#34;\u060c&#34;: (&#34;‚&#34;, &#34;,&#34;, &#34;,&#34;, &#34;,&#34;),  # ARABIC COMMA
+        &#34;\u061b&#34;: (&#34;„&#34;, &#34;;&#34;, &#34;;&#34;, &#34;;&#34;),  # ARABIC SEMICOLON
+        &#34;\u061f&#34;: (&#34;?&#34;, &#34;?&#34;, &#34;?&#34;, &#34;?&#34;),  # ARABIC QUESTION MARK
+        &#34;\u0621&#34;: (&#34;&#39;&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;&#39;&#34;),  # ARABIC LETTER HAMZA
+        &#34;\u0622&#34;: (&#34;»&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),  # ARABIC LETTER ALEF WITH MADDA ABOVE
+        &#34;\u0623&#34;: (&#34;&gt;&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),  # ARABIC LETTER ALEF WITH HAMZA ABOVE
+        &#34;\u0624&#34;: (&#34;&amp;&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;&#39;&#34;),  # ARABIC LETTER WAW WITH HAMZA ABOVE
+        &#34;\u0625&#34;: (&#34;&lt;&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),  # ARABIC LETTER ALEF WITH HAMZA BELOW
+        &#34;\u0626&#34;: (&#34;}&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;y&#34;),  # ARABIC LETTER YEH WITH HAMZA ABOVE
+        &#34;\u0627&#34;: (&#34;A&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),  # ARABIC LETTER ALEF
+        &#34;\u0628&#34;: (&#34;b&#34;, &#34;b&#34;, &#34;b&#34;, &#34;b&#34;),  # ARABIC LETTER BEH
+        &#34;\u0629&#34;: (&#34;p&#34;, &#34;=t&#34;, &#34;ŧ&#34;, &#34;t&#34;),  # ARABIC LETTER TEH MARBUTA
+        &#34;\u062a&#34;: (&#34;t&#34;, &#34;t&#34;, &#34;t&#34;, &#34;t&#34;),  # ARABIC LETTER TEH
+        &#34;\u062b&#34;: (&#34;v&#34;, &#34;_t&#34;, &#34;ṯ&#34;, &#34;th&#34;),  # ARABIC LETTER THEH
+        &#34;\u062c&#34;: (&#34;j&#34;, &#34;j&#34;, &#34;ǧ&#34;, &#34;j&#34;),  # ARABIC LETTER JEEM
+        &#34;\u062d&#34;: (&#34;H&#34;, &#34;*h&#34;, &#34;ḥ&#34;, &#34;ḥ&#34;),  # ARABIC LETTER HAH
+        &#34;\u062e&#34;: (&#34;x&#34;, &#34;_h&#34;, &#34;ḫ&#34;, &#34;kh&#34;),  # ARABIC LETTER KHAH
+        &#34;\u062f&#34;: (&#34;d&#34;, &#34;d&#34;, &#34;d&#34;, &#34;d&#34;),  # ARABIC LETTER DAL
+        &#34;\u0630&#34;: (&#34;*&#34;, &#34;_d&#34;, &#34;ḏ&#34;, &#34;dh&#34;),  # ARABIC LETTER THAL
+        &#34;\u0631&#34;: (&#34;r&#34;, &#34;r&#34;, &#34;r&#34;, &#34;r&#34;),  # ARABIC LETTER REH
+        &#34;\u0632&#34;: (&#34;z&#34;, &#34;z&#34;, &#34;z&#34;, &#34;z&#34;),  # ARABIC LETTER ZAIN
+        &#34;\u0633&#34;: (&#34;s&#34;, &#34;s&#34;, &#34;s&#34;, &#34;s&#34;),  # ARABIC LETTER SEEN
+        &#34;\u0634&#34;: (&#34;$&#34;, &#34;^s&#34;, &#34;š&#34;, &#34;sh&#34;),  # ARABIC LETTER SHEEN
+        &#34;\u0635&#34;: (&#34;S&#34;, &#34;*s&#34;, &#34;ṣ&#34;, &#34;ṣ&#34;),  # ARABIC LETTER SAD
+        &#34;\u0636&#34;: (&#34;D&#34;, &#34;*d&#34;, &#34;ḍ&#34;, &#34;ḍ&#34;),  # ARABIC LETTER DAD
+        &#34;\u0637&#34;: (&#34;T&#34;, &#34;*t&#34;, &#34;ṭ&#34;, &#34;ṭ&#34;),  # ARABIC LETTER TAH
+        &#34;\u0638&#34;: (&#34;Z&#34;, &#34;*z&#34;, &#34;ẓ&#34;, &#34;ẓ&#34;),  # ARABIC LETTER ZAH
+        &#34;\u0639&#34;: (&#34;E&#34;, &#34;`&#34;, &#34;ʿ&#34;, &#34;`&#34;),  # ARABIC LETTER AIN
+        &#34;\u063a&#34;: (&#34;g&#34;, &#34;*g&#34;, &#34;ġ&#34;, &#34;gh&#34;),  # ARABIC LETTER GHAIN
+        &#34;\u0640&#34;: (&#34;_&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC TATWEEL
+        &#34;\u0641&#34;: (&#34;f&#34;, &#34;f&#34;, &#34;f&#34;, &#34;f&#34;),  # ARABIC LETTER FEH
+        &#34;\u0642&#34;: (&#34;q&#34;, &#34;*k&#34;, &#34;ḳ&#34;, &#34;q&#34;),  # ARABIC LETTER QAF
+        &#34;\u0643&#34;: (&#34;k&#34;, &#34;k&#34;, &#34;k&#34;, &#34;k&#34;),  # ARABIC LETTER KAF
+        &#34;\u0644&#34;: (&#34;l&#34;, &#34;l&#34;, &#34;l&#34;, &#34;l&#34;),  # ARABIC LETTER LAM
+        &#34;\u0645&#34;: (&#34;m&#34;, &#34;m&#34;, &#34;m&#34;, &#34;m&#34;),  # ARABIC LETTER MEEM
+        &#34;\u0646&#34;: (&#34;n&#34;, &#34;n&#34;, &#34;n&#34;, &#34;n&#34;),  # ARABIC LETTER NOON
+        &#34;\u0647&#34;: (&#34;h&#34;, &#34;h&#34;, &#34;h&#34;, &#34;h&#34;),  # ARABIC LETTER HEH
+        &#34;\u0648&#34;: (&#34;w&#34;, &#34;w&#34;, &#34;w&#34;, &#34;w&#34;),  # ARABIC LETTER WAW
+        &#34;\u0649&#34;: (&#34;Y&#34;, &#34;/a&#34;, &#34;á&#34;, &#34;ā&#34;),  # ARABIC LETTER ALEF MAKSURA
+        &#34;\u064a&#34;: (&#34;y&#34;, &#34;y&#34;, &#34;y&#34;, &#34;y&#34;),  # ARABIC LETTER YEH
         &#34;\u064b&#34;: (&#34;F&#34;, &#34;a*n&#34;, &#34;aⁿ&#34;, &#34;an&#34;),  # ARABIC FATHATAN
         &#34;\u064c&#34;: (&#34;N&#34;, &#34;u*n&#34;, &#34;uⁿ&#34;, &#34;un&#34;),  # ARABIC DAMMATAN
         &#34;\u064d&#34;: (&#34;K&#34;, &#34;i*n&#34;, &#34;iⁿ&#34;, &#34;in&#34;),  # ARABIC KASRATAN
-        &#34;\u064e&#34;: (&#34;a&#34;, &#34;a&#34;, &#34;a&#34;, &#34;a&#34;),      # ARABIC FATHA
-        &#34;\u064f&#34;: (&#34;u&#34;, &#34;u&#34;, &#34;u&#34;, &#34;u&#34;),      # ARABIC DAMMA
-        &#34;\u0650&#34;: (&#34;i&#34;, &#34;i&#34;, &#34;i&#34;, &#34;i&#34;),      # ARABIC KASRA
-        &#34;\u0651&#34;: (&#34;~&#34;, &#34;u&#34;, &#34;u&#34;, &#34;ūw&#34;),     # ARABIC SHADDA
-        &#34;\u0652&#34;: (&#34;o&#34;, &#34;a&#34;, &#34;a&#34;, &#34;a&#34;),      # ARABIC SUKUN
-        &#34;\u0653&#34;: (&#34;^&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),     # ARABIC MADDAH ABOVE
-        &#34;\u0654&#34;: (&#34;#&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;ā&#34;),      # ARABIC HAMZA ABOVE
-        &#34;\u0655&#34;: (&#34;=&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;ā&#34;),      # ARABIC HAMZA BELOW
-        &#34;\u0660&#34;: (&#34;0&#34;, &#34;0&#34;, &#34;0&#34;, &#34;0&#34;),      # ARABIC INDIC DIGIT ZERO
-        &#34;\u0661&#34;: (&#34;1&#34;, &#34;1&#34;, &#34;1&#34;, &#34;1&#34;),      # ARABIC INDIC DIGIT ONE
-        &#34;\u0662&#34;: (&#34;2&#34;, &#34;2&#34;, &#34;2&#34;, &#34;2&#34;),      # ARABIC INDIC DIGIT TWO
-        &#34;\u0663&#34;: (&#34;3&#34;, &#34;3&#34;, &#34;3&#34;, &#34;3&#34;),      # ARABIC INDIC DIGIT THREE
-        &#34;\u0664&#34;: (&#34;4&#34;, &#34;4&#34;, &#34;4&#34;, &#34;4&#34;),      # ARABIC INDIC DIGIT FOUR
-        &#34;\u0665&#34;: (&#34;5&#34;, &#34;5&#34;, &#34;5&#34;, &#34;5&#34;),      # ARABIC INDIC DIGIT FIVE
-        &#34;\u0666&#34;: (&#34;6&#34;, &#34;6&#34;, &#34;6&#34;, &#34;6&#34;),      # ARABIC INDIC DIGIT SIX
-        &#34;\u0667&#34;: (&#34;7&#34;, &#34;7&#34;, &#34;7&#34;, &#34;7&#34;),      # ARABIC INDIC DIGIT SEVEN
-        &#34;\u0668&#34;: (&#34;8&#34;, &#34;8&#34;, &#34;8&#34;, &#34;8&#34;),      # ARABIC INDIC DIGIT EIGHT
-        &#34;\u0669&#34;: (&#34;9&#34;, &#34;9&#34;, &#34;9&#34;, &#34;9&#34;),      # ARABIC INDIC DIGIT NINE
-        &#34;\u0670&#34;: (&#34;`&#34;, &#34;~a&#34;, &#34;ã&#34;, &#34;&#34;),      # ARABIC LETTER SUPERSCRIPT ALEF
-        &#34;\u0671&#34;: (&#34;{&#34;, &#34;a&#34;, &#34;a&#34;, &#34;a&#34;),      # ARABIC LETTER ALEF WASLA
-        &#34;\u06af&#34;: (&#34;G&#34;, &#34;g&#34;, &#34;g&#34;, &#34;g&#34;),      # ARABIC LETTER GAF
-        &#34;\u06cc&#34;: (&#34;J&#34;, &#34;#y&#34;, &#34;Y&#34;, &#34;y&#34;),     # ARABIC LETTER FARSI YEH
-        &#34;\u06d6&#34;: (&#34;SlY&#34;, &#34;*sl/a&#34;, &#34;ṣlá&#34;, &#34;ṣla&#34;),  # ARABIC SMALL HIGH LIGATURE SAD WITH LAM WITH ALEF MAKSURA
-        &#34;\u06da&#34;: (&#34;M&#34;, &#34;#j&#34;, &#34;J&#34;, &#34;j&#34;),     # ARABIC SMALL HIGH JEEM
-        &#34;\u06dc&#34;: (&#34;:&#34;, &#34;#s&#34;, &#34;S&#34;, &#34;s&#34;),     # ARABIC SMALL HIGH SEEN
-        &#34;\u06df&#34;: (&#34;@&#34;, &#34;0&#34;, &#34;0&#34;, &#34;0&#34;),      # ARABIC SMALL HIGH ROUNDED ZERO
-        &#34;\u06e0&#34;: (&#39;&#34;&#39;, &#34;0&#34;, &#34;0&#34;, &#34;0&#34;),      # ARABIC SMALL HIGH UPRIGHT RECTANGULAR ZERO
-        &#34;\u06e2&#34;: (&#34;[&#34;, &#34;#m&#34;, &#34;M&#34;, &#34;M&#34;),     # ARABIC SMALL HIGH MEEM ISOLATED FORM
-        &#34;\u06e3&#34;: (&#34;;&#34;, &#34;#s&#34;, &#34;S&#34;, &#34;S&#34;),     # ARABIC SMALL LOW SEEN
-        &#34;\u06e5&#34;: (&#34;,&#34;, &#34;#w&#34;, &#34;W&#34;, &#34;W&#34;),     # ARABIC SMALL WAW
-        &#34;\u06e6&#34;: (&#34;.&#34;, &#34;#y&#34;, &#34;Y&#34;, &#34;Y&#34;),     # ARABIC SMALL YEH
-        &#34;\u06e8&#34;: (&#34;!&#34;, &#34;#n&#34;, &#34;N&#34;, &#34;N&#34;),     # ARABIC SMALL HIGH NOON
-        &#34;\u06ea&#34;: (&#34;-&#34;, &#34;.&#34;, &#34;.&#34;, &#34;.&#34;),      # ARABIC EMPTY CENTRE LOW STOP
-        &#34;\u06eb&#34;: (&#34;+&#34;, &#34;.&#34;, &#34;.&#34;, &#34;.&#34;),      # ARABIC EMPTY CENTRE HIGH STOP
-        &#34;\u06ec&#34;: (&#34;%&#34;, &#34;.&#34;, &#34;.&#34;, &#34;.&#34;),      # ARABIC ROUNDED HIGH STOP WITH FILLED CENTRE
-        &#34;\u06ed&#34;: (&#34;]&#34;, &#34;#m&#34;, &#34;M&#34;, &#34;M&#34;),     # ARABIC SMALL LOW MEEM
+        &#34;\u064e&#34;: (&#34;a&#34;, &#34;a&#34;, &#34;a&#34;, &#34;a&#34;),  # ARABIC FATHA
+        &#34;\u064f&#34;: (&#34;u&#34;, &#34;u&#34;, &#34;u&#34;, &#34;u&#34;),  # ARABIC DAMMA
+        &#34;\u0650&#34;: (&#34;i&#34;, &#34;i&#34;, &#34;i&#34;, &#34;i&#34;),  # ARABIC KASRA
+        &#34;\u0651&#34;: (&#34;~&#34;, &#34;u&#34;, &#34;u&#34;, &#34;ūw&#34;),  # ARABIC SHADDA
+        &#34;\u0652&#34;: (&#34;o&#34;, &#34;a&#34;, &#34;a&#34;, &#34;a&#34;),  # ARABIC SUKUN
+        &#34;\u0653&#34;: (&#34;^&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),  # ARABIC MADDAH ABOVE
+        &#34;\u0654&#34;: (&#34;#&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;ā&#34;),  # ARABIC HAMZA ABOVE
+        &#34;\u0655&#34;: (&#34;=&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;ā&#34;),  # ARABIC HAMZA BELOW
+        &#34;\u0660&#34;: (&#34;0&#34;, &#34;0&#34;, &#34;0&#34;, &#34;0&#34;),  # ARABIC INDIC DIGIT ZERO
+        &#34;\u0661&#34;: (&#34;1&#34;, &#34;1&#34;, &#34;1&#34;, &#34;1&#34;),  # ARABIC INDIC DIGIT ONE
+        &#34;\u0662&#34;: (&#34;2&#34;, &#34;2&#34;, &#34;2&#34;, &#34;2&#34;),  # ARABIC INDIC DIGIT TWO
+        &#34;\u0663&#34;: (&#34;3&#34;, &#34;3&#34;, &#34;3&#34;, &#34;3&#34;),  # ARABIC INDIC DIGIT THREE
+        &#34;\u0664&#34;: (&#34;4&#34;, &#34;4&#34;, &#34;4&#34;, &#34;4&#34;),  # ARABIC INDIC DIGIT FOUR
+        &#34;\u0665&#34;: (&#34;5&#34;, &#34;5&#34;, &#34;5&#34;, &#34;5&#34;),  # ARABIC INDIC DIGIT FIVE
+        &#34;\u0666&#34;: (&#34;6&#34;, &#34;6&#34;, &#34;6&#34;, &#34;6&#34;),  # ARABIC INDIC DIGIT SIX
+        &#34;\u0667&#34;: (&#34;7&#34;, &#34;7&#34;, &#34;7&#34;, &#34;7&#34;),  # ARABIC INDIC DIGIT SEVEN
+        &#34;\u0668&#34;: (&#34;8&#34;, &#34;8&#34;, &#34;8&#34;, &#34;8&#34;),  # ARABIC INDIC DIGIT EIGHT
+        &#34;\u0669&#34;: (&#34;9&#34;, &#34;9&#34;, &#34;9&#34;, &#34;9&#34;),  # ARABIC INDIC DIGIT NINE
+        &#34;\u0670&#34;: (&#34;`&#34;, &#34;~a&#34;, &#34;ã&#34;, &#34;&#34;),  # ARABIC LETTER SUPERSCRIPT ALEF
+        &#34;\u0671&#34;: (&#34;{&#34;, &#34;a&#34;, &#34;a&#34;, &#34;a&#34;),  # ARABIC LETTER ALEF WASLA
+        &#34;\u06af&#34;: (&#34;G&#34;, &#34;g&#34;, &#34;g&#34;, &#34;g&#34;),  # ARABIC LETTER GAF
+        &#34;\u06cc&#34;: (&#34;J&#34;, &#34;#y&#34;, &#34;Y&#34;, &#34;y&#34;),  # ARABIC LETTER FARSI YEH
+        &#34;\u06d6&#34;: (
+            &#34;SlY&#34;,
+            &#34;*sl/a&#34;,
+            &#34;ṣlá&#34;,
+            &#34;ṣla&#34;,
+        ),  # ARABIC SMALL HIGH LIGATURE SAD WITH LAM WITH ALEF MAKSURA
+        &#34;\u06da&#34;: (&#34;M&#34;, &#34;#j&#34;, &#34;J&#34;, &#34;j&#34;),  # ARABIC SMALL HIGH JEEM
+        &#34;\u06dc&#34;: (&#34;:&#34;, &#34;#s&#34;, &#34;S&#34;, &#34;s&#34;),  # ARABIC SMALL HIGH SEEN
+        &#34;\u06df&#34;: (&#34;@&#34;, &#34;0&#34;, &#34;0&#34;, &#34;0&#34;),  # ARABIC SMALL HIGH ROUNDED ZERO
+        &#34;\u06e0&#34;: (&#39;&#34;&#39;, &#34;0&#34;, &#34;0&#34;, &#34;0&#34;),  # ARABIC SMALL HIGH UPRIGHT RECTANGULAR ZERO
+        &#34;\u06e2&#34;: (&#34;[&#34;, &#34;#m&#34;, &#34;M&#34;, &#34;M&#34;),  # ARABIC SMALL HIGH MEEM ISOLATED FORM
+        &#34;\u06e3&#34;: (&#34;;&#34;, &#34;#s&#34;, &#34;S&#34;, &#34;S&#34;),  # ARABIC SMALL LOW SEEN
+        &#34;\u06e5&#34;: (&#34;,&#34;, &#34;#w&#34;, &#34;W&#34;, &#34;W&#34;),  # ARABIC SMALL WAW
+        &#34;\u06e6&#34;: (&#34;.&#34;, &#34;#y&#34;, &#34;Y&#34;, &#34;Y&#34;),  # ARABIC SMALL YEH
+        &#34;\u06e8&#34;: (&#34;!&#34;, &#34;#n&#34;, &#34;N&#34;, &#34;N&#34;),  # ARABIC SMALL HIGH NOON
+        &#34;\u06ea&#34;: (&#34;-&#34;, &#34;.&#34;, &#34;.&#34;, &#34;.&#34;),  # ARABIC EMPTY CENTRE LOW STOP
+        &#34;\u06eb&#34;: (&#34;+&#34;, &#34;.&#34;, &#34;.&#34;, &#34;.&#34;),  # ARABIC EMPTY CENTRE HIGH STOP
+        &#34;\u06ec&#34;: (&#34;%&#34;, &#34;.&#34;, &#34;.&#34;, &#34;.&#34;),  # ARABIC ROUNDED HIGH STOP WITH FILLED CENTRE
+        &#34;\u06ed&#34;: (&#34;]&#34;, &#34;#m&#34;, &#34;M&#34;, &#34;M&#34;),  # ARABIC SMALL LOW MEEM
     }
     &#34;&#34;&#34;
     More Arabic transcriptions:
 
-    * column 1: `custom` [Quran-tanzil](http://tanzil.net/#1:1), slightly extended
-    * column 2/: `ascii` resp. `latin` plus diacritics also known as betacode.
-      We use a list compiled by
-      [Peter Verkinderen](https://pverkind.github.io/betacodeTranscriber/js/betacode.js)
-    * column 4: `standard` (Library of Congress) (to-be filled).
-      We use the
-      [arabic romanization list of 2012](https://www.loc.gov/catdir/cpso/romanization/arabic.pdf)
-      We refrain of from applying rules that cannot be computed without
-      lexical/grammatical/dialectical knowledge of the arabic language.
+    *   column 1: `custom` [Quran-tanzil](http://tanzil.net/#1:1), slightly extended
+    *   column 2: `ascii` resp. `latin` plus diacritics also known as betacode.
+        We use a list compiled by
+        [Peter Verkinderen](https://pverkind.github.io/betacodeTranscriber/js/betacode.js)
+    *   column 4: `standard` (Library of Congress) (to-be filled).
+        We use the
+        [arabic romanization list of 2012](https://www.loc.gov/catdir/cpso/romanization/arabic.pdf)
+        We refrain of from applying rules that cannot be computed without
+        lexical/grammatical/dialectical knowledge of the arabic language.
     &#34;&#34;&#34;
 
     arabicTransQuran = {}
@@ -638,7 +645,7 @@ class Transcription:
     arabicTransLatin = {}
     arabicTransStandard = {}
 
-    for (ara, (qur, asc, lat, std)) in arabicTrans.items():
+    for ara, (qur, asc, lat, std) in arabicTrans.items():
         arabicTransQuran[ara] = qur
         arabicTransAscii[ara] = asc
         arabicTransLatin[ara] = lat
@@ -691,7 +698,7 @@ class Transcription:
 
         for u in sorted(Transcription.arabicTrans):
             (qur, asc, lat, std) = Transcription.arabicTrans[u]
-            for (k, v) in zip(arabicMap.keys(), Transcription.arabicTrans[u]):
+            for k, v in zip(arabicMap.keys(), Transcription.arabicTrans[u]):
                 arabicMap[k].setdefault(v, u)
                 arabicMapI[k][u] = v
 
@@ -702,12 +709,12 @@ class Transcription:
         pass
 
     def _comp(s):
-        for (d, c) in Transcription.decomp.items():
+        for d, c in Transcription.decomp.items():
             s = s.replace(d, c)
         return s
 
     def _decomp(s):
-        for (d, c) in Transcription.decomp.items():
+        for d, c in Transcription.decomp.items():
             s = s.replace(c, d)
         return s
 
@@ -721,11 +728,15 @@ class Transcription:
 
         Example:
 
-            Transcription.suffix_and_finales(&#39;71T_H@&gt;@95REY00&#39;)
+        ``` python
+        Transcription.suffix_and_finales(&#39;71T_H@&gt;@95REY00&#39;)
+        ```
 
         Output:
 
-            (&#39;71T_H@&gt;@95REy&#39;, &#39;00\n&#39;)
+        ```
+        (&#39;71T_H@&gt;@95REy&#39;, &#39;00\n&#39;)
+        ```
 
         Note that the `Y` has been replaced by `y`.
         &#34;&#34;&#34;
@@ -791,26 +802,30 @@ class Transcription:
     def _ph_simple(m):
         return &#34;å&#34; if m.group(1) in &#34;āo&#34; else &#34;&#34;
 
-    # unicode normalization is harmful
+    # UNICODE normalization is harmful
     # if there is a combination of dagesh, vowel and accent.
 
     def suppress_space(word):
         &#34;&#34;&#34;
         Given an ETCBC transliteration of a word,
-        match the end of the word for interpunction and spacing characters
-        (sof pasuq, paseq, nun hafukha, setumah, petuhah, space, no-space)
+        match the end of the word for punctuation and spacing characters
+        (`sof pasuq`, `paseq`, `nun hafukha`, `setumah`, `petuhah`, space, no-space)
 
         Example:
 
-            Transcription.suppress_space(&#39;B.:&amp;&#39;)
-            Transcription.suppress_space(&#39;B.@R@74&gt;&#39;)
-            Transcription.suppress_space(&#39;71T_H@&gt;@95REY00&#39;)
+        ``` python
+        Transcription.suppress_space(&#39;B.:&amp;&#39;)
+        Transcription.suppress_space(&#39;B.@R@74&gt;&#39;)
+        Transcription.suppress_space(&#39;71T_H@&gt;@95REY00&#39;)
+        ```
 
         Output:
 
-            &lt;re.Match object; span=(3, 4), match=&#39;&amp;&#39;&gt;
-            None
-            &lt;re.Match object; span=(13, 15), match=&#39;00&#39;&gt;
+        ```
+        &lt;re.Match object; span=(3, 4), match=&#39;&amp;&#39;&gt;
+        None
+        &lt;re.Match object; span=(13, 15), match=&#39;00&#39;&gt;
+        ```
         &#34;&#34;&#34;
 
         return Transcription.noorigspace.search(word)
@@ -822,11 +837,15 @@ class Transcription:
 
         Example:
 
-            Transcription.to_etcbc_v(&#39;HAC.@MA73JIm&#39;)
+        ``` python
+        Transcription.to_etcbc_v(&#39;HAC.@MA73JIm&#39;)
+        ```
 
         Output:
 
-            HAC.@MAJIm
+        ```
+        HAC.@MAJIm
+        ```
         &#34;&#34;&#34;
 
         return Transcription.remove_accent_pat.sub(Transcription._remove_accent, word)
@@ -839,11 +858,15 @@ class Transcription:
 
         Example:
 
-            Transcription.to_etcbc_c(&#39;HAC.@MA73JIm&#39;)
+        ``` python
+        Transcription.to_etcbc_c(&#39;HAC.@MA73JIm&#39;)
+        ```
 
         Output:
 
-            H#MJM
+        ```
+        H#MJM
+        ```
 
         Note that the pointed shin (`C`) is replaced by an unpointed one (`#`).
         &#34;&#34;&#34;
@@ -861,17 +884,21 @@ class Transcription:
     def to_hebrew(word):
         &#34;&#34;&#34;
         Given a transliteration of a fully pointed word,
-        produce the word in Unicode Hebrew.
+        produce the word in UNICODE Hebrew.
         Care will be taken that vowel pointing will be added to consonants
         before accent pointing.
 
         Example:
 
-            Transcription.to_hebrew(&#39;HAC.@MA73JIm&#39;)
+        ``` python
+        Transcription.to_hebrew(&#39;HAC.@MA73JIm&#39;)
+        ```
 
         Output:
 
-            הַשָּׁמַ֖יִם
+        ```
+        הַשָּׁמַ֖יִם
+        ```
         &#34;&#34;&#34;
 
         word = Transcription.swap_accent_pat.sub(Transcription._swap_accent, word)
@@ -880,15 +907,19 @@ class Transcription:
     def to_hebrew_v(word):
         &#34;&#34;&#34;
         Given a transliteration of a fully pointed word,
-        produce the word in Unicode Hebrew, but without the accents.
+        produce the word in UNICODE Hebrew, but without the accents.
 
         Example:
 
-            Transcription.to_hebrew_v(&#39;HAC.@MA73JIm&#39;)
+        ``` python
+        Transcription.to_hebrew_v(&#39;HAC.@MA73JIm&#39;)
+        ```
 
         Output:
 
-            הַשָּׁמַיִם
+        ```
+        הַשָּׁמַיִם
+        ```
         &#34;&#34;&#34;
 
         return Transcription.trans_hebrew_pat.sub(
@@ -898,15 +929,19 @@ class Transcription:
     def to_hebrew_c(word):
         &#34;&#34;&#34;
         Given a transliteration of a fully pointed word,
-        produce the word in Unicode Hebrew, but without the pointing.
+        produce the word in UNICODE Hebrew, but without the pointing.
 
         Example:
 
-            Transcription.to_hebrew_c(&#39;HAC.@MA73JIm&#39;)
+        ``` python
+        Transcription.to_hebrew_c(&#39;HAC.@MA73JIm&#39;)
+        ```
 
         Output:
 
-            השמימ
+        ```
+        השמימ
+        ```
 
         Note that final consonant forms are not being used.
         &#34;&#34;&#34;
@@ -918,17 +953,21 @@ class Transcription:
     def to_hebrew_x(word):
         &#34;&#34;&#34;
         Given a transliteration of a fully pointed word,
-        produce the word in Unicode Hebrew, but without the pointing.
+        produce the word in UNICODE Hebrew, but without the pointing.
         Vowel pointing and accent pointing will be applied in the order given
         by the input word.
 
         Example:
 
-            Transcription.to_hebrew_x(&#39;HAC.@MA73JIm&#39;)
+        ``` python
+        Transcription.to_hebrew_x(&#39;HAC.@MA73JIm&#39;)
+        ```
 
         Output:
 
-            הַשָּׁמַ֖יִם
+        ```
+        הַשָּׁמַ֖יִם
+        ```
         &#34;&#34;&#34;
 
         return Transcription.trans_hebrew_pat.sub(Transcription._map_hebrew, word)
@@ -940,35 +979,42 @@ class Transcription:
 
         Example:
 
-            Transcription.ph_simplify(&#39;ʔᵉlōhˈîm&#39;)
-            Transcription.ph_simplify(&#39;māqˈôm&#39;)
-            Transcription.ph_simplify(&#39;kol&#39;)
+        ``` python
+        Transcription.ph_simplify(&#39;ʔᵉlōhˈîm&#39;)
+        Transcription.ph_simplify(&#39;māqˈôm&#39;)
+        Transcription.ph_simplify(&#39;kol&#39;)
+        ```
 
         Output:
 
-            ʔlōhîm
-            måqôm
-            kål
+        ```
+        ʔlōhîm
+        måqôm
+        kål
+        ```
 
-        Note that the simplified version transliterates the qamets gadol and qatan
-        to the same
-        character.
+        Note that the simplified version transliterates the `qamets gadol` and `qatan`
+        to the same character.
         &#34;&#34;&#34;
 
         return Transcription.ph_simple_pat.sub(Transcription._ph_simple, pword)
 
     def from_hebrew(self, word):
         &#34;&#34;&#34;
-        Given a fully pointed word in Unicode Hebrew,
+        Given a fully pointed word in UNICODE Hebrew,
         produce the word in ETCBC transliteration.
 
         Example:
 
-            tr.from_hebrew(&#39;הָאָֽרֶץ׃&#39;)
+        ``` python
+        tr.from_hebrew(&#39;הָאָֽרֶץ׃&#39;)
+        ```
 
         Output:
 
-            H@&gt;@95REy00
+        ```
+        H@&gt;@95REy00
+        ```
         &#34;&#34;&#34;
 
         return &#34;&#34;.join(
@@ -978,31 +1024,39 @@ class Transcription:
     def to_syriac(self, word):
         &#34;&#34;&#34;
         Given a word in ETCBC transliteration,
-        produce the word in Unicode Syriac.
+        produce the word in UNICODE Syriac.
 
         Example:
 
-            tr.to_syriac(&#39;MKSJN&#39;)
+        ``` python
+        tr.to_syriac(&#39;MKSJN&#39;)
+        ```
 
         Output:
 
-            ܡܟܣܝܢ
+        ```
+        ܡܟܣܝܢ
+        ```
         &#34;&#34;&#34;
 
         return Transcription.trans_syriac_pat.sub(Transcription._map_syriac, word)
 
     def from_syriac(self, word):
         &#34;&#34;&#34;
-        Given a word in Unicode Syriac,
+        Given a word in UNICODE Syriac,
         produce the word in ETCBC transliteration.
 
         Example:
 
-            tr.from_syriac(&#39;ܡܟܣܝܢ&#39;)
+        ``` python
+        tr.from_syriac(&#39;ܡܟܣܝܢ&#39;)
+        ```
 
         Output:
 
-            MKSJN
+        ```
+        MKSJN
+        ```
         &#34;&#34;&#34;
 
         return &#34;&#34;.join(self.syriac_mappingi.get(x, x) for x in word)
@@ -1020,31 +1074,39 @@ class Transcription:
     def to_arabic(word):
         &#34;&#34;&#34;
         Given a word in transliteration,
-        produce the word in Unicode Arabic.
+        produce the word in UNICODE Arabic.
 
         Example:
 
-            tr.to_arabic(&#39;bisomi&#39;)
+        ``` python
+        tr.to_arabic(&#39;bisomi&#39;)
+        ```
 
         Output:
 
-            بِسْمِ
+        ```
+        بِسْمِ
+        ```
         &#34;&#34;&#34;
 
         return &#34;&#34;.join(Transcription.arabic_mapping.get(x, x) for x in word)
 
     def from_arabic(word):
         &#34;&#34;&#34;
-        Given a word in Unicode Arabic,
+        Given a word in UNICODE Arabic,
         produce the word in transliteration.
 
         Example:
 
-            tr.from_arabic(&#39;بِسْمِ&#39;)
+        ``` python
+        tr.from_arabic(&#39;بِسْمِ&#39;)
+        ```
 
         Output:
 
-            bisomi
+        ```
+        bisomi
+        ```
         &#34;&#34;&#34;
 
         return &#34;&#34;.join(Transcription.arabic_mappingi.get(x, x) for x in word)</code></pre>
@@ -1063,7 +1125,7 @@ class Transcription:
 <span>class <span class="ident">Transcription</span></span>
 </code></dt>
 <dd>
-<div class="desc"><p>Conversion between unicode and various transcriptions.</p>
+<div class="desc"><p>Conversion between UNICODE and various transcriptions.</p>
 <p>Usage notes:</p>
 <p>Invoke the transcription functionality as follows:</p>
 <pre><code>from tf.writing.transcription import Transcription
@@ -1080,10 +1142,10 @@ others are instance attributes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/writing/transcription.py#L49-L997" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/writing/transcription.py#L49-L1059" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Transcription:
-    &#34;&#34;&#34;Conversion between unicode and various transcriptions.
+    &#34;&#34;&#34;Conversion between UNICODE and various transcriptions.
 
     Usage notes:
 
@@ -1208,7 +1270,7 @@ others are instance attributes.</p>
         &#39;&#34;&#39;: &#34;\u05f4&#34;,  # punctuation gershayim
     }
     &#34;&#34;&#34;
-    Maps all ETCBC transliteration character combinations for Hebrew to Unicode.
+    Maps all ETCBC transliteration character combinations for Hebrew to UNICODE.
 
     Example: sof-pasuq:
 
@@ -1419,7 +1481,7 @@ others are instance attributes.</p>
         &#34;o&#34;: &#34;\u2022&#34;,  # large dot in caesuras
     }
     &#34;&#34;&#34;
-    Maps all ETCBC transliteration character combinations for Syriac to Unicode.
+    Maps all ETCBC transliteration character combinations for Syriac to UNICODE.
 
     Example: semkath-final:
 
@@ -1496,7 +1558,7 @@ others are instance attributes.</p>
         &#34;]&#34;: &#34;\u06ed&#34;,  # ARABIC SMALL LOW MEEM
     }
     &#34;&#34;&#34;
-    Maps an Arabic transliteration character to Unicode.
+    Maps an Arabic transliteration character to UNICODE.
     This is the mapping used in the Quran representation on tanzil.net.
 
     Example: beh
@@ -1505,9 +1567,11 @@ others are instance attributes.</p>
 
     Output:
 
+    ```
         ب
+    ```
 
-    Maps an Arabic letter in unicode to its transliteration
+    Maps an Arabic letter in UNICODE to its transliteration
 
     Example: beh transliteration
 
@@ -1521,99 +1585,104 @@ others are instance attributes.</p>
     arabic_mappingi = {v: k for (k, v) in arabic_mapping.items()}
 
     arabicTrans = {
-        &#34;\u0020&#34;: (&#34; &#34;, &#34; &#34;, &#34; &#34;, &#34; &#34;),      # SPACE
-        &#34;\u060c&#34;: (&#34;‚&#34;, &#34;,&#34;, &#34;,&#34;, &#34;,&#34;),      # ARABIC COMMA
-        &#34;\u061b&#34;: (&#34;„&#34;, &#34;;&#34;, &#34;;&#34;, &#34;;&#34;),      # ARABIC SEMICOLON
-        &#34;\u061f&#34;: (&#34;?&#34;, &#34;?&#34;, &#34;?&#34;, &#34;?&#34;),      # ARABIC QUESTION MARK
-        &#34;\u0621&#34;: (&#34;&#39;&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;&#39;&#34;),      # ARABIC LETTER HAMZA
-        &#34;\u0622&#34;: (&#34;»&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),     # ARABIC LETTER ALEF WITH MADDA ABOVE
-        &#34;\u0623&#34;: (&#34;&gt;&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),     # ARABIC LETTER ALEF WITH HAMZA ABOVE
-        &#34;\u0624&#34;: (&#34;&amp;&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;&#39;&#34;),      # ARABIC LETTER WAW WITH HAMZA ABOVE
-        &#34;\u0625&#34;: (&#34;&lt;&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),     # ARABIC LETTER ALEF WITH HAMZA BELOW
-        &#34;\u0626&#34;: (&#34;}&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;y&#34;),      # ARABIC LETTER YEH WITH HAMZA ABOVE
-        &#34;\u0627&#34;: (&#34;A&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),     # ARABIC LETTER ALEF
-        &#34;\u0628&#34;: (&#34;b&#34;, &#34;b&#34;, &#34;b&#34;, &#34;b&#34;),      # ARABIC LETTER BEH
-        &#34;\u0629&#34;: (&#34;p&#34;, &#34;=t&#34;, &#34;ŧ&#34;, &#34;t&#34;),     # ARABIC LETTER TEH MARBUTA
-        &#34;\u062a&#34;: (&#34;t&#34;, &#34;t&#34;, &#34;t&#34;, &#34;t&#34;),      # ARABIC LETTER TEH
-        &#34;\u062b&#34;: (&#34;v&#34;, &#34;_t&#34;, &#34;ṯ&#34;, &#34;th&#34;),    # ARABIC LETTER THEH
-        &#34;\u062c&#34;: (&#34;j&#34;, &#34;j&#34;, &#34;ǧ&#34;, &#34;j&#34;),      # ARABIC LETTER JEEM
-        &#34;\u062d&#34;: (&#34;H&#34;, &#34;*h&#34;, &#34;ḥ&#34;, &#34;ḥ&#34;),     # ARABIC LETTER HAH
-        &#34;\u062e&#34;: (&#34;x&#34;, &#34;_h&#34;, &#34;ḫ&#34;, &#34;kh&#34;),    # ARABIC LETTER KHAH
-        &#34;\u062f&#34;: (&#34;d&#34;, &#34;d&#34;, &#34;d&#34;, &#34;d&#34;),      # ARABIC LETTER DAL
-        &#34;\u0630&#34;: (&#34;*&#34;, &#34;_d&#34;, &#34;ḏ&#34;, &#34;dh&#34;),    # ARABIC LETTER THAL
-        &#34;\u0631&#34;: (&#34;r&#34;, &#34;r&#34;, &#34;r&#34;, &#34;r&#34;),      # ARABIC LETTER REH
-        &#34;\u0632&#34;: (&#34;z&#34;, &#34;z&#34;, &#34;z&#34;, &#34;z&#34;),      # ARABIC LETTER ZAIN
-        &#34;\u0633&#34;: (&#34;s&#34;, &#34;s&#34;, &#34;s&#34;, &#34;s&#34;),      # ARABIC LETTER SEEN
-        &#34;\u0634&#34;: (&#34;$&#34;, &#34;^s&#34;, &#34;š&#34;, &#34;sh&#34;),    # ARABIC LETTER SHEEN
-        &#34;\u0635&#34;: (&#34;S&#34;, &#34;*s&#34;, &#34;ṣ&#34;, &#34;ṣ&#34;),     # ARABIC LETTER SAD
-        &#34;\u0636&#34;: (&#34;D&#34;, &#34;*d&#34;, &#34;ḍ&#34;, &#34;ḍ&#34;),     # ARABIC LETTER DAD
-        &#34;\u0637&#34;: (&#34;T&#34;, &#34;*t&#34;, &#34;ṭ&#34;, &#34;ṭ&#34;),     # ARABIC LETTER TAH
-        &#34;\u0638&#34;: (&#34;Z&#34;, &#34;*z&#34;, &#34;ẓ&#34;, &#34;ẓ&#34;),     # ARABIC LETTER ZAH
-        &#34;\u0639&#34;: (&#34;E&#34;, &#34;`&#34;, &#34;ʿ&#34;, &#34;`&#34;),      # ARABIC LETTER AIN
-        &#34;\u063a&#34;: (&#34;g&#34;, &#34;*g&#34;, &#34;ġ&#34;, &#34;gh&#34;),    # ARABIC LETTER GHAIN
-        &#34;\u0640&#34;: (&#34;_&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),         # ARABIC TATWEEL
-        &#34;\u0641&#34;: (&#34;f&#34;, &#34;f&#34;, &#34;f&#34;, &#34;f&#34;),      # ARABIC LETTER FEH
-        &#34;\u0642&#34;: (&#34;q&#34;, &#34;*k&#34;, &#34;ḳ&#34;, &#34;q&#34;),     # ARABIC LETTER QAF
-        &#34;\u0643&#34;: (&#34;k&#34;, &#34;k&#34;, &#34;k&#34;, &#34;k&#34;),      # ARABIC LETTER KAF
-        &#34;\u0644&#34;: (&#34;l&#34;, &#34;l&#34;, &#34;l&#34;, &#34;l&#34;),      # ARABIC LETTER LAM
-        &#34;\u0645&#34;: (&#34;m&#34;, &#34;m&#34;, &#34;m&#34;, &#34;m&#34;),      # ARABIC LETTER MEEM
-        &#34;\u0646&#34;: (&#34;n&#34;, &#34;n&#34;, &#34;n&#34;, &#34;n&#34;),      # ARABIC LETTER NOON
-        &#34;\u0647&#34;: (&#34;h&#34;, &#34;h&#34;, &#34;h&#34;, &#34;h&#34;),      # ARABIC LETTER HEH
-        &#34;\u0648&#34;: (&#34;w&#34;, &#34;w&#34;, &#34;w&#34;, &#34;w&#34;),      # ARABIC LETTER WAW
-        &#34;\u0649&#34;: (&#34;Y&#34;, &#34;/a&#34;, &#34;á&#34;, &#34;ā&#34;),     # ARABIC LETTER ALEF MAKSURA
-        &#34;\u064a&#34;: (&#34;y&#34;, &#34;y&#34;, &#34;y&#34;, &#34;y&#34;),      # ARABIC LETTER YEH
+        &#34;\u0020&#34;: (&#34; &#34;, &#34; &#34;, &#34; &#34;, &#34; &#34;),  # SPACE
+        &#34;\u060c&#34;: (&#34;‚&#34;, &#34;,&#34;, &#34;,&#34;, &#34;,&#34;),  # ARABIC COMMA
+        &#34;\u061b&#34;: (&#34;„&#34;, &#34;;&#34;, &#34;;&#34;, &#34;;&#34;),  # ARABIC SEMICOLON
+        &#34;\u061f&#34;: (&#34;?&#34;, &#34;?&#34;, &#34;?&#34;, &#34;?&#34;),  # ARABIC QUESTION MARK
+        &#34;\u0621&#34;: (&#34;&#39;&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;&#39;&#34;),  # ARABIC LETTER HAMZA
+        &#34;\u0622&#34;: (&#34;»&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),  # ARABIC LETTER ALEF WITH MADDA ABOVE
+        &#34;\u0623&#34;: (&#34;&gt;&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),  # ARABIC LETTER ALEF WITH HAMZA ABOVE
+        &#34;\u0624&#34;: (&#34;&amp;&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;&#39;&#34;),  # ARABIC LETTER WAW WITH HAMZA ABOVE
+        &#34;\u0625&#34;: (&#34;&lt;&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),  # ARABIC LETTER ALEF WITH HAMZA BELOW
+        &#34;\u0626&#34;: (&#34;}&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;y&#34;),  # ARABIC LETTER YEH WITH HAMZA ABOVE
+        &#34;\u0627&#34;: (&#34;A&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),  # ARABIC LETTER ALEF
+        &#34;\u0628&#34;: (&#34;b&#34;, &#34;b&#34;, &#34;b&#34;, &#34;b&#34;),  # ARABIC LETTER BEH
+        &#34;\u0629&#34;: (&#34;p&#34;, &#34;=t&#34;, &#34;ŧ&#34;, &#34;t&#34;),  # ARABIC LETTER TEH MARBUTA
+        &#34;\u062a&#34;: (&#34;t&#34;, &#34;t&#34;, &#34;t&#34;, &#34;t&#34;),  # ARABIC LETTER TEH
+        &#34;\u062b&#34;: (&#34;v&#34;, &#34;_t&#34;, &#34;ṯ&#34;, &#34;th&#34;),  # ARABIC LETTER THEH
+        &#34;\u062c&#34;: (&#34;j&#34;, &#34;j&#34;, &#34;ǧ&#34;, &#34;j&#34;),  # ARABIC LETTER JEEM
+        &#34;\u062d&#34;: (&#34;H&#34;, &#34;*h&#34;, &#34;ḥ&#34;, &#34;ḥ&#34;),  # ARABIC LETTER HAH
+        &#34;\u062e&#34;: (&#34;x&#34;, &#34;_h&#34;, &#34;ḫ&#34;, &#34;kh&#34;),  # ARABIC LETTER KHAH
+        &#34;\u062f&#34;: (&#34;d&#34;, &#34;d&#34;, &#34;d&#34;, &#34;d&#34;),  # ARABIC LETTER DAL
+        &#34;\u0630&#34;: (&#34;*&#34;, &#34;_d&#34;, &#34;ḏ&#34;, &#34;dh&#34;),  # ARABIC LETTER THAL
+        &#34;\u0631&#34;: (&#34;r&#34;, &#34;r&#34;, &#34;r&#34;, &#34;r&#34;),  # ARABIC LETTER REH
+        &#34;\u0632&#34;: (&#34;z&#34;, &#34;z&#34;, &#34;z&#34;, &#34;z&#34;),  # ARABIC LETTER ZAIN
+        &#34;\u0633&#34;: (&#34;s&#34;, &#34;s&#34;, &#34;s&#34;, &#34;s&#34;),  # ARABIC LETTER SEEN
+        &#34;\u0634&#34;: (&#34;$&#34;, &#34;^s&#34;, &#34;š&#34;, &#34;sh&#34;),  # ARABIC LETTER SHEEN
+        &#34;\u0635&#34;: (&#34;S&#34;, &#34;*s&#34;, &#34;ṣ&#34;, &#34;ṣ&#34;),  # ARABIC LETTER SAD
+        &#34;\u0636&#34;: (&#34;D&#34;, &#34;*d&#34;, &#34;ḍ&#34;, &#34;ḍ&#34;),  # ARABIC LETTER DAD
+        &#34;\u0637&#34;: (&#34;T&#34;, &#34;*t&#34;, &#34;ṭ&#34;, &#34;ṭ&#34;),  # ARABIC LETTER TAH
+        &#34;\u0638&#34;: (&#34;Z&#34;, &#34;*z&#34;, &#34;ẓ&#34;, &#34;ẓ&#34;),  # ARABIC LETTER ZAH
+        &#34;\u0639&#34;: (&#34;E&#34;, &#34;`&#34;, &#34;ʿ&#34;, &#34;`&#34;),  # ARABIC LETTER AIN
+        &#34;\u063a&#34;: (&#34;g&#34;, &#34;*g&#34;, &#34;ġ&#34;, &#34;gh&#34;),  # ARABIC LETTER GHAIN
+        &#34;\u0640&#34;: (&#34;_&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC TATWEEL
+        &#34;\u0641&#34;: (&#34;f&#34;, &#34;f&#34;, &#34;f&#34;, &#34;f&#34;),  # ARABIC LETTER FEH
+        &#34;\u0642&#34;: (&#34;q&#34;, &#34;*k&#34;, &#34;ḳ&#34;, &#34;q&#34;),  # ARABIC LETTER QAF
+        &#34;\u0643&#34;: (&#34;k&#34;, &#34;k&#34;, &#34;k&#34;, &#34;k&#34;),  # ARABIC LETTER KAF
+        &#34;\u0644&#34;: (&#34;l&#34;, &#34;l&#34;, &#34;l&#34;, &#34;l&#34;),  # ARABIC LETTER LAM
+        &#34;\u0645&#34;: (&#34;m&#34;, &#34;m&#34;, &#34;m&#34;, &#34;m&#34;),  # ARABIC LETTER MEEM
+        &#34;\u0646&#34;: (&#34;n&#34;, &#34;n&#34;, &#34;n&#34;, &#34;n&#34;),  # ARABIC LETTER NOON
+        &#34;\u0647&#34;: (&#34;h&#34;, &#34;h&#34;, &#34;h&#34;, &#34;h&#34;),  # ARABIC LETTER HEH
+        &#34;\u0648&#34;: (&#34;w&#34;, &#34;w&#34;, &#34;w&#34;, &#34;w&#34;),  # ARABIC LETTER WAW
+        &#34;\u0649&#34;: (&#34;Y&#34;, &#34;/a&#34;, &#34;á&#34;, &#34;ā&#34;),  # ARABIC LETTER ALEF MAKSURA
+        &#34;\u064a&#34;: (&#34;y&#34;, &#34;y&#34;, &#34;y&#34;, &#34;y&#34;),  # ARABIC LETTER YEH
         &#34;\u064b&#34;: (&#34;F&#34;, &#34;a*n&#34;, &#34;aⁿ&#34;, &#34;an&#34;),  # ARABIC FATHATAN
         &#34;\u064c&#34;: (&#34;N&#34;, &#34;u*n&#34;, &#34;uⁿ&#34;, &#34;un&#34;),  # ARABIC DAMMATAN
         &#34;\u064d&#34;: (&#34;K&#34;, &#34;i*n&#34;, &#34;iⁿ&#34;, &#34;in&#34;),  # ARABIC KASRATAN
-        &#34;\u064e&#34;: (&#34;a&#34;, &#34;a&#34;, &#34;a&#34;, &#34;a&#34;),      # ARABIC FATHA
-        &#34;\u064f&#34;: (&#34;u&#34;, &#34;u&#34;, &#34;u&#34;, &#34;u&#34;),      # ARABIC DAMMA
-        &#34;\u0650&#34;: (&#34;i&#34;, &#34;i&#34;, &#34;i&#34;, &#34;i&#34;),      # ARABIC KASRA
-        &#34;\u0651&#34;: (&#34;~&#34;, &#34;u&#34;, &#34;u&#34;, &#34;ūw&#34;),     # ARABIC SHADDA
-        &#34;\u0652&#34;: (&#34;o&#34;, &#34;a&#34;, &#34;a&#34;, &#34;a&#34;),      # ARABIC SUKUN
-        &#34;\u0653&#34;: (&#34;^&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),     # ARABIC MADDAH ABOVE
-        &#34;\u0654&#34;: (&#34;#&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;ā&#34;),      # ARABIC HAMZA ABOVE
-        &#34;\u0655&#34;: (&#34;=&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;ā&#34;),      # ARABIC HAMZA BELOW
-        &#34;\u0660&#34;: (&#34;0&#34;, &#34;0&#34;, &#34;0&#34;, &#34;0&#34;),      # ARABIC INDIC DIGIT ZERO
-        &#34;\u0661&#34;: (&#34;1&#34;, &#34;1&#34;, &#34;1&#34;, &#34;1&#34;),      # ARABIC INDIC DIGIT ONE
-        &#34;\u0662&#34;: (&#34;2&#34;, &#34;2&#34;, &#34;2&#34;, &#34;2&#34;),      # ARABIC INDIC DIGIT TWO
-        &#34;\u0663&#34;: (&#34;3&#34;, &#34;3&#34;, &#34;3&#34;, &#34;3&#34;),      # ARABIC INDIC DIGIT THREE
-        &#34;\u0664&#34;: (&#34;4&#34;, &#34;4&#34;, &#34;4&#34;, &#34;4&#34;),      # ARABIC INDIC DIGIT FOUR
-        &#34;\u0665&#34;: (&#34;5&#34;, &#34;5&#34;, &#34;5&#34;, &#34;5&#34;),      # ARABIC INDIC DIGIT FIVE
-        &#34;\u0666&#34;: (&#34;6&#34;, &#34;6&#34;, &#34;6&#34;, &#34;6&#34;),      # ARABIC INDIC DIGIT SIX
-        &#34;\u0667&#34;: (&#34;7&#34;, &#34;7&#34;, &#34;7&#34;, &#34;7&#34;),      # ARABIC INDIC DIGIT SEVEN
-        &#34;\u0668&#34;: (&#34;8&#34;, &#34;8&#34;, &#34;8&#34;, &#34;8&#34;),      # ARABIC INDIC DIGIT EIGHT
-        &#34;\u0669&#34;: (&#34;9&#34;, &#34;9&#34;, &#34;9&#34;, &#34;9&#34;),      # ARABIC INDIC DIGIT NINE
-        &#34;\u0670&#34;: (&#34;`&#34;, &#34;~a&#34;, &#34;ã&#34;, &#34;&#34;),      # ARABIC LETTER SUPERSCRIPT ALEF
-        &#34;\u0671&#34;: (&#34;{&#34;, &#34;a&#34;, &#34;a&#34;, &#34;a&#34;),      # ARABIC LETTER ALEF WASLA
-        &#34;\u06af&#34;: (&#34;G&#34;, &#34;g&#34;, &#34;g&#34;, &#34;g&#34;),      # ARABIC LETTER GAF
-        &#34;\u06cc&#34;: (&#34;J&#34;, &#34;#y&#34;, &#34;Y&#34;, &#34;y&#34;),     # ARABIC LETTER FARSI YEH
-        &#34;\u06d6&#34;: (&#34;SlY&#34;, &#34;*sl/a&#34;, &#34;ṣlá&#34;, &#34;ṣla&#34;),  # ARABIC SMALL HIGH LIGATURE SAD WITH LAM WITH ALEF MAKSURA
-        &#34;\u06da&#34;: (&#34;M&#34;, &#34;#j&#34;, &#34;J&#34;, &#34;j&#34;),     # ARABIC SMALL HIGH JEEM
-        &#34;\u06dc&#34;: (&#34;:&#34;, &#34;#s&#34;, &#34;S&#34;, &#34;s&#34;),     # ARABIC SMALL HIGH SEEN
-        &#34;\u06df&#34;: (&#34;@&#34;, &#34;0&#34;, &#34;0&#34;, &#34;0&#34;),      # ARABIC SMALL HIGH ROUNDED ZERO
-        &#34;\u06e0&#34;: (&#39;&#34;&#39;, &#34;0&#34;, &#34;0&#34;, &#34;0&#34;),      # ARABIC SMALL HIGH UPRIGHT RECTANGULAR ZERO
-        &#34;\u06e2&#34;: (&#34;[&#34;, &#34;#m&#34;, &#34;M&#34;, &#34;M&#34;),     # ARABIC SMALL HIGH MEEM ISOLATED FORM
-        &#34;\u06e3&#34;: (&#34;;&#34;, &#34;#s&#34;, &#34;S&#34;, &#34;S&#34;),     # ARABIC SMALL LOW SEEN
-        &#34;\u06e5&#34;: (&#34;,&#34;, &#34;#w&#34;, &#34;W&#34;, &#34;W&#34;),     # ARABIC SMALL WAW
-        &#34;\u06e6&#34;: (&#34;.&#34;, &#34;#y&#34;, &#34;Y&#34;, &#34;Y&#34;),     # ARABIC SMALL YEH
-        &#34;\u06e8&#34;: (&#34;!&#34;, &#34;#n&#34;, &#34;N&#34;, &#34;N&#34;),     # ARABIC SMALL HIGH NOON
-        &#34;\u06ea&#34;: (&#34;-&#34;, &#34;.&#34;, &#34;.&#34;, &#34;.&#34;),      # ARABIC EMPTY CENTRE LOW STOP
-        &#34;\u06eb&#34;: (&#34;+&#34;, &#34;.&#34;, &#34;.&#34;, &#34;.&#34;),      # ARABIC EMPTY CENTRE HIGH STOP
-        &#34;\u06ec&#34;: (&#34;%&#34;, &#34;.&#34;, &#34;.&#34;, &#34;.&#34;),      # ARABIC ROUNDED HIGH STOP WITH FILLED CENTRE
-        &#34;\u06ed&#34;: (&#34;]&#34;, &#34;#m&#34;, &#34;M&#34;, &#34;M&#34;),     # ARABIC SMALL LOW MEEM
+        &#34;\u064e&#34;: (&#34;a&#34;, &#34;a&#34;, &#34;a&#34;, &#34;a&#34;),  # ARABIC FATHA
+        &#34;\u064f&#34;: (&#34;u&#34;, &#34;u&#34;, &#34;u&#34;, &#34;u&#34;),  # ARABIC DAMMA
+        &#34;\u0650&#34;: (&#34;i&#34;, &#34;i&#34;, &#34;i&#34;, &#34;i&#34;),  # ARABIC KASRA
+        &#34;\u0651&#34;: (&#34;~&#34;, &#34;u&#34;, &#34;u&#34;, &#34;ūw&#34;),  # ARABIC SHADDA
+        &#34;\u0652&#34;: (&#34;o&#34;, &#34;a&#34;, &#34;a&#34;, &#34;a&#34;),  # ARABIC SUKUN
+        &#34;\u0653&#34;: (&#34;^&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),  # ARABIC MADDAH ABOVE
+        &#34;\u0654&#34;: (&#34;#&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;ā&#34;),  # ARABIC HAMZA ABOVE
+        &#34;\u0655&#34;: (&#34;=&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;ā&#34;),  # ARABIC HAMZA BELOW
+        &#34;\u0660&#34;: (&#34;0&#34;, &#34;0&#34;, &#34;0&#34;, &#34;0&#34;),  # ARABIC INDIC DIGIT ZERO
+        &#34;\u0661&#34;: (&#34;1&#34;, &#34;1&#34;, &#34;1&#34;, &#34;1&#34;),  # ARABIC INDIC DIGIT ONE
+        &#34;\u0662&#34;: (&#34;2&#34;, &#34;2&#34;, &#34;2&#34;, &#34;2&#34;),  # ARABIC INDIC DIGIT TWO
+        &#34;\u0663&#34;: (&#34;3&#34;, &#34;3&#34;, &#34;3&#34;, &#34;3&#34;),  # ARABIC INDIC DIGIT THREE
+        &#34;\u0664&#34;: (&#34;4&#34;, &#34;4&#34;, &#34;4&#34;, &#34;4&#34;),  # ARABIC INDIC DIGIT FOUR
+        &#34;\u0665&#34;: (&#34;5&#34;, &#34;5&#34;, &#34;5&#34;, &#34;5&#34;),  # ARABIC INDIC DIGIT FIVE
+        &#34;\u0666&#34;: (&#34;6&#34;, &#34;6&#34;, &#34;6&#34;, &#34;6&#34;),  # ARABIC INDIC DIGIT SIX
+        &#34;\u0667&#34;: (&#34;7&#34;, &#34;7&#34;, &#34;7&#34;, &#34;7&#34;),  # ARABIC INDIC DIGIT SEVEN
+        &#34;\u0668&#34;: (&#34;8&#34;, &#34;8&#34;, &#34;8&#34;, &#34;8&#34;),  # ARABIC INDIC DIGIT EIGHT
+        &#34;\u0669&#34;: (&#34;9&#34;, &#34;9&#34;, &#34;9&#34;, &#34;9&#34;),  # ARABIC INDIC DIGIT NINE
+        &#34;\u0670&#34;: (&#34;`&#34;, &#34;~a&#34;, &#34;ã&#34;, &#34;&#34;),  # ARABIC LETTER SUPERSCRIPT ALEF
+        &#34;\u0671&#34;: (&#34;{&#34;, &#34;a&#34;, &#34;a&#34;, &#34;a&#34;),  # ARABIC LETTER ALEF WASLA
+        &#34;\u06af&#34;: (&#34;G&#34;, &#34;g&#34;, &#34;g&#34;, &#34;g&#34;),  # ARABIC LETTER GAF
+        &#34;\u06cc&#34;: (&#34;J&#34;, &#34;#y&#34;, &#34;Y&#34;, &#34;y&#34;),  # ARABIC LETTER FARSI YEH
+        &#34;\u06d6&#34;: (
+            &#34;SlY&#34;,
+            &#34;*sl/a&#34;,
+            &#34;ṣlá&#34;,
+            &#34;ṣla&#34;,
+        ),  # ARABIC SMALL HIGH LIGATURE SAD WITH LAM WITH ALEF MAKSURA
+        &#34;\u06da&#34;: (&#34;M&#34;, &#34;#j&#34;, &#34;J&#34;, &#34;j&#34;),  # ARABIC SMALL HIGH JEEM
+        &#34;\u06dc&#34;: (&#34;:&#34;, &#34;#s&#34;, &#34;S&#34;, &#34;s&#34;),  # ARABIC SMALL HIGH SEEN
+        &#34;\u06df&#34;: (&#34;@&#34;, &#34;0&#34;, &#34;0&#34;, &#34;0&#34;),  # ARABIC SMALL HIGH ROUNDED ZERO
+        &#34;\u06e0&#34;: (&#39;&#34;&#39;, &#34;0&#34;, &#34;0&#34;, &#34;0&#34;),  # ARABIC SMALL HIGH UPRIGHT RECTANGULAR ZERO
+        &#34;\u06e2&#34;: (&#34;[&#34;, &#34;#m&#34;, &#34;M&#34;, &#34;M&#34;),  # ARABIC SMALL HIGH MEEM ISOLATED FORM
+        &#34;\u06e3&#34;: (&#34;;&#34;, &#34;#s&#34;, &#34;S&#34;, &#34;S&#34;),  # ARABIC SMALL LOW SEEN
+        &#34;\u06e5&#34;: (&#34;,&#34;, &#34;#w&#34;, &#34;W&#34;, &#34;W&#34;),  # ARABIC SMALL WAW
+        &#34;\u06e6&#34;: (&#34;.&#34;, &#34;#y&#34;, &#34;Y&#34;, &#34;Y&#34;),  # ARABIC SMALL YEH
+        &#34;\u06e8&#34;: (&#34;!&#34;, &#34;#n&#34;, &#34;N&#34;, &#34;N&#34;),  # ARABIC SMALL HIGH NOON
+        &#34;\u06ea&#34;: (&#34;-&#34;, &#34;.&#34;, &#34;.&#34;, &#34;.&#34;),  # ARABIC EMPTY CENTRE LOW STOP
+        &#34;\u06eb&#34;: (&#34;+&#34;, &#34;.&#34;, &#34;.&#34;, &#34;.&#34;),  # ARABIC EMPTY CENTRE HIGH STOP
+        &#34;\u06ec&#34;: (&#34;%&#34;, &#34;.&#34;, &#34;.&#34;, &#34;.&#34;),  # ARABIC ROUNDED HIGH STOP WITH FILLED CENTRE
+        &#34;\u06ed&#34;: (&#34;]&#34;, &#34;#m&#34;, &#34;M&#34;, &#34;M&#34;),  # ARABIC SMALL LOW MEEM
     }
     &#34;&#34;&#34;
     More Arabic transcriptions:
 
-    * column 1: `custom` [Quran-tanzil](http://tanzil.net/#1:1), slightly extended
-    * column 2/: `ascii` resp. `latin` plus diacritics also known as betacode.
-      We use a list compiled by
-      [Peter Verkinderen](https://pverkind.github.io/betacodeTranscriber/js/betacode.js)
-    * column 4: `standard` (Library of Congress) (to-be filled).
-      We use the
-      [arabic romanization list of 2012](https://www.loc.gov/catdir/cpso/romanization/arabic.pdf)
-      We refrain of from applying rules that cannot be computed without
-      lexical/grammatical/dialectical knowledge of the arabic language.
+    *   column 1: `custom` [Quran-tanzil](http://tanzil.net/#1:1), slightly extended
+    *   column 2: `ascii` resp. `latin` plus diacritics also known as betacode.
+        We use a list compiled by
+        [Peter Verkinderen](https://pverkind.github.io/betacodeTranscriber/js/betacode.js)
+    *   column 4: `standard` (Library of Congress) (to-be filled).
+        We use the
+        [arabic romanization list of 2012](https://www.loc.gov/catdir/cpso/romanization/arabic.pdf)
+        We refrain of from applying rules that cannot be computed without
+        lexical/grammatical/dialectical knowledge of the arabic language.
     &#34;&#34;&#34;
 
     arabicTransQuran = {}
@@ -1621,7 +1690,7 @@ others are instance attributes.</p>
     arabicTransLatin = {}
     arabicTransStandard = {}
 
-    for (ara, (qur, asc, lat, std)) in arabicTrans.items():
+    for ara, (qur, asc, lat, std) in arabicTrans.items():
         arabicTransQuran[ara] = qur
         arabicTransAscii[ara] = asc
         arabicTransLatin[ara] = lat
@@ -1674,7 +1743,7 @@ others are instance attributes.</p>
 
         for u in sorted(Transcription.arabicTrans):
             (qur, asc, lat, std) = Transcription.arabicTrans[u]
-            for (k, v) in zip(arabicMap.keys(), Transcription.arabicTrans[u]):
+            for k, v in zip(arabicMap.keys(), Transcription.arabicTrans[u]):
                 arabicMap[k].setdefault(v, u)
                 arabicMapI[k][u] = v
 
@@ -1685,12 +1754,12 @@ others are instance attributes.</p>
         pass
 
     def _comp(s):
-        for (d, c) in Transcription.decomp.items():
+        for d, c in Transcription.decomp.items():
             s = s.replace(d, c)
         return s
 
     def _decomp(s):
-        for (d, c) in Transcription.decomp.items():
+        for d, c in Transcription.decomp.items():
             s = s.replace(c, d)
         return s
 
@@ -1704,11 +1773,15 @@ others are instance attributes.</p>
 
         Example:
 
-            Transcription.suffix_and_finales(&#39;71T_H@&gt;@95REY00&#39;)
+        ``` python
+        Transcription.suffix_and_finales(&#39;71T_H@&gt;@95REY00&#39;)
+        ```
 
         Output:
 
-            (&#39;71T_H@&gt;@95REy&#39;, &#39;00\n&#39;)
+        ```
+        (&#39;71T_H@&gt;@95REy&#39;, &#39;00\n&#39;)
+        ```
 
         Note that the `Y` has been replaced by `y`.
         &#34;&#34;&#34;
@@ -1774,26 +1847,30 @@ others are instance attributes.</p>
     def _ph_simple(m):
         return &#34;å&#34; if m.group(1) in &#34;āo&#34; else &#34;&#34;
 
-    # unicode normalization is harmful
+    # UNICODE normalization is harmful
     # if there is a combination of dagesh, vowel and accent.
 
     def suppress_space(word):
         &#34;&#34;&#34;
         Given an ETCBC transliteration of a word,
-        match the end of the word for interpunction and spacing characters
-        (sof pasuq, paseq, nun hafukha, setumah, petuhah, space, no-space)
+        match the end of the word for punctuation and spacing characters
+        (`sof pasuq`, `paseq`, `nun hafukha`, `setumah`, `petuhah`, space, no-space)
 
         Example:
 
-            Transcription.suppress_space(&#39;B.:&amp;&#39;)
-            Transcription.suppress_space(&#39;B.@R@74&gt;&#39;)
-            Transcription.suppress_space(&#39;71T_H@&gt;@95REY00&#39;)
+        ``` python
+        Transcription.suppress_space(&#39;B.:&amp;&#39;)
+        Transcription.suppress_space(&#39;B.@R@74&gt;&#39;)
+        Transcription.suppress_space(&#39;71T_H@&gt;@95REY00&#39;)
+        ```
 
         Output:
 
-            &lt;re.Match object; span=(3, 4), match=&#39;&amp;&#39;&gt;
-            None
-            &lt;re.Match object; span=(13, 15), match=&#39;00&#39;&gt;
+        ```
+        &lt;re.Match object; span=(3, 4), match=&#39;&amp;&#39;&gt;
+        None
+        &lt;re.Match object; span=(13, 15), match=&#39;00&#39;&gt;
+        ```
         &#34;&#34;&#34;
 
         return Transcription.noorigspace.search(word)
@@ -1805,11 +1882,15 @@ others are instance attributes.</p>
 
         Example:
 
-            Transcription.to_etcbc_v(&#39;HAC.@MA73JIm&#39;)
+        ``` python
+        Transcription.to_etcbc_v(&#39;HAC.@MA73JIm&#39;)
+        ```
 
         Output:
 
-            HAC.@MAJIm
+        ```
+        HAC.@MAJIm
+        ```
         &#34;&#34;&#34;
 
         return Transcription.remove_accent_pat.sub(Transcription._remove_accent, word)
@@ -1822,11 +1903,15 @@ others are instance attributes.</p>
 
         Example:
 
-            Transcription.to_etcbc_c(&#39;HAC.@MA73JIm&#39;)
+        ``` python
+        Transcription.to_etcbc_c(&#39;HAC.@MA73JIm&#39;)
+        ```
 
         Output:
 
-            H#MJM
+        ```
+        H#MJM
+        ```
 
         Note that the pointed shin (`C`) is replaced by an unpointed one (`#`).
         &#34;&#34;&#34;
@@ -1844,17 +1929,21 @@ others are instance attributes.</p>
     def to_hebrew(word):
         &#34;&#34;&#34;
         Given a transliteration of a fully pointed word,
-        produce the word in Unicode Hebrew.
+        produce the word in UNICODE Hebrew.
         Care will be taken that vowel pointing will be added to consonants
         before accent pointing.
 
         Example:
 
-            Transcription.to_hebrew(&#39;HAC.@MA73JIm&#39;)
+        ``` python
+        Transcription.to_hebrew(&#39;HAC.@MA73JIm&#39;)
+        ```
 
         Output:
 
-            הַשָּׁמַ֖יִם
+        ```
+        הַשָּׁמַ֖יִם
+        ```
         &#34;&#34;&#34;
 
         word = Transcription.swap_accent_pat.sub(Transcription._swap_accent, word)
@@ -1863,15 +1952,19 @@ others are instance attributes.</p>
     def to_hebrew_v(word):
         &#34;&#34;&#34;
         Given a transliteration of a fully pointed word,
-        produce the word in Unicode Hebrew, but without the accents.
+        produce the word in UNICODE Hebrew, but without the accents.
 
         Example:
 
-            Transcription.to_hebrew_v(&#39;HAC.@MA73JIm&#39;)
+        ``` python
+        Transcription.to_hebrew_v(&#39;HAC.@MA73JIm&#39;)
+        ```
 
         Output:
 
-            הַשָּׁמַיִם
+        ```
+        הַשָּׁמַיִם
+        ```
         &#34;&#34;&#34;
 
         return Transcription.trans_hebrew_pat.sub(
@@ -1881,15 +1974,19 @@ others are instance attributes.</p>
     def to_hebrew_c(word):
         &#34;&#34;&#34;
         Given a transliteration of a fully pointed word,
-        produce the word in Unicode Hebrew, but without the pointing.
+        produce the word in UNICODE Hebrew, but without the pointing.
 
         Example:
 
-            Transcription.to_hebrew_c(&#39;HAC.@MA73JIm&#39;)
+        ``` python
+        Transcription.to_hebrew_c(&#39;HAC.@MA73JIm&#39;)
+        ```
 
         Output:
 
-            השמימ
+        ```
+        השמימ
+        ```
 
         Note that final consonant forms are not being used.
         &#34;&#34;&#34;
@@ -1901,17 +1998,21 @@ others are instance attributes.</p>
     def to_hebrew_x(word):
         &#34;&#34;&#34;
         Given a transliteration of a fully pointed word,
-        produce the word in Unicode Hebrew, but without the pointing.
+        produce the word in UNICODE Hebrew, but without the pointing.
         Vowel pointing and accent pointing will be applied in the order given
         by the input word.
 
         Example:
 
-            Transcription.to_hebrew_x(&#39;HAC.@MA73JIm&#39;)
+        ``` python
+        Transcription.to_hebrew_x(&#39;HAC.@MA73JIm&#39;)
+        ```
 
         Output:
 
-            הַשָּׁמַ֖יִם
+        ```
+        הַשָּׁמַ֖יִם
+        ```
         &#34;&#34;&#34;
 
         return Transcription.trans_hebrew_pat.sub(Transcription._map_hebrew, word)
@@ -1923,35 +2024,42 @@ others are instance attributes.</p>
 
         Example:
 
-            Transcription.ph_simplify(&#39;ʔᵉlōhˈîm&#39;)
-            Transcription.ph_simplify(&#39;māqˈôm&#39;)
-            Transcription.ph_simplify(&#39;kol&#39;)
+        ``` python
+        Transcription.ph_simplify(&#39;ʔᵉlōhˈîm&#39;)
+        Transcription.ph_simplify(&#39;māqˈôm&#39;)
+        Transcription.ph_simplify(&#39;kol&#39;)
+        ```
 
         Output:
 
-            ʔlōhîm
-            måqôm
-            kål
+        ```
+        ʔlōhîm
+        måqôm
+        kål
+        ```
 
-        Note that the simplified version transliterates the qamets gadol and qatan
-        to the same
-        character.
+        Note that the simplified version transliterates the `qamets gadol` and `qatan`
+        to the same character.
         &#34;&#34;&#34;
 
         return Transcription.ph_simple_pat.sub(Transcription._ph_simple, pword)
 
     def from_hebrew(self, word):
         &#34;&#34;&#34;
-        Given a fully pointed word in Unicode Hebrew,
+        Given a fully pointed word in UNICODE Hebrew,
         produce the word in ETCBC transliteration.
 
         Example:
 
-            tr.from_hebrew(&#39;הָאָֽרֶץ׃&#39;)
+        ``` python
+        tr.from_hebrew(&#39;הָאָֽרֶץ׃&#39;)
+        ```
 
         Output:
 
-            H@&gt;@95REy00
+        ```
+        H@&gt;@95REy00
+        ```
         &#34;&#34;&#34;
 
         return &#34;&#34;.join(
@@ -1961,31 +2069,39 @@ others are instance attributes.</p>
     def to_syriac(self, word):
         &#34;&#34;&#34;
         Given a word in ETCBC transliteration,
-        produce the word in Unicode Syriac.
+        produce the word in UNICODE Syriac.
 
         Example:
 
-            tr.to_syriac(&#39;MKSJN&#39;)
+        ``` python
+        tr.to_syriac(&#39;MKSJN&#39;)
+        ```
 
         Output:
 
-            ܡܟܣܝܢ
+        ```
+        ܡܟܣܝܢ
+        ```
         &#34;&#34;&#34;
 
         return Transcription.trans_syriac_pat.sub(Transcription._map_syriac, word)
 
     def from_syriac(self, word):
         &#34;&#34;&#34;
-        Given a word in Unicode Syriac,
+        Given a word in UNICODE Syriac,
         produce the word in ETCBC transliteration.
 
         Example:
 
-            tr.from_syriac(&#39;ܡܟܣܝܢ&#39;)
+        ``` python
+        tr.from_syriac(&#39;ܡܟܣܝܢ&#39;)
+        ```
 
         Output:
 
-            MKSJN
+        ```
+        MKSJN
+        ```
         &#34;&#34;&#34;
 
         return &#34;&#34;.join(self.syriac_mappingi.get(x, x) for x in word)
@@ -2003,31 +2119,39 @@ others are instance attributes.</p>
     def to_arabic(word):
         &#34;&#34;&#34;
         Given a word in transliteration,
-        produce the word in Unicode Arabic.
+        produce the word in UNICODE Arabic.
 
         Example:
 
-            tr.to_arabic(&#39;bisomi&#39;)
+        ``` python
+        tr.to_arabic(&#39;bisomi&#39;)
+        ```
 
         Output:
 
-            بِسْمِ
+        ```
+        بِسْمِ
+        ```
         &#34;&#34;&#34;
 
         return &#34;&#34;.join(Transcription.arabic_mapping.get(x, x) for x in word)
 
     def from_arabic(word):
         &#34;&#34;&#34;
-        Given a word in Unicode Arabic,
+        Given a word in UNICODE Arabic,
         produce the word in transliteration.
 
         Example:
 
-            tr.from_arabic(&#39;بِسْمِ&#39;)
+        ``` python
+        tr.from_arabic(&#39;بِسْمِ&#39;)
+        ```
 
         Output:
 
-            bisomi
+        ```
+        bisomi
+        ```
         &#34;&#34;&#34;
 
         return &#34;&#34;.join(Transcription.arabic_mappingi.get(x, x) for x in word)</code></pre>
@@ -2043,7 +2167,7 @@ others are instance attributes.</p>
 <div class="desc"><p>More Arabic transcriptions:</p>
 <ul>
 <li>column 1: <code>custom</code> <a href="http://tanzil.net/#1:1">Quran-tanzil</a>, slightly extended</li>
-<li>column 2/: <code>ascii</code> resp. <code>latin</code> plus diacritics also known as betacode.
+<li>column 2: <code>ascii</code> resp. <code>latin</code> plus diacritics also known as betacode.
 We use a list compiled by
 <a href="https://pverkind.github.io/betacodeTranscriber/js/betacode.js">Peter Verkinderen</a></li>
 <li>column 4: <code>standard</code> (Library of Congress) (to-be filled).
@@ -2071,18 +2195,19 @@ lexical/grammatical/dialectical knowledge of the arabic language.</li>
 </dd>
 <dt id="tf.writing.transcription.Transcription.arabic_mapping"><code class="name">var <span class="ident">arabic_mapping</span></code></dt>
 <dd>
-<div class="desc"><p>Maps an Arabic transliteration character to Unicode.
+<div class="desc"><p>Maps an Arabic transliteration character to UNICODE.
 This is the mapping used in the Quran representation on tanzil.net.</p>
 <p>Example: beh</p>
 <pre><code>Transcription.syriac_mapping['b']
 </code></pre>
-<h2 id="output">Output</h2>
-<p>ب</p>
-<p>Maps an Arabic letter in unicode to its transliteration</p>
+<p>Output:</p>
+<pre><code>    ب
+</code></pre>
+<p>Maps an Arabic letter in UNICODE to its transliteration</p>
 <p>Example: beh transliteration</p>
 <pre><code>Transcription.syriac_mapping['ب']
 </code></pre>
-<h2 id="output_1">Output</h2>
+<h2 id="output">Output</h2>
 <p>b</p></div>
 </dd>
 <dt id="tf.writing.transcription.Transcription.arabic_mappingi"><code class="name">var <span class="ident">arabic_mappingi</span></code></dt>
@@ -2103,7 +2228,7 @@ This is the mapping used in the Quran representation on tanzil.net.</p>
 </dd>
 <dt id="tf.writing.transcription.Transcription.hebrew_mapping"><code class="name">var <span class="ident">hebrew_mapping</span></code></dt>
 <dd>
-<div class="desc"><p>Maps all ETCBC transliteration character combinations for Hebrew to Unicode.</p>
+<div class="desc"><p>Maps all ETCBC transliteration character combinations for Hebrew to UNICODE.</p>
 <p>Example: sof-pasuq:</p>
 <pre><code>Transcription.hebrew_mapping['00']
 </code></pre>
@@ -2156,7 +2281,7 @@ This is the mapping used in the Quran representation on tanzil.net.</p>
 </dd>
 <dt id="tf.writing.transcription.Transcription.syriac_mapping"><code class="name">var <span class="ident">syriac_mapping</span></code></dt>
 <dd>
-<div class="desc"><p>Maps all ETCBC transliteration character combinations for Syriac to Unicode.</p>
+<div class="desc"><p>Maps all ETCBC transliteration character combinations for Syriac to UNICODE.</p>
 <p>Example: semkath-final:</p>
 <pre><code>Transcription.syriac_mapping['s']
 </code></pre>
@@ -2194,7 +2319,7 @@ This is the mapping used in the Quran representation on tanzil.net.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/writing/transcription.py#L597-L598" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/writing/transcription.py#L604-L605" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def asciiFromArabic(word):
     return &#34;&#34;.join(Transcription.arabicTransAscii.get(x, x) for x in word)</code></pre>
@@ -2208,7 +2333,7 @@ This is the mapping used in the Quran representation on tanzil.net.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/writing/transcription.py#L964-L965" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/writing/transcription.py#L1018-L1019" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def can_from_syriac(self, word):
     return all(c in self.syriac_mappingi for c in word if c != &#34; &#34;)</code></pre>
@@ -2222,7 +2347,7 @@ This is the mapping used in the Quran representation on tanzil.net.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/writing/transcription.py#L957-L962" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/writing/transcription.py#L1011-L1016" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def can_to_syriac(self, word):
     return all(
@@ -2236,29 +2361,35 @@ This is the mapping used in the Quran representation on tanzil.net.</p>
 <span>def <span class="ident">from_arabic</span></span>(<span>word)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Given a word in Unicode Arabic,
+<div class="desc"><p>Given a word in UNICODE Arabic,
 produce the word in transliteration.</p>
-<h2 id="example">Example</h2>
-<p>tr.from_arabic('بِسْمِ')</p>
-<h2 id="output">Output</h2>
-<p>bisomi</p></div>
+<p>Example:</p>
+<pre><code class="language-python">tr.from_arabic('بِسْمِ')
+</code></pre>
+<p>Output:</p>
+<pre><code>bisomi
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/writing/transcription.py#L983-L997" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/writing/transcription.py#L1041-L1059" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def from_arabic(word):
     &#34;&#34;&#34;
-    Given a word in Unicode Arabic,
+    Given a word in UNICODE Arabic,
     produce the word in transliteration.
 
     Example:
 
-        tr.from_arabic(&#39;بِسْمِ&#39;)
+    ``` python
+    tr.from_arabic(&#39;بِسْمِ&#39;)
+    ```
 
     Output:
 
-        bisomi
+    ```
+    bisomi
+    ```
     &#34;&#34;&#34;
 
     return &#34;&#34;.join(Transcription.arabic_mappingi.get(x, x) for x in word)</code></pre>
@@ -2268,29 +2399,35 @@ produce the word in transliteration.</p>
 <span>def <span class="ident">from_hebrew</span></span>(<span>self, word)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Given a fully pointed word in Unicode Hebrew,
+<div class="desc"><p>Given a fully pointed word in UNICODE Hebrew,
 produce the word in ETCBC transliteration.</p>
-<h2 id="example">Example</h2>
-<p>tr.from_hebrew('הָאָֽרֶץ׃')</p>
-<h2 id="output">Output</h2>
-<p>H@&gt;@95REy00</p></div>
+<p>Example:</p>
+<pre><code class="language-python">tr.from_hebrew('הָאָֽרֶץ׃')
+</code></pre>
+<p>Output:</p>
+<pre><code>H@&gt;@95REy00
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/writing/transcription.py#L907-L923" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/writing/transcription.py#L949-L969" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def from_hebrew(self, word):
     &#34;&#34;&#34;
-    Given a fully pointed word in Unicode Hebrew,
+    Given a fully pointed word in UNICODE Hebrew,
     produce the word in ETCBC transliteration.
 
     Example:
 
-        tr.from_hebrew(&#39;הָאָֽרֶץ׃&#39;)
+    ``` python
+    tr.from_hebrew(&#39;הָאָֽרֶץ׃&#39;)
+    ```
 
     Output:
 
-        H@&gt;@95REy00
+    ```
+    H@&gt;@95REy00
+    ```
     &#34;&#34;&#34;
 
     return &#34;&#34;.join(
@@ -2302,29 +2439,35 @@ produce the word in ETCBC transliteration.</p>
 <span>def <span class="ident">from_syriac</span></span>(<span>self, word)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Given a word in Unicode Syriac,
+<div class="desc"><p>Given a word in UNICODE Syriac,
 produce the word in ETCBC transliteration.</p>
-<h2 id="example">Example</h2>
-<p>tr.from_syriac('ܡܟܣܝܢ')</p>
-<h2 id="output">Output</h2>
-<p>MKSJN</p></div>
+<p>Example:</p>
+<pre><code class="language-python">tr.from_syriac('ܡܟܣܝܢ')
+</code></pre>
+<p>Output:</p>
+<pre><code>MKSJN
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/writing/transcription.py#L941-L955" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/writing/transcription.py#L991-L1009" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def from_syriac(self, word):
     &#34;&#34;&#34;
-    Given a word in Unicode Syriac,
+    Given a word in UNICODE Syriac,
     produce the word in ETCBC transliteration.
 
     Example:
 
-        tr.from_syriac(&#39;ܡܟܣܝܢ&#39;)
+    ``` python
+    tr.from_syriac(&#39;ܡܟܣܝܢ&#39;)
+    ```
 
     Output:
 
-        MKSJN
+    ```
+    MKSJN
+    ```
     &#34;&#34;&#34;
 
     return &#34;&#34;.join(self.syriac_mappingi.get(x, x) for x in word)</code></pre>
@@ -2338,7 +2481,7 @@ produce the word in ETCBC transliteration.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/writing/transcription.py#L600-L601" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/writing/transcription.py#L607-L608" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def latinFromArabic(word):
     return &#34;&#34;.join(Transcription.arabicTransLatin.get(x, x) for x in word)</code></pre>
@@ -2350,21 +2493,22 @@ produce the word in ETCBC transliteration.</p>
 <dd>
 <div class="desc"><p>Given a phonological transliteration of a fully pointed word,
 produce a more coarse phonological transliteration.</p>
-<h2 id="example">Example</h2>
-<p>Transcription.ph_simplify('ʔᵉlōhˈîm')
+<p>Example:</p>
+<pre><code class="language-python">Transcription.ph_simplify('ʔᵉlōhˈîm')
 Transcription.ph_simplify('māqˈôm')
-Transcription.ph_simplify('kol')</p>
-<h2 id="output">Output</h2>
-<p>ʔlōhîm
+Transcription.ph_simplify('kol')
+</code></pre>
+<p>Output:</p>
+<pre><code>ʔlōhîm
 måqôm
-kål</p>
-<p>Note that the simplified version transliterates the qamets gadol and qatan
-to the same
-character.</p></div>
+kål
+</code></pre>
+<p>Note that the simplified version transliterates the <code>qamets gadol</code> and <code>qatan</code>
+to the same character.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/writing/transcription.py#L883-L905" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/writing/transcription.py#L922-L947" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ph_simplify(pword):
     &#34;&#34;&#34;
@@ -2373,19 +2517,22 @@ character.</p></div>
 
     Example:
 
-        Transcription.ph_simplify(&#39;ʔᵉlōhˈîm&#39;)
-        Transcription.ph_simplify(&#39;māqˈôm&#39;)
-        Transcription.ph_simplify(&#39;kol&#39;)
+    ``` python
+    Transcription.ph_simplify(&#39;ʔᵉlōhˈîm&#39;)
+    Transcription.ph_simplify(&#39;māqˈôm&#39;)
+    Transcription.ph_simplify(&#39;kol&#39;)
+    ```
 
     Output:
 
-        ʔlōhîm
-        måqôm
-        kål
+    ```
+    ʔlōhîm
+    måqôm
+    kål
+    ```
 
-    Note that the simplified version transliterates the qamets gadol and qatan
-    to the same
-    character.
+    Note that the simplified version transliterates the `qamets gadol` and `qatan`
+    to the same character.
     &#34;&#34;&#34;
 
     return Transcription.ph_simple_pat.sub(Transcription._ph_simple, pword)</code></pre>
@@ -2399,7 +2546,7 @@ character.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/writing/transcription.py#L594-L595" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/writing/transcription.py#L601-L602" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def quranFromArabic(word):
     return &#34;&#34;.join(Transcription.arabicTransQuran.get(x, x) for x in word)</code></pre>
@@ -2413,7 +2560,7 @@ character.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/writing/transcription.py#L603-L604" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/writing/transcription.py#L610-L611" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def standardFromArabic(word):
     return &#34;&#34;.join(Transcription.arabicTransStandard.get(x, x) for x in word)</code></pre>
@@ -2430,19 +2577,23 @@ Replace the last consonant of the word material by its final form, if applicable
 
     Example:
 
-        Transcription.suffix_and_finales('71T_H@&gt;@95REY00')
+    ``` python
+    Transcription.suffix_and_finales('71T_H@&gt;@95REY00')
+    ```
 
     Output:
 
-        ('71T_H@&gt;@95REy', '00
+    ```
+    ('71T_H@&gt;@95REy', '00
 </code></pre>
-<p>')</p>
+<p>')
+```</p>
 <pre><code>    Note that the &lt;code&gt;Y&lt;/code&gt; has been replaced by &lt;code&gt;y&lt;/code&gt;.
 </code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/writing/transcription.py#L661-L718" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/writing/transcription.py#L668-L729" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def suffix_and_finales(word):
     &#34;&#34;&#34;
@@ -2454,11 +2605,15 @@ Replace the last consonant of the word material by its final form, if applicable
 
     Example:
 
-        Transcription.suffix_and_finales(&#39;71T_H@&gt;@95REY00&#39;)
+    ``` python
+    Transcription.suffix_and_finales(&#39;71T_H@&gt;@95REY00&#39;)
+    ```
 
     Output:
 
-        (&#39;71T_H@&gt;@95REy&#39;, &#39;00\n&#39;)
+    ```
+    (&#39;71T_H@&gt;@95REy&#39;, &#39;00\n&#39;)
+    ```
 
     Note that the `Y` has been replaced by `y`.
     &#34;&#34;&#34;
@@ -2509,38 +2664,44 @@ Replace the last consonant of the word material by its final form, if applicable
 </code></dt>
 <dd>
 <div class="desc"><p>Given an ETCBC transliteration of a word,
-match the end of the word for interpunction and spacing characters
-(sof pasuq, paseq, nun hafukha, setumah, petuhah, space, no-space)</p>
-<h2 id="example">Example</h2>
-<p>Transcription.suppress_space('B.:&amp;')
+match the end of the word for punctuation and spacing characters
+(<code>sof pasuq</code>, <code>paseq</code>, <code>nun hafukha</code>, <code>setumah</code>, <code>petuhah</code>, space, no-space)</p>
+<p>Example:</p>
+<pre><code class="language-python">Transcription.suppress_space('B.:&amp;')
 Transcription.suppress_space('B.@R@74&gt;')
-Transcription.suppress_space('71T_H@&gt;@95REY00')</p>
-<h2 id="output">Output</h2>
-<p><re.Match object; span=(3, 4), match='&'>
+Transcription.suppress_space('71T_H@&gt;@95REY00')
+</code></pre>
+<p>Output:</p>
+<pre><code>&lt;re.Match object; span=(3, 4), match='&amp;'&gt;
 None
-<re.Match object; span=(13, 15), match='00'></p></div>
+&lt;re.Match object; span=(13, 15), match='00'&gt;
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/writing/transcription.py#L744-L763" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/writing/transcription.py#L755-L778" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def suppress_space(word):
     &#34;&#34;&#34;
     Given an ETCBC transliteration of a word,
-    match the end of the word for interpunction and spacing characters
-    (sof pasuq, paseq, nun hafukha, setumah, petuhah, space, no-space)
+    match the end of the word for punctuation and spacing characters
+    (`sof pasuq`, `paseq`, `nun hafukha`, `setumah`, `petuhah`, space, no-space)
 
     Example:
 
-        Transcription.suppress_space(&#39;B.:&amp;&#39;)
-        Transcription.suppress_space(&#39;B.@R@74&gt;&#39;)
-        Transcription.suppress_space(&#39;71T_H@&gt;@95REY00&#39;)
+    ``` python
+    Transcription.suppress_space(&#39;B.:&amp;&#39;)
+    Transcription.suppress_space(&#39;B.@R@74&gt;&#39;)
+    Transcription.suppress_space(&#39;71T_H@&gt;@95REY00&#39;)
+    ```
 
     Output:
 
-        &lt;re.Match object; span=(3, 4), match=&#39;&amp;&#39;&gt;
-        None
-        &lt;re.Match object; span=(13, 15), match=&#39;00&#39;&gt;
+    ```
+    &lt;re.Match object; span=(3, 4), match=&#39;&amp;&#39;&gt;
+    None
+    &lt;re.Match object; span=(13, 15), match=&#39;00&#39;&gt;
+    ```
     &#34;&#34;&#34;
 
     return Transcription.noorigspace.search(word)</code></pre>
@@ -2554,7 +2715,7 @@ None
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/writing/transcription.py#L648-L649" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/writing/transcription.py#L655-L656" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sycSplitPunc(self):
     pass</code></pre>
@@ -2565,28 +2726,34 @@ None
 </code></dt>
 <dd>
 <div class="desc"><p>Given a word in transliteration,
-produce the word in Unicode Arabic.</p>
-<h2 id="example">Example</h2>
-<p>tr.to_arabic('bisomi')</p>
-<h2 id="output">Output</h2>
-<p>بِسْمِ</p></div>
+produce the word in UNICODE Arabic.</p>
+<p>Example:</p>
+<pre><code class="language-python">tr.to_arabic('bisomi')
+</code></pre>
+<p>Output:</p>
+<pre><code>بِسْمِ
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/writing/transcription.py#L967-L981" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/writing/transcription.py#L1021-L1039" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_arabic(word):
     &#34;&#34;&#34;
     Given a word in transliteration,
-    produce the word in Unicode Arabic.
+    produce the word in UNICODE Arabic.
 
     Example:
 
-        tr.to_arabic(&#39;bisomi&#39;)
+    ``` python
+    tr.to_arabic(&#39;bisomi&#39;)
+    ```
 
     Output:
 
-        بِسْمِ
+    ```
+    بِسْمِ
+    ```
     &#34;&#34;&#34;
 
     return &#34;&#34;.join(Transcription.arabic_mapping.get(x, x) for x in word)</code></pre>
@@ -2599,15 +2766,17 @@ produce the word in Unicode Arabic.</p>
 <div class="desc"><p>Given an ETCBC transliteration of a fully pointed word,
 strip everything except the consonants.
 Punctuation will also be stripped.</p>
-<h2 id="example">Example</h2>
-<p>Transcription.to_etcbc_c('HAC.@MA73JIm')</p>
-<h2 id="output">Output</h2>
-<p>H#MJM</p>
+<p>Example:</p>
+<pre><code class="language-python">Transcription.to_etcbc_c('HAC.@MA73JIm')
+</code></pre>
+<p>Output:</p>
+<pre><code>H#MJM
+</code></pre>
 <p>Note that the pointed shin (<code>C</code>) is replaced by an unpointed one (<code>#</code>).</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/writing/transcription.py#L781-L806" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/writing/transcription.py#L800-L829" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_etcbc_c(word):
     &#34;&#34;&#34;
@@ -2617,11 +2786,15 @@ Punctuation will also be stripped.</p>
 
     Example:
 
-        Transcription.to_etcbc_c(&#39;HAC.@MA73JIm&#39;)
+    ``` python
+    Transcription.to_etcbc_c(&#39;HAC.@MA73JIm&#39;)
+    ```
 
     Output:
 
-        H#MJM
+    ```
+    H#MJM
+    ```
 
     Note that the pointed shin (`C`) is replaced by an unpointed one (`#`).
     &#34;&#34;&#34;
@@ -2643,14 +2816,16 @@ Punctuation will also be stripped.</p>
 <dd>
 <div class="desc"><p>Given an ETCBC transliteration of a fully pointed word,
 strip all the non-vowel pointing (i.e. the accents).</p>
-<h2 id="example">Example</h2>
-<p>Transcription.to_etcbc_v('HAC.@MA73JIm')</p>
-<h2 id="output">Output</h2>
-<p>HAC.@MAJIm</p></div>
+<p>Example:</p>
+<pre><code class="language-python">Transcription.to_etcbc_v('HAC.@MA73JIm')
+</code></pre>
+<p>Output:</p>
+<pre><code>HAC.@MAJIm
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/writing/transcription.py#L765-L779" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/writing/transcription.py#L780-L798" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_etcbc_v(word):
     &#34;&#34;&#34;
@@ -2659,11 +2834,15 @@ strip all the non-vowel pointing (i.e. the accents).</p>
 
     Example:
 
-        Transcription.to_etcbc_v(&#39;HAC.@MA73JIm&#39;)
+    ``` python
+    Transcription.to_etcbc_v(&#39;HAC.@MA73JIm&#39;)
+    ```
 
     Output:
 
-        HAC.@MAJIm
+    ```
+    HAC.@MAJIm
+    ```
     &#34;&#34;&#34;
 
     return Transcription.remove_accent_pat.sub(Transcription._remove_accent, word)</code></pre>
@@ -2674,32 +2853,38 @@ strip all the non-vowel pointing (i.e. the accents).</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Given a transliteration of a fully pointed word,
-produce the word in Unicode Hebrew.
+produce the word in UNICODE Hebrew.
 Care will be taken that vowel pointing will be added to consonants
 before accent pointing.</p>
-<h2 id="example">Example</h2>
-<p>Transcription.to_hebrew('HAC.@MA73JIm')</p>
-<h2 id="output">Output</h2>
-<p>הַשָּׁמַ֖יִם</p></div>
+<p>Example:</p>
+<pre><code class="language-python">Transcription.to_hebrew('HAC.@MA73JIm')
+</code></pre>
+<p>Output:</p>
+<pre><code>הַשָּׁמַ֖יִם
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/writing/transcription.py#L808-L825" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/writing/transcription.py#L831-L852" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_hebrew(word):
     &#34;&#34;&#34;
     Given a transliteration of a fully pointed word,
-    produce the word in Unicode Hebrew.
+    produce the word in UNICODE Hebrew.
     Care will be taken that vowel pointing will be added to consonants
     before accent pointing.
 
     Example:
 
-        Transcription.to_hebrew(&#39;HAC.@MA73JIm&#39;)
+    ``` python
+    Transcription.to_hebrew(&#39;HAC.@MA73JIm&#39;)
+    ```
 
     Output:
 
-        הַשָּׁמַ֖יִם
+    ```
+    הַשָּׁמַ֖יִם
+    ```
     &#34;&#34;&#34;
 
     word = Transcription.swap_accent_pat.sub(Transcription._swap_accent, word)
@@ -2711,29 +2896,35 @@ before accent pointing.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Given a transliteration of a fully pointed word,
-produce the word in Unicode Hebrew, but without the pointing.</p>
-<h2 id="example">Example</h2>
-<p>Transcription.to_hebrew_c('HAC.@MA73JIm')</p>
-<h2 id="output">Output</h2>
-<p>השמימ</p>
+produce the word in UNICODE Hebrew, but without the pointing.</p>
+<p>Example:</p>
+<pre><code class="language-python">Transcription.to_hebrew_c('HAC.@MA73JIm')
+</code></pre>
+<p>Output:</p>
+<pre><code>השמימ
+</code></pre>
 <p>Note that final consonant forms are not being used.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/writing/transcription.py#L845-L863" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/writing/transcription.py#L876-L898" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_hebrew_c(word):
     &#34;&#34;&#34;
     Given a transliteration of a fully pointed word,
-    produce the word in Unicode Hebrew, but without the pointing.
+    produce the word in UNICODE Hebrew, but without the pointing.
 
     Example:
 
-        Transcription.to_hebrew_c(&#39;HAC.@MA73JIm&#39;)
+    ``` python
+    Transcription.to_hebrew_c(&#39;HAC.@MA73JIm&#39;)
+    ```
 
     Output:
 
-        השמימ
+    ```
+    השמימ
+    ```
 
     Note that final consonant forms are not being used.
     &#34;&#34;&#34;
@@ -2748,28 +2939,34 @@ produce the word in Unicode Hebrew, but without the pointing.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Given a transliteration of a fully pointed word,
-produce the word in Unicode Hebrew, but without the accents.</p>
-<h2 id="example">Example</h2>
-<p>Transcription.to_hebrew_v('HAC.@MA73JIm')</p>
-<h2 id="output">Output</h2>
-<p>הַשָּׁמַיִם</p></div>
+produce the word in UNICODE Hebrew, but without the accents.</p>
+<p>Example:</p>
+<pre><code class="language-python">Transcription.to_hebrew_v('HAC.@MA73JIm')
+</code></pre>
+<p>Output:</p>
+<pre><code>הַשָּׁמַיִם
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/writing/transcription.py#L827-L843" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/writing/transcription.py#L854-L874" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_hebrew_v(word):
     &#34;&#34;&#34;
     Given a transliteration of a fully pointed word,
-    produce the word in Unicode Hebrew, but without the accents.
+    produce the word in UNICODE Hebrew, but without the accents.
 
     Example:
 
-        Transcription.to_hebrew_v(&#39;HAC.@MA73JIm&#39;)
+    ``` python
+    Transcription.to_hebrew_v(&#39;HAC.@MA73JIm&#39;)
+    ```
 
     Output:
 
-        הַשָּׁמַיִם
+    ```
+    הַשָּׁמַיִם
+    ```
     &#34;&#34;&#34;
 
     return Transcription.trans_hebrew_pat.sub(
@@ -2782,32 +2979,38 @@ produce the word in Unicode Hebrew, but without the accents.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Given a transliteration of a fully pointed word,
-produce the word in Unicode Hebrew, but without the pointing.
+produce the word in UNICODE Hebrew, but without the pointing.
 Vowel pointing and accent pointing will be applied in the order given
 by the input word.</p>
-<h2 id="example">Example</h2>
-<p>Transcription.to_hebrew_x('HAC.@MA73JIm')</p>
-<h2 id="output">Output</h2>
-<p>הַשָּׁמַ֖יִם</p></div>
+<p>Example:</p>
+<pre><code class="language-python">Transcription.to_hebrew_x('HAC.@MA73JIm')
+</code></pre>
+<p>Output:</p>
+<pre><code>הַשָּׁמַ֖יִם
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/writing/transcription.py#L865-L881" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/writing/transcription.py#L900-L920" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_hebrew_x(word):
     &#34;&#34;&#34;
     Given a transliteration of a fully pointed word,
-    produce the word in Unicode Hebrew, but without the pointing.
+    produce the word in UNICODE Hebrew, but without the pointing.
     Vowel pointing and accent pointing will be applied in the order given
     by the input word.
 
     Example:
 
-        Transcription.to_hebrew_x(&#39;HAC.@MA73JIm&#39;)
+    ``` python
+    Transcription.to_hebrew_x(&#39;HAC.@MA73JIm&#39;)
+    ```
 
     Output:
 
-        הַשָּׁמַ֖יִם
+    ```
+    הַשָּׁמַ֖יִם
+    ```
     &#34;&#34;&#34;
 
     return Transcription.trans_hebrew_pat.sub(Transcription._map_hebrew, word)</code></pre>
@@ -2818,28 +3021,34 @@ by the input word.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Given a word in ETCBC transliteration,
-produce the word in Unicode Syriac.</p>
-<h2 id="example">Example</h2>
-<p>tr.to_syriac('MKSJN')</p>
-<h2 id="output">Output</h2>
-<p>ܡܟܣܝܢ</p></div>
+produce the word in UNICODE Syriac.</p>
+<p>Example:</p>
+<pre><code class="language-python">tr.to_syriac('MKSJN')
+</code></pre>
+<p>Output:</p>
+<pre><code>ܡܟܣܝܢ
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/writing/transcription.py#L925-L939" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/writing/transcription.py#L971-L989" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_syriac(self, word):
     &#34;&#34;&#34;
     Given a word in ETCBC transliteration,
-    produce the word in Unicode Syriac.
+    produce the word in UNICODE Syriac.
 
     Example:
 
-        tr.to_syriac(&#39;MKSJN&#39;)
+    ``` python
+    tr.to_syriac(&#39;MKSJN&#39;)
+    ```
 
     Output:
 
-        ܡܟܣܝܢ
+    ```
+    ܡܟܣܝܢ
+    ```
     &#34;&#34;&#34;
 
     return Transcription.trans_syriac_pat.sub(Transcription._map_syriac, word)</code></pre>

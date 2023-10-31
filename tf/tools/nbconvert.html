@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/nbconvert.py#L1-L255" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/nbconvert.py#L1-L255" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 import re
@@ -51,21 +51,21 @@ Copy mode
 ---------
 If outputDir is given and not equal to &#34;-&#34;:
 
-Converts all `.ipynb` files in *inputDir* to `.html` files in *outputDir*.
-Copies all other files in *inputDir* to *outputDir*.
-If *outputDir* does not exist, it will be created.
+Converts all `.ipynb` files in `inputDir` to `.html` files in `outputDir`.
+Copies all other files in `inputDir` to `outputDir`.
+If `outputDir` does not exist, it will be created.
 
-Makes sure that all links in the resulting html to one of the
+Makes sure that all links in the resulting HTML to one of the
 original `.ipynb` files are transformed in links to the converted `.html` files.
 
 In place mode
 -------------
 If outputDir is given and equal to &#34;-&#34;:
 
-Converts all `.ipynb` files in *inputDir* to `.html` files next to their originals.
-Overwrites existing html names with the same name.
+Converts all `.ipynb` files in `inputDir` to `.html` files next to their originals.
+Overwrites existing HTML names with the same name.
 
-Makes sure that all links in the resulting html to one of the
+Makes sure that all links in the resulting HTML to one of the
 original `.ipynb` files are transformed in links to the converted `.html` files.
 
 Index mode
@@ -73,11 +73,11 @@ Index mode
 Without outputDir
 
 Generates an index.html file in inputDir with links
-to all html files that can be recursively found inside the inputDir.
+to all HTML files that can be recursively found inside the inputDir.
 
 Command switches
 
-```
+``` sh
 -h
 --help
 ```
@@ -300,7 +300,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/nbconvert.py#L151-L239" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/nbconvert.py#L151-L239" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertDir(inputDir, outputDir):
     inPlace = outputDir == &#34;-&#34;
@@ -401,7 +401,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/nbconvert.py#L242-L248" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/nbconvert.py#L242-L248" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     args = sys.argv[1:]
@@ -420,7 +420,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/nbconvert.py#L76-L148" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/nbconvert.py#L76-L148" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeIndex(inputDir):
     htmlStart = dedent(
@@ -506,29 +506,29 @@ if __name__ == &#34;__main__&#34;:
 <p>Several modes:</p>
 <h2 id="copy-mode">Copy Mode</h2>
 <p>If outputDir is given and not equal to "-":</p>
-<p>Converts all <code>.ipynb</code> files in <em>inputDir</em> to <code>.html</code> files in <em>outputDir</em>.
-Copies all other files in <em>inputDir</em> to <em>outputDir</em>.
-If <em>outputDir</em> does not exist, it will be created.</p>
-<p>Makes sure that all links in the resulting html to one of the
+<p>Converts all <code>.ipynb</code> files in <code>inputDir</code> to <code>.html</code> files in <code>outputDir</code>.
+Copies all other files in <code>inputDir</code> to <code>outputDir</code>.
+If <code>outputDir</code> does not exist, it will be created.</p>
+<p>Makes sure that all links in the resulting HTML to one of the
 original <code>.ipynb</code> files are transformed in links to the converted <code>.html</code> files.</p>
 <h2 id="in-place-mode">In Place Mode</h2>
 <p>If outputDir is given and equal to "-":</p>
-<p>Converts all <code>.ipynb</code> files in <em>inputDir</em> to <code>.html</code> files next to their originals.
-Overwrites existing html names with the same name.</p>
-<p>Makes sure that all links in the resulting html to one of the
+<p>Converts all <code>.ipynb</code> files in <code>inputDir</code> to <code>.html</code> files next to their originals.
+Overwrites existing HTML names with the same name.</p>
+<p>Makes sure that all links in the resulting HTML to one of the
 original <code>.ipynb</code> files are transformed in links to the converted <code>.html</code> files.</p>
 <h2 id="index-mode">Index Mode</h2>
 <p>Without outputDir</p>
 <p>Generates an index.html file in inputDir with links
-to all html files that can be recursively found inside the inputDir.</p>
+to all HTML files that can be recursively found inside the inputDir.</p>
 <p>Command switches</p>
-<pre><code>-h
+<pre><code class="language-sh">-h
 --help
 </code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/tools/nbconvert.py#L63-L73" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/tools/nbconvert.py#L63-L73" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(*args):
     inputDir = args[0]

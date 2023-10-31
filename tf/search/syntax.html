@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/syntax.py#L1-L679" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/syntax.py#L1-L679" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Syntax of search templates
@@ -164,7 +164,7 @@ def _tokenize(searchExe):
     #
     # Because indentation is not indicative of quantifier nesting
     # we need to maintain a stack of inner quantifiers,
-    # just to be able to determine wich quantifier words
+    # just to be able to determine which quantifier words
     # belong to the outerlevel quantifiers.
 
     curQu = []
@@ -725,7 +725,7 @@ def _unesc(x, inRe=False):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/syntax.py#L607-L612" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/syntax.py#L607-L612" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cleanParent(atom, parentName):
     (kind, data) = parseLine(atom)
@@ -743,7 +743,7 @@ def _unesc(x, inRe=False):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/syntax.py#L615-L658" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/syntax.py#L615-L658" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def deContext(quantifier, parentName):
     (quKind, quTemplates, ln) = quantifier
@@ -799,7 +799,7 @@ def _unesc(x, inRe=False):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/syntax.py#L512-L574" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/syntax.py#L512-L574" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def parseFeatureVals(searchExe, featStr, features, i, asEdge=False):
     if asEdge:
@@ -874,7 +874,7 @@ def _unesc(x, inRe=False):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/syntax.py#L465-L509" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/syntax.py#L465-L509" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def parseLine(line):
     for x in [True]:
@@ -931,7 +931,7 @@ def _unesc(x, inRe=False):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/syntax.py#L76-L92" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/syntax.py#L76-L92" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def syntax(searchExe):
     error = searchExe.api.TF.error

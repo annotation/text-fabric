@@ -24,7 +24,7 @@
 </header>
 <section id="section-intro">
 <h1 id="browser">Browser</h1>
-<p>The Text-Fabric package contains a command to
+<p>The TF package contains a command to
 work with your corpus in your browser.
 It sets up a local web server, which interacts with your web browser.
 Then you can view and search the corpus without programming and without
@@ -32,42 +32,42 @@ internet connection.</p>
 <h2 id="start-up">Start up</h2>
 <p>Below, when you see <code>app</code>, you have to substitute it by the name
 of an existing TF app.</p>
-<p>The Text-Fabric browser fetches the apps and corpora (<code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code>)
-it needs from GitHub/GitLab automatically.</p>
+<p>The TF browser fetches the apps and corpora (<code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code>)
+it needs from GitHub / GitLab automatically.</p>
 <div class="admonition hint">
 <p class="admonition-title">On Windows?</p>
 <p>You can click the Start Menu, and type</p>
-<pre><code>text-fabric app
-</code></pre>
+<p><code>sh
+tf app</code></p>
 <p>in the search box, and then Enter.</p>
 </div>
 <div class="admonition hint">
 <p class="admonition-title">On Linux or Macos?</p>
 <p>You can open a terminal (command prompt), and just say</p>
-<pre><code>text-fabric app
-</code></pre>
+<p><code>sh
+tf app</code></p>
 </div>
 <div class="admonition explanation">
 <p class="admonition-title">All platforms</p>
 <p>The corpus data will be downloaded automatically,
-and be loaded into text-fabric.
+and be loaded into TF.
 Then your browser will open and load the search interface.
 There you'll find links to further help.</p>
 </div>
 <h2 id="more-data">More data</h2>
 <p>You can let TF use extra features: </p>
-<pre><code>text-fabric app --mod=org/repo/path
-text-fabric app --mod=org/repo/path -c
-text-fabric app --mod=org/repo/path,org/repo/path
+<pre><code class="language-sh">tf app --mod=org/repo/path
+tf app --mod=org/repo/path -c
+tf app --mod=org/repo/path,org/repo/path
 </code></pre>
-<p>Here <code>org</code>, <code>repo</code> and <code>path</code> must be replaced with a github user or organization,
-a github repo, and a path within that repo.</p>
+<p>Here <code>org</code>, <code>repo</code> and <code>path</code> must be replaced with a GitHub user or organization,
+a GitHub repo, and a path within that repo.</p>
 <p>Read more about your data life-cycle in the Data guide (<code><a title="tf.about.datasharing" href="datasharing.html">tf.about.datasharing</a></code>).</p>
 <h2 id="custom-sets">Custom sets</h2>
 <p>You can create custom sets of nodes, give them a name, and use those names
 in search templates.
 The TF browser can import those sets, so that you can use such queries in the browser too.</p>
-<pre><code>text-fabric app --sets=filePath
+<pre><code class="language-sh">tf app --sets=filePath
 </code></pre>
 <ul>
 <li>Start a TF browser for <code>app</code>.</li>
@@ -87,7 +87,7 @@ under the name <em>app</em><code>-default</code>,
 or another name if you rename, duplicate, import or create new sessions.</p>
 <h2 id="shut-down">Shut down</h2>
 <p>You can close the web server by pressing Ctrl-C in the terminal
-or command prompt where you have started <code>text-fabric</code>.</p>
+or command prompt where you have started <code><a title="tf" href="../index.html">tf</a></code>.</p>
 <h2 id="work-with-exported-results">Work with exported results</h2>
 <p>You can export your results to CSV files which you can process with various tools,
 including your own.</p>
@@ -97,39 +97,39 @@ A new page will open, which you can save as a PDF.</p>
 <p>There is also a button to download all your results as data files.</p>
 <h3 id="exported-materials">Exported materials</h3>
 <dl>
-<dt>job.json</dt>
-<dd>A json file with all information associated with your current session.
+<dt><code>job.json</code></dt>
+<dd>A JSON file with all information associated with your current session.
 You can import this in the Jobs section, and restore the session by which
 you created these results.</dd>
-<dt>about.md</dt>
+<dt><code>about.md</code></dt>
 <dd>a Markdown file with your description and some provenance metadata.</dd>
-<dt>resultsx.tsv</dt>
+<dt><code>resultsx.tsv</code></dt>
 <dd>contains your precise search results, decorated with the features
-you have used in your searchTemplate.
+you have used in your search template.
 Not only the results on the current page, but <em>all</em> results.</dd>
-<dt>results.tsv</dt>
+<dt><code>results.tsv</code></dt>
 <dd>contains your precise search results, as a list of tuples of nodes.
 Not only the results on the current page, but <em>all</em> results.</dd>
-<dt>sections.tsv</dt>
+<dt><code>sections.tsv</code></dt>
 <dd>contains the sections you have selected as a list of nodes.</dd>
-<dt>nodes.tsv</dt>
+<dt><code>nodes.tsv</code></dt>
 <dd>contains the nodes you have selected as a list of tuples of nodes.</dd>
-<dt>nodesx.tsv</dt>
+<dt><code>nodesx.tsv</code></dt>
 <dd>contains the nodes you have selected as a list of tuples of nodes,
 decorated with location information and text content.</dd>
 </dl>
 <p>Now, if you want to share your results for checking and replication,
-put all this in a research repository or in a GitHub/GitLab repository,
+put all this in a research repository or in a GitHub / GitLab repository,
 which you can then archive to <a href="https://zenodo.org">ZENODO</a> to obtain a DOI.</p>
-<h3 id="unicode-in-excel-csvs">Unicode in Excel CSVs</h3>
+<h3 id="unicode-in-excel-csvs">UNICODE in Excel CSVs</h3>
 <p>The file <code>resultsx.tsv</code> is not in the usual <code>utf8</code> encoding,
 but in <code>utf_16</code> encoding.
 The reason is that this is the only encoding
 in which Excel handles CSV files properly.</p>
 <p>So if you work with this file in Python, specify the encoding <code>utf_16</code>.</p>
-<pre><code>with open('resultsx.tsv', encoding='utf_16') as fh:
-  for row in fh:
-  # do something with row
+<pre><code class="language-python">with open('resultsx.tsv', encoding='utf_16') as fh:
+    for row in fh:
+        # do something with row 
 </code></pre>
 <p>Conversely, if you want to write a CSV with Hebrew in it,
 to be opened in Excel, take care to:</p>
@@ -137,27 +137,27 @@ to be opened in Excel, take care to:</p>
 <li>give the file name extension <code>.tsv</code> (not <code>.csv</code>)</li>
 <li>make the file <strong>tab</strong> separated (do not use the comma or semicolon!)</li>
 <li>use the encoding <code>utf_16_le</code> (not merely <code>utf_16</code>, nor <code>utf8</code>!)</li>
-<li>start the file with a BOM mark.<pre><code>with open('mydata.tsv', 'w', encoding='utf_16_le') as fh:
-  fh.write('\uFEFF')
-  for row in myData:
-    fh.write('\t'.join(row))
-    fh.write('\n')
-</code></pre>
-</li>
+<li>start the file with a BOM mark.</li>
 </ul>
+<pre><code class="language-python">with open('mydata.tsv', 'w', encoding='utf_16_le') as fh:
+    fh.write('\uFEFF')
+    for row in myData:
+        fh.write('\t'.join(row))
+        fh.write('\n')
+</code></pre>
 <div class="admonition explanation">
 <p class="admonition-title">Gory details</p>
 <p>The file has been written with the <code>utf_16_le</code> encoding,
-and the first character is the unicode
+and the first character is the UNICODE
 FEFF character.
 That is needed for machines so that they can see which byte in a 16 bits word is
 the least end (<code>le</code>) and which one is the big end (<code>be</code>).
 Knowing that the first character is FEFF,
-all machines can see whether this is in a <em>least-endian (le)</em> encoding
+all machines can see whether this is in a <code>least-endian (le)</code> encoding
 or in a
-<em>big-endian (be)</em>.
+<code>big-endian (be)</code>.
 Hence this character is called the Byte Order Mark (BOM).</p>
-<p>See more on <a href="https://en.wikipedia.org/wiki/Byte_order_mark">wikipedia</a>.</p>
+<p>See more on <a href="https://en.wikipedia.org/wiki/Byte_order_mark">Wikipedia</a>.</p>
 <p>When reading a file with encoding <code>utf_16</code>,
 Python reads the BOM, draws its conclusions, and strips the BOM.
 So when you iterate over its lines, you will not see the BOM, which is good.</p>
@@ -169,7 +169,7 @@ That is unpleasant.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/about/browser.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/about/browser.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/browser.md
@@ -248,7 +248,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#shut-down">Shut down</a></li>
 <li><a href="#work-with-exported-results">Work with exported results</a><ul>
 <li><a href="#exported-materials">Exported materials</a></li>
-<li><a href="#unicode-in-excel-csvs">Unicode in Excel CSVs</a></li>
+<li><a href="#unicode-in-excel-csvs">UNICODE in Excel CSVs</a></li>
 </ul>
 </li>
 </ul>

@@ -34,7 +34,7 @@ collect(
   workLocation,
 )
 </code></pre>
-<pre><code>collect(
+<pre><code class="language-python">collect(
   (
       (name1, location1),
       (name2, location2),
@@ -49,14 +49,14 @@ collect(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/volumes/collect.py#L1-L893" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/volumes/collect.py#L1-L901" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Collect
 
 ## Usage
 
-```python
+``` python
 from tf.volumes import collect
 collect(
   (
@@ -67,7 +67,7 @@ collect(
 )
 ```
 
-```
+``` python
 collect(
   (
       (name1, location1),
@@ -122,7 +122,7 @@ def collect(
 ):
     &#34;&#34;&#34;Creates a collection out of a number of volumes.
 
-    The volumes are individual TF data sets, the work is a new TF data set.
+    The volumes are individual TF datasets, the work is a new TF data set.
 
     You may pass as many volume data sources as you want.
 
@@ -199,7 +199,7 @@ def collect(
 
     overwrite: boolean, optional None
         If True, the target collection will be
-        be created and will replace any existing collection/volume of the same name.
+        be created and will replace any existing collection / volume of the same name.
         If None, the collection will only be created if it does not exist.
         No check will be performed as to whether an existing collection
         is equal to what would have been created by this call.
@@ -219,26 +219,28 @@ def collect(
         The name of the new feature is `volumeFeature`
         if it is a non-empty string, else it is the value of `volumeType`.
 
-        !!! caution &#34;volumeType must be fresh&#34;
+        !!! caution &#34;`volumeType` must be fresh&#34;
             It is an error if the `volumeType` is a node type that already
             occurs in one of the volumes.
 
-        !!! note &#34;volumeFeature may exist&#34;
+        !!! note &#34;`volumeFeature` may exist&#34;
             The `volumeFeature` may already exist in one or more volumes.
             In that case the new feature values for nodes of `volumeType` will
             just be added to it.
 
         Example
         -------
-            collect(
-                dict(
-                    banks=&#39;banks/tf/0.2&#39;,
-                    river=&#39;banks/tf/0.4&#39;,
-                ),
-                &#39;riverbanks/tf/1.0&#39;,
-                volumeType=&#39;volume&#39;,
-                volumeFeature=&#39;vol&#39;,
-            )
+        ``` python
+        collect(
+            dict(
+                banks=&#39;banks/tf/0.2&#39;,
+                river=&#39;banks/tf/0.4&#39;,
+            ),
+            &#39;riverbanks/tf/1.0&#39;,
+            volumeType=&#39;volume&#39;,
+            volumeFeature=&#39;vol&#39;,
+        )
+        ```
 
         This results in a work with nodes and features from the volumes
         found at the indicated places on your file system.
@@ -259,14 +261,14 @@ def collect(
         will be assigned to the combined feature.
 
         If you want to assign other meta data to specific features,
-        or pass meta data for new features that orginate from the merging process,
+        or pass meta data for new features that originate from the merging process,
         you can pass them in the parameter `featureMeta` as in the following example,
         where we pass meta data for a feature called `level` with integer values.
 
         The contents of the `otext.tf` features are also metadata,
         and their contents will be merged in exactly the same way.
 
-        So if the section/structure specifications and the formats are not
+        So if the section / structure specifications and the formats are not
         the same for all volumes, you will see them spread out
         in fields qualified by the volume name with a `!` sign between
         the key and the volume.
@@ -291,70 +293,76 @@ def collect(
 
     Example
     -------
-        collect(
-            dict(
-                banks=&#39;banks/tf/0.2&#39;,
-                river=&#39;banks/tf/0.4&#39;,
-            ),
-            &#39;riverbanks/tf/1.0&#39;,
-            featureMeta=dict(
-              level=dict(
-                valueType=&#39;int&#39;,
-                description=&#39;level of a section node&#39;,
-              ),
-            ),
-        )
+    ``` python
+    collect(
+        dict(
+            banks=&#39;banks/tf/0.2&#39;,
+            river=&#39;banks/tf/0.4&#39;,
+        ),
+        &#39;riverbanks/tf/1.0&#39;,
+        featureMeta=dict(
+          level=dict(
+            valueType=&#39;int&#39;,
+            description=&#39;level of a section node&#39;,
+          ),
+        ),
+    )
+    ```
 
     Example
     -------
-        collect(
-            dict(
-                banks=&#39;banks/tf/0.2&#39;,
-                river=&#39;banks/tf/0.4&#39;,
+    ``` python
+    collect(
+        dict(
+            banks=&#39;banks/tf/0.2&#39;,
+            river=&#39;banks/tf/0.4&#39;,
+        ),
+        &#39;riverbanks/tf/1.0&#39;,
+        featureMeta=dict(
+            otext=dict(
+                volumeType=&#39;volume&#39;,
+                volumeFeature=&#39;vol&#39;,
+                sectionTypes=&#39;volume,chapter,line&#39;,
+                sectionFeatures=&#39;title,number,number&#39;,
             ),
-            &#39;riverbanks/tf/1.0&#39;,
-            featureMeta=dict(
-                otext=dict(
-                    volumeType=&#39;volume&#39;,
-                    volumeFeature=&#39;vol&#39;,
-                    sectionTypes=&#39;volume,chapter,line&#39;,
-                    sectionFeatures=&#39;title,number,number&#39;,
-                ),
-            ),
-            silent=SILENT_D,
-        )
+        ),
+        silent=SILENT_D,
+    )
+    ```
 
     This will give rise to something like this (assuming that `banks` and
     `rivers` have some deviating material in their `otext.tf`:
 
-        @config
-        @compiler=Dirk Roorda
-        @dateWritten=2019-05-20T19:12:23Z
-        @fmt:line-default={letters:XXX}{terminator}
-        @fmt:line-term=line#{terminator}
-        @fmt:text-orig-extra={letters}{punc}{gap}
-        @fmt:text-orig-full={letters}
-        @fmt:text-orig-full!banks={letters}{punc}
-        @fmt:text-orig-full!rivers={letters}{gap}
-        @name=Culture quotes from Iain Banks
-        @purpose=exposition
-        @sectionFeatures=title,number,number
-        @sectionFeatures!banks=title,number,number
-        @sectionFeatures!rivers=number,number,number
-        @sectionTypes=volume,chapter,line
-        @sectionTypes!banks=book,chapter,sentence
-        @sectionTypes!rivers=chapter,sentence,line
-        @source=Good Reads
-        @status=with for similarities in a separate module
-        @structureFeatures!banks=title,number,number,number
-        @structureFeatures!rivers=title,number,number
-        @structureTypes!banks=book,chapter,sentence,line
-        @structureTypes!rivers=book,chapter,sentence
-        @url=https://www.goodreads.com/work/quotes/14366-consider-phlebas
-        @version=0.2
-        @writtenBy=Text-Fabric
-        @writtenBy=Text-Fabric
-        @dateWritten=2019-05-28T10:55:06Z
+    ```
+    @config
+    @compiler=Dirk Roorda
+    @dateWritten=2019-05-20T19:12:23Z
+    @fmt:line-default={letters:XXX}{terminator}
+    @fmt:line-term=line#{terminator}
+    @fmt:text-orig-extra={letters}{punc}{gap}
+    @fmt:text-orig-full={letters}
+    @fmt:text-orig-full!banks={letters}{punc}
+    @fmt:text-orig-full!rivers={letters}{gap}
+    @name=Culture quotes from Iain Banks
+    @purpose=exposition
+    @sectionFeatures=title,number,number
+    @sectionFeatures!banks=title,number,number
+    @sectionFeatures!rivers=number,number,number
+    @sectionTypes=volume,chapter,line
+    @sectionTypes!banks=book,chapter,sentence
+    @sectionTypes!rivers=chapter,sentence,line
+    @source=Good Reads
+    @status=with for similarities in a separate module
+    @structureFeatures!banks=title,number,number,number
+    @structureFeatures!rivers=title,number,number
+    @structureTypes!banks=book,chapter,sentence,line
+    @structureTypes!rivers=book,chapter,sentence
+    @url=https://www.goodreads.com/work/quotes/14366-consider-phlebas
+    @version=0.2
+    @writtenBy=Text-Fabric
+    @writtenBy=Text-Fabric
+    @dateWritten=2019-05-28T10:55:06Z
+    ```
 
     !!! caution &#34;inter-version edges&#34;
         Features with names starting in `omap@` contain node maps from
@@ -606,7 +614,7 @@ def collect(
         good = True
 
         # check whether volumes have overlapping slots
-        # we use the original work slots, provided by the owork feature
+        # we use the original work slots, provided by the `owork` feature
         # if it exists; otherwise we cannot know whether slots are overlapping
         info(&#34;Check against overlapping slots ...&#34;)
         indent(level=2, reset=True)
@@ -671,7 +679,7 @@ def collect(
         nW = sW
 
         indent(level=1)
-        info(&#34;Mapping nodes from volume to/from work ...&#34;)
+        info(&#34;Mapping nodes from volume to / from work ...&#34;)
         indent(level=2)
         for (nType, nodes) in nodesByType.items():
             startW = nW
@@ -833,7 +841,7 @@ def collect(
 
         # Indeed, when splitting the original work into volumes,
         # it might have been the case that certain top-level sections
-        # of the orginal work do not end up in one of the volumes.
+        # of the original work do not end up in one of the volumes.
 
         getOworkWI = {}
 
@@ -958,7 +966,7 @@ def collect(
 </code></dt>
 <dd>
 <div class="desc"><p>Creates a collection out of a number of volumes.</p>
-<p>The volumes are individual TF data sets, the work is a new TF data set.</p>
+<p>The volumes are individual TF datasets, the work is a new TF data set.</p>
 <p>You may pass as many volume data sources as you want.</p>
 <p>The work will be the union of all nodes of the volumes,
 rearranged according to their types, where node types with the
@@ -1025,7 +1033,7 @@ However, names are only used if you pass <code>volumeType</code> and /or <code>v
 <dd>The directory into which the feature files of the work will be written.</dd>
 <dt><strong><code>overwrite</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
 <dd>If True, the target collection will be
-be created and will replace any existing collection/volume of the same name.
+be created and will replace any existing collection / volume of the same name.
 If None, the collection will only be created if it does not exist.
 No check will be performed as to whether an existing collection
 is equal to what would have been created by this call.
@@ -1042,27 +1050,27 @@ if it is a non-empty string, else it is the value of <code>volumeFeature</code>.
 <p>The name of the new feature is <code>volumeFeature</code>
 if it is a non-empty string, else it is the value of <code>volumeType</code>.</p>
 <div class="admonition caution">
-<p class="admonition-title">volumeType must be fresh</p>
+<p class="admonition-title"><code>volumeType</code> must be fresh</p>
 <p>It is an error if the <code>volumeType</code> is a node type that already
 occurs in one of the volumes.</p>
 </div>
 <div class="admonition note">
-<p class="admonition-title">volumeFeature may exist</p>
+<p class="admonition-title"><code>volumeFeature</code> may exist</p>
 <p>The <code>volumeFeature</code> may already exist in one or more volumes.
 In that case the new feature values for nodes of <code>volumeType</code> will
 just be added to it.</p>
 </div>
 <h2 id="example">Example</h2>
-<pre><code>collect(
-    dict(
-        banks='banks/tf/0.2',
-        river='banks/tf/0.4',
-    ),
-    'riverbanks/tf/1.0',
-    volumeType='volume',
-    volumeFeature='vol',
-)
-</code></pre>
+<p><code>python
+collect(
+dict(
+banks='banks/tf/0.2',
+river='banks/tf/0.4',
+),
+'riverbanks/tf/1.0',
+volumeType='volume',
+volumeFeature='vol',
+)</code></p>
 <p>This results in a work with nodes and features from the volumes
 found at the indicated places on your file system.
 After combination, the volumes are visible in the work as nodes
@@ -1081,12 +1089,12 @@ to one single value <code>str</code> if some volumes have it as <code>str</code>
 If the volumes assign the same value type to a feature, that value type
 will be assigned to the combined feature.</p>
 <p>If you want to assign other meta data to specific features,
-or pass meta data for new features that orginate from the merging process,
+or pass meta data for new features that originate from the merging process,
 you can pass them in the parameter <code>featureMeta</code> as in the following example,
 where we pass meta data for a feature called <code>level</code> with integer values.</p>
 <p>The contents of the <code>otext.tf</code> features are also metadata,
 and their contents will be merged in exactly the same way.</p>
-<p>So if the section/structure specifications and the formats are not
+<p>So if the section / structure specifications and the formats are not
 the same for all volumes, you will see them spread out
 in fields qualified by the volume name with a <code>!</code> sign between
 the key and the volume.</p>
@@ -1110,7 +1118,7 @@ that is already in one of the volumes.</p>
 </dd>
 </dl>
 <h2 id="example_1">Example</h2>
-<pre><code>collect(
+<pre><code class="language-python">collect(
     dict(
         banks='banks/tf/0.2',
         river='banks/tf/0.4',
@@ -1125,7 +1133,7 @@ that is already in one of the volumes.</p>
 )
 </code></pre>
 <h2 id="example_2">Example</h2>
-<pre><code>collect(
+<pre><code class="language-python">collect(
     dict(
         banks='banks/tf/0.2',
         river='banks/tf/0.4',
@@ -1167,7 +1175,7 @@ that is already in one of the volumes.</p>
 @structureFeatures!rivers=title,number,number
 @structureTypes!banks=book,chapter,sentence,line
 @structureTypes!rivers=book,chapter,sentence
-@url=&lt;https://www.goodreads.com/work/quotes/14366-consider-phlebas&gt;
+@url=https://www.goodreads.com/work/quotes/14366-consider-phlebas
 @version=0.2
 @writtenBy=Text-Fabric
 @writtenBy=Text-Fabric
@@ -1182,7 +1190,7 @@ These will be excluded from collection.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/volumes/collect.py#L60-L893" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/volumes/collect.py#L60-L901" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def collect(
     volumes,
@@ -1196,7 +1204,7 @@ These will be excluded from collection.</p>
 ):
     &#34;&#34;&#34;Creates a collection out of a number of volumes.
 
-    The volumes are individual TF data sets, the work is a new TF data set.
+    The volumes are individual TF datasets, the work is a new TF data set.
 
     You may pass as many volume data sources as you want.
 
@@ -1273,7 +1281,7 @@ These will be excluded from collection.</p>
 
     overwrite: boolean, optional None
         If True, the target collection will be
-        be created and will replace any existing collection/volume of the same name.
+        be created and will replace any existing collection / volume of the same name.
         If None, the collection will only be created if it does not exist.
         No check will be performed as to whether an existing collection
         is equal to what would have been created by this call.
@@ -1293,26 +1301,28 @@ These will be excluded from collection.</p>
         The name of the new feature is `volumeFeature`
         if it is a non-empty string, else it is the value of `volumeType`.
 
-        !!! caution &#34;volumeType must be fresh&#34;
+        !!! caution &#34;`volumeType` must be fresh&#34;
             It is an error if the `volumeType` is a node type that already
             occurs in one of the volumes.
 
-        !!! note &#34;volumeFeature may exist&#34;
+        !!! note &#34;`volumeFeature` may exist&#34;
             The `volumeFeature` may already exist in one or more volumes.
             In that case the new feature values for nodes of `volumeType` will
             just be added to it.
 
         Example
         -------
-            collect(
-                dict(
-                    banks=&#39;banks/tf/0.2&#39;,
-                    river=&#39;banks/tf/0.4&#39;,
-                ),
-                &#39;riverbanks/tf/1.0&#39;,
-                volumeType=&#39;volume&#39;,
-                volumeFeature=&#39;vol&#39;,
-            )
+        ``` python
+        collect(
+            dict(
+                banks=&#39;banks/tf/0.2&#39;,
+                river=&#39;banks/tf/0.4&#39;,
+            ),
+            &#39;riverbanks/tf/1.0&#39;,
+            volumeType=&#39;volume&#39;,
+            volumeFeature=&#39;vol&#39;,
+        )
+        ```
 
         This results in a work with nodes and features from the volumes
         found at the indicated places on your file system.
@@ -1333,14 +1343,14 @@ These will be excluded from collection.</p>
         will be assigned to the combined feature.
 
         If you want to assign other meta data to specific features,
-        or pass meta data for new features that orginate from the merging process,
+        or pass meta data for new features that originate from the merging process,
         you can pass them in the parameter `featureMeta` as in the following example,
         where we pass meta data for a feature called `level` with integer values.
 
         The contents of the `otext.tf` features are also metadata,
         and their contents will be merged in exactly the same way.
 
-        So if the section/structure specifications and the formats are not
+        So if the section / structure specifications and the formats are not
         the same for all volumes, you will see them spread out
         in fields qualified by the volume name with a `!` sign between
         the key and the volume.
@@ -1365,70 +1375,76 @@ These will be excluded from collection.</p>
 
     Example
     -------
-        collect(
-            dict(
-                banks=&#39;banks/tf/0.2&#39;,
-                river=&#39;banks/tf/0.4&#39;,
-            ),
-            &#39;riverbanks/tf/1.0&#39;,
-            featureMeta=dict(
-              level=dict(
-                valueType=&#39;int&#39;,
-                description=&#39;level of a section node&#39;,
-              ),
-            ),
-        )
+    ``` python
+    collect(
+        dict(
+            banks=&#39;banks/tf/0.2&#39;,
+            river=&#39;banks/tf/0.4&#39;,
+        ),
+        &#39;riverbanks/tf/1.0&#39;,
+        featureMeta=dict(
+          level=dict(
+            valueType=&#39;int&#39;,
+            description=&#39;level of a section node&#39;,
+          ),
+        ),
+    )
+    ```
 
     Example
     -------
-        collect(
-            dict(
-                banks=&#39;banks/tf/0.2&#39;,
-                river=&#39;banks/tf/0.4&#39;,
+    ``` python
+    collect(
+        dict(
+            banks=&#39;banks/tf/0.2&#39;,
+            river=&#39;banks/tf/0.4&#39;,
+        ),
+        &#39;riverbanks/tf/1.0&#39;,
+        featureMeta=dict(
+            otext=dict(
+                volumeType=&#39;volume&#39;,
+                volumeFeature=&#39;vol&#39;,
+                sectionTypes=&#39;volume,chapter,line&#39;,
+                sectionFeatures=&#39;title,number,number&#39;,
             ),
-            &#39;riverbanks/tf/1.0&#39;,
-            featureMeta=dict(
-                otext=dict(
-                    volumeType=&#39;volume&#39;,
-                    volumeFeature=&#39;vol&#39;,
-                    sectionTypes=&#39;volume,chapter,line&#39;,
-                    sectionFeatures=&#39;title,number,number&#39;,
-                ),
-            ),
-            silent=SILENT_D,
-        )
+        ),
+        silent=SILENT_D,
+    )
+    ```
 
     This will give rise to something like this (assuming that `banks` and
     `rivers` have some deviating material in their `otext.tf`:
 
-        @config
-        @compiler=Dirk Roorda
-        @dateWritten=2019-05-20T19:12:23Z
-        @fmt:line-default={letters:XXX}{terminator}
-        @fmt:line-term=line#{terminator}
-        @fmt:text-orig-extra={letters}{punc}{gap}
-        @fmt:text-orig-full={letters}
-        @fmt:text-orig-full!banks={letters}{punc}
-        @fmt:text-orig-full!rivers={letters}{gap}
-        @name=Culture quotes from Iain Banks
-        @purpose=exposition
-        @sectionFeatures=title,number,number
-        @sectionFeatures!banks=title,number,number
-        @sectionFeatures!rivers=number,number,number
-        @sectionTypes=volume,chapter,line
-        @sectionTypes!banks=book,chapter,sentence
-        @sectionTypes!rivers=chapter,sentence,line
-        @source=Good Reads
-        @status=with for similarities in a separate module
-        @structureFeatures!banks=title,number,number,number
-        @structureFeatures!rivers=title,number,number
-        @structureTypes!banks=book,chapter,sentence,line
-        @structureTypes!rivers=book,chapter,sentence
-        @url=https://www.goodreads.com/work/quotes/14366-consider-phlebas
-        @version=0.2
-        @writtenBy=Text-Fabric
-        @writtenBy=Text-Fabric
-        @dateWritten=2019-05-28T10:55:06Z
+    ```
+    @config
+    @compiler=Dirk Roorda
+    @dateWritten=2019-05-20T19:12:23Z
+    @fmt:line-default={letters:XXX}{terminator}
+    @fmt:line-term=line#{terminator}
+    @fmt:text-orig-extra={letters}{punc}{gap}
+    @fmt:text-orig-full={letters}
+    @fmt:text-orig-full!banks={letters}{punc}
+    @fmt:text-orig-full!rivers={letters}{gap}
+    @name=Culture quotes from Iain Banks
+    @purpose=exposition
+    @sectionFeatures=title,number,number
+    @sectionFeatures!banks=title,number,number
+    @sectionFeatures!rivers=number,number,number
+    @sectionTypes=volume,chapter,line
+    @sectionTypes!banks=book,chapter,sentence
+    @sectionTypes!rivers=chapter,sentence,line
+    @source=Good Reads
+    @status=with for similarities in a separate module
+    @structureFeatures!banks=title,number,number,number
+    @structureFeatures!rivers=title,number,number
+    @structureTypes!banks=book,chapter,sentence,line
+    @structureTypes!rivers=book,chapter,sentence
+    @url=https://www.goodreads.com/work/quotes/14366-consider-phlebas
+    @version=0.2
+    @writtenBy=Text-Fabric
+    @writtenBy=Text-Fabric
+    @dateWritten=2019-05-28T10:55:06Z
+    ```
 
     !!! caution &#34;inter-version edges&#34;
         Features with names starting in `omap@` contain node maps from
@@ -1680,7 +1696,7 @@ These will be excluded from collection.</p>
         good = True
 
         # check whether volumes have overlapping slots
-        # we use the original work slots, provided by the owork feature
+        # we use the original work slots, provided by the `owork` feature
         # if it exists; otherwise we cannot know whether slots are overlapping
         info(&#34;Check against overlapping slots ...&#34;)
         indent(level=2, reset=True)
@@ -1745,7 +1761,7 @@ These will be excluded from collection.</p>
         nW = sW
 
         indent(level=1)
-        info(&#34;Mapping nodes from volume to/from work ...&#34;)
+        info(&#34;Mapping nodes from volume to / from work ...&#34;)
         indent(level=2)
         for (nType, nodes) in nodesByType.items():
             startW = nW
@@ -1907,7 +1923,7 @@ These will be excluded from collection.</p>
 
         # Indeed, when splitting the original work into volumes,
         # it might have been the case that certain top-level sections
-        # of the orginal work do not end up in one of the volumes.
+        # of the original work do not end up in one of the volumes.
 
         getOworkWI = {}
 

@@ -33,7 +33,7 @@ the
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/variants.py#L1-L551" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/variants.py#L1-L554" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Variants
@@ -100,13 +100,13 @@ class Variants:
         the data by `Variants.resetApps()`. This should match the call(s) to
         `Variants.initApps`.
 
-        Then, at the start of each app-, lem-, rdg- element, call
+        Then, at the start of each `app`-, `lem`-, `rdg`- element, call
         `Variants.startApp(tag)` with tag the corresponding tag name (
         `app`, `lem`, or `rdg`).
 
         Likewise, at the end, call `Variants.endApp(tag)`.
 
-        Whenever you create slots, isse a `Variants.startSent()` first,
+        Whenever you create slots, issue a `Variants.startSent()` first,
         and a `Variants.checkSent()` after.
 
         Close every TEI file with a `Variants.endSent()`, to finish off all
@@ -128,9 +128,11 @@ class Variants:
             Those keys are mentioned in constants in the source code and there are
             a few keys dependent on the `sentType` parameter, namely
 
-                f&#34;n{sentType}&#34;
-                f&#34;stack{sentType}&#34;
-                f&#34;var{sentType}&#34;
+            ```
+            f&#34;n{sentType}&#34;
+            f&#34;stack{sentType}&#34;
+            f&#34;var{sentType}&#34;
+            ```
 
         baseWitness: string
             The name of the base text. Take care that it is different from the names
@@ -143,13 +145,13 @@ class Variants:
             sentences. It could be anything, provided we have access to its boundaries.
 
         checkPunc: function(string, string, punc): boolean
-            Given a the texts of the last two slots and the punctuation after that,
+            Given the texts of the last two slots and the punctuation after that,
             it determines whether is contains a boundary.
             This function should be written in the converter program.
-            Hence it is up to the conversion code to define what constitues a boundary,
+            Hence it is up to the conversion code to define what constitutes a boundary,
             and whether it are sentences or some things else that are being bounded.
             This function is called and depending on the outcome sentence nodes are
-            terminated and/or created, or nothing is done.
+            terminated and / or created, or nothing is done.
 
         addWarning, addError: function(string, dict)
             Functions taking a message string and a dict with current information
@@ -157,7 +159,7 @@ class Variants:
             They will be called if a warning or error has to be issued.
             When they is called, `cur` will be passed as dict.
             This function should be defined in the conversion program. It may use values
-            in `cur` to generate an indication where the warning/error occurred.
+            in `cur` to generate an indication where the warning / error occurred.
 
         &#34;&#34;&#34;
         self.cv = cv
@@ -178,13 +180,14 @@ class Variants:
 
         Call this for the root nodes of every TEI file of the corpus.
 
-        Collects the witnesses from all rdg-elements.
-        For each lem-element the set of witnesses of its rdg siblings is collected in
+        Collects the witnesses from all `rdg`-elements.
+        For each `lem`-element the set of witnesses of its `rdg` siblings is collected in
         such a way that it can be retrieved later on.
 
-        We also store a pointer to the parent app-element of each nested app-element.
+        We also store a pointer to the parent `app`-element of each nested
+        `app`-element.
 
-        We also check that multiple direct-rdg children of the same
+        We also check that multiple direct-`rdg` children of the same
         app have disjoint witnesses.
         &#34;&#34;&#34;
 
@@ -263,7 +266,7 @@ class Variants:
         cur[varSent] = {baseWitness: None}
 
     def startApp(self, tag, atts):
-        &#34;&#34;&#34;Actions at the start of app- lem- and rdg-elements.
+        &#34;&#34;&#34;Actions at the start of `app`- `lem`- and `rdg`-elements.
 
         Use this each time you enter one of these XML elements.
 
@@ -329,7 +332,7 @@ class Variants:
                     self._suspend(wit)
 
     def endApp(self, tag):
-        &#34;&#34;&#34;Actions at the end of app- lem- and rdg-elements.
+        &#34;&#34;&#34;Actions at the end of `app`- `lem`- and `rdg`-elements.
 
         Use this each time you leave one of these XML elements.
 
@@ -384,7 +387,7 @@ class Variants:
             This very function is responsible for putting the last text value into
             the context.
         punc: string
-            The non-alfanumeric text material after the text of the last slot.
+            The non-alphanumeric text material after the text of the last slot.
             Will be used to determine whether there is a &#34;sentence&#34; break here.
             The actual check will be done by the function `checkPunc`,
             which has been passed as parameter when the `Variants` object was
@@ -402,10 +405,10 @@ class Variants:
     def startSent(self):
         &#34;&#34;&#34;Starts a &#34;sentence&#34; if there is no current sentence.
 
-        When in an rdg-element, witness-dependend &#34;sentence&#34; nodes
-        are created for each witness for the rdg.
+        When in an `rdg`-element, witness-dependent &#34;sentence&#34; nodes
+        are created for each witness for the `rdg`.
 
-        Use this before creating a slot and/or at the start of certain elements
+        Use this before creating a slot and / or at the start of certain elements
         such as paragraphs.
         &#34;&#34;&#34;
 
@@ -429,7 +432,7 @@ class Variants:
         there should not remain pending sentences. You can also call this
         at the end of certain elements, such as paragraphs.
 
-        When in a lem-element, all pending &#34;sentences&#34; of all witnesses
+        When in a `lem`-element, all pending &#34;sentences&#34; of all witnesses
         that agree with the base text here are also ended.
         No new sentences for these witnesses are started, since we are in
         the base text.
@@ -615,11 +618,11 @@ each TEI file in the corpus.</p>
 <p>After collecting the witnesses you should prepare for the final walk through
 the data by <code><a title="tf.convert.variants.Variants.resetApps" href="#tf.convert.variants.Variants.resetApps">Variants.resetApps()</a></code>. This should match the call(s) to
 <code><a title="tf.convert.variants.Variants.initApps" href="#tf.convert.variants.Variants.initApps">Variants.initApps()</a></code>.</p>
-<p>Then, at the start of each app-, lem-, rdg- element, call
+<p>Then, at the start of each <code>app</code>-, <code>lem</code>-, <code>rdg</code>- element, call
 <code><a title="tf.convert.variants.Variants.startApp" href="#tf.convert.variants.Variants.startApp">Variants.startApp()</a>(tag)</code> with tag the corresponding tag name (
 <code>app</code>, <code>lem</code>, or <code>rdg</code>).</p>
 <p>Likewise, at the end, call <code><a title="tf.convert.variants.Variants.endApp" href="#tf.convert.variants.Variants.endApp">Variants.endApp()</a>(tag)</code>.</p>
-<p>Whenever you create slots, isse a <code><a title="tf.convert.variants.Variants.startSent" href="#tf.convert.variants.Variants.startSent">Variants.startSent()</a></code> first,
+<p>Whenever you create slots, issue a <code><a title="tf.convert.variants.Variants.startSent" href="#tf.convert.variants.Variants.startSent">Variants.startSent()</a></code> first,
 and a <code><a title="tf.convert.variants.Variants.checkSent" href="#tf.convert.variants.Variants.checkSent">Variants.checkSent()</a></code> after.</p>
 <p>Close every TEI file with a <code><a title="tf.convert.variants.Variants.endSent" href="#tf.convert.variants.Variants.endSent">Variants.endSent()</a></code>, to finish off all
 pending sentences.</p>
@@ -638,10 +641,9 @@ dict, and it is this dict that should be passed. The <code><a title="tf.convert.
 stores additional information here under specific keys.</p>
 <p>Those keys are mentioned in constants in the source code and there are
 a few keys dependent on the <code>sentType</code> parameter, namely</p>
-<pre><code>f"n{sentType}"
+<p><code>f"n{sentType}"
 f"stack{sentType}"
-f"var{sentType}"
-</code></pre>
+f"var{sentType}"</code></p>
 </dd>
 <dt><strong><code>baseWitness</code></strong> :&ensp;<code>string</code></dt>
 <dd>The name of the base text. Take care that it is different from the names
@@ -652,25 +654,25 @@ basis of boundaries. It could be "sentence", but it could also be any
 other name, and it is not assumed that the nodes in question represent
 sentences. It could be anything, provided we have access to its boundaries.</dd>
 <dt><strong><code>checkPunc</code></strong> :&ensp;<code>function(string, string, punc): boolean</code></dt>
-<dd>Given a the texts of the last two slots and the punctuation after that,
+<dd>Given the texts of the last two slots and the punctuation after that,
 it determines whether is contains a boundary.
 This function should be written in the converter program.
-Hence it is up to the conversion code to define what constitues a boundary,
+Hence it is up to the conversion code to define what constitutes a boundary,
 and whether it are sentences or some things else that are being bounded.
 This function is called and depending on the outcome sentence nodes are
-terminated and/or created, or nothing is done.</dd>
+terminated and / or created, or nothing is done.</dd>
 <dt><strong><code>addWarning</code></strong>, <strong><code>addError</code></strong> :&ensp;<code>function(string, dict)</code></dt>
 <dd>Functions taking a message string and a dict with current information
 (typically cur).
 They will be called if a warning or error has to be issued.
 When they is called, <code>cur</code> will be passed as dict.
 This function should be defined in the conversion program. It may use values
-in <code>cur</code> to generate an indication where the warning/error occurred.</dd>
+in <code>cur</code> to generate an indication where the warning / error occurred.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/variants.py#L43-L551" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/variants.py#L43-L554" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Variants:
     def __init__(self, cv, cur, baseWitness, sentType, checkPunc, addWarning, addError):
@@ -695,13 +697,13 @@ in <code>cur</code> to generate an indication where the warning/error occurred.<
         the data by `Variants.resetApps()`. This should match the call(s) to
         `Variants.initApps`.
 
-        Then, at the start of each app-, lem-, rdg- element, call
+        Then, at the start of each `app`-, `lem`-, `rdg`- element, call
         `Variants.startApp(tag)` with tag the corresponding tag name (
         `app`, `lem`, or `rdg`).
 
         Likewise, at the end, call `Variants.endApp(tag)`.
 
-        Whenever you create slots, isse a `Variants.startSent()` first,
+        Whenever you create slots, issue a `Variants.startSent()` first,
         and a `Variants.checkSent()` after.
 
         Close every TEI file with a `Variants.endSent()`, to finish off all
@@ -723,9 +725,11 @@ in <code>cur</code> to generate an indication where the warning/error occurred.<
             Those keys are mentioned in constants in the source code and there are
             a few keys dependent on the `sentType` parameter, namely
 
-                f&#34;n{sentType}&#34;
-                f&#34;stack{sentType}&#34;
-                f&#34;var{sentType}&#34;
+            ```
+            f&#34;n{sentType}&#34;
+            f&#34;stack{sentType}&#34;
+            f&#34;var{sentType}&#34;
+            ```
 
         baseWitness: string
             The name of the base text. Take care that it is different from the names
@@ -738,13 +742,13 @@ in <code>cur</code> to generate an indication where the warning/error occurred.<
             sentences. It could be anything, provided we have access to its boundaries.
 
         checkPunc: function(string, string, punc): boolean
-            Given a the texts of the last two slots and the punctuation after that,
+            Given the texts of the last two slots and the punctuation after that,
             it determines whether is contains a boundary.
             This function should be written in the converter program.
-            Hence it is up to the conversion code to define what constitues a boundary,
+            Hence it is up to the conversion code to define what constitutes a boundary,
             and whether it are sentences or some things else that are being bounded.
             This function is called and depending on the outcome sentence nodes are
-            terminated and/or created, or nothing is done.
+            terminated and / or created, or nothing is done.
 
         addWarning, addError: function(string, dict)
             Functions taking a message string and a dict with current information
@@ -752,7 +756,7 @@ in <code>cur</code> to generate an indication where the warning/error occurred.<
             They will be called if a warning or error has to be issued.
             When they is called, `cur` will be passed as dict.
             This function should be defined in the conversion program. It may use values
-            in `cur` to generate an indication where the warning/error occurred.
+            in `cur` to generate an indication where the warning / error occurred.
 
         &#34;&#34;&#34;
         self.cv = cv
@@ -773,13 +777,14 @@ in <code>cur</code> to generate an indication where the warning/error occurred.<
 
         Call this for the root nodes of every TEI file of the corpus.
 
-        Collects the witnesses from all rdg-elements.
-        For each lem-element the set of witnesses of its rdg siblings is collected in
+        Collects the witnesses from all `rdg`-elements.
+        For each `lem`-element the set of witnesses of its `rdg` siblings is collected in
         such a way that it can be retrieved later on.
 
-        We also store a pointer to the parent app-element of each nested app-element.
+        We also store a pointer to the parent `app`-element of each nested
+        `app`-element.
 
-        We also check that multiple direct-rdg children of the same
+        We also check that multiple direct-`rdg` children of the same
         app have disjoint witnesses.
         &#34;&#34;&#34;
 
@@ -858,7 +863,7 @@ in <code>cur</code> to generate an indication where the warning/error occurred.<
         cur[varSent] = {baseWitness: None}
 
     def startApp(self, tag, atts):
-        &#34;&#34;&#34;Actions at the start of app- lem- and rdg-elements.
+        &#34;&#34;&#34;Actions at the start of `app`- `lem`- and `rdg`-elements.
 
         Use this each time you enter one of these XML elements.
 
@@ -924,7 +929,7 @@ in <code>cur</code> to generate an indication where the warning/error occurred.<
                     self._suspend(wit)
 
     def endApp(self, tag):
-        &#34;&#34;&#34;Actions at the end of app- lem- and rdg-elements.
+        &#34;&#34;&#34;Actions at the end of `app`- `lem`- and `rdg`-elements.
 
         Use this each time you leave one of these XML elements.
 
@@ -979,7 +984,7 @@ in <code>cur</code> to generate an indication where the warning/error occurred.<
             This very function is responsible for putting the last text value into
             the context.
         punc: string
-            The non-alfanumeric text material after the text of the last slot.
+            The non-alphanumeric text material after the text of the last slot.
             Will be used to determine whether there is a &#34;sentence&#34; break here.
             The actual check will be done by the function `checkPunc`,
             which has been passed as parameter when the `Variants` object was
@@ -997,10 +1002,10 @@ in <code>cur</code> to generate an indication where the warning/error occurred.<
     def startSent(self):
         &#34;&#34;&#34;Starts a &#34;sentence&#34; if there is no current sentence.
 
-        When in an rdg-element, witness-dependend &#34;sentence&#34; nodes
-        are created for each witness for the rdg.
+        When in an `rdg`-element, witness-dependent &#34;sentence&#34; nodes
+        are created for each witness for the `rdg`.
 
-        Use this before creating a slot and/or at the start of certain elements
+        Use this before creating a slot and / or at the start of certain elements
         such as paragraphs.
         &#34;&#34;&#34;
 
@@ -1024,7 +1029,7 @@ in <code>cur</code> to generate an indication where the warning/error occurred.<
         there should not remain pending sentences. You can also call this
         at the end of certain elements, such as paragraphs.
 
-        When in a lem-element, all pending &#34;sentences&#34; of all witnesses
+        When in a `lem`-element, all pending &#34;sentences&#34; of all witnesses
         that agree with the base text here are also ended.
         No new sentences for these witnesses are started, since we are in
         the base text.
@@ -1199,7 +1204,7 @@ This value is taken from the context information.
 This very function is responsible for putting the last text value into
 the context.</dd>
 <dt><strong><code>punc</code></strong> :&ensp;<code>string</code></dt>
-<dd>The non-alfanumeric text material after the text of the last slot.
+<dd>The non-alphanumeric text material after the text of the last slot.
 Will be used to determine whether there is a "sentence" break here.
 The actual check will be done by the function <code>checkPunc</code>,
 which has been passed as parameter when the <code><a title="tf.convert.variants.Variants" href="#tf.convert.variants.Variants">Variants</a></code> object was
@@ -1208,7 +1213,7 @@ created.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/variants.py#L336-L363" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/variants.py#L339-L366" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkSent(self, trans, punc):
     &#34;&#34;&#34;Checks whether there is a &#34;sentence&#34; boundary at this point.
@@ -1224,7 +1229,7 @@ created.</dd>
         This very function is responsible for putting the last text value into
         the context.
     punc: string
-        The non-alfanumeric text material after the text of the last slot.
+        The non-alphanumeric text material after the text of the last slot.
         Will be used to determine whether there is a &#34;sentence&#34; break here.
         The actual check will be done by the function `checkPunc`,
         which has been passed as parameter when the `Variants` object was
@@ -1246,29 +1251,31 @@ created.</dd>
 <dd>
 <div class="desc"><p>Collect all witnesses.</p>
 <p>Call this for the root nodes of every TEI file of the corpus.</p>
-<p>Collects the witnesses from all rdg-elements.
-For each lem-element the set of witnesses of its rdg siblings is collected in
+<p>Collects the witnesses from all <code>rdg</code>-elements.
+For each <code>lem</code>-element the set of witnesses of its <code>rdg</code> siblings is collected in
 such a way that it can be retrieved later on.</p>
-<p>We also store a pointer to the parent app-element of each nested app-element.</p>
-<p>We also check that multiple direct-rdg children of the same
+<p>We also store a pointer to the parent <code>app</code>-element of each nested
+<code>app</code>-element.</p>
+<p>We also check that multiple direct-<code>rdg</code> children of the same
 app have disjoint witnesses.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/variants.py#L139-L189" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/variants.py#L141-L192" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def collectWitnesses(self, node):
     &#34;&#34;&#34;Collect all witnesses.
 
     Call this for the root nodes of every TEI file of the corpus.
 
-    Collects the witnesses from all rdg-elements.
-    For each lem-element the set of witnesses of its rdg siblings is collected in
+    Collects the witnesses from all `rdg`-elements.
+    For each `lem`-element the set of witnesses of its `rdg` siblings is collected in
     such a way that it can be retrieved later on.
 
-    We also store a pointer to the parent app-element of each nested app-element.
+    We also store a pointer to the parent `app`-element of each nested
+    `app`-element.
 
-    We also check that multiple direct-rdg children of the same
+    We also check that multiple direct-`rdg` children of the same
     app have disjoint witnesses.
     &#34;&#34;&#34;
 
@@ -1314,7 +1321,7 @@ app have disjoint witnesses.</p></div>
 <span>def <span class="ident">endApp</span></span>(<span>self, tag)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Actions at the end of app- lem- and rdg-elements.</p>
+<div class="desc"><p>Actions at the end of <code>app</code>- <code>lem</code>- and <code>rdg</code>-elements.</p>
 <p>Use this each time you leave one of these XML elements.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
@@ -1324,10 +1331,10 @@ app have disjoint witnesses.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/variants.py#L294-L334" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/variants.py#L297-L337" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def endApp(self, tag):
-    &#34;&#34;&#34;Actions at the end of app- lem- and rdg-elements.
+    &#34;&#34;&#34;Actions at the end of `app`- `lem`- and `rdg`-elements.
 
     Use this each time you leave one of these XML elements.
 
@@ -1377,14 +1384,14 @@ app have disjoint witnesses.</p></div>
 <p>Use this at the end of each XML file if you are sure that
 there should not remain pending sentences. You can also call this
 at the end of certain elements, such as paragraphs.</p>
-<p>When in a lem-element, all pending "sentences" of all witnesses
+<p>When in a <code>lem</code>-element, all pending "sentences" of all witnesses
 that agree with the base text here are also ended.
 No new sentences for these witnesses are started, since we are in
 the base text.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/variants.py#L388-L412" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/variants.py#L391-L415" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def endSent(self):
     &#34;&#34;&#34;Ends a &#34;sentence&#34; if there is a current sentence.
@@ -1393,7 +1400,7 @@ the base text.</p></div>
     there should not remain pending sentences. You can also call this
     at the end of certain elements, such as paragraphs.
 
-    When in a lem-element, all pending &#34;sentences&#34; of all witnesses
+    When in a `lem`-element, all pending &#34;sentences&#34; of all witnesses
     that agree with the base text here are also ended.
     No new sentences for these witnesses are started, since we are in
     the base text.
@@ -1423,7 +1430,7 @@ or each time before entering a volume.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/variants.py#L191-L202" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/variants.py#L194-L205" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def initApps(self):
     &#34;&#34;&#34;Initialize app- processing and witness collection.
@@ -1452,7 +1459,7 @@ But it should be kept in tandem with <code><a title="tf.convert.variants.Variant
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/variants.py#L204-L226" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/variants.py#L207-L229" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resetApps(self):
     &#34;&#34;&#34;Initialize app- and &#34;sentence&#34; processing.
@@ -1483,7 +1490,7 @@ But it should be kept in tandem with <code><a title="tf.convert.variants.Variant
 <span>def <span class="ident">startApp</span></span>(<span>self, tag, atts)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Actions at the start of app- lem- and rdg-elements.</p>
+<div class="desc"><p>Actions at the start of <code>app</code>- <code>lem</code>- and <code>rdg</code>-elements.</p>
 <p>Use this each time you enter one of these XML elements.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
@@ -1495,10 +1502,10 @@ But it should be kept in tandem with <code><a title="tf.convert.variants.Variant
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/variants.py#L228-L292" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/variants.py#L231-L295" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def startApp(self, tag, atts):
-    &#34;&#34;&#34;Actions at the start of app- lem- and rdg-elements.
+    &#34;&#34;&#34;Actions at the start of `app`- `lem`- and `rdg`-elements.
 
     Use this each time you enter one of these XML elements.
 
@@ -1569,22 +1576,22 @@ But it should be kept in tandem with <code><a title="tf.convert.variants.Variant
 </code></dt>
 <dd>
 <div class="desc"><p>Starts a "sentence" if there is no current sentence.</p>
-<p>When in an rdg-element, witness-dependend "sentence" nodes
-are created for each witness for the rdg.</p>
-<p>Use this before creating a slot and/or at the start of certain elements
+<p>When in an <code>rdg</code>-element, witness-dependent "sentence" nodes
+are created for each witness for the <code>rdg</code>.</p>
+<p>Use this before creating a slot and / or at the start of certain elements
 such as paragraphs.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/variants.py#L365-L386" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/variants.py#L368-L389" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def startSent(self):
     &#34;&#34;&#34;Starts a &#34;sentence&#34; if there is no current sentence.
 
-    When in an rdg-element, witness-dependend &#34;sentence&#34; nodes
-    are created for each witness for the rdg.
+    When in an `rdg`-element, witness-dependent &#34;sentence&#34; nodes
+    are created for each witness for the `rdg`.
 
-    Use this before creating a slot and/or at the start of certain elements
+    Use this before creating a slot and / or at the start of certain elements
     such as paragraphs.
     &#34;&#34;&#34;
 

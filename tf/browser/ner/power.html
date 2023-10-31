@@ -29,14 +29,14 @@
 <code><a title="tf.browser.ner.annotate" href="annotate.html">tf.browser.ner.annotate</a></code> .</p>
 <h1 id="power-annotation-done-in-a-jupyter-notebook">Power annotation done in a Jupyter Notebook</h1>
 <p>If you have a spreadsheet with named entities, and for each entity a list of surface forms,
-then this module takes care to read that spreadsheet, translate it to yaml,
-and then use the yaml as instructions to add entity annotations to the corpus.</p>
+then this module takes care to read that spreadsheet, translate it to YAML,
+and then use the YAML as instructions to add entity annotations to the corpus.</p>
 <p>See this
 <a href="https://nbviewer.jupyter.org/github/HuygensING/suriano/blob/main/programs/powerNer.ipynb">example notebook</a>.</p>
 <p>Here are more details.</p>
 <h2 id="starting-up">Starting up</h2>
 <p>Load the relevant Python modules:</p>
-<pre><code>from tf.app import use
+<pre><code class="language-python">from tf.app import use
 from tf.browser.ner.power import PowerNER
 </code></pre>
 <p>Load your corpus. There are two ways:</p>
@@ -46,16 +46,16 @@ from tf.browser.ner.power import PowerNER
 <p><code>A = use("HuygensING/suriano:clone", checkout="clone")</code></p>
 </li>
 <li>
-<p>Or let Text-Fabric auto-download the latest version and work with that:</p>
+<p>Or let TF auto-download the latest version and work with that:</p>
 <p><code>A = use("HuygensING/suriano")</code></p>
 </li>
 </ul>
 <p>Load the Power-Annotator module:</p>
-<pre><code>PA = PowerNER(A)
+<pre><code class="language-python">PA = PowerNER(A)
 </code></pre>
 <p>The tool expects some input data to be present: configuration and spreadsheets with
 instructions. They can be found in the <code>ner</code> directory.
-If you work with a local github clone, that data resides in
+If you work with a local GitHub clone, that data resides in
 <code>~/github/HuygensING/suriano</code>
 and if you work with an auto-downloaded copy of the data, it is in
 <code>~/text-fabric-data/github/HuygensING/suriano</code>.</p>
@@ -75,24 +75,24 @@ to the <code>ner</code> directory.</p>
 keywords freely for this)</li>
 <li>the third column contains a number of surface forms for this entity,
 separated by <code>;</code></li>
-<li>when the surface forms are peeled out, leading and trailing white space will be
+<li>when the surface forms are peeled out, leading and trailing white-space will be
 stripped</li>
 <li>all other columns will be ignored for the moment; in later versions we may use
 the information in those columns to fill in extra data about the entities;
-but probably that information will not end up in Text-Fabric features.</li>
+but probably that information will not end up in TF features.</li>
 </ul>
-<p>During translation from xlsx to yaml the following happens:</p>
+<p>During translation from XLSX to YAML the following happens:</p>
 <ul>
 <li>An identifier is distilled from the name of the entity;</li>
 <li>Missing kind fields are filled with the default kind.</li>
 </ul>
 <p>These steps need some configuration information from the <code>ner/config.yaml</code> file.</p>
 <p>Translation is done by</p>
-<pre><code>PA.readInstructions(&quot;people&quot;)
+<pre><code class="language-python">PA.readInstructions(&quot;people&quot;)
 </code></pre>
-<p>The resulting yaml ends up next to the
+<p>The resulting YAML ends up next to the
 spreadsheet, and it looks like this:</p>
-<pre><code>christoffel.sticke:
+<pre><code class="language-yaml">christoffel.sticke:
   kind: PER
   name: Christoffel Sticke
   occSpecs: []
@@ -118,7 +118,7 @@ jan.baptist.roelants:
 <h2 id="inventory">Inventory</h2>
 <p>A first step is to find out how many occurrences we find in the corpus for these
 surface forms:</p>
-<pre><code>PA.makeInventory()
+<pre><code class="language-python">PA.makeInventory()
 PA.showInventory()
 </code></pre>
 <p>and the output looks like this</p>
@@ -135,17 +135,17 @@ francois.doubleth        PER   Doublet                  2 x François Doubleth
 
 Total 150
 </code></pre>
-<p>Entities that are in the spreadsheet, but not in de corpus are skipped.</p>
+<p>Entities that are in the spreadsheet, but not in the corpus are skipped.</p>
 <h2 id="marking-up">Marking up</h2>
 <p>In order to create annotations for these entities, we have to switch to an
 annotation set. Let's start a new set and give it the name <code>power</code>.</p>
-<pre><code>PA.setSet(&quot;power&quot;)
+<pre><code class="language-python">PA.setSet(&quot;power&quot;)
 </code></pre>
 <p>If it turns out that <code>power</code> has already annotations, and you want to clear them, say</p>
-<pre><code>PA.resetSet(&quot;power&quot;)
+<pre><code class="language-python">PA.resetSet(&quot;power&quot;)
 </code></pre>
 <p>Now we are ready for the big thing: creating the annotations:</p>
-<pre><code>PA.markEntities()
+<pre><code class="language-python">PA.markEntities()
 </code></pre>
 <p>It outputs this message:</p>
 <pre><code>Already present:     0 x
@@ -154,12 +154,12 @@ Added:             150 x
 <h2 id="inspection">Inspection</h2>
 <p>We now revert to lower-level methods from the <code><a title="tf.browser.ner.annotate" href="annotate.html">tf.browser.ner.annotate</a></code> class to
 inspect some of the results.</p>
-<pre><code>results = PA.filterContent(bFind=&quot;pach&quot;, bFindC=False, anyEnt=True, showStats=None)
+<pre><code class="language-python">results = PA.filterContent(bFind=&quot;pach&quot;, bFindC=False, anyEnt=True, showStats=None)
 </code></pre>
 <p>Here we filtered the chunks (paragraphs) to those that contain the string <code>pach</code>,
 in a case-insensitive way, and that contain at least one entity.</p>
 <p>There 6 of them, and we can show them:</p>
-<pre><code>PA.showContent(results)
+<pre><code class="language-python">PA.showContent(results)
 </code></pre>
 <p><img alt="browser" src="../../images/Annotate/pach.png"></p>
 <p>The resulting entities are in <code>_temp/power/entities.tsv</code> and look like this:</p>
@@ -184,13 +184,13 @@ Lines consist of tab separated fields:</p>
 <li>entity identifier</li>
 <li>entity kind</li>
 <li>remaining fields: slots, i.e. the textual positions occupied by the occurrence.
-Some entity occurrences consist of multiple words/tokens, hence have multiple
+Some entity occurrences consist of multiple words / tokens, hence have multiple
 slots.</li>
 </ul>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/power.py#L1-L505" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/power.py#L1-L505" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;API for rule-based entity marking.
 
@@ -202,8 +202,8 @@ To see how this fits among all the modules of this package, see
 # Power annotation done in a Jupyter Notebook
 
 If you have a spreadsheet with named entities, and for each entity a list of surface forms,
-then this module takes care to read that spreadsheet, translate it to yaml,
-and then use the yaml as instructions to add entity annotations to the corpus.
+then this module takes care to read that spreadsheet, translate it to YAML,
+and then use the YAML as instructions to add entity annotations to the corpus.
 
 See this
 [example notebook](https://nbviewer.jupyter.org/github/HuygensING/suriano/blob/main/programs/powerNer.ipynb).
@@ -214,7 +214,7 @@ Here are more details.
 
 Load the relevant Python modules:
 
-```
+``` python
 from tf.app import use
 from tf.browser.ner.power import PowerNER
 ```
@@ -227,7 +227,7 @@ Load your corpus. There are two ways:
     A = use(&#34;HuygensING/suriano:clone&#34;, checkout=&#34;clone&#34;)
     ```
 
-*   Or let Text-Fabric auto-download the latest version and work with that:
+*   Or let TF auto-download the latest version and work with that:
 
     ```
     A = use(&#34;HuygensING/suriano&#34;)
@@ -235,13 +235,13 @@ Load your corpus. There are two ways:
 
 Load the Power-Annotator module:
 
-```
+``` python
 PA = PowerNER(A)
 ```
 
 The tool expects some input data to be present: configuration and spreadsheets with
 instructions. They can be found in the `ner` directory.
-If you work with a local github clone, that data resides in
+If you work with a local GitHub clone, that data resides in
 `~/github/HuygensING/suriano`
 and if you work with an auto-downloaded copy of the data, it is in
 `~/text-fabric-data/github/HuygensING/suriano`.
@@ -267,13 +267,13 @@ The spreadsheet will be read as follows:
     keywords freely for this)
 *   the third column contains a number of surface forms for this entity,
     separated by `;`
-*   when the surface forms are peeled out, leading and trailing white space will be
+*   when the surface forms are peeled out, leading and trailing white-space will be
     stripped
 *   all other columns will be ignored for the moment; in later versions we may use
     the information in those columns to fill in extra data about the entities;
-    but probably that information will not end up in Text-Fabric features.
+    but probably that information will not end up in TF features.
 
-During translation from xlsx to yaml the following happens:
+During translation from XLSX to YAML the following happens:
 
 *   An identifier is distilled from the name of the entity;
 *   Missing kind fields are filled with the default kind.
@@ -282,14 +282,14 @@ These steps need some configuration information from the `ner/config.yaml` file.
 
 Translation is done by
 
-```
+``` python
 PA.readInstructions(&#34;people&#34;)
 ```
 
-The resulting yaml ends up next to the
+The resulting YAML ends up next to the
 spreadsheet, and it looks like this:
 
-```
+``` yaml
 christoffel.sticke:
   kind: PER
   name: Christoffel Sticke
@@ -319,7 +319,7 @@ jan.baptist.roelants:
 A first step is to find out how many occurrences we find in the corpus for these
 surface forms:
 
-```
+``` python
 PA.makeInventory()
 PA.showInventory()
 ```
@@ -341,26 +341,26 @@ francois.doubleth        PER   Doublet                  2 x François Doubleth
 Total 150
 ```
 
-Entities that are in the spreadsheet, but not in de corpus are skipped.
+Entities that are in the spreadsheet, but not in the corpus are skipped.
 
 ## Marking up
 
 In order to create annotations for these entities, we have to switch to an
 annotation set. Let&#39;s start a new set and give it the name `power`.
 
-```
+``` python
 PA.setSet(&#34;power&#34;)
 ```
 
 If it turns out that `power` has already annotations, and you want to clear them, say
 
-```
+``` python
 PA.resetSet(&#34;power&#34;)
 ```
 
 Now we are ready for the big thing: creating the annotations:
 
-```
+``` python
 PA.markEntities()
 ```
 
@@ -376,7 +376,7 @@ Added:             150 x
 We now revert to lower-level methods from the `tf.browser.ner.annotate` class to
 inspect some of the results.
 
-```
+``` python
 results = PA.filterContent(bFind=&#34;pach&#34;, bFindC=False, anyEnt=True, showStats=None)
 ```
 
@@ -385,7 +385,7 @@ in a case-insensitive way, and that contain at least one entity.
 
 There 6 of them, and we can show them:
 
-```
+``` python
 PA.showContent(results)
 ```
 
@@ -416,7 +416,7 @@ Lines consist of tab separated fields:
 *   entity identifier
 *   entity kind
 *   remaining fields: slots, i.e. the textual positions occupied by the occurrence.
-    Some entity occurrences consist of multiple words/tokens, hence have multiple
+    Some entity occurrences consist of multiple words / tokens, hence have multiple
     slots.
 
 &#34;&#34;&#34;
@@ -433,7 +433,7 @@ class PowerNER(Annotate):
     def __init__(self, app):
         &#34;&#34;&#34;Bulk entity annotation.
 
-        Contains methods to translate spreadsheets to yaml files with markup
+        Contains methods to translate spreadsheets to YAML files with markup
         instructions; to locate all relevant occurrences; and to mark them up
         properly.
 
@@ -460,7 +460,7 @@ class PowerNER(Annotate):
         or if the corresponding YAML file is out of data, the spreadsheet will be
         converted to YAML.
 
-        The info in the resulting yaml file is stored as attribute
+        The info in the resulting YAML file is stored as attribute
         `instructions` in this object.
 
         A report of the instructions will be shown in the output.
@@ -474,7 +474,7 @@ class PowerNER(Annotate):
         sheetName: string
             The file name without extension of the spreadsheet.
             The spreadsheet is expected in the `ner/sheets` directory.
-            The yaml file ends up in the same directory, with the same name and
+            The YAML file ends up in the same directory, with the same name and
             extension `.yaml`
         force: boolean, optional False
             If True, the conversion from Excel to YAML will take place anyhow, provided
@@ -714,7 +714,7 @@ class PowerNER(Annotate):
 </code></dt>
 <dd>
 <div class="desc"><p>Bulk entity annotation.</p>
-<p>Contains methods to translate spreadsheets to yaml files with markup
+<p>Contains methods to translate spreadsheets to YAML files with markup
 instructions; to locate all relevant occurrences; and to mark them up
 properly.</p>
 <p>It is a high-level class, building on the lower-level tools provided
@@ -727,13 +727,13 @@ by the Annotate class on which it is based.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/power.py#L238-L505" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/power.py#L238-L505" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PowerNER(Annotate):
     def __init__(self, app):
         &#34;&#34;&#34;Bulk entity annotation.
 
-        Contains methods to translate spreadsheets to yaml files with markup
+        Contains methods to translate spreadsheets to YAML files with markup
         instructions; to locate all relevant occurrences; and to mark them up
         properly.
 
@@ -760,7 +760,7 @@ by the Annotate class on which it is based.</p>
         or if the corresponding YAML file is out of data, the spreadsheet will be
         converted to YAML.
 
-        The info in the resulting yaml file is stored as attribute
+        The info in the resulting YAML file is stored as attribute
         `instructions` in this object.
 
         A report of the instructions will be shown in the output.
@@ -774,7 +774,7 @@ by the Annotate class on which it is based.</p>
         sheetName: string
             The file name without extension of the spreadsheet.
             The spreadsheet is expected in the `ner/sheets` directory.
-            The yaml file ends up in the same directory, with the same name and
+            The YAML file ends up in the same directory, with the same name and
             extension `.yaml`
         force: boolean, optional False
             If True, the conversion from Excel to YAML will take place anyhow, provided
@@ -1033,7 +1033,7 @@ slot sequences where those token sequences occur in the corpus.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/power.py#L413-L434" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/power.py#L413-L434" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeInventory(self):
     &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
@@ -1071,7 +1071,7 @@ If there is no inventory yet, it will be created.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/power.py#L464-L505" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/power.py#L464-L505" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def markEntities(self):
     &#34;&#34;&#34;Marks up the members of the inventory as entities.
@@ -1125,7 +1125,7 @@ If there is no inventory yet, it will be created.</p></div>
 <p>If an Excel spreadsheet is present and no corresponding YAML file is present,
 or if the corresponding YAML file is out of data, the spreadsheet will be
 converted to YAML.</p>
-<p>The info in the resulting yaml file is stored as attribute
+<p>The info in the resulting YAML file is stored as attribute
 <code>instructions</code> in this object.</p>
 <p>A report of the instructions will be shown in the output.</p>
 <p>Reading instructions will invalidate the <code>inventory</code> member of this object,
@@ -1136,7 +1136,7 @@ of the instructions.</p>
 <dt><strong><code>sheetName</code></strong> :&ensp;<code>string</code></dt>
 <dd>The file name without extension of the spreadsheet.
 The spreadsheet is expected in the <code>ner/sheets</code> directory.
-The yaml file ends up in the same directory, with the same name and
+The YAML file ends up in the same directory, with the same name and
 extension <code>.yaml</code></dd>
 <dt><strong><code>force</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>If True, the conversion from Excel to YAML will take place anyhow, provided
@@ -1145,7 +1145,7 @@ the Excel sheet exists.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/power.py#L262-L411" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/power.py#L262-L411" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readInstructions(self, sheetName, force=False):
     &#34;&#34;&#34;Reads an Excel or YAML file with entity recognition instructions.
@@ -1154,7 +1154,7 @@ the Excel sheet exists.</dd>
     or if the corresponding YAML file is out of data, the spreadsheet will be
     converted to YAML.
 
-    The info in the resulting yaml file is stored as attribute
+    The info in the resulting YAML file is stored as attribute
     `instructions` in this object.
 
     A report of the instructions will be shown in the output.
@@ -1168,7 +1168,7 @@ the Excel sheet exists.</dd>
     sheetName: string
         The file name without extension of the spreadsheet.
         The spreadsheet is expected in the `ner/sheets` directory.
-        The yaml file ends up in the same directory, with the same name and
+        The YAML file ends up in the same directory, with the same name and
         extension `.yaml`
     force: boolean, optional False
         If True, the conversion from Excel to YAML will take place anyhow, provided
@@ -1309,7 +1309,7 @@ of which they are surface forms.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/power.py#L436-L462" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/power.py#L436-L462" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showInventory(self):
     &#34;&#34;&#34;Shows the inventory.

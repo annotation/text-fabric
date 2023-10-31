@@ -30,7 +30,7 @@ in any TF dataset, this pays off.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/otypefeature.py#L1-L133" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/otypefeature.py#L1-L133" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Access to *otype* feature data.
@@ -124,7 +124,7 @@ class OtypeFeature:
             (`tf.core.nodes`)
         &#34;&#34;&#34;
 
-        # NB: the support attribute has been added by precomputing __levels__
+        # NB: the support attribute has been added by pre-computing __levels__
         if val in self.support:
             (b, e) = self.support[val]
             # N.B. for a long time we delivered range(b, e + 1)
@@ -160,7 +160,7 @@ class OtypeFeature:
             The start and end node of the interval of nodes with this type.
         &#34;&#34;&#34;
 
-        # NB: the support attribute has been added by precomputing __levels__
+        # NB: the support attribute has been added by pre-computing __levels__
         if val in self.support:
             return self.support[val]
         else:
@@ -185,7 +185,7 @@ class OtypeFeature:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/otypefeature.py#L11-L133" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/otypefeature.py#L11-L133" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class OtypeFeature:
     def __init__(self, api, metaData, data):
@@ -269,7 +269,7 @@ class OtypeFeature:
             (`tf.core.nodes`)
         &#34;&#34;&#34;
 
-        # NB: the support attribute has been added by precomputing __levels__
+        # NB: the support attribute has been added by pre-computing __levels__
         if val in self.support:
             (b, e) = self.support[val]
             # N.B. for a long time we delivered range(b, e + 1)
@@ -305,7 +305,7 @@ class OtypeFeature:
             The start and end node of the interval of nodes with this type.
         &#34;&#34;&#34;
 
-        # NB: the support attribute has been added by precomputing __levels__
+        # NB: the support attribute has been added by pre-computing __levels__
         if val in self.support:
             return self.support[val]
         else:
@@ -346,7 +346,7 @@ in the <code>.<a title="tf" href="../index.html">tf</a></code> feature file.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/otypefeature.py#L34-L49" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/otypefeature.py#L34-L49" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def items(self):
     &#34;&#34;&#34;As in `tf.core.nodefeature.NodeFeature.items`.&#34;&#34;&#34;
@@ -387,7 +387,7 @@ in the <code>.<a title="tf" href="../index.html">tf</a></code> feature file.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/otypefeature.py#L75-L109" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/otypefeature.py#L75-L109" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def s(self, val):
     &#34;&#34;&#34;Query all nodes having a specified node type.
@@ -407,7 +407,7 @@ in the <code>.<a title="tf" href="../index.html">tf</a></code> feature file.</p>
         (`tf.core.nodes`)
     &#34;&#34;&#34;
 
-    # NB: the support attribute has been added by precomputing __levels__
+    # NB: the support attribute has been added by pre-computing __levels__
     if val in self.support:
         (b, e) = self.support[val]
         # N.B. for a long time we delivered range(b, e + 1)
@@ -447,7 +447,7 @@ The first interval, <code>1:maxSlot + 1</code> is reserved for the slot type.</p
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/otypefeature.py#L111-L133" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/otypefeature.py#L111-L133" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sInterval(self, val):
     &#34;&#34;&#34;The interval of nodes having a specified node type.
@@ -467,7 +467,7 @@ The first interval, <code>1:maxSlot + 1</code> is reserved for the slot type.</p
         The start and end node of the interval of nodes with this type.
     &#34;&#34;&#34;
 
-    # NB: the support attribute has been added by precomputing __levels__
+    # NB: the support attribute has been added by pre-computing __levels__
     if val in self.support:
         return self.support[val]
     else:
@@ -493,7 +493,7 @@ always a string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/otypefeature.py#L51-L73" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/otypefeature.py#L51-L73" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def v(self, n):
     &#34;&#34;&#34;Get the node type of a node.

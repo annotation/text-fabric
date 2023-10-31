@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>tf.core.prepare API documentation</title>
-<meta name="description" content="Precompute data …" />
+<meta name="description" content="Pre-compute data …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -23,26 +23,26 @@
 <h1 class="title">Module <code>tf.core.prepare</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="precompute-data">Precompute data.</h1>
-<p>For Text-Fabric to work efficiently, some
-derived data needs to be precomputed.
-The precomputed data has a similar function as indexes in a database.</p>
-<p>Precomputation is triggered when <code><a title="tf.fabric.Fabric" href="../fabric.html#tf.fabric.Fabric">Fabric</a></code> loads features, and
+<h1 id="pre-compute-data">Pre-compute data.</h1>
+<p>For TF to work efficiently, some
+derived data needs to be pre-computed.
+The pre-computed data has a similar function as indexes in a database.</p>
+<p>Pre-computation is triggered when <code><a title="tf.fabric.Fabric" href="../fabric.html#tf.fabric.Fabric">Fabric</a></code> loads features, and
 the order and nature of the steps is configured in
 <code><a title="tf.core.fabric.PRECOMPUTE" href="fabric.html#tf.core.fabric.PRECOMPUTE">PRECOMPUTE</a></code>.</p>
 <p>The functions in this module implement those tasks.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/prepare.py#L1-L775" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/prepare.py#L1-L773" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-# Precompute data.
+# Pre-compute data.
 
-For Text-Fabric to work efficiently, some  derived data needs to be precomputed.
-The precomputed data has a similar function as indexes in a database.
+For TF to work efficiently, some  derived data needs to be pre-computed.
+The pre-computed data has a similar function as indexes in a database.
 
-Precomputation is triggered when `tf.fabric.Fabric` loads features, and
+Pre-computation is triggered when `tf.fabric.Fabric` loads features, and
 the order and nature of the steps is configured in
 `tf.core.fabric.PRECOMPUTE`.
 
@@ -68,11 +68,11 @@ def levels(info, error, otype, oslots, otext):
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     oslots: iterable
-        The data of the *oslots* feature.
+        The data of the `oslots` feature.
     otext: iterable
-        The data of the *otext* feature.
+        The data of the `otext` feature.
 
     Returns
     -------
@@ -94,8 +94,8 @@ def levels(info, error, otype, oslots, otext):
         that type usually occupy. The bigger the average object, the lower the levels.
         Books have the lowest level, words the highest level.
 
-        However, this can be overruled. Suppose you have a node type *phrase* and above
-        it a node type *cluster*, i.e. phrases are contained in clusters, but not vice
+        However, this can be overruled. Suppose you have a node type `phrase` and above
+        it a node type `cluster`, i.e. phrases are contained in clusters, but not vice
         versa. If all phrases are contained in clusters, and some clusters have more
         than one phrase, the automatic level ranking of node types works out well in
         this case. But if clusters only have very small phrases, and the big phrases do
@@ -104,7 +104,7 @@ def levels(info, error, otype, oslots, otext):
 
         In general, it is too expensive to try to compute the levels in a sophisticated
         way. In order to remedy cases where the algorithm assigns wrong levels, you can
-        add a `@levels` and/or `@levelsConstraint` key to the `otext` config feature.
+        add a `@levels` and / or `@levelsConstraint` key to the `otext` config feature.
         See `tf.core.text`.
     &#34;&#34;&#34;
 
@@ -184,11 +184,11 @@ def order(info, error, otype, oslots, levels):
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     oslots: iterable
-        The data of the *oslots* feature.
+        The data of the `oslots` feature.
     levels: tuple
-        The data of the *levels* precompute step.
+        The data of the `levels` pre-computation step.
 
     Returns
     -------
@@ -259,9 +259,9 @@ def rank(info, error, otype, order):
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     order: tuple
-        The data of the *order* feature.
+        The data of the `order` feature.
 
     Returns
     -------
@@ -291,11 +291,11 @@ def levUp(info, error, otype, oslots, rank):
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     oslots: iterable
-        The data of the *oslots* feature.
+        The data of the `oslots` feature.
     rank: tuple
-        The data of the *rank* precompute step.
+        The data of the `rank` pre-computation step.
 
     Returns
     -------
@@ -381,22 +381,22 @@ def levDown(info, error, otype, levUp, rank):
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     levUp: iterable
-        The data of the *levUp* precompute step.
+        The data of the `levUp` pre-computation step.
     rank: tuple
-        The data of the *rank* precompute step.
+        The data of the `rank` pre-computation step.
 
     Returns
     -------
     tuple
-        The *n*-th member is an tuple of the embedded nodes of *n + maxSlot*.
+        The `n`-th member is an tuple of the embedded nodes of `n + maxSlot`.
         Those tuples are sorted in canonical order (`tf.core.nodes`).
 
     !!! hint &#34;Memory efficiency&#34;
         Slot nodes do not have embedded nodes, so they do not have to occupy
         space in this tuple. Hence the first member are the embedded nodes
-        of node *maxSlot + 1*.
+        of node `maxSlot + 1`.
 
     !!! caution &#34;Use with care&#34;
         It is not advisable to use this data directly by `C.levDown.data`,
@@ -435,12 +435,12 @@ def characters(info, error, otext, tFormats, *tFeats):
     error: function
         Method to write error messages to the console.
     otext: iterable
-        The data of the *otext* feature.
-    tFormats:
+        The data of the `otext` feature.
+    tFormats: dict
         Dictionary keyed by text format and valued by the tuple of features
         used in that format.
     tFeats: iterable
-        Each tFeat is the name and the data of a text feature.
+        Each `tFeat` is the name and the data of a text feature.
         i.e. a feature used in text formats.
 
     Returns
@@ -495,20 +495,20 @@ def boundary(info, error, otype, oslots, rank):
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     oslots: iterable
-        The data of the *oslots* feature.
+        The data of the `oslots` feature.
     rank: tuple
-        The data of the *rank* precompute step.
+        The data of the `rank` pre-computation step.
 
     Returns
     -------
     tuple
         *   first: tuple of tuple
-            The *n*-th member is the tuple of nodes that start at slot *n*,
+            The `n`-th member is the tuple of nodes that start at slot `n`,
             ordered in *reversed* canonical order (`tf.core.nodes`);
         *   last: tuple of tuple
-            The *n*-th member is the tuple of nodes that end at slot *n*,
+            The `n`-th member is the tuple of nodes that end at slot `n`,
             ordered in canonical order;
 
     Notes
@@ -545,14 +545,14 @@ def boundary(info, error, otype, oslots, rank):
 def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     &#34;&#34;&#34;Computes section data.
 
-    Text-Fabric datasets may define up to three section levels, roughly corresponding
+    TF datasets may define up to three section levels, roughly corresponding
     with a volume, a chapter, a paragraph.
 
     If the corpus has a richer section structure, it is also possible
     a different, more flexible and more extensive nest of structural sections.
     See `structure`.
 
-    Text-Fabric must be able to go from sections at one level to the sections
+    TF must be able to go from sections at one level to the sections
     at one level lower. It must also be able to map section headings
     to nodes. For this, the section features are needed, since they
     contain the section headings.
@@ -564,32 +564,32 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     oslots: iterable
-        The data of the *oslots* feature.
+        The data of the `oslots` feature.
     otext: iterable
-        The data of the *otext* feature.
+        The data of the `otext` feature.
     levUp: tuple
-        The data of the *levUp* precompute step.
+        The data of the `levUp` pre-computation step.
     levels: tuple
-        The data of the *levels* precompute step.
+        The data of the `levels` pre-computation step.
     sFeats: iterable
-        Each sFeat is the data of a section feature.
+        Each `sFeat` is the data of a section feature.
 
     Returns
     -------
     tuple
-        *   sec1
+        *   `sec1`
             Mapping from section-level-1 nodes to mappings from
-            section-level-2 headings to section-level2 nodes.
-        *   sec2
+            section-level-2 headings to section-level-2 nodes.
+        *   `sec2`
             Mapping from section-level-1 nodes to mappings from
             section-level-2 headings to mappings from
-            section-level3 headings to section-level-3 nodes.
+            section-level-3 headings to section-level-3 nodes.
 
     Warnings
     --------
-    Note that the terms `book`, `chapter`, `verse` are not baked into Text-Fabric.
+    Note that the terms `book`, `chapter`, `verse` are not baked into TF.
     It is the corpus data, especially the `otext` config feature that
     spells out the names of the sections.
 
@@ -678,11 +678,11 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
     a flexible and extensive nest of structural sections.
 
     Independent of this,
-    Text-Fabric datasets may also define up to three section levels,
+    TF datasets may also define up to three section levels,
     roughly corresponding with a volume, a chapter, a paragraph.
     See `sections`.
 
-    Text-Fabric must be able to go from sections at one level to the sections
+    TF must be able to go from sections at one level to the sections
     at one level lower. It must also be able to map section headings
     to nodes. For this, the section features are needed, since they
     contain the section headings.
@@ -694,29 +694,27 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     oslots: iterable
-        The data of the *oslots* feature.
+        The data of the `oslots` feature.
     otext: iterable
-        The data of the *otext* feature.
+        The data of the `otext` feature.
     rank: tuple
-        The data of the *rank* precompute step.
+        The data of the `rank` pre-computation step.
     levUp: tuple
-        The data of the *levUp* precompute step.
+        The data of the `levUp` pre-computation step.
     sFeats: iterable
-        Each sFeat the data of a section feature.
+        Each `sFeat` the data of a section feature.
 
     Returns
     -------
     tuple
-        *   headingFromNode
-            (Mapping from nodes to section keys)
-        *   nodeFromHeading
-            (Mapping from section keys to nodes)
-        *   multiple
-        *   top
-        *   up
-        *   down
+        *   `headingFromNode` (Mapping from nodes to section keys)
+        *   `nodeFromHeading` (Mapping from section keys to nodes)
+        *   `multiple`
+        *   `top`
+        *   `up`
+        *   `down`
 
     Notes
     -----
@@ -838,11 +836,11 @@ and
 <dt><strong><code>error</code></strong> :&ensp;<code>function</code></dt>
 <dd>Method to write error messages to the console.</dd>
 <dt><strong><code>otype</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>The data of the <em>otype</em> feature.</dd>
+<dd>The data of the <code>otype</code> feature.</dd>
 <dt><strong><code>oslots</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>The data of the <em>oslots</em> feature.</dd>
+<dd>The data of the <code>oslots</code> feature.</dd>
 <dt><strong><code>rank</code></strong> :&ensp;<code>tuple</code></dt>
-<dd>The data of the <em>rank</em> precompute step.</dd>
+<dd>The data of the <code><a title="tf.core.prepare.rank" href="#tf.core.prepare.rank">rank()</a></code> pre-computation step.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -850,10 +848,10 @@ and
 <dd>
 <ul>
 <li>first: tuple of tuple
-The <em>n</em>-th member is the tuple of nodes that start at slot <em>n</em>,
+The <code>n</code>-th member is the tuple of nodes that start at slot <code>n</code>,
 ordered in <em>reversed</em> canonical order (<code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code>);</li>
 <li>last: tuple of tuple
-The <em>n</em>-th member is the tuple of nodes that end at slot <em>n</em>,
+The <code>n</code>-th member is the tuple of nodes that end at slot <code>n</code>,
 ordered in canonical order;</li>
 </ul>
 </dd>
@@ -867,7 +865,7 @@ reversed canonical order?</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/prepare.py#L442-L504" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/prepare.py#L442-L504" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def boundary(info, error, otype, oslots, rank):
     &#34;&#34;&#34;Computes boundary data.
@@ -887,20 +885,20 @@ reversed canonical order?</p>
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     oslots: iterable
-        The data of the *oslots* feature.
+        The data of the `oslots` feature.
     rank: tuple
-        The data of the *rank* precompute step.
+        The data of the `rank` pre-computation step.
 
     Returns
     -------
     tuple
         *   first: tuple of tuple
-            The *n*-th member is the tuple of nodes that start at slot *n*,
+            The `n`-th member is the tuple of nodes that start at slot `n`,
             ordered in *reversed* canonical order (`tf.core.nodes`);
         *   last: tuple of tuple
-            The *n*-th member is the tuple of nodes that end at slot *n*,
+            The `n`-th member is the tuple of nodes that end at slot `n`,
             ordered in canonical order;
 
     Notes
@@ -948,12 +946,12 @@ is made.</p>
 <dt><strong><code>error</code></strong> :&ensp;<code>function</code></dt>
 <dd>Method to write error messages to the console.</dd>
 <dt><strong><code>otext</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>The data of the <em>otext</em> feature.</dd>
-<dt>tFormats:</dt>
-<dt>Dictionary keyed by text format and valued by the tuple of features</dt>
-<dt>used in that format.</dt>
+<dd>The data of the <code>otext</code> feature.</dd>
+<dt><strong><code>tFormats</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Dictionary keyed by text format and valued by the tuple of features
+used in that format.</dd>
 <dt><strong><code>tFeats</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>Each tFeat is the name and the data of a text feature.
+<dd>Each <code>tFeat</code> is the name and the data of a text feature.
 i.e. a feature used in text formats.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -966,7 +964,7 @@ of that character in the whole corpus when rendered with that format.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/prepare.py#L387-L439" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/prepare.py#L387-L439" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def characters(info, error, otext, tFormats, *tFeats):
     &#34;&#34;&#34;Computes character data.
@@ -981,12 +979,12 @@ of that character in the whole corpus when rendered with that format.</dd>
     error: function
         Method to write error messages to the console.
     otext: iterable
-        The data of the *otext* feature.
-    tFormats:
+        The data of the `otext` feature.
+    tFormats: dict
         Dictionary keyed by text format and valued by the tuple of features
         used in that format.
     tFeats: iterable
-        Each tFeat is the name and the data of a text feature.
+        Each `tFeat` is the name and the data of a text feature.
         i.e. a feature used in text formats.
 
     Returns
@@ -1038,23 +1036,23 @@ the level-down data.</p>
 <dt><strong><code>error</code></strong> :&ensp;<code>function</code></dt>
 <dd>Method to write error messages to the console.</dd>
 <dt><strong><code>otype</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>The data of the <em>otype</em> feature.</dd>
+<dd>The data of the <code>otype</code> feature.</dd>
 <dt><strong><code>levUp</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>The data of the <em>levUp</em> precompute step.</dd>
+<dd>The data of the <code><a title="tf.core.prepare.levUp" href="#tf.core.prepare.levUp">levUp()</a></code> pre-computation step.</dd>
 <dt><strong><code>rank</code></strong> :&ensp;<code>tuple</code></dt>
-<dd>The data of the <em>rank</em> precompute step.</dd>
+<dd>The data of the <code><a title="tf.core.prepare.rank" href="#tf.core.prepare.rank">rank()</a></code> pre-computation step.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>tuple</code></dt>
-<dd>The <em>n</em>-th member is an tuple of the embedded nodes of <em>n + maxSlot</em>.
+<dd>The <code>n</code>-th member is an tuple of the embedded nodes of <code>n + maxSlot</code>.
 Those tuples are sorted in canonical order (<code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code>).</dd>
 </dl>
 <div class="admonition hint">
 <p class="admonition-title">Memory efficiency</p>
 <p>Slot nodes do not have embedded nodes, so they do not have to occupy
 space in this tuple. Hence the first member are the embedded nodes
-of node <em>maxSlot + 1</em>.</p>
+of node <code>maxSlot + 1</code>.</p>
 </div>
 <div class="admonition caution">
 <p class="admonition-title">Use with care</p>
@@ -1066,7 +1064,7 @@ this raw data might be a deal.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/prepare.py#L331-L384" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/prepare.py#L331-L384" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levDown(info, error, otype, levUp, rank):
     &#34;&#34;&#34;Computes level-down data.
@@ -1083,22 +1081,22 @@ this raw data might be a deal.</p>
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     levUp: iterable
-        The data of the *levUp* precompute step.
+        The data of the `levUp` pre-computation step.
     rank: tuple
-        The data of the *rank* precompute step.
+        The data of the `rank` pre-computation step.
 
     Returns
     -------
     tuple
-        The *n*-th member is an tuple of the embedded nodes of *n + maxSlot*.
+        The `n`-th member is an tuple of the embedded nodes of `n + maxSlot`.
         Those tuples are sorted in canonical order (`tf.core.nodes`).
 
     !!! hint &#34;Memory efficiency&#34;
         Slot nodes do not have embedded nodes, so they do not have to occupy
         space in this tuple. Hence the first member are the embedded nodes
-        of node *maxSlot + 1*.
+        of node `maxSlot + 1`.
 
     !!! caution &#34;Use with care&#34;
         It is not advisable to use this data directly by `C.levDown.data`,
@@ -1139,11 +1137,11 @@ the level-up data.</p>
 <dt><strong><code>error</code></strong> :&ensp;<code>function</code></dt>
 <dd>Method to write error messages to the console.</dd>
 <dt><strong><code>otype</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>The data of the <em>otype</em> feature.</dd>
+<dd>The data of the <code>otype</code> feature.</dd>
 <dt><strong><code>oslots</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>The data of the <em>oslots</em> feature.</dd>
+<dd>The data of the <code>oslots</code> feature.</dd>
 <dt><strong><code>rank</code></strong> :&ensp;<code>tuple</code></dt>
-<dd>The data of the <em>rank</em> precompute step.</dd>
+<dd>The data of the <code><a title="tf.core.prepare.rank" href="#tf.core.prepare.rank">rank()</a></code> pre-computation step.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -1165,7 +1163,7 @@ this raw data might be a deal.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/prepare.py#L241-L328" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/prepare.py#L241-L328" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levUp(info, error, otype, oslots, rank):
     &#34;&#34;&#34;Computes level-up data.
@@ -1182,11 +1180,11 @@ this raw data might be a deal.</p></div>
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     oslots: iterable
-        The data of the *oslots* feature.
+        The data of the `oslots` feature.
     rank: tuple
-        The data of the *rank* precompute step.
+        The data of the `rank` pre-computation step.
 
     Returns
     -------
@@ -1271,11 +1269,11 @@ and order the node types on that.</p>
 <dt><strong><code>error</code></strong> :&ensp;<code>function</code></dt>
 <dd>Method to write error messages to the console.</dd>
 <dt><strong><code>otype</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>The data of the <em>otype</em> feature.</dd>
+<dd>The data of the <code>otype</code> feature.</dd>
 <dt><strong><code>oslots</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>The data of the <em>oslots</em> feature.</dd>
+<dd>The data of the <code>oslots</code> feature.</dd>
 <dt><strong><code>otext</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>The data of the <em>otext</em> feature.</dd>
+<dd>The data of the <code>otext</code> feature.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -1299,8 +1297,8 @@ and order the node types on that.</p>
 <p>All node types have a level, defined by the average amount of slots object of
 that type usually occupy. The bigger the average object, the lower the levels.
 Books have the lowest level, words the highest level.</p>
-<p>However, this can be overruled. Suppose you have a node type <em>phrase</em> and above
-it a node type <em>cluster</em>, i.e. phrases are contained in clusters, but not vice
+<p>However, this can be overruled. Suppose you have a node type <code>phrase</code> and above
+it a node type <code>cluster</code>, i.e. phrases are contained in clusters, but not vice
 versa. If all phrases are contained in clusters, and some clusters have more
 than one phrase, the automatic level ranking of node types works out well in
 this case. But if clusters only have very small phrases, and the big phrases do
@@ -1308,13 +1306,13 @@ not occur in clusters, then the algorithm may assign a lower rank to clusters
 than to phrases.</p>
 <p>In general, it is too expensive to try to compute the levels in a sophisticated
 way. In order to remedy cases where the algorithm assigns wrong levels, you can
-add a <code>@levels</code> and/or <code>@levelsConstraint</code> key to the <code>otext</code> config feature.
+add a <code>@levels</code> and / or <code>@levelsConstraint</code> key to the <code>otext</code> config feature.
 See <code><a title="tf.core.text" href="text.html">tf.core.text</a></code>.</p>
 </div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/prepare.py#L20-L131" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/prepare.py#L20-L131" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levels(info, error, otype, oslots, otext):
     &#34;&#34;&#34;Computes level data.
@@ -1329,11 +1327,11 @@ See <code><a title="tf.core.text" href="text.html">tf.core.text</a></code>.</p>
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     oslots: iterable
-        The data of the *oslots* feature.
+        The data of the `oslots` feature.
     otext: iterable
-        The data of the *otext* feature.
+        The data of the `otext` feature.
 
     Returns
     -------
@@ -1355,8 +1353,8 @@ See <code><a title="tf.core.text" href="text.html">tf.core.text</a></code>.</p>
         that type usually occupy. The bigger the average object, the lower the levels.
         Books have the lowest level, words the highest level.
 
-        However, this can be overruled. Suppose you have a node type *phrase* and above
-        it a node type *cluster*, i.e. phrases are contained in clusters, but not vice
+        However, this can be overruled. Suppose you have a node type `phrase` and above
+        it a node type `cluster`, i.e. phrases are contained in clusters, but not vice
         versa. If all phrases are contained in clusters, and some clusters have more
         than one phrase, the automatic level ranking of node types works out well in
         this case. But if clusters only have very small phrases, and the big phrases do
@@ -1365,7 +1363,7 @@ See <code><a title="tf.core.text" href="text.html">tf.core.text</a></code>.</p>
 
         In general, it is too expensive to try to compute the levels in a sophisticated
         way. In order to remedy cases where the algorithm assigns wrong levels, you can
-        add a `@levels` and/or `@levelsConstraint` key to the `otext` config feature.
+        add a `@levels` and / or `@levelsConstraint` key to the `otext` config feature.
         See `tf.core.text`.
     &#34;&#34;&#34;
 
@@ -1446,11 +1444,11 @@ account.</p>
 <dt><strong><code>error</code></strong> :&ensp;<code>function</code></dt>
 <dd>Method to write error messages to the console.</dd>
 <dt><strong><code>otype</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>The data of the <em>otype</em> feature.</dd>
+<dd>The data of the <code>otype</code> feature.</dd>
 <dt><strong><code>oslots</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>The data of the <em>oslots</em> feature.</dd>
+<dd>The data of the <code>oslots</code> feature.</dd>
 <dt><strong><code>levels</code></strong> :&ensp;<code>tuple</code></dt>
-<dd>The data of the <em>levels</em> precompute step.</dd>
+<dd>The data of the <code><a title="tf.core.prepare.levels" href="#tf.core.prepare.levels">levels()</a></code> pre-computation step.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -1465,7 +1463,7 @@ account.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/prepare.py#L134-L208" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/prepare.py#L134-L208" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def order(info, error, otype, oslots, levels):
     &#34;&#34;&#34;Computes order data for the canonical ordering.
@@ -1482,11 +1480,11 @@ account.</p>
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     oslots: iterable
-        The data of the *oslots* feature.
+        The data of the `oslots` feature.
     levels: tuple
-        The data of the *levels* precompute step.
+        The data of the `levels` pre-computation step.
 
     Returns
     -------
@@ -1558,9 +1556,9 @@ canonical order (see <code><a title="tf.core.nodes" href="nodes.html">tf.core.no
 <dt><strong><code>error</code></strong> :&ensp;<code>function</code></dt>
 <dd>Method to write error messages to the console.</dd>
 <dt><strong><code>otype</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>The data of the <em>otype</em> feature.</dd>
+<dd>The data of the <code>otype</code> feature.</dd>
 <dt><strong><code>order</code></strong> :&ensp;<code>tuple</code></dt>
-<dd>The data of the <em>order</em> feature.</dd>
+<dd>The data of the <code><a title="tf.core.prepare.order" href="#tf.core.prepare.order">order()</a></code> feature.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -1570,7 +1568,7 @@ canonical order (see <code><a title="tf.core.nodes" href="nodes.html">tf.core.no
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/prepare.py#L211-L238" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/prepare.py#L211-L238" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rank(info, error, otype, order):
     &#34;&#34;&#34;Computes rank data.
@@ -1585,9 +1583,9 @@ canonical order (see <code><a title="tf.core.nodes" href="nodes.html">tf.core.no
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     order: tuple
-        The data of the *order* feature.
+        The data of the `order` feature.
 
     Returns
     -------
@@ -1607,12 +1605,12 @@ canonical order (see <code><a title="tf.core.nodes" href="nodes.html">tf.core.no
 </code></dt>
 <dd>
 <div class="desc"><p>Computes section data.</p>
-<p>Text-Fabric datasets may define up to three section levels, roughly corresponding
+<p>TF datasets may define up to three section levels, roughly corresponding
 with a volume, a chapter, a paragraph.</p>
 <p>If the corpus has a richer section structure, it is also possible
 a different, more flexible and more extensive nest of structural sections.
 See <code><a title="tf.core.prepare.structure" href="#tf.core.prepare.structure">structure()</a></code>.</p>
-<p>Text-Fabric must be able to go from sections at one level to the sections
+<p>TF must be able to go from sections at one level to the sections
 at one level lower. It must also be able to map section headings
 to nodes. For this, the section features are needed, since they
 contain the section headings.</p>
@@ -1623,53 +1621,53 @@ contain the section headings.</p>
 <dt><strong><code>error</code></strong> :&ensp;<code>function</code></dt>
 <dd>Method to write error messages to the console.</dd>
 <dt><strong><code>otype</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>The data of the <em>otype</em> feature.</dd>
+<dd>The data of the <code>otype</code> feature.</dd>
 <dt><strong><code>oslots</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>The data of the <em>oslots</em> feature.</dd>
+<dd>The data of the <code>oslots</code> feature.</dd>
 <dt><strong><code>otext</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>The data of the <em>otext</em> feature.</dd>
+<dd>The data of the <code>otext</code> feature.</dd>
 <dt><strong><code>levUp</code></strong> :&ensp;<code>tuple</code></dt>
-<dd>The data of the <em>levUp</em> precompute step.</dd>
+<dd>The data of the <code><a title="tf.core.prepare.levUp" href="#tf.core.prepare.levUp">levUp()</a></code> pre-computation step.</dd>
 <dt><strong><code>levels</code></strong> :&ensp;<code>tuple</code></dt>
-<dd>The data of the <em>levels</em> precompute step.</dd>
+<dd>The data of the <code><a title="tf.core.prepare.levels" href="#tf.core.prepare.levels">levels()</a></code> pre-computation step.</dd>
 <dt><strong><code>sFeats</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>Each sFeat is the data of a section feature.</dd>
+<dd>Each <code>sFeat</code> is the data of a section feature.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>tuple</code></dt>
 <dd>
 <ul>
-<li>sec1
+<li><code>sec1</code>
 Mapping from section-level-1 nodes to mappings from
-section-level-2 headings to section-level2 nodes.</li>
-<li>sec2
+section-level-2 headings to section-level-2 nodes.</li>
+<li><code>sec2</code>
 Mapping from section-level-1 nodes to mappings from
 section-level-2 headings to mappings from
-section-level3 headings to section-level-3 nodes.</li>
+section-level-3 headings to section-level-3 nodes.</li>
 </ul>
 </dd>
 </dl>
 <h2 id="warnings">Warnings</h2>
-<p>Note that the terms <code>book</code>, <code>chapter</code>, <code>verse</code> are not baked into Text-Fabric.
+<p>Note that the terms <code>book</code>, <code>chapter</code>, <code>verse</code> are not baked into TF.
 It is the corpus data, especially the <code>otext</code> config feature that
 spells out the names of the sections.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/prepare.py#L507-L633" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/prepare.py#L507-L633" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     &#34;&#34;&#34;Computes section data.
 
-    Text-Fabric datasets may define up to three section levels, roughly corresponding
+    TF datasets may define up to three section levels, roughly corresponding
     with a volume, a chapter, a paragraph.
 
     If the corpus has a richer section structure, it is also possible
     a different, more flexible and more extensive nest of structural sections.
     See `structure`.
 
-    Text-Fabric must be able to go from sections at one level to the sections
+    TF must be able to go from sections at one level to the sections
     at one level lower. It must also be able to map section headings
     to nodes. For this, the section features are needed, since they
     contain the section headings.
@@ -1681,32 +1679,32 @@ spells out the names of the sections.</p></div>
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     oslots: iterable
-        The data of the *oslots* feature.
+        The data of the `oslots` feature.
     otext: iterable
-        The data of the *otext* feature.
+        The data of the `otext` feature.
     levUp: tuple
-        The data of the *levUp* precompute step.
+        The data of the `levUp` pre-computation step.
     levels: tuple
-        The data of the *levels* precompute step.
+        The data of the `levels` pre-computation step.
     sFeats: iterable
-        Each sFeat is the data of a section feature.
+        Each `sFeat` is the data of a section feature.
 
     Returns
     -------
     tuple
-        *   sec1
+        *   `sec1`
             Mapping from section-level-1 nodes to mappings from
-            section-level-2 headings to section-level2 nodes.
-        *   sec2
+            section-level-2 headings to section-level-2 nodes.
+        *   `sec2`
             Mapping from section-level-1 nodes to mappings from
             section-level-2 headings to mappings from
-            section-level3 headings to section-level-3 nodes.
+            section-level-3 headings to section-level-3 nodes.
 
     Warnings
     --------
-    Note that the terms `book`, `chapter`, `verse` are not baked into Text-Fabric.
+    Note that the terms `book`, `chapter`, `verse` are not baked into TF.
     It is the corpus data, especially the `otext` config feature that
     spells out the names of the sections.
 
@@ -1796,10 +1794,10 @@ spells out the names of the sections.</p></div>
 <p>If the corpus has a rich section structure, it is possible to define
 a flexible and extensive nest of structural sections.</p>
 <p>Independent of this,
-Text-Fabric datasets may also define up to three section levels,
+TF datasets may also define up to three section levels,
 roughly corresponding with a volume, a chapter, a paragraph.
 See <code><a title="tf.core.prepare.sections" href="#tf.core.prepare.sections">sections()</a></code>.</p>
-<p>Text-Fabric must be able to go from sections at one level to the sections
+<p>TF must be able to go from sections at one level to the sections
 at one level lower. It must also be able to map section headings
 to nodes. For this, the section features are needed, since they
 contain the section headings.</p>
@@ -1810,31 +1808,29 @@ contain the section headings.</p>
 <dt><strong><code>error</code></strong> :&ensp;<code>function</code></dt>
 <dd>Method to write error messages to the console.</dd>
 <dt><strong><code>otype</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>The data of the <em>otype</em> feature.</dd>
+<dd>The data of the <code>otype</code> feature.</dd>
 <dt><strong><code>oslots</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>The data of the <em>oslots</em> feature.</dd>
+<dd>The data of the <code>oslots</code> feature.</dd>
 <dt><strong><code>otext</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>The data of the <em>otext</em> feature.</dd>
+<dd>The data of the <code>otext</code> feature.</dd>
 <dt><strong><code>rank</code></strong> :&ensp;<code>tuple</code></dt>
-<dd>The data of the <em>rank</em> precompute step.</dd>
+<dd>The data of the <code><a title="tf.core.prepare.rank" href="#tf.core.prepare.rank">rank()</a></code> pre-computation step.</dd>
 <dt><strong><code>levUp</code></strong> :&ensp;<code>tuple</code></dt>
-<dd>The data of the <em>levUp</em> precompute step.</dd>
+<dd>The data of the <code><a title="tf.core.prepare.levUp" href="#tf.core.prepare.levUp">levUp()</a></code> pre-computation step.</dd>
 <dt><strong><code>sFeats</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>Each sFeat the data of a section feature.</dd>
+<dd>Each <code>sFeat</code> the data of a section feature.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>tuple</code></dt>
 <dd>
 <ul>
-<li>headingFromNode
-(Mapping from nodes to section keys)</li>
-<li>nodeFromHeading
-(Mapping from section keys to nodes)</li>
-<li>multiple</li>
-<li>top</li>
-<li>up</li>
-<li>down</li>
+<li><code>headingFromNode</code> (Mapping from nodes to section keys)</li>
+<li><code>nodeFromHeading</code> (Mapping from section keys to nodes)</li>
+<li><code>multiple</code></li>
+<li><code>top</code></li>
+<li><code>up</code></li>
+<li><code>down</code></li>
 </ul>
 </dd>
 </dl>
@@ -1847,7 +1843,7 @@ section key.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/prepare.py#L636-L775" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/prepare.py#L636-L773" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
     &#34;&#34;&#34;Computes structure data.
@@ -1856,11 +1852,11 @@ section key.</p></div>
     a flexible and extensive nest of structural sections.
 
     Independent of this,
-    Text-Fabric datasets may also define up to three section levels,
+    TF datasets may also define up to three section levels,
     roughly corresponding with a volume, a chapter, a paragraph.
     See `sections`.
 
-    Text-Fabric must be able to go from sections at one level to the sections
+    TF must be able to go from sections at one level to the sections
     at one level lower. It must also be able to map section headings
     to nodes. For this, the section features are needed, since they
     contain the section headings.
@@ -1872,29 +1868,27 @@ section key.</p></div>
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     oslots: iterable
-        The data of the *oslots* feature.
+        The data of the `oslots` feature.
     otext: iterable
-        The data of the *otext* feature.
+        The data of the `otext` feature.
     rank: tuple
-        The data of the *rank* precompute step.
+        The data of the `rank` pre-computation step.
     levUp: tuple
-        The data of the *levUp* precompute step.
+        The data of the `levUp` pre-computation step.
     sFeats: iterable
-        Each sFeat the data of a section feature.
+        Each `sFeat` the data of a section feature.
 
     Returns
     -------
     tuple
-        *   headingFromNode
-            (Mapping from nodes to section keys)
-        *   nodeFromHeading
-            (Mapping from section keys to nodes)
-        *   multiple
-        *   top
-        *   up
-        *   down
+        *   `headingFromNode` (Mapping from nodes to section keys)
+        *   `nodeFromHeading` (Mapping from section keys to nodes)
+        *   `multiple`
+        *   `top`
+        *   `up`
+        *   `down`
 
     Notes
     -----
@@ -2051,7 +2045,7 @@ setTimeout(() => input.focus(), 100);
 <h1>Index</h1>
 <div class="toc">
 <ul>
-<li><a href="#precompute-data">Precompute data.</a></li>
+<li><a href="#pre-compute-data">Pre-compute data.</a></li>
 </ul>
 </div>
 <ul id="index">

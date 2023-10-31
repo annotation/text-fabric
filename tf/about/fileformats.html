@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>tf.about.fileformats API documentation</title>
-<meta name="description" content="Text-Fabric File Format …" />
+<meta name="description" content="TF File Format …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -23,7 +23,7 @@
 <h1 class="title">Module <code>tf.about.fileformats</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="text-fabric-file-format">Text-Fabric File Format</h1>
+<h1 id="tf-file-format">TF File Format</h1>
 <h2 id="overview">Overview</h2>
 <p>A <code>.<a title="tf" href="../index.html">tf</a></code> feature file starts with a <em>header</em>, and is followed by the actual data.
 The whole file is a plain text in UNICODE-utf8.</p>
@@ -43,14 +43,14 @@ The whole file is a plain text in UNICODE-utf8.</p>
 <p>or</p>
 <pre><code>@config
 </code></pre>
-<p>This tells Text-Fabric whether the data in the feature file is a <em>node</em> feature
+<p>This tells TF whether the data in the feature file is a <em>node</em> feature
 or an <em>edge</em> feature. The value <code>@config</code> means that the file will be used as
 configuration info. It will only have metadata.</p>
 <p>There <strong>must</strong> also be a type declaration:</p>
 <pre><code>@valueType=type
 </code></pre>
 <p>where type is <code>str</code> or <code>int</code>. <code>@valueType</code> declares the type of the values in
-this feature file. If it is anything other than <code>str</code> (=<em>string</em>), Text-Fabric
+this feature file. If it is anything other than <code>str</code> (=<em>string</em>), TF
 will convert it to that type when it reads the data from the file. Currently,
 the only other supported type is <code>int</code> for integers.</p>
 <p>In edge features, there <strong>may</strong> also be a declaration</p>
@@ -117,12 +117,12 @@ arbitrary order:</p>
 <p>An edge is specified by an <em>ordered</em> pair of nodes. The edge is <em>from</em> the first
 node in the pair <em>to</em> the second one. An edge spec consists of two node specs.
 It denotes all edges that are <em>from</em> a node denoted by the first node spec <em>to</em>
-a node denoted by the second node spec. An edge might be labelled, in that case
+a node denoted by the second node spec. An edge might be labeled, in that case
 the label of the edge is specified by the <em>value</em> after the two node specs.</p>
 <h4 id="value">Value</h4>
 <p>The value is arbitrary text. The type of the value must conform to the
 <code>@valueType</code> declaration in the feature file. If it is missing, it is assumed to
-be <code>str</code>, which is the type of Unicode-utf8 strings. If it is <code>int</code>, it should
+be <code>str</code>, which is the type of UNICODE-utf8 strings. If it is <code>int</code>, it should
 be a valid representation of an integer number,</p>
 <p>There are a few escapes:</p>
 <ul>
@@ -144,16 +144,16 @@ fact that features annotate nodes or edges of a graph.</p>
 <h3 id="single-values">Single values</h3>
 <p>It is assumed that a node feature assigns only one value to the same node. If
 the data contains multiple assignments to a node, only the last assignment will
-be honoured, the previous ones will be discarded.</p>
+be honored, the previous ones will be discarded.</p>
 <p>Likewise, it is assumed that an edge feature assigns only one value to the same
 edge. If the data contains multiple assignments to an edge, only the last
-assignment will be honoured.</p>
+assignment will be honored.</p>
 <p>Violations maybe or may not be reported, and processing may continue without
 warnings.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/about/fileformats.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/about/fileformats.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/fileformats.md
@@ -224,7 +224,7 @@ setTimeout(() => input.focus(), 100);
 <h1>Index</h1>
 <div class="toc">
 <ul>
-<li><a href="#text-fabric-file-format">Text-Fabric File Format</a><ul>
+<li><a href="#tf-file-format">TF File Format</a><ul>
 <li><a href="#overview">Overview</a></li>
 <li><a href="#header">Header</a></li>
 <li><a href="#data">Data</a><ul>

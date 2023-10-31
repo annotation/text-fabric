@@ -30,7 +30,7 @@ in which you can enter a search template and view the results.</p>
 <p>This is realized by a web app based on
 <a href="http://flask.pocoo.org/docs/1.0/">Flask</a>.</p>
 <p>This web app initializes by loading a TF corpus from which it obtains data.
-In repsonse to requests, it merges the retrieved data into a set of
+In response to requests, it merges the retrieved data into a set of
 <a href="https://github.com/annotation/text-fabric/tree/master/tf/browser/views">templates</a>.</p>
 <h2 id="start-up">Start up</h2>
 <p>Web server and browser page are started
@@ -41,7 +41,7 @@ directory by the <code>pip</code> installer.</p>
 <table>
 <thead>
 <tr>
-<th>url pattern</th>
+<th>URL pattern</th>
 <th>effect</th>
 </tr>
 </thead>
@@ -72,18 +72,18 @@ directory by the <code>pip</code> installer.</p>
 <li><em>index</em>: the normal template for returning responses
 to user requests;</li>
 <li><em>export</em>: the template used for exporting results; it
-has printer/PDF-friendly formatting: good page breaks.
+has printer / PDF-friendly formatting: good page breaks.
 Pretty displays always occur on a page by their own.
 It has very few user interaction controls.
 When saved as PDF from the browser, it is a neat record
-of work done, with DOI links to the corpus and to Text-Fabric.</li>
+of work done, with DOI links to the corpus and to TF.</li>
 </ul>
 <h2 id="css">CSS</h2>
 <p>We format the web pages with CSS, with extensive use of
 <a href="https://css-tricks.com/snippets/css/a-guide-to-flexbox">flexbox</a>.</p>
 <p>There are several sources of CSS formatting:</p>
 <ul>
-<li>the CSS loaded from the app dependent extraApi, used
+<li>the CSS loaded from the app dependent <code>extraApi</code>, used
 for pretty displays;</li>
 <li><a href="https://github.com/annotation/text-fabric/blob/master/tf/browser/static/index.css">index.css</a>:
 the formatting of the <em>index</em> web page with which the user interacts;</li>
@@ -92,14 +92,14 @@ the formatting of the export page;</li>
 <li><a href="https://github.com/annotation/text-fabric/blob/master/tf/browser/views/base.css">base.css</a>
 shared formatting between the index and export pages.</li>
 </ul>
-<h2 id="javascript">Javascript</h2>
+<h2 id="javascript">JavaScript</h2>
 <p>We use a
-<a href="https://github.com/annotation/text-fabric/blob/master/tf/browser/static/tf.js">modest amount of Javascript</a>
+<a href="https://github.com/annotation/text-fabric/blob/master/tf/browser/static/tf.js">modest amount of JavaScript</a>
 on top of
 <a href="https://api.jquery.com">JQuery</a>.</p>
 <p>For collapsing and expanding elements we use the
 <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details">details</a>
-element. This is a convenient, Javascript-free way to manage
+element. This is a convenient, JavaScript-free way to manage
 collapsing. Unfortunately it is not supported by the Microsoft
 browsers, not even Edge.</p>
 <div class="admonition caution">
@@ -109,7 +109,7 @@ browsers, not even Edge.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/web.py#L1-L289" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/web.py#L1-L289" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Web interface
@@ -123,7 +123,7 @@ This is realized by a web app based on
 [Flask](http://flask.pocoo.org/docs/1.0/).
 
 This web app initializes by loading a TF corpus from which it obtains data.
-In repsonse to requests, it merges the retrieved data into a set of
+In response to requests, it merges the retrieved data into a set of
 [templates](https://github.com/annotation/text-fabric/tree/master/tf/browser/views).
 
 ## Start up
@@ -136,7 +136,7 @@ directory by the `pip` installer.
 
 There are 4 kinds of routes in the web app:
 
-url pattern | effect
+URL pattern | effect
 --- | ---
 `/browser/static/...` | serves a static file from the server-wide [static folder](https://github.com/annotation/text-fabric/tree/master/tf/browser/static)
 `/data/static/...` | serves a static file from the app specific static folder
@@ -149,14 +149,14 @@ There are two templates in
 [views](https://github.com/annotation/text-fabric/tree/master/tf/browser/views)
 :
 
-* *index*: the normal template for returning responses
-  to user requests;
-* *export*: the template used for exporting results; it
-  has printer/PDF-friendly formatting: good page breaks.
-  Pretty displays always occur on a page by their own.
-  It has very few user interaction controls.
-  When saved as PDF from the browser, it is a neat record
-  of work done, with DOI links to the corpus and to Text-Fabric.
+*   *index*: the normal template for returning responses
+    to user requests;
+*   *export*: the template used for exporting results; it
+    has printer / PDF-friendly formatting: good page breaks.
+    Pretty displays always occur on a page by their own.
+    It has very few user interaction controls.
+    When saved as PDF from the browser, it is a neat record
+    of work done, with DOI links to the corpus and to TF.
 
 ## CSS
 
@@ -165,25 +165,25 @@ We format the web pages with CSS, with extensive use of
 
 There are several sources of CSS formatting:
 
-* the CSS loaded from the app dependent extraApi, used
-  for pretty displays;
-* [index.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/static/index.css):
-  the formatting of the *index* web page with which the user interacts;
-* [export.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/views/export.css)
-  the formatting of the export page;
-* [base.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/views/base.css)
-  shared formatting between the index and export pages.
+*   the CSS loaded from the app dependent `extraApi`, used
+    for pretty displays;
+*   [index.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/static/index.css):
+    the formatting of the *index* web page with which the user interacts;
+*   [export.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/views/export.css)
+    the formatting of the export page;
+*   [base.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/views/base.css)
+    shared formatting between the index and export pages.
 
-## Javascript
+## JavaScript
 
 We use a
-[modest amount of Javascript](https://github.com/annotation/text-fabric/blob/master/tf/browser/static/tf.js)
+[modest amount of JavaScript](https://github.com/annotation/text-fabric/blob/master/tf/browser/static/tf.js)
 on top of
 [JQuery](https://api.jquery.com).
 
 For collapsing and expanding elements we use the
 [details](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details)
-element. This is a convenient, Javascript-free way to manage
+element. This is a convenient, JavaScript-free way to manage
 collapsing. Unfortunately it is not supported by the Microsoft
 browsers, not even Edge.
 
@@ -417,7 +417,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/web.py#L127-L202" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/web.py#L127-L202" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def factory(web):
     app = Flask(__name__)
@@ -505,7 +505,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/web.py#L205-L285" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/web.py#L205-L285" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv[1:]):
     debug = False
@@ -604,7 +604,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/web.py#L114-L124" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/web.py#L114-L124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Web:
     def __init__(self, kernelApi):
@@ -628,7 +628,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/web.py#L122-L124" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/web.py#L122-L124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(self, msg):
     if self.debug:
@@ -701,7 +701,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#routes">Routes</a></li>
 <li><a href="#templates">Templates</a></li>
 <li><a href="#css">CSS</a></li>
-<li><a href="#javascript">Javascript</a></li>
+<li><a href="#javascript">JavaScript</a></li>
 </ul>
 </li>
 </ul>

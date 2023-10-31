@@ -29,7 +29,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/settings.py#L1-L204" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/settings.py#L1-L204" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Corpus dependent setup of the annotation tool.
 
@@ -168,12 +168,12 @@ We divide entity features in *keyword* features and *free* features.
 The typical keyword feature is `kind`, it has a limited set of values.
 The typical free feature is `eid`, it has an unbounded number of values.
 
-As it is now, we could have expressed this in a fixed stylesheet.
+As it is now, we could have expressed this in a fixed style sheet.
 But if we open up to allowing for more entity features, we can use this setup
 to easily configure the formatting of them.
 
 However, we should move these definitions to the `ner.yaml` file then, so that the
-only place of configuration is that yaml file, and not this file.
+only place of configuration is that YAML file, and not this file.
 &#34;&#34;&#34;
 
 
@@ -209,7 +209,7 @@ class Settings:
 
         There is also customizable configuration, meant to adapt the tool to the
         specifics of a corpus.
-        Those configuration values are read from a yaml file, located in a directory
+        Those configuration values are read from a YAML file, located in a directory
         `ner` next to the `tf` data of the corpus.
         &#34;&#34;&#34;
         specDir = self.specDir
@@ -321,11 +321,11 @@ style sheet.</p>
 <p>We divide entity features in <em>keyword</em> features and <em>free</em> features.
 The typical keyword feature is <code>kind</code>, it has a limited set of values.
 The typical free feature is <code>eid</code>, it has an unbounded number of values.</p>
-<p>As it is now, we could have expressed this in a fixed stylesheet.
+<p>As it is now, we could have expressed this in a fixed style sheet.
 But if we open up to allowing for more entity features, we can use this setup
 to easily configure the formatting of them.</p>
 <p>However, we should move these definitions to the <code>ner.yaml</code> file then, so that the
-only place of configuration is that yaml file, and not this file.</p></div>
+only place of configuration is that YAML file, and not this file.</p></div>
 </dd>
 <dt id="tf.browser.ner.settings.TOOLKEY"><code class="name">var <span class="ident">TOOLKEY</span></code></dt>
 <dd>
@@ -355,12 +355,12 @@ These configuration values are put in variables in this module, which
 other modules can import.</p>
 <p>There is also customizable configuration, meant to adapt the tool to the
 specifics of a corpus.
-Those configuration values are read from a yaml file, located in a directory
+Those configuration values are read from a YAML file, located in a directory
 <code>ner</code> next to the <code><a title="tf" href="../../index.html">tf</a></code> data of the corpus.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/settings.py#L169-L204" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/settings.py#L169-L204" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Settings:
     def __init__(self):
@@ -372,7 +372,7 @@ Those configuration values are read from a yaml file, located in a directory
 
         There is also customizable configuration, meant to adapt the tool to the
         specifics of a corpus.
-        Those configuration values are read from a yaml file, located in a directory
+        Those configuration values are read from a YAML file, located in a directory
         `ner` next to the `tf` data of the corpus.
         &#34;&#34;&#34;
         specDir = self.specDir
@@ -417,7 +417,7 @@ without the need to add an <code>import</code> statement to the code.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/settings.py#L195-L204" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/settings.py#L195-L204" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(self, msg, **kwargs):
     &#34;&#34;&#34;Print something to the output.

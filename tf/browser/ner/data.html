@@ -38,7 +38,7 @@ processed if it is needed and out of date.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/data.py#L1-L900" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L1-L900" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Annotation data module.
 
@@ -94,7 +94,7 @@ class Data(Corpus):
             This is wasteful.
 
             We have set up the web server in such a way that it incorporates the
-            annotation data. The webserver will pass it to the
+            annotation data. The web server will pass it to the
             `tf.browser.ner.annotate.Annotate` object initializer, which passes
             it to the initializer here.
 
@@ -138,7 +138,7 @@ class Data(Corpus):
     def fromSource(self):
         &#34;&#34;&#34;Loads annotation data from source.
 
-        If the current annotation set is`&#34;&#34;`, the annotation data is already in
+        If the current annotation set is `&#34;&#34;`, the annotation data is already in
         the TF data,
         and we compile that data into a dict of entity data keyed by entity node.
 
@@ -227,7 +227,7 @@ class Data(Corpus):
     def process(self, changed):
         &#34;&#34;&#34;Generated derived data structures out of the source data.
 
-        After loading we process the data into derived datastructures.
+        After loading we process the data into derived data structures.
 
         We try to be lazy. We only load data from disk if the data is not
         already in memory, or the data on disk has been updated since the last load.
@@ -243,10 +243,10 @@ class Data(Corpus):
 
         *   `dateProcessed`: datetime when the data was last processed
         *   `entityText`: dict, text of entity by entity node or line number in
-            tsv file;
+            TSV file;
         *   `entityTextVal`: dict of dict, set of feature values of entity, keyed by
             feature name and then by text of the entity;
-        *   `entitySummary`: dict, list of entity nodes/line numbers, keyed by value
+        *   `entitySummary`: dict, list of entity nodes / line numbers, keyed by value
             of entity kind;
         *   `entityIdent`: dict, list of entity nodes./line numbers, keyed by tuple of
             entity feature values (these tuples are identifying for an entity);
@@ -390,7 +390,7 @@ class Data(Corpus):
     def delEntity(self, vals, allMatches=None, silent=True):
         &#34;&#34;&#34;Delete entity occurrences from the current set.
 
-        This operation is not allowed if the current set is the readonly set with the
+        This operation is not allowed if the current set is the read-only set with the
         empty name.
 
         The entities to delete are selected by their feature values.
@@ -469,7 +469,7 @@ class Data(Corpus):
     def delEntityRich(self, deletions, buckets, excludedTokens=set()):
         &#34;&#34;&#34;Delete specified entity occurrences from the current set.
 
-        This operation is not allowed if the current set is the readonly set with the
+        This operation is not allowed if the current set is the read-only set with the
         empty name.
 
         This function has more detailed instructions as to which entities
@@ -568,7 +568,7 @@ class Data(Corpus):
                 tuple(sorted(stats.items())) if len(stats) else [&#34;Nothing deleted&#34;]
             )
             if excl:
-                report.append(f&#34;Deletion: occurences excluded: {excl}&#34;)
+                report.append(f&#34;Deletion: occurrences excluded: {excl}&#34;)
 
         if len(delEntities):
             self.weedEntities(delEntities)
@@ -592,7 +592,7 @@ class Data(Corpus):
     def addEntity(self, vals, allMatches, silent=True):
         &#34;&#34;&#34;Add entity occurrences to the current set.
 
-        This operation is not allowed if the current set is the readonly set with the
+        This operation is not allowed if the current set is the read-only set with the
         empty name.
 
         The entities to add are specified by their feature values.
@@ -669,7 +669,7 @@ class Data(Corpus):
     def addEntities(self, newEntities, silent=True):
         &#34;&#34;&#34;Add multiple entities efficiently to the current set.
 
-        This operation is not allowed if the current set is the readonly set with the
+        This operation is not allowed if the current set is the read-only set with the
         empty name.
 
         If you have multiple entities to add, it is wasteful to do multiple passes over
@@ -740,7 +740,7 @@ class Data(Corpus):
     def addEntityRich(self, additions, buckets, excludedTokens=set()):
         &#34;&#34;&#34;Add specified entity occurrences to the current set.
 
-        This operation is not allowed if the current set is the readonly set with the
+        This operation is not allowed if the current set is the read-only set with the
         empty name.
 
         This function has more detailed instructions as to which entities
@@ -833,7 +833,7 @@ class Data(Corpus):
                 tuple(sorted(stats.items())) if len(stats) else [&#34;Nothing added&#34;]
             )
             if excl:
-                report.append(f&#34;Addition: occurences excluded: {excl}&#34;)
+                report.append(f&#34;Addition: occurrences excluded: {excl}&#34;)
 
         if len(addEntities):
             self.mergeEntities(addEntities)
@@ -857,7 +857,7 @@ class Data(Corpus):
     def weedEntities(self, delEntities):
         &#34;&#34;&#34;Performs deletions to the current annotation set.
 
-        This operation is not allowed if the current set is the readonly set with the
+        This operation is not allowed if the current set is the read-only set with the
         empty name.
 
         Parameters
@@ -899,7 +899,7 @@ class Data(Corpus):
     def mergeEntities(self, newEntities):
         &#34;&#34;&#34;Performs additions to the current annotation set.
 
-        This operation is not allowed if the current set is the readonly set with the
+        This operation is not allowed if the current set is the read-only set with the
         empty name.
 
         Parameters
@@ -973,7 +973,7 @@ If None, a fresh data store will be created.</p>
 it will need to load the required data from file.
 This is wasteful.</p>
 <p>We have set up the web server in such a way that it incorporates the
-annotation data. The webserver will pass it to the
+annotation data. The web server will pass it to the
 <code><a title="tf.browser.ner.annotate.Annotate" href="annotate.html#tf.browser.ner.annotate.Annotate">Annotate</a></code> object initializer, which passes
 it to the initializer here.</p>
 <p>In that way, the <code><a title="tf.browser.ner.data.Data" href="#tf.browser.ner.data.Data">Data</a></code> object can start with the data already in memory.</p>
@@ -982,7 +982,7 @@ it to the initializer here.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/data.py#L32-L900" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L32-L900" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Data(Corpus):
     def __init__(self, data=None):
@@ -1007,7 +1007,7 @@ it to the initializer here.</p>
             This is wasteful.
 
             We have set up the web server in such a way that it incorporates the
-            annotation data. The webserver will pass it to the
+            annotation data. The web server will pass it to the
             `tf.browser.ner.annotate.Annotate` object initializer, which passes
             it to the initializer here.
 
@@ -1051,7 +1051,7 @@ it to the initializer here.</p>
     def fromSource(self):
         &#34;&#34;&#34;Loads annotation data from source.
 
-        If the current annotation set is`&#34;&#34;`, the annotation data is already in
+        If the current annotation set is `&#34;&#34;`, the annotation data is already in
         the TF data,
         and we compile that data into a dict of entity data keyed by entity node.
 
@@ -1140,7 +1140,7 @@ it to the initializer here.</p>
     def process(self, changed):
         &#34;&#34;&#34;Generated derived data structures out of the source data.
 
-        After loading we process the data into derived datastructures.
+        After loading we process the data into derived data structures.
 
         We try to be lazy. We only load data from disk if the data is not
         already in memory, or the data on disk has been updated since the last load.
@@ -1156,10 +1156,10 @@ it to the initializer here.</p>
 
         *   `dateProcessed`: datetime when the data was last processed
         *   `entityText`: dict, text of entity by entity node or line number in
-            tsv file;
+            TSV file;
         *   `entityTextVal`: dict of dict, set of feature values of entity, keyed by
             feature name and then by text of the entity;
-        *   `entitySummary`: dict, list of entity nodes/line numbers, keyed by value
+        *   `entitySummary`: dict, list of entity nodes / line numbers, keyed by value
             of entity kind;
         *   `entityIdent`: dict, list of entity nodes./line numbers, keyed by tuple of
             entity feature values (these tuples are identifying for an entity);
@@ -1303,7 +1303,7 @@ it to the initializer here.</p>
     def delEntity(self, vals, allMatches=None, silent=True):
         &#34;&#34;&#34;Delete entity occurrences from the current set.
 
-        This operation is not allowed if the current set is the readonly set with the
+        This operation is not allowed if the current set is the read-only set with the
         empty name.
 
         The entities to delete are selected by their feature values.
@@ -1382,7 +1382,7 @@ it to the initializer here.</p>
     def delEntityRich(self, deletions, buckets, excludedTokens=set()):
         &#34;&#34;&#34;Delete specified entity occurrences from the current set.
 
-        This operation is not allowed if the current set is the readonly set with the
+        This operation is not allowed if the current set is the read-only set with the
         empty name.
 
         This function has more detailed instructions as to which entities
@@ -1481,7 +1481,7 @@ it to the initializer here.</p>
                 tuple(sorted(stats.items())) if len(stats) else [&#34;Nothing deleted&#34;]
             )
             if excl:
-                report.append(f&#34;Deletion: occurences excluded: {excl}&#34;)
+                report.append(f&#34;Deletion: occurrences excluded: {excl}&#34;)
 
         if len(delEntities):
             self.weedEntities(delEntities)
@@ -1505,7 +1505,7 @@ it to the initializer here.</p>
     def addEntity(self, vals, allMatches, silent=True):
         &#34;&#34;&#34;Add entity occurrences to the current set.
 
-        This operation is not allowed if the current set is the readonly set with the
+        This operation is not allowed if the current set is the read-only set with the
         empty name.
 
         The entities to add are specified by their feature values.
@@ -1582,7 +1582,7 @@ it to the initializer here.</p>
     def addEntities(self, newEntities, silent=True):
         &#34;&#34;&#34;Add multiple entities efficiently to the current set.
 
-        This operation is not allowed if the current set is the readonly set with the
+        This operation is not allowed if the current set is the read-only set with the
         empty name.
 
         If you have multiple entities to add, it is wasteful to do multiple passes over
@@ -1653,7 +1653,7 @@ it to the initializer here.</p>
     def addEntityRich(self, additions, buckets, excludedTokens=set()):
         &#34;&#34;&#34;Add specified entity occurrences to the current set.
 
-        This operation is not allowed if the current set is the readonly set with the
+        This operation is not allowed if the current set is the read-only set with the
         empty name.
 
         This function has more detailed instructions as to which entities
@@ -1746,7 +1746,7 @@ it to the initializer here.</p>
                 tuple(sorted(stats.items())) if len(stats) else [&#34;Nothing added&#34;]
             )
             if excl:
-                report.append(f&#34;Addition: occurences excluded: {excl}&#34;)
+                report.append(f&#34;Addition: occurrences excluded: {excl}&#34;)
 
         if len(addEntities):
             self.mergeEntities(addEntities)
@@ -1770,7 +1770,7 @@ it to the initializer here.</p>
     def weedEntities(self, delEntities):
         &#34;&#34;&#34;Performs deletions to the current annotation set.
 
-        This operation is not allowed if the current set is the readonly set with the
+        This operation is not allowed if the current set is the read-only set with the
         empty name.
 
         Parameters
@@ -1812,7 +1812,7 @@ it to the initializer here.</p>
     def mergeEntities(self, newEntities):
         &#34;&#34;&#34;Performs additions to the current annotation set.
 
-        This operation is not allowed if the current set is the readonly set with the
+        This operation is not allowed if the current set is the read-only set with the
         empty name.
 
         Parameters
@@ -1870,7 +1870,7 @@ it to the initializer here.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Add multiple entities efficiently to the current set.</p>
-<p>This operation is not allowed if the current set is the readonly set with the
+<p>This operation is not allowed if the current set is the read-only set with the
 empty name.</p>
 <p>If you have multiple entities to add, it is wasteful to do multiple passes over
 the corpus to find them.</p>
@@ -1900,12 +1900,12 @@ asked to be deleted and the number of actually deleted entities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/data.py#L627-L696" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L627-L696" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addEntities(self, newEntities, silent=True):
     &#34;&#34;&#34;Add multiple entities efficiently to the current set.
 
-    This operation is not allowed if the current set is the readonly set with the
+    This operation is not allowed if the current set is the read-only set with the
     empty name.
 
     If you have multiple entities to add, it is wasteful to do multiple passes over
@@ -1979,7 +1979,7 @@ asked to be deleted and the number of actually deleted entities.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Add entity occurrences to the current set.</p>
-<p>This operation is not allowed if the current set is the readonly set with the
+<p>This operation is not allowed if the current set is the read-only set with the
 empty name.</p>
 <p>The entities to add are specified by their feature values.
 So you can use this function to add entities with a certain
@@ -2006,12 +2006,12 @@ asked to be deleted and the number of actually deleted entities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/data.py#L550-L625" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L550-L625" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addEntity(self, vals, allMatches, silent=True):
     &#34;&#34;&#34;Add entity occurrences to the current set.
 
-    This operation is not allowed if the current set is the readonly set with the
+    This operation is not allowed if the current set is the read-only set with the
     empty name.
 
     The entities to add are specified by their feature values.
@@ -2091,7 +2091,7 @@ asked to be deleted and the number of actually deleted entities.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Add specified entity occurrences to the current set.</p>
-<p>This operation is not allowed if the current set is the readonly set with the
+<p>This operation is not allowed if the current set is the read-only set with the
 empty name.</p>
 <p>This function has more detailed instructions as to which entities
 should be added than <code><a title="tf.browser.ner.data.Data.addEntity" href="#tf.browser.ner.data.Data.addEntity">Data.addEntity()</a></code> .</p>
@@ -2120,12 +2120,12 @@ no entity will be added there.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/data.py#L698-L813" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L698-L813" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addEntityRich(self, additions, buckets, excludedTokens=set()):
     &#34;&#34;&#34;Add specified entity occurrences to the current set.
 
-    This operation is not allowed if the current set is the readonly set with the
+    This operation is not allowed if the current set is the read-only set with the
     empty name.
 
     This function has more detailed instructions as to which entities
@@ -2218,7 +2218,7 @@ no entity will be added there.</dd>
             tuple(sorted(stats.items())) if len(stats) else [&#34;Nothing added&#34;]
         )
         if excl:
-            report.append(f&#34;Addition: occurences excluded: {excl}&#34;)
+            report.append(f&#34;Addition: occurrences excluded: {excl}&#34;)
 
     if len(addEntities):
         self.mergeEntities(addEntities)
@@ -2245,7 +2245,7 @@ no entity will be added there.</dd>
 </code></dt>
 <dd>
 <div class="desc"><p>Delete entity occurrences from the current set.</p>
-<p>This operation is not allowed if the current set is the readonly set with the
+<p>This operation is not allowed if the current set is the read-only set with the
 empty name.</p>
 <p>The entities to delete are selected by their feature values.
 So you can use this function to delete all entities with a certain
@@ -2274,12 +2274,12 @@ asked to be deleted and the number of actually deleted entities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/data.py#L348-L425" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L348-L425" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def delEntity(self, vals, allMatches=None, silent=True):
     &#34;&#34;&#34;Delete entity occurrences from the current set.
 
-    This operation is not allowed if the current set is the readonly set with the
+    This operation is not allowed if the current set is the read-only set with the
     empty name.
 
     The entities to delete are selected by their feature values.
@@ -2361,7 +2361,7 @@ asked to be deleted and the number of actually deleted entities.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Delete specified entity occurrences from the current set.</p>
-<p>This operation is not allowed if the current set is the readonly set with the
+<p>This operation is not allowed if the current set is the read-only set with the
 empty name.</p>
 <p>This function has more detailed instructions as to which entities
 should be deleted than <code><a title="tf.browser.ner.data.Data.delEntity" href="#tf.browser.ner.data.Data.delEntity">Data.delEntity()</a></code> .</p>
@@ -2390,12 +2390,12 @@ the entity will not be deleted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/data.py#L427-L548" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L427-L548" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def delEntityRich(self, deletions, buckets, excludedTokens=set()):
     &#34;&#34;&#34;Delete specified entity occurrences from the current set.
 
-    This operation is not allowed if the current set is the readonly set with the
+    This operation is not allowed if the current set is the read-only set with the
     empty name.
 
     This function has more detailed instructions as to which entities
@@ -2494,7 +2494,7 @@ the entity will not be deleted.</dd>
             tuple(sorted(stats.items())) if len(stats) else [&#34;Nothing deleted&#34;]
         )
         if excl:
-            report.append(f&#34;Deletion: occurences excluded: {excl}&#34;)
+            report.append(f&#34;Deletion: occurrences excluded: {excl}&#34;)
 
     if len(delEntities):
         self.weedEntities(delEntities)
@@ -2521,7 +2521,7 @@ the entity will not be deleted.</dd>
 </code></dt>
 <dd>
 <div class="desc"><p>Loads annotation data from source.</p>
-<p>If the current annotation set is<code>""</code>, the annotation data is already in
+<p>If the current annotation set is <code>""</code>, the annotation data is already in
 the TF data,
 and we compile that data into a dict of entity data keyed by entity node.</p>
 <p>Otherwise, we read the corresponding TSV file from disk and compile that
@@ -2538,12 +2538,12 @@ that are part of the entity.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/data.py#L96-L183" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L96-L183" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fromSource(self):
     &#34;&#34;&#34;Loads annotation data from source.
 
-    If the current annotation set is`&#34;&#34;`, the annotation data is already in
+    If the current annotation set is `&#34;&#34;`, the annotation data is already in
     the TF data,
     and we compile that data into a dict of entity data keyed by entity node.
 
@@ -2643,7 +2643,7 @@ that are part of the entity.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/data.py#L72-L94" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L72-L94" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadData(self):
     &#34;&#34;&#34;Loads data of the current annotation set into memory.
@@ -2675,7 +2675,7 @@ that are part of the entity.</li>
 </code></dt>
 <dd>
 <div class="desc"><p>Performs additions to the current annotation set.</p>
-<p>This operation is not allowed if the current set is the readonly set with the
+<p>This operation is not allowed if the current set is the read-only set with the
 empty name.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
@@ -2686,12 +2686,12 @@ and an iterable of slot tuples where the entity is located.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/data.py#L857-L882" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L857-L882" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mergeEntities(self, newEntities):
     &#34;&#34;&#34;Performs additions to the current annotation set.
 
-    This operation is not allowed if the current set is the readonly set with the
+    This operation is not allowed if the current set is the read-only set with the
     empty name.
 
     Parameters
@@ -2721,7 +2721,7 @@ and an iterable of slot tuples where the entity is located.</dd>
 </code></dt>
 <dd>
 <div class="desc"><p>Generated derived data structures out of the source data.</p>
-<p>After loading we process the data into derived datastructures.</p>
+<p>After loading we process the data into derived data structures.</p>
 <p>We try to be lazy. We only load data from disk if the data is not
 already in memory, or the data on disk has been updated since the last load.</p>
 <p>The resulting data is stored in current set under the various keys.</p>
@@ -2733,10 +2733,10 @@ under the following keys:</p>
 <ul>
 <li><code>dateProcessed</code>: datetime when the data was last processed</li>
 <li><code>entityText</code>: dict, text of entity by entity node or line number in
-tsv file;</li>
+TSV file;</li>
 <li><code>entityTextVal</code>: dict of dict, set of feature values of entity, keyed by
 feature name and then by text of the entity;</li>
-<li><code>entitySummary</code>: dict, list of entity nodes/line numbers, keyed by value
+<li><code>entitySummary</code>: dict, list of entity nodes / line numbers, keyed by value
 of entity kind;</li>
 <li><code>entityIdent</code>: dict, list of entity nodes./line numbers, keyed by tuple of
 entity feature values (these tuples are identifying for an entity);</li>
@@ -2775,12 +2775,12 @@ entities in the surrounding context of tokens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/data.py#L185-L346" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L185-L346" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def process(self, changed):
     &#34;&#34;&#34;Generated derived data structures out of the source data.
 
-    After loading we process the data into derived datastructures.
+    After loading we process the data into derived data structures.
 
     We try to be lazy. We only load data from disk if the data is not
     already in memory, or the data on disk has been updated since the last load.
@@ -2796,10 +2796,10 @@ entities in the surrounding context of tokens.</p>
 
     *   `dateProcessed`: datetime when the data was last processed
     *   `entityText`: dict, text of entity by entity node or line number in
-        tsv file;
+        TSV file;
     *   `entityTextVal`: dict of dict, set of feature values of entity, keyed by
         feature name and then by text of the entity;
-    *   `entitySummary`: dict, list of entity nodes/line numbers, keyed by value
+    *   `entitySummary`: dict, list of entity nodes / line numbers, keyed by value
         of entity kind;
     *   `entityIdent`: dict, list of entity nodes./line numbers, keyed by tuple of
         entity feature values (these tuples are identifying for an entity);
@@ -2956,7 +2956,7 @@ entities in the surrounding context of tokens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/data.py#L884-L900" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L884-L900" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def saveEntitiesAs(self, dataFile):
     &#34;&#34;&#34;Export the data of an annotation set to a file.
@@ -2982,7 +2982,7 @@ entities in the surrounding context of tokens.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Performs deletions to the current annotation set.</p>
-<p>This operation is not allowed if the current set is the readonly set with the
+<p>This operation is not allowed if the current set is the read-only set with the
 empty name.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
@@ -2993,12 +2993,12 @@ and an iterable of slot tuples where the entity is located.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/data.py#L815-L855" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L815-L855" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def weedEntities(self, delEntities):
     &#34;&#34;&#34;Performs deletions to the current annotation set.
 
-    This operation is not allowed if the current set is the readonly set with the
+    This operation is not allowed if the current set is the read-only set with the
     empty name.
 
     Parameters

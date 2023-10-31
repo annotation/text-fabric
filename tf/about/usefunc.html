@@ -28,22 +28,22 @@
 in the same way as the <code>use</code> statements in MySQL and MongoDb let you
 make use of a database.
 It loads the features of a corpus plus extra modules, it loads the
-Text-Fabric app or a customization of it, and makes it all available in an
+TF app or a customization of it, and makes it all available in an
 API.
 If any of the above mentioned ingredients is not locally available on your
 computer, it will auto-download it, subject to checkout specifiers that you
 provide.</p>
 <h3 id="basic-usage">Basic usage:</h3>
-<pre><code>A = use(&quot;org/repo&quot;)
+<pre><code class="language-python">A = use(&quot;org/repo&quot;)
 </code></pre>
 <p>or</p>
-<pre><code>A = use(&quot;org/repo:specapp&quot;, checkout=&quot;specdata&quot;)
+<pre><code class="language-python">A = use(&quot;org/repo:specapp&quot;, checkout=&quot;specdata&quot;)
 </code></pre>
-<pre><code>A = use(&quot;org/repo:specapp&quot;, checkout=&quot;specdata&quot;, backend=&quot;gitlab.huc.knaw.nl&quot;)
+<pre><code class="language-python">A = use(&quot;org/repo:specapp&quot;, checkout=&quot;specdata&quot;, backend=&quot;gitlab.huc.knaw.nl&quot;)
 </code></pre>
 <p>See <code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code> for a list of known corpora that can be loaded this way.</p>
 <h3 id="full-usage">Full usage</h3>
-<pre><code>A = use(
+<pre><code class="language-python">A = use(
     &quot;org/repo:specapp&quot;,
     backend=None,     # e.g. &quot;gitlab.huc.knaw.nl&quot;
     checkout=None, # e.g. &quot;latest&quot;
@@ -62,15 +62,15 @@ provide.</p>
 )
 </code></pre>
 <h3 id="legacy-usage">Legacy usage:</h3>
-<pre><code>A = use(&quot;corpus&quot;)
+<pre><code class="language-python">A = use(&quot;corpus&quot;)
 </code></pre>
 <p>or</p>
-<pre><code>A = use(&quot;corpus&quot;, legacy=True)
+<pre><code class="language-python">A = use(&quot;corpus&quot;, legacy=True)
 </code></pre>
 <h2 id="security">Security</h2>
 <div class="admonition caution">
 <p class="admonition-title">Security warning</p>
-<p>Text-Fabric apps may be downloaded from GitHub/GitLab and then
+<p>TF apps may be downloaded from GitHub / GitLab and then
 imported as a module and then <em>executed</em>.</p>
 <p>Do you trust the downloaded code?
 Make sure you know the repository where the code comes from, and the people
@@ -78,13 +78,13 @@ who own the repository.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Security note</p>
-<p>Text-Fabric data maybe downloaded from arbitrary repositories on GitHub/GitLab,
+<p>TF data maybe downloaded from arbitrary repositories on GitHub / GitLab,
 but the downloaded material will be read as <em>data</em> and not executed as code.</p>
 </div>
 <h2 id="details">Details</h2>
 <p>When loading a corpus via this method, most of the features in view will
 be loaded and made available.
-However, some Text-Fabric apps may exclude some features from being
+However, some TF apps may exclude some features from being
 automatically loaded.
 And in general, features whose names start with <code>omap@</code> will not be
 automatically loaded.
@@ -111,7 +111,7 @@ advanced API; if present, additional settings, code and styling is loaded.</li>
 locally or online.
 Such a specification consists of a <em>path</em> and a <em>checkout specifier</em>.
 The <em>path</em> part looks like a directory, and specifies a location inside
-a repository, e.g. <code>etcbc/bhsa</code>.
+a repository, e.g. <code>ETCBC/bhsa</code>.
 The <em>checkout specifier</em> part is a keyword:</p>
 <ul>
 <li><code>local</code> under your local directory <code>~/text-fabric-data</code></li>
@@ -125,14 +125,15 @@ otherwise the latest release on back-end, if present, otherwise the latest
 commit on back-end.</li>
 </ul>
 <p>For a demo, see
-<a href="https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb">banks/repo</a>.</p>
-<h2 id="specifying-app-andor-data">Specifying app and/or data</h2>
-<p>By default, the online repository for apps and data is GitHub (<a href="https://github.com">https://github.com</a>).</p>
+<a href="https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb"><code>banks/repo</code></a>.</p>
+<h2 id="specifying-app-and-or-data">Specifying app and / or data</h2>
+<p>By default, the online repository for apps and data is
+<a href="https://github.com">GitHub</a>.</p>
 <p>But you can also use GitLab instances. You do that by specifying the server location
 in the parameter <code>backend</code>, e.g.</p>
-<pre><code>    backend=&quot;gitlab&quot;
+<pre><code class="language-python">    backend=&quot;gitlab&quot;
 </code></pre>
-<pre><code>    backend=&quot;gitlab.knaw.huc.nl&quot;
+<pre><code class="language-python">    backend=&quot;gitlab.knaw.huc.nl&quot;
 </code></pre>
 <p>Synonyms:</p>
 <ul>
@@ -144,7 +145,8 @@ in the parameter <code>backend</code>, e.g.</p>
 The normal case is where <em>app-path</em> has the form <code>org/repo</code> pointing to
 a repository that holds the corpus, both app and data.
 If we find an app under <em>app-path</em>, it will have information about where the data is, so the
-<em>data-path</em> is known. The <em>data-checkout-specifier</em> is passed as an optiona argument:
+<em>data-path</em> is known. The <em>data-checkout-specifier</em> is passed as an optional
+argument:
 <code>checkout=</code><em>data-checkout-specifier</em>.</p>
 <p>So far we have described how to use a TF corpus which has an <code>app</code> inside in the
 standard location, i.e. as org/repo/<code>app</code> .
@@ -165,20 +167,20 @@ You may pass a <em>checkout specifier</em> by appending <code>:</code><em>xxx</e
 <li>
 <p><em>corpus</em>
 <strong>legacy way of calling an app by its name only</strong>.
-Find a TF app in repo <code>annotation/app-</code><em>corpus</em>.</p>
+Find a TF app in repo <code>annotation/app-corpus</code>.</p>
 <p>Without <code>legacy=True</code>,
 you get a warning, and TF assumes the TF app has been migrated
-from annotation/app-corpus to org/repo/app, and it loads the app from there.</p>
+from <code>annotation/app-corpus</code> to <code>org/repo/app</code>, and it loads the app from there.</p>
 <p>If you pass <code>legacy=True</code> you do not get that warning, and TF loads
-the app from annotation/app-corpus.</p>
+the app from <code>annotation/app-corpus</code>.</p>
 <p>You have to use this if you go back in the history to times where
 the legacy method was the only method of loading a corpus.
-The older history of the app is preserved in annotation/app-corpus,
+The older history of the app is preserved in <code>annotation/app-corpus</code>,
 but not in the migrated org/repo/app.</p>
 </li>
 </ul>
 <h2 id="versions">Versions</h2>
-<p>Text-Fabric expects that the data resides in version directories.
+<p>TF expects that the data resides in version directories.
 The configuration of a corpus app specifies which version will be used.
 You can override that by passing
 the optional argument <code>version="x.y.z"</code>.
@@ -203,7 +205,7 @@ version of the main source!</p>
 <p>They are typically sets of features provides by others to enrich or comment
 the main corpus.
 A module is specified in much the same way as the main corpus data.
-The optional <strong>mod</strong> argument is a comma-separated list
+The optional <code>mod</code> argument is a comma-separated list
 or an iterable of modules in one of the forms</p>
 <pre><code>{org}/{repo}/{path}
 </code></pre>
@@ -212,11 +214,11 @@ or an iterable of modules in one of the forms</p>
 </code></pre>
 <p>All features of all those modules will be loaded.
 If they are not yet present, they will be downloaded from a back-end first.
-For example, there is an easter egg module on GitHub,
+For example, there is an Easter egg module on GitHub,
 and you can obtain it by</p>
-<pre><code>mod='etcbc/lingo/easter/tf'
+<pre><code class="language-python">mod='ETCBC/lingo/easter/tf'
 </code></pre>
-<p>Here the <code>{org}</code> is <code>etcbc</code>, the <code>{repo}</code> is <code>lingo</code>,
+<p>Here the <code>{org}</code> is <code>ETCBC</code>, the <code>{repo}</code> is <code>lingo</code>,
 and the <code>{path}</code> is <code>easter/tf</code> under which
 version <code>c</code> of the feature <code>egg</code>
 is available in TF format.
@@ -232,7 +234,7 @@ explicitly.</p>
 <p>This is needed for example if you specify a specific release
 for the core data module. The associated standard modules probably
 do not have that exact same release, so you have to look up their
-releases in GitHub/GitLab, and attach the release numbers found
+releases in GitHub / GitLab, and attach the release numbers found
 to the module specifiers.</p>
 </div>
 <div class="admonition caution">
@@ -240,17 +242,17 @@ to the module specifiers.</p>
 <p>It is better not to fiddle with your <code>~/text-fabric-data</code> directory
 manually. Let it be filled with auto-downloaded data.
 You can then delete data sources and modules when needed,
-and have them redownloaded at your wish,
+and have them re-downloaded at your wish,
 without any hassle or data loss.</p>
 </div>
 <h3 id="sets">Sets</h3>
-<p>They are named nodesets, that, when imported, can be used in
+<p>They are named node sets, that, when imported, can be used in
 <a href="https://annotation.github.io/text-fabric/tf/about/searchusage.html#simple-indent-nameotype-or-set-features">search templates</a>
 as if they were node types.
 You can construct them in a Python program and then write them to disk
 with <code><a title="tf.lib.writeSets" href="../lib.html#tf.lib.writeSets">writeSets()</a></code>.
 When you pass that file path with <code>setFile=path/to/file</code>,
-the named sets will be loaded by Text-Fabric.</p>
+the named sets will be loaded by TF.</p>
 <p>See also <code><a title="tf.search.search.Search.search" href="../search/search.html#tf.search.search.Search.search">Search.search()</a></code> and <code><a title="tf.lib.readSets" href="../lib.html#tf.lib.readSets">readSets()</a></code>.</p>
 <h2 id="overrides">Overrides</h2>
 <p>Sometimes you need to deviate from settings that have been specified in the TF app
@@ -263,15 +265,15 @@ The list of possible settings is spelled out in
 <div class="admonition hint">
 <p class="admonition-title">Corpus has moved</p>
 <p>Suppose you want to work with an older version of the corpus.
-A complication occurs if the repo has been renamed and/or moved
+A complication occurs if the repo has been renamed and / or moved
 to an other organization.
 When you go back in the history and download an older version of the app,
 its configuration settings specify a different org, repo and relative path
 than what is currently the case. Here the possibility to override settings
 come to the rescue.</p>
 <p>A good example is in
-<a href="https://nbviewer.org/github/clariah/wp6-missieven/blob/master/tutorial/annotate.ipynb">clariah/wp6-missieven</a>
-which resided in annotation/clariah-gm before, and in Dans-labs/clariah-gm even earlier.</p>
+<a href="https://nbviewer.org/github/clariah/wp6-missieven/blob/master/tutorial/annotate.ipynb"><code>clariah/wp6-missieven</code></a>
+which resided in <code>annotation/clariah-gm</code> before, and in <code>Dans-labs/clariah-gm</code> even earlier.</p>
 <p>When we want to migrate manual annotations made against the 0.4 version to the 0.7
 version, we run into this issue.
 But we can still load the 0.4 version by means of</p>
@@ -298,7 +300,7 @@ such as</p>
 <p>If you work with one corpus in a notebook, this gets cumbersome.
 You can inject the global variables <code>F</code>, <code>L</code>, <code>T</code>, <code>TF</code> and a few others
 directly into your program by passing <code>hoist=globals()</code>.
-See the output for a list wof the new globals that you have got this way.
+See the output for a list of the new globals that you have got this way.
 Do not do this if you work with several corpora or several versions of a corpus
 in the same program!</p>
 <h2 id="volumes-and-collections">Volumes and collections</h2>
@@ -306,7 +308,7 @@ in the same program!</p>
 or collections of individual volumes of it.
 If your work is confined to a volume or collection, it might pay off
 to load only the relevant pieces of the corpus.
-Text-Fabric will maintain the details of the relationship between the parts
+TF will maintain the details of the relationship between the parts
 and the whole.</p>
 <div class="admonition caution">
 <p class="admonition-title">Volumes and collections</p>
@@ -343,19 +345,19 @@ Read on to see how you can achieve the loading of fewer features.</p>
 </div>
 <h3 id="api">api</h3>
 <p>So far, <code>A = use()</code> will construct an advanced API with a more or less standard set of features
-loaded, and make that API avaible to you, under <code>A.api</code>.
-But you can also setup a core API yourself by usin the lower level method
+loaded, and make that API available to you, under <code>A.api</code>.
+But you can also setup a core API yourself by using the lower level method
 <code><a title="tf.core.fabric.FabricCore" href="../core/fabric.html#tf.core.fabric.FabricCore">FabricCore</a></code> with your choice of locations and modules:</p>
-<pre><code>from tf.fabric import Fabric
+<pre><code class="language-python">from tf.fabric import Fabric
 TF = Fabric(locations=..., modules=...)
 api = TF.load(features)
 </code></pre>
 <p>Here you have full control over what you load and what not.
 If you want the extra power of the TF app, you can wrap this <code>api</code>:</p>
-<pre><code>A = use(&quot;org/repo&quot;, api=api)`
+<pre><code class="language-python">A = use(&quot;org/repo&quot;, api=api)
 </code></pre>
 <p>or</p>
-<pre><code>A = use(&quot;app:path/to/app&quot;, api=api)`
+<pre><code class="language-python">A = use(&quot;app:path/to/app&quot;, api=api)
 </code></pre>
 <p>etc.</p>
 <div class="admonition hint">
@@ -366,10 +368,10 @@ that most people never need.
 Loading them cost time and takes a lot of RAM.</p>
 <p>In the case where you need an available feature
 that has not been loaded, you can load it by demanding</p>
-<p>TF.load('feature1 feature2', add=True)`</p>
+<p><code>TF.load('feature1 feature2', add=True)</code></p>
 <p>provided you have used the <code>hoist=globals()</code> parameter earlier.
 If not, you have to say</p>
-<p>A.api.TF.load('feature1 feature2', add=True)`</p>
+<p><code>A.api.TF.load('feature1 feature2', add=True)</code></p>
 </div>
 <h2 id="silence">Silence</h2>
 <p>Loading a corpus can be quite noisy in the output.
@@ -392,17 +394,17 @@ of the features are included.</p>
 <p>Data loading is costly.
 If you need to get some information of a TF dataset that is not dependent on loaded
 data features, you can suppress the loading of data by</p>
-<pre><code>A = use(&quot;org/repo&quot;, loadData=False)`
+<pre><code class="language-python">A = use(&quot;org/repo&quot;, loadData=False)
 </code></pre>
 <p>You can also prevent loading data of modules that are associated with the code
 data by default. These are the ones specified in the <code>config.yaml</code> file of
 the corpus app under <code>provenanceSpec &gt; moduleSpecs</code>:</p>
-<pre><code>A = use(&quot;org/repo&quot;, loadData=&quot;core&quot;)`
+<pre><code class="language-python">A = use(&quot;org/repo&quot;, loadData=&quot;core&quot;)
 </code></pre>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/about/usefunc.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/about/usefunc.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/usefunc.md
@@ -482,7 +484,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#security">Security</a></li>
 <li><a href="#details">Details</a></li>
 <li><a href="#loading">Loading</a></li>
-<li><a href="#specifying-app-andor-data">Specifying app and/or data</a></li>
+<li><a href="#specifying-app-and-or-data">Specifying app and / or data</a></li>
 <li><a href="#versions">Versions</a></li>
 <li><a href="#modules-and-sets">Modules and sets</a><ul>
 <li><a href="#modules">Modules</a></li>

@@ -25,7 +25,7 @@
 <section id="section-intro">
 <p>Section</p>
 <p>There is support for section headings.</p>
-<p>Text-Fabric datasets may specify two kinds of sections in their
+<p>TF datasets may specify two kinds of sections in their
 <code>otext.tf</code> configuration feature:</p>
 <h3 id="sections">Sections</h3>
 <p>At most three levels:</p>
@@ -35,7 +35,7 @@
 a few pages</li>
 <li>level 3 is for small things, such as lines.</li>
 </ul>
-<p>Text-Fabric uses these levels in the Text-Fabric browser, to divide your corpus
+<p>TF uses these levels in the TF browser, to divide your corpus
 into divisions that can conveniently be displayed to you in the browser.</p>
 <h3 id="structure">Structure</h3>
 <p>Any number of levels.
@@ -44,25 +44,25 @@ without regard for how they are to be displayed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/sections.py#L1-L200" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/sections.py#L1-L202" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Section
 
 There is support for section headings.
 
-Text-Fabric datasets may specify two kinds of sections in their
+TF datasets may specify two kinds of sections in their
 `otext.tf` configuration feature:
 
 ### Sections
 
 At most three levels:
 
-* level 1 is for big things, like books
-* level 2 is for intermediate things, like chapters, that fit on one page or just
-  a few pages
-* level 3 is for small things, such as lines.
+*   level 1 is for big things, like books
+*   level 2 is for intermediate things, like chapters, that fit on one page or just
+    a few pages
+*   level 3 is for small things, such as lines.
 
-Text-Fabric uses these levels in the Text-Fabric browser, to divide your corpus
+TF uses these levels in the TF browser, to divide your corpus
 into divisions that can conveniently be displayed to you in the browser.
 
 ### Structure
@@ -90,15 +90,16 @@ def nodeFromSectionStr(app, sectionStr, lang=&#34;en&#34;):
     Parameters
     ----------
     sectionStr: string
-        Must be a valid section specficiation in the
-        language specified in *lang*.
+        Must be a valid section specification in the
+        language specified in `lang`.
 
-        The string may specify a section 0 level only (book/tablet), or
-        section 0 and 1 levels (book/tablet chapter/column),
+        The string may specify a section 0 level only (book / tablet), or
+        section 0 and 1 levels (book / tablet; chapter / column),
         or all levels
-        (book/tablet chapter/column verse/line).
+        (book / tablet; chapter / column; verse / line).
 
         !!! hint &#34;examples&#34;
+            ```
             Genesis
 
             Genesis 1
@@ -110,6 +111,7 @@ def nodeFromSectionStr(app, sectionStr, lang=&#34;en&#34;):
             P005381 1
 
             P005381 1:1
+            ```
 
     lang: string, optional en
         The language assumed for the section parts,
@@ -190,7 +192,7 @@ def sectionStrFromNode(app, n, lang=&#34;en&#34;, lastSlot=False, fillup=False):
     section heading:string
         Corresponds to the reference node.
         The result is built from the labels of the individual section levels,
-        with dummies for missing parts if *fillup* is true.
+        with dummies for missing parts if `fillup` is true.
     &#34;&#34;&#34;
 
     api = app.api
@@ -265,20 +267,22 @@ def _sectionLink(app, n, text=None, clsName=None):
 <dl>
 <dt><strong><code>sectionStr</code></strong> :&ensp;<code>string</code></dt>
 <dd>
-<p>Must be a valid section specficiation in the
-language specified in <em>lang</em>.</p>
-<p>The string may specify a section 0 level only (book/tablet), or
-section 0 and 1 levels (book/tablet chapter/column),
+<p>Must be a valid section specification in the
+language specified in <code>lang</code>.</p>
+<p>The string may specify a section 0 level only (book / tablet), or
+section 0 and 1 levels (book / tablet; chapter / column),
 or all levels
-(book/tablet chapter/column verse/line).</p>
+(book / tablet; chapter / column; verse / line).</p>
 <div class="admonition hint">
 <p class="admonition-title">examples</p>
-<p>Genesis</p>
+<p>```
+Genesis</p>
 <p>Genesis 1</p>
 <p>Genesis 1:1</p>
 <p>P005381</p>
 <p>P005381 1</p>
-<p>P005381 1:1</p>
+<p>P005381 1:1
+```</p>
 </div>
 </dd>
 <dt><strong><code>lang</code></strong> :&ensp;<code>string</code>, optional <code>en</code></dt>
@@ -298,7 +302,7 @@ Must be a 2-letter language code.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/sections.py#L37-L117" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/sections.py#L37-L119" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def nodeFromSectionStr(app, sectionStr, lang=&#34;en&#34;):
     &#34;&#34;&#34;Find the node of a section string.
@@ -308,15 +312,16 @@ Must be a 2-letter language code.</dd>
     Parameters
     ----------
     sectionStr: string
-        Must be a valid section specficiation in the
-        language specified in *lang*.
+        Must be a valid section specification in the
+        language specified in `lang`.
 
-        The string may specify a section 0 level only (book/tablet), or
-        section 0 and 1 levels (book/tablet chapter/column),
+        The string may specify a section 0 level only (book / tablet), or
+        section 0 and 1 levels (book / tablet; chapter / column),
         or all levels
-        (book/tablet chapter/column verse/line).
+        (book / tablet; chapter / column; verse / line).
 
         !!! hint &#34;examples&#34;
+            ```
             Genesis
 
             Genesis 1
@@ -328,6 +333,7 @@ Must be a 2-letter language code.</dd>
             P005381 1
 
             P005381 1:1
+            ```
 
     lang: string, optional en
         The language assumed for the section parts,
@@ -409,12 +415,12 @@ Must be a 2-letter language code.</dd>
 <dt><code>section heading:string</code></dt>
 <dd>Corresponds to the reference node.
 The result is built from the labels of the individual section levels,
-with dummies for missing parts if <em>fillup</em> is true.</dd>
+with dummies for missing parts if <code>fillup</code> is true.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/sections.py#L120-L160" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/sections.py#L122-L162" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sectionStrFromNode(app, n, lang=&#34;en&#34;, lastSlot=False, fillup=False):
     &#34;&#34;&#34;The heading of a section to which a node belongs.
@@ -441,7 +447,7 @@ with dummies for missing parts if <em>fillup</em> is true.</dd>
     section heading:string
         Corresponds to the reference node.
         The result is built from the labels of the individual section levels,
-        with dummies for missing parts if *fillup* is true.
+        with dummies for missing parts if `fillup` is true.
     &#34;&#34;&#34;
 
     api = app.api
@@ -467,7 +473,7 @@ with dummies for missing parts if <em>fillup</em> is true.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/sections.py#L30-L34" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/sections.py#L30-L34" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sectionsApi(app):
     app.nodeFromSectionStr = types.MethodType(nodeFromSectionStr, app)
@@ -493,7 +499,7 @@ The result is built from the labels of the individual section levels.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/sections.py#L163-L193" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/sections.py#L165-L195" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def structureStrFromNode(app, n):
     &#34;&#34;&#34;The heading of a structure to which a node belongs.

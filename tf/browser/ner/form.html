@@ -26,19 +26,19 @@
 <p>Machinery for request reading.</p>
 <p>All form data comes as key value pairs where the values are strings.
 We need more streamlined values, in several data types and organizations.
-Also we need defaults for missing and/or empty values.</p>
+Also we need defaults for missing and / or empty values.</p>
 <p>To see how this fits among all the modules of this package, see
 <code><a title="tf.browser.ner.annotate" href="annotate.html">tf.browser.ner.annotate</a></code> .</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/form.py#L1-L155" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/form.py#L1-L155" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Machinery for request reading.
 
 All form data comes as key value pairs where the values are strings.
 We need more streamlined values, in several data types and organizations.
-Also we need defaults for missing and/or empty values.
+Also we need defaults for missing and / or empty values.
 
 To see how this fits among all the modules of this package, see
 `tf.browser.ner.annotate` .
@@ -77,7 +77,7 @@ class Form:
             If the default should be a `None`, `False` or empty string value,
             nothing has to be specified. Only if the default is a specific
             meaningful value, it needs to be specified.
-        keys[Str,Bool,Tri,Int,Tup,SetInt,Json]: list
+        keysStr,keysBool,keysTri,keysInt,keysTup,keysSetInt,keysJson: list
             See `tf.browser.ner.request.Request`.
         &#34;&#34;&#34;
         self.features = features
@@ -136,8 +136,8 @@ class Form:
     def fgetj(self, k):
         &#34;&#34;&#34;Makes form value under key `k` or its default into a data structure.
 
-        The datastructure is retrieved by interpreting the original string as
-        quoted json.
+        The data structure is retrieved by interpreting the original string as
+        quoted JSON.
         &#34;&#34;&#34;
         formValue = self.fgets(k)
         return (
@@ -218,12 +218,12 @@ If the default should be a <code>None</code>, <code>False</code> or empty string
 nothing has to be specified. Only if the default is a specific
 meaningful value, it needs to be specified.</dd>
 </dl>
-<p>keys[Str,Bool,Tri,Int,Tup,SetInt,Json]: list
+<p>keysStr,keysBool,keysTri,keysInt,keysTup,keysSetInt,keysJson: list
 See <code><a title="tf.browser.ner.request.Request" href="request.html#tf.browser.ner.request.Request">Request</a></code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/form.py#L18-L155" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/form.py#L18-L155" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Form:
     def __init__(
@@ -251,7 +251,7 @@ See <code><a title="tf.browser.ner.request.Request" href="request.html#tf.browse
             If the default should be a `None`, `False` or empty string value,
             nothing has to be specified. Only if the default is a specific
             meaningful value, it needs to be specified.
-        keys[Str,Bool,Tri,Int,Tup,SetInt,Json]: list
+        keysStr,keysBool,keysTri,keysInt,keysTup,keysSetInt,keysJson: list
             See `tf.browser.ner.request.Request`.
         &#34;&#34;&#34;
         self.features = features
@@ -310,8 +310,8 @@ See <code><a title="tf.browser.ner.request.Request" href="request.html#tf.browse
     def fgetj(self, k):
         &#34;&#34;&#34;Makes form value under key `k` or its default into a data structure.
 
-        The datastructure is retrieved by interpreting the original string as
-        quoted json.
+        The data structure is retrieved by interpreting the original string as
+        quoted JSON.
         &#34;&#34;&#34;
         formValue = self.fgets(k)
         return (
@@ -378,7 +378,7 @@ See <code><a title="tf.browser.ner.request.Request" href="request.html#tf.browse
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/form.py#L62-L65" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/form.py#L62-L65" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fget2(self, k):
     &#34;&#34;&#34;Makes form value under key `k` or its default into an boolean.&#34;&#34;&#34;
@@ -394,7 +394,7 @@ See <code><a title="tf.browser.ner.request.Request" href="request.html#tf.browse
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/form.py#L67-L70" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/form.py#L67-L70" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fget3(self, k):
     &#34;&#34;&#34;Makes form value under key `k` or its default into a 3-way boolean.&#34;&#34;&#34;
@@ -410,7 +410,7 @@ See <code><a title="tf.browser.ner.request.Request" href="request.html#tf.browse
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/form.py#L72-L75" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/form.py#L72-L75" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fgeti(self, k):
     &#34;&#34;&#34;Makes form value under key `k` or its default into an integer.&#34;&#34;&#34;
@@ -423,18 +423,18 @@ See <code><a title="tf.browser.ner.request.Request" href="request.html#tf.browse
 </code></dt>
 <dd>
 <div class="desc"><p>Makes form value under key <code>k</code> or its default into a data structure.</p>
-<p>The datastructure is retrieved by interpreting the original string as
-quoted json.</p></div>
+<p>The data structure is retrieved by interpreting the original string as
+quoted JSON.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/form.py#L100-L111" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/form.py#L100-L111" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fgetj(self, k):
     &#34;&#34;&#34;Makes form value under key `k` or its default into a data structure.
 
-    The datastructure is retrieved by interpreting the original string as
-    quoted json.
+    The data structure is retrieved by interpreting the original string as
+    quoted JSON.
     &#34;&#34;&#34;
     formValue = self.fgets(k)
     return (
@@ -452,7 +452,7 @@ quoted json.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/form.py#L57-L60" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/form.py#L57-L60" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fgets(self, k):
     &#34;&#34;&#34;Makes form value under key `k` or its default into an string.&#34;&#34;&#34;
@@ -471,7 +471,7 @@ Parts that do not form valid integers are skipped.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/form.py#L86-L98" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/form.py#L86-L98" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fgetsi(self, k):
     &#34;&#34;&#34;Makes form value under key `k` or its default into a set.
@@ -498,7 +498,7 @@ The values are retrieved by splitting the original string value on <code>⊙</co
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/form.py#L77-L84" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/form.py#L77-L84" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fgettu(self, k):
     &#34;&#34;&#34;Makes form value under key `k` or its default into a tuple.
@@ -525,7 +525,7 @@ are the logical values derived from them by the methods in this class.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/browser/ner/form.py#L113-L155" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/form.py#L113-L155" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fill(self):
     &#34;&#34;&#34;Fill a dictionary with interpreted form values.

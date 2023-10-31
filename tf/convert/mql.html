@@ -25,7 +25,7 @@
 <section id="section-intro">
 <h1 id="mql">MQL</h1>
 <p>You can interchange with <a href="https://emdros.org">MQL data</a>.
-Text-Fabric can read and write MQL dumps.
+TF can read and write MQL dumps.
 An MQL dump is a text file, like an SQL dump.
 It contains the instructions to create and fill a complete database.</p>
 <h2 id="correspondence-tf-and-mql">Correspondence TF and MQL</h2>
@@ -49,7 +49,7 @@ Only if the feature is a number feature, you may omit the quotes:</p>
 [verse chapter=1 and verse=1]
 </code></pre>
 <h2 id="enumeration-types">Enumeration types</h2>
-<p>It is attractive to use eumeration types for the values of a feature, whereever
+<p>It is attractive to use enumeration types for the values of a feature, where ever
 possible, because then you can query those features in MQL with <code>IN</code> and without
 quotes:</p>
 <pre><code>[chapter book IN (Genesis, Exodus)]
@@ -88,7 +88,7 @@ i.e. lists of object identifiers.</p>
 <p>The requirements are for names are:</p>
 <ul>
 <li>start with a letter (ASCII, upper-case or lower-case)</li>
-<li>follow by any sequence of ASCII upper/lower-case letters or digits or
+<li>follow by any sequence of ASCII upper / lower-case letters or digits or
 underscores (<code>_</code>)</li>
 <li>avoid being a reserved word in the C language</li>
 </ul>
@@ -99,13 +99,13 @@ C word.</p>
 <p>With these provisos:</p>
 <ul>
 <li>the given <code>dbName</code> correspond to the MQL <em>database name</em></li>
-<li>the TF <em>otypes</em> correspond to the MQL <em>objects</em></li>
-<li>the TF <em>features</em> correspond to the MQL <em>features</em></li>
+<li>the TF <code>otypes</code> correspond to the MQL <em>objects</em></li>
+<li>the TF <code>features</code> correspond to the MQL <em>features</em></li>
 </ul>
 <p>The MQL export is usually quite massive (500 MB for the Hebrew Bible).
 It can be compressed greatly, especially by the program <code>bzip2</code>.</p>
 <div class="admonition caution">
-<p class="admonition-title">Exisiting database</p>
+<p class="admonition-title">Existing database</p>
 <p>If you try to import an MQL file in Emdros, and there exists already a file or
 directory with the same name as the MQL database, your import will fail
 spectacularly. So do not do that.</p>
@@ -123,13 +123,13 @@ rm dataset ; mql -b 3 &lt; dataset.mql
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/mql.py#L1-L1018" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/mql.py#L1-L1022" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # MQL
 
 You can interchange with [MQL data](https://emdros.org).
-Text-Fabric can read and write MQL dumps.
+TF can read and write MQL dumps.
 An MQL dump is a text file, like an SQL dump.
 It contains the instructions to create and fill a complete database.
 
@@ -161,7 +161,7 @@ Only if the feature is a number feature, you may omit the quotes:
 
 ## Enumeration types
 
-It is attractive to use eumeration types for the values of a feature, whereever
+It is attractive to use enumeration types for the values of a feature, where ever
 possible, because then you can query those features in MQL with `IN` and without
 quotes:
 
@@ -207,7 +207,7 @@ i.e. lists of object identifiers.
 The requirements are for names are:
 
 *   start with a letter (ASCII, upper-case or lower-case)
-*   follow by any sequence of ASCII upper/lower-case letters or digits or
+*   follow by any sequence of ASCII upper / lower-case letters or digits or
     underscores (`_`)
 *   avoid being a reserved word in the C language
 
@@ -219,13 +219,13 @@ C word.
 With these provisos:
 
 *   the given `dbName` correspond to the MQL *database name*
-*   the TF *otypes* correspond to the MQL *objects*
-*   the TF *features* correspond to the MQL *features*
+*   the TF `otypes` correspond to the MQL *objects*
+*   the TF `features` correspond to the MQL *features*
 
 The MQL export is usually quite massive (500 MB for the Hebrew Bible).
 It can be compressed greatly, especially by the program `bzip2`.
 
-!!! caution &#34;Exisiting database&#34;
+!!! caution &#34;Existing database&#34;
     If you try to import an MQL file in Emdros, and there exists already a file or
     directory with the same name as the MQL database, your import will fail
     spectacularly. So do not do that.
@@ -238,7 +238,7 @@ A good way to prevent clashes:
 
 Delete existing copy:
 
-```sh
+``` sh
 cd ~/Downloads
 rm dataset ; mql -b 3 &lt; dataset.mql
 ```
@@ -284,12 +284,12 @@ def exportMQL(app, mqlDb, exportDir=None):
         A `tf.advanced.app.App` object, which holds the corpus data
         that will be exported to MQL.
     mqlDb: string
-        Name of the mql database
+        Name of the MQL database
     exportDir: string, optional None
-        Directory where the MQL dir will be saved.
+        Directory where the MQL data will be saved.
         If None is given, it will end up in the same repo as the dataset, in a new
         top-level subdirectory called `mql`.
-        The exported data will be written to file *exportDir*`/`*mqlDb.mql*.
+        The exported data will be written to file `exportDir/mqlDb.mql`.
         If `exportDir` starts with `~`, the `~` will be expanded to your
         home directory.
         Likewise, `..` will be expanded to the parent of the current directory,
@@ -326,7 +326,7 @@ def exportMQL(app, mqlDb, exportDir=None):
 
 
 def importMQL(mqlFile, saveDir, silent=None, slotType=None, otext=None, meta=None):
-    &#34;&#34;&#34;Converts an MQL database dump to a Text-Fabric dataset.
+    &#34;&#34;&#34;Converts an MQL database dump to a TF dataset.
 
     Parameters
     ----------
@@ -346,10 +346,12 @@ def importMQL(mqlFile, saveDir, silent=None, slotType=None, otext=None, meta=Non
         the parameter `otext`. This info will end up in the `otext.tf` feature.
         Pass it as a dictionary of keys and values, like so:
 
-            otext = {
-                &#39;fmt:text-trans-plain&#39;: &#39;{glyphs}{trailer}&#39;,
-                &#39;sectionFeatures&#39;: &#39;book,chapter,verse&#39;,
-            }
+        ```
+        otext = {
+            &#39;fmt:text-trans-plain&#39;: &#39;{glyphs}{trailer}&#39;,
+            &#39;sectionFeatures&#39;: &#39;book,chapter,verse&#39;,
+        }
+        ```
 
     meta: dict
         Likewise, you can add a dictionary keyed by features
@@ -361,23 +363,25 @@ def importMQL(mqlFile, saveDir, silent=None, slotType=None, otext=None, meta=Non
 
         Example:
 
-            meta = {
-                &#34;&#34;: dict(
-                    dataset=&#39;DLC&#39;,
-                    datasetName=&#39;Digital Language Corpus&#39;,
-                    author=&#34;That &#39;s me&#34;,
-                ),
-                &#34;sp&#34;: dict(
-                    description: &#34;part-of-speech&#34;,
-                ),
-            }
+        ```
+        meta = {
+            &#34;&#34;: dict(
+                dataset=&#39;DLC&#39;,
+                datasetName=&#39;Digital Language Corpus&#39;,
+                author=&#34;That &#39;s me&#34;,
+            ),
+            &#34;sp&#34;: dict(
+                description: &#34;part-of-speech&#34;,
+            ),
+        }
+        ```
 
         !!! note &#34;description&#34;
-            Text-Fabric will display all metadata information under the
+            TF will display all metadata information under the
             key `description` in a more prominent place than the other
             metadata.
 
-        !!! caution &#34;valueType&#34;
+        !!! caution &#34;`value type`&#34;
             Do not pass the value types of the features here.
 
     Returns
@@ -796,8 +800,8 @@ uniscan = re.compile(r&#34;(?:\\x..)+&#34;)
 
 
 def makeuni(match):
-    &#34;&#34;&#34;Make proper unicode of a text that contains byte escape codes
-    such as backslash xb6
+    &#34;&#34;&#34;Make proper UNICODE of a text that contains byte escape codes
+    such as backslash `xb6`
     &#34;&#34;&#34;
     byts = eval(&#39;&#34;&#39; + match.group(0) + &#39;&#34;&#39;)
     return byts.encode(&#34;latin1&#34;).decode(&#34;utf-8&#34;)
@@ -814,8 +818,8 @@ def tfFromMql(mqlFile, tmObj, slotType=None, otext=None, meta=None):
     ----------
     tmObj: object
         A `tf.core.timestamp.Timestamp` object
-    mqlFile, slotType, otype, meta: various
-        See `tf.convert.mql.importMQL
+    mqlFile, slotType, otype, meta: mixed
+        See `tf.convert.mql.importMQL`
     &#34;&#34;&#34;
     mqlFile = ex(mqlFile)
     error = tmObj.error
@@ -833,7 +837,7 @@ def parseMql(mqlFile, tmObj):
     info = tmObj.info
     error = tmObj.error
 
-    info(&#34;Parsing mql source ...&#34;)
+    info(&#34;Parsing MQL source ...&#34;)
     fh = open(mqlFile, encoding=&#34;utf8&#34;)
 
     objectTypes = dict()
@@ -1163,12 +1167,12 @@ def tfFromData(tmObj, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
 <dd>A <code><a title="tf.advanced.app.App" href="../advanced/app.html#tf.advanced.app.App">App</a></code> object, which holds the corpus data
 that will be exported to MQL.</dd>
 <dt><strong><code>mqlDb</code></strong> :&ensp;<code>string</code></dt>
-<dd>Name of the mql database</dd>
+<dd>Name of the MQL database</dd>
 <dt><strong><code>exportDir</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
-<dd>Directory where the MQL dir will be saved.
+<dd>Directory where the MQL data will be saved.
 If None is given, it will end up in the same repo as the dataset, in a new
 top-level subdirectory called <code>mql</code>.
-The exported data will be written to file <em>exportDir</em><code>/</code><em>mqlDb.mql</em>.
+The exported data will be written to file <code>exportDir/mqlDb.mql</code>.
 If <code>exportDir</code> starts with <code>~</code>, the <code>~</code> will be expanded to your
 home directory.
 Likewise, <code>..</code> will be expanded to the parent of the current directory,
@@ -1184,7 +1188,7 @@ and <code>.</code> to the current directory, both only at the start of <code>exp
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/mql.py#L151-L198" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/mql.py#L151-L198" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exportMQL(app, mqlDb, exportDir=None):
     &#34;&#34;&#34;Exports the complete TF dataset into single MQL database.
@@ -1195,12 +1199,12 @@ and <code>.</code> to the current directory, both only at the start of <code>exp
         A `tf.advanced.app.App` object, which holds the corpus data
         that will be exported to MQL.
     mqlDb: string
-        Name of the mql database
+        Name of the MQL database
     exportDir: string, optional None
-        Directory where the MQL dir will be saved.
+        Directory where the MQL data will be saved.
         If None is given, it will end up in the same repo as the dataset, in a new
         top-level subdirectory called `mql`.
-        The exported data will be written to file *exportDir*`/`*mqlDb.mql*.
+        The exported data will be written to file `exportDir/mqlDb.mql`.
         If `exportDir` starts with `~`, the `~` will be expanded to your
         home directory.
         Likewise, `..` will be expanded to the parent of the current directory,
@@ -1240,7 +1244,7 @@ and <code>.</code> to the current directory, both only at the start of <code>exp
 <span>def <span class="ident">importMQL</span></span>(<span>mqlFile, saveDir, silent=None, slotType=None, otext=None, meta=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Converts an MQL database dump to a Text-Fabric dataset.</p>
+<div class="desc"><p>Converts an MQL database dump to a TF dataset.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>mqlFile</code></strong> :&ensp;<code>string</code></dt>
@@ -1253,13 +1257,14 @@ and <code>.</code> to the current directory, both only at the start of <code>exp
 <dd>You have to tell which object type in the MQL file acts as the slot type,
 because TF cannot see that on its own.</dd>
 <dt><strong><code>otext</code></strong> :&ensp;<code>dict</code></dt>
-<dd>You can pass the information about sections and text formats as
+<dd>
+<p>You can pass the information about sections and text formats as
 the parameter <code>otext</code>. This info will end up in the <code>otext.tf</code> feature.
-Pass it as a dictionary of keys and values, like so:<pre><code>otext = {
-    'fmt:text-trans-plain': '{glyphs}{trailer}',
-    'sectionFeatures': 'book,chapter,verse',
-}
-</code></pre>
+Pass it as a dictionary of keys and values, like so:</p>
+<p><code>otext = {
+'fmt:text-trans-plain': '{glyphs}{trailer}',
+'sectionFeatures': 'book,chapter,verse',
+}</code></p>
 </dd>
 <dt><strong><code>meta</code></strong> :&ensp;<code>dict</code></dt>
 <dd>
@@ -1269,25 +1274,24 @@ that will added to the metadata of the corresponding features.</p>
 this will be added to the metadata of all features.
 Handy to add provenance data there.</p>
 <p>Example:</p>
-<pre><code>meta = {
-    "": dict(
-        dataset='DLC',
-        datasetName='Digital Language Corpus',
-        author="That 's me",
-    ),
-    "sp": dict(
-        description: "part-of-speech",
-    ),
-}
-</code></pre>
+<p><code>meta = {
+"": dict(
+dataset='DLC',
+datasetName='Digital Language Corpus',
+author="That 's me",
+),
+"sp": dict(
+description: "part-of-speech",
+),
+}</code></p>
 <div class="admonition note">
 <p class="admonition-title">description</p>
-<p>Text-Fabric will display all metadata information under the
+<p>TF will display all metadata information under the
 key <code>description</code> in a more prominent place than the other
 metadata.</p>
 </div>
 <div class="admonition caution">
-<p class="admonition-title">valueType</p>
+<p class="admonition-title"><code>value type</code></p>
 <p>Do not pass the value types of the features here.</p>
 </div>
 </dd>
@@ -1301,10 +1305,10 @@ MQL data into TF.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/mql.py#L201-L273" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/mql.py#L201-L277" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importMQL(mqlFile, saveDir, silent=None, slotType=None, otext=None, meta=None):
-    &#34;&#34;&#34;Converts an MQL database dump to a Text-Fabric dataset.
+    &#34;&#34;&#34;Converts an MQL database dump to a TF dataset.
 
     Parameters
     ----------
@@ -1324,10 +1328,12 @@ MQL data into TF.</dd>
         the parameter `otext`. This info will end up in the `otext.tf` feature.
         Pass it as a dictionary of keys and values, like so:
 
-            otext = {
-                &#39;fmt:text-trans-plain&#39;: &#39;{glyphs}{trailer}&#39;,
-                &#39;sectionFeatures&#39;: &#39;book,chapter,verse&#39;,
-            }
+        ```
+        otext = {
+            &#39;fmt:text-trans-plain&#39;: &#39;{glyphs}{trailer}&#39;,
+            &#39;sectionFeatures&#39;: &#39;book,chapter,verse&#39;,
+        }
+        ```
 
     meta: dict
         Likewise, you can add a dictionary keyed by features
@@ -1339,23 +1345,25 @@ MQL data into TF.</dd>
 
         Example:
 
-            meta = {
-                &#34;&#34;: dict(
-                    dataset=&#39;DLC&#39;,
-                    datasetName=&#39;Digital Language Corpus&#39;,
-                    author=&#34;That &#39;s me&#34;,
-                ),
-                &#34;sp&#34;: dict(
-                    description: &#34;part-of-speech&#34;,
-                ),
-            }
+        ```
+        meta = {
+            &#34;&#34;: dict(
+                dataset=&#39;DLC&#39;,
+                datasetName=&#39;Digital Language Corpus&#39;,
+                author=&#34;That &#39;s me&#34;,
+            ),
+            &#34;sp&#34;: dict(
+                description: &#34;part-of-speech&#34;,
+            ),
+        }
+        ```
 
         !!! note &#34;description&#34;
-            Text-Fabric will display all metadata information under the
+            TF will display all metadata information under the
             key `description` in a more prominent place than the other
             metadata.
 
-        !!! caution &#34;valueType&#34;
+        !!! caution &#34;`value type`&#34;
             Do not pass the value types of the features here.
 
     Returns
@@ -1382,16 +1390,16 @@ MQL data into TF.</dd>
 <span>def <span class="ident">makeuni</span></span>(<span>match)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Make proper unicode of a text that contains byte escape codes
-such as backslash xb6</p></div>
+<div class="desc"><p>Make proper UNICODE of a text that contains byte escape codes
+such as backslash <code>xb6</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/mql.py#L671-L676" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/mql.py#L675-L680" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeuni(match):
-    &#34;&#34;&#34;Make proper unicode of a text that contains byte escape codes
-    such as backslash xb6
+    &#34;&#34;&#34;Make proper UNICODE of a text that contains byte escape codes
+    such as backslash `xb6`
     &#34;&#34;&#34;
     byts = eval(&#39;&#34;&#39; + match.group(0) + &#39;&#34;&#39;)
     return byts.encode(&#34;latin1&#34;).decode(&#34;utf-8&#34;)</code></pre>
@@ -1405,13 +1413,13 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/mql.py#L705-L906" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/mql.py#L709-L910" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def parseMql(mqlFile, tmObj):
     info = tmObj.info
     error = tmObj.error
 
-    info(&#34;Parsing mql source ...&#34;)
+    info(&#34;Parsing MQL source ...&#34;)
     fh = open(mqlFile, encoding=&#34;utf8&#34;)
 
     objectTypes = dict()
@@ -1619,7 +1627,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/mql.py#L909-L1018" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/mql.py#L913-L1022" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tfFromData(tmObj, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
     info = tmObj.info
@@ -1742,13 +1750,13 @@ such as backslash xb6</p></div>
 <dl>
 <dt><strong><code>tmObj</code></strong> :&ensp;<code>object</code></dt>
 <dd>A <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code> object</dd>
-<dt><strong><code>mqlFile</code></strong>, <strong><code>slotType</code></strong>, <strong><code>otype</code></strong>, <strong><code>meta</code></strong> :&ensp;<code>various</code></dt>
-<dd>See `tf.convert.mql.importMQL</dd>
+<dt><strong><code>mqlFile</code></strong>, <strong><code>slotType</code></strong>, <strong><code>otype</code></strong>, <strong><code>meta</code></strong> :&ensp;<code>mixed</code></dt>
+<dd>See <code><a title="tf.convert.mql.importMQL" href="#tf.convert.mql.importMQL">importMQL()</a></code></dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/mql.py#L683-L702" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/mql.py#L687-L706" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tfFromMql(mqlFile, tmObj, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Generate TF from MQL
@@ -1757,8 +1765,8 @@ such as backslash xb6</p></div>
     ----------
     tmObj: object
         A `tf.core.timestamp.Timestamp` object
-    mqlFile, slotType, otype, meta: various
-        See `tf.convert.mql.importMQL
+    mqlFile, slotType, otype, meta: mixed
+        See `tf.convert.mql.importMQL`
     &#34;&#34;&#34;
     mqlFile = ex(mqlFile)
     error = tmObj.error
@@ -1780,7 +1788,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/mql.py#L679-L680" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/mql.py#L683-L684" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def uni(line):
     return uniscan.sub(makeuni, line)</code></pre>
@@ -1800,7 +1808,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/mql.py#L276-L663" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/mql.py#L280-L667" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class MQL:
     def __init__(self, app, mqlDb, exportDir, silent=SILENT_D):
@@ -2201,7 +2209,7 @@ GO
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/mql.py#L295-L329" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/mql.py#L299-L333" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def write(self):
     silent = self.silent

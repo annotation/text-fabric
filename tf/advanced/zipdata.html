@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/zipdata.py#L1-L422" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/zipdata.py#L1-L422" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 import types
@@ -70,23 +70,23 @@ text-fabric-zip {org}/{repo}{relative} --backend=gitlab.huc.knaw.nl
 
 ### EFFECT
 
-Zips text-fabric data from your local github/gitlab repository into
-a release file, ready to be attached to a github release.
+Zips TF data from your local GitHub / GitLab repository into
+a release file, ready to be attached to a GitHub release.
 
 Your repo must sit in `~/github/*org*/*repo*` or in `~/gitlab/*org*/*repo*`
-or in whatever Gitlab backend you have chosen.
+or in whatever GitLab back-end you have chosen.
 
-Your TF data is assumed to sit in the toplevel tf directory of your repo.
+Your TF data is assumed to sit in the toplevel TF directory of your repo.
 But if it is somewhere else, you can pass relative, e.g phrases/heads/tf
 
-It is assumed that your tf directory contains subdirectories according to
-the versions of the main datasource.
-The actual .tf files are in those version directories.
+It is assumed that your TF directory contains subdirectories according to
+the versions of the main data source.
+The actual `.tf` files are in those version directories.
 
 Each of these version directories will be zipped into a separate file.
 
-The resulting zip files end up in ~/Downloads/*backend*/*org*-release/*repo*
-and the are named *relative*-*version*.zip
+The resulting zip files end up in `~/Downloads/backend/org-release/repo`
+and the are named `relative-version.zip`
 (where the / in relative have been replaced by -)
 
 &#34;&#34;&#34;
@@ -113,30 +113,30 @@ def zipAll(app):
 
     *   the app
     *   the main data module
-    *   all modules mentioned in the moduleSpecs in the provenanceSpec of the app
-    *   all graphics data mentioned in the graphicsRelative of the provenanceSpec
-    *   all extra data mentioned in the extraData of the provenanceSpec
+    *   all modules mentioned in the `moduleSpecs` in the `provenanceSpec` of the app
+    *   all graphics data mentioned in the `graphicsRelative` of the `provenanceSpec`
+    *   all extra data mentioned in the `extraData` of the `provenanceSpec`
 
     The data will be zipped in a file complete.zip which can be unpacked
     in the ~/text-fabric-data directory.
 
-    !!! Hint
+    !!! hint
         You can attach this file straight to the latest release of of dataset
         on GitHub. This makes that users can download the dataset from GitHub
         without problems such as bumping against the GitHub API rate limit.
 
-    !!! Caution
-        All data should reside on the same backend.
+    !!! caution
+        All data should reside on the same back-end.
 
-    !!! Note &#34;checkout files&#34;
+    !!! note &#34;checkout files&#34;
         There will be `__checkout__.txt` files included in the zip file,
-        so that after unpacking Text-Fabric detects from which release the data is
+        so that after unpacking TF detects from which release the data is
         coming.
 
     Parameters
     ----------
     app: object
-        A loaded text-fabric datasource or None.
+        A loaded TF data source or None.
     &#34;&#34;&#34;
     context = app.context
 
@@ -191,7 +191,7 @@ def zipAll(app):
         label = &#34;-&#34;.join(labelItems)
         if mbase != base:
             good = False
-            console(f&#34;ERROR: module {label} not on expected backend {backend}&#34;)
+            console(f&#34;ERROR: module {label} not on expected back-end {backend}&#34;)
         dataItems.append((f&#34;module {label}&#34;, f&#34;{mrepoDir}{mrelative}/{version}&#34;))
 
     if not good:
@@ -303,26 +303,26 @@ def zipData(
     Parameters
     ----------
     backend: string
-        The backend for which the zip file is meant (`github`, `gitlab`, etc).
+        The back-end for which the zip file is meant (`github`, `gitlab`, etc).
     org, repo: string
-        Where the corpus is located on the backend,
+        Where the corpus is located on the back-end,
     relative: string, optional &#34;tf&#34;
         The subdirectory of the repo that will be zipped.
     version: string, optional None
         If passed, only data of this version is zipped, otherwise all versions
         will be zipped.
     tf: boolean, optional True
-        Whether the data to be zipped are tf feature files or other kinds of data.
+        Whether the data to be zipped are TF feature files or other kinds of data.
     keep: boolean, optional True
-        Whether previously generated zipfiles in the destination directory should
+        Whether previously generated zip files in the destination directory should
         be kept or deleted.
     source: string, optional None
         Top directory under which the repository is found, if None; this directory
-        is given by the backend: `~/github`, `~/gitlab`, etc.
+        is given by the back-end: `~/github`, `~/gitlab`, etc.
     dest: string, optional None
-        Top directory under which the generated zipfiles are saved; if None,
+        Top directory under which the generated zip files are saved; if None,
         this directory under the user&#39;s Downloads directory and further determined by
-        the backend: `~/Downloads/github`, `~/Downloads/gitlab`, etc.
+        the back-end: `~/Downloads/github`, `~/Downloads/gitlab`, etc.
     &#34;&#34;&#34;
 
     if source is None:
@@ -467,7 +467,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/zipdata.py#L205-L231" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/zipdata.py#L205-L231" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addCheckout(path):
     release = None
@@ -506,7 +506,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/zipdata.py#L234-L249" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/zipdata.py#L234-L249" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def collectFiles(base, path, results, zipBase=None):
     if zipBase is None:
@@ -538,23 +538,23 @@ text-fabric-zip {org}/{repo}{relative}
 text-fabric-zip {org}/{repo}{relative} --backend=gitlab.huc.knaw.nl
 </code></pre>
 <h3 id="effect">EFFECT</h3>
-<p>Zips text-fabric data from your local github/gitlab repository into
-a release file, ready to be attached to a github release.</p>
+<p>Zips TF data from your local GitHub / GitLab repository into
+a release file, ready to be attached to a GitHub release.</p>
 <p>Your repo must sit in <code>~/github/*org*/*repo*</code> or in <code>~/gitlab/*org*/*repo*</code>
-or in whatever Gitlab backend you have chosen.</p>
-<p>Your TF data is assumed to sit in the toplevel tf directory of your repo.
+or in whatever GitLab back-end you have chosen.</p>
+<p>Your TF data is assumed to sit in the toplevel TF directory of your repo.
 But if it is somewhere else, you can pass relative, e.g phrases/heads/tf</p>
-<p>It is assumed that your tf directory contains subdirectories according to
-the versions of the main datasource.
-The actual .tf files are in those version directories.</p>
+<p>It is assumed that your TF directory contains subdirectories according to
+the versions of the main data source.
+The actual <code>.<a title="tf" href="../index.html">tf</a></code> files are in those version directories.</p>
 <p>Each of these version directories will be zipped into a separate file.</p>
-<p>The resulting zip files end up in ~/Downloads/<em>backend</em>/<em>org</em>-release/<em>repo</em>
-and the are named <em>relative</em>-<em>version</em>.zip
+<p>The resulting zip files end up in <code>~/Downloads/backend/org-release/repo</code>
+and the are named <code>relative-version.zip</code>
 (where the / in relative have been replaced by -)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/zipdata.py#L379-L415" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/zipdata.py#L379-L415" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     if len(cargs) &lt; 2 or any(
@@ -604,9 +604,9 @@ and the are named <em>relative</em>-<em>version</em>.zip
 <ul>
 <li>the app</li>
 <li>the main data module</li>
-<li>all modules mentioned in the moduleSpecs in the provenanceSpec of the app</li>
-<li>all graphics data mentioned in the graphicsRelative of the provenanceSpec</li>
-<li>all extra data mentioned in the extraData of the provenanceSpec</li>
+<li>all modules mentioned in the <code>moduleSpecs</code> in the <code>provenanceSpec</code> of the app</li>
+<li>all graphics data mentioned in the <code>graphicsRelative</code> of the <code>provenanceSpec</code></li>
+<li>all extra data mentioned in the <code>extraData</code> of the <code>provenanceSpec</code></li>
 </ul>
 <p>The data will be zipped in a file complete.zip which can be unpacked
 in the ~/text-fabric-data directory.</p>
@@ -618,23 +618,23 @@ without problems such as bumping against the GitHub API rate limit.</p>
 </div>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
-<p>All data should reside on the same backend.</p>
+<p>All data should reside on the same back-end.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">checkout files</p>
 <p>There will be <code>__checkout__.txt</code> files included in the zip file,
-so that after unpacking Text-Fabric detects from which release the data is
+so that after unpacking TF detects from which release the data is
 coming.</p>
 </div>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
-<dd>A loaded text-fabric datasource or None.</dd>
+<dd>A loaded TF data source or None.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/zipdata.py#L79-L202" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/zipdata.py#L79-L202" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipAll(app):
     &#34;&#34;&#34;Gathers all data for a TF resource and zips it into one file.
@@ -643,30 +643,30 @@ coming.</p>
 
     *   the app
     *   the main data module
-    *   all modules mentioned in the moduleSpecs in the provenanceSpec of the app
-    *   all graphics data mentioned in the graphicsRelative of the provenanceSpec
-    *   all extra data mentioned in the extraData of the provenanceSpec
+    *   all modules mentioned in the `moduleSpecs` in the `provenanceSpec` of the app
+    *   all graphics data mentioned in the `graphicsRelative` of the `provenanceSpec`
+    *   all extra data mentioned in the `extraData` of the `provenanceSpec`
 
     The data will be zipped in a file complete.zip which can be unpacked
     in the ~/text-fabric-data directory.
 
-    !!! Hint
+    !!! hint
         You can attach this file straight to the latest release of of dataset
         on GitHub. This makes that users can download the dataset from GitHub
         without problems such as bumping against the GitHub API rate limit.
 
-    !!! Caution
-        All data should reside on the same backend.
+    !!! caution
+        All data should reside on the same back-end.
 
-    !!! Note &#34;checkout files&#34;
+    !!! note &#34;checkout files&#34;
         There will be `__checkout__.txt` files included in the zip file,
-        so that after unpacking Text-Fabric detects from which release the data is
+        so that after unpacking TF detects from which release the data is
         coming.
 
     Parameters
     ----------
     app: object
-        A loaded text-fabric datasource or None.
+        A loaded TF data source or None.
     &#34;&#34;&#34;
     context = app.context
 
@@ -721,7 +721,7 @@ coming.</p>
         label = &#34;-&#34;.join(labelItems)
         if mbase != base:
             good = False
-            console(f&#34;ERROR: module {label} not on expected backend {backend}&#34;)
+            console(f&#34;ERROR: module {label} not on expected back-end {backend}&#34;)
         dataItems.append((f&#34;module {label}&#34;, f&#34;{mrepoDir}{mrelative}/{version}&#34;))
 
     if not good:
@@ -775,7 +775,7 @@ coming.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/zipdata.py#L67-L76" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/zipdata.py#L67-L76" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipApi(app):
     &#34;&#34;&#34;Produce the zip creation API.
@@ -797,31 +797,31 @@ coming.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>backend</code></strong> :&ensp;<code>string</code></dt>
-<dd>The backend for which the zip file is meant (<code>github</code>, <code>gitlab</code>, etc).</dd>
+<dd>The back-end for which the zip file is meant (<code>github</code>, <code>gitlab</code>, etc).</dd>
 <dt><strong><code>org</code></strong>, <strong><code>repo</code></strong> :&ensp;<code>string</code></dt>
-<dd>Where the corpus is located on the backend,</dd>
+<dd>Where the corpus is located on the back-end,</dd>
 <dt><strong><code>relative</code></strong> :&ensp;<code>string</code>, optional <code>"tf"</code></dt>
 <dd>The subdirectory of the repo that will be zipped.</dd>
 <dt><strong><code>version</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
 <dd>If passed, only data of this version is zipped, otherwise all versions
 will be zipped.</dd>
 <dt><strong><code>tf</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
-<dd>Whether the data to be zipped are tf feature files or other kinds of data.</dd>
+<dd>Whether the data to be zipped are TF feature files or other kinds of data.</dd>
 <dt><strong><code>keep</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
-<dd>Whether previously generated zipfiles in the destination directory should
+<dd>Whether previously generated zip files in the destination directory should
 be kept or deleted.</dd>
 <dt><strong><code>source</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
 <dd>Top directory under which the repository is found, if None; this directory
-is given by the backend: <code>~/github</code>, <code>~/gitlab</code>, etc.</dd>
+is given by the back-end: <code>~/github</code>, <code>~/gitlab</code>, etc.</dd>
 <dt><strong><code>dest</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
-<dd>Top directory under which the generated zipfiles are saved; if None,
+<dd>Top directory under which the generated zip files are saved; if None,
 this directory under the user's Downloads directory and further determined by
-the backend: <code>~/Downloads/github</code>, <code>~/Downloads/gitlab</code>, etc.</dd>
+the back-end: <code>~/Downloads/github</code>, <code>~/Downloads/gitlab</code>, etc.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/zipdata.py#L260-L376" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/zipdata.py#L260-L376" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipData(
     backend,
@@ -839,26 +839,26 @@ the backend: <code>~/Downloads/github</code>, <code>~/Downloads/gitlab</code>, e
     Parameters
     ----------
     backend: string
-        The backend for which the zip file is meant (`github`, `gitlab`, etc).
+        The back-end for which the zip file is meant (`github`, `gitlab`, etc).
     org, repo: string
-        Where the corpus is located on the backend,
+        Where the corpus is located on the back-end,
     relative: string, optional &#34;tf&#34;
         The subdirectory of the repo that will be zipped.
     version: string, optional None
         If passed, only data of this version is zipped, otherwise all versions
         will be zipped.
     tf: boolean, optional True
-        Whether the data to be zipped are tf feature files or other kinds of data.
+        Whether the data to be zipped are TF feature files or other kinds of data.
     keep: boolean, optional True
-        Whether previously generated zipfiles in the destination directory should
+        Whether previously generated zip files in the destination directory should
         be kept or deleted.
     source: string, optional None
         Top directory under which the repository is found, if None; this directory
-        is given by the backend: `~/github`, `~/gitlab`, etc.
+        is given by the back-end: `~/github`, `~/gitlab`, etc.
     dest: string, optional None
-        Top directory under which the generated zipfiles are saved; if None,
+        Top directory under which the generated zip files are saved; if None,
         this directory under the user&#39;s Downloads directory and further determined by
-        the backend: `~/Downloads/github`, `~/Downloads/gitlab`, etc.
+        the back-end: `~/Downloads/github`, `~/Downloads/gitlab`, etc.
     &#34;&#34;&#34;
 
     if source is None:
@@ -950,7 +950,7 @@ the backend: <code>~/Downloads/github</code>, <code>~/Downloads/gitlab</code>, e
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/advanced/zipdata.py#L252-L257" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/zipdata.py#L252-L257" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipDataPart(source, results):
     if not dirExists(source):

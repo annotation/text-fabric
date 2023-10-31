@@ -24,7 +24,7 @@
 </header>
 <section id="section-intro">
 <h1 id="a-advanced-api"><code>A.</code> Advanced API</h1>
-<h2 id="initialisation-configuration-meta-data-and-linking">Initialisation, configuration, meta data, and linking</h2>
+<h2 id="initialization-configuration-meta-data-and-linking">Initialization, configuration, meta data, and linking</h2>
 <dl>
 <dt><pre><code class="language-python">A = use('org/repo')
 </code></pre></dt>
@@ -62,7 +62,7 @@ the global scope.</p>
 <dt><pre><code class="language-python">A.header(allMeta=False)
 </code></pre></dt>
 <dd>
-<p>show colofon</p>
+<p>show colophon</p>
 </dd>
 <dd>
 <p><code><a title="tf.advanced.links.header" href="advanced/links.html#tf.advanced.links.header">header()</a></code></p>
@@ -235,7 +235,7 @@ A.flexLink(&quot;tut&quot;)
 <dt><pre><code class="language-python">A.getCss()
 </code></pre></dt>
 <dd>
-<p>get the complete CSS stylesheet for this app</p>
+<p>get the complete CSS style sheet for this app</p>
 </dd>
 <dd>
 <p><code><a title="tf.advanced.display.getCss" href="advanced/display.html#tf.advanced.display.getCss">getCss()</a></code></p>
@@ -259,7 +259,7 @@ A.flexLink(&quot;tut&quot;)
 <dt><pre><code class="language-python">A.nodeFromSectionStr(...)
 </code></pre></dt>
 <dd>
-<p>lookup node for sectionheading</p>
+<p>lookup node for section heading</p>
 </dd>
 <dd>
 <p><code><a title="tf.advanced.sections.nodeFromSectionStr" href="advanced/sections.html#tf.advanced.sections.nodeFromSectionStr">nodeFromSectionStr()</a></code></p>
@@ -358,7 +358,7 @@ A.flexLink(&quot;tut&quot;)
 <dt><pre><code class="language-python">A.banner
 </code></pre></dt>
 <dd>
-<p>banner of the Text-Fabric program.</p>
+<p>banner of the TF program.</p>
 </dd>
 <dd>
 <p><code><a title="tf.fabric.Fabric.banner" href="core/fabric.html#tf.core.fabric.FabricCore.banner">Fabric.banner</a></code></p>
@@ -366,7 +366,7 @@ A.flexLink(&quot;tut&quot;)
 <dt><pre><code class="language-python">A.isSilent()
 </code></pre></dt>
 <dd>
-<p>report the verbosity of Text-Fabric</p>
+<p>report the verbosity of TF</p>
 </dd>
 <dd>
 <p><code><a title="tf.core.timestamp.Timestamp.isSilent" href="core/timestamp.html#tf.core.timestamp.Timestamp.isSilent">Timestamp.isSilent()</a></code></p>
@@ -390,7 +390,7 @@ A.flexLink(&quot;tut&quot;)
 <dt><pre><code class="language-python">A.setSilent(silent)
 </code></pre></dt>
 <dd>
-<p>set the verbosity of Text-Fabric.</p>
+<p>set the verbosity of TF.</p>
 </dd>
 <dd>
 <p><code><a title="tf.core.timestamp.Timestamp.setSilent" href="core/timestamp.html#tf.core.timestamp.Timestamp.setSilent">Timestamp.setSilent()</a></code></p>
@@ -872,7 +872,7 @@ A.flexLink(&quot;tut&quot;)
 </dl>
 <hr>
 <h2 id="s-search-low-level"><code>S.</code> Search (low level)</h2>
-<p><a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/searchRough.ipynb">searchRough</a></p>
+<p><a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/searchRough.ipynb"><code>searchRough</code></a></p>
 <h3 id="preparation">Preparation</h3>
 <dl>
 <dt><pre><code class="language-python">S.search(query, limit=None)
@@ -950,13 +950,13 @@ A.flexLink(&quot;tut&quot;)
 </dl>
 <hr>
 <h2 id="c-computed-data-components"><code>C.</code> Computed data components.</h2>
-<p>Access to precomputed data: <code><a title="tf.core.computed.Computeds" href="core/computed.html#tf.core.computed.Computeds">Computeds</a></code>.</p>
+<p>Access to pre-computed data: <code><a title="tf.core.computed.Computeds" href="core/computed.html#tf.core.computed.Computeds">Computeds</a></code>.</p>
 <p>All components have just one useful attribute: <code>.data</code>.</p>
 <dl>
 <dt><pre><code class="language-python">Call()
 </code></pre></dt>
 <dd>
-<p>all precomputed data component names</p>
+<p>all pre-computed data component names</p>
 </dd>
 <dd>
 <p><code><a title="tf.core.api.Api.Call" href="core/api.html#tf.core.api.Api.Call">Api.Call()</a></code></p>
@@ -1181,7 +1181,7 @@ complete zipped data to it.</p>
 <dt><pre><code class="language-python">TF.version
 </code></pre></dt>
 <dd>
-<p>version number of Text-Fabric.</p>
+<p>version number of TF.</p>
 </dd>
 <dd>
 <p><code><a title="tf.fabric.Fabric.version" href="core/fabric.html#tf.core.fabric.FabricCore.version">Fabric.version</a></code></p>
@@ -1344,7 +1344,7 @@ from tf.lib import writeSets
 </dd>
 </dl>
 <hr>
-<h2 id="xmltei-import">XML/TEI import</h2>
+<h2 id="xml-tei-import">XML / TEI import</h2>
 <pre><code class="language-python">from tf.convert.xml import XML
 </code></pre>
 <dl>
@@ -1390,12 +1390,12 @@ steps.</p>
 </dd>
 </dl>
 <hr>
-<h2 id="pandas-export">Pandas export</h2>
+<h2 id="pandas-export"><code>pandas</code> export</h2>
 <dl>
 <dt><pre><code class="language-python">A.exportPandas()
 </code></pre></dt>
 <dd>
-<p>export dataset as Pandas dataframe</p>
+<p>export dataset as <code>pandas</code> data frame</p>
 </dd>
 <dd>
 <p><code><a title="tf.convert.pandas" href="convert/pandas.html">tf.convert.pandas</a></code></p>
@@ -1453,7 +1453,7 @@ TF = importMQL(mqlFile, saveDir)
 </dd>
 </dl>
 <hr>
-<h1 id="tf-app-development">TF-App development</h1>
+<h1 id="tf-app-development">TF App development</h1>
 <dl>
 <dt><pre><code class="language-python">A.reuse()
 </code></pre></dt>
@@ -1478,7 +1478,7 @@ TF = importMQL(mqlFile, saveDir)
 <dt><pre><code>~/mypath/myname/app/config.yaml
 </code></pre></dt>
 <dd>
-<p>settings for a TF-App</p>
+<p>settings for a TF App</p>
 </dd>
 <dd>
 <p><code><a title="tf.advanced.settings" href="advanced/settings.html">tf.advanced.settings</a></code></p>
@@ -1486,12 +1486,12 @@ TF = importMQL(mqlFile, saveDir)
 </dl>
 <hr>
 <h1 id="layered-search">Layered search</h1>
-<p>(these work on the commandline if Text-Fabric is installed)</p>
+<p>(these work on the command-line if TF is installed)</p>
 <dl>
 <dt><pre><code class="language-sh">text-fabric-make {dataset} {client} ship
 </code></pre></dt>
 <dd>
-<p>generate a static site with a search interface in client-side javascript and
+<p>generate a static site with a search interface in client-side JavaScript and
 publish it to GitHub pages.
 If <code>{client}</code> is left out, generate all clients that are defined for this
 dataset.
@@ -1512,13 +1512,13 @@ More commands
 <a href="https://github.com/annotation/text-fabric/blob/master/tf/client/make/help.py">here</a>.</p>
 <hr>
 <h1 id="command-line-tools">Command-line tools</h1>
-<p>(these work on the commandline if Text-Fabric is installed)</p>
+<p>(these work on the command-line if TF is installed)</p>
 <dl>
 <dt><pre><code class="language-sh">tf {org}/{repo}
-text-fabric {org}/{repo}
+tf {org}/{repo}
 </code></pre></dt>
 <dd>
-<p>Starts the text-fabric browser for the corpus in <em>org</em>/<em>repo</em>.</p>
+<p>Starts the TF browser for the corpus in <em>org</em>/<em>repo</em>.</p>
 </dd>
 <dd>
 <p><code><a title="tf.browser.start" href="browser/start.html">tf.browser.start</a></code></p>
@@ -1528,7 +1528,7 @@ text-fabric {org}/{repo}
 <dd>
 <p>Zips the TF dataset located by the current directory,
 <em>with all its additional data modules</em>, but only <em>the latest version</em>,
-so that it can be attached to a release on Github/GitLab.</p>
+so that it can be attached to a release on GitHub / GitLab.</p>
 </dd>
 <dd>
 <p><code><a title="tf.advanced.zipdata.zipAll" href="advanced/zipdata.html#tf.advanced.zipdata.zipAll">zipAll()</a></code> and <code><a title="tf.zip" href="zip.html">tf.zip</a></code></p>
@@ -1538,7 +1538,7 @@ text-fabric-zip {org}/{repo}
 </code></pre></dt>
 <dd>
 <p>Zips the TF dataset in <em>org</em>/<em>repo</em> so that it can be attached to a release on
-Github/GitLab.</p>
+GitHub / GitLab.</p>
 </dd>
 <dd>
 <p><code><a title="tf.advanced.zipdata" href="advanced/zipdata.html">tf.advanced.zipdata</a></code></p>
@@ -1547,7 +1547,7 @@ Github/GitLab.</p>
 nbconvert {inDirectory} {outDirectory}
 </code></pre></dt>
 <dd>
-<p>Converts notebooks in <em>inDirectory</em> to HTML and stores them in <em>outDirectory</em>.</p>
+<p>Converts notebooks in <code>inDirectory</code> to HTML and stores them in <code>outDirectory</code>.</p>
 </dd>
 <dd>
 <p><code><a title="tf.tools.nbconvert" href="tools/nbconvert.html">tf.tools.nbconvert</a></code></p>
@@ -1595,7 +1595,7 @@ after running Spacy to get them.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: docs/main/cheatsheet.md
@@ -1667,7 +1667,7 @@ setTimeout(() => input.focus(), 100);
 <div class="toc">
 <ul>
 <li><a href="#a-advanced-api">A. Advanced API</a><ul>
-<li><a href="#initialisation-configuration-meta-data-and-linking">Initialisation, configuration, meta data, and linking</a></li>
+<li><a href="#initialization-configuration-meta-data-and-linking">Initialization, configuration, meta data, and linking</a></li>
 <li><a href="#displaying">Displaying</a></li>
 <li><a href="#search-high-level">Search (high level)</a></li>
 <li><a href="#sections-and-structure">Sections and Structure</a></li>
@@ -1709,15 +1709,15 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#export-to-excel_1">Export to Excel</a></li>
 <li><a href="#export-to-zip">Export to ZIP</a></li>
 <li><a href="#interchange-with-external-annotation-tools">Interchange with external annotation tools</a></li>
-<li><a href="#xmltei-import">XML/TEI import</a></li>
+<li><a href="#xml-tei-import">XML / TEI import</a></li>
 <li><a href="#nlp-import">NLP import</a></li>
-<li><a href="#pandas-export">Pandas export</a></li>
+<li><a href="#pandas-export">pandas export</a></li>
 <li><a href="#mql-interchange">MQL interchange</a></li>
 <li><a href="#walker-conversion">Walker conversion</a></li>
 <li><a href="#exploding">Exploding</a></li>
 </ul>
 </li>
-<li><a href="#tf-app-development">TF-App development</a></li>
+<li><a href="#tf-app-development">TF App development</a></li>
 <li><a href="#layered-search">Layered search</a></li>
 <li><a href="#command-line-tools">Command-line tools</a></li>
 </ul>

@@ -41,7 +41,7 @@ dictionary: <code><a title="tf.core.edgefeature.EdgeFeature.items" href="#tf.cor
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/edgefeature.py#L1-L278" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/edgefeature.py#L1-L278" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Mappings from edges to values.
@@ -209,17 +209,17 @@ class EdgeFeature:
         -----
         !!! hint &#34;symmetric closure&#34;
             This method gives the *symmetric closure* of a set of edges:
-            if there is an edge between *n* and *m*, this method will deliver
+            if there is an edge between `n` and `m`, this method will deliver
             its value, no matter the direction of the edge.
 
         !!! example &#34;symmetric edges&#34;
             Some edge sets are semantically symmetric, for example *similarity*.
-            If *n* is similar to *m*, then *m* is similar to *n*.
+            If `n` is similar to `m`, then `m` is similar to `n`.
 
             But if you store such an edge feature completely,
             half of the data is redundant.
             By virtue of this method you do not have to do that, you only need to store
-            one of the edges between *n* and *m* (it does not matter which one),
+            one of the edges between `n` and `m` (it does not matter which one),
             and `E.fff.b(n)` will nevertheless produce the complete results.
 
         !!! caution &#34;conflicting values&#34;
@@ -277,10 +277,10 @@ class EdgeFeature:
         Parameters
         ----------
         nodeTypesFrom: set of string, optional None
-            If you pass a set of nodeTypes here, only the values for edges
+            If you pass a set of node types here, only the values for edges
             that start *from* a node with such a type will be counted.
         nodeTypesTo: set of string, optional None
-            If you pass a set of nodeTypes here, only the values for edges
+            If you pass a set of node types here, only the values for edges
             that go *to* a node with such a type will be counted.
 
         Returns
@@ -342,7 +342,7 @@ class EdgeFeature:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/edgefeature.py#L33-L278" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/edgefeature.py#L33-L278" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class EdgeFeature:
     &#34;&#34;&#34;Provides access to (edge) feature data.
@@ -478,17 +478,17 @@ class EdgeFeature:
         -----
         !!! hint &#34;symmetric closure&#34;
             This method gives the *symmetric closure* of a set of edges:
-            if there is an edge between *n* and *m*, this method will deliver
+            if there is an edge between `n` and `m`, this method will deliver
             its value, no matter the direction of the edge.
 
         !!! example &#34;symmetric edges&#34;
             Some edge sets are semantically symmetric, for example *similarity*.
-            If *n* is similar to *m*, then *m* is similar to *n*.
+            If `n` is similar to `m`, then `m` is similar to `n`.
 
             But if you store such an edge feature completely,
             half of the data is redundant.
             By virtue of this method you do not have to do that, you only need to store
-            one of the edges between *n* and *m* (it does not matter which one),
+            one of the edges between `n` and `m` (it does not matter which one),
             and `E.fff.b(n)` will nevertheless produce the complete results.
 
         !!! caution &#34;conflicting values&#34;
@@ -546,10 +546,10 @@ class EdgeFeature:
         Parameters
         ----------
         nodeTypesFrom: set of string, optional None
-            If you pass a set of nodeTypes here, only the values for edges
+            If you pass a set of node types here, only the values for edges
             that start *from* a node with such a type will be counted.
         nodeTypesTo: set of string, optional None
-            If you pass a set of nodeTypes here, only the values for edges
+            If you pass a set of node types here, only the values for edges
             that go *to* a node with such a type will be counted.
 
         Returns
@@ -632,17 +632,17 @@ rather than <code>None</code>.</p>
 <div class="admonition hint">
 <p class="admonition-title">symmetric closure</p>
 <p>This method gives the <em>symmetric closure</em> of a set of edges:
-if there is an edge between <em>n</em> and <em>m</em>, this method will deliver
+if there is an edge between <code>n</code> and <code>m</code>, this method will deliver
 its value, no matter the direction of the edge.</p>
 </div>
 <div class="admonition example">
 <p class="admonition-title">symmetric edges</p>
 <p>Some edge sets are semantically symmetric, for example <em>similarity</em>.
-If <em>n</em> is similar to <em>m</em>, then <em>m</em> is similar to <em>n</em>.</p>
+If <code>n</code> is similar to <code>m</code>, then <code>m</code> is similar to <code>n</code>.</p>
 <p>But if you store such an edge feature completely,
 half of the data is redundant.
 By virtue of this method you do not have to do that, you only need to store
-one of the edges between <em>n</em> and <em>m</em> (it does not matter which one),
+one of the edges between <code>n</code> and <code>m</code> (it does not matter which one),
 and <code>E.fff.b(n)</code> will nevertheless produce the complete results.</p>
 </div>
 <div class="admonition caution">
@@ -667,7 +667,7 @@ E.b(m) = (n, 6)
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/edgefeature.py#L139-L217" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/edgefeature.py#L139-L217" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def b(self, n):
     &#34;&#34;&#34;Query *both* incoming edges to, and outgoing edges from a node.
@@ -697,17 +697,17 @@ E.b(m) = (n, 6)
     -----
     !!! hint &#34;symmetric closure&#34;
         This method gives the *symmetric closure* of a set of edges:
-        if there is an edge between *n* and *m*, this method will deliver
+        if there is an edge between `n` and `m`, this method will deliver
         its value, no matter the direction of the edge.
 
     !!! example &#34;symmetric edges&#34;
         Some edge sets are semantically symmetric, for example *similarity*.
-        If *n* is similar to *m*, then *m* is similar to *n*.
+        If `n` is similar to `m`, then `m` is similar to `n`.
 
         But if you store such an edge feature completely,
         half of the data is redundant.
         By virtue of this method you do not have to do that, you only need to store
-        one of the edges between *n* and *m* (it does not matter which one),
+        one of the edges between `n` and `m` (it does not matter which one),
         and `E.fff.b(n)` will nevertheless produce the complete results.
 
     !!! caution &#34;conflicting values&#34;
@@ -778,7 +778,7 @@ rather than <code>None</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/edgefeature.py#L73-L103" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/edgefeature.py#L73-L103" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def f(self, n):
     &#34;&#34;&#34;Get outgoing edges *from* a node.
@@ -828,10 +828,10 @@ highest frequencies first.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>nodeTypesFrom</code></strong> :&ensp;<code>set</code> of <code>string</code>, optional <code>None</code></dt>
-<dd>If you pass a set of nodeTypes here, only the values for edges
+<dd>If you pass a set of node types here, only the values for edges
 that start <em>from</em> a node with such a type will be counted.</dd>
 <dt><strong><code>nodeTypesTo</code></strong> :&ensp;<code>set</code> of <code>string</code>, optional <code>None</code></dt>
-<dd>If you pass a set of nodeTypes here, only the values for edges
+<dd>If you pass a set of node types here, only the values for edges
 that go <em>to</em> a node with such a type will be counted.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -843,7 +843,7 @@ highest frequencies first.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/edgefeature.py#L219-L278" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/edgefeature.py#L219-L278" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def freqList(self, nodeTypesFrom=None, nodeTypesTo=None):
     &#34;&#34;&#34;Frequency list of the values of this feature.
@@ -861,10 +861,10 @@ highest frequencies first.</dd>
     Parameters
     ----------
     nodeTypesFrom: set of string, optional None
-        If you pass a set of nodeTypes here, only the values for edges
+        If you pass a set of node types here, only the values for edges
         that start *from* a node with such a type will be counted.
     nodeTypesTo: set of string, optional None
-        If you pass a set of nodeTypes here, only the values for edges
+        If you pass a set of node types here, only the values for edges
         that go *to* a node with such a type will be counted.
 
     Returns
@@ -920,7 +920,7 @@ you can store the result as follows:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/edgefeature.py#L58-L71" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/edgefeature.py#L58-L71" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def items(self):
     &#34;&#34;&#34;A generator that yields the items of the feature, seen as a mapping.
@@ -966,7 +966,7 @@ rather than <code>None</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/edgefeature.py#L105-L137" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/edgefeature.py#L105-L137" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def t(self, n):
     &#34;&#34;&#34;Get incoming edges *to* a node.
@@ -1013,7 +1013,7 @@ rather than <code>None</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/edgefeature.py#L29-L30" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/edgefeature.py#L29-L30" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class EdgeFeatures:
     pass</code></pre>

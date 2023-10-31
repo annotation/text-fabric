@@ -28,7 +28,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/parameters.py#L1-L203" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/parameters.py#L1-L203" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Parameters
@@ -57,7 +57,7 @@ BANNER = f&#34;This is {NAME} {VERSION}&#34;
 PACK_VERSION = &#34;3&#34;
 &#34;&#34;&#34;Data serialization version.
 
-Plain text feature files will be compressed to zipped, pickled datastructures
+Plain text feature files will be compressed to zipped, `pickled` data structures
 that load must faster.
 
 These methods evolve, sometimes in incompatible ways.
@@ -77,8 +77,8 @@ tf.clean
 API_VERSION = 3
 &#34;&#34;&#34;TF API version.
 
-Text-Fabric offers and API to TF apps.
-This is the version that the current Text-Fabric offers to its apps.
+TF offers and API to TF apps.
+This is the version that the current TF offers to its apps.
 
 Apps require a version. The provided version and the required version must
 match exactly in order to get a working system.
@@ -86,16 +86,16 @@ match exactly in order to get a working system.
 We do not aim for backward compatibility, since it is very easy to obtain a new version
 of an app.
 
-When Text-Fabric loads a TF app, it will check the api version that the app requires
+When TF loads a TF app, it will check the api version that the app requires
 against this version.
 
 App requirement higher than TF API version
-:   The user is advised to upgrade Text-Fabric, or, alternatively,
+:   The user is advised to upgrade TF, or, alternatively,
     select an older version of the app
 
 App requirement lower than TF API version
 :   The user is advised to obtain a newer version of the app, or alternatively,
-    downgrade Text-Fabric
+    downgrade TF
 &#34;&#34;&#34;
 
 OTYPE = &#34;otype&#34;
@@ -133,7 +133,7 @@ The full name of such a feature is `omap@`*oldversion*`-`*newversion*
 &#34;&#34;&#34;
 
 WARP = (OTYPE, OSLOTS, OTEXT)
-&#34;&#34;&#34;The names of the central features of TF data sets.
+&#34;&#34;&#34;The names of the central features of TF datasets.
 
 The features `otype` and `oslots` are crucial to every TF dataset.
 Without them, a dataset is not a TF dataset, although it could still be a
@@ -141,24 +141,24 @@ TF data module.
 &#34;&#34;&#34;
 
 GZIP_LEVEL = 2
-&#34;&#34;&#34;Compression level when compressing tf files.&#34;&#34;&#34;
+&#34;&#34;&#34;Compression level when compressing TF files.&#34;&#34;&#34;
 
 PICKLE_PROTOCOL = 4
-&#34;&#34;&#34;Pickle protocol level when pickling tf files.&#34;&#34;&#34;
+&#34;&#34;&#34;Pickle protocol level when pickling TF files.&#34;&#34;&#34;
 
 ORG = &#34;annotation&#34;
 &#34;&#34;&#34;GitHub organization or GitLab group.
 
-This is where the repo that contains Text-Fabric resides.
+This is where the repo that contains TF resides.
 &#34;&#34;&#34;
 REPO = &#34;text-fabric&#34;
 &#34;&#34;&#34;GitHub repo or GitLab project.
 
-This is the name of the repo that contains Text-Fabric.
+This is the name of the repo that contains TF.
 &#34;&#34;&#34;
 
 RELATIVE = &#34;tf&#34;
-&#34;&#34;&#34;Default relative path with a repo to the directory with tf files.
+&#34;&#34;&#34;Default relative path with a repo to the directory with TF files.
 &#34;&#34;&#34;
 
 ON_IPAD = sys.platform == &#34;darwin&#34; and os.uname().machine.startswith(&#34;iP&#34;)
@@ -170,25 +170,25 @@ GL = &#34;gitlab&#34;
 &#34;&#34;&#34;Name of GitLab backend.&#34;&#34;&#34;
 
 URL_GH = &#34;https://github.com&#34;
-&#34;&#34;&#34;Base url of GitHub.&#34;&#34;&#34;
+&#34;&#34;&#34;Base URL of GitHub.&#34;&#34;&#34;
 
 URL_GH_API = &#34;https://api.github.com&#34;
-&#34;&#34;&#34;Base url of GitHub API.&#34;&#34;&#34;
+&#34;&#34;&#34;Base URL of GitHub API.&#34;&#34;&#34;
 
 URL_GH_UPLOAD = &#34;https://uploads.github.com&#34;
-&#34;&#34;&#34;Base url of GitHub upload end point.&#34;&#34;&#34;
+&#34;&#34;&#34;Base URL of GitHub upload end point.&#34;&#34;&#34;
 
 URL_GL = &#34;https://gitlab.com&#34;
-&#34;&#34;&#34;Base url of GitLab.&#34;&#34;&#34;
+&#34;&#34;&#34;Base URL of GitLab.&#34;&#34;&#34;
 
 URL_GL_API = &#34;https://api.gitlab.com&#34;
-&#34;&#34;&#34;Base url of GitLab API.&#34;&#34;&#34;
+&#34;&#34;&#34;Base URL of GitLab API.&#34;&#34;&#34;
 
 URL_GL_UPLOAD = &#34;https://uploads.gitlab.com&#34;
-&#34;&#34;&#34;Base url of GitLab upload end point.&#34;&#34;&#34;
+&#34;&#34;&#34;Base URL of GitLab upload end point.&#34;&#34;&#34;
 
 URL_NB = &#34;https://nbviewer.jupyter.org&#34;
-&#34;&#34;&#34;Base url of NB-viewer.&#34;&#34;&#34;
+&#34;&#34;&#34;Base URL of NB-viewer.&#34;&#34;&#34;
 
 
 PROTOCOL = &#34;http://&#34;
@@ -209,14 +209,14 @@ BRANCH_DEFAULT_NEW = &#34;main&#34;
 &#34;&#34;&#34;Default branch in repositories, modern value.&#34;&#34;&#34;
 
 ZIP_OPTIONS = dict(compression=ZIP_DEFLATED)
-&#34;&#34;&#34;Options for zip when packing tf files.
+&#34;&#34;&#34;Options for zip when packing TF files.
 
-This is for packaging collections of plain tf files into zip files
-to be attached to releases on GitHub/GitLab.
+This is for packaging collections of plain TF files into zip files
+to be attached to releases on GitHub / GitLab.
 
-!!! caution &#34;Not for .tfx files&#34;
-    This is not the zipping as done when .tf files are
-    pickled and compressed to .tfx files.
+!!! caution &#34;Not for `.tfx` files&#34;
+    This is not the zipping as done when `.tf` files are
+    `pickled` and compressed to `.tfx` files.
 &#34;&#34;&#34;
 
 if sys.version_info[0] &gt; 3 or sys.version_info[0] == 3 and sys.version_info[1] &gt;= 7:
@@ -243,21 +243,21 @@ SEARCH_FAIL_FACTOR = 4
 <dt id="tf.parameters.API_VERSION"><code class="name">var <span class="ident">API_VERSION</span></code></dt>
 <dd>
 <div class="desc"><p>TF API version.</p>
-<p>Text-Fabric offers and API to TF apps.
-This is the version that the current Text-Fabric offers to its apps.</p>
+<p>TF offers and API to TF apps.
+This is the version that the current TF offers to its apps.</p>
 <p>Apps require a version. The provided version and the required version must
 match exactly in order to get a working system.</p>
 <p>We do not aim for backward compatibility, since it is very easy to obtain a new version
 of an app.</p>
-<p>When Text-Fabric loads a TF app, it will check the api version that the app requires
+<p>When TF loads a TF app, it will check the api version that the app requires
 against this version.</p>
 <dl>
 <dt>App requirement higher than TF API version</dt>
-<dd>The user is advised to upgrade Text-Fabric, or, alternatively,
+<dd>The user is advised to upgrade TF, or, alternatively,
 select an older version of the app</dd>
 <dt>App requirement lower than TF API version</dt>
 <dd>The user is advised to obtain a newer version of the app, or alternatively,
-downgrade Text-Fabric</dd>
+downgrade TF</dd>
 </dl></div>
 </dd>
 <dt id="tf.parameters.BRANCH_DEFAULT"><code class="name">var <span class="ident">BRANCH_DEFAULT</span></code></dt>
@@ -282,7 +282,7 @@ downgrade Text-Fabric</dd>
 </dd>
 <dt id="tf.parameters.GZIP_LEVEL"><code class="name">var <span class="ident">GZIP_LEVEL</span></code></dt>
 <dd>
-<div class="desc"><p>Compression level when compressing tf files.</p></div>
+<div class="desc"><p>Compression level when compressing TF files.</p></div>
 </dd>
 <dt id="tf.parameters.NAME"><code class="name">var <span class="ident">NAME</span></code></dt>
 <dd>
@@ -306,7 +306,7 @@ of a volume.</p></div>
 <dt id="tf.parameters.ORG"><code class="name">var <span class="ident">ORG</span></code></dt>
 <dd>
 <div class="desc"><p>GitHub organization or GitLab group.</p>
-<p>This is where the repo that contains Text-Fabric resides.</p></div>
+<p>This is where the repo that contains TF resides.</p></div>
 </dd>
 <dt id="tf.parameters.OSLOTS"><code class="name">var <span class="ident">OSLOTS</span></code></dt>
 <dd>
@@ -336,7 +336,7 @@ to nodes in that work.</p></div>
 <dt id="tf.parameters.PACK_VERSION"><code class="name">var <span class="ident">PACK_VERSION</span></code></dt>
 <dd>
 <div class="desc"><p>Data serialization version.</p>
-<p>Plain text feature files will be compressed to zipped, pickled datastructures
+<p>Plain text feature files will be compressed to zipped, <code>pickled</code> data structures
 that load must faster.</p>
 <p>These methods evolve, sometimes in incompatible ways.
 In those cases we bump this version number.
@@ -351,16 +351,16 @@ files, where <code>{PVN}</code> is the package version number.</p>
 </dd>
 <dt id="tf.parameters.PICKLE_PROTOCOL"><code class="name">var <span class="ident">PICKLE_PROTOCOL</span></code></dt>
 <dd>
-<div class="desc"><p>Pickle protocol level when pickling tf files.</p></div>
+<div class="desc"><p>Pickle protocol level when pickling TF files.</p></div>
 </dd>
 <dt id="tf.parameters.RELATIVE"><code class="name">var <span class="ident">RELATIVE</span></code></dt>
 <dd>
-<div class="desc"><p>Default relative path with a repo to the directory with tf files.</p></div>
+<div class="desc"><p>Default relative path with a repo to the directory with TF files.</p></div>
 </dd>
 <dt id="tf.parameters.REPO"><code class="name">var <span class="ident">REPO</span></code></dt>
 <dd>
 <div class="desc"><p>GitHub repo or GitLab project.</p>
-<p>This is the name of the repo that contains Text-Fabric.</p></div>
+<p>This is the name of the repo that contains TF.</p></div>
 </dd>
 <dt id="tf.parameters.SEARCH_FAIL_FACTOR"><code class="name">var <span class="ident">SEARCH_FAIL_FACTOR</span></code></dt>
 <dd>
@@ -376,31 +376,31 @@ files, where <code>{PVN}</code> is the package version number.</p>
 </dd>
 <dt id="tf.parameters.URL_GH"><code class="name">var <span class="ident">URL_GH</span></code></dt>
 <dd>
-<div class="desc"><p>Base url of GitHub.</p></div>
+<div class="desc"><p>Base URL of GitHub.</p></div>
 </dd>
 <dt id="tf.parameters.URL_GH_API"><code class="name">var <span class="ident">URL_GH_API</span></code></dt>
 <dd>
-<div class="desc"><p>Base url of GitHub API.</p></div>
+<div class="desc"><p>Base URL of GitHub API.</p></div>
 </dd>
 <dt id="tf.parameters.URL_GH_UPLOAD"><code class="name">var <span class="ident">URL_GH_UPLOAD</span></code></dt>
 <dd>
-<div class="desc"><p>Base url of GitHub upload end point.</p></div>
+<div class="desc"><p>Base URL of GitHub upload end point.</p></div>
 </dd>
 <dt id="tf.parameters.URL_GL"><code class="name">var <span class="ident">URL_GL</span></code></dt>
 <dd>
-<div class="desc"><p>Base url of GitLab.</p></div>
+<div class="desc"><p>Base URL of GitLab.</p></div>
 </dd>
 <dt id="tf.parameters.URL_GL_API"><code class="name">var <span class="ident">URL_GL_API</span></code></dt>
 <dd>
-<div class="desc"><p>Base url of GitLab API.</p></div>
+<div class="desc"><p>Base URL of GitLab API.</p></div>
 </dd>
 <dt id="tf.parameters.URL_GL_UPLOAD"><code class="name">var <span class="ident">URL_GL_UPLOAD</span></code></dt>
 <dd>
-<div class="desc"><p>Base url of GitLab upload end point.</p></div>
+<div class="desc"><p>Base URL of GitLab upload end point.</p></div>
 </dd>
 <dt id="tf.parameters.URL_NB"><code class="name">var <span class="ident">URL_NB</span></code></dt>
 <dd>
-<div class="desc"><p>Base url of NB-viewer.</p></div>
+<div class="desc"><p>Base URL of NB-viewer.</p></div>
 </dd>
 <dt id="tf.parameters.VERSION"><code class="name">var <span class="ident">VERSION</span></code></dt>
 <dd>
@@ -410,7 +410,7 @@ files, where <code>{PVN}</code> is the package version number.</p>
 </dd>
 <dt id="tf.parameters.WARP"><code class="name">var <span class="ident">WARP</span></code></dt>
 <dd>
-<div class="desc"><p>The names of the central features of TF data sets.</p>
+<div class="desc"><p>The names of the central features of TF datasets.</p>
 <p>The features <code>otype</code> and <code>oslots</code> are crucial to every TF dataset.
 Without them, a dataset is not a TF dataset, although it could still be a
 TF data module.</p></div>
@@ -421,13 +421,13 @@ TF data module.</p></div>
 </dd>
 <dt id="tf.parameters.ZIP_OPTIONS"><code class="name">var <span class="ident">ZIP_OPTIONS</span></code></dt>
 <dd>
-<div class="desc"><p>Options for zip when packing tf files.</p>
-<p>This is for packaging collections of plain tf files into zip files
-to be attached to releases on GitHub/GitLab.</p>
+<div class="desc"><p>Options for zip when packing TF files.</p>
+<p>This is for packaging collections of plain TF files into zip files
+to be attached to releases on GitHub / GitLab.</p>
 <div class="admonition caution">
-<p class="admonition-title">Not for .tfx files</p>
-<p>This is not the zipping as done when .tf files are
-pickled and compressed to .tfx files.</p>
+<p class="admonition-title">Not for <code>.tfx</code> files</p>
+<p>This is not the zipping as done when <code>.<a title="tf" href="index.html">tf</a></code> files are
+<code>pickled</code> and compressed to <code>.tfx</code> files.</p>
 </div></div>
 </dd>
 </dl>

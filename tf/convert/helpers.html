@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/helpers.py#L1-L561" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/helpers.py#L1-L561" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 from textwrap import dedent
@@ -105,7 +105,7 @@ Code `tei`, since there is a direct correspondence with the TEI source.
 
 Examples:
 
-*   Generated white space based on whether elements are pure or mixed;
+*   Generated white-space based on whether elements are pure or mixed;
 *   Edges between parent and child elements, or sibling elements.
 &#34;&#34;&#34;
 
@@ -297,9 +297,9 @@ def setUp(kind):
         check=&#34;reports on the elements in the source&#34;,
         convert=f&#34;converts {kind} to TF&#34;,
         load=&#34;loads the generated TF&#34;,
-        app=&#34;configures the TF-app for the result&#34;,
-        apptoken=&#34;modifies the TF-app to make it token- instead of character-based&#34;,
-        browse=&#34;starts the text-fabric browser on the result&#34;,
+        app=&#34;configures the TF app for the result&#34;,
+        apptoken=&#34;modifies the TF app to make it token- instead of character-based&#34;,
+        browse=&#34;starts the TF browser on the result&#34;,
     )
     taskExcluded = {&#34;apptoken&#34;, &#34;browse&#34;}
 
@@ -307,7 +307,7 @@ def setUp(kind):
         &#34;tf&#34;: (
             (
                 &#34;0 or latest: update latest version;\n\t\t&#34;
-                &#34;1 2 3: increase major, intermediate, minor tf version;\n\t\t&#34;
+                &#34;1 2 3: increase major, intermediate, minor TF version;\n\t\t&#34;
                 &#34;rest: explicit version.&#34;
             ),
             &#34;latest&#34;,
@@ -509,7 +509,7 @@ def lookupSource(cv, cur, specs):
     Parameters
     ----------
     cv: object
-        The convertor object, needed to issue actions.
+        The converter object, needed to issue actions.
     cur: dict
         Various pieces of data collected during walking
         and relevant for some next steps in the walk.
@@ -517,18 +517,18 @@ def lookupSource(cv, cur, specs):
         A sequence of instructions what to look for.
         Each instruction has the following parts:
 
-        *   pathSpec
-        *   node type
-        *   featureName
+        *   `pathSpec`
+        *   `nodeType`
+        *   `featureName`
 
         The effect is:
 
-        The pathSpec is compared to the current XML stack.
+        The `pathSpec` is compared to the current XML stack.
         If it matches the current node, the text content of the current node or one of
         its attributes will be collected and put in a feature with name
         `featureName`, for the current TF node of type `nodeType`.
 
-        The pathSpec is a list of components.
+        The `pathSpec` is a list of components.
         The first component should match the top of the XML stack, the second
         component the element that is below the top, etc.
         Each component is a tuple of
@@ -622,7 +622,7 @@ def lookupSource(cv, cur, specs):
 <p><em>Straightforward</em> means: by taking into account the semantics of XML.</p>
 <p>Examples:</p>
 <ul>
-<li>Generated white space based on whether elements are pure or mixed;</li>
+<li>Generated white-space based on whether elements are pure or mixed;</li>
 <li>Edges between parent and child elements, or sibling elements.</li>
 </ul></div>
 </dd>
@@ -722,7 +722,7 @@ or by elements within a single TEI source file.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/helpers.py#L178-L239" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/helpers.py#L178-L239" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkModel(kind, thisModel):
     modelDefault = PAGE_MODEL_DEFAULT if kind == &#34;page&#34; else SECTION_MODEL_DEFAULT
@@ -806,7 +806,7 @@ and put that information into a feature, as value for a certain node.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>cv</code></strong> :&ensp;<code>object</code></dt>
-<dd>The convertor object, needed to issue actions.</dd>
+<dd>The converter object, needed to issue actions.</dd>
 <dt><strong><code>cur</code></strong> :&ensp;<code>dict</code></dt>
 <dd>Various pieces of data collected during walking
 and relevant for some next steps in the walk.</dd>
@@ -815,16 +815,16 @@ and relevant for some next steps in the walk.</dd>
 <p>A sequence of instructions what to look for.
 Each instruction has the following parts:</p>
 <ul>
-<li>pathSpec</li>
-<li>node type</li>
-<li>featureName</li>
+<li><code>pathSpec</code></li>
+<li><code>nodeType</code></li>
+<li><code>featureName</code></li>
 </ul>
 <p>The effect is:</p>
-<p>The pathSpec is compared to the current XML stack.
+<p>The <code>pathSpec</code> is compared to the current XML stack.
 If it matches the current node, the text content of the current node or one of
 its attributes will be collected and put in a feature with name
 <code>featureName</code>, for the current TF node of type <code>nodeType</code>.</p>
-<p>The pathSpec is a list of components.
+<p>The <code>pathSpec</code> is a list of components.
 The first component should match the top of the XML stack, the second
 component the element that is below the top, etc.
 Each component is a tuple of</p>
@@ -840,7 +840,7 @@ that attribute, not from the content of the element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/helpers.py#L462-L561" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/helpers.py#L462-L561" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def lookupSource(cv, cur, specs):
     &#34;&#34;&#34;Looks up information from the current XML stack.
@@ -862,7 +862,7 @@ that attribute, not from the content of the element.</p>
     Parameters
     ----------
     cv: object
-        The convertor object, needed to issue actions.
+        The converter object, needed to issue actions.
     cur: dict
         Various pieces of data collected during walking
         and relevant for some next steps in the walk.
@@ -870,18 +870,18 @@ that attribute, not from the content of the element.</p>
         A sequence of instructions what to look for.
         Each instruction has the following parts:
 
-        *   pathSpec
-        *   node type
-        *   featureName
+        *   `pathSpec`
+        *   `nodeType`
+        *   `featureName`
 
         The effect is:
 
-        The pathSpec is compared to the current XML stack.
+        The `pathSpec` is compared to the current XML stack.
         If it matches the current node, the text content of the current node or one of
         its attributes will be collected and put in a feature with name
         `featureName`, for the current TF node of type `nodeType`.
 
-        The pathSpec is a list of components.
+        The `pathSpec` is a list of components.
         The first component should match the top of the XML stack, the second
         component the element that is below the top, etc.
         Each component is a tuple of
@@ -952,7 +952,7 @@ that attribute, not from the content of the element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/helpers.py#L242-L257" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/helpers.py#L242-L257" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def matchModel(properties, tag, atts):
     if tag == properties[&#34;element&#34;]:
@@ -980,7 +980,7 @@ that attribute, not from the content of the element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/helpers.py#L260-L300" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/helpers.py#L260-L300" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setUp(kind):
     helpText = f&#34;&#34;&#34;
@@ -992,9 +992,9 @@ that attribute, not from the content of the element.</p>
         check=&#34;reports on the elements in the source&#34;,
         convert=f&#34;converts {kind} to TF&#34;,
         load=&#34;loads the generated TF&#34;,
-        app=&#34;configures the TF-app for the result&#34;,
-        apptoken=&#34;modifies the TF-app to make it token- instead of character-based&#34;,
-        browse=&#34;starts the text-fabric browser on the result&#34;,
+        app=&#34;configures the TF app for the result&#34;,
+        apptoken=&#34;modifies the TF app to make it token- instead of character-based&#34;,
+        browse=&#34;starts the TF browser on the result&#34;,
     )
     taskExcluded = {&#34;apptoken&#34;, &#34;browse&#34;}
 
@@ -1002,7 +1002,7 @@ that attribute, not from the content of the element.</p>
         &#34;tf&#34;: (
             (
                 &#34;0 or latest: update latest version;\n\t\t&#34;
-                &#34;1 2 3: increase major, intermediate, minor tf version;\n\t\t&#34;
+                &#34;1 2 3: increase major, intermediate, minor TF version;\n\t\t&#34;
                 &#34;rest: explicit version.&#34;
             ),
             &#34;latest&#34;,
@@ -1033,7 +1033,7 @@ that attribute, not from the content of the element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/helpers.py#L303-L459" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/helpers.py#L303-L459" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tweakTrans(
     template,

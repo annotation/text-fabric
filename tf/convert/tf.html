@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/tf.py#L1-L324" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/tf.py#L1-L324" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Raw, unoptimized data from TF files
@@ -54,9 +54,9 @@ DATA_TYPE_STR = &#34;, &#34;.join(DATA_TYPES)
 
 
 def explode(inPath, outPath):
-    &#34;&#34;&#34;Explodes .tf files into non-optimized .tf files without metadata.
+    &#34;&#34;&#34;Explodes `.tf` files into non-optimized `.tf` files without metadata.
 
-    An exploded .tf feature file is a tf file with explicit node specifiers,
+    An exploded `.tf` feature file is a TF file with explicit node specifiers,
     no optimizations.
 
     The format of each line is:
@@ -93,7 +93,7 @@ def explode(inPath, outPath):
     inPath: string
         Source file(s).
         If pointing to a file, it should be file containing TF feature data.
-        If pointing to a directory, all .tf files in that directory will be exploded
+        If pointing to a directory, all `.tf` files in that directory will be exploded
         (non-recursively).
         The path may contain `~` which will be expanded to the user&#39;s home directory.
     outPath: string
@@ -104,7 +104,7 @@ def explode(inPath, outPath):
 
     Returns
     -------
-    bool
+    boolean
         whether the operation was successful.
     &#34;&#34;&#34;
 
@@ -366,8 +366,8 @@ def _setFromSpec(spec):
 <span>def <span class="ident">explode</span></span>(<span>inPath, outPath)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Explodes .tf files into non-optimized .tf files without metadata.</p>
-<p>An exploded .tf feature file is a tf file with explicit node specifiers,
+<div class="desc"><p>Explodes <code>.<a title="tf" href="../index.html">tf</a></code> files into non-optimized <code>.<a title="tf" href="../index.html">tf</a></code> files without metadata.</p>
+<p>An exploded <code>.<a title="tf" href="../index.html">tf</a></code> feature file is a TF file with explicit node specifiers,
 no optimizations.</p>
 <p>The format of each line is:</p>
 <p><strong>Node features</strong>:</p>
@@ -396,7 +396,7 @@ to node 1.</p>
 <dt><strong><code>inPath</code></strong> :&ensp;<code>string</code></dt>
 <dd>Source file(s).
 If pointing to a file, it should be file containing TF feature data.
-If pointing to a directory, all .tf files in that directory will be exploded
+If pointing to a directory, all <code>.<a title="tf" href="../index.html">tf</a></code> files in that directory will be exploded
 (non-recursively).
 The path may contain <code>~</code> which will be expanded to the user's home directory.</dd>
 <dt><strong><code>outPath</code></strong> :&ensp;<code>string</code></dt>
@@ -407,18 +407,18 @@ If pointing to an existing directory, exploded file(s) will be put there.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>bool</code></dt>
+<dt><code>boolean</code></dt>
 <dd>whether the operation was successful.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/tf.py#L25-L138" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/tf.py#L25-L138" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def explode(inPath, outPath):
-    &#34;&#34;&#34;Explodes .tf files into non-optimized .tf files without metadata.
+    &#34;&#34;&#34;Explodes `.tf` files into non-optimized `.tf` files without metadata.
 
-    An exploded .tf feature file is a tf file with explicit node specifiers,
+    An exploded `.tf` feature file is a TF file with explicit node specifiers,
     no optimizations.
 
     The format of each line is:
@@ -455,7 +455,7 @@ If pointing to an existing directory, exploded file(s) will be put there.</dd>
     inPath: string
         Source file(s).
         If pointing to a file, it should be file containing TF feature data.
-        If pointing to a directory, all .tf files in that directory will be exploded
+        If pointing to a directory, all `.tf` files in that directory will be exploded
         (non-recursively).
         The path may contain `~` which will be expanded to the user&#39;s home directory.
     outPath: string
@@ -466,7 +466,7 @@ If pointing to an existing directory, exploded file(s) will be put there.</dd>
 
     Returns
     -------
-    bool
+    boolean
         whether the operation was successful.
     &#34;&#34;&#34;
 

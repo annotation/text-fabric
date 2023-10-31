@@ -82,7 +82,7 @@ python tfFromTei.py apptoken</code></p>
 </li>
 </ul>
 <h1 id="usage">Usage</h1>
-<h2 id="commandline">Commandline</h2>
+<h2 id="command-line">Command-line</h2>
 <pre><code class="language-sh">tf-addnlp tasks params flags
 </code></pre>
 <h2 id="from-python">From Python</h2>
@@ -99,7 +99,7 @@ NLP.loadApp(Apre)
 NLP.task(**tasks, **flags)
 </code></pre>
 <p>For the tasks, parameters and flags, see
-<code><a title="tf.convert.addnlp.TASKS" href="#tf.convert.addnlp.TASKS">TASKS</a></code>, <code><a title="tf.convert.addnlp.PARAMS" href="#tf.convert.addnlp.PARAMS">PARAMS</a></code>, and <code><a title="tf.convert.addnlp.FLAGS" href="#tf.convert.addnlp.FLAGS">FLAGS</a></code> and expand the code.</p>
+<code><a title="tf.convert.addnlp.TASKS" href="#tf.convert.addnlp.TASKS">TASKS</a></code>, <code><a title="tf.convert.addnlp.PARAMS" href="#tf.convert.addnlp.PARAMS">PARAMS</a></code>, <code><a title="tf.convert.addnlp.FLAGS" href="#tf.convert.addnlp.FLAGS">FLAGS</a></code> and expand the code.</p>
 <p>The parameters have defaults that are exactly suited to corpora that have been
 converted from TEI by <code><a title="tf.convert.tei" href="tei.html">tf.convert.tei</a></code>.</p>
 <h2 id="examples">Examples</h2>
@@ -111,7 +111,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/addnlp.py#L1-L1528" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/addnlp.py#L1-L1529" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Add data from an NLP pipeline.
 
@@ -173,15 +173,15 @@ new tokens will be used as slots.
 
 # Usage
 
-## Commandline
+## Command-line
 
-```sh
+``` sh
 tf-addnlp tasks params flags
 ```
 
 ## From Python
 
-```python
+``` python
 from tf.convert.addnlp import NLPipeline
 from tf.app import use
 
@@ -196,7 +196,7 @@ NLP.task(**tasks, **flags)
 ```
 
 For the tasks, parameters and flags, see
-`TASKS`, `PARAMS`, and `FLAGS` and expand the code.
+`TASKS`, `PARAMS`, `FLAGS` and expand the code.
 
 The parameters have defaults that are exactly suited to corpora that have been
 converted from TEI by `tf.convert.tei`.
@@ -352,7 +352,7 @@ class NLPipeline:
         slotFeature: string, optional ch
             The  feature on slots that provides the text of a slot to be included
             in the generated text.
-        removeSlotFeatures: &#34;ch&#34;
+        removeSlotFeatures: string
             A tuple is distilled from comma-separated values.
             The names of features defined on original slots that do not have to be
             carried over to the new slots of type of the atomic tokens.
@@ -513,7 +513,7 @@ class NLPipeline:
             console(f&#34;{len(lastSlots):&gt;6} end postions&#34;)
 
     def getElementInfo(self, verbose=None):
-        &#34;&#34;&#34;Analyse the schema.
+        &#34;&#34;&#34;Analyze the schema.
 
         The XML schema has useful information about the XML elements that
         occur in the source. Here we extract that information and make it
@@ -550,7 +550,7 @@ class NLPipeline:
     def generatePlain(self):
         &#34;&#34;&#34;Generates a plain text out of a data source.
 
-        The text is generatad in such a way that out of flow elements are collected
+        The text is generated in such a way that out of flow elements are collected
         and put at the end. Examples of such elements are notes.
         Leaving them at their original positions will interfere with sentence detection.
 
@@ -566,8 +566,8 @@ class NLPipeline:
             The result is a tuple consisting of
 
             *   *text*: the generated text
-            *   *positions*: a list of nodes such that list item *i* contains
-                the original slot that corresponds to the character *i* in the
+            *   *positions*: a list of nodes such that list item `i` contains
+                the original slot that corresponds to the character `i` in the
                 generated text (counting from zero).
         &#34;&#34;&#34;
         slotFeature = self.slotFeature
@@ -807,9 +807,10 @@ class NLPipeline:
         stream: list of tuple
             The tuples should consist of
 
-            *   *start*: a start number (char pos in the plain text, starting at `0`)
-            *   *end*: an end number (char pos in tghe plain text plus one)
-            *   *values*: values for feature assignment
+            *   `start`: a start number (character position in the plain text,
+                starting at `0`)
+            *   `end`: an end number (character position in the plain text plus one)
+            *   `values`: values for feature assignment
 
         tp: string
             The type of the nodes that will be generated.
@@ -825,7 +826,7 @@ class NLPipeline:
             Name of feature that identifies the empty slots.
 
         skipBlanks: boolean, optional False
-            If True, rows whose text component is only white space will be skipped.
+            If True, rows whose text component is only white-space will be skipped.
 
         skipFlows: set
             set of elements whose resulting data in the stream should be ignored
@@ -835,9 +836,9 @@ class NLPipeline:
         tuple
             We deliver the following pieces of information in a tuple:
 
-            * the last node
-            * the mapping of the new nodes to the slots they occupy;
-            * the data of the new features.
+            *   the last node
+            *   the mapping of the new nodes to the slots they occupy;
+            *   the data of the new features.
 
             However, when we deliver the token results, they come in two such tuples:
             one for the atomic tokens and one for the full tokens.
@@ -1194,20 +1195,20 @@ class NLPipeline:
         )
 
     def ingestNlpOutput(self, positions, tkStream, sentenceStream, entityStream):
-        &#34;&#34;&#34;Ingests nlp output such as tokens in a dataset. Tokens become the new slots.
+        &#34;&#34;&#34;Ingests NLP output such as tokens in a dataset. Tokens become the new slots.
 
         By default:
 
-        * tokens become nodes of a new type `t`;
-        * the texts of tokens ends up in the feature `str`;
-        * if there is a space after a token, it ends up in the feature `after`;
-        * sentences become nodes of a new type `sentence`;
-        * the sentence number ends up in the feature `nsent`.
-        * token nodes become the new slots.
-        * entities become noes of a new type `ent`;
-        * the texts of the entities end up in feature `str`;
-        * the labels of the entities end up in feature `kind`;
-        * entity nodes are linked to the tokens they occupy.
+        *   tokens become nodes of a new type `t`;
+        *   the texts of tokens ends up in the feature `str`;
+        *   if there is a space after a token, it ends up in the feature `after`;
+        *   sentences become nodes of a new type `sentence`;
+        *   the sentence number ends up in the feature `nsent`.
+        *   token nodes become the new slots.
+        *   entities become noes of a new type `ent`;
+        *   the texts of the entities end up in feature `str`;
+        *   the labels of the entities end up in feature `kind`;
+        *   entity nodes are linked to the tokens they occupy.
 
         But this function can also be adapted to token, sentence, and entity streams
         that have additional names and values, see below.
@@ -1232,12 +1233,12 @@ class NLPipeline:
 
         !!! hint &#34;Look at the defaults&#34;
             The default `tokenFeatures=(&#34;str&#34;, &#34;after&#34;)` specifies that two
-            fields from the tokenstream will be read, and those values will be assigned
-            to features `str` and `after`.
+            fields from the token stream will be read, and those values will be
+            assigned to features `str` and `after`.
             There will be no field with the node itself in it.
 
             The default `sentenceFeatures=()` specifies that no field from the
-            tokenstream will be read. But that there is a feature `nsent` that
+            token stream will be read. But that there is a feature `nsent` that
             has the node of each sentence as value.
 
         We have to ignore the sentence boundaries in some flows,
@@ -1490,7 +1491,7 @@ class NLPipeline:
 
         This is a higher level function that can execute a selection of tasks.
 
-        The tasks will be executed in a fixed order: plaintext, lingo, ingest.
+        The tasks will be executed in a fixed order: `plaintext`, `lingo`, `ingest`.
         But you can select which one(s) must be executed.
 
         If multiple tasks must be executed and one fails, the subsequent tasks
@@ -1505,7 +1506,7 @@ class NLPipeline:
         ingest: boolean, optional False
             Whether to ingest the NLP results into the dataset..
         verbose: integer, optional -1
-            Produce no (-1), some (0) or many (1) orprogress and reporting messages
+            Produce no (-1), some (0) or many (1) progress and reporting messages
         write: boolean, optional False
             Whether to write the generated plain text and position files to disk.
         kwargs: dict
@@ -1673,7 +1674,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/addnlp.py#L1516-L1524" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/addnlp.py#L1517-L1525" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(&#34;tf-addnlp&#34;, HELP, TASKS, PARAMS, FLAGS)
@@ -1713,7 +1714,7 @@ but without the <code>pre</code>.</dd>
 <dd>The
 feature on slots that provides the text of a slot to be included
 in the generated text.</dd>
-<dt><strong><code>removeSlotFeatures</code></strong> :&ensp;<code>"ch"</code></dt>
+<dt><strong><code>removeSlotFeatures</code></strong> :&ensp;<code>string</code></dt>
 <dd>A tuple is distilled from comma-separated values.
 The names of features defined on original slots that do not have to be
 carried over to the new slots of type of the atomic tokens.
@@ -1772,7 +1773,7 @@ sequence number of the entity in the data stream, starting at 1.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/addnlp.py#L196-L1513" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/addnlp.py#L196-L1514" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NLPipeline:
     def __init__(
@@ -1818,7 +1819,7 @@ sequence number of the entity in the data stream, starting at 1.</dd>
         slotFeature: string, optional ch
             The  feature on slots that provides the text of a slot to be included
             in the generated text.
-        removeSlotFeatures: &#34;ch&#34;
+        removeSlotFeatures: string
             A tuple is distilled from comma-separated values.
             The names of features defined on original slots that do not have to be
             carried over to the new slots of type of the atomic tokens.
@@ -1979,7 +1980,7 @@ sequence number of the entity in the data stream, starting at 1.</dd>
             console(f&#34;{len(lastSlots):&gt;6} end postions&#34;)
 
     def getElementInfo(self, verbose=None):
-        &#34;&#34;&#34;Analyse the schema.
+        &#34;&#34;&#34;Analyze the schema.
 
         The XML schema has useful information about the XML elements that
         occur in the source. Here we extract that information and make it
@@ -2016,7 +2017,7 @@ sequence number of the entity in the data stream, starting at 1.</dd>
     def generatePlain(self):
         &#34;&#34;&#34;Generates a plain text out of a data source.
 
-        The text is generatad in such a way that out of flow elements are collected
+        The text is generated in such a way that out of flow elements are collected
         and put at the end. Examples of such elements are notes.
         Leaving them at their original positions will interfere with sentence detection.
 
@@ -2032,8 +2033,8 @@ sequence number of the entity in the data stream, starting at 1.</dd>
             The result is a tuple consisting of
 
             *   *text*: the generated text
-            *   *positions*: a list of nodes such that list item *i* contains
-                the original slot that corresponds to the character *i* in the
+            *   *positions*: a list of nodes such that list item `i` contains
+                the original slot that corresponds to the character `i` in the
                 generated text (counting from zero).
         &#34;&#34;&#34;
         slotFeature = self.slotFeature
@@ -2273,9 +2274,10 @@ sequence number of the entity in the data stream, starting at 1.</dd>
         stream: list of tuple
             The tuples should consist of
 
-            *   *start*: a start number (char pos in the plain text, starting at `0`)
-            *   *end*: an end number (char pos in tghe plain text plus one)
-            *   *values*: values for feature assignment
+            *   `start`: a start number (character position in the plain text,
+                starting at `0`)
+            *   `end`: an end number (character position in the plain text plus one)
+            *   `values`: values for feature assignment
 
         tp: string
             The type of the nodes that will be generated.
@@ -2291,7 +2293,7 @@ sequence number of the entity in the data stream, starting at 1.</dd>
             Name of feature that identifies the empty slots.
 
         skipBlanks: boolean, optional False
-            If True, rows whose text component is only white space will be skipped.
+            If True, rows whose text component is only white-space will be skipped.
 
         skipFlows: set
             set of elements whose resulting data in the stream should be ignored
@@ -2301,9 +2303,9 @@ sequence number of the entity in the data stream, starting at 1.</dd>
         tuple
             We deliver the following pieces of information in a tuple:
 
-            * the last node
-            * the mapping of the new nodes to the slots they occupy;
-            * the data of the new features.
+            *   the last node
+            *   the mapping of the new nodes to the slots they occupy;
+            *   the data of the new features.
 
             However, when we deliver the token results, they come in two such tuples:
             one for the atomic tokens and one for the full tokens.
@@ -2660,20 +2662,20 @@ sequence number of the entity in the data stream, starting at 1.</dd>
         )
 
     def ingestNlpOutput(self, positions, tkStream, sentenceStream, entityStream):
-        &#34;&#34;&#34;Ingests nlp output such as tokens in a dataset. Tokens become the new slots.
+        &#34;&#34;&#34;Ingests NLP output such as tokens in a dataset. Tokens become the new slots.
 
         By default:
 
-        * tokens become nodes of a new type `t`;
-        * the texts of tokens ends up in the feature `str`;
-        * if there is a space after a token, it ends up in the feature `after`;
-        * sentences become nodes of a new type `sentence`;
-        * the sentence number ends up in the feature `nsent`.
-        * token nodes become the new slots.
-        * entities become noes of a new type `ent`;
-        * the texts of the entities end up in feature `str`;
-        * the labels of the entities end up in feature `kind`;
-        * entity nodes are linked to the tokens they occupy.
+        *   tokens become nodes of a new type `t`;
+        *   the texts of tokens ends up in the feature `str`;
+        *   if there is a space after a token, it ends up in the feature `after`;
+        *   sentences become nodes of a new type `sentence`;
+        *   the sentence number ends up in the feature `nsent`.
+        *   token nodes become the new slots.
+        *   entities become noes of a new type `ent`;
+        *   the texts of the entities end up in feature `str`;
+        *   the labels of the entities end up in feature `kind`;
+        *   entity nodes are linked to the tokens they occupy.
 
         But this function can also be adapted to token, sentence, and entity streams
         that have additional names and values, see below.
@@ -2698,12 +2700,12 @@ sequence number of the entity in the data stream, starting at 1.</dd>
 
         !!! hint &#34;Look at the defaults&#34;
             The default `tokenFeatures=(&#34;str&#34;, &#34;after&#34;)` specifies that two
-            fields from the tokenstream will be read, and those values will be assigned
-            to features `str` and `after`.
+            fields from the token stream will be read, and those values will be
+            assigned to features `str` and `after`.
             There will be no field with the node itself in it.
 
             The default `sentenceFeatures=()` specifies that no field from the
-            tokenstream will be read. But that there is a feature `nsent` that
+            token stream will be read. But that there is a feature `nsent` that
             has the node of each sentence as value.
 
         We have to ignore the sentence boundaries in some flows,
@@ -2956,7 +2958,7 @@ sequence number of the entity in the data stream, starting at 1.</dd>
 
         This is a higher level function that can execute a selection of tasks.
 
-        The tasks will be executed in a fixed order: plaintext, lingo, ingest.
+        The tasks will be executed in a fixed order: `plaintext`, `lingo`, `ingest`.
         But you can select which one(s) must be executed.
 
         If multiple tasks must be executed and one fails, the subsequent tasks
@@ -2971,7 +2973,7 @@ sequence number of the entity in the data stream, starting at 1.</dd>
         ingest: boolean, optional False
             Whether to ingest the NLP results into the dataset..
         verbose: integer, optional -1
-            Produce no (-1), some (0) or many (1) orprogress and reporting messages
+            Produce no (-1), some (0) or many (1) progress and reporting messages
         write: boolean, optional False
             Whether to write the generated plain text and position files to disk.
         kwargs: dict
@@ -3103,7 +3105,7 @@ sequence number of the entity in the data stream, starting at 1.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/addnlp.py#L633-L635" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/addnlp.py#L633-L635" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def lingo(*args, **kwargs):
@@ -3118,7 +3120,7 @@ def lingo(*args, **kwargs):
 </code></dt>
 <dd>
 <div class="desc"><p>Generates a plain text out of a data source.</p>
-<p>The text is generatad in such a way that out of flow elements are collected
+<p>The text is generated in such a way that out of flow elements are collected
 and put at the end. Examples of such elements are notes.
 Leaving them at their original positions will interfere with sentence detection.</p>
 <p>We separate the flows clearly in the output, so that they are discernible
@@ -3132,8 +3134,8 @@ cross element boundaries and need to be split into atomic tokens.</p>
 <p>The result is a tuple consisting of</p>
 <ul>
 <li><em>text</em>: the generated text</li>
-<li><em>positions</em>: a list of nodes such that list item <em>i</em> contains
-the original slot that corresponds to the character <em>i</em> in the
+<li><em>positions</em>: a list of nodes such that list item <code>i</code> contains
+the original slot that corresponds to the character <code>i</code> in the
 generated text (counting from zero).</li>
 </ul>
 </dd>
@@ -3141,12 +3143,12 @@ generated text (counting from zero).</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/addnlp.py#L435-L631" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/addnlp.py#L435-L631" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def generatePlain(self):
     &#34;&#34;&#34;Generates a plain text out of a data source.
 
-    The text is generatad in such a way that out of flow elements are collected
+    The text is generated in such a way that out of flow elements are collected
     and put at the end. Examples of such elements are notes.
     Leaving them at their original positions will interfere with sentence detection.
 
@@ -3162,8 +3164,8 @@ generated text (counting from zero).</li>
         The result is a tuple consisting of
 
         *   *text*: the generated text
-        *   *positions*: a list of nodes such that list item *i* contains
-            the original slot that corresponds to the character *i* in the
+        *   *positions*: a list of nodes such that list item `i` contains
+            the original slot that corresponds to the character `i` in the
             generated text (counting from zero).
     &#34;&#34;&#34;
     slotFeature = self.slotFeature
@@ -3346,7 +3348,7 @@ generated text (counting from zero).</li>
 <span>def <span class="ident">getElementInfo</span></span>(<span>self, verbose=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Analyse the schema.</p>
+<div class="desc"><p>Analyze the schema.</p>
 <p>The XML schema has useful information about the XML elements that
 occur in the source. Here we extract that information and make it
 fast-accessible.</p>
@@ -3366,10 +3368,10 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/addnlp.py#L400-L433" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/addnlp.py#L400-L433" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getElementInfo(self, verbose=None):
-    &#34;&#34;&#34;Analyse the schema.
+    &#34;&#34;&#34;Analyze the schema.
 
     The XML schema has useful information about the XML elements that
     occur in the source. Here we extract that information and make it
@@ -3449,9 +3451,10 @@ generated text that must be stripped.</dd>
 <dd>
 <p>The tuples should consist of</p>
 <ul>
-<li><em>start</em>: a start number (char pos in the plain text, starting at <code>0</code>)</li>
-<li><em>end</em>: an end number (char pos in tghe plain text plus one)</li>
-<li><em>values</em>: values for feature assignment</li>
+<li><code>start</code>: a start number (character position in the plain text,
+starting at <code>0</code>)</li>
+<li><code>end</code>: an end number (character position in the plain text plus one)</li>
+<li><code>values</code>: values for feature assignment</li>
 </ul>
 </dd>
 <dt><strong><code>tp</code></strong> :&ensp;<code>string</code></dt>
@@ -3464,7 +3467,7 @@ the element in the data stream, starting at 1.</dd>
 <dt><strong><code>emptyFeature</code></strong> :&ensp;<code>string</code>, optional <code>empty</code></dt>
 <dd>Name of feature that identifies the empty slots.</dd>
 <dt><strong><code>skipBlanks</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>If True, rows whose text component is only white space will be skipped.</dd>
+<dd>If True, rows whose text component is only white-space will be skipped.</dd>
 <dt><strong><code>skipFlows</code></strong> :&ensp;<code>set</code></dt>
 <dd>set of elements whose resulting data in the stream should be ignored</dd>
 </dl>
@@ -3485,7 +3488,7 @@ one for the atomic tokens and one for the full tokens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/addnlp.py#L637-L1079" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/addnlp.py#L637-L1080" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ingest(
     self,
@@ -3545,9 +3548,10 @@ one for the atomic tokens and one for the full tokens.</p>
     stream: list of tuple
         The tuples should consist of
 
-        *   *start*: a start number (char pos in the plain text, starting at `0`)
-        *   *end*: an end number (char pos in tghe plain text plus one)
-        *   *values*: values for feature assignment
+        *   `start`: a start number (character position in the plain text,
+            starting at `0`)
+        *   `end`: an end number (character position in the plain text plus one)
+        *   `values`: values for feature assignment
 
     tp: string
         The type of the nodes that will be generated.
@@ -3563,7 +3567,7 @@ one for the atomic tokens and one for the full tokens.</p>
         Name of feature that identifies the empty slots.
 
     skipBlanks: boolean, optional False
-        If True, rows whose text component is only white space will be skipped.
+        If True, rows whose text component is only white-space will be skipped.
 
     skipFlows: set
         set of elements whose resulting data in the stream should be ignored
@@ -3573,9 +3577,9 @@ one for the atomic tokens and one for the full tokens.</p>
     tuple
         We deliver the following pieces of information in a tuple:
 
-        * the last node
-        * the mapping of the new nodes to the slots they occupy;
-        * the data of the new features.
+        *   the last node
+        *   the mapping of the new nodes to the slots they occupy;
+        *   the data of the new features.
 
         However, when we deliver the token results, they come in two such tuples:
         one for the atomic tokens and one for the full tokens.
@@ -3936,7 +3940,7 @@ one for the atomic tokens and one for the full tokens.</p>
 <span>def <span class="ident">ingestNlpOutput</span></span>(<span>self, positions, tkStream, sentenceStream, entityStream)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Ingests nlp output such as tokens in a dataset. Tokens become the new slots.</p>
+<div class="desc"><p>Ingests NLP output such as tokens in a dataset. Tokens become the new slots.</p>
 <p>By default:</p>
 <ul>
 <li>tokens become nodes of a new type <code>t</code>;</li>
@@ -3969,11 +3973,11 @@ filled with the node numbers of the newly generated nodes.</p>
 <div class="admonition hint">
 <p class="admonition-title">Look at the defaults</p>
 <p>The default <code>tokenFeatures=("str", "after")</code> specifies that two
-fields from the tokenstream will be read, and those values will be assigned
-to features <code>str</code> and <code>after</code>.
+fields from the token stream will be read, and those values will be
+assigned to features <code>str</code> and <code>after</code>.
 There will be no field with the node itself in it.</p>
 <p>The default <code>sentenceFeatures=()</code> specifies that no field from the
-tokenstream will be read. But that there is a feature <code>nsent</code> that
+token stream will be read. But that there is a feature <code>nsent</code> that
 has the node of each sentence as value.</p>
 </div>
 <p>We have to ignore the sentence boundaries in some flows,
@@ -3997,23 +4001,23 @@ sentence boundaries.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/addnlp.py#L1081-L1363" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/addnlp.py#L1082-L1364" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ingestNlpOutput(self, positions, tkStream, sentenceStream, entityStream):
-    &#34;&#34;&#34;Ingests nlp output such as tokens in a dataset. Tokens become the new slots.
+    &#34;&#34;&#34;Ingests NLP output such as tokens in a dataset. Tokens become the new slots.
 
     By default:
 
-    * tokens become nodes of a new type `t`;
-    * the texts of tokens ends up in the feature `str`;
-    * if there is a space after a token, it ends up in the feature `after`;
-    * sentences become nodes of a new type `sentence`;
-    * the sentence number ends up in the feature `nsent`.
-    * token nodes become the new slots.
-    * entities become noes of a new type `ent`;
-    * the texts of the entities end up in feature `str`;
-    * the labels of the entities end up in feature `kind`;
-    * entity nodes are linked to the tokens they occupy.
+    *   tokens become nodes of a new type `t`;
+    *   the texts of tokens ends up in the feature `str`;
+    *   if there is a space after a token, it ends up in the feature `after`;
+    *   sentences become nodes of a new type `sentence`;
+    *   the sentence number ends up in the feature `nsent`.
+    *   token nodes become the new slots.
+    *   entities become noes of a new type `ent`;
+    *   the texts of the entities end up in feature `str`;
+    *   the labels of the entities end up in feature `kind`;
+    *   entity nodes are linked to the tokens they occupy.
 
     But this function can also be adapted to token, sentence, and entity streams
     that have additional names and values, see below.
@@ -4038,12 +4042,12 @@ sentence boundaries.</p>
 
     !!! hint &#34;Look at the defaults&#34;
         The default `tokenFeatures=(&#34;str&#34;, &#34;after&#34;)` specifies that two
-        fields from the tokenstream will be read, and those values will be assigned
-        to features `str` and `after`.
+        fields from the token stream will be read, and those values will be
+        assigned to features `str` and `after`.
         There will be no field with the node itself in it.
 
         The default `sentenceFeatures=()` specifies that no field from the
-        tokenstream will be read. But that there is a feature `nsent` that
+        token stream will be read. But that there is a feature `nsent` that
         has the node of each sentence as value.
 
     We have to ignore the sentence boundaries in some flows,
@@ -4305,7 +4309,7 @@ If not passed, take the verbose member of this object.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/addnlp.py#L332-L398" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/addnlp.py#L332-L398" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadApp(self, app=None, verbose=None):
     &#34;&#34;&#34;Loads a given TF app or loads the TF app based on the working directory.
@@ -4382,7 +4386,7 @@ If not passed, take the verbose member of this object.</dd>
 <dd>
 <div class="desc"><p>Carry out tasks, possibly modified by flags.</p>
 <p>This is a higher level function that can execute a selection of tasks.</p>
-<p>The tasks will be executed in a fixed order: plaintext, lingo, ingest.
+<p>The tasks will be executed in a fixed order: <code>plaintext</code>, <code>lingo</code>, <code>ingest</code>.
 But you can select which one(s) must be executed.</p>
 <p>If multiple tasks must be executed and one fails, the subsequent tasks
 will not be executed.</p>
@@ -4395,7 +4399,7 @@ will not be executed.</p>
 <dt><strong><code>ingest</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>Whether to ingest the NLP results into the dataset..</dd>
 <dt><strong><code>verbose</code></strong> :&ensp;<code>integer</code>, optional <code>-1</code></dt>
-<dd>Produce no (-1), some (0) or many (1) orprogress and reporting messages</dd>
+<dd>Produce no (-1), some (0) or many (1) progress and reporting messages</dd>
 <dt><strong><code>write</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>Whether to write the generated plain text and position files to disk.</dd>
 <dt><strong><code>kwargs</code></strong> :&ensp;<code>dict</code></dt>
@@ -4409,7 +4413,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/addnlp.py#L1365-L1513" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/addnlp.py#L1366-L1514" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,
@@ -4424,7 +4428,7 @@ will not be executed.</p>
 
     This is a higher level function that can execute a selection of tasks.
 
-    The tasks will be executed in a fixed order: plaintext, lingo, ingest.
+    The tasks will be executed in a fixed order: `plaintext`, `lingo`, `ingest`.
     But you can select which one(s) must be executed.
 
     If multiple tasks must be executed and one fails, the subsequent tasks
@@ -4439,7 +4443,7 @@ will not be executed.</p>
     ingest: boolean, optional False
         Whether to ingest the NLP results into the dataset..
     verbose: integer, optional -1
-        Produce no (-1), some (0) or many (1) orprogress and reporting messages
+        Produce no (-1), some (0) or many (1) progress and reporting messages
     write: boolean, optional False
         Whether to write the generated plain text and position files to disk.
     kwargs: dict
@@ -4626,7 +4630,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#effect">Effect</a></li>
 <li><a href="#homework">Homework</a></li>
 <li><a href="#usage">Usage</a><ul>
-<li><a href="#commandline">Commandline</a></li>
+<li><a href="#command-line">Command-line</a></li>
 <li><a href="#from-python">From Python</a></li>
 <li><a href="#examples">Examples</a></li>
 </ul>

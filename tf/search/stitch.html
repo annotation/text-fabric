@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/stitch.py#L1-L886" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/stitch.py#L1-L886" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Search result finding
@@ -129,7 +129,7 @@ def _spread_1_first(searchExe):
     # that can be connected
     # to the graph under construction
     # then we start a new iteration, because the graph has grown,
-    # and and new edges might
+    # and new edges might
     # have become connectable by that
 
     # in order to fail early, we can also add edges
@@ -263,7 +263,7 @@ def _small_choice_multi(searchExe):
     # but it tries to combine multi-edges as much as possible.
 
     # A multi edge is a collection of half-bound edges from the same node,
-    # some of wich provide an upper bound for that node, and some a lower bound.
+    # some of which provide an upper bound for that node, and some a lower bound.
     # So, a multi edge constrains choices much more than each of the individual edges.
 
     qedges = searchExe.qedges
@@ -628,7 +628,7 @@ def _stitchResults(searchExe):
     # The next function is optimized, and the lookup of functions and data
     # should be as direct as possible.
     # Because deliver() below fetches the results,
-    # of wich there are unpredictably many.
+    # of which there are unpredictably many.
 
     # We are going to build-up and deliver stitches,
     # which are instantiations of all the query nodes
@@ -648,7 +648,7 @@ def _stitchResults(searchExe):
     #        build(stitch+b)
     #
     # But we do not have to pass on the stitch as an immutable data structure.
-    # We can just keep it as one single mutable datastructure, provided we
+    # We can just keep it as one single mutable data structure, provided we
     # do something between the two recursive calls above.
     # Suppose stitch is an list, and in the outer build n elements are filled
     # (the rest contains -1)
@@ -932,7 +932,7 @@ def _stitchResults(searchExe):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/stitch.py#L22-L43" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/stitch.py#L22-L43" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setStrategy(searchExe, strategy, keep=False):
     error = searchExe.api.TF.error
@@ -966,7 +966,7 @@ def _stitchResults(searchExe):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/search/stitch.py#L492-L496" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/search/stitch.py#L492-L496" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def stitch(searchExe):
     estimateSpreads(searchExe, both=True)

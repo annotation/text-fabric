@@ -35,14 +35,14 @@ extract(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/volumes/extract.py#L1-L730" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/volumes/extract.py#L1-L738" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Extract
 
 ## Usage
 
-```python
+``` python
 from tf.volumes import extract
 extract(
   workLocation,
@@ -129,7 +129,7 @@ def extract(
 ):
     &#34;&#34;&#34;Extracts volumes of a work.
 
-    The volumes are new TF data sets, the work is an existing TF data set.
+    The volumes are new TF datasets, the work is an existing TF data set.
     Volumes of a work consist of collections of its top-level sections.
 
     You can define volumes by passing a volume specification.
@@ -139,7 +139,7 @@ def extract(
     Volumes will get a node feature `owork` which maps nodes in the volume to
     nodes in the work.
 
-    !!! note &#34;use of feature owork&#34;
+    !!! note &#34;use of feature `owork`&#34;
         If volumes are combined to a work, nodes in distinct volumes may
         correspond to a single node in the work. In that case, they have the
         same value in the `owork` feature.
@@ -162,34 +162,34 @@ def extract(
 
     Volumes will also get two node features `ointerfrom` and `ointerto`.
 
-    For each node *f* in the volume, `ointerfrom` has a value composed of
-    all work nodes *t* outside the volume that are reached by an edge
-    named *e* from *f* with value *val*.
+    For each node `f` in the volume, `ointerfrom` has a value composed of
+    all work nodes `t` outside the volume that are reached by an edge
+    named `e` from `f` with value *val*.
 
-    For each node *t* in the volume, `ointerto` has a value composed of
-    all work nodes *f* outside the volume that reach *t* by an edge
-    named *e* with value *val*.
+    For each node `t` in the volume, `ointerto` has a value composed of
+    all work nodes `f` outside the volume that reach `t` by an edge
+    named `e` with value *val*.
 
-    More precisely, the keys of `ointerf` and `ointert` are nodes *nW* of the
+    More precisely, the keys of `ointerf` and `ointert` are nodes `nW` of the
     *original work* that correspond with nodes in the volume that have outgoing resp.
     incoming edges to resp. from other volumes.
 
     Each value of `oninterf` and `ointert` is a semicolon separated list of
 
-    *mW*, *e*, *doValues*, *valueType* , *value*
+    `mW`, `e`, `doValues`, `valueType` , `value`
 
     where
 
-    *mW* is the node in the *original work* reached by *nW* or that reaches *nW*
+    `mW` is the node in the *original work* reached by `nW` or that reaches `nW`
 
-    *e* is the name of the edge feature in question
+    `e` is the name of the edge feature in question
 
-    *doValues* is `v` if the edge feature has values and `x` otherwise
+    `doValues` is `v` if the edge feature has values and `x` otherwise
 
-    *valueType* is &#34;i&#34; (int) or &#34;s&#34; (str)
+    `valueType` is `i` (`int`) or `s` (`str`)
 
-    *value* is the value assigned by the edge feature to the edge from *nW* to *mW*
-    or from *mW* to *nW*. If the edge does not have values it is a dummy value `x`.
+    `value` is the value assigned by the edge feature to the edge from `nW` to `mW`
+    or from `mW` to `nW`. If the edge does not have values it is a dummy value `x`.
 
     Parameters
     ----------
@@ -236,7 +236,7 @@ def extract(
         from which the volumes are to be extracted.
         In this case, the `workLocation` parameter is not used.
         If absent or `None`, the dataset at `workLocation`
-        will be loaded by Text-Fabric, and its api will be used subsequently.
+        will be loaded by TF, and its api will be used subsequently.
 
     overwrite: boolean, optional None
         If True, the volumes defined by `volumes` will be
@@ -265,24 +265,28 @@ def extract(
 
     Example
     -------
-        volumeList = extract(
-            &#39;clariah-gm/tf/0.9.1&#39;,
-            &#39;clariah-gm/asvolumes/tf/0.9.1&#39;,
-        )
+    ``` python
+    volumeList = extract(
+        &#39;clariah-gm/tf/0.9.1&#39;,
+        &#39;clariah-gm/asvolumes/tf/0.9.1&#39;,
+    )
+    ```
 
     This will extract the top-level sections of the missives corpus
     into that many volumes.
 
     Example
     -------
-        volumeList = extract(
-            &#39;clariah-gm/tf/0.9.1&#39;,
-            &#39;clariah-gm/asvolumes/tf/0.9.1&#39;,
-            volumes=dict(
-                early=(1,2,3,4,5,6,7,8),
-                late=(9, 10, 11, 12),
-            )
+    ``` python
+    volumeList = extract(
+        &#39;clariah-gm/tf/0.9.1&#39;,
+        &#39;clariah-gm/asvolumes/tf/0.9.1&#39;,
+        volumes=dict(
+            early=(1,2,3,4,5,6,7,8),
+            late=(9, 10, 11, 12),
         )
+    )
+    ```
 
     This will create 2 volumes, named `early` and `late`,
     where `early` consists of top-level sections 1-8,
@@ -291,23 +295,27 @@ def extract(
 
     Example
     -------
-        volumeList = extract(
-            &#39;bhsa/tf/2021&#39;,
-            &#39;bhsa/asvolumes/tf/2021&#39;,
-        )
+    ``` python
+    volumeList = extract(
+        &#39;bhsa/tf/2021&#39;,
+        &#39;bhsa/asvolumes/tf/2021&#39;,
+    )
+    ```
 
     This will extract the books of the bible as separate volumes.
 
     Example
     -------
-        volumeList = extract(
-            &#39;bhsa/tf/2021&#39;,
-            &#39;bhsa/asvolumes/tf/2021&#39;,
-            volumes=dict(
-                thora=(&#34;Genesis&#34;, &#34;Exodus&#34;, &#34;Leviticus&#34;, &#34;Numeri&#34;, &#34;Deuteronomy&#34;),
-                poetry=(&#34;Psalms&#34;, &#34;Proverbs&#34;),
-            ),
-        )
+    ``` python
+    volumeList = extract(
+        &#39;bhsa/tf/2021&#39;,
+        &#39;bhsa/asvolumes/tf/2021&#39;,
+        volumes=dict(
+            thora=(&#34;Genesis&#34;, &#34;Exodus&#34;, &#34;Leviticus&#34;, &#34;Numeri&#34;, &#34;Deuteronomy&#34;),
+            poetry=(&#34;Psalms&#34;, &#34;Proverbs&#34;),
+        ),
+    )
+    ```
 
     This will extract two volumes of the bible:
     `thora` with the first 5 books and `poetry` with two poetic books.
@@ -781,7 +789,7 @@ def extract(
 </code></dt>
 <dd>
 <div class="desc"><p>Extracts volumes of a work.</p>
-<p>The volumes are new TF data sets, the work is an existing TF data set.
+<p>The volumes are new TF datasets, the work is an existing TF data set.
 Volumes of a work consist of collections of its top-level sections.</p>
 <p>You can define volumes by passing a volume specification.
 If the specification <code>True</code> is given, a volume will be created for every single
@@ -789,7 +797,7 @@ top-level section.</p>
 <p>Volumes will get a node feature <code>owork</code> which maps nodes in the volume to
 nodes in the work.</p>
 <div class="admonition note">
-<p class="admonition-title">use of feature owork</p>
+<p class="admonition-title">use of feature <code>owork</code></p>
 <p>If volumes are combined to a work, nodes in distinct volumes may
 correspond to a single node in the work. In that case, they have the
 same value in the <code>owork</code> feature.
@@ -812,24 +820,24 @@ older to newer versions.
 These will be excluded from volumes.</p>
 </div>
 <p>Volumes will also get two node features <code>ointerfrom</code> and <code>ointerto</code>.</p>
-<p>For each node <em>f</em> in the volume, <code>ointerfrom</code> has a value composed of
-all work nodes <em>t</em> outside the volume that are reached by an edge
-named <em>e</em> from <em>f</em> with value <em>val</em>.</p>
-<p>For each node <em>t</em> in the volume, <code>ointerto</code> has a value composed of
-all work nodes <em>f</em> outside the volume that reach <em>t</em> by an edge
-named <em>e</em> with value <em>val</em>.</p>
-<p>More precisely, the keys of <code>ointerf</code> and <code>ointert</code> are nodes <em>nW</em> of the
+<p>For each node <code>f</code> in the volume, <code>ointerfrom</code> has a value composed of
+all work nodes <code>t</code> outside the volume that are reached by an edge
+named <code>e</code> from <code>f</code> with value <em>val</em>.</p>
+<p>For each node <code>t</code> in the volume, <code>ointerto</code> has a value composed of
+all work nodes <code>f</code> outside the volume that reach <code>t</code> by an edge
+named <code>e</code> with value <em>val</em>.</p>
+<p>More precisely, the keys of <code>ointerf</code> and <code>ointert</code> are nodes <code>nW</code> of the
 <em>original work</em> that correspond with nodes in the volume that have outgoing resp.
 incoming edges to resp. from other volumes.</p>
 <p>Each value of <code>oninterf</code> and <code>ointert</code> is a semicolon separated list of</p>
-<p><em>mW</em>, <em>e</em>, <em>doValues</em>, <em>valueType</em> , <em>value</em></p>
+<p><code>mW</code>, <code>e</code>, <code>doValues</code>, <code>valueType</code> , <code>value</code></p>
 <p>where</p>
-<p><em>mW</em> is the node in the <em>original work</em> reached by <em>nW</em> or that reaches <em>nW</em></p>
-<p><em>e</em> is the name of the edge feature in question</p>
-<p><em>doValues</em> is <code>v</code> if the edge feature has values and <code>x</code> otherwise</p>
-<p><em>valueType</em> is "i" (int) or "s" (str)</p>
-<p><em>value</em> is the value assigned by the edge feature to the edge from <em>nW</em> to <em>mW</em>
-or from <em>mW</em> to <em>nW</em>. If the edge does not have values it is a dummy value <code>x</code>.</p>
+<p><code>mW</code> is the node in the <em>original work</em> reached by <code>nW</code> or that reaches <code>nW</code></p>
+<p><code>e</code> is the name of the edge feature in question</p>
+<p><code>doValues</code> is <code>v</code> if the edge feature has values and <code>x</code> otherwise</p>
+<p><code>valueType</code> is <code>i</code> (<code>int</code>) or <code>s</code> (<code>str</code>)</p>
+<p><code>value</code> is the value assigned by the edge feature to the edge from <code>nW</code> to <code>mW</code>
+or from <code>mW</code> to <code>nW</code>. If the edge does not have values it is a dummy value <code>x</code>.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>workLocation</code></strong> :&ensp;<code>string</code></dt>
@@ -868,7 +876,7 @@ Note, that depending on the work, section titles may be strings or integers.</dd
 from which the volumes are to be extracted.
 In this case, the <code>workLocation</code> parameter is not used.
 If absent or <code>None</code>, the dataset at <code>workLocation</code>
-will be loaded by Text-Fabric, and its api will be used subsequently.</dd>
+will be loaded by TF, and its api will be used subsequently.</dd>
 <dt><strong><code>overwrite</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
 <dd>If True, the volumes defined by <code>volumes</code> will be
 all be created and will replace any existing volumes of the same names.
@@ -893,7 +901,7 @@ items <code>location</code> (on disk) and <code>new</code> (whether the volume h
 by this call).</dd>
 </dl>
 <h2 id="example">Example</h2>
-<pre><code>volumeList = extract(
+<pre><code class="language-python">volumeList = extract(
     'clariah-gm/tf/0.9.1',
     'clariah-gm/asvolumes/tf/0.9.1',
 )
@@ -901,7 +909,7 @@ by this call).</dd>
 <p>This will extract the top-level sections of the missives corpus
 into that many volumes.</p>
 <h2 id="example_1">Example</h2>
-<pre><code>volumeList = extract(
+<pre><code class="language-python">volumeList = extract(
     'clariah-gm/tf/0.9.1',
     'clariah-gm/asvolumes/tf/0.9.1',
     volumes=dict(
@@ -915,19 +923,19 @@ where <code>early</code> consists of top-level sections 1-8,
 and <code>late</code> consists of top-level sections 9-12.
 Top-level section 13 will not be extracted into a volume.</p>
 <h2 id="example_2">Example</h2>
-<pre><code>volumeList = extract(
+<pre><code class="language-python">volumeList = extract(
     'bhsa/tf/2021',
     'bhsa/asvolumes/tf/2021',
 )
 </code></pre>
 <p>This will extract the books of the bible as separate volumes.</p>
 <h2 id="example_3">Example</h2>
-<pre><code>volumeList = extract(
+<pre><code class="language-python">volumeList = extract(
     'bhsa/tf/2021',
     'bhsa/asvolumes/tf/2021',
     volumes=dict(
-        thora=("Genesis", "Exodus", "Leviticus", "Numeri", "Deuteronomy"),
-        poetry=("Psalms", "Proverbs"),
+        thora=(&quot;Genesis&quot;, &quot;Exodus&quot;, &quot;Leviticus&quot;, &quot;Numeri&quot;, &quot;Deuteronomy&quot;),
+        poetry=(&quot;Psalms&quot;, &quot;Proverbs&quot;),
     ),
 )
 </code></pre>
@@ -936,7 +944,7 @@ Top-level section 13 will not be extracted into a volume.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/volumes/extract.py#L80-L730" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/volumes/extract.py#L80-L738" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def extract(
     workLocation,
@@ -951,7 +959,7 @@ Top-level section 13 will not be extracted into a volume.</p>
 ):
     &#34;&#34;&#34;Extracts volumes of a work.
 
-    The volumes are new TF data sets, the work is an existing TF data set.
+    The volumes are new TF datasets, the work is an existing TF data set.
     Volumes of a work consist of collections of its top-level sections.
 
     You can define volumes by passing a volume specification.
@@ -961,7 +969,7 @@ Top-level section 13 will not be extracted into a volume.</p>
     Volumes will get a node feature `owork` which maps nodes in the volume to
     nodes in the work.
 
-    !!! note &#34;use of feature owork&#34;
+    !!! note &#34;use of feature `owork`&#34;
         If volumes are combined to a work, nodes in distinct volumes may
         correspond to a single node in the work. In that case, they have the
         same value in the `owork` feature.
@@ -984,34 +992,34 @@ Top-level section 13 will not be extracted into a volume.</p>
 
     Volumes will also get two node features `ointerfrom` and `ointerto`.
 
-    For each node *f* in the volume, `ointerfrom` has a value composed of
-    all work nodes *t* outside the volume that are reached by an edge
-    named *e* from *f* with value *val*.
+    For each node `f` in the volume, `ointerfrom` has a value composed of
+    all work nodes `t` outside the volume that are reached by an edge
+    named `e` from `f` with value *val*.
 
-    For each node *t* in the volume, `ointerto` has a value composed of
-    all work nodes *f* outside the volume that reach *t* by an edge
-    named *e* with value *val*.
+    For each node `t` in the volume, `ointerto` has a value composed of
+    all work nodes `f` outside the volume that reach `t` by an edge
+    named `e` with value *val*.
 
-    More precisely, the keys of `ointerf` and `ointert` are nodes *nW* of the
+    More precisely, the keys of `ointerf` and `ointert` are nodes `nW` of the
     *original work* that correspond with nodes in the volume that have outgoing resp.
     incoming edges to resp. from other volumes.
 
     Each value of `oninterf` and `ointert` is a semicolon separated list of
 
-    *mW*, *e*, *doValues*, *valueType* , *value*
+    `mW`, `e`, `doValues`, `valueType` , `value`
 
     where
 
-    *mW* is the node in the *original work* reached by *nW* or that reaches *nW*
+    `mW` is the node in the *original work* reached by `nW` or that reaches `nW`
 
-    *e* is the name of the edge feature in question
+    `e` is the name of the edge feature in question
 
-    *doValues* is `v` if the edge feature has values and `x` otherwise
+    `doValues` is `v` if the edge feature has values and `x` otherwise
 
-    *valueType* is &#34;i&#34; (int) or &#34;s&#34; (str)
+    `valueType` is `i` (`int`) or `s` (`str`)
 
-    *value* is the value assigned by the edge feature to the edge from *nW* to *mW*
-    or from *mW* to *nW*. If the edge does not have values it is a dummy value `x`.
+    `value` is the value assigned by the edge feature to the edge from `nW` to `mW`
+    or from `mW` to `nW`. If the edge does not have values it is a dummy value `x`.
 
     Parameters
     ----------
@@ -1058,7 +1066,7 @@ Top-level section 13 will not be extracted into a volume.</p>
         from which the volumes are to be extracted.
         In this case, the `workLocation` parameter is not used.
         If absent or `None`, the dataset at `workLocation`
-        will be loaded by Text-Fabric, and its api will be used subsequently.
+        will be loaded by TF, and its api will be used subsequently.
 
     overwrite: boolean, optional None
         If True, the volumes defined by `volumes` will be
@@ -1087,24 +1095,28 @@ Top-level section 13 will not be extracted into a volume.</p>
 
     Example
     -------
-        volumeList = extract(
-            &#39;clariah-gm/tf/0.9.1&#39;,
-            &#39;clariah-gm/asvolumes/tf/0.9.1&#39;,
-        )
+    ``` python
+    volumeList = extract(
+        &#39;clariah-gm/tf/0.9.1&#39;,
+        &#39;clariah-gm/asvolumes/tf/0.9.1&#39;,
+    )
+    ```
 
     This will extract the top-level sections of the missives corpus
     into that many volumes.
 
     Example
     -------
-        volumeList = extract(
-            &#39;clariah-gm/tf/0.9.1&#39;,
-            &#39;clariah-gm/asvolumes/tf/0.9.1&#39;,
-            volumes=dict(
-                early=(1,2,3,4,5,6,7,8),
-                late=(9, 10, 11, 12),
-            )
+    ``` python
+    volumeList = extract(
+        &#39;clariah-gm/tf/0.9.1&#39;,
+        &#39;clariah-gm/asvolumes/tf/0.9.1&#39;,
+        volumes=dict(
+            early=(1,2,3,4,5,6,7,8),
+            late=(9, 10, 11, 12),
         )
+    )
+    ```
 
     This will create 2 volumes, named `early` and `late`,
     where `early` consists of top-level sections 1-8,
@@ -1113,23 +1125,27 @@ Top-level section 13 will not be extracted into a volume.</p>
 
     Example
     -------
-        volumeList = extract(
-            &#39;bhsa/tf/2021&#39;,
-            &#39;bhsa/asvolumes/tf/2021&#39;,
-        )
+    ``` python
+    volumeList = extract(
+        &#39;bhsa/tf/2021&#39;,
+        &#39;bhsa/asvolumes/tf/2021&#39;,
+    )
+    ```
 
     This will extract the books of the bible as separate volumes.
 
     Example
     -------
-        volumeList = extract(
-            &#39;bhsa/tf/2021&#39;,
-            &#39;bhsa/asvolumes/tf/2021&#39;,
-            volumes=dict(
-                thora=(&#34;Genesis&#34;, &#34;Exodus&#34;, &#34;Leviticus&#34;, &#34;Numeri&#34;, &#34;Deuteronomy&#34;),
-                poetry=(&#34;Psalms&#34;, &#34;Proverbs&#34;),
-            ),
-        )
+    ``` python
+    volumeList = extract(
+        &#39;bhsa/tf/2021&#39;,
+        &#39;bhsa/asvolumes/tf/2021&#39;,
+        volumes=dict(
+            thora=(&#34;Genesis&#34;, &#34;Exodus&#34;, &#34;Leviticus&#34;, &#34;Numeri&#34;, &#34;Deuteronomy&#34;),
+            poetry=(&#34;Psalms&#34;, &#34;Proverbs&#34;),
+        ),
+    )
+    ```
 
     This will extract two volumes of the bible:
     `thora` with the first 5 books and `poetry` with two poetic books.
@@ -1612,7 +1628,7 @@ is returned. Otherwise a list of subdirectories that are modules.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/volumes/extract.py#L38-L77" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/volumes/extract.py#L38-L77" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getVolumes(volumesLocation):
     &#34;&#34;&#34;Lists volumes of a work that exist in a given directory.

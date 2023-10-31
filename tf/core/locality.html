@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/locality.py#L1-L312" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/locality.py#L1-L312" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Local navigation between nodes.
@@ -40,7 +40,7 @@ SET_TYPES = {set, frozenset}
 class Locality:
     &#34;&#34;&#34;Methods by which you can navigate from a node to its neighborhood.
 
-    Neighbours are: nodes that have slots in common, embedders and embeddees,
+    Neighbors are: nodes that have slots in common, embedders and embeddees,
     previous and next siblings.
 
     !!! note &#34;L&#34;
@@ -55,7 +55,7 @@ class Locality:
 
     !!! caution &#34;Results of the `L.` functions are tuples, not single nodes&#34;
           Even if an `L`-function returns a single node, it is packed in a *tuple*.
-          So to get the node itself, you have to dereference the tuple:
+          So to get the node itself, you have to index the tuple:
 
               L.u(node)[0]
 
@@ -98,8 +98,8 @@ class Locality:
             The tuple nodes is sorted in the
             canonical order (`tf.core.nodes`).
 
-            The result never includes *n* itself.
-            But other nodes linked to the same set of slots as *n*
+            The result never includes `n` itself.
+            But other nodes linked to the same set of slots as `n`
             may count as intersector nodes.
 
             Slots themselves can be intersectors.
@@ -156,8 +156,8 @@ class Locality:
             The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
             but *reversed*: right and small embedders before left and big embedders.
 
-            The result never includes *n* itself.
-            But other nodes linked to the same set of slots as *n*
+            The result never includes `n` itself.
+            But other nodes linked to the same set of slots as `n`
             may count as embedder nodes.
 
             Slots themselves are never embedders.
@@ -202,8 +202,8 @@ class Locality:
             The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
             left and big embeddees before right and small embeddees.
 
-            The result never includes *n* itself.
-            But other nodes linked to the same set of slots as *n*
+            The result never includes `n` itself.
+            But other nodes linked to the same set of slots as `n`
             may count as embeddee nodes.
         &#34;&#34;&#34;
 
@@ -247,7 +247,7 @@ class Locality:
     def p(self, n, otype=None):
         &#34;&#34;&#34;Produces an ordered tuple of *previous* nodes.
 
-        One node is previous to an other if the last slot of the former just preceeds
+        One node is previous to an other if the last slot of the former just precedes
         the first slots of the latter.
 
         Parameters
@@ -358,7 +358,7 @@ class Locality:
 </code></dt>
 <dd>
 <div class="desc"><p>Methods by which you can navigate from a node to its neighborhood.</p>
-<p>Neighbours are: nodes that have slots in common, embedders and embeddees,
+<p>Neighbors are: nodes that have slots in common, embedders and embeddees,
 previous and next siblings.</p>
 <div class="admonition note">
 <p class="admonition-title">L</p>
@@ -375,7 +375,7 @@ or a (frozen)set of node types.</p>
 <div class="admonition caution">
 <p class="admonition-title">Results of the <code>L.</code> functions are tuples, not single nodes</p>
 <p>Even if an <code>L</code>-function returns a single node, it is packed in a <em>tuple</em>.
-So to get the node itself, you have to dereference the tuple:</p>
+So to get the node itself, you have to index the tuple:</p>
 <pre><code>  L.u(node)[0]
 </code></pre>
 </div>
@@ -399,12 +399,12 @@ same words, then that is a case where:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/locality.py#L9-L312" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/locality.py#L9-L312" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Locality:
     &#34;&#34;&#34;Methods by which you can navigate from a node to its neighborhood.
 
-    Neighbours are: nodes that have slots in common, embedders and embeddees,
+    Neighbors are: nodes that have slots in common, embedders and embeddees,
     previous and next siblings.
 
     !!! note &#34;L&#34;
@@ -419,7 +419,7 @@ same words, then that is a case where:</p>
 
     !!! caution &#34;Results of the `L.` functions are tuples, not single nodes&#34;
           Even if an `L`-function returns a single node, it is packed in a *tuple*.
-          So to get the node itself, you have to dereference the tuple:
+          So to get the node itself, you have to index the tuple:
 
               L.u(node)[0]
 
@@ -462,8 +462,8 @@ same words, then that is a case where:</p>
             The tuple nodes is sorted in the
             canonical order (`tf.core.nodes`).
 
-            The result never includes *n* itself.
-            But other nodes linked to the same set of slots as *n*
+            The result never includes `n` itself.
+            But other nodes linked to the same set of slots as `n`
             may count as intersector nodes.
 
             Slots themselves can be intersectors.
@@ -520,8 +520,8 @@ same words, then that is a case where:</p>
             The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
             but *reversed*: right and small embedders before left and big embedders.
 
-            The result never includes *n* itself.
-            But other nodes linked to the same set of slots as *n*
+            The result never includes `n` itself.
+            But other nodes linked to the same set of slots as `n`
             may count as embedder nodes.
 
             Slots themselves are never embedders.
@@ -566,8 +566,8 @@ same words, then that is a case where:</p>
             The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
             left and big embeddees before right and small embeddees.
 
-            The result never includes *n* itself.
-            But other nodes linked to the same set of slots as *n*
+            The result never includes `n` itself.
+            But other nodes linked to the same set of slots as `n`
             may count as embeddee nodes.
         &#34;&#34;&#34;
 
@@ -611,7 +611,7 @@ same words, then that is a case where:</p>
     def p(self, n, otype=None):
         &#34;&#34;&#34;Produces an ordered tuple of *previous* nodes.
 
-        One node is previous to an other if the last slot of the former just preceeds
+        One node is previous to an other if the last slot of the former just precedes
         the first slots of the latter.
 
         Parameters
@@ -729,15 +729,15 @@ in the slots of the latter.</p>
 <dd>
 <p>The tuple nodes is sorted in the canonical order (<code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code>),
 left and big embeddees before right and small embeddees.</p>
-<p>The result never includes <em>n</em> itself.
-But other nodes linked to the same set of slots as <em>n</em>
+<p>The result never includes <code>n</code> itself.
+But other nodes linked to the same set of slots as <code>n</code>
 may count as embeddee nodes.</p>
 </dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/locality.py#L153-L214" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/locality.py#L153-L214" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def d(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *downward* nodes.
@@ -760,8 +760,8 @@ may count as embeddee nodes.</p>
         The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
         left and big embeddees before right and small embeddees.
 
-        The result never includes *n* itself.
-        But other nodes linked to the same set of slots as *n*
+        The result never includes `n` itself.
+        But other nodes linked to the same set of slots as `n`
         may count as embeddee nodes.
     &#34;&#34;&#34;
 
@@ -822,8 +822,8 @@ may count as embeddee nodes.</p>
 <dd>
 <p>The tuple nodes is sorted in the
 canonical order (<code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code>).</p>
-<p>The result never includes <em>n</em> itself.
-But other nodes linked to the same set of slots as <em>n</em>
+<p>The result never includes <code>n</code> itself.
+But other nodes linked to the same set of slots as <code>n</code>
 may count as intersector nodes.</p>
 <p>Slots themselves can be intersectors.</p>
 </dd>
@@ -831,7 +831,7 @@ may count as intersector nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/locality.py#L51-L105" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/locality.py#L51-L105" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def i(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *intersecting* nodes
@@ -852,8 +852,8 @@ may count as intersector nodes.</p>
         The tuple nodes is sorted in the
         canonical order (`tf.core.nodes`).
 
-        The result never includes *n* itself.
-        But other nodes linked to the same set of slots as *n*
+        The result never includes `n` itself.
+        But other nodes linked to the same set of slots as `n`
         may count as intersector nodes.
 
         Slots themselves can be intersectors.
@@ -913,7 +913,7 @@ left and big embeddees before right and small embeddees.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/locality.py#L264-L312" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/locality.py#L264-L312" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def n(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *next* nodes.
@@ -971,7 +971,7 @@ left and big embeddees before right and small embeddees.</dd>
 </code></dt>
 <dd>
 <div class="desc"><p>Produces an ordered tuple of <em>previous</em> nodes.</p>
-<p>One node is previous to an other if the last slot of the former just preceeds
+<p>One node is previous to an other if the last slot of the former just precedes
 the first slots of the latter.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
@@ -989,12 +989,12 @@ but <em>reversed</em>: right and small embedders before left and big embedders.<
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/locality.py#L216-L262" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/locality.py#L216-L262" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def p(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *previous* nodes.
 
-    One node is previous to an other if the last slot of the former just preceeds
+    One node is previous to an other if the last slot of the former just precedes
     the first slots of the latter.
 
     Parameters
@@ -1061,8 +1061,8 @@ of the former.</p>
 <dd>
 <p>The tuple nodes is sorted in the canonical order (<code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code>),
 but <em>reversed</em>: right and small embedders before left and big embedders.</p>
-<p>The result never includes <em>n</em> itself.
-But other nodes linked to the same set of slots as <em>n</em>
+<p>The result never includes <code>n</code> itself.
+But other nodes linked to the same set of slots as <code>n</code>
 may count as embedder nodes.</p>
 <p>Slots themselves are never embedders.</p>
 </dd>
@@ -1070,7 +1070,7 @@ may count as embedder nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/core/locality.py#L107-L151" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/locality.py#L107-L151" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def u(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *upward* nodes.
@@ -1093,8 +1093,8 @@ may count as embedder nodes.</p>
         The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
         but *reversed*: right and small embedders before left and big embedders.
 
-        The result never includes *n* itself.
-        But other nodes linked to the same set of slots as *n*
+        The result never includes `n` itself.
+        But other nodes linked to the same set of slots as `n`
         may count as embedder nodes.
 
         Slots themselves are never embedders.

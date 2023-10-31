@@ -25,17 +25,17 @@
 <section id="section-intro">
 <h1 id="annotate-tool-in-tf-browser">Annotate tool in TF Browser</h1>
 <p>We explain the manual annotation process with a leading example:
-<a href="https://github.com/HuygensING/suriano">HuygensING/suriano</a>.</p>
+<a href="https://github.com/HuygensING/suriano"><code>HuygensING/suriano</code></a>.</p>
 <h2 id="prerequisites">Prerequisites</h2>
 <ul>
 <li><a href="https://www.python.org">Python</a> must be installed;</li>
 <li>You must know how to start up a terminal
 (macos or linux) or command prompt (windows);</li>
 <li>
-<p>Text-Fabric must be installed: in a terminal or command prompt say</p>
+<p>TF must be installed: in a terminal or command prompt say</p>
 <p><code>pip install text-fabric</code></p>
 <p>On some systems you have to say <code>pip3</code> instead of <code>pip</code>.
-If by chance you already have an older version of text-fabric,
+If by chance you already have an older version of TF,
 say</p>
 <p><code>pip install --upgrade text-fabric</code></p>
 </li>
@@ -44,13 +44,13 @@ say</p>
 <p>Start a terminal or command prompt.
 You need not go to a specific directory.
 Give the command</p>
-<pre><code>tf HuygensING/suriano --tool=ner --chrome
+<pre><code class="language-sh">tf HuygensING/suriano --tool=ner --chrome
 </code></pre>
 <p>The tool opens in a new window in the Chrome browser.
 Currently the tool works best in Chrome, but it is not required.
 If you leave out the <code>--chrome</code> bit, the tool starts in your default browser.</p>
 <p>You can restart the tool without navigating away from the web page as follows:</p>
-<pre><code>tf HuygensING/suriano --tool=ner --chrome -noweb
+<pre><code class="language-sh">tf HuygensING/suriano --tool=ner --chrome -noweb
 </code></pre>
 <p>Because of <code>-noweb</code> it will not open a new browser window and you can continue in the
 already open browser tab.</p>
@@ -120,7 +120,7 @@ at the left of the relevant paragraph.</p>
 <p>You will get a scrollable view of the whole section (letter) in which that paragraph
 occurs. </p>
 <p><img alt="browser" src="../images/Annotate/context.png"></p>
-<p>The paragraph you started from is in the centre. You can scroll up and down the
+<p>The paragraph you started from is in the center. You can scroll up and down the
 whole letter that the paragraph is contained in.
 If you want to return to the paragraph you started from, click the blue dot.
 If you want to remove the context, click the blue section indicator again.</p>
@@ -169,7 +169,7 @@ select, and the app has already selected them for you.</p>
 <li>
 <p><strong>Modify step</strong></p>
 <p>Now you can act on the selected occurrences. There are two possible actions:
-<em>add</em> entitiies for these occurrences or <em>delete</em> existing entities for these
+<em>add</em> entities for these occurrences or <em>delete</em> existing entities for these
 occurrences. Since our set of entities is still empty, we can only add.</p>
 <p><img alt="browser" src="../images/Annotate/add.png"></p>
 <p>You have to tell the annotator the values for the entity identifier and kind that
@@ -185,7 +185,7 @@ More about that below.</p>
 <p>(new entity markings show up!).</p>
 <p>Also the control sections look different now:</p>
 <p><img alt="browser" src="../images/Annotate/result-controls.png"></p>
-<p>Note the the lines with the black background: they report the result of the
+<p>Note the lines with the black background: they report the result of the
 previous action.</p>
 <p>The <strong>select</strong> control now shows additional values under the selected occurrences:
 the identifier and kind of the entity markings we have just added.</p>
@@ -235,8 +235,9 @@ occurrence and leave it unaffected.
 You can also select or deselect all occurrences in one go.</p>
 <p><strong>N.B.</strong>
 If you have filtered the paragraphs, and under <strong>select</strong> you have chosen to work with
-<code>all</code> results, (de)selecting only works for the occurrences in the filtered paragraphs.
-The other results are not (de)selectable, and will all be affected.</p>
+<code>all</code> results, selecting and deselecting only work for the occurrences in the filtered paragraphs.
+The other results are not selectable or deselectable, and will all be
+affected.</p>
 <p><strong>Several surface forms for one entity</strong></p>
 <p>If you have added an entity, and you mark another one, you'll see a new button next to
 the ✅, namely ❎. It has mostly the same effect, namely marking all occurrences
@@ -259,7 +260,7 @@ and make fine-tuning corrections.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/about/annotateBrowser.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/about/annotateBrowser.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/annotateBrowser.md

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>tf.convert.pandas API documentation</title>
-<meta name="description" content="Export a TF dataset to a Pandas dataframe …" />
+<meta name="description" content="Export a TF dataset to a `pandas` data frame …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -23,9 +23,9 @@
 <h1 class="title">Module <code>tf.convert.pandas</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="export-a-tf-dataset-to-a-pandas-dataframe">Export a TF dataset to a Pandas dataframe.</h1>
+<h1 id="export-a-tf-dataset-to-a-pandas-data-frame">Export a TF dataset to a <code>pandas</code> data frame.</h1>
 <p>There is a natural mapping of a TF dataset with its nodes, edges and features to a
-rectangular dataframe with rows and columns:</p>
+rectangular data frame with rows and columns:</p>
 <ul>
 <li>the <em>nodes</em> correspond to <em>rows</em>;</li>
 <li>the node <em>features</em> correspond to <em>columns</em>;</li>
@@ -39,14 +39,14 @@ the row.</li>
 To each row we add the following columns:</p>
 <ul>
 <li>for each node type, except the slot type, there is a column with named
-<code>in_</code><em>nodeType</em>, that contains the node of the smallest object that
+<code>in_nodeType</code>, that contains the node of the smallest object that
 contains the node of the row;</li>
 </ul>
 <p>We compose the big table and save it as a tab delimited file.
-This temporary result can be processed by R and Pandas.</p>
-<p>It turns out that for this size of the data Pandas is a bit
+This temporary result can be processed by <code>R</code> and <code>pandas</code>.</p>
+<p>It turns out that for this size of the data <code>pandas</code> is a bit
 quicker than R. It is also more Pythonic, which is a pro if you use other Python
-programs, such as Text-Fabric, to process the same data.</p>
+programs, such as TF, to process the same data.</p>
 <h1 id="examples">Examples</h1>
 <ul>
 <li><a href="https://nbviewer.org/github/ETCBC/bhsa/blob/master/tutorial/export.ipynb">BHSA</a></li>
@@ -56,13 +56,13 @@ programs, such as Text-Fabric, to process the same data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/pandas.py#L1-L291" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/pandas.py#L1-L291" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-# Export a TF dataset to a Pandas dataframe.
+# Export a TF dataset to a `pandas` data frame.
 
 There is a natural mapping of a TF dataset with its nodes, edges and features to a
-rectangular dataframe with rows and columns:
+rectangular data frame with rows and columns:
 
 *   the *nodes* correspond to *rows*;
 *   the node *features* correspond to *columns*;
@@ -76,21 +76,21 @@ We also write the data that says which nodes are contained in which other nodes.
 To each row we add the following columns:
 
 *   for each node type, except the slot type, there is a column with named
-    `in_`*nodeType*, that contains the node of the smallest object that
+    `in_nodeType`, that contains the node of the smallest object that
     contains the node of the row;
 
 We compose the big table and save it as a tab delimited file.
-This temporary result can be processed by R and Pandas.
+This temporary result can be processed by `R` and `pandas`.
 
-It turns out that for this size of the data Pandas is a bit
+It turns out that for this size of the data `pandas` is a bit
 quicker than R. It is also more Pythonic, which is a pro if you use other Python
-programs, such as Text-Fabric, to process the same data.
+programs, such as TF, to process the same data.
 
 # Examples
 
-* [BHSA](https://nbviewer.org/github/ETCBC/bhsa/blob/master/tutorial/export.ipynb)
-* [Moby Dick](https://nbviewer.org/github/CLARIAH/wp6-mobydick/blob/main/tutorial/export.ipynb)
-* [Ferdinand Huyck](https://nbviewer.org/github/CLARIAH/wp6-ferdinandhuyck/blob/main/tutorial/export.ipynb)
+*   [BHSA](https://nbviewer.org/github/ETCBC/bhsa/blob/master/tutorial/export.ipynb)
+*   [Moby Dick](https://nbviewer.org/github/CLARIAH/wp6-mobydick/blob/main/tutorial/export.ipynb)
+*   [Ferdinand Huyck](https://nbviewer.org/github/CLARIAH/wp6-ferdinandhuyck/blob/main/tutorial/export.ipynb)
 &#34;&#34;&#34;
 
 import pandas
@@ -100,7 +100,7 @@ from ..core.files import TEMP_DIR, unexpanduser as ux, expandDir, dirMake
 from ..core.helpers import fitemize, pandasEsc, PANDAS_QUOTE, PANDAS_ESCAPE
 
 HELP = &#34;&#34;&#34;
-Transforms TF dataset into Pandas
+Transforms TF dataset into `pandas`
 &#34;&#34;&#34;
 
 INT = &#34;Int64&#34;
@@ -109,26 +109,26 @@ NA = [&#34;&#34;]
 
 
 def exportPandas(app, inTypes=None, exportDir=None):
-    &#34;&#34;&#34;Export a currently loaded TF dataset to Pandas.
+    &#34;&#34;&#34;Export a currently loaded TF dataset to `pandas`.
 
     The function proceeds by first producing a TSV file as an intermediate result.
     This is usually too big for GitHub, to it is produced in a `/_temp` directory
     that is usually in the `.gitignore` of the repo.
 
-    This file serves as the basis for the export to a Pandas dataframe.
+    This file serves as the basis for the export to a `pandas` data frame.
 
     !!! hint &#34;R&#34;
         You can import this file in other programs as well, e.g.
         [R](https://www.r-project.org)
 
     !!! note &#34;Quotation, newlines, tabs, backslashes and escaping&#34;
-        If the data as it comes from text-fabric contains newlines or tabs or
+        If the data as it comes from TF contains newlines or tabs or
         double quotes, we put them escaped into the TSV, as follows:
 
-        * *newline* becomes *backslash* plus *n*;
-        * *tab* becomes a single space;
-        * *double quote* becomes *Control-A* plus *double quote*;
-        * *backslash* remains *backslash*.
+        *   *newline* becomes *backslash* plus `n`;
+        *   *tab* becomes a single space;
+        *   *double quote* becomes *Control-A* plus *double quote*;
+        *   *backslash* remains *backslash*.
 
         In this way, the TSV file is not disturbed by non-delimiting tabs, i.e.
         tabs that are part of the content of a field. No field will contain a tab!
@@ -146,19 +146,19 @@ def exportPandas(app, inTypes=None, exportDir=None):
         Backslashes are no problem, but programs might interpret them in a special
         way in combination with specific following characters.
 
-        Now what happens to these characters when Pandas reads the file?
+        Now what happens to these characters when `pandas` reads the file?
 
-        We instruct the Pandas table reading function to use the Control-A as
+        We instruct the `pandas` table reading function to use the Control-A as
         escape char and the double quote as quote char.
 
         **Backslash**
 
-        Pandas has two special behaviours:
+        `pandas` has two special behaviors:
 
-        * *backslash* *n* becomes a *newline*;
-        * *backslash* *blackslash* becomes a single *backslash*.
+        *   *backslash* `n` becomes a *newline*;
+        *   *backslash* *blackslash* becomes a single *backslash*.
 
-        This is almost what we want: the newline behaviour is desired; the
+        This is almost what we want: the newline behavior is desired; the
         reducing of backslashes not, but we leave it as it is.
 
         **Double quote**
@@ -182,7 +182,7 @@ def exportPandas(app, inTypes=None, exportDir=None):
         But you can also specify the list of such node types explicitly.
         In all cases, there will be columns for sectional node types.
     exportDir: string, optional None
-        The directory to which the Pandas file will be exported.
+        The directory to which the `pandas` file will be exported.
         If `None`, it is the `/pandas` directory in the repo of the app.
     &#34;&#34;&#34;
 
@@ -362,11 +362,11 @@ def exportPandas(app, inTypes=None, exportDir=None):
 <span>def <span class="ident">exportPandas</span></span>(<span>app, inTypes=None, exportDir=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Export a currently loaded TF dataset to Pandas.</p>
+<div class="desc"><p>Export a currently loaded TF dataset to <code>pandas</code>.</p>
 <p>The function proceeds by first producing a TSV file as an intermediate result.
 This is usually too big for GitHub, to it is produced in a <code>/_temp</code> directory
 that is usually in the <code>.gitignore</code> of the repo.</p>
-<p>This file serves as the basis for the export to a Pandas dataframe.</p>
+<p>This file serves as the basis for the export to a <code>pandas</code> data frame.</p>
 <div class="admonition hint">
 <p class="admonition-title">R</p>
 <p>You can import this file in other programs as well, e.g.
@@ -374,10 +374,10 @@ that is usually in the <code>.gitignore</code> of the repo.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Quotation, newlines, tabs, backslashes and escaping</p>
-<p>If the data as it comes from text-fabric contains newlines or tabs or
+<p>If the data as it comes from TF contains newlines or tabs or
 double quotes, we put them escaped into the TSV, as follows:</p>
 <ul>
-<li><em>newline</em> becomes <em>backslash</em> plus <em>n</em>;</li>
+<li><em>newline</em> becomes <em>backslash</em> plus <code>n</code>;</li>
 <li><em>tab</em> becomes a single space;</li>
 <li><em>double quote</em> becomes <em>Control-A</em> plus <em>double quote</em>;</li>
 <li><em>backslash</em> remains <em>backslash</em>.</li>
@@ -394,16 +394,16 @@ That's why we escape it by putting a character in front of it that is very
 unlikely to occur in the text of a corpus: Ctrl A, which is ASCII character 1.</p>
 <p>Backslashes are no problem, but programs might interpret them in a special
 way in combination with specific following characters.</p>
-<p>Now what happens to these characters when Pandas reads the file?</p>
-<p>We instruct the Pandas table reading function to use the Control-A as
+<p>Now what happens to these characters when <code>pandas</code> reads the file?</p>
+<p>We instruct the <code>pandas</code> table reading function to use the Control-A as
 escape char and the double quote as quote char.</p>
 <p><strong>Backslash</strong></p>
-<p>Pandas has two special behaviours:</p>
+<p><code>pandas</code> has two special behaviors:</p>
 <ul>
-<li><em>backslash</em> <em>n</em> becomes a <em>newline</em>;</li>
+<li><em>backslash</em> <code>n</code> becomes a <em>newline</em>;</li>
 <li><em>backslash</em> <em>blackslash</em> becomes a single <em>backslash</em>.</li>
 </ul>
-<p>This is almost what we want: the newline behaviour is desired; the
+<p>This is almost what we want: the newline behavior is desired; the
 reducing of backslashes not, but we leave it as it is.</p>
 <p><strong>Double quote</strong></p>
 <p><em>Ctrl-A</em> plus <em>double quote</em> becomes <em>double quote</em>.</p>
@@ -424,35 +424,35 @@ node types.
 But you can also specify the list of such node types explicitly.
 In all cases, there will be columns for sectional node types.</dd>
 <dt><strong><code>exportDir</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
-<dd>The directory to which the Pandas file will be exported.
+<dd>The directory to which the <code>pandas</code> file will be exported.
 If <code>None</code>, it is the <code>/pandas</code> directory in the repo of the app.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/convert/pandas.py#L51-L291" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/convert/pandas.py#L51-L291" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exportPandas(app, inTypes=None, exportDir=None):
-    &#34;&#34;&#34;Export a currently loaded TF dataset to Pandas.
+    &#34;&#34;&#34;Export a currently loaded TF dataset to `pandas`.
 
     The function proceeds by first producing a TSV file as an intermediate result.
     This is usually too big for GitHub, to it is produced in a `/_temp` directory
     that is usually in the `.gitignore` of the repo.
 
-    This file serves as the basis for the export to a Pandas dataframe.
+    This file serves as the basis for the export to a `pandas` data frame.
 
     !!! hint &#34;R&#34;
         You can import this file in other programs as well, e.g.
         [R](https://www.r-project.org)
 
     !!! note &#34;Quotation, newlines, tabs, backslashes and escaping&#34;
-        If the data as it comes from text-fabric contains newlines or tabs or
+        If the data as it comes from TF contains newlines or tabs or
         double quotes, we put them escaped into the TSV, as follows:
 
-        * *newline* becomes *backslash* plus *n*;
-        * *tab* becomes a single space;
-        * *double quote* becomes *Control-A* plus *double quote*;
-        * *backslash* remains *backslash*.
+        *   *newline* becomes *backslash* plus `n`;
+        *   *tab* becomes a single space;
+        *   *double quote* becomes *Control-A* plus *double quote*;
+        *   *backslash* remains *backslash*.
 
         In this way, the TSV file is not disturbed by non-delimiting tabs, i.e.
         tabs that are part of the content of a field. No field will contain a tab!
@@ -470,19 +470,19 @@ If <code>None</code>, it is the <code>/pandas</code> directory in the repo of th
         Backslashes are no problem, but programs might interpret them in a special
         way in combination with specific following characters.
 
-        Now what happens to these characters when Pandas reads the file?
+        Now what happens to these characters when `pandas` reads the file?
 
-        We instruct the Pandas table reading function to use the Control-A as
+        We instruct the `pandas` table reading function to use the Control-A as
         escape char and the double quote as quote char.
 
         **Backslash**
 
-        Pandas has two special behaviours:
+        `pandas` has two special behaviors:
 
-        * *backslash* *n* becomes a *newline*;
-        * *backslash* *blackslash* becomes a single *backslash*.
+        *   *backslash* `n` becomes a *newline*;
+        *   *backslash* *blackslash* becomes a single *backslash*.
 
-        This is almost what we want: the newline behaviour is desired; the
+        This is almost what we want: the newline behavior is desired; the
         reducing of backslashes not, but we leave it as it is.
 
         **Double quote**
@@ -506,7 +506,7 @@ If <code>None</code>, it is the <code>/pandas</code> directory in the repo of th
         But you can also specify the list of such node types explicitly.
         In all cases, there will be columns for sectional node types.
     exportDir: string, optional None
-        The directory to which the Pandas file will be exported.
+        The directory to which the `pandas` file will be exported.
         If `None`, it is the `/pandas` directory in the repo of the app.
     &#34;&#34;&#34;
 
@@ -735,7 +735,7 @@ setTimeout(() => input.focus(), 100);
 <h1>Index</h1>
 <div class="toc">
 <ul>
-<li><a href="#export-a-tf-dataset-to-a-pandas-dataframe">Export a TF dataset to a Pandas dataframe.</a></li>
+<li><a href="#export-a-tf-dataset-to-a-pandas-data-frame">Export a TF dataset to a pandas data frame.</a></li>
 <li><a href="#examples">Examples</a></li>
 </ul>
 </div>

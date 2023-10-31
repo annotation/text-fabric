@@ -128,7 +128,7 @@ where you can switch it on and off.</p>
 <p>We can reckon with line boundaries:</p>
 <ul>
 <li><code>^mute$</code> matches <code>mute</code> but only if it occupies a complete line;</li>
-<li><code>^mute</code> matches occurences of <code>mute</code> at the start of a line;</li>
+<li><code>^mute</code> matches occurrences of <code>mute</code> at the start of a line;</li>
 <li><code>mute$</code> matches occurrences of <code>mute</code> at the end of a line.</li>
 </ul>
 <div class="admonition hint">
@@ -192,11 +192,11 @@ followed by any number of vowels,
 possibly none at all,
 followed by an <code>r</code>.</dd>
 <dt><code>{3,7}</code> means at least 3 and at most 7 times</dt>
-<dd><code>ma{3,7}t</code> matches an <code>m</code>, then 3-7 <code>a</code>s, and then a <code>t</code>.</dd>
+<dd><code>ma{3,7}t</code> matches an <code>m</code>, then 3-7 <code>a</code>, and then a <code>t</code>.</dd>
 <dt><code>{3,}</code> means at least 3 times</dt>
-<dd><code>ma{3,}t</code> matches an <code>m</code>, then at least 3 <code>a</code>s, and then a <code>t</code>.</dd>
+<dd><code>ma{3,}t</code> matches an <code>m</code>, then at least 3 <code>a</code>, and then a <code>t</code>.</dd>
 <dt><code>{,7}</code> means at most 7 times</dt>
-<dd><code>ma{,7}t</code> matches an <code>m</code>, then at most 7 <code>a</code>s, and then a <code>t</code>.</dd>
+<dd><code>ma{,7}t</code> matches an <code>m</code>, then at most 7 <code>a</code>, and then a <code>t</code>.</dd>
 </dl>
 <p>The quantifiers <code>?</code>, <code>+</code>, <code>*</code> try to make as many repetitions as the
 text admits. But you can reign them in so that they make as few repetitions as possible,
@@ -251,7 +251,7 @@ the same.</p>
 <p>This is not all. Much more can be done with patterns.
 The full story is here:</p>
 <ul>
-<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet">cheatsheet</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet">cheat sheet</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Regular_expression">regex</a></li>
 </ul>
 </dd>
@@ -276,7 +276,7 @@ and the results in one layer will be "intersected" with the results in all other
 is not very refined in taking intersections.
 It takes the intersections of the joint results of the matches in the layers.
 It will not take the intersections of the individual matches.</p>
-<p>The bottomline is: use the search tool to grab the things that are potentially of interest.
+<p>The bottom-line is: use the search tool to grab the things that are potentially of interest.
 If you need to pinpoint further, export the results to Excel and use other tools/methods
 to achieve that.</p>
 <p>If you need more information in this, consult the
@@ -353,38 +353,38 @@ to perform the following actions:</p>
 <tbody>
 <tr>
 <td><code>n</code></td>
-<td><strong>n</strong>ext position</td>
+<td>next position</td>
 </tr>
 <tr>
 <td><code>p</code></td>
-<td><strong>p</strong>revious position</td>
+<td>previous position</td>
 </tr>
 <tr>
 <td><code>b</code></td>
-<td><strong>b</strong>ack a batch</td>
+<td>back a batch</td>
 </tr>
 <tr>
 <td><code>f</code></td>
-<td><strong>f</strong>orward a batch</td>
+<td>forward a batch</td>
 </tr>
 <tr>
 <td><code>s</code></td>
-<td><strong>s</strong>tart</td>
+<td>start</td>
 </tr>
 <tr>
 <td><code>e</code></td>
-<td><strong>e</strong>nd</td>
+<td>end</td>
 </tr>
 <tr>
 <td><code>m</code></td>
-<td><strong>m</strong>anually type the position in the box</td>
+<td>manually type the position in the box</td>
 </tr>
 </tbody>
 </table>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7fdf25fed954698d7bcf1c0099489ed4c8456fe6/tf/about/manual.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/about/manual.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/manual.md
