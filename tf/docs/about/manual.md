@@ -102,7 +102,7 @@ Line boundaries
 :   We can reckon with line boundaries:
 
     *   `^mute$` matches `mute` but only if it occupies a complete line;
-    *   `^mute` matches occurences of `mute` at the start of a line;
+    *   `^mute` matches occurrences of `mute` at the start of a line;
     *   `mute$` matches occurrences of `mute` at the end of a line.
 
     !!! hint "match literally"
@@ -164,13 +164,13 @@ Repetitions
         followed by an `r`.
 
     `{3,7}` means at least 3 and at most 7 times
-    :   `ma{3,7}t` matches an `m`, then 3-7 `a`s, and then a `t`.
+    :   `ma{3,7}t` matches an `m`, then 3-7 `a`, and then a `t`.
 
     `{3,}` means at least 3 times
-    :   `ma{3,}t` matches an `m`, then at least 3 `a`s, and then a `t`.
+    :   `ma{3,}t` matches an `m`, then at least 3 `a`, and then a `t`.
 
     `{,7}` means at most 7 times
-    :   `ma{,7}t` matches an `m`, then at most 7 `a`s, and then a `t`.
+    :   `ma{,7}t` matches an `m`, then at most 7 `a`, and then a `t`.
 
     The quantifiers `?`, `+`, `*` try to make as many repetitions as the
     text admits. But you can reign them in so that they make as few repetitions as possible,
@@ -226,7 +226,7 @@ Ultimate power
 :   This is not all. Much more can be done with patterns.
     The full story is here:
 
-    *   [cheatsheet](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet)
+    *   [cheat sheet](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet)
     *   [regex](https://en.wikipedia.org/wiki/Regular_expression)
 
 ## Meaning
@@ -237,9 +237,9 @@ Your corpus is divided into levels, e.g. text/line/sentence/word/.
 
 At each level there are objects in the corpus and they can be represented in certain ways:
 
-* text are represented by their titles;
-* lines are represented by their numbers;
-* words are represented by the strings of which they are composed.
+*   text are represented by their titles;
+*   lines are represented by their numbers;
+*   words are represented by the strings of which they are composed.
 
 ### Combined search
 
@@ -255,7 +255,7 @@ and the results in one layer will be "intersected" with the results in all other
     It takes the intersections of the joint results of the matches in the layers.
     It will not take the intersections of the individual matches.
 
-    The bottomline is: use the search tool to grab the things that are potentially of interest.
+    The bottom-line is: use the search tool to grab the things that are potentially of interest.
     If you need to pinpoint further, export the results to Excel and use other tools/methods
     to achieve that.
 
@@ -292,10 +292,10 @@ to perform the following actions:
 
 shortcut | action
 --- | ---
-`n` | **n**ext position
-`p` | **p**revious position
-`b` | **b**ack a batch
-`f` | **f**orward a batch
-`s` | **s**tart
-`e` | **e**nd
-`m` | **m**anually type the position in the box
+`n` | next position
+`p` | previous position
+`b` | back a batch
+`f` | forward a batch
+`s` | start
+`e` | end
+`m` | manually type the position in the box

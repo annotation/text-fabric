@@ -33,7 +33,7 @@ def render(app, isPretty, n, _inTuple, _asString, explain, **options):
     """Renders a node, in plain or pretty mode.
 
     We take care that when a node has graphics, and the node is split into several
-    chunks/fragments, the graphics only occurs on the first fragment.
+    chunks / fragments, the graphics only occurs on the first fragment.
     """
 
     graphicsFetched = set()

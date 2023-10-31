@@ -5,14 +5,14 @@ But in a smallish, well-known corpus, such tools tend to create more noise than 
 If you know which names to expect and in what forms they occur in the corpus,
 it might be easier to mark them by hand.
 
-Text-Fabric contains a tool to help you with that. The basic thing it does is
+TF contains a tool to help you with that. The basic thing it does is
 to find all occurrences of a pattern you specify, and then assign an identifier and
 a kind to all those occurrences.
 
 For example, it finds all `Ernesto di Nassau` occurrences and it assigns
 identity `ernesto.di.nassau` and kind `PER` to them.
 
-There are two interfaces. One runs inside the Text-Fabric browser, and it
+There are two interfaces. One runs inside the TF browser, and it
 enables you to search and mark repeatedly, to apply additions and
 deletions of named entities to restricted sets of occurrences, so that you can
 make individual exceptions to the rules.
@@ -35,7 +35,7 @@ features that give information about those nodes.
 ## Supported corpora
 
 This tool is being developed against the
-[HuygensING/suriano corpus](https://github.com/HuygensING/suriano).
+[`HuygensING/suriano` corpus](https://github.com/HuygensING/suriano).
 Yet it is meant to be usable for all TF corpora. No corpus knowledge is baked in.
 If corpus specifics are needed, it will be fetched from the already present TF
 configuration of that corpus.
@@ -43,7 +43,7 @@ And where that is not sufficient, details are put in `ner/config.yaml`, which
 can be put next to the corpus.
 
 I have tested it for the
-[ETCBC/bhsa (Hebrew Bible) corpus](https://github.com/ETCBC/bhsa), and the
+[`ETCBC/bhsa` (Hebrew Bible) corpus](https://github.com/ETCBC/bhsa), and the
 machinery works.
 But it remains to be seen whether the tools is sufficiently *ergonomic* for that
 corpus.
@@ -68,7 +68,7 @@ you miss the fine points in your corpus.
 We need to gather experience in order to arrive at a truly usable tool.
 
 We are going to mark up the 
-[HuygensING/suriano corpus](https://github.com/HuygensING/suriano) in this way and hope
+[`HuygensING/suriano` corpus](https://github.com/HuygensING/suriano) in this way and hope
 to acquire a lot of experience in the process.
 
 ## Delivery of annotation data
@@ -77,7 +77,7 @@ But how exactly are those new nodes and features delivered?
 
 This is work in progress!
 
-Currently, Text-Fabric supports data modules on top of a corpus, provided the modules
+Currently, TF supports data modules on top of a corpus, provided the modules
 consist of features that annotate the existing nodes in the corpus.
 
 Here we have a new situation: we not only have new features, but also a new node type.
@@ -87,11 +87,11 @@ an existing TF dataset.
 
 What do we have, though?
 
-Text-Fabric has already functions to *add* new types with their features to a dataset:
+TF has already functions to *add* new types with their features to a dataset:
 `tf.dataset.modify`. This will create a completely new and separate data set out of
 the existing dataset and the new nodes and features.
 
-We deliver the annotation data as `.tsv` files, where each line specifies
+We deliver the annotation data as TSV files, where each line specifies
 a new (entity) node, and the columns specify the values of the entity features for
 that node, plus the slots that are linked to that node.
 
@@ -101,7 +101,7 @@ With this information in hand, it is possible
 *   work in a Jupyter notebook and use the entity data in whatever way you like.
 
 In the future I intend to broaden the concept of data module to modules that introduce
-new node types. In order to do that I have to write code for Text-Fabric to include
+new node types. In order to do that I have to write code for TF to include
 the module data in the existing `otype` and `oslots` features and, most of all,
 to generate adapted computed features such as `__levup__` and `__levdown__`.
 See `tf.core.prepare` .
@@ -123,8 +123,8 @@ Your corpus may already have entities, marked up by an automatic tool such as
 Spacy (see `tf.tools.myspacy`). In that case there is already a node type
 `ent` and features `eid` and `kind`.
 
-When you make manual annotations, the annotations are saved as `.tsv` files.
-In order to create nodes for them in your corpus, you can use those `.tsv` files,
+When you make manual annotations, the annotations are saved as TSV files.
+In order to create nodes for them in your corpus, you can use those TSV files,
 read off the feature information, and invoke `tf.dataset.modify` function to
 generate new nodes and add them to your corpus.
 
@@ -143,9 +143,9 @@ The same occurrence may have multiple entity nodes.
 For example, if an occurrence `Amsterdam` refers to a location, a city council,
 and a ship at the same time, you might mark it up as
 
-* `('amsterdam', 'LOC')`
-* `('amsterdam', 'ORG')`
-* `('amsterdam', 'SHIP')`
+*   `('amsterdam', 'LOC')`
+*   `('amsterdam', 'ORG')`
+*   `('amsterdam', 'SHIP')`
 
 In fact, an entity in the real word is not solely identified by the `eid` feature,
 but by the *combination* of the `eid` and `kind` features.
@@ -160,7 +160,7 @@ You can give this a name, and the data you create will be stored under that name
 
 ## For annotators
 
-Go to the manual for annotating in the Text-Fabric browser:
+Go to the manual for annotating in the TF browser:
 `tf.about.annotateBrowser`
 
 ## For power annotators
@@ -177,7 +177,7 @@ This tool needs additional input data and produces additional output data.
 The *input* data can be found in the directory `ner` next to the actual `tf` directory
 from where the program has loaded the corpus data.
 
-Depending on how you invoke Text-Fabric, this can be in a clone of the
+Depending on how you invoke TF, this can be in a clone of the
 repository of the corpus, or an auto-downloaded copy of the data.
 
 If you work with the corpus in a local clone, you'll find it under
@@ -261,14 +261,14 @@ Concerning the Excel sheets in `ner/sheets`:
 ### Good practice
 
 All NER input data (config file and Excel sheets) should reside in the repository.
-The corresponding TF-app should specify in its `app/config.yaml`,
+The corresponding TF app should specify in its `app/config.yaml`,
 under `provenanceSpecs`:
 
 *   `extraData: ner`
 
 When you make a new release on GitHub of the repo, do not forget to run
 
-```
+``` python
 A = use("HuygensING/suriano:clone", checkout="clone")
 A.zipAll()
 ```
@@ -278,12 +278,12 @@ and attach it to your new release on GitHub.
 
 Then other users can invoke the corpus by
 
-```
+``` python
 A = use("HuygensING/suriano")
 ```
 
 This way there is no need to clone the repository first.
-Text-Fabric will auto-download the corpus, including the `ner` input data.
+TF will auto-download the corpus, including the `ner` input data.
 
 Then multiple people can work on annotation tasks on their local computers.
 
@@ -291,13 +291,13 @@ Then multiple people can work on annotation tasks on their local computers.
 
 The results of all your annotation actions will end up in the
 `_temp/ner/`*version* folder in your corpus, where *version* is the
-TF-version of your corpus.
+TF version of your corpus.
 The output data is tightly coupled to a specific version of the corpus.
 
 !!! caution "Versioning"
     If a new versions of the corpus is published, the generated annotations
     do not automatically migrate to the new version.
-    Text-Fabric has tools to perform those migrations, but they are not fully automatic.
+    TF has tools to perform those migrations, but they are not fully automatic.
     Whenever a new version of the corpus is produced, the producer should also
     generate a mapping file from the nodes of the new corpus to the old corpus.
     That will enable the migration of the annotations.

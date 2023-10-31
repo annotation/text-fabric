@@ -1,6 +1,6 @@
 # Usage
 
-## What is Text-Fabric Search?
+## What is TF Search?
 
 You can query for graph like structures
 in your data set. The structure you are interested in has to be written as a
@@ -53,7 +53,7 @@ intervening between the noun and the verb, they will be included in the results.
 Speaking of results: the `search` function returns its results as tuples of
 nodes:
 
-```python
+``` python
 (book, chapter, sentence, word1, word2)
 ```
 
@@ -144,9 +144,9 @@ You can also use the [edge features](#relational-operators) in the corpus as
 relational operators as well.
 
 Suppose we have an edge feature `sub` between clauses, such that if main clause
-*m* has subordinate clauses *s1*, *s2* and *s3*, then
+`m` has subordinate clauses `s1`, `s2` and `s3`, then
 
-```
+``` python
 E.sub.f(m) = (s1, s2, s3)
 ```
 
@@ -178,7 +178,7 @@ Read `m -sub> s` as: there is a `sub`-arrow from `m` to `s`.
 
 Edge features may have values.
 For example, the
-[crossref feature](https://github.com/ETCBC/parallels)
+[`crossref` feature](https://github.com/ETCBC/parallels)
 is a set of edges between parallel verses, with the levels of confidence
 as values. This number is an integer between 0 and 100.
 We can ask for parallel verses in an unqualified way:
@@ -222,7 +222,7 @@ verse
 To get a more specific introduction to search, consult the search tutorials for
 annotated corpora, see `tf.about.corpora`.
 
-Finally an example with quantifiers. We want all clauses where Pred-phrases
+Finally an example with quantifiers. We want all clauses where `Pred`-phrases
 consist of verbs only:
 
 ```
@@ -246,7 +246,7 @@ We have these kinds of lines in a template:
 
 *   if the first non-white character on a line is `%` it is a comment line;
 *   you cannot comment out parts of lines after a non-white part;
-*   if a line is empty or has whitespace only, it is a comment line;
+*   if a line is empty or has white-space only, it is a comment line;
 *   comment lines are allowed everywhere;
 *   comment lines are ignored.
 
@@ -265,13 +265,13 @@ full variety of feature constraints on nodes and edges.
 Examples
 
 1.  `word pos=verb gender=feminine`
-2.  `vb:word pos=verb gender=feminine`
-3.  `vb pos=verb gender=feminine`
-4.  `. n=3`
+1.  `vb:word pos=verb gender=feminine`
+1.  `vb pos=verb gender=feminine`
+1.  `. n=3`
 
 Notes
 
-*   The indent is significant. Indent is counted as the number of white space
+*   The indent is significant. Indent is counted as the number of white-space
     characters, where tabs count for just 1. **Avoid tabs!**.
 *   The **name:** part is optional.
     If present, it defines a name for this atom that can be used
@@ -296,7 +296,7 @@ pnew:phrase vs=qal
 p = pnew
 ```
 
-##### (with relop): **indent op name:otype-or-set features**
+##### (with `relop`): **indent op name:otype-or-set features**
 
 *   `<: word pos=verb gender=feminine`
 *   The relation operator specifies an extra constraint between a preceding atom
@@ -305,8 +305,9 @@ p = pnew
     it may the preceding sibling.
 *   You can leave out the **name:otype-or-set features** bit. In that case, the
     relation holds between the preceding atom and its parent.
-*   The **name:** part is optional. Exactly as in the case without relop.
-*   The **otype-or-set** part is optional. Exactly as in the case without relop.
+*   The **name:** part is optional. Exactly as in the case without `relop`.
+*   The **otype-or-set** part is optional. Exactly as in the case without
+    `relop`.
 
 #### *feature* lines: **features**
 
@@ -371,16 +372,16 @@ See [*quantifiers*](#quantifiers) below for all the syntax and semantics.
 
 ### Feature specifications
 
-The **features** above is a specification of what features with
+The `features` above is a specification of what features with
 which values to search for. This specification must be written as a white-space
-separated list of **feature specs**.
+separated list of `feature specs`.
 
-A **feature spec** has the form *name* *valueSpec*, with no space between the *name*
-and the *valueSpec*.
+A `feature spec` has the form `name valueSpec`, with no space between the `name`
+and the `valueSpec`.
 
 #### Value specifications
 
-The *valueSpec* may have the following forms and
+The `valueSpec` may have the following forms and
 meanings:
 
 form | the feature *name* ...
@@ -400,7 +401,7 @@ form | the feature *name* ...
 
     *Why would you want to include such a "criterion"?*
 
-    Some applications, such as the Text-Fabric browser collect the features used in a query
+    Some applications, such as the TF browser collect the features used in a query
     to retrieve result information to be presented to the user. So if you want to include
     the values of a particular feature, mention that feature with a `*`.
 
@@ -478,7 +479,7 @@ do not have values).
 
 Some of the adjacency relations can actually be weakened. Instead of requiring
 that one slot is equal to an other slot, you can require that they are *k-near*,
-i.e. they are at most *k* apart. Here are the relationships where you can do
+i.e. they are at most `k` apart. Here are the relationships where you can do
 that. Instead of typing the letter `k`, provide the actual number you want.
 
 *   `<k:` `:k>`: `k`-*adjacent* before and after (with respect to the slots
@@ -494,9 +495,9 @@ that. Instead of typing the letter `k`, provide the actual number you want.
 #### Based on node features
 
 Nodes can be compared on the basis of the features that they have.
-For each pair of node features *f*, *g* there is a relation between nodes
-that holds precisely when feature *f* of the first node has the same value as
-feature *g* on the second node. This can be used in search templates.
+For each pair of node features `f`, `g` there is a relation between nodes
+that holds precisely when feature `f` of the first node has the same value as
+feature `g` on the second node. This can be used in search templates.
 Not only equality is covered, also inequality, comparison, and matching.
 
 *   `.f.` and `.f=g.` feature equality:
@@ -520,7 +521,7 @@ Not only equality is covered, also inequality, comparison, and matching.
         In particular, two nodes that have both `None` for a feature `f`, count as
         having unequal values for `f`.
 *   `.f<g.` and `.f>g.` feature less than and greater than:
-    the `f` value of the left node is less/greater than the `g` value of right node.
+    the `f` value of the left node is less / greater than the `g` value of right node.
     This is only legal if both `f` and `g` are integer valued features.
     ![op](../images/Spatial/Spatial.024.png)
     
@@ -554,9 +555,9 @@ of the edges.
 
 *   without values
 
-    *   A `-`*name*`>` B: edge from A to B
-    *   A `<`*name*`-` B: edge from B to A
-    *   A `<`*name*`>` B: edge from A to B or from B to A or both
+    *   A `-name>` B: edge from A to B .
+    *   A `<name-` B: edge from B to A .
+    *   A `<name>` B: edge from A to B or from B to A or both .
 
     These forms work for edges that do and do not have values;
 
@@ -566,9 +567,9 @@ of the edges.
 
 *   with values
 
-    *   A `-`*name* *valueSpec*`>` B: edge with value from A to B
-    *   A `<`*name* *valueSpec*`-` B: edge with value from B to A
-    *   A `<`*name* *valueSpec*`>` B: edge with value from A to B
+    *   A `-name valueSpec>` B: edge with value from A to B .
+    *   A `<name valueSpec-` B: edge with value from B to A .
+    *   A `<name valueSpec>` B: edge with value from A to B .
         or form B to A or both
 
     These forms work only for edges that do have values.
@@ -624,9 +625,9 @@ plus all feature lines that follow it.
 
 The Meaning is:
 
-node *r* is a result of this template if and only if
-*r* is a result of `atom` (with all its the extra feature lines) and
-there is no tuple *RN* such that (*r*, *RN*) is a result of
+node `r` is a result of this template if and only if
+`r` is a result of `atom` (with all its the extra feature lines) and
+there is no tuple `RN` such that (`r`, `RN`) is a result of
 
 ```
 atom
@@ -648,15 +649,15 @@ templateH
 
 Meaning:
 
-node *r* is a result of this template if and only if *r* is a result of `atom` and
-for all tuples (*RA*) such that (*r*, *RA*) is a result of
+node `r` is a result of this template if and only if `r` is a result of `atom` and
+for all tuples (`RA`) such that (`r`, `RA`) is a result of
 
 ```
 atom
 templateA
 ```
 
-there is a tuple *RH* such that (*r*, *RA*, *RH*)  is a result of
+there is a tuple *RH* such that (`r`, `RA`, `RH`)  is a result of
 
 ```
 atom
@@ -681,22 +682,22 @@ templateO3
 
 Meaning:
 
-node *r* is a result of this template if and only if:
-there is a tuple *R1* such that (*r*, *R1*) is a result of
+node `r` is a result of this template if and only if:
+there is a tuple `R1` such that (`r`, `R1`) is a result of
 
 ```
 atom
 templateO1
 ```
 
-or there is a tuple *R2* such that (*r*, *R2*) is a result of
+or there is a tuple `R2` such that (`r`, `R2`) is a result of
 
 ```
 atom
 templateO2
 ```
 
-or there is a tuple *R3* such that (*r*, *R3*) is a result of
+or there is a tuple `R3` such that (`r`, `R3`) is a result of
 
 ```
 atom
@@ -741,7 +742,7 @@ You may have multiple quantifiers for one parent.
 
 ##### Not in result tuples
 
-Whereas a the search for a normal template proceeds by finding a tuple
+Whereas the search for a normal template proceeds by finding a tuple
 that instantiates all its nodes in such a way that
 all relationships expressed in the template hold, a quantifier template is not
 instantiated. It asserts a condition that has to be tested for all nodes
@@ -778,7 +779,8 @@ Due to the implementation of quantifiers there are certain restrictions.
 
 *   The following situations block the visibility of names:
 
-    *   in `/with/`, `templateO`*i* may not use names defined in `templateO`*j* for *j* other than *i*;
+    *   in `/with/`, `templateOi` may not use names defined in `templateOj` for
+        `j` other than `i`;
     *   names defined outer quantifiers are not accessible in inner quantifiers;
     *   names defined inner quantifiers are not accessible in outer quantifiers.
 
@@ -842,7 +844,7 @@ on, and why the quantifiers have certain limitations, and how indentation works.
 
 The basic idea is:
 
-*   a quantifier leads to the execution of one or more separate searche templates;
+*   a quantifier leads to the execution of one or more separate search templates;
 *   the results of these searches are combined by means of set operations:
     *difference*, *intersection*, *union*, dependent on the nature of the quantifier;
 *   the end result of this combination will fed as a custom set to
@@ -878,7 +880,7 @@ QUANTIFIER2
     customSets=dict(fclause=filteredClauses1)
 ```
 
-and so on until we have had QUANTIFIERn,
+and so on until we have had `QUANTIFIERn`,
 leading to a set `filteredClausesN` of clauses
 that pass all filters set by the quantifiers.
 

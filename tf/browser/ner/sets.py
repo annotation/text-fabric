@@ -33,7 +33,7 @@ class Sets(Data):
 
         There is one special annotation set, whose name is the empty string,
         and whose content are the pre-existing entities, i.e. the entities that
-        are present in the tf data as nodes and features.
+        are present in the TF data as nodes and features.
 
         There is always one current annotation set, whose data is loaded into
         memory.
@@ -114,7 +114,7 @@ class Sets(Data):
     def resetSet(self):
         """Clear the current annotation set.
 
-        The special set `""` cannot be reset, because it is readonly.
+        The special set `""` cannot be reset, because it is read-only.
         """
         settings = self.settings
         annoSet = self.annoSet
@@ -147,7 +147,7 @@ class Sets(Data):
         """Duplicates the current set to a set with a new name.
 
         !!! hint "The special set can be duplicated"
-            After duplication of the special readonly set, the duplicate
+            After duplication of the special read-only set, the duplicate
             copy is modifiable.
             In this way you can make corrections to the set of pre-existing,
             tool-generated annotations.
@@ -213,7 +213,7 @@ class Sets(Data):
         messages = []
 
         if delSet == "":
-            messages.append("""Cannot remove set "" because it is readonly""")
+            messages.append("""Cannot remove set "" because it is read-only""")
             return messages
 
         data = self.data
@@ -229,7 +229,7 @@ class Sets(Data):
         else:
             setNames.discard(delSet)
             del setsData[delSet]
-            if self.annotSet == delSet:
+            if self.annoSet == delSet:
                 self.annoSet = ""
 
         return messages

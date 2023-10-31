@@ -81,7 +81,7 @@ def specialCharacters(app, fmt=None, _browse=False):
 
     Returns
     -------
-    html
+    string
         A piece of HTML.
     """
 

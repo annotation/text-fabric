@@ -4,71 +4,71 @@
 
 ## Stay up to date!
 
-Always use the latest version of Text-Fabric, because there is still
+Always use the latest version of TF, because there is still
 a lot of development going on.
 
 A working installation contains three parts that are updated occasionally,
-sometinmes slowly, other times rapidly:
+sometimes slowly, other times rapidly:
 
-* text-fabric itself, the Python library that you obtained by `pip install text-fabric`;
-* TF apps, the apps that are specialized in a specific corpus; you obtained it when you said
-  `text-fabric org/repo` or `A = use("org/repo")`;
-* TF data, which was downloaded by that same statement that downloaded the app.
+*   TF itself, the Python library that you obtained by `pip install text-fabric`;
+*   TF apps, the apps that are specialized in a specific corpus; you obtained it when you said
+    `tf org/repo` or `A = use("org/repo")`;
+*   TF data, which was downloaded by that same statement that downloaded the app.
 
 See `tf.about.install` for instructions how to upgrade these things.
 
 
-## Latest Text-Fabric
+## Latest TF
 
-### Text-Fabric cannot be found!
+### TF cannot be found!
 
-Most likely, you installed Text-Fabric into another Python than you use when you run your
+Most likely, you installed TF into another Python than you use when you run your
 Python programs. See Python Setup below.
 
-### Failed to upgrade Text-Fabric!
+### Failed to upgrade TF!
 
 When you get errors doing `pip install text-fabric`, there is probably an older version around.
 You have to say
 
-```sh
+``` sh
 pip install --upgrade text-fabric
 ```
 
 If this still does not download the most recent version of `text-fabric`,
 it may have been caused by caching. Then say:
 
-```sh
+``` sh
 pip install --upgrade --no-cache-dir text-fabric
 ```
 
-You can check what the newest distributed version of Text-Fabric is on
+You can check what the newest distributed version of TF is on
 [PyPi](https://pypi.org/project/text-fabric/).
 
-### Failed to upgrade Text-Fabric (still)!
+### Failed to upgrade TF (still)!
 
 Old versions on your system might get in the way.
 
-Sometimes `pip uninstall text-fabric` fails to remove all traces of Text-Fabric.
+Sometimes `pip uninstall text-fabric` fails to remove all traces of TF.
 Here is how you can remove them manually:
 
-* locate the `bin` directory of the current Python, it is something like
+*   locate the `bin` directory of the current Python, it is something like
 
-  * (Macos regular Python) `/Library/Frameworks/Python.framework/Versions/3.7/bin`
-  * (Windows Anaconda) `C:\Users\You\Anaconda3\Scripts`
+    *   (Macos regular Python) `/Library/Frameworks/Python.framework/Versions/3.7/bin`
+    *   (Windows Anaconda) `C:\Users\You\Anaconda3\Scripts`
 
-  Remove the file `text-fabric` from this directory if it exists.
+    Remove the file `text-fabric` from this directory if it exists.
 
-* locate the `site-packages` directory of the current Python, it is something like
+*   locate the `site-packages` directory of the current Python, it is something like
 
-  * (Macos regular Python)
-    `/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages`
+    *   (Macos regular Python)
+        `/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages`
 
-    Remove the subdirectory `tf` from this location, plus all files with
-    `text-fabric` in the name.
+        Remove the subdirectory `tf` from this location, plus all files with
+        `text-fabric` in the name.
 
-* After this, you can make a fresh install of `text-fabric`:
+*   After this, you can make a fresh install of `text-fabric`:
 
-```sh
+``` sh
 pip install text-fabric
 ```
 
@@ -76,35 +76,35 @@ pip install text-fabric
 
 If you are new to Python, it might be tricky to set up Python the right way.
 If you make unlucky choices, and work with trial and error, things might get messed up.
-Most of the times when `text-fabric` does not appear to work, it is because of this.
+Most of the times when TF does not appear to work, it is because of this.
 Here are some hints to recover from that.
 
-### Upgrade of Text-Fabric does not have any effect!
+### Upgrade of TF does not have any effect!
 
 Most likely, you have multiple Pythons on your system.
-You installed Text-Fabric in one Python, but you are using it in another Python.
+You installed TF in one Python, but you are using it in another Python.
 
 This can happen if you installed Python from [python.org](https://www.python.org)
 and then later installed Jupyter from Anaconda, which brings its own Python.
 
 You can check whether you are in this situation.
 
-First, on the command line, do 
+First, on the command-line, do 
 
-```sh
+``` sh
 text-fabric
 ```
 
-You will see the version of Text-Fabric that is used when you call the Text-Fabric browser.
+You will see the version of TF that is used when you call the TF browser.
 
 Then, in a Jupyter notebook, say
 
-```python
+``` python
 from tf.parameters import VERSION
 print(VERSION)
 ```
 
-You will see the version of Text-Fabric that you use in a Jupyter notebook.
+You will see the version of TF that you use in a Jupyter notebook.
 
 If they are equal, you might use the same Python in both cases.
 
@@ -113,28 +113,28 @@ Ask a local guru, or google your way out. Or read on.
 
 ### Other Python versions
 
-The following hygeneic measures are known to be beneficial 
+The following hygienic measures are known to be beneficial 
 when you have multiple versions of Python on your system.
 
 When you have upgraded Python, remove PATH statements for older versions
 from your system startup files.
 
-* For the Macos: look at `.zshrc`, `.bashrc`, and `.bash_profile` in your home directory.
-* For Windows: on the command prompt, say `echo %path%` to see what the content
-  of your PATH variable is. If you see references to older versions of python
-  than you actually work with, they need to be removed.
-  [Here is how](https://www.computerhope.com/issues/ch000549.htm)
+*   For the Macos: look at `.zshrc`, `.bashrc`, and `.bash_profile` in your home directory.
+*   For Windows: on the command prompt, say `echo %path%` to see what the content
+    of your PATH variable is. If you see references to older versions of python
+    than you actually work with, they need to be removed.
+    [Here is how](https://www.computerhope.com/issues/ch000549.htm)
 
 Do not remove references to Python `2.*`, but only outdated Python `3.*` versions. 
 
-## Text-Fabric browser
+## TF browser
 
 ### Internal Server Error!
 
 When the TF browser opens with an Internal Server error, the most likely reason is that
-the TF webserver has not started up without errors.
+the TF web server has not started up without errors.
 
-Look back at the terminal or command prompt where you started `text-fabric`.
+Look back at the terminal or command prompt where you started `tf`.
 
 If somewhere down the road you see `Error`, I offer you my apologies!
 
@@ -157,22 +157,22 @@ If your machine has 4GB of RAM, it should be possible to run TF, with care.
 
 ## GitHub
 
-Text-Fabric uses the GitHub API to get its apps and data on the fly.
+TF uses the GitHub API to get its apps and data on the fly.
 
 ### GitHub Rate Limit Exceeded!
 
 Several solutions:
 
-1. (*recommended*) ask the provider of the dataset to use
-   `tf.advanced.zipdata.zipAll()` to create a zipfile of the complete dataset
-   and attach it to the latest release on GitHub.
-   Then TF uses a method to get your data which does not involve the GitHub API, and
-   your problem is gone.
-1. use previously downloaded data or get data manually from GitHub, e.g. by *cloning*
-   the GitHub repository that holds the dataset.
-   This requires confidence with git/GitHub operations such as cloning and pulling.
-1. increase your rate limit by making yourself known to GitHub.
-   The work needed to increase the rate is fairly simple, but it assumes a bit
-   more knowledge about how your terminal and operating system works.
+1.  (*recommended*) ask the provider of the dataset to use
+    `tf.advanced.zipdata.zipAll()` to create a zip file of the complete dataset
+    and attach it to the latest release on GitHub.
+    Then TF uses a method to get your data which does not involve the GitHub API, and
+    your problem is gone.
+1.  use previously downloaded data or get data manually from GitHub, e.g. by *cloning*
+    the GitHub repository that holds the dataset.
+    This requires confidence with `git` / GitHub operations such as cloning and pulling.
+1.  increase your rate limit by making yourself known to GitHub.
+    The work needed to increase the rate is fairly simple, but it assumes a bit
+    more knowledge about how your terminal and operating system works.
 
 See also `tf.advanced.repo`.

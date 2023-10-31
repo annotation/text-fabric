@@ -6,7 +6,7 @@ from tf.core.files import baseNm, splitExt
 
 
 def checkDiffs(path1, path2):
-    """Check differences between runs of tf generations.
+    """Check differences between runs of TF generations.
     """
     def diffFeature(f):
         with open(f"{path1}/{f}.tf", encoding="utf8") as h:

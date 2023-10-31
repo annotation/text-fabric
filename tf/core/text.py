@@ -25,8 +25,8 @@ which is a config feature.
 ## Structure
 
 If a corpus has sectional elements, such as
-series, volume, book, part, document, chapter, fragment, verse, halfverse,
-line, etc, then you can configure those elements as structural types.
+`series`, `volume`, `book`, `part`, `document`, `chapter`, `fragment`, `verse`,
+`halfverse`, `line`, etc, then you can configure those elements as structural types.
 
 If your TF dataset designer has done that, the `T.api` will provide a number
 of handy functions to navigate your corpus along its structure, programmatically.
@@ -99,25 +99,25 @@ functions available by which you can make handy use of that information.
 
 !!! explanation "Section levels are generic"
     In this documentation, we call the main section level `book`, the second level
-    `chapter`, and the third level `verse`. Text-Fabric, however, is completely
+    `chapter`, and the third level `verse`. TF, however, is completely
     agnostic about how these levels are called. It is prepared to distinguish three
     section levels, but how they are called, must be configured in the dataset. The
     task of the `otext` feature is to declare which node type and feature correspond
-    with which section level. Text-Fabric assumes that the first section level may
+    with which section level. TF assumes that the first section level may
     have multilingual headings, but that section levels two and three have single
     language headings (numbers of some kind).
 
 !!! explanation "String versus number"
     Chapter and verse numbers will be considered to be strings or
     integers, depending on whether your dataset has declared the corresponding
-    feature *valueType* as `str` or as `int`.
+    feature with `valueType` as `str` or as `int`.
 
     Conceivably, other works might have chapter and verse numbers
     like `XIV`, '3A', '4.5', and in those cases these numbers are obviously not
-    `int`s.
+    `int`.
 
 !!! explanation "levels of node types"
-    Usually, Text-Fabric computes the hierarchy of node types correctly, in the
+    Usually, TF computes the hierarchy of node types correctly, in the
     sense that node types that act as containers have a lower level than node types
     that act as containees. So books have the lowest level, words the highest. See
     [levels](#levels). However, if this level assignment turns out to be wrong for
@@ -132,7 +132,7 @@ functions available by which you can make handy use of that information.
     you can add a key `levelConstraints` with a `;`-separated list of
     constraints, where each constraint has the form
 
-    *smalller* `<` *bigger1*, *bigger2*, ...
+    *smaller* `<` *bigger-1*, *bigger-2*, ...
 
     Example:
 
@@ -143,9 +143,9 @@ functions available by which you can make handy use of that information.
 ## Book names and languages
 
 The names of the books may be available in multiple languages. The book names
-are stored in node features with names of the form `book@`*la*, where *la* is
+are stored in node features with names of the form `book@la`, where `la` is
 the [ISO 639](https://en.wikipedia.org/wiki/ISO_639) two-letter code for that
-language. Text-Fabric will always load these features.
+language. TF will always load these features.
 
 ## Text representation
 
@@ -156,18 +156,18 @@ A format name is a string of keywords separated by `-`:
 
 *what*`-`*how*`-`*fullness*`-`*modifier*
 
-For Hebrew any combination of the follwoing could be useful formats:
+For Hebrew any combination of the following could be useful formats:
 
 keyword | value | meaning
 ------- | ----- | -------
 *what* | `text` | words as they belong to the text
 *what* | `lex` | lexemes of the words
-*how* | `orig` | in the original script (Hebrew, Greek, Syriac) (all Unicode)
+*how* | `orig` | in the original script (Hebrew, Greek, Syriac) (all UNICODE)
 *how* | `trans` | in (latin) transliteration
-*how* | `phono` | in phonetic/phonological transcription
+*how* | `phono` | in phonetic / phonological transcription
 *fullness* | `full` | complete with accents and all diacritical marks
 *fullness* | `plain` | with accents and diacritical marks stripped, in Hebrew only the consonants are left
-*modifier* | `ketiv` | (Hebrew): where there is ketiv/qere, follow ketiv instead of qere (default);
+*modifier* | `ketiv` | (Hebrew): where there is ketiv / qere, follow ketiv instead of qere (default);
 
 The default format is `text-orig-full`, we assume that every TF dataset defines
 this format.
@@ -202,7 +202,7 @@ This tries the feature `special` first, and if that is undefined, it takes
 !!! caution "undefined versus empty"
     The criterion to skip the value of feature `special` and use the value
     of feature `normal` is that `special` either has no value, or its value is
-    `None` (Text-Fabric essentially makes no difference between the two).
+    `None` (TF essentially makes no difference between the two).
     But if the value of `special` happens to be the empty string, it will be used!
 
 !!! hint "longer chains"
@@ -230,16 +230,16 @@ by default!
 
 TF datasets may also define formats of the form
 
-*nodetype*`-default`
+`nodeType-default`
 
-where *nodetype* is a valid type of node in the dataset.
+where `nodeType` is a valid type of node in the dataset.
 
 These formats will be invoked in cases where no explicit format is specified as
 a fall back for some kind of nodes. See `T.text()` below.
 
 A node type may also be prepended to a format, with `#` as separator:
 
-*nodetype*`#`*textformat*
+`nodeType#textformat`
 
 In general, a format can be applied to any kind of node, and it will
 lookup the features defined in its template for that node.
@@ -249,7 +249,7 @@ So formats may indicate that they should be applied to nodes of a specific type.
 See `T.text()` below.
 
 Remember that the formats are defined in the `otext` warp config feature of your
-set, not by Text-Fabric.
+set, not by TF.
 
 !!! note "Freedom of names for formats"
     There is complete freedom of choosing names for text formats.
@@ -263,7 +263,7 @@ set, not by Text-Fabric.
 ### The T.text() function
 
 The way th `tf.core.text.Text.text` responds to its parameters may look complicated,
-but the retionale is that the defaults should be sensible.
+but the rationale is that the defaults should be sensible.
 
 Consider the simplest call to this function: `T.text(node)`.
 This will apply the default format to `node`.
@@ -282,7 +282,7 @@ features to furnish a decent representation.
     as slots, but the representation of a lexeme
     is not the string of its occurrences, but
     resides in a feature such as `voc_lex_utf8`
-    (vocalized lexeme in Unicode).
+    (vocalized lexeme in UNICODE).
 
     If the dataset defines the format `lex-default={lex} `,
     this is the only thing needed to regulate
@@ -301,7 +301,9 @@ features to furnish a decent representation.
     For example, if words are associated with lexemes, stored in a word
     feature `lex`, we can define a text format
 
-       lex-orig-full=word#{lex} `
+    ```
+    lex-orig-full=word#{lex}
+    ```
 
     When you call `T.text(n)` for a non-slot, non-word node,
     normally the node will be replaced by the slot nodes it contains,
@@ -309,25 +311,27 @@ features to furnish a decent representation.
     But if you pass a format that specifies a different node type,
     nodes will be replaced by contained nodes of that type. So
 
-        T.text(n, fmt='lex-orig-full')
+    ```
+    T.text(n, fmt='lex-orig-full')
+    ```
 
-    will lookup all word nodes under *n* and apply the template `{lex}`
+    will lookup all word nodes under `n` and apply the template `{lex}`
     to them.
 
-!!! caution "same and different behaviours"
+!!! caution "same and different behaviors"
     The consequences of the rules might be unexpected in some cases.
     Here are a few observations:
 
-    * formats like `phrase-default` can be implicitly invoked for phrase nodes,
-      but `descend=True` prevents that;
-    * when a format targeted at phrases is invoked for phrase nodes,
-      `descend=True` will not cause the expansion of those nodes to slot nodes,
-      because the phrase node is already expanded
-      to the target type of the format;
+    *   formats like `phrase-default` can be implicitly invoked for phrase nodes,
+        but `descend=True` prevents that;
+    *   when a format targeted at phrases is invoked for phrase nodes,
+        `descend=True` will not cause the expansion of those nodes to slot nodes,
+        because the phrase node is already expanded
+        to the target type of the format;
 
 
 !!! hint "memory aid"
-    *   If *fmt* is explicitly passed, it will be the format used
+    *   If `fmt` is explicitly passed, it will be the format used
         no matter what, and it determines the level of the nodes to descend to;
     *   Descending is the norm, it can only be prevented
         by setting default formats for node types or
@@ -352,10 +356,13 @@ features to furnish a decent representation.
     It is your responsibility to take care to use the formats
     for node types for which they make sense.
 
-!!! caution "Escape whitespace in formats"
+!!! caution "Escape white-space in formats"
     When defining formats in `otext.tf`,
     if you need a newline or tab in the format,
-    specify it as `\n` and `\t`.
+    specify it as `\\n` and `\\t`.
+    (i.e. a single backslash plus the character `n` or `t`.
+    In your editor you may have to type the backslash twice in order to put it
+    in the file once!)
 """
 
 from ..parameters import OTEXT
@@ -379,10 +386,12 @@ class Text:
 
         Here we take the BHSA as example: `bookName()` and `bookNode()`
 
-            T.bookName(node, lang='en')
-            T.bookNode(name, lang='en')
+        ```
+        T.bookName(node, lang='en')
+        T.bookNode(name, lang='en')
+        ```
 
-        with node:int the node in question, name:str the name in question,
+        with `node:int` the node in question, `name:str` the name in question,
         and `lang='en'` the language of the book name.
     """
 
@@ -473,28 +482,28 @@ class Text:
         n: integer
             The node whose containing section to retrieve.
         lastSlot: boolean, optional False
-            Whether the reference node will be the last slot contained by *n*
+            Whether the reference node will be the last slot contained by `n`
             or the first slot.
         fillup: boolean, optional False
             Whether to fill up the tuple with missing section elements.
         Returns
         -------
         section: tuple of int
-            If *n* is not a section node, a reference node *r* will be taken
-            according to the *lastSlot* parameter.
+            If `n` is not a section node, a reference node `r` will be taken
+            according to the `lastSlot` parameter.
 
             If `fillup == False`:
 
-            If *r* is a level 0 section node,
-            *section* is the 1-element tuple `(r,)`.
+            If `r` is a level 0 section node,
+            `section` is the 1-element tuple `(r,)`.
 
-            If *r* is a level 1 section node,
+            If `r` is a level 1 section node,
             *section* is a 2-element tuple, i.e.
-            the enclosing level 0 section node and *r* itself.
+            the enclosing level 0 section node and `r` itself.
 
-            If *r* is a level 2 section node,
-            *section* is a 3-element tuple, i.e.
-            the enclosing level 0 and  1 section nodes and *r* itself.
+            If `r` is a level 2 section node,
+            `section` is a 3-element tuple, i.e.
+            the enclosing level 0 and  1 section nodes and `r` itself.
 
             If `fillup == True`, always a complete 3-tuple of a level 0, 1, and 2
             section nodes is returned.
@@ -563,7 +572,7 @@ class Text:
         n: integer
             The node whose heading to retrieve.
         lastSlot: boolean, optional False
-            Whether the reference node will be the last slot contained by *n*
+            Whether the reference node will be the last slot contained by `n`
             or the first slot.
         lang: string, optional en
             The language assumed for the section parts,
@@ -575,12 +584,12 @@ class Text:
         Returns
         -------
         heading: tuple of pairs
-            If *n* is not a section node, a reference node *r* will be taken
-            according to the *lastSlot* parameter.
+            If `n` is not a section node, a reference node `r` will be taken
+            according to the `lastSlot` parameter.
 
-            It is the tuple of integer/string values for section ancestors
-            of *r* and *r* itself,
-            where the *fillup* parameter plays the same role as in
+            It is the tuple of integer / string values for section ancestors
+            of `r` and `r` itself,
+            where the `fillup` parameter plays the same role as in
             `Text.sectionTuple`.
 
         Notes
@@ -821,7 +830,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
         -------
         parent: integer
             The parent is that structural node that whose heading you get from
-            the heading of *n* minus its last element.
+            the heading of `n` minus its last element.
 
         Notes
         -----
@@ -861,7 +870,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
         -------
         children: tuple of integers
             The children are those structural nodes whose headings are one
-            longer than the one from *n*.
+            longer than the one from `n`.
 
         Notes
         -----
@@ -900,7 +909,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
         -------
         heading: tuple of pairs
             It is the tuple of pairs (node type, feature value)
-            for all ancestors of *n*.
+            for all ancestors of `n`.
 
         Notes
         -----
@@ -984,7 +993,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
             The text-format of the text representation.
 
             If it is not specified or `None`, each node will be formatted with
-            a node type specific format, defined as *nodeType*`-default`, if it
+            a node type specific format, defined as `nodeType-default`, if it
             exists.
 
             If there is no node specific format, the default format
@@ -993,13 +1002,13 @@ There are {len(hdFromNd)} structural elements in the dataset.
             If `text-orig-full` is not defined, an error message will be issued,
             and the nodes will be represented by their types and numbers.
 
-            If a value for *fmt* is passed, but it is not a format defined in the
-            *otext.tf* feature, there will be an error message and `None` is returned.
+            If a value for `fmt` is passed, but it is not a format defined in the
+            `otext.tf` feature, there will be an error message and `None` is returned.
 
         descend: boolean, optional None
             Whether to descend to constituent nodes.
 
-            If `True`, nodes will be replaced by a sequence of their consituent nodes,
+            If `True`, nodes will be replaced by a sequence of their constituent nodes,
             which have a type specified by the format chosen, or, if the format does
             not specify such a type, the node will be replaced
             by the slots contained in it.

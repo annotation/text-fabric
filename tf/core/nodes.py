@@ -13,8 +13,8 @@ that you can enumerate all nodes in the order you encounter them if you
 walk through your corpus.
 
 Formally
-:   A node *A* comes before a node *B* if *A* contains the smallest slot
-    that occurs in only one of *A* and *B*.
+:   A node `A` comes before a node `B` if `A` contains the smallest slot
+    that occurs in only one of `A` and `B`.
 
 Briefly this means:
 
@@ -48,10 +48,10 @@ This order is a modification of the one as described in (Doedens 1994, 3.6.3).
 > Doedens, Crist-Jan (1994), *Text Databases. One Database Model and Several
 > Retrieval Languages*, number 14 in Language and Computers, Editions Rodopi,
 > Amsterdam, Netherlands and Atlanta, USA. ISBN: 90-5183-729-1,
-> https://books.google.nl/books?id=9ggOBRz1dO4C. The order as defined by
-> Doedens corresponds to walking trees in post-order.
+> [Google books](https://books.google.nl/books?id=9ggOBRz1dO4C).
+> The order as defined by Doedens corresponds to walking trees in post-order.
 
-For a lot of processing, it is handy to have a the stack of embedding elements
+For a lot of processing, it is handy to have the stack of embedding elements
 available when working with an element. That is the advantage of pre-order over
 post-order. It is very much like SAX parsing in the XML world.
 """
@@ -71,7 +71,7 @@ class Nodes:
         The node types are ordered in `C.levels.data`, and if you reverse that list,
         you get the rank of a type by looking at the position in which that type occurs.
 
-        The *slotType* has rank 0 (`otypeRank[F.otype.slotType] == 0`),
+        The `slotType` has rank 0 (`otypeRank[F.otype.slotType] == 0`),
         and the more comprehensive a type is, the higher its rank.
         """
 
@@ -116,7 +116,7 @@ class Nodes:
         Mostly, this subset of slots is contiguous (no gaps), and mostly it is
         maximal: the slots immediately before and after the chunk do not belong to the node.
 
-        But the sortkey also works if these conditions are not met.
+        But the sort key also works if these conditions are not met.
 
         Notes
         -----

@@ -30,7 +30,8 @@ SEQ_TYPES2 = {tuple, list, set, frozenset}
 def runsInNotebook():
     """Determines whether the program runs in an interactive shell.
 
-    From https://stackoverflow.com/questions/15411967/how-can-i-check-if-code-is-executed-in-the-ipython-notebook/24937408
+    From
+    [stackoverflow](https://stackoverflow.com/questions/15411967/how-can-i-check-if-code-is-executed-in-the-ipython-notebook/24937408)
     """
     try:
         runcontext = get_ipython()
@@ -92,7 +93,7 @@ def dh(html, inNb=True, unexpand=False):
     Parameters
     ----------
     html: string
-        Raw html string.
+        Raw HTML string.
     inNb: boolean, optional True
         Whether the program runs in a notebook
     unexpand: boolean
@@ -264,11 +265,11 @@ def transitiveClosure(relation, reflexiveExceptions):
     """Produce the reflexive transitive closure of a relation.
 
     The transitive closure of a relation R is the relation TR
-    such that aTRb if and only if there is a chain of c1, c2, ..., cn
-    such that ARc1, c1Rc2, ..., cnRb.
+    such that `a TR b` if and only if there is a chain of `c1`, `c2`, ..., `cn`
+    such that `a Rc1`, `c1 R c2`, ..., `cn R b`.
 
     If we allow the chain to have length zero, we effectively have that
-    aTRa for all elements. That is the reflexive, transitive closure.
+    `a TR a` for all elements. That is the reflexive, transitive closure.
 
     This function builds the latter, but we allow for exceptions to the
     reflexivity.
@@ -289,9 +290,9 @@ def transitiveClosure(relation, reflexiveExceptions):
 
     Notes
     -----
-    We use this function to build the closure of the childType relation
+    We use this function to build the closure of the `childType` relation
     between node types. We want to exclude the slot type from the
-    reflexivity. The closure of the childType relation is the descendant type
+    reflexivity. The closure of the `childType` relation is the descendant type
     relation.
     The display algorithm uses this to unravel nodes.
 
@@ -464,7 +465,7 @@ def isUniform(app, tuples):
 
     An iterable of tuples of nodes is uniform, if each
     tuple has the same number of nodes,
-    and if the type of a node at position *i* in the tuple
+    and if the type of a node at position `i` in the tuple
     is the same for all tuples.
     """
     api = app.api
@@ -769,7 +770,7 @@ def showDict(title, data, _browse, inNb, *keys):
     Parameters
     ----------
     _browse: boolean
-        Whether we are in the text-fabric browser.
+        Whether we are in the TF browser.
     inNb: boolean
         Whether we run in a notebook.
     keys: iterable of string

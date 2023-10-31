@@ -99,7 +99,7 @@ class App:
         silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
         hoist: dict, optional False
-        configOverrides: key value pairs
+        configOverrides: list of tuple
 
         _withGc: boolean, optional True
             If False, it disables the Python garbage collector before
@@ -185,7 +185,7 @@ class App:
                     console(
                         """
 No data has been loaded.
-Most of the Text-Fabric API has not been loaded.
+Most of the TF API has not been loaded.
 """
                     )
             else:
@@ -228,7 +228,7 @@ Most of the Text-Fabric API has not been loaded.
                 console(
                     f"""
 There were problems with loading data.
-The Text-Fabric API has not been loaded!
+The TF API has not been loaded!
 The app "{appName}" will not work!
 """,
                     error=True,
@@ -263,7 +263,7 @@ The app "{appName}" will not work!
             if silent in {VERBOSE, AUTO, TERSE}:
                 if self.inNb:
                     dh(
-                        "<div><b>Text-Fabric API:</b> names "
+                        "<div><b>TF API:</b> names "
                         + outLink(
                             "N F E L T S C TF Fs Fall Es Eall Cs Call",
                             APIREF,
@@ -302,7 +302,7 @@ The app "{appName}" will not work!
         return TF.load(features, add=True, silent=silent)
 
     def reinit(self):
-        """TF-Apps may override this method.
+        """TF Apps may override this method.
         It is called by `reuse`. Hence it needs to be present.
         """
 
@@ -391,22 +391,22 @@ def findApp(
     appName: string or None
         Either:
 
-        * None, but then dataLoc should have a value
-        * `app:`*path/to/tf/app*
-        * *org*/*repo*
-        * *org*/*repo* *relative*
-        * *app*, i.e. the plain name of an official TF app
-          (e.g. `bhsa`, `oldbabylonian`)
+        *   None, but then `dataLoc` should have a value
+        *   `app:path/to/tf/app` (not literally)
+        *   `org/repo` (not literally)
+        *   `org/repo/relative` (not literally)
+        *   `app`, i.e. the plain name of an official TF app
+            (e.g. `bhsa`, `oldbabylonian`)
 
-        The last case is legacy: instead of *app*, pass *org*/*repo*.
+        The last case is legacy: instead of `app`, pass `org/repo`.
 
     dataLoc: string or None
         Either:
 
-        * None, but then appName should have a value
-        * path to a local directory
-        * *org*/*repo*
-        * *org*/*repo* *relative*
+        *   None, but then `appName` should have a value
+        *   path to a local directory
+        *   `org/repo`
+        *   `org/repo/relative`
 
         Except for the first two cases, a trailing checkout specifier
         is allowed, like `:clone`, `:local`, `:latest`, `:hot`
@@ -415,7 +415,7 @@ def findApp(
         a vanilla app without extra configuration is initialized.
 
     checkoutApp: string
-        The checkout specifier for the TF-app. See `tf.advanced.app.App`.
+        The checkout specifier for the TF app. See `tf.advanced.app.App`.
 
     args: mixed
         Arguments that will be passed to the initializer of the `tf.advanced.app.App`
@@ -443,11 +443,11 @@ def findApp(
         appName = normpath(appName)
 
     if dataLoc is None and appName is None:
-        console("No TF-app and no data location specified", error=True)
+        console("No TF app and no data location specified", error=True)
         return None
 
     if dataLoc is not None and appName is not None:
-        console("Both a TF-app and a data location are specified", error=True)
+        console("Both a TF app and a data location are specified", error=True)
         return None
 
     dataOrg = None
@@ -634,7 +634,7 @@ def findApp(
             )
             console(repr(e), error=True)
         traceback.print_exc()
-        console("Text-Fabric is not loaded", error=True)
+        console("TF is not loaded", error=True)
         return None
     return app
 
@@ -653,10 +653,10 @@ def useApp(appName, backend):
         or a GitLab instance such as `gitlab.huc.knaw.nl`.
         If absent, `None` or empty, it is `github`.
 
-    args:
+    args: mixed
         Do not pass any other positional argument!
 
-    kwargs:
+    kwargs: mixed
         Used to initialize the corpus app that we use.
         That is either an uncustomized `tf.advanced.app.App` or
         a customization of it.
@@ -693,7 +693,7 @@ def useApp(appName, backend):
 def loadApp(silent=DEEP):
     """Loads a given TF app or loads the TF app based on the working directory.
 
-    It assumes that the dataset sits in a clone from a backend (github/gitlab),
+    It assumes that the dataset sits in a clone from a back-end (`github` / `gitlab`),
     and it will load this data.
 
     Parameters

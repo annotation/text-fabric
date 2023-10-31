@@ -1,12 +1,12 @@
 """
 # Usage
 
-After installing Text-Fabric, you have a new command `text-fabric-make`.
-You can use this on the command line to build new search interfaces for existing
-Text-Fabric apps.
+After installing TF, you have a new command `text-fabric-make`.
+You can use this on the command-line to build new search interfaces for existing
+TF apps.
 
-Such a search interface is a static HTML page, powered by a Javascript program
-that reads the corpus data from Javascript variables.
+Such a search interface is a static HTML page, powered by a JavaScript program
+that reads the corpus data from JavaScript variables.
 
 You can build the interface and deploy the HTML page to GitHub Pages
 (GitLab pages not yet supported),
@@ -14,13 +14,13 @@ after which it is usable for everyone.
 
 ## Prerequisites
 
-1.  A Text-Fabric dataset that has a TF-App, e.g. `CambridgeSemiticsLab/nena_tf`
+1.  A TF dataset that has a TF App, e.g. `CambridgeSemiticsLab/nena_tf`
     [github.com/CambridgeSemiticsLab/nena_tf](https://github.com/CambridgeSemiticsLab/nena_tf).
     This is the normative example for now.
 1.  An accompanying repository in the same organization, with the same name
     but with `-search` appended to the name.
 1.  Within that `-search` repo, a subdirectory
-    [layeredsearch](https://github.com/CambridgeSemiticsLab/nena_tf-search/tree/master/layeredsearch)
+    [`layeredsearch`](https://github.com/CambridgeSemiticsLab/nena_tf-search/tree/master/layeredsearch)
     with definitions of search interfaces
     (you can define multiple search interfaces for one dataset).
     Within this directory:
@@ -31,13 +31,13 @@ after which it is usable for everyone.
         1.  `logo.png`: a logo
         1.  `custom.css`: additional styling (may be empty)
         1.  `mkdata.py`: a module containing a few functions that wrap the
-            corpus data into Javascript variables:
+            corpus data into JavaScript variables:
             1.  `makeLegends(maker)`: produce abbreviation lists for some layers
-            2.  `record(maker)`: produce all the search data: full texts of layers and
+            1.  `record(maker)`: produce all the search data: full texts of layers and
                 mappings between nodes and positions in those texts
 
             The `maker` argument is passed by the builder, and contains
-            the definition of the layers and the api of a loaded Text-Fabric dataset.
+            the definition of the layers and the api of a loaded TF dataset.
 
 ## Commands
 
@@ -406,12 +406,12 @@ class Make:
                 writingUrl=f"{URL_TFDOC}/writing/«writing».html",
                 urls=dict(
                     cheatsheet=(
-                        "regexp cheatsheet",
+                        "regexp cheat sheet",
                         (
                             "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/"
                             "Regular_Expressions/Cheatsheet"
                         ),
-                        "cheatsheet of regular expressions",
+                        "cheat sheet of regular expressions",
                     ),
                     license=(
                         "MIT",
@@ -451,7 +451,7 @@ class Make:
                     tf=(
                         None,
                         URL_TFDOC,
-                        "Text-Fabric documentation website",
+                        "TF documentation website",
                     ),
                     lsdoc=(
                         "user manual (full)",
@@ -469,9 +469,9 @@ class Make:
                         "explanation of the features in the dataset",
                     ),
                     data=(
-                        "based on text-fabric data version «data.version»",
+                        "based on TF data version «data.version»",
                         "«dataUrl»",
-                        "online repository of the underlying text-fabric data",
+                        "online repository of the underlying TF data",
                     ),
                     generator=(
                         f"{REPO}/client",
@@ -582,9 +582,9 @@ class Make:
         urls = C.urls
         tutUrl = self.A.flexLink("tut")
         urls["related"] = (
-            f"text-fabric {org}/{repo}",
+            f"tf {org}/{repo}",
             tutUrl,
-            "using Text-Fabric on the same corpus",
+            "using TF on the same corpus",
         )
 
         clientConfig = dict(
@@ -1028,7 +1028,7 @@ class Make:
         """
         We create a client app in the target directory.
 
-        The client consists of HTML/CSS/PNG files plus a modular Javascript program.
+        The client consists of HTML/CSS/PNG files plus a modular JavaScript program.
 
         Module loading does not work when you open the HTML file locally
         (i.e. when the HTML is not served by a server).
@@ -1036,20 +1036,20 @@ class Make:
         N.B. There is a difference between a local web server serving at `localhost`
         and opening the file directly into your browser by double clicking on it.
 
-        In the first case, you see in your un the URL bar of your browser
+        In the first case, you see in the URL bar of your browser
         something that starts with
         `http://` or `https://`, in the second case you see `file://` instead.
 
-        Modular Javascript does not work with `file://` origins.
+        Modular JavaScript does not work with `file://` origins.
 
         For that case, we bundle the modules into one,
         and let a «client»-local.html include it
 
         We also zip the client into {C.client}.zip so that users can download it easily
 
-        However, if the debugState is on, we skip all steps that are unneccesary
+        However, if the `debugState` is on, we skip all steps that are unnecessary
         to see the updated client working.
-        But we do save an extra copy of the texts to the local dir in such a way
+        But we do save an extra copy of the texts to the local directory in such a way
         that they can be easily inspected.
         """
 
@@ -1087,7 +1087,7 @@ class Make:
 
         console("Copied static files")
 
-        # create combined javascript file
+        # create combined JavaScript file
 
         if not debug:
             self.makeCombined()

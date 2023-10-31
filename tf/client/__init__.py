@@ -1,16 +1,16 @@
 """
 # Layered Search
 
-A search interface for Text-Fabric datasets.
-The interface is purely client side, written in Javascript.
-It depends on corpus data generated from the underlying text-fabric data
+A search interface for TF datasets.
+The interface is purely client side, written in JavaScript.
+It depends on corpus data generated from the underlying TF data
 of a corpus.
 
 This repo contains the machinery to generate such an interface,
 based on essentially two parameters:
 
-* a bunch of configuration details;
-* a piece of code that generates the search data.
+*   a bunch of configuration details;
+*   a piece of code that generates the search data.
 
 See also:
 
@@ -22,7 +22,7 @@ See also:
 **Author**:
 [Dirk Roorda](https://pure.knaw.nl/portal/en/persons/dirk-roorda)
 
-## Acknowledgements
+## Acknowledgments
 
 Layered search has been developed first in a project for the
 [NENA corpus developed at Cambridge](https://github.com/CambridgeSemiticsLab/nena_tf).

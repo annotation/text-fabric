@@ -1,15 +1,9 @@
 """
 Produce exports of the whole dataset in different formats.
 
-This module supposes that you have installed Pandas and pyarrow:
+Currently only `pandas` is supported here,
 
-```
-pip install pandas pyarrow
-```
-
-Currently only Pandas is supported here,
-
-although there is also an export to MQL elsewere:
+although there is also an export to MQL elsewhere:
 
 `tf.convert.mql`
 """

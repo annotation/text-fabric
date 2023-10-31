@@ -6,12 +6,12 @@ annotated by features.
 
 The core API consists of
 
-* `N`: see `nodes.Nodes` (walk through nodes)
-* `F`: see `nodefeature.NodeFeature` (retrieve feature values for nodes)
-* `E`: see `edgefeature.EdgeFeature` (retrieve feature values for edges)
-* `L`: see `locality.Locality` (move between levels)
-* `T`: see `text.Text` (get the text)
-* `S`: see `tf.search.search` (search by templates)
+*   `N`: see `nodes.Nodes` (walk through nodes)
+*   `F`: see `nodefeature.NodeFeature` (retrieve feature values for nodes)
+*   `E`: see `edgefeature.EdgeFeature` (retrieve feature values for edges)
+*   `L`: see `locality.Locality` (move between levels)
+*   `T`: see `text.Text` (get the text)
+*   `S`: see `tf.search.search` (search by templates)
 
 plus some additional methods.
 """

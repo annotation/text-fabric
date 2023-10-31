@@ -1,5 +1,5 @@
 """
-Command line argument processing
+Command-line argument processing
 """
 
 from zlib import crc32
@@ -7,7 +7,7 @@ from zlib import crc32
 from ..parameters import PORT_BASE
 from ..core.files import getLocation
 
-# COMMAND LINE ARGS
+# COMMAND-LINE ARGS
 
 
 def getPort(slug):

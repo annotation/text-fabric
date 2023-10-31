@@ -415,7 +415,7 @@ div.pval {
 
 summary {
   /* needed to override the normalize.less
-   * in the classical jupyter notebook
+   * in the classical Jupyter Notebook
    */
   display: list-item ! important;
 }

@@ -600,6 +600,7 @@ tf/search/stitch.py
 tf/search/syntax.py
 tf/tools/__init__.py
 tf/tools/checkdiffs.py
+tf/tools/docsright.py
 tf/tools/myspacy.py
 tf/tools/nbconvert.py
 tf/tools/pdocs.py

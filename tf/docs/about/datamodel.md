@@ -1,4 +1,4 @@
-# Text-Fabric Data Model
+# TF Data Model
 
 ---
 
@@ -46,7 +46,7 @@ linguistic relations between nodes.
 Nodes have types. Types are just a label that we use to make distinctions
 between word nodes, phrase nodes, ..., book nodes. The type assignment is an
 example of a *feature* of nodes: a mapping that assigns a piece of information
-to each node. This type assignment has a name: **otype**, and every Text-Fabric
+to each node. This type assignment has a name: `otype`, and every TF
 dataset has such a feature.
 
 Nodes may be linked to textual positions or *slots*. Some nodes are linked to a
@@ -59,7 +59,7 @@ Nodes of the second kind have an edge to every slot (which is also a node) that
 they are linked to. The collection of these edges from nodes of the second kind
 to nodes of the first kind, is an example of a *feature* of edges: a mapping
 that assigns to each pair of nodes a boolean value: is this pair a link or not?
-This particular edge feature is called **oslots**, and every Text-Fabric dataset
+This particular edge feature is called `oslots`, and every TF dataset
 has such a feature.
 
 Nodes of the third kind represent information that is not part of the main body
@@ -76,7 +76,7 @@ Before we go on, we invite you to look at a few basic terms in the craft of
 [weaving](https://en.wikipedia.org/wiki/Weaving).
 
 A weaver sets up a set of fixed, parallel threads, the *warp*. He then picks a
-thread, usually a colourful one, and sends it in a perpendicular way through the
+thread, usually a colorful one, and sends it in a perpendicular way through the
 warp. This thread is called the *weft*.
 
 ![Warp](../images/warp.png)
@@ -88,13 +88,13 @@ wefts, until he has completed a rectangular piece of fabric, the *weave*.
 ![Weave](../images/weave.png)
 [source](https://sew4home.com/tips-resources/buying-guide/all-about-fabric-weaves-tutorial)
 
-Now Text-Fabric, the tool, can be seen as the loom that sends features (the
+Now TF, the tool, can be seen as the loom that sends features (the
 wefts) through a warp (the system of nodes and edges).
 
-The features **otype** and **oslots** are the ones that set up the system of
-nodes and edges. That's why we call them *warp* features. Every Text-Fabric
+The features `otype` and `oslots` are the ones that set up the system of
+nodes and edges. That's why we call them *warp* features. Every TF
 dataset contains these two warp features. (Later on we'll see a third member of
-the warp, **otext**). They provide the structure of a text and its annotations,
+the warp, `otext`). They provide the structure of a text and its annotations,
 without any content. Even the text itself is left out!
 
 ![Warp](../images/DataModel/DataModel.003.png)
@@ -105,17 +105,17 @@ information, isolated as a kind of module. It is a collection of values which
 can be woven as a weft into the warp.
 
 One of the more basic things to add to the warp is the text itself. Ancient
-texts often have several text representations, like original (Unicode)
+texts often have several text representations, like original (UNICODE)
 characters or transliterated characters, with or without the complete set of
-diacritical marks. In Text-Fabric we do not have to choose between them: we can
+diacritical marks. In TF we do not have to choose between them: we can
 package each representation into a feature, and add it to the fabric.
 
-A Text-Fabric data set is a warp (*otype*, *oslots*) plus a collection of wefts
+A TF data set is a warp (*otype*, *oslots*) plus a collection of wefts
 (all other features). We may add other features to the same warp. Data sets with
 only wefts, but no warps, are called modules. When you use modules with a
 dataset, the modules must have been constructed around the warp of the dataset.
 
-Whenever you use Text-Fabric to generate new data, you are weaving a weave. The
+Whenever you use TF to generate new data, you are weaving a weave. The
 resulting dataset is a tight fabric of individual features (wefts), whose values
 are taken for a set of nodes (warp).
 
@@ -125,17 +125,17 @@ Some features deserve a privileged place. After all, we are dealing with *text*,
 so we need a bit of information about which features carry textual
 representations and sectioning information (e.g. books, chapters, verses).
 
-This information is not hard-wired into Text-Fabric, but it is given in the form
+This information is not hard-wired into TF, but it is given in the form
 of a *config* feature. A config feature has no data, only metadata. Every
-Text-Fabric dataset may contain a config feature called **otext**, which
+TF dataset may contain a config feature called `otext`, which
 specifies which node types and features correspond to sectional units such as
 books, chapters, and verses. It also contains templates for generating text
 representations for the slots.
 
-The **otext** feature is optional, because not all Text-Fabric datasets are
+The `otext` feature is optional, because not all TF datasets are
 expected to have extensive sectioning and text representation definitions.
 Especially when you are in the process of converting a data source (such as a
-treebanks set) into a Text-Fabric dataset, it is handy that Text-Fabric can load
+treebanks set) into a TF dataset, it is handy that TF can load
 the data without bothering about these matters.
 
 ![Text](../images/DataModel/DataModel.005.png)
@@ -151,13 +151,13 @@ Text objects:
 *   carry a *type* (just a label); all *slots* carry the same type, the *slot
     type*; e.g. *word* or *character*;
 *   can be annotated by *features* (key-value pairs)
-*   can be connected by directed, labelled links to other text objects.
+*   can be connected by directed, labeled links to other text objects.
 
 The model knows which feature assigned values to nodes and edges. If two
 different features assign a value to an edge or node, both values can be read
 off later; one through the one feature, and one through the other.
 
-The data in Text-Fabric is organized as an annotated directed graph with a bit
+The data in TF is organized as an annotated directed graph with a bit
 of additional structure. The correspondence is
 
 *   text positions => the first so many slot numbers
@@ -166,7 +166,7 @@ of additional structure. The correspondence is
 *   information associated with text objects => node features
 *   labels on links between text objects => edge features
 *   **NB:** since every link is specified by an edge feature, every link is
-    implicitly labelled by the name of the edge feature. If the edge feature
+    implicitly labeled by the name of the edge feature. If the edge feature
     assigns values to edges, those values come on top of the implicit label.
 *   types of text objects => a special node feature called `otype` (read: object
     type)
@@ -176,7 +176,7 @@ of additional structure. The correspondence is
     config feature called `otext` (read: object text)
 
 Together, the `otype`, `oslots`, and the optional `otext` features are called
-the **warp** of a Text-Fabric dataset.
+the `warp` of a TF dataset.
 
 ## Representation
 
@@ -188,9 +188,9 @@ We represent the elements that make up such a graph as follows:
 *   nodes greater than `maxSlot` correspond to general text objects;
 *   node features are mappings of integers to values;
 *   edge features are mappings of pairs of integers to values; i.e. edges are
-    ordered pairs of integers; labelled edges are ordered tuples of two nodes and
+    ordered pairs of integers; labeled edges are ordered tuples of two nodes and
     a value;
-*   values (for nodes and for edges) are strings (Unicode, utf8) or numbers;
+*   values (for nodes and for edges) are strings (UNICODE, utf8) or numbers;
 *   the `otype` feature maps
     *   the integers `1..maxSlot` (including) to the *slot type*, where `maxSlot` is
         the last *slot*,
@@ -199,13 +199,13 @@ We represent the elements that make up such a graph as follows:
 *   the `oslots` feature is an valueless edge feature, mapping all non-slot nodes
     to sets of slots; so there is an `oslots` edge between each non-slot node and
     each slot *contained* by that node;
-*   a Text-Fabric dataset is a collection of node features and edge features
+*   a TF dataset is a collection of node features and edge features
     containing at least the *warp* features `otype`, `oslots`, and, optionally
     `otext`.
 
 ## More about the warp
 
-The warp/weft distinction is a handy way of separating textual organisation from
+The warp / weft distinction is a handy way of separating textual organization from
 textual content. Let us discuss the warp features a bit more.
 
 ### otype: node feature
@@ -259,29 +259,29 @@ It gives also rise to a canonical ordering of nodes, see `tf.core.nodes`.
 
 Declares which node types correspond to the first three levels of sectioning,
 usually *book*, *chapter*, *verse*. Also declares the corresponding features to
-get the names or numbers of the sections in those levels. Text-Fabric uses this
+get the names or numbers of the sections in those levels. TF uses this
 information to construct the so-called Text-API, with functions to
 
 *   convert nodes to section labels and vice versa,
 *   represent section names in multiple languages,
 *   print formatted text for node sets.
 
-If information about sections or text representations are missing, Text-Fabric
+If information about sections or text representations are missing, TF
 will build a reduced Text-API for you, but it will continue.
 
-## Serializing and precomputing
+## Serializing and pre-computing
 
-When Text-Fabric works with a dataset, it reads feature data files, and offers
-an API to process that data. The main task of Text-Fabric is to make processing
+When TF works with a dataset, it reads feature data files, and offers
+an API to process that data. The main task of TF is to make processing
 efficient, so that it can be done in interactive ways, such as in a Jupyter
-notebook. To that end, Text-Fabric
+notebook. To that end, TF
 
 *   optimizes feature data after reading it for the first time and stores it in
     binary form for fast loading in next invocations;
-*   precomputes additional data from the warp features in order to provide
+*   pre-computes additional data from the warp features in order to provide
     convenient API functions.
 
-In Text-Fabric, we have various ways of encoding this model:
+In TF, we have various ways of encoding this model:
 
 *   as plain text in `.tf` feature files,
 *   as Python data structures in memory,

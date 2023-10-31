@@ -1,7 +1,7 @@
 """
 # Transcription
 
-Text-Fabric has support for several writing systems, by means of
+TF has support for several writing systems, by means of
 transcription tables and fonts that will be invoked when displaying the main text.
 
 It also calls functions to use these tables for converting Hebrew and Syriac
@@ -47,7 +47,7 @@ import re
 
 
 class Transcription:
-    """Conversion between unicode and various transcriptions.
+    """Conversion between UNICODE and various transcriptions.
 
     Usage notes:
 
@@ -172,7 +172,7 @@ class Transcription:
         '"': "\u05f4",  # punctuation gershayim
     }
     """
-    Maps all ETCBC transliteration character combinations for Hebrew to Unicode.
+    Maps all ETCBC transliteration character combinations for Hebrew to UNICODE.
 
     Example: sof-pasuq:
 
@@ -383,7 +383,7 @@ class Transcription:
         "o": "\u2022",  # large dot in caesuras
     }
     """
-    Maps all ETCBC transliteration character combinations for Syriac to Unicode.
+    Maps all ETCBC transliteration character combinations for Syriac to UNICODE.
 
     Example: semkath-final:
 
@@ -460,7 +460,7 @@ class Transcription:
         "]": "\u06ed",  # ARABIC SMALL LOW MEEM
     }
     """
-    Maps an Arabic transliteration character to Unicode.
+    Maps an Arabic transliteration character to UNICODE.
     This is the mapping used in the Quran representation on tanzil.net.
 
     Example: beh
@@ -469,9 +469,11 @@ class Transcription:
 
     Output:
 
+    ```
         ب
+    ```
 
-    Maps an Arabic letter in unicode to its transliteration
+    Maps an Arabic letter in UNICODE to its transliteration
 
     Example: beh transliteration
 
@@ -485,99 +487,104 @@ class Transcription:
     arabic_mappingi = {v: k for (k, v) in arabic_mapping.items()}
 
     arabicTrans = {
-        "\u0020": (" ", " ", " ", " "),      # SPACE
-        "\u060c": ("‚", ",", ",", ","),      # ARABIC COMMA
-        "\u061b": ("„", ";", ";", ";"),      # ARABIC SEMICOLON
-        "\u061f": ("?", "?", "?", "?"),      # ARABIC QUESTION MARK
-        "\u0621": ("'", "'", "ʾ", "'"),      # ARABIC LETTER HAMZA
-        "\u0622": ("»", "_a", "ā", "ā"),     # ARABIC LETTER ALEF WITH MADDA ABOVE
-        "\u0623": (">", "_a", "ā", "ā"),     # ARABIC LETTER ALEF WITH HAMZA ABOVE
-        "\u0624": ("&", "'", "ʾ", "'"),      # ARABIC LETTER WAW WITH HAMZA ABOVE
-        "\u0625": ("<", "_a", "ā", "ā"),     # ARABIC LETTER ALEF WITH HAMZA BELOW
-        "\u0626": ("}", "'", "ʾ", "y"),      # ARABIC LETTER YEH WITH HAMZA ABOVE
-        "\u0627": ("A", "_a", "ā", "ā"),     # ARABIC LETTER ALEF
-        "\u0628": ("b", "b", "b", "b"),      # ARABIC LETTER BEH
-        "\u0629": ("p", "=t", "ŧ", "t"),     # ARABIC LETTER TEH MARBUTA
-        "\u062a": ("t", "t", "t", "t"),      # ARABIC LETTER TEH
-        "\u062b": ("v", "_t", "ṯ", "th"),    # ARABIC LETTER THEH
-        "\u062c": ("j", "j", "ǧ", "j"),      # ARABIC LETTER JEEM
-        "\u062d": ("H", "*h", "ḥ", "ḥ"),     # ARABIC LETTER HAH
-        "\u062e": ("x", "_h", "ḫ", "kh"),    # ARABIC LETTER KHAH
-        "\u062f": ("d", "d", "d", "d"),      # ARABIC LETTER DAL
-        "\u0630": ("*", "_d", "ḏ", "dh"),    # ARABIC LETTER THAL
-        "\u0631": ("r", "r", "r", "r"),      # ARABIC LETTER REH
-        "\u0632": ("z", "z", "z", "z"),      # ARABIC LETTER ZAIN
-        "\u0633": ("s", "s", "s", "s"),      # ARABIC LETTER SEEN
-        "\u0634": ("$", "^s", "š", "sh"),    # ARABIC LETTER SHEEN
-        "\u0635": ("S", "*s", "ṣ", "ṣ"),     # ARABIC LETTER SAD
-        "\u0636": ("D", "*d", "ḍ", "ḍ"),     # ARABIC LETTER DAD
-        "\u0637": ("T", "*t", "ṭ", "ṭ"),     # ARABIC LETTER TAH
-        "\u0638": ("Z", "*z", "ẓ", "ẓ"),     # ARABIC LETTER ZAH
-        "\u0639": ("E", "`", "ʿ", "`"),      # ARABIC LETTER AIN
-        "\u063a": ("g", "*g", "ġ", "gh"),    # ARABIC LETTER GHAIN
-        "\u0640": ("_", "", "", ""),         # ARABIC TATWEEL
-        "\u0641": ("f", "f", "f", "f"),      # ARABIC LETTER FEH
-        "\u0642": ("q", "*k", "ḳ", "q"),     # ARABIC LETTER QAF
-        "\u0643": ("k", "k", "k", "k"),      # ARABIC LETTER KAF
-        "\u0644": ("l", "l", "l", "l"),      # ARABIC LETTER LAM
-        "\u0645": ("m", "m", "m", "m"),      # ARABIC LETTER MEEM
-        "\u0646": ("n", "n", "n", "n"),      # ARABIC LETTER NOON
-        "\u0647": ("h", "h", "h", "h"),      # ARABIC LETTER HEH
-        "\u0648": ("w", "w", "w", "w"),      # ARABIC LETTER WAW
-        "\u0649": ("Y", "/a", "á", "ā"),     # ARABIC LETTER ALEF MAKSURA
-        "\u064a": ("y", "y", "y", "y"),      # ARABIC LETTER YEH
+        "\u0020": (" ", " ", " ", " "),  # SPACE
+        "\u060c": ("‚", ",", ",", ","),  # ARABIC COMMA
+        "\u061b": ("„", ";", ";", ";"),  # ARABIC SEMICOLON
+        "\u061f": ("?", "?", "?", "?"),  # ARABIC QUESTION MARK
+        "\u0621": ("'", "'", "ʾ", "'"),  # ARABIC LETTER HAMZA
+        "\u0622": ("»", "_a", "ā", "ā"),  # ARABIC LETTER ALEF WITH MADDA ABOVE
+        "\u0623": (">", "_a", "ā", "ā"),  # ARABIC LETTER ALEF WITH HAMZA ABOVE
+        "\u0624": ("&", "'", "ʾ", "'"),  # ARABIC LETTER WAW WITH HAMZA ABOVE
+        "\u0625": ("<", "_a", "ā", "ā"),  # ARABIC LETTER ALEF WITH HAMZA BELOW
+        "\u0626": ("}", "'", "ʾ", "y"),  # ARABIC LETTER YEH WITH HAMZA ABOVE
+        "\u0627": ("A", "_a", "ā", "ā"),  # ARABIC LETTER ALEF
+        "\u0628": ("b", "b", "b", "b"),  # ARABIC LETTER BEH
+        "\u0629": ("p", "=t", "ŧ", "t"),  # ARABIC LETTER TEH MARBUTA
+        "\u062a": ("t", "t", "t", "t"),  # ARABIC LETTER TEH
+        "\u062b": ("v", "_t", "ṯ", "th"),  # ARABIC LETTER THEH
+        "\u062c": ("j", "j", "ǧ", "j"),  # ARABIC LETTER JEEM
+        "\u062d": ("H", "*h", "ḥ", "ḥ"),  # ARABIC LETTER HAH
+        "\u062e": ("x", "_h", "ḫ", "kh"),  # ARABIC LETTER KHAH
+        "\u062f": ("d", "d", "d", "d"),  # ARABIC LETTER DAL
+        "\u0630": ("*", "_d", "ḏ", "dh"),  # ARABIC LETTER THAL
+        "\u0631": ("r", "r", "r", "r"),  # ARABIC LETTER REH
+        "\u0632": ("z", "z", "z", "z"),  # ARABIC LETTER ZAIN
+        "\u0633": ("s", "s", "s", "s"),  # ARABIC LETTER SEEN
+        "\u0634": ("$", "^s", "š", "sh"),  # ARABIC LETTER SHEEN
+        "\u0635": ("S", "*s", "ṣ", "ṣ"),  # ARABIC LETTER SAD
+        "\u0636": ("D", "*d", "ḍ", "ḍ"),  # ARABIC LETTER DAD
+        "\u0637": ("T", "*t", "ṭ", "ṭ"),  # ARABIC LETTER TAH
+        "\u0638": ("Z", "*z", "ẓ", "ẓ"),  # ARABIC LETTER ZAH
+        "\u0639": ("E", "`", "ʿ", "`"),  # ARABIC LETTER AIN
+        "\u063a": ("g", "*g", "ġ", "gh"),  # ARABIC LETTER GHAIN
+        "\u0640": ("_", "", "", ""),  # ARABIC TATWEEL
+        "\u0641": ("f", "f", "f", "f"),  # ARABIC LETTER FEH
+        "\u0642": ("q", "*k", "ḳ", "q"),  # ARABIC LETTER QAF
+        "\u0643": ("k", "k", "k", "k"),  # ARABIC LETTER KAF
+        "\u0644": ("l", "l", "l", "l"),  # ARABIC LETTER LAM
+        "\u0645": ("m", "m", "m", "m"),  # ARABIC LETTER MEEM
+        "\u0646": ("n", "n", "n", "n"),  # ARABIC LETTER NOON
+        "\u0647": ("h", "h", "h", "h"),  # ARABIC LETTER HEH
+        "\u0648": ("w", "w", "w", "w"),  # ARABIC LETTER WAW
+        "\u0649": ("Y", "/a", "á", "ā"),  # ARABIC LETTER ALEF MAKSURA
+        "\u064a": ("y", "y", "y", "y"),  # ARABIC LETTER YEH
         "\u064b": ("F", "a*n", "aⁿ", "an"),  # ARABIC FATHATAN
         "\u064c": ("N", "u*n", "uⁿ", "un"),  # ARABIC DAMMATAN
         "\u064d": ("K", "i*n", "iⁿ", "in"),  # ARABIC KASRATAN
-        "\u064e": ("a", "a", "a", "a"),      # ARABIC FATHA
-        "\u064f": ("u", "u", "u", "u"),      # ARABIC DAMMA
-        "\u0650": ("i", "i", "i", "i"),      # ARABIC KASRA
-        "\u0651": ("~", "u", "u", "ūw"),     # ARABIC SHADDA
-        "\u0652": ("o", "a", "a", "a"),      # ARABIC SUKUN
-        "\u0653": ("^", "_a", "ā", "ā"),     # ARABIC MADDAH ABOVE
-        "\u0654": ("#", "'", "ʾ", "ā"),      # ARABIC HAMZA ABOVE
-        "\u0655": ("=", "'", "ʾ", "ā"),      # ARABIC HAMZA BELOW
-        "\u0660": ("0", "0", "0", "0"),      # ARABIC INDIC DIGIT ZERO
-        "\u0661": ("1", "1", "1", "1"),      # ARABIC INDIC DIGIT ONE
-        "\u0662": ("2", "2", "2", "2"),      # ARABIC INDIC DIGIT TWO
-        "\u0663": ("3", "3", "3", "3"),      # ARABIC INDIC DIGIT THREE
-        "\u0664": ("4", "4", "4", "4"),      # ARABIC INDIC DIGIT FOUR
-        "\u0665": ("5", "5", "5", "5"),      # ARABIC INDIC DIGIT FIVE
-        "\u0666": ("6", "6", "6", "6"),      # ARABIC INDIC DIGIT SIX
-        "\u0667": ("7", "7", "7", "7"),      # ARABIC INDIC DIGIT SEVEN
-        "\u0668": ("8", "8", "8", "8"),      # ARABIC INDIC DIGIT EIGHT
-        "\u0669": ("9", "9", "9", "9"),      # ARABIC INDIC DIGIT NINE
-        "\u0670": ("`", "~a", "ã", ""),      # ARABIC LETTER SUPERSCRIPT ALEF
-        "\u0671": ("{", "a", "a", "a"),      # ARABIC LETTER ALEF WASLA
-        "\u06af": ("G", "g", "g", "g"),      # ARABIC LETTER GAF
-        "\u06cc": ("J", "#y", "Y", "y"),     # ARABIC LETTER FARSI YEH
-        "\u06d6": ("SlY", "*sl/a", "ṣlá", "ṣla"),  # ARABIC SMALL HIGH LIGATURE SAD WITH LAM WITH ALEF MAKSURA
-        "\u06da": ("M", "#j", "J", "j"),     # ARABIC SMALL HIGH JEEM
-        "\u06dc": (":", "#s", "S", "s"),     # ARABIC SMALL HIGH SEEN
-        "\u06df": ("@", "0", "0", "0"),      # ARABIC SMALL HIGH ROUNDED ZERO
-        "\u06e0": ('"', "0", "0", "0"),      # ARABIC SMALL HIGH UPRIGHT RECTANGULAR ZERO
-        "\u06e2": ("[", "#m", "M", "M"),     # ARABIC SMALL HIGH MEEM ISOLATED FORM
-        "\u06e3": (";", "#s", "S", "S"),     # ARABIC SMALL LOW SEEN
-        "\u06e5": (",", "#w", "W", "W"),     # ARABIC SMALL WAW
-        "\u06e6": (".", "#y", "Y", "Y"),     # ARABIC SMALL YEH
-        "\u06e8": ("!", "#n", "N", "N"),     # ARABIC SMALL HIGH NOON
-        "\u06ea": ("-", ".", ".", "."),      # ARABIC EMPTY CENTRE LOW STOP
-        "\u06eb": ("+", ".", ".", "."),      # ARABIC EMPTY CENTRE HIGH STOP
-        "\u06ec": ("%", ".", ".", "."),      # ARABIC ROUNDED HIGH STOP WITH FILLED CENTRE
-        "\u06ed": ("]", "#m", "M", "M"),     # ARABIC SMALL LOW MEEM
+        "\u064e": ("a", "a", "a", "a"),  # ARABIC FATHA
+        "\u064f": ("u", "u", "u", "u"),  # ARABIC DAMMA
+        "\u0650": ("i", "i", "i", "i"),  # ARABIC KASRA
+        "\u0651": ("~", "u", "u", "ūw"),  # ARABIC SHADDA
+        "\u0652": ("o", "a", "a", "a"),  # ARABIC SUKUN
+        "\u0653": ("^", "_a", "ā", "ā"),  # ARABIC MADDAH ABOVE
+        "\u0654": ("#", "'", "ʾ", "ā"),  # ARABIC HAMZA ABOVE
+        "\u0655": ("=", "'", "ʾ", "ā"),  # ARABIC HAMZA BELOW
+        "\u0660": ("0", "0", "0", "0"),  # ARABIC INDIC DIGIT ZERO
+        "\u0661": ("1", "1", "1", "1"),  # ARABIC INDIC DIGIT ONE
+        "\u0662": ("2", "2", "2", "2"),  # ARABIC INDIC DIGIT TWO
+        "\u0663": ("3", "3", "3", "3"),  # ARABIC INDIC DIGIT THREE
+        "\u0664": ("4", "4", "4", "4"),  # ARABIC INDIC DIGIT FOUR
+        "\u0665": ("5", "5", "5", "5"),  # ARABIC INDIC DIGIT FIVE
+        "\u0666": ("6", "6", "6", "6"),  # ARABIC INDIC DIGIT SIX
+        "\u0667": ("7", "7", "7", "7"),  # ARABIC INDIC DIGIT SEVEN
+        "\u0668": ("8", "8", "8", "8"),  # ARABIC INDIC DIGIT EIGHT
+        "\u0669": ("9", "9", "9", "9"),  # ARABIC INDIC DIGIT NINE
+        "\u0670": ("`", "~a", "ã", ""),  # ARABIC LETTER SUPERSCRIPT ALEF
+        "\u0671": ("{", "a", "a", "a"),  # ARABIC LETTER ALEF WASLA
+        "\u06af": ("G", "g", "g", "g"),  # ARABIC LETTER GAF
+        "\u06cc": ("J", "#y", "Y", "y"),  # ARABIC LETTER FARSI YEH
+        "\u06d6": (
+            "SlY",
+            "*sl/a",
+            "ṣlá",
+            "ṣla",
+        ),  # ARABIC SMALL HIGH LIGATURE SAD WITH LAM WITH ALEF MAKSURA
+        "\u06da": ("M", "#j", "J", "j"),  # ARABIC SMALL HIGH JEEM
+        "\u06dc": (":", "#s", "S", "s"),  # ARABIC SMALL HIGH SEEN
+        "\u06df": ("@", "0", "0", "0"),  # ARABIC SMALL HIGH ROUNDED ZERO
+        "\u06e0": ('"', "0", "0", "0"),  # ARABIC SMALL HIGH UPRIGHT RECTANGULAR ZERO
+        "\u06e2": ("[", "#m", "M", "M"),  # ARABIC SMALL HIGH MEEM ISOLATED FORM
+        "\u06e3": (";", "#s", "S", "S"),  # ARABIC SMALL LOW SEEN
+        "\u06e5": (",", "#w", "W", "W"),  # ARABIC SMALL WAW
+        "\u06e6": (".", "#y", "Y", "Y"),  # ARABIC SMALL YEH
+        "\u06e8": ("!", "#n", "N", "N"),  # ARABIC SMALL HIGH NOON
+        "\u06ea": ("-", ".", ".", "."),  # ARABIC EMPTY CENTRE LOW STOP
+        "\u06eb": ("+", ".", ".", "."),  # ARABIC EMPTY CENTRE HIGH STOP
+        "\u06ec": ("%", ".", ".", "."),  # ARABIC ROUNDED HIGH STOP WITH FILLED CENTRE
+        "\u06ed": ("]", "#m", "M", "M"),  # ARABIC SMALL LOW MEEM
     }
     """
     More Arabic transcriptions:
 
-    * column 1: `custom` [Quran-tanzil](http://tanzil.net/#1:1), slightly extended
-    * column 2/: `ascii` resp. `latin` plus diacritics also known as betacode.
-      We use a list compiled by
-      [Peter Verkinderen](https://pverkind.github.io/betacodeTranscriber/js/betacode.js)
-    * column 4: `standard` (Library of Congress) (to-be filled).
-      We use the
-      [arabic romanization list of 2012](https://www.loc.gov/catdir/cpso/romanization/arabic.pdf)
-      We refrain of from applying rules that cannot be computed without
-      lexical/grammatical/dialectical knowledge of the arabic language.
+    *   column 1: `custom` [Quran-tanzil](http://tanzil.net/#1:1), slightly extended
+    *   column 2: `ascii` resp. `latin` plus diacritics also known as betacode.
+        We use a list compiled by
+        [Peter Verkinderen](https://pverkind.github.io/betacodeTranscriber/js/betacode.js)
+    *   column 4: `standard` (Library of Congress) (to-be filled).
+        We use the
+        [arabic romanization list of 2012](https://www.loc.gov/catdir/cpso/romanization/arabic.pdf)
+        We refrain of from applying rules that cannot be computed without
+        lexical/grammatical/dialectical knowledge of the arabic language.
     """
 
     arabicTransQuran = {}
@@ -585,7 +592,7 @@ class Transcription:
     arabicTransLatin = {}
     arabicTransStandard = {}
 
-    for (ara, (qur, asc, lat, std)) in arabicTrans.items():
+    for ara, (qur, asc, lat, std) in arabicTrans.items():
         arabicTransQuran[ara] = qur
         arabicTransAscii[ara] = asc
         arabicTransLatin[ara] = lat
@@ -638,7 +645,7 @@ class Transcription:
 
         for u in sorted(Transcription.arabicTrans):
             (qur, asc, lat, std) = Transcription.arabicTrans[u]
-            for (k, v) in zip(arabicMap.keys(), Transcription.arabicTrans[u]):
+            for k, v in zip(arabicMap.keys(), Transcription.arabicTrans[u]):
                 arabicMap[k].setdefault(v, u)
                 arabicMapI[k][u] = v
 
@@ -649,12 +656,12 @@ class Transcription:
         pass
 
     def _comp(s):
-        for (d, c) in Transcription.decomp.items():
+        for d, c in Transcription.decomp.items():
             s = s.replace(d, c)
         return s
 
     def _decomp(s):
-        for (d, c) in Transcription.decomp.items():
+        for d, c in Transcription.decomp.items():
             s = s.replace(c, d)
         return s
 
@@ -668,11 +675,15 @@ class Transcription:
 
         Example:
 
-            Transcription.suffix_and_finales('71T_H@>@95REY00')
+        ``` python
+        Transcription.suffix_and_finales('71T_H@>@95REY00')
+        ```
 
         Output:
 
-            ('71T_H@>@95REy', '00\n')
+        ```
+        ('71T_H@>@95REy', '00\n')
+        ```
 
         Note that the `Y` has been replaced by `y`.
         """
@@ -738,26 +749,30 @@ class Transcription:
     def _ph_simple(m):
         return "å" if m.group(1) in "āo" else ""
 
-    # unicode normalization is harmful
+    # UNICODE normalization is harmful
     # if there is a combination of dagesh, vowel and accent.
 
     def suppress_space(word):
         """
         Given an ETCBC transliteration of a word,
-        match the end of the word for interpunction and spacing characters
-        (sof pasuq, paseq, nun hafukha, setumah, petuhah, space, no-space)
+        match the end of the word for punctuation and spacing characters
+        (`sof pasuq`, `paseq`, `nun hafukha`, `setumah`, `petuhah`, space, no-space)
 
         Example:
 
-            Transcription.suppress_space('B.:&')
-            Transcription.suppress_space('B.@R@74>')
-            Transcription.suppress_space('71T_H@>@95REY00')
+        ``` python
+        Transcription.suppress_space('B.:&')
+        Transcription.suppress_space('B.@R@74>')
+        Transcription.suppress_space('71T_H@>@95REY00')
+        ```
 
         Output:
 
-            <re.Match object; span=(3, 4), match='&'>
-            None
-            <re.Match object; span=(13, 15), match='00'>
+        ```
+        <re.Match object; span=(3, 4), match='&'>
+        None
+        <re.Match object; span=(13, 15), match='00'>
+        ```
         """
 
         return Transcription.noorigspace.search(word)
@@ -769,11 +784,15 @@ class Transcription:
 
         Example:
 
-            Transcription.to_etcbc_v('HAC.@MA73JIm')
+        ``` python
+        Transcription.to_etcbc_v('HAC.@MA73JIm')
+        ```
 
         Output:
 
-            HAC.@MAJIm
+        ```
+        HAC.@MAJIm
+        ```
         """
 
         return Transcription.remove_accent_pat.sub(Transcription._remove_accent, word)
@@ -786,11 +805,15 @@ class Transcription:
 
         Example:
 
-            Transcription.to_etcbc_c('HAC.@MA73JIm')
+        ``` python
+        Transcription.to_etcbc_c('HAC.@MA73JIm')
+        ```
 
         Output:
 
-            H#MJM
+        ```
+        H#MJM
+        ```
 
         Note that the pointed shin (`C`) is replaced by an unpointed one (`#`).
         """
@@ -808,17 +831,21 @@ class Transcription:
     def to_hebrew(word):
         """
         Given a transliteration of a fully pointed word,
-        produce the word in Unicode Hebrew.
+        produce the word in UNICODE Hebrew.
         Care will be taken that vowel pointing will be added to consonants
         before accent pointing.
 
         Example:
 
-            Transcription.to_hebrew('HAC.@MA73JIm')
+        ``` python
+        Transcription.to_hebrew('HAC.@MA73JIm')
+        ```
 
         Output:
 
-            הַשָּׁמַ֖יִם
+        ```
+        הַשָּׁמַ֖יִם
+        ```
         """
 
         word = Transcription.swap_accent_pat.sub(Transcription._swap_accent, word)
@@ -827,15 +854,19 @@ class Transcription:
     def to_hebrew_v(word):
         """
         Given a transliteration of a fully pointed word,
-        produce the word in Unicode Hebrew, but without the accents.
+        produce the word in UNICODE Hebrew, but without the accents.
 
         Example:
 
-            Transcription.to_hebrew_v('HAC.@MA73JIm')
+        ``` python
+        Transcription.to_hebrew_v('HAC.@MA73JIm')
+        ```
 
         Output:
 
-            הַשָּׁמַיִם
+        ```
+        הַשָּׁמַיִם
+        ```
         """
 
         return Transcription.trans_hebrew_pat.sub(
@@ -845,15 +876,19 @@ class Transcription:
     def to_hebrew_c(word):
         """
         Given a transliteration of a fully pointed word,
-        produce the word in Unicode Hebrew, but without the pointing.
+        produce the word in UNICODE Hebrew, but without the pointing.
 
         Example:
 
-            Transcription.to_hebrew_c('HAC.@MA73JIm')
+        ``` python
+        Transcription.to_hebrew_c('HAC.@MA73JIm')
+        ```
 
         Output:
 
-            השמימ
+        ```
+        השמימ
+        ```
 
         Note that final consonant forms are not being used.
         """
@@ -865,17 +900,21 @@ class Transcription:
     def to_hebrew_x(word):
         """
         Given a transliteration of a fully pointed word,
-        produce the word in Unicode Hebrew, but without the pointing.
+        produce the word in UNICODE Hebrew, but without the pointing.
         Vowel pointing and accent pointing will be applied in the order given
         by the input word.
 
         Example:
 
-            Transcription.to_hebrew_x('HAC.@MA73JIm')
+        ``` python
+        Transcription.to_hebrew_x('HAC.@MA73JIm')
+        ```
 
         Output:
 
-            הַשָּׁמַ֖יִם
+        ```
+        הַשָּׁמַ֖יִם
+        ```
         """
 
         return Transcription.trans_hebrew_pat.sub(Transcription._map_hebrew, word)
@@ -887,35 +926,42 @@ class Transcription:
 
         Example:
 
-            Transcription.ph_simplify('ʔᵉlōhˈîm')
-            Transcription.ph_simplify('māqˈôm')
-            Transcription.ph_simplify('kol')
+        ``` python
+        Transcription.ph_simplify('ʔᵉlōhˈîm')
+        Transcription.ph_simplify('māqˈôm')
+        Transcription.ph_simplify('kol')
+        ```
 
         Output:
 
-            ʔlōhîm
-            måqôm
-            kål
+        ```
+        ʔlōhîm
+        måqôm
+        kål
+        ```
 
-        Note that the simplified version transliterates the qamets gadol and qatan
-        to the same
-        character.
+        Note that the simplified version transliterates the `qamets gadol` and `qatan`
+        to the same character.
         """
 
         return Transcription.ph_simple_pat.sub(Transcription._ph_simple, pword)
 
     def from_hebrew(self, word):
         """
-        Given a fully pointed word in Unicode Hebrew,
+        Given a fully pointed word in UNICODE Hebrew,
         produce the word in ETCBC transliteration.
 
         Example:
 
-            tr.from_hebrew('הָאָֽרֶץ׃')
+        ``` python
+        tr.from_hebrew('הָאָֽרֶץ׃')
+        ```
 
         Output:
 
-            H@>@95REy00
+        ```
+        H@>@95REy00
+        ```
         """
 
         return "".join(
@@ -925,31 +971,39 @@ class Transcription:
     def to_syriac(self, word):
         """
         Given a word in ETCBC transliteration,
-        produce the word in Unicode Syriac.
+        produce the word in UNICODE Syriac.
 
         Example:
 
-            tr.to_syriac('MKSJN')
+        ``` python
+        tr.to_syriac('MKSJN')
+        ```
 
         Output:
 
-            ܡܟܣܝܢ
+        ```
+        ܡܟܣܝܢ
+        ```
         """
 
         return Transcription.trans_syriac_pat.sub(Transcription._map_syriac, word)
 
     def from_syriac(self, word):
         """
-        Given a word in Unicode Syriac,
+        Given a word in UNICODE Syriac,
         produce the word in ETCBC transliteration.
 
         Example:
 
-            tr.from_syriac('ܡܟܣܝܢ')
+        ``` python
+        tr.from_syriac('ܡܟܣܝܢ')
+        ```
 
         Output:
 
-            MKSJN
+        ```
+        MKSJN
+        ```
         """
 
         return "".join(self.syriac_mappingi.get(x, x) for x in word)
@@ -967,31 +1021,39 @@ class Transcription:
     def to_arabic(word):
         """
         Given a word in transliteration,
-        produce the word in Unicode Arabic.
+        produce the word in UNICODE Arabic.
 
         Example:
 
-            tr.to_arabic('bisomi')
+        ``` python
+        tr.to_arabic('bisomi')
+        ```
 
         Output:
 
-            بِسْمِ
+        ```
+        بِسْمِ
+        ```
         """
 
         return "".join(Transcription.arabic_mapping.get(x, x) for x in word)
 
     def from_arabic(word):
         """
-        Given a word in Unicode Arabic,
+        Given a word in UNICODE Arabic,
         produce the word in transliteration.
 
         Example:
 
-            tr.from_arabic('بِسْمِ')
+        ``` python
+        tr.from_arabic('بِسْمِ')
+        ```
 
         Output:
 
-            bisomi
+        ```
+        bisomi
+        ```
         """
 
         return "".join(Transcription.arabic_mappingi.get(x, x) for x in word)

@@ -1,12 +1,12 @@
 # Display design
 
-In Text-Fabric we want to display pieces of corpus material in insightful ways.
+In TF we want to display pieces of corpus material in insightful ways.
 
 We have implemented two types of displaying:
 
-*   **plain**: almost as the plain text of nodes, but with optional in-line 
+*   `plain`: almost as the plain text of nodes, but with optional in-line 
     formatting
-*   **pretty**: almost as a tree-bank view, but for the fact that the text objects
+*   `pretty`: almost as a tree-bank view, but for the fact that the text objects
     are not merely trees, but graphs.
 
 In both types of display it is possible to optionally show node numbers to the
@@ -19,7 +19,7 @@ intermediate levels, etc.
 Whatever we want to display, we have to display in HTML, which is basically a
 hierarchically organized set of presentation elements.
 
-But a node and its constellation of relevant neighbourhood nodes
+But a node and its constellation of relevant neighborhood nodes
 does not have a hierarchical structure, in general, that is.
 
 The unravel algorithm solves the problem of turning a node and its associated piece
@@ -28,7 +28,7 @@ of the slots is preserved.
 
 ![unravel](../images/DisplayDesign/DisplayDesign.001.png)
 
-Unravelling is the core of the display algorithm in Text-Fabric.
+Unraveling is the core of the display algorithm in TF.
 When nodes violate the hierarchy, the algorithm *chunks* and *fragments* them
 and *stacks* the fragments into a tree.
 
@@ -40,14 +40,14 @@ straightforward code, see `tf.advanced.render.render`.
 
 Here is an account of how *unravel* works and which challenges it has to meet.
 
-## Neighbourhood
+## Neighborhood
 
 When we display a node, we consider all the slots to which this node is linked,
 and then collect all other nodes in the corpus that share one or more of these slots.
 (see `tf.core.locality.Locality.i`).
 
 !!! explanation "with some subtleties"
-    We exclude some nodes from the neighbourhood, such as lexeme nodes, which have
+    We exclude some nodes from the neighborhood, such as lexeme nodes, which have
     characteristics that require special treatment.
     We also exclude nodes of types that have a higher rank (read on).
 
@@ -81,7 +81,7 @@ one, while remaining completely disjoint.
 
 ![chunking](../images/DisplayDesign/DisplayDesign.003.png)
 
-We divide each node in our neighbourhood into its maximal contiguous chunks.
+We divide each node in our neighborhood into its maximal contiguous chunks.
 Such chunk are specified by tuples `(n, b, e)`, where `n` is the node (an integer),
 and `b` is the first slot of the chunk and `e` its last slot.
 
@@ -97,7 +97,7 @@ Here is an example from a corpus of Old Babylonian letters (cuneiform):
 
 ![overlap](../images/DisplayDesign/DisplayDesign.004.png)
 
-> [Tablet P509373 reverse:6'](https://cdli.ucla.edu/search/search_results.php?SearchMode=Text&ObjectID=P509373),
+> [`Tablet P509373 reverse:6'`](https://cdli.ucla.edu/search/search_results.php?SearchMode=Text&ObjectID=P509373),
 > example taken from [notebook](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/zz_test/062-obb-clusters.ipynb).
 
 Here you see a cluster that does not respect a word boundary.
@@ -107,7 +107,7 @@ Here you see a cluster that does not respect a word boundary.
 We use the word boundary to break up the cluster in question into two *fragments*.
 A *fragment* is, like a chunk, a continuous part of a node, but not necessarily maximal.
 
-We fragment all node chunks in our neighbourhood.
+We fragment all node chunks in our neighborhood.
 
 !!! explanation "with some subtleties"
     We work from higher levels to lower levels: node chunks of higher levels fragment
@@ -124,9 +124,9 @@ In the Hebrew Bible, as encoded in the
 [BHSA](https://github.com/ETCBC/bhsa), the usual sequence of division is:
 sentence, sentence atom, clause, clause atom, phrase, phrase atom word.
 Look at the middle clause. It coincides with its clause atom, phrase and phrase atom.
-Without ranking information, Text-Fabric cannot know which of these is the outer node and which
+Without ranking information, TF cannot know which of these is the outer node and which
 the inner node.
-Text-Fabric has computed this information when it loaded the corpus for the first time,
+TF has computed this information when it loaded the corpus for the first time,
 based on the average size of nodes. It is also possible that the corpus designer has overridden
 this by an explicit ranking in the settings of the corpus app.
 

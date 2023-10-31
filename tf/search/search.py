@@ -26,7 +26,7 @@ class Search:
             Before the search engine retrieves result tuples of nodes,
             there is a process to narrow down the search space.
 
-            See `tf.about.searchdesign` and and remember that we use the term *yarn* for
+            See `tf.about.searchdesign` and remember that we use the term *yarn* for
             the sets of candidate nodes from which we stitch our results together.
 
             *Edge spinning* is the process of
@@ -91,11 +91,11 @@ class Search:
             by a sample.
 
             !!! example "Example"
-                Suppose we set the yarnRatio to 1.5.
+                Suppose we set the `yarnRatio` to 1.5.
                 Then, if we have yarns of 100,000 and 10,000 members,
                 with a relation between them with spread 5,
                 then 100,000 / 10,000 / 5 = 2.
-                This is higher than the yarnRatio of 1.5,
+                This is higher than the `yarnRatio` of 1.5,
                 so the search engine decides that edge spinning is worth it.
 
                 The reasoning is that the 10,000 nodes in the smallest yarn are expected
@@ -103,10 +103,10 @@ class Search:
                 and so we can achieve a significant reduction.
 
             If you have a very slow query, and you think that a bit more edge spinning
-            helps, decrease the yarnRatio towards 0.
+            helps, decrease the `yarnRatio` towards 0.
 
             If you find that a lot of queries spend too much time in edge spinning,
-            increase the yarnRatio.
+            increase the `yarnRatio`.
 
         tryLimitFrom: integer
             In order to determine the spreads of the relations, TF takes
@@ -181,8 +181,8 @@ class Search:
             If `True` or `1`, the result is a set of things that match the
             top-level element of the `query`.
 
-            If `2` or a bigger number *n*, return the set of truncated result tuples:
-            only the first *n* members of each tuple is retained.
+            If `2` or a bigger number `n`, return the set of truncated result tuples:
+            only the first `n` members of each tuple is retained.
 
             If `False` or `0`, a sorted list of all result tuples will be returned.
 
@@ -203,7 +203,7 @@ class Search:
         -------
         generator | tuple
             Each result is a tuple of nodes, where each node corresponds to an
-            *atom*-line in your search template.about.searchusage`).
+            *atom*-line in your search template (see `tf.about.searchusage`).
 
             If `limit` is not `None`, a *generator* is returned,
             which yields the results one by one.
@@ -257,10 +257,10 @@ class Search:
         The search space will be narrowed down and a plan for retrieving the results
         will be set up.
 
-        If the search template query has quantifiers, the asscociated search templates
+        If the search template query has quantifiers, the associated search templates
         will be constructed and executed. These searches will be reported clearly.
 
-        The resulting plan can be viewd by `tf.search.search.Search.showPlan`.
+        The resulting plan can be viewed by `tf.search.search.Search.showPlan`.
 
         Parameters
         ----------
@@ -283,8 +283,8 @@ class Search:
             If `True` or `1`, the result is a set of things that match the
             top-level element of the search template.
 
-            If `2` or a bigger number *n*, return the set of truncated result tuples:
-            only the first *n* members of each tuple is retained.
+            If `2` or a bigger number `n`, return the set of truncated result tuples:
+            only the first `n` members of each tuple is retained.
 
             If `False` or `0`, a sorted list of all result tuples will be returned.
 
@@ -343,7 +343,7 @@ class Search:
         -------
         generator | tuple
             Each result is a tuple of nodes, where each node corresponds to an
-            *atom*-line in your search template.about.searchusage`).
+            *atom*-line in your search template (see `tf.about.searchusage`).
 
             If `limit` is not `None`, a *generator* is returned,
             which yields the results one by one.
@@ -356,10 +356,12 @@ class Search:
         !!! example "Iterating over the `fetch()` generator"
             You typically fetch results by saying:
 
-                i = 0
-                for tup in S.results():
-                    do_something(tup[0])
-                    do_something_else(tup[1])
+            ```
+            i = 0
+            for tup in S.results():
+                do_something(tup[0])
+                do_something_else(tup[1])
+            ```
 
             Alternatively, you can set the `limit` parameter, to ask for just so many
             results. They will be fetched, and when they are all collected,
@@ -368,7 +370,9 @@ class Search:
         !!! example "Fetching a limited amount of results"
             This
 
-                S.fetch(limit=10)
+            ```
+            S.fetch(limit=10)
+            ```
 
             gives you the first 10 results without further ado.
         """
@@ -489,7 +493,7 @@ class Search:
         Returns
         -------
         string
-            The result indicats where the tuple occurs in terms of sections,
+            The result indicates where the tuple occurs in terms of sections,
             and what text is associated with the tuple.
 
         Notes

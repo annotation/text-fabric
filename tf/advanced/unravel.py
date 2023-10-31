@@ -1,7 +1,7 @@
 """
 # Unravel
 
-Unraveling means to transform a neighbourhood of nodes into a tree of node fragment.
+Unraveling means to transform a neighborhood of nodes into a tree of node fragment.
 That sounds simple, but quite a few ideas have to work together to make it work.
 
 It is described at length in `tf.about.displaydesign`.
@@ -48,7 +48,7 @@ OuterSettings = namedtuple(  # noqa: F811
 __pdoc__["OuterSettings.slotType"] = "The slot type of the dataset."
 __pdoc__["OuterSettings.ltr"] = "writing direction."
 __pdoc__["OuterSettings.fmt"] = "the currently selected text format."
-__pdoc__["OuterSettings.textClsDefault"] = "Default css class for full text."
+__pdoc__["OuterSettings.textClsDefault"] = "Default CSS class for full text."
 __pdoc__["OuterSettings.textMethod"] = (
     "Method to print text of a node according to a text format: "
     "`tf.core.text.Text.text`"
@@ -74,7 +74,7 @@ __pdoc__[
 ] = "Set of all edge features: `tf.core.api.Api.Eall(warp=False)`"
 __pdoc__[
     "OuterSettings.browsing"
-] = "whether we work for the Text-Fabric browser or for a Jupyter notebook"
+] = "whether we work for the TF browser or for a Jupyter notebook"
 __pdoc__[
     "OuterSettings.webLink"
 ] = "Method to produce a web link to a node: `tf.advanced.links.webLink`"
@@ -183,7 +183,7 @@ class TreeInfo:
 
 
 def unravel(app, n, isPlain=True, _inTuple=False, explain=False, **options):
-    """Unravels a node and its graph-neighbourhood into a tree of fragments.
+    """Unravels a node and its graph-neighborhood into a tree of fragments.
 
     Parameters
     ----------
@@ -206,11 +206,11 @@ def unravel(app, n, isPlain=True, _inTuple=False, explain=False, **options):
     chunk: tuple
         `(node, (begin slot, end slot))`
         The top of the tree has `None`
-    info: TreeInfo
+    info: object
         dressing information in the form of key value pairs, among which:
         `options` (the display options that are in force), `settings` (properties
         of node independent properties), `props` (properties
-        of the node of the chunk), `boundaryCls` (css info for the boundaries of
+        of the node of the chunk), `boundaryCls` (CSS info for the boundaries of
         the chunk). The top of the tree has only has options and settings.
     children: list
         subtrees where each subtree is again a tuple of chunk, info and children.
@@ -544,7 +544,7 @@ def _unravel(app, isPretty, options, n, _inTuple=False, explain=False):
 def _getSplitPoints(pChunk, qChunk):
     """Determines where the boundaries of one chunk cut through another chunk.
 
-    The splitpoint is the index where the second part starts.
+    The splitting point is the index where the second part starts.
     So the split point is always greater than the start point.
     """
 

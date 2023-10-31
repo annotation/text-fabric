@@ -4,17 +4,17 @@
 Where the advanced API really shines is in displaying nodes.
 There are basically two ways of displaying a node:
 
-* *plain*: just the associated text of a node, or if that would be too much,
-  an identifying label of that node (e.g. for books, chapters and lexemes).
-* *pretty*: a display of the internal structure of the textual object a node
-  stands for. That structure is adorned with relevant feature values.
+*   *plain*: just the associated text of a node, or if that would be too much,
+    an identifying label of that node (e.g. for books, chapters and lexemes).
+*   *pretty*: a display of the internal structure of the textual object a node
+    stands for. That structure is adorned with relevant feature values.
 
 These display methods are available for nodes, tuples of nodes, and iterables
 of tuples of nodes (think: query results).
 The names of these methods are
 
-* `plain`, `plainTuple`, and `table`;
-* `pretty`, `prettyTuple` and `show`.
+*   `plain`, `plainTuple`, and `table`;
+*   `pretty`, `prettyTuple` and `show`.
 
 In plain and pretty displays, certain parts can be *highlighted*, which is
 good for displaying query results where the parts that correspond directly to the
@@ -30,9 +30,9 @@ when you are done.
 All calls to the display functions look for the values for these parameters in the
 following order:
 
-* optional parameters passed directly to the function,
-* values as set up by previous calls to `displaySetup()`,
-* corpus dependent default values configured by the advanced API.
+*   optional parameters passed directly to the function,
+*   values as set up by previous calls to `displaySetup()`,
+*   corpus dependent default values configured by the advanced API.
 
 See `tf.advanced.options` for a list of display parameters.
 
@@ -96,7 +96,7 @@ def displayApi(app, silent=SILENT_D):
     ----------
     app: obj
         The high-level API object
-    silent: string, optional tf.core.timestamp.SILENT_D`
+    silent: string, optional `tf.core.timestamp.SILENT_D`
         See `tf.core.timestamp.Timestamp`
         Normally this parameter is taken from the app,
         but when we do an `A.reuse()` we force `silent="deep"`.
@@ -207,12 +207,12 @@ def displayReset(app, *options):
 def loadCss(app):
     """Load the CSS for this app.
 
-    If we are in the TF-browser, the generic CSS is already provided, we only
+    If we are in the TF browser, the generic CSS is already provided, we only
     need to respond with the app-specific CSS: we return it as string.
     The flag `app._browse` is used to steer us into this case.
 
     Otherwise, if we are in a notebook,
-    we collect the complete CSS code from Text-Fabric and the app,
+    we collect the complete CSS code from TF and the app,
     and we add a piece to override some of the notebook CSS for tables,
     which specify a table layout with right aligned cell contents by default.
 
@@ -259,14 +259,14 @@ def loadCss(app):
 def getCss(app):
     """Export the CSS for this app.
 
-    We collect the complete CSS code from Text-Fabric and the app,
+    We collect the complete CSS code from TF and the app,
     and we add a piece to override some of the notebook CSS for tables,
     which specify a table layout with right aligned cell contents by default.
 
     Returns
     -------
     None | string
-        CSS code, including a surrounding `<style>` element.
+        CSS code, including a surrounding `style` element.
     """
 
     aContext = app.context
@@ -289,9 +289,9 @@ def getCss(app):
 def loadToolCss(app, tool, extraCss):
     """Load the Tool CSS for this app.
 
-    We assume that the geberic CSS and the app-specific CSS are already in place.
+    We assume that the generic CSS and the app-specific CSS are already in place.
 
-    If we are in the TF-browser, we return the CSS as string.
+    If we are in the TF browser, we return the CSS as string.
     The flag `app._browse` is used to steer us into this case.
 
     Otherwise, if we are in a notebook, we load the resulting CSS into the notebook.
@@ -335,7 +335,7 @@ def getToolCss(app, tool):
     Returns
     -------
     None | string
-        CSS code, including a surrounding `<style>` element.
+        CSS code, including a surrounding `style` element.
     """
     thisToolDisplayBase = TOOL_DISPLAY_BASE.format(tool)
     cssPath = f"{dirNm(dirNm(abspath(__file__)))}" f"{thisToolDisplayBase}"
@@ -350,13 +350,13 @@ def getToolCss(app, tool):
 
 
 def export(app, tuples, toDir=None, toFile="results.tsv", **options):
-    """Exports an iterable of tuples of nodes to an Excel friendly `.tsv` file.
+    """Exports an iterable of tuples of nodes to an Excel friendly TSV file.
 
     !!! hint "Examples"
         See for detailed examples the
-        [exportExcel (etcbc/bhsa)](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/exportExcel.ipynb)
+        [`exportExcel` (`ETCBC/bhsa`)](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/exportExcel.ipynb)
         and
-        [exportExcel (Nino-cunei/oldbabylonian)](https://nbviewer.jupyter.org/github/Nino-cunei/oldbabylonian/blob/master/tutorial/exportExcel.ipynb)
+        [`exportExcel` (`Nino-cunei/oldbabylonian`)](https://nbviewer.jupyter.org/github/Nino-cunei/oldbabylonian/blob/master/tutorial/exportExcel.ipynb)
         notebooks.
 
     Parameters
@@ -370,40 +370,42 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
         By default it is your Downloads folder.
 
         If the directory does not exist, it will be created.
-    toFile: boolean, optional results.tsv
+    toFile: boolean, optional `results.tsv`
         The name of the exported file.
     options: dict
         Display options, see `tf.advanced.options`.
 
         !!! note "details"
-            * `condensed`
-              Has no effect. Exports to Excel will not be condensed, because the
-              number of columns is variable per row in that case.
-              Excel itself has nice possibilities for grouping rows.
-              You can also filter your tuples by means of hand-coding
-              before exporting them.
-            * `condenseType`
-              The condense type influences for which nodes
-              the full text will be exported.
-              Only nodes that are "smaller" than the condense type will have
-              their full text exported.
-            * `fmt`
-              This display parameter specifies the text format for any nodes
-              that trigger a text value to be exported.
-            * `tupleFeatures`
-              This is a display parameter that steers which features are exported
-              with each member of the tuples in the list.
+            *   `condensed`
+                Has no effect. Exports to Excel will not be condensed, because the
+                number of columns is variable per row in that case.
+                Excel itself has nice possibilities for grouping rows.
+                You can also filter your tuples by means of hand-coding
+                before exporting them.
+            *   `condenseType`
+                The condense type influences for which nodes
+                the full text will be exported.
+                Only nodes that are "smaller" than the condense type will have
+                their full text exported.
+            *   `fmt`
+                This display parameter specifies the text format for any nodes
+                that trigger a text value to be exported.
+            *   `tupleFeatures`
+                This is a display parameter that steers which features are exported
+                with each member of the tuples in the list.
 
-              If the iterable of tuples are the results of a query you have just
-              run, then an appropriate call to `displaySetup(tupleFeatures=...)`
-              has already been issued, so you can just say:
+                If the iterable of tuples are the results of a query you have just
+                run, then an appropriate call to `displaySetup(tupleFeatures=...)`
+                has already been issued, so you can just say:
 
-                 results = A.search(query)`
-                 A.export(results)`
+                ```
+                results = A.search(query)
+                A.export(results)
+                ```
 
     Results
     -------
-    A file *toFile* in directory *toDir* with the following content:
+    A file `toFile` in directory `toDir` with the following content:
 
     There will be a row for each tuple.
 
@@ -413,20 +415,20 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
 
     The columns are:
 
-    * **R** the sequence number of the result tuple in the result list
-    * **S1 S2 S3** the section as book, chapter, verse, in separate columns;
-      the section is the section of the first non book/chapter node in the tuple
-    * **NODEi TYPEi** the node and its type,
-      for each node **i** in the result tuple
-    * **TEXTi** the full text of node **i**,
-      if the node type admits a concise text representation;
-      the criterion is whether the node type has a type not bigger than the
-      default condense type, which is app specific.
-      If you pass an explicit `condenseType=`*xxx* as display parameter,
-      then this is the reference condenseType on which the decision is based.
-    * **XFi** the value of extra feature **XF** for node **i**,
-      where these features have been declared by a previous
-      displaySetup(tupleFeatures=...)`
+    *   `R` the sequence number of the result tuple in the result list
+    *   `S1 S2 S3` the section as book, chapter, verse, in separate columns;
+        the section is the section of the first non book / chapter node in the tuple
+    *   `NODEi TYPEi` the node and its type,
+        for each node `i` in the result tuple
+    *   `TEXTi` the full text of node `i`,
+        if the node type admits a concise text representation;
+        the criterion is whether the node type has a type not bigger than the
+        default condense type, which is app specific.
+        If you pass an explicit `condenseType=xxx` as display parameter,
+        then this is the reference `condenseType` on which the decision is based.
+    *   `XFi` the value of extra feature `XF` for node `i`,
+        where these features have been declared by a previous
+        `displaySetup(tupleFeatures=...)`
 
     If the input tuples are not uniform, the layout is more primitive.
     There will be no header column, because the number of columns may vary per row.
@@ -486,7 +488,7 @@ def table(app, tuples, _asString=False, **options):
     Every row is prepended with the sequence number in the iterable,
     and then displayed by `plainTuple`
 
-    !!! hint "condense, condenseType"
+    !!! hint "`condense`, `condenseType`"
         You can condense the list first to containers of `condenseType`,
         before displaying the list.
         Pass the display parameters `condense` and `condenseType`.
@@ -500,7 +502,7 @@ def table(app, tuples, _asString=False, **options):
         Display options, see `tf.advanced.options`.
     _asString: boolean, optional False
         Whether to deliver the result as a HTML string or to display it directly
-        inside a notebook. When the TF-browser uses this function it needs the
+        inside a notebook. When the TF browser uses this function it needs the
         HTML string.
     """
 
@@ -604,11 +606,13 @@ def plainTuple(
         If *seq* equals *position*, the tuple is in focus.
         The effect is to add the CSS class *focus* to the output HTML
         for the row of this tuple.
-    opened:  booolean, optional False
+    opened:  boolean, optional False
         Whether this tuple should be expandable to a `pretty` display.
         The normal output of this row will be wrapped in a
 
-           <details><summary>plain</summary>pretty</details>`
+        ```
+        <details><summary>plain</summary>pretty</details>
+        ```
 
         pattern, so that the user can click a triangle to switch between plain
         and pretty display.
@@ -619,13 +623,13 @@ def plainTuple(
         Display options, see `tf.advanced.options`.
     _asString: boolean, optional False
         Whether to deliver the result as a HTML string or to display it directly
-        inside a notebook. When the TF-browser uses this function it needs the
+        inside a notebook. When the TF browser uses this function it needs the
         HTML string.
 
     Result
     ------
-    html string or `None`
-        Depending on *asString* above.
+    string or `None`
+        Depending on `asString` above.
     """
 
     display = app.display
@@ -787,7 +791,7 @@ def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
         not be displayed in full.
     _asString: boolean, optional False
         Whether to deliver the result as a HTML string or to display it directly
-        inside a notebook. When the TF-browser uses this function it needs the
+        inside a notebook. When the TF browser uses this function it needs the
         HTML string.
     explain: boolean, optional False
         Whether to print a trace of which nodes have been visited and how these
@@ -795,7 +799,7 @@ def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
 
     Result
     ------
-    html string or `None`
+    string or `None`
         Depending on `_asString` above.
     """
 
@@ -810,7 +814,7 @@ def show(app, tuples, _asString=False, **options):
 
     The elements of the list are displayed by `A.prettyTuple()`.
 
-    !!! hint "condense, condenseType"
+    !!! hint "`condense`, `condenseType`"
         You can condense the list first to containers of `condenseType`,
         before displaying the list.
         Pass the display parameters `condense` and `condenseType`.
@@ -822,14 +826,14 @@ def show(app, tuples, _asString=False, **options):
         The integers are the nodes, together they form a table.
     _asString: boolean, optional False
         Whether to deliver the result as a HTML string or to display it directly
-        inside a notebook. When the TF-browser uses this function it needs the
+        inside a notebook. When the TF browser uses this function it needs the
         HTML string.
     options: dict
         Display options, see `tf.advanced.options`.
 
     Result
     ------
-    html string or `None`
+    string or `None`
         When used for the TF browser (`app._browse` is true),
         or when `_asString` is True, the result is returned
         as HTML. Otherwise the result is directly displayed in a notebook.
@@ -897,14 +901,14 @@ def prettyTuple(app, tup, seq=None, _asString=False, item=RESULT, **options):
         A name for the tuple: it could be a result, or a chapter, or a line.
     _asString: boolean, optional False
         Whether to deliver the result as a HTML string or to display it directly
-        inside a notebook. When the TF-browser uses this function it needs the
+        inside a notebook. When the TF browser uses this function it needs the
         HTML string.
     options: dict
         Display options, see `tf.advanced.options`.
 
     Result
     ------
-    html string or `None`
+    string or `None`
         When used for the TF browser (`app._browse` is true),
         or when `_asString` is True, the result is returned
         as HTML. Otherwise the result is directly displayed in a notebook.
@@ -965,12 +969,12 @@ def pretty(app, n, explain=False, _asString=False, **options):
         The following `tf.advanced.options`
         are particularly relevant to pretty displays:
 
-        * `condenseType`: the standard container to display nodes in;
-        * `full`: whether to display a reference to the material or the material itself;
-        * `extraFeatures`: additional node/edge features to  display
-        * `edgeFeatures`: which edge features maybe displayed
-        * `edgeHighlights`: highlight specs for edges
-        * `tupleFeatures`: additional features to  display (primarily for `export`).
+        *   `condenseType`: the standard container to display nodes in;
+        *   `full`: whether to display a reference to the material or the material itself;
+        *   `extraFeatures`: additional node / edge features to  display
+        *   `edgeFeatures`: which edge features maybe displayed
+        *   `edgeHighlights`: highlight specs for edges
+        *   `tupleFeatures`: additional features to  display (primarily for `export`).
 
     Parameters
     ----------
@@ -986,7 +990,7 @@ def pretty(app, n, explain=False, _asString=False, **options):
 
     Result
     ------
-    html string or `None`
+    string or `None`
         When used for the TF browser (`app._browse` is true),
         or when `_asString` is True, the result is returned
         as HTML.

@@ -26,7 +26,7 @@ for:
 
 *   `tf.browser.ner.power`: the API for users to manipulate annotations in their
     own programs, especially in a Jupyter notebook.
-*   `tf.browser.ner.web`: Flask app that routes urls to controller functions.
+*   `tf.browser.ner.web`: Flask app that routes URLs to controller functions.
 
 `web` makes use of the following modules that are not needed by `power`:
 
@@ -47,7 +47,7 @@ already mentioned under `annotate` and its parent classes:
     syntax.
 
 !!! note "Class hierarchy"
-    The classes ``Settings`, `Corpus`, `Data`, `Sets`, `Show`, `Annotate`,
+    The classes `Settings`, `Corpus`, `Data`, `Sets`, `Show`, `Annotate`,
     `PowerNER` form one hierarchy.
     So an object of class `PowerNER` has access to all methods of these classes.
 
@@ -91,7 +91,7 @@ class Annotate(Sets, Show):
         """Entity annotation.
 
         Basic methods to handle the various aspects of entity annotation.
-        These methods can be used by code that runs in the Text-Fabric browser
+        These methods can be used by code that runs in the TF browser
         and by code that runs in a Jupyter notebook.
 
         This class handles data, it does not contain code to generate HTML.
@@ -102,7 +102,7 @@ class Annotate(Sets, Show):
         and switch between them.
 
         We consider the corpus as a list of buckets (typically level-3 sectional
-        units; in TEI-derived corpora called `chunk`s, being generalizations of
+        units; in TEI-derived corpora called `chunk`, being generalizations of
         `p` (paragraph) elements). What type exactly the buckets are is configured
         in the `ner/config.yaml` file.
 
@@ -117,7 +117,7 @@ class Annotate(Sets, Show):
             If None, no data is handed over, and a fresh data store will be
             created by an ancestor class (Data)
         browse: boolean, optional False
-            If True, the object is informed that it is run by the Text-Fabric
+            If True, the object is informed that it is run by the TF
             browser. This will influence how results are reported back.
         """
         self.app = app
@@ -260,7 +260,7 @@ class Annotate(Sets, Show):
 
             *   the TF node of the bucket;
             *   tokens: the tokens of the bucket, each token is a tuple consisting
-                of the TF-slot of the token and its string value;
+                of the TF slot of the token and its string value;
             *   matches: the match positions of the found occurrences or entity;
             *   positions: the token positions of where the text of the bucket
                 starts matching the `bFindRe`;

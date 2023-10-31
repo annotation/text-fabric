@@ -1,9 +1,9 @@
 """
 # Start the TF browser
 
-What the `text-fabric` script does is the same as:
+What the `tf` script does is the same as:
 
-```sh
+``` sh
 python -m tf.browser.start
 ```
 
@@ -11,14 +11,14 @@ During start up the following happens:
 
 Load TF corpus data.
 :    This can take a while.
-    When it has loaded the data, it hands the TF API over to the webserver.
+    When it has loaded the data, it hands the TF API over to the web server.
 
 Start TF web server
 :   With the TF data in hand the TF web server is started.
 
 Load web page
 :   After a short while, the default web browser will be started
-    with a url and port at which the
+    with a URL and port at which the
     web server will listen. You see your browser being started up
     and the TF page being loaded.
 
@@ -40,7 +40,7 @@ first argument of the `use()` function:
 *   `app:path/to/app`
 *   `data:path/to/data`
 
-The following arguments of the `use()` function can be used on the command line,
+The following arguments of the `use()` function can be used on the command-line,
 prepended with `--`:
 
 *   `--checkout`
@@ -55,17 +55,17 @@ The following argument does not come from the `use()` function:
 *   `--tool`
 
 If you pass `--tool=ner` for example, the TF browser opens navigated to the
-the *ner* tool page (named entity annotator).
+`ner` tool page (named entity annotator).
 
 ## Implementation notes
 
-Different corpora will use different ports for webserver.
+Different corpora will use different ports for web server.
 
 The ports are computed from the `org`, `repo` and `path` arguments with which
-text-fabric is called.
+`tf` is called.
 
-*   Invocations of text-fabric with different corpora lead to different ports
-*   Repeated invocations of text-fabric with the same corpus lead to the same port,
+*   Invocations of `tf` with different corpora lead to different ports
+*   Repeated invocations of `tf` with the same corpus lead to the same port,
     provided the previous invocation has been terminated.
 """
 
@@ -103,11 +103,11 @@ tf app:/path/to/app --locations=locations-string [--modules=modules-string]
 The following ones do the same but are deprecated:
 
 text-fabric
-text-fabric --help
-text-fabric -v
+tf --help
+tf -v
 
-text-fabric org/repo
-text-fabric app:/path/to/app --locations=locations-string [--modules=modules-string]
+tf org/repo
+tf app:/path/to/app --locations=locations-string [--modules=modules-string]
 
 where all args are optional and args have one of these forms:
 
@@ -128,7 +128,7 @@ Additional options
     installed, it opens in the default browser.
     If this option is not passed, the interface opens in the default browser.
   debug
-    The webserver runs in debug mode: if the TF code is modified, the webserver
+    The web server runs in debug mode: if the TF code is modified, the web server
     reloads itself automatically.
     Only relevant for TF developers.
 
@@ -136,11 +136,16 @@ EFFECT
 
 See https://annotation.github.io/text-fabric/tf/browser/start.html
 
-If called without org/repo, --backend=xxx, --checkout=yyy,
+If called without
+
+```
+org/repo, --backend=xxx, --checkout=yyy,
+```
+
 the current directory is used to determine a clone of a repo containing a TF dataset.
 If that is found, the TF browser will be started for that dataset.
 
-If an org/repo is given, a TF browser for that org/repo is started.
+If an `org/repo` is given, a TF browser for that `org/repo` is started.
 
 The default browser will be opened, except when -noweb is passed.
 

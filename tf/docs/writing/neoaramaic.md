@@ -87,13 +87,13 @@ of the table below.
 
 **Legend**
 
-**lt** = *lite*
+`lt` = `lite`
 
-**fz** = *fuzzy*
+`fz` = `fuzzy`
 
-**fzUr** = *fuzzy Urmi*
+`fzUr` = `fuzzy Urmi`
 
-**є** = empty
+`є` = empty
 
 
 <pre class="chars">

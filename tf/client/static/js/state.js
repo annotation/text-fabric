@@ -148,7 +148,7 @@ export class StateProvider {
       jobName: null,
 
       /* the current state of all user interactions
-       * The jobState is what gets serialized when we store/retrieve jobs,
+       * The jobState is what gets serialized when we store / retrieve jobs,
        * whether in localStorage or in files.
        * See for the members the definition of jobState below.
        */
@@ -202,11 +202,11 @@ export class StateProvider {
          */
         nodeseq,
 
-        /* whether to mark matches in tsv exports
+        /* whether to mark matches in TSV exports
          */
         exporthl,
 
-        /* whether to keep results in single rows in tsv exports
+        /* whether to keep results in single rows in TSV exports
          * even if there are multiple layers per level
          */
         exportsr,
@@ -222,7 +222,7 @@ export class StateProvider {
       /* { pattern, flags, exec } per node type and then per layer
        * - pattern: a regex (regular expression): defines the search
        * - flags: (i m s)
-       * - exec: whether it is will be/is executed
+       * - exec: whether it is will be / is executed
        */
       query: {},
 

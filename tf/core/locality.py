@@ -9,7 +9,7 @@ SET_TYPES = {set, frozenset}
 class Locality:
     """Methods by which you can navigate from a node to its neighborhood.
 
-    Neighbours are: nodes that have slots in common, embedders and embeddees,
+    Neighbors are: nodes that have slots in common, embedders and embeddees,
     previous and next siblings.
 
     !!! note "L"
@@ -24,7 +24,7 @@ class Locality:
 
     !!! caution "Results of the `L.` functions are tuples, not single nodes"
           Even if an `L`-function returns a single node, it is packed in a *tuple*.
-          So to get the node itself, you have to dereference the tuple:
+          So to get the node itself, you have to index the tuple:
 
               L.u(node)[0]
 
@@ -67,8 +67,8 @@ class Locality:
             The tuple nodes is sorted in the
             canonical order (`tf.core.nodes`).
 
-            The result never includes *n* itself.
-            But other nodes linked to the same set of slots as *n*
+            The result never includes `n` itself.
+            But other nodes linked to the same set of slots as `n`
             may count as intersector nodes.
 
             Slots themselves can be intersectors.
@@ -125,8 +125,8 @@ class Locality:
             The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
             but *reversed*: right and small embedders before left and big embedders.
 
-            The result never includes *n* itself.
-            But other nodes linked to the same set of slots as *n*
+            The result never includes `n` itself.
+            But other nodes linked to the same set of slots as `n`
             may count as embedder nodes.
 
             Slots themselves are never embedders.
@@ -171,8 +171,8 @@ class Locality:
             The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
             left and big embeddees before right and small embeddees.
 
-            The result never includes *n* itself.
-            But other nodes linked to the same set of slots as *n*
+            The result never includes `n` itself.
+            But other nodes linked to the same set of slots as `n`
             may count as embeddee nodes.
         """
 
@@ -216,7 +216,7 @@ class Locality:
     def p(self, n, otype=None):
         """Produces an ordered tuple of *previous* nodes.
 
-        One node is previous to an other if the last slot of the former just preceeds
+        One node is previous to an other if the last slot of the former just precedes
         the first slots of the latter.
 
         Parameters

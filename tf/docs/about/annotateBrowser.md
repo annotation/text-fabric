@@ -1,21 +1,21 @@
 # Annotate tool in TF Browser
 
 We explain the manual annotation process with a leading example:
-[HuygensING/suriano](https://github.com/HuygensING/suriano).
+[`HuygensING/suriano`](https://github.com/HuygensING/suriano).
 
 ## Prerequisites
 
 *   [Python](https://www.python.org) must be installed;
 *   You must know how to start up a terminal
     (macos or linux) or command prompt (windows);
-*   Text-Fabric must be installed: in a terminal or command prompt say
+*   TF must be installed: in a terminal or command prompt say
 
     ```
     pip install text-fabric
     ```
 
     On some systems you have to say `pip3` instead of `pip`.
-    If by chance you already have an older version of text-fabric,
+    If by chance you already have an older version of TF,
     say
 
     ```
@@ -28,7 +28,7 @@ Start a terminal or command prompt.
 You need not go to a specific directory.
 Give the command
 
-```
+``` sh
 tf HuygensING/suriano --tool=ner --chrome
 ```
 
@@ -38,7 +38,7 @@ If you leave out the `--chrome` bit, the tool starts in your default browser.
 
 You can restart the tool without navigating away from the web page as follows:
 
-```
+``` sh
 tf HuygensING/suriano --tool=ner --chrome -noweb
 ```
 
@@ -67,7 +67,7 @@ The start-up window looks like this:
     this is a good way to start.
 
 *   **Entities column**:
-    
+
     See the entities in the chosen set.
 
     At the top you see an overview of the kinds of entities and how many entities
@@ -132,7 +132,7 @@ occurs.
 
 ![browser](../images/Annotate/context.png)
 
-The paragraph you started from is in the centre. You can scroll up and down the
+The paragraph you started from is in the center. You can scroll up and down the
 whole letter that the paragraph is contained in.
 If you want to return to the paragraph you started from, click the blue dot.
 If you want to remove the context, click the blue section indicator again.
@@ -190,7 +190,7 @@ steps:
 1. **Modify step**
 
     Now you can act on the selected occurrences. There are two possible actions:
-    *add* entitiies for these occurrences or *delete* existing entities for these
+    *add* entities for these occurrences or *delete* existing entities for these
     occurrences. Since our set of entities is still empty, we can only add.
 
     ![browser](../images/Annotate/add.png)
@@ -217,7 +217,7 @@ steps:
 
     ![browser](../images/Annotate/result-controls.png)
 
-    Note the the lines with the black background: they report the result of the
+    Note the lines with the black background: they report the result of the
     previous action.
 
     The **select** control now shows additional values under the selected occurrences:
@@ -287,8 +287,9 @@ You can also select or deselect all occurrences in one go.
 
 **N.B.**
 If you have filtered the paragraphs, and under **select** you have chosen to work with
-`all` results, (de)selecting only works for the occurrences in the filtered paragraphs.
-The other results are not (de)selectable, and will all be affected.
+`all` results, selecting and deselecting only work for the occurrences in the filtered paragraphs.
+The other results are not selectable or deselectable, and will all be
+affected.
 
 **Several surface forms for one entity**
 

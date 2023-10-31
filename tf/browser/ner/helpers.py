@@ -37,14 +37,14 @@ for u, a in TO_ASCII_DEF.items():
 
 
 def normalize(text):
-    """Normalize white space in a text."""
+    """Normalize white-space in a text."""
     return WHITE_RE.sub(" ", text).strip()
 
 
 def toTokens(text, spaceEscaped=False):
     """Split a text into tokens.
 
-    The text is split on white space.
+    The text is split on white-space.
     Tokens are further split into maximal segments of word characters
     and individual non-word characters.
 
@@ -61,8 +61,8 @@ def toAscii(text):
     """Transforms a text with diacritical marks into a plain ASCII text.
 
     Characters with diacritics are replaced by their base character.
-    Some characters with diacritics are considered by Unicode to be undecomposable
-    characters, such as `` and ``.
+    Some characters with diacritics are considered by UNICODE to be undecomposable
+    characters, such as `ø` and `ñ`.
     We use a table (`TO_ASCII_DEF`) to map these on their related ASCII characters.
     """
     return "".join(
@@ -164,7 +164,7 @@ def findCompile(bFind, bFindC):
     Returns
     -------
     tuple
-        the whitespace-stripped search pattern;
+        the white-space-stripped search pattern;
         the regular expression object, if successful, otherwise None;
         the error message if the re-compilation was not successful.
     """

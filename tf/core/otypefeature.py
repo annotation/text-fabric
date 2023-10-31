@@ -90,7 +90,7 @@ class OtypeFeature:
             (`tf.core.nodes`)
         """
 
-        # NB: the support attribute has been added by precomputing __levels__
+        # NB: the support attribute has been added by pre-computing __levels__
         if val in self.support:
             (b, e) = self.support[val]
             # N.B. for a long time we delivered range(b, e + 1)
@@ -126,7 +126,7 @@ class OtypeFeature:
             The start and end node of the interval of nodes with this type.
         """
 
-        # NB: the support attribute has been added by precomputing __levels__
+        # NB: the support attribute has been added by pre-computing __levels__
         if val in self.support:
             return self.support[val]
         else:

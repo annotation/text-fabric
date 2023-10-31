@@ -13,7 +13,7 @@
  * - can: a boolean that reports whether the use() function ran without issue
  * - error: any error that occurred when running the use function
  *
- * The use() and fallback() functions should return some html that can be used
+ * The use() and fallback() functions should return some HTML that can be used
  * in a report.
  */
 

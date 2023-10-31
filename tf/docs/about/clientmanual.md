@@ -7,7 +7,7 @@ There is a separate manual for the simplified interface:
 ![interface](../images/ls/ls.001.png)
 
 <mark>1. about</mark>
-:   Read the colofon, with provenance and license information.
+:   Read the colophon, with provenance and license information.
 
 <mark>2. jobs</mark>
 :   Manage your search tasks. They are remembered by your browser. You can start new jobs,
@@ -31,12 +31,12 @@ There is a separate manual for the simplified interface:
         Read
         [background on regexes](https://en.wikipedia.org/wiki/Regular_expression)
         and
-        [cheatsheet](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet).
+        [cheat sheet](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet).
 
 <mark>3a. legend</mark>
 :   Some layers have a triangle in front of their names.
     These are layers that consist of a limited amount of keywords.
-    If they are acronymns, you can see their legend here.
+    If they are acronyms, you can see their legend here.
     Otherwise, you see a frequency list of there values here.
 
     ![values](../images/ls/ls.008.png)
@@ -53,7 +53,7 @@ There is a separate manual for the simplified interface:
     *    `m`: multiline: `^` and `$` match around embedded newlines;
     *    `s`: single-string: `.` also matches newlines.
 
-<mark>5. on/off</mark>
+<mark>5. on / off</mark>
 :   Regexes can be switched off and on.
 
     !!! hint
@@ -63,7 +63,7 @@ There is a separate manual for the simplified interface:
 :   The level that corresponds with a single row in the results table.
     Think of result rows as *observations* with *features*.
 
-<mark>7. hide/show</mark>
+<mark>7. hide / show</mark>
 :   Whether a layer/level should show up in the results.
     Showing a level means showing their objects by their identifying numbers.
     See option **nodes and ordinals** below.
@@ -84,7 +84,7 @@ There is a separate manual for the simplified interface:
     compared to the statistics of the whole corpus.
 
 <mark>10. options</mark>
-:   Modify the behaviour of search/export.
+:   Modify the behavior of search/export.
     See **Options** below.
 
     !!! hint "Special characters"
@@ -105,7 +105,7 @@ There is a separate manual for the simplified interface:
     This file can be opened in Excel.
     All  results are exported, not only the ones that show on the current page.
     The level of detail depends on the currently selected **focus** level
-    and the visible layers as set by **hide/show**.
+    and the visible layers as set by **hide / show**.
 
     !!! hint
         The precise organization of the export may depend on some of the options.
@@ -139,12 +139,12 @@ There is a separate manual for the simplified interface:
         shortcut | direction | amount
         --- | --- | ---
         `m` | NA | manual entry of the result number
-        `n` | **n**ext | one
-        `p` | **p**revious | one
-        `b` | **b**ack | a batch (half a screenful)
-        `f` | **f**orward | a batch (half a screen)
-        `s` | **s**tart | all the way
-        `e` | **e**nd | all the way
+        `n` | next | one
+        `p` | previous | one
+        `b` | back | a batch (half a screenful)
+        `f` | forward | a batch (half a screen)
+        `s` | start | all the way
+        `e` | end | all the way
     
 <mark>15. position</mark>
 :   The current position in the results table is marked.
@@ -176,15 +176,15 @@ Your corpus is divided into levels, e.g. text/line/sentence/word/.
 
 At each level there are objects in the corpus and they can be represented in certain ways:
 
-* text are represented by their titles;
-* lines are represented by their numbers;
-* words are represented by the strings of which they are composed.
+*   text are represented by their titles;
+*   lines are represented by their numbers;
+*   words are represented by the strings of which they are composed.
 
 ### Layers
 
 Per level, there may be more than one way to represent the objects.
-For example, at the word level, you may have representations in the original script in unicode,
-but also various transliterations in ascii.
+For example, at the word level, you may have representations in the original script in UNICODE,
+but also various transliterations in ASCII.
 
 All these representations are *layers* that you can search.
 For example, the
@@ -216,7 +216,7 @@ in those results.
 We take all nodes that are involved in the results of one layer as a set.
 We do the same for the other layer.
 Then we take the intersection of those sets.
-The resulting set is the nodeset defined by the combined results in the two layers.
+The resulting set is the node set defined by the combined results in the two layers.
 When we display them, we show the results in both layers, by showing the material
 of the result nodes according to the layer and we highlight the portions that match
 the regular expression in that layer.
@@ -237,7 +237,7 @@ We project a node *upward* by mapping it to the node that embeds it.
 We project a node *downward* by mapping it to all nodes that are embedded in it.
 
 By projecting the result nodes of one level to another level,
-we end up with two nodesets at the same level that we can intersect.
+we end up with two node sets at the same level that we can intersect.
 
 !!! caution "Beware of complicated criteria"
     Before you devise sophisticated criteria, note that this search engine
@@ -264,7 +264,7 @@ we end up with two nodesets at the same level that we can intersect.
     For now, that is becoming way to complex, both to be usable and to be implementable.
     That is why we have opted for the lax interpretation.
 
-    The bottomline is: use the search tool to grab the things that are potentially of interest.
+    The bottom-line is: use the search tool to grab the things that are potentially of interest.
     If you need to pinpoint further, export the results to Excel and use other tools/methods
     to achieve that.
 
@@ -323,13 +323,13 @@ We have a single column for the content of the focus objects.
 
     An observation is represented by:
 
-    * shallow representations of the context objects,
-    * a shallow representation of the focus object,
-    * a deep representation of the focus object.
+    *   shallow representations of the context objects,
+    *   a shallow representation of the focus object,
+    *   a deep representation of the focus object.
 
 All objects are represented ultimately by their material in the layers.
 When we display results or export them,
-we present all layers that you have selected by means of **hide/show**.
+we present all layers that you have selected by means of **hide / show**.
 
 !!! note "Multiple layers"
     If multiple layers have been selected for some levels,
@@ -341,12 +341,12 @@ we present all layers that you have selected by means of **hide/show**.
 
     **layers to columns**:
 
-    *   `+`: one result, one row, good for postprocessing
+    *   `+`: one result, one row, good for post-processing
     *   `-`: the layers  of one object do not line up, difficult visual inspection
 
     **layers to rows**:
 
-    *   `-`: one result, multiple rows, complicates postprocessing
+    *   `-`: one result, multiple rows, complicates post-processing
     *   `+`: the layers  of one object line up, comfortable visual inspection
 
     Observe the difference:
@@ -366,10 +366,10 @@ we present all layers that you have selected by means of **hide/show**.
 :   Each object in the corpus has a unique number: its *node* number.
     Within a level, we can also enumerate all its objects, starting with 1.
     The ordinals identify objects uniquely within their level.
-    You can choose wich of these numbers you want displayed.
+    You can choose which of these numbers you want displayed.
 
     !!! hint
-        Use nodes for interoperability with Text-Fabric;
+        Use nodes for interoperability with TF;
         otherwise ordinals are more intuitive.
 
 <mark>3. highlighting in exports</mark>
@@ -377,7 +377,7 @@ we present all layers that you have selected by means of **hide/show**.
     But in exports, the highlight characters « » may hinder further processing.
     So you can omit them.
 
-<mark>4. organisation of exports</mark>
+<mark>4. organization of exports</mark>
 :   When several layers are visible for a level, the question arises:
     how should we organize them in exported results?
     There are two options:
@@ -391,12 +391,12 @@ we present all layers that you have selected by means of **hide/show**.
     !!! hint
         Use extra rows if you rely on visual inspection of the exported file in Excel.
         Use extra columns if you want to process the exported file by means of other tools,
-        such as Pandas or R.
+        such as `pandas` or `R`.
 
 <mark>5. single or multiple highlights</mark>
 :   If you use `( )` for grouping in your regexes,
     the parts of the results that match these groups
-    can be highlighted with different colours.
+    can be highlighted with different colors.
     
     !!! hint
         Not all browsers support this;
@@ -406,7 +406,7 @@ we present all layers that you have selected by means of **hide/show**.
     !!! hint
         This is handy for cases where you search for twice the same thing in a sentence,
         for instance.
-        You can have both matches coloured differently.
+        You can have both matches colored differently.
     
 
 # Background information
@@ -418,7 +418,7 @@ you can search in several layers of the corpus by means of several regexes in pa
 It is a method to make good use of the annotations that exist in the corpus at various levels.
 
 Regular expressions are a key tool for specifying sophisticated search patterns.
-Their theoretical foundation was layed in the 1950s,
+Their theoretical foundation was laid in the 1950s,
 and by now they have been implemented in all major
 programming languages and in all powerful text-editors.
 
@@ -426,20 +426,20 @@ If this is the first time you encounter them, it will pay off to get to know the
 because it is very likely that you encounter them again.
 
 For more background,
-read [wikipedia](https://en.wikipedia.org/wiki/Regular_expression).
+read [Wikipedia](https://en.wikipedia.org/wiki/Regular_expression).
 
 # The search interface as app
 
 We have implemented layered search as an offline Single Page Application.
 
 The app consists of a single HTML file (*app*`.html`),
-a CSS file, PNG files (logos) and Javascript files.
-The corpus data is in a big Javascript file, the corpus configuration in a small one.
-The remaining Javascript files are the modules of the program.
+a CSS file, PNG files (logos) and JavaScript files.
+The corpus data is in a big JavaScript file, the corpus configuration in a small one.
+The remaining JavaScript files are the modules of the program.
 
-Modern browsers can take in modular Javascript, except when you have the HTML file
+Modern browsers can take in modular JavaScript, except when you have the HTML file
 locally on your computer and you open it with a double click.
-Your browser has then `file://` in its URL bar, and in that case modular Javascript does
+Your browser has then `file://` in its URL bar, and in that case modular JavaScript does
 not work.
 
 To overcome that, we have also bundled the program in a single file, and that is included by
@@ -454,30 +454,30 @@ without further internet connection (except when you navigate to external links)
 
 As a consequence
 
-* this app works without any kind of installation
-* it does not collect data about you
-* it does not use cookies.
-* it works without internet connection
+*   this app works without any kind of installation
+*   it does not collect data about you
+*   it does not use cookies.
+*   it works without internet connection
 
 When the browser remembers your previous jobs,
 it does not use cookies for it but
-[localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage),
+[`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage),
 which other sites cannot read.
 
 # Making this app
 
 The construction of this app relies very much of the organization of the corpus
-as a Text-Fabric dataset.
+as a TF dataset.
 
 The process of creating a layered search functionality
-is baked into Text-Fabric.
+is baked into TF.
 
 The designer needs to specify the layers in a `.yaml` file
 and write a small piece of code to generate the data for the layers
-from the corresponding Text-Fabric dataset.
+from the corresponding TF dataset.
 
 See e.g.
-[app-nena/layeredsearch](https://github.com/CambridgeSemiticsLab/nena_tf/tree/master/app).
+[`app-nena/layeredsearch`](https://github.com/CambridgeSemiticsLab/nena_tf/tree/master/app).
 
 All the rest (building, shipping, and deploying the app) is then automatic,
 See `tf.client.make.build`.
@@ -485,7 +485,7 @@ See `tf.client.make.build`.
 The first layered search interface created this way is one for the
 [NENA](https://github.com/CambridgeSemiticsLab/nena_tf) corpus.
 
-We intend to make more interfaces for other Text-Fabric corpora,
+We intend to make more interfaces for other TF corpora,
 reducing and streamlining the preparation effort in the process.
 
 # Credits
@@ -493,13 +493,13 @@ reducing and streamlining the preparation effort in the process.
 The idea for this app came out of a discussion of
 [Cody Kingham](https://www.linkedin.com/in/cody-kingham-1135018a)
 and me about how we could make a simple but usable search interface
-for people that need to get hands on with a Text-Fabric corpus.
+for people that need to get hands on with a TF corpus.
 
-Given that we have the corpus data at our finger tips through Text-Fabric,
-but that TF-Query (`tf.about.searchusage`) does not cover over all use cases,
+Given that we have the corpus data at our finger tips through TF,
+but that TF Query (`tf.about.searchusage`) does not cover over all use cases,
 and requires installing Python,
 we adopted the approach to assemble data
-and power a simple Javascript program with it.
+and power a simple JavaScript program with it.
 
 The first implementation of these idea was funded by
 [Prof. Geoffrey Khan](https://www.ames.cam.ac.uk/people/professor-geoffrey-khan),

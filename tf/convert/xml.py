@@ -3,11 +3,11 @@
 
 You can convert any XML source into TF by specifying a few details about the source.
 
-Text-Fabric then invokes the `tf.convert.walker` machinery to produce a Text-Fabric
+TF then invokes the `tf.convert.walker` machinery to produce a TF
 dataset out of the source.
 
-The converter goes one extra mile: it generates a TF-app, in such a way that
-the Text-Fabric browser is instantly usable.
+The converter goes one extra mile: it generates a TF app, in such a way that
+the TF browser is instantly usable.
 
 !!! caution "As an example"
     This is more intended as an example of how to tackle the conversion
@@ -17,13 +17,13 @@ the Text-Fabric browser is instantly usable.
 
     See `tf.convert.tei` for a production converter of TEI XML to TF.
 
-## Whitespace
+## White-space
 
 This converter does not read schemas and has no extra knowledge about the elements.
 
 Because of the lack of schema information we do not know exactly which white-space
-is significant. The only thing we do to whitespace is to condense each stretch
-of whitespace to a single space.
+is significant. The only thing we do to white-space is to condense each stretch
+of white-space to a single space.
 
 Whether some of these spaces around tags must be ignored is a matter of further
 customization.
@@ -38,14 +38,14 @@ In this directory we'll look for two optional files:
     get the conversion off the ground.
 
 *   a file `xml.py` in which you define a function `transform(text)` which
-    takes a text string ar argument and delivers a text string as result.
+    takes a text string argument and delivers a text string as result.
     The converter will call this on every XML input file it reads *before*
     feeding it to the XML parser.
 
 
 ## Keys and values of the `xml.yaml` file
 
-### generic
+### `generic`
 
 dict, optional `{}`
 
@@ -55,20 +55,20 @@ it will be inserted based on the version that the converter will actually use.
 That version depends on the `xml` argument passed to the program.
 The key under which the source version will be inserted is `xmlVersion`.
 
-### intFeatures
+### `intFeatures`
 
 list, optional `[]`
 
 The features (nodes and edges) that are integer-valued.
 
-### featureDescriptions
+### `featureDescriptions`
 
 dict, optional `{}`
 
 Short descriptions for the features.
 Will be included in the metadata of the feature files, after `@description`.
 
-### procins
+### `procins`
 
 boolean, optional `False`
 
@@ -78,15 +78,15 @@ element named `foo` with attribute `bar` with value `xxx`.
 
 # Usage
 
-## Commandline
+## Command-line
 
-```sh
+``` sh
 tf-fromxml tasks flags
 ```
 
 ## From Python
 
-```python
+``` python
 from tf.convert.xml import XML
 
 X = XML()
@@ -101,11 +101,11 @@ We have the following conversion tasks:
 
 1.  `check`: makes and inventory of all XML elements and attributes used.
 1.  `convert`: produces actual TF files by converting XML files.
-1.  `load`: loads the generated TF for the first time, by which the precomputation
-    step is triggered. During precomputation some checks are performed. Once this
-    has succeeded, we have a workable Text-Fabric dataset.
-1.  `app`: creates or updates a corpus specific TF-app with minimal sensible settings.
-1.  `browse`: starts the text-fabric browser on the newly created dataset.
+1.  `load`: loads the generated TF for the first time, by which the pre-computation
+    step is triggered. During pre-computation some checks are performed. Once this
+    has succeeded, we have a workable TF dataset.
+1.  `app`: creates or updates a corpus specific TF app with minimal sensible settings.
+1.  `browse`: starts the TF browser on the newly created dataset.
 
 Tasks can be run by passing any choice of task keywords to the
 `XML.task()` method.
@@ -115,7 +115,7 @@ Tasks can be run by passing any choice of task keywords to the
 The XML source files come in versions, indicated with a data.
 The converter picks the most recent one, unless you specify an other one:
 
-```python
+``` python
 tf-fromxml xml=-2  # previous version
 tf-fromxml xml=0  # first version
 tf-fromxml xml=3  # third version
@@ -128,7 +128,7 @@ unless you specify another one.
 
 It looks at the latest version and then bumps a part of the version number.
 
-```python
+``` python
 tf-fromxml tf=3  # minor version, 1.2.3 becomes 1.2.4
 tf-fromxml tf=2  # intermediate version, 1.2.3 becomes 1.3.0
 tf-fromxml tf=1  # major version, 1.2.3 becomes 2.0.0
@@ -137,10 +137,10 @@ tf-fromxml tf=1.8.3  # explicit version
 
 ## Examples
 
-Exactly how you can call the methods of this module and add your own customised
+Exactly how you can call the methods of this module and add your own customized
 conversion code is demonstrated in the Greek New Testament:
 
-*   [Nestle1904](https://nbviewer.org/github/ETCBC/nestle1904/blob/master/programs/tfFromLowfat.ipynb).
+*   [`ETCBC/nestle1904`](https://nbviewer.org/github/ETCBC/nestle1904/blob/master/programs/tfFromLowfat.ipynb).
 """
 
 import sys
@@ -227,22 +227,22 @@ class XML:
         where
 
         *   `~` is your home directory;
-        *   `backend` is an online *backend* name,
+        *   `backend` is an online back-end name,
             like `github`, `gitlab`, `git.huc.knaw.nl`;
-        *   `org` is an organisation, person, or group in the backend;
+        *   `org` is an organization, person, or group in the back-end;
         *   `repo` is a repository in the `org`.
         *   `relative` is a directory path within the repo (0 or more components)
 
         This is only about the directory structure on your local computer;
         it is not required that you have online incarnations of your repository
-        in that backend.
+        in that back-end.
         Even your local repository does not have to be a git repository.
 
         The only thing that matters is that the full path to your repo can be parsed
-        as a sequence of *home*/*backend*/*org*/*repo*/*relative*.
+        as a sequence of `home/backend/org/repo/relative` .
 
         Relative to this directory the program expects and creates
-        input/output directories.
+        input / output directories.
 
         ## Input directories
 
@@ -252,36 +252,36 @@ class XML:
 
         **If it does not exist, the program aborts with an error.**
 
-        Several levels of subfolders are assumed:
+        Several levels of subdirectories are assumed:
 
         1.  the version of the source (this could be a date string).
-        2.  volumes/collections of documents. The subfolder `__ignore__` is ignored.
-        3.  the XML documents themselves.
+        1.  volumes / collections of documents. The subdirectory `__ignore__` is ignored.
+        1.  the XML documents themselves.
 
         ## Output directories
 
         ### `report`
 
         Directory to write the results of the `check` task to: an inventory
-        of elements/attributes encountered.
+        of elements / attributes encountered.
         If the directory does not exist, it will be created.
         The default value is `.` (i.e. the current directory in which
         the script is invoked).
 
         ### `tf`
 
-        The directory under which the text-fabric output file (with extension `.tf`)
+        The directory under which the TF output file (with extension `.tf`)
         are placed.
         If it does not exist, it will be created.
-        The tf files will be generated in a folder named by a version number,
+        The TF files will be generated in a folder named by a version number,
         passed as `tfVersion`.
 
         ### `app`
 
-        Location of additional TF-app configuration files.
+        Location of additional TF app configuration files.
         If they do not exist, they will be created with some sensible default
         settings and generated documentation.
-        These settings can be overriden in the `app/config_custom.yaml` file.
+        These settings can be overridden in the `app/config_custom.yaml` file.
         Also a default `display.css` file and a logo are added.
 
         Custom content for these files can be provided in files
@@ -293,7 +293,7 @@ class XML:
             You can pass a replacement for the `convertTask` method.
             If you do that, it will be used instead.
             By means of this approach you can use the generic machinery of the
-            xml convertor as much as possible, and you only have to adpat the bits
+            XML converter as much as possible, and you only have to adapt the bits
             that process the XML sources.
         trimAtts: iterable of string, optional set()
             You can pass the names of attributes whose values you do not have to
@@ -318,11 +318,11 @@ class XML:
             version name.
 
         tf: string, optional ""
-            If empty, the tf version used will be the latest one under the `tf`
+            If empty, the TF version used will be the latest one under the `tf`
             directory.
 
             If it can be parsed as the integers 1, 2, or 3 it will bump the latest
-            relevant tf version:
+            relevant TF version:
 
             *   `0` or `latest`: overwrite the latest version
             *   `1` will bump the major version
@@ -333,7 +333,7 @@ class XML:
             Otherwise, the value is taken as the exact version name.
 
         verbose: integer, optional -1
-            Produce no (-1), some (0) or many (1) orprogress and reporting messages
+            Produce no (-1), some (0) or many (1) progress and reporting messages
         """
         self.good = True
         self.convertTaskCustom = convertTaskCustom
@@ -352,7 +352,7 @@ class XML:
 
         if verbose == 1:
             console(
-                f"Working in repository {org}/{repo}{relative} in backend {backend}"
+                f"Working in repository {org}/{repo}{relative} in back-end {backend}"
             )
 
         base = ex(f"~/{backend}")
@@ -508,14 +508,14 @@ class XML:
         self.myDir = myDir
 
     def getParser(self):
-        """Configure the lxml parser.
+        """Configure the LXML parser.
 
         See [parser options](https://lxml.de/parsing.html#parser-options).
 
         Returns
         -------
         object
-            A configured lxml parse object.
+            A configured LXML parse object.
         """
         procins = self.procins
 
@@ -585,7 +585,7 @@ class XML:
         It writes reports to the `reportPath`:
 
         *   `errors.txt`: validation errors
-        *   `elements.txt`: element/attribute inventory.
+        *   `elements.txt`: element / attribute inventory.
         """
         if not self.good:
             return
@@ -622,7 +622,7 @@ class XML:
 
         initTree(reportPath)
 
-        def analyse(root, analysis):
+        def analyze(root, analysis):
             NUM_RE = re.compile(r"""[0-9]""", re.S)
 
             def nodeInfo(xnode):
@@ -772,7 +772,7 @@ class XML:
         def doXMLFile(xmlPath):
             tree = etree.parse(xmlPath, parser)
             root = tree.getroot()
-            analyse(root, analysis)
+            analyze(root, analysis)
 
         i = 0
         for (xmlFolder, xmlFiles) in self.getXML():
@@ -825,13 +825,13 @@ class XML:
     def loadTask(self):
         """Implementation of the "load" task.
 
-        It loads the tf data that resides in the directory where the "convert" task
+        It loads the TF data that resides in the directory where the "convert" task
         deliver its results.
 
         During loading there are additional checks. If they succeed, we have evidence
         that we have a valid TF dataset.
 
-        Also, during the first load intensive precomputation of TF data takes place,
+        Also, during the first load intensive pre-computation of TF data takes place,
         the results of which will be cached in the invisible `.tf` directory there.
 
         That makes the TF data ready to be loaded fast, next time it is needed.
@@ -850,7 +850,7 @@ class XML:
 
         if not dirExists(tfPath):
             console(f"Directory {ux(tfPath)} does not exist.")
-            console("No tf found, nothing to load")
+            console("No TF found, nothing to load")
             self.good = False
             return
 
@@ -871,7 +871,7 @@ class XML:
     def appTask(self, tokenBased=False):
         """Implementation of the "app" task.
 
-        It creates/updates a corpus-specific app.
+        It creates / updates a corpus-specific app.
         There should be a valid TF dataset in place, because some
         settings in the app derive from it.
 
@@ -879,13 +879,13 @@ class XML:
         These files are:
 
         *   `config_custom.yaml`:
-            A yaml file with config data that will be *merged* into the generated
+            A YAML file with config data that will be *merged* into the generated
             config.yaml.
         *   `app_custom.py`:
             A python file with named snippets of code to be inserted
             at corresponding places in the generated `app.py`
         *   `display_custom.css`:
-            Additonal css definitions that will be put in place.
+            Additional CSS definitions that will be put in place.
 
         If the TF app for this resource needs custom code, this is the way to retain
         that code between automatic generation of files.
@@ -903,9 +903,9 @@ class XML:
         refDir = self.refDir
         myDir = self.myDir
 
-        # key | parent dir | file | template based
+        # key | parent directory | file | template based
 
-        # if parent dir is a tuple, the first part is the parent of the source
+        # if parent directory is a tuple, the first part is the parent of the source
         # end the second part is the parent of the destination
 
         itemSpecs = (
@@ -1047,7 +1047,7 @@ class XML:
                         msg = "(generated with custom info)"
                     else:
                         if preExists:
-                            msg = "(no custom info, older orginal exists)"
+                            msg = "(no custom info, older original exists)"
                         else:
                             msg = "(no custom info, original preserved)"
                             fileCopy(itemTarget, itemPre)
@@ -1102,9 +1102,9 @@ class XML:
     def browseTask(self):
         """Implementation of the "browse" task.
 
-        It gives a shell command to start the text-fabric browser on
+        It gives a shell command to start the TF browser on
         the newly created corpus.
-        There should be a valid TF dataset and app configuraiton in place
+        There should be a valid TF dataset and app configuration in place
 
         Returns
         -------
@@ -1126,7 +1126,7 @@ class XML:
         try:
             run(
                 (
-                    f"text-fabric {org}/{repo}{relative}:clone --checkout=clone "
+                    f"tf {org}/{repo}{relative}:clone --checkout=clone "
                     f"{versionOpt} {backendOpt}"
                 ),
                 shell=True,
@@ -1147,8 +1147,8 @@ class XML:
 
         This is a higher level function that can execute a selection of tasks.
 
-        The tasks will be executed in a fixed order: check, convert, load, app,
-        apptoken, browse.
+        The tasks will be executed in a fixed order:
+        `check`, `convert`, `load`, `app`, `apptoken`, `browse`.
         But you can select which one(s) must be executed.
 
         If multiple tasks must be executed and one fails, the subsequent tasks
@@ -1167,7 +1167,7 @@ class XML:
         browse: boolean, optional False
             Whether to carry out the "browse" task"
         verbose: integer, optional -1
-            Produce no (-1), some (0) or many (1) orprogress and reporting messages
+            Produce no (-1), some (0) or many (1) progress and reporting messages
 
         Returns
         -------

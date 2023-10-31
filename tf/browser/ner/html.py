@@ -1,4 +1,4 @@
-"""HTML generation done in the Pythonesque way.
+"""HTML generation done in the Pythonic way.
 
 To see how this fits among all the modules of this package, see
 `tf.browser.ner.annotate` .
@@ -35,14 +35,14 @@ def dig(*content, sep=""):
     Parameters
     ----------
     content: iterable or string
-        Arbitrarily ested iterable of strings.
+        Arbitrarily nested iterable of strings.
     sep: string, optional ""
         The string by which the individual strings from the iterables are to be joined.
 
     Returns
     -------
     string
-        The fully joined string corresponding to the orginal iterables.
+        The fully joined string corresponding to the original iterables.
     """
     if len(content) == 0:
         return ""

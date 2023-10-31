@@ -133,7 +133,7 @@ div.rightcol {
   display: none;
 }
 
-/* buttons and inputs for job control, im/export */
+/* buttons and inputs for job control, import / export */
 
 #jobs {
   display: flex;

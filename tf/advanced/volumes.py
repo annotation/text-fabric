@@ -1,5 +1,5 @@
 """
-Produce links to Text-Fabric data and links from nodes to web resources.
+Produce links to TF data and links from nodes to web resources.
 """
 
 import re

@@ -3,7 +3,7 @@ import { DEFAULTJOB } from "./defs.js"
 export class MemProvider {
 /* LOCAL STORAGE MANAGEMENT
  *
- * When we store/retrieve keys in localStorage,
+ * When we store / retrieve keys in localStorage,
  * we always prepend a prefix to the key:
  * - a fixed part, marking that it is a layered search app
  * - a Config dependent part: the org and repo of the data
@@ -14,7 +14,7 @@ export class MemProvider {
  *
  * When retrieving content for non-existing keys, we silently return the empty object.
  *
- * localStorage for file:// urls is not clearly defined.
+ * localStorage for file:// URLs is not clearly defined.
  * If several apps like this are being used in the same browser,
  * this practice will prevent collisions
  */

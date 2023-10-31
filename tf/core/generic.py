@@ -3,16 +3,13 @@ class AttrDict(dict):
 
     If non-existing attributes are accessed for reading, `None` is returned.
 
-    See:
-    https://stackoverflow.com/questions/4984647/accessing-dict-keys-like-an-attribute
+    See these links on stackoverflow:
 
-    And:
-    https://stackoverflow.com/questions/16237659/python-how-to-implement-getattr
-    (especially the remark that
+    *   [1](https://stackoverflow.com/questions/4984647/accessing-dict-keys-like-an-attribute)
+    *   [2](https://stackoverflow.com/questions/16237659/python-how-to-implement-getattr)
+        especially the remark that
 
-    > `__getattr__` is only used for missing attribute lookup
-
-    )
+        > `__getattr__` is only used for missing attribute lookup
 
     We also need to define the `__missing__` method in case we access the underlying
     dict by means of keys, like `xxx["yyy"]` rather then by attribute like `xxx.yyy`.
@@ -42,21 +39,22 @@ class AttrDict(dict):
 
 
 def deepdict(info):
-    """Turns an AttrDict into a dict, recursively.
+    """Turns an `AttrDict` into a `dict`, recursively.
 
     Parameters
     ----------
     info: any
         The input dictionary. We assume that it is a data structure built by
-        tuple, list, set, frozenset, dict and atomic types such as int, str, bool.
-        We assume there are no user defined objects in it,
-        and no generators and functions.
+        `tuple`, `list`, `set`, `frozenset`, `dict` and atomic types such as
+        `int`, `str`, `bool`.
+        We assume there are no user defined objects in it, and no generators
+        and functions.
 
     Returns
     -------
     dict
-        An dict containing the same info as the input dict, but where
-        each value of type AttrDict is turned into a dict.
+        A dictionary containing the same info as the input dictionary, but where
+        each value of type `AttrDict` is turned into a `dict`.
     """
     tp = type(info)
 
@@ -76,23 +74,24 @@ def deepdict(info):
 
 
 def deepAttrDict(info, preferTuples=False):
-    """Turn a dict into an AttrDict, recursively.
+    """Turn a `dict` into an `AttrDict`, recursively.
 
     Parameters
     ----------
     info: any
         The input dictionary. We assume that it is a data structure built by
-        tuple, list, set, frozenset, dict and atomic types such as int, str, bool.
-        We assume there are no user defined objects in it,
-        and no generators and functions.
+        `tuple`, `list`, `set`, `frozenset`, `dict` and atomic types such as
+        `int`, `str`, `bool`.
+        We assume there are no user defined objects in it, and no generators
+        and functions.
     preferTuples: boolean, optional False
         Lists are converted to tuples.
 
     Returns
     -------
     AttrDict
-        An AttrDict containing the same info as the input dict, but where
-        each value of type dict is turned into an AttrDict.
+        An `AttrDict` containing the same info as the input dictionary, but where
+        each value of type `dict` is turned into an `AttrDict`.
     """
     tp = type(info)
 

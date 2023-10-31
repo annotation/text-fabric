@@ -1,8 +1,8 @@
 """
-# Export a TF dataset to a Pandas dataframe.
+# Export a TF dataset to a `pandas` data frame.
 
 There is a natural mapping of a TF dataset with its nodes, edges and features to a
-rectangular dataframe with rows and columns:
+rectangular data frame with rows and columns:
 
 *   the *nodes* correspond to *rows*;
 *   the node *features* correspond to *columns*;
@@ -16,21 +16,21 @@ We also write the data that says which nodes are contained in which other nodes.
 To each row we add the following columns:
 
 *   for each node type, except the slot type, there is a column with named
-    `in_`*nodeType*, that contains the node of the smallest object that
+    `in_nodeType`, that contains the node of the smallest object that
     contains the node of the row;
 
 We compose the big table and save it as a tab delimited file.
-This temporary result can be processed by R and Pandas.
+This temporary result can be processed by `R` and `pandas`.
 
-It turns out that for this size of the data Pandas is a bit
+It turns out that for this size of the data `pandas` is a bit
 quicker than R. It is also more Pythonic, which is a pro if you use other Python
-programs, such as Text-Fabric, to process the same data.
+programs, such as TF, to process the same data.
 
 # Examples
 
-* [BHSA](https://nbviewer.org/github/ETCBC/bhsa/blob/master/tutorial/export.ipynb)
-* [Moby Dick](https://nbviewer.org/github/CLARIAH/wp6-mobydick/blob/main/tutorial/export.ipynb)
-* [Ferdinand Huyck](https://nbviewer.org/github/CLARIAH/wp6-ferdinandhuyck/blob/main/tutorial/export.ipynb)
+*   [BHSA](https://nbviewer.org/github/ETCBC/bhsa/blob/master/tutorial/export.ipynb)
+*   [Moby Dick](https://nbviewer.org/github/CLARIAH/wp6-mobydick/blob/main/tutorial/export.ipynb)
+*   [Ferdinand Huyck](https://nbviewer.org/github/CLARIAH/wp6-ferdinandhuyck/blob/main/tutorial/export.ipynb)
 """
 
 import pandas
@@ -40,7 +40,7 @@ from ..core.files import TEMP_DIR, unexpanduser as ux, expandDir, dirMake
 from ..core.helpers import fitemize, pandasEsc, PANDAS_QUOTE, PANDAS_ESCAPE
 
 HELP = """
-Transforms TF dataset into Pandas
+Transforms TF dataset into `pandas`
 """
 
 INT = "Int64"
@@ -49,26 +49,26 @@ NA = [""]
 
 
 def exportPandas(app, inTypes=None, exportDir=None):
-    """Export a currently loaded TF dataset to Pandas.
+    """Export a currently loaded TF dataset to `pandas`.
 
     The function proceeds by first producing a TSV file as an intermediate result.
     This is usually too big for GitHub, to it is produced in a `/_temp` directory
     that is usually in the `.gitignore` of the repo.
 
-    This file serves as the basis for the export to a Pandas dataframe.
+    This file serves as the basis for the export to a `pandas` data frame.
 
     !!! hint "R"
         You can import this file in other programs as well, e.g.
         [R](https://www.r-project.org)
 
     !!! note "Quotation, newlines, tabs, backslashes and escaping"
-        If the data as it comes from text-fabric contains newlines or tabs or
+        If the data as it comes from TF contains newlines or tabs or
         double quotes, we put them escaped into the TSV, as follows:
 
-        * *newline* becomes *backslash* plus *n*;
-        * *tab* becomes a single space;
-        * *double quote* becomes *Control-A* plus *double quote*;
-        * *backslash* remains *backslash*.
+        *   *newline* becomes *backslash* plus `n`;
+        *   *tab* becomes a single space;
+        *   *double quote* becomes *Control-A* plus *double quote*;
+        *   *backslash* remains *backslash*.
 
         In this way, the TSV file is not disturbed by non-delimiting tabs, i.e.
         tabs that are part of the content of a field. No field will contain a tab!
@@ -86,19 +86,19 @@ def exportPandas(app, inTypes=None, exportDir=None):
         Backslashes are no problem, but programs might interpret them in a special
         way in combination with specific following characters.
 
-        Now what happens to these characters when Pandas reads the file?
+        Now what happens to these characters when `pandas` reads the file?
 
-        We instruct the Pandas table reading function to use the Control-A as
+        We instruct the `pandas` table reading function to use the Control-A as
         escape char and the double quote as quote char.
 
         **Backslash**
 
-        Pandas has two special behaviours:
+        `pandas` has two special behaviors:
 
-        * *backslash* *n* becomes a *newline*;
-        * *backslash* *blackslash* becomes a single *backslash*.
+        *   *backslash* `n` becomes a *newline*;
+        *   *backslash* *blackslash* becomes a single *backslash*.
 
-        This is almost what we want: the newline behaviour is desired; the
+        This is almost what we want: the newline behavior is desired; the
         reducing of backslashes not, but we leave it as it is.
 
         **Double quote**
@@ -122,7 +122,7 @@ def exportPandas(app, inTypes=None, exportDir=None):
         But you can also specify the list of such node types explicitly.
         In all cases, there will be columns for sectional node types.
     exportDir: string, optional None
-        The directory to which the Pandas file will be exported.
+        The directory to which the `pandas` file will be exported.
         If `None`, it is the `/pandas` directory in the repo of the app.
     """
 

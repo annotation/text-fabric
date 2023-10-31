@@ -12,20 +12,20 @@ def getHlAtt(app, n, highlights, isSlot):
         The node to be highlighted
     highlights: set|dict
         The nodes to be highlighted.
-        Keys/elements are the nodes to be highlighted.
+        Keys / elements are the nodes to be highlighted.
         This function is only interested in whether `n` is in it,
         and if so, what the value is (in case of a dict).
         If given as set: use the default highlight color.
         If given as dict: use the value as color.
     isSlot: boolean
-        Whether the node has the slotType
+        Whether the node has the slot type
 
     Returns
     -------
     hlCls: dict
         Highlight attribute, keyed by boolean 'is pretty'
     hlStyle: dict
-        Highlight color as css style, keyed by boolean 'is pretty'
+        Highlight color as CSS style, keyed by boolean 'is pretty'
     """
 
     noResult = ({True: "", False: ""}, {True: "", False: ""})
@@ -60,7 +60,7 @@ def getEdgeHlAtt(e, pair, highlights):
 
     Parameters
     ----------
-    e: str
+    e: string
         The edge feature to be highlighted
     pair: tuple
         The *from* node of the edge to be highlighted and
@@ -75,10 +75,10 @@ def getEdgeHlAtt(e, pair, highlights):
 
     Returns
     -------
-    hlCls: str
+    hlCls: string
         Highlight attribute
-    hlStyle: str
-        Highlight color as css style
+    hlStyle: string
+        Highlight color as CSS style
     """
 
     if highlights is None:
@@ -125,7 +125,7 @@ def getTupleHighlights(api, tup, highlights, colorMap, condenseType):
         `condenseType` as they occur in.
     highlights: set|dict
         The nodes to be highlighted.
-        Keys/elements are the nodes to be highlighted.
+        Keys / elements are the nodes to be highlighted.
         This function is only interested in whether the members of `tup` are in it,
         and if so, what the values are (in case of a dict).
         If given as set: use the default highlight color.

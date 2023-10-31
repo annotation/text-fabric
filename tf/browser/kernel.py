@@ -1,5 +1,5 @@
 """
-# Text-Fabric kernel
+# TF kernel
 
 This is a set of higher level methods by which the TF browser can obtain chunks
 of TF data for display on the website.
@@ -9,7 +9,7 @@ of TF data for display on the website.
 The API of the TF kernel is created by the function `makeTfKernel`.
 
 It returns a class `TfKernel` with a number of methods that are useful
-for a webserver.
+for a web server.
 """
 
 from functools import reduce
@@ -63,10 +63,10 @@ def makeTfKernel(app, appName):
             """Gets the names of the custom sets that the app has loaded.
 
             The app can load additional sets of data triggered by the
-            `--sets=` command line argument with which the app
+            `--sets=` command-line argument with which the app
             was started.
 
-            A web server kan use this information to write out provenance info.
+            A web server can use this information to write out provenance info.
             """
 
             app = self.app
@@ -96,34 +96,34 @@ def makeTfKernel(app, appName):
             """Gets passages, i.e. sections of level 1 (chapter-like).
 
             The material will be displayed as a sequence of plain
-            representations of the sec2s (verse-like), which can be expanded to pretty
+            representations of the `sec2` (verse-like), which can be expanded to pretty
             displays when the user chooses to do so.
 
             Parameters
             ----------
             features: string | iterable
                 The features that should be displayed in pretty displays when expanding
-                a plain representation of a sec2 into a pretty display
+                a plain representation of a `sec2` into a pretty display.
 
             query: string
                 The query whose results should be highlighted in the passage display.
 
             sec0: string | int
-                The level 0 section (book)-like label in which the passage occurs
+                The level 0 section (book)-like label in which the passage occurs.
 
             sec1: string | int, optional None
                 The level 1 section (chapter)-like label to fetch
 
             sec2: string | int, optional None
-                The level 2 section (verse-like) label that should get focus
+                The level 2 section (verse-like) label that should get focus.
 
             opened: set, optional, `set()`
-                The set of items that are currently expanded into pretty display
+                The set of items that are currently expanded into pretty display.
 
             getx: string | int, optional None
-                If given, only a single sec2 (verse) will be fetched, but in pretty
+                If given, only a single `sec2` (verse) will be fetched, but in pretty
                 display.
-                `getx` is the identifier (section label, verse number) of the item/
+                `getx` is the identifier (section label, verse number) of the item.
 
             options: dict
                 Additional, optional display options, see `tf.advanced.options`.
@@ -245,15 +245,15 @@ def makeTfKernel(app, appName):
 
             features: string | iterable
                 The features that should be displayed in pretty displays when expanding
-                a plain representation of a sec2 into a pretty display
+                a plain representation of a `sec2` into a pretty display.
 
             opened: set, optional, `set()`
-                The set of items that are currently expanded into pretty display
+                The set of items that are currently expanded into pretty display.
 
             getx: string | int, optional None
-                If given, only a single sec2 (verse) will be fetched, but in pretty
+                If given, only a single `sec2` (verse) will be fetched, but in pretty
                 display.
-                `getx` is the identifier (section label, verse number) of the item/
+                `getx` is the identifier (section label, verse number) of the item.
 
             options: dict
                 Additional, optional display options, see `tf.advanced.options`.
@@ -320,7 +320,7 @@ def makeTfKernel(app, appName):
             position: integer, optional 1
                 The position that is in focus in the browser.
                 The navigation links take this position as the central point,
-                and enable the user to navigate to neighbouring results,
+                and enable the user to navigate to neighboring results,
                 in ever bigger strides.
 
             opened: set, optional set()
@@ -331,9 +331,9 @@ def makeTfKernel(app, appName):
                 pretty displays.
 
             getx: string | int, optional None
-                If given, only a single sec2 (verse) will be fetched, but in pretty
+                If given, only a single `sec2` (verse) will be fetched, but in pretty
                 display.
-                `getx` is the identifier (section label, verse number) of the item/
+                `getx` is the identifier (section label, verse number) of the item.
             """
 
             app = self.app
@@ -390,7 +390,7 @@ def makeTfKernel(app, appName):
             return (table, status, " ".join(messages), featureStr, start, total)
 
         def csvs(self, query, tuples, sections, **options):
-            """Gets query results etc. in plain csv format.
+            """Gets query results etc. in plain CSV format.
 
             The query results, tuples, and sections are retrieved, as in
             `exposed_search`, but this function only needs some features per node.

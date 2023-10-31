@@ -5,13 +5,13 @@ language modules.
 
 To get [Spacy](https://spacy.io), do
 
-```
+``` sh
 pip install spacy
 ```
 
-The Enlish language module can then be installed by
+The English language module can then be installed by
 
-```
+``` sh
 python -m spacy download en_core_web_sm
 ```
 
@@ -71,7 +71,7 @@ class Spacy:
             The language to be used; Spacy may need to download it, if so, it will
             happen automatically.
 
-            If the language is not supported by Spacy, we switch to the multilanguage
+            If the language is not supported by Spacy, we switch to the multi-language
             called `xx`.
 
             See `tf.tools.myspacy.LANG_MODELS` about the language models that Spacy supports.
@@ -216,15 +216,15 @@ class Spacy:
             Character positions start at 0.
         *   *end*: last character position that the token occupies in the text
             *plus one*.
-        *   *text*: text of the token, **excluding any trailing whitespace**.
-        *   *space*: any white space behind the token, if present, otherwise
+        *   *text*: text of the token, **excluding any trailing white-space**.
+        *   *space*: any white-space behind the token, if present, otherwise
             the empty string.
 
 
         !!! note "End position and space"
             If there is a space behind the token, it will not add to the end position
             of the token. So the start and end positions of the tokens reflect
-            where the tokens themselves are, and spaces do nto belong to the tokens.
+            where the tokens themselves are, and spaces do not belong to the tokens.
 
         Returns
         -------

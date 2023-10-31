@@ -40,7 +40,7 @@ export class GuiProvider {
    */
 
   build() {
-    /* fill in title and description and colofon
+    /* fill in title and description and colophon
      */
     const {
       Config: {
@@ -240,7 +240,7 @@ export class GuiProvider {
   }
 
   genTypeWidgets(nType, tpDesc, tpInfo) {
-    /* Generate html for the search controls for a node type
+    /* Generate HTML for the search controls for a node type
      */
     const { State } = this
     const {
@@ -284,7 +284,7 @@ export class GuiProvider {
   }
 
   genWidget(nType, layer, lrInfo) {
-    /* Generate html for the search controls for a single layer
+    /* Generate HTML for the search controls for a single layer
      */
     const { State } = this
     const {
@@ -347,7 +347,7 @@ export class GuiProvider {
   }
 
   genLegend(nType, layer, lrInfo) {
-    /* Generate html for the description / legend of a single layer
+    /* Generate HTML for the description / legend of a single layer
      */
     const { State } = this
     const {

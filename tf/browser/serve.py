@@ -213,7 +213,7 @@ def serveExport(web):
 
     form = getFormData(interfaceDefaults)
 
-    (colofon, header, appLogo, tfLogo) = app.header()
+    (colophon, header, appLogo, tfLogo) = app.header()
     css = kernelApi.css()
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
@@ -257,7 +257,7 @@ def serveExport(web):
         queryTable=(
             queryMessages if queryMessages or queryTable is None else queryTable
         ),
-        colofon=f"{appLogo}{colofon}{tfLogo}",
+        colophon=f"{appLogo}{colophon}{tfLogo}",
         provenance=provenanceHtml,
         setNames=setNameHtml,
         **form,
@@ -334,12 +334,12 @@ def serveDownload(web, jobOnly):
         redirect("/")
         return jsonify(status=queryStatus, messages=queryMessages)
 
-    (colofon, header, appLogo, tfLogo) = app.header()
+    (colophon, header, appLogo, tfLogo) = app.header()
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
     (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
 
-    about = getAbout(colofon, header, provenanceMd, form)
+    about = getAbout(colophon, header, provenanceMd, form)
     (fileName, zipBuffer) = zipTables(csvs, tupleResultsX, queryResultsX, about, form)
 
     headers = {
@@ -394,7 +394,7 @@ def serveAll(web, anything):
     pages = ""
     passages = ""
 
-    (colofon, header, appLogo, tfLogo) = app.header()
+    (colophon, header, appLogo, tfLogo) = app.header()
     css = kernelApi.css()
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
@@ -433,7 +433,7 @@ def serveAll(web, anything):
         characters=characters,
         colorMapHtml=colorMapHtml,
         eColorMapHtml=eColorMapHtml,
-        colofon=f"{appLogo}{colofon}{tfLogo}",
+        colophon=f"{appLogo}{colophon}{tfLogo}",
         header=header,
         setNames=setNameHtml,
         options=options,

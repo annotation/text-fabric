@@ -63,13 +63,13 @@ class Variants:
         the data by `Variants.resetApps()`. This should match the call(s) to
         `Variants.initApps`.
 
-        Then, at the start of each app-, lem-, rdg- element, call
+        Then, at the start of each `app`-, `lem`-, `rdg`- element, call
         `Variants.startApp(tag)` with tag the corresponding tag name (
         `app`, `lem`, or `rdg`).
 
         Likewise, at the end, call `Variants.endApp(tag)`.
 
-        Whenever you create slots, isse a `Variants.startSent()` first,
+        Whenever you create slots, issue a `Variants.startSent()` first,
         and a `Variants.checkSent()` after.
 
         Close every TEI file with a `Variants.endSent()`, to finish off all
@@ -91,9 +91,11 @@ class Variants:
             Those keys are mentioned in constants in the source code and there are
             a few keys dependent on the `sentType` parameter, namely
 
-                f"n{sentType}"
-                f"stack{sentType}"
-                f"var{sentType}"
+            ```
+            f"n{sentType}"
+            f"stack{sentType}"
+            f"var{sentType}"
+            ```
 
         baseWitness: string
             The name of the base text. Take care that it is different from the names
@@ -106,13 +108,13 @@ class Variants:
             sentences. It could be anything, provided we have access to its boundaries.
 
         checkPunc: function(string, string, punc): boolean
-            Given a the texts of the last two slots and the punctuation after that,
+            Given the texts of the last two slots and the punctuation after that,
             it determines whether is contains a boundary.
             This function should be written in the converter program.
-            Hence it is up to the conversion code to define what constitues a boundary,
+            Hence it is up to the conversion code to define what constitutes a boundary,
             and whether it are sentences or some things else that are being bounded.
             This function is called and depending on the outcome sentence nodes are
-            terminated and/or created, or nothing is done.
+            terminated and / or created, or nothing is done.
 
         addWarning, addError: function(string, dict)
             Functions taking a message string and a dict with current information
@@ -120,7 +122,7 @@ class Variants:
             They will be called if a warning or error has to be issued.
             When they is called, `cur` will be passed as dict.
             This function should be defined in the conversion program. It may use values
-            in `cur` to generate an indication where the warning/error occurred.
+            in `cur` to generate an indication where the warning / error occurred.
 
         """
         self.cv = cv
@@ -141,13 +143,14 @@ class Variants:
 
         Call this for the root nodes of every TEI file of the corpus.
 
-        Collects the witnesses from all rdg-elements.
-        For each lem-element the set of witnesses of its rdg siblings is collected in
+        Collects the witnesses from all `rdg`-elements.
+        For each `lem`-element the set of witnesses of its `rdg` siblings is collected in
         such a way that it can be retrieved later on.
 
-        We also store a pointer to the parent app-element of each nested app-element.
+        We also store a pointer to the parent `app`-element of each nested
+        `app`-element.
 
-        We also check that multiple direct-rdg children of the same
+        We also check that multiple direct-`rdg` children of the same
         app have disjoint witnesses.
         """
 
@@ -226,7 +229,7 @@ class Variants:
         cur[varSent] = {baseWitness: None}
 
     def startApp(self, tag, atts):
-        """Actions at the start of app- lem- and rdg-elements.
+        """Actions at the start of `app`- `lem`- and `rdg`-elements.
 
         Use this each time you enter one of these XML elements.
 
@@ -292,7 +295,7 @@ class Variants:
                     self._suspend(wit)
 
     def endApp(self, tag):
-        """Actions at the end of app- lem- and rdg-elements.
+        """Actions at the end of `app`- `lem`- and `rdg`-elements.
 
         Use this each time you leave one of these XML elements.
 
@@ -347,7 +350,7 @@ class Variants:
             This very function is responsible for putting the last text value into
             the context.
         punc: string
-            The non-alfanumeric text material after the text of the last slot.
+            The non-alphanumeric text material after the text of the last slot.
             Will be used to determine whether there is a "sentence" break here.
             The actual check will be done by the function `checkPunc`,
             which has been passed as parameter when the `Variants` object was
@@ -365,10 +368,10 @@ class Variants:
     def startSent(self):
         """Starts a "sentence" if there is no current sentence.
 
-        When in an rdg-element, witness-dependend "sentence" nodes
-        are created for each witness for the rdg.
+        When in an `rdg`-element, witness-dependent "sentence" nodes
+        are created for each witness for the `rdg`.
 
-        Use this before creating a slot and/or at the start of certain elements
+        Use this before creating a slot and / or at the start of certain elements
         such as paragraphs.
         """
 
@@ -392,7 +395,7 @@ class Variants:
         there should not remain pending sentences. You can also call this
         at the end of certain elements, such as paragraphs.
 
-        When in a lem-element, all pending "sentences" of all witnesses
+        When in a `lem`-element, all pending "sentences" of all witnesses
         that agree with the base text here are also ended.
         No new sentences for these witnesses are started, since we are in
         the base text.

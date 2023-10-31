@@ -15,62 +15,64 @@ they are separate words (the XML-elements are used as data containers);
 otherwise they belong to the same word (the XML-elements annotate a piece
 of string).
 
-This module can perform several analysis tasks of xml schemas.
+This module can perform several analysis tasks of XML schemas.
 
-**fromrelax** task:
+`fromrelax` task:
 
-Transforms a RelaxNG schema into an equivalent xsd schema using James Clark's
-trang library.  For this, you must have java installed.
+Transforms a RelaxNG schema into an equivalent XSD schema using James Clark's
+TRANG library.  For this, you must have java installed.
 
-**analyse** task:
+`analyze` task:
 
 Given an XML schema file, produces a tab-separated list of elements defined in
 the schema, with columns
 
-    (element name) (simple or complex) (mixed or pure content)
+```
+(element name) (simple or complex) (mixed or pure content)
+```
 
-**tei** task:
+`tei` task:
 
 Analyses the complete TEI schema plus optional customizations on top of it.  If
-you pass an optional customized TEI schema, it will be analysed separately, and
-the result will be used to override the result of analysing the complete TEI
+you pass an optional customized TEI schema, it will be analyzed separately, and
+the result will be used to override the result of analyzing the complete TEI
 schema.  The complete TEI schema is part of this package, you do not have to
 provide it.  It has been generated on with the online
-[TEI-Roma tool](https://roma.tei-c.org/startroma.php).
+[`TEI-Roma` tool](https://roma.tei-c.org/startroma.php).
 
 !!! note "Caution"
-    This code has only been tested on a single xsd, converted from a relaxRNG
-    file produced by a customisation of TEI.
+    This code has only been tested on a single XSD, converted from a RelaxNG
+    file produced by a customization of TEI.
 
     It could very well be that I have missed parts of the semantics of XML-Schema.
 
 ## Usage
 
-This program can be used as a library or as a command line tool.
+This program can be used as a library or as a command-line tool.
 
 ### As command-line tool
 
 ``` sh
 xmlschema validate schema.rng/xsd doc1.xml doc2.xml ...
 xmlschema fromrelax schema.rng
-xmlschema analyse schema.xsd
+xmlschema analyze schema.xsd
 xmlschema tei customschema.xsd
 xmlschema tei
 ```
 
 Here `customschema` and `schema` are variable arguments.
 
-The result is written to the console and/or a file in the current directory
+The result is written to the console and / or a file in the current directory
 (from where the command `xmlschema` is called):
 
 *   output from task `validate` is written to the standard output/error
-*   output from task `fromrelax` is a file *schema*`.xsd`;
-*   output from task `analysis` is written to *schema*`.tsv;
-*   output from task `tei` is written to *customschema*`.tsv.
+*   output from task `fromrelax` is a file `schema.xsd`;
+*   output from task `analysis` is written to `schema.tsv`;
+*   output from task `tei` is written to `customschema.tsv`.
 
 ### As library
 
-You can write a script with exactly the same behaviour as the `xmlschema` command
+You can write a script with exactly the same behavior as the `xmlschema` command
 as follows:
 
 ``` python
@@ -141,7 +143,7 @@ class Elements:
             Whether to run in debug mode or not.
             In debug mode more information is shown on the console.
         verbose: integer, optional -1
-            Produce no (-1), some (0) or many (1) orprogress and reporting messages
+            Produce no (-1), some (0) or many (1) progress and reporting messages
         """
 
         self.verbose = verbose
@@ -154,13 +156,13 @@ class Elements:
         Parameters
         ----------
         baseSchema: string
-            The path of the xsd file that acts as the base schema that we want
-            to analyse.
+            The path of the XSD file that acts as the base schema that we want
+            to analyze.
         override: string, optional None
-            The path of another schema intended to override parts of the baseSchema.
+            The path of another schema intended to override parts of the `baseSchema`.
         roots: list, optional None
             If passed, it should be the list of root elements of the schema, resulting
-            from another configure call with the same baseSchema, but not necessarily
+            from another configure call with the same `baseSchema`, but not necessarily
             the same override).
         """
 
@@ -179,7 +181,7 @@ class Elements:
         )
 
         def findImports(node):
-            """Inner function to walk through the xsd and get the import statements.
+            """Inner function to walk through the XSD and get the import statements.
 
             This function is called recursively for child nodes.
 
@@ -261,18 +263,19 @@ class Elements:
 
     @staticmethod
     def eKey(x):
-        """Sort the dict with element definitions.
+        """Sort the dictionary with element definitions.
 
         Parameters
         ----------
-        x: (str, dict)
+        x: tuple
             The element name and the element info.
 
         Returns
         -------
         tuple
-            The members are such that definitions from other than xs:element come first,
-            and within xs:element those that are "abstract" come first.
+            The members are such that definitions from other than `xs:element`
+            come first, and within `xs:element` those that are "abstract" come
+            first.
         """
         name = x[0]
         tag = x[1]["tag"]
@@ -285,16 +288,16 @@ class Elements:
         )
 
     def interpret(self):
-        """Reads the xsd and interprets the element definitions.
+        """Reads the XSD and interprets the element definitions.
 
-        The definitions are read with the module `lxml`.
+        The definitions are read with the module LXML.
 
         For each definition of a name certain attributes are remembered, e.g.
-        the *kind*, the presence of a *mixed* attribute, whether it is a
-        *substitutionGroup* or *extension*, and whether it is *abstract*.
+        the `kind`, the presence of a `mixed` attribute, whether it is a
+        `substitutionGroup` or `extension`, and whether it is `abstract`.
 
-        When elements refer to a *substitutionGroup*, they need to get
-        the *kind* and *mixed* attributes of that group.
+        When elements refer to a `substitutionGroup`, they need to get
+        the `kind` and `mixed` attributes of that group.
 
         When elements refer to a *base*, they need to get
         the *kind* and *mixed* attributes of an extension with that *base*.
@@ -325,7 +328,7 @@ class Elements:
         redefinitions = collections.Counter()
 
         def findDefs(node, definingName, topDef):
-            """Inner function to walk through the xsd and get definitions.
+            """Inner function to walk through the XSD and get definitions.
 
             This function is called recursively for child nodes.
 
@@ -463,8 +466,8 @@ class Elements:
 
         Returns
         -------
-        str | list
-            One line/item per element.
+        string | list
+            One line / item per element.
             Each line has: element name, element kind, mixed status.
 
             The absence of the element *kind* and *mixed* status are indicated
@@ -600,10 +603,10 @@ class Analysis:
             """
             USAGE
 
-            Command line:
+            Command-line:
 
             xmlschema tei [customschemafile.xsd]
-            xmlschema analyse {schemafile.xsd}
+            xmlschema analyze {schemafile.xsd}
             xmlschema fromrelax {schemafile.rng}
             xmlschema validate {schemafile.rng} {docfile1.xml} {docfile2.xml} ...
 
@@ -619,7 +622,7 @@ class Analysis:
             Whether to run in debug mode or not.
             In debug mode more information is shown on the console.
         verbose: integer, optional -1
-            Produce no (-1), some (0) or many (1) orprogress and reporting messages
+            Produce no (-1), some (0) or many (1) progress and reporting messages
         """
 
         self.verbose = verbose
@@ -627,7 +630,7 @@ class Analysis:
         self.myDir = dirNm(abspath(__file__))
         self.setModes(debug=debug, verbose=verbose)
         self.schemaRoots = {}
-        self.analysers = {}
+        self.analyzers = {}
         self.modelRe = re.compile(r"<\?xml-model\b.*?\?>", re.S)
         self.modelSnsRe = re.compile(r"""schematypens=(['"])(.*?)\1""", re.S)
         self.modelHrefRe = re.compile(r"""href=(['"])(.*?)\1""", re.S)
@@ -646,7 +649,7 @@ class Analysis:
         -------
         dict
             A dictionary with keys `rng` and `xsd` and values the paths of the
-            rng and xsd files of the base schema.
+            RNG and XSD files of the base schema.
         """
         myDir = self.myDir
 
@@ -680,12 +683,12 @@ class Analysis:
         self.verbose = verbose
 
     def fromrelax(self, baseSchema, schemaOut):
-        """Converts a RELAX NG schema to an XSD schema.
+        """Converts a RelaxNG schema to an XSD schema.
 
         Parameters
         ----------
         baseSchema: string
-            The RELAX NG schema to convert.
+            The RelaxNG schema to convert.
         schemaOut: string
             The XSD schema to write to.
 
@@ -765,10 +768,10 @@ class Analysis:
 
         return (good, info, errors)
 
-    def analyser(self, baseSchema, override):
-        """Initializes an analyser for a schema.
+    def analyzer(self, baseSchema, override):
+        """Initializes an analyzer for a schema.
         """
-        if (baseSchema, override) in self.analysers:
+        if (baseSchema, override) in self.analyzers:
             return True
 
         debug = self.debug
@@ -786,25 +789,25 @@ class Analysis:
             return False
 
         self.schemaRoots[baseSchema] = E.roots
-        self.analysers[(baseSchema, override)] = E
+        self.analyzers[(baseSchema, override)] = E
         return True
 
     def elements(self, baseSchema, override):
         """Makes a list of elements and their properties.
 
-        The elements of baseSchema are analysed and their properties are
+        The elements of `baseSchema` are analyzed and their properties are
         determined. If there is an overriding schema, the elements of that
-        schema are analysed as well and the properties of the elements are
+        schema are analyzed as well and the properties of the elements are
         updated with the properties of the overriding elements.
         The properties in question are whether an element is simple or complex,
-        and whether its conten is mixed or pure.
+        and whether its content is mixed or pure.
 
         Parameters
         ----------
         baseSchema: string
-            The base schema to analyse.
+            The base schema to analyze.
         override: string | None
-            The overriding schema to analyse.
+            The overriding schema to analyze.
         write: boolean, optional True
             Whether to write the results to a file.
 
@@ -816,10 +819,10 @@ class Analysis:
             - the name of the output file
             - the list of elements with their properties
         """
-        if not self.analyser(baseSchema, override):
+        if not self.analyzer(baseSchema, override):
             return (False, None)
 
-        E = self.analysers[(baseSchema, override)]
+        E = self.analyzers[(baseSchema, override)]
 
         E.interpret()
         if not E.good:
@@ -830,7 +833,7 @@ class Analysis:
         return result
 
     def getElementInfo(self, baseSchema, overrides, verbose=None):
-        """Analyse the schema and its overrides.
+        """Analyze the schema and its overrides.
 
         The XML schema has useful information about the XML elements that
         occur in the source. Here we extract that information and make it
@@ -881,7 +884,7 @@ class Analysis:
         Parameters
         ----------
         task: string
-            The task to execute: `"fromrelax"`, `"analyse"`, `"tei"`, or `"validate"`.
+            The task to execute: `"fromrelax"`, `"analyze"`, `"tei"`, or `"validate"`.
 
         ask: list
             Any arguments for the task.
@@ -904,7 +907,7 @@ class Analysis:
 
         result = True
 
-        if task in {"tei", "analyse"}:
+        if task in {"tei", "analyze"}:
             if task == "tei":
                 baseSchema = self.getBaseSchema()["xsd"]
                 override = args[0] if len(args) else None
@@ -945,7 +948,7 @@ class Analysis:
         return result
 
     def run(self):
-        """Run a task specified by arguments on the command line.
+        """Run a task specified by arguments on the command-line.
 
         Returns
         -------
@@ -956,7 +959,7 @@ class Analysis:
         """
         tasks = dict(
             tei={0, 1},
-            analyse={1},
+            analyze={1},
             fromrelax={1},
             validate=True,
         )

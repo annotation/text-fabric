@@ -1,1 +1,1 @@
-"""Various tools for workflows around Text-Fabric."""
+"""Various tools for workflows around TF."""

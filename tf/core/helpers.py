@@ -218,7 +218,7 @@ PANDAS_ESCAPE = "\u0001"
 
 
 def pandasEsc(x):
-    """Escapes the character that will be used as the Pandas quote char.
+    """Escapes the character that will be used as the `pandas` quote char.
 
     The escaping is realized by prepending a special char the quote char.
     Also: all tab characters will be replaced by single spaces.
@@ -546,7 +546,7 @@ def getAllRealFeatures(api):
     When we take volumes or collections from works,
     we need to pass these features on.
 
-    This will exclude the computed features and the node/edge features
+    This will exclude the computed features and the node / edge features
     that are not loaded by default.
     """
 
@@ -602,11 +602,14 @@ def deepSize(o, handlers={}, verbose=False, seen=None):
     """Returns the approximate memory footprint an object and all of its contents.
 
     Automatically finds the contents of the following builtin containers and
-    their subclasses:  tuple, list, deque, dict, set and frozenset.
+    their subclasses:
+    `tuple`, `list`, `deque`, `dict`, `set` and `frozenset`.
     To search other containers, add handlers to iterate over their contents:
 
-        handlers = {SomeContainerClass: iter,
-                    OtherContainerClass: OtherContainerClass.get_elements}
+    ```
+    handlers = {SomeContainerClass: iter,
+                OtherContainerClass: OtherContainerClass.get_elements}
+    ```
 
     """
 
@@ -647,14 +650,14 @@ def deepSize(o, handlers={}, verbose=False, seen=None):
 def run(cmdline, workDir=None):
     """Runs a shell command and returns all relevant info.
 
-    The function runs a command line in a shell, and returns
-    whether the command was successfull, and also what the output was, separately for
+    The function runs a command-line in a shell, and returns
+    whether the command was successful, and also what the output was, separately for
     standard error and standard output.
 
     Parameters
     ----------
-    cmdline:
-        The command line to execute.
+    cmdline: string
+        The command-line to execute.
     workDir: string, optional None
         The working directory where the command should be executed.
         If `None` the current directory is used.

@@ -17,17 +17,21 @@ def compose(
     Some of the rows will be expandable, namely the rows specified by `opened`,
     for which extra data has been fetched.
 
-    *features* is a list of names of features that will be shown
-    in expanded pretty displays.
-    Typically, it is the list of features used in the query that delivered the tuples.
+    Parameters
+    ----------
+    features: list
+        The names of features that will be shown in expanded pretty displays.
+        Typically, it is the list of features used in the query that delivered
+        the tuples.
 
-    *position* The current position in the list. Will be highlighted in the display.
+    position: integer
+        The current position in the list. Will be highlighted in the display.
 
-    *getx=None* If `None`, a portion of the tuples will be put in a table. otherwise,
-    it is an index in the list for which a pretty display will be retrieved.
-    Typically, this happens when a TF-browser user clicks on a table row
-    in order to expand
-    it.
+    getx: integer, optional None
+        If `None`, a portion of the tuples will be put in a table. otherwise,
+        it is an index in the list for which a pretty display will be retrieved.
+        Typically, this happens when a TF browser user clicks on a table row
+        in order to expand it.
     """
 
     display = app.display
@@ -110,8 +114,8 @@ def composeT(
     """Takes a list of tuples and composes it into an HTML table.
 
     Very much like `compose`,
-    but here the tuples come from a sections and/or tuples specification
-    in the TF-browser.
+    but here the tuples come from a sections and / or tuples specification
+    in the TF browser.
     """
 
     display = app.display
@@ -191,20 +195,22 @@ def composeP(
 ):
     """Takes a list of tuples and composes it into an HTML table.
 
-    Like `composeT`, but this is meant to compose the items at section level 2 (verses) within
-    an item of section level 1 (chapter) within an item of section level 0 (a book).
+    Like `composeT`, but this is meant to compose the items at section level 2
+    (verses) within an item of section level 1 (chapter) within an item of
+    section level 0 (a book).
 
-    Typically invoked when a user of the TF-browser is browsing passages.
-    The query is used to highlight its results in the passages that the user is browsing.
+    Typically invoked when a user of the TF browser is browsing passages.
+    The query is used to highlight its results in the passages that the user is
+    browsing.
 
     Parameters
     ----------
     items: int or list of int
         A node or list of nodes.
-        Some corpora require a passage to be shown as a pretty display of the section node
-        in question, and then items is a single node.
+        Some corpora require a passage to be shown as a pretty display of the
+        section node in question, and then items is a single node.
         Normally, the items is the list of section nodes one level lower than the
-        section node in question. See *browseContentPretty* in `tf.advanced.settings`.
+        section node in question. See `browseContentPretty` in `tf.advanced.settings`.
     """
 
     display = app.display

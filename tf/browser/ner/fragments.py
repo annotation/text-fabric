@@ -20,18 +20,18 @@ class Fragments:
         v.messages = H.p((H.span(text, cls=lev) + H.br() for (lev, text) in messageSrc))
 
     def wrapAnnoSets(self):
-        """HTML for the annoset chooser.
+        """HTML for the annotation set chooser.
 
-        It is a list of buttons, each corresponding to an existing annoset.
-        A click on the button selects that annoset.
-        There is also a control to delete the annoset.
+        It is a list of buttons, each corresponding to an existing annotation set.
+        A click on the button selects that set.
+        There is also a control to delete the set.
 
         Apart from these buttons there is a button to switch to the entities that are
         present in the TF dataset as nodes of the entity type specified
-        in the yaml file with corresponding
+        in the YAML file with corresponding
         features.
 
-        Finally, it is possible to create a new, empty annoset.
+        Finally, it is possible to create a new, empty annotation set.
         """
         annotate = self.annotate
         setNames = annotate.setNames
@@ -489,7 +489,7 @@ class Fragments:
     def wrapScope(self):
         """HTML for the scope widget.
 
-        The scope widget lets the user choose whether the add/del actions should
+        The scope widget lets the user choose whether the add / del actions should
         be applied to all relevant buckets, or only to the filtered buckets.
         """
         v = self.v
@@ -520,12 +520,12 @@ class Fragments:
         v.scopefilter = scopeFilter
 
     def wrapExceptions(self):
-        """HTML for the select/deselect buttons.
+        """HTML for the select / deselect buttons.
 
         These buttons appear at the end of selected occurrences in the text displayed
         in the buckets.
         The user can select or deselect individual entities for the application of
-        the add/del operations.
+        the add / del operations.
         """
         v = self.v
         txt = v.txt
@@ -546,7 +546,7 @@ class Fragments:
                     "✅",
                     type="button",
                     id="selectall",
-                    title=f"select all occurences in filtered {bucketType}s",
+                    title=f"select all occurrences in filtered {bucketType}s",
                     cls="icon",
                 ),
                 " ",
@@ -554,7 +554,7 @@ class Fragments:
                     "❌",
                     type="button",
                     id="selectnone",
-                    title=f"deselect all occurences in filtered {bucketType}s",
+                    title=f"deselect all occurrences in filtered {bucketType}s",
                     cls="icon",
                 ),
             )
@@ -562,7 +562,7 @@ class Fragments:
         return scopeExceptions
 
     def wrapEntityModify(self):
-        """HTML for the add/del widget.
+        """HTML for the add / del widget.
 
         This widget contains controls to specify which entity feature values
         should be added or deleted.
@@ -859,7 +859,7 @@ class Fragments:
         )
 
     def wrapEntityModReport(self):
-        """HTML for the combined report of add/del actions."""
+        """HTML for the combined report of add / del actions."""
         v = self.v
         reportDel = v.reportdel
         reportAdd = v.reportadd
@@ -869,7 +869,7 @@ class Fragments:
         )
 
     def wrapReport(self, report, kind):
-        """HTML for the report of add/del actions."""
+        """HTML for the report of add / del actions."""
         v = self.v
         annotate = self.annotate
         settings = annotate.settings

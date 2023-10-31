@@ -1,10 +1,10 @@
 """
 # Clean
 
-From version 7.7.7 onwards, Text-Fabric uses a parameter `tf.parameters.PACK_VERSION`
+From version 7.7.7 onward, TF uses a parameter `tf.parameters.PACK_VERSION`
 to mark the stored pre-computed data.
 Whenever there are incompatible changes in the packed data format, this
-version number will be increased and Text-Fabric will not attempt to load
+version number will be increased and TF will not attempt to load
 the older pre-computed data.
 
 The older data will not be removed, however.
@@ -43,13 +43,13 @@ def err(msg):
 
 
 def clean(tfd=True, backend=None, dry=True, specific=None, current=False):
-    """Clean up older compressed .tfx files.
+    """Clean up older compressed `.tfx` files.
 
     Parameters
     ----------
 
-    Removes all precomputed data resulting from other `PACK_VERSION`s
-    than the one currently used by Text-Fabric.
+    Removes all pre-computed data resulting from other `PACK_VERSION`
+    than the one currently used by TF.
 
     You find the current pack version in
     `tf.parameters`
@@ -59,9 +59,9 @@ def clean(tfd=True, backend=None, dry=True, specific=None, current=False):
         but if you pass `tfd=False` it will be skipped.
     backend: string, optional, `None`
         If None, only material in `text-fabric-data` will be cleaned.
-        But you can also clean clones of GitHub/GitLab.
+        But you can also clean clones of GitHub / GitLab.
 
-        To clean GitHub/GitLab clones, pass `github` / `gitlab`.
+        To clean GitHub / GitLab clones, pass `github` / `gitlab`.
 
         To clean the clones from a specific GitLab server,
         pass its server name.
@@ -70,7 +70,7 @@ def clean(tfd=True, backend=None, dry=True, specific=None, current=False):
         `~/github` and `~/text-fabric-data` will not be used, only
         the directory you pass here. `~` will be expanded to your home directory.
     current: boolean, optional, `False`
-        If current=True, also the precomputed results of the current version will
+        If current=True, also the pre-computed results of the current version will
         be removed.
     dry: boolean, optional, `False`
         By default, nothing will be deleted, and you only get a list of

@@ -1,6 +1,6 @@
 # `A.` Advanced API
 
-## Initialisation, configuration, meta data, and linking
+## Initialization, configuration, meta data, and linking
 
 ``` python
 A = use('org/repo')
@@ -30,7 +30,7 @@ A.showContext(...)
 ``` python
 A.header(allMeta=False)
 ```
-:   show colofon
+:   show colophon
 :   `tf.advanced.links.header`
 
 ``` python
@@ -161,7 +161,7 @@ A.unravel(node, ...)
 ``` python
 A.getCss()
 ```
-:   get the complete CSS stylesheet for this app
+:   get the complete CSS style sheet for this app
 :   `tf.advanced.display.getCss`
 
 ---
@@ -181,7 +181,7 @@ A.search(...)
 ``` python
 A.nodeFromSectionStr(...)
 ```
-:   lookup node for sectionheading
+:   lookup node for section heading
 :   `tf.advanced.sections.nodeFromSectionStr`
 
 ``` python
@@ -260,13 +260,13 @@ The following methods work also for `TF.` instead of `A.`:
 ``` python
 A.banner
 ```
-:   banner of the Text-Fabric program.
+:   banner of the TF program.
 :   `tf.fabric.Fabric.banner`
 
 ``` python
 A.isSilent()
 ```
-:   report the verbosity of Text-Fabric
+:   report the verbosity of TF
 :   `tf.core.timestamp.Timestamp.isSilent`
 
 ``` python
@@ -284,7 +284,7 @@ A.silentOff()
 ``` python
 A.setSilent(silent)
 ```
-:   set the verbosity of Text-Fabric.
+:   set the verbosity of TF.
 :   `tf.core.timestamp.Timestamp.setSilent`
 
 ``` python
@@ -663,7 +663,7 @@ T.down(node)
 
 ## `S.` Search (low level)
 
-[searchRough](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/searchRough.ipynb)
+[`searchRough`](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/searchRough.ipynb)
 
 ### Preparation
 
@@ -727,14 +727,14 @@ S.tweakPerformance(...)
 
 ## `C.` Computed data components.
 
-Access to precomputed data: `tf.core.computed.Computeds`.
+Access to pre-computed data: `tf.core.computed.Computeds`.
 
 All components have just one useful attribute: `.data`.
 
 ``` python
 Call()
 ```
-:   all precomputed data component names
+:   all pre-computed data component names
 :   `tf.core.api.Api.Call`
 
 ``` python
@@ -912,7 +912,7 @@ A.publishRelease(increase, message=None, description=None,,...)
 ``` python
 TF.version
 ```
-:   version number of Text-Fabric.
+:   version number of TF.
 :   `tf.fabric.Fabric.version`
 
 ``` python
@@ -1054,7 +1054,7 @@ Recorder()
 
 ---
 
-## XML/TEI import
+## XML / TEI import
 
 ``` python
 from tf.convert.xml import XML
@@ -1099,12 +1099,12 @@ newVersion = addTokensAndSenteces(A)
 
 ---
 
-## Pandas export
+## `pandas` export
 
 ``` python
 A.exportPandas()
 ```
-:   export dataset as Pandas dataframe
+:   export dataset as `pandas` data frame
 :   `tf.convert.pandas`
 
 ---
@@ -1156,7 +1156,7 @@ explode(inLocation, outLocation)
 
 ---
 
-# TF-App development
+# TF App development
 
 ``` python
 A.reuse()
@@ -1177,19 +1177,19 @@ mmm = loadModule("mmm", *args)
 ```
 ~/mypath/myname/app/config.yaml
 ```
-:   settings for a TF-App
+:   settings for a TF App
 :   `tf.advanced.settings`
 
 ---
 
 # Layered search
 
-(these work on the commandline if Text-Fabric is installed)
+(these work on the command-line if TF is installed)
 
 ``` sh
 text-fabric-make {dataset} {client} ship
 ```
-:   generate a static site with a search interface in client-side javascript and
+:   generate a static site with a search interface in client-side JavaScript and
     publish it to GitHub pages.
     If `{client}` is left out, generate all clients that are defined for this
     dataset.
@@ -1210,13 +1210,13 @@ More commands
 
 # Command-line tools
 
-(these work on the commandline if Text-Fabric is installed)
+(these work on the command-line if TF is installed)
 
 ``` sh
 tf {org}/{repo}
-text-fabric {org}/{repo}
+tf {org}/{repo}
 ```
-:   Starts the text-fabric browser for the corpus in *org*/*repo*.
+:   Starts the TF browser for the corpus in *org*/*repo*.
 :   `tf.browser.start`
 
 ``` sh
@@ -1224,7 +1224,7 @@ tf-zipall
 ```
 :   Zips the TF dataset located by the current directory,
     *with all its additional data modules*, but only *the latest version*,
-    so that it can be attached to a release on Github/GitLab.
+    so that it can be attached to a release on GitHub / GitLab.
 :   `tf.advanced.zipdata.zipAll` and `tf.zip`
 
 ``` sh
@@ -1232,14 +1232,14 @@ tf-zip {org}/{repo}
 text-fabric-zip {org}/{repo}
 ```
 :   Zips the TF dataset in *org*/*repo* so that it can be attached to a release on
-    Github/GitLab.
+    GitHub / GitLab.
 :   `tf.advanced.zipdata`
 
 ``` sh
 tf-nbconvert {inDirectory} {outDirectory}
 nbconvert {inDirectory} {outDirectory}
 ```
-:   Converts notebooks in *inDirectory* to HTML and stores them in *outDirectory*.
+:   Converts notebooks in `inDirectory` to HTML and stores them in `outDirectory`.
 :   `tf.tools.nbconvert`
 
 ``` sh

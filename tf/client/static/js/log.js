@@ -3,7 +3,7 @@
 import { DEBUG } from "./defs.js"
 
 export class LogProvider {
-  /* Issues messages to the interface and/or console
+  /* Issues messages to the interface and / or console
    * Not used for debug messages
    */
 
@@ -17,7 +17,7 @@ export class LogProvider {
     this.tell("!!! IS ON !!!")
 
     this.place = $("#progress")
-    await this.placeProgress("Javascript has kicked in.")
+    await this.placeProgress("JavaScript has kicked in.")
   }
   async later() {
     await this.placeProgress("Done ...")

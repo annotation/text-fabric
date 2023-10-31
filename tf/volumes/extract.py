@@ -3,7 +3,7 @@
 
 ## Usage
 
-```python
+``` python
 from tf.volumes import extract
 extract(
   workLocation,
@@ -90,7 +90,7 @@ def extract(
 ):
     """Extracts volumes of a work.
 
-    The volumes are new TF data sets, the work is an existing TF data set.
+    The volumes are new TF datasets, the work is an existing TF data set.
     Volumes of a work consist of collections of its top-level sections.
 
     You can define volumes by passing a volume specification.
@@ -100,7 +100,7 @@ def extract(
     Volumes will get a node feature `owork` which maps nodes in the volume to
     nodes in the work.
 
-    !!! note "use of feature owork"
+    !!! note "use of feature `owork`"
         If volumes are combined to a work, nodes in distinct volumes may
         correspond to a single node in the work. In that case, they have the
         same value in the `owork` feature.
@@ -123,34 +123,34 @@ def extract(
 
     Volumes will also get two node features `ointerfrom` and `ointerto`.
 
-    For each node *f* in the volume, `ointerfrom` has a value composed of
-    all work nodes *t* outside the volume that are reached by an edge
-    named *e* from *f* with value *val*.
+    For each node `f` in the volume, `ointerfrom` has a value composed of
+    all work nodes `t` outside the volume that are reached by an edge
+    named `e` from `f` with value *val*.
 
-    For each node *t* in the volume, `ointerto` has a value composed of
-    all work nodes *f* outside the volume that reach *t* by an edge
-    named *e* with value *val*.
+    For each node `t` in the volume, `ointerto` has a value composed of
+    all work nodes `f` outside the volume that reach `t` by an edge
+    named `e` with value *val*.
 
-    More precisely, the keys of `ointerf` and `ointert` are nodes *nW* of the
+    More precisely, the keys of `ointerf` and `ointert` are nodes `nW` of the
     *original work* that correspond with nodes in the volume that have outgoing resp.
     incoming edges to resp. from other volumes.
 
     Each value of `oninterf` and `ointert` is a semicolon separated list of
 
-    *mW*, *e*, *doValues*, *valueType* , *value*
+    `mW`, `e`, `doValues`, `valueType` , `value`
 
     where
 
-    *mW* is the node in the *original work* reached by *nW* or that reaches *nW*
+    `mW` is the node in the *original work* reached by `nW` or that reaches `nW`
 
-    *e* is the name of the edge feature in question
+    `e` is the name of the edge feature in question
 
-    *doValues* is `v` if the edge feature has values and `x` otherwise
+    `doValues` is `v` if the edge feature has values and `x` otherwise
 
-    *valueType* is "i" (int) or "s" (str)
+    `valueType` is `i` (`int`) or `s` (`str`)
 
-    *value* is the value assigned by the edge feature to the edge from *nW* to *mW*
-    or from *mW* to *nW*. If the edge does not have values it is a dummy value `x`.
+    `value` is the value assigned by the edge feature to the edge from `nW` to `mW`
+    or from `mW` to `nW`. If the edge does not have values it is a dummy value `x`.
 
     Parameters
     ----------
@@ -197,7 +197,7 @@ def extract(
         from which the volumes are to be extracted.
         In this case, the `workLocation` parameter is not used.
         If absent or `None`, the dataset at `workLocation`
-        will be loaded by Text-Fabric, and its api will be used subsequently.
+        will be loaded by TF, and its api will be used subsequently.
 
     overwrite: boolean, optional None
         If True, the volumes defined by `volumes` will be
@@ -226,24 +226,28 @@ def extract(
 
     Example
     -------
-        volumeList = extract(
-            'clariah-gm/tf/0.9.1',
-            'clariah-gm/asvolumes/tf/0.9.1',
-        )
+    ``` python
+    volumeList = extract(
+        'clariah-gm/tf/0.9.1',
+        'clariah-gm/asvolumes/tf/0.9.1',
+    )
+    ```
 
     This will extract the top-level sections of the missives corpus
     into that many volumes.
 
     Example
     -------
-        volumeList = extract(
-            'clariah-gm/tf/0.9.1',
-            'clariah-gm/asvolumes/tf/0.9.1',
-            volumes=dict(
-                early=(1,2,3,4,5,6,7,8),
-                late=(9, 10, 11, 12),
-            )
+    ``` python
+    volumeList = extract(
+        'clariah-gm/tf/0.9.1',
+        'clariah-gm/asvolumes/tf/0.9.1',
+        volumes=dict(
+            early=(1,2,3,4,5,6,7,8),
+            late=(9, 10, 11, 12),
         )
+    )
+    ```
 
     This will create 2 volumes, named `early` and `late`,
     where `early` consists of top-level sections 1-8,
@@ -252,23 +256,27 @@ def extract(
 
     Example
     -------
-        volumeList = extract(
-            'bhsa/tf/2021',
-            'bhsa/asvolumes/tf/2021',
-        )
+    ``` python
+    volumeList = extract(
+        'bhsa/tf/2021',
+        'bhsa/asvolumes/tf/2021',
+    )
+    ```
 
     This will extract the books of the bible as separate volumes.
 
     Example
     -------
-        volumeList = extract(
-            'bhsa/tf/2021',
-            'bhsa/asvolumes/tf/2021',
-            volumes=dict(
-                thora=("Genesis", "Exodus", "Leviticus", "Numeri", "Deuteronomy"),
-                poetry=("Psalms", "Proverbs"),
-            ),
-        )
+    ``` python
+    volumeList = extract(
+        'bhsa/tf/2021',
+        'bhsa/asvolumes/tf/2021',
+        volumes=dict(
+            thora=("Genesis", "Exodus", "Leviticus", "Numeri", "Deuteronomy"),
+            poetry=("Psalms", "Proverbs"),
+        ),
+    )
+    ```
 
     This will extract two volumes of the bible:
     `thora` with the first 5 books and `poetry` with two poetic books.

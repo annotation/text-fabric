@@ -32,7 +32,7 @@ class Request(Form):
         *   `Int` values are positive integers;
         *   `Tup` values are tuples of strings;
         *   `SetInt` values are sets of integers;
-        *   `Json` values are arbitrary structures encoded in json strings;
+        *   `Json` values are arbitrary structures encoded in JSON strings;
 
         We also define a few composed values, where we store the values of
         several related keys in the form as a dictionary value under a new key.

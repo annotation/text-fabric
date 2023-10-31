@@ -37,6 +37,7 @@ Requires-Dist: ipython
 Requires-Dist: lxml
 Requires-Dist: pyyaml>=5.3
 Requires-Dist: flask
+Requires-Dist: pandas
 Provides-Extra: github
 Requires-Dist: pygithub>=1.57; extra == "github"
 Provides-Extra: gitlab

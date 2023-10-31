@@ -75,7 +75,7 @@ Code `tei`, since there is a direct correspondence with the TEI source.
 
 Examples:
 
-*   Generated white space based on whether elements are pure or mixed;
+*   Generated white-space based on whether elements are pure or mixed;
 *   Edges between parent and child elements, or sibling elements.
 """
 
@@ -267,9 +267,9 @@ def setUp(kind):
         check="reports on the elements in the source",
         convert=f"converts {kind} to TF",
         load="loads the generated TF",
-        app="configures the TF-app for the result",
-        apptoken="modifies the TF-app to make it token- instead of character-based",
-        browse="starts the text-fabric browser on the result",
+        app="configures the TF app for the result",
+        apptoken="modifies the TF app to make it token- instead of character-based",
+        browse="starts the TF browser on the result",
     )
     taskExcluded = {"apptoken", "browse"}
 
@@ -277,7 +277,7 @@ def setUp(kind):
         "tf": (
             (
                 "0 or latest: update latest version;\n\t\t"
-                "1 2 3: increase major, intermediate, minor tf version;\n\t\t"
+                "1 2 3: increase major, intermediate, minor TF version;\n\t\t"
                 "rest: explicit version."
             ),
             "latest",
@@ -479,7 +479,7 @@ def lookupSource(cv, cur, specs):
     Parameters
     ----------
     cv: object
-        The convertor object, needed to issue actions.
+        The converter object, needed to issue actions.
     cur: dict
         Various pieces of data collected during walking
         and relevant for some next steps in the walk.
@@ -487,18 +487,18 @@ def lookupSource(cv, cur, specs):
         A sequence of instructions what to look for.
         Each instruction has the following parts:
 
-        *   pathSpec
-        *   node type
-        *   featureName
+        *   `pathSpec`
+        *   `nodeType`
+        *   `featureName`
 
         The effect is:
 
-        The pathSpec is compared to the current XML stack.
+        The `pathSpec` is compared to the current XML stack.
         If it matches the current node, the text content of the current node or one of
         its attributes will be collected and put in a feature with name
         `featureName`, for the current TF node of type `nodeType`.
 
-        The pathSpec is a list of components.
+        The `pathSpec` is a list of components.
         The first component should match the top of the XML stack, the second
         component the element that is below the top, etc.
         Each component is a tuple of

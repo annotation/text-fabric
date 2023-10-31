@@ -65,7 +65,7 @@ h1.chars {
             <th>phonetic</th>
             <th>remarks</th>
             <th>name</th>
-            <th>unicode</th>
+            <th>UNICODE</th>
         </tr>
     </thead>
     <tbody>
@@ -258,7 +258,7 @@ h1.chars {
             <th>phonetic</th>
             <th>remarks</th>
             <th>name</th>
-            <th>unicode</th>
+            <th>UNICODE</th>
         </tr>
     </thead>
     <tbody>
@@ -299,7 +299,7 @@ h1.chars {
             <th>phonetic</th>
             <th>remarks</th>
             <th>name</th>
-            <th>unicode</th>
+            <th>UNICODE</th>
         </tr>
     </thead>
     <tbody>
@@ -324,7 +324,7 @@ h1.chars {
             <th>phonetic</th>
             <th>remarks</th>
             <th>name</th>
-            <th>unicode</th>
+            <th>UNICODE</th>
         </tr>
     </thead>
     <tbody>
@@ -361,8 +361,8 @@ h1.chars {
   <td class="u">0735</td>
 </tr>
 <tr>
-  <td class="t">O</td><
-  td class="g">`ܿ</td>
+  <td class="t">O</td>
+  <td class="g">`ܿ</td>
   <td class="p"></td>
   <td class="r"></td>
   <td class="n">holem, rewaha</td>
@@ -461,7 +461,7 @@ h1.chars {
             <th>phonetic</th>
             <th>remarks</th>
             <th>name</th>
-            <th>unicode</th>
+            <th>UNICODE</th>
         </tr>
     </thead>
     <tbody>
@@ -550,7 +550,7 @@ h1.chars {
             <th>phonetic</th>
             <th>remarks</th>
             <th>name</th>
-            <th>unicode</th>
+            <th>UNICODE</th>
         </tr>
     </thead>
     <tbody>

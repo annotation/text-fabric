@@ -21,21 +21,21 @@ Copy mode
 ---------
 If outputDir is given and not equal to "-":
 
-Converts all `.ipynb` files in *inputDir* to `.html` files in *outputDir*.
-Copies all other files in *inputDir* to *outputDir*.
-If *outputDir* does not exist, it will be created.
+Converts all `.ipynb` files in `inputDir` to `.html` files in `outputDir`.
+Copies all other files in `inputDir` to `outputDir`.
+If `outputDir` does not exist, it will be created.
 
-Makes sure that all links in the resulting html to one of the
+Makes sure that all links in the resulting HTML to one of the
 original `.ipynb` files are transformed in links to the converted `.html` files.
 
 In place mode
 -------------
 If outputDir is given and equal to "-":
 
-Converts all `.ipynb` files in *inputDir* to `.html` files next to their originals.
-Overwrites existing html names with the same name.
+Converts all `.ipynb` files in `inputDir` to `.html` files next to their originals.
+Overwrites existing HTML names with the same name.
 
-Makes sure that all links in the resulting html to one of the
+Makes sure that all links in the resulting HTML to one of the
 original `.ipynb` files are transformed in links to the converted `.html` files.
 
 Index mode
@@ -43,11 +43,11 @@ Index mode
 Without outputDir
 
 Generates an index.html file in inputDir with links
-to all html files that can be recursively found inside the inputDir.
+to all HTML files that can be recursively found inside the inputDir.
 
 Command switches
 
-```
+``` sh
 -h
 --help
 ```

@@ -33,10 +33,10 @@ def use(appName, *args, backend=None, **kwargs):
         or a GitLab instance such as `gitlab.huc.knaw.nl`.
         If absent, `None` or empty, it is `github`.
 
-    args:
+    args: mixed
         Do not pass any other positional argument!
 
-    kwargs:
+    kwargs: mixed
         Used to initialize the corpus app that we use.
         That is either an uncustomized `tf.advanced.app.App` or
         a customization of it.

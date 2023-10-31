@@ -133,7 +133,7 @@ def _tokenize(searchExe):
     #
     # Because indentation is not indicative of quantifier nesting
     # we need to maintain a stack of inner quantifiers,
-    # just to be able to determine wich quantifier words
+    # just to be able to determine which quantifier words
     # belong to the outerlevel quantifiers.
 
     curQu = []

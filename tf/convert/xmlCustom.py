@@ -46,7 +46,7 @@ def convertTaskDefault(self):
         empty=dict(description="whether a slot has been inserted in an empty element"),
     )
 
-    featureMeta["ch"] = dict(description="the unicode character of a slot")
+    featureMeta["ch"] = dict(description="the UNICODE character of a slot")
     featureMeta[FOLDER] = dict(description=f"name of source {FOLDER}")
     featureMeta[FILE] = dict(description=f"name of source {FILE}")
 
@@ -126,12 +126,12 @@ def getDirector(self):
         Parameters
         ----------
         cv: object
-            The convertor object, needed to issue actions.
+            The converter object, needed to issue actions.
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
         xnode: object
-            An lxml element node.
+            An LXML element node.
         """
         if procins and isinstance(xnode, etree._ProcessingInstruction):
             target = xnode.target
@@ -161,12 +161,12 @@ def getDirector(self):
         """Add a slot.
 
         Whenever we encounter a character, we add it as a new slot.
-        If needed, we start/terminate word nodes as well.
+        If needed, we start / terminate word nodes as well.
 
         Parameters
         ----------
         cv: object
-            The convertor object, needed to issue actions.
+            The converter object, needed to issue actions.
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
@@ -182,16 +182,16 @@ def getDirector(self):
         Parameters
         ----------
         cv: object
-            The convertor object, needed to issue actions.
+            The converter object, needed to issue actions.
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
         xnode: object
-            An lxml element node.
+            An LXML element node.
         tag: string
-            The tag of the lxml node.
+            The tag of the LXML node.
         atts: dict
-            The attributes of the lxml node, possibly renamed.
+            The attributes of the LXML node, possibly renamed.
         """
         if tag not in PASS_THROUGH:
             curNode = cv.node(tag)
@@ -213,16 +213,16 @@ def getDirector(self):
         Parameters
         ----------
         cv: object
-            The convertor object, needed to issue actions.
+            The converter object, needed to issue actions.
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
         xnode: object
-            An lxml element node.
+            An LXML element node.
         tag: string
-            The tag of the lxml node.
+            The tag of the LXML node.
         atts: dict
-            The attributes of the lxml node, possibly renamed.
+            The attributes of the LXML node, possibly renamed.
         """
         if tag not in PASS_THROUGH:
             curNode = cur[TNEST].pop()
@@ -236,23 +236,23 @@ def getDirector(self):
     def afterTag(cv, cur, xnode, tag, atts):
         """Node actions after dealing with the children and after the end tag.
 
-        This is the place where we proces the `tail` of an lxml node: the
+        This is the place where we process the `tail` of an LXML node: the
         text material after the element and before the next open/close
         tag of any element.
 
         Parameters
         ----------
         cv: object
-            The convertor object, needed to issue actions.
+            The converter object, needed to issue actions.
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
         xnode: object
-            An lxml element node.
+            An LXML element node.
         tag: string
-            The tag of the lxml node.
+            The tag of the LXML node.
         atts: dict
-            The attributes of the lxml node, possibly renamed.
+            The attributes of the LXML node, possibly renamed.
         """
         if xnode.tail:
             tailMaterial = WHITE_TRIM_RE.sub(" ", xnode.tail)
@@ -272,7 +272,7 @@ def getDirector(self):
         Parameters
         ----------
         cv: object
-            The convertor object, needed to issue actions.
+            The converter object, needed to issue actions.
         """
         cur = {}
 

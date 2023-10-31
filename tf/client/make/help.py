@@ -8,8 +8,8 @@ text-fabric-make [--backend={backend} {org}/{repo} {client} {command} [parameter
 
 backend: `github` or `gitlab` or a GitLab instance such as `gitlab.huc.knaw.nl`.
           If absent, `github` is assumed.
-org/repo: a Text-Fabric dataset in a GitHub/GitLab repo under org,
-          such as "etcbc/bhsa" and "CambridgeSemiticsLab/nena_tf"
+org/repo: a TF dataset in a GitHub / GitLab repo under org,
+          such as `ETCBC/bhsa` and `CambridgeSemiticsLab/nena_tf`
 client:   the name of a layered-search client as defined in the config.yaml
           in «org»/«repo»-search
 

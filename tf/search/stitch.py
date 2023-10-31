@@ -98,7 +98,7 @@ def _spread_1_first(searchExe):
     # that can be connected
     # to the graph under construction
     # then we start a new iteration, because the graph has grown,
-    # and and new edges might
+    # and new edges might
     # have become connectable by that
 
     # in order to fail early, we can also add edges
@@ -232,7 +232,7 @@ def _small_choice_multi(searchExe):
     # but it tries to combine multi-edges as much as possible.
 
     # A multi edge is a collection of half-bound edges from the same node,
-    # some of wich provide an upper bound for that node, and some a lower bound.
+    # some of which provide an upper bound for that node, and some a lower bound.
     # So, a multi edge constrains choices much more than each of the individual edges.
 
     qedges = searchExe.qedges
@@ -597,7 +597,7 @@ def _stitchResults(searchExe):
     # The next function is optimized, and the lookup of functions and data
     # should be as direct as possible.
     # Because deliver() below fetches the results,
-    # of wich there are unpredictably many.
+    # of which there are unpredictably many.
 
     # We are going to build-up and deliver stitches,
     # which are instantiations of all the query nodes
@@ -617,7 +617,7 @@ def _stitchResults(searchExe):
     #        build(stitch+b)
     #
     # But we do not have to pass on the stitch as an immutable data structure.
-    # We can just keep it as one single mutable datastructure, provided we
+    # We can just keep it as one single mutable data structure, provided we
     # do something between the two recursive calls above.
     # Suppose stitch is an list, and in the outer build n elements are filled
     # (the rest contains -1)

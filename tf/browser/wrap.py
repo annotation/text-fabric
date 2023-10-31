@@ -26,7 +26,7 @@ from ..core.helpers import TO_SYM
 def pageLinks(nResults, position, spread=10):
     """Provide navigation links for results sets, big or small.
 
-    It creates links around *position* in a set of *nResults*.
+    It creates links around *position* in a set of `nResults`.
     The spread indicates how many links before and after *position* are generated
     in each column.
 
@@ -95,12 +95,13 @@ def passageLinks(passages, sec0Type, sec0, sec1, tillLevel):
 
     in the form of links to sections of level 0, 1 and 2 (books, chapters and verses).
 
-    If `sec0` is not given, only a list of sec0 links is produced.
+    If `sec0` is not given, only a list of `sec0` links is produced.
 
-    If `sec0` is given, but `sec1` not, a list of links for sec1s within the given `sec0`
+    If `sec0` is given, but `sec1` not, a list of links for `sec1` within the
+    given `sec0`
     is produced.
 
-    If both `sec0` and `sec1` are given, de sec1 entry is focused.
+    If both `sec0` and `sec1` are given, the `sec1` entry is focused.
     """
 
     sec0s = []
@@ -141,7 +142,7 @@ def wrapColorMap(form):
     """Wraps the color map for query result highlighting into HTML.
 
     The color map is a dict, keyed by integers (the positions of atoms
-    iin a query template) and the values are RGB colors (as string) or the
+    in a query template) and the values are RGB colors (as string) or the
     empty string.
 
     This dict is stored in `form["colorMap"]`.
@@ -362,7 +363,7 @@ def wrapSelect(option, allowedValues, value, group, item, multiple):
 
     Returns
     -------
-    html
+    string
         A HTML fragment containing the options with the current value(s) selected.
     """
 

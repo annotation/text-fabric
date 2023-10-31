@@ -1,17 +1,17 @@
 # Data sharing express guide
 
-Text-Fabric is an analytical tool to process corpus data.
+TF is an analytical tool to process corpus data.
 But it can also help you to transform the insights gained into new data:
 new features, that you can save in TF format and share with others.
 
-Text-Fabric supports the flow of creating research data,
+TF supports the flow of creating research data,
 packaging it, distributing it, and importing in apps.
 
 ## Zipping your new data
 
 There is a command
 
-```sh
+``` sh
 text-fabric-zip
 ```
 
@@ -23,21 +23,21 @@ tutorial.
 
 ## Using new data
 
-The `text-fabric` command has several optional command line arguments: 
+The `tf` command has several optional command-line arguments: 
 
     --mod=...
 
 By means of these arguments you can load extra features, either from your own
-system, or from GitHub/GitLab:
+system, or from GitHub / GitLab:
 
-```sh
-text-fabric bhsa --mod=etcbc/valence/tf
+``` sh
+tf bhsa --mod=etcbc/valence/tf
 ```
 
 or, if the module resides at a different back-end than the main data:
 
-```sh
-text-fabric bhsa --mod=<gitlab>yourgroup/yourrepo/tf
+``` sh
+tf bhsa --mod=<gitlab>yourgroup/yourrepo/tf
 ```
 
 See the incantation in `tf.about.usefunc`.
@@ -59,8 +59,8 @@ You can create custom sets of nodes, give them a name, and use those names
 in search templates. 
 The TF browser can import those sets, so that you can use such queries in the browser too.
 
-```sh
-text-fabric appname --sets=filePath
+``` sh
+tf appname --sets=filePath
 ```
 
 Read more in `tf.about.browser`.
@@ -77,7 +77,7 @@ main corpus
     The TF features of the corpus must be versioned, i.e. they must sit
     in a subdirectory named after the version.
 
-versioned tf data
+versioned TF data
 :   The data you share consists of a set of TF features, tied to a specific
     *version* of the main corpus, preferably the most recent version.
     The new features must sit in a directory named after the version
@@ -88,15 +88,15 @@ local GitHub or GitLab
     The convention is, that you have a directory `github` and or `gitlab` under your
     home directory. And inside that you have directories for
     organizations or people first, and then repositories, exactly as 
-    the online GitHub/GitLab is organized. 
+    the online GitHub / GitLab is organized. 
 
     Your own data should be in such a repo as well, e.g.
 
-    `ch-jensen/participants/actor/tf
+    `ch-jensen/participants/actor/tf`
 
     or
 
-    `etcbc/lingo/heads/tf`
+    `ETCBC/lingo/heads/tf`
 
     or
 
@@ -104,19 +104,19 @@ local GitHub or GitLab
 
 synchronized with the back-end
 :   You must have your local repo contents synchronized with that on the
-    GitHub/GitLab back-end.
+    GitHub / GitLab back-end.
 
     Now other people can use your data.
     Whenever you push updates, users may fetch the updated data, depending
     on how they call up your data, see below.
 
-released on GitHub/GitLab
+released on GitHub / GitLab
 :   If your data is reasonably stable, consider making an official *release*
-    on GitHub/GitLab.
+    on GitHub / GitLab.
 
     !!! hint "Zip the data"
         Attach your features as a zip file to that release.
-        Text-Fabric has a command to produce a zip file with exactly the
+        TF has a command to produce a zip file with exactly the
         right structure and name.
 
         This is especially useful for GitHub, where it speeds up the download
@@ -130,24 +130,26 @@ released on GitHub/GitLab
     and you get a DOI pointing to the released version. 
 
 get data
-:   In order to get data, the only thing Text-Fabric needs to know,
-    is a string with the organisation or person, the repository,
+:   In order to get data, the only thing TF needs to know,
+    is a string with the organization or person, the repository,
     and the path within the repository up to the parent of 
     the subdirectories corresponding corresponding to the versions of
     the features.
 
     !!! example "Module specs do not contain versions"
-        In the `bhsa` repository if the `etcbc` organization, there is a 
-        directory `tf` under which you see direcories `2021`, `2017`, `c`, etc.
+        In the `bhsa` repository if the `ETCBC` organization, there is a 
+        directory `tf` under which you see directories `2021`, `2017`, `c`, etc.
         which contain TF feature files.
-        In order to get these features, your module specififer is
-        `etcbc/bhsa/tf`.
+        In order to get these features, your module specifier is
+        `ETCBC/bhsa/tf`.
 
     Based on the string `{org}/{repo}/{path}` it will find the online
     repository, check the latest release, find the zip file,
     download and expand it to your local
 
-       ~/text-fabric/data/{org}/{repo}/{path}`
+    ```
+    ~/text-fabric/data/{org}/{repo}/{path}
+    ```
 
     If there are no releases, it will find the latest commit and use the
     data from there.
@@ -156,7 +158,7 @@ get data
 
 everywhere
 :   The extra data is accessible whether you work in a Jupyter notebook,
-    or in the Text-Fabric browser.
+    or in the TF browser.
     The extra features are clearly listed after the incantation in a notebook,
     and they show up in the pretty displays in the TF browser.
     And when you export data from the TF browser, all data modules are reported
@@ -169,18 +171,18 @@ you take the trouble of publishing them as a zip file attached to a release/
 Here we describe the easiest workflow to work with your developing data with a view to share
 it much less often than you modify it.
 
-### Produce in your local GitHub/GitLab folder
+### Produce in your local GitHub / GitLab folder
 
 You probably have a program or notebook that synthesizes a bunch of new features.
 It is a good idea to have that program in a version control system, and publish
-it on GitHub/GitLab, in a repository of your choice.
+it on GitHub / GitLab, in a repository of your choice.
 
 Set up that program in such a way, that your features end up in the same repository,
 in a folder of your choosing, but directly under a folder that corresponds with
 the version of the main data source against which you are building your data.
 
-Currently, your features only live on your computer, in your local github folder.
-You may or may not commit your local changes to the online GitHub/GitLab.
+Currently, your features only live on your computer, in your local `github` folder.
+You may or may not commit your local changes to the online GitHub / GitLab.
 But you do not want to create a new release and attach your zipped feature data to it yet.
 
 We use the existing
@@ -206,7 +208,7 @@ We are going to develop the `sim` feature, in
 When you want to load the new features, you can use
 the `mod` parameter:
 
-```python
+``` python
 use("annotation/banks", mod=f"annotation/banks/sim/tf")
 ```
 
@@ -215,7 +217,7 @@ Both will fail, especially when you let TF manage your `~/text-fabric-data` dire
 
 You have to pass `clone` as the checkout option: 
 
-```python
+``` python
 use("annotation/banks", mod=f"annotation/banks/sim/tf:clone")
 ```
 
@@ -232,9 +234,9 @@ to do that.
     You can only do the following steps for repositories for which you have write access,
     so do not try to perform this on `annotation/banks` but use a repo of your own.
 
-On the command line, go to the directory of your repository, and say
+On the command-line, go to the directory of your repository, and say
 
-```sh
+``` sh
 git add --all .
 git commit -m "data update or whatever"
 git push origin master
@@ -245,7 +247,7 @@ But very effectively.
 
 From now on, other users (and you too) can use that data by passing just the switch
 
-```python
+``` python
 use("annotation/banks", mod=f"annotation/banks/sim/tf")
 ```
 
@@ -256,7 +258,7 @@ And every time you do this again, the downloaded data is ready to use.
 If you want to make sure that you have the most recent stable release of that data,
 you may say
 
-```python
+``` python
 use("annotation/banks", mod=f"annotation/banks/sim/tf:latest")
 ```
 
@@ -287,7 +289,7 @@ Now your data is available to others.
 
 The users of your data can refer to that copy by means of the version number:
 
-```python
+``` python
 use("annotation/banks", mod=f"annotation/banks/sim/tf:0.2")
 ```
 
@@ -299,11 +301,11 @@ it is more economical to zip that data and attach it as a binary to the release.
 It is vitally important for the TF workflows that that zip file has the right name 
 and the right structure.
 
-Text-Fabric comes with a command to create that zip file for you.
+TF comes with a command to create that zip file for you.
 
 Execute the following command in your terminal:
 
-```sh
+``` sh
 text-fabric-zip annotation/banks/tf
 ```
 
@@ -330,15 +332,15 @@ Attach these versions, or just the newest version, to the release and publish th
 ![releases](../images/add-attach.png)
 
 Zip your data with the `text-fabric-zip` command as explained above.
-It will look into your local github directory, pickup the features from there,
+It will look into your local `github` directory, pickup the features from there,
 zip them, and put the zip files in your Downloads folder. Then you can pick
 that zip file up and attach it manually to a new release of your repository
-on the online GitHub/GitLab.
+on the online GitHub / GitLab.
 
 ### Continue developing your features
 
 Probably you'll make changes to your features after having published them.
-Then you have the cutting edge version of your features in your local github
+Then you have the cutting edge version of your features in your local `github`
 directory, and the published version in your text-fabric-data directory.
 
 When you make new commits, users that call up your data in the standard way,
@@ -346,7 +348,7 @@ will still get the latest stable release.
 
 But users that say 
 
-```python
+``` python
 use("annotation/banks", mod=f"annotation/banks/sim/tf:hot")
 ```
 
@@ -366,55 +368,57 @@ You have already seen it, and here we spell them out in greater detail.
 
 You can specify the checkout parameter separately for 
 
-* the corpus app code (so you can go back to previous instantiations of the corpus app)
-* the main data of the app plus its standard data modules
-* every data-module that you include by means of the `--mod=` parameter.
+*   the corpus app code (so you can go back to previous instantiations of the
+    corpus app)
+*   the main data of the app plus its standard data modules
+*   every data-module that you include by means of the `--mod=` parameter.
 
 The values of the checkout parameters tell you to use data that is:
 
-* `clone`: locally present under `~/github` in the appropriate place
-* `local`: locally present under `~/text-fabric-data` in the appropriate place
-* `latest`: from the latest online release
-* `hot`: from the latest online commit
-* `""`: (default): from your local copy, but if there is no local copy,
-  from the latest online release, or if there are no releases,
-  from the latest online commit
-* `2387abc78f9de...`: a concrete commit hash found on GitHub/GitLab (under Commits)
-* `v1.3`: a release tag found on GitHub/GitLab (under Releases)
+*   `clone`: locally present under `~/github` in the appropriate place
+*   `local`: locally present under `~/text-fabric-data` in the appropriate place
+*   `latest`: from the latest online release
+*   `hot`: from the latest online commit
+*   `""`: (default): from your local copy, but if there is no local copy,
+    from the latest online release, or if there are no releases,
+    from the latest online commit
+*   `2387abc78f9de...`: a concrete commit hash found on GitHub / GitLab (under Commits)
+*   `v1.3`: a release tag found on GitHub / GitLab (under Releases)
 
 You pass the checkout values as follows:
 
-* For the corpus app:
-  **after the app name**:
-  `bhsa:clone`, `oldbabylonian:local`, `quran`.
-  If you leave it out, it defaults to the empty string: local copy or latest release or commit.
-* For the main data and standard data modules of the app:
-  **in the `checkout` parameter**: 
-  `checkout="clone"`, `checkout="local"`, `checkout=""`.
-  If you omit `checkout` out, it defaults to the empty string: latest release or commit.
-  If you need a different checkout specifier for the main data and the standard
-  modules, you can pass the standard modules explicitly to the
-  `mod=` parameter of the `use()` command and give them the specifiers you need.
-* For the data that you call up as a module:
-  **after the module name**:
-  `annotation/banks/sim/tf:clone`, `annotation/banks/sim/tf:local`,
-  `annotation/banks/sim/tf`.
-  If you leave it out, it defaults to the empty string: latest release or commit.
+*   For the corpus app:
+    **after the app name**:
+    `bhsa:clone`, `oldbabylonian:local`, `quran`.
+    If you leave it out, it defaults to the empty string: local copy or latest
+    release or commit.
+*   For the main data and standard data modules of the app:
+    **in the `checkout` parameter**: 
+    `checkout="clone"`, `checkout="local"`, `checkout=""`.
+    If you omit `checkout` out, it defaults to the empty string: latest release or commit.
+    If you need a different checkout specifier for the main data and the standard
+    modules, you can pass the standard modules explicitly to the
+    `mod=` parameter of the `use()` command and give them the specifiers you need.
+*   For the data that you call up as a module:
+    **after the module name**:
+    `annotation/banks/sim/tf:clone`, `annotation/banks/sim/tf:local`,
+    `annotation/banks/sim/tf`.
+    If you leave it out, it defaults to the empty string: latest release or commit.
 
 The checkout parameter can be used in the `use()` function when you call up
-Text-Fabric in a program (or notebook) and when you call up the text-fabric
-browser on the command line:
+TF in a program (or notebook) and when you call up the text-fabric
+browser on the command-line:
 
 (in a program)
 
-```python
+``` python
 use("annotation/banks:clone", checkout="latest", mod="annotation/banks/sim/tf:hot")
 ```
 
-(on the command line)
+(on the command-line)
 
-```sh
-text-fabric banks:clone --checkout=latest --mod=annotation/banks/sim/tf:hot
+``` sh
+tf banks:clone --checkout=latest --mod=annotation/banks/sim/tf:hot
 ```
 
 Note that you can pass different specifiers for the distinct portions of data and code
@@ -429,14 +433,14 @@ Suppose you have called up a data module:
 
 (in a program)
 
-```python
+``` python
 A = use("annotation/banks", mod="annotation/banks/sim/tf")
 ```
 
-(on the command line)
+(on the command-line)
 
-```sh
-text-fabric banks --mod=annotation/banks/sim/tf
+``` sh
+tf banks --mod=annotation/banks/sim/tf
 ```
 
 You can then use the features of the module in everywhere.

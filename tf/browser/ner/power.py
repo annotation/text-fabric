@@ -8,8 +8,8 @@ To see how this fits among all the modules of this package, see
 # Power annotation done in a Jupyter Notebook
 
 If you have a spreadsheet with named entities, and for each entity a list of surface forms,
-then this module takes care to read that spreadsheet, translate it to yaml,
-and then use the yaml as instructions to add entity annotations to the corpus.
+then this module takes care to read that spreadsheet, translate it to YAML,
+and then use the YAML as instructions to add entity annotations to the corpus.
 
 See this
 [example notebook](https://nbviewer.jupyter.org/github/HuygensING/suriano/blob/main/programs/powerNer.ipynb).
@@ -20,7 +20,7 @@ Here are more details.
 
 Load the relevant Python modules:
 
-```
+``` python
 from tf.app import use
 from tf.browser.ner.power import PowerNER
 ```
@@ -33,7 +33,7 @@ Load your corpus. There are two ways:
     A = use("HuygensING/suriano:clone", checkout="clone")
     ```
 
-*   Or let Text-Fabric auto-download the latest version and work with that:
+*   Or let TF auto-download the latest version and work with that:
 
     ```
     A = use("HuygensING/suriano")
@@ -41,13 +41,13 @@ Load your corpus. There are two ways:
 
 Load the Power-Annotator module:
 
-```
+``` python
 PA = PowerNER(A)
 ```
 
 The tool expects some input data to be present: configuration and spreadsheets with
 instructions. They can be found in the `ner` directory.
-If you work with a local github clone, that data resides in
+If you work with a local GitHub clone, that data resides in
 `~/github/HuygensING/suriano`
 and if you work with an auto-downloaded copy of the data, it is in
 `~/text-fabric-data/github/HuygensING/suriano`.
@@ -73,13 +73,13 @@ The spreadsheet will be read as follows:
     keywords freely for this)
 *   the third column contains a number of surface forms for this entity,
     separated by `;`
-*   when the surface forms are peeled out, leading and trailing white space will be
+*   when the surface forms are peeled out, leading and trailing white-space will be
     stripped
 *   all other columns will be ignored for the moment; in later versions we may use
     the information in those columns to fill in extra data about the entities;
-    but probably that information will not end up in Text-Fabric features.
+    but probably that information will not end up in TF features.
 
-During translation from xlsx to yaml the following happens:
+During translation from XLSX to YAML the following happens:
 
 *   An identifier is distilled from the name of the entity;
 *   Missing kind fields are filled with the default kind.
@@ -88,14 +88,14 @@ These steps need some configuration information from the `ner/config.yaml` file.
 
 Translation is done by
 
-```
+``` python
 PA.readInstructions("people")
 ```
 
-The resulting yaml ends up next to the
+The resulting YAML ends up next to the
 spreadsheet, and it looks like this:
 
-```
+``` yaml
 christoffel.sticke:
   kind: PER
   name: Christoffel Sticke
@@ -125,7 +125,7 @@ jan.baptist.roelants:
 A first step is to find out how many occurrences we find in the corpus for these
 surface forms:
 
-```
+``` python
 PA.makeInventory()
 PA.showInventory()
 ```
@@ -147,26 +147,26 @@ francois.doubleth        PER   Doublet                  2 x François Doubleth
 Total 150
 ```
 
-Entities that are in the spreadsheet, but not in de corpus are skipped.
+Entities that are in the spreadsheet, but not in the corpus are skipped.
 
 ## Marking up
 
 In order to create annotations for these entities, we have to switch to an
 annotation set. Let's start a new set and give it the name `power`.
 
-```
+``` python
 PA.setSet("power")
 ```
 
 If it turns out that `power` has already annotations, and you want to clear them, say
 
-```
+``` python
 PA.resetSet("power")
 ```
 
 Now we are ready for the big thing: creating the annotations:
 
-```
+``` python
 PA.markEntities()
 ```
 
@@ -182,7 +182,7 @@ Added:             150 x
 We now revert to lower-level methods from the `tf.browser.ner.annotate` class to
 inspect some of the results.
 
-```
+``` python
 results = PA.filterContent(bFind="pach", bFindC=False, anyEnt=True, showStats=None)
 ```
 
@@ -191,7 +191,7 @@ in a case-insensitive way, and that contain at least one entity.
 
 There 6 of them, and we can show them:
 
-```
+``` python
 PA.showContent(results)
 ```
 
@@ -222,7 +222,7 @@ Lines consist of tab separated fields:
 *   entity identifier
 *   entity kind
 *   remaining fields: slots, i.e. the textual positions occupied by the occurrence.
-    Some entity occurrences consist of multiple words/tokens, hence have multiple
+    Some entity occurrences consist of multiple words / tokens, hence have multiple
     slots.
 
 """
@@ -239,7 +239,7 @@ class PowerNER(Annotate):
     def __init__(self, app):
         """Bulk entity annotation.
 
-        Contains methods to translate spreadsheets to yaml files with markup
+        Contains methods to translate spreadsheets to YAML files with markup
         instructions; to locate all relevant occurrences; and to mark them up
         properly.
 
@@ -266,7 +266,7 @@ class PowerNER(Annotate):
         or if the corresponding YAML file is out of data, the spreadsheet will be
         converted to YAML.
 
-        The info in the resulting yaml file is stored as attribute
+        The info in the resulting YAML file is stored as attribute
         `instructions` in this object.
 
         A report of the instructions will be shown in the output.
@@ -280,7 +280,7 @@ class PowerNER(Annotate):
         sheetName: string
             The file name without extension of the spreadsheet.
             The spreadsheet is expected in the `ner/sheets` directory.
-            The yaml file ends up in the same directory, with the same name and
+            The YAML file ends up in the same directory, with the same name and
             extension `.yaml`
         force: boolean, optional False
             If True, the conversion from Excel to YAML will take place anyhow, provided

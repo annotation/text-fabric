@@ -33,10 +33,10 @@ def findAppConfig(
     """Find the config information of an app.
 
     If there is a `config.yaml` file, read it and check the compatibility
-    of the config settings with the current version of Text-Fabric.
+    of the config settings with the current version of TF.
 
     If there is no such file but a `config.py` is present,
-    conclude that this is an older app, not compatible with TF v8 or higher.
+    conclude that this is an older app, not compatible with TF v8.0.0 or higher.
 
     If there are no such config files, fill in a few basic settings.
 
@@ -100,7 +100,7 @@ def findAppConfig(
         elif avA is None or avA < avTf:
             console(
                 f"""
-App `{appName}` requires API version {avA or 0} but Text-Fabric provides {avTf}.
+App `{appName}` requires API version {avA or 0} but TF provides {avTf}.
 Your copy of the TF app `{appName}` is outdated for this version of TF.
 Recommendation: obtain a newer version of `{appName}`.
 Hint: load the app in one of the following ways:
@@ -111,11 +111,11 @@ Hint: load the app in one of the following ways:
 
     For example:
 
-    The Text-Fabric browser:
+    The TF browser:
 
-        text-fabric {org}/{repo}:latest
+        tf {org}/{repo}:latest
 
-    In a program/notebook:
+    In a program / notebook:
 
         A = use('{org}/{repo}:latest', hoist=globals())
 
@@ -126,9 +126,9 @@ Hint: load the app in one of the following ways:
             console(
                 f"""
 App `{appName}` or rather `{org}/{repo}` requires API version {avA or 0}
-but Text-Fabric provides {avTf}.
-Your Text-Fabric is outdated and cannot use this version of the TF app `{org}/{repo}`.
-Recommendation: upgrade Text-Fabric.
+but TF provides {avTf}.
+Your TF is outdated and cannot use this version of the TF app `{org}/{repo}`.
+Recommendation: upgrade TF.
 Hint:
 
     pip install --upgrade text-fabric
@@ -189,7 +189,7 @@ def loadModule(moduleName, *args):
     Parameters
     ----------
     moduleName: string
-        Name of a module under a TF-app that needs to be imported.
+        Name of a module under a TF app that needs to be imported.
     args: mixed
         The same list of arguments that is passed to `tf.advanced.app.App`
         of which only the `appName` and the `appPath` are used.

@@ -15,7 +15,7 @@ a:link, a:visited {
 
 /* HEADER */
 
-div.colofon {
+div.colophon {
 	display: flex;
   font-size: small;
 	flex-flow: row nowrap;
@@ -148,7 +148,7 @@ button.small.active, button.medium.active, a.medium.active, a.small.active {
   background-color: var(--button-back);
 }
 
-/* buttons and inputs for job control, im/export */
+/* buttons and inputs for job control, import / export */
 
 #jobs {
   display: flex;

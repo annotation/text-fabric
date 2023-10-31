@@ -6,8 +6,8 @@
 Here are functions that are being used by various parts of the
 TF browser infrastructure, such as
 
-* `tf.browser.web`
-* `tf.browser.start`
+*   `tf.browser.web`
+*   `tf.browser.start`
 """
 
 import json
@@ -56,7 +56,7 @@ def getFormData(interfaceDefaults):
     and stored as logical values.
 
     Most of the data has a known function to the web server,
-    but there is also a list of webapp dependent options.
+    but there is also a list of web app dependent options.
     """
 
     form = {}
@@ -195,9 +195,9 @@ def getFormData(interfaceDefaults):
     return form
 
 
-def getAbout(colofon, header, provenance, form):
+def getAbout(colophon, header, provenance, form):
     return f"""
-{colofon}
+{colophon}
 
 {provenance}
 
@@ -213,19 +213,19 @@ Job: {form['jobName']}
 
 ### Sections
 
-```
+``` python
 {form['sections']}
 ```
 
 ### Nodes
 
-```
+``` python
 {form['tuples']}
 ```
 
 ### Search
 
-```
+``` python
 {form['query']}
 ```
 """

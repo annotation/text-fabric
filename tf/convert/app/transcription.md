@@ -13,17 +13,17 @@ A TF dataset contains:
 *   in particular, the text itself is stored in one or more features;
 *   there are a few standard features that are present in every TF dataset;
 *   See the
-    [Text-Fabric datamodel](https://annotation.github.io/text-fabric/tf/about/datamodel.html).
+    [TF data model](https://annotation.github.io/text-fabric/tf/about/datamodel.html).
 
-In this dataset, **«slot»s** fullfill the role of slots.
+In this dataset, **«slot»s** fulfill the role of slots.
 
 ## How TEI maps to TF
 
-*   Text-Fabric *«slot» nodes* correspond to **«slotf»** in TEI element content;
-*   Text-Fabric *node types* correspond to TEI *element names (tags)*;
-*   Text-Fabric *non-«slot» nodes* correspond to TEI *elements in the source*;
-*   Text-Fabric *features* correspond to TEI *attributes*;
-*   Text-Fabric *edges* correspond to *relationships* between TEI elements;
+*   TF *«slot» nodes* correspond to **«slotf»** in TEI element content;
+*   TF *node types* correspond to TEI *element names (tags)*;
+*   TF *non-«slot» nodes* correspond to TEI *elements in the source*;
+*   TF *features* correspond to TEI *attributes*;
+*   TF *edges* correspond to *relationships* between TEI elements;
 «beginParentYes»
     *   `parent` edges correspond to TEI elements and their parent elements 
 «endParentYes»
@@ -32,7 +32,7 @@ In this dataset, **«slot»s** fullfill the role of slots.
 «endSiblingYes»
 *   Here are the [TEI elements and attributes](elements.md) used in this corpus.
 «beginProcinsYes»
-*   Text-Fabric *node types* that start with a `?` correspond to TEI processing 
+*   TF *node types* that start with a `?` correspond to TEI processing 
     instruction with that node type as target. The attributes of the processing
     instruction translate to TF features. As to the link to slots: it is
     treated as if it were an empty element.
@@ -50,7 +50,7 @@ generated documentation.
 «token generation»
 
 The TEI to TF conversion is an almost literal and very faithful transformation from
-the TEI source files to a Text-Fabric data set.
+the TEI source files to a TF data set.
 
 ## TF nodes and features overview
 
@@ -60,7 +60,7 @@ the TEI source files to a Text-Fabric data set.
 
 ### node type `«folder»`
 
-*The type of subfolders of TEI documents.*
+*The type of subdirectories of TEI documents.*
 
 **Section level 1**
 
@@ -68,7 +68,7 @@ the TEI source files to a Text-Fabric data set.
 
 feature | description
 --- | ---
-`«folder»` | name of the subfolder
+`«folder»` | name of the subdirectory
 
 ### node type `«file»`
 
@@ -161,33 +161,33 @@ feature | description
 `str` | the characters of the «tokenWord», without soft hyphens.
 «beginTokenNo»`after` | the non-word characters after the word, up till the next word.
 «endTokenNo»«beginTokenYes»`after` | the space after the word, if present, otherwise the empty string.
-«endTokenYes»`is_meta` | whether a «tokenWord» is in the teiHeader element
+«endTokenYes»`is_meta` | whether a «tokenWord» is in the `teiHeader` element
 `is_note` | whether a «tokenWord» is in a note element
-`rend_`*r* | whether a «tokenWord» is under the influence of a `rend="`*r*`"` attribute.
+`rend_r` | whether a «tokenWord» is under the influence of a `rend="r"` attribute.
 
 «beginTokenNo»
 «beginSlotchar»
 
 ### node type `char`
 
-*Unicode characters.*
+*UNICODE characters.*
 
 **Slot type.**
 
 The characters of the text of the elements.
-Ignorable whitespace has been discarded, and is not present in the TF dataset.
-Meaningful whitespace has been condensed to single spaces.
+Ignorable white-space has been discarded, and is not present in the TF dataset.
+Meaningful white-space has been condensed to single spaces.
 
 **Features**
 
 feature | description
 --- | ---
-`ch` | the unicode character in that «slot».
+`ch` | the UNICODE character in that «slot».
 `empty` | whether a «slot» has been inserted in an empty element
 `extraspace` | whether this is an extra space or newline, added by the conversion
-`is_meta` | whether a character is in the teiHeader element
+`is_meta` | whether a character is in the `teiHeader` element
 `is_note` | whether a character is in a note element
-`rend_`*r* | whether a character is under the influence of a `rend="`*r*`"` attribute.
+`rend_r` | whether a character is under the influence of a `rend="r"` attribute.
 
 «endSlotchar»
 «endTokenNo»
@@ -198,7 +198,7 @@ feature | description
 --- | ---«beginParentYes»
 `parent` | from a node to the node that corresponds to the parent element
 «endParentYes»«beginSiblingYes»
-`sibling` | from a node to all nodes that correspond to a preceding sibling element; the edges are labelled with the distance between the siblings; adjacent siblings have distance 1
+`sibling` | from a node to all nodes that correspond to a preceding sibling element; the edges are labeled with the distance between the siblings; adjacent siblings have distance 1
 «endSiblingYes»
 
 Note that edges can be traversed in both directions, see the
@@ -206,16 +206,16 @@ Note that edges can be traversed in both directions, see the
 
 «beginParentYes»
 
-* `E.parent.f(node)` finds the parent of a node
-* `E.parent.t(node)` finds the children of a node
+*   `E.parent.f(node)` finds the parent of a node
+*   `E.parent.t(node)` finds the children of a node
 
 «endParentYes»
 
 «beginSiblingYes»
 
-* `E.sibling.f(node)` finds the *preceding* siblings of a node
-* `E.sibling.t(node)` finds the *succeeding* siblings of a node
-* `E.sibling.b(node)` finds *all* siblings of a node
+*   `E.sibling.f(node)` finds the *preceding* siblings of a node
+*   `E.sibling.t(node)` finds the *succeeding* siblings of a node
+*   `E.sibling.b(node)` finds *all* siblings of a node
 
 «endSiblingYes»
 
@@ -248,7 +248,7 @@ This corpus is converted with section **Model «sectionModel»**.
 ### Model I: folders and files
 
 This model assumes that the source is a directory consisting of folders
-consisting of xml files, the TEI files.
+consisting of XML files, the TEI files.
 
 There are three section levels:
 
@@ -286,7 +286,7 @@ There are no additional switches for tweaking the model further, at the moment.
 
 «beginModelII»
 
-### Model II: single file and divs.
+### Model II: single file and `div` elements.
 
 This model assumes that the source is a single TEI file.
 
@@ -294,7 +294,7 @@ There are two section levels:
 
 *   *«chapter»* Top-level division, roughly corresponding to top-level `<div>` elements;
     heading: a sequence number and a tag name, or the contents of an heading-bearing element;
-*   *«chunk»* division withint the «chapter»s, roughly corresponding to `<p>` elements.
+*   *«chunk»* division within the «chapter»s, roughly corresponding to `<p>` elements.
     heading: sequence number of the «chunk» within a «chapter»; «chunk»s that are `<p>` elements
     are numbered with positive numbers; other «chunk»s are numbered separately with negative numbers.
 
@@ -326,7 +326,7 @@ All section headings are stored in a feature with the same name as the type of s
 1.  The heading of a «chapter» is either the text in a heading-bearing element,
     or, if no such element is found, a sequence number and the tag name.
 1.  Extra parameters specify how to find the head-bearing element for a «chapter».
-    This corpus is parametrized with
+    This corpus is parameterized with
 
     ```
     «propertiesRaw»
@@ -354,13 +354,13 @@ Words have been be detected.
 They are maximally long sequences of alphanumeric characters
 and hyphens.
 
-1.  What is alphanumeric is determined by the unicode class of the character,
+1.  What is alphanumeric is determined by the UNICODE class of the character,
     see the Python documentation of the function
     [`isalnum()`](https://docs.python.org/3/library/stdtypes.html#text-sequence-type-str)
-1.  Hyphens are Unicode characters 002D (ascii hyphen) and 2010 (unicode hyphen).
+1.  Hyphens are UNICODE characters 002D (ASCII hyphen) and 2010 (UNICODE hyphen).
 1.  Words get the following features:
     *   `str`: the alphanumeric string that is the word;
-    *   `after`: the non-alphanumeric string after the word unti the following word.
+    *   `after`: the non-alphanumeric string after the word until the following word.
 «endTokenNo»
 
 «beginTokenYes»
@@ -368,12 +368,12 @@ and hyphens.
 
 Tokens have been detected by an NLP pipeline.
 The values of tokens are either words or non-word characters.
-White space is not part of the token.
+White-space is not part of the token.
 Whether a token is followed by a space or not is in the feature `after`.
 
 ## Sentence detection
 Sentences have been detected by an NLP pipeline.
-They form a new nodetype, `sentence`, with just a sequence number as feature (`nsent`).
+They form a new node type, `sentence`, with just a sequence number as feature (`nsent`).
 «endTokenYes»
 
 ## «Slot»s
@@ -387,7 +387,7 @@ provided later on.
 
 When empty elements occur, something must be done to anchor them to the text stream.
 
-To such elements we add an empty «slot» with the ZERO-WIDTH-SPACE (Unicode 200B) as
+To such elements we add an empty «slot» with the ZERO-WIDTH-SPACE (UNICODE 200B) as
 character/string value.
 
 Such slots get the feature `empty` assigned with value 1.
@@ -395,7 +395,7 @@ Such slots get the feature `empty` assigned with value 1.
 ### «Slot»s in general
 
 1.  Spaces are stripped when they are between elements whose parent does not allow
-    mixed content; other whitespace is reduced to a single space.
+    mixed content; other white-space is reduced to a single space.
 1.  However, after direct child elements of pure elements we add a single space
     or newline: if there is an ancestor with mixed content, we add a space;
     if the whole ancestry consists of pure elements (typically in the TEI header),
@@ -405,14 +405,14 @@ Such slots get the feature `empty` assigned with value 1.
     These added slots get the feature `extraspace` set to 1.
     «endSlotword»
     
-1.  All «slot»s inside the teiHeader will get the feature `is_meta` set to 1;
+1.  All «slot»s inside the `teiHeader` will get the feature `is_meta` set to 1;
     for «slot»s inside the body, `is_meta` has no value.
 
 «beginSlotchar»
 
 ## More about characters
 
-The basic unit is the unicode character.
+The basic unit is the UNICODE character.
 For each character in the input we make a slot, but the correspondence is not
 quite 1-1, because of the white-space handling.
 
@@ -442,16 +442,16 @@ The basic unit is the word, as detected by the NLP pipeline used.
     *   `after`: a possible space after the word
 «endTokenYes»
 
-1. Nodes that contain only part of the characters of a «tokenWord», will
-   contain the whole «tokenWord».
-1. Features that have different values for different characters in the «tokenWord»,
-   will have the last value encountered for the whole «tokenWord».
-1. Formatting attributes, such as `rend=italic` (see below) will give rise
-   to features `r_italic`. If a «tokenWord» is embedded in severel elements with
-   `rend` attributes and different values for them, the «tokenWord» will get
-   features `r_`*value* for all those values. But if different parts of the
-   «tokenWord» are in the scope of different `rend` values, that information
-   will be lost, the `r_`*value* features all apply the whole «tokenWord».
+1.  Nodes that contain only part of the characters of a «tokenWord», will
+    contain the whole «tokenWord».
+1.  Features that have different values for different characters in the «tokenWord»,
+    will have the last value encountered for the whole «tokenWord».
+1.  Formatting attributes, such as `rend=italic` (see below) will give rise
+    to features `r_italic`. If a «tokenWord» is embedded in several elements with
+    `rend` attributes and different values for them, the «tokenWord» will get
+    features `r_`*value* for all those values. But if different parts of the
+    «tokenWord» are in the scope of different `rend` values, that information
+    will be lost, the `r_`*value* features all apply the whole «tokenWord».
 
 «endSlotword»
 
@@ -468,13 +468,13 @@ The following features are added:
 *   `is_meta`: 1 if the «tokenWord» occurs in inside the `<teiHeader>`, no
     value otherwise.
 *   `is_note`: 1 if the «tokenWord» occurs in inside the `<note>`, no value otherwise.
-*   `rend_`*r*: for any *r* that is the value of a `rend` attribute.
+*   `rend_r`: for any `r` that is the value of a `rend` attribute.
 
 All these features are defined for «char and word» nodes.
 For «tokenWord» nodes, the value of these features is set equal to what these features
 are for their first character.
 
-Special formatting for the `rend_`*r* features is supported for some values of *r*.
+Special formatting for the `rend_r` features is supported for some values of `r`.
 The conversion supports these out-of-the-box:
 
 value | description
@@ -496,7 +496,7 @@ what text is displayed.
 There are two kind of text-formats: those that start with the word `layout` and
 those that start with `text`.
 
-The `text` formats do not apply any kind of special formating, the `layout` formats
+The `text` formats do not apply any kind of special formatting, the `layout` formats
 do.
 
 We have the following formats:
@@ -525,7 +525,7 @@ a bit.
 1.  Comments (`<!-- this is a comment -->`) are ignored.
 1.  Declarations (`<?xml ...>` `<?xml-model ...>` `<?xml-stylesheet ...>`) are
     read by the parser, but do not leave traces in the TF output.
-1.  The atrributes of the root-element (`<TEI>`) are ignored.
+1.  The attributes of the root-element (`<TEI>`) are ignored.
 1.  Namespaces (`xmlns="http://www.tei-c.org/ns/1.0"`) are read by the parser,
     but only the unqualified names are distinguishable in the output as feature names.
     So if the input has elements `tei:abb` and `ns:abb`, we'll see just the node
@@ -533,7 +533,7 @@ a bit.
 
 ### Validation
 
-We have used [lxml](https://lxml.de) for XML parsing. During `convert` it is not used
+We have used [LXML](https://lxml.de) for XML parsing. During `convert` it is not used
 in validating mode, but we can trigger a validation step during `check`.
 
 However, some information about the elements, in particular whether they allow
@@ -541,4 +541,4 @@ mixed content or not, has been gleaned from the schemas, and has been used
 during conversion.
 
 Care has been taken that the names of these extra nodes and features do not collide
-with element/attribute names of the TEI.
+with element / attribute names of the TEI.

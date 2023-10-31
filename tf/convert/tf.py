@@ -23,9 +23,9 @@ DATA_TYPE_STR = ", ".join(DATA_TYPES)
 
 
 def explode(inPath, outPath):
-    """Explodes .tf files into non-optimized .tf files without metadata.
+    """Explodes `.tf` files into non-optimized `.tf` files without metadata.
 
-    An exploded .tf feature file is a tf file with explicit node specifiers,
+    An exploded `.tf` feature file is a TF file with explicit node specifiers,
     no optimizations.
 
     The format of each line is:
@@ -62,7 +62,7 @@ def explode(inPath, outPath):
     inPath: string
         Source file(s).
         If pointing to a file, it should be file containing TF feature data.
-        If pointing to a directory, all .tf files in that directory will be exploded
+        If pointing to a directory, all `.tf` files in that directory will be exploded
         (non-recursively).
         The path may contain `~` which will be expanded to the user's home directory.
     outPath: string
@@ -73,7 +73,7 @@ def explode(inPath, outPath):
 
     Returns
     -------
-    bool
+    boolean
         whether the operation was successful.
     """
 

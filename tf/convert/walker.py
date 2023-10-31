@@ -4,11 +4,11 @@
 You can convert a dataset to TF by writing a function that walks through it.
 
 That function must trigger a sequence of actions when reading the data.
-These actions drive Text-Fabric to build a valid Text-Fabric dataset.
+These actions drive TF to build a valid TF dataset.
 Many checks will be performed.
 
 !!! hint "to and from MQL"
-    If your source is MQL, you are even better off: Text-Fabric has a
+    If your source is MQL, you are even better off: TF has a
     module to import from MQL and to export to MQL.
     See `tf.convert.mql.importMQL` and `tf.convert.mql.exportMQL`.
 
@@ -16,7 +16,7 @@ Many checks will be performed.
 
 Here is a schematic set up of such a conversion program.
 
-```python
+``` python
 from tf.fabric import Fabric
 from tf.convert.walker import CV
 
@@ -37,7 +37,7 @@ generic = {  # dictionary of metadata meant for all features
 intFeatures = {  # set of integer valued feature names
     ...
 }
-featureMeta = {  # per feature dicts with metadata
+featureMeta = {  # per feature dictionaries with metadata
    ...
 }
 
@@ -67,10 +67,10 @@ You issue these things by means of an *action method* from `cv`, such as
 `cv.slot()` or `cv.node(nodeType)`.
 
 When your action creates slots or non slot nodes,
-Text-Fabric will return you a reference to that node,
+TF will return you a reference to that node,
 that you can use later for more actions related to that node.
 
-```python
+``` python
 curPara = cv.node('para')
 ```
 
@@ -83,7 +83,7 @@ It will require two node arguments: the *from* node and the *to* node.
 There is always a set of current *embedder nodes*.
 When you create a slot node
 
-```python
+``` python
 curWord = cv.slot()
 ```
 
@@ -94,9 +94,9 @@ to remove them from it,
 and to add them again.
 
 If your data is organized in such a way that you see the slots in a different
-order than the intended order, you kan pass a key value to the slot, like so
+order than the intended order, you can pass a key value to the slot, like so
 
-```
+``` python
 curWord = cv.slot(key=wordNumber)
 ```
 
@@ -106,7 +106,7 @@ after sorting, and all edges that start from or arrive at slots will do that aft
 the sorting.
 
 For an example, see
-[lowfat.py](https://github.com/ETCBC/nestle1904/blob/master/programs/lowfat.py).
+[`lowfat.py`](https://github.com/ETCBC/nestle1904/blob/master/programs/lowfat.py).
 
 ## Dynamic Metadata
 
@@ -271,7 +271,7 @@ class CV:
 
         The `director` function should unravel the source.
         You have to program the `director`, which takes one argument: `cv`.
-        From the `cv` you can use a few standard actions that instruct Text-Fabric
+        From the `cv` you can use a few standard actions that instruct TF
         to build a graph.
 
         This function will check whether the metadata makes sense and is minimally
@@ -284,7 +284,7 @@ class CV:
         to see whether the metadata matches the data and vice versa.
 
         If the slots need to be sorted by their keys, it will happen at this point,
-        and the generated features will be adpated to the sorted slots.
+        and the generated features will be adapted to the sorted slots.
 
         The new feature data will be written to the output directory of the
         underlying TF object.  In fact, the rules are exactly the same as for
@@ -299,11 +299,11 @@ class CV:
             The configuration information to be stored in the `otext` feature
             (see `tf.core.text`):
 
-            * section types
-            * section features
-            * structure types
-            * structure features
-            * text formats
+            *   section types
+            *   section features
+            *   structure types
+            *   structure features
+            *   text formats
 
         generic: dict
             Metadata that will be written into the header of all generated TF features.
@@ -627,12 +627,14 @@ class CV:
     def stop(self, msg):
         """Stops the director. No further input will be read.
 
-            cv.stop(msg)
+        ```
+        cv.stop(msg)
+        ```
 
         The director will exit with a non-good status  and issue the message `msg`.
         If you have called `walk()` with `force=True`, indicating that the
-        director must proceed after errors, then this stop command will cause termination
-        nevertheless.
+        director must proceed after errors, then this stop command will cause
+        termination nevertheless.
 
         Parameters
         ----------
@@ -655,20 +657,23 @@ class CV:
     def slot(self, key=None):
         """Make a slot node and return the handle to it in `n`.
 
-            n = cv.slot()
-
+        ```
+        n = cv.slot()
+        ```
 
         No further information is needed.
         Remember that you can add features to the node by later
 
-            cv.feature(n, key=value, ...)
+        ```
+        cv.feature(n, key=value, ...)
+        ```
 
         calls.
 
         Parameters
         ----------
         key: string, optional None
-            If passed, it acts as a sortkey on the slot.
+            If passed, it acts as a sort key on the slot.
             At the end of the walk, all slots will be sorted by their key and then
             by their original order. Care will be taken that slots retain their
             features and linkages.
@@ -714,24 +719,28 @@ class CV:
     def node(self, nType, slots=None):
         """Make a non-slot node and return the handle to it in `n`.
 
-            n = cv.node(nodeType)
+        ```
+        n = cv.node(nodeType)
+        ```
 
         You have to pass its *node type*, i.e. a string.
         Think of `sentence`, `paragraph`, `phrase`, `word`, `sign`, whatever.
 
         There are two modes for this function:
 
-        * Auto: (`slots=None`):
-          Non slot nodes will be automatically added to the set of embedders.
-        * Explicit: (`slots=iterable`):
-          The slots in iterable will be assigned to this node and nothing else.
-          The node will not be added to the set of embedders.
-          Put otherwise: the node will be terminated after construction.
-          However: you could resume it later to add other slots.
+        *   Auto: (`slots=None`):
+            Non slot nodes will be automatically added to the set of embedders.
+        *   Explicit: (`slots=iterable`):
+            The slots in iterable will be assigned to this node and nothing else.
+            The node will not be added to the set of embedders.
+            Put otherwise: the node will be terminated after construction.
+            However: you could resume it later to add other slots.
 
         Remember that you can add features to the node by later
 
-            cv.feature(n, key=value, ...)
+        ```
+        cv.feature(n, key=value, ...)
+        ```
 
         calls.
 
@@ -794,7 +803,9 @@ class CV:
     def terminate(self, node):
         """**terminate** a node.
 
-            cv.terminate(n)
+        ```
+        cv.terminate(n)
+        ```
 
         The node `n` will be removed from the set of current embedders.
         This `n` must be the result of a previous `cv.slot()` or `cv.node()` action.
@@ -817,11 +828,13 @@ class CV:
     def delete(self, node):
         """**deletes** a node.
 
-            cv.deletes(n)
+        ```
+        cv.delete(n)
+        ```
 
         The node `n` will be deleted from the set of nodes that will be created.
         This `n` must be the result of a previous `cv.node()` action.
-        sLots cannot be deleted.
+        slots cannot be deleted.
 
         Parameters
         ----------
@@ -848,7 +861,9 @@ class CV:
     def resume(self, node):
         """**resume** a node.
 
-            cv.resume(n)
+        ```
+        cv.resume(n)
+        ```
 
         If you resume a non-slot node, you add it again to the set of embedders.
         No new node will be created.
@@ -882,7 +897,9 @@ class CV:
     def link(self, node, slots):
         """Link the given, existing slots to a node.
 
-            cv.link(n, [s1, s2])
+        ```
+        cv.link(n, [s1, s2])
+        ```
 
         Sometimes the automatic linking of slots to nodes is not sufficient.
 
@@ -914,8 +931,9 @@ class CV:
     def linked(self, node):
         """Returns the slots `ss` to which a node is currently linked.
 
-            ss = cv.linked(n)
-
+        ```
+        ss = cv.linked(n)
+        ```
 
         If you construct non-slot nodes without linking them to slots,
         they will be removed when TF validates the collective result
@@ -944,7 +962,9 @@ class CV:
     def feature(self, node, **features):
         """Add **node features**.
 
-            cv.feature(n, name=value, ... , name=value)
+        ```
+        cv.feature(n, name=value, ... , name=value)
+        ```
 
         Parameters
         ----------
@@ -974,7 +994,9 @@ class CV:
     def edge(self, nodeFrom, nodeTo, **features):
         """Add **edge features**.
 
-            cv.edge(nf, nt, name=value, ... , name=value)
+        ```
+        cv.edge(nf, nt, name=value, ... , name=value)
+        ```
 
         Parameters
         ----------
@@ -1008,7 +1030,9 @@ class CV:
     def occurs(self, feat):
         """Whether the feature `featureName` occurs in the resulting data so far.
 
-            occurs = cv.occurs(featureName)
+        ```
+        occurs = cv.occurs(featureName)
+        ```
 
         If you have assigned None values to a feature, that will count, i.e.
         that feature occurs in the data.
@@ -1043,13 +1067,15 @@ class CV:
     def meta(self, feat, **metadata):
         """Add, modify, delete metadata fields of features.
 
-            cv.meta(feature, name=value, ... , name=value)
+        ```
+        cv.meta(feature, name=value, ... , name=value)
+        ```
 
         Parameters
         ----------
         feat: string
             The name of a feature
-        **metaData: pairs of name and value
+        metadata: dict
             If a `value` is `None`, that `name` will be deleted from the
             metadata fields of the feature.
             A bare `cv.meta(feature)` will remove the all metadata from the feature.
@@ -1096,7 +1122,9 @@ class CV:
     def features(self):
         """Get the list of all features.
 
-            featureNames = cv.features()
+        ```
+        featureNames = cv.features()
+        ```
 
         Returns
         -------
@@ -1112,7 +1140,9 @@ class CV:
 
         Active nodes are the nodes in the set of current embedders.
 
-            isActive = cv.active(n)
+        ```
+        isActive = cv.active(n)
+        ```
 
         If you construct your nodes in a very dynamic way, it might be
         hard to keep track for each node whether it has been created, terminated,
@@ -1136,8 +1166,10 @@ class CV:
     def activeNodes(self, nTypes=None):
         """The currently active nodes, i.e. the embedders.
 
-            nodes = cv.activeNodes()
-            nodes = cv.activeNodes(nTypes=("sentence", "clause"))
+        ```
+        nodes = cv.activeNodes()
+        nodes = cv.activeNodes(nTypes=("sentence", "clause"))
+        ```
 
         Parameters
         ----------
@@ -1159,7 +1191,9 @@ class CV:
     def activeTypes(self):
         """The node types of the currently active nodes, i.e. the embedders.
 
-            nTypes = cv.activeTypes()
+        ```
+        nTypes = cv.activeTypes()
+        ```
 
         Parameters
         ----------
@@ -1175,7 +1209,9 @@ class CV:
     def get(self, feature, *args):
         """Retrieve feature values.
 
-            cv.get(feature, n) and cv.get(feature, nf, nt)
+        ```
+        cv.get(feature, n) and cv.get(feature, nf, nt)
+        ```
 
         `feature` is the name of the feature.
 

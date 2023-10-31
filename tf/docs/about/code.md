@@ -1,6 +1,6 @@
-# Code organisation
+# Code organization
 
-The code base of Text-Fabric can be divided into a few major parts,
+The code base of TF can be divided into a few major parts,
 each with their own, identifiable task.
 
 Some parts of the code are covered by unit tests (`tf.about.tests`).
@@ -10,15 +10,15 @@ Some parts of the code are covered by unit tests (`tf.about.tests`).
 (`tf.core`) The core API is responsible for:
 
 Data management
-:   Text-Fabric data consists of *feature files*.
-    TF must be able to load them, save them, import/export from MQL.
+:   TF data consists of *feature files*.
+    TF must be able to load them, save them, import / export from MQL.
 
 Provide an API
 :   TF must offer an API for handling its data in applications.
     That means: feature lookup, containment lookup, text serialization.
 
-Precomputation
-:   In order to make its API work efficiently, TF has to precompute certain
+Pre-computation
+:   In order to make its API work efficiently, TF has to pre-compute certain
     compiled forms of the data.
 
 ## Search
@@ -42,7 +42,7 @@ Search vs hand coding
 
 ## Advanced
 
-(`tf.advanced`) TF contains an advanced API geared to autodownloading
+(`tf.advanced`) TF contains an advanced API geared to auto-downloading
 corpus data and displaying corpus materials in useful ways.
 
 ## Web interface
@@ -53,9 +53,9 @@ with your corpus without programming.
 The web interface lets you fire queries (search templates) to TF and interact
 with the results:
 
-* expanding rows to pretty displays;
-* condensing results to verious container types;
-* exporting results as PDF and CSV.
+*   expanding rows to pretty displays;
+*   condensing results to various container types;
+*   exporting results as PDF and CSV.
 
 This interface be served by a local web server provided with data from a TF app.
 (`tf.browser.start`, `tf.browser.kernel` and `tf.browser.web`).
@@ -78,10 +78,10 @@ See also `tf.about.volumes`.
 arbitrary structured data (such as database dumps or TEI files) to TF
 (`tf.convert.mql`, `tf.convert.walker`).
 
-There is also some support for roundtrips of TF data into other annotation tools and back
+There is also some support for round-trips of TF data into other annotation tools and back
 (`tf.convert.recorder`).
 
 ## Writing
 
-(`tf.writing`) Text-Fabric supports several writing systems by means of transliterations
-and conversions between them and Unicode.
+(`tf.writing`) TF supports several writing systems by means of transliterations
+and conversions between them and UNICODE.

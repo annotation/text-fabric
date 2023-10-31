@@ -1,5 +1,5 @@
 """
-# Fabric
+# `Fabric`
 
 The main class that works the core API is `tf.fabric.Fabric`.
 
@@ -7,22 +7,22 @@ It is responsible for feature data loading and saving.
 
 !!! note "Tutorial"
     The tutorials for specific annotated corpora (see `tf.about.corpora`)
-    put the Text-Fabric API on show for vastly different corpora.
+    put the TF API on show for vastly different corpora.
 
 !!! note "Generic API versus apps"
-    This is the API of Text-Fabric in general.
-    Text-Fabric has no baked in knowledge of particular corpora.
+    This is the API of TF in general.
+    TF has no baked in knowledge of particular corpora.
 
-    However, Text-Fabric comes with several *apps* that make working
+    However, TF comes with several *apps* that make working
     with specific `tf.about.corpora` easier.
     Such an app may be as simple as a *config.yaml* file, even an empty one.
     The extra functions of those apps
     are available through the advanced API: `A`, see `tf.app`.
 
-Fabric has built-in volume support: it can load volumes of a work and it can
+`Fabric` has built-in volume support: it can load volumes of a work and it can
 collect volumes into a new work.
 
-Fabric is an extension of `tf.core.fabric` where volume support is added.
+`Fabric` is an extension of `tf.core.fabric` where volume support is added.
 """
 
 import types
@@ -48,9 +48,9 @@ class Fabric(FabricCore):
     """Initialize the core API for a corpus.
 
     !!! note "Implementation"
-        Fabric is implemented as a subclass of `tf.core.fabric.FabricCore`
+        `Fabric` is implemented as a subclass of `tf.core.fabric.FabricCore`
 
-    See `tf.core.fabric.FabricCore for most of the functionality.
+    See `tf.core.fabric.FabricCore` for most of the functionality.
     Here we document the volume support only.
 
     Parameters
@@ -67,7 +67,7 @@ class Fabric(FabricCore):
     and `modules` will be used.
     There the volumes reside under a directory `_local`.
     You may want to add `_local` to your `.gitignore`, so that volumes generated
-    in a backend directory will not be pushed.
+    in a back-end directory will not be pushed.
 
     !!! caution "Volumes and collections"
         It is an error to load a volume as a collection and vice-versa

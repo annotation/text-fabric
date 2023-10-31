@@ -4,6 +4,7 @@ ipython
 lxml
 pyyaml>=5.3
 flask
+pandas
 
 [all]
 pygithub>=1.57

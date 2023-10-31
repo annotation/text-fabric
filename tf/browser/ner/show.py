@@ -201,9 +201,9 @@ class Show:
         Parameters
         ----------
         buckets: iterable of tuple
-            A selection of buckets (chunks/paragraphs) of the corpus.
+            A selection of buckets (chunks / paragraphs) of the corpus.
             Each bucket is given as a tuple.
-            The exact form is this datastructure is equal to what the
+            The exact form is this data structure is equal to what the
             function `tf.browser.ner.annotate.Annotate.filterContent`
             returns.
 
@@ -213,7 +213,7 @@ class Show:
         excludedTokens: set, optional None
             If passed, it is a set of tokens where a ❌ has been placed by the
             user. They correspond to occurrences that have been deselected from
-            being subject to add/delete operations.
+            being subject to add / delete operations.
 
         mayLimit: boolean, optional False
             It is possible that the buckets make up the whole corpus.

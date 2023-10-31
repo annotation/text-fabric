@@ -11,13 +11,13 @@ interconnected material.
 When we search, we have a fabric in mind, woven from specific material, stitched
 together in a specific manner.
 
-Search in Text-Fabric works exactly like this: you give a sample patch, and
-Text-Fabric fetches all pieces of the big fabric that match your patch.
+Search in TF works exactly like this: you give a sample patch, and
+TF fetches all pieces of the big fabric that match your patch.
 
 ![patch](../images/SearchDesign/SearchDesign.001.png)
 
 The textile metaphor is particularly suited for grasping the search part of
-Text-Fabric, so I'm going to stick to it for a while. I have used it in the
+TF, so I'm going to stick to it for a while. I have used it in the
 actual code as well, and even in the proofs that certain parts of the algorithm
 terminate and are correct. Yet it remains a metaphor, and the fit is not exact.
 
@@ -25,7 +25,7 @@ The basic pattern of search is this:
 
 textile | text | example
 ------- | ---- | -------
-take several fleeces | pick the nodes corresponding to a node type | `word`s, `phrase`s, `clause`s, `verse`s
+take several fleeces | pick the nodes corresponding to a node type | `word`, `phrase`, `clause`, `verse`
 spin thick yarns from them | filter by feature conditions | `part-of-speech=verb` gender=`f` `book=Genesis` `vt`
 spin the yarns further into thin yarns | throw away nodes that do not have the right connections | feature conditions on a verse also affect the search space for sentences, clauses, etc., and vice versa
 stitch the yarns together with thread | build results by selecting a member for every filtered node set | `word` node `123456` in `phrase` node `657890` in `clause` node `490567` in `verse` node `1403456`
@@ -62,7 +62,7 @@ word
 Fleeces are the raw material from which we fabricate our search results.
 
 Every node type, such as `word`, `sentence`, `book` corresponds to a fleece. In
-Text-Fabric, every node has exactly one node type, so the whole space is neatly
+TF, every node has exactly one node type, so the whole space is neatly
 divided into a small set of fleeces.
 
 The most important characteristic of a fleece is it size: the number of nodes in
@@ -91,12 +91,12 @@ corresponds with first thing that we do with a fleece: *spin* a thick *yarn*
 from it. Yarns in general are obtained by spinning fleeces, i.e. by filtering
 node sets that correspond to a node type.
 
-A search template may contain multiple atoms. Text-Fabric collects all atoms of
+A search template may contain multiple atoms. TF collects all atoms of
 a template, grabs the corresponding fleeces, and spins thick yarns from them.
 For each atom it will spin a yarn, and if there are several atoms referring to
 the same node type, there will be several yarns spun from that fleece. This
 spinning of thick yarns out of fleeces happens in just one go. All fleeces
-together contain exactly all nodes, so Text-Fabric walks in one pass over all
+together contain exactly all nodes, so TF walks in one pass over all
 nodes, applies the feature conditions, and puts the nodes into the yarns
 depending on which conditions apply.
 
@@ -146,7 +146,7 @@ The meaning of this template is that we look for a `verse` that
 *   (1) claims to be in Genesis
 *   (2) has a clause whose type is `rela`
 *   (3) which in turn has a phrase of a determined character
-*   (4) which contains a word in the plural and that has a verbal tense (vt)
+*   (4) which contains a word in the plural and that has a verbal tense (`vt`)
 
 There should also be a
 
@@ -169,7 +169,7 @@ match lines 1-4, and, independently, for things that match line 6. And every
 result of the first part, combined with any result of the second part, would be
 a valid result of the whole.
 
-Well, Text-Fabric is nobody's fool: it refuses to accept two search tasks at the
+Well, TF is nobody's fool: it refuses to accept two search tasks at the
 same time, let alone that it wants to waste time to generate all the results in
 the product. You will have to fire those search tasks one by one, and it is up
 to you how you combine the results.
@@ -177,7 +177,7 @@ to you how you combine the results.
 The upshot it: **the atoms in the search template should form a network,
 connected by constraints**.
 
-Text-Fabric will check this, and will only work with search templates that have
+TF will check this, and will only work with search templates that have
 only one connected component.
 
 ### Terminology
@@ -187,7 +187,7 @@ underneath: what we have called *atoms* are in fact the nodes, and what we have
 called *constraints*, are the edges.
 
 From now on, we will call the *atoms* **qnodes** and the constraints **qedges**.
-The **q** is to distinguish the nodes and the edges from the nodes and the edges
+The `q` is to distinguish the nodes and the edges from the nodes and the edges
 of your dataset, the *text* nodes and *text* edges. When we use the term *nodes*
 and *edges* we will always refer to *text* nodes and edges.
 
@@ -300,16 +300,16 @@ results. We call this *stitching* and we'll get there in a moment.
 ### The spread of a qedge
 
 A very important property of a qedge is its *spread*. A qedge links every node
-*n* in its *from*-yarn to zero, one, or more nodes in its *to*-yarn. The number
-of nodes in the *to*-yarn is a key property. The average number of nodes *m* in
-the *to*-yarn per linked node *n* in the *from*-yarn is the *spread* of the
+`n` in its *from*-yarn to zero, one, or more nodes in its *to*-yarn. The number
+of nodes in the *to*-yarn is a key property. The average number of nodes `m` in
+the *to*-yarn per linked node `n` in the *from*-yarn is the *spread* of the
 edge.
 
 A few examples:
 
-*   An edge that corresponds to `]]`, *n* embeds *m*. If this edge goes from books
-    to words, then every book node *n* is linked to every one of its words. So
-    very *n* has hundreds or thousands *m*s. The spread will roughly be 425,000 /
+*   An edge that corresponds to `]]`, `n` embeds `m`. If this edge goes from books
+    to words, then every book node `n` is linked to every one of its words. So
+    very `n` has hundreds or thousands `m`. The spread will roughly be 425,000 /
     39 =~ 10,000
 *   The opposite edge has a spread of exactly 1, because every word belongs to
     exactly one book. Edges with spread 1 are very pleasant for our stitching
@@ -321,8 +321,8 @@ A few examples:
     is still a breeze to compute, but the result is heavy: the set of all nodes
     not equal to a given node. The spread is nearly 100% of the yarn length, in
     both directions. These edges are not worth to spin, because if you have two
-    yarns, no node will be excluded: if you have an *n* in the *from*-yarn, you
-    will always be able to find a different *n* in the *to*-yarn (except when bot
+    yarns, no node will be excluded: if you have an `n` in the *from*-yarn, you
+    will always be able to find a different `n` in the *to*-yarn (except when bot
     yarns are equal, and contain just one node).
 *   An edge corresponding to `==`, the relation between nodes that are linked to
     the same set of slots. The spread of this relation is not too big, but the
@@ -388,7 +388,7 @@ But if none of the yarns is thin at the outset, spinning qedges will not result
 in appreciable thinning of the yarns, while it might be an enormous amount of
 work, depending on the actual relations involved.
 
-The good news is that it is possible to detect those situations. Text-Fabric
+The good news is that it is possible to detect those situations. TF
 estimates whether it makes sense to spin a qedge, and if not, it will just skip
 spinning that edge. Which will make the final result gathering (stitching) more
 expensive.
@@ -405,7 +405,7 @@ thicker yarn.
 ![stitch](../images/SearchDesign/SearchDesign.008.png)
 
 The last step is actually getting results. A result is a bunch of nodes, one
-from each yarn, in such a way that result nodes on yarns fulfil the
+from each yarn, in such a way that result nodes on yarns fulfill the
 relationships that the qedges of the search template dictate. If we can find
 such a set of nodes, we have stitched the yarns together. We call such a result
 a *stitch*. A stitch is a tuple of text nodes, each corresponding to exactly one
@@ -463,7 +463,7 @@ what yarn we shall select to start with, and in which order we shall follow the
 edges. We need a strategy, and multiple strategies might lead to the same
 results, albeit with varying efficiency.
 
-In Text-Fabric we employ a strategy, that makes the *narrowest* choices first.
+In TF we employ a strategy, that makes the *narrowest* choices first.
 We call a choice narrow if there are few alternatives to choose from, and broad
 if there are many alternatives.
 
@@ -476,13 +476,13 @@ fact does not hold.
 So we want to get as many nodes in our stitch as quickly as possible.
 
 If our search tree is narrowly branching near the root, and broadly branching
-near the leaves, the top *n* levels of the tree contain relatively few nodes. So
+near the leaves, the top `n` levels of the tree contain relatively few nodes. So
 we have relatively few possibilities to stitch n nodes together, and most
-reasons to fail will happen while visiting these *n* levels.
+reasons to fail will happen while visiting these `n` levels.
 
 If on the other hand our search tree is broadly branching near the root, and
-narrowly branching near the leaves, the top *n* levels of the tree contain many
-nodes. We will visit many nodes and try many stitchings of length *n*, of which
+narrowly branching near the leaves, the top `n` levels of the tree contain many
+nodes. We will visit many nodes and try many stitchings of length `n`, of which
 a lot will fail.
 
 I have also tried a different, more complicated strategy, which is still
@@ -499,14 +499,14 @@ Here is the small-first strategy in a bit more detail.
     per source on average, relative to the current source and target yarns;
 *   at every step there are three kinds of qedges:
     1.  qedges that go between qnodes of which we have already stitched the yarns
-    2.  qedges that go from a yarn that is already part of the stitch to a yarn
+    1.  qedges that go from a yarn that is already part of the stitch to a yarn
         outside the stitch
-    3.  qedges that do not start at a yarn in the current stitch
+    1.  qedges that do not start at a yarn in the current stitch
 *   at every step,
     1.  we first process all qedges of type (i), in arbitrary order;
-    2.  we select one edge with minimal spread out of type (ii) and process it;
-    3.  we postpone all edges of type (iii);
-    4.  we redetermine which edges are in all types.
+    1.  we select one edge with minimal spread out of type (ii) and process it;
+    1.  we postpone all edges of type (iii);
+    1.  we redetermine which edges are in all types.
 
 It cannot happen that at the end we have not visited all qnodes and yarns,
 because we have assumed that our search template consists of one connected
@@ -526,8 +526,8 @@ Secondly, before we start stitching, we can compute the order of qedges that we
 will use for every stitch. We then sort the qnodes according to the order by
 which they will be encountered when we work through the qedges. When we are
 stitching, in the midst of a partial stitch, it is always the case that we have
-stitched qnodes 1 .. *n* for some *n*, and we still have to stitch all qnodes
-above *n*. That means that when we try to finish partial stitches of which an
+stitched qnodes 1 .. `n` for some `n`, and we still have to stitch all qnodes
+above `n`. That means that when we try to finish partial stitches of which an
 initial part has been fixed, the search process will not change that initial
 part of the stitch. Only when the algorithm has exhausted all possibilities
 based on that initial part, it will change the last node of the initial part,

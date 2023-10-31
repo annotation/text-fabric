@@ -341,7 +341,7 @@
     }
 
     /*
-     * Don't show links for images, or javascript/internal links
+     * Don't show links for images, or JavaScript / internal links
      */
 
     .ir a:after,

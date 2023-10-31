@@ -33,7 +33,7 @@ class AppData:
             paths given by the `locations` argument to form search locations
             for TF data files.
         version: string
-            The version of TF data that should be retrievend. Version is a directory
+            The version of TF data that should be retrieved. Version is a directory
             level just below the search locations.
         checkout: string
             A specifier to use a specific release or commit of a data repository.
@@ -93,9 +93,9 @@ class AppData:
         These are specified in the `moduleSpecs` setting under
         `provenanceSpecs` in `config.yaml`.
 
-        They will be loaded *after* the extra modules specified in the **mod**
-        parameter, and only in as far they have not been specifief in the
-        **mod** parameter. In this way you can pass overriding
+        They will be loaded *after* the extra modules specified in the `mod`
+        parameter, and only in as far they have not been specified in the
+        `mod` parameter. In this way you can pass overriding
         checkout specifiers to the standard modules.
 
         See Also
@@ -243,7 +243,7 @@ class AppData:
         checkout: string
             A specifier to use a specific release or commit of a data repository.
         backend: string
-            The backend if different from the backend of the main module
+            The back-end if different from the back-end of the main module
         isBase: boolean, optional False
             Whether this module is the main data of the corpus.
         specs: dict, optional False

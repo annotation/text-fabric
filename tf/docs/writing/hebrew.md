@@ -56,7 +56,7 @@ h1.chars {
 </style>
 
 !!! note "Disclaimer"
-    This just a look-up table, not a full exposition of the organisation of the Masoretic system.
+    This just a look-up table, not a full exposition of the organization of the Masoretic system.
 
 !!! abstract "Transcriptions"
     The ETCBC transcription is used by the ETCBC.
@@ -65,9 +65,9 @@ h1.chars {
     The Abegg transcription is used in the Dead Sea scrolls.
     It has no entries for 
     accents, but it has a repertoire of text-critical marks.
-    We have back translated the latter to etcbc-compatible variants
+    We have back translated the latter to `ETCBC`-compatible variants
     and entered them in the
-    etcbc column, although they are not strictly etcbc marks.
+    `ETCBC` column, although they are not strictly `ETCBC` marks.
 
 !!! abstract "Phonetics"
     The phonetic representation is meant as a
@@ -79,21 +79,21 @@ h1.chars {
 ## Consonants
 
 !!! abstract "Details"
-    *   For most  consonants: an inner dot is a *dagesh forte*.
+    *   For most  consonants: an inner dot is a `dagesh forte`.
     *   For the <span class="g">בגדכפת</span> consonants:
-        an inner dot is either a *dagesh forte* or a *dagesh lene*.
-    *   When the <span class="g">ה</span> contains a dot, it is called a *mappiq*.
+        an inner dot is either a `dagesh forte` or a `dagesh lene`.
+    *   When the <span class="g">ה</span> contains a dot, it is called a `mappiq`.
 
 <table class="chars" summary="consonants">
     <thead>
         <tr>
-            <th>transcription (etcbc)</th>
+            <th>transcription (`ETCBC`)</th>
             <th>transcription (Abegg)</th>
             <th>glyph</th>
             <th>phonetic</th>
             <th>remarks</th>
             <th>name</th>
-            <th>unicode</th>
+            <th>UNICODE</th>
         </tr>
     </thead>
     <tbody>
@@ -377,13 +377,13 @@ h1.chars {
 <table class="chars" summary="vowels">
     <thead>
         <tr>
-            <th>transcription (etcbc)</th>
+            <th>transcription (`ETCBC`)</th>
             <th>transcription (Abegg)</th>
             <th>glyph</th>
             <th>phonetic</th>
             <th>remarks</th>
             <th>name</th>
-            <th>unicode</th>
+            <th>UNICODE</th>
         </tr>
     </thead>
     <tbody>
@@ -494,13 +494,13 @@ h1.chars {
 <table class="chars" summary="other points and marks">
     <thead>
         <tr>
-            <th>transcription (etcbc)</th>
+            <th>transcription (`ETCBC`)</th>
             <th>transcription (Abegg)</th>
             <th>glyph</th>
             <th>phonetic</th>
             <th>remarks</th>
             <th>name</th>
-            <th>unicode</th>
+            <th>UNICODE</th>
         </tr>
     </thead>
     <tbody>
@@ -612,23 +612,23 @@ h1.chars {
     Some specialties in the Masoretic system are not reflected
     in the phonetics:
 
-    *   *setumah*
+    *   `setumah`
         <span class="g">ס</span>;
-    *   *petuhah*
+    *   `petuhah`
         <span class="g">ף</span>;
-    *   *nun-hafuka*
+    *   `nun-hafuka`
         <span class="g"> ̇׆</span>.
 
 <table class="chars" summary="punctuation">
     <thead>
         <tr>
-            <th>transcription (etcbc)</th>
+            <th>transcription (`ETCBC`)</th>
             <th>transcription (Abegg)</th>
             <th>glyph</th>
             <th>phonetic</th>
             <th>remarks</th>
             <th>name</th>
-            <th>unicode</th>
+            <th>UNICODE</th>
         </tr>
     </thead>
     <tbody>
@@ -706,7 +706,7 @@ h1.chars {
             <th>phonetic</th>
             <th>remarks</th>
             <th>name</th>
-            <th>unicode</th>
+            <th>UNICODE</th>
         </tr>
     </thead>
     <tbody>
@@ -725,8 +725,8 @@ h1.chars {
 ## Accents
 
 !!! abstract "Details"
-    Some accents play a role in deciding whether a schwa is silent or mobile
-    and whether a qamets is gadol or qatan.
+    Some accents play a role in deciding whether a `schwa` is silent or mobile
+    and whether a `qamets` is `gadol` or `qatan`.
     In the phonetics those accents appear as `ˈ` or `ˌ`.
     Implied accents are also added.
 
@@ -738,7 +738,7 @@ h1.chars {
             <th>phonetic</th>
             <th>remarks</th>
             <th>name</th>
-            <th>unicode</th>
+            <th>UNICODE</th>
         </tr>
     </thead>
     <tbody>
@@ -1006,10 +1006,10 @@ h1.chars {
 !!! abstract "Details"
     These signs occur in the Dead Sea scrolls.
     We represent them with conventional Hebrew characters for numbers
-    and use the geresh accent or another accent to mark the letter
+    and use the `geresh` accent or another accent to mark the letter
     as a numeral.
 
-    The ETCBC codes are obtained by translating back from the unicode.
+    The ETCBC codes are obtained by translating back from the UNICODE.
 
 <table class="chars" summary="numerals">
     <thead>
@@ -1090,7 +1090,7 @@ h1.chars {
     These signs occur in the Dead Sea scrolls.
     They are used to indicate uncertainty and editing acts by ancient scribes
     or modern editors.
-    They do not have an associated glyph in Unicode.
+    They do not have an associated glyph in UNICODE.
 
     The ETCBC does not have codes for them, but we propose an
     ETCBC-compatible encoding for them.
@@ -1106,7 +1106,7 @@ h1.chars {
     <thead>
         <tr>
             <th>transcription (Abegg)</th>
-            <th>transcription (etcbc)</th>
+            <th>transcription (`ETCBC`)</th>
             <th>remarks</th>
             <th>name</th>
         </tr>

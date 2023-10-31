@@ -58,7 +58,7 @@ export class SearchProvider {
 
     /* LONG RUNNING FUNCTIONS
      *
-     * We apply a device to make behaviour more conspicuous on the interface.
+     * We apply a device to make behavior more conspicuous on the interface.
      *
      * There are two problems
      *
@@ -447,7 +447,7 @@ export class SearchProvider {
   composeResults(recomputeFocus) {
     /* divided search results into chunks by focusType
      * The results are organized by the nodes that have focusType as node type.
-     * Each result is an object with as keys a nodetype and as values some
+     * Each result is an object with as keys a node type and as values some
      * results in that node type.
      * If the node type is higher than or equal than the focus type, the
      * results are just nodes.
@@ -754,7 +754,7 @@ export class SearchProvider {
     resultshead.html(header)
 
     const genValueHtml = (nType, layer, node, linkUrl) => {
-      /* generates the html for a layer of node, including the result highlighting
+      /* generates the HTML for a layer of node, including the result highlighting
        */
 
       if (layer == "_") {
@@ -817,7 +817,7 @@ export class SearchProvider {
     }
 
     const genNodeHtml = node => {
-      /* generates the html for a node, including all layers and highlighting
+      /* generates the HTML for a node, including all layers and highlighting
        */
       const [n, children] = typeof node === NUMBER ? [node, []] : node
       const nType = resultTypeMap.get(n)
@@ -867,7 +867,7 @@ export class SearchProvider {
     }
 
     const genResultHtml = (i, result) => {
-      /* generates the html for a single result
+      /* generates the HTML for a single result
        */
       const isFocus = i == focusPos
       const isPrevFocus = i == prevFocusPos
@@ -897,7 +897,7 @@ export class SearchProvider {
     }
 
     const genResultsHtml = () => {
-      /* generates the html for all relevant results around a focus position in the
+      /* generates the HTML for all relevant results around a focus position in the
        * table of results
        */
       if (resultsComposed == null) {
@@ -920,18 +920,18 @@ export class SearchProvider {
   }
 
   /* RESULTS EXPORT
-   * Exports the current results to a tsv file
+   * Exports the current results to a TSV file
    * All results will be exported, not only the ones that are displayed
    * on the screen.
    * One result per row, with the same information per result that is currently active:
    * the same focus, the same visibility of layers and node numbers.
    *
-   * The resulting tsv is written in UTF-16-LE encoding for optimal interoperability
+   * The resulting TSV is written in UTF-16-LE encoding for optimal interoperability
    * with Excel
    */
 
   tabular() {
-    /* tsv export, closely analogous to how the results are displayed on screen
+    /* TSV export, closely analogous to how the results are displayed on screen
      */
 
     const {
@@ -1006,7 +1006,7 @@ export class SearchProvider {
     }
 
     const genNodeTsv = (node, stack) => {
-      /* generates the html for a node, including all layers and highlighting
+      /* generates the HTML for a node, including all layers and highlighting
        */
       const [n, children] = typeof node === NUMBER ? [node, []] : node
       const nType = resultTypeMap.get(n)
@@ -1046,7 +1046,7 @@ export class SearchProvider {
     }
 
     const genResultTsv = (s, result) => {
-      /* generates the tsv for a single result
+      /* generates the TSV for a single result
        */
       const typeNodes = []
       for (const nType of upperTypes) {
@@ -1095,7 +1095,7 @@ export class SearchProvider {
       return tsv
     }
 
-    /* generates the tsv for all relevant results around a focus position in the
+    /* generates the TSV for all relevant results around a focus position in the
      * table of results
      */
     if (resultsComposed == null) {

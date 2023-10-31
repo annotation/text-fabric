@@ -2,7 +2,7 @@
 # MQL
 
 You can interchange with [MQL data](https://emdros.org).
-Text-Fabric can read and write MQL dumps.
+TF can read and write MQL dumps.
 An MQL dump is a text file, like an SQL dump.
 It contains the instructions to create and fill a complete database.
 
@@ -34,7 +34,7 @@ Only if the feature is a number feature, you may omit the quotes:
 
 ## Enumeration types
 
-It is attractive to use eumeration types for the values of a feature, whereever
+It is attractive to use enumeration types for the values of a feature, where ever
 possible, because then you can query those features in MQL with `IN` and without
 quotes:
 
@@ -80,7 +80,7 @@ i.e. lists of object identifiers.
 The requirements are for names are:
 
 *   start with a letter (ASCII, upper-case or lower-case)
-*   follow by any sequence of ASCII upper/lower-case letters or digits or
+*   follow by any sequence of ASCII upper / lower-case letters or digits or
     underscores (`_`)
 *   avoid being a reserved word in the C language
 
@@ -92,13 +92,13 @@ C word.
 With these provisos:
 
 *   the given `dbName` correspond to the MQL *database name*
-*   the TF *otypes* correspond to the MQL *objects*
-*   the TF *features* correspond to the MQL *features*
+*   the TF `otypes` correspond to the MQL *objects*
+*   the TF `features` correspond to the MQL *features*
 
 The MQL export is usually quite massive (500 MB for the Hebrew Bible).
 It can be compressed greatly, especially by the program `bzip2`.
 
-!!! caution "Exisiting database"
+!!! caution "Existing database"
     If you try to import an MQL file in Emdros, and there exists already a file or
     directory with the same name as the MQL database, your import will fail
     spectacularly. So do not do that.
@@ -111,7 +111,7 @@ A good way to prevent clashes:
 
 Delete existing copy:
 
-```sh
+``` sh
 cd ~/Downloads
 rm dataset ; mql -b 3 < dataset.mql
 ```
@@ -157,12 +157,12 @@ def exportMQL(app, mqlDb, exportDir=None):
         A `tf.advanced.app.App` object, which holds the corpus data
         that will be exported to MQL.
     mqlDb: string
-        Name of the mql database
+        Name of the MQL database
     exportDir: string, optional None
-        Directory where the MQL dir will be saved.
+        Directory where the MQL data will be saved.
         If None is given, it will end up in the same repo as the dataset, in a new
         top-level subdirectory called `mql`.
-        The exported data will be written to file *exportDir*`/`*mqlDb.mql*.
+        The exported data will be written to file `exportDir/mqlDb.mql`.
         If `exportDir` starts with `~`, the `~` will be expanded to your
         home directory.
         Likewise, `..` will be expanded to the parent of the current directory,
@@ -199,7 +199,7 @@ def exportMQL(app, mqlDb, exportDir=None):
 
 
 def importMQL(mqlFile, saveDir, silent=None, slotType=None, otext=None, meta=None):
-    """Converts an MQL database dump to a Text-Fabric dataset.
+    """Converts an MQL database dump to a TF dataset.
 
     Parameters
     ----------
@@ -219,10 +219,12 @@ def importMQL(mqlFile, saveDir, silent=None, slotType=None, otext=None, meta=Non
         the parameter `otext`. This info will end up in the `otext.tf` feature.
         Pass it as a dictionary of keys and values, like so:
 
-            otext = {
-                'fmt:text-trans-plain': '{glyphs}{trailer}',
-                'sectionFeatures': 'book,chapter,verse',
-            }
+        ```
+        otext = {
+            'fmt:text-trans-plain': '{glyphs}{trailer}',
+            'sectionFeatures': 'book,chapter,verse',
+        }
+        ```
 
     meta: dict
         Likewise, you can add a dictionary keyed by features
@@ -234,23 +236,25 @@ def importMQL(mqlFile, saveDir, silent=None, slotType=None, otext=None, meta=Non
 
         Example:
 
-            meta = {
-                "": dict(
-                    dataset='DLC',
-                    datasetName='Digital Language Corpus',
-                    author="That 's me",
-                ),
-                "sp": dict(
-                    description: "part-of-speech",
-                ),
-            }
+        ```
+        meta = {
+            "": dict(
+                dataset='DLC',
+                datasetName='Digital Language Corpus',
+                author="That 's me",
+            ),
+            "sp": dict(
+                description: "part-of-speech",
+            ),
+        }
+        ```
 
         !!! note "description"
-            Text-Fabric will display all metadata information under the
+            TF will display all metadata information under the
             key `description` in a more prominent place than the other
             metadata.
 
-        !!! caution "valueType"
+        !!! caution "`value type`"
             Do not pass the value types of the features here.
 
     Returns
@@ -669,8 +673,8 @@ uniscan = re.compile(r"(?:\\x..)+")
 
 
 def makeuni(match):
-    """Make proper unicode of a text that contains byte escape codes
-    such as backslash xb6
+    """Make proper UNICODE of a text that contains byte escape codes
+    such as backslash `xb6`
     """
     byts = eval('"' + match.group(0) + '"')
     return byts.encode("latin1").decode("utf-8")
@@ -687,8 +691,8 @@ def tfFromMql(mqlFile, tmObj, slotType=None, otext=None, meta=None):
     ----------
     tmObj: object
         A `tf.core.timestamp.Timestamp` object
-    mqlFile, slotType, otype, meta: various
-        See `tf.convert.mql.importMQL
+    mqlFile, slotType, otype, meta: mixed
+        See `tf.convert.mql.importMQL`
     """
     mqlFile = ex(mqlFile)
     error = tmObj.error
@@ -706,7 +710,7 @@ def parseMql(mqlFile, tmObj):
     info = tmObj.info
     error = tmObj.error
 
-    info("Parsing mql source ...")
+    info("Parsing MQL source ...")
     fh = open(mqlFile, encoding="utf8")
 
     objectTypes = dict()

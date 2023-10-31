@@ -18,8 +18,8 @@ The scenario is:
 The recorder object is an engine to which you can send text material, interspersed
 with commands that say:
 
-* start node `n`;
-* end node `n`.
+*   start node `n`;
+*   end node `n`.
 
 The recorder stores the accumulating text as a plain text, without any
 trace of the `start` and `end` commands.
@@ -37,7 +37,7 @@ to the set of active nodes at that point.
 
 We suppose you have a corpus loaded, either by
 
-```
+``` python
 from tf.app import use
 A = use(corpus)
 api = A.api
@@ -45,13 +45,13 @@ api = A.api
 
 or by
 
-```
+``` python
 from tf.fabric import Fabric
 TF = Fabric(locations, modules)
 api = TF.load(features)
 ```
 
-```
+``` python
 from tf.convert.recorder import Recorder
 
 rec = Recorder(api)
@@ -307,7 +307,7 @@ where `api` is the result of
             or as a single point.
             Points are integers.
             If False, ranges are represented by strings: `,` separated ranges,
-            a range is *b*`-`*e* or *p*.
+            a range is `b-e` or `p`.
         asEntries: boolean, optional False
             If True, do not return the dict, but rather its entries.
 
@@ -374,10 +374,10 @@ where `api` is the result of
         Strong assumptions:
 
         1.  every textual position is covered by **exactly one node**;
-        2.  the nodes are consecutive:
+        1.  the nodes are consecutive:
             every next node is equal to the previous node plus 1;
-        3.  the positions of the nodes are monotonous in the nodes, i.e.
-            if node *n* < *m*, then the position of *n* is before the position of *m*.
+        1.  the positions of the nodes are monotonous in the nodes, i.e.
+            if node `n < m`, then the position of `n` is before the position of `m`.
 
         Imagine the text partitioned in consecutive non-overlapping chunks, where
         each node corresponds to exactly one chunk, and the order of the nodes
@@ -386,31 +386,31 @@ where `api` is the result of
         We compute a list of positions that encode the mapping from nodes to textual
         positions as follows:
 
-        Suppose we need map nodes *n*, *n+1*, ..., *n+m* to textual positions;
+        Suppose we need map nodes `n`, `n+1`, ..., `n+m` to textual positions;
         say
 
-        *   node *n* starts at position *t0*,
-        *   node *n+1* at position *t1*,
-        *   node *n+m* at position *tm*.
+        *   node `n` starts at position `t0`,
+        *   node *n+1* at position `t1`,
+        *   node *n+m* at position `tm`.
 
-        Say position *te* is the position just after the whole text covered by these
+        Say position `te` is the position just after the whole text covered by these
         nodes.
 
         Then we deliver the mapping as a sequence of these numbers:
 
-        *   *n - 1*
-        *   *t0*
-        *   *t1*
+        *   `n-1`
+        *   `t0`
+        *   `t1`
         *   ...
-        *   *tm*
-        *   *te*
+        *   `tm`
+        *   `te`
 
         So the first element of the list is used to specify the offset to be
         applied for all subsequent nodes.
-        The *te* value is added as a sentinel, to facilitate the determination
+        The `te` value is added as a sentinel, to facilitate the determination
         of the last position of each node.
 
-        Users of this list can find the start and end positions of node *m*
+        Users of this list can find the start and end positions of node `m`
         as follows
 
         ```
@@ -432,10 +432,10 @@ where `api` is the result of
 
         Returns
         -------
-        list | str
+        list | string
             The result is a list of numbers as described above.
 
-            We only return the *posList* if the assunptions hold.
+            We only return the `posList` if the assumptions hold.
 
             If not, we return a string with diagnostic information.
         """
@@ -545,13 +545,13 @@ where `api` is the result of
             and `inverted` is False.
             The format of each line is:
 
-            *rep* `*` *nodes`
+            `rep * nodes`
 
-            where *rep* is a number that indicates repetition and *nodes*
+            where `rep` is a number that indicates repetition and `nodes`
             is a tab-separated list of node numbers.
 
-            The meaning is that the following *rep* character positions
-            are associated with these *nodes*.
+            The meaning is that the following `rep` character positions
+            are associated with these `nodes`.
         """
 
         textPath = ex(textPath)
@@ -659,7 +659,7 @@ where `api` is the result of
             on each line a tab-separated list of active nodes.
 
             !!! caution
-                Pos files that have been written with `optimize=True` cannot
+                Position files that have been written with `optimize=True` cannot
                 be read back.
         """
 
@@ -684,17 +684,17 @@ where `api` is the result of
         An external annotation tool typically annotates text by assigning values
         to character positions or ranges of character positions.
 
-        In Text-Fabric, annotations are values assigned to nodes.
+        In TF, annotations are values assigned to nodes.
 
         If a *recorded* text has been annotated by an external tool,
-        we can use the position-to-node mapping to construct Text-Fabric features
+        we can use the position-to-node mapping to construct TF features
         out of it.
 
         The annotation file is assumed to be a tab-separated file.
         Every line corresponds to an annotation.
         The first two columns have the start and end positions, as character positions
         in the text.
-        The remaining columns contain annotation values for that strectch of text.
+        The remaining columns contain annotation values for that stretch of text.
 
         If there is a heading column, the values of the headers translate to names
         of the new TF features.

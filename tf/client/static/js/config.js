@@ -72,8 +72,8 @@ export class ConfigProvider {
      */
     this.levels = levels
 
-    /* several kinds of urls: for corpus, maker, tf, source, package
-     * For each kind, there is a pair consisting of the href and the title of the url
+    /* several kinds of URLs: for corpus, maker, tf, source, package
+     * For each kind, there is a pair consisting of the href and the title of the URL
      */
     this.urls = urls
 

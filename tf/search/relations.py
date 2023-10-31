@@ -1635,7 +1635,7 @@ def basicRelations(searchExe, api):
     )
     searchExe.relationLegend += f"""
 The warp feature "{OSLOTS}" and {OMAP} features cannot be used in searches.
-One of the above relations on nodes and/or slots will suit you better.
+One of the above relations on nodes and / or slots will suit you better.
 """
     searchExe.converse = dict(
         tuple((2 * i, 2 * i + 1) for i in range(lr))

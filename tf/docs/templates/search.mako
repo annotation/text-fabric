@@ -29,7 +29,7 @@
 </head>
 <body>
 <noscript>
-    JavaScript is not supported/enabled in your browser. The search feature won't work.
+    JavaScript is not supported / enabled in your browser. The search feature won't work.
 </noscript>
 <main>
     <h3 id="search-status"></h3>

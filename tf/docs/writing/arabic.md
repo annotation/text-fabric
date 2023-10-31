@@ -61,14 +61,14 @@ h1.chars {
 <table class="chars">
     <thead>
         <tr>
-            <th>quran/tanzil</th>
-            <th>ascii</th>
+            <th>quran / tanzil</th>
+            <th>ASCII</th>
             <th>latin</th>
             <th>standard</th>
             <th>glyph</th>
             <th>remarks</th>
             <th>name</th>
-            <th>unicode</th>
+            <th>UNICODE</th>
         </tr>
     </thead>
     <tbody>
@@ -420,14 +420,14 @@ h1.chars {
 <table class="chars">
     <thead>
         <tr>
-            <th>quran/tanzil</th>
-            <th>ascii</th>
+            <th>quran / tanzil</th>
+            <th>ASCII</th>
             <th>latin</th>
             <th>standard</th>
             <th>glyph</th>
             <th>remarks</th>
             <th>name</th>
-            <th>unicode</th>
+            <th>UNICODE</th>
         </tr>
     </thead>
     <tbody>
@@ -539,14 +539,14 @@ h1.chars {
 <table class="chars">
     <thead>
         <tr>
-            <th>quran/tanzil</th>
-            <th>ascii</th>
+            <th>quran / tanzil</th>
+            <th>ASCII</th>
             <th>latin</th>
             <th>standard</th>
             <th>glyph</th>
             <th>remarks</th>
             <th>name</th>
-            <th>unicode</th>
+            <th>UNICODE</th>
         </tr>
     </thead>
     <tbody>
@@ -588,14 +588,14 @@ h1.chars {
 <table class="chars">
     <thead>
         <tr>
-            <th>quran/tanzil</th>
-            <th>ascii</th>
+            <th>quran / tanzil</th>
+            <th>ASCII</th>
             <th>latin</th>
             <th>standard</th>
             <th>glyph</th>
             <th>remarks</th>
             <th>name</th>
-            <th>unicode</th>
+            <th>UNICODE</th>
         </tr>
     </thead>
     <tbody>
@@ -707,14 +707,14 @@ h1.chars {
 <table class="chars">
     <thead>
         <tr>
-            <th>quran/tanzil</th>
-            <th>ascii</th>
+            <th>quran / tanzil</th>
+            <th>ASCII</th>
             <th>latin</th>
             <th>standard</th>
             <th>glyph</th>
             <th>remarks</th>
             <th>name</th>
-            <th>unicode</th>
+            <th>UNICODE</th>
         </tr>
     </thead>
     <tbody>
@@ -776,14 +776,14 @@ h1.chars {
 <table class="chars">
     <thead>
         <tr>
-            <th>quran/tanzil</th>
-            <th>ascii</th>
+            <th>quran / tanzil</th>
+            <th>ASCII</th>
             <th>latin</th>
             <th>standard</th>
             <th>glyph</th>
             <th>remarks</th>
             <th>name</th>
-            <th>unicode</th>
+            <th>UNICODE</th>
         </tr>
     </thead>
     <tbody>
@@ -805,14 +805,14 @@ h1.chars {
 <table class="chars">
     <thead>
         <tr>
-            <th>quran/tanzil</th>
-            <th>ascii</th>
+            <th>quran / tanzil</th>
+            <th>ASCII</th>
             <th>latin</th>
             <th>standard</th>
             <th>glyph</th>
             <th>remarks</th>
             <th>name</th>
-            <th>unicode</th>
+            <th>UNICODE</th>
         </tr>
     </thead>
     <tbody
@@ -885,14 +885,14 @@ h1.chars {
 <table class="chars">
     <thead>
         <tr>
-            <th>quran/tanzil</th>
-            <th>ascii</th>
+            <th>quran / tanzil</th>
+            <th>ASCII</th>
             <th>latin</th>
             <th>standard</th>
             <th>glyph</th>
             <th>remarks</th>
             <th>name</th>
-            <th>unicode</th>
+            <th>UNICODE</th>
         </tr>
     </thead>
     <tbody>
@@ -975,14 +975,14 @@ h1.chars {
 <table class="chars">
     <thead>
         <tr>
-            <th>quran/tanzil</th>
-            <th>ascii</th>
+            <th>quran / tanzil</th>
+            <th>ASCII</th>
             <th>latin</th>
             <th>standard</th>
             <th>glyph</th>
             <th>remarks</th>
             <th>name</th>
-            <th>unicode</th>
+            <th>UNICODE</th>
         </tr>
     </thead>
     <tbody>
@@ -1001,9 +1001,9 @@ h1.chars {
 
 ## See also
 
-* [Arabic script in Unicode](https://en.wikipedia.org/wiki/Arabic_script_in_Unicode)<br>
-* [Arabic diacritics](https://en.wikipedia.org/wiki/Arabic_diacritics#harakat)<br>
-* [Beta code](https://pverkind.github.io/betacodeTranscriber/js/betacode.js)
-* [Library of Congress](https://www.loc.gov/catdir/cpso/romanization/arabic.pdf)
+*   [Arabic script in UNICODE](https://en.wikipedia.org/wiki/Arabic_script_in_Unicode)<br>
+*   [Arabic diacritics](https://en.wikipedia.org/wiki/Arabic_diacritics#harakat)<br>
+*   [Beta code](https://pverkind.github.io/betacodeTranscriber/js/betacode.js)
+*   [Library of Congress](https://www.loc.gov/catdir/cpso/romanization/arabic.pdf)
 
 

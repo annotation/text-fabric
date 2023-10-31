@@ -10,7 +10,7 @@ This is realized by a web app based on
 [Flask](http://flask.pocoo.org/docs/1.0/).
 
 This web app initializes by loading a TF corpus from which it obtains data.
-In repsonse to requests, it merges the retrieved data into a set of
+In response to requests, it merges the retrieved data into a set of
 [templates](https://github.com/annotation/text-fabric/tree/master/tf/browser/views).
 
 ## Start up
@@ -23,7 +23,7 @@ directory by the `pip` installer.
 
 There are 4 kinds of routes in the web app:
 
-url pattern | effect
+URL pattern | effect
 --- | ---
 `/browser/static/...` | serves a static file from the server-wide [static folder](https://github.com/annotation/text-fabric/tree/master/tf/browser/static)
 `/data/static/...` | serves a static file from the app specific static folder
@@ -36,14 +36,14 @@ There are two templates in
 [views](https://github.com/annotation/text-fabric/tree/master/tf/browser/views)
 :
 
-* *index*: the normal template for returning responses
-  to user requests;
-* *export*: the template used for exporting results; it
-  has printer/PDF-friendly formatting: good page breaks.
-  Pretty displays always occur on a page by their own.
-  It has very few user interaction controls.
-  When saved as PDF from the browser, it is a neat record
-  of work done, with DOI links to the corpus and to Text-Fabric.
+*   *index*: the normal template for returning responses
+    to user requests;
+*   *export*: the template used for exporting results; it
+    has printer / PDF-friendly formatting: good page breaks.
+    Pretty displays always occur on a page by their own.
+    It has very few user interaction controls.
+    When saved as PDF from the browser, it is a neat record
+    of work done, with DOI links to the corpus and to TF.
 
 ## CSS
 
@@ -52,25 +52,25 @@ We format the web pages with CSS, with extensive use of
 
 There are several sources of CSS formatting:
 
-* the CSS loaded from the app dependent extraApi, used
-  for pretty displays;
-* [index.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/static/index.css):
-  the formatting of the *index* web page with which the user interacts;
-* [export.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/views/export.css)
-  the formatting of the export page;
-* [base.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/views/base.css)
-  shared formatting between the index and export pages.
+*   the CSS loaded from the app dependent `extraApi`, used
+    for pretty displays;
+*   [index.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/static/index.css):
+    the formatting of the *index* web page with which the user interacts;
+*   [export.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/views/export.css)
+    the formatting of the export page;
+*   [base.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/views/base.css)
+    shared formatting between the index and export pages.
 
-## Javascript
+## JavaScript
 
 We use a
-[modest amount of Javascript](https://github.com/annotation/text-fabric/blob/master/tf/browser/static/tf.js)
+[modest amount of JavaScript](https://github.com/annotation/text-fabric/blob/master/tf/browser/static/tf.js)
 on top of
 [JQuery](https://api.jquery.com).
 
 For collapsing and expanding elements we use the
 [details](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details)
-element. This is a convenient, Javascript-free way to manage
+element. This is a convenient, JavaScript-free way to manage
 collapsing. Unfortunately it is not supported by the Microsoft
 browsers, not even Edge.
 

@@ -16,7 +16,7 @@ from .fragments import Fragments
 
 class Serve(Request, Fragments):
     def __init__(self, web):
-        """Object that implements the controller functions for the annotatation tool.
+        """Object that implements the controller functions for the annotation tool.
 
         Parameters
         ----------
@@ -87,7 +87,7 @@ class Serve(Request, Fragments):
         """Builds the full page.
 
         This includes the controls by which the user makes selections and triggers
-        axctions.
+        actions.
         """
         annotate = self.annotate
         v = self.v
@@ -149,7 +149,7 @@ class Serve(Request, Fragments):
         list is a tuple as indicated in the `filterContent` function.
         The list is stored in the `Serve` object.
         Additionally, statistics about these buckets and how many entity values
-        occur in het, are delivered in the `v`.
+        occur in it, are delivered in the `v`.
 
         Parameters
         ----------

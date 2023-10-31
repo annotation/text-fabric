@@ -2,7 +2,7 @@
 
 All form data comes as key value pairs where the values are strings.
 We need more streamlined values, in several data types and organizations.
-Also we need defaults for missing and/or empty values.
+Also we need defaults for missing and / or empty values.
 
 To see how this fits among all the modules of this package, see
 `tf.browser.ner.annotate` .
@@ -41,7 +41,7 @@ class Form:
             If the default should be a `None`, `False` or empty string value,
             nothing has to be specified. Only if the default is a specific
             meaningful value, it needs to be specified.
-        keys[Str,Bool,Tri,Int,Tup,SetInt,Json]: list
+        keysStr,keysBool,keysTri,keysInt,keysTup,keysSetInt,keysJson: list
             See `tf.browser.ner.request.Request`.
         """
         self.features = features
@@ -100,8 +100,8 @@ class Form:
     def fgetj(self, k):
         """Makes form value under key `k` or its default into a data structure.
 
-        The datastructure is retrieved by interpreting the original string as
-        quoted json.
+        The data structure is retrieved by interpreting the original string as
+        quoted JSON.
         """
         formValue = self.fgets(k)
         return (

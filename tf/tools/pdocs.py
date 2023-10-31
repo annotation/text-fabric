@@ -43,7 +43,7 @@ def _write(pipe, data):
 
 
 def _normalize_path(path):
-    # Fix unicode pathnames on OS X
+    # Fix UNICODE pathnames on OS X
     # See: https://stackoverflow.com/a/5582439/44289
     if sys.platform == "darwin":
         return unicodedata.normalize("NFKC", _dec(path))
@@ -210,7 +210,7 @@ def pdoc3(pkg):
     console("Copy over the images")
     copytree(f"{pkg}/docs/images", f"{SITE}/{pkg}/images", dirs_exist_ok=True)
 
-    # a link from the old docs url to the new one
+    # a link from the old docs URL to the new one
     copyfile(f"{pkg}/docs/index.html", f"{SITE}/index.html")
 
 

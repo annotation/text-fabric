@@ -30,7 +30,7 @@
     # No prefix results in all links being relative.
     link_prefix = ''
 
-    # Enable syntax highlighting for code/source blocks by including Highlight.js
+    # Enable syntax highlighting for code / source blocks by including Highlight.js
     syntax_highlighting = True
 
     # Set the style keyword such as 'atom-one-light' or 'github-gist'
@@ -43,7 +43,7 @@
     # google_analytics = ''
 
     # If set, insert Google Custom Search search bar widget above the sidebar index.
-    # The whitespace-separated tokens represent arbitrary extra queries (at least one
+    # The white-space-separated tokens represent arbitrary extra queries (at least one
     # must match) passed to regular Google search. Example:
     # search_query = 'inurl:github.com/annotation  site:annotation.github.io'
     # google_search_query = 'inurl:github.com/annotation  site:annotation.github.io'

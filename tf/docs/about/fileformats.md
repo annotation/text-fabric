@@ -1,4 +1,4 @@
-# Text-Fabric File Format
+# TF File Format
 
 ## Overview
 
@@ -37,7 +37,7 @@ or
 @config
 ```
 
-This tells Text-Fabric whether the data in the feature file is a *node* feature
+This tells TF whether the data in the feature file is a *node* feature
 or an *edge* feature. The value `@config` means that the file will be used as
 configuration info. It will only have metadata.
 
@@ -48,7 +48,7 @@ There **must** also be a type declaration:
 ```
 
 where type is `str` or `int`. `@valueType` declares the type of the values in
-this feature file. If it is anything other than `str` (=*string*), Text-Fabric
+this feature file. If it is anything other than `str` (=*string*), TF
 will convert it to that type when it reads the data from the file. Currently,
 the only other supported type is `int` for integers.
 
@@ -160,14 +160,14 @@ arbitrary order:
 An edge is specified by an *ordered* pair of nodes. The edge is *from* the first
 node in the pair *to* the second one. An edge spec consists of two node specs.
 It denotes all edges that are *from* a node denoted by the first node spec *to*
-a node denoted by the second node spec. An edge might be labelled, in that case
+a node denoted by the second node spec. An edge might be labeled, in that case
 the label of the edge is specified by the *value* after the two node specs.
 
 #### Value
 
 The value is arbitrary text. The type of the value must conform to the
 `@valueType` declaration in the feature file. If it is missing, it is assumed to
-be `str`, which is the type of Unicode-utf8 strings. If it is `int`, it should
+be `str`, which is the type of UNICODE-utf8 strings. If it is `int`, it should
 be a valid representation of an integer number,
 
 There are a few escapes:
@@ -195,11 +195,11 @@ fact that features annotate nodes or edges of a graph.
 
 It is assumed that a node feature assigns only one value to the same node. If
 the data contains multiple assignments to a node, only the last assignment will
-be honoured, the previous ones will be discarded.
+be honored, the previous ones will be discarded.
 
 Likewise, it is assumed that an edge feature assigns only one value to the same
 edge. If the data contains multiple assignments to an edge, only the last
-assignment will be honoured.
+assignment will be honored.
 
 Violations maybe or may not be reported, and processing may continue without
 warnings.

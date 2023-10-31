@@ -6,8 +6,8 @@ These settings will be read, checked, and transformed into configuration data
 that is read by the app, see `tf.advanced.settings.showContext`
 
 See for examples:
-* [bhsa](https://github.com/etcbc/bhsa/blob/master/app/config.yaml).
-* [uruk](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml).
+*   [`ETCBC/bhsa`](https://github.com/etcbc/bhsa/blob/master/app/config.yaml).
+*   [`Nino-cunei/uruk`](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml).
 
 # Config specs
 
@@ -16,12 +16,12 @@ Here is a specification of all settings you can configure for an app.
 Each section below corresponds to a main key in the `config.yaml` of an app.
 
 Everything is optional, an empty `config.yaml` is valid.
-Text-Fabric tries hard to supply reasonable defaults on the basis of the corpus
+TF tries hard to supply reasonable defaults on the basis of the corpus
 data it has loaded.
 
 ## `apiVersion`
 
-To let Text-Fabric check whether its version matches the version of the corpus app
+To let TF check whether its version matches the version of the corpus app
 
 Default:
 :   integer `1`
@@ -49,7 +49,7 @@ Default:
 
 ### `browseNavLevel`
 
-The section level up to which the TF-browser shows a hierarchical tree.
+The section level up to which the TF browser shows a hierarchical tree.
 
 Values
 : `1` or `2`
@@ -117,7 +117,7 @@ Default:
 
 ### `showVerseInTuple`
 
-Show the full text of verselike nodes in tables and tuples
+Show the full text of verse-like nodes in tables and tuples
 (in `tf.advanced.display.plainTuple` and `tf.advanced.display.table`)
 
 Default:
@@ -138,7 +138,7 @@ A `None` value will be interpreted later as the default text format `text-orig-f
 
 ### `textFormats`
 
-```
+``` yaml
 textFormats:
     layout-orig-full: layoutRich
 ```
@@ -149,22 +149,22 @@ Keys
 :   names of existing and new text formats.
 
 Values
-:   (methd, style)
+:   (method, style)
 
 where
 
 method
 :   name of a method that implements that format.
-    If the name is `xxx`, or n`typexxx`
+    If the name is `xxx`, or `typexxx`
     then `app.py` should implement a method `fmt_xxx(node, **kwargs)`
-    to produce html for node `node`.
+    to produce HTML for node `node`.
     This function will passed the `outer=True` if called by a plain or pretty at
     the outer level, level=recursion depth, and `first=True, last=True`
     if the node is on a leftmost resp.
     rightmost branch in the tree of children below the outer node.
 style
 :   a keyword indicating in what style the format should be set:
-    normal, source, trans, phono, orig.
+    `normal`, `source`, `trans`, `phono`, `orig`.
 
 Default:
 :   dict `{}`
@@ -174,7 +174,7 @@ Default:
 ## `docs`
 
 In the settings below you may refer to provenance settings, like `{org}` and `{repo}`
-You may refer to nbviewer with `{urlNb}` and to github with `{urlGh}`
+You may refer to NBViewer with `{urlNb}` and to GitHub with `{urlGh}`
 
 Default:
 :   dict `{}`
@@ -211,7 +211,7 @@ Default:
 
 ### `docBase`
 
-Base url page for the corpus documentation
+Base URL page for the corpus documentation
 
 Default:
 :   string `{docRoot}/{org}/{repo}/blob/{branch}/docs`
@@ -239,10 +239,10 @@ Default:
 ### `docRoot`
 
 Where the docs are: on GitHub or GitLab (default),
-or on nbviewer (`{urlNb}`) or somewhere else.
+or on NBViewer (`{urlNb}`) or somewhere else.
 
 Default:
-:   string `{urlGh}` or `https://`*backend*
+:   string `{urlGh}` or `https://backend` where `backend` is a valid back-end
 
 ---
 
@@ -271,12 +271,12 @@ Default:
 
 The following options can be passed to the display functions
 `tf.advanced.display.plain` and `tf.advanced.display.pretty`.
-They can also be set in the Text-Fabric Browser.
+They can also be set in the TF Browser.
 The values set here are the defaults as given by this app.
 Not all options are relevant for all corpora.
 Only relevant options should be included.
 By setting the default to `None`, the option will not be shown
-on the TF-browser interface.
+on the TF browser interface.
 
 These options are described in `tf.advanced.options`: all options
 marked as **interface option**.
@@ -307,7 +307,9 @@ Default:
 
 ### `doi`
 
-If your data is archived: the doi of the archived version, like
+If your data is archived: the DOI
+[Digital Object Identifier](https://www.doi.org)
+of the archived version, like
 `xx.yyyy/archive.zzzzzzz` without the `https://doi.org/` in front.
 
 Default:
@@ -340,31 +342,23 @@ Default:
 You can specify modules that should always be loaded with the core data,
 as many as you want:
 
-```
-moduleSpecs = (
-  dict(
-      backend="gitlab",
-      org="researcher1",
-      repo="work1",
-      relative="tf",
-      corpus="speicalism1",
-      docUrl=(
-          "{urlNb}/researcher1/work1/blob/master/programs/specialism1.ipynb"
-      ),
-      doi="xx.yyyy/archive.zzzzzzz",
-  ),
-  dict(
-      backend="gitlab.huc.knaw.nl",
-      org="researcher2",
-      repo="work2",
-      relative="tf",
-      corpus="speicalism2",
-      docUrl=(
-          "{urlNb}/researcher2/work2/blob/master/programs/specialism2.ipynb"
-      ),
-      doi="uu.vvvv/archive.wwwwwww",
-  ),
-)
+``` yaml
+moduleSpecs:
+-   backend: gitlab
+    org: researcher1
+    repo: work1
+    relative: tf
+    corpus: speicalism1
+    docUrl: '{urlNb}/researcher1/work1/blob/master/programs/specialism1.ipynb'
+    doi: xx.yyyy/archive.zzzzzzz
+
+-   backend: gitlab.huc.knaw.nl
+    org: researcher2
+    repo: work2
+    relative: tf
+    corpus: speicalism2
+    docUrl: '{urlNb}/researcher2/work2/blob/master/programs/specialism2.ipynb'
+    doi: uu.vvvv/archive.wwwwwww
 ```
 
 If modules have the same org or repo as the main data, these do not have to
@@ -378,7 +372,7 @@ Default:
 
 ### `org`
 
-The GitHub organisation or the GitLab group under which your TF data resides.
+The GitHub organization or the GitLab group under which your TF data resides.
 
 Default:
 :   string `annotation`
@@ -388,7 +382,7 @@ Default:
 ### `relative`
 
 The path inside the repo to the directory
-that holds the version directories of the tf data.
+that holds the version directories of the TF data.
 
 Default:
 :   string `tf`
@@ -418,7 +412,7 @@ Default:
 
 ### `branch`
 
-The branch on the backend where the corpus data is stored.
+The branch on the back-end where the corpus data is stored.
 
 Nowadays, repositories typically work with `main` where they used to work
 with `master`.
@@ -430,22 +424,22 @@ Default:
 
 ### `pages`
 
-The url pattern of the Pages publication service of the backend, in case it is
-unpredicatable from the backend itself.
+The URL pattern of the Pages publication service of the back-end, in case it is
+unpredictable from the back-end itself.
 
 If this value is `None`, the following defaults are used, depending on the choice of
-backend:
+back-end:
 
 *   for `github.com` the default is `github.io`,
     so pages are addressed by *org*`.github.io/`*repo*;
 *   for `gitlab.com` the default is `gitlab.io`,
     so pages are addressed by *org*`.gitlab.io/`*repo*;
-*   for on-premiss gitlab, e.g. `git.diginfra.net` the default is
+*   for on-premise GitLab, e.g. `git.diginfra.net` the default is
     `pages.diginfra.net`,
     so pages are addressed by *org*`.pages.diginfra.net/`*repo*;
 
 If these defaults do not work for a particular situation, you can change the
-pattern here. For example, in the last case above, if the on-premiss gitlab has a
+pattern here. For example, in the last case above, if the on-premise GitLab has a
 repository `mondriaan/letters` whose pages are served on
 `mondriaan.diginfra.vu/letters`, you have to specify `pages="diginfra.vu"` .
 
@@ -457,7 +451,7 @@ Default:
 
 ### `webBase`
 
-If present, the base url for an online edition of the corpus.
+If present, the base URL for an online edition of the corpus.
 
 Default:
 :   string `null`
@@ -466,7 +460,7 @@ Default:
 
 ### `webFeature`
 
-If passed, contains the name of the feature that stores the part of the weblink for
+If passed, contains the name of the feature that stores the part of the web link for
 that node that comes after `webBase`.
 This overrides `webUrl` in that when `webFeature` is present, and a node has a value
 for it, than that value will be used in composing the web link, rather than filling
@@ -516,18 +510,18 @@ Default:
 ### `webOffset`
 
 If present, it is a dictionary that specifies offsets between page numbers as derived
-from section headings and page numbers as needed in the query string for te url
+from section headings and page numbers as needed in the query string for the URL
 of the online resource (see `webUrl`).
 
 Suppose we need to offset sections of level 2 depending on the section of level 1
 they are in.
 For example, in the
-[missieven corpus](https://github.com/clariah/wp6-missieven/blob/master/app/config.yaml)
+[Missieven corpus](https://github.com/clariah/wp6-missieven/blob/master/app/config.yaml)
 we have section levels 1=volume, 2=page, 3=line.
 In each volume, the logical page 1 must be translated into a higher
 number, depending on the number of preface pages in that volume.
 
-The value of this parameter is a dict of dicts.
+The value of this parameter is a dict of dictionaries.
 
 The first level of keys specifies the section level of the sections that needs offsets.
 In our example case we specify offsets for pages (level 1), so the key is `2`.
@@ -547,7 +541,7 @@ Missing values translate to 0 or the empty string.
 
 ### `webUrl`
 
-If present, `webLink(node)` will use this as a template to generate a url
+If present, `webLink(node)` will use this as a template to generate a URL
 to an online edition of the node.
 
 This may happen in two ways:
@@ -558,9 +552,9 @@ This may happen in two ways:
 *   If `webFeature` is not given, or if it is given,
     but the feature has no value for `n`, the web link will be computed from the
     section headings.
-    The following place holders will be honoured:
+    The following place holders will be honored:
 
-    *   `{webBase}`: the webBase above
+    *   `{webBase}`: the `webBase` above
     *   `<1>` : value for section heading 1
     *   `<2>` : value for section heading 2
     *   `<3>` : value for section heading 3
@@ -581,10 +575,10 @@ If there is no value or the value is 0 for a section level, there will be
 no padding.
 Otherwise is specifies the length to which values should be padded.
 
-E.g. if a value is `123` and the amount of padding specified is 5, two `0`s
+E.g. if a value is `123` and the amount of padding specified is 5, two `0`
 will be prepended.
 This holds also for values that are not integers:
-if the value is `a35` and the padding is 5, again two `0`s will be prepended.
+if the value is `a35` and the padding is 5, again two `0` will be prepended.
 
 Default:
 :   dict `null`
@@ -593,10 +587,10 @@ Default:
 
 ### `webUrlLex`
 
-If present, `webLink(node)` will use this as a template to generate a url
+If present, `webLink(node)` will use this as a template to generate a URL
 to an online edition of the lexeme node.
 
-The following place holders will be honoured:
+The following place holders will be honored:
 *   `{webBase}`: the `webBase` value above
 *   `<lid>` : value for the id of the lexeme
 *   `{version}` version of the TF resource
@@ -609,7 +603,7 @@ Default:
 ### `zip`
 
 Only used by `text-fabric-zip` when collecting data into zip files
-as attachments to a GitHub/GitLab release.
+as attachments to a GitHub / GitLab release.
 
 If left to `null`, will be configured to use the main repo and the modules.
 
@@ -626,7 +620,7 @@ You can specify the main repo, modules, and related data:
 Default:
 :   list `["repo"] + [("org1", "mod1", "relative1"), ("org2", "mod2", "relative2")]`
 
-    where all modules mentioned in the moduleSpecs will be filled in.
+    where all modules mentioned in the `moduleSpecs` will be filled in.
 
 ---
 
@@ -673,17 +667,19 @@ Default:
 Which type of child nodes to be included in the display.
 The value should be a node type or a set of node types:
 
+``` yaml
 children: aya
 
 children:
   - sura
   - aya
+```
 
 !!! hint "Reductive"
     Use this if you want to reduce the number of section levels in a display.
-    For example, in the Q'uran there are various types of sections, not very well
+    For example, in the Quran there are various types of sections, not very well
     related, and we do not want to get trees of all those sections. Rather, each section
-    should unravel straight into the lowest one: the aya.
+    should unravel straight into the lowest one: the `aya`.
 
 Default:
 :   set, `set()`
@@ -717,12 +713,12 @@ All nodes that satisfy at least one of these conditions will be left out.
 
 !!! hint
     Use this if you want to exclude particular nodes of some type, e.g. in
-    [dss](https://github.com/etcbc/dss/blob/master/app/config.yaml).
+    [`ETCBC/dss`](https://github.com/etcbc/dss/blob/master/app/config.yaml).
     where we want to prevent line terminator signs.
 
 The value is a dictionary of feature name - value pairs.
 
-```
+``` yaml
 exclude:
     type: term
 ```
@@ -763,10 +759,10 @@ Values: `hor`, `ver`
 Default:
 :   string
 
-    *   `ver` if level is 3 (typically section types), except for the verselike types
+    *   `ver` if level is 3 (typically section types), except for the verse-like types
     *   `ver` if level is 0 (typically slot types and lexeme types)
     *   `hor` if level is 1 or 2 (typically linguistic types at sentence level) and
-        for the verselike types
+        for the verse-like types
 
 ---
 
@@ -777,11 +773,13 @@ type.
 
 The app needs to define a function
 
-```
-getGraphics(isPretty, node, nodeType, isOuter) => HTML code for sourcing the graphics
+``` python
+getGraphics(isPretty, node, nodeType, isOuter)
 ```
 
-See [uruk](https://github.com/Nino-cunei/uruk/blob/master/app/app.py).
+results in HTML code for sourcing the graphics.
+
+See [`Nino-cunei/uruk`](https://github.com/Nino-cunei/uruk/blob/master/app/app.py).
 
 Default
 :   boolean `null`
@@ -791,7 +789,7 @@ Default
 ### `hidden`
 
 Plain and pretty: whether nodes of this type must be hidden by default.
-See for example the bhsa, where the `atom` types are hidden by default.
+See for example the `bhsa`, where the `atom` types are hidden by default.
 
 The user of the app can selectively mark any node type (except the slot type)
 as hidden, by means of `hiddenTypes` in `tf.advanced.options`.
@@ -843,7 +841,7 @@ The bigger the number, the heavier the borders of the boxes.
 
 The default is:
 
-*   3 for types known as section or structure types, including the verselike types
+*   3 for types known as section or structure types, including the verse-like types
 *   0 for the slot type and types known as lexeme types
 *   1 or 2 for the remaining types: the bigger types are 2, the smaller types are 1
 
@@ -859,7 +857,7 @@ and it points to the type of things that are occurrences of lexemes.
 Lexemes are displayed with an indication of their first and last occurrence.
 
 Default
-:   string *slotType*
+:   string `slotType` (not literal, the value for the slot type)
 
 ---
 
@@ -888,7 +886,7 @@ Default
 
 !!! hint
     For some types in
-    [uruk](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml)
+    [`Nino-cunei/uruk`](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml)
     it is needed to deviate from the default.
 
 ---
@@ -910,13 +908,13 @@ You can specify:
 :   transcription of corpus text
 
 `phono`
-:   phonological/phonetic transcription of corpus text
+:   phonological / phonetic transcription of corpus text
 
 `orig`
-:   unicode corpus text
+:   corpus text in UNICODE
 
 *anything else*
-:   will be inserted as an extra css class.
+:   will be inserted as an extra CSS class.
 
 Default
 :   string `null`
@@ -926,10 +924,10 @@ Default
 ### `transform`
 
 Sometimes you do not want to display straight feature values, but transformed ones.
-For each feature you can specfiy a transform function `f`:
+For each feature you can specify a transform function `f`:
 E.g.
 
-```
+``` yaml
 transform:
     type: ctype
 ```
@@ -938,7 +936,7 @@ The feature `type`, when computed for a node of the type we are configuring here
 will yield a value which is transformed by function `ctype` to a new value.
 In your app code you have to implement:
 
-```
+``` python
 def transform_f(app, origValue):
     ...
     newValue = ...
@@ -957,8 +955,8 @@ Whether this type should be formatted as a verse
 The default is:
 `true` for the lowest section type, if there are section types in `otext.tf`.
 
-But more types can be declared as verselike, e.g. `halfverse` in the
-[bhsa](https://github.com/etcbc/bhsa/blob/master/app/config.yaml).
+But more types can be declared as verse-like, e.g. `halfverse` in the
+[`bhsa`](https://github.com/etcbc/bhsa/blob/master/app/config.yaml).
 
 ---
 
@@ -975,7 +973,7 @@ Default:
 
 !!! hint
     For some types in
-    [uruk](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml)
+    [`Nino-cunei/uruk`](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml)
     it is needed to deviate from the default.
 
 ---
@@ -1185,7 +1183,7 @@ class AppCurrent:
 
     def update(self, specs):
         allKeys = self.allKeys
-        for (k, v) in specs.items():
+        for k, v in specs.items():
             allKeys.add(k)
             setattr(self, k, v)
 
@@ -1266,7 +1264,7 @@ class Check:
                 if type(v) is not str or v not in nTypes:
                     errors.append(f"{k}: node type {v} not present")
             elif k == "transform":
-                for (feat, method) in extra.items():
+                for feat, method in extra.items():
                     if type(method) is str:
                         errors.append(f"{k}:{feat}: {method}() not implemented in app")
             elif k == "style":
@@ -1281,8 +1279,8 @@ class Check:
             elif k == "textFormats":
                 formatStyle = specs["formatStyle"]
                 if type(v) is dict:
-                    for (fmt, fmtInfo) in v.items():
-                        for (fk, fv) in fmtInfo.items():
+                    for fmt, fmtInfo in v.items():
+                        for fk, fv in fmtInfo.items():
                             if fk not in FMT_KEYS:
                                 errors.append(f"{k}: {fmt}: illegal key {fk}")
                                 continue
@@ -1361,7 +1359,7 @@ class Check:
         errors.clear()
         dSource = cfg.get(dKey, {})
 
-        for (k, v) in dSource.items():
+        for k, v in dSource.items():
             if k in defaults:
                 if k not in postpone:
                     self.checkSetting(k, v)
@@ -1414,7 +1412,7 @@ def setAppSpecs(app, cfg, reset=False):
     checker.report()
     value = cfg.get(dKey, "")
     specs[dKey] = value
-    for (k, v) in WRITING_DEFAULTS[value].items():
+    for k, v in WRITING_DEFAULTS[value].items():
         specs[k] = v
         if k == "language":
             specs["charLoc"] = f"{v}.html" if v else ""
@@ -1422,14 +1420,14 @@ def setAppSpecs(app, cfg, reset=False):
     defaultClsOrig = f"{DEFAULT_CLS_ORIG}{extension}"
     specs.update(extension=extension, defaultClsOrig=defaultClsOrig)
 
-    for (dKey, defaults) in (
+    for dKey, defaults in (
         ("provenanceSpec", PROVENANCE_DEFAULTS),
         ("docs", DOC_DEFAULTS(backend)),
     ):
         checker.checkGroup(cfg, {d[0] for d in defaults}, dKey)
         checker.report()
         dSource = cfg.get(dKey, {})
-        for (k, v) in defaults:
+        for k, v in defaults:
             val = dSource.get(k, v)
             val = (
                 None
@@ -1479,7 +1477,7 @@ def setAppSpecs(app, cfg, reset=False):
             + extraModule
         )
 
-    for (dKey, method) in (
+    for dKey, method in (
         ("dataDisplay", getDataDefaults),
         ("typeDisplay", getTypeDefaults),
     ):
@@ -1494,7 +1492,7 @@ def setAppSpecsApi(app, cfg):
 
     specs = app.specs
 
-    for (dKey, method) in (
+    for dKey, method in (
         ("dataDisplay", getDataDefaults),
         ("typeDisplay", getTypeDefaults),
     ):
@@ -1509,7 +1507,7 @@ def setAppSpecsApi(app, cfg):
     specific = {"lineNumbers", "showGraphics"}
 
     allowed = {}
-    for (k, v) in interfaceDefaults.items():
+    for k, v in interfaceDefaults.items():
         allow = (
             (
                 k == "lineNumbers"
@@ -1559,7 +1557,7 @@ def getDataDefaults(app, cfg, dKey, withApi):
     checker.checkGroup(cfg, legalKeys, dKey)
     checker.report()
 
-    for (attr, default, needsApi) in DATA_DISPLAY_DEFAULTS:
+    for attr, default, needsApi in DATA_DISPLAY_DEFAULTS:
         if needsApi and not withApi or not needsApi and withApi:
             continue
 
@@ -1653,7 +1651,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         unknownTypesRep = ",".join(sorted(unknownTypes))
         console(f"App config error(s) in typeDisplay: {unknownTypesRep}", error=True)
 
-    for (nType, info) in givenInfo.items():
+    for nType, info in givenInfo.items():
         checker.checkGroup(
             givenInfo,
             TYPE_KEYS,
@@ -1690,14 +1688,14 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         trans = info.get("transform", None)
         if trans is not None:
             resolvedTrans = {}
-            for (feat, func) in trans.items():
+            for feat, func in trans.items():
                 methodName = f"transform_{func}"
                 resolvedTrans[feat] = getattr(app, methodName, methodName)
             v = resolvedTrans
             checker.checkSetting("transform", trans, extra=v)
             transform[nType] = v
 
-        for (k, dest) in (("template", templates), ("label", labels)):
+        for k, dest in (("template", templates), ("label", labels)):
             if k in info:
                 template = info[k]
                 templateFeatures = (
@@ -1816,7 +1814,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
 
     # here we override from the chlidren information in the app-config
 
-    for (nType, childInfo) in children.items():
+    for nType, childInfo in children.items():
         childType[nType] = childInfo
 
     lowestSectionalTypes = set() | verseTypes
@@ -1851,13 +1849,13 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     if condenseType is None:
         condenseType = sectionTypes[-1] if sectionTypes else midType
 
-    for (i, nTypes) in enumerate(levelTypes):
+    for i, nTypes in enumerate(levelTypes):
         for nType in nTypes:
             levels[nType] = getLevel(i, givenLevels.get(nType, {}), nType in verseTypes)
 
     levelCls = {}
 
-    for (nType, nTypeInfo) in levels.items():
+    for nType, nTypeInfo in levels.items():
         level = nTypeInfo["level"]
         flow = nTypeInfo["flow"]
         wrap = nTypeInfo["wrap"]
@@ -1934,7 +1932,7 @@ def showContext(app, *keys, withComputed=True, asHtml=False):
 
     result = []
 
-    for (kind, data) in (
+    for kind, data in (
         ("specified", app.cfgSpecs),
         ("computed", app.specs),
     ):
@@ -1981,7 +1979,7 @@ def compileFormatCls(app, specs, givenStyles):
         style = givenStyles.get(fmt, None)
         if style is None:
             textCls = None
-            for (key, cls) in FORMAT_CLS:
+            for key, cls in FORMAT_CLS:
                 if (
                     f"-{key}-" in fmt
                     or fmt.startswith(f"{key}-")

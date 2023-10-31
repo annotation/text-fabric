@@ -5,7 +5,7 @@ Contains a bunch of instant methods to access corpus material.
 To see how this fits among all the modules of this package, see
 `tf.browser.ner.annotate` .
 
-All access to the TF-API should happen through methods in this class.
+All access to the TF API should happen through methods in this class.
 
 At this point we have the information from the settings and from the corpus.
 By collecting all corpus access methods in one class, we have good conceptual
@@ -138,7 +138,7 @@ class Corpus(Settings):
 
         Returns
         -------
-        bool
+        boolean
             Whether the feature is loaded in this corpus.
         """
 
@@ -210,10 +210,10 @@ class Corpus(Settings):
             of them.
 
             !!! caution "Space between slots"
-                Leading and trailing whitespace is stripped, and inner whitespace is
+                Leading and trailing white-space is stripped, and inner white-space is
                 normalized to a single space.
                 The text of the individual slots is joined by means of a single
-                white space, also in corpora that may have zero space between words.
+                white-space, also in corpora that may have zero space between words.
         """
 
         self.getTextR = getTextR
@@ -261,8 +261,8 @@ class Corpus(Settings):
         -------
         tuple
             The members consist of the string values of the tokens in question,
-            as far as these values are not purely whitespace.
-            Also, the string values are stripped from leading and trailing whitespace.
+            as far as these values are not purely white-space.
+            Also, the string values are stripped from leading and trailing white-space.
         """
 
         self.getContext = getContext
@@ -287,7 +287,7 @@ class Corpus(Settings):
         This acts as the default value for the `eid` feature of new
         entities.
 
-        Starting with the whitespace-normalized text of a number of slots,
+        Starting with the white-space-normalized text of a number of slots,
         the string is lowercased, non-alphanumeric characters are stripped,
         and spaces are replaced by dots.
         """

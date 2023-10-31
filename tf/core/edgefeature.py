@@ -164,17 +164,17 @@ class EdgeFeature:
         -----
         !!! hint "symmetric closure"
             This method gives the *symmetric closure* of a set of edges:
-            if there is an edge between *n* and *m*, this method will deliver
+            if there is an edge between `n` and `m`, this method will deliver
             its value, no matter the direction of the edge.
 
         !!! example "symmetric edges"
             Some edge sets are semantically symmetric, for example *similarity*.
-            If *n* is similar to *m*, then *m* is similar to *n*.
+            If `n` is similar to `m`, then `m` is similar to `n`.
 
             But if you store such an edge feature completely,
             half of the data is redundant.
             By virtue of this method you do not have to do that, you only need to store
-            one of the edges between *n* and *m* (it does not matter which one),
+            one of the edges between `n` and `m` (it does not matter which one),
             and `E.fff.b(n)` will nevertheless produce the complete results.
 
         !!! caution "conflicting values"
@@ -232,10 +232,10 @@ class EdgeFeature:
         Parameters
         ----------
         nodeTypesFrom: set of string, optional None
-            If you pass a set of nodeTypes here, only the values for edges
+            If you pass a set of node types here, only the values for edges
             that start *from* a node with such a type will be counted.
         nodeTypesTo: set of string, optional None
-            If you pass a set of nodeTypes here, only the values for edges
+            If you pass a set of node types here, only the values for edges
             that go *to* a node with such a type will be counted.
 
         Returns

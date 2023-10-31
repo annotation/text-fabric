@@ -177,29 +177,29 @@ Here are a few more and less contrived examples of legal feature data lines.
 ### Node features
 
 1.  `\t\n`
-2.  `2 2\t3`
-3.  `foo\nbar`
-4.  `1 Escape \t as \\t`
+1.  `2 2\t3`
+1.  `foo\nbar`
+1.  `1 Escape \t as \\t`
 
 meaning
 
 1.  node 1 has value: *tab* *newline*
-2.  node 2 has value: 2 *tab* 3
-3.  node 3 has value: foo *newline* bar
-4.  node 1 gets a new value: Escape <tab> as \t
+1.  node 2 has value: 2 *tab* 3
+1.  node 3 has value: foo *newline* bar
+1.  node 1 gets a new value: Escape <tab> as \t
 
 ### Edge features
 
 1.  `1`
-2.  `1 2`
-3.  `2 3 foo`
-4.  `1-2 2-3 bar`
+1.  `1 2`
+1.  `2 3 foo`
+1.  `1-2 2-3 bar`
 
 meaning
 
 1.  edge from 1 to 1 with no value
-2.  edge from 1 to 2 with no value
-3.  edge from 2 to 3 with value foo
-4.  four edges: 1->2, 1->3, 2->2, 2->3, all with value bar. Note that edges can
+1.  edge from 1 to 2 with no value
+1.  edge from 2 to 3 with value foo
+1.  four edges: 1->2, 1->3, 2->2, 2->3, all with value bar. Note that edges can
     go from a node to itself. Note also that this line reassigns a value to two
     edges: 1->2 and 2->3.

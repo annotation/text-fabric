@@ -135,12 +135,12 @@ We divide entity features in *keyword* features and *free* features.
 The typical keyword feature is `kind`, it has a limited set of values.
 The typical free feature is `eid`, it has an unbounded number of values.
 
-As it is now, we could have expressed this in a fixed stylesheet.
+As it is now, we could have expressed this in a fixed style sheet.
 But if we open up to allowing for more entity features, we can use this setup
 to easily configure the formatting of them.
 
 However, we should move these definitions to the `ner.yaml` file then, so that the
-only place of configuration is that yaml file, and not this file.
+only place of configuration is that YAML file, and not this file.
 """
 
 
@@ -176,7 +176,7 @@ class Settings:
 
         There is also customizable configuration, meant to adapt the tool to the
         specifics of a corpus.
-        Those configuration values are read from a yaml file, located in a directory
+        Those configuration values are read from a YAML file, located in a directory
         `ner` next to the `tf` data of the corpus.
         """
         specDir = self.specDir

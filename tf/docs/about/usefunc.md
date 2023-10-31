@@ -4,7 +4,7 @@ The function `tf.app.use` lets you make use of a corpus
 in the same way as the `use` statements in MySQL and MongoDb let you
 make use of a database.
 It loads the features of a corpus plus extra modules, it loads the
-Text-Fabric app or a customization of it, and makes it all available in an
+TF app or a customization of it, and makes it all available in an
 API.
 If any of the above mentioned ingredients is not locally available on your
 computer, it will auto-download it, subject to checkout specifiers that you
@@ -12,18 +12,18 @@ provide.
 
 ### Basic usage:
 
-```
+``` python
 A = use("org/repo")
 ```
 
 or
 
-```
+``` python
 A = use("org/repo:specapp", checkout="specdata")
 ```
 
 
-```
+``` python
 A = use("org/repo:specapp", checkout="specdata", backend="gitlab.huc.knaw.nl")
 ```
 
@@ -31,7 +31,7 @@ See `tf.about.corpora` for a list of known corpora that can be loaded this way.
 
 ### Full usage
 
-```
+``` python
 A = use(
     "org/repo:specapp",
     backend=None,     # e.g. "gitlab.huc.knaw.nl"
@@ -53,20 +53,20 @@ A = use(
 
 ### Legacy usage:
 
-```
+``` python
 A = use("corpus")
 ```
 
 or
 
-```
+``` python
 A = use("corpus", legacy=True)
 ```
 
 ## Security
 
 !!! caution "Security warning"
-    Text-Fabric apps may be downloaded from GitHub/GitLab and then
+    TF apps may be downloaded from GitHub / GitLab and then
     imported as a module and then *executed*.
 
     Do you trust the downloaded code?
@@ -74,14 +74,14 @@ A = use("corpus", legacy=True)
     who own the repository.
 
 !!! note "Security note"
-    Text-Fabric data maybe downloaded from arbitrary repositories on GitHub/GitLab,
+    TF data maybe downloaded from arbitrary repositories on GitHub / GitLab,
     but the downloaded material will be read as *data* and not executed as code.
 
 ## Details
 
 When loading a corpus via this method, most of the features in view will
 be loaded and made available.
-However, some Text-Fabric apps may exclude some features from being
+However, some TF apps may exclude some features from being
 automatically loaded.
 And in general, features whose names start with `omap@` will not be
 automatically loaded.
@@ -93,24 +93,24 @@ During start-up the following happens:
 1.  the corpus data may be downloaded to your
     `~/text-fabric-data` directory,
     if not already present there;
-2.  if your data has been freshly downloaded,
+1.  if your data has been freshly downloaded,
     a series of optimizations is executed;
-3.  most features of the corpus are loaded into memory.
-4.  the data is inspected to derive configuration information for the
+1.  most features of the corpus are loaded into memory.
+1.  the data is inspected to derive configuration information for the
     advanced API; if present, additional settings, code and styling is loaded.
 
 ## Loading
 
 Loading a corpus consists of 2 separate steps:
 
-1. load the *app* of the corpus (config setting, static material, python code)
-2. load the *data* of the corpus.
+1.  load the *app* of the corpus (config setting, static material, python code)
+1.  load the *data* of the corpus.
 
 Both items can be specified independently, in terms of where they reside
 locally or online.
 Such a specification consists of a *path* and a *checkout specifier*.
 The *path* part looks like a directory, and specifies a location inside
-a repository, e.g. `etcbc/bhsa`.
+a repository, e.g. `ETCBC/bhsa`.
 The *checkout specifier* part is a keyword:
 
 *   `local` under your local directory `~/text-fabric-data`
@@ -124,20 +124,21 @@ The *checkout specifier* part is a keyword:
     commit on back-end.
 
 For a demo, see
-[banks/repo](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb).
+[`banks/repo`](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb).
 
-## Specifying app and/or data
+## Specifying app and / or data
 
-By default, the online repository for apps and data is GitHub (https://github.com).
+By default, the online repository for apps and data is
+[GitHub](https://github.com).
 
 But you can also use GitLab instances. You do that by specifying the server location
 in the parameter `backend`, e.g.
 
-```
+``` python
     backend="gitlab"
 ```
 
-```
+``` python
     backend="gitlab.knaw.huc.nl"
 ```
 
@@ -151,7 +152,8 @@ The specification of the app is in the first argument:
 The normal case is where *app-path* has the form `org/repo` pointing to
 a repository that holds the corpus, both app and data.
 If we find an app under *app-path*, it will have information about where the data is, so the
-*data-path* is known. The *data-checkout-specifier* is passed as an optiona argument:
+*data-path* is known. The *data-checkout-specifier* is passed as an optional
+argument:
 `checkout=`*data-checkout-specifier*.
 
 So far we have described how to use a TF corpus which has an `app` inside in the
@@ -170,23 +172,23 @@ is additional syntax in the first argument:
 
 *   *corpus*
     **legacy way of calling an app by its name only**.
-    Find a TF app in repo `annotation/app-`*corpus*.
+    Find a TF app in repo `annotation/app-corpus`.
 
     Without `legacy=True`,
     you get a warning, and TF assumes the TF app has been migrated
-    from annotation/app-corpus to org/repo/app, and it loads the app from there.
+    from `annotation/app-corpus` to `org/repo/app`, and it loads the app from there.
 
     If you pass `legacy=True` you do not get that warning, and TF loads
-    the app from annotation/app-corpus.
+    the app from `annotation/app-corpus`.
 
     You have to use this if you go back in the history to times where
     the legacy method was the only method of loading a corpus.
-    The older history of the app is preserved in annotation/app-corpus,
+    The older history of the app is preserved in `annotation/app-corpus`,
     but not in the migrated org/repo/app.
 
 ## Versions
 
-Text-Fabric expects that the data resides in version directories.
+TF expects that the data resides in version directories.
 The configuration of a corpus app specifies which version will be used.
 You can override that by passing
 the optional argument `version="x.y.z"`.
@@ -213,7 +215,7 @@ Besides the main corpus data, you can also draw in other data.
 They are typically sets of features provides by others to enrich or comment
 the main corpus.
 A module is specified in much the same way as the main corpus data.
-The optional **mod** argument is a comma-separated list
+The optional `mod` argument is a comma-separated list
 or an iterable of modules in one of the forms
 
 ```
@@ -228,14 +230,14 @@ or
 
 All features of all those modules will be loaded.
 If they are not yet present, they will be downloaded from a back-end first.
-For example, there is an easter egg module on GitHub,
+For example, there is an Easter egg module on GitHub,
 and you can obtain it by
 
-```
-mod='etcbc/lingo/easter/tf'
+``` python
+mod='ETCBC/lingo/easter/tf'
 ```
 
-Here the `{org}` is `etcbc`, the `{repo}` is `lingo`,
+Here the `{org}` is `ETCBC`, the `{repo}` is `lingo`,
 and the `{path}` is `easter/tf` under which
 version `c` of the feature `egg`
 is available in TF format.
@@ -252,25 +254,25 @@ explicitly.
     This is needed for example if you specify a specific release
     for the core data module. The associated standard modules probably
     do not have that exact same release, so you have to look up their
-    releases in GitHub/GitLab, and attach the release numbers found
+    releases in GitHub / GitLab, and attach the release numbers found
     to the module specifiers.
 
 !!! caution "Let TF manage your text-fabric-data directory"
     It is better not to fiddle with your `~/text-fabric-data` directory
     manually. Let it be filled with auto-downloaded data.
     You can then delete data sources and modules when needed,
-    and have them redownloaded at your wish,
+    and have them re-downloaded at your wish,
     without any hassle or data loss.
 
 ### Sets
 
-They are named nodesets, that, when imported, can be used in
+They are named node sets, that, when imported, can be used in
 [search templates](https://annotation.github.io/text-fabric/tf/about/searchusage.html#simple-indent-nameotype-or-set-features)
 as if they were node types.
 You can construct them in a Python program and then write them to disk
 with `tf.lib.writeSets`. 
 When you pass that file path with `setFile=path/to/file`,
-the named sets will be loaded by Text-Fabric.
+the named sets will be loaded by TF.
 
 See also `tf.search.search.Search.search` and `tf.lib.readSets`.
 
@@ -286,7 +288,7 @@ The list of possible settings is spelled out in
 
 !!! hint "Corpus has moved"
     Suppose you want to work with an older version of the corpus.
-    A complication occurs if the repo has been renamed and/or moved
+    A complication occurs if the repo has been renamed and / or moved
     to an other organization.
     When you go back in the history and download an older version of the app,
     its configuration settings specify a different org, repo and relative path
@@ -294,8 +296,8 @@ The list of possible settings is spelled out in
     come to the rescue.
 
     A good example is in
-    [clariah/wp6-missieven](https://nbviewer.org/github/clariah/wp6-missieven/blob/master/tutorial/annotate.ipynb)
-    which resided in annotation/clariah-gm before, and in Dans-labs/clariah-gm even earlier.
+    [`clariah/wp6-missieven`](https://nbviewer.org/github/clariah/wp6-missieven/blob/master/tutorial/annotate.ipynb)
+    which resided in `annotation/clariah-gm` before, and in `Dans-labs/clariah-gm` even earlier.
 
     When we want to migrate manual annotations made against the 0.4 version to the 0.7
     version, we run into this issue.
@@ -319,15 +321,15 @@ the corpus app, loaded in memory, offering an API to the corpus data.
 You get that API by `api = A.api`, and then you have access to the particular members
 such as
 
-* `F = api.F` (see `tf.core.nodefeature.NodeFeature`)
-* `L = api.L` (see `tf.core.locality.Locality`)
-* `T = api.T` (see `tf.core.text.Text`)
-* `TF = api.TF` (see `tf.core.fabric.FabricCore`)
+*   `F = api.F` (see `tf.core.nodefeature.NodeFeature`)
+*   `L = api.L` (see `tf.core.locality.Locality`)
+*   `T = api.T` (see `tf.core.text.Text`)
+*   `TF = api.TF` (see `tf.core.fabric.FabricCore`)
 
 If you work with one corpus in a notebook, this gets cumbersome.
 You can inject the global variables `F`, `L`, `T`, `TF` and a few others
 directly into your program by passing `hoist=globals()`.
-See the output for a list wof the new globals that you have got this way.
+See the output for a list of the new globals that you have got this way.
 Do not do this if you work with several corpora or several versions of a corpus
 in the same program!
 
@@ -337,7 +339,7 @@ Instead of loading a whole corpus, you can also load individual volumes
 or collections of individual volumes of it.
 If your work is confined to a volume or collection, it might pay off
 to load only the relevant pieces of the corpus.
-Text-Fabric will maintain the details of the relationship between the parts
+TF will maintain the details of the relationship between the parts
 and the whole.
 
 !!! caution "Volumes and collections"
@@ -383,11 +385,11 @@ For the precise meaning of these parameters see `tf.core.fabric.FabricCore`.
 ### api
 
 So far, `A = use()` will construct an advanced API with a more or less standard set of features
-loaded, and make that API avaible to you, under `A.api`.
-But you can also setup a core API yourself by usin the lower level method
+loaded, and make that API available to you, under `A.api`.
+But you can also setup a core API yourself by using the lower level method
 `tf.core.fabric.FabricCore` with your choice of locations and modules:
 
-```
+``` python
 from tf.fabric import Fabric
 TF = Fabric(locations=..., modules=...)
 api = TF.load(features)
@@ -396,14 +398,14 @@ api = TF.load(features)
 Here you have full control over what you load and what not.
 If you want the extra power of the TF app, you can wrap this `api`:
 
-```
-A = use("org/repo", api=api)`
+``` python
+A = use("org/repo", api=api)
 ```
 
 or
 
-```
-A = use("app:path/to/app", api=api)`
+``` python
+A = use("app:path/to/app", api=api)
 ```
 
 etc.
@@ -418,12 +420,16 @@ etc.
     In the case where you need an available feature
     that has not been loaded, you can load it by demanding
 
-       TF.load('feature1 feature2', add=True)`
+    ```
+    TF.load('feature1 feature2', add=True)
+    ```
 
     provided you have used the `hoist=globals()` parameter earlier.
     If not, you have to say
 
-       A.api.TF.load('feature1 feature2', add=True)`
+    ```
+    A.api.TF.load('feature1 feature2', add=True)
+    ```
 
 ## Silence
 
@@ -456,8 +462,8 @@ Data loading is costly.
 If you need to get some information of a TF dataset that is not dependent on loaded
 data features, you can suppress the loading of data by
 
-```
-A = use("org/repo", loadData=False)`
+``` python
+A = use("org/repo", loadData=False)
 ```
 
 You can also prevent loading data of modules that are associated with the code
@@ -465,7 +471,7 @@ data by default. These are the ones specified in the `config.yaml` file of
 the corpus app under `provenanceSpec > moduleSpecs`:
 
 
-```
-A = use("org/repo", loadData="core")`
+``` python
+A = use("org/repo", loadData="core")
 ```
 

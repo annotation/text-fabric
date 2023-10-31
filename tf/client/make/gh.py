@@ -40,7 +40,7 @@ def _write(pipe, data):
 
 
 def _normalize_path(path):
-    # Fix unicode pathnames on macos
+    # Fix UNICODE pathnames on macos
     # See: https://stackoverflow.com/a/5582439/44289
     if sys.platform == "darwin":
         return unicodedata.normalize("NFKC", _dec(path))

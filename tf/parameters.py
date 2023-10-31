@@ -25,7 +25,7 @@ BANNER = f"This is {NAME} {VERSION}"
 PACK_VERSION = "3"
 """Data serialization version.
 
-Plain text feature files will be compressed to zipped, pickled datastructures
+Plain text feature files will be compressed to zipped, `pickled` data structures
 that load must faster.
 
 These methods evolve, sometimes in incompatible ways.
@@ -45,8 +45,8 @@ tf.clean
 API_VERSION = 3
 """TF API version.
 
-Text-Fabric offers and API to TF apps.
-This is the version that the current Text-Fabric offers to its apps.
+TF offers and API to TF apps.
+This is the version that the current TF offers to its apps.
 
 Apps require a version. The provided version and the required version must
 match exactly in order to get a working system.
@@ -54,16 +54,16 @@ match exactly in order to get a working system.
 We do not aim for backward compatibility, since it is very easy to obtain a new version
 of an app.
 
-When Text-Fabric loads a TF app, it will check the api version that the app requires
+When TF loads a TF app, it will check the api version that the app requires
 against this version.
 
 App requirement higher than TF API version
-:   The user is advised to upgrade Text-Fabric, or, alternatively,
+:   The user is advised to upgrade TF, or, alternatively,
     select an older version of the app
 
 App requirement lower than TF API version
 :   The user is advised to obtain a newer version of the app, or alternatively,
-    downgrade Text-Fabric
+    downgrade TF
 """
 
 OTYPE = "otype"
@@ -101,7 +101,7 @@ The full name of such a feature is `omap@`*oldversion*`-`*newversion*
 """
 
 WARP = (OTYPE, OSLOTS, OTEXT)
-"""The names of the central features of TF data sets.
+"""The names of the central features of TF datasets.
 
 The features `otype` and `oslots` are crucial to every TF dataset.
 Without them, a dataset is not a TF dataset, although it could still be a
@@ -109,24 +109,24 @@ TF data module.
 """
 
 GZIP_LEVEL = 2
-"""Compression level when compressing tf files."""
+"""Compression level when compressing TF files."""
 
 PICKLE_PROTOCOL = 4
-"""Pickle protocol level when pickling tf files."""
+"""Pickle protocol level when pickling TF files."""
 
 ORG = "annotation"
 """GitHub organization or GitLab group.
 
-This is where the repo that contains Text-Fabric resides.
+This is where the repo that contains TF resides.
 """
 REPO = "text-fabric"
 """GitHub repo or GitLab project.
 
-This is the name of the repo that contains Text-Fabric.
+This is the name of the repo that contains TF.
 """
 
 RELATIVE = "tf"
-"""Default relative path with a repo to the directory with tf files.
+"""Default relative path with a repo to the directory with TF files.
 """
 
 ON_IPAD = sys.platform == "darwin" and os.uname().machine.startswith("iP")
@@ -138,25 +138,25 @@ GL = "gitlab"
 """Name of GitLab backend."""
 
 URL_GH = "https://github.com"
-"""Base url of GitHub."""
+"""Base URL of GitHub."""
 
 URL_GH_API = "https://api.github.com"
-"""Base url of GitHub API."""
+"""Base URL of GitHub API."""
 
 URL_GH_UPLOAD = "https://uploads.github.com"
-"""Base url of GitHub upload end point."""
+"""Base URL of GitHub upload end point."""
 
 URL_GL = "https://gitlab.com"
-"""Base url of GitLab."""
+"""Base URL of GitLab."""
 
 URL_GL_API = "https://api.gitlab.com"
-"""Base url of GitLab API."""
+"""Base URL of GitLab API."""
 
 URL_GL_UPLOAD = "https://uploads.gitlab.com"
-"""Base url of GitLab upload end point."""
+"""Base URL of GitLab upload end point."""
 
 URL_NB = "https://nbviewer.jupyter.org"
-"""Base url of NB-viewer."""
+"""Base URL of NB-viewer."""
 
 
 PROTOCOL = "http://"
@@ -177,14 +177,14 @@ BRANCH_DEFAULT_NEW = "main"
 """Default branch in repositories, modern value."""
 
 ZIP_OPTIONS = dict(compression=ZIP_DEFLATED)
-"""Options for zip when packing tf files.
+"""Options for zip when packing TF files.
 
-This is for packaging collections of plain tf files into zip files
-to be attached to releases on GitHub/GitLab.
+This is for packaging collections of plain TF files into zip files
+to be attached to releases on GitHub / GitLab.
 
-!!! caution "Not for .tfx files"
-    This is not the zipping as done when .tf files are
-    pickled and compressed to .tfx files.
+!!! caution "Not for `.tfx` files"
+    This is not the zipping as done when `.tf` files are
+    `pickled` and compressed to `.tfx` files.
 """
 
 if sys.version_info[0] > 3 or sys.version_info[0] == 3 and sys.version_info[1] >= 7:

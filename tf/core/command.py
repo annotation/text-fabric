@@ -10,22 +10,22 @@ from .helpers import console
 def readArgs(
     command, descr, possibleTasks, possibleParams, possibleFlags, notInAll=set()
 ):
-    """Interpret tasks, params and flags specified.
+    """Interpret tasks, parameters and flags specified.
 
     Parameters
     ----------
     command:
-        The name of the command, as entered on the command line
+        The name of the command, as entered on the command-line
     descr: string
         A description of the task
     possibleTasks: dict
         Keyed by the names of tasks, the values are a short description of the task.
     possibleParams: dict
-        Keyed by the names of the params, the values are tuples with a short
-        description of the param plus a default value for it.
+        Keyed by the names of the parameters, the values are tuples with a short
+        description of the parameter plus a default value for it.
     possibleFlags: dict
         Keyed by the name of the flags, the values are tuples with a short
-        description of the flag, plus a default value for irt, plus the number
+        description of the flag, plus a default value for it, plus the number
         of values it can take.
         There are these possibilities:
 
@@ -42,9 +42,9 @@ def readArgs(
     tuple
         The tuple returned consists of
 
-        *   a boolean whehter there is an error in the arguments
+        *   a boolean whether there is an error in the arguments
         *   a dict keyed by the tasks, values are True or False
-        *   a dict of the params, values are strings
+        *   a dict of the parameters, values are strings
         *   a dict of the flags, values are -1, 0 or 1
     """
 
@@ -88,7 +88,7 @@ def readArgs(
         tasks:
         «tasks»
 
-        params:
+        parameters:
         «params»
 
         flags:

@@ -3,7 +3,7 @@
 
 ## Usage
 
-```python
+``` python
 from tf.dataset import modify
 modify(
     location,
@@ -108,7 +108,7 @@ def modify(
 
     Finally, the resulting features will be written to disk.
 
-    !!! hint "Only added/merged features"
+    !!! hint "Only added / merged features"
         It is possible to output only the added and merged features instead
         of a complete dataset. Just pass the boolean value `True` to `deleteFeatures`
         below.
@@ -118,7 +118,7 @@ def modify(
 
     location: string
         You can pass just the location of the original dataset in the file system,
-        i.e. the directory that contains the .tf files.
+        i.e. the directory that contains the `.tf` files.
 
     targetLocation: string
         The directory into which the result dataset will be written.
@@ -139,10 +139,12 @@ def modify(
 
         Example
         -------
-            mergeFeatures=dict(
-                resultFeature1=[feat1, feat2],
-                resultFeature2="feat3, feat4",
-            ),
+        ``` python
+        mergeFeatures=dict(
+            resultFeature1=[feat1, feat2],
+            resultFeature2="feat3, feat4",
+        ),
+        ```
 
         If the resulting feature is new, or needs a new description, you can
         provide metadata in the `featureMeta` argument.
@@ -169,15 +171,17 @@ def modify(
 
         Example
         -------
-            addFeatures=dict(
-                nodeFeatures=dict(
-                  feat1=data1,
-                  feat2=data2,
-                ),
-                edgeFeatures=dict(
-                  feat3=data3,
-                  feat4=data4,
-                ),
+        ``` python
+        addFeatures=dict(
+            nodeFeatures=dict(
+              feat1=data1,
+              feat2=data2,
+            ),
+            edgeFeatures=dict(
+              feat3=data3,
+              feat4=data4,
+            ),
+        ```
 
         If the resulting features are new, or need a new description, you can
         provide metadata in the `featureMeta` argument.
@@ -197,41 +201,45 @@ def modify(
 
         Example
         -------
-            mergeTypes=dict(
-                outTypeA=(
-                    'inType1',
-                    'inType2',
-                ),
-                outTypeB="inType3, inType4",
-            )
+        ``` python
+        mergeTypes=dict(
+            outTypeA=(
+                'inType1',
+                'inType2',
+            ),
+            outTypeB="inType3, inType4",
+        )
+        ```
 
         Example
         -------
-            mergeTypes=dict(
-                outTypeA=dict(
-                    inType1=dict(
-                        featureI=valueI,
-                        featureK=valueK,
-                    ),
-                    inType2=dict(
-                        featureL=valueL,
-                        featureM=valueM,
-                    ),
+        ```
+        mergeTypes=dict(
+            outTypeA=dict(
+                inType1=dict(
+                    featureI=valueI,
+                    featureK=valueK,
                 ),
-                outTypeB=dict(
-                    inType3=dict(
-                        featureN=valueN,
-                        featureO=valueO,
-                    ),
-                    inType4=dict(
-                        featureP=valueP,
-                        featureQ=valueQ,
-                    ),
+                inType2=dict(
+                    featureL=valueL,
+                    featureM=valueM,
                 ),
-            )
+            ),
+            outTypeB=dict(
+                inType3=dict(
+                    featureN=valueN,
+                    featureO=valueO,
+                ),
+                inType4=dict(
+                    featureP=valueP,
+                    featureQ=valueQ,
+                ),
+            ),
+        )
+        ```
 
         It does not matter if these types and features already occur.
-        The outTypes may be existing types of really new types.
+        The `outTypes` may be existing types of really new types.
         The new features may be existing or new features.
 
         Do not forget to provide meta data for new features in the `featureMeta` argument.
@@ -264,11 +272,15 @@ def modify(
 
         Example
         -------
-            deleteTypes=('line', 'sentence')
+        ```
+        deleteTypes=('line', 'sentence')
+        ```
 
         Example
         -------
-            deleteTypes="line sentence"
+        ```
+        deleteTypes="line sentence"
+        ```
 
         !!! caution "slot types"
             Deleting is all about non-slot types.
@@ -283,22 +295,24 @@ def modify(
 
         Example
         -------
-            dict(
-                nodeType1=dict(
-                    nodeFrom=from1,
-                    nodeTo=to1,
-                    nodeSlots=slots1,
-                    nodeFeatures=nFeatures1,
-                    edgeFeatures=eFeatures1,
-                ),
-                nodeType2=dict(
-                    nodeFrom=from2,
-                    nodeTo=to2,
-                    nodeSlots=slots2,
-                    nodeFeatures=nFeatures2,
-                    edgeFeatures=eFeatures2,
-                ),
+        ``` python
+        dict(
+            nodeType1=dict(
+                nodeFrom=from1,
+                nodeTo=to1,
+                nodeSlots=slots1,
+                nodeFeatures=nFeatures1,
+                edgeFeatures=eFeatures1,
             ),
+            nodeType2=dict(
+                nodeFrom=from2,
+                nodeTo=to2,
+                nodeSlots=slots2,
+                nodeFeatures=nFeatures2,
+                edgeFeatures=eFeatures2,
+            ),
+        ),
+        ```
 
         The boundaries may be completely arbitrary, so if you get your nodes from another
         TF data source, you do not need to align their values.
@@ -314,7 +328,7 @@ def modify(
             It is an error if a new node type already exists in the original,
             unless that type is meant to be deleted.
 
-        !!! info "nodeFeatures, edgeFeatures"
+        !!! info "`nodeFeatures`, `edgeFeatures`"
             You can add any number of features.
             Per feature you have to provide the mapping that defines the feature.
 
@@ -327,46 +341,52 @@ def modify(
 
             Example
             -------
-                dict(
-                    feat1=dict(
-                        n1=val1,
-                        n2=val2,
-                    ),
-                    feat2=dict(
-                        n1=val1,
-                        n2=val2,
-                    ),
+            ``` python
+            dict(
+                feat1=dict(
+                    n1=val1,
+                    n2=val2,
                 ),
+                feat2=dict(
+                    n1=val1,
+                    n2=val2,
+                ),
+            ),
+            ```
 
             Edge features without values are specified like this:
 
             Example
             -------
-                dict(
-                    feat1=dict(
-                        n1={m1, m2},
-                        n2={m3, m4},
-                    ),
-                    feat2=dict(
-                        n1={m5, m6},
-                        n2={m7, m8},
-                    ),
+            ``` python
+            dict(
+                feat1=dict(
+                    n1={m1, m2},
+                    n2={m3, m4},
                 ),
+                feat2=dict(
+                    n1={m5, m6},
+                    n2={m7, m8},
+                ),
+            ),
+            ```
 
             Edge features with values are specified like this:
 
             Example
             -------
-                dict(
-                    feat1=dict(
-                        n1={m1: v1, m2: v2},
-                        n2={m3: v3, m4: v4},
-                    ),
-                    feat2=dict(
-                        n1={m5: v5, m6: v6},
-                        n2={m7: v7, m8: v8},
-                    ),
+            ``` python
+            dict(
+                feat1=dict(
+                    n1={m1: v1, m2: v2},
+                    n2={m3: v3, m4: v4},
                 ),
+                feat2=dict(
+                    n1={m5: v5, m6: v6},
+                    n2={m7: v7, m8: v8},
+                ),
+            ),
+            ```
 
     replaceSlotType: string, optional None
         If passed, it should be a tuple whose first member is a valid, non-slot
@@ -397,24 +417,26 @@ def modify(
         in the `featureMeta` argument.
 
     featureMeta: dict, optional None
-        If the features you have specified in one of the paramers above are new,
+        If the features you have specified in one of the parameters above are new,
         do not forget to pass metadata for them in this  parameter
         It is especially important to state the value type:
 
         Example
         -------
-            featureMeta=dict(
-                featureI=dict(
-                  valueType='int',
-                  description='level of node'
-                ),
-                featureK=dict(
-                  valueType='str',
-                  description='subtype of node'
-                ),
+        ``` python
+        featureMeta=dict(
+            featureI=dict(
+              valueType='int',
+              description='level of node'
             ),
+            featureK=dict(
+              valueType='str',
+              description='subtype of node'
+            ),
+        ),
+        ```
 
-        You can also tweak the section/structure configuration and the
+        You can also tweak the section / structure configuration and the
         text-formats that are specified in the `otext` feature.
         Just specify them as keys and values to the `otext` feature.
 
@@ -1087,7 +1109,7 @@ def modify(
                     else:
                         outData.update(featObj.items())
                 if feat in featUpd:
-                    # inf("new/updated feature")
+                    # inf("new / updated feature")
                     outData.update(featUpd[feat])
                     if kind == EDGE:
                         aVal = next(iter(featUpd[feat].values()))

@@ -1,10 +1,10 @@
 """
-# Precompute data.
+# Pre-compute data.
 
-For Text-Fabric to work efficiently, some  derived data needs to be precomputed.
-The precomputed data has a similar function as indexes in a database.
+For TF to work efficiently, some  derived data needs to be pre-computed.
+The pre-computed data has a similar function as indexes in a database.
 
-Precomputation is triggered when `tf.fabric.Fabric` loads features, and
+Pre-computation is triggered when `tf.fabric.Fabric` loads features, and
 the order and nature of the steps is configured in
 `tf.core.fabric.PRECOMPUTE`.
 
@@ -30,11 +30,11 @@ def levels(info, error, otype, oslots, otext):
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     oslots: iterable
-        The data of the *oslots* feature.
+        The data of the `oslots` feature.
     otext: iterable
-        The data of the *otext* feature.
+        The data of the `otext` feature.
 
     Returns
     -------
@@ -56,8 +56,8 @@ def levels(info, error, otype, oslots, otext):
         that type usually occupy. The bigger the average object, the lower the levels.
         Books have the lowest level, words the highest level.
 
-        However, this can be overruled. Suppose you have a node type *phrase* and above
-        it a node type *cluster*, i.e. phrases are contained in clusters, but not vice
+        However, this can be overruled. Suppose you have a node type `phrase` and above
+        it a node type `cluster`, i.e. phrases are contained in clusters, but not vice
         versa. If all phrases are contained in clusters, and some clusters have more
         than one phrase, the automatic level ranking of node types works out well in
         this case. But if clusters only have very small phrases, and the big phrases do
@@ -66,7 +66,7 @@ def levels(info, error, otype, oslots, otext):
 
         In general, it is too expensive to try to compute the levels in a sophisticated
         way. In order to remedy cases where the algorithm assigns wrong levels, you can
-        add a `@levels` and/or `@levelsConstraint` key to the `otext` config feature.
+        add a `@levels` and / or `@levelsConstraint` key to the `otext` config feature.
         See `tf.core.text`.
     """
 
@@ -146,11 +146,11 @@ def order(info, error, otype, oslots, levels):
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     oslots: iterable
-        The data of the *oslots* feature.
+        The data of the `oslots` feature.
     levels: tuple
-        The data of the *levels* precompute step.
+        The data of the `levels` pre-computation step.
 
     Returns
     -------
@@ -221,9 +221,9 @@ def rank(info, error, otype, order):
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     order: tuple
-        The data of the *order* feature.
+        The data of the `order` feature.
 
     Returns
     -------
@@ -253,11 +253,11 @@ def levUp(info, error, otype, oslots, rank):
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     oslots: iterable
-        The data of the *oslots* feature.
+        The data of the `oslots` feature.
     rank: tuple
-        The data of the *rank* precompute step.
+        The data of the `rank` pre-computation step.
 
     Returns
     -------
@@ -343,22 +343,22 @@ def levDown(info, error, otype, levUp, rank):
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     levUp: iterable
-        The data of the *levUp* precompute step.
+        The data of the `levUp` pre-computation step.
     rank: tuple
-        The data of the *rank* precompute step.
+        The data of the `rank` pre-computation step.
 
     Returns
     -------
     tuple
-        The *n*-th member is an tuple of the embedded nodes of *n + maxSlot*.
+        The `n`-th member is an tuple of the embedded nodes of `n + maxSlot`.
         Those tuples are sorted in canonical order (`tf.core.nodes`).
 
     !!! hint "Memory efficiency"
         Slot nodes do not have embedded nodes, so they do not have to occupy
         space in this tuple. Hence the first member are the embedded nodes
-        of node *maxSlot + 1*.
+        of node `maxSlot + 1`.
 
     !!! caution "Use with care"
         It is not advisable to use this data directly by `C.levDown.data`,
@@ -397,12 +397,12 @@ def characters(info, error, otext, tFormats, *tFeats):
     error: function
         Method to write error messages to the console.
     otext: iterable
-        The data of the *otext* feature.
-    tFormats:
+        The data of the `otext` feature.
+    tFormats: dict
         Dictionary keyed by text format and valued by the tuple of features
         used in that format.
     tFeats: iterable
-        Each tFeat is the name and the data of a text feature.
+        Each `tFeat` is the name and the data of a text feature.
         i.e. a feature used in text formats.
 
     Returns
@@ -457,20 +457,20 @@ def boundary(info, error, otype, oslots, rank):
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     oslots: iterable
-        The data of the *oslots* feature.
+        The data of the `oslots` feature.
     rank: tuple
-        The data of the *rank* precompute step.
+        The data of the `rank` pre-computation step.
 
     Returns
     -------
     tuple
         *   first: tuple of tuple
-            The *n*-th member is the tuple of nodes that start at slot *n*,
+            The `n`-th member is the tuple of nodes that start at slot `n`,
             ordered in *reversed* canonical order (`tf.core.nodes`);
         *   last: tuple of tuple
-            The *n*-th member is the tuple of nodes that end at slot *n*,
+            The `n`-th member is the tuple of nodes that end at slot `n`,
             ordered in canonical order;
 
     Notes
@@ -507,14 +507,14 @@ def boundary(info, error, otype, oslots, rank):
 def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     """Computes section data.
 
-    Text-Fabric datasets may define up to three section levels, roughly corresponding
+    TF datasets may define up to three section levels, roughly corresponding
     with a volume, a chapter, a paragraph.
 
     If the corpus has a richer section structure, it is also possible
     a different, more flexible and more extensive nest of structural sections.
     See `structure`.
 
-    Text-Fabric must be able to go from sections at one level to the sections
+    TF must be able to go from sections at one level to the sections
     at one level lower. It must also be able to map section headings
     to nodes. For this, the section features are needed, since they
     contain the section headings.
@@ -526,32 +526,32 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     oslots: iterable
-        The data of the *oslots* feature.
+        The data of the `oslots` feature.
     otext: iterable
-        The data of the *otext* feature.
+        The data of the `otext` feature.
     levUp: tuple
-        The data of the *levUp* precompute step.
+        The data of the `levUp` pre-computation step.
     levels: tuple
-        The data of the *levels* precompute step.
+        The data of the `levels` pre-computation step.
     sFeats: iterable
-        Each sFeat is the data of a section feature.
+        Each `sFeat` is the data of a section feature.
 
     Returns
     -------
     tuple
-        *   sec1
+        *   `sec1`
             Mapping from section-level-1 nodes to mappings from
-            section-level-2 headings to section-level2 nodes.
-        *   sec2
+            section-level-2 headings to section-level-2 nodes.
+        *   `sec2`
             Mapping from section-level-1 nodes to mappings from
             section-level-2 headings to mappings from
-            section-level3 headings to section-level-3 nodes.
+            section-level-3 headings to section-level-3 nodes.
 
     Warnings
     --------
-    Note that the terms `book`, `chapter`, `verse` are not baked into Text-Fabric.
+    Note that the terms `book`, `chapter`, `verse` are not baked into TF.
     It is the corpus data, especially the `otext` config feature that
     spells out the names of the sections.
 
@@ -640,11 +640,11 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
     a flexible and extensive nest of structural sections.
 
     Independent of this,
-    Text-Fabric datasets may also define up to three section levels,
+    TF datasets may also define up to three section levels,
     roughly corresponding with a volume, a chapter, a paragraph.
     See `sections`.
 
-    Text-Fabric must be able to go from sections at one level to the sections
+    TF must be able to go from sections at one level to the sections
     at one level lower. It must also be able to map section headings
     to nodes. For this, the section features are needed, since they
     contain the section headings.
@@ -656,29 +656,27 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
     error: function
         Method to write error messages to the console.
     otype: iterable
-        The data of the *otype* feature.
+        The data of the `otype` feature.
     oslots: iterable
-        The data of the *oslots* feature.
+        The data of the `oslots` feature.
     otext: iterable
-        The data of the *otext* feature.
+        The data of the `otext` feature.
     rank: tuple
-        The data of the *rank* precompute step.
+        The data of the `rank` pre-computation step.
     levUp: tuple
-        The data of the *levUp* precompute step.
+        The data of the `levUp` pre-computation step.
     sFeats: iterable
-        Each sFeat the data of a section feature.
+        Each `sFeat` the data of a section feature.
 
     Returns
     -------
     tuple
-        *   headingFromNode
-            (Mapping from nodes to section keys)
-        *   nodeFromHeading
-            (Mapping from section keys to nodes)
-        *   multiple
-        *   top
-        *   up
-        *   down
+        *   `headingFromNode` (Mapping from nodes to section keys)
+        *   `nodeFromHeading` (Mapping from section keys to nodes)
+        *   `multiple`
+        *   `top`
+        *   `up`
+        *   `down`
 
     Notes
     -----

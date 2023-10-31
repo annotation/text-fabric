@@ -57,9 +57,9 @@ class Timestamp:
         in this class, but can also affects messages emitted
         by other parts of the application, such as:
 
-        * the display of the number of results in searches
-        * the header that is displayed after the incantation
-          of text-fabric.
+        *   the display of the number of results in searches
+        *   the header that is displayed after the incantation
+            of TF.
 
         Parameters
         ----------
@@ -159,7 +159,7 @@ class Timestamp:
         cache: integer, optional 0
             Whether the message should be cached.
         force: boolean, optional False
-            If True, any silent condition is overriden.
+            If True, any silent condition is overridden.
 
         !!! caution "Silence"
             Informational messages are not displayed in silent mode.
@@ -185,7 +185,7 @@ class Timestamp:
         cache: integer, optional 0
             Whether the message should be cached.
         force: boolean, optional False
-            If True, any silent condition is overriden.
+            If True, any silent condition is overridden.
 
         !!! caution "Silence"
             Informational messages are not displayed in silent mode.
@@ -211,7 +211,7 @@ class Timestamp:
         cache: integer, optional 0
             Whether the message should be cached.
         force: boolean, optional False
-            If True, any silent condition is overriden.
+            If True, any silent condition is overridden.
 
         !!! caution "Silence"
             Warning messages are not displayed if silent mode is `deep`.
@@ -224,7 +224,7 @@ class Timestamp:
         """Sends an warning message to the standard error.
 
         In a Jupyter notebook, the standard error is displayed with
-        a reddish background colour.
+        a reddish background color.
 
         Parameters
         ----------

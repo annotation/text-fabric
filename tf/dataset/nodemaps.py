@@ -1,5 +1,5 @@
 """
-# Nodemaps
+# Node maps
 
 When different versions of a TF dataset exist, it makes sense to map the nodes from the
 older version to nodes of the newer version.
@@ -11,16 +11,16 @@ redoing all the work.
 
 Mapping the nodes consists of two stages:
 
-1. **slot mapping** This is very dependent on what happened between versions.
-2. **node mappings per node type** These can be generically constructed
-once we have a slot mapping.
+1.  **slot mapping** This is very dependent on what happened between versions.
+1.  **node mappings per node type** These can be generically constructed once
+    we have a slot mapping.
 
 This module contains the function `makeVersionMapping` which is a function to furnish node mappings
 for node types given a slot mapping exists.
 
 # Nodes in general
 The basic idea we use for the general case is that that nodes are linked to slots.
-In text-fabric, the standard `oslots` edge feature lists for each non-slot node
+In TF, the standard `oslots` edge feature lists for each non-slot node
 the slots it is linked to.
 
 Combining the just created slot mappings between versions and the `oslots` feature,
@@ -37,8 +37,8 @@ They are good candidates for the mapping.
 # Refinements
 
 When we try to match nodes across versions, based on slot containment, we also respect
-their `otype`s. So we will not try to match a `clause` to a `phrase`.
-We make implicit use of the fact that for most `otype`s, the members
+their `otype`. So we will not try to match a `clause` to a `phrase`.
+We make implicit use of the fact that for most `otype`, the members
 contain disjoint slots.
 
 # Multiple candidates
@@ -67,8 +67,8 @@ minus the number of slots in their intersection.
 
 In other words: \\(m_1\\) gets a penalty for
 
-* each slot \\(s\\in m_1\\) that is not in the mapped slots \\(m\\);
-* each mapped slot \\(t\\in m\\) that is not in \\(m_1\\).
+*   each slot \\(s\\in m_1\\) that is not in the mapped slots \\(m\\);
+*   each mapped slot \\(t\\in m\\) that is not in \\(m_1\\).
 
 If a candidate occupies exactly the mapped slots, the dissimilarity is 0.
 If there is only one such candidate of the right type, the case is completely clear,
@@ -125,7 +125,7 @@ A simpler example, using this code is
 
 ## Usage
 
-```python
+``` python
 from tf.dataset import Versions
 
 V = Versions(api, va, vb, slotMap)
@@ -153,7 +153,7 @@ TIMESTAMP = None
 
 class Versions:
     def __init__(self, api, va, vb, silent=SILENT_D, slotMap=None):
-        """Map the nodes of a nodetype between two versions of a TF dataset.
+        """Map the nodes of a node type between two versions of a TF dataset.
 
         There are two scenarios in which you can use this object:
 
@@ -163,7 +163,7 @@ class Versions:
         extend that mapping to a complete node mapping and save the mapping
         as an `f"omap@{va}-{vb}"` edge feature in the dataset version `vb`.
 
-        In this use case, the apis for both `va` and `vb` should be full TF APIs,
+        In this use case, the APIs for both `va` and `vb` should be full TF APIs,
         in particular, they should provide the `tf.core.locality` API.
 
         **Use an existing node map to upgrade features from one version to another**.
@@ -172,14 +172,14 @@ class Versions:
         but in the `vb` dataset there should be an `omap@a-b` feature,
         i.e. a node map from the nodes of `va` to those of `vb`.
 
-        The apis for both `va` and `vb` may be partial TF APIs, which means that they
+        The APIs for both `va` and `vb` may be partial TF APIs, which means that they
         only have to provide the `tf.core.nodefeature.NodeFeatures` (`F`) and
-        `tf.core.edgefeature.EdgeFeatures` (`E`) apis.
+        `tf.core.edgefeature.EdgeFeatures` (`E`) APIs.
 
         Parameters
         ----------
         api: dict
-            TF-API objects to several versions of a dataset, keyed by version label
+            TF API objects to several versions of a dataset, keyed by version label
         va: string
             version label of the version whose nodes are the source of the mapping
         vb: string
@@ -198,7 +198,7 @@ class Versions:
         for v in (va, vb):
             if v not in api:
                 sys.stderr.write(
-                    f"No TF-API for version {va} in the `api` parameter.\n"
+                    f"No TF API for version {va} in the `api` parameter.\n"
                 )
                 self.good = False
 
@@ -431,7 +431,7 @@ class Versions:
                 "about": "Mapping from the slots of version {} to version {}".format(
                     va, vb
                 ),
-                "encoder": "Text-Fabric tf.dataset.nodemaps",
+                "encoder": "TF tf.dataset.nodemaps",
                 "valueType": "int",
                 "edgeValues": True,
             }
@@ -476,10 +476,10 @@ class Versions:
         Suppose the value is `v`. Then the feature assignment will assign
         `v` to nodes `p` and `q`.
 
-        But there could very wel be a later node `m` with value `w` in the old version
+        But there could very well be a later node `m` with value `w` in the old version
         that also maps to `p`, and with a lower quality.
         Then later the node `p` in the new version will be assigned the value `w`
-        because of this, and this is sub otpimal.
+        because of this, and this is sub optimal.
 
         So we make sure that for each feature and each node in the new version
         the value assigned to it is the value of the node in the old version that

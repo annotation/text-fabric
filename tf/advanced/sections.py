@@ -2,19 +2,19 @@
 
 There is support for section headings.
 
-Text-Fabric datasets may specify two kinds of sections in their
+TF datasets may specify two kinds of sections in their
 `otext.tf` configuration feature:
 
 ### Sections
 
 At most three levels:
 
-* level 1 is for big things, like books
-* level 2 is for intermediate things, like chapters, that fit on one page or just
-  a few pages
-* level 3 is for small things, such as lines.
+*   level 1 is for big things, like books
+*   level 2 is for intermediate things, like chapters, that fit on one page or just
+    a few pages
+*   level 3 is for small things, such as lines.
 
-Text-Fabric uses these levels in the Text-Fabric browser, to divide your corpus
+TF uses these levels in the TF browser, to divide your corpus
 into divisions that can conveniently be displayed to you in the browser.
 
 ### Structure
@@ -42,15 +42,16 @@ def nodeFromSectionStr(app, sectionStr, lang="en"):
     Parameters
     ----------
     sectionStr: string
-        Must be a valid section specficiation in the
-        language specified in *lang*.
+        Must be a valid section specification in the
+        language specified in `lang`.
 
-        The string may specify a section 0 level only (book/tablet), or
-        section 0 and 1 levels (book/tablet chapter/column),
+        The string may specify a section 0 level only (book / tablet), or
+        section 0 and 1 levels (book / tablet; chapter / column),
         or all levels
-        (book/tablet chapter/column verse/line).
+        (book / tablet; chapter / column; verse / line).
 
         !!! hint "examples"
+            ```
             Genesis
 
             Genesis 1
@@ -62,6 +63,7 @@ def nodeFromSectionStr(app, sectionStr, lang="en"):
             P005381 1
 
             P005381 1:1
+            ```
 
     lang: string, optional en
         The language assumed for the section parts,
@@ -142,7 +144,7 @@ def sectionStrFromNode(app, n, lang="en", lastSlot=False, fillup=False):
     section heading:string
         Corresponds to the reference node.
         The result is built from the labels of the individual section levels,
-        with dummies for missing parts if *fillup* is true.
+        with dummies for missing parts if `fillup` is true.
     """
 
     api = app.api

@@ -9,10 +9,10 @@ See the app-specific tutorials via `tf.about.corpora`.
 ---
 
 **The TEI converter is still in active development.
-If you need the latest version, clone the Text-Fabric repo
+If you need the latest version, clone the TF repo
 and in its top-level directory run the command:**
 
-```
+``` sh
 pip install -e .
 ```
 
@@ -35,17 +35,17 @@ pip install -e .
 
 ##### New stuff
 
-*   In the Text-Fabric browser there will be a new tab in the vertical sidebar: 
+*   In the TF browser there will be a new tab in the vertical sidebar: 
     **Annotate**, which will give access to manual annotation tools. I'm developing
     the first one, a tool to annotate named entities efficiently, both in the
-    Text-Fabric browser and in a Jupyter Notebook.
+    TF browser and in a Jupyter Notebook.
     Reed more in `tf.about.annotate`.
 
     These tools will let you save your work as files on your own computer.
 
 *   In `tf.convert.addnlp` we can now extract more NLP information besides tokens
-    and sentences: part-of-speech, morphological tagging, lemmatisation, named
-    entity recognititon
+    and sentences: part-of-speech, morphological tagging, lemmatization, named
+    entity recognition
 
 ##### Fixes
 
@@ -57,8 +57,8 @@ pip install -e .
 
 2023-09-13
 
-Trivial fix in code that exports the data from a job in the Text-Fabric browser.
-In the meanwhile there is unfinished business in the `Annotate` tab in the TF-browser,
+Trivial fix in code that exports the data from a job in the TF browser.
+In the meanwhile there is unfinished business in the `Annotate` tab in the TF browser,
 that will come into production in the upcoming 12.1 release.
 
 The Chrome browser has an attractive feature that other browsers such as Safari lack:
@@ -68,20 +68,20 @@ With this property you can prevent
 the browser to do the expensive rendering of content that is not visible on the screen.
 That makes it possible to load a lot of content in a single page without tripping up
 the browser. You also need the
-[IntersectionObserver API])https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API),
+[`IntersectionObserver` API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API),
 but that is generally supported by browsers. With the help of that API you can
 restrict the binding of event listeners to elements that are visible on the screen.
 
-So, you can open the Text-Fabric browser in Chrome by passing the option `--chrome`.
+So, you can open the TF browser in Chrome by passing the option `--chrome`.
 But if Chrome is not installed, it will open in the default browser anyway.
-Also, when the opening of the browser fails somehow, the webserver is stopped.
+Also, when the opening of the browser fails somehow, the web server is stopped.
 
 #### 12.0.5
 
 2023-07-10
 
 Fixed references to static files that still went to `/server` instead of `/browser`.
-This has to do with the new approach to the Text-Fabric browser.
+This has to do with the new approach to the TF browser.
 
 #### 12.0.0-4
 
@@ -89,11 +89,11 @@ This has to do with the new approach to the Text-Fabric browser.
 
 ##### Simplification
 
-*   The Text-Fabric browser no longer works with a separate process that holds the
-    TF corpus data. Instead, the webserver (flask) loads the corpus itself.
+*   The TF browser no longer works with a separate process that holds the
+    TF corpus data. Instead, the web server (flask) loads the corpus itself.
     This will restrict the usage of the TF browser to local-single-user scenarios.
 
-*   Text-Fabric no longer exposes the installation options `[browser, pandas]`
+*   TF no longer exposes the installation options `[browser, pandas]`
 
     ```
     pip install 'text-fabric[browser]'
@@ -115,7 +115,7 @@ This has to do with the new approach to the Text-Fabric browser.
 
     Hence, TF can be installed on the iPad, although the
     TF browser works is not working there yet.
-    But the autoloading of data from GitHub/GitLab works.
+    But the auto-downloading of data from GitHub / GitLab works.
 
 
 ##### Minor things

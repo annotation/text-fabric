@@ -19,7 +19,7 @@ METHODS = ["GET", "POST"]
 
 
 def factory(web):
-    """A sub webapp, to be inserted into the TF browser webapp.
+    """A sub web app, to be inserted into the TF browser web app.
 
     The way of connecting this sub app to the main app is by way of the concept
     of [BluePrint](https://flask.palletsprojects.com/en/2.3.x/blueprints/),

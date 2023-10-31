@@ -1,5 +1,5 @@
 """
-# Search preprocessing
+# Search pre-processing
 """
 
 import types

@@ -1,19 +1,19 @@
 """
-# Auto downloading from a backend repository
+# Auto downloading from a back-end repository
 
 ## Description
 
-Text-Fabric maintains local copies of subfolders of backend repositories,
+TF maintains local copies of subdirectories of back-end repositories,
 where it stores the feature data of corpora that the user is working with.
 
-Currently GitHub and GitLab are supported as backends.
+Currently GitHub and GitLab are supported as back-ends.
 In case of GitLab, not only [gitlab.com](https://gitlab.com) is supported,
 but also GitLab instances on other servers that support the GitLab API.
 
 There is some bookkeeping to account for which release and commit the
 feature files come from.
 
-Users can request data from any repo according to any release and/or commit.
+Users can request data from any repo according to any release and / or commit.
 
 ## Rate limiting
 
@@ -30,7 +30,7 @@ This can be too restrictive, and here are two ways to keep working nevertheless.
 
 !!! hint
     If you are a dataset provider, use `tf.advanced.zipdata.zipAll()` to
-    produce a zipfile of your complete dataset, and then attach it to the latest
+    produce a zip file of your complete dataset, and then attach it to the latest
     release on GitHub.
     Then TF will find this file and download it automatically if needed, without ever
     using the GitHub API, so your users do not have to do the things described below!
@@ -40,32 +40,32 @@ This can be too restrictive, and here are two ways to keep working nevertheless.
 If you use this function in an application of yours that uses it very often,
 you can increase the limit to 5000 calls per hour by making yourself known.
 
-* [create a personal access token](https://github.com/settings/tokens)
-* Copy your token and put it in an environment variable named `GHPERS`
-  on the system where your app runs.
-  See below how to do that.
-* If `checkoutRepo` finds this variable, it will add the
-  token to every GitHub API call it makes, and that will
-  increase the rate.
-* Never pass your personal credentials on to others, let them obtain their own!
+*   [create a personal access token](https://github.com/settings/tokens)
+*   Copy your token and put it in an environment variable named `GHPERS`
+    on the system where your app runs.
+    See below how to do that.
+*   If `checkoutRepo` finds this variable, it will add the
+    token to every GitHub API call it makes, and that will
+    increase the rate.
+*   Never pass your personal credentials on to others, let them obtain their own!
 
 You might want to read this:
 
-* [Read more about rate limiting on GitHub](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting)
+*   [Read more about rate limiting on GitHub](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting)
 
 # GitLab
 
 In order to reach an on-premise GitLab and have access to the repository in
-question, you may need to have a VPN connection with the GitLab backend.
+question, you may need to have a VPN connection with the GitLab back-end.
 
 Additionally, you may need to make your identity known.
 If you have an account on the GitLab instance, go to your settings and request
 a personal token with *api* privileges.
 
-On your own system, make an environment variable named GL_*BACKEND*`_PERS` whose
+On your own system, make an environment variable named `GL_BACKEND_PERS` whose
 content is exactly the value of this token.
 
-And *BACKEND* should be the uppercase variant of the name of the GitLab backend,
+And `BACKEND` should be the uppercase variant of the name of the GitLab back-end,
 where every character that is not a letter or digit or `_` is replaced by a `_`.
 
 For example, for `gitlab.huc.knaw.nl` use `GL_GITLAB_HUC_KNAW_NL_PERS`
@@ -78,14 +78,14 @@ See below how to put this in an environment variable.
 How to put your personal access token into an environment variable?
 
 !!! note "What is an environment variable?"
-    It is a setting on your system that various programs/processes can read.
+    It is a setting on your system that various programs / processes can read.
     On Windows it is part of the `Registry`.
 
     In this particular case, you put a personal token
-    that you obtain from GitHub/GitLab
+    that you obtain from GitHub / GitLab
     in such an environment variable.
-    When Text-Fabric accesses the backend, it will look up this token
-    first, and pass it to the backend API. The backend then knows who you are and
+    When TF accesses the back-end, it will look up this token
+    first, and pass it to the back-end API. The back-end then knows who you are and
     will give you more privileges.
 
 ### On Mac and Linux
@@ -110,14 +110,16 @@ Whatever is your case, pick the file indicated above and edit it.
     Assuming that you want to edit the `.zshrc` in your home directory,
     go to your terminal and say this:
 
-        nano ~/.zshrc
+    ```
+    nano ~/.zshrc
+    ```
 
     Then you get a view on your file. Then
 
     *   press `Ctrl V` a number of times till you are at the end of the file,
     *   type the two lines lines of text (specified in the next step), or
         copy them from the clipboard
-    *   type `Ctrl X` to exit; nano will ask you to save changes, type `Y`,
+    *   type `Ctrl X` to exit; `nano` will ask you to save changes, type `Y`,
         it will then verify the file name, type `Enter` and you're done
 
 
@@ -140,12 +142,12 @@ export GL_BACKEND_PERS
 where
 
 *   `xxx` is replaced by your actual token.
-*   `BACKEND` is replaced by the uppercase GitLab backend
+*   `BACKEND` is replaced by the uppercase GitLab back-end
     e.g.
     *   `gitlab.com` becomes `GL_GITLAB_COM_PERS`
     *   `gitlab.huc.knaw.nl` becomes `GL_GITLAB_HUC_KNAW_NL_PERS`
 
-    In this way you can store tokens for multiple GitLab backends.
+    In this way you can store tokens for multiple GitLab back-ends.
 
 Then restart your terminal or say in an existing terminal
 
@@ -177,29 +179,29 @@ Then quit the command prompt and start a new one.
 **GitHub**
 
 With this done, you will automatically get the good rate limit,
-whenever you fire up Text-Fabric in the future.
+whenever you fire up TF in the future.
 
 **GitLab**
 
-You are now known to the GitLab backend, and you have the same access to its
+You are now known to the GitLab back-end, and you have the same access to its
 repository as when you log in via the web interface.
 
 ## Minimize accessing GitHub
 
-Another way te avoid being bitten by the rate limit is to reduce the number
+Another way to avoid being bitten by the rate limit is to reduce the number
 of your access actions to GitHub.
 
-There are two instances where Text-Fabric wants to access GitHub:
+There are two instances where TF wants to access GitHub:
 
-1. when you start the Text-Fabric browser from the command line
-2. when you give the `use()` command in your Python program (or in a Jupyter Notebook).
+1.  when you start the TF browser from the command-line
+1.  when you give the `use()` command in your Python program (or in a Jupyter Notebook).
 
 ### Using a corpus for the first time, within the rate limit
 
 If you are still within the rate limit, just give the usual commands, such as
 
 ``` sh
-text-fabric org/repo
+tf org/repo
 ```
 
 or
@@ -216,7 +218,7 @@ The data will be downloaded to your computer and stored in your
 ### Using a corpus for the first time, after hitting the rate limit
 
 If you want to load a new corpus after having passed the rate limit, and not
-wanting to wait an hour, you could directly clone the repos from GitHub/GitLab:
+wanting to wait an hour, you could directly clone the repos from GitHub / GitLab:
 
 Open your terminal, and go to (or create) directory `~/github` or `~/gitlab`
 (in your home directory).
@@ -238,7 +240,7 @@ git clone https://gitlab.com/org/repo
 
 (replacing `org` and `repo` with the values that apply to your corpus).
 
-This will fetch the Text-Fabric *data*, *app*, and *tutorials* for that corpus.
+This will fetch the TF *data*, *app*, and *tutorials* for that corpus.
 
 Now you have all data you need on your system.
 
@@ -246,10 +248,10 @@ If you want to see by example how to use this data, have a look at
 [repo](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb),
 especially when it discusses `clone`.
 
-In order to run Text-Fabric without further access to the backend, say
+In order to run TF without further access to the back-end, say
 
 ``` sh
-text-fabric corpus:clone checkout=clone
+tf corpus:clone checkout=clone
 ```
 
 or, in a program,
@@ -258,7 +260,7 @@ or, in a program,
 A = use('org/repo:clone', checkout='clone', hoist=globals())
 ```
 
-This will instruct Text-Fabric to use the app and data from within your `~/github`
+This will instruct TF to use the app and data from within your `~/github`
 or `~/gitlab` directory tree.
 
 ### Using a corpus that you already have
@@ -267,15 +269,15 @@ Depending on how you got the corpus, it is in your
 `~/github`, `~/gitlab` or in your `~/text-fabric-data` directory tree:
 
 1.   if you cloned it from GitHub, it is in your `~/github` tree;
-2.   if you cloned it from GitLab, it is in your `~/gitlab` tree;
-3.   if you cloned it from an other instance of GitLab, say hosted at
+1.   if you cloned it from GitLab, it is in your `~/gitlab` tree;
+1.   if you cloned it from an other instance of GitLab, say hosted at
     `gitlab.huc.knaw.nl`, it is in your `~/gitlab.huc.knaw.nl` tree;
-4.   if you used the autoload of Text-Fabric it is in your `~/text-fabric-data`.
+1.   if you used the auto-download of TF it is in your `~/text-fabric-data`.
 
 In the first case, do this:
 
 ``` sh
-text-fabric corpus:clone checkout=clone
+tf corpus:clone checkout=clone
 ```
 
 or, in a program,
@@ -287,7 +289,7 @@ A = use('org/repo:clone', checkout='clone', hoist=globals())
 In the second case, do this:
 
 ``` sh
-text-fabric corpus:clone checkout=clone --backend=gitlab
+tf corpus:clone checkout=clone --backend=gitlab
 ```
 
 or, in a program,
@@ -299,7 +301,7 @@ A = use('org/repo:clone', checkout='clone', backend="gitlab", hoist=globals())
 In the third case, do this:
 
 ``` sh
-text-fabric corpus:clone checkout=clone --backend=gitlab.huc.knaw.nl
+tf corpus:clone checkout=clone --backend=gitlab.huc.knaw.nl
 ```
 
 or, in a program,
@@ -316,7 +318,7 @@ A = use(
 In the fourth case, do just this:
 
 ``` sh
-text-fabric corpus
+tf corpus
 ```
 
 or, in a program,
@@ -329,7 +331,7 @@ See also `tf.advanced.app.App`.
 
 ### Updating a corpus that you already have
 
-If you cloned it from GitHub/GitLab:
+If you cloned it from GitHub / GitLab:
 
 In your terminal:
 
@@ -348,6 +350,7 @@ and `corpus` with the name of your corpus).
 
 And then:
 
+```
 git pull origin master
 ```
 
@@ -356,7 +359,7 @@ and you can use it as follows
 (we show the example for `github`):
 
 ``` sh
-text-fabric corpus:clone checkout=clone
+tf corpus:clone checkout=clone
 ```
 
 or, in a program,
@@ -365,11 +368,11 @@ or, in a program,
 A = use('org/repo:clone', checkout='clone', hoist=globals())
 ```
 
-If you have autoloaded it from the backend,
+If you have auto-downloaded it from the back-end,
 you have to add the `latest` or `hot` specifier:
 
 ``` sh
-text-fabric corpus:latest checkout=latest
+tf corpus:latest checkout=latest
 ```
 
 or, in a program,
@@ -714,7 +717,7 @@ class Repo:
             )
             console(f"{dataFile} attached to release {newTag}")
         except Exception as e:
-            self.error("\tcannot attach zipfile to release", newline=True)
+            self.error("\tcannot attach zip file to release", newline=True)
             catchRemaining(e)
             return False
 
@@ -806,8 +809,8 @@ def releaseData(
     repo: string
         The name of the repo
     folder: string
-        The subfolder in the repo that contains the text-fabric files.
-        If the tf files are versioned, it is the directory that
+        The subdirectory in the repo that contains the TF files.
+        If the TF files are versioned, it is the directory that
         contains the version directories.
         In most cases it is `tf` or it ends in `/tf`.
     version: string
@@ -819,7 +822,7 @@ def releaseData(
             2 = bump intermediate version;
             3 = bump minor version
 
-    source: string, optional None`
+    source: string, optional None
         Path to where the local GitHub clones are stored
     dest: string, optional DOWNLOADS
         Path to where the zipped data should be stored
@@ -859,13 +862,13 @@ def publishRelease(app, increase, message=None, description=None):
     release on GitHub.
 
     For an example, see
-    [annotation/mondriaan](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/publish.ipynb)
+    [`annotation/mondriaan`](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/publish.ipynb)
 
     Parameters
     ----------
     app: object
         A loaded TF app.
-        Only if the TF app is working with backend GitHub
+        Only if the TF app is working with back-end GitHub
     increase: integer
         The way in which the release version should be increased:
 
@@ -878,7 +881,7 @@ def publishRelease(app, increase, message=None, description=None):
         If None, a boiler plate text, based on the `increase` parameter, is provided.
 
     description: string, optional None
-        Documentaiton of the release. May be a multiline (markdown) string.
+        Documentation of the release. May be a multiline (markdown) string.
         If None, the `message` parameter will be used.
     """
     repoLocation = app.repoLocation
@@ -1126,7 +1129,7 @@ class Checkout:
                 try:
                     conn = Github(person)
                 except Exception as e:
-                    self.error(f"Can't make connection to Github because of {e}")
+                    self.error(f"Can't make connection to GitHub because of {e}")
                     self.conn = None
                     catchRemaining(e)
                     return None
@@ -2043,7 +2046,7 @@ def checkoutRepo(
     silent=SILENT_D,
     label="data",
 ):
-    """Checks out text-fabric data from an (online) repository.
+    """Checks out TF data from an (online) repository.
 
     The copy may be taken from any point in the commit history of the online repo.
 
@@ -2064,13 +2067,13 @@ def checkoutRepo(
         The *repo* on GitHub or the project on GitLab
 
     folder: string, optional /tf
-        The subfolder in the repo that contains the text-fabric files.
-        If the tf files are versioned, it is the directory that
+        The subdirectory in the repo that contains the TF files.
+        If the TF files are versioned, it is the directory that
         contains the version directories.
         In most cases it is `tf` or it ends in `/tf`.
 
     version: string, optional, the empty string
-        The version of the tf feature data
+        The version of the TF feature data
 
     checkout: string, optional the mepty string
         From which version/release/local copy we should extract the data.
@@ -2079,7 +2082,7 @@ def checkoutRepo(
             If there is no data there, data will be downloaded.
         *   `local`: whatever you have locally in `~/text-fabric-data`.
             If there is no data there, you get an error message.
-        *   `clone`: whatever you have locally as a GitHub/GitLab clone
+        *   `clone`: whatever you have locally as a GitHub / GitLab clone
             If there is no data there, you get an error message.
         *   `latest`: make sure the latest release has been fetched from online
         *   `hot`: make sure the latest commit has been fetched from online
@@ -2096,7 +2099,7 @@ def checkoutRepo(
         If given, it overrides the semi-baked in `~/github` value.
 
     dest: string, optional empty string
-        The base of your local cache of downloaded tf feature files.
+        The base of your local cache of downloaded TF feature files.
         If given, it overrides the semi-baked in `~/text-fabric-data` value.
 
     withPaths: boolean, optional True
@@ -2118,34 +2121,34 @@ def checkoutRepo(
 
     Returns
     -------
-    (commitOffline, releaseOffline, kindLocal, localBase, localDir)
+    tuple
 
-    *   *commitOffline* is the commit hash of the data you have offline afterwards
-    *   *releaseOffline* is the release tag of the data you have offline afterwards
-    *   *kindLocal* indicates whether an online check has been performed:
+    *   `commitOffline` is the commit hash of the data you have offline afterwards
+    *   `releaseOffline` is the release tag of the data you have offline afterwards
+    *   `kindLocal` indicates whether an online check has been performed:
         it is `None` if there has been an online check. Otherwise it is
         `clone` if the data is in your `~/github` directory else it is `local`.
-    *   *localBase* where the data is under: `~/github` or `~/text-fabric-data`,
-        or whatever you have passed as *source* and *dest*.
-    *   *localDir* releative path from *localBase* to your data.
-        If your data has versions, *localDir* points to directory that has the versions,
+    *   `localBase` where the data is under: `~/github` or `~/text-fabric-data`,
+        or whatever you have passed as `source` and `dest`.
+    *   `localDir` relative path from `localBase` to your data.
+        If your data has versions, `localDir` points to directory that has the versions,
         not to a specific version.
 
     Your local copy can be found:
 
     *   in the cache under your `~/text-fabric-data`, and from
-        there under *backend*/*org/repo* where *backend* is github or gitlab or
-        the server name of a gitlab instance.
+        there under `backend/org/repo` where `backend` is `github` or `gitlab` or
+        the server name of a GitLab instance.
 
     or
 
-    *   in the place where you store your clones from GitHub/GitLab:
-        `~/github` or `~/gitlab` or `~/`*backend*
-        (whatever the value of the *backend* parameter is.
-        From there it is under *org/repo*.
+    *   in the place where you store your clones from GitHub / GitLab:
+        `~/github` or `~/gitlab` or `~/backend`
+        (whatever the value of the `backend` parameter is.
+        From there it is under `org/repo`.
 
-    The actual feature files are in *folder/version* if there is a *version*,
-    else *folder*.
+    The actual feature files are in `folder/version` if there is a `version`,
+    else `folder`.
 
     """
 

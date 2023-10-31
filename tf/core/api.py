@@ -213,7 +213,7 @@ class Api:
         features: iterable | string, optional None
             The features to get info for.
             If absent or None: all features seen by TF.
-            If a string, it is a comma and/or space spearated list of feature names.
+            If a string, it is a comma and / or space separated list of feature names.
             Otherwise the items of the iterable are feature names.
 
         pretty: boolean, optional True
@@ -240,7 +240,7 @@ class Api:
             It it is the boolean value True: all metadata will be printed.
 
             If it is a list of key names or a string with key names
-            separated by white space and/or commas, only these metadata keys
+            separated by white-space and / or commas, only these metadata keys
             will be printed.
 
         Returns
@@ -499,7 +499,7 @@ class Api:
     def footprint(self, recompute=False, bySize=True):
         """Computes the memory footprint in RAM of the loaded TF data.
 
-        This includes the precomputed data.
+        This includes the pre-computed data.
 
         Parameters
         ----------

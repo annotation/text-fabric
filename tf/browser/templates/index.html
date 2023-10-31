@@ -4,7 +4,7 @@
 		<meta charset="utf-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		<title>TF {{appName}}-{{jobName}}</title>
-		<meta name="application-name" content="Text-Fabric Search Box"/>
+		<meta name="application-name" content="TF Search Box"/>
 		<link rel="shortcut icon" href="/browser/static/favicon.ico">
 		<link rel="stylesheet" href="/browser/static/colors.css"/>
 		<link rel="stylesheet" href="/browser/static/base.css"/>
@@ -52,8 +52,8 @@
 					<div><img class="mainlogo" src="/browser/static/huc.png"/></div>
 				</div>
 				<div status="corpus">
-					<div class="colofon">
-						{{colofon|safe}}
+					<div class="colophon">
+						{{colophon|safe}}
 					</div>
 					<div class="header">
 						{{header|safe}}
@@ -110,7 +110,7 @@
 				</div>
 				<div status="help">
 					<details id="helpTf" class="help dstate">
-						<summary>Text-Fabric Browser</summary>
+						<summary>TF Browser</summary>
             <p>Explore the <b>{{appName}}</b> corpus.</p>
 						<p>Use the
 							<span class="sections">{{defaultCondenseType}}</span>,
@@ -173,7 +173,7 @@
           <details id="helpEColormap" class="help dstate ecolormap">
             <summary>Color map for edges</summary>
             <p>In pretty displays, edge information may be visible, see
-               <b>show/hide selected edge features</b> under the <b>Options</b>
+               <b>show / hide selected edge features</b> under the <b>Options</b>
                tab.</p>
             <p>You can color edge information in order to see which nodes
                have edges to which nodes. By default, no edges are colored, but you
@@ -222,8 +222,8 @@
             <p><b title="baseTypes={nodeType1, nodeType2}">Base types</b>
                These types of nodes count as base types. The components of base
                nodes will not be broken down in pretty displays. Highlights of
-               base nodes consist of coloured backgrounds, highlights of other
-               nodes consist of coloured boxes around the nodes.</p>
+               base nodes consist of colored backgrounds, highlights of other
+               nodes consist of colored boxes around the nodes.</p>
             {{optionsHelp|safe}}
 					</details>
 					<details id="helpJobs" class="help dstate">
@@ -237,7 +237,7 @@
             </p>
             <p><button class="medium active">↑</button>
                <b>Import a job from a file.</b>
-               This must be a json file, preferably one saved by Text-Fabric.</p>
+               This must be a JSON file, preferably one saved by TF.</p>
             <p><button class="medium active">+</button>
                <b>Start a new job.</b>
                The current job will be saved, and you will be prompted for a
@@ -274,7 +274,7 @@
                to provide your name, title, and description (markdown is supported).</p>
             <p>Below the metadata you entered there are two buttons:</p>
 						<p><button class="fa fa-print medium active"></button>:
-              <b>Print/PDF-friendly version</b>
+              <b>Print / PDF-friendly version</b>
 						   The exported page opens in a new window or tab, in a form that is
                especially handy to save as PDF (from within the browser).<br>
                The PDF will contain a complete description of your work, with
@@ -302,7 +302,7 @@
             <p><b>(2) a markdown file <code>about.md</code></b>
                with the metadata and description.</p>
             <p><b>(3) <code>.tsv</code> files</b>
-               corresponding to the results of the the contents of the pads:
+               corresponding to the results of the contents of the pads:
                these files contain the node numbers only.</p>
             <p><b>(4) a file <code>job.json</code></b>
                with the job information, exactly as what you get when you press

@@ -1,29 +1,29 @@
 # Corpora
 
-Text-Fabric corpora are usually stored on GitHub/GitLab and Text-Fabric
-knows how to download a corpus from GitHub/GitLab if you specify the *org/repo*.
+TF corpora are usually stored on GitHub / GitLab and TF
+knows how to download a corpus from GitHub / GitLab if you specify the `org/repo`.
 
 Most corpora are configured by metadata in a directory *app* in the repo.
 
-You can load a corpus into a Python datastructure by
+You can load a corpus into a Python data structure by
 
 ``` python
 from tf.app import use
 A = use("org/repo")
 ```
 
-And you can get it in the Text-Fabric browser by saying this on a command prompt:
+And you can get it in the TF browser by saying this on a command prompt:
 
 
 ``` sh
-text-fabric org/repo
+tf org/repo
 ```
 
 Here is a list of corpora that can be loaded this way.
-Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not be complete!
+Since everybody can put a TF corpus on GitHub / GitLab, the list may not be complete!
 
-[annotation/banks](https://github.com/annotation/banks)
-:   *modern english*
+[`annotation/banks`](https://github.com/annotation/banks)
+:   *modern English*
     Iain M. Banks, 1954 - 2013,
     99 words from the SF novel
     **[Consider Phlebas](https://read.amazon.com/kp/kshare?asin=B002TXZRQI&id=NpPGzf_HT5aADabyiDDSIQ&reshareId=RZ91SGMZJPWK9S1Y4EZX&reshareChannel=system)**,
@@ -31,8 +31,8 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
 
     *to see the details*
 
-[annotation/mobydick](https://github.com/annotation/mobydick)
-:   *english*
+[`annotation/mobydick`](https://github.com/annotation/mobydick)
+:   *English*
     Herman Melville, 1819 - 1891,
     Novel, 1851;
     converted from TEI in the Oxford Text Archive,
@@ -40,8 +40,8 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
 
     *with NLP output from Spacy woven in*
 
-[annotation/mondriaan](https://github.com/annotation/mondriaan)
-:   *english*
+[`annotation/mondriaan`](https://github.com/annotation/mondriaan)
+:   *English*
     Piet Mondriaan, 1872 - 1944,
     Test corpus of 14 letters;
     converted from TEI from the Huygens Institute, together with RKD and HuC;
@@ -51,53 +51,53 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
 
 ## [Cambridge Semitics Lab](https://github.com/CambridgeSemiticsLab)
 
-[CambridgeSemiticsLab/nena_tf](https://github.com/CambridgeSemiticsLab/nena_tf)
+[`CambridgeSemiticsLab/nena_tf`](https://github.com/CambridgeSemiticsLab/nena_tf)
 :   *Aramaic*
     North Eastern Neo-Aramaic Corpus, 2000,
     **[Nena Cambridge](https://nena.ames.cam.ac.uk)**,
     Cody Kingham
 
-    *with a client-side, offline search interface in Javascript*
+    *with a client-side, offline search interface in JavaScript*
 
 ## [CenterBLC Andrews University](https://github.com/CenterBLC)
 
-[CenterBLC/LXX](https://github.com/CenterBLC/LXX)
+[`CenterBLC/LXX`](https://github.com/CenterBLC/LXX)
 :   *Greek*
     [Septuagint](https://en.wikipedia.org/wiki/Septuagint), 300 - 100 BCE,
     **LXX Rahlf's edition 1935 plus additional features by CenterBLC**;
     earliest extant Greek translation of Hebrew Bible books;
     Oliver Glanz, Adrian Negrea
 
-[CenterBLC/NA](https://github.com/CenterBLC/NA)
+[`CenterBLC/NA`](https://github.com/CenterBLC/NA)
 :   *Greek*
     New Testament, 100 - 400,
-    **GNT Nestle-Aland edition 1904 with new features by CentrBLC**,
+    **GNT Nestle-Aland edition 1904 with new features by CenterBLC**,
     converted from 
-    [biblicalhumanities/Nestle1904](https://github.com/biblicalhumanities/Nestle1904)
+    [`biblicalhumanities/Nestle1904`](https://github.com/biblicalhumanities/Nestle1904)
     contributed by Ulrik Sandborg Petersen, Jonathan Robie;
     Oliver Glanz
 
-[CenterBLC/SBLGNT](https://github.com/CenterBLC/SBLGNT)
+[`CenterBLC/SBLGNT`](https://github.com/CenterBLC/SBLGNT)
 :   *Greek*
     New Testament, 100 - 400,
     converted from
-    **James Tauber's [morphgnt/sblgnt](https://github.com/morphgnt/sblgnt) with additional features by CenterBLC**;
+    **James Tauber's [`morphgnt` / `sblgnt`](https://github.com/morphgnt/sblgnt) with additional features by CenterBLC**;
     Adrian Negrea, Clacir Virmes, Oliver Glanz, Krysten Thomas
 
 ## [CLARIAH](https://github.com/CLARIAH)
 
-[CLARIAH/descartes-tf](https://github.com/CLARIAH/descartes-tf)
+[`CLARIAH/descartes-tf`](https://github.com/CLARIAH/descartes-tf)
 :   *French*, *Latin*, *Dutch* 
     Letters from and to Descartes, 1619 - 1650,
     **René Descartes - Correspondance**;
     Ch. Adam et G. Milhaud (eds. and illustrations, 1896-1911);
-    Katsuzo Murakami, Meguru Sasaki, Takehumi Tokoro (ascii digitization, 1998);
+    Katsuzo Murakami, Meguru Sasaki, Takehumi Tokoro (ASCII digitization, 1998);
     Erik-Jan Bos (ed, 2011); 
     Dirk Roorda (converter TEI, 2011 and TF 2023)
 
     *with math display and illustrations*
 
-[CLARIAH/wp6-ferdinandhuyck](https://github.com/CLARIAH/wp6-ferdinandhuyck)
+[`CLARIAH/wp6-ferdinandhuyck`](https://github.com/CLARIAH/wp6-ferdinandhuyck)
 :   *Dutch* 
     a novel by Jacob van Lennep, 1840,
     **Jacob van Lennep - Ferdinand Huyck**;
@@ -106,13 +106,13 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
 
     *with NLP output from Spacy woven in*
 
-[CLARIAH/wp6-missieven](https://github.com/CLARIAH/wp6-missieven)
+[`CLARIAH/wp6-missieven`](https://github.com/CLARIAH/wp6-missieven)
 :   *Dutch* 
     General Missives, 1600 - 1800,
     **General Missives, Dutch East-Indian Company**,
     Jesse van der Does, Sophie Arnoult, Dirk Roorda
 
-[CLARIAH/wp6-daghregisters](https://github.com/CLARIAH/wp6-daghregisters)
+[`CLARIAH/wp6-daghregisters`](https://github.com/CLARIAH/wp6-daghregisters)
 :   *Dutch* 
     Dagh Registers Batavia, 1640 - 1641,
     **Daily events at Batavia, Indonesia, historical source for
@@ -120,11 +120,11 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
     Lodewijk Petram, Dirk Roorda.
     *work in progress, currently only volume 4*
 
-    *with many ocr errors and an attempt to detect them*
+    *with many OCR errors and an attempt to detect them*
 
 ## [Cody Kingham](https://github.com/codykingham)
 
-[codykingham/tischendorf_tf](https://github.com/codykingham/tischendorf_tf)
+[`codykingham/tischendorf_tf`](https://github.com/codykingham/tischendorf_tf)
 :   *Greek*
     New Testament, 50 - 450,
     **Tischendorf 8th Edition**,
@@ -132,16 +132,16 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
 
 ## [Digital Theologians of the University of Copenhagen](https://github.com/DT-UCPH)
 
-[DT-UCPH/sp](https://github.com/DT-UCPH)
+[`DT-UCPH/sp`](https://github.com/DT-UCPH)
 :   *Hebrew*
     [Samaritan Pentateuch](https://en.wikipedia.org/wiki/Samaritan_Pentateuch)
     , 516 BCE - 70 AD,
     **MS Dublin Chester Beatty Library 751 + MS Garizim 1**,
     Martijn Naaijer, Christian Canu Højgaard
 
-## [Eep Talstra Centre for Bible and Computer](https://github.com/ETCBC)
+## [Eep Talstra Center for Bible and Computer](https://github.com/ETCBC)
 
-[ETCBC/bhsa](https://github.com/ETCBC/bhsa)
+[`ETCBC/bhsa`](https://github.com/ETCBC/bhsa)
 :   *Hebrew*
     Bible (Old Testament), 1000 BCE - 900 AD,
     **[Biblia Hebraica Stuttgartensia (Amstelodamensis)](https://ETCBC.github.io/bhsa/)**,
@@ -149,50 +149,50 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
 
     *the canonical TF dataset, where it all started*
 
-[ETCBC/dhammapada](https://github.com/ETCBC/dhammapada)
+[`ETCBC/dhammapada`](https://github.com/ETCBC/dhammapada)
 :   *Pāli* and *Latin*
     Ancient Buddhist verses, 300 BCE and 1855 AD,
     **Transcription with Latin translations based on Viggo Fausbøll's book**,
     Bee Scherer, Yvonne Mataar, Dirk Roorda
 
-[ETCBC/dss](https://github.com/ETCBC/dss)
+[`ETCBC/dss`](https://github.com/ETCBC/dss)
 :   *Hebrew*
     Dead Sea Scrolls, 300 BCE - 100 AD,
     **Transcriptions with morphology based on Martin Abegg's data files**,
     Martijn Naaijer, Jarod Jacobs, Dirk Roorda
 
-[ETCBC/nestle1904](https://github.com/ETCBC/nestle1904)
+[`ETCBC/nestle1904`](https://github.com/ETCBC/nestle1904)
 :   *Greek*
     New Testament, 100 - 400,
     **GNT Nestle-Aland edition 1904 from LOWFAT-XML syntax trees**,
     converted from 
-    [biblicalhumanities/greek-new-testament](https://github.com/biblicalhumanities/greek-new-testament/tree/master/syntax-trees/sblgnt-lowfat)
+    [`biblicalhumanities/greek-new-testament`](https://github.com/biblicalhumanities/greek-new-testament/tree/master/syntax-trees/sblgnt-lowfat)
     contributed by Jonathan Robie and Micheal Palmer;
     Oliver Glanz, Tony Jurg, Saulo de Oliveira Cantanhêde, Dirk Roorda
 
-[ETCBC/peshitta](https://github.com/ETCBC/peshitta)
+[`ETCBC/peshitta`](https://github.com/ETCBC/peshitta)
 :   *Syriac*
     Peshitta (Old Testament), 1000 BCE - 900 AD,
     **Vetus Testamentum Syriace**,
     Hannes Vlaardingerbroek, Dirk Roorda
 
-[ETCBC/syrnt](https://github.com/ETCBC/syrnt)
+[`ETCBC/syrnt`](https://github.com/ETCBC/syrnt)
 :   *Syriac*
     New Testament, 0 - 1000,
     **Novum Testamentum Syriace**,
     Hannes Vlaardingerbroek, Dirk Roorda
 
-## [KNAW/Huygens](https://github.com/HuygensING)
+## [`KNAW/HuygensING`](https://github.com/HuygensING)
 
-[hermans/works](https://gitlab.huc.knaw.nl/hermans/works)
+[`hermans/works`](https://gitlab.huc.knaw.nl/hermans/works)
 :   *Dutch*
     Complete Works of W.F. Hermans.
-    The conversion to Text-Fabric is work in progress.
+    The conversion to TF is work in progress.
     So far these works have been done:
 
-    * Paranoia
-    * Sadistisch Universum
-    * Nooit meer slapen
+    *   Paranoia
+    *   Sadistisch Universum
+    *   Nooit meer slapen
 
     Bram Oostveen, Peter Kegel, Dirk Roorda
 
@@ -200,20 +200,20 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
 
     *with a critical apparatus*
 
-[mondriaan/letters](https://git.diginfra.nl/mondriaan/letters)
+[`mondriaan/letters`](https://git.diginfra.nl/mondriaan/letters)
 :   *Dutch*
     Letters of Piet Mondriaan , 1892-1923.
-    Straight conversion from TEI to Text-Fabric,
+    Straight conversion from TEI to TF,
     Peter Boot et al., Dirk Roorda
 
     ** Work in progress, not yet public*.*
 
     *with NLP output from Spacy woven in*
 
-[HuygensING/suriano](https://github.com/HuygensING/suriano)
+[`HuygensING/suriano`](https://github.com/HuygensING/suriano)
 :   *Italian*
     Correspondence of Christofforo Suriano , 1616-1623.
-    Straight conversion from TEI to Text-Fabric,
+    Straight conversion from TEI to TF,
     Nina Lamal et al., Dirk Roorda
 
     ** Work in progress*.*
@@ -222,25 +222,25 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
 
 ## [NINO Cuneiform](https://github.com/Nino-cunei)
 
-[Nino-cunei/ninmed](https://github.com/Nino-cunei/ninmed)
+[`Nino-cunei/ninmed`](https://github.com/Nino-cunei/ninmed)
 :   *Akkadian / cuneiform*
     Medical Encyclopedia from Nineveh, ca. 800 BCE,
     **Medical documents with lemma annotations**,
     Cale Johnson, Dirk Roorda
 
-[Nino-cunei/oldassyrian](https://github.com/Nino-cunei/oldassyrian)
+[`Nino-cunei/oldassyrian`](https://github.com/Nino-cunei/oldassyrian)
 :   *Akkadian / cuneiform*
     Old Assyrian documents, 2000 - 1600 BCE,
     **Documents from Ashur**
     Cale Johnson, Alba de Ridder, Martijn Kokken, Dirk Roorda
 
-[Nino-cunei/oldbabylonian](https://github.com/Nino-cunei/oldbabylonian)
+[`Nino-cunei/oldbabylonian`](https://github.com/Nino-cunei/oldbabylonian)
 :   *Akkadian / cuneiform*
     Old Babylonian letters, 1900 - 1600 BCE,
     **Altbabylonische Briefe in Umschrift und Übersetzung**,
     Cale Johnson, Dirk Roorda
 
-[Nino-cunei/uruk](https://github.com/Nino-cunei/uruk)
+[`Nino-cunei/uruk`](https://github.com/Nino-cunei/uruk)
 :   *proto-cuneiform*
     Uruk, 4000 - 3100 BCE,
     **Archaic tablets from Uruk**,
@@ -257,7 +257,7 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
     [Open Greek and Latin Project](https://github.com/OpenGreekAndLatin/First1KGreek)
     The result of a massive conversion effort by Ernst Boogert.
 
-[pthu/athenaeus](https://github.com/pthu/athenaeus)
+[`pthu/athenaeus`](https://github.com/pthu/athenaeus)
 :   *Greek*
     Works of Athenaeus, 80 - 170,
     **[Deipnosophistae](https://en.wikipedia.org/wiki/Deipnosophistae)**,
@@ -265,7 +265,7 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
 
 ## [Quran](https://github.com/q-ran)
 
-[q-ran/quran](https://github.com/q-ran/quran)
+[`q-ran/quran`](https://github.com/q-ran/quran)
 :   *Arabic*
     Quran, 600 - 900,
     **Quranic Arabic Corpus**,
@@ -273,7 +273,7 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
 
 ## [University of Utrecht: Cornelis van Lit](https://github.com/among)
 
-[among/fusus](https://github.com/among/fusus)
+[`among/fusus`](https://github.com/among/fusus)
 :   *Arabic*
     Fusus Al Hikam,  1165- 2000,
     **editions (Lakhnawi and Afifi) of Ibn Arabi's Fusus plus commentaries in the centuries thereafter**,
@@ -281,7 +281,7 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
 
 ### Intentions
 
-oldroyal
+Old Royal
 :   *Akkadian-Sumerian cuneiform*
     Bilingual royal inscriptions, 2000 - 1600,
     **more info to come**, Martijn Kokken, Dirk Roorda
@@ -291,7 +291,7 @@ oldroyal
 
 ### Automatically
 
-Text-Fabric downloads corpus data and apps from GitHub/GitLab on demand.
+TF downloads corpus data and apps from GitHub / GitLab on demand.
 
 See `tf.about.use`.
 
@@ -308,27 +308,31 @@ The TF data is fairly compact.
 ### Manually
 
 TF data of corpora reside in a back-end repo.
-You can manually clone such a data repository and point Text-Fabric to that data.
+You can manually clone such a data repository and point TF to that data.
 
-First, take care that your clone ends up in `github/`*orgName* or `gitlab/`*orgName*
+First, take care that your clone ends up in `github/orgName` or `gitlab/orgName`
 (relative your home directory)
-where *orgName* is the organization or person or group on GitHub/GitLab under which you have
+where `orgName` is the organization or person or group on GitHub / GitLab under which you have
 found the repo.
 
 Then, when you invoke the app, pass the specifier `:clone`.
-This instructs Text-Fabric to look in your local GitHub/GitLab clone, rather
+This instructs TF to look in your local GitHub / GitLab clone, rather
 than online or in your local `text-fabric-data`, where downloaded data is stored.
 
-    use('org/repo:clone', checkout="clone")
+``` python
+use('org/repo:clone', checkout="clone")
+```
 
-    text-fabric org/repo:clone --checkout=clone
+``` sh
+tf org/repo:clone --checkout=clone
+```
 
 In this way, you can work with data that is under your control.
 
 !!! caution "Size of data"
-    Cloning a data repository is more costly then letting Text-Fabric download the data.
+    Cloning a data repository is more costly then letting TF download the data.
     A data repository may contain several versions and representations of the data,
-    including the their change histories. There might also be other
+    including their change histories. There might also be other
     material in the repo, such as source data, tutorials, programs.
 
     For example, the `ETCBC/bhsa` repo is several GB, but the TF data for a specific

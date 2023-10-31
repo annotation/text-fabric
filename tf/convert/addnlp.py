@@ -58,15 +58,15 @@ new tokens will be used as slots.
 
 # Usage
 
-## Commandline
+## Command-line
 
-```sh
+``` sh
 tf-addnlp tasks params flags
 ```
 
 ## From Python
 
-```python
+``` python
 from tf.convert.addnlp import NLPipeline
 from tf.app import use
 
@@ -81,7 +81,7 @@ NLP.task(**tasks, **flags)
 ```
 
 For the tasks, parameters and flags, see
-`TASKS`, `PARAMS`, and `FLAGS` and expand the code.
+`TASKS`, `PARAMS`, `FLAGS` and expand the code.
 
 The parameters have defaults that are exactly suited to corpora that have been
 converted from TEI by `tf.convert.tei`.
@@ -237,7 +237,7 @@ class NLPipeline:
         slotFeature: string, optional ch
             The  feature on slots that provides the text of a slot to be included
             in the generated text.
-        removeSlotFeatures: "ch"
+        removeSlotFeatures: string
             A tuple is distilled from comma-separated values.
             The names of features defined on original slots that do not have to be
             carried over to the new slots of type of the atomic tokens.
@@ -398,7 +398,7 @@ class NLPipeline:
             console(f"{len(lastSlots):>6} end postions")
 
     def getElementInfo(self, verbose=None):
-        """Analyse the schema.
+        """Analyze the schema.
 
         The XML schema has useful information about the XML elements that
         occur in the source. Here we extract that information and make it
@@ -435,7 +435,7 @@ class NLPipeline:
     def generatePlain(self):
         """Generates a plain text out of a data source.
 
-        The text is generatad in such a way that out of flow elements are collected
+        The text is generated in such a way that out of flow elements are collected
         and put at the end. Examples of such elements are notes.
         Leaving them at their original positions will interfere with sentence detection.
 
@@ -451,8 +451,8 @@ class NLPipeline:
             The result is a tuple consisting of
 
             *   *text*: the generated text
-            *   *positions*: a list of nodes such that list item *i* contains
-                the original slot that corresponds to the character *i* in the
+            *   *positions*: a list of nodes such that list item `i` contains
+                the original slot that corresponds to the character `i` in the
                 generated text (counting from zero).
         """
         slotFeature = self.slotFeature
@@ -692,9 +692,10 @@ class NLPipeline:
         stream: list of tuple
             The tuples should consist of
 
-            *   *start*: a start number (char pos in the plain text, starting at `0`)
-            *   *end*: an end number (char pos in tghe plain text plus one)
-            *   *values*: values for feature assignment
+            *   `start`: a start number (character position in the plain text,
+                starting at `0`)
+            *   `end`: an end number (character position in the plain text plus one)
+            *   `values`: values for feature assignment
 
         tp: string
             The type of the nodes that will be generated.
@@ -710,7 +711,7 @@ class NLPipeline:
             Name of feature that identifies the empty slots.
 
         skipBlanks: boolean, optional False
-            If True, rows whose text component is only white space will be skipped.
+            If True, rows whose text component is only white-space will be skipped.
 
         skipFlows: set
             set of elements whose resulting data in the stream should be ignored
@@ -720,9 +721,9 @@ class NLPipeline:
         tuple
             We deliver the following pieces of information in a tuple:
 
-            * the last node
-            * the mapping of the new nodes to the slots they occupy;
-            * the data of the new features.
+            *   the last node
+            *   the mapping of the new nodes to the slots they occupy;
+            *   the data of the new features.
 
             However, when we deliver the token results, they come in two such tuples:
             one for the atomic tokens and one for the full tokens.
@@ -1079,20 +1080,20 @@ class NLPipeline:
         )
 
     def ingestNlpOutput(self, positions, tkStream, sentenceStream, entityStream):
-        """Ingests nlp output such as tokens in a dataset. Tokens become the new slots.
+        """Ingests NLP output such as tokens in a dataset. Tokens become the new slots.
 
         By default:
 
-        * tokens become nodes of a new type `t`;
-        * the texts of tokens ends up in the feature `str`;
-        * if there is a space after a token, it ends up in the feature `after`;
-        * sentences become nodes of a new type `sentence`;
-        * the sentence number ends up in the feature `nsent`.
-        * token nodes become the new slots.
-        * entities become noes of a new type `ent`;
-        * the texts of the entities end up in feature `str`;
-        * the labels of the entities end up in feature `kind`;
-        * entity nodes are linked to the tokens they occupy.
+        *   tokens become nodes of a new type `t`;
+        *   the texts of tokens ends up in the feature `str`;
+        *   if there is a space after a token, it ends up in the feature `after`;
+        *   sentences become nodes of a new type `sentence`;
+        *   the sentence number ends up in the feature `nsent`.
+        *   token nodes become the new slots.
+        *   entities become noes of a new type `ent`;
+        *   the texts of the entities end up in feature `str`;
+        *   the labels of the entities end up in feature `kind`;
+        *   entity nodes are linked to the tokens they occupy.
 
         But this function can also be adapted to token, sentence, and entity streams
         that have additional names and values, see below.
@@ -1117,12 +1118,12 @@ class NLPipeline:
 
         !!! hint "Look at the defaults"
             The default `tokenFeatures=("str", "after")` specifies that two
-            fields from the tokenstream will be read, and those values will be assigned
-            to features `str` and `after`.
+            fields from the token stream will be read, and those values will be
+            assigned to features `str` and `after`.
             There will be no field with the node itself in it.
 
             The default `sentenceFeatures=()` specifies that no field from the
-            tokenstream will be read. But that there is a feature `nsent` that
+            token stream will be read. But that there is a feature `nsent` that
             has the node of each sentence as value.
 
         We have to ignore the sentence boundaries in some flows,
@@ -1375,7 +1376,7 @@ class NLPipeline:
 
         This is a higher level function that can execute a selection of tasks.
 
-        The tasks will be executed in a fixed order: plaintext, lingo, ingest.
+        The tasks will be executed in a fixed order: `plaintext`, `lingo`, `ingest`.
         But you can select which one(s) must be executed.
 
         If multiple tasks must be executed and one fails, the subsequent tasks
@@ -1390,7 +1391,7 @@ class NLPipeline:
         ingest: boolean, optional False
             Whether to ingest the NLP results into the dataset..
         verbose: integer, optional -1
-            Produce no (-1), some (0) or many (1) orprogress and reporting messages
+            Produce no (-1), some (0) or many (1) progress and reporting messages
         write: boolean, optional False
             Whether to write the generated plain text and position files to disk.
         kwargs: dict

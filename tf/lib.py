@@ -1,7 +1,7 @@
 """
-# Uitility functions
+# Utility functions
 
-Read and write TF node sets from/to file.
+Read and write TF node sets from / to file.
 """
 
 import pickle
@@ -12,7 +12,7 @@ from .core.files import expanduser as ex, fileExists, dirMake, splitPath
 
 
 def writeList(data, dest, intCols=None):
-    """Writes a list of tuples sets to a tsv file.
+    """Writes a list of tuples sets to a TSV file.
 
     The members of the tuples will be written
     as string values in tab separated lines, with newlines and tabs
@@ -28,7 +28,7 @@ def writeList(data, dest, intCols=None):
     for linguistic features, which are strings or numbers.
 
     If there is no data, an empty file is created, with a header line.
-    If intCols is not given, the header line itself is empty.
+    If `intCols` is not given, the header line itself is empty.
 
     !!! caution "Equal length"
         It is assumed that all tuples have equal length.
@@ -73,16 +73,16 @@ def writeList(data, dest, intCols=None):
 
 
 def readList(source):
-    """Reads list of tuples from a tsv file.
+    """Reads list of tuples from a TSV file.
 
-    The first line of the tsv file will be interpreted as the types of the
+    The first line of the TSV file will be interpreted as the types of the
     columns.
 
     Parameters
     ----------
     source: string
         A file path. You may use `~` to refer to your home directory.
-        This file must contain a gzipped, pickled data structure.
+        This file must contain a `gzipped`, `pickled` data structure.
 
     Returns
     -------
@@ -115,7 +115,7 @@ def readList(source):
 def writeSets(sets, dest):
     """Writes a dictionary of named sets to file.
 
-    The dictionary will be written as a gzipped, pickled data structure.
+    The dictionary will be written as a `gzipped`, `pickled` data structure.
 
     Intended use: if you have constructed custom node sets that you want to use
     in search templates that run in the TF browser.
@@ -154,7 +154,7 @@ def readSets(source):
     ----------
     source: string
         A file path. You may use `~` to refer to your home directory.
-        This file must contain a gzipped, pickled data structure.
+        This file must contain a `gzipped`, `pickled` data structure.
 
     Returns
     -------

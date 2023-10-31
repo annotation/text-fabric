@@ -40,23 +40,23 @@ text-fabric-zip {org}/{repo}{relative} --backend=gitlab.huc.knaw.nl
 
 ### EFFECT
 
-Zips text-fabric data from your local github/gitlab repository into
-a release file, ready to be attached to a github release.
+Zips TF data from your local GitHub / GitLab repository into
+a release file, ready to be attached to a GitHub release.
 
 Your repo must sit in `~/github/*org*/*repo*` or in `~/gitlab/*org*/*repo*`
-or in whatever Gitlab backend you have chosen.
+or in whatever GitLab back-end you have chosen.
 
-Your TF data is assumed to sit in the toplevel tf directory of your repo.
+Your TF data is assumed to sit in the toplevel TF directory of your repo.
 But if it is somewhere else, you can pass relative, e.g phrases/heads/tf
 
-It is assumed that your tf directory contains subdirectories according to
-the versions of the main datasource.
-The actual .tf files are in those version directories.
+It is assumed that your TF directory contains subdirectories according to
+the versions of the main data source.
+The actual `.tf` files are in those version directories.
 
 Each of these version directories will be zipped into a separate file.
 
-The resulting zip files end up in ~/Downloads/*backend*/*org*-release/*repo*
-and the are named *relative*-*version*.zip
+The resulting zip files end up in `~/Downloads/backend/org-release/repo`
+and the are named `relative-version.zip`
 (where the / in relative have been replaced by -)
 
 """
@@ -83,30 +83,30 @@ def zipAll(app):
 
     *   the app
     *   the main data module
-    *   all modules mentioned in the moduleSpecs in the provenanceSpec of the app
-    *   all graphics data mentioned in the graphicsRelative of the provenanceSpec
-    *   all extra data mentioned in the extraData of the provenanceSpec
+    *   all modules mentioned in the `moduleSpecs` in the `provenanceSpec` of the app
+    *   all graphics data mentioned in the `graphicsRelative` of the `provenanceSpec`
+    *   all extra data mentioned in the `extraData` of the `provenanceSpec`
 
     The data will be zipped in a file complete.zip which can be unpacked
     in the ~/text-fabric-data directory.
 
-    !!! Hint
+    !!! hint
         You can attach this file straight to the latest release of of dataset
         on GitHub. This makes that users can download the dataset from GitHub
         without problems such as bumping against the GitHub API rate limit.
 
-    !!! Caution
-        All data should reside on the same backend.
+    !!! caution
+        All data should reside on the same back-end.
 
-    !!! Note "checkout files"
+    !!! note "checkout files"
         There will be `__checkout__.txt` files included in the zip file,
-        so that after unpacking Text-Fabric detects from which release the data is
+        so that after unpacking TF detects from which release the data is
         coming.
 
     Parameters
     ----------
     app: object
-        A loaded text-fabric datasource or None.
+        A loaded TF data source or None.
     """
     context = app.context
 
@@ -161,7 +161,7 @@ def zipAll(app):
         label = "-".join(labelItems)
         if mbase != base:
             good = False
-            console(f"ERROR: module {label} not on expected backend {backend}")
+            console(f"ERROR: module {label} not on expected back-end {backend}")
         dataItems.append((f"module {label}", f"{mrepoDir}{mrelative}/{version}"))
 
     if not good:
@@ -273,26 +273,26 @@ def zipData(
     Parameters
     ----------
     backend: string
-        The backend for which the zip file is meant (`github`, `gitlab`, etc).
+        The back-end for which the zip file is meant (`github`, `gitlab`, etc).
     org, repo: string
-        Where the corpus is located on the backend,
+        Where the corpus is located on the back-end,
     relative: string, optional "tf"
         The subdirectory of the repo that will be zipped.
     version: string, optional None
         If passed, only data of this version is zipped, otherwise all versions
         will be zipped.
     tf: boolean, optional True
-        Whether the data to be zipped are tf feature files or other kinds of data.
+        Whether the data to be zipped are TF feature files or other kinds of data.
     keep: boolean, optional True
-        Whether previously generated zipfiles in the destination directory should
+        Whether previously generated zip files in the destination directory should
         be kept or deleted.
     source: string, optional None
         Top directory under which the repository is found, if None; this directory
-        is given by the backend: `~/github`, `~/gitlab`, etc.
+        is given by the back-end: `~/github`, `~/gitlab`, etc.
     dest: string, optional None
-        Top directory under which the generated zipfiles are saved; if None,
+        Top directory under which the generated zip files are saved; if None,
         this directory under the user's Downloads directory and further determined by
-        the backend: `~/Downloads/github`, `~/Downloads/gitlab`, etc.
+        the back-end: `~/Downloads/github`, `~/Downloads/gitlab`, etc.
     """
 
     if source is None:

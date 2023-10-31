@@ -2,29 +2,25 @@
 # Display Settings.
 
 Display options are used by
-
-    tf.advanced.display.plain
-
+`tf.advanced.display.plain`
 and
-
-    tf.advanced.display.pretty
-
+`tf.advanced.display.pretty`
 and other display functions.
 
 This class manages
 
-* the provisining of options with defaults,
-* the overriding options by passing options as arguments to display functions
-* the retrieval of option values by the rest of the application.
+*   the provisioning of options with defaults,
+*   the overriding options by passing options as arguments to display functions
+*   the retrieval of option values by the rest of the application.
 
 !!! note "distinction between interface options and display options"
-    * all interface options are also display options and can be passed as arguments
-      to display functions
-    * interface options have a checkbox in the TF browser
+    *   all interface options are also display options and can be passed as arguments
+        to display functions
+    *   interface options have a checkbox in the TF browser
 
 Parameters
 ----------
-baseTypes: string | iterable, optional None`
+baseTypes: string | iterable, optional None
     **interface option**
     Node types at the bottom of pretty displays.
     The default is app dependent, usually the slot type of the corpus.
@@ -46,7 +42,7 @@ colorMap: dict, optional None
     !!! hint "color names"
         The link above points to a series of handy color names and their previews.
 
-    !!! note "highlights takes precedence over colorMap"
+    !!! note "`highlights` takes precedence over `colorMap`"
         If both `highlights` and `colorMap` are given, `colorMap` is ignored.
 
         If you need to micro-manage, `highlights` is your thing.
@@ -118,7 +114,7 @@ end: int, optional None
     If `None`, displaying will stop after the end of the iterable.
 
 extraFeatures: string | iterable, optional ()
-    A string or iterable of (node-/edge-) feature names.
+    A string or iterable of (node- / edge-) feature names.
     These features will be loaded automatically.
     In pretty displays these features will show up as `feature=value`,
     provided the value is not `None`, or something like None.
@@ -131,7 +127,7 @@ extraFeatures: string | iterable, optional ()
         Suppose you want to display a value from a related node, e.g. a `gloss`
         that is available on `lex` nodes but not on `word` nodes, and you
         want to show it on the word nodes.
-        Then you may specifiy `lex:gloss`, meaning that Text-Fabric will
+        Then you may specify `lex:gloss`, meaning that TF will
         look up a `lex` node from the current node (by means of `L.u(w, otype='lex')`,
         and if it finds one, it will read the `gloss` feature from it.
 
@@ -197,7 +193,7 @@ highlights: dict | set, optional {}
     If you map a node to the empty string, it will get the default highlight color.
 
     Highlights in plain display will be done, also for nodes deeply buried in the top node.
-    Slots are higlighted by coloring the background,
+    Slots are highlighted by coloring the background,
     all other nodes by colored frames around their material.
 
     !!! note "one big highlights dictionary"
@@ -214,7 +210,7 @@ lineNumbers: boolean, optional False
 
     !!! note "source data"
         Line numbers are with respect to the source data file that is contains the
-        origin material of the node in question, if a datasource provides
+        origin material of the node in question, if a data source provides
         a feature that contains line numbers.
 
     !!! caution "configuration"
@@ -235,13 +231,15 @@ noneValues: set, optional None
     !!! hint "None is useful"
         Keep `None` in the set. If not, all custom features will be displayed
         for all kinds of nodes. So you will see clause types on words,
-        and part of speech on clause atoms, al with value `None`.
+        and part of speech on clause atoms, all with value `None`.
 
     !!! hint "Suppress common values"
         You can use `noneValues` also to suppress the normal values of a feature,
         in order to attract attention to the more special values, e.g.
 
-            noneValues={None, 'NA', 'unknown', 'm', 'sg', 'p3'}
+        ```
+        noneValues={None, 'NA', 'unknown', 'm', 'sg', 'p3'}
+        ```
 
     !!! caution "None values affect all features"
         Beware of putting to much in `noneValues`.
@@ -271,7 +269,7 @@ showGraphics: boolean, optional True
     graphic elements.
 
     !!! caution "configuration"
-        Whether a corpus has graphics for some nodetypes and how to get them is
+        Whether a corpus has graphics for some node types and how to get them is
         configured in a corpus dependent app.
 
         If the corpus has no graphics, the default is `None`.
@@ -317,7 +315,7 @@ suppress: set, optional set()
     selectively.
 
 tupleFeatures: iterable of 2-tuples, optional ()
-    A bit like "extraFeatures" above, but more intricate.
+    A bit like `extraFeatures` above, but more intricate.
     Only meant to steer the
     `A.export()` function below into outputting the
     features you choose.
@@ -353,10 +351,10 @@ withNodes: boolean, optional False
         to look up all information
         about each node that the corpus has to offer:
 
-        * **F**: `tf.core.nodefeature.NodeFeature`
-        * **E**: `tf.core.edgefeature.EdgeFeature`
-        * **L**: `tf.core.locality.Locality`
-        * **T**: `tf.core.text.Text`
+        *   `F`: `tf.core.nodefeature.NodeFeature`
+        *   `E`: `tf.core.edgefeature.EdgeFeature`
+        *   `L`: `tf.core.locality.Locality`
+        *   `T`: `tf.core.text.Text`
 
 withTypes: boolean, optional False
     **interface option**
@@ -391,7 +389,7 @@ INTERFACE_OPTIONS = (
         "forceEdges",
         False,
         "forcee",
-        "show/hide the selected edge features",
+        "show / hide the selected edge features",
         "Show selected edge features in pretty displays, hide the unselected ones. "
         "If this is off, only the edge features that occur in the query are shown.",
         True,
@@ -490,13 +488,13 @@ INTERFACE_OPTIONS = (
         False,
     ),
 )
-"""Options that can be set on the interface of the text-fabric browser.
+"""Options that can be set on the interface of the TF browser.
 
 Every option is a tuple with members
 
 *   *option*: the name by which you can control this option in API functions;
 *   *default*: the value that is used if this option is nowhere explicitly given;
-*   *acro*: acronym for this option, used in the html as value for an id attribute;
+*   *acro*: acronym for this option, used in the HTML as value for an id attribute;
 *   *desc*: short description;
 *   *long*: long description;
 *   *move*: whether to move this option into a separate box in the text-fabric

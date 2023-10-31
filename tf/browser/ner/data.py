@@ -52,7 +52,7 @@ class Data(Corpus):
             This is wasteful.
 
             We have set up the web server in such a way that it incorporates the
-            annotation data. The webserver will pass it to the
+            annotation data. The web server will pass it to the
             `tf.browser.ner.annotate.Annotate` object initializer, which passes
             it to the initializer here.
 
@@ -96,7 +96,7 @@ class Data(Corpus):
     def fromSource(self):
         """Loads annotation data from source.
 
-        If the current annotation set is`""`, the annotation data is already in
+        If the current annotation set is `""`, the annotation data is already in
         the TF data,
         and we compile that data into a dict of entity data keyed by entity node.
 
@@ -185,7 +185,7 @@ class Data(Corpus):
     def process(self, changed):
         """Generated derived data structures out of the source data.
 
-        After loading we process the data into derived datastructures.
+        After loading we process the data into derived data structures.
 
         We try to be lazy. We only load data from disk if the data is not
         already in memory, or the data on disk has been updated since the last load.
@@ -201,10 +201,10 @@ class Data(Corpus):
 
         *   `dateProcessed`: datetime when the data was last processed
         *   `entityText`: dict, text of entity by entity node or line number in
-            tsv file;
+            TSV file;
         *   `entityTextVal`: dict of dict, set of feature values of entity, keyed by
             feature name and then by text of the entity;
-        *   `entitySummary`: dict, list of entity nodes/line numbers, keyed by value
+        *   `entitySummary`: dict, list of entity nodes / line numbers, keyed by value
             of entity kind;
         *   `entityIdent`: dict, list of entity nodes./line numbers, keyed by tuple of
             entity feature values (these tuples are identifying for an entity);
@@ -348,7 +348,7 @@ class Data(Corpus):
     def delEntity(self, vals, allMatches=None, silent=True):
         """Delete entity occurrences from the current set.
 
-        This operation is not allowed if the current set is the readonly set with the
+        This operation is not allowed if the current set is the read-only set with the
         empty name.
 
         The entities to delete are selected by their feature values.
@@ -427,7 +427,7 @@ class Data(Corpus):
     def delEntityRich(self, deletions, buckets, excludedTokens=set()):
         """Delete specified entity occurrences from the current set.
 
-        This operation is not allowed if the current set is the readonly set with the
+        This operation is not allowed if the current set is the read-only set with the
         empty name.
 
         This function has more detailed instructions as to which entities
@@ -526,7 +526,7 @@ class Data(Corpus):
                 tuple(sorted(stats.items())) if len(stats) else ["Nothing deleted"]
             )
             if excl:
-                report.append(f"Deletion: occurences excluded: {excl}")
+                report.append(f"Deletion: occurrences excluded: {excl}")
 
         if len(delEntities):
             self.weedEntities(delEntities)
@@ -550,7 +550,7 @@ class Data(Corpus):
     def addEntity(self, vals, allMatches, silent=True):
         """Add entity occurrences to the current set.
 
-        This operation is not allowed if the current set is the readonly set with the
+        This operation is not allowed if the current set is the read-only set with the
         empty name.
 
         The entities to add are specified by their feature values.
@@ -627,7 +627,7 @@ class Data(Corpus):
     def addEntities(self, newEntities, silent=True):
         """Add multiple entities efficiently to the current set.
 
-        This operation is not allowed if the current set is the readonly set with the
+        This operation is not allowed if the current set is the read-only set with the
         empty name.
 
         If you have multiple entities to add, it is wasteful to do multiple passes over
@@ -698,7 +698,7 @@ class Data(Corpus):
     def addEntityRich(self, additions, buckets, excludedTokens=set()):
         """Add specified entity occurrences to the current set.
 
-        This operation is not allowed if the current set is the readonly set with the
+        This operation is not allowed if the current set is the read-only set with the
         empty name.
 
         This function has more detailed instructions as to which entities
@@ -791,7 +791,7 @@ class Data(Corpus):
                 tuple(sorted(stats.items())) if len(stats) else ["Nothing added"]
             )
             if excl:
-                report.append(f"Addition: occurences excluded: {excl}")
+                report.append(f"Addition: occurrences excluded: {excl}")
 
         if len(addEntities):
             self.mergeEntities(addEntities)
@@ -815,7 +815,7 @@ class Data(Corpus):
     def weedEntities(self, delEntities):
         """Performs deletions to the current annotation set.
 
-        This operation is not allowed if the current set is the readonly set with the
+        This operation is not allowed if the current set is the read-only set with the
         empty name.
 
         Parameters
@@ -857,7 +857,7 @@ class Data(Corpus):
     def mergeEntities(self, newEntities):
         """Performs additions to the current annotation set.
 
-        This operation is not allowed if the current set is the readonly set with the
+        This operation is not allowed if the current set is the read-only set with the
         empty name.
 
         Parameters

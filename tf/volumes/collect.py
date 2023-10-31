@@ -3,7 +3,7 @@
 
 ## Usage
 
-```python
+``` python
 from tf.volumes import collect
 collect(
   (
@@ -14,7 +14,7 @@ collect(
 )
 ```
 
-```
+``` python
 collect(
   (
       (name1, location1),
@@ -69,7 +69,7 @@ def collect(
 ):
     """Creates a collection out of a number of volumes.
 
-    The volumes are individual TF data sets, the work is a new TF data set.
+    The volumes are individual TF datasets, the work is a new TF data set.
 
     You may pass as many volume data sources as you want.
 
@@ -146,7 +146,7 @@ def collect(
 
     overwrite: boolean, optional None
         If True, the target collection will be
-        be created and will replace any existing collection/volume of the same name.
+        be created and will replace any existing collection / volume of the same name.
         If None, the collection will only be created if it does not exist.
         No check will be performed as to whether an existing collection
         is equal to what would have been created by this call.
@@ -166,26 +166,28 @@ def collect(
         The name of the new feature is `volumeFeature`
         if it is a non-empty string, else it is the value of `volumeType`.
 
-        !!! caution "volumeType must be fresh"
+        !!! caution "`volumeType` must be fresh"
             It is an error if the `volumeType` is a node type that already
             occurs in one of the volumes.
 
-        !!! note "volumeFeature may exist"
+        !!! note "`volumeFeature` may exist"
             The `volumeFeature` may already exist in one or more volumes.
             In that case the new feature values for nodes of `volumeType` will
             just be added to it.
 
         Example
         -------
-            collect(
-                dict(
-                    banks='banks/tf/0.2',
-                    river='banks/tf/0.4',
-                ),
-                'riverbanks/tf/1.0',
-                volumeType='volume',
-                volumeFeature='vol',
-            )
+        ``` python
+        collect(
+            dict(
+                banks='banks/tf/0.2',
+                river='banks/tf/0.4',
+            ),
+            'riverbanks/tf/1.0',
+            volumeType='volume',
+            volumeFeature='vol',
+        )
+        ```
 
         This results in a work with nodes and features from the volumes
         found at the indicated places on your file system.
@@ -206,14 +208,14 @@ def collect(
         will be assigned to the combined feature.
 
         If you want to assign other meta data to specific features,
-        or pass meta data for new features that orginate from the merging process,
+        or pass meta data for new features that originate from the merging process,
         you can pass them in the parameter `featureMeta` as in the following example,
         where we pass meta data for a feature called `level` with integer values.
 
         The contents of the `otext.tf` features are also metadata,
         and their contents will be merged in exactly the same way.
 
-        So if the section/structure specifications and the formats are not
+        So if the section / structure specifications and the formats are not
         the same for all volumes, you will see them spread out
         in fields qualified by the volume name with a `!` sign between
         the key and the volume.
@@ -238,70 +240,76 @@ def collect(
 
     Example
     -------
-        collect(
-            dict(
-                banks='banks/tf/0.2',
-                river='banks/tf/0.4',
-            ),
-            'riverbanks/tf/1.0',
-            featureMeta=dict(
-              level=dict(
-                valueType='int',
-                description='level of a section node',
-              ),
-            ),
-        )
+    ``` python
+    collect(
+        dict(
+            banks='banks/tf/0.2',
+            river='banks/tf/0.4',
+        ),
+        'riverbanks/tf/1.0',
+        featureMeta=dict(
+          level=dict(
+            valueType='int',
+            description='level of a section node',
+          ),
+        ),
+    )
+    ```
 
     Example
     -------
-        collect(
-            dict(
-                banks='banks/tf/0.2',
-                river='banks/tf/0.4',
+    ``` python
+    collect(
+        dict(
+            banks='banks/tf/0.2',
+            river='banks/tf/0.4',
+        ),
+        'riverbanks/tf/1.0',
+        featureMeta=dict(
+            otext=dict(
+                volumeType='volume',
+                volumeFeature='vol',
+                sectionTypes='volume,chapter,line',
+                sectionFeatures='title,number,number',
             ),
-            'riverbanks/tf/1.0',
-            featureMeta=dict(
-                otext=dict(
-                    volumeType='volume',
-                    volumeFeature='vol',
-                    sectionTypes='volume,chapter,line',
-                    sectionFeatures='title,number,number',
-                ),
-            ),
-            silent=SILENT_D,
-        )
+        ),
+        silent=SILENT_D,
+    )
+    ```
 
     This will give rise to something like this (assuming that `banks` and
     `rivers` have some deviating material in their `otext.tf`:
 
-        @config
-        @compiler=Dirk Roorda
-        @dateWritten=2019-05-20T19:12:23Z
-        @fmt:line-default={letters:XXX}{terminator}
-        @fmt:line-term=line#{terminator}
-        @fmt:text-orig-extra={letters}{punc}{gap}
-        @fmt:text-orig-full={letters}
-        @fmt:text-orig-full!banks={letters}{punc}
-        @fmt:text-orig-full!rivers={letters}{gap}
-        @name=Culture quotes from Iain Banks
-        @purpose=exposition
-        @sectionFeatures=title,number,number
-        @sectionFeatures!banks=title,number,number
-        @sectionFeatures!rivers=number,number,number
-        @sectionTypes=volume,chapter,line
-        @sectionTypes!banks=book,chapter,sentence
-        @sectionTypes!rivers=chapter,sentence,line
-        @source=Good Reads
-        @status=with for similarities in a separate module
-        @structureFeatures!banks=title,number,number,number
-        @structureFeatures!rivers=title,number,number
-        @structureTypes!banks=book,chapter,sentence,line
-        @structureTypes!rivers=book,chapter,sentence
-        @url=https://www.goodreads.com/work/quotes/14366-consider-phlebas
-        @version=0.2
-        @writtenBy=Text-Fabric
-        @writtenBy=Text-Fabric
-        @dateWritten=2019-05-28T10:55:06Z
+    ```
+    @config
+    @compiler=Dirk Roorda
+    @dateWritten=2019-05-20T19:12:23Z
+    @fmt:line-default={letters:XXX}{terminator}
+    @fmt:line-term=line#{terminator}
+    @fmt:text-orig-extra={letters}{punc}{gap}
+    @fmt:text-orig-full={letters}
+    @fmt:text-orig-full!banks={letters}{punc}
+    @fmt:text-orig-full!rivers={letters}{gap}
+    @name=Culture quotes from Iain Banks
+    @purpose=exposition
+    @sectionFeatures=title,number,number
+    @sectionFeatures!banks=title,number,number
+    @sectionFeatures!rivers=number,number,number
+    @sectionTypes=volume,chapter,line
+    @sectionTypes!banks=book,chapter,sentence
+    @sectionTypes!rivers=chapter,sentence,line
+    @source=Good Reads
+    @status=with for similarities in a separate module
+    @structureFeatures!banks=title,number,number,number
+    @structureFeatures!rivers=title,number,number
+    @structureTypes!banks=book,chapter,sentence,line
+    @structureTypes!rivers=book,chapter,sentence
+    @url=https://www.goodreads.com/work/quotes/14366-consider-phlebas
+    @version=0.2
+    @writtenBy=Text-Fabric
+    @writtenBy=Text-Fabric
+    @dateWritten=2019-05-28T10:55:06Z
+    ```
 
     !!! caution "inter-version edges"
         Features with names starting in `omap@` contain node maps from
@@ -553,7 +561,7 @@ def collect(
         good = True
 
         # check whether volumes have overlapping slots
-        # we use the original work slots, provided by the owork feature
+        # we use the original work slots, provided by the `owork` feature
         # if it exists; otherwise we cannot know whether slots are overlapping
         info("Check against overlapping slots ...")
         indent(level=2, reset=True)
@@ -618,7 +626,7 @@ def collect(
         nW = sW
 
         indent(level=1)
-        info("Mapping nodes from volume to/from work ...")
+        info("Mapping nodes from volume to / from work ...")
         indent(level=2)
         for (nType, nodes) in nodesByType.items():
             startW = nW
@@ -780,7 +788,7 @@ def collect(
 
         # Indeed, when splitting the original work into volumes,
         # it might have been the case that certain top-level sections
-        # of the orginal work do not end up in one of the volumes.
+        # of the original work do not end up in one of the volumes.
 
         getOworkWI = {}
 

@@ -31,20 +31,20 @@ Now restart this notebook by clicking the circular arrow in the toolbar:
 
 ## If you do not have Python
 
-The fastest way to set up everything you need to use Text-Fabric is by installing the
+The fastest way to set up everything you need to use TF is by installing the
 JupyterLab Desktop application.
 
 This installs both JupyterLab and Python in one go,
 as a desktop application running under  Macos, Linux or Windows.
 
 The Jupyter Desktop App can be downloaded from
-[jupyterlab-desktop](https://github.com/jupyterlab/jupyterlab-desktop),
+[JupyterLab-desktop](https://github.com/jupyterlab/jupyterlab-desktop),
 choose the one that fits your system.
 
 After downloading, go to your downloads folder and install the application in the way
 you are used to, but notice the following:
 
-**on macos**: right-click the `.pkg` file, answer the dialogbox with `OK`. 
+**on macos**: right-click the `.pkg` file, answer the dialog box with `OK`. 
 
 **on all platforms**: install for the current user, not for all users, otherwise
 you run into problems later on.
@@ -63,44 +63,45 @@ sudo chown -R username:username /opt/JupyterLab
 Two installers will be launched, let them work with the same default
 location for installation.
 
-### Work with Text-Fabric
+### Work with TF
 
 In a notebook, put this *incantation* in a cell and run it:
 
-```
+``` python
 from tf.app import use
 ```
 
 And in a next cell, load the data of some corpus, e.g. `annotation/banks`.
 
 
-```
+``` python
 A = use("annotation/banks")
 ```
 
-The first time you do this you will see that the data is being downloaded and prepared for its first use.
-If you do this a second time, the data is already on your computer in preprocessed form, and Text-Fabric
-will see that data and load it quickly.
+The first time you do this you will see that the data is being downloaded and
+prepared for its first use.
+If you do this a second time, the data is already on your computer in
+pre-processed form, and TF will see that data and load it quickly.
 
 From here you can use a
 [tutorial](https://nbviewer.org/github/annotation/banks/blob/master/tutorial/use.ipynb).
 
 More extensive tutorials are available for other corpora, see `tf.about.corpora`.
 
-### Text-Fabric browser
+### TF browser
 
-You can also work with Text-Fabric outside any programming context, just in the browser.
+You can also work with TF outside any programming context, just in the browser.
 
 In a terminal, say
 
 ``` sh
-text-fabric annotation/banks
+tf annotation/banks
 ```
 
 Or, in a notebook cell, say
 
-```
-!text-fabric annotation/banks
+``` sh
+!tf annotation/banks
 ```
 
 Wait a few seconds and you see a new window in your browser
@@ -108,19 +109,19 @@ with an interface to submit queries to the corpus.
 
 #### Note for Linux users
 
-* On Ubuntu the `text-fabric` script ends up in your `~/.local/bin` directory,
-  but this is not on your PATH.
-* You need to execute your `.profile` file first by:
+*   On Ubuntu the `tf` script ends up in your `~/.local/bin` directory,
+    but this is not on your PATH.
+*   You need to execute your `.profile` file first by:
 
-```sh
+``` sh
 source ~/.profile
 ```
 
 You need to do this every time when you open a new terminal and
-want to run Text-Fabric.
+want to run TF.
 If you get tired of this, you can add this to your `.bashrc` file:
 
-```sh
+``` sh
 PATH="~/.local/bin:${PATH}"
 export PATH
 ```

@@ -1,13 +1,13 @@
 # Unit tests
 
-The Text-Fabric program code implements a combinatorical explosion.
+The TF program code implements a combinatorial explosion.
 There are many environments in which the core engine operates, there
 are several apps that make use of it, and there is a built in query language.
 
 One way of mastering the complexity and safeguarding the correctness of it all,
 is by employing [unit tests](https://en.wikipedia.org/wiki/Unit_testing).
 
-To my embarrassment, most parts of Text-Fabric are not covered by unit tests.
+To my embarrassment, most parts of TF are not covered by unit tests.
 
 Here we describe the parts that are covered.
 But first a few words about the machinery of unit testing.
@@ -16,7 +16,7 @@ But first a few words about the machinery of unit testing.
 
 We build a
 [test corpus](https://github.com/annotation/text-fabric/tree/master/test/generic/tf),
-wich contains only 10 slots, with node type `sign` and one other node type `part`.
+which contains only 10 slots, with node type `sign` and one other node type `part`.
 
 The code to build it is in
 [makeTestTf.py](https://github.com/annotation/text-fabric/blob/master/test/generic/makeTestTf.py).
@@ -26,7 +26,7 @@ Probably the corpus will be enlarged when new tests are being implemented.
 ## Framework
 
 We use the
-[unittest](https://docs.python.org/3/library/unittest.html#module-unittest)
+[`unittest`](https://docs.python.org/3/library/unittest.html#module-unittest)
 framework that comes with Python.
 
 It is just a few lines to setup a test class, hence we have not yet separated the code

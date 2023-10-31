@@ -1,14 +1,14 @@
 # Usage
 
-You can work with the TF-browser or with the TF-API.
+You can work with the TF browser or with the TF API.
 In both cases, the data will be automatically downloaded.
 
-## TF-browser
+## TF browser
 
-The basic command to start the TF-browser (`tf.about.browser`) is:
+The basic command to start the TF browser (`tf.about.browser`) is:
 
 ``` sh
-text-fabric org/repo
+tf org/repo
 ```
 
 (More details in `tf.browser.start`).
@@ -38,7 +38,7 @@ advanced API functions (`tf.advanced`).
 
 ## Search templates
 
-Text-Fabric has a templates-based search engine (`tf.about.searchusage`)
+TF has a templates-based search engine (`tf.about.searchusage`)
 which follows closely the features of the annotations to the corpus.
 
 (Uruk)
@@ -74,7 +74,7 @@ aya\n",
   <: word pos=noun posx=proper root=Alh
 ```
 
-## Text-Fabric API
+## TF API
 
 Beyond searching, you can program your own analytical methods.
 You can "talk" to your corpus through the high-level API (`tf.advanced`)
@@ -82,6 +82,6 @@ dedicated to your corpus which can download its data and display its material.
 
 You can use it together with the core API (`tf.core`) to
 
-* search your corpus programmatically by means of the same templates,
-* prepare derived data for analysis in R, and
-* create new data and distribute it to others.
+*   search your corpus programmatically by means of the same templates,
+*   prepare derived data for analysis in R, and
+*   create new data and distribute it to others.

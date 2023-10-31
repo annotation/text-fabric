@@ -100,7 +100,7 @@ def entityMatch(
             *   `tokens` all tokens of the bucket, each token is a tuple consisting
                 of its slot number (position) and string value;
             *   `matches`: a list of the positions of the found occurrences for the
-                `qTokens` and/or `eVals` in the bucket;
+                `qTokens` and / or `eVals` in the bucket;
             *   `positions`: a set of positions in the bucket where the
                 `bFindRe` starts to match;
 

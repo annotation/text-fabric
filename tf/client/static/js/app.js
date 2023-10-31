@@ -4,15 +4,16 @@
  *
  * This is a Web App that implements Layered Search in a Corpus.
  * The app is a single page app (SPA), meant to work with a static HTML file,
- * not served by a webserver, not even by localhost, although both should be possible.
+ * not served by a web server, not even by localhost,
+ * although both should be possible.
  *
  * Author:
  *
  * Dirk Roorda (https://pure.knaw.nl/portal/en/persons/dirk-roorda)
- * Organisation: KNAW/HuC (https://huc.knaw.nl)
+ * Organization: KNAW/HuC (https://huc.knaw.nl)
  * License: MIT (https://mit-license.org)
  *
- * Acknowledgements:
+ * Acknowledgments:
  *
  * The first development of this concept was inspired by
  * Cody Kingham (https://www.linkedin.com/in/cody-kingham-1135018a)
@@ -47,7 +48,7 @@
  * Corpus       Manages incoming bulk data of the corpus
  * Search       Implements the search algorithm
  *
- * Application  Generic logic of a typical webapp
+ * Application  Generic logic of a typical web app
  * ----------------------------------------------
  * State        Single source of truth about computations and user interactions
  * Job          Task units that can be saved and loaded, imported and exported
@@ -133,7 +134,7 @@ class AppProvider {
  *
  * Document loading:
  * we take care that the user sees as much of the interface as early as possible.
- * We specifiy all scripts in the header of the document, but with the defer
+ * We specify all scripts in the header of the document, but with the defer
  * attribute, so that the scripts load asynchronously
  * and are executed in the given order:
  *
@@ -156,7 +157,7 @@ class AppProvider {
  * Then the app continues by fetching the most recent known job, if any,
  * and executes its query
  *
- * Only then the app is ready to use, and the progress/waiting markers disappear.
+ * Only then the app is ready to use, and the progress / waiting markers disappear.
  */
 
   constructor() {

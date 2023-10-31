@@ -82,7 +82,7 @@ def multiEdges(searchExe):
     error = api.TF.error
 
     medgesIndex = {}
-    # will be a dict keyed by edge destination, then by upper/lower bound
+    # will be a dict keyed by edge destination, then by upper / lower bound
     # and then the values are directed edges
     for (e, (f, rela, t)) in enumerate(qedges):
         relInfo = relations[rela]

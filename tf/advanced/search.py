@@ -61,15 +61,15 @@ def search(
         the search template (`tf.about.searchusage`)
         that has to be searched for.
 
-    silent: string, optional tf.core.timestamp.SILENT_D`
+    silent: string, optional `tf.core.timestamp.SILENT_D`
         See `tf.core.timestamp.Timestamp`
 
     shallow: boolean, optional False
         If `True` or `1`, the result is a set of things that match the top-level element
         of the `query`.
 
-        If `2` or a bigger number *n*, return the set of truncated result tuples: only
-        the first *n* members of each tuple are retained.
+        If `2` or a bigger number `n`, return the set of truncated result tuples: only
+        the first `n` members of each tuple are retained.
 
         If `False` or `0`, a list of all result tuples will be returned.
 
@@ -81,8 +81,10 @@ def search(
         that have a gap, you can pass `sets=dict(gphrase=gappedPhrases)`,
         and then in your query you can say
 
-           gphrase function=Pred`
-             word sp=verb`
+        ```
+        gphrase function=Pred
+          word sp=verb
+        ```
 
         etc.
 
@@ -105,7 +107,9 @@ def search(
         !!! note "canonical sort key for tuples"
             This sort is achieved by using the function
 
-               tf.core.nodes.Nodes.sortKeyTuple`
+            ```
+            tf.core.nodes.Nodes.sortKeyTuple
+            ```
 
             as sort key.
 
@@ -193,8 +197,8 @@ def runSearch(app, query, cache):
     """A wrapper around the generic search interface of TF.
 
     Before running the TF search, the *query* will be looked up in the *cache*.
-    If present, its cached results/error messages will be returned.
-    If not, the query will be run, results/error messages collected, put in the *cache*,
+    If present, its cached results / error messages will be returned.
+    If not, the query will be run, results / error messages collected, put in the *cache*,
     and returned.
 
     !!! note "Context web app"

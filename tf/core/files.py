@@ -79,7 +79,7 @@ def prefixSlash(path):
 
 
 def getLocation(targetDir=None):
-    """Get backend, org, repo, relative of directory.
+    """Get back-end, org, repo, relative of directory.
 
     Parameters
     ----------
@@ -103,8 +103,8 @@ def getLocation(targetDir=None):
     Returns
     -------
     tuple
-        backend, org, repo, relative.
-        Relative is either empty or it starts with a "/" plus a non-empty path.
+        Consisting of `backend`, `org`, `repo`, `relative`.
+        `relative` is either empty or it starts with a "/" plus a non-empty path.
     """
     curDir = normpath(os.getcwd())
     if targetDir is not None:
@@ -137,15 +137,15 @@ def getLocation(targetDir=None):
 
 
 def backendRep(be, kind, default=None):
-    """Various backend dependent values.
+    """Various back-end dependent values.
 
-    First of all, the backend value is
+    First of all, the back-end value is
     normalized. Then related values are computed.
 
     Parameters
     ----------
     be: string or None
-        The raw backend value.
+        The raw back-end value.
         It will be normalized first, where missing, undefined, empty values are
         converted to the string `github`, and other values will be lower-cased.
         Also, `github.com` and `gitlab.com` will be shortened to `github` and `gitlab`.
@@ -153,31 +153,32 @@ def backendRep(be, kind, default=None):
     kind: string
         Indicates what kind of related value should be returned:
 
-        * `norm`: the normalized value as described above
-        * `tech`: technology of the backend: either `github` or `gitlab` or None;
-          we assume that there is only one GitHub; that there are many Gitlabs;
-          any backend that is not `github` is an instance of `gitlab`.
-        * `name`: lowercase shortest name of the backend: `github` or `gitlab`
-          or a server name like `gitlab.huc.knaw.nl`
-        * `machine`: lowercase machine name of the backend: `github.com` or `gitlab.com`
-          or a server name like `gitlab.huc.knaw.nl`
-        * `spec`: enclosed in `<` and `>`. Depending on the parameter `default`
-          the empty string is returned instead.
-        * `clone`: base directory where clones of repos in this backend are stored
-          `~/github`, etc.
-        * `cache`: base directory where data downloads from this backend are stored:
-          `~/text-fabric-data/github`, etc.
-        * `url`: url of the online backend
-        * `urlnb`: url of notebooks from the online backend, rendered on NB-Viewer
-        * `pages`: base url of the Pages service of the backend
+        *   `norm`: the normalized value as described above
+        *   `tech`: technology of the back-end: either `github` or `gitlab` or None;
+            we assume that there is only one GitHub; that there are many GitLabs;
+            any back-end that is not `github` is an instance of `gitlab`.
+        *   `name`: lowercase shortest name of the back-end: `github` or `gitlab`
+            or a server name like `gitlab.huc.knaw.nl`
+        *   `machine`: lowercase machine name of the back-end: `github.com` or
+            `gitlab.com`
+            or a server name like `gitlab.huc.knaw.nl`
+        *   `spec`: enclosed in `<` and `>`. Depending on the parameter `default`
+            the empty string is returned instead.
+        *   `clone`: base directory where clones of repos in this back-end are stored
+            `~/github`, etc.
+        *   `cache`: base directory where data downloads from this back-end are stored:
+            `~/text-fabric-data/github`, etc.
+        *   `url`: URL of the online back-end
+        *   `urlnb`: URL of notebooks from the online back-end, rendered on NB-Viewer
+        *   `pages`: base URL of the Pages service of the back-end
 
     default: boolean, optional False
         Only relevant for `kind` = `rep`.
         If `default` is passed and not None and `be` is equal to `default`,
         then the empty string is returned.
 
-        Explanation: this is used to supply a backend specifier to a module
-        but only if that module has a different backend than the main module.
+        Explanation: this is used to supply a back-end specifier to a module
+        but only if that module has a different back-end than the main module.
 
     Returns
     -------
@@ -247,20 +248,20 @@ def backendRep(be, kind, default=None):
 def annotateDir(app, tool):
     """Return the input and output directories for a specific annotation tool.
 
-    * The input directory is located next to the tf data of the corpus
-    * The output directory is located in the `_temp` dir next to the tf data of
-      the corpus
+    *   The input directory is located next to the TF data of the corpus
+    *   The output directory is located in the `_temp` directory next to the TF data of
+        the corpus
 
     Parameters
     ----------
     app: object
-        the Text-Fabric app
+        the TF app
     tool: string
         The name of the annotation tool
 
     Returns
     -------
-    str
+    string
         The path of the working directory for that tool and that corpus
     """
     context = app.context
@@ -270,14 +271,14 @@ def annotateDir(app, tool):
 
 
 URL_TFDOC = f"https://{ORG}.{backendRep(GH, 'pages')}/{REPO}/tf"
-"""Base url of the online Text-Fabric documentation."""
+"""Base URL of the online TF documentation."""
 
 
 APIREF = f"https://{ORG}.{backendRep(GH, 'pages')}/{REPO}/tf/cheatsheet.html"
-"""Link to the Api docs of Text-Fabric."""
+"""Link to the Api docs of TF."""
 
 SEARCHREF = f"https://{ORG}.{backendRep(GH, 'pages')}/{REPO}/tf/about/searchusage.html"
-"""Link to the Search docs of Text-Fabric."""
+"""Link to the Search docs of TF."""
 
 
 DOWNLOADS = f"{_homeDir}/Downloads"
@@ -288,7 +289,7 @@ EXPRESS_SYNC = "__checkout__.txt"
 """Name of cache indicator file.
 
 When a dataset is stored in the cache,
-information about the release/commit is stored in a file
+information about the release / commit is stored in a file
 with this name.
 """
 
@@ -319,19 +320,19 @@ APP_APP = "app"
 """Name of the top-level directory of a TF app."""
 
 APP_DISPLAY = "static/display.css"
-"""Relative path of the css file of a TF app."""
+"""Relative path of the CSS file of a TF app."""
 
 SERVER_DISPLAY_BASE = "/browser/static"
-"""Base of server css files."""
+"""Base of server CSS files."""
 
 SERVER_DISPLAY = ("fonts.css", "display.css", "highlight.css")
-"""Bunch of TF-generic css files."""
+"""Bunch of TF generic CSS files."""
 
 TOOL_DISPLAY_BASE = "/browser/{}/static"
-"""Base of tool css files."""
+"""Base of tool CSS files."""
 
 TOOL_DISPLAY = ("base.css",)
-"""Bunch of tool-specific css files."""
+"""Bunch of tool-specific CSS files."""
 
 TEMP_DIR = "_temp"
 """Name of temporary directories.
@@ -346,11 +347,11 @@ TEMP_DIR = "_temp"
 """
 
 LOCATIONS = ["~/text-fabric-data"]
-"""Default locations for tf data files.
+"""Default locations for TF data files.
 
 If the `locations` parameter for the `tf.fabric.Fabric` call is omitted,
 this is the default.
-Text-Fabric will search all these directories as for `.tf` modules of files.
+TF will search all these directories as for `.tf` modules of files.
 """
 
 LOCAL = "_local"
@@ -366,8 +367,8 @@ LS = "layeredsearch"
 """Directory where layered search code is stored.
 
 Layered search is client-side search, generated in a dedicated search repo.
-If the main data resides in org/repo, then the layered search code resides
-in org/repo-search/layeredsearch.
+If the main data resides in `org/repo`, then the layered search code resides
+in `org/repo-search/layeredsearch`.
 """
 
 
@@ -377,7 +378,7 @@ def dirEmpty(target):
 
 
 def clearTree(path):
-    """Remove all files from a directory, recursively, but leave subdirs.
+    """Remove all files from a directory, recursively, but leave subdirectories.
 
     Reason: we want to inspect output in an editor.
     But if we remove the directories, the editor looses its current directory
@@ -450,7 +451,7 @@ def baseNm(path):
 
 
 def splitPath(path):
-    """Split a filename in a directory part and a file part."""
+    """Split a file name in a directory part and a file part."""
     return os.path.split(path)
 
 
@@ -579,6 +580,44 @@ def dirContents(path):
             dirs.append(entry)
 
     return (tuple(files), tuple(dirs))
+
+
+def dirAllFiles(path):
+    """Gets all the files found by `path`.
+
+    The result is just `[path]` if `path` is a file, otherwise the list of files under
+    `path`, recursively.
+
+    The files are sorted alphabetically by path name.
+
+    Parameters
+    ----------
+    path: string
+        The path to the file or directory on the file system.
+
+    Returns
+    -------
+    tuple of string
+        The names of the files under `path`, starting with `path`, followed
+        by the bit relative to `path`.
+    """
+    if fileExists(path):
+        return [path]
+
+    if not dirExists(path):
+        return []
+
+    files = []
+
+    for entry in os.listdir(path):
+        name = f"{path}/{entry}"
+
+        if os.path.isfile(name):
+            files.append(name)
+        elif os.path.isdir(name):
+            files.extend(dirAllFiles(name))
+
+    return tuple(sorted(files))
 
 
 def getCwd():
