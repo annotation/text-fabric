@@ -38,7 +38,7 @@ processed if it is needed and out of date.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L1-L899" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/data.py#L1-L934" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Annotation data module.
 
@@ -101,6 +101,8 @@ class Data(Corpus):
             In that way, the `Data` object can start with the data already in memory.
         &#34;&#34;&#34;
         super().__init__()
+        if not self.properlySetup:
+            return
 
         if data is None:
             data = AttrDict()
@@ -119,6 +121,9 @@ class Data(Corpus):
         *   loading the source data (see `Data.fromSource()`)
         *   processing the loaded source data (see `Data.process()`)
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         data = self.data
         annoSet = self.annoSet
 
@@ -154,6 +159,9 @@ class Data(Corpus):
             each entity specifies a tuple of feature values and a list of slots
             that are part of the entity.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return None
+
         settings = self.settings
         data = self.data
         annoSet = self.annoSet
@@ -281,6 +289,9 @@ class Data(Corpus):
         changed: boolean
             Whether the data has changed since last processing.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         settings = self.settings
         features = settings.features
         getText = self.getText
@@ -421,6 +432,9 @@ class Data(Corpus):
 
             If the operation is not allowed, both integers above are set to -1.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         annoSet = self.annoSet
         annoSetRep = self.annoSetRep
 
@@ -498,6 +512,9 @@ class Data(Corpus):
             skipped from deletion. If the last slot of an entity is in this set,
             the entity will not be deleted.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         annoSet = self.annoSet
         annoSetRep = self.annoSetRep
         browse = self.browse
@@ -621,6 +638,9 @@ class Data(Corpus):
 
             If the operation is not allowed, both integers above are set to -1.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         annoSet = self.annoSet
         annoSetRep = self.annoSetRep
 
@@ -698,6 +718,9 @@ class Data(Corpus):
 
             If the operation is not allowed, both integers above are set to -1.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         annoSet = self.annoSet
         annoSetRep = self.annoSetRep
 
@@ -768,6 +791,9 @@ class Data(Corpus):
             receive new entities. If the last slot of an entity is in this set,
             no entity will be added there.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         annoSet = self.annoSet
         annoSetRep = self.annoSetRep
         browse = self.browse
@@ -865,6 +891,9 @@ class Data(Corpus):
             The set consists of entity specs: a tuple of values of entity features,
             and an iterable of slot tuples where the entity is located.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         annoSet = self.annoSet
         annoSetRep = self.annoSetRep
 
@@ -907,6 +936,9 @@ class Data(Corpus):
             The set consists of entity specs: a tuple of values of entity features,
             and an iterable of slot tuples where the entity is located.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         annoSet = self.annoSet
         annoSetRep = self.annoSetRep
 
@@ -933,6 +965,9 @@ class Data(Corpus):
         dataFile: string
             The path of the file to write to.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         setData = self.getSetData()
         entities = setData.entities
 
@@ -981,7 +1016,7 @@ it to the initializer here.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L32-L899" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/data.py#L32-L934" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Data(Corpus):
     def __init__(self, data=None):
@@ -1013,6 +1048,8 @@ it to the initializer here.</p>
             In that way, the `Data` object can start with the data already in memory.
         &#34;&#34;&#34;
         super().__init__()
+        if not self.properlySetup:
+            return
 
         if data is None:
             data = AttrDict()
@@ -1031,6 +1068,9 @@ it to the initializer here.</p>
         *   loading the source data (see `Data.fromSource()`)
         *   processing the loaded source data (see `Data.process()`)
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         data = self.data
         annoSet = self.annoSet
 
@@ -1066,6 +1106,9 @@ it to the initializer here.</p>
             each entity specifies a tuple of feature values and a list of slots
             that are part of the entity.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return None
+
         settings = self.settings
         data = self.data
         annoSet = self.annoSet
@@ -1193,6 +1236,9 @@ it to the initializer here.</p>
         changed: boolean
             Whether the data has changed since last processing.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         settings = self.settings
         features = settings.features
         getText = self.getText
@@ -1333,6 +1379,9 @@ it to the initializer here.</p>
 
             If the operation is not allowed, both integers above are set to -1.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         annoSet = self.annoSet
         annoSetRep = self.annoSetRep
 
@@ -1410,6 +1459,9 @@ it to the initializer here.</p>
             skipped from deletion. If the last slot of an entity is in this set,
             the entity will not be deleted.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         annoSet = self.annoSet
         annoSetRep = self.annoSetRep
         browse = self.browse
@@ -1533,6 +1585,9 @@ it to the initializer here.</p>
 
             If the operation is not allowed, both integers above are set to -1.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         annoSet = self.annoSet
         annoSetRep = self.annoSetRep
 
@@ -1610,6 +1665,9 @@ it to the initializer here.</p>
 
             If the operation is not allowed, both integers above are set to -1.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         annoSet = self.annoSet
         annoSetRep = self.annoSetRep
 
@@ -1680,6 +1738,9 @@ it to the initializer here.</p>
             receive new entities. If the last slot of an entity is in this set,
             no entity will be added there.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         annoSet = self.annoSet
         annoSetRep = self.annoSetRep
         browse = self.browse
@@ -1777,6 +1838,9 @@ it to the initializer here.</p>
             The set consists of entity specs: a tuple of values of entity features,
             and an iterable of slot tuples where the entity is located.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         annoSet = self.annoSet
         annoSetRep = self.annoSetRep
 
@@ -1819,6 +1883,9 @@ it to the initializer here.</p>
             The set consists of entity specs: a tuple of values of entity features,
             and an iterable of slot tuples where the entity is located.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         annoSet = self.annoSet
         annoSetRep = self.annoSetRep
 
@@ -1845,6 +1912,9 @@ it to the initializer here.</p>
         dataFile: string
             The path of the file to write to.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         setData = self.getSetData()
         entities = setData.entities
 
@@ -1897,7 +1967,7 @@ asked to be deleted and the number of actually deleted entities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L627-L695" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/data.py#L647-L718" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addEntities(self, newEntities, silent=True):
     &#34;&#34;&#34;Add multiple entities efficiently to the current set.
@@ -1931,6 +2001,9 @@ asked to be deleted and the number of actually deleted entities.</p>
 
         If the operation is not allowed, both integers above are set to -1.
     &#34;&#34;&#34;
+    if not self.properlySetup:
+        return
+
     annoSet = self.annoSet
     annoSetRep = self.annoSetRep
 
@@ -2002,7 +2075,7 @@ asked to be deleted and the number of actually deleted entities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L550-L625" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/data.py#L567-L645" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addEntity(self, vals, allMatches, silent=True):
     &#34;&#34;&#34;Add entity occurrences to the current set.
@@ -2036,6 +2109,9 @@ asked to be deleted and the number of actually deleted entities.</p>
 
         If the operation is not allowed, both integers above are set to -1.
     &#34;&#34;&#34;
+    if not self.properlySetup:
+        return
+
     annoSet = self.annoSet
     annoSetRep = self.annoSetRep
 
@@ -2116,7 +2192,7 @@ no entity will be added there.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L697-L812" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/data.py#L720-L838" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addEntityRich(self, additions, buckets, excludedTokens=set()):
     &#34;&#34;&#34;Add specified entity occurrences to the current set.
@@ -2150,6 +2226,9 @@ no entity will be added there.</dd>
         receive new entities. If the last slot of an entity is in this set,
         no entity will be added there.
     &#34;&#34;&#34;
+    if not self.properlySetup:
+        return
+
     annoSet = self.annoSet
     annoSetRep = self.annoSetRep
     browse = self.browse
@@ -2270,7 +2349,7 @@ asked to be deleted and the number of actually deleted entities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L348-L425" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/data.py#L359-L439" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def delEntity(self, vals, allMatches=None, silent=True):
     &#34;&#34;&#34;Delete entity occurrences from the current set.
@@ -2306,6 +2385,9 @@ asked to be deleted and the number of actually deleted entities.</p>
 
         If the operation is not allowed, both integers above are set to -1.
     &#34;&#34;&#34;
+    if not self.properlySetup:
+        return
+
     annoSet = self.annoSet
     annoSetRep = self.annoSetRep
 
@@ -2386,7 +2468,7 @@ the entity will not be deleted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L427-L548" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/data.py#L441-L565" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def delEntityRich(self, deletions, buckets, excludedTokens=set()):
     &#34;&#34;&#34;Delete specified entity occurrences from the current set.
@@ -2420,6 +2502,9 @@ the entity will not be deleted.</dd>
         skipped from deletion. If the last slot of an entity is in this set,
         the entity will not be deleted.
     &#34;&#34;&#34;
+    if not self.properlySetup:
+        return
+
     annoSet = self.annoSet
     annoSetRep = self.annoSetRep
     browse = self.browse
@@ -2534,7 +2619,7 @@ that are part of the entity.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L96-L183" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/data.py#L101-L191" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fromSource(self):
     &#34;&#34;&#34;Loads annotation data from source.
@@ -2555,6 +2640,9 @@ that are part of the entity.</li>
         each entity specifies a tuple of feature values and a list of slots
         that are part of the entity.
     &#34;&#34;&#34;
+    if not self.properlySetup:
+        return None
+
     settings = self.settings
     data = self.data
     annoSet = self.annoSet
@@ -2639,7 +2727,7 @@ that are part of the entity.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L72-L94" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/data.py#L74-L99" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadData(self):
     &#34;&#34;&#34;Loads data of the current annotation set into memory.
@@ -2649,6 +2737,9 @@ that are part of the entity.</li>
     *   loading the source data (see `Data.fromSource()`)
     *   processing the loaded source data (see `Data.process()`)
     &#34;&#34;&#34;
+    if not self.properlySetup:
+        return
+
     data = self.data
     annoSet = self.annoSet
 
@@ -2682,7 +2773,7 @@ and an iterable of slot tuples where the entity is located.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L856-L881" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/data.py#L885-L913" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mergeEntities(self, newEntities):
     &#34;&#34;&#34;Performs additions to the current annotation set.
@@ -2696,6 +2787,9 @@ and an iterable of slot tuples where the entity is located.</dd>
         The set consists of entity specs: a tuple of values of entity features,
         and an iterable of slot tuples where the entity is located.
     &#34;&#34;&#34;
+    if not self.properlySetup:
+        return
+
     annoSet = self.annoSet
     annoSetRep = self.annoSetRep
 
@@ -2771,7 +2865,7 @@ entities in the surrounding context of tokens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L185-L346" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/data.py#L193-L357" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def process(self, changed):
     &#34;&#34;&#34;Generated derived data structures out of the source data.
@@ -2830,6 +2924,9 @@ entities in the surrounding context of tokens.</p>
     changed: boolean
         Whether the data has changed since last processing.
     &#34;&#34;&#34;
+    if not self.properlySetup:
+        return
+
     settings = self.settings
     features = settings.features
     getText = self.getText
@@ -2952,7 +3049,7 @@ entities in the surrounding context of tokens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L883-L899" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/data.py#L915-L934" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def saveEntitiesAs(self, dataFile):
     &#34;&#34;&#34;Export the data of an annotation set to a file.
@@ -2965,6 +3062,9 @@ entities in the surrounding context of tokens.</p>
     dataFile: string
         The path of the file to write to.
     &#34;&#34;&#34;
+    if not self.properlySetup:
+        return
+
     setData = self.getSetData()
     entities = setData.entities
 
@@ -2989,7 +3089,7 @@ and an iterable of slot tuples where the entity is located.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L814-L854" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/data.py#L840-L883" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def weedEntities(self, delEntities):
     &#34;&#34;&#34;Performs deletions to the current annotation set.
@@ -3003,6 +3103,9 @@ and an iterable of slot tuples where the entity is located.</dd>
         The set consists of entity specs: a tuple of values of entity features,
         and an iterable of slot tuples where the entity is located.
     &#34;&#34;&#34;
+    if not self.properlySetup:
+        return
+
     annoSet = self.annoSet
     annoSetRep = self.annoSetRep
 
@@ -3056,6 +3159,7 @@ and an iterable of slot tuples where the entity is located.</dd>
 <li><code><a title="tf.browser.ner.corpus.Corpus.getText" href="corpus.html#tf.browser.ner.corpus.Corpus.getText">getText</a></code></li>
 <li><code><a title="tf.browser.ner.corpus.Corpus.getTextR" href="corpus.html#tf.browser.ner.corpus.Corpus.getTextR">getTextR</a></code></li>
 <li><code><a title="tf.browser.ner.corpus.Corpus.getTokens" href="corpus.html#tf.browser.ner.corpus.Corpus.getTokens">getTokens</a></code></li>
+<li><code><a title="tf.browser.ner.corpus.Corpus.properlySetup" href="corpus.html#tf.browser.ner.corpus.Corpus.properlySetup">properlySetup</a></code></li>
 <li><code><a title="tf.browser.ner.corpus.Corpus.sectionHead" href="corpus.html#tf.browser.ner.corpus.Corpus.sectionHead">sectionHead</a></code></li>
 <li><code><a title="tf.browser.ner.corpus.Corpus.slotType" href="corpus.html#tf.browser.ner.corpus.Corpus.slotType">slotType</a></code></li>
 </ul>

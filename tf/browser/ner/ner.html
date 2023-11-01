@@ -189,7 +189,7 @@ slots.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/ner.py#L1-L504" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/ner.py#L1-L519" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;API for rule-based entity marking.
 
@@ -444,6 +444,9 @@ class NER(Annotate):
             The object that corresponds to a loaded TF app for a corpus.
         &#34;&#34;&#34;
         super().__init__(app)
+        if not self.properlySetup:
+            return
+
         self.instructions = None
         &#34;&#34;&#34;Will contain the information in a spreadsheet for marking up entities.&#34;&#34;&#34;
 
@@ -478,6 +481,9 @@ class NER(Annotate):
             If True, the conversion from Excel to YAML will take place anyhow, provided
             the Excel sheet exists.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         sheetDir = self.sheetDir
 
         xlsFile = f&#34;{sheetDir}/{sheetName}.xlsx&#34;
@@ -613,6 +619,9 @@ class NER(Annotate):
         It is a dictionary, keyed by sequences of tokens, whose values are the
         slot sequences where those token sequences occur in the corpus.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         instructions = self.instructions
         settings = self.settings
         spaceEscaped = settings.spaceEscaped
@@ -631,6 +640,9 @@ class NER(Annotate):
         The surface forms in the inventory are put into the context of the entities
         of which they are surface forms.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         instructions = self.instructions
         inventory = self.inventory
         settings = self.settings
@@ -662,6 +674,9 @@ class NER(Annotate):
         The inventory knows where the occurrences of the surface forms are.
         If there is no inventory yet, it will be created.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         inventory = self.inventory
         instructions = self.instructions
         settings = self.settings
@@ -725,7 +740,7 @@ by the Annotate class on which it is based.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/ner.py#L237-L504" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/ner.py#L237-L519" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Annotate):
     def __init__(self, app):
@@ -744,6 +759,9 @@ by the Annotate class on which it is based.</p>
             The object that corresponds to a loaded TF app for a corpus.
         &#34;&#34;&#34;
         super().__init__(app)
+        if not self.properlySetup:
+            return
+
         self.instructions = None
         &#34;&#34;&#34;Will contain the information in a spreadsheet for marking up entities.&#34;&#34;&#34;
 
@@ -778,6 +796,9 @@ by the Annotate class on which it is based.</p>
             If True, the conversion from Excel to YAML will take place anyhow, provided
             the Excel sheet exists.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         sheetDir = self.sheetDir
 
         xlsFile = f&#34;{sheetDir}/{sheetName}.xlsx&#34;
@@ -913,6 +934,9 @@ by the Annotate class on which it is based.</p>
         It is a dictionary, keyed by sequences of tokens, whose values are the
         slot sequences where those token sequences occur in the corpus.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         instructions = self.instructions
         settings = self.settings
         spaceEscaped = settings.spaceEscaped
@@ -931,6 +955,9 @@ by the Annotate class on which it is based.</p>
         The surface forms in the inventory are put into the context of the entities
         of which they are surface forms.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         instructions = self.instructions
         inventory = self.inventory
         settings = self.settings
@@ -962,6 +989,9 @@ by the Annotate class on which it is based.</p>
         The inventory knows where the occurrences of the surface forms are.
         If there is no inventory yet, it will be created.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         inventory = self.inventory
         instructions = self.instructions
         settings = self.settings
@@ -1031,7 +1061,7 @@ slot sequences where those token sequences occur in the corpus.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/ner.py#L412-L433" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/ner.py#L418-L442" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeInventory(self):
     &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
@@ -1044,6 +1074,9 @@ slot sequences where those token sequences occur in the corpus.</p></div>
     It is a dictionary, keyed by sequences of tokens, whose values are the
     slot sequences where those token sequences occur in the corpus.
     &#34;&#34;&#34;
+    if not self.properlySetup:
+        return
+
     instructions = self.instructions
     settings = self.settings
     spaceEscaped = settings.spaceEscaped
@@ -1069,7 +1102,7 @@ If there is no inventory yet, it will be created.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/ner.py#L463-L504" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/ner.py#L475-L519" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def markEntities(self):
     &#34;&#34;&#34;Marks up the members of the inventory as entities.
@@ -1080,6 +1113,9 @@ If there is no inventory yet, it will be created.</p></div>
     The inventory knows where the occurrences of the surface forms are.
     If there is no inventory yet, it will be created.
     &#34;&#34;&#34;
+    if not self.properlySetup:
+        return
+
     inventory = self.inventory
     instructions = self.instructions
     settings = self.settings
@@ -1143,7 +1179,7 @@ the Excel sheet exists.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/ner.py#L261-L410" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/ner.py#L264-L416" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readInstructions(self, sheetName, force=False):
     &#34;&#34;&#34;Reads an Excel or YAML file with entity recognition instructions.
@@ -1172,6 +1208,9 @@ the Excel sheet exists.</dd>
         If True, the conversion from Excel to YAML will take place anyhow, provided
         the Excel sheet exists.
     &#34;&#34;&#34;
+    if not self.properlySetup:
+        return
+
     sheetDir = self.sheetDir
 
     xlsFile = f&#34;{sheetDir}/{sheetName}.xlsx&#34;
@@ -1307,7 +1346,7 @@ of which they are surface forms.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/ner.py#L435-L461" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/ner.py#L444-L473" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showInventory(self):
     &#34;&#34;&#34;Shows the inventory.
@@ -1315,6 +1354,9 @@ of which they are surface forms.</p></div>
     The surface forms in the inventory are put into the context of the entities
     of which they are surface forms.
     &#34;&#34;&#34;
+    if not self.properlySetup:
+        return
+
     instructions = self.instructions
     inventory = self.inventory
     settings = self.settings
@@ -1374,6 +1416,7 @@ of which they are surface forms.</p></div>
 <li><code><a title="tf.browser.ner.annotate.Annotate.loadData" href="data.html#tf.browser.ner.data.Data.loadData">loadData</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.mergeEntities" href="data.html#tf.browser.ner.data.Data.mergeEntities">mergeEntities</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.process" href="data.html#tf.browser.ner.data.Data.process">process</a></code></li>
+<li><code><a title="tf.browser.ner.annotate.Annotate.properlySetup" href="corpus.html#tf.browser.ner.corpus.Corpus.properlySetup">properlySetup</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.resetSet" href="sets.html#tf.browser.ner.sets.Sets.resetSet">resetSet</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.saveEntitiesAs" href="data.html#tf.browser.ner.data.Data.saveEntitiesAs">saveEntitiesAs</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.sectionHead" href="corpus.html#tf.browser.ner.corpus.Corpus.sectionHead">sectionHead</a></code></li>

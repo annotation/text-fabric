@@ -29,7 +29,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/settings.py#L1-L204" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/settings.py#L1-L232" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Corpus dependent setup of the annotation tool.
 
@@ -39,7 +39,7 @@ To see how this fits among all the modules of this package, see
 
 
 from ...core.helpers import console as cs
-from ...core.files import readYaml
+from ...core.files import readYaml, fileExists
 
 TOOLKEY = &#34;ner&#34;
 &#34;&#34;&#34;The name of this annotation tool.
@@ -199,6 +199,29 @@ SC_FILT = &#34;f&#34;
 &#34;&#34;&#34;Value that indicates *filtered* buckets.&#34;&#34;&#34;
 
 
+DEFAULT_SETTINGS = &#34;&#34;&#34;
+entityType: ent
+entitySet: &#34;{entityType}-nodes&#34;
+
+bucketType: chunk
+
+strFeature: str
+afterFeature: after
+
+features:
+  - eid
+  - kind
+
+keywordFeatures:
+  - kind
+
+defaultValues:
+  kind: PER
+
+spaceEscaped: false
+&#34;&#34;&#34;
+
+
 class Settings:
     def __init__(self):
         &#34;&#34;&#34;Provides configuration details.
@@ -215,8 +238,13 @@ class Settings:
         specDir = self.specDir
 
         nerSpec = f&#34;{specDir}/config.yaml&#34;
-        settings = readYaml(asFile=nerSpec, preferTuples=True)
-        settings.entitySet = settings.entitySet.format(entityType=settings.entityType)
+        kwargs = (
+            dict(asFile=nerSpec) if fileExists(nerSpec) else dict(text=DEFAULT_SETTINGS)
+        )
+        settings = readYaml(preferTuples=True, **kwargs)
+        settings.entitySet = (settings.entitySet or &#34;entity-nodes&#34;).format(
+            entityType=settings.entityType
+        )
         self.settings = settings
 
         features = self.settings.features
@@ -360,7 +388,7 @@ Those configuration values are read from a YAML file, located in a directory
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/settings.py#L169-L204" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/settings.py#L192-L232" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Settings:
     def __init__(self):
@@ -378,8 +406,13 @@ Those configuration values are read from a YAML file, located in a directory
         specDir = self.specDir
 
         nerSpec = f&#34;{specDir}/config.yaml&#34;
-        settings = readYaml(asFile=nerSpec, preferTuples=True)
-        settings.entitySet = settings.entitySet.format(entityType=settings.entityType)
+        kwargs = (
+            dict(asFile=nerSpec) if fileExists(nerSpec) else dict(text=DEFAULT_SETTINGS)
+        )
+        settings = readYaml(preferTuples=True, **kwargs)
+        settings.entitySet = (settings.entitySet or &#34;entity-nodes&#34;).format(
+            entityType=settings.entityType
+        )
         self.settings = settings
 
         features = self.settings.features
@@ -417,7 +450,7 @@ without the need to add an <code>import</code> statement to the code.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/settings.py#L195-L204" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/settings.py#L223-L232" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(self, msg, **kwargs):
     &#34;&#34;&#34;Print something to the output.

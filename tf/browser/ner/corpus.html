@@ -34,7 +34,7 @@ control over how to customize the annotator for different corpora.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/corpus.py#L1-L337" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/corpus.py#L1-L364" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Access to the corpus.
 
@@ -64,6 +64,18 @@ NON_ALPHA_RE = re.compile(r&#34;&#34;&#34;[^\w ]&#34;&#34;&#34;, re.S)
 
 class Corpus(Settings):
     def __init__(self):
+        &#34;&#34;&#34;Corpus dependent methods for the annotator.
+
+        Everything that depends on the specifics of a corpus, such as getting its text,
+        is collected here.
+
+        If a corpus does not have a config file that tells TF which features to use
+        for text representation, then we flag to the object instance that it is not
+        properly set up.
+
+        All methods that might fail because of this, are guarded by a check on this
+        flag.
+        &#34;&#34;&#34;
         app = self.app
         context = app.context
         appName = context.appName
@@ -88,16 +100,9 @@ class Corpus(Settings):
         self.slotType = slotType
         &#34;&#34;&#34;The node type of the slots in the corpus.&#34;&#34;&#34;
 
-        context = app.context
-        self.style = context.defaultClsOrig
-        self.ltr = context.direction
-
         settings = self.settings
         features = settings.features
         keywordFeatures = settings.keywordFeatures
-
-        self.css = app.loadToolCss(TOOLKEY, makeCss(features, keywordFeatures))
-
         bucketType = settings.bucketType
         entityType = settings.entityType
         strFeature = settings.strFeature
@@ -117,6 +122,28 @@ class Corpus(Settings):
 
         def getStr():
             return Fs(strFeature).v
+
+        if not checkFeature(strFeature) or not checkFeature(afterFeature):
+            self.properlySetup = False
+            return
+
+        self.properlySetup = True
+        &#34;&#34;&#34;Whether the tool has been properly set up.
+
+        This means that the configuration in `ner/config.yaml` or the
+        default configuration work correctly with this corpus.
+        If not, this attribute will prevent most of the methods
+        from working: they fail silently.
+
+        So users of corpora without any need for this tool will not be bothered
+        by it.
+        &#34;&#34;&#34;
+
+        context = app.context
+        self.style = context.defaultClsOrig
+        self.ltr = context.direction
+
+        self.css = app.loadToolCss(TOOLKEY, makeCss(features, keywordFeatures))
 
         strv = getStr()
         afterv = getAfter()
@@ -388,21 +415,33 @@ class Corpus(Settings):
 <span>class <span class="ident">Corpus</span></span>
 </code></dt>
 <dd>
-<div class="desc"><p>Provides configuration details.</p>
-<p>There is fixed configuration, that is not intended to be modifiable by users.
-These configuration values are put in variables in this module, which
-other modules can import.</p>
-<p>There is also customizable configuration, meant to adapt the tool to the
-specifics of a corpus.
-Those configuration values are read from a YAML file, located in a directory
-<code>ner</code> next to the <code><a title="tf" href="../../index.html">tf</a></code> data of the corpus.</p></div>
+<div class="desc"><p>Corpus dependent methods for the annotator.</p>
+<p>Everything that depends on the specifics of a corpus, such as getting its text,
+is collected here.</p>
+<p>If a corpus does not have a config file that tells TF which features to use
+for text representation, then we flag to the object instance that it is not
+properly set up.</p>
+<p>All methods that might fail because of this, are guarded by a check on this
+flag.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/corpus.py#L27-L337" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/corpus.py#L27-L364" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Corpus(Settings):
     def __init__(self):
+        &#34;&#34;&#34;Corpus dependent methods for the annotator.
+
+        Everything that depends on the specifics of a corpus, such as getting its text,
+        is collected here.
+
+        If a corpus does not have a config file that tells TF which features to use
+        for text representation, then we flag to the object instance that it is not
+        properly set up.
+
+        All methods that might fail because of this, are guarded by a check on this
+        flag.
+        &#34;&#34;&#34;
         app = self.app
         context = app.context
         appName = context.appName
@@ -427,16 +466,9 @@ Those configuration values are read from a YAML file, located in a directory
         self.slotType = slotType
         &#34;&#34;&#34;The node type of the slots in the corpus.&#34;&#34;&#34;
 
-        context = app.context
-        self.style = context.defaultClsOrig
-        self.ltr = context.direction
-
         settings = self.settings
         features = settings.features
         keywordFeatures = settings.keywordFeatures
-
-        self.css = app.loadToolCss(TOOLKEY, makeCss(features, keywordFeatures))
-
         bucketType = settings.bucketType
         entityType = settings.entityType
         strFeature = settings.strFeature
@@ -456,6 +488,28 @@ Those configuration values are read from a YAML file, located in a directory
 
         def getStr():
             return Fs(strFeature).v
+
+        if not checkFeature(strFeature) or not checkFeature(afterFeature):
+            self.properlySetup = False
+            return
+
+        self.properlySetup = True
+        &#34;&#34;&#34;Whether the tool has been properly set up.
+
+        This means that the configuration in `ner/config.yaml` or the
+        default configuration work correctly with this corpus.
+        If not, this attribute will prevent most of the methods
+        from working: they fail silently.
+
+        So users of corpora without any need for this tool will not be bothered
+        by it.
+        &#34;&#34;&#34;
+
+        context = app.context
+        self.style = context.defaultClsOrig
+        self.ltr = context.direction
+
+        self.css = app.loadToolCss(TOOLKEY, makeCss(features, keywordFeatures))
 
         strv = getStr()
         afterv = getAfter()
@@ -922,6 +976,16 @@ white-space, also in corpora that may have zero space between words.</p>
 string value. If there is no string value, the empty string is taken.</dd>
 </dl></div>
 </dd>
+<dt id="tf.browser.ner.corpus.Corpus.properlySetup"><code class="name">var <span class="ident">properlySetup</span></code></dt>
+<dd>
+<div class="desc"><p>Whether the tool has been properly set up.</p>
+<p>This means that the configuration in <code>ner/config.yaml</code> or the
+default configuration work correctly with this corpus.
+If not, this attribute will prevent most of the methods
+from working: they fail silently.</p>
+<p>So users of corpora without any need for this tool will not be bothered
+by it.</p></div>
+</dd>
 <dt id="tf.browser.ner.corpus.Corpus.sectionHead"><code class="name">var <span class="ident">sectionHead</span></code></dt>
 <dd>
 <div class="desc"><p>Provide a section heading.</p>
@@ -1036,6 +1100,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.browser.ner.corpus.Corpus.getText" href="#tf.browser.ner.corpus.Corpus.getText">getText</a></code></li>
 <li><code><a title="tf.browser.ner.corpus.Corpus.getTextR" href="#tf.browser.ner.corpus.Corpus.getTextR">getTextR</a></code></li>
 <li><code><a title="tf.browser.ner.corpus.Corpus.getTokens" href="#tf.browser.ner.corpus.Corpus.getTokens">getTokens</a></code></li>
+<li><code><a title="tf.browser.ner.corpus.Corpus.properlySetup" href="#tf.browser.ner.corpus.Corpus.properlySetup">properlySetup</a></code></li>
 <li><code><a title="tf.browser.ner.corpus.Corpus.sectionHead" href="#tf.browser.ner.corpus.Corpus.sectionHead">sectionHead</a></code></li>
 <li><code><a title="tf.browser.ner.corpus.Corpus.slotType" href="#tf.browser.ner.corpus.Corpus.slotType">slotType</a></code></li>
 </ul>

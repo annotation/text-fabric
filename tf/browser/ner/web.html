@@ -29,7 +29,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/web.py#L1-L89" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/web.py#L1-L93" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Flask sub web app in the TF browser.
 
@@ -94,6 +94,7 @@ def factory(web):
 
     if not hasattr(web, &#34;toolData&#34;):
         setattr(web, &#34;toolData&#34;, AttrDict())
+
     toolData = web.toolData
 
     if TOOLKEY not in toolData:
@@ -101,6 +102,9 @@ def factory(web):
 
     data = toolData[TOOLKEY]
     web.annotate = Annotate(tfApp, data=data, browse=True)
+
+    if not web.annotate.properlySetup:
+        return app
 
     @app.route(&#34;/static/&lt;path:filepath&gt;&#34;)
     def serveStatic(filepath):
@@ -161,7 +165,7 @@ populated by the tool data as it is read from disk.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/web.py#L21-L89" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/web.py#L21-L93" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def factory(web):
     &#34;&#34;&#34;A sub web app, to be inserted into the TF browser web app.
@@ -206,6 +210,7 @@ populated by the tool data as it is read from disk.</p>
 
     if not hasattr(web, &#34;toolData&#34;):
         setattr(web, &#34;toolData&#34;, AttrDict())
+
     toolData = web.toolData
 
     if TOOLKEY not in toolData:
@@ -213,6 +218,9 @@ populated by the tool data as it is read from disk.</p>
 
     data = toolData[TOOLKEY]
     web.annotate = Annotate(tfApp, data=data, browse=True)
+
+    if not web.annotate.properlySetup:
+        return app
 
     @app.route(&#34;/static/&lt;path:filepath&gt;&#34;)
     def serveStatic(filepath):

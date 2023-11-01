@@ -31,7 +31,7 @@ the tool.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/sets.py#L1-L284" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/sets.py#L1-L302" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Annotation set management.
 
@@ -80,6 +80,9 @@ class Sets(Data):
             If None, a fresh data store will be created by a parent class (Data).
         &#34;&#34;&#34;
         super().__init__(data=data)
+        if not self.properlySetup:
+            return
+
         settings = self.settings
         entitySet = settings.entitySet
 
@@ -113,6 +116,9 @@ class Sets(Data):
         newAnnoSet: string
             The name of the new annotation set to switch to.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         settings = self.settings
         entitySet = settings.entitySet
         browse = self.browse
@@ -151,6 +157,9 @@ class Sets(Data):
 
         The special set `&#34;&#34;` cannot be reset, because it is read-only.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         settings = self.settings
         annoSet = self.annoSet
         entitySet = settings.entitySet
@@ -194,6 +203,9 @@ class Sets(Data):
         dupSet: string
             The name of new set that is the result of the duplication.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return []
+
         data = self.data
         setNames = self.setNames
         setsData = data.sets
@@ -245,6 +257,9 @@ class Sets(Data):
             The name of the set to be removed.
             It is not allowed to remove the special set named `&#34;&#34;`.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return []
+
         messages = []
 
         if delSet == &#34;&#34;:
@@ -281,6 +296,9 @@ class Sets(Data):
         moveSet: string
             The new name of the current set.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return []
+
         messages = []
 
         if moveSet == &#34;&#34;:
@@ -349,7 +367,7 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/sets.py#L28-L284" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/sets.py#L28-L302" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Sets(Data):
     def __init__(self, data=None):
@@ -371,6 +389,9 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
             If None, a fresh data store will be created by a parent class (Data).
         &#34;&#34;&#34;
         super().__init__(data=data)
+        if not self.properlySetup:
+            return
+
         settings = self.settings
         entitySet = settings.entitySet
 
@@ -404,6 +425,9 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
         newAnnoSet: string
             The name of the new annotation set to switch to.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         settings = self.settings
         entitySet = settings.entitySet
         browse = self.browse
@@ -442,6 +466,9 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
 
         The special set `&#34;&#34;` cannot be reset, because it is read-only.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
         settings = self.settings
         annoSet = self.annoSet
         entitySet = settings.entitySet
@@ -485,6 +512,9 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
         dupSet: string
             The name of new set that is the result of the duplication.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return []
+
         data = self.data
         setNames = self.setNames
         setsData = data.sets
@@ -536,6 +566,9 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
             The name of the set to be removed.
             It is not allowed to remove the special set named `&#34;&#34;`.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return []
+
         messages = []
 
         if delSet == &#34;&#34;:
@@ -572,6 +605,9 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
         moveSet: string
             The new name of the current set.
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return []
+
         messages = []
 
         if moveSet == &#34;&#34;:
@@ -644,7 +680,7 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/sets.py#L61-L68" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/sets.py#L64-L71" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getSetData(self):
     &#34;&#34;&#34;Deliver the data of the current set.
@@ -665,13 +701,16 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/sets.py#L114-L144" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/sets.py#L120-L153" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resetSet(self):
     &#34;&#34;&#34;Clear the current annotation set.
 
     The special set `&#34;&#34;` cannot be reset, because it is read-only.
     &#34;&#34;&#34;
+    if not self.properlySetup:
+        return
+
     settings = self.settings
     annoSet = self.annoSet
     entitySet = settings.entitySet
@@ -716,7 +755,7 @@ It is not allowed to remove the special set named <code>""</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/sets.py#L201-L235" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/sets.py#L213-L250" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setDel(self, delSet):
     &#34;&#34;&#34;Remove a named set.
@@ -730,6 +769,9 @@ It is not allowed to remove the special set named <code>""</code>.</dd>
         The name of the set to be removed.
         It is not allowed to remove the special set named `&#34;&#34;`.
     &#34;&#34;&#34;
+    if not self.properlySetup:
+        return []
+
     messages = []
 
     if delSet == &#34;&#34;:
@@ -776,7 +818,7 @@ tool-generated annotations.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/sets.py#L146-L199" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/sets.py#L155-L211" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setDup(self, dupSet):
     &#34;&#34;&#34;Duplicates the current set to a set with a new name.
@@ -794,6 +836,9 @@ tool-generated annotations.</p>
     dupSet: string
         The name of new set that is the result of the duplication.
     &#34;&#34;&#34;
+    if not self.properlySetup:
+        return []
+
     data = self.data
     setNames = self.setNames
     setsData = data.sets
@@ -850,7 +895,7 @@ It is also forbidden to rename another set to the special set.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/sets.py#L237-L284" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/sets.py#L252-L302" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setMove(self, moveSet):
     &#34;&#34;&#34;Renames a named set.
@@ -864,6 +909,9 @@ It is also forbidden to rename another set to the special set.</p>
     moveSet: string
         The new name of the current set.
     &#34;&#34;&#34;
+    if not self.properlySetup:
+        return []
+
     messages = []
 
     if moveSet == &#34;&#34;:
@@ -917,7 +965,7 @@ After the switch, the data of the new set will be loaded into memory.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/sets.py#L70-L112" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b327b982df71b21364c6544f2fef8190868523a4/tf/browser/ner/sets.py#L73-L118" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setSet(self, newAnnoSet):
     &#34;&#34;&#34;Switch to a named annotation set.
@@ -930,6 +978,9 @@ After the switch, the data of the new set will be loaded into memory.</p>
     newAnnoSet: string
         The name of the new annotation set to switch to.
     &#34;&#34;&#34;
+    if not self.properlySetup:
+        return
+
     settings = self.settings
     entitySet = settings.entitySet
     browse = self.browse
@@ -995,6 +1046,7 @@ After the switch, the data of the new set will be loaded into memory.</p>
 <li><code><a title="tf.browser.ner.data.Data.loadData" href="data.html#tf.browser.ner.data.Data.loadData">loadData</a></code></li>
 <li><code><a title="tf.browser.ner.data.Data.mergeEntities" href="data.html#tf.browser.ner.data.Data.mergeEntities">mergeEntities</a></code></li>
 <li><code><a title="tf.browser.ner.data.Data.process" href="data.html#tf.browser.ner.data.Data.process">process</a></code></li>
+<li><code><a title="tf.browser.ner.data.Data.properlySetup" href="corpus.html#tf.browser.ner.corpus.Corpus.properlySetup">properlySetup</a></code></li>
 <li><code><a title="tf.browser.ner.data.Data.saveEntitiesAs" href="data.html#tf.browser.ner.data.Data.saveEntitiesAs">saveEntitiesAs</a></code></li>
 <li><code><a title="tf.browser.ner.data.Data.sectionHead" href="corpus.html#tf.browser.ner.corpus.Corpus.sectionHead">sectionHead</a></code></li>
 <li><code><a title="tf.browser.ner.data.Data.slotType" href="corpus.html#tf.browser.ner.corpus.Corpus.slotType">slotType</a></code></li>

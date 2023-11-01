@@ -98,7 +98,6 @@ URLS=[
 "tf/browser/ner/index.html",
 "tf/browser/ner/show.html",
 "tf/browser/ner/web.html",
-"tf/browser/ner/html.html",
 "tf/browser/ner/request.html",
 "tf/browser/ner/form.html",
 "tf/browser/ner/serve.html",
@@ -112,6 +111,7 @@ URLS=[
 "tf/browser/ner/helpers.html",
 "tf/browser/ner/match.html",
 "tf/browser/servelib.html",
+"tf/browser/html.html",
 "tf/browser/serve.html",
 "tf/browser/start.html",
 "tf/browser/wrap.html",
@@ -3534,7 +3534,7 @@ INDEX=[
 {
 "ref":"tf.about.releases",
 "url":72,
-"doc":" Release notes  ! hint \"Consult the tutorials after changes\" When we change the API, we make sure that the tutorials show off all possibilities. See the app-specific tutorials via  tf.about.corpora .  -  The TEI converter is still in active development. If you need the latest version, clone the TF repo and in its top-level directory run the command:  sh pip install -e .    12  12.1  12.1.3 2023-11-01  API change in the Annotator: Calling the annotator is now easier:  python A.makeNer()  (No need to make an additional  import statement.) This will give you access to all annotation methods, including using a spreadsheet to read annotation instructins from.  Removal of deprecated commands (on the command line) in version 11:   text-fabric (has become  tf )   text-fabric-zip (has become  tf-zip )   text-fabric-make (has become  tf-make )  Bug fixes: [ 81](https: github.com/annotation/text-fabric/issues/81) and [ 82](https: github.com/annotation/text-fabric/issues/82)  Spell-checked all bits of the TF docs here (33,000 lines). Wrote a script  tf.tools.docsright to separate the code content from the markdown content, and to strip bits from the markdown content that lead to false positives for the spell checker. Then had the Vim spell checker run over those lines and corrected all mistakes by hand. Still, there might be grammar errors and content inaccuracies.  12.1.1,2 2023-10-29  Bug fix: the mechanism to make individual exceptions when adding named entities in the  tf.browser.ner.annotate tool was broken. Thanks to Daniel Swanson for spotting it.  Additional fixes and enhancements.  12.1.0 2023-10-28  New stuff  In the TF browser there will be a new tab in the vertical sidebar:  Annotate , which will give access to manual annotation tools. I'm developing the first one, a tool to annotate named entities efficiently, both in the TF browser and in a Jupyter Notebook. Reed more in  tf.about.annotate . These tools will let you save your work as files on your own computer.  In  tf.convert.addnlp we can now extract more NLP information besides tokens and sentences: part-of-speech, morphological tagging, lemmatization, named entity recognition  Fixes  in the TEI converter.  12.0  12.0.6,7 2023-09-13 Trivial fix in code that exports the data from a job in the TF browser. In the meanwhile there is unfinished business in the  Annotate tab in the TF browser, that will come into production in the upcoming 12.1 release. The Chrome browser has an attractive feature that other browsers such as Safari lack: It supports the CSS property [content-visibility](https: developer.mozilla.org/en-US/docs/Web/CSS/content-visibility). With this property you can prevent the browser to do the expensive rendering of content that is not visible on the screen. That makes it possible to load a lot of content in a single page without tripping up the browser. You also need the [ IntersectionObserver API](https: developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API), but that is generally supported by browsers. With the help of that API you can restrict the binding of event listeners to elements that are visible on the screen. So, you can open the TF browser in Chrome by passing the option   chrome . But if Chrome is not installed, it will open in the default browser anyway. Also, when the opening of the browser fails somehow, the web server is stopped.  12.0.5 2023-07-10 Fixed references to static files that still went to  /server instead of  /browser . This has to do with the new approach to the TF browser.  12.0.0-4 2023-07-05  Simplification  The TF browser no longer works with a separate process that holds the TF corpus data. Instead, the web server (flask) loads the corpus itself. This will restrict the usage of the TF browser to local-single-user scenarios.  TF no longer exposes the installation options  [browser, pandas]  pip install 'text-fabric[browser]' pip install 'text-fabric[pandas]'  If you work with Pandas (like exporting to Pandas) you have to install it yourself:  pip install pandas pyarrow  The TF browser is always supported. The reason to have these distinct capabilities was that there are python libraries involved that do not install on the iPad. The simplification of the TF browser makes it possible to be no longer dependent on these modules. Hence, TF can be installed on the iPad, although the TF browser works is not working there yet. But the auto-downloading of data from GitHub / GitLab works.  Minor things  Header. After loading a dataset, a header is shown with shows all kinds of information about the corpus. But so far, it did not show the TF app settings. Now they are included in the header. There are two kinds: the explicitly given settings and the derived and computed settings. The latter ones will be suppressed when loading a dataset in a Jupyter notebook, because these settings can become quite big. You can still get them with  A.showContext() . In the TF browser they will be always included, you find it in the  Corpus tab.  -  Older releases See  tf.about.releasesold ."
+"doc":" Release notes  ! hint \"Consult the tutorials after changes\" When we change the API, we make sure that the tutorials show off all possibilities. See the app-specific tutorials via  tf.about.corpora .  -  The TEI converter is still in active development. If you need the latest version, clone the TF repo and in its top-level directory run the command:  sh pip install -e .    12  12.1  12.1.3,4 2023-11-01  API change in the Annotator: Calling the annotator is now easier:  python A.makeNer()  (No need to make an additional  import statement.) This will give you access to all annotation methods, including using a spreadsheet to read annotation instructins from.  Removal of deprecated commands (on the command line) in version 11:   text-fabric (has become  tf )   text-fabric-zip (has become  tf-zip )   text-fabric-make (has become  tf-make )  Bug fixes: [ 81](https: github.com/annotation/text-fabric/issues/81) and [ 82](https: github.com/annotation/text-fabric/issues/82)  Spell-checked all bits of the TF docs here (33,000 lines). Wrote a script  tf.tools.docsright to separate the code content from the markdown content, and to strip bits from the markdown content that lead to false positives for the spell checker. Then had the Vim spell checker run over those lines and corrected all mistakes by hand. Still, there might be grammar errors and content inaccuracies.  12.1.4 follows 12.1.3. quickly, because in corpora without a NER config file, TF did not start up properly.  12.1.1,2 2023-10-29  Bug fix: the mechanism to make individual exceptions when adding named entities in the  tf.browser.ner.annotate tool was broken. Thanks to Daniel Swanson for spotting it.  Additional fixes and enhancements.  12.1.0 2023-10-28  New stuff  In the TF browser there will be a new tab in the vertical sidebar:  Annotate , which will give access to manual annotation tools. I'm developing the first one, a tool to annotate named entities efficiently, both in the TF browser and in a Jupyter Notebook. Reed more in  tf.about.annotate . These tools will let you save your work as files on your own computer.  In  tf.convert.addnlp we can now extract more NLP information besides tokens and sentences: part-of-speech, morphological tagging, lemmatization, named entity recognition  Fixes  in the TEI converter.  12.0  12.0.6,7 2023-09-13 Trivial fix in code that exports the data from a job in the TF browser. In the meanwhile there is unfinished business in the  Annotate tab in the TF browser, that will come into production in the upcoming 12.1 release. The Chrome browser has an attractive feature that other browsers such as Safari lack: It supports the CSS property [content-visibility](https: developer.mozilla.org/en-US/docs/Web/CSS/content-visibility). With this property you can prevent the browser to do the expensive rendering of content that is not visible on the screen. That makes it possible to load a lot of content in a single page without tripping up the browser. You also need the [ IntersectionObserver API](https: developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API), but that is generally supported by browsers. With the help of that API you can restrict the binding of event listeners to elements that are visible on the screen. So, you can open the TF browser in Chrome by passing the option   chrome . But if Chrome is not installed, it will open in the default browser anyway. Also, when the opening of the browser fails somehow, the web server is stopped.  12.0.5 2023-07-10 Fixed references to static files that still went to  /server instead of  /browser . This has to do with the new approach to the TF browser.  12.0.0-4 2023-07-05  Simplification  The TF browser no longer works with a separate process that holds the TF corpus data. Instead, the web server (flask) loads the corpus itself. This will restrict the usage of the TF browser to local-single-user scenarios.  TF no longer exposes the installation options  [browser, pandas]  pip install 'text-fabric[browser]' pip install 'text-fabric[pandas]'  If you work with Pandas (like exporting to Pandas) you have to install it yourself:  pip install pandas pyarrow  The TF browser is always supported. The reason to have these distinct capabilities was that there are python libraries involved that do not install on the iPad. The simplification of the TF browser makes it possible to be no longer dependent on these modules. Hence, TF can be installed on the iPad, although the TF browser works is not working there yet. But the auto-downloading of data from GitHub / GitLab works.  Minor things  Header. After loading a dataset, a header is shown with shows all kinds of information about the corpus. But so far, it did not show the TF app settings. Now they are included in the header. There are two kinds: the explicitly given settings and the derived and computed settings. The latter ones will be suppressed when loading a dataset in a Jupyter notebook, because these settings can become quite big. You can still get them with  A.showContext() . In the TF browser they will be always included, you find it in the  Corpus tab.  -  Older releases See  tf.about.releasesold ."
 },
 {
 "ref":"tf.about.clientmanual",
@@ -4014,697 +4014,574 @@ INDEX=[
 "func":1
 },
 {
-"ref":"tf.browser.ner.html",
-"url":99,
-"doc":"HTML generation done in the Pythonic way. To see how this fits among all the modules of this package, see  tf.browser.ner.annotate ."
-},
-{
-"ref":"tf.browser.ner.html.H_ELEMENTS",
-"url":99,
-"doc":"The HTML elements used in this tool."
-},
-{
-"ref":"tf.browser.ner.html.dig",
-"url":99,
-"doc":"A method to join nested iterables of strings into a string. Parameters      content: iterable or string Arbitrarily nested iterable of strings. sep: string, optional  The string by which the individual strings from the iterables are to be joined. Returns    - string The fully joined string corresponding to the original iterables.",
-"func":1
-},
-{
-"ref":"tf.browser.ner.html.generate",
-"url":99,
-"doc":"Transform the logical information for an HTML element into an HTML string. Parameters      close: boolean Whether the element must be closed with an end tag. tag: string The name of the tag. content: iterable The content of the element. This may be an arbitrarily nested iterable of strings. atts: dict The attributes of the element. Returns    - string The HTML string representation of an element.",
-"func":1
-},
-{
-"ref":"tf.browser.ner.html.elemFunc",
-"url":99,
-"doc":"Generates a function to serialize a specific HTML element. Parameters      close: boolean Whether the element needs an end tag. elem: string The name of the element. Returns    - function The function has the same signature as  generate() except it does not take the parameters  close and  tag .",
-"func":1
-},
-{
-"ref":"tf.browser.ner.html.H",
-"url":99,
-"doc":"Provider of HTML serializing functions per element type. Also has a class attribute  nb : the non-breaking space. For each HTML element in the specs ( H_ELEMENTS ) a corresponding generating function is added as method."
-},
-{
-"ref":"tf.browser.ner.html.H.nb",
-"url":99,
-"doc":""
-},
-{
-"ref":"tf.browser.ner.html.H.join",
-"url":99,
-"doc":"A method to join nested iterables of strings into a string. Parameters      content: iterable or string Arbitrarily nested iterable of strings. sep: string, optional  The string by which the individual strings from the iterables are to be joined. Returns    - string The fully joined string corresponding to the original iterables.",
-"func":1
-},
-{
-"ref":"tf.browser.ner.html.H.b",
-"url":99,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.browser.ner.html.H.br",
-"url":99,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.browser.ner.html.H.button",
-"url":99,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.browser.ner.html.H.code",
-"url":99,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.browser.ner.html.H.details",
-"url":99,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.browser.ner.html.H.div",
-"url":99,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.browser.ner.html.H.i",
-"url":99,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.browser.ner.html.H.input",
-"url":99,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.browser.ner.html.H.option",
-"url":99,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.browser.ner.html.H.p",
-"url":99,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.browser.ner.html.H.select",
-"url":99,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.browser.ner.html.H.span",
-"url":99,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.browser.ner.html.H.style",
-"url":99,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.browser.ner.html.H.summary",
-"url":99,
-"doc":"",
-"func":1
-},
-{
 "ref":"tf.browser.ner.request",
-"url":100,
+"url":99,
 "doc":"Auxiliary functions for managing request data. To see how this fits among all the modules of this package, see  tf.browser.ner.annotate ."
 },
 {
 "ref":"tf.browser.ner.request.Request",
-"url":100,
+"url":99,
 "doc":"Calculate important values based on form data. We define specifications as to how to read form values and which defaults should be supplied. We categorize the keys in the request form into categories based on their interpreted type and organization. We provide appropriate empty values as defaults, but it is possible to specify other defaults. The categories are:   Str values are strings;   Bool values are booleans (2 possible values);   Tri values are booleans (3 possible values, a none value is included);   Int values are positive integers;   Tup values are tuples of strings;   SetInt values are sets of integers;   Json values are arbitrary structures encoded in JSON strings; We also define a few composed values, where we store the values of several related keys in the form as a dictionary value under a new key."
 },
 {
 "ref":"tf.browser.ner.request.Request.getFormData",
-"url":100,
+"url":99,
 "doc":"Get form data. The TF browser user interacts with the app by clicking and typing, as a result of which a HTML form gets filled in. This form as regularly submitted to the server with a request for a new incarnation of the page: a response. The values that come with a request, must be peeled out of the form, and stored as logical values. Additionally, some business logic is carried out: we set values for the entity features, based on the form, especially the keys ending in  _active . We build a value under key  valselect based on the value for key  submitter . Depending on which button caused the submit, the NONE value is added to each feature. The idea is that when the user is still engaged in filtering buckets, and there is an occurrence selected, the user should have the option to sub-select occurrences that do not yet have an entity assigned.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.request.Request.initVars",
-"url":100,
+"url":99,
 "doc":"Initializes the computation of the new page. It collects the request data, gleans some info from the configuration settings and the TF app, and initializes some data structures that will collect further information for the page. All bits and pieces that are needed during processing the request and filling in the final HTML template find a place under some key in the  v dict which is stored in  self . So, this function makes the transition from information that is in the  form dictionary to values that are stored in the  v dictionary.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.request.Request.adaptValSelect",
-"url":100,
+"url":99,
 "doc":"Adapts the values contained in  valSelect after a modification action. After the addition or deletion of an entity, the values contained in  valSelect may have become obsolete or inconvenient for further actions. This function adapts those values before having them rendered on the page. Parameters      v: dict Contains the intermediate results of computing the new page.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.request.Request.findSetup",
-"url":100,
+"url":99,
 "doc":"Compiles the filter pattern into a regular expression. When the user enters a search pattern in the box meant to filter the buckets, the pattern will be interpreted as a regular expression. We do the compilation here. If there are errors in the pattern they will be reported. Whether or not the search is case sensitive or not is under user control, and it will influence the compilation of the pattern. All input and output data is in  v .",
 "func":1
 },
 {
 "ref":"tf.browser.ner.request.Request.fgets",
-"url":101,
+"url":100,
 "doc":"Makes form value under key  k or its default into an string.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.request.Request.fget2",
-"url":101,
+"url":100,
 "doc":"Makes form value under key  k or its default into an boolean.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.request.Request.fget3",
-"url":101,
+"url":100,
 "doc":"Makes form value under key  k or its default into a 3-way boolean.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.request.Request.fgeti",
-"url":101,
+"url":100,
 "doc":"Makes form value under key  k or its default into an integer.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.request.Request.fgettu",
-"url":101,
+"url":100,
 "doc":"Makes form value under key  k or its default into a tuple. The values in the tuples are strings. The values are retrieved by splitting the original string value on  \u2299 .",
 "func":1
 },
 {
 "ref":"tf.browser.ner.request.Request.fgetsi",
-"url":101,
+"url":100,
 "doc":"Makes form value under key  k or its default into a set. The values in the set are integers. The values are retrieved by splitting the original string value on  , . Parts that do not form valid integers are skipped.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.request.Request.fgetj",
-"url":101,
+"url":100,
 "doc":"Makes form value under key  k or its default into a data structure. The data structure is retrieved by interpreting the original string as quoted JSON.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.request.Request.fill",
-"url":101,
+"url":100,
 "doc":"Fill a dictionary with interpreted form values. The input data is the request data from Flask, the output data are the logical values derived from them by the methods in this class. Returns    - dict The filled in form.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve",
-"url":102,
+"url":101,
 "doc":"Main controller for Flask This module contains the controllers that Flask invokes when serving the annotation tool in the TF browser. To see how this fits among all the modules of this package, see  tf.browser.ner.annotate ."
 },
 {
 "ref":"tf.browser.ner.serve.Serve",
-"url":102,
+"url":101,
 "doc":"Object that implements the controller functions for the annotation tool. Parameters      web: object This represents the Flask website that is the TF browser. It has initialized a  tf.browser.ner.annotate.Annotate object, and has stored it under attribute  annotate . See  tf.browser.ner.web.factory and  tf.browser.web.factory ."
 },
 {
 "ref":"tf.browser.ner.serve.Serve.setupFull",
-"url":102,
+"url":101,
 "doc":"Prepares to serve a complete page.  Sets up the find widget;  Encodes the active entity in hidden  input elements;  Collects and generates the specific CSS styles needed for this corpus.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.setupLean",
-"url":102,
+"url":101,
 "doc":"Prepares to update a portion of the page.  Encodes the active entity in hidden  input elements.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.actionsFull",
-"url":102,
+"url":101,
 "doc":"Carries out requested actions before building the full page.  annotation set management actions;  fetch selected buckets from the whole corpus;  modification actions in the selected set.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.actionsLean",
-"url":102,
+"url":101,
 "doc":"Carries out requested actions before building a portion of the page.  fetch all buckets from a section of the corpus.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.wrapFull",
-"url":102,
+"url":101,
 "doc":"Builds the full page. This includes the controls by which the user makes selections and triggers actions.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.wrapLean",
-"url":102,
+"url":101,
 "doc":"Builds a portion of the page. No need to build user controls, because they are already on the page. Returns    - The generated HTML for the portion of the page.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.getBuckets",
-"url":102,
+"url":101,
 "doc":"Fetch a selection of buckets from the corpus. The selection is defined in the  v . We further modify the selection by two additional parameters. The resulting list of buckets is obtained by  tf.browser.ner.annotate.Annotate.filterContent , and each member in the bucket list is a tuple as indicated in the  filterContent function. The list is stored in the  Serve object. Additionally, statistics about these buckets and how many entity values occur in it, are delivered in the  v . Parameters      noFind: boolean, optional False If  noFind we override the filtering by the filter widget on the interface. We use this when the user has indicated that he wants to apply an action on all buckets instead of the filtered ones. node: integer, optional None If passed, it is a TF node, probably for a top-level section. The effect is that it restricts the result to those buttons that fall under that TF node. We use this when we retrieve the context for a given bucket.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.setHandling",
-"url":102,
+"url":101,
 "doc":"Carries out the set-related actions before composing the page. These actions are:  switch to an other set than the current set and create it if it does not yet exist;  duplicate the current set;  rename the current set;  delete a set. The results of the actions are wrapped in messages and stored in the  v .",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.updateHandling",
-"url":102,
+"url":101,
 "doc":"Carries out modification actions in the current annotation set. Modification actions are:  deletion of an entity;  addition of an entity. The results of the actions are wrapped in a report and stored in the  v .",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.getFormData",
-"url":100,
+"url":99,
 "doc":"Get form data. The TF browser user interacts with the app by clicking and typing, as a result of which a HTML form gets filled in. This form as regularly submitted to the server with a request for a new incarnation of the page: a response. The values that come with a request, must be peeled out of the form, and stored as logical values. Additionally, some business logic is carried out: we set values for the entity features, based on the form, especially the keys ending in  _active . We build a value under key  valselect based on the value for key  submitter . Depending on which button caused the submit, the NONE value is added to each feature. The idea is that when the user is still engaged in filtering buckets, and there is an occurrence selected, the user should have the option to sub-select occurrences that do not yet have an entity assigned.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.initVars",
-"url":100,
+"url":99,
 "doc":"Initializes the computation of the new page. It collects the request data, gleans some info from the configuration settings and the TF app, and initializes some data structures that will collect further information for the page. All bits and pieces that are needed during processing the request and filling in the final HTML template find a place under some key in the  v dict which is stored in  self . So, this function makes the transition from information that is in the  form dictionary to values that are stored in the  v dictionary.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.adaptValSelect",
-"url":100,
+"url":99,
 "doc":"Adapts the values contained in  valSelect after a modification action. After the addition or deletion of an entity, the values contained in  valSelect may have become obsolete or inconvenient for further actions. This function adapts those values before having them rendered on the page. Parameters      v: dict Contains the intermediate results of computing the new page.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.findSetup",
-"url":100,
+"url":99,
 "doc":"Compiles the filter pattern into a regular expression. When the user enters a search pattern in the box meant to filter the buckets, the pattern will be interpreted as a regular expression. We do the compilation here. If there are errors in the pattern they will be reported. Whether or not the search is case sensitive or not is under user control, and it will influence the compilation of the pattern. All input and output data is in  v .",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.fgets",
-"url":101,
+"url":100,
 "doc":"Makes form value under key  k or its default into an string.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.fget2",
-"url":101,
+"url":100,
 "doc":"Makes form value under key  k or its default into an boolean.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.fget3",
-"url":101,
+"url":100,
 "doc":"Makes form value under key  k or its default into a 3-way boolean.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.fgeti",
-"url":101,
+"url":100,
 "doc":"Makes form value under key  k or its default into an integer.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.fgettu",
-"url":101,
+"url":100,
 "doc":"Makes form value under key  k or its default into a tuple. The values in the tuples are strings. The values are retrieved by splitting the original string value on  \u2299 .",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.fgetsi",
-"url":101,
+"url":100,
 "doc":"Makes form value under key  k or its default into a set. The values in the set are integers. The values are retrieved by splitting the original string value on  , . Parts that do not form valid integers are skipped.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.fgetj",
-"url":101,
+"url":100,
 "doc":"Makes form value under key  k or its default into a data structure. The data structure is retrieved by interpreting the original string as quoted JSON.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.fill",
-"url":101,
+"url":100,
 "doc":"Fill a dictionary with interpreted form values. The input data is the request data from Flask, the output data are the logical values derived from them by the methods in this class. Returns    - dict The filled in form.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.wrapMessages",
-"url":103,
+"url":102,
 "doc":"HTML for messages.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.wrapAnnoSets",
-"url":103,
+"url":102,
 "doc":"HTML for the annotation set chooser. It is a list of buttons, each corresponding to an existing annotation set. A click on the button selects that set. There is also a control to delete the set. Apart from these buttons there is a button to switch to the entities that are present in the TF dataset as nodes of the entity type specified in the YAML file with corresponding features. Finally, it is possible to create a new, empty annotation set.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.wrapQuery",
-"url":103,
+"url":102,
 "doc":"HTML for all control widgets on the page.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.wrapAppearance",
-"url":103,
+"url":102,
 "doc":"HTML for the appearance widget. The appearance widget lets the user choose how inline entities should appear: with or without underlining, identifier, kind, frequency.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.wrapFilter",
-"url":103,
+"url":102,
 "doc":"HTML for the filter widget. The filter widget lets the user filter the buckets by a search pattern or the condition that the buckets contains entities (and the even more useful condition that the buckets do  not contain entities).",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.wrapEntity",
-"url":103,
+"url":102,
 "doc":"Basic data for the selected entity widget. The entity widget shows the occurrence or entity that is selected. This function computed the relevant values and stores them in hidden input elements.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.wrapEntityHeaders",
-"url":103,
+"url":102,
 "doc":"HTML for the header of the entity table, dependent on the state of sorting.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.wrapEntityText",
-"url":103,
+"url":102,
 "doc":"HTML for the selected entity widget.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.wrapEntityFeats",
-"url":103,
+"url":102,
 "doc":"HTML for the entity feature value selection. All feature values of entities that occupy the selected occurrences are shown, with the possibility that the user selects some of these values, thereby selecting a subset of the original set of occurrences.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.wrapScope",
-"url":103,
+"url":102,
 "doc":"HTML for the scope widget. The scope widget lets the user choose whether the add / del actions should be applied to all relevant buckets, or only to the filtered buckets.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.wrapExceptions",
-"url":103,
+"url":102,
 "doc":"HTML for the select / deselect buttons. These buttons appear at the end of selected occurrences in the text displayed in the buckets. The user can select or deselect individual entities for the application of the add / del operations.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.wrapEntityModify",
-"url":103,
+"url":102,
 "doc":"HTML for the add / del widget. This widget contains controls to specify which entity feature values should be added or deleted. Considerable effort is made to prefill these components with ergonomic values.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.wrapFindStat",
-"url":103,
+"url":102,
 "doc":"HTML for statistics. This is about totals of occurrences in all buckets versus in filtered buckets.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.wrapEntityStat",
-"url":103,
+"url":102,
 "doc":"HTML for statistics of feature values. This is about totals of occurrences of feature values in all buckets versus in filtered buckets.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.wrapActive",
-"url":103,
+"url":102,
 "doc":"HTML for the active entity.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.wrapEntityModReport",
-"url":103,
+"url":102,
 "doc":"HTML for the combined report of add / del actions.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.Serve.wrapReport",
-"url":103,
+"url":102,
 "doc":"HTML for the report of add / del actions.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.serveNer",
-"url":102,
+"url":101,
 "doc":"Main controller to render a full page. Parameters      web: object The TF browser object, a Flask web app.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.serve.serveNerContext",
-"url":102,
+"url":101,
 "doc":"Controller to render a portion of a page. More specifically: the context around a single bucket. Parameters      web: object The TF browser object, a Flask web app. node: integer The TF node that contain the bucket nodes that form the context.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.annotate",
-"url":104,
-"doc":"Central Annotation object. As a preparation, read  tf.about.annotate first, since it explains the concepts, and guides you to set up the configuration for your corpus. The main task of this module is to find occurrences of annotations on the basis of criteria. But this is just the tip of the iceberg, since this module inherits from a number of other modules that inherit form yet other modules:   tf.browser.ner.show : generate HTML for annotated buckets of the corpus;   tf.browser.ner.sets : manage annotation sets;   tf.browser.ner.data : manage annotation data: loading, adding/deleting annotations;   tf.browser.ner.settings : manage the specifics of a TF corpus and have access to its data. It also uses   tf.browser.ner.match : to filter individual buckets on the basis of criteria. Hence,  Annotation is the central class of this tool, whose methods are relevant for:   tf.browser.ner.ner : the API for users to manipulate annotations in their own programs, especially in a Jupyter notebook.   tf.browser.ner.web : Flask app that routes URLs to controller functions.  web makes use of the following modules that are not needed by  ner :   tf.browser.ner.serve : define the controllers of the web app Again, this is a top of an iceberg, since it inherits from:   tf.browser.ner.request : manage the data of a request;   tf.browser.ner.fragments : generate HTML for widgets on the page;  request also uses  form to retrieve form values into typed and structured values. Both  web and  ner make use of the following modules in as far as they are not already mentioned under  annotate and its parent classes:   tf.browser.ner.helpers : a variety of context-free data jugglers;   tf.browser.ner.html : a generic library to generate HTML using Pythonic syntax.  ! note \"Class hierarchy\" The classes  Settings ,  Corpus ,  Data ,  Sets ,  Show ,  Annotate ,  NER form one hierarchy. So an object of class  NER has access to all methods of these classes. The classes  Serve ,  Request ,  Fragments ,  From form a separate hierarchy. It will create an  Annotate instance which will be stored in a  Serve instance. Here is an overview how the modules hang together. A  | denotes inheritance, parent classes above child classes. A  <-< arrow denotes dependency by importing code.   Browser | Api-hierarchy                             - | NER | | web <  -< Serve <        -< Annotate <-< match | | | | | Request Fragments <-< html | Sets Show <-< html | | | Form | Data | | | Corpus | | | Settings  "
+"url":103,
+"doc":"Central Annotation object. As a preparation, read  tf.about.annotate first, since it explains the concepts, and guides you to set up the configuration for your corpus. The main task of this module is to find occurrences of annotations on the basis of criteria. But this is just the tip of the iceberg, since this module inherits from a number of other modules that inherit form yet other modules:   tf.browser.ner.show : generate HTML for annotated buckets of the corpus;   tf.browser.ner.sets : manage annotation sets;   tf.browser.ner.data : manage annotation data: loading, adding/deleting annotations;   tf.browser.ner.settings : manage the specifics of a TF corpus and have access to its data. It also uses   tf.browser.ner.match : to filter individual buckets on the basis of criteria. Hence,  Annotation is the central class of this tool, whose methods are relevant for:   tf.browser.ner.ner : the API for users to manipulate annotations in their own programs, especially in a Jupyter notebook.   tf.browser.ner.web : Flask app that routes URLs to controller functions.  web makes use of the following modules that are not needed by  ner :   tf.browser.ner.serve : define the controllers of the web app Again, this is a top of an iceberg, since it inherits from:   tf.browser.ner.request : manage the data of a request;   tf.browser.ner.fragments : generate HTML for widgets on the page;  request also uses  form to retrieve form values into typed and structured values. Both  web and  ner make use of the following modules in as far as they are not already mentioned under  annotate and its parent classes:   tf.browser.ner.helpers : a variety of context-free data jugglers;   tf.browser.html : a generic library to generate HTML using Pythonic syntax.  ! note \"Class hierarchy\" The classes  Settings ,  Corpus ,  Data ,  Sets ,  Show ,  Annotate ,  NER form one hierarchy. So an object of class  NER has access to all methods of these classes. The classes  Serve ,  Request ,  Fragments ,  From form a separate hierarchy. It will create an  Annotate instance which will be stored in a  Serve instance. Here is an overview how the modules hang together. A  | denotes inheritance, parent classes above child classes. A  <-< arrow denotes dependency by importing code.   Browser | Api-hierarchy                             - | NER | | web <  -< Serve <        -< Annotate <-< match | | | | | Request Fragments <-< html | Sets Show <-< html | | | Form | Data | | | Corpus | | | Settings  "
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate",
-"url":104,
+"url":103,
 "doc":"Entity annotation. Basic methods to handle the various aspects of entity annotation. These methods can be used by code that runs in the TF browser and by code that runs in a Jupyter notebook. This class handles data, it does not contain code to generate HTML. But it has a parent class,  Show , that can generate HTML. This class works with a fixed annotation set. But it has a parent class,  Sets that has method to manipulate such sets and switch between them. We consider the corpus as a list of buckets (typically level-3 sectional units; in TEI-derived corpora called  chunk , being generalizations of  p (paragraph) elements). What type exactly the buckets are is configured in the  ner/config.yaml file. Parameters      app: object The object that corresponds to a loaded TF app for a corpus. data: object, optional None Entity data to start with. If this class is initialized by the browser, the browser hands over the in-memory data that the tool needs. That way, it can maintain access to the same data between requests. If None, no data is handed over, and a fresh data store will be created by an ancestor class (Data) browse: boolean, optional False If True, the object is informed that it is run by the TF browser. This will influence how results are reported back."
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.findOccs",
-"url":104,
+"url":103,
 "doc":"Finds the occurrences of multiple sequences of tokens. This is meant to efficiently list all occurrences of many token sequences in the corpus. Parameters      qTokenSet: set, optional set() A set of sequences of tokens. Each sequence in the set will be used as a search pattern in the whole corpus, and it occurrences are collected. Returns    - dict Keyed by each member of parameter  qTokenSet the values are the occurrences of that member in the corpus. A single occurrence is represented as a tuple of slots.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.filterContent",
-"url":104,
+"url":103,
 "doc":"Filter the buckets according to a variety of criteria. Either the buckets of the whole corpus are filtered, or a given subset of buckets, or a subset of buckets, namely those contained in a particular node, see parameters  node , and  buckets .  Bucket filtering The parameters  bFind ,  bFindC ,  bFindRe specify a regular expression search on the texts of the buckets. The positions of the found occurrences is included in the result. The parameter  anyEnt is a filter on the presence or absence of entities in buckets in general.  Entity filtering The parameter  eVals holds the values of a specific entity to look for.  Occurrence filtering The parameter  qTokens is a sequence of tokens to look for. The occurrences that are found, can be filtered further by  valSelect and  freeState . In entity filtering and occurrence filtering, the matching occurrences are included in the result. Parameters      buckets: set of integer, optional None The set of buckets to filter, instead of the whole corpus. Works also if the parameter  node is specified, which also restricts the buckets to filter. If both are specified, their effect will be combined. node: integer, optional None Gets the context of the node, typically the intermediate-level section in which the node occurs. Then restricts the filtering to the buckets contained in the context, instead of the whole corpus. bFind: string, optional None A search pattern that filters the buckets, before applying the search for a token sequence. bFindC: string, optional None Whether the search is case sensitive or not. bFindRe: object, optional None A compiled regular expression. This function searches on  bFindRe , but if it is None, it compiles  bFind as regular expression and searches on that. If  bFind itself is not None, of course. anyEnt: boolean, optional None If True, it wants all buckets that contain at least one already marked entity; if False, it wants all buckets that do not contain any already marked entity. eVals: tuple, optional None A sequence of values corresponding with the entity features  eid and  kind . If given, the function wants buckets that contain at least an entity with those properties. qTokens: tuple, optional None A sequence of tokens whose occurrences in the corpus will be looked up. valSelect: dict, optional None If present, the keys are the entity features ( eid and  kind ), and the values are iterables of values that are allowed. The feature values to filter on. The results of searching for  eVals or  qTokens are filtered further. If a result is also an instance of an already marked entity, the properties of that entity will be compared feature by feature with the allowed values that  valSelect specifies for that feature. freeState: boolean, optional None If True, found occurrences may not intersect with already marked up features. If False, found occurrences must intersect with already marked up features. showStats: boolean, optional None Whether to show statistics of the find. If None, it only shows gross totals, if False, it shows nothing, if True, it shows totals by feature. Returns    - list of tuples For each bucket that passes the filter, a tuple with the following members is added to the list:  the TF node of the bucket;  tokens: the tokens of the bucket, each token is a tuple consisting of the TF slot of the token and its string value;  matches: the match positions of the found occurrences or entity;  positions: the token positions of where the text of the bucket starts matching the  bFindRe ; If  browse is True, also some stats are passed next to the list of results.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.getSetData",
-"url":105,
+"url":104,
 "doc":"Deliver the data of the current set.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.setSet",
-"url":105,
+"url":104,
 "doc":"Switch to a named annotation set. If the new set does not exist, it will be created. After the switch, the data of the new set will be loaded into memory. Parameters      newAnnoSet: string The name of the new annotation set to switch to.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.resetSet",
-"url":105,
+"url":104,
 "doc":"Clear the current annotation set. The special set    cannot be reset, because it is read-only.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.setDup",
-"url":105,
+"url":104,
 "doc":"Duplicates the current set to a set with a new name.  ! hint \"The special set can be duplicated\" After duplication of the special read-only set, the duplicate copy is modifiable. In this way you can make corrections to the set of pre-existing, tool-generated annotations. The current set changes to the result of the duplication. Parameters      dupSet: string The name of new set that is the result of the duplication.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.setDel",
-"url":105,
+"url":104,
 "doc":"Remove a named set. If the removed set happens to be the current set, the current set changes to the special set named    . Parameters      delSet: string The name of the set to be removed. It is not allowed to remove the special set named    .",
 "func":1
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.setMove",
-"url":105,
+"url":104,
 "doc":"Renames a named set. The current set changes to the renamed set. It is not possible to rename the special set named    . It is also forbidden to rename another set to the special set. Parameters      moveSet: string The new name of the current set.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.annoSet",
-"url":105,
+"url":104,
 "doc":"The current annotation set."
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.annoSetRep",
-"url":105,
+"url":104,
 "doc":"The name representation of the current annotation set."
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.setNames",
-"url":105,
+"url":104,
 "doc":"The set of names of annotation sets that are present on the file system."
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.loadData",
-"url":106,
+"url":105,
 "doc":"Loads data of the current annotation set into memory. It has two phases:  loading the source data (see  Data.fromSource() )  processing the loaded source data (see  Data.process() )",
 "func":1
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.fromSource",
-"url":106,
+"url":105,
 "doc":"Loads annotation data from source. If the current annotation set is    , the annotation data is already in the TF data, and we compile that data into a dict of entity data keyed by entity node. Otherwise, we read the corresponding TSV file from disk and compile that data into a dict of entity data keyed by line number. After collection of this data it is stored in the set data; in fact we store data under the following keys:   dateLoaded : datetime when the data was last loaded from disk;   entities : the list of entities as loaded from the source; it is a dict of entities, keyed by nodes or line numbers; each entity specifies a tuple of feature values and a list of slots that are part of the entity.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.process",
-"url":106,
+"url":105,
 "doc":"Generated derived data structures out of the source data. After loading we process the data into derived data structures. We try to be lazy. We only load data from disk if the data is not already in memory, or the data on disk has been updated since the last load. The resulting data is stored in current set under the various keys. After processing, the time of processing is recorded, so that it can be observed if the processed data is no longer up to date w.r.t. the data as loaded from source. For each such set we produce several data structures, which we store under the following keys:   dateProcessed : datetime when the data was last processed   entityText : dict, text of entity by entity node or line number in TSV file;   entityTextVal : dict of dict, set of feature values of entity, keyed by feature name and then by text of the entity;   entitySummary : dict, list of entity nodes / line numbers, keyed by value of entity kind;   entityIdent : dict, list of entity nodes./line numbers, keyed by tuple of entity feature values (these tuples are identifying for an entity);   entityFreq : dict of counters, a counter for each feature name; the counter gives the number of times each value of that feature occurs in an entity;   entityIndex : dict of dict, a dict for each feature name; the sub-dict gives for each position the values that entities occupying that position can have; positions are tuples of slots;   entityVal : dict, keyed by value tuples gives the set of positions that entities with that value tuple occupy;   entitySlotVal : dict, keyed by positions gives the set of values that entities occupying that position can have;   entitySlotAll : dict, keyed by single first slots gives the set of ending slots that entities starting at that first slot have;   entitySlotIndex : dict, keyed by single slot gives list of items corresponding to entities that occupy that slot;  if an entity starts there, an entry  [True, -n, values] is made;  if an entity ends there, an entry  [False, n, values] is made;  if an entity occupies that slot without starting or ending there, an entry  None is made; Above,  n is the length of the entity in tokens and  values is the tuple of feature values of that entity. This is precisely the information we need if we want to mark up a set of entities in the surrounding context of tokens. Parameters      changed: boolean Whether the data has changed since last processing.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.delEntity",
-"url":106,
+"url":105,
 "doc":"Delete entity occurrences from the current set. This operation is not allowed if the current set is the read-only set with the empty name. The entities to delete are selected by their feature values. So you can use this function to delete all entities with a certain entity id and kind. Moreover, you can also specify a set of locations and restrict the entity removal to the entities that occupy those locations. Parameters      vals: tuple For each entity feature it has a value of that feature. This specifies which entities have to go. allMatches: iterable of tuple of int, optional None A number of slot tuples. They are the locations from which the candidate entities will be deleted. If it is None, the entity candidates will be removed wherever they occur. silent: boolean, optional False Reports how many entities have been deleted and how many were not present in the specified locations. Returns    - (int, int) or void If  silent , it returns the number of non-existing entities that were asked to be deleted and the number of actually deleted entities. If the operation is not allowed, both integers above are set to -1.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.delEntityRich",
-"url":106,
+"url":105,
 "doc":"Delete specified entity occurrences from the current set. This operation is not allowed if the current set is the read-only set with the empty name. This function has more detailed instructions as to which entities should be deleted than  Data.delEntity() . It is a handy function for the TF browser to call, but not so much when you are manipulating entities yourself in a Jupyter notebook. Parameters      deletions: tuple of tuple or string Each member of the tuple corresponds to an entity feature. It is either a single value of such a feature, or an iterable of such values. The tuple together specifies a set of entities whose entity features have values that are either equal to the corresponding member of  deletions or contained in it. buckets: iterable of list This is typically the result of  tf.browser.ner.annotate.Annotate.filterContent() . The only important thing is that member 2 of each bucket is the list of entity matches in that bucket. Only entities that occupy these places will be removed. excludedTokens: set, optional set() This is the set of token positions that define the entities that must be skipped from deletion. If the last slot of an entity is in this set, the entity will not be deleted.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.addEntity",
-"url":106,
+"url":105,
 "doc":"Add entity occurrences to the current set. This operation is not allowed if the current set is the read-only set with the empty name. The entities to add are specified by their feature values. So you can use this function to add entities with a certain entity id and kind. You also have to specify a set of locations where the entities should be added. Parameters      vals: tuple For each entity feature it has a value of that feature. This specifies which entities have will be added. allMatches: iterable of tuple of int A number of slot tuples. They are the locations where the entities will be added. silent: boolean, optional False Reports how many entities have been added and how many were already present in the specified locations. Returns    - (int, int) or void If  silent , it returns the number of already existing entities that were asked to be deleted and the number of actually deleted entities. If the operation is not allowed, both integers above are set to -1.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.addEntities",
-"url":106,
+"url":105,
 "doc":"Add multiple entities efficiently to the current set. This operation is not allowed if the current set is the read-only set with the empty name. If you have multiple entities to add, it is wasteful to do multiple passes over the corpus to find them. This method does them all in one fell swoop. It is used by the method  tf.browser.ner.ner.NER.markEntities() . Parameters      newEntites: iterable of tuples of tuples each new entity consists of  a tuple of entity feature values, specifying the entity to add  a list of slot tuples, specifying where to add this entity silent: boolean, optional False Reports how many entities have been added and how many were already present in the specified locations. Returns    - (int, int) or void If  silent , it returns the number of already existing entities that were asked to be deleted and the number of actually deleted entities. If the operation is not allowed, both integers above are set to -1.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.addEntityRich",
-"url":106,
+"url":105,
 "doc":"Add specified entity occurrences to the current set. This operation is not allowed if the current set is the read-only set with the empty name. This function has more detailed instructions as to which entities should be added than  Data.addEntity() . It is a handy function for the TF browser to call, but not so much when you are manipulating entities yourself in a Jupyter notebook. Parameters      additions: tuple of tuple or string Each member of the tuple corresponds to an entity feature. It is either a single value of such a feature, or an iterable of such values. The tuple together specifies a set of entities whose entity features have values that are either equal to the corresponding member of  additions or contained in it. buckets: iterable of list This is typically the result of  tf.browser.ner.annotate.Annotate.filterContent() . The only important thing is that member 2 of each bucket is the list of entity matches in that bucket. Entities will only be added at these places. excludedTokens: set, optional set() This is the set of token positions that define the locations that must not receive new entities. If the last slot of an entity is in this set, no entity will be added there.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.weedEntities",
-"url":106,
+"url":105,
 "doc":"Performs deletions to the current annotation set. This operation is not allowed if the current set is the read-only set with the empty name. Parameters      delEntities: set The set consists of entity specs: a tuple of values of entity features, and an iterable of slot tuples where the entity is located.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.mergeEntities",
-"url":106,
+"url":105,
 "doc":"Performs additions to the current annotation set. This operation is not allowed if the current set is the read-only set with the empty name. Parameters      newEntities: set The set consists of entity specs: a tuple of values of entity features, and an iterable of slot tuples where the entity is located.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.saveEntitiesAs",
-"url":106,
+"url":105,
 "doc":"Export the data of an annotation set to a file. This function is used when a set has to be duplicated:  tf.browser.ner.sets.Sets.setDup() . Parameters      dataFile: string The path of the file to write to.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.slotType",
-"url":107,
+"url":106,
 "doc":"The node type of the slots in the corpus."
 },
 {
+"ref":"tf.browser.ner.annotate.Annotate.properlySetup",
+"url":106,
+"doc":"Whether the tool has been properly set up. This means that the configuration in  ner/config.yaml or the default configuration work correctly with this corpus. If not, this attribute will prevent most of the methods from working: they fail silently. So users of corpora without any need for this tool will not be bothered by it."
+},
+{
 "ref":"tf.browser.ner.annotate.Annotate.checkFeature",
-"url":107,
+"url":106,
 "doc":"Checks whether a feature is loaded in the corpus. Parameters      feat: string The name of the feature Returns    - boolean Whether the feature is loaded in this corpus."
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.getFVal",
-"url":107,
+"url":106,
 "doc":"Retrieves the value of a feature for a node. Parameters      feat: string The name of the feature node: int The node whose feature value we need Returns    - string or integer or void The value of the feature for that node, if there is a value."
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.getStr",
-"url":107,
+"url":106,
 "doc":"Delivers a function that retrieves the material of a slot. Returns    - function It accepts integers, presumably slots, and delivers the value of the  str feature, which is configured in  ner/config.yaml under key  strFeature ."
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.getAfter",
-"url":107,
+"url":106,
 "doc":"Delivers a function that retrieves the material after a slot. Returns    - function It accepts integers, presumably slots, and delivers the value of the  after feature, which is configured in  ner/config.yaml under key  afterFeature ."
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.getSlots",
-"url":107,
+"url":106,
 "doc":"Gets the slot nodes contained in a node. Parameters      node: integer The container node. Returns    - list of integer The slots in the container."
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.getText",
-"url":107,
+"url":106,
 "doc":"Gets the text of a number of slots. Parameters      slots: iterable of integer Returns    - string The concatenation of the representation of the individual slots. These representations are white-space trimmed at both sides, and the concatenation adds a single space between each adjacent pair of them.  ! caution \"Space between slots\" Leading and trailing white-space is stripped, and inner white-space is normalized to a single space. The text of the individual slots is joined by means of a single white-space, also in corpora that may have zero space between words."
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.getTextR",
-"url":107,
+"url":106,
 "doc":"Gets the text for a non-slot node. It first determines the slots contained in a node, and then uses  Settings.getText() to return the text of those slots. Parameters      node: integer The nodes for whose slots we want the text. Returns    - string"
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.getTokens",
-"url":107,
+"url":106,
 "doc":"Gets the tokens contained in node. Parameters      node: integer The nodes whose slots we want. Returns    - list of tuple Each tuple is a pair of the slot number of the token and its string value. If there is no string value, the empty string is taken."
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.getStrings",
-"url":107,
+"url":106,
 "doc":"Gets the text of the tokens occupying a sequence of slots. Parameters      tokenStart: integer The position of the starting token. tokenEnd: integer The position of the ending token. Returns    - tuple The members consist of the string values of the tokens in question, as far as these values are not purely white-space. Also, the string values are stripped from leading and trailing white-space."
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.getContext",
-"url":107,
+"url":106,
 "doc":"Gets the context buckets around a node. We start from a node and find the section node of intermediate level that contains that node. Then we return all buckets contained in that section. Parameters      node: int Returns    - tuple of int"
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.get0",
-"url":107,
+"url":106,
 "doc":"Makes an identifier value out of a number of slots. This acts as the default value for the  eid feature of new entities. Starting with the white-space-normalized text of a number of slots, the string is lowercased, non-alphanumeric characters are stripped, and spaces are replaced by dots."
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.get1",
-"url":107,
+"url":106,
 "doc":"Return a fixed value specified in the corpus-dependent settings. This acts as the default value ofr the  kind feature of new entities."
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.getBucketNodes",
-"url":107,
+"url":106,
 "doc":"Return all bucket nodes."
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.getEntityNodes",
-"url":107,
+"url":106,
 "doc":"Return all entity nodes."
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.sectionHead",
-"url":107,
+"url":106,
 "doc":"Provide a section heading. Parameters      node: integer The node whose section head we need. Returns    - string"
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.checkBuckets",
-"url":107,
+"url":106,
 "doc":"Given a set of nodes, return the set of only its bucket nodes. Parameters      nodes: set of int Returns    - set of int"
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.featureDefault",
-"url":107,
+"url":106,
 "doc":"Functions that deliver default values for the entity features."
 },
 {
 "ref":"tf.browser.ner.annotate.Annotate.console",
-"url":108,
+"url":107,
 "doc":"Print something to the output. This works exactly as  tf.core.helpers.console It is handy to have this as a method on the Annotate object, so that we can issue temporary console statements during development without the need to add an  import statement to the code.",
 "func":1
 },
@@ -4728,328 +4605,333 @@ INDEX=[
 },
 {
 "ref":"tf.browser.ner.form",
-"url":101,
+"url":100,
 "doc":"Machinery for request reading. All form data comes as key value pairs where the values are strings. We need more streamlined values, in several data types and organizations. Also we need defaults for missing and / or empty values. To see how this fits among all the modules of this package, see  tf.browser.ner.annotate ."
 },
 {
 "ref":"tf.browser.ner.form.Form",
-"url":101,
+"url":100,
 "doc":"Remember the specification of data types and organization for form values. Parameters      features: list The entity features in the tool; derives ultimately from  tf.browser.ner.settings.Settings , which reads the  ner/config.yaml file. defaults: dict Provides default values for form keys with a missing or empty value. If the default should be a  None ,  False or empty string value, nothing has to be specified. Only if the default is a specific meaningful value, it needs to be specified. keysStr,keysBool,keysTri,keysInt,keysTup,keysSetInt,keysJson: list See  tf.browser.ner.request.Request ."
 },
 {
 "ref":"tf.browser.ner.form.Form.fgets",
-"url":101,
+"url":100,
 "doc":"Makes form value under key  k or its default into an string.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.form.Form.fget2",
-"url":101,
+"url":100,
 "doc":"Makes form value under key  k or its default into an boolean.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.form.Form.fget3",
-"url":101,
+"url":100,
 "doc":"Makes form value under key  k or its default into a 3-way boolean.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.form.Form.fgeti",
-"url":101,
+"url":100,
 "doc":"Makes form value under key  k or its default into an integer.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.form.Form.fgettu",
-"url":101,
+"url":100,
 "doc":"Makes form value under key  k or its default into a tuple. The values in the tuples are strings. The values are retrieved by splitting the original string value on  \u2299 .",
 "func":1
 },
 {
 "ref":"tf.browser.ner.form.Form.fgetsi",
-"url":101,
+"url":100,
 "doc":"Makes form value under key  k or its default into a set. The values in the set are integers. The values are retrieved by splitting the original string value on  , . Parts that do not form valid integers are skipped.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.form.Form.fgetj",
-"url":101,
+"url":100,
 "doc":"Makes form value under key  k or its default into a data structure. The data structure is retrieved by interpreting the original string as quoted JSON.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.form.Form.fill",
-"url":101,
+"url":100,
 "doc":"Fill a dictionary with interpreted form values. The input data is the request data from Flask, the output data are the logical values derived from them by the methods in this class. Returns    - dict The filled in form.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner",
-"url":109,
+"url":108,
 "doc":"API for rule-based entity marking. This module contains the top-level methods for applying annotation rules to a corpus. To see how this fits among all the modules of this package, see  tf.browser.ner.annotate .  Programmatic annotation done in a Jupyter Notebook If you have a spreadsheet with named entities, and for each entity a list of surface forms, then this module takes care to read that spreadsheet, translate it to YAML, and then use the YAML as instructions to add entity annotations to the corpus. See this [example notebook](https: nbviewer.jupyter.org/github/HuygensING/suriano/blob/main/programs/ner.ipynb). Here are more details.  Starting up Load the relevant Python modules:  python from tf.app import use   Load your corpus. There are two ways:  Work with a local GitHub clone of the corpus in  ~/HuygensING/suriano :  A = use(\"HuygensING/suriano:clone\", checkout=\"clone\")   Or let TF auto-download the latest version and work with that:  A = use(\"HuygensING/suriano\")  Load the Ner module:  python NE = A.makeNer()   The tool expects some input data to be present: configuration and spreadsheets with instructions. They can be found in the  ner directory. If you work with a local GitHub clone, that data resides in  ~/github/HuygensING/suriano and if you work with an auto-downloaded copy of the data, it is in  ~/text-fabric-data/github/HuygensING/suriano . The output data of the tool ends up in the  _temp directory, which ends up next to the  ner directory.  The entity spreadsheets Here is an example: ![browser]( / /images/Annotate/spreadsheet.png) In our example, the name of the spreadsheet containing this information is  people.xlsx and it can be found as  ner/sheets/people.xlsx The spreadsheet will be read as follows:  the first two rows will be skipped  after that, each row is taken to describe exactly one entity  the first column has the full and unique name for that entity  the second column contains the kind of the entity (you may choose your keywords freely for this)  the third column contains a number of surface forms for this entity, separated by  ;  when the surface forms are peeled out, leading and trailing white-space will be stripped  all other columns will be ignored for the moment; in later versions we may use the information in those columns to fill in extra data about the entities; but probably that information will not end up in TF features. During translation from XLSX to YAML the following happens:  An identifier is distilled from the name of the entity;  Missing kind fields are filled with the default kind. These steps need some configuration information from the  ner/config.yaml file. Translation is done by  python NE.readInstructions(\"people\")   The resulting YAML ends up next to the spreadsheet, and it looks like this:  yaml christoffel.sticke: kind: PER name: Christoffel Sticke occSpecs: [] diederik.sticke: kind: PER name: Diederik Sticke occSpecs: - Dierck - Dirk dirck.hartog: kind: PER name: Dirck Hartog occSpecs: - Dirich Hartocson - Hertocson jan.baptist.roelants: kind: PER name: Jan-Baptist Roelants occSpecs: - Roelans - Rolans    Inventory A first step is to find out how many occurrences we find in the corpus for these surface forms:  python NE.makeInventory() NE.showInventory()   and the output looks like this    . cornelis.adriaensz PER Pach 7 x Cornelis Adriaensz. Pack david.marlot PER Morlot 1 x David de Marlot erick.dimmer PER Dimer 11 x Erick Dimmer erycius.puteanus PER Potiano 2 x Erycius Puteanus francesco.giustiniani PER Giustiniano 11 x Francesco Giustiniani francois.doubleth PER Doublet 2 x Fran\u00e7ois Doubleth  . Total 150   Entities that are in the spreadsheet, but not in the corpus are skipped.  Marking up In order to create annotations for these entities, we have to switch to an annotation set. Let's start a new set and give it the name  power .  python NE.setSet(\"power\")   If it turns out that  power has already annotations, and you want to clear them, say  python NE.resetSet(\"power\")   Now we are ready for the big thing: creating the annotations:  python NE.markEntities()   It outputs this message:   Already present: 0 x Added: 150 x    Inspection We now revert to lower-level methods from the  tf.browser.ner.annotate class to inspect some of the results.  python results = NE.filterContent(bFind=\"pach\", bFindC=False, anyEnt=True, showStats=None)   Here we filtered the chunks (paragraphs) to those that contain the string  pach , in a case-insensitive way, and that contain at least one entity. There 6 of them, and we can show them:  python NE.showContent(results)   ![browser]( / /images/Annotate/pach.png) The resulting entities are in  _temp/power/entities.tsv and look like this:   erick.dimmer PER 160196 isabella.clara.eugenia PER 142613 gaspar.iii.coligny PER 7877 isabella.clara.eugenia PER 210499 john.vere PER 94659 antonio.lando PER 267755 isabella.clara.eugenia PER 107069 isabella.clara.eugenia PER 9162 michiel.pagani PER 94366 isabella.clara.eugenia PER 179208 isabella.clara.eugenia PER 258933 hans.meinhard PER 75039  .   Each line corresponds to a marked entity occurrence. Lines consist of tab separated fields:  entity identifier  entity kind  remaining fields: slots, i.e. the textual positions occupied by the occurrence. Some entity occurrences consist of multiple words / tokens, hence have multiple slots."
 },
 {
 "ref":"tf.browser.ner.ner.NER",
-"url":109,
+"url":108,
 "doc":"Bulk entity annotation. Contains methods to translate spreadsheets to YAML files with markup instructions; to locate all relevant occurrences; and to mark them up properly. It is a high-level class, building on the lower-level tools provided by the Annotate class on which it is based. Parameters      app: object The object that corresponds to a loaded TF app for a corpus."
 },
 {
 "ref":"tf.browser.ner.ner.NER.readInstructions",
-"url":109,
+"url":108,
 "doc":"Reads an Excel or YAML file with entity recognition instructions. If an Excel spreadsheet is present and no corresponding YAML file is present, or if the corresponding YAML file is out of data, the spreadsheet will be converted to YAML. The info in the resulting YAML file is stored as attribute  instructions in this object. A report of the instructions will be shown in the output. Reading instructions will invalidate the  inventory member of this object, which is the result of looking up all entities in the corpus on the basis of the instructions. Parameters      sheetName: string The file name without extension of the spreadsheet. The spreadsheet is expected in the  ner/sheets directory. The YAML file ends up in the same directory, with the same name and extension  .yaml force: boolean, optional False If True, the conversion from Excel to YAML will take place anyhow, provided the Excel sheet exists.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner.NER.makeInventory",
-"url":109,
+"url":108,
 "doc":"Explores the corpus for the surface forms mentioned in the instructions. The instructions are present in the  instructions attribute of the object. The resulting inventory is stored in the  inventory member of the object. It is a dictionary, keyed by sequences of tokens, whose values are the slot sequences where those token sequences occur in the corpus.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner.NER.showInventory",
-"url":109,
+"url":108,
 "doc":"Shows the inventory. The surface forms in the inventory are put into the context of the entities of which they are surface forms.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner.NER.markEntities",
-"url":109,
+"url":108,
 "doc":"Marks up the members of the inventory as entities. The instructions contain the entity identifier and the entity kind that have to be assigned to the surface forms. The inventory knows where the occurrences of the surface forms are. If there is no inventory yet, it will be created.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner.NER.instructions",
-"url":109,
+"url":108,
 "doc":"Will contain the information in a spreadsheet for marking up entities."
 },
 {
 "ref":"tf.browser.ner.ner.NER.inventory",
-"url":109,
+"url":108,
 "doc":"Will contain the locations of all surface forms in the current instructions."
 },
 {
 "ref":"tf.browser.ner.ner.NER.findOccs",
-"url":104,
+"url":103,
 "doc":"Finds the occurrences of multiple sequences of tokens. This is meant to efficiently list all occurrences of many token sequences in the corpus. Parameters      qTokenSet: set, optional set() A set of sequences of tokens. Each sequence in the set will be used as a search pattern in the whole corpus, and it occurrences are collected. Returns    - dict Keyed by each member of parameter  qTokenSet the values are the occurrences of that member in the corpus. A single occurrence is represented as a tuple of slots.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner.NER.filterContent",
-"url":104,
+"url":103,
 "doc":"Filter the buckets according to a variety of criteria. Either the buckets of the whole corpus are filtered, or a given subset of buckets, or a subset of buckets, namely those contained in a particular node, see parameters  node , and  buckets .  Bucket filtering The parameters  bFind ,  bFindC ,  bFindRe specify a regular expression search on the texts of the buckets. The positions of the found occurrences is included in the result. The parameter  anyEnt is a filter on the presence or absence of entities in buckets in general.  Entity filtering The parameter  eVals holds the values of a specific entity to look for.  Occurrence filtering The parameter  qTokens is a sequence of tokens to look for. The occurrences that are found, can be filtered further by  valSelect and  freeState . In entity filtering and occurrence filtering, the matching occurrences are included in the result. Parameters      buckets: set of integer, optional None The set of buckets to filter, instead of the whole corpus. Works also if the parameter  node is specified, which also restricts the buckets to filter. If both are specified, their effect will be combined. node: integer, optional None Gets the context of the node, typically the intermediate-level section in which the node occurs. Then restricts the filtering to the buckets contained in the context, instead of the whole corpus. bFind: string, optional None A search pattern that filters the buckets, before applying the search for a token sequence. bFindC: string, optional None Whether the search is case sensitive or not. bFindRe: object, optional None A compiled regular expression. This function searches on  bFindRe , but if it is None, it compiles  bFind as regular expression and searches on that. If  bFind itself is not None, of course. anyEnt: boolean, optional None If True, it wants all buckets that contain at least one already marked entity; if False, it wants all buckets that do not contain any already marked entity. eVals: tuple, optional None A sequence of values corresponding with the entity features  eid and  kind . If given, the function wants buckets that contain at least an entity with those properties. qTokens: tuple, optional None A sequence of tokens whose occurrences in the corpus will be looked up. valSelect: dict, optional None If present, the keys are the entity features ( eid and  kind ), and the values are iterables of values that are allowed. The feature values to filter on. The results of searching for  eVals or  qTokens are filtered further. If a result is also an instance of an already marked entity, the properties of that entity will be compared feature by feature with the allowed values that  valSelect specifies for that feature. freeState: boolean, optional None If True, found occurrences may not intersect with already marked up features. If False, found occurrences must intersect with already marked up features. showStats: boolean, optional None Whether to show statistics of the find. If None, it only shows gross totals, if False, it shows nothing, if True, it shows totals by feature. Returns    - list of tuples For each bucket that passes the filter, a tuple with the following members is added to the list:  the TF node of the bucket;  tokens: the tokens of the bucket, each token is a tuple consisting of the TF slot of the token and its string value;  matches: the match positions of the found occurrences or entity;  positions: the token positions of where the text of the bucket starts matching the  bFindRe ; If  browse is True, also some stats are passed next to the list of results.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner.NER.getSetData",
-"url":105,
+"url":104,
 "doc":"Deliver the data of the current set.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner.NER.setSet",
-"url":105,
+"url":104,
 "doc":"Switch to a named annotation set. If the new set does not exist, it will be created. After the switch, the data of the new set will be loaded into memory. Parameters      newAnnoSet: string The name of the new annotation set to switch to.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner.NER.resetSet",
-"url":105,
+"url":104,
 "doc":"Clear the current annotation set. The special set    cannot be reset, because it is read-only.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner.NER.setDup",
-"url":105,
+"url":104,
 "doc":"Duplicates the current set to a set with a new name.  ! hint \"The special set can be duplicated\" After duplication of the special read-only set, the duplicate copy is modifiable. In this way you can make corrections to the set of pre-existing, tool-generated annotations. The current set changes to the result of the duplication. Parameters      dupSet: string The name of new set that is the result of the duplication.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner.NER.setDel",
-"url":105,
+"url":104,
 "doc":"Remove a named set. If the removed set happens to be the current set, the current set changes to the special set named    . Parameters      delSet: string The name of the set to be removed. It is not allowed to remove the special set named    .",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner.NER.setMove",
-"url":105,
+"url":104,
 "doc":"Renames a named set. The current set changes to the renamed set. It is not possible to rename the special set named    . It is also forbidden to rename another set to the special set. Parameters      moveSet: string The new name of the current set.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner.NER.annoSet",
-"url":105,
+"url":104,
 "doc":"The current annotation set."
 },
 {
 "ref":"tf.browser.ner.ner.NER.annoSetRep",
-"url":105,
+"url":104,
 "doc":"The name representation of the current annotation set."
 },
 {
 "ref":"tf.browser.ner.ner.NER.setNames",
-"url":105,
+"url":104,
 "doc":"The set of names of annotation sets that are present on the file system."
 },
 {
 "ref":"tf.browser.ner.ner.NER.loadData",
-"url":106,
+"url":105,
 "doc":"Loads data of the current annotation set into memory. It has two phases:  loading the source data (see  Data.fromSource() )  processing the loaded source data (see  Data.process() )",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner.NER.fromSource",
-"url":106,
+"url":105,
 "doc":"Loads annotation data from source. If the current annotation set is    , the annotation data is already in the TF data, and we compile that data into a dict of entity data keyed by entity node. Otherwise, we read the corresponding TSV file from disk and compile that data into a dict of entity data keyed by line number. After collection of this data it is stored in the set data; in fact we store data under the following keys:   dateLoaded : datetime when the data was last loaded from disk;   entities : the list of entities as loaded from the source; it is a dict of entities, keyed by nodes or line numbers; each entity specifies a tuple of feature values and a list of slots that are part of the entity.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner.NER.process",
-"url":106,
+"url":105,
 "doc":"Generated derived data structures out of the source data. After loading we process the data into derived data structures. We try to be lazy. We only load data from disk if the data is not already in memory, or the data on disk has been updated since the last load. The resulting data is stored in current set under the various keys. After processing, the time of processing is recorded, so that it can be observed if the processed data is no longer up to date w.r.t. the data as loaded from source. For each such set we produce several data structures, which we store under the following keys:   dateProcessed : datetime when the data was last processed   entityText : dict, text of entity by entity node or line number in TSV file;   entityTextVal : dict of dict, set of feature values of entity, keyed by feature name and then by text of the entity;   entitySummary : dict, list of entity nodes / line numbers, keyed by value of entity kind;   entityIdent : dict, list of entity nodes./line numbers, keyed by tuple of entity feature values (these tuples are identifying for an entity);   entityFreq : dict of counters, a counter for each feature name; the counter gives the number of times each value of that feature occurs in an entity;   entityIndex : dict of dict, a dict for each feature name; the sub-dict gives for each position the values that entities occupying that position can have; positions are tuples of slots;   entityVal : dict, keyed by value tuples gives the set of positions that entities with that value tuple occupy;   entitySlotVal : dict, keyed by positions gives the set of values that entities occupying that position can have;   entitySlotAll : dict, keyed by single first slots gives the set of ending slots that entities starting at that first slot have;   entitySlotIndex : dict, keyed by single slot gives list of items corresponding to entities that occupy that slot;  if an entity starts there, an entry  [True, -n, values] is made;  if an entity ends there, an entry  [False, n, values] is made;  if an entity occupies that slot without starting or ending there, an entry  None is made; Above,  n is the length of the entity in tokens and  values is the tuple of feature values of that entity. This is precisely the information we need if we want to mark up a set of entities in the surrounding context of tokens. Parameters      changed: boolean Whether the data has changed since last processing.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner.NER.delEntity",
-"url":106,
+"url":105,
 "doc":"Delete entity occurrences from the current set. This operation is not allowed if the current set is the read-only set with the empty name. The entities to delete are selected by their feature values. So you can use this function to delete all entities with a certain entity id and kind. Moreover, you can also specify a set of locations and restrict the entity removal to the entities that occupy those locations. Parameters      vals: tuple For each entity feature it has a value of that feature. This specifies which entities have to go. allMatches: iterable of tuple of int, optional None A number of slot tuples. They are the locations from which the candidate entities will be deleted. If it is None, the entity candidates will be removed wherever they occur. silent: boolean, optional False Reports how many entities have been deleted and how many were not present in the specified locations. Returns    - (int, int) or void If  silent , it returns the number of non-existing entities that were asked to be deleted and the number of actually deleted entities. If the operation is not allowed, both integers above are set to -1.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner.NER.delEntityRich",
-"url":106,
+"url":105,
 "doc":"Delete specified entity occurrences from the current set. This operation is not allowed if the current set is the read-only set with the empty name. This function has more detailed instructions as to which entities should be deleted than  Data.delEntity() . It is a handy function for the TF browser to call, but not so much when you are manipulating entities yourself in a Jupyter notebook. Parameters      deletions: tuple of tuple or string Each member of the tuple corresponds to an entity feature. It is either a single value of such a feature, or an iterable of such values. The tuple together specifies a set of entities whose entity features have values that are either equal to the corresponding member of  deletions or contained in it. buckets: iterable of list This is typically the result of  tf.browser.ner.annotate.Annotate.filterContent() . The only important thing is that member 2 of each bucket is the list of entity matches in that bucket. Only entities that occupy these places will be removed. excludedTokens: set, optional set() This is the set of token positions that define the entities that must be skipped from deletion. If the last slot of an entity is in this set, the entity will not be deleted.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner.NER.addEntity",
-"url":106,
+"url":105,
 "doc":"Add entity occurrences to the current set. This operation is not allowed if the current set is the read-only set with the empty name. The entities to add are specified by their feature values. So you can use this function to add entities with a certain entity id and kind. You also have to specify a set of locations where the entities should be added. Parameters      vals: tuple For each entity feature it has a value of that feature. This specifies which entities have will be added. allMatches: iterable of tuple of int A number of slot tuples. They are the locations where the entities will be added. silent: boolean, optional False Reports how many entities have been added and how many were already present in the specified locations. Returns    - (int, int) or void If  silent , it returns the number of already existing entities that were asked to be deleted and the number of actually deleted entities. If the operation is not allowed, both integers above are set to -1.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner.NER.addEntities",
-"url":106,
+"url":105,
 "doc":"Add multiple entities efficiently to the current set. This operation is not allowed if the current set is the read-only set with the empty name. If you have multiple entities to add, it is wasteful to do multiple passes over the corpus to find them. This method does them all in one fell swoop. It is used by the method  tf.browser.ner.ner.NER.markEntities() . Parameters      newEntites: iterable of tuples of tuples each new entity consists of  a tuple of entity feature values, specifying the entity to add  a list of slot tuples, specifying where to add this entity silent: boolean, optional False Reports how many entities have been added and how many were already present in the specified locations. Returns    - (int, int) or void If  silent , it returns the number of already existing entities that were asked to be deleted and the number of actually deleted entities. If the operation is not allowed, both integers above are set to -1.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner.NER.addEntityRich",
-"url":106,
+"url":105,
 "doc":"Add specified entity occurrences to the current set. This operation is not allowed if the current set is the read-only set with the empty name. This function has more detailed instructions as to which entities should be added than  Data.addEntity() . It is a handy function for the TF browser to call, but not so much when you are manipulating entities yourself in a Jupyter notebook. Parameters      additions: tuple of tuple or string Each member of the tuple corresponds to an entity feature. It is either a single value of such a feature, or an iterable of such values. The tuple together specifies a set of entities whose entity features have values that are either equal to the corresponding member of  additions or contained in it. buckets: iterable of list This is typically the result of  tf.browser.ner.annotate.Annotate.filterContent() . The only important thing is that member 2 of each bucket is the list of entity matches in that bucket. Entities will only be added at these places. excludedTokens: set, optional set() This is the set of token positions that define the locations that must not receive new entities. If the last slot of an entity is in this set, no entity will be added there.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner.NER.weedEntities",
-"url":106,
+"url":105,
 "doc":"Performs deletions to the current annotation set. This operation is not allowed if the current set is the read-only set with the empty name. Parameters      delEntities: set The set consists of entity specs: a tuple of values of entity features, and an iterable of slot tuples where the entity is located.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner.NER.mergeEntities",
-"url":106,
+"url":105,
 "doc":"Performs additions to the current annotation set. This operation is not allowed if the current set is the read-only set with the empty name. Parameters      newEntities: set The set consists of entity specs: a tuple of values of entity features, and an iterable of slot tuples where the entity is located.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner.NER.saveEntitiesAs",
-"url":106,
+"url":105,
 "doc":"Export the data of an annotation set to a file. This function is used when a set has to be duplicated:  tf.browser.ner.sets.Sets.setDup() . Parameters      dataFile: string The path of the file to write to.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.ner.NER.slotType",
-"url":107,
+"url":106,
 "doc":"The node type of the slots in the corpus."
 },
 {
+"ref":"tf.browser.ner.ner.NER.properlySetup",
+"url":106,
+"doc":"Whether the tool has been properly set up. This means that the configuration in  ner/config.yaml or the default configuration work correctly with this corpus. If not, this attribute will prevent most of the methods from working: they fail silently. So users of corpora without any need for this tool will not be bothered by it."
+},
+{
 "ref":"tf.browser.ner.ner.NER.checkFeature",
-"url":107,
+"url":106,
 "doc":"Checks whether a feature is loaded in the corpus. Parameters      feat: string The name of the feature Returns    - boolean Whether the feature is loaded in this corpus."
 },
 {
 "ref":"tf.browser.ner.ner.NER.getFVal",
-"url":107,
+"url":106,
 "doc":"Retrieves the value of a feature for a node. Parameters      feat: string The name of the feature node: int The node whose feature value we need Returns    - string or integer or void The value of the feature for that node, if there is a value."
 },
 {
 "ref":"tf.browser.ner.ner.NER.getStr",
-"url":107,
+"url":106,
 "doc":"Delivers a function that retrieves the material of a slot. Returns    - function It accepts integers, presumably slots, and delivers the value of the  str feature, which is configured in  ner/config.yaml under key  strFeature ."
 },
 {
 "ref":"tf.browser.ner.ner.NER.getAfter",
-"url":107,
+"url":106,
 "doc":"Delivers a function that retrieves the material after a slot. Returns    - function It accepts integers, presumably slots, and delivers the value of the  after feature, which is configured in  ner/config.yaml under key  afterFeature ."
 },
 {
 "ref":"tf.browser.ner.ner.NER.getSlots",
-"url":107,
+"url":106,
 "doc":"Gets the slot nodes contained in a node. Parameters      node: integer The container node. Returns    - list of integer The slots in the container."
 },
 {
 "ref":"tf.browser.ner.ner.NER.getText",
-"url":107,
+"url":106,
 "doc":"Gets the text of a number of slots. Parameters      slots: iterable of integer Returns    - string The concatenation of the representation of the individual slots. These representations are white-space trimmed at both sides, and the concatenation adds a single space between each adjacent pair of them.  ! caution \"Space between slots\" Leading and trailing white-space is stripped, and inner white-space is normalized to a single space. The text of the individual slots is joined by means of a single white-space, also in corpora that may have zero space between words."
 },
 {
 "ref":"tf.browser.ner.ner.NER.getTextR",
-"url":107,
+"url":106,
 "doc":"Gets the text for a non-slot node. It first determines the slots contained in a node, and then uses  Settings.getText() to return the text of those slots. Parameters      node: integer The nodes for whose slots we want the text. Returns    - string"
 },
 {
 "ref":"tf.browser.ner.ner.NER.getTokens",
-"url":107,
+"url":106,
 "doc":"Gets the tokens contained in node. Parameters      node: integer The nodes whose slots we want. Returns    - list of tuple Each tuple is a pair of the slot number of the token and its string value. If there is no string value, the empty string is taken."
 },
 {
 "ref":"tf.browser.ner.ner.NER.getStrings",
-"url":107,
+"url":106,
 "doc":"Gets the text of the tokens occupying a sequence of slots. Parameters      tokenStart: integer The position of the starting token. tokenEnd: integer The position of the ending token. Returns    - tuple The members consist of the string values of the tokens in question, as far as these values are not purely white-space. Also, the string values are stripped from leading and trailing white-space."
 },
 {
 "ref":"tf.browser.ner.ner.NER.getContext",
-"url":107,
+"url":106,
 "doc":"Gets the context buckets around a node. We start from a node and find the section node of intermediate level that contains that node. Then we return all buckets contained in that section. Parameters      node: int Returns    - tuple of int"
 },
 {
 "ref":"tf.browser.ner.ner.NER.get0",
-"url":107,
+"url":106,
 "doc":"Makes an identifier value out of a number of slots. This acts as the default value for the  eid feature of new entities. Starting with the white-space-normalized text of a number of slots, the string is lowercased, non-alphanumeric characters are stripped, and spaces are replaced by dots."
 },
 {
 "ref":"tf.browser.ner.ner.NER.get1",
-"url":107,
+"url":106,
 "doc":"Return a fixed value specified in the corpus-dependent settings. This acts as the default value ofr the  kind feature of new entities."
 },
 {
 "ref":"tf.browser.ner.ner.NER.getBucketNodes",
-"url":107,
+"url":106,
 "doc":"Return all bucket nodes."
 },
 {
 "ref":"tf.browser.ner.ner.NER.getEntityNodes",
-"url":107,
+"url":106,
 "doc":"Return all entity nodes."
 },
 {
 "ref":"tf.browser.ner.ner.NER.sectionHead",
-"url":107,
+"url":106,
 "doc":"Provide a section heading. Parameters      node: integer The node whose section head we need. Returns    - string"
 },
 {
 "ref":"tf.browser.ner.ner.NER.checkBuckets",
-"url":107,
+"url":106,
 "doc":"Given a set of nodes, return the set of only its bucket nodes. Parameters      nodes: set of int Returns    - set of int"
 },
 {
 "ref":"tf.browser.ner.ner.NER.featureDefault",
-"url":107,
+"url":106,
 "doc":"Functions that deliver default values for the entity features."
 },
 {
 "ref":"tf.browser.ner.ner.NER.console",
-"url":108,
+"url":107,
 "doc":"Print something to the output. This works exactly as  tf.core.helpers.console It is handy to have this as a method on the Annotate object, so that we can issue temporary console statements during development without the need to add an  import statement to the code.",
 "func":1
 },
@@ -5073,821 +4955,964 @@ INDEX=[
 },
 {
 "ref":"tf.browser.ner.settings",
-"url":108,
+"url":107,
 "doc":"Corpus dependent setup of the annotation tool. To see how this fits among all the modules of this package, see  tf.browser.ner.annotate ."
 },
 {
 "ref":"tf.browser.ner.settings.TOOLKEY",
-"url":108,
+"url":107,
 "doc":"The name of this annotation tool. This name is used  in directory paths on the file system to find the data that is managed by this tool;  as a key to address the in-memory data that belongs to this tool;  as a prefix to modularize the Flask app for this tool within the encompassing TF browser Flask app and also it CSS files."
 },
 {
 "ref":"tf.browser.ner.settings.NONE",
-"url":108,
+"url":107,
 "doc":"GUI representiation of an empty value. Used to mark the fact that an occurrence does not have a value for an entity feature. That happens when an occurrence is not part of an entity."
 },
 {
 "ref":"tf.browser.ner.settings.EMPTY",
-"url":108,
+"url":107,
 "doc":"GUI representation of the empty string. If an entity feature has the empty string as value, and we want to create a button for it, this is the label we draw on that button."
 },
 {
 "ref":"tf.browser.ner.settings.LIMIT_BROWSER",
-"url":108,
+"url":107,
 "doc":"Limit of amount of buckets to load on one page when in the TF browser. This is not a hard limit. We only use it if the page contains the whole corpus or a filtered subset of it. But as soon we have selected a token string or an entity, we show all buckets that contain it, no matter how many there are.  ! note \"Performance\" We use the [CSS device  content-visibility ](https: developer.mozilla.org/en-US/docs/Web/CSS/content-visibility) to restrict rendering to the material that is visible in the viewport. However, this is not supported in Safari, so the performance may suffer in Safari if we load the whole corpus on a single page. In practice, even in browsers that support this device are not happy with a big chunk of HTML on the page, since they do have to build a large DOM, including event listeners. That's why we restrict the page to a limited amount of buckets. But when a selection has been made, it is more important to show the whole, untruncated result set, than to incur a performance penalty. Moreover, it is hardly the case that a selected entity of occurrence occurs in a very large number of buckets."
 },
 {
 "ref":"tf.browser.ner.settings.LIMIT_NB",
-"url":108,
+"url":107,
 "doc":"Limit of amount of buckets to load on one page when in a Jupyter notebook. See also  LIMIT_BROWSER ."
 },
 {
 "ref":"tf.browser.ner.settings.STYLES",
-"url":108,
+"url":107,
 "doc":"CSS style configuration for entity features. Here we define properties of the styling of the entity features and their values. Since these features are defined in configuration, we cannot work with a fixed style sheet. We divide entity features in  keyword features and  free features. The typical keyword feature is  kind , it has a limited set of values. The typical free feature is  eid , it has an unbounded number of values. As it is now, we could have expressed this in a fixed style sheet. But if we open up to allowing for more entity features, we can use this setup to easily configure the formatting of them. However, we should move these definitions to the  ner.yaml file then, so that the only place of configuration is that YAML file, and not this file."
 },
 {
 "ref":"tf.browser.ner.settings.SORTDIR_DESC",
-"url":108,
+"url":107,
 "doc":"Value that indicates the descending sort direction."
 },
 {
 "ref":"tf.browser.ner.settings.SORTDIR_ASC",
-"url":108,
+"url":107,
 "doc":"Value that indicates the ascending sort direction."
 },
 {
 "ref":"tf.browser.ner.settings.SORTDIR_DEFAULT",
-"url":108,
+"url":107,
 "doc":"Default sort direction."
 },
 {
 "ref":"tf.browser.ner.settings.SORTKEY_DEFAULT",
-"url":108,
+"url":107,
 "doc":"Default sort key."
 },
 {
 "ref":"tf.browser.ner.settings.SORT_DEFAULT",
-"url":108,
+"url":107,
 "doc":"Default sort key plus sort direction combination."
 },
 {
 "ref":"tf.browser.ner.settings.SC_ALL",
-"url":108,
+"url":107,
 "doc":"Value that indicates  all buckets."
 },
 {
 "ref":"tf.browser.ner.settings.SC_FILT",
-"url":108,
+"url":107,
 "doc":"Value that indicates  filtered buckets."
 },
 {
 "ref":"tf.browser.ner.settings.Settings",
-"url":108,
+"url":107,
 "doc":"Provides configuration details. There is fixed configuration, that is not intended to be modifiable by users. These configuration values are put in variables in this module, which other modules can import. There is also customizable configuration, meant to adapt the tool to the specifics of a corpus. Those configuration values are read from a YAML file, located in a directory  ner next to the  tf data of the corpus."
 },
 {
 "ref":"tf.browser.ner.settings.Settings.console",
-"url":108,
+"url":107,
 "doc":"Print something to the output. This works exactly as  tf.core.helpers.console It is handy to have this as a method on the Annotate object, so that we can issue temporary console statements during development without the need to add an  import statement to the code.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.fragments",
-"url":103,
+"url":102,
 "doc":"Wraps various pieces into HTML. This module generates HTML for various controls that appear in the TF browser. To see how this fits among all the modules of this package, see  tf.browser.ner.annotate ."
 },
 {
 "ref":"tf.browser.ner.fragments.Fragments",
-"url":103,
+"url":102,
 "doc":""
 },
 {
 "ref":"tf.browser.ner.fragments.Fragments.wrapMessages",
-"url":103,
+"url":102,
 "doc":"HTML for messages.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.fragments.Fragments.wrapAnnoSets",
-"url":103,
+"url":102,
 "doc":"HTML for the annotation set chooser. It is a list of buttons, each corresponding to an existing annotation set. A click on the button selects that set. There is also a control to delete the set. Apart from these buttons there is a button to switch to the entities that are present in the TF dataset as nodes of the entity type specified in the YAML file with corresponding features. Finally, it is possible to create a new, empty annotation set.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.fragments.Fragments.wrapQuery",
-"url":103,
+"url":102,
 "doc":"HTML for all control widgets on the page.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.fragments.Fragments.wrapAppearance",
-"url":103,
+"url":102,
 "doc":"HTML for the appearance widget. The appearance widget lets the user choose how inline entities should appear: with or without underlining, identifier, kind, frequency.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.fragments.Fragments.wrapFilter",
-"url":103,
+"url":102,
 "doc":"HTML for the filter widget. The filter widget lets the user filter the buckets by a search pattern or the condition that the buckets contains entities (and the even more useful condition that the buckets do  not contain entities).",
 "func":1
 },
 {
 "ref":"tf.browser.ner.fragments.Fragments.wrapEntity",
-"url":103,
+"url":102,
 "doc":"Basic data for the selected entity widget. The entity widget shows the occurrence or entity that is selected. This function computed the relevant values and stores them in hidden input elements.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.fragments.Fragments.wrapEntityHeaders",
-"url":103,
+"url":102,
 "doc":"HTML for the header of the entity table, dependent on the state of sorting.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.fragments.Fragments.wrapEntityText",
-"url":103,
+"url":102,
 "doc":"HTML for the selected entity widget.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.fragments.Fragments.wrapEntityFeats",
-"url":103,
+"url":102,
 "doc":"HTML for the entity feature value selection. All feature values of entities that occupy the selected occurrences are shown, with the possibility that the user selects some of these values, thereby selecting a subset of the original set of occurrences.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.fragments.Fragments.wrapScope",
-"url":103,
+"url":102,
 "doc":"HTML for the scope widget. The scope widget lets the user choose whether the add / del actions should be applied to all relevant buckets, or only to the filtered buckets.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.fragments.Fragments.wrapExceptions",
-"url":103,
+"url":102,
 "doc":"HTML for the select / deselect buttons. These buttons appear at the end of selected occurrences in the text displayed in the buckets. The user can select or deselect individual entities for the application of the add / del operations.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.fragments.Fragments.wrapEntityModify",
-"url":103,
+"url":102,
 "doc":"HTML for the add / del widget. This widget contains controls to specify which entity feature values should be added or deleted. Considerable effort is made to prefill these components with ergonomic values.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.fragments.Fragments.wrapFindStat",
-"url":103,
+"url":102,
 "doc":"HTML for statistics. This is about totals of occurrences in all buckets versus in filtered buckets.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.fragments.Fragments.wrapEntityStat",
-"url":103,
+"url":102,
 "doc":"HTML for statistics of feature values. This is about totals of occurrences of feature values in all buckets versus in filtered buckets.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.fragments.Fragments.wrapActive",
-"url":103,
+"url":102,
 "doc":"HTML for the active entity.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.fragments.Fragments.wrapEntityModReport",
-"url":103,
+"url":102,
 "doc":"HTML for the combined report of add / del actions.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.fragments.Fragments.wrapReport",
-"url":103,
+"url":102,
 "doc":"HTML for the report of add / del actions.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.sets",
-"url":105,
+"url":104,
 "doc":"Annotation set management. Annotation sets contain the annotations that the user generates by using the tool. To see how this fits among all the modules of this package, see  tf.browser.ner.annotate ."
 },
 {
 "ref":"tf.browser.ner.sets.Sets",
-"url":105,
+"url":104,
 "doc":"Methods to create, duplicate, rename and delete annotation sets. Annotation sets have names, given by the user. There is one special annotation set, whose name is the empty string, and whose content are the pre-existing entities, i.e. the entities that are present in the TF data as nodes and features. There is always one current annotation set, whose data is loaded into memory. Parameters      data: object, optional None Entity data to start with. If None, a fresh data store will be created by a parent class (Data)."
 },
 {
 "ref":"tf.browser.ner.sets.Sets.getSetData",
-"url":105,
+"url":104,
 "doc":"Deliver the data of the current set.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.sets.Sets.setSet",
-"url":105,
+"url":104,
 "doc":"Switch to a named annotation set. If the new set does not exist, it will be created. After the switch, the data of the new set will be loaded into memory. Parameters      newAnnoSet: string The name of the new annotation set to switch to.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.sets.Sets.resetSet",
-"url":105,
+"url":104,
 "doc":"Clear the current annotation set. The special set    cannot be reset, because it is read-only.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.sets.Sets.setDup",
-"url":105,
+"url":104,
 "doc":"Duplicates the current set to a set with a new name.  ! hint \"The special set can be duplicated\" After duplication of the special read-only set, the duplicate copy is modifiable. In this way you can make corrections to the set of pre-existing, tool-generated annotations. The current set changes to the result of the duplication. Parameters      dupSet: string The name of new set that is the result of the duplication.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.sets.Sets.setDel",
-"url":105,
+"url":104,
 "doc":"Remove a named set. If the removed set happens to be the current set, the current set changes to the special set named    . Parameters      delSet: string The name of the set to be removed. It is not allowed to remove the special set named    .",
 "func":1
 },
 {
 "ref":"tf.browser.ner.sets.Sets.setMove",
-"url":105,
+"url":104,
 "doc":"Renames a named set. The current set changes to the renamed set. It is not possible to rename the special set named    . It is also forbidden to rename another set to the special set. Parameters      moveSet: string The new name of the current set.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.sets.Sets.annoSet",
-"url":105,
+"url":104,
 "doc":"The current annotation set."
 },
 {
 "ref":"tf.browser.ner.sets.Sets.annoSetRep",
-"url":105,
+"url":104,
 "doc":"The name representation of the current annotation set."
 },
 {
 "ref":"tf.browser.ner.sets.Sets.setNames",
-"url":105,
+"url":104,
 "doc":"The set of names of annotation sets that are present on the file system."
 },
 {
 "ref":"tf.browser.ner.sets.Sets.loadData",
-"url":106,
+"url":105,
 "doc":"Loads data of the current annotation set into memory. It has two phases:  loading the source data (see  Data.fromSource() )  processing the loaded source data (see  Data.process() )",
 "func":1
 },
 {
 "ref":"tf.browser.ner.sets.Sets.fromSource",
-"url":106,
+"url":105,
 "doc":"Loads annotation data from source. If the current annotation set is    , the annotation data is already in the TF data, and we compile that data into a dict of entity data keyed by entity node. Otherwise, we read the corresponding TSV file from disk and compile that data into a dict of entity data keyed by line number. After collection of this data it is stored in the set data; in fact we store data under the following keys:   dateLoaded : datetime when the data was last loaded from disk;   entities : the list of entities as loaded from the source; it is a dict of entities, keyed by nodes or line numbers; each entity specifies a tuple of feature values and a list of slots that are part of the entity.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.sets.Sets.process",
-"url":106,
+"url":105,
 "doc":"Generated derived data structures out of the source data. After loading we process the data into derived data structures. We try to be lazy. We only load data from disk if the data is not already in memory, or the data on disk has been updated since the last load. The resulting data is stored in current set under the various keys. After processing, the time of processing is recorded, so that it can be observed if the processed data is no longer up to date w.r.t. the data as loaded from source. For each such set we produce several data structures, which we store under the following keys:   dateProcessed : datetime when the data was last processed   entityText : dict, text of entity by entity node or line number in TSV file;   entityTextVal : dict of dict, set of feature values of entity, keyed by feature name and then by text of the entity;   entitySummary : dict, list of entity nodes / line numbers, keyed by value of entity kind;   entityIdent : dict, list of entity nodes./line numbers, keyed by tuple of entity feature values (these tuples are identifying for an entity);   entityFreq : dict of counters, a counter for each feature name; the counter gives the number of times each value of that feature occurs in an entity;   entityIndex : dict of dict, a dict for each feature name; the sub-dict gives for each position the values that entities occupying that position can have; positions are tuples of slots;   entityVal : dict, keyed by value tuples gives the set of positions that entities with that value tuple occupy;   entitySlotVal : dict, keyed by positions gives the set of values that entities occupying that position can have;   entitySlotAll : dict, keyed by single first slots gives the set of ending slots that entities starting at that first slot have;   entitySlotIndex : dict, keyed by single slot gives list of items corresponding to entities that occupy that slot;  if an entity starts there, an entry  [True, -n, values] is made;  if an entity ends there, an entry  [False, n, values] is made;  if an entity occupies that slot without starting or ending there, an entry  None is made; Above,  n is the length of the entity in tokens and  values is the tuple of feature values of that entity. This is precisely the information we need if we want to mark up a set of entities in the surrounding context of tokens. Parameters      changed: boolean Whether the data has changed since last processing.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.sets.Sets.delEntity",
-"url":106,
+"url":105,
 "doc":"Delete entity occurrences from the current set. This operation is not allowed if the current set is the read-only set with the empty name. The entities to delete are selected by their feature values. So you can use this function to delete all entities with a certain entity id and kind. Moreover, you can also specify a set of locations and restrict the entity removal to the entities that occupy those locations. Parameters      vals: tuple For each entity feature it has a value of that feature. This specifies which entities have to go. allMatches: iterable of tuple of int, optional None A number of slot tuples. They are the locations from which the candidate entities will be deleted. If it is None, the entity candidates will be removed wherever they occur. silent: boolean, optional False Reports how many entities have been deleted and how many were not present in the specified locations. Returns    - (int, int) or void If  silent , it returns the number of non-existing entities that were asked to be deleted and the number of actually deleted entities. If the operation is not allowed, both integers above are set to -1.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.sets.Sets.delEntityRich",
-"url":106,
+"url":105,
 "doc":"Delete specified entity occurrences from the current set. This operation is not allowed if the current set is the read-only set with the empty name. This function has more detailed instructions as to which entities should be deleted than  Data.delEntity() . It is a handy function for the TF browser to call, but not so much when you are manipulating entities yourself in a Jupyter notebook. Parameters      deletions: tuple of tuple or string Each member of the tuple corresponds to an entity feature. It is either a single value of such a feature, or an iterable of such values. The tuple together specifies a set of entities whose entity features have values that are either equal to the corresponding member of  deletions or contained in it. buckets: iterable of list This is typically the result of  tf.browser.ner.annotate.Annotate.filterContent() . The only important thing is that member 2 of each bucket is the list of entity matches in that bucket. Only entities that occupy these places will be removed. excludedTokens: set, optional set() This is the set of token positions that define the entities that must be skipped from deletion. If the last slot of an entity is in this set, the entity will not be deleted.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.sets.Sets.addEntity",
-"url":106,
+"url":105,
 "doc":"Add entity occurrences to the current set. This operation is not allowed if the current set is the read-only set with the empty name. The entities to add are specified by their feature values. So you can use this function to add entities with a certain entity id and kind. You also have to specify a set of locations where the entities should be added. Parameters      vals: tuple For each entity feature it has a value of that feature. This specifies which entities have will be added. allMatches: iterable of tuple of int A number of slot tuples. They are the locations where the entities will be added. silent: boolean, optional False Reports how many entities have been added and how many were already present in the specified locations. Returns    - (int, int) or void If  silent , it returns the number of already existing entities that were asked to be deleted and the number of actually deleted entities. If the operation is not allowed, both integers above are set to -1.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.sets.Sets.addEntities",
-"url":106,
+"url":105,
 "doc":"Add multiple entities efficiently to the current set. This operation is not allowed if the current set is the read-only set with the empty name. If you have multiple entities to add, it is wasteful to do multiple passes over the corpus to find them. This method does them all in one fell swoop. It is used by the method  tf.browser.ner.ner.NER.markEntities() . Parameters      newEntites: iterable of tuples of tuples each new entity consists of  a tuple of entity feature values, specifying the entity to add  a list of slot tuples, specifying where to add this entity silent: boolean, optional False Reports how many entities have been added and how many were already present in the specified locations. Returns    - (int, int) or void If  silent , it returns the number of already existing entities that were asked to be deleted and the number of actually deleted entities. If the operation is not allowed, both integers above are set to -1.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.sets.Sets.addEntityRich",
-"url":106,
+"url":105,
 "doc":"Add specified entity occurrences to the current set. This operation is not allowed if the current set is the read-only set with the empty name. This function has more detailed instructions as to which entities should be added than  Data.addEntity() . It is a handy function for the TF browser to call, but not so much when you are manipulating entities yourself in a Jupyter notebook. Parameters      additions: tuple of tuple or string Each member of the tuple corresponds to an entity feature. It is either a single value of such a feature, or an iterable of such values. The tuple together specifies a set of entities whose entity features have values that are either equal to the corresponding member of  additions or contained in it. buckets: iterable of list This is typically the result of  tf.browser.ner.annotate.Annotate.filterContent() . The only important thing is that member 2 of each bucket is the list of entity matches in that bucket. Entities will only be added at these places. excludedTokens: set, optional set() This is the set of token positions that define the locations that must not receive new entities. If the last slot of an entity is in this set, no entity will be added there.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.sets.Sets.weedEntities",
-"url":106,
+"url":105,
 "doc":"Performs deletions to the current annotation set. This operation is not allowed if the current set is the read-only set with the empty name. Parameters      delEntities: set The set consists of entity specs: a tuple of values of entity features, and an iterable of slot tuples where the entity is located.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.sets.Sets.mergeEntities",
-"url":106,
+"url":105,
 "doc":"Performs additions to the current annotation set. This operation is not allowed if the current set is the read-only set with the empty name. Parameters      newEntities: set The set consists of entity specs: a tuple of values of entity features, and an iterable of slot tuples where the entity is located.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.sets.Sets.saveEntitiesAs",
-"url":106,
+"url":105,
 "doc":"Export the data of an annotation set to a file. This function is used when a set has to be duplicated:  tf.browser.ner.sets.Sets.setDup() . Parameters      dataFile: string The path of the file to write to.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.sets.Sets.slotType",
-"url":107,
+"url":106,
 "doc":"The node type of the slots in the corpus."
 },
 {
+"ref":"tf.browser.ner.sets.Sets.properlySetup",
+"url":106,
+"doc":"Whether the tool has been properly set up. This means that the configuration in  ner/config.yaml or the default configuration work correctly with this corpus. If not, this attribute will prevent most of the methods from working: they fail silently. So users of corpora without any need for this tool will not be bothered by it."
+},
+{
 "ref":"tf.browser.ner.sets.Sets.checkFeature",
-"url":107,
+"url":106,
 "doc":"Checks whether a feature is loaded in the corpus. Parameters      feat: string The name of the feature Returns    - boolean Whether the feature is loaded in this corpus."
 },
 {
 "ref":"tf.browser.ner.sets.Sets.getFVal",
-"url":107,
+"url":106,
 "doc":"Retrieves the value of a feature for a node. Parameters      feat: string The name of the feature node: int The node whose feature value we need Returns    - string or integer or void The value of the feature for that node, if there is a value."
 },
 {
 "ref":"tf.browser.ner.sets.Sets.getStr",
-"url":107,
+"url":106,
 "doc":"Delivers a function that retrieves the material of a slot. Returns    - function It accepts integers, presumably slots, and delivers the value of the  str feature, which is configured in  ner/config.yaml under key  strFeature ."
 },
 {
 "ref":"tf.browser.ner.sets.Sets.getAfter",
-"url":107,
+"url":106,
 "doc":"Delivers a function that retrieves the material after a slot. Returns    - function It accepts integers, presumably slots, and delivers the value of the  after feature, which is configured in  ner/config.yaml under key  afterFeature ."
 },
 {
 "ref":"tf.browser.ner.sets.Sets.getSlots",
-"url":107,
+"url":106,
 "doc":"Gets the slot nodes contained in a node. Parameters      node: integer The container node. Returns    - list of integer The slots in the container."
 },
 {
 "ref":"tf.browser.ner.sets.Sets.getText",
-"url":107,
+"url":106,
 "doc":"Gets the text of a number of slots. Parameters      slots: iterable of integer Returns    - string The concatenation of the representation of the individual slots. These representations are white-space trimmed at both sides, and the concatenation adds a single space between each adjacent pair of them.  ! caution \"Space between slots\" Leading and trailing white-space is stripped, and inner white-space is normalized to a single space. The text of the individual slots is joined by means of a single white-space, also in corpora that may have zero space between words."
 },
 {
 "ref":"tf.browser.ner.sets.Sets.getTextR",
-"url":107,
+"url":106,
 "doc":"Gets the text for a non-slot node. It first determines the slots contained in a node, and then uses  Settings.getText() to return the text of those slots. Parameters      node: integer The nodes for whose slots we want the text. Returns    - string"
 },
 {
 "ref":"tf.browser.ner.sets.Sets.getTokens",
-"url":107,
+"url":106,
 "doc":"Gets the tokens contained in node. Parameters      node: integer The nodes whose slots we want. Returns    - list of tuple Each tuple is a pair of the slot number of the token and its string value. If there is no string value, the empty string is taken."
 },
 {
 "ref":"tf.browser.ner.sets.Sets.getStrings",
-"url":107,
+"url":106,
 "doc":"Gets the text of the tokens occupying a sequence of slots. Parameters      tokenStart: integer The position of the starting token. tokenEnd: integer The position of the ending token. Returns    - tuple The members consist of the string values of the tokens in question, as far as these values are not purely white-space. Also, the string values are stripped from leading and trailing white-space."
 },
 {
 "ref":"tf.browser.ner.sets.Sets.getContext",
-"url":107,
+"url":106,
 "doc":"Gets the context buckets around a node. We start from a node and find the section node of intermediate level that contains that node. Then we return all buckets contained in that section. Parameters      node: int Returns    - tuple of int"
 },
 {
 "ref":"tf.browser.ner.sets.Sets.get0",
-"url":107,
+"url":106,
 "doc":"Makes an identifier value out of a number of slots. This acts as the default value for the  eid feature of new entities. Starting with the white-space-normalized text of a number of slots, the string is lowercased, non-alphanumeric characters are stripped, and spaces are replaced by dots."
 },
 {
 "ref":"tf.browser.ner.sets.Sets.get1",
-"url":107,
+"url":106,
 "doc":"Return a fixed value specified in the corpus-dependent settings. This acts as the default value ofr the  kind feature of new entities."
 },
 {
 "ref":"tf.browser.ner.sets.Sets.getBucketNodes",
-"url":107,
+"url":106,
 "doc":"Return all bucket nodes."
 },
 {
 "ref":"tf.browser.ner.sets.Sets.getEntityNodes",
-"url":107,
+"url":106,
 "doc":"Return all entity nodes."
 },
 {
 "ref":"tf.browser.ner.sets.Sets.sectionHead",
-"url":107,
+"url":106,
 "doc":"Provide a section heading. Parameters      node: integer The node whose section head we need. Returns    - string"
 },
 {
 "ref":"tf.browser.ner.sets.Sets.checkBuckets",
-"url":107,
+"url":106,
 "doc":"Given a set of nodes, return the set of only its bucket nodes. Parameters      nodes: set of int Returns    - set of int"
 },
 {
 "ref":"tf.browser.ner.sets.Sets.featureDefault",
-"url":107,
+"url":106,
 "doc":"Functions that deliver default values for the entity features."
 },
 {
 "ref":"tf.browser.ner.sets.Sets.console",
-"url":108,
+"url":107,
 "doc":"Print something to the output. This works exactly as  tf.core.helpers.console It is handy to have this as a method on the Annotate object, so that we can issue temporary console statements during development without the need to add an  import statement to the code.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.helpers",
-"url":110,
+"url":109,
 "doc":"Auxiliary functions. To see how this fits among all the modules of this package, see  tf.browser.ner.annotate ."
 },
 {
 "ref":"tf.browser.ner.helpers.CUT_OFF",
-"url":110,
+"url":109,
 "doc":"Maximum length of parts of entity identifiers."
 },
 {
 "ref":"tf.browser.ner.helpers.TO_ASCII_DEF",
-"url":110,
+"url":109,
 "doc":"Undecomposable UNICODE characters mapped to their related ASCII characters."
 },
 {
 "ref":"tf.browser.ner.helpers.normalize",
-"url":110,
+"url":109,
 "doc":"Normalize white-space in a text.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.helpers.toTokens",
-"url":110,
+"url":109,
 "doc":"Split a text into tokens. The text is split on white-space. Tokens are further split into maximal segments of word characters and individual non-word characters. Parameters      spaceEscaped: boolean, optional False If True, it is assumed that if a  _ occurs in a token string, a space is meant.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.helpers.toAscii",
-"url":110,
+"url":109,
 "doc":"Transforms a text with diacritical marks into a plain ASCII text. Characters with diacritics are replaced by their base character. Some characters with diacritics are considered by UNICODE to be undecomposable characters, such as  \u00f8 and  \u00f1 . We use a table ( TO_ASCII_DEF ) to map these on their related ASCII characters.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.helpers.toId",
-"url":110,
+"url":109,
 "doc":"Transforms text to an identifier string. Tokens are lower-cased, separated by  . , reduced to ASCII.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.helpers.toSmallId",
-"url":110,
+"url":109,
 "doc":"Transforms text to a smaller identifier string. As  toId() , but now certain parts of the resulting identifier are either left out or replaced by shorter strings. This transformation is defined by the  transform dictionary, which ultimately is provided in the corpus-dependent  ner/config.yaml .",
 "func":1
 },
 {
 "ref":"tf.browser.ner.helpers.repIdent",
-"url":110,
+"url":109,
 "doc":"Represents an identifier in HTML. Parameters      vals: iterable The material is given as a list of feature values. active: string, optional  A CSS class name to add to the HTML representation. Can be used to mark the entity as active.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.helpers.repSummary",
-"url":110,
+"url":109,
 "doc":"Represents an keyword value in HTML. Parameters      vals: iterable The material is given as a list of values of keyword features. active: string, optional  A CSS class name to add to the HTML representation. Can be used to mark the entity as active.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.helpers.valRep",
-"url":110,
+"url":109,
 "doc":"HTML representation of an entity as a sequence of  feat=val strings.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.helpers.findCompile",
-"url":110,
+"url":109,
 "doc":"Compiles a regular expression out of a search pattern. Parameters      bFind: string The search pattern as a plain string. bFindC: boolean Whether the search is case-sensitive. Returns    - tuple the white-space-stripped search pattern; the regular expression object, if successful, otherwise None; the error message if the re-compilation was not successful.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.helpers.makeCss",
-"url":110,
+"url":109,
 "doc":"Generates CSS for the tool. The CSS for this tool has a part that depends on the choice of entity features. For now, the dependency is mild: keyword features such as  kind are formatted differently than features with an unbounded set of values, such as  eid . Parameters      features, keywordFeatures: iterable What the features are and what the keyword features are. These derive ultimately from the corpus-dependent  ner/config.yaml .",
 "func":1
 },
 {
 "ref":"tf.browser.ner.data",
-"url":106,
+"url":105,
 "doc":"Annotation data module. This module manages the data of annotations. To see how this fits among all the modules of this package, see  tf.browser.ner.annotate . Annotation data is either the set of pre-existing data in the corpus or the result of actions by the user of this tool, whether he uses the TF browser, or the API in his own programs. Annotation data must be stored on file, must be read from file, and must be represented in memory in various ways in order to make the API functions of the tool efficient. We have set up the functions in such a way that data is only loaded and processed if it is needed and out of date."
 },
 {
 "ref":"tf.browser.ner.data.Data",
-"url":106,
+"url":105,
 "doc":"Manages annotation data. This class is also responsible for adding entities to a set and deleting entities from them. Both addition and deletion is implemented by first figuring out what has to be done, and then applying it to the entity data on disk; after that we perform a data load from the update file. Parameters      data: object, optional None Entity data to start with. If None, a fresh data store will be created. When the tool runs in browser context, each request will create a  Data object from scratch. If no data is provided to the initializer, it will need to load the required data from file. This is wasteful. We have set up the web server in such a way that it incorporates the annotation data. The web server will pass it to the  tf.browser.ner.annotate.Annotate object initializer, which passes it to the initializer here. In that way, the  Data object can start with the data already in memory."
 },
 {
 "ref":"tf.browser.ner.data.Data.loadData",
-"url":106,
+"url":105,
 "doc":"Loads data of the current annotation set into memory. It has two phases:  loading the source data (see  Data.fromSource() )  processing the loaded source data (see  Data.process() )",
 "func":1
 },
 {
 "ref":"tf.browser.ner.data.Data.fromSource",
-"url":106,
+"url":105,
 "doc":"Loads annotation data from source. If the current annotation set is    , the annotation data is already in the TF data, and we compile that data into a dict of entity data keyed by entity node. Otherwise, we read the corresponding TSV file from disk and compile that data into a dict of entity data keyed by line number. After collection of this data it is stored in the set data; in fact we store data under the following keys:   dateLoaded : datetime when the data was last loaded from disk;   entities : the list of entities as loaded from the source; it is a dict of entities, keyed by nodes or line numbers; each entity specifies a tuple of feature values and a list of slots that are part of the entity.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.data.Data.process",
-"url":106,
+"url":105,
 "doc":"Generated derived data structures out of the source data. After loading we process the data into derived data structures. We try to be lazy. We only load data from disk if the data is not already in memory, or the data on disk has been updated since the last load. The resulting data is stored in current set under the various keys. After processing, the time of processing is recorded, so that it can be observed if the processed data is no longer up to date w.r.t. the data as loaded from source. For each such set we produce several data structures, which we store under the following keys:   dateProcessed : datetime when the data was last processed   entityText : dict, text of entity by entity node or line number in TSV file;   entityTextVal : dict of dict, set of feature values of entity, keyed by feature name and then by text of the entity;   entitySummary : dict, list of entity nodes / line numbers, keyed by value of entity kind;   entityIdent : dict, list of entity nodes./line numbers, keyed by tuple of entity feature values (these tuples are identifying for an entity);   entityFreq : dict of counters, a counter for each feature name; the counter gives the number of times each value of that feature occurs in an entity;   entityIndex : dict of dict, a dict for each feature name; the sub-dict gives for each position the values that entities occupying that position can have; positions are tuples of slots;   entityVal : dict, keyed by value tuples gives the set of positions that entities with that value tuple occupy;   entitySlotVal : dict, keyed by positions gives the set of values that entities occupying that position can have;   entitySlotAll : dict, keyed by single first slots gives the set of ending slots that entities starting at that first slot have;   entitySlotIndex : dict, keyed by single slot gives list of items corresponding to entities that occupy that slot;  if an entity starts there, an entry  [True, -n, values] is made;  if an entity ends there, an entry  [False, n, values] is made;  if an entity occupies that slot without starting or ending there, an entry  None is made; Above,  n is the length of the entity in tokens and  values is the tuple of feature values of that entity. This is precisely the information we need if we want to mark up a set of entities in the surrounding context of tokens. Parameters      changed: boolean Whether the data has changed since last processing.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.data.Data.delEntity",
-"url":106,
+"url":105,
 "doc":"Delete entity occurrences from the current set. This operation is not allowed if the current set is the read-only set with the empty name. The entities to delete are selected by their feature values. So you can use this function to delete all entities with a certain entity id and kind. Moreover, you can also specify a set of locations and restrict the entity removal to the entities that occupy those locations. Parameters      vals: tuple For each entity feature it has a value of that feature. This specifies which entities have to go. allMatches: iterable of tuple of int, optional None A number of slot tuples. They are the locations from which the candidate entities will be deleted. If it is None, the entity candidates will be removed wherever they occur. silent: boolean, optional False Reports how many entities have been deleted and how many were not present in the specified locations. Returns    - (int, int) or void If  silent , it returns the number of non-existing entities that were asked to be deleted and the number of actually deleted entities. If the operation is not allowed, both integers above are set to -1.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.data.Data.delEntityRich",
-"url":106,
+"url":105,
 "doc":"Delete specified entity occurrences from the current set. This operation is not allowed if the current set is the read-only set with the empty name. This function has more detailed instructions as to which entities should be deleted than  Data.delEntity() . It is a handy function for the TF browser to call, but not so much when you are manipulating entities yourself in a Jupyter notebook. Parameters      deletions: tuple of tuple or string Each member of the tuple corresponds to an entity feature. It is either a single value of such a feature, or an iterable of such values. The tuple together specifies a set of entities whose entity features have values that are either equal to the corresponding member of  deletions or contained in it. buckets: iterable of list This is typically the result of  tf.browser.ner.annotate.Annotate.filterContent() . The only important thing is that member 2 of each bucket is the list of entity matches in that bucket. Only entities that occupy these places will be removed. excludedTokens: set, optional set() This is the set of token positions that define the entities that must be skipped from deletion. If the last slot of an entity is in this set, the entity will not be deleted.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.data.Data.addEntity",
-"url":106,
+"url":105,
 "doc":"Add entity occurrences to the current set. This operation is not allowed if the current set is the read-only set with the empty name. The entities to add are specified by their feature values. So you can use this function to add entities with a certain entity id and kind. You also have to specify a set of locations where the entities should be added. Parameters      vals: tuple For each entity feature it has a value of that feature. This specifies which entities have will be added. allMatches: iterable of tuple of int A number of slot tuples. They are the locations where the entities will be added. silent: boolean, optional False Reports how many entities have been added and how many were already present in the specified locations. Returns    - (int, int) or void If  silent , it returns the number of already existing entities that were asked to be deleted and the number of actually deleted entities. If the operation is not allowed, both integers above are set to -1.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.data.Data.addEntities",
-"url":106,
+"url":105,
 "doc":"Add multiple entities efficiently to the current set. This operation is not allowed if the current set is the read-only set with the empty name. If you have multiple entities to add, it is wasteful to do multiple passes over the corpus to find them. This method does them all in one fell swoop. It is used by the method  tf.browser.ner.ner.NER.markEntities() . Parameters      newEntites: iterable of tuples of tuples each new entity consists of  a tuple of entity feature values, specifying the entity to add  a list of slot tuples, specifying where to add this entity silent: boolean, optional False Reports how many entities have been added and how many were already present in the specified locations. Returns    - (int, int) or void If  silent , it returns the number of already existing entities that were asked to be deleted and the number of actually deleted entities. If the operation is not allowed, both integers above are set to -1.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.data.Data.addEntityRich",
-"url":106,
+"url":105,
 "doc":"Add specified entity occurrences to the current set. This operation is not allowed if the current set is the read-only set with the empty name. This function has more detailed instructions as to which entities should be added than  Data.addEntity() . It is a handy function for the TF browser to call, but not so much when you are manipulating entities yourself in a Jupyter notebook. Parameters      additions: tuple of tuple or string Each member of the tuple corresponds to an entity feature. It is either a single value of such a feature, or an iterable of such values. The tuple together specifies a set of entities whose entity features have values that are either equal to the corresponding member of  additions or contained in it. buckets: iterable of list This is typically the result of  tf.browser.ner.annotate.Annotate.filterContent() . The only important thing is that member 2 of each bucket is the list of entity matches in that bucket. Entities will only be added at these places. excludedTokens: set, optional set() This is the set of token positions that define the locations that must not receive new entities. If the last slot of an entity is in this set, no entity will be added there.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.data.Data.weedEntities",
-"url":106,
+"url":105,
 "doc":"Performs deletions to the current annotation set. This operation is not allowed if the current set is the read-only set with the empty name. Parameters      delEntities: set The set consists of entity specs: a tuple of values of entity features, and an iterable of slot tuples where the entity is located.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.data.Data.mergeEntities",
-"url":106,
+"url":105,
 "doc":"Performs additions to the current annotation set. This operation is not allowed if the current set is the read-only set with the empty name. Parameters      newEntities: set The set consists of entity specs: a tuple of values of entity features, and an iterable of slot tuples where the entity is located.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.data.Data.saveEntitiesAs",
-"url":106,
+"url":105,
 "doc":"Export the data of an annotation set to a file. This function is used when a set has to be duplicated:  tf.browser.ner.sets.Sets.setDup() . Parameters      dataFile: string The path of the file to write to.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.data.Data.slotType",
-"url":107,
+"url":106,
 "doc":"The node type of the slots in the corpus."
 },
 {
+"ref":"tf.browser.ner.data.Data.properlySetup",
+"url":106,
+"doc":"Whether the tool has been properly set up. This means that the configuration in  ner/config.yaml or the default configuration work correctly with this corpus. If not, this attribute will prevent most of the methods from working: they fail silently. So users of corpora without any need for this tool will not be bothered by it."
+},
+{
 "ref":"tf.browser.ner.data.Data.checkFeature",
-"url":107,
+"url":106,
 "doc":"Checks whether a feature is loaded in the corpus. Parameters      feat: string The name of the feature Returns    - boolean Whether the feature is loaded in this corpus."
 },
 {
 "ref":"tf.browser.ner.data.Data.getFVal",
-"url":107,
+"url":106,
 "doc":"Retrieves the value of a feature for a node. Parameters      feat: string The name of the feature node: int The node whose feature value we need Returns    - string or integer or void The value of the feature for that node, if there is a value."
 },
 {
 "ref":"tf.browser.ner.data.Data.getStr",
-"url":107,
+"url":106,
 "doc":"Delivers a function that retrieves the material of a slot. Returns    - function It accepts integers, presumably slots, and delivers the value of the  str feature, which is configured in  ner/config.yaml under key  strFeature ."
 },
 {
 "ref":"tf.browser.ner.data.Data.getAfter",
-"url":107,
+"url":106,
 "doc":"Delivers a function that retrieves the material after a slot. Returns    - function It accepts integers, presumably slots, and delivers the value of the  after feature, which is configured in  ner/config.yaml under key  afterFeature ."
 },
 {
 "ref":"tf.browser.ner.data.Data.getSlots",
-"url":107,
+"url":106,
 "doc":"Gets the slot nodes contained in a node. Parameters      node: integer The container node. Returns    - list of integer The slots in the container."
 },
 {
 "ref":"tf.browser.ner.data.Data.getText",
-"url":107,
+"url":106,
 "doc":"Gets the text of a number of slots. Parameters      slots: iterable of integer Returns    - string The concatenation of the representation of the individual slots. These representations are white-space trimmed at both sides, and the concatenation adds a single space between each adjacent pair of them.  ! caution \"Space between slots\" Leading and trailing white-space is stripped, and inner white-space is normalized to a single space. The text of the individual slots is joined by means of a single white-space, also in corpora that may have zero space between words."
 },
 {
 "ref":"tf.browser.ner.data.Data.getTextR",
-"url":107,
+"url":106,
 "doc":"Gets the text for a non-slot node. It first determines the slots contained in a node, and then uses  Settings.getText() to return the text of those slots. Parameters      node: integer The nodes for whose slots we want the text. Returns    - string"
 },
 {
 "ref":"tf.browser.ner.data.Data.getTokens",
-"url":107,
+"url":106,
 "doc":"Gets the tokens contained in node. Parameters      node: integer The nodes whose slots we want. Returns    - list of tuple Each tuple is a pair of the slot number of the token and its string value. If there is no string value, the empty string is taken."
 },
 {
 "ref":"tf.browser.ner.data.Data.getStrings",
-"url":107,
+"url":106,
 "doc":"Gets the text of the tokens occupying a sequence of slots. Parameters      tokenStart: integer The position of the starting token. tokenEnd: integer The position of the ending token. Returns    - tuple The members consist of the string values of the tokens in question, as far as these values are not purely white-space. Also, the string values are stripped from leading and trailing white-space."
 },
 {
 "ref":"tf.browser.ner.data.Data.getContext",
-"url":107,
+"url":106,
 "doc":"Gets the context buckets around a node. We start from a node and find the section node of intermediate level that contains that node. Then we return all buckets contained in that section. Parameters      node: int Returns    - tuple of int"
 },
 {
 "ref":"tf.browser.ner.data.Data.get0",
-"url":107,
+"url":106,
 "doc":"Makes an identifier value out of a number of slots. This acts as the default value for the  eid feature of new entities. Starting with the white-space-normalized text of a number of slots, the string is lowercased, non-alphanumeric characters are stripped, and spaces are replaced by dots."
 },
 {
 "ref":"tf.browser.ner.data.Data.get1",
-"url":107,
+"url":106,
 "doc":"Return a fixed value specified in the corpus-dependent settings. This acts as the default value ofr the  kind feature of new entities."
 },
 {
 "ref":"tf.browser.ner.data.Data.getBucketNodes",
-"url":107,
+"url":106,
 "doc":"Return all bucket nodes."
 },
 {
 "ref":"tf.browser.ner.data.Data.getEntityNodes",
-"url":107,
+"url":106,
 "doc":"Return all entity nodes."
 },
 {
 "ref":"tf.browser.ner.data.Data.sectionHead",
-"url":107,
+"url":106,
 "doc":"Provide a section heading. Parameters      node: integer The node whose section head we need. Returns    - string"
 },
 {
 "ref":"tf.browser.ner.data.Data.checkBuckets",
-"url":107,
+"url":106,
 "doc":"Given a set of nodes, return the set of only its bucket nodes. Parameters      nodes: set of int Returns    - set of int"
 },
 {
 "ref":"tf.browser.ner.data.Data.featureDefault",
-"url":107,
+"url":106,
 "doc":"Functions that deliver default values for the entity features."
 },
 {
 "ref":"tf.browser.ner.data.Data.console",
-"url":108,
+"url":107,
 "doc":"Print something to the output. This works exactly as  tf.core.helpers.console It is handy to have this as a method on the Annotate object, so that we can issue temporary console statements during development without the need to add an  import statement to the code.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.corpus",
-"url":107,
+"url":106,
 "doc":"Access to the corpus. Contains a bunch of instant methods to access corpus material. To see how this fits among all the modules of this package, see  tf.browser.ner.annotate . All access to the TF API should happen through methods in this class. At this point we have the information from the settings and from the corpus. By collecting all corpus access methods in one class, we have good conceptual control over how to customize the annotator for different corpora."
 },
 {
 "ref":"tf.browser.ner.corpus.Corpus",
-"url":107,
-"doc":"Provides configuration details. There is fixed configuration, that is not intended to be modifiable by users. These configuration values are put in variables in this module, which other modules can import. There is also customizable configuration, meant to adapt the tool to the specifics of a corpus. Those configuration values are read from a YAML file, located in a directory  ner next to the  tf data of the corpus."
+"url":106,
+"doc":"Corpus dependent methods for the annotator. Everything that depends on the specifics of a corpus, such as getting its text, is collected here. If a corpus does not have a config file that tells TF which features to use for text representation, then we flag to the object instance that it is not properly set up. All methods that might fail because of this, are guarded by a check on this flag."
 },
 {
 "ref":"tf.browser.ner.corpus.Corpus.slotType",
-"url":107,
+"url":106,
 "doc":"The node type of the slots in the corpus."
 },
 {
+"ref":"tf.browser.ner.corpus.Corpus.properlySetup",
+"url":106,
+"doc":"Whether the tool has been properly set up. This means that the configuration in  ner/config.yaml or the default configuration work correctly with this corpus. If not, this attribute will prevent most of the methods from working: they fail silently. So users of corpora without any need for this tool will not be bothered by it."
+},
+{
 "ref":"tf.browser.ner.corpus.Corpus.checkFeature",
-"url":107,
+"url":106,
 "doc":"Checks whether a feature is loaded in the corpus. Parameters      feat: string The name of the feature Returns    - boolean Whether the feature is loaded in this corpus."
 },
 {
 "ref":"tf.browser.ner.corpus.Corpus.getFVal",
-"url":107,
+"url":106,
 "doc":"Retrieves the value of a feature for a node. Parameters      feat: string The name of the feature node: int The node whose feature value we need Returns    - string or integer or void The value of the feature for that node, if there is a value."
 },
 {
 "ref":"tf.browser.ner.corpus.Corpus.getStr",
-"url":107,
+"url":106,
 "doc":"Delivers a function that retrieves the material of a slot. Returns    - function It accepts integers, presumably slots, and delivers the value of the  str feature, which is configured in  ner/config.yaml under key  strFeature ."
 },
 {
 "ref":"tf.browser.ner.corpus.Corpus.getAfter",
-"url":107,
+"url":106,
 "doc":"Delivers a function that retrieves the material after a slot. Returns    - function It accepts integers, presumably slots, and delivers the value of the  after feature, which is configured in  ner/config.yaml under key  afterFeature ."
 },
 {
 "ref":"tf.browser.ner.corpus.Corpus.getSlots",
-"url":107,
+"url":106,
 "doc":"Gets the slot nodes contained in a node. Parameters      node: integer The container node. Returns    - list of integer The slots in the container."
 },
 {
 "ref":"tf.browser.ner.corpus.Corpus.getText",
-"url":107,
+"url":106,
 "doc":"Gets the text of a number of slots. Parameters      slots: iterable of integer Returns    - string The concatenation of the representation of the individual slots. These representations are white-space trimmed at both sides, and the concatenation adds a single space between each adjacent pair of them.  ! caution \"Space between slots\" Leading and trailing white-space is stripped, and inner white-space is normalized to a single space. The text of the individual slots is joined by means of a single white-space, also in corpora that may have zero space between words."
 },
 {
 "ref":"tf.browser.ner.corpus.Corpus.getTextR",
-"url":107,
+"url":106,
 "doc":"Gets the text for a non-slot node. It first determines the slots contained in a node, and then uses  Settings.getText() to return the text of those slots. Parameters      node: integer The nodes for whose slots we want the text. Returns    - string"
 },
 {
 "ref":"tf.browser.ner.corpus.Corpus.getTokens",
-"url":107,
+"url":106,
 "doc":"Gets the tokens contained in node. Parameters      node: integer The nodes whose slots we want. Returns    - list of tuple Each tuple is a pair of the slot number of the token and its string value. If there is no string value, the empty string is taken."
 },
 {
 "ref":"tf.browser.ner.corpus.Corpus.getStrings",
-"url":107,
+"url":106,
 "doc":"Gets the text of the tokens occupying a sequence of slots. Parameters      tokenStart: integer The position of the starting token. tokenEnd: integer The position of the ending token. Returns    - tuple The members consist of the string values of the tokens in question, as far as these values are not purely white-space. Also, the string values are stripped from leading and trailing white-space."
 },
 {
 "ref":"tf.browser.ner.corpus.Corpus.getContext",
-"url":107,
+"url":106,
 "doc":"Gets the context buckets around a node. We start from a node and find the section node of intermediate level that contains that node. Then we return all buckets contained in that section. Parameters      node: int Returns    - tuple of int"
 },
 {
 "ref":"tf.browser.ner.corpus.Corpus.get0",
-"url":107,
+"url":106,
 "doc":"Makes an identifier value out of a number of slots. This acts as the default value for the  eid feature of new entities. Starting with the white-space-normalized text of a number of slots, the string is lowercased, non-alphanumeric characters are stripped, and spaces are replaced by dots."
 },
 {
 "ref":"tf.browser.ner.corpus.Corpus.get1",
-"url":107,
+"url":106,
 "doc":"Return a fixed value specified in the corpus-dependent settings. This acts as the default value ofr the  kind feature of new entities."
 },
 {
 "ref":"tf.browser.ner.corpus.Corpus.getBucketNodes",
-"url":107,
+"url":106,
 "doc":"Return all bucket nodes."
 },
 {
 "ref":"tf.browser.ner.corpus.Corpus.getEntityNodes",
-"url":107,
+"url":106,
 "doc":"Return all entity nodes."
 },
 {
 "ref":"tf.browser.ner.corpus.Corpus.sectionHead",
-"url":107,
+"url":106,
 "doc":"Provide a section heading. Parameters      node: integer The node whose section head we need. Returns    - string"
 },
 {
 "ref":"tf.browser.ner.corpus.Corpus.checkBuckets",
-"url":107,
+"url":106,
 "doc":"Given a set of nodes, return the set of only its bucket nodes. Parameters      nodes: set of int Returns    - set of int"
 },
 {
 "ref":"tf.browser.ner.corpus.Corpus.featureDefault",
-"url":107,
+"url":106,
 "doc":"Functions that deliver default values for the entity features."
 },
 {
 "ref":"tf.browser.ner.corpus.Corpus.console",
-"url":108,
+"url":107,
 "doc":"Print something to the output. This works exactly as  tf.core.helpers.console It is handy to have this as a method on the Annotate object, so that we can issue temporary console statements during development without the need to add an  import statement to the code.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.match",
-"url":111,
+"url":110,
 "doc":"Match functions. To see how this fits among all the modules of this package, see  tf.browser.ner.annotate ."
 },
 {
 "ref":"tf.browser.ner.match.occMatch",
-"url":111,
+"url":110,
 "doc":"Finds the occurrences of multiple sequences of tokens in a single bucket. Parameters      getTokens: function See  tf.browser.ner.corpus.Corpus.getTokens b: integer The node of the bucket in question qTokenSet: set, optional set() A set of sequences of tokens. Each sequence in the set will be used as a search pattern, and it occurrences in the bucket are collected. result: dict A dictionary to collect the results in. Keyed by each member of parameter  qTokenSet the values are the occurrences of that member in the corpus. A single occurrence is represented as a tuple of slots.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.match.entityMatch",
-"url":111,
+"url":110,
 "doc":"Checks whether a bucket satisfies a variety of criteria. When we do the checking, we ignore empty tokens in the bucket. Parameters      entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex: object Various kinds of processed entity data, see  tf.browser.ner.data getTextR: function See  tf.browser.ner.corpus.Corpus.getTextR getTokens: function See  tf.browser.ner.corpus.Corpus.getTokens b: integer The node of the bucket in question bFindRe, anyEnt, eVals, qTokens, valSelect, freeState: object As in  tf.browser.ner.annotate.Annotate.filterContent Returns    - tuple Members:   fits : boolean, whether the bucket passes the filter   (tokens, matches, positions) :   tokens all tokens of the bucket, each token is a tuple consisting of its slot number (position) and string value;   matches : a list of the positions of the found occurrences for the  qTokens and / or  eVals in the bucket;   positions : a set of positions in the bucket where the  bFindRe starts to match;",
 "func":1
 },
 {
 "ref":"tf.browser.servelib",
-"url":112,
+"url":111,
 "doc":" Common Server Related Functions  About Here are functions that are being used by various parts of the TF browser infrastructure, such as   tf.browser.web   tf.browser.start "
 },
 {
 "ref":"tf.browser.servelib.getInt",
-"url":112,
+"url":111,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.browser.servelib.batchAround",
-"url":112,
+"url":111,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.browser.servelib.getFormData",
-"url":112,
+"url":111,
 "doc":"Get form data. The TF browser user interacts with the web app by clicking and typing, as a result of which a HTML form gets filled in. This form as regularly submitted to the web server with a request for a new incarnation of the page: a response. The values that come with a request, must be peeled out of the form, and stored as logical values. Most of the data has a known function to the web server, but there is also a list of web app dependent options.",
 "func":1
 },
 {
 "ref":"tf.browser.servelib.getAbout",
-"url":112,
+"url":111,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.browser.servelib.zipTables",
+"url":111,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.html",
+"url":112,
+"doc":"HTML generation done in the Pythonic way. To see how this fits among all the modules of this package, see  tf.browser.ner.annotate ."
+},
+{
+"ref":"tf.browser.html.H_ELEMENTS",
+"url":112,
+"doc":"The HTML elements used in this tool."
+},
+{
+"ref":"tf.browser.html.dig",
+"url":112,
+"doc":"A method to join nested iterables of strings into a string. Parameters      content: iterable or string Arbitrarily nested iterable of strings. sep: string, optional  The string by which the individual strings from the iterables are to be joined. Returns    - string The fully joined string corresponding to the original iterables.",
+"func":1
+},
+{
+"ref":"tf.browser.html.generate",
+"url":112,
+"doc":"Transform the logical information for an HTML element into an HTML string. Parameters      close: boolean Whether the element must be closed with an end tag. tag: string The name of the tag. content: iterable The content of the element. This may be an arbitrarily nested iterable of strings. atts: dict The attributes of the element. Returns    - string The HTML string representation of an element.",
+"func":1
+},
+{
+"ref":"tf.browser.html.elemFunc",
+"url":112,
+"doc":"Generates a function to serialize a specific HTML element. Parameters      close: boolean Whether the element needs an end tag. elem: string The name of the element. Returns    - function The function has the same signature as  generate() except it does not take the parameters  close and  tag .",
+"func":1
+},
+{
+"ref":"tf.browser.html.H",
+"url":112,
+"doc":"Provider of HTML serializing functions per element type. Also has a class attribute  nb : the non-breaking space. For each HTML element in the specs ( H_ELEMENTS ) a corresponding generating function is added as method."
+},
+{
+"ref":"tf.browser.html.H.nb",
+"url":112,
+"doc":""
+},
+{
+"ref":"tf.browser.html.H.join",
+"url":112,
+"doc":"A method to join nested iterables of strings into a string. Parameters      content: iterable or string Arbitrarily nested iterable of strings. sep: string, optional  The string by which the individual strings from the iterables are to be joined. Returns    - string The fully joined string corresponding to the original iterables.",
+"func":1
+},
+{
+"ref":"tf.browser.html.H.b",
+"url":112,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.html.H.br",
+"url":112,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.html.H.button",
+"url":112,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.html.H.code",
+"url":112,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.html.H.details",
+"url":112,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.html.H.div",
+"url":112,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.html.H.i",
+"url":112,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.html.H.input",
+"url":112,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.html.H.option",
+"url":112,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.html.H.p",
+"url":112,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.html.H.select",
+"url":112,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.html.H.span",
+"url":112,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.html.H.style",
+"url":112,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.html.H.summary",
 "url":112,
 "doc":"",
 "func":1
