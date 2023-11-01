@@ -388,7 +388,7 @@ The following workflow is now supported by means of simple commands.
         TF can find that file and download it without any API access.
     *   There is a new function `A.zipAll()` that zips all corpus data into
         a file `complete.zip`, which you can attach to a release.
-    *   This file can also be unzipped in your text-fabric-data directory.
+    *   This file can also be unzipped in your `~/text-fabric-data` directory.
         
 *   TEI to TF converter:
     *   Fix: better console output when running the check task.
@@ -1122,7 +1122,7 @@ Additional fixes: quite a bit, among which
 
 *   When downloading zip files from releases, the Uruk images got
     the wrong paths. That has been fixed in `zipData`, used by
-    the `text-fabric-zip` command.
+    the `tf-zip` command.
 
 #### 9.1.13
 
@@ -4322,7 +4322,7 @@ otherwise it does not work.
 
 2017-05-12
 
-Fixes. Added an extra default location for looking for text-fabric-data sources,
+Fixes. Added an extra default location for looking for TF data sources,
 for the benefit of running TF within a shared notebook service.
 
 #### 2.3.5-6

@@ -5,6 +5,8 @@ lxml
 pyyaml>=5.3
 flask
 pandas
+pyarrow
+openpyxl
 
 [all]
 pygithub>=1.57

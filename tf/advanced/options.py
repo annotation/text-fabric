@@ -497,8 +497,7 @@ Every option is a tuple with members
 *   *acro*: acronym for this option, used in the HTML as value for an id attribute;
 *   *desc*: short description;
 *   *long*: long description;
-*   *move*: whether to move this option into a separate box in the text-fabric
-    browser.
+*   *move*: whether to move this option into a separate box in the TF browser.
 """
 
 

@@ -155,9 +155,11 @@ class FabricCore:
 
         Defaults:
 
-            ~/Downloads/text-fabric-data
-            ~/text-fabric-data
-            ~/github/text-fabric-data
+        ``` sh
+        ~/Downloads/text-fabric-data
+        ~/text-fabric-data
+        ~/github/text-fabric-data
+        ```
 
         So if you have stored your main TF dataset in
         `text-fabric-data` in one of these directories

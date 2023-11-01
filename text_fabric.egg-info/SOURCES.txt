@@ -320,6 +320,7 @@ tf/about/usefunc.py
 tf/about/variants.py
 tf/about/volumes.py
 tf/advanced/__init__.py
+tf/advanced/annotate.py
 tf/advanced/app.py
 tf/advanced/condense.py
 tf/advanced/data.py
@@ -356,7 +357,7 @@ tf/browser/ner/fragments.py
 tf/browser/ner/helpers.py
 tf/browser/ner/html.py
 tf/browser/ner/match.py
-tf/browser/ner/power.py
+tf/browser/ner/ner.py
 tf/browser/ner/request.py
 tf/browser/ner/serve.py
 tf/browser/ner/sets.py

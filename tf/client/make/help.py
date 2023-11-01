@@ -1,10 +1,10 @@
 HELP = """
-text-fabric-make [--backend={backend} {org}/{repo} serve {folder}
-text-fabric-make [--backend={backend} {org}/{repo} ship
-text-fabric-make [--backend={backend} {org}/{repo} {client} ship
-text-fabric-make [--backend={backend} {org}/{repo} make [config] output
-text-fabric-make [--backend={backend} {org}/{repo} {client} make [config] output
-text-fabric-make [--backend={backend} {org}/{repo} {client} {command} [parameters]
+tf-make [--backend={backend} {org}/{repo} serve {folder}
+tf-make [--backend={backend} {org}/{repo} ship
+tf-make [--backend={backend} {org}/{repo} {client} ship
+tf-make [--backend={backend} {org}/{repo} make [config] output
+tf-make [--backend={backend} {org}/{repo} {client} make [config] output
+tf-make [--backend={backend} {org}/{repo} {client} {command} [parameters]
 
 backend: `github` or `gitlab` or a GitLab instance such as `gitlab.huc.knaw.nl`.
           If absent, `github` is assumed.

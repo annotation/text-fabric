@@ -92,7 +92,7 @@ You can check whether you are in this situation.
 First, on the command-line, do 
 
 ``` sh
-text-fabric
+tf
 ```
 
 You will see the version of TF that is used when you call the TF browser.

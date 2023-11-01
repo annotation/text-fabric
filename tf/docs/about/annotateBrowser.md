@@ -300,7 +300,7 @@ Whereas the ✅ button fills the `eid` field with a value derived from the occur
 the ❎ leaves the previous value unchanged. So you can just click `add` to mark
 the new occurrences with the values of the same entity as before.
 
-# More power
+# Programming
 
 The workflow sketched above works fine if you know what to look for, and if there are
 not too many distinct named entities in the corpus.
@@ -309,11 +309,11 @@ Probably you soon discover that there are quite a bit of distinct named entities
 and each entity has quite a bit of surface forms.
 Then the work load may not feel doable any more.
 
-For that purpose, there is also a *power* annotate mode, where you run the
+For that purpose, there is also a way of annotating-by-programming, where you run the
 annotator tool in a Jupyter Notebook, driven by a spreadsheet with names and
 surface forms.
 
-See `tf.browser.ner.power`.
+See `tf.browser.ner.ner`.
 
 You can then still use this tool after the fact to check the entity assignments
 and make fine-tuning corrections.

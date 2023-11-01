@@ -21,14 +21,14 @@ It also uses
 *   `tf.browser.ner.match`: to filter individual buckets on the basis of
     criteria.
 
-Hence, `Annotation` is the central class of this tools, whose methods are relevant
+Hence, `Annotation` is the central class of this tool, whose methods are relevant
 for:
 
-*   `tf.browser.ner.power`: the API for users to manipulate annotations in their
+*   `tf.browser.ner.ner`: the API for users to manipulate annotations in their
     own programs, especially in a Jupyter notebook.
 *   `tf.browser.ner.web`: Flask app that routes URLs to controller functions.
 
-`web` makes use of the following modules that are not needed by `power`:
+`web` makes use of the following modules that are not needed by `ner`:
 
 *   `tf.browser.ner.serve`: define the controllers of the web app
 
@@ -39,7 +39,7 @@ Again, this is a top of an iceberg, since it inherits from:
 
 `request` also uses `form` to retrieve form values into typed and structured values.
 
-Both `web` and `power` make use of the following modules in as far as they are not
+Both `web` and `ner` make use of the following modules in as far as they are not
 already mentioned under `annotate` and its parent classes:
 
 *   `tf.browser.ner.helpers`: a variety of context-free data jugglers;
@@ -48,8 +48,8 @@ already mentioned under `annotate` and its parent classes:
 
 !!! note "Class hierarchy"
     The classes `Settings`, `Corpus`, `Data`, `Sets`, `Show`, `Annotate`,
-    `PowerNER` form one hierarchy.
-    So an object of class `PowerNER` has access to all methods of these classes.
+    `NER` form one hierarchy.
+    So an object of class `NER` has access to all methods of these classes.
 
     The classes `Serve`, `Request`, `Fragments`, `From` form a separate hierarchy.
     It will create an `Annotate` instance which will be stored in a `Serve` instance.
@@ -63,7 +63,7 @@ A `<-<` arrow denotes dependency by importing code.
 ```
 Browser                           |   Api-hierarchy
 ---------------------------------------------------------
-                                  |   PowerNER
+                                  |   NER
                                   |     |
 web <-----< Serve <-----------------< Annotate  <-< match
             |   |                 |     |   |

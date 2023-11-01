@@ -100,15 +100,6 @@ tf -v
 tf org/repo
 tf app:/path/to/app --locations=locations-string [--modules=modules-string]
 
-The following ones do the same but are deprecated:
-
-text-fabric
-tf --help
-tf -v
-
-tf org/repo
-tf app:/path/to/app --locations=locations-string [--modules=modules-string]
-
 where all args are optional and args have one of these forms:
 
   -noweb

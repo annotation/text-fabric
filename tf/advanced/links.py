@@ -144,7 +144,7 @@ def linksApi(app, silent=SILENT_D):
     tfLink = outLink(
         f"TF API {app.TF.version}",
         APIREF,
-        "text-fabric-api",
+        "text-fabric api",
         asHtml=inNb or _browse,
     )
     tfsLink = (

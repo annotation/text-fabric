@@ -602,7 +602,7 @@ Default:
 
 ### `zip`
 
-Only used by `text-fabric-zip` when collecting data into zip files
+Only used by `tf-zip` when collecting data into zip files
 as attachments to a GitHub / GitLab release.
 
 If left to `null`, will be configured to use the main repo and the modules.

@@ -1187,7 +1187,7 @@ mmm = loadModule("mmm", *args)
 (these work on the command-line if TF is installed)
 
 ``` sh
-text-fabric-make {dataset} {client} ship
+tf-make {dataset} {client} ship
 ```
 :   generate a static site with a search interface in client-side JavaScript and
     publish it to GitHub pages.
@@ -1199,12 +1199,34 @@ text-fabric-make {dataset} {client} ship
 :   `tf.client.make.build`
 
 ``` sh
-text-fabric-make {dataset} serve
+tf-make {dataset} serve
 ```
 :   serve the search interfaces defined for `{dataset}` locally.
 
 More commands
 [here](https://github.com/annotation/text-fabric/blob/master/tf/client/make/help.py).
+
+---
+
+# Annotation tools
+
+(these work in the TF browser and in Jupyter Notebooks)
+
+## Named Entity Annotation
+
+``` sh
+tf {org}/{repo} --tool=ner 
+```
+:   Starts the TF browser for the corpus in *org*/*repo* and opens the manual
+    annotation tool.
+:   `tf.about.annotateBrowser`
+
+``` python
+NE = A.makeNer()
+```
+:   Sets up the 'manual' annotation API for the corpus in `A`.
+:   `tf.browser.ner.ner`
+:   More info and examples in `tf.about.annotate` .
 
 ---
 
@@ -1229,7 +1251,6 @@ tf-zipall
 
 ``` sh
 tf-zip {org}/{repo}
-text-fabric-zip {org}/{repo}
 ```
 :   Zips the TF dataset in *org*/*repo* so that it can be attached to a release on
     GitHub / GitLab.
@@ -1237,14 +1258,12 @@ text-fabric-zip {org}/{repo}
 
 ``` sh
 tf-nbconvert {inDirectory} {outDirectory}
-nbconvert {inDirectory} {outDirectory}
 ```
 :   Converts notebooks in `inDirectory` to HTML and stores them in `outDirectory`.
 :   `tf.tools.nbconvert`
 
 ``` sh
 tf-xmlschema analysis {schema}.xsd
-xmlschema analysis {schema}.xsd
 ```
 :   Analyses an XML *schema* file and extracts meaningful information for processing
     the XML that adheres to that schema.
@@ -1267,8 +1286,14 @@ tf-fromtei
 
 ``` sh
 tf-addnlp
-addnlp
 ```
 :   When run in the repo of a TF dataset, it adds NLP output to it
     after running Spacy to get them.
 :   `tf.convert.addnlp`
+
+``` sh
+tf-docsright tf ~/Downloads/docs.txt
+```
+:   When run in the repo of a TF itself it extracts all documentation
+    and filters it so that you can run a spell-checker over it.
+:   `tf.tools.docsright`

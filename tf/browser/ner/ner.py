@@ -5,14 +5,14 @@ This module contains the top-level methods for applying annotation rules to a co
 To see how this fits among all the modules of this package, see
 `tf.browser.ner.annotate` .
 
-# Power annotation done in a Jupyter Notebook
+# Programmatic annotation done in a Jupyter Notebook
 
 If you have a spreadsheet with named entities, and for each entity a list of surface forms,
 then this module takes care to read that spreadsheet, translate it to YAML,
 and then use the YAML as instructions to add entity annotations to the corpus.
 
 See this
-[example notebook](https://nbviewer.jupyter.org/github/HuygensING/suriano/blob/main/programs/powerNer.ipynb).
+[example notebook](https://nbviewer.jupyter.org/github/HuygensING/suriano/blob/main/programs/ner.ipynb).
 
 Here are more details.
 
@@ -22,7 +22,6 @@ Load the relevant Python modules:
 
 ``` python
 from tf.app import use
-from tf.browser.ner.power import PowerNER
 ```
 
 Load your corpus. There are two ways:
@@ -39,10 +38,10 @@ Load your corpus. There are two ways:
     A = use("HuygensING/suriano")
     ```
 
-Load the Power-Annotator module:
+Load the Ner module:
 
 ``` python
-PA = PowerNER(A)
+NE = A.makeNer()
 ```
 
 The tool expects some input data to be present: configuration and spreadsheets with
@@ -89,7 +88,7 @@ These steps need some configuration information from the `ner/config.yaml` file.
 Translation is done by
 
 ``` python
-PA.readInstructions("people")
+NE.readInstructions("people")
 ```
 
 The resulting YAML ends up next to the
@@ -126,8 +125,8 @@ A first step is to find out how many occurrences we find in the corpus for these
 surface forms:
 
 ``` python
-PA.makeInventory()
-PA.showInventory()
+NE.makeInventory()
+NE.showInventory()
 ```
 
 and the output looks like this
@@ -155,19 +154,19 @@ In order to create annotations for these entities, we have to switch to an
 annotation set. Let's start a new set and give it the name `power`.
 
 ``` python
-PA.setSet("power")
+NE.setSet("power")
 ```
 
 If it turns out that `power` has already annotations, and you want to clear them, say
 
 ``` python
-PA.resetSet("power")
+NE.resetSet("power")
 ```
 
 Now we are ready for the big thing: creating the annotations:
 
 ``` python
-PA.markEntities()
+NE.markEntities()
 ```
 
 It outputs this message:
@@ -183,7 +182,7 @@ We now revert to lower-level methods from the `tf.browser.ner.annotate` class to
 inspect some of the results.
 
 ``` python
-results = PA.filterContent(bFind="pach", bFindC=False, anyEnt=True, showStats=None)
+results = NE.filterContent(bFind="pach", bFindC=False, anyEnt=True, showStats=None)
 ```
 
 Here we filtered the chunks (paragraphs) to those that contain the string `pach`,
@@ -192,7 +191,7 @@ in a case-insensitive way, and that contain at least one entity.
 There 6 of them, and we can show them:
 
 ``` python
-PA.showContent(results)
+NE.showContent(results)
 ```
 
 ![browser](../../images/Annotate/pach.png)
@@ -235,7 +234,7 @@ from .helpers import normalize, toSmallId, toTokens
 from .annotate import Annotate
 
 
-class PowerNER(Annotate):
+class NER(Annotate):
     def __init__(self, app):
         """Bulk entity annotation.
 

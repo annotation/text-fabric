@@ -312,12 +312,12 @@ You can manually clone such a data repository and point TF to that data.
 
 First, take care that your clone ends up in `github/orgName` or `gitlab/orgName`
 (relative your home directory)
-where `orgName` is the organization or person or group on GitHub / GitLab under which you have
-found the repo.
+where `orgName` is the organization or person or group on GitHub / GitLab under
+which you have found the repo.
 
 Then, when you invoke the app, pass the specifier `:clone`.
 This instructs TF to look in your local GitHub / GitLab clone, rather
-than online or in your local `text-fabric-data`, where downloaded data is stored.
+than online or in your local `~/text-fabric-data`, where downloaded data is stored.
 
 ``` python
 use('org/repo:clone', checkout="clone")

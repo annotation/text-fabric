@@ -20,6 +20,40 @@ pip install -e .
 
 ### 12.1
 
+#### 12.1.3
+
+2023-11-01
+
+*   API change in the Annotator:
+    Calling the annotator is now easier: 
+
+    ``` python
+    A.makeNer()
+    ```
+
+    (No need to make an additional `import` statement.)
+
+    This will give you access to all annotation methods, including using a spreadsheet
+    to read annotation instructins from.
+*   Removal of deprecated commands (on the command line) in version 11:
+
+    * `text-fabric` (has become `tf`)
+    * `text-fabric-zip` (has become `tf-zip`)
+    * `text-fabric-make` (has become `tf-make`)
+    
+*   Bug fixes:
+    [#81](https://github.com/annotation/text-fabric/issues/81)
+    and
+    [#82](https://github.com/annotation/text-fabric/issues/82)
+
+*   Spell-checked all bits of the TF docs here (33,000 lines).
+    Wrote a script `tf.tools.docsright` to separate the code content from
+    the markdown content, and to strip bits from the markdown content that lead
+    to false positives for the spell checker.
+    Then had the Vim spell checker run over those lines and corrected all mistakes
+    by hand.
+    Still, there might be grammar errors and content inaccuracies.
+
 #### 12.1.1,2
 
 2023-10-29

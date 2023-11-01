@@ -16,7 +16,7 @@ In response to requests, it merges the retrieved data into a set of
 ## Start up
 
 Web server and browser page are started
-up by means of a script called `tf` or `text-fabric`, which will be installed in an executable
+up by means of a script called `tf`, which will be installed in an executable
 directory by the `pip` installer.
 
 ## Routes

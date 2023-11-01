@@ -105,7 +105,7 @@ It can be compressed greatly, especially by the program `bzip2`.
 
 A good way to prevent clashes:
 
-*   export the MQL to outside your `text-fabric-data` directory, e.g. to
+*   export the MQL to outside your `~/text-fabric-data` directory, e.g. to
     `~/Downloads`;
 *   before importing the MQL file, delete the previous copy;
 

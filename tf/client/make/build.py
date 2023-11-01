@@ -1,7 +1,7 @@
 """
 # Usage
 
-After installing TF, you have a new command `text-fabric-make`.
+After installing TF, you have a new command `tf-make`.
 You can use this on the command-line to build new search interfaces for existing
 TF apps.
 

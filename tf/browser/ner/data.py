@@ -634,8 +634,7 @@ class Data(Corpus):
         the corpus to find them.
 
         This method does them all in one fell swoop.
-        It is used by the power method
-        `tf.browser.ner.power.PowerNER.markEntities()`.
+        It is used by the method `tf.browser.ner.ner.NER.markEntities()`.
 
         Parameters
         ----------

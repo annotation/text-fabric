@@ -32,6 +32,7 @@ from .text import textApi
 from .sections import sectionsApi
 from .display import displayApi
 from .search import searchApi
+from .annotate import annotateApi
 from .data import getModulesData
 from .repo import checkoutRepo, publishRelease
 
@@ -216,6 +217,7 @@ Most of the TF API has not been loaded.
                 setAppSpecsApi(self, cfg)
                 displayApi(self, silent=silent)
                 textApi(self)
+                annotateApi(self)
             setattr(self, "isLoaded", self.api.isLoaded)
             if hoist:
                 self.hoist(hoist)

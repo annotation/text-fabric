@@ -31,11 +31,11 @@ HELP = """
 ### USAGE
 
 ``` sh
-text-fabric-zip --help
+tf-zip --help
 
-text-fabric-zip {org}/{repo}{relative}
+tf-zip {org}/{repo}{relative}
 
-text-fabric-zip {org}/{repo}{relative} --backend=gitlab.huc.knaw.nl
+tf-zip {org}/{repo}{relative} --backend=gitlab.huc.knaw.nl
 ```
 
 ### EFFECT
@@ -88,7 +88,7 @@ def zipAll(app):
     *   all extra data mentioned in the `extraData` of the `provenanceSpec`
 
     The data will be zipped in a file complete.zip which can be unpacked
-    in the ~/text-fabric-data directory.
+    in the `~/text-fabric-data` directory.
 
     !!! hint
         You can attach this file straight to the latest release of of dataset

@@ -12,7 +12,7 @@ packaging it, distributing it, and importing in apps.
 There is a command
 
 ``` sh
-text-fabric-zip
+tf-zip
 ```
 
 to make a distribution of your own features.
@@ -212,7 +212,8 @@ the `mod` parameter:
 use("annotation/banks", mod=f"annotation/banks/sim/tf")
 ```
 
-But TF then tries to download it from GitHub, or look it up from your `~/text-fabric-data`.
+But TF then tries to download it from GitHub, or look it up from your
+`~/text-fabric-data`.
 Both will fail, especially when you let TF manage your `~/text-fabric-data` directory.
 
 You have to pass `clone` as the checkout option: 
@@ -306,7 +307,7 @@ TF comes with a command to create that zip file for you.
 Execute the following command in your terminal:
 
 ``` sh
-text-fabric-zip annotation/banks/tf
+tf-zip annotation/banks/tf
 ```
 
 You'll see
@@ -331,7 +332,7 @@ Attach these versions, or just the newest version, to the release and publish th
         
 ![releases](../images/add-attach.png)
 
-Zip your data with the `text-fabric-zip` command as explained above.
+Zip your data with the `tf-zip` command as explained above.
 It will look into your local `github` directory, pickup the features from there,
 zip them, and put the zip files in your Downloads folder. Then you can pick
 that zip file up and attach it manually to a new release of your repository
@@ -341,7 +342,7 @@ on the online GitHub / GitLab.
 
 Probably you'll make changes to your features after having published them.
 Then you have the cutting edge version of your features in your local `github`
-directory, and the published version in your text-fabric-data directory.
+directory, and the published version in your `~/text-fabric-data` directory.
 
 When you make new commits, users that call up your data in the standard way,
 will still get the latest stable release.
@@ -406,8 +407,7 @@ You pass the checkout values as follows:
     If you leave it out, it defaults to the empty string: latest release or commit.
 
 The checkout parameter can be used in the `use()` function when you call up
-TF in a program (or notebook) and when you call up the text-fabric
-browser on the command-line:
+TF in a program (or notebook) and when you call up the TF browser on the command-line:
 
 (in a program)
 

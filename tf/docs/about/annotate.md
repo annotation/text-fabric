@@ -52,11 +52,11 @@ See also the following Jupyter Notebooks that show the work-in-progress:
 
 *   Suriano
     *   [basic annotation API](https://nbviewer.org/github/HuygensING/suriano/blob/main/programs/nerTest.ipynb)
-    *   [using a spreadsheet with instructions](https://nbviewer.org/github/HuygensING/suriano/blob/main/programs/powerNer.ipynb)
+    *   [using a spreadsheet with instructions](https://nbviewer.org/github/HuygensING/suriano/blob/main/programs/ner.ipynb)
 
 *   BHSA
     *   [basic annotation API](https://nbviewer.org/github/ETCBC/bhsa/blob/master/programs/nerTest.ipynb)
-    *   [using a spreadsheet with instructions](https://nbviewer.org/github/ETCBC/bhsa/blob/master/programs/nerPower.ipynb)
+    *   [using a spreadsheet with instructions](https://nbviewer.org/github/ETCBC/bhsa/blob/master/programs/ner.ipynb)
     *   [cookbook recipe](https://nbviewer.org/github/ETCBC/bhsa/blob/master/tutorial/cookbook/nerByTheBook.ipynb)
 
 ## Ergonomics of annotation
@@ -163,12 +163,12 @@ You can give this a name, and the data you create will be stored under that name
 Go to the manual for annotating in the TF browser:
 `tf.about.annotateBrowser`
 
-## For power annotators
+## For programming annotators
 
-Go to the manual for power-annotating in in a Jupyter Notebook, using the API:
-`tf.browser.ner.power`
+Go to the manual for annotating in in a Jupyter Notebook, using the API:
+`tf.browser.ner.ner`
 Or see this
-[example notebook](https://nbviewer.jupyter.org/github/HuygensING/suriano/blob/main/programs/powerNer.ipynb).
+[example notebook](https://nbviewer.jupyter.org/github/HuygensING/suriano/blob/main/programs/ner.ipynb).
 
 ## For corpus maintainers
 
@@ -249,7 +249,7 @@ Concerning `ner/config.yaml`: it has the following information:
 
 Concerning the Excel sheets in `ner/sheets`:
 
-*   they can be read by `tf.browser.ner.power.PowerNER.readInstructions`;
+*   they can be read by `tf.browser.ner.ner.NER.readInstructions`;
 
 *   you might need to `pip install openpyxl` first;
 
