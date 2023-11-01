@@ -385,7 +385,7 @@ The node type of slot nodes is never displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/options.py#L1-L709" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/advanced/options.py#L1-L708" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Display Settings.
@@ -886,8 +886,7 @@ Every option is a tuple with members
 *   *acro*: acronym for this option, used in the HTML as value for an id attribute;
 *   *desc*: short description;
 *   *long*: long description;
-*   *move*: whether to move this option into a separate box in the text-fabric
-    browser.
+*   *move*: whether to move this option into a separate box in the TF browser.
 &#34;&#34;&#34;
 
 
@@ -1113,8 +1112,7 @@ class Options:
 <li><em>acro</em>: acronym for this option, used in the HTML as value for an id attribute;</li>
 <li><em>desc</em>: short description;</li>
 <li><em>long</em>: long description;</li>
-<li><em>move</em>: whether to move this option into a separate box in the text-fabric
-browser.</li>
+<li><em>move</em>: whether to move this option into a separate box in the TF browser.</li>
 </ul></div>
 </dd>
 </dl>
@@ -1133,7 +1131,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/options.py#L545-L709" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/advanced/options.py#L544-L708" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Options:
     def __init__(self, app):
@@ -1311,7 +1309,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/options.py#L643-L692" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/advanced/options.py#L642-L691" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def check(self, msg, options):
     app = self.app
@@ -1373,7 +1371,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/options.py#L708-L709" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/advanced/options.py#L707-L708" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def consume(self, options, *remove):
     return {o: options[o] for o in options if o not in remove}</code></pre>
@@ -1387,7 +1385,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/options.py#L694-L706" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/advanced/options.py#L693-L705" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def distill(self, options):
     defaults = self.defaults
@@ -1412,7 +1410,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/options.py#L589-L641" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/advanced/options.py#L588-L640" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def normalize(self, option, value):
     app = self.app
@@ -1477,7 +1475,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/options.py#L563-L578" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/advanced/options.py#L562-L577" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reset(self, *options):
     app = self.app
@@ -1505,7 +1503,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/options.py#L580-L587" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/advanced/options.py#L579-L586" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setup(self, *options, **overrides):
     current = self.current
@@ -1528,7 +1526,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/options.py#L531-L542" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/advanced/options.py#L530-L541" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class OptionsCurrent:
     def __init__(self, options):
@@ -1553,7 +1551,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/options.py#L537-L538" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/advanced/options.py#L536-L537" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, k, v=None):
     return getattr(self, k, v)</code></pre>
@@ -1567,7 +1565,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/advanced/options.py#L540-L542" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/advanced/options.py#L539-L541" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set(self, k, v):
     self.allKeys.add(k)

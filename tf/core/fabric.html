@@ -36,7 +36,7 @@ By leaving out volume support, volume support can use <code><a title="tf.core.fa
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/fabric.py#L1-L1052" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/core/fabric.py#L1-L1054" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # `FabricCore`
@@ -195,9 +195,11 @@ class FabricCore:
 
         Defaults:
 
-            ~/Downloads/text-fabric-data
-            ~/text-fabric-data
-            ~/github/text-fabric-data
+        ``` sh
+        ~/Downloads/text-fabric-data
+        ~/text-fabric-data
+        ~/github/text-fabric-data
+        ```
 
         So if you have stored your main TF dataset in
         `text-fabric-data` in one of these directories
@@ -1156,10 +1158,10 @@ in searching for TF feature files.
 In general, they will not searched directly, but certain subdirectories
 of them will be searched, specified by the <code>modules</code> parameter.</p>
 <p>Defaults:</p>
-<pre><code>~/Downloads/text-fabric-data
+<p><code>sh
+~/Downloads/text-fabric-data
 ~/text-fabric-data
-~/github/text-fabric-data
-</code></pre>
+~/github/text-fabric-data</code></p>
 <p>So if you have stored your main TF dataset in
 <code>text-fabric-data</code> in one of these directories
 you do not have to pass a location to Fabric.</p>
@@ -1200,7 +1202,7 @@ also can add new formats to the Text-API.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/fabric.py#L131-L1052" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/core/fabric.py#L131-L1054" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FabricCore:
     &#34;&#34;&#34;Initialize the core API for a corpus.
@@ -1229,9 +1231,11 @@ also can add new formats to the Text-API.</p>
 
         Defaults:
 
-            ~/Downloads/text-fabric-data
-            ~/text-fabric-data
-            ~/github/text-fabric-data
+        ``` sh
+        ~/Downloads/text-fabric-data
+        ~/text-fabric-data
+        ~/github/text-fabric-data
+        ```
 
         So if you have stored your main TF dataset in
         `text-fabric-data` in one of these directories
@@ -2184,7 +2188,7 @@ all <code>.tfx</code> files inside the hidden <code>.<a title="tf" href="../inde
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/fabric.py#L535-L558" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/core/fabric.py#L537-L560" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clearCache(self):
     &#34;&#34;&#34;Clears the cache of compiled TF data.
@@ -2249,7 +2253,7 @@ There are other functions that give you the loaded features:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/fabric.py#L443-L517" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/core/fabric.py#L445-L519" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def explore(self, silent=SILENT_D, show=True):
     &#34;&#34;&#34;Makes categorization of all features in the dataset.
@@ -2358,7 +2362,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/fabric.py#L281-L441" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/core/fabric.py#L283-L443" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, add=False, silent=SILENT_D):
     &#34;&#34;&#34;Loads features from disk into RAM memory.
@@ -2536,7 +2540,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/fabric.py#L519-L533" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/core/fabric.py#L521-L535" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadAll(self, silent=SILENT_D):
     &#34;&#34;&#34;Load all loadable features.
@@ -2637,7 +2641,7 @@ TF will save in <code>path1/path2</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/core/fabric.py#L560-L785" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/core/fabric.py#L562-L787" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def save(
     self,

@@ -427,7 +427,7 @@ attached to the latest release on GitHub.
 TF can find that file and download it without any API access.</li>
 <li>There is a new function <code>A.zipAll()</code> that zips all corpus data into
 a file <code>complete.zip</code>, which you can attach to a release.</li>
-<li>This file can also be unzipped in your text-fabric-data directory.</li>
+<li>This file can also be unzipped in your <code>~/text-fabric-data</code> directory.</li>
 </ul>
 </li>
 <li>
@@ -976,7 +976,7 @@ on the annotation organization.</p>
 <ul>
 <li>When downloading zip files from releases, the Uruk images got
 the wrong paths. That has been fixed in <code>zipData</code>, used by
-the <code>text-fabric-zip</code> command.</li>
+the <code>tf-zip</code> command.</li>
 </ul>
 <h4 id="9113">9.1.13</h4>
 <p>2022-01-02</p>
@@ -3284,7 +3284,7 @@ feature. It is still the case that exactly three levels must be specified,
 otherwise it does not work.</p>
 <h4 id="237">2.3.7</h4>
 <p>2017-05-12</p>
-<p>Fixes. Added an extra default location for looking for text-fabric-data sources,
+<p>Fixes. Added an extra default location for looking for TF data sources,
 for the benefit of running TF within a shared notebook service.</p>
 <h4 id="235-6">2.3.5-6</h4>
 <p>2017-03-01</p>
@@ -3419,7 +3419,7 @@ see in TF if they want to use it in MQL and vice versa.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/about/releasesold.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/about/releasesold.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releasesold.md

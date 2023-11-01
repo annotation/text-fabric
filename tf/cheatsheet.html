@@ -1488,7 +1488,7 @@ TF = importMQL(mqlFile, saveDir)
 <h1 id="layered-search">Layered search</h1>
 <p>(these work on the command-line if TF is installed)</p>
 <dl>
-<dt><pre><code class="language-sh">text-fabric-make {dataset} {client} ship
+<dt><pre><code class="language-sh">tf-make {dataset} {client} ship
 </code></pre></dt>
 <dd>
 <p>generate a static site with a search interface in client-side JavaScript and
@@ -1502,7 +1502,7 @@ More commands
 <dd>
 <p><code><a title="tf.client.make.build" href="client/make/build.html">tf.client.make.build</a></code></p>
 </dd>
-<dt><pre><code class="language-sh">text-fabric-make {dataset} serve
+<dt><pre><code class="language-sh">tf-make {dataset} serve
 </code></pre></dt>
 <dd>
 <p>serve the search interfaces defined for <code>{dataset}</code> locally.</p>
@@ -1510,6 +1510,32 @@ More commands
 </dl>
 <p>More commands
 <a href="https://github.com/annotation/text-fabric/blob/master/tf/client/make/help.py">here</a>.</p>
+<hr>
+<h1 id="annotation-tools">Annotation tools</h1>
+<p>(these work in the TF browser and in Jupyter Notebooks)</p>
+<h2 id="named-entity-annotation">Named Entity Annotation</h2>
+<dl>
+<dt><pre><code class="language-sh">tf {org}/{repo} --tool=ner 
+</code></pre></dt>
+<dd>
+<p>Starts the TF browser for the corpus in <em>org</em>/<em>repo</em> and opens the manual
+annotation tool.</p>
+</dd>
+<dd>
+<p><code><a title="tf.about.annotateBrowser" href="about/annotateBrowser.html">tf.about.annotateBrowser</a></code></p>
+</dd>
+<dt><pre><code class="language-python">NE = A.makeNer()
+</code></pre></dt>
+<dd>
+<p>Sets up the 'manual' annotation API for the corpus in <code>A</code>.</p>
+</dd>
+<dd>
+<p><code><a title="tf.browser.ner.ner" href="browser/ner/ner.html">tf.browser.ner.ner</a></code></p>
+</dd>
+<dd>
+<p>More info and examples in <code><a title="tf.about.annotate" href="about/annotate.html">tf.about.annotate</a></code> .</p>
+</dd>
+</dl>
 <hr>
 <h1 id="command-line-tools">Command-line tools</h1>
 <p>(these work on the command-line if TF is installed)</p>
@@ -1534,7 +1560,6 @@ so that it can be attached to a release on GitHub / GitLab.</p>
 <p><code><a title="tf.advanced.zipdata.zipAll" href="advanced/zipdata.html#tf.advanced.zipdata.zipAll">zipAll()</a></code> and <code><a title="tf.zip" href="zip.html">tf.zip</a></code></p>
 </dd>
 <dt><pre><code class="language-sh">tf-zip {org}/{repo}
-text-fabric-zip {org}/{repo}
 </code></pre></dt>
 <dd>
 <p>Zips the TF dataset in <em>org</em>/<em>repo</em> so that it can be attached to a release on
@@ -1544,7 +1569,6 @@ GitHub / GitLab.</p>
 <p><code><a title="tf.advanced.zipdata" href="advanced/zipdata.html">tf.advanced.zipdata</a></code></p>
 </dd>
 <dt><pre><code class="language-sh">tf-nbconvert {inDirectory} {outDirectory}
-nbconvert {inDirectory} {outDirectory}
 </code></pre></dt>
 <dd>
 <p>Converts notebooks in <code>inDirectory</code> to HTML and stores them in <code>outDirectory</code>.</p>
@@ -1553,7 +1577,6 @@ nbconvert {inDirectory} {outDirectory}
 <p><code><a title="tf.tools.nbconvert" href="tools/nbconvert.html">tf.tools.nbconvert</a></code></p>
 </dd>
 <dt><pre><code class="language-sh">tf-xmlschema analysis {schema}.xsd
-xmlschema analysis {schema}.xsd
 </code></pre></dt>
 <dd>
 <p>Analyses an XML <em>schema</em> file and extracts meaningful information for processing
@@ -1582,7 +1605,6 @@ The resulting TF data is delivered in the repo.</p>
 <p><code><a title="tf.convert.tei" href="convert/tei.html">tf.convert.tei</a></code></p>
 </dd>
 <dt><pre><code class="language-sh">tf-addnlp
-addnlp
 </code></pre></dt>
 <dd>
 <p>When run in the repo of a TF dataset, it adds NLP output to it
@@ -1591,11 +1613,20 @@ after running Spacy to get them.</p>
 <dd>
 <p><code><a title="tf.convert.addnlp" href="convert/addnlp.html">tf.convert.addnlp</a></code></p>
 </dd>
+<dt><pre><code class="language-sh">tf-docsright tf ~/Downloads/docs.txt
+</code></pre></dt>
+<dd>
+<p>When run in the repo of a TF itself it extracts all documentation
+and filters it so that you can run a spell-checker over it.</p>
+</dd>
+<dd>
+<p><code><a title="tf.tools.docsright" href="tools/docsright.html">tf.tools.docsright</a></code></p>
+</dd>
 </dl>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: docs/main/cheatsheet.md
@@ -1719,6 +1750,10 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><a href="#tf-app-development">TF App development</a></li>
 <li><a href="#layered-search">Layered search</a></li>
+<li><a href="#annotation-tools">Annotation tools</a><ul>
+<li><a href="#named-entity-annotation">Named Entity Annotation</a></li>
+</ul>
+</li>
 <li><a href="#command-line-tools">Command-line tools</a></li>
 </ul>
 </div>

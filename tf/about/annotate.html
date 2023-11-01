@@ -66,14 +66,14 @@ corpus.</p>
 <p>Suriano</p>
 <ul>
 <li><a href="https://nbviewer.org/github/HuygensING/suriano/blob/main/programs/nerTest.ipynb">basic annotation API</a></li>
-<li><a href="https://nbviewer.org/github/HuygensING/suriano/blob/main/programs/powerNer.ipynb">using a spreadsheet with instructions</a></li>
+<li><a href="https://nbviewer.org/github/HuygensING/suriano/blob/main/programs/ner.ipynb">using a spreadsheet with instructions</a></li>
 </ul>
 </li>
 <li>
 <p>BHSA</p>
 <ul>
 <li><a href="https://nbviewer.org/github/ETCBC/bhsa/blob/master/programs/nerTest.ipynb">basic annotation API</a></li>
-<li><a href="https://nbviewer.org/github/ETCBC/bhsa/blob/master/programs/nerPower.ipynb">using a spreadsheet with instructions</a></li>
+<li><a href="https://nbviewer.org/github/ETCBC/bhsa/blob/master/programs/ner.ipynb">using a spreadsheet with instructions</a></li>
 <li><a href="https://nbviewer.org/github/ETCBC/bhsa/blob/master/tutorial/cookbook/nerByTheBook.ipynb">cookbook recipe</a></li>
 </ul>
 </li>
@@ -152,11 +152,11 @@ You can give this a name, and the data you create will be stored under that name
 <h2 id="for-annotators">For annotators</h2>
 <p>Go to the manual for annotating in the TF browser:
 <code><a title="tf.about.annotateBrowser" href="annotateBrowser.html">tf.about.annotateBrowser</a></code></p>
-<h2 id="for-power-annotators">For power annotators</h2>
-<p>Go to the manual for power-annotating in in a Jupyter Notebook, using the API:
-<code><a title="tf.browser.ner.power" href="../browser/ner/power.html">tf.browser.ner.power</a></code>
+<h2 id="for-programming-annotators">For programming annotators</h2>
+<p>Go to the manual for annotating in in a Jupyter Notebook, using the API:
+<code><a title="tf.browser.ner.ner" href="../browser/ner/ner.html">tf.browser.ner.ner</a></code>
 Or see this
-<a href="https://nbviewer.jupyter.org/github/HuygensING/suriano/blob/main/programs/powerNer.ipynb">example notebook</a>.</p>
+<a href="https://nbviewer.jupyter.org/github/HuygensING/suriano/blob/main/programs/ner.ipynb">example notebook</a>.</p>
 <h2 id="for-corpus-maintainers">For corpus maintainers</h2>
 <p>This tool needs additional input data and produces additional output data.</p>
 <p>The <em>input</em> data can be found in the directory <code>ner</code> next to the actual <code><a title="tf" href="../index.html">tf</a></code> directory
@@ -236,7 +236,7 @@ name parts that are very generic, such as <code>de</code>, <code>van</code>, <co
 <p>Concerning the Excel sheets in <code>ner/sheets</code>:</p>
 <ul>
 <li>
-<p>they can be read by <code><a title="tf.browser.ner.power.PowerNER.readInstructions" href="../browser/ner/power.html#tf.browser.ner.power.PowerNER.readInstructions">PowerNER.readInstructions()</a></code>;</p>
+<p>they can be read by <code><a title="tf.browser.ner.ner.NER.readInstructions" href="../browser/ner/ner.html#tf.browser.ner.ner.NER.readInstructions">NER.readInstructions()</a></code>;</p>
 </li>
 <li>
 <p>you might need to <code>pip install openpyxl</code> first;</p>
@@ -292,7 +292,7 @@ I intend to write functions to make this task easier.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/about/annotate.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/about/annotate.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/annotate.md
@@ -376,7 +376,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#occurrences-and-identifiers">Occurrences and identifiers</a></li>
 <li><a href="#entity-sets">Entity sets</a></li>
 <li><a href="#for-annotators">For annotators</a></li>
-<li><a href="#for-power-annotators">For power annotators</a></li>
+<li><a href="#for-programming-annotators">For programming annotators</a></li>
 <li><a href="#for-corpus-maintainers">For corpus maintainers</a><ul>
 <li><a href="#input-data">Input data</a></li>
 <li><a href="#good-practice">Good practice</a></li>

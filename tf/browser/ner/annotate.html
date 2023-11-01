@@ -43,14 +43,14 @@ access to its data.</li>
 <li><code><a title="tf.browser.ner.match" href="match.html">tf.browser.ner.match</a></code>: to filter individual buckets on the basis of
 criteria.</li>
 </ul>
-<p>Hence, <code>Annotation</code> is the central class of this tools, whose methods are relevant
+<p>Hence, <code>Annotation</code> is the central class of this tool, whose methods are relevant
 for:</p>
 <ul>
-<li><code><a title="tf.browser.ner.power" href="power.html">tf.browser.ner.power</a></code>: the API for users to manipulate annotations in their
+<li><code><a title="tf.browser.ner.ner" href="ner.html">tf.browser.ner.ner</a></code>: the API for users to manipulate annotations in their
 own programs, especially in a Jupyter notebook.</li>
 <li><code><a title="tf.browser.ner.web" href="web.html">tf.browser.ner.web</a></code>: Flask app that routes URLs to controller functions.</li>
 </ul>
-<p><code>web</code> makes use of the following modules that are not needed by <code>power</code>:</p>
+<p><code>web</code> makes use of the following modules that are not needed by <code>ner</code>:</p>
 <ul>
 <li><code><a title="tf.browser.ner.serve" href="serve.html">tf.browser.ner.serve</a></code>: define the controllers of the web app</li>
 </ul>
@@ -60,7 +60,7 @@ own programs, especially in a Jupyter notebook.</li>
 <li><code><a title="tf.browser.ner.fragments" href="fragments.html">tf.browser.ner.fragments</a></code>: generate HTML for widgets on the page;</li>
 </ul>
 <p><code>request</code> also uses <code>form</code> to retrieve form values into typed and structured values.</p>
-<p>Both <code>web</code> and <code>power</code> make use of the following modules in as far as they are not
+<p>Both <code>web</code> and <code>ner</code> make use of the following modules in as far as they are not
 already mentioned under <code>annotate</code> and its parent classes:</p>
 <ul>
 <li><code><a title="tf.browser.ner.helpers" href="helpers.html">tf.browser.ner.helpers</a></code>: a variety of context-free data jugglers;</li>
@@ -70,8 +70,8 @@ syntax.</li>
 <div class="admonition note">
 <p class="admonition-title">Class hierarchy</p>
 <p>The classes <code>Settings</code>, <code>Corpus</code>, <code>Data</code>, <code>Sets</code>, <code>Show</code>, <code><a title="tf.browser.ner.annotate.Annotate" href="#tf.browser.ner.annotate.Annotate">Annotate</a></code>,
-<code>PowerNER</code> form one hierarchy.
-So an object of class <code>PowerNER</code> has access to all methods of these classes.</p>
+<code>NER</code> form one hierarchy.
+So an object of class <code>NER</code> has access to all methods of these classes.</p>
 <p>The classes <code>Serve</code>, <code>Request</code>, <code>Fragments</code>, <code>From</code> form a separate hierarchy.
 It will create an <code><a title="tf.browser.ner.annotate.Annotate" href="#tf.browser.ner.annotate.Annotate">Annotate</a></code> instance which will be stored in a <code>Serve</code> instance.</p>
 </div>
@@ -80,7 +80,7 @@ It will create an <code><a title="tf.browser.ner.annotate.Annotate" href="#tf.br
 <p>A <code>&lt;-&lt;</code> arrow denotes dependency by importing code.</p>
 <pre><code>Browser                           |   Api-hierarchy
 ---------------------------------------------------------
-                                  |   PowerNER
+                                  |   NER
                                   |     |
 web &lt;-----&lt; Serve &lt;-----------------&lt; Annotate  &lt;-&lt; match
             |   |                 |     |   |
@@ -95,7 +95,7 @@ web &lt;-----&lt; Serve &lt;-----------------&lt; Annotate  &lt;-&lt; match
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/annotate.py#L1-L399" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/annotate.py#L1-L399" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Central Annotation object.
 
@@ -120,14 +120,14 @@ It also uses
 *   `tf.browser.ner.match`: to filter individual buckets on the basis of
     criteria.
 
-Hence, `Annotation` is the central class of this tools, whose methods are relevant
+Hence, `Annotation` is the central class of this tool, whose methods are relevant
 for:
 
-*   `tf.browser.ner.power`: the API for users to manipulate annotations in their
+*   `tf.browser.ner.ner`: the API for users to manipulate annotations in their
     own programs, especially in a Jupyter notebook.
 *   `tf.browser.ner.web`: Flask app that routes URLs to controller functions.
 
-`web` makes use of the following modules that are not needed by `power`:
+`web` makes use of the following modules that are not needed by `ner`:
 
 *   `tf.browser.ner.serve`: define the controllers of the web app
 
@@ -138,7 +138,7 @@ Again, this is a top of an iceberg, since it inherits from:
 
 `request` also uses `form` to retrieve form values into typed and structured values.
 
-Both `web` and `power` make use of the following modules in as far as they are not
+Both `web` and `ner` make use of the following modules in as far as they are not
 already mentioned under `annotate` and its parent classes:
 
 *   `tf.browser.ner.helpers`: a variety of context-free data jugglers;
@@ -147,8 +147,8 @@ already mentioned under `annotate` and its parent classes:
 
 !!! note &#34;Class hierarchy&#34;
     The classes `Settings`, `Corpus`, `Data`, `Sets`, `Show`, `Annotate`,
-    `PowerNER` form one hierarchy.
-    So an object of class `PowerNER` has access to all methods of these classes.
+    `NER` form one hierarchy.
+    So an object of class `NER` has access to all methods of these classes.
 
     The classes `Serve`, `Request`, `Fragments`, `From` form a separate hierarchy.
     It will create an `Annotate` instance which will be stored in a `Serve` instance.
@@ -162,7 +162,7 @@ A `&lt;-&lt;` arrow denotes dependency by importing code.
 ```
 Browser                           |   Api-hierarchy
 ---------------------------------------------------------
-                                  |   PowerNER
+                                  |   NER
                                   |     |
 web &lt;-----&lt; Serve &lt;-----------------&lt; Annotate  &lt;-&lt; match
             |   |                 |     |   |
@@ -542,7 +542,7 @@ browser. This will influence how results are reported back.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/annotate.py#L89-L399" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/annotate.py#L89-L399" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Annotate(Sets, Show):
     def __init__(self, app, data=None, browse=False):
@@ -866,7 +866,7 @@ browser. This will influence how results are reported back.</dd>
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
-<li><a title="tf.browser.ner.power.PowerNER" href="power.html#tf.browser.ner.power.PowerNER">PowerNER</a></li>
+<li><a title="tf.browser.ner.ner.NER" href="ner.html#tf.browser.ner.ner.NER">NER</a></li>
 </ul>
 <h3>Methods</h3>
 <dl>
@@ -964,7 +964,7 @@ of results.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/annotate.py#L163-L399" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/annotate.py#L163-L399" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def filterContent(
     self,
@@ -1228,7 +1228,7 @@ A single occurrence is represented as a tuple of slots.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/annotate.py#L131-L161" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/annotate.py#L131-L161" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findOccs(self, qTokenSet=set()):
     &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens.

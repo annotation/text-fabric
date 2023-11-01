@@ -245,22 +245,22 @@ in the corpus, but the differences are in what happens below the <code>add</code
 Whereas the ✅ button fills the <code>eid</code> field with a value derived from the occurrence,
 the ❎ leaves the previous value unchanged. So you can just click <code>add</code> to mark
 the new occurrences with the values of the same entity as before.</p>
-<h1 id="more-power">More power</h1>
+<h1 id="programming">Programming</h1>
 <p>The workflow sketched above works fine if you know what to look for, and if there are
 not too many distinct named entities in the corpus.</p>
 <p>Probably you soon discover that there are quite a bit of distinct named entities,
 and each entity has quite a bit of surface forms.
 Then the work load may not feel doable any more.</p>
-<p>For that purpose, there is also a <em>power</em> annotate mode, where you run the
+<p>For that purpose, there is also a way of annotating-by-programming, where you run the
 annotator tool in a Jupyter Notebook, driven by a spreadsheet with names and
 surface forms.</p>
-<p>See <code><a title="tf.browser.ner.power" href="../browser/ner/power.html">tf.browser.ner.power</a></code>.</p>
+<p>See <code><a title="tf.browser.ner.ner" href="../browser/ner/ner.html">tf.browser.ner.ner</a></code>.</p>
 <p>You can then still use this tool after the fact to check the entity assignments
 and make fine-tuning corrections.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/about/annotateBrowser.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/about/annotateBrowser.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/annotateBrowser.md
@@ -342,7 +342,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#sophistication">Sophistication</a></li>
 </ul>
 </li>
-<li><a href="#more-power">More power</a></li>
+<li><a href="#programming">Programming</a></li>
 </ul>
 </div>
 <ul id="index">

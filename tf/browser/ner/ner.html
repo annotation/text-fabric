@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>tf.browser.ner.power API documentation</title>
+<title>tf.browser.ner.ner API documentation</title>
 <meta name="description" content="API for rule-based entity marking …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
@@ -20,24 +20,23 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.browser.ner.power</code></h1>
+<h1 class="title">Module <code>tf.browser.ner.ner</code></h1>
 </header>
 <section id="section-intro">
 <p>API for rule-based entity marking.</p>
 <p>This module contains the top-level methods for applying annotation rules to a corpus.</p>
 <p>To see how this fits among all the modules of this package, see
 <code><a title="tf.browser.ner.annotate" href="annotate.html">tf.browser.ner.annotate</a></code> .</p>
-<h1 id="power-annotation-done-in-a-jupyter-notebook">Power annotation done in a Jupyter Notebook</h1>
+<h1 id="programmatic-annotation-done-in-a-jupyter-notebook">Programmatic annotation done in a Jupyter Notebook</h1>
 <p>If you have a spreadsheet with named entities, and for each entity a list of surface forms,
 then this module takes care to read that spreadsheet, translate it to YAML,
 and then use the YAML as instructions to add entity annotations to the corpus.</p>
 <p>See this
-<a href="https://nbviewer.jupyter.org/github/HuygensING/suriano/blob/main/programs/powerNer.ipynb">example notebook</a>.</p>
+<a href="https://nbviewer.jupyter.org/github/HuygensING/suriano/blob/main/programs/ner.ipynb">example notebook</a>.</p>
 <p>Here are more details.</p>
 <h2 id="starting-up">Starting up</h2>
 <p>Load the relevant Python modules:</p>
 <pre><code class="language-python">from tf.app import use
-from tf.browser.ner.power import PowerNER
 </code></pre>
 <p>Load your corpus. There are two ways:</p>
 <ul>
@@ -50,8 +49,8 @@ from tf.browser.ner.power import PowerNER
 <p><code>A = use("HuygensING/suriano")</code></p>
 </li>
 </ul>
-<p>Load the Power-Annotator module:</p>
-<pre><code class="language-python">PA = PowerNER(A)
+<p>Load the Ner module:</p>
+<pre><code class="language-python">NE = A.makeNer()
 </code></pre>
 <p>The tool expects some input data to be present: configuration and spreadsheets with
 instructions. They can be found in the <code>ner</code> directory.
@@ -88,7 +87,7 @@ but probably that information will not end up in TF features.</li>
 </ul>
 <p>These steps need some configuration information from the <code>ner/config.yaml</code> file.</p>
 <p>Translation is done by</p>
-<pre><code class="language-python">PA.readInstructions(&quot;people&quot;)
+<pre><code class="language-python">NE.readInstructions(&quot;people&quot;)
 </code></pre>
 <p>The resulting YAML ends up next to the
 spreadsheet, and it looks like this:</p>
@@ -118,8 +117,8 @@ jan.baptist.roelants:
 <h2 id="inventory">Inventory</h2>
 <p>A first step is to find out how many occurrences we find in the corpus for these
 surface forms:</p>
-<pre><code class="language-python">PA.makeInventory()
-PA.showInventory()
+<pre><code class="language-python">NE.makeInventory()
+NE.showInventory()
 </code></pre>
 <p>and the output looks like this</p>
 <pre><code>...
@@ -139,13 +138,13 @@ Total 150
 <h2 id="marking-up">Marking up</h2>
 <p>In order to create annotations for these entities, we have to switch to an
 annotation set. Let's start a new set and give it the name <code>power</code>.</p>
-<pre><code class="language-python">PA.setSet(&quot;power&quot;)
+<pre><code class="language-python">NE.setSet(&quot;power&quot;)
 </code></pre>
 <p>If it turns out that <code>power</code> has already annotations, and you want to clear them, say</p>
-<pre><code class="language-python">PA.resetSet(&quot;power&quot;)
+<pre><code class="language-python">NE.resetSet(&quot;power&quot;)
 </code></pre>
 <p>Now we are ready for the big thing: creating the annotations:</p>
-<pre><code class="language-python">PA.markEntities()
+<pre><code class="language-python">NE.markEntities()
 </code></pre>
 <p>It outputs this message:</p>
 <pre><code>Already present:     0 x
@@ -154,12 +153,12 @@ Added:             150 x
 <h2 id="inspection">Inspection</h2>
 <p>We now revert to lower-level methods from the <code><a title="tf.browser.ner.annotate" href="annotate.html">tf.browser.ner.annotate</a></code> class to
 inspect some of the results.</p>
-<pre><code class="language-python">results = PA.filterContent(bFind=&quot;pach&quot;, bFindC=False, anyEnt=True, showStats=None)
+<pre><code class="language-python">results = NE.filterContent(bFind=&quot;pach&quot;, bFindC=False, anyEnt=True, showStats=None)
 </code></pre>
 <p>Here we filtered the chunks (paragraphs) to those that contain the string <code>pach</code>,
 in a case-insensitive way, and that contain at least one entity.</p>
 <p>There 6 of them, and we can show them:</p>
-<pre><code class="language-python">PA.showContent(results)
+<pre><code class="language-python">NE.showContent(results)
 </code></pre>
 <p><img alt="browser" src="../../images/Annotate/pach.png"></p>
 <p>The resulting entities are in <code>_temp/power/entities.tsv</code> and look like this:</p>
@@ -190,7 +189,7 @@ slots.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/power.py#L1-L505" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/ner.py#L1-L504" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;API for rule-based entity marking.
 
@@ -199,14 +198,14 @@ This module contains the top-level methods for applying annotation rules to a co
 To see how this fits among all the modules of this package, see
 `tf.browser.ner.annotate` .
 
-# Power annotation done in a Jupyter Notebook
+# Programmatic annotation done in a Jupyter Notebook
 
 If you have a spreadsheet with named entities, and for each entity a list of surface forms,
 then this module takes care to read that spreadsheet, translate it to YAML,
 and then use the YAML as instructions to add entity annotations to the corpus.
 
 See this
-[example notebook](https://nbviewer.jupyter.org/github/HuygensING/suriano/blob/main/programs/powerNer.ipynb).
+[example notebook](https://nbviewer.jupyter.org/github/HuygensING/suriano/blob/main/programs/ner.ipynb).
 
 Here are more details.
 
@@ -216,7 +215,6 @@ Load the relevant Python modules:
 
 ``` python
 from tf.app import use
-from tf.browser.ner.power import PowerNER
 ```
 
 Load your corpus. There are two ways:
@@ -233,10 +231,10 @@ Load your corpus. There are two ways:
     A = use(&#34;HuygensING/suriano&#34;)
     ```
 
-Load the Power-Annotator module:
+Load the Ner module:
 
 ``` python
-PA = PowerNER(A)
+NE = A.makeNer()
 ```
 
 The tool expects some input data to be present: configuration and spreadsheets with
@@ -283,7 +281,7 @@ These steps need some configuration information from the `ner/config.yaml` file.
 Translation is done by
 
 ``` python
-PA.readInstructions(&#34;people&#34;)
+NE.readInstructions(&#34;people&#34;)
 ```
 
 The resulting YAML ends up next to the
@@ -320,8 +318,8 @@ A first step is to find out how many occurrences we find in the corpus for these
 surface forms:
 
 ``` python
-PA.makeInventory()
-PA.showInventory()
+NE.makeInventory()
+NE.showInventory()
 ```
 
 and the output looks like this
@@ -349,19 +347,19 @@ In order to create annotations for these entities, we have to switch to an
 annotation set. Let&#39;s start a new set and give it the name `power`.
 
 ``` python
-PA.setSet(&#34;power&#34;)
+NE.setSet(&#34;power&#34;)
 ```
 
 If it turns out that `power` has already annotations, and you want to clear them, say
 
 ``` python
-PA.resetSet(&#34;power&#34;)
+NE.resetSet(&#34;power&#34;)
 ```
 
 Now we are ready for the big thing: creating the annotations:
 
 ``` python
-PA.markEntities()
+NE.markEntities()
 ```
 
 It outputs this message:
@@ -377,7 +375,7 @@ We now revert to lower-level methods from the `tf.browser.ner.annotate` class to
 inspect some of the results.
 
 ``` python
-results = PA.filterContent(bFind=&#34;pach&#34;, bFindC=False, anyEnt=True, showStats=None)
+results = NE.filterContent(bFind=&#34;pach&#34;, bFindC=False, anyEnt=True, showStats=None)
 ```
 
 Here we filtered the chunks (paragraphs) to those that contain the string `pach`,
@@ -386,7 +384,7 @@ in a case-insensitive way, and that contain at least one entity.
 There 6 of them, and we can show them:
 
 ``` python
-PA.showContent(results)
+NE.showContent(results)
 ```
 
 ![browser](../../images/Annotate/pach.png)
@@ -429,7 +427,7 @@ from .helpers import normalize, toSmallId, toTokens
 from .annotate import Annotate
 
 
-class PowerNER(Annotate):
+class NER(Annotate):
     def __init__(self, app):
         &#34;&#34;&#34;Bulk entity annotation.
 
@@ -708,8 +706,8 @@ class PowerNER(Annotate):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="tf.browser.ner.power.PowerNER"><code class="flex name class">
-<span>class <span class="ident">PowerNER</span></span>
+<dt id="tf.browser.ner.ner.NER"><code class="flex name class">
+<span>class <span class="ident">NER</span></span>
 <span>(</span><span>app)</span>
 </code></dt>
 <dd>
@@ -727,9 +725,9 @@ by the Annotate class on which it is based.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/power.py#L238-L505" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/ner.py#L237-L504" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">class PowerNER(Annotate):
+<pre><code class="python">class NER(Annotate):
     def __init__(self, app):
         &#34;&#34;&#34;Bulk entity annotation.
 
@@ -1009,18 +1007,18 @@ by the Annotate class on which it is based.</p>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="tf.browser.ner.power.PowerNER.instructions"><code class="name">var <span class="ident">instructions</span></code></dt>
+<dt id="tf.browser.ner.ner.NER.instructions"><code class="name">var <span class="ident">instructions</span></code></dt>
 <dd>
 <div class="desc"><p>Will contain the information in a spreadsheet for marking up entities.</p></div>
 </dd>
-<dt id="tf.browser.ner.power.PowerNER.inventory"><code class="name">var <span class="ident">inventory</span></code></dt>
+<dt id="tf.browser.ner.ner.NER.inventory"><code class="name">var <span class="ident">inventory</span></code></dt>
 <dd>
 <div class="desc"><p>Will contain the locations of all surface forms in the current instructions.</p></div>
 </dd>
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="tf.browser.ner.power.PowerNER.makeInventory"><code class="name flex">
+<dt id="tf.browser.ner.ner.NER.makeInventory"><code class="name flex">
 <span>def <span class="ident">makeInventory</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1033,7 +1031,7 @@ slot sequences where those token sequences occur in the corpus.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/power.py#L413-L434" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/ner.py#L412-L433" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeInventory(self):
     &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
@@ -1059,7 +1057,7 @@ slot sequences where those token sequences occur in the corpus.</p></div>
     self.inventory = self.findOccs(qSets)</code></pre>
 </details>
 </dd>
-<dt id="tf.browser.ner.power.PowerNER.markEntities"><code class="name flex">
+<dt id="tf.browser.ner.ner.NER.markEntities"><code class="name flex">
 <span>def <span class="ident">markEntities</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1071,7 +1069,7 @@ If there is no inventory yet, it will be created.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/power.py#L464-L505" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/ner.py#L463-L504" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def markEntities(self):
     &#34;&#34;&#34;Marks up the members of the inventory as entities.
@@ -1117,7 +1115,7 @@ If there is no inventory yet, it will be created.</p></div>
     self.addEntities(newEntities, silent=False)</code></pre>
 </details>
 </dd>
-<dt id="tf.browser.ner.power.PowerNER.readInstructions"><code class="name flex">
+<dt id="tf.browser.ner.ner.NER.readInstructions"><code class="name flex">
 <span>def <span class="ident">readInstructions</span></span>(<span>self, sheetName, force=False)</span>
 </code></dt>
 <dd>
@@ -1145,7 +1143,7 @@ the Excel sheet exists.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/power.py#L262-L411" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/ner.py#L261-L410" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readInstructions(self, sheetName, force=False):
     &#34;&#34;&#34;Reads an Excel or YAML file with entity recognition instructions.
@@ -1299,7 +1297,7 @@ the Excel sheet exists.</dd>
     self.inventory = None</code></pre>
 </details>
 </dd>
-<dt id="tf.browser.ner.power.PowerNER.showInventory"><code class="name flex">
+<dt id="tf.browser.ner.ner.NER.showInventory"><code class="name flex">
 <span>def <span class="ident">showInventory</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1309,7 +1307,7 @@ of which they are surface forms.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/power.py#L436-L462" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/ner.py#L435-L461" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showInventory(self):
     &#34;&#34;&#34;Shows the inventory.
@@ -1451,7 +1449,7 @@ setTimeout(() => input.focus(), 100);
 <h1>Index</h1>
 <div class="toc">
 <ul>
-<li><a href="#power-annotation-done-in-a-jupyter-notebook">Power annotation done in a Jupyter Notebook</a><ul>
+<li><a href="#programmatic-annotation-done-in-a-jupyter-notebook">Programmatic annotation done in a Jupyter Notebook</a><ul>
 <li><a href="#starting-up">Starting up</a></li>
 <li><a href="#the-entity-spreadsheets">The entity spreadsheets</a></li>
 <li><a href="#inventory">Inventory</a></li>
@@ -1470,14 +1468,14 @@ setTimeout(() => input.focus(), 100);
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="tf.browser.ner.power.PowerNER" href="#tf.browser.ner.power.PowerNER">PowerNER</a></code></h4>
+<h4><code><a title="tf.browser.ner.ner.NER" href="#tf.browser.ner.ner.NER">NER</a></code></h4>
 <ul class="two-column">
-<li><code><a title="tf.browser.ner.power.PowerNER.instructions" href="#tf.browser.ner.power.PowerNER.instructions">instructions</a></code></li>
-<li><code><a title="tf.browser.ner.power.PowerNER.inventory" href="#tf.browser.ner.power.PowerNER.inventory">inventory</a></code></li>
-<li><code><a title="tf.browser.ner.power.PowerNER.makeInventory" href="#tf.browser.ner.power.PowerNER.makeInventory">makeInventory</a></code></li>
-<li><code><a title="tf.browser.ner.power.PowerNER.markEntities" href="#tf.browser.ner.power.PowerNER.markEntities">markEntities</a></code></li>
-<li><code><a title="tf.browser.ner.power.PowerNER.readInstructions" href="#tf.browser.ner.power.PowerNER.readInstructions">readInstructions</a></code></li>
-<li><code><a title="tf.browser.ner.power.PowerNER.showInventory" href="#tf.browser.ner.power.PowerNER.showInventory">showInventory</a></code></li>
+<li><code><a title="tf.browser.ner.ner.NER.instructions" href="#tf.browser.ner.ner.NER.instructions">instructions</a></code></li>
+<li><code><a title="tf.browser.ner.ner.NER.inventory" href="#tf.browser.ner.ner.NER.inventory">inventory</a></code></li>
+<li><code><a title="tf.browser.ner.ner.NER.makeInventory" href="#tf.browser.ner.ner.NER.makeInventory">makeInventory</a></code></li>
+<li><code><a title="tf.browser.ner.ner.NER.markEntities" href="#tf.browser.ner.ner.NER.markEntities">markEntities</a></code></li>
+<li><code><a title="tf.browser.ner.ner.NER.readInstructions" href="#tf.browser.ner.ner.NER.readInstructions">readInstructions</a></code></li>
+<li><code><a title="tf.browser.ner.ner.NER.showInventory" href="#tf.browser.ner.ner.NER.showInventory">showInventory</a></code></li>
 </ul>
 </li>
 </ul>

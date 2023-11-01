@@ -31,7 +31,7 @@ new features, that you can save in TF format and share with others.</p>
 packaging it, distributing it, and importing in apps.</p>
 <h2 id="zipping-your-new-data">Zipping your new data</h2>
 <p>There is a command</p>
-<pre><code class="language-sh">text-fabric-zip
+<pre><code class="language-sh">tf-zip
 </code></pre>
 <p>to make a distribution of your own features.</p>
 <p>For an example of all the steps of data sharing, see the
@@ -179,7 +179,8 @@ data as an example.</p>
 the <code>mod</code> parameter:</p>
 <pre><code class="language-python">use(&quot;annotation/banks&quot;, mod=f&quot;annotation/banks/sim/tf&quot;)
 </code></pre>
-<p>But TF then tries to download it from GitHub, or look it up from your <code>~/text-fabric-data</code>.
+<p>But TF then tries to download it from GitHub, or look it up from your
+<code>~/text-fabric-data</code>.
 Both will fail, especially when you let TF manage your <code>~/text-fabric-data</code> directory.</p>
 <p>You have to pass <code>clone</code> as the checkout option: </p>
 <pre><code class="language-python">use(&quot;annotation/banks&quot;, mod=f&quot;annotation/banks/sim/tf:clone&quot;)
@@ -238,7 +239,7 @@ it is more economical to zip that data and attach it as a binary to the release.
 and the right structure.</p>
 <p>TF comes with a command to create that zip file for you.</p>
 <p>Execute the following command in your terminal:</p>
-<pre><code class="language-sh">text-fabric-zip annotation/banks/tf
+<pre><code class="language-sh">tf-zip annotation/banks/tf
 </code></pre>
 <p>You'll see</p>
 <pre><code>Create release data for annotation/banks/tf
@@ -254,7 +255,7 @@ zipping annotation/banks           0.2 with  10 features ==&gt; tf-0.2.zip
 </code></pre>
 <p>Attach these versions, or just the newest version, to the release and publish the release.</p>
 <p><img alt="releases" src="../images/add-attach.png"></p>
-<p>Zip your data with the <code>text-fabric-zip</code> command as explained above.
+<p>Zip your data with the <code>tf-zip</code> command as explained above.
 It will look into your local <code>github</code> directory, pickup the features from there,
 zip them, and put the zip files in your Downloads folder. Then you can pick
 that zip file up and attach it manually to a new release of your repository
@@ -262,7 +263,7 @@ on the online GitHub / GitLab.</p>
 <h3 id="continue-developing-your-features">Continue developing your features</h3>
 <p>Probably you'll make changes to your features after having published them.
 Then you have the cutting edge version of your features in your local <code>github</code>
-directory, and the published version in your text-fabric-data directory.</p>
+directory, and the published version in your <code>~/text-fabric-data</code> directory.</p>
 <p>When you make new commits, users that call up your data in the standard way,
 will still get the latest stable release.</p>
 <p>But users that say </p>
@@ -316,8 +317,7 @@ modules, you can pass the standard modules explicitly to the
 If you leave it out, it defaults to the empty string: latest release or commit.</li>
 </ul>
 <p>The checkout parameter can be used in the <code>use()</code> function when you call up
-TF in a program (or notebook) and when you call up the text-fabric
-browser on the command-line:</p>
+TF in a program (or notebook) and when you call up the TF browser on the command-line:</p>
 <p>(in a program)</p>
 <pre><code class="language-python">use(&quot;annotation/banks:clone&quot;, checkout=&quot;latest&quot;, mod=&quot;annotation/banks/sim/tf:hot&quot;)
 </code></pre>
@@ -356,7 +356,7 @@ tutorial.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/about/datasharing.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/about/datasharing.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/datasharing.md

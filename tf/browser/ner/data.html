@@ -38,7 +38,7 @@ processed if it is needed and out of date.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L1-L900" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L1-L899" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Annotation data module.
 
@@ -676,8 +676,7 @@ class Data(Corpus):
         the corpus to find them.
 
         This method does them all in one fell swoop.
-        It is used by the power method
-        `tf.browser.ner.power.PowerNER.markEntities()`.
+        It is used by the method `tf.browser.ner.ner.NER.markEntities()`.
 
         Parameters
         ----------
@@ -982,7 +981,7 @@ it to the initializer here.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L32-L900" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L32-L899" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Data(Corpus):
     def __init__(self, data=None):
@@ -1589,8 +1588,7 @@ it to the initializer here.</p>
         the corpus to find them.
 
         This method does them all in one fell swoop.
-        It is used by the power method
-        `tf.browser.ner.power.PowerNER.markEntities()`.
+        It is used by the method `tf.browser.ner.ner.NER.markEntities()`.
 
         Parameters
         ----------
@@ -1875,8 +1873,7 @@ empty name.</p>
 <p>If you have multiple entities to add, it is wasteful to do multiple passes over
 the corpus to find them.</p>
 <p>This method does them all in one fell swoop.
-It is used by the power method
-<code><a title="tf.browser.ner.power.PowerNER.markEntities" href="power.html#tf.browser.ner.power.PowerNER.markEntities">PowerNER.markEntities()</a></code>.</p>
+It is used by the method <code><a title="tf.browser.ner.ner.NER.markEntities" href="ner.html#tf.browser.ner.ner.NER.markEntities">NER.markEntities()</a></code>.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>newEntites</code></strong> :&ensp;<code>iterable</code> of <code>tuples</code> of <code>tuples</code></dt>
@@ -1900,7 +1897,7 @@ asked to be deleted and the number of actually deleted entities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L627-L696" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L627-L695" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addEntities(self, newEntities, silent=True):
     &#34;&#34;&#34;Add multiple entities efficiently to the current set.
@@ -1912,8 +1909,7 @@ asked to be deleted and the number of actually deleted entities.</p>
     the corpus to find them.
 
     This method does them all in one fell swoop.
-    It is used by the power method
-    `tf.browser.ner.power.PowerNER.markEntities()`.
+    It is used by the method `tf.browser.ner.ner.NER.markEntities()`.
 
     Parameters
     ----------
@@ -2006,7 +2002,7 @@ asked to be deleted and the number of actually deleted entities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L550-L625" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L550-L625" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addEntity(self, vals, allMatches, silent=True):
     &#34;&#34;&#34;Add entity occurrences to the current set.
@@ -2120,7 +2116,7 @@ no entity will be added there.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L698-L813" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L697-L812" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addEntityRich(self, additions, buckets, excludedTokens=set()):
     &#34;&#34;&#34;Add specified entity occurrences to the current set.
@@ -2274,7 +2270,7 @@ asked to be deleted and the number of actually deleted entities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L348-L425" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L348-L425" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def delEntity(self, vals, allMatches=None, silent=True):
     &#34;&#34;&#34;Delete entity occurrences from the current set.
@@ -2390,7 +2386,7 @@ the entity will not be deleted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L427-L548" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L427-L548" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def delEntityRich(self, deletions, buckets, excludedTokens=set()):
     &#34;&#34;&#34;Delete specified entity occurrences from the current set.
@@ -2538,7 +2534,7 @@ that are part of the entity.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L96-L183" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L96-L183" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fromSource(self):
     &#34;&#34;&#34;Loads annotation data from source.
@@ -2643,7 +2639,7 @@ that are part of the entity.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L72-L94" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L72-L94" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadData(self):
     &#34;&#34;&#34;Loads data of the current annotation set into memory.
@@ -2686,7 +2682,7 @@ and an iterable of slot tuples where the entity is located.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L857-L882" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L856-L881" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mergeEntities(self, newEntities):
     &#34;&#34;&#34;Performs additions to the current annotation set.
@@ -2775,7 +2771,7 @@ entities in the surrounding context of tokens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L185-L346" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L185-L346" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def process(self, changed):
     &#34;&#34;&#34;Generated derived data structures out of the source data.
@@ -2956,7 +2952,7 @@ entities in the surrounding context of tokens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L884-L900" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L883-L899" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def saveEntitiesAs(self, dataFile):
     &#34;&#34;&#34;Export the data of an annotation set to a file.
@@ -2993,7 +2989,7 @@ and an iterable of slot tuples where the entity is located.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fe29c2e478670953240ef34c9151800a87e98356/tf/browser/ner/data.py#L815-L855" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/090dfd4d38d455952fd251326aa03184833a7acf/tf/browser/ner/data.py#L814-L854" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def weedEntities(self, delEntities):
     &#34;&#34;&#34;Performs deletions to the current annotation set.
