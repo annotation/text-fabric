@@ -20,7 +20,7 @@ pip install -e .
 
 ### 12.1
 
-#### 12.1.3
+#### 12.1.3,4
 
 2023-11-01
 
@@ -53,6 +53,8 @@ pip install -e .
     Then had the Vim spell checker run over those lines and corrected all mistakes
     by hand.
     Still, there might be grammar errors and content inaccuracies.
+*   12.1.4 follows 12.1.3. quickly, because in corpora without a NER config file,
+    TF did not start up properly.
 
 #### 12.1.1,2
 

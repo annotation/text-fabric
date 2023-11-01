@@ -251,6 +251,9 @@ class NER(Annotate):
             The object that corresponds to a loaded TF app for a corpus.
         """
         super().__init__(app)
+        if not self.properlySetup:
+            return
+
         self.instructions = None
         """Will contain the information in a spreadsheet for marking up entities."""
 
@@ -285,6 +288,9 @@ class NER(Annotate):
             If True, the conversion from Excel to YAML will take place anyhow, provided
             the Excel sheet exists.
         """
+        if not self.properlySetup:
+            return
+
         sheetDir = self.sheetDir
 
         xlsFile = f"{sheetDir}/{sheetName}.xlsx"
@@ -420,6 +426,9 @@ class NER(Annotate):
         It is a dictionary, keyed by sequences of tokens, whose values are the
         slot sequences where those token sequences occur in the corpus.
         """
+        if not self.properlySetup:
+            return
+
         instructions = self.instructions
         settings = self.settings
         spaceEscaped = settings.spaceEscaped
@@ -438,6 +447,9 @@ class NER(Annotate):
         The surface forms in the inventory are put into the context of the entities
         of which they are surface forms.
         """
+        if not self.properlySetup:
+            return
+
         instructions = self.instructions
         inventory = self.inventory
         settings = self.settings
@@ -469,6 +481,9 @@ class NER(Annotate):
         The inventory knows where the occurrences of the surface forms are.
         If there is no inventory yet, it will be created.
         """
+        if not self.properlySetup:
+            return
+
         inventory = self.inventory
         instructions = self.instructions
         settings = self.settings

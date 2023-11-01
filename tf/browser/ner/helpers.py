@@ -7,7 +7,7 @@ To see how this fits among all the modules of this package, see
 import re
 import unicodedata
 
-from .html import H
+from ..html import H
 
 from .settings import STYLES
 

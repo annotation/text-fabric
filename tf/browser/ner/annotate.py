@@ -43,7 +43,7 @@ Both `web` and `ner` make use of the following modules in as far as they are not
 already mentioned under `annotate` and its parent classes:
 
 *   `tf.browser.ner.helpers`: a variety of context-free data jugglers;
-*   `tf.browser.ner.html`: a generic library to generate HTML using Pythonic
+*   `tf.browser.html`: a generic library to generate HTML using Pythonic
     syntax.
 
 !!! note "Class hierarchy"
@@ -121,9 +121,11 @@ class Annotate(Sets, Show):
             browser. This will influence how results are reported back.
         """
         self.app = app
-        super().__init__(data=data)
-
         self.browse = browse
+
+        super().__init__(data=data)
+        if not self.properlySetup:
+            return
 
         if not browse:
             self.loadData()
@@ -148,6 +150,9 @@ class Annotate(Sets, Show):
             A single occurrence is represented as a tuple of slots.
 
         """
+        if not self.properlySetup:
+            return []
+
         setData = self.getSetData()
         getTokens = self.getTokens
 
@@ -268,6 +273,9 @@ class Annotate(Sets, Show):
             If `browse` is True, also some stats are passed next to the list
             of results.
         """
+        if not self.properlySetup:
+            return []
+
         settings = self.settings
         bucketType = settings.bucketType
         features = settings.features

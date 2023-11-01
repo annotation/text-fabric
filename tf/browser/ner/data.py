@@ -59,6 +59,8 @@ class Data(Corpus):
             In that way, the `Data` object can start with the data already in memory.
         """
         super().__init__()
+        if not self.properlySetup:
+            return
 
         if data is None:
             data = AttrDict()
@@ -77,6 +79,9 @@ class Data(Corpus):
         *   loading the source data (see `Data.fromSource()`)
         *   processing the loaded source data (see `Data.process()`)
         """
+        if not self.properlySetup:
+            return
+
         data = self.data
         annoSet = self.annoSet
 
@@ -112,6 +117,9 @@ class Data(Corpus):
             each entity specifies a tuple of feature values and a list of slots
             that are part of the entity.
         """
+        if not self.properlySetup:
+            return None
+
         settings = self.settings
         data = self.data
         annoSet = self.annoSet
@@ -239,6 +247,9 @@ class Data(Corpus):
         changed: boolean
             Whether the data has changed since last processing.
         """
+        if not self.properlySetup:
+            return
+
         settings = self.settings
         features = settings.features
         getText = self.getText
@@ -379,6 +390,9 @@ class Data(Corpus):
 
             If the operation is not allowed, both integers above are set to -1.
         """
+        if not self.properlySetup:
+            return
+
         annoSet = self.annoSet
         annoSetRep = self.annoSetRep
 
@@ -456,6 +470,9 @@ class Data(Corpus):
             skipped from deletion. If the last slot of an entity is in this set,
             the entity will not be deleted.
         """
+        if not self.properlySetup:
+            return
+
         annoSet = self.annoSet
         annoSetRep = self.annoSetRep
         browse = self.browse
@@ -579,6 +596,9 @@ class Data(Corpus):
 
             If the operation is not allowed, both integers above are set to -1.
         """
+        if not self.properlySetup:
+            return
+
         annoSet = self.annoSet
         annoSetRep = self.annoSetRep
 
@@ -656,6 +676,9 @@ class Data(Corpus):
 
             If the operation is not allowed, both integers above are set to -1.
         """
+        if not self.properlySetup:
+            return
+
         annoSet = self.annoSet
         annoSetRep = self.annoSetRep
 
@@ -726,6 +749,9 @@ class Data(Corpus):
             receive new entities. If the last slot of an entity is in this set,
             no entity will be added there.
         """
+        if not self.properlySetup:
+            return
+
         annoSet = self.annoSet
         annoSetRep = self.annoSetRep
         browse = self.browse
@@ -823,6 +849,9 @@ class Data(Corpus):
             The set consists of entity specs: a tuple of values of entity features,
             and an iterable of slot tuples where the entity is located.
         """
+        if not self.properlySetup:
+            return
+
         annoSet = self.annoSet
         annoSetRep = self.annoSetRep
 
@@ -865,6 +894,9 @@ class Data(Corpus):
             The set consists of entity specs: a tuple of values of entity features,
             and an iterable of slot tuples where the entity is located.
         """
+        if not self.properlySetup:
+            return
+
         annoSet = self.annoSet
         annoSetRep = self.annoSetRep
 
@@ -891,6 +923,9 @@ class Data(Corpus):
         dataFile: string
             The path of the file to write to.
         """
+        if not self.properlySetup:
+            return
+
         setData = self.getSetData()
         entities = setData.entities
 

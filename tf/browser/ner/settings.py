@@ -6,7 +6,7 @@ To see how this fits among all the modules of this package, see
 
 
 from ...core.helpers import console as cs
-from ...core.files import readYaml
+from ...core.files import readYaml, fileExists
 
 TOOLKEY = "ner"
 """The name of this annotation tool.
@@ -166,6 +166,29 @@ SC_FILT = "f"
 """Value that indicates *filtered* buckets."""
 
 
+DEFAULT_SETTINGS = """
+entityType: ent
+entitySet: "{entityType}-nodes"
+
+bucketType: chunk
+
+strFeature: str
+afterFeature: after
+
+features:
+  - eid
+  - kind
+
+keywordFeatures:
+  - kind
+
+defaultValues:
+  kind: PER
+
+spaceEscaped: false
+"""
+
+
 class Settings:
     def __init__(self):
         """Provides configuration details.
@@ -182,8 +205,13 @@ class Settings:
         specDir = self.specDir
 
         nerSpec = f"{specDir}/config.yaml"
-        settings = readYaml(asFile=nerSpec, preferTuples=True)
-        settings.entitySet = settings.entitySet.format(entityType=settings.entityType)
+        kwargs = (
+            dict(asFile=nerSpec) if fileExists(nerSpec) else dict(text=DEFAULT_SETTINGS)
+        )
+        settings = readYaml(preferTuples=True, **kwargs)
+        settings.entitySet = (settings.entitySet or "entity-nodes").format(
+            entityType=settings.entityType
+        )
         self.settings = settings
 
         features = self.settings.features

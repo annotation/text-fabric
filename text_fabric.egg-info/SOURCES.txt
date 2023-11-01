@@ -343,6 +343,7 @@ tf/advanced/volumes.py
 tf/advanced/zipdata.py
 tf/browser/__init__.py
 tf/browser/command.py
+tf/browser/html.py
 tf/browser/kernel.py
 tf/browser/serve.py
 tf/browser/servelib.py
@@ -355,7 +356,6 @@ tf/browser/ner/data.py
 tf/browser/ner/form.py
 tf/browser/ner/fragments.py
 tf/browser/ner/helpers.py
-tf/browser/ner/html.py
 tf/browser/ner/match.py
 tf/browser/ner/ner.py
 tf/browser/ner/request.py

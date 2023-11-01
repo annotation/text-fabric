@@ -45,6 +45,9 @@ class Sets(Data):
             If None, a fresh data store will be created by a parent class (Data).
         """
         super().__init__(data=data)
+        if not self.properlySetup:
+            return
+
         settings = self.settings
         entitySet = settings.entitySet
 
@@ -78,6 +81,9 @@ class Sets(Data):
         newAnnoSet: string
             The name of the new annotation set to switch to.
         """
+        if not self.properlySetup:
+            return
+
         settings = self.settings
         entitySet = settings.entitySet
         browse = self.browse
@@ -116,6 +122,9 @@ class Sets(Data):
 
         The special set `""` cannot be reset, because it is read-only.
         """
+        if not self.properlySetup:
+            return
+
         settings = self.settings
         annoSet = self.annoSet
         entitySet = settings.entitySet
@@ -159,6 +168,9 @@ class Sets(Data):
         dupSet: string
             The name of new set that is the result of the duplication.
         """
+        if not self.properlySetup:
+            return []
+
         data = self.data
         setNames = self.setNames
         setsData = data.sets
@@ -210,6 +222,9 @@ class Sets(Data):
             The name of the set to be removed.
             It is not allowed to remove the special set named `""`.
         """
+        if not self.properlySetup:
+            return []
+
         messages = []
 
         if delSet == "":
@@ -246,6 +261,9 @@ class Sets(Data):
         moveSet: string
             The new name of the current set.
         """
+        if not self.properlySetup:
+            return []
+
         messages = []
 
         if moveSet == "":

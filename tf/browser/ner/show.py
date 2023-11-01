@@ -9,7 +9,7 @@ from itertools import chain
 from ...advanced.helpers import dh
 
 from .helpers import repIdent, repSummary
-from .html import H
+from ..html import H
 
 from .settings import (
     SORT_DEFAULT,

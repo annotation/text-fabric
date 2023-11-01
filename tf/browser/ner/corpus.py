@@ -26,6 +26,18 @@ NON_ALPHA_RE = re.compile(r"""[^\w ]""", re.S)
 
 class Corpus(Settings):
     def __init__(self):
+        """Corpus dependent methods for the annotator.
+
+        Everything that depends on the specifics of a corpus, such as getting its text,
+        is collected here.
+
+        If a corpus does not have a config file that tells TF which features to use
+        for text representation, then we flag to the object instance that it is not
+        properly set up.
+
+        All methods that might fail because of this, are guarded by a check on this
+        flag.
+        """
         app = self.app
         context = app.context
         appName = context.appName
@@ -50,16 +62,9 @@ class Corpus(Settings):
         self.slotType = slotType
         """The node type of the slots in the corpus."""
 
-        context = app.context
-        self.style = context.defaultClsOrig
-        self.ltr = context.direction
-
         settings = self.settings
         features = settings.features
         keywordFeatures = settings.keywordFeatures
-
-        self.css = app.loadToolCss(TOOLKEY, makeCss(features, keywordFeatures))
-
         bucketType = settings.bucketType
         entityType = settings.entityType
         strFeature = settings.strFeature
@@ -79,6 +84,28 @@ class Corpus(Settings):
 
         def getStr():
             return Fs(strFeature).v
+
+        if not checkFeature(strFeature) or not checkFeature(afterFeature):
+            self.properlySetup = False
+            return
+
+        self.properlySetup = True
+        """Whether the tool has been properly set up.
+
+        This means that the configuration in `ner/config.yaml` or the
+        default configuration work correctly with this corpus.
+        If not, this attribute will prevent most of the methods
+        from working: they fail silently.
+
+        So users of corpora without any need for this tool will not be bothered
+        by it.
+        """
+
+        context = app.context
+        self.style = context.defaultClsOrig
+        self.ltr = context.direction
+
+        self.css = app.loadToolCss(TOOLKEY, makeCss(features, keywordFeatures))
 
         strv = getStr()
         afterv = getAfter()

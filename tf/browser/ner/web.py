@@ -61,6 +61,7 @@ def factory(web):
 
     if not hasattr(web, "toolData"):
         setattr(web, "toolData", AttrDict())
+
     toolData = web.toolData
 
     if TOOLKEY not in toolData:
@@ -68,6 +69,9 @@ def factory(web):
 
     data = toolData[TOOLKEY]
     web.annotate = Annotate(tfApp, data=data, browse=True)
+
+    if not web.annotate.properlySetup:
+        return app
 
     @app.route("/static/<path:filepath>")
     def serveStatic(filepath):

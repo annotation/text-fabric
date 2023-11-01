@@ -7,7 +7,7 @@ To see how this fits among all the modules of this package, see
 """
 
 from .settings import EMPTY, NONE, SORTDIR_ASC
-from .html import H
+from ..html import H
 from .helpers import repIdent, valRep
 
 
