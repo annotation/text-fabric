@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.tools.pdocs API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.tools.pdocs</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/tools/pdocs.py#L1-L226" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">import sys
+import os
+from shutil import rmtree, copytree, copyfile
+
+from subprocess import run, call, Popen, PIPE
+
+import errno
+import time
+import unicodedata
+
+
+SITE = &#34;site&#34;
+REMOTE = &#34;origin&#34;
+BRANCH = &#34;gh-pages&#34;
+
+
+# COPIED FROM MKDOCS AND MODIFIED
+
+
+def console(*args):
+    sys.stderr.write(&#34; &#34;.join(args) + &#34;\n&#34;)
+    sys.stderr.flush()
+
+
+def _enc(text):
+    if isinstance(text, bytes):
+        return text
+    return text.encode()
+
+
+def _dec(text):
+    if isinstance(text, bytes):
+        return text.decode(&#34;utf-8&#34;)
+    return text
+
+
+def _write(pipe, data):
+    try:
+        pipe.stdin.write(data)
+    except OSError as e:
+        if e.errno != errno.EPIPE:
+            raise
+
+
+def _normalize_path(path):
+    # Fix UNICODE pathnames on OS X
+    # See: https://stackoverflow.com/a/5582439/44289
+    if sys.platform == &#34;darwin&#34;:
+        return unicodedata.normalize(&#34;NFKC&#34;, _dec(path))
+    return path
+
+
+def _try_rebase(remote, branch):
+    cmd = [&#34;git&#34;, &#34;rev-list&#34;, &#34;--max-count=1&#34;, &#34;{}/{}&#34;.format(remote, branch)]
+    p = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    (rev, _) = p.communicate()
+    if p.wait() != 0:
+        return True
+    cmd = [&#34;git&#34;, &#34;update-ref&#34;, &#34;refs/heads/%s&#34; % branch, _dec(rev.strip())]
+    if call(cmd) != 0:
+        return False
+    return True
+
+
+def _get_config(key):
+    p = Popen([&#34;git&#34;, &#34;config&#34;, key], stdin=PIPE, stdout=PIPE)
+    (value, _) = p.communicate()
+    return value.decode(&#34;utf-8&#34;).strip()
+
+
+def _get_prev_commit(branch):
+    cmd = [&#34;git&#34;, &#34;rev-list&#34;, &#34;--max-count=1&#34;, branch, &#34;--&#34;]
+    p = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    (rev, _) = p.communicate()
+    if p.wait() != 0:
+        return None
+    return rev.decode(&#34;utf-8&#34;).strip()
+
+
+def _mk_when(timestamp=None):
+    if timestamp is None:
+        timestamp = int(time.time())
+    currtz = &#34;%+05d&#34; % (-1 * time.timezone / 36)  # / 3600 * 100
+    return &#34;{} {}&#34;.format(timestamp, currtz)
+
+
+def _start_commit(pipe, branch, message):
+    uname = _dec(_get_config(&#34;user.name&#34;))
+    email = _dec(_get_config(&#34;user.email&#34;))
+    _write(pipe, _enc(&#34;commit refs/heads/%s\n&#34; % branch))
+    _write(pipe, _enc(&#34;committer {} &lt;{}&gt; {}\n&#34;.format(uname, email, _mk_when())))
+    _write(pipe, _enc(&#34;data %d\n%s\n&#34; % (len(message), message)))
+    head = _get_prev_commit(branch)
+    if head:
+        _write(pipe, _enc(&#34;from %s\n&#34; % head))
+    _write(pipe, _enc(&#34;deleteall\n&#34;))
+
+
+def _add_file(pipe, srcpath, tgtpath):
+    with open(srcpath, &#34;rb&#34;) as handle:
+        if os.access(srcpath, os.X_OK):
+            _write(pipe, _enc(&#34;M 100755 inline %s\n&#34; % tgtpath))
+        else:
+            _write(pipe, _enc(&#34;M 100644 inline %s\n&#34; % tgtpath))
+        data = handle.read()
+        _write(pipe, _enc(&#34;data %d\n&#34; % len(data)))
+        _write(pipe, _enc(data))
+        _write(pipe, _enc(&#34;\n&#34;))
+
+
+def _add_nojekyll(pipe):
+    _write(pipe, _enc(&#34;M 100644 inline .nojekyll\n&#34;))
+    _write(pipe, _enc(&#34;data 0\n&#34;))
+    _write(pipe, _enc(&#34;\n&#34;))
+
+
+def _gitpath(fname):
+    norm = os.path.normpath(fname)
+    return &#34;/&#34;.join(norm.split(os.path.sep))
+
+
+def _ghp_import():
+    if not _try_rebase(REMOTE, BRANCH):
+        print(&#34;Failed to rebase %s branch.&#34;, BRANCH)
+
+    console(f&#34;copy docs to the {BRANCH} branch&#34;)
+    cmd = [&#34;git&#34;, &#34;fast-import&#34;, &#34;--date-format=raw&#34;, &#34;--quiet&#34;]
+    kwargs = {&#34;stdin&#34;: PIPE}
+    if sys.version_info &gt;= (3, 2, 0):
+        kwargs[&#34;universal_newlines&#34;] = False
+    pipe = Popen(cmd, **kwargs)
+    _start_commit(pipe, BRANCH, &#34;docs update&#34;)
+    for path, _, fnames in os.walk(SITE):
+        for fn in fnames:
+            fpath = os.path.join(path, fn)
+            fpath = _normalize_path(fpath)
+            gpath = _gitpath(os.path.relpath(fpath, start=SITE))
+            _add_file(pipe, fpath, gpath)
+    _add_nojekyll(pipe)
+    _write(pipe, _enc(&#34;\n&#34;))
+    pipe.stdin.close()
+    if pipe.wait() != 0:
+        sys.stdout.write(_enc(&#34;Failed to process commit.\n&#34;))
+
+    console(f&#34;push {BRANCH} branch to GitHub&#34;)
+    cmd = [&#34;git&#34;, &#34;push&#34;, REMOTE, BRANCH]
+    proc = Popen(cmd, stdout=PIPE, stderr=PIPE)
+    (out, err) = proc.communicate()
+    result = proc.wait() == 0
+
+    return result, _dec(err)
+
+
+def _gh_deploy(org, repo, pkg):
+    (result, error) = _ghp_import()
+    if not result:
+        print(&#34;Failed to deploy to GitHub with error: \n%s&#34;, error)
+        raise SystemExit(1)
+    else:
+        url = f&#34;https://{org}.github.io/{repo}/{pkg}&#34;
+        print(&#34;Your documentation should shortly be available at: &#34; + url)
+
+
+# END COPIED FROM MKDOCS AND MODIFIED
+
+
+TEMPLATE_LOC = &#34;{}/docs/templates&#34;
+
+
+def getCommand(pkg, asString=False):
+    templateLoc = TEMPLATE_LOC.format(pkg)
+
+    pdoc3 = [
+        &#34;pdoc3&#34;,
+        &#34;--force&#34;,
+        &#34;--html&#34;,
+        &#34;--output-dir&#34;,
+        SITE,
+        &#34;--template-dir&#34;,
+        templateLoc,
+    ]
+    return &#34; &#34;.join(pdoc3) if asString else pdoc3
+
+
+def pdoc3serve(pkg):
+    &#34;&#34;&#34;Build the docs into site and serve them.&#34;&#34;&#34;
+
+    proc = Popen([*getCommand(pkg), &#34;--http&#34;, &#34;:&#34;, pkg])
+    time.sleep(1)
+    run(f&#34;open http://localhost:8080/{pkg}&#34;, shell=True)
+    try:
+        proc.wait()
+    except KeyboardInterrupt:
+        pass
+    proc.terminate()
+
+
+def pdoc3(pkg):
+    &#34;&#34;&#34;Build the docs into site.&#34;&#34;&#34;
+
+    console(&#34;Build docs&#34;)
+    if os.path.exists(SITE):
+        console(f&#34;Remove previous build ({SITE})&#34;)
+        rmtree(SITE)
+    console(&#34;Generate docs with pdoc3&#34;)
+    run(f&#34;{getCommand(pkg, asString=True)} {pkg}&#34;, shell=True)
+    # console(&#34;Move docs into place&#34;)
+    # run(f&#34;mv {SITE}/{pkg}/* {SITE}&#34;, shell=True)
+    # rmtree(f&#34;{SITE}/{pkg}&#34;)
+    console(&#34;Copy over the images&#34;)
+    copytree(f&#34;{pkg}/docs/images&#34;, f&#34;{SITE}/{pkg}/images&#34;, dirs_exist_ok=True)
+
+    # a link from the old docs URL to the new one
+    copyfile(f&#34;{pkg}/docs/index.html&#34;, f&#34;{SITE}/index.html&#34;)
+
+
+def servePdocs(pkg):
+    run(&#34;python -m http.server 9000&#34;, cwd=SITE, shell=True)
+
+
+def shipDocs(org, repo, pkg, pdoc=True):
+    &#34;&#34;&#34;Build the docs into site and ship them.&#34;&#34;&#34;
+
+    if pdoc:
+        pdoc3(pkg)
+    _gh_deploy(org, repo, pkg)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.tools.pdocs.console"><code class="name flex">
+<span>def <span class="ident">console</span></span>(<span>*args)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/tools/pdocs.py#L20-L22" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def console(*args):
+    sys.stderr.write(&#34; &#34;.join(args) + &#34;\n&#34;)
+    sys.stderr.flush()</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.pdocs.getCommand"><code class="name flex">
+<span>def <span class="ident">getCommand</span></span>(<span>pkg, asString=False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/tools/pdocs.py#L170-L182" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getCommand(pkg, asString=False):
+    templateLoc = TEMPLATE_LOC.format(pkg)
+
+    pdoc3 = [
+        &#34;pdoc3&#34;,
+        &#34;--force&#34;,
+        &#34;--html&#34;,
+        &#34;--output-dir&#34;,
+        SITE,
+        &#34;--template-dir&#34;,
+        templateLoc,
+    ]
+    return &#34; &#34;.join(pdoc3) if asString else pdoc3</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.pdocs.pdoc3"><code class="name flex">
+<span>def <span class="ident">pdoc3</span></span>(<span>pkg)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Build the docs into site.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/tools/pdocs.py#L198-L214" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def pdoc3(pkg):
+    &#34;&#34;&#34;Build the docs into site.&#34;&#34;&#34;
+
+    console(&#34;Build docs&#34;)
+    if os.path.exists(SITE):
+        console(f&#34;Remove previous build ({SITE})&#34;)
+        rmtree(SITE)
+    console(&#34;Generate docs with pdoc3&#34;)
+    run(f&#34;{getCommand(pkg, asString=True)} {pkg}&#34;, shell=True)
+    # console(&#34;Move docs into place&#34;)
+    # run(f&#34;mv {SITE}/{pkg}/* {SITE}&#34;, shell=True)
+    # rmtree(f&#34;{SITE}/{pkg}&#34;)
+    console(&#34;Copy over the images&#34;)
+    copytree(f&#34;{pkg}/docs/images&#34;, f&#34;{SITE}/{pkg}/images&#34;, dirs_exist_ok=True)
+
+    # a link from the old docs URL to the new one
+    copyfile(f&#34;{pkg}/docs/index.html&#34;, f&#34;{SITE}/index.html&#34;)</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.pdocs.pdoc3serve"><code class="name flex">
+<span>def <span class="ident">pdoc3serve</span></span>(<span>pkg)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Build the docs into site and serve them.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/tools/pdocs.py#L185-L195" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def pdoc3serve(pkg):
+    &#34;&#34;&#34;Build the docs into site and serve them.&#34;&#34;&#34;
+
+    proc = Popen([*getCommand(pkg), &#34;--http&#34;, &#34;:&#34;, pkg])
+    time.sleep(1)
+    run(f&#34;open http://localhost:8080/{pkg}&#34;, shell=True)
+    try:
+        proc.wait()
+    except KeyboardInterrupt:
+        pass
+    proc.terminate()</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.pdocs.servePdocs"><code class="name flex">
+<span>def <span class="ident">servePdocs</span></span>(<span>pkg)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/tools/pdocs.py#L217-L218" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def servePdocs(pkg):
+    run(&#34;python -m http.server 9000&#34;, cwd=SITE, shell=True)</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.pdocs.shipDocs"><code class="name flex">
+<span>def <span class="ident">shipDocs</span></span>(<span>org, repo, pkg, pdoc=True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Build the docs into site and ship them.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/tools/pdocs.py#L221-L226" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def shipDocs(org, repo, pkg, pdoc=True):
+    &#34;&#34;&#34;Build the docs into site and ship them.&#34;&#34;&#34;
+
+    if pdoc:
+        pdoc3(pkg)
+    _gh_deploy(org, repo, pkg)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.tools" href="index.html">tf.tools</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="tf.tools.pdocs.console" href="#tf.tools.pdocs.console">console</a></code></li>
+<li><code><a title="tf.tools.pdocs.getCommand" href="#tf.tools.pdocs.getCommand">getCommand</a></code></li>
+<li><code><a title="tf.tools.pdocs.pdoc3" href="#tf.tools.pdocs.pdoc3">pdoc3</a></code></li>
+<li><code><a title="tf.tools.pdocs.pdoc3serve" href="#tf.tools.pdocs.pdoc3serve">pdoc3serve</a></code></li>
+<li><code><a title="tf.tools.pdocs.servePdocs" href="#tf.tools.pdocs.servePdocs">servePdocs</a></code></li>
+<li><code><a title="tf.tools.pdocs.shipDocs" href="#tf.tools.pdocs.shipDocs">shipDocs</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
