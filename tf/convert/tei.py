@@ -485,7 +485,7 @@ from io import BytesIO
 from subprocess import run
 from importlib import util
 
-from lxml import etree
+from ..capable import CheckImport
 from .helpers import (
     setUp,
     tweakTrans,
@@ -531,6 +531,9 @@ from ..core.files import (
 )
 
 from ..tools.xmlschema import Analysis
+
+
+etree = None
 
 
 (HELP, TASKS, TASKS_EXCLUDED, PARAMS, FLAGS) = setUp("TEI")
@@ -766,7 +769,7 @@ def getRefs(tag, atts, xmlFile):
     return result
 
 
-class TEI:
+class TEI(CheckImport):
     def __init__(
         self,
         tei=PARAMS["tei"][1],
@@ -919,6 +922,13 @@ class TEI:
             Produce no (-1), some (0) or many (1) progress and reporting messages
 
         """
+        super().__init__("lxml")
+        if self.importOK(hint=True):
+            global etree
+            etree = self.importGet()
+        else:
+            return
+
         self.good = True
 
         (backend, org, repo, relative) = getLocation()
@@ -1478,6 +1488,9 @@ class TEI:
         object
             A configured LXML parse object.
         """
+        if not self.importOK():
+            return None
+
         procins = self.procins
 
         return etree.XMLParser(
@@ -1589,6 +1602,9 @@ class TEI:
         *   `errors.txt`: validation errors
         *   `elements.txt`: element / attribute inventory.
         """
+        if not self.importOK():
+            return
+
         if not self.good:
             return
 
@@ -2271,6 +2287,12 @@ class TEI:
         function
             The local director function that has been constructed.
         """
+        if not self.importOK():
+            return
+
+        if not self.good:
+            return
+
         TEI_HEADER = "teiHeader"
 
         TEXT_ANCESTOR = "text"
@@ -2327,6 +2349,7 @@ class TEI:
         )
 
         parser = self.getParser()
+
         baseSchema = modelInfo[None]
         overrides = [
             override for (model, override) in modelInfo.items() if model is not None
@@ -3647,6 +3670,9 @@ class TEI:
         boolean
             Whether the conversion was successful.
         """
+        if not self.importOK():
+            return
+
         if not self.good:
             return
 
@@ -3713,6 +3739,9 @@ class TEI:
         boolean
             Whether the loading was successful.
         """
+        if not self.importOK():
+            return
+
         if not self.good:
             return
 
@@ -3774,6 +3803,9 @@ class TEI:
         boolean
             Whether the operation was successful.
         """
+        if not self.importOK():
+            return
+
         if not self.good:
             return
 
@@ -4118,6 +4150,9 @@ class TEI:
         boolean
             Whether the operation was successful.
         """
+        if not self.importOK():
+            return
+
         if not self.good:
             return
 
@@ -4187,6 +4222,9 @@ class TEI:
         boolean
             Whether all tasks have executed successfully.
         """
+        if not self.importOK():
+            return
+
         if verbose is not None:
             verboseSav = self.verbose
             self.verbose = verbose
@@ -4222,10 +4260,10 @@ def main():
     if not good:
         return False
 
-    T = TEI(**params, **flags)
-    T.task(**tasks, **flags)
+    Obj = TEI(**params, **flags)
+    Obj.task(**tasks, **flags)
 
-    return T.good
+    return Obj.good
 
 
 if __name__ == "__main__":

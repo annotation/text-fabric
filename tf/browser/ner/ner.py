@@ -38,7 +38,7 @@ Load your corpus. There are two ways:
     A = use("HuygensING/suriano")
     ```
 
-Load the Ner module:
+Load the `Ner` module:
 
 ``` python
 NE = A.makeNer()
@@ -226,8 +226,7 @@ Lines consist of tab separated fields:
 
 """
 
-from openpyxl import load_workbook
-
+from ...capable import CheckImport
 from ...core.files import mTime, fileExists, readYaml, writeYaml
 from ...core.helpers import console
 from .helpers import normalize, toSmallId, toTokens
@@ -288,6 +287,13 @@ class NER(Annotate):
             If True, the conversion from Excel to YAML will take place anyhow, provided
             the Excel sheet exists.
         """
+        CI = CheckImport("openpyxl")
+        if CI.importOK(hint=True):
+            openpyxl = CI.importGet()
+            load_workbook = openpyxl.load_workbook
+        else:
+            return
+
         if not self.properlySetup:
             return
 

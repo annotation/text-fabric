@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: text-fabric
-Version: 12.1.4
+Version: 12.1.5
 Summary: Processor and browser for annotated text corpora
 Home-page: https://github.com/annotation/text-fabric
 Author: Dirk Roorda
@@ -34,12 +34,9 @@ License-File: LICENSE
 Requires-Dist: wheel
 Requires-Dist: markdown>=3.4.1
 Requires-Dist: ipython
-Requires-Dist: lxml
 Requires-Dist: pyyaml>=5.3
 Requires-Dist: flask
-Requires-Dist: pandas
-Requires-Dist: pyarrow
-Requires-Dist: openpyxl
+Requires-Dist: requests
 Provides-Extra: github
 Requires-Dist: pygithub>=1.57; extra == "github"
 Provides-Extra: gitlab

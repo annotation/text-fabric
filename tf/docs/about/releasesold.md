@@ -2584,7 +2584,7 @@ that have an incoming edge from `m` and the nodes that have an outgoing edge to 
 
 2019-03-11
 
-*   `TF.save()`an now write to any absolute location by means of the
+*   `TF.save()` can now write to any absolute location by means of the
     optional parameter `location`.
 
 #### 7.4.10

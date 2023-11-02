@@ -149,9 +149,9 @@ import re
 from subprocess import run
 from importlib import util
 
-from lxml import etree
 from .helpers import setUp, FILE
 from .xmlCustom import convertTaskDefault
+from ..capable import CheckImport
 from ..parameters import BRANCH_DEFAULT_NEW
 from ..fabric import Fabric
 from ..core.helpers import console, versionSort
@@ -189,7 +189,7 @@ TRIM_ATTS = set(
 )
 
 
-class XML:
+class XML(CheckImport):
     def __init__(
         self,
         convertTaskCustom=None,
@@ -335,6 +335,13 @@ class XML:
         verbose: integer, optional -1
             Produce no (-1), some (0) or many (1) progress and reporting messages
         """
+        super().__init__("lxml")
+        if self.importOK(hint=True):
+            global etree
+            etree = self.importGet()
+        else:
+            return
+
         self.good = True
         self.convertTaskCustom = convertTaskCustom
         self.trimAtts = set(trimAtts)
@@ -517,6 +524,9 @@ class XML:
         object
             A configured LXML parse object.
         """
+        if not self.importOK():
+            return None
+
         procins = self.procins
 
         return etree.XMLParser(
@@ -587,6 +597,9 @@ class XML:
         *   `errors.txt`: validation errors
         *   `elements.txt`: element / attribute inventory.
         """
+        if not self.importOK():
+            return
+
         if not self.good:
             return
 
@@ -643,7 +656,7 @@ class XML:
                     kind = "rest"
                     analysis[kind][tag][""][""] += 1
                 else:
-                    for (kOrig, v) in atts.items():
+                    for kOrig, v in atts.items():
                         k = etree.QName(kOrig).localname
                         kind = "keyword" if k in keywordAtts else "rest"
                         dest = analysis[kind]
@@ -671,7 +684,7 @@ class XML:
             nErrors = 0
 
             with open(errorFile, "w", encoding="utf8") as fh:
-                for (xmlFile, lines) in errors:
+                for xmlFile, lines in errors:
                     fh.write(f"{xmlFile}\n")
                     for line in lines:
                         fh.write(line)
@@ -692,7 +705,7 @@ class XML:
             nTags = len(tagByNs)
 
             with open(errorFile, "w", encoding="utf8") as fh:
-                for (tag, nsInfo) in sorted(
+                for tag, nsInfo in sorted(
                     tagByNs.items(), key=lambda x: (-len(x[1]), x[0])
                 ):
                     label = "OK"
@@ -701,7 +714,7 @@ class XML:
                         nErrors += 1
                         label = "XX"
 
-                    for (ns, amount) in sorted(
+                    for ns, amount in sorted(
                         nsInfo.items(), key=lambda x: (-x[1], x[0])
                     ):
                         fh.write(
@@ -742,7 +755,7 @@ class XML:
                         f"{nl}\t{tagRep:<18} " f"{attRep:<18} {amount:>5}x {val}\n"
                     )
                     infoLines += 1
-                    for (val, amount) in atts[1:]:
+                    for val, amount in atts[1:]:
                         fh.write(f"""\t{'':<18} {'"':<18} {amount:>5}x {val}\n""")
                         infoLines += 1
 
@@ -752,12 +765,12 @@ class XML:
                     (att, attInfo) = tags[0]
                     writeAttInfo(tag, att, attInfo)
                     infoLines += 1
-                    for (att, attInfo) in tags[1:]:
+                    for att, attInfo in tags[1:]:
                         writeAttInfo("", att, attInfo)
 
-                for (kind, label) in kindLabels.items():
+                for kind, label in kindLabels.items():
                     fh.write(f"\n{label}\n")
-                    for (tag, tagInfo) in sorted(analysis[kind].items()):
+                    for tag, tagInfo in sorted(analysis[kind].items()):
                         writeTagInfo(tag, tagInfo)
 
             if verbose >= 0:
@@ -775,7 +788,7 @@ class XML:
             analyze(root, analysis)
 
         i = 0
-        for (xmlFolder, xmlFiles) in self.getXML():
+        for xmlFolder, xmlFiles in self.getXML():
             console(f"Start folder {xmlFolder}:")
             for xmlFile in xmlFiles:
                 i += 1
@@ -802,10 +815,15 @@ class XML:
         boolean
             Whether the conversion was successful.
         """
+        if not self.importOK():
+            return
+
         convertTaskCustom = self.convertTaskCustom
-        return (convertTaskDefault if convertTaskCustom is None else convertTaskCustom)(
-            self
-        )
+        return (
+            convertTaskDefault(etree)
+            if convertTaskCustom is None
+            else convertTaskCustom
+        )(self)
 
     def getConverter(self):
         """Initializes a converter.
@@ -841,6 +859,9 @@ class XML:
         boolean
             Whether the loading was successful.
         """
+        if not self.importOK():
+            return
+
         if not self.good:
             return
 
@@ -895,6 +916,9 @@ class XML:
         boolean
             Whether the operation was successful.
         """
+        if not self.importOK():
+            return
+
         if not self.good:
             return
 
@@ -934,9 +958,7 @@ class XML:
             interfaceDefaults["fmt"] = DEFAULT_FORMAT
 
             customSettings = (
-                {}
-                if customText is None
-                else readYaml(text=customText, plain=True)
+                {} if customText is None else readYaml(text=customText, plain=True)
             )
 
             mergeDict(settings, customSettings)
@@ -1003,7 +1025,7 @@ class XML:
         if verbose >= 0:
             console("App updating ...")
 
-        for (name, info) in genTasks.items():
+        for name, info in genTasks.items():
             parent = info["parent"]
             (sourceBit, targetBit) = (
                 parent if type(parent) is tuple else (parent, parent)
@@ -1111,6 +1133,9 @@ class XML:
         boolean
             Whether the operation was successful.
         """
+        if not self.importOK():
+            return
+
         if not self.good:
             return
 
@@ -1174,13 +1199,16 @@ class XML:
         boolean
             Whether all tasks have executed successfully.
         """
+        if not self.importOK():
+            return
+
         if verbose is not None:
             self.verbose = verbose
 
         if not self.good:
             return False
 
-        for (condition, method, kwargs) in (
+        for condition, method, kwargs in (
             (check, self.checkTask, {}),
             (convert, self.convertTask, {}),
             (load, self.loadTask, {}),
@@ -1202,10 +1230,10 @@ def main():
     if not good:
         return False
 
-    X = XML(**params, **flags)
-    X.task(**tasks, **flags)
+    Obj = XML(**params, **flags)
+    Obj.task(**tasks, **flags)
 
-    return X.good
+    return Obj.good
 
 
 if __name__ == "__main__":

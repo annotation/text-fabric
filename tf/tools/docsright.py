@@ -253,13 +253,25 @@ def main(cargs=sys.argv[1:]):
         text = ILINK_RE.sub(r" ", text)
         text = LINK_RE.sub(r"\1", text)
         text = TTICK_RE.sub("\n", text)
+
+        good = True
+
         for i, line in enumerate(text.split("\n")):
             tc = line.count("`")
             if tc % 2 == 1:
+                good = False
                 print(f"Line {i + 1:>6}: odd number ({tc}) of ticks in: {line}")
-        text = TICK_RE.sub("be", text)
+
+        if good:
+            text = TICK_RE.sub("CODE", text)
+        else:
+            print("No `code` replacement because of unmatched `s")
+
         text = SYM_RE.sub("", text)
-        fh.write(text)
+
+        lines = [x for line in text.split("\n") if (x := line.strip())]
+
+        fh.write("\n".join(lines))
         print(f"{nLines} written")
 
     return 0

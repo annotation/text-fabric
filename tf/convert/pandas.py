@@ -33,11 +33,11 @@ programs, such as TF, to process the same data.
 *   [Ferdinand Huyck](https://nbviewer.org/github/CLARIAH/wp6-ferdinandhuyck/blob/main/tutorial/export.ipynb)
 """
 
-import pandas
-
+from ..capable import CheckImport
 from ..parameters import OTYPE, OSLOTS
 from ..core.files import TEMP_DIR, unexpanduser as ux, expandDir, dirMake
 from ..core.helpers import fitemize, pandasEsc, PANDAS_QUOTE, PANDAS_ESCAPE
+
 
 HELP = """
 Transforms TF dataset into `pandas`
@@ -125,6 +125,11 @@ def exportPandas(app, inTypes=None, exportDir=None):
         The directory to which the `pandas` file will be exported.
         If `None`, it is the `/pandas` directory in the repo of the app.
     """
+    CI = CheckImport("pandas", "pyarrow")
+    if CI.importOK(hint=True):
+        (pandas, pyarrow) = CI.importGet()
+    else:
+        return
 
     api = app.api
     Eall = api.Eall
@@ -145,7 +150,7 @@ def exportPandas(app, inTypes=None, exportDir=None):
     sectionTypeSet = set(sectionTypes)
     sectionFeatIndex = {}
 
-    for (i, f) in enumerate(sectionFeats):
+    for i, f in enumerate(sectionFeats):
         sectionFeatIndex[f] = i
 
     skipFeatures = {f for f in Fall() + Eall() if "@" in f}
@@ -254,7 +259,7 @@ def exportPandas(app, inTypes=None, exportDir=None):
         rows = 0
         chars = 0
         columns = 0
-        for (i, line) in enumerate(hr):
+        for i, line in enumerate(hr):
             if i == 0:
                 columns = line.split("\t")
                 app.info(f"Columns {len(columns)}:")

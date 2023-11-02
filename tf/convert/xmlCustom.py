@@ -1,5 +1,4 @@
 import re
-from lxml import etree
 from io import BytesIO
 
 from tf.core.helpers import console
@@ -8,71 +7,84 @@ from tf.core.files import initTree, unexpanduser as ux
 from tf.convert.helpers import ZWSP, XNEST, TNEST, CHAR, FOLDER, FILE
 
 
-def convertTaskDefault(self):
-    """Implementation of the "convert" task.
+def convertTaskDefault(etreeGiven):
+    global etree
 
-    It sets up the `tf.convert.walker` machinery and runs it.
+    etree = etreeGiven
 
-    Returns
-    -------
-    boolean
-        Whether the conversion was successful.
-    """
-    if not self.good:
-        return
+    if etree is None:
+        def dummy(self):
+            pass
 
-    procins = self.procins
-    verbose = self.verbose
-    tfPath = self.tfPath
-    xmlPath = self.xmlPath
+        return dummy
 
-    if verbose == 1:
-        console(f"XML to TF converting: {ux(xmlPath)} => {ux(tfPath)}")
-    if verbose >= 0:
-        console(
-            f"Processing instructions are {'treated' if procins else 'ignored'}"
+    def convertTaskDefaultInner(self):
+        """Implementation of the "convert" task.
+
+        It sets up the `tf.convert.walker` machinery and runs it.
+
+        Returns
+        -------
+        boolean
+            Whether the conversion was successful.
+        """
+        if not self.good:
+            return
+
+        procins = self.procins
+        verbose = self.verbose
+        tfPath = self.tfPath
+        xmlPath = self.xmlPath
+
+        if verbose == 1:
+            console(f"XML to TF converting: {ux(xmlPath)} => {ux(tfPath)}")
+        if verbose >= 0:
+            console(
+                f"Processing instructions are {'treated' if procins else 'ignored'}"
+            )
+
+        slotType = CHAR
+        otext = {
+            "fmt:text-orig-full": "{ch}",
+            "sectionFeatures": "folder,file",
+            "sectionTypes": "folder,file",
+        }
+        intFeatures = {"empty"}
+        featureMeta = dict(
+            str=dict(description="the text of a word"),
+            after=dict(description="the text after a word till the next word"),
+            empty=dict(description="whether a slot has been inserted in an empty element"),
         )
 
-    slotType = CHAR
-    otext = {
-        "fmt:text-orig-full": "{ch}",
-        "sectionFeatures": "folder,file",
-        "sectionTypes": "folder,file",
-    }
-    intFeatures = {"empty"}
-    featureMeta = dict(
-        str=dict(description="the text of a word"),
-        after=dict(description="the text after a word till the next word"),
-        empty=dict(description="whether a slot has been inserted in an empty element"),
-    )
+        featureMeta["ch"] = dict(description="the UNICODE character of a slot")
+        featureMeta[FOLDER] = dict(description=f"name of source {FOLDER}")
+        featureMeta[FILE] = dict(description=f"name of source {FILE}")
 
-    featureMeta["ch"] = dict(description="the UNICODE character of a slot")
-    featureMeta[FOLDER] = dict(description=f"name of source {FOLDER}")
-    featureMeta[FILE] = dict(description=f"name of source {FILE}")
+        self.intFeatures = intFeatures
+        self.featureMeta = featureMeta
 
-    self.intFeatures = intFeatures
-    self.featureMeta = featureMeta
+        tfVersion = self.tfVersion
+        xmlVersion = self.xmlVersion
+        generic = self.generic
+        generic["sourceFormat"] = "XML"
+        generic["version"] = tfVersion
+        generic["xmlVersion"] = xmlVersion
 
-    tfVersion = self.tfVersion
-    xmlVersion = self.xmlVersion
-    generic = self.generic
-    generic["sourceFormat"] = "XML"
-    generic["version"] = tfVersion
-    generic["xmlVersion"] = xmlVersion
+        initTree(tfPath, fresh=True, gentle=True)
 
-    initTree(tfPath, fresh=True, gentle=True)
+        cv = self.getConverter()
 
-    cv = self.getConverter()
+        self.good = cv.walk(
+            getDirector(self),
+            slotType,
+            otext=otext,
+            generic=generic,
+            intFeatures=intFeatures,
+            featureMeta=featureMeta,
+            generateTf=True,
+        )
 
-    self.good = cv.walk(
-        getDirector(self),
-        slotType,
-        otext=otext,
-        generic=generic,
-        intFeatures=intFeatures,
-        featureMeta=featureMeta,
-        generateTf=True,
-    )
+    return convertTaskDefaultInner
 
 
 def getDirector(self):

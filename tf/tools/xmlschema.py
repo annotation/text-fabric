@@ -110,13 +110,12 @@ import sys
 import collections
 import re
 
-from lxml import etree
-
+from ..capable import CheckImport
 from ..core.helpers import console, run
 from ..core.files import fileExists, baseNm, dirNm, abspath
 
 
-class Elements:
+class Elements(CheckImport):
     types = set(
         """
         simpleType
@@ -145,6 +144,14 @@ class Elements:
         verbose: integer, optional -1
             Produce no (-1), some (0) or many (1) progress and reporting messages
         """
+        super().__init__("lxml")
+        if self.importOK(hint=True):
+            global etree
+            etree = self.importGet()
+        else:
+            return
+
+        self.good = True
 
         self.verbose = verbose
         self.debug = debug
@@ -165,6 +172,11 @@ class Elements:
             from another configure call with the same `baseSchema`, but not necessarily
             the same override).
         """
+        if not self.importOK():
+            return
+
+        if not self.good:
+            return
 
         verbose = self.verbose
 
@@ -316,6 +328,11 @@ class Elements:
         with `None`.
         If all went well, there are no such absences!
         """
+        if not self.importOK():
+            return
+
+        if not self.good:
+            return
 
         verbose = self.verbose
         debug = self.debug
@@ -596,7 +613,7 @@ class Elements:
                 console(f"\t{name} {trans}")
 
 
-class Analysis:
+class Analysis(CheckImport):
     @staticmethod
     def help():
         console(
@@ -624,6 +641,12 @@ class Analysis:
         verbose: integer, optional -1
             Produce no (-1), some (0) or many (1) progress and reporting messages
         """
+        super().__init__("lxml")
+        if self.importOK(hint=True):
+            global etree
+            etree = self.importGet()
+        else:
+            return
 
         self.verbose = verbose
         self.debug = debug
@@ -771,6 +794,9 @@ class Analysis:
     def analyzer(self, baseSchema, override):
         """Initializes an analyzer for a schema.
         """
+        if not self.importOK():
+            return
+
         if (baseSchema, override) in self.analyzers:
             return True
 
@@ -819,6 +845,9 @@ class Analysis:
             - the name of the output file
             - the list of elements with their properties
         """
+        if not self.importOK():
+            return
+
         if not self.analyzer(baseSchema, override):
             return (False, None)
 
@@ -854,6 +883,9 @@ class Analysis:
             for each name is a tuple of booleans: whether the element is simple
             or complex; whether the element allows mixed content or only pure content.
         """
+        if not self.importOK():
+            return
+
         verboseSav = None
         if verbose is not None:
             verboseSav = self.verbose
@@ -896,6 +928,8 @@ class Analysis:
         boolean
             whether the task was completed successfully.
         """
+        if not self.importOK():
+            return
 
         verboseSav = None
 
@@ -957,6 +991,12 @@ class Analysis:
             -1 is an error from before executing the task,
             1 is an error from the actual execution of a task.
         """
+        if not self.importOK():
+            return
+
+        if not self.good:
+            return -1
+
         tasks = dict(
             tei={0, 1},
             analyze={1},
@@ -1013,5 +1053,4 @@ def main():
 
 
 if __name__ == "__main__":
-    A = Analysis()
     exit(main())

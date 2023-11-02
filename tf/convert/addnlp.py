@@ -99,6 +99,7 @@ import re
 
 # from copy import deepcopy
 
+from ..capable import CheckImport
 from .recorder import Recorder
 from .helpers import CONVERSION_METHODS, CM_NLP
 from ..advanced.app import loadApp
@@ -193,7 +194,7 @@ FLAGS = dict(
 """Possible flags."""
 
 
-class NLPipeline:
+class NLPipeline(CheckImport):
     def __init__(
         self,
         app=None,
@@ -292,8 +293,10 @@ class NLPipeline:
         entityNFeature: string, optional None
             If not None, the name of the entity feature that will hold the
             sequence number of the entity in the data stream, starting at 1.
-
         """
+        super().__init__("lxml", "spacy")
+        if not self.importOK(hint=True):
+            return
 
         def makeString(s):
             return None if not s else s
@@ -346,6 +349,9 @@ class NLPipeline:
             Produce more progress and reporting messages
             If not passed, take the verbose member of this object.
         """
+        if not self.importOK():
+            return
+
         ignoreTypes = self.ignoreTypes
 
         if verbose is not None:
@@ -384,7 +390,7 @@ class NLPipeline:
         firstSlots = set()
         lastSlots = set()
 
-        for (node, slots) in E.oslots.items():
+        for node, slots in E.oslots.items():
             if F.otype.v(node) in ignoreTypes:
                 continue
             firstSlots.add(slots[0])
@@ -417,11 +423,15 @@ class NLPipeline:
             for each name is a tuple of booleans: whether the element is simple
             or complex; whether the element allows mixed content or only pure content.
         """
+        if not self.importOK(hint=True):
+            return
+
         if verbose is not None:
             self.verbose = verbose
         verbose = self.verbose
 
         self.elementDefs = {}
+        self.mixedTypes = {}
 
         A = Analysis(verbose=verbose)
         baseSchema = A.getBaseSchema()["xsd"]
@@ -455,6 +465,9 @@ class NLPipeline:
                 the original slot that corresponds to the character `i` in the
                 generated text (counting from zero).
         """
+        if not self.importOK(hint=True):
+            return (None, None)
+
         slotFeature = self.slotFeature
         emptyFeature = self.emptyFeature
         ignoreTypes = self.ignoreTypes
@@ -524,7 +537,7 @@ class NLPipeline:
         Fchv = Fs(slotFeature).v
         sectionTypes = T.sectionTypes
 
-        for (n, kind) in N.walk(events=True):
+        for n, kind in N.walk(events=True):
             nType = F.otype.v(n)
 
             if nType in ignoreTypes:
@@ -630,8 +643,10 @@ class NLPipeline:
 
         return (rec.text(), rec.positions(simple=True))
 
-    @staticmethod
-    def lingo(*args, **kwargs):
+    def lingo(self, *args, **kwargs):
+        if not self.importOK():
+            return ()
+
         return nlpOutput(*args, **kwargs)
 
     def ingest(
@@ -728,6 +743,16 @@ class NLPipeline:
             However, when we deliver the token results, they come in two such tuples:
             one for the atomic tokens and one for the full tokens.
         """
+        if not self.importOK():
+            return (
+                (
+                    (None, None, None),
+                    (None, None, None),
+                )
+                if isTk
+                else (None, None, None)
+            )
+
         slotFeature = self.slotFeature
         firstSlots = self.firstSlots
         lastSlots = self.lastSlots
@@ -823,7 +848,7 @@ class NLPipeline:
             tokenLinks[token] = curTokenSlots
             featToken[token] = curTokenValue
 
-            for (feat, val) in zip(features[2:], vals[2:]):
+            for feat, val in zip(features[2:], vals[2:]):
                 tokenFeaturesData[feat][token] = val
             if doN:
                 tokenFeaturesData[nFeature][token] = token
@@ -855,7 +880,7 @@ class NLPipeline:
             slotLinks[node] = mySlots
             featEnt[node] = myText
 
-            for (feat, val) in zip(features[1:], vals[1:]):
+            for feat, val in zip(features[1:], vals[1:]):
                 featuresData[feat][node] = val.replace("\n", " ").strip()
             if doN:
                 featuresData[nFeature][node] = node
@@ -865,7 +890,7 @@ class NLPipeline:
 
             node += 1
             slotLinks[node] = mySlots
-            for (feat, val) in zip(features, vals):
+            for feat, val in zip(features, vals):
                 featuresData[feat][node] = val
             if doN:
                 featuresData[nFeature][node] = node
@@ -893,7 +918,7 @@ class NLPipeline:
         skipping = False
         flow = None
 
-        for (i, (b, e, *vals)) in enumerate(stream):
+        for i, (b, e, *vals) in enumerate(stream):
             if skipFlows is not None:
                 text = vals[0]
                 if skipping:
@@ -979,7 +1004,7 @@ class NLPipeline:
                 else:
                     sAfter = positions[e]
 
-                    for (i, slot) in enumerate(mySlots):
+                    for i, slot in enumerate(mySlots):
                         last = i == nMySlots - 1
                         isStart = slot in firstSlots
                         isEnd = slot - 1 in lastSlots
@@ -1058,11 +1083,11 @@ class NLPipeline:
         if skipBlanks:
             tasks.append(("Items with empty final text", itemsEmpty))
 
-        for (label, items) in tasks:
+        for label, items in tasks:
             nItems = len(items)
             info(f"{nItems:>5}x {label}", force=verbose >= 0)
             indent(level=True)
-            for (i, b, e, *vals) in items[0:5]:
+            for i, b, e, *vals in items[0:5]:
                 info(
                     f"\t{i} span {b}-{e}: {', '.join(str(v) for v in vals)}",
                     force=verbose == 1,
@@ -1145,6 +1170,9 @@ class NLPipeline:
         string
             The new version number of the data that contains the NLP output..
         """
+        if not self.importOK():
+            return None
+
         emptyFeature = self.emptyFeature
         removeSlotFeatures = self.removeSlotFeatures
         tkType = self.tkType
@@ -1197,7 +1225,7 @@ class NLPipeline:
                     features[feat] = {}
                 lastNode[entityType] = 0
 
-        for (isTk, isEnt, data, skipFlows, tp, feats, nFeat, skipBlanks, thisEmpty) in (
+        for isTk, isEnt, data, skipFlows, tp, feats, nFeat, skipBlanks, thisEmpty in (
             (
                 True,
                 False,
@@ -1259,7 +1287,7 @@ class NLPipeline:
 
             lastNode[tp] = node
             slotLinks[tp] = theseSlotLinks
-            for (feat, featData) in featuresData.items():
+            for feat, featData in featuresData.items():
                 features[feat] = featData
             info(f"{lastNode[tp]} {tp}s", force=verbose >= 0)
 
@@ -1399,9 +1427,19 @@ class NLPipeline:
 
         Returns
         -------
-        boolean
-            Whether all tasks have executed successfully.
+        boolean | any
+            False if a task failed, otherwise whatever the last task delivered.
         """
+        if not self.importOK():
+            return (
+                None
+                if ingest
+                else (None, None)
+                if lingo
+                else (None, None)
+                if plaintext
+                else None
+            )
 
         if write is None:
             write = self.write

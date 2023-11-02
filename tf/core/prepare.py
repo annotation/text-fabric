@@ -14,6 +14,7 @@ The functions in this module implement those tasks.
 import collections
 import functools
 import array
+
 from .helpers import itemize
 
 

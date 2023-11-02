@@ -19,9 +19,8 @@ You can install many more [language models](https://spacy.io/usage/models).
 """
 
 import re
-import spacy
-from spacy.cli.download import download
 
+from ..capable import CheckImport
 from ..core.helpers import console
 
 
@@ -54,7 +53,7 @@ xx ent_wiki multi-language
 """Languages and their associated Spacy models."""
 
 
-class Spacy:
+class Spacy(CheckImport):
     def __init__(self, lang=None, parser=False):
         """Sets up an NLP (Natural Language Processing) pipeline.
 
@@ -76,6 +75,14 @@ class Spacy:
 
             See `tf.tools.myspacy.LANG_MODELS` about the language models that Spacy supports.
         """
+        super().__init__("spacy", "spacyd")
+        if self.importOK(hint=True):
+            global spacy
+            global download
+            (spacy, download) = self.importGet()
+        else:
+            return
+
         langModels = {}
         languages = {}
 
@@ -196,6 +203,9 @@ class Spacy:
         text: string
             The complete, raw text.
         """
+        if not self.importOK():
+            return
+
         nText = len(text)
         nlp = self.nlp
 
@@ -271,6 +281,9 @@ class Spacy:
         list
             All sentences as tuples.
         """
+        if not self.importOK():
+            return []
+
         doc = self.doc
         if doc is None:
             console("No results available from the NLP pipeline")
@@ -319,6 +332,9 @@ class Spacy:
         list
             All entities as tuples.
         """
+        if not self.importOK():
+            return []
+
         doc = self.doc
         if doc is None:
             console("No results available from the NLP pipeline")

@@ -2,7 +2,7 @@
 Enable manual annotation APIs.
 
 Currently only `tf.browser.ner.ner` is supported here,
-but otther annotation tools might be added in the future.
+but other annotation tools might be added in the future.
 """
 
 import types

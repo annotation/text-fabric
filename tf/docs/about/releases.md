@@ -20,6 +20,19 @@ pip install -e .
 
 ### 12.1
 
+#### 12.1.5
+
+2023-11-02
+
+*   Improvement in dependencies. Text-Fabric is no longer mandatory dependent on
+    `openpyxl`, `pandas`, `pyarrow`, `lxml`.
+    The optional dependencies on `pygithub` and `python-gitlab` remain, but most users
+    will never need them, because TF can also fetch the `complete.zip` that is
+    available as release asset for most corpora.
+
+    Whenever TF invokes a module that is not in the mandatory dependencies,
+    it will act gracefully, providing hints to install the modules in question.
+
 #### 12.1.3,4
 
 2023-11-01
@@ -34,7 +47,7 @@ pip install -e .
     (No need to make an additional `import` statement.)
 
     This will give you access to all annotation methods, including using a spreadsheet
-    to read annotation instructins from.
+    to read annotation instructions from.
 *   Removal of deprecated commands (on the command line) in version 11:
 
     * `text-fabric` (has become `tf`)

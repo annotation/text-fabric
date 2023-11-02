@@ -406,8 +406,6 @@ import ssl
 
 import requests
 from requests import exceptions as requestsExceptions
-# from github import Github, GithubException, UnknownObjectException
-# from gitlab import Gitlab, GitlabGetError
 
 from ..parameters import (
     GH,

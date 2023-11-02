@@ -1,12 +1,9 @@
 wheel
 markdown>=3.4.1
 ipython
-lxml
 pyyaml>=5.3
 flask
-pandas
-pyarrow
-openpyxl
+requests
 
 [all]
 pygithub>=1.57
