@@ -53,14 +53,14 @@ Here is how you can remove them manually:
 
 *   locate the `bin` directory of the current Python, it is something like
 
-    *   (Macos regular Python) `/Library/Frameworks/Python.framework/Versions/3.7/bin`
+    *   (MacOS regular Python) `/Library/Frameworks/Python.framework/Versions/3.7/bin`
     *   (Windows Anaconda) `C:\Users\You\Anaconda3\Scripts`
 
     Remove the file `text-fabric` from this directory if it exists.
 
 *   locate the `site-packages` directory of the current Python, it is something like
 
-    *   (Macos regular Python)
+    *   (MacOS regular Python)
         `/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages`
 
         Remove the subdirectory `tf` from this location, plus all files with
@@ -119,7 +119,7 @@ when you have multiple versions of Python on your system.
 When you have upgraded Python, remove PATH statements for older versions
 from your system startup files.
 
-*   For the Macos: look at `.zshrc`, `.bashrc`, and `.bash_profile` in your home directory.
+*   For the MacOS: look at `.zshrc`, `.bashrc`, and `.bash_profile` in your home directory.
 *   For Windows: on the command prompt, say `echo %path%` to see what the content
     of your PATH variable is. If you see references to older versions of python
     than you actually work with, they need to be removed.

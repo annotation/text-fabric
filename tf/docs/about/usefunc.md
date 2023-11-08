@@ -103,7 +103,7 @@ During start-up the following happens:
 
 Loading a corpus consists of 2 separate steps:
 
-1.  load the *app* of the corpus (config setting, static material, python code)
+1.  load the *app* of the corpus (configuration setting, static material, python code)
 1.  load the *data* of the corpus.
 
 Both items can be specified independently, in terms of where they reside
@@ -241,7 +241,7 @@ Here the `{org}` is `ETCBC`, the `{repo}` is `lingo`,
 and the `{path}` is `easter/tf` under which
 version `c` of the feature `egg`
 is available in TF format.
-You can point to any such directory om the entire GitHub
+You can point to any such directory in the entire GitHub
 if you know that it contains relevant features.
 
 Your TF app might be configured to download specific modules.
@@ -382,7 +382,7 @@ For the precise meaning of these parameters see `tf.core.fabric.FabricCore`.
     Read on to see how you can achieve the loading of fewer features.
 
 
-### api
+### API
 
 So far, `A = use()` will construct an advanced API with a more or less standard set of features
 loaded, and make that API available to you, under `A.api`.

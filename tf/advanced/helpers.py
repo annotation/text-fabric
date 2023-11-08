@@ -264,7 +264,7 @@ def parseFeaturesLogical(feats):
 def transitiveClosure(relation, reflexiveExceptions):
     """Produce the reflexive transitive closure of a relation.
 
-    The transitive closure of a relation R is the relation TR
+    The transitive closure of a relation `R` is the relation `TR`
     such that `a TR b` if and only if there is a chain of `c1`, `c2`, ..., `cn`
     such that `a Rc1`, `c1 R c2`, ..., `cn R b`.
 

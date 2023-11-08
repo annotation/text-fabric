@@ -326,7 +326,7 @@ All section headings are stored in a feature with the same name as the type of s
 1.  The heading of a «chapter» is either the text in a heading-bearing element,
     or, if no such element is found, a sequence number and the tag name.
 1.  Extra parameters specify how to find the head-bearing element for a «chapter».
-    This corpus is parameterized with
+    This corpus is parametrized with
 
     ```
     «propertiesRaw»

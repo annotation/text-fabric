@@ -67,7 +67,8 @@ def levels(info, error, otype, oslots, otext):
 
         In general, it is too expensive to try to compute the levels in a sophisticated
         way. In order to remedy cases where the algorithm assigns wrong levels, you can
-        add a `@levels` and / or `@levelsConstraint` key to the `otext` config feature.
+        add a `@levels` and / or `@levelsConstraint` key to the `otext`
+        configuration feature.
         See `tf.core.text`.
     """
 
@@ -263,7 +264,7 @@ def levUp(info, error, otype, oslots, rank):
     Returns
     -------
     tuple
-        The n-th member is an tuple of the embedder nodes of n.
+        The `n`-th member is a tuple of the embedder nodes of `n`.
         Those tuples are sorted in canonical order (`tf.core.nodes`).
 
     Notes
@@ -553,7 +554,7 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     Warnings
     --------
     Note that the terms `book`, `chapter`, `verse` are not baked into TF.
-    It is the corpus data, especially the `otext` config feature that
+    It is the corpus data, especially the `otext` configuration feature that
     spells out the names of the sections.
 
     """

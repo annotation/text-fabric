@@ -142,7 +142,7 @@ def wrapColorMap(form):
     """Wraps the color map for query result highlighting into HTML.
 
     The color map is a dict, keyed by integers (the positions of atoms
-    in a query template) and the values are RGB colors (as string) or the
+    in a query template) and the values are RGB colours (as string) or the
     empty string.
 
     This dict is stored in `form["colorMap"]`.
@@ -208,7 +208,7 @@ def wrapColorMap(form):
 def wrapEColorMap(form):
     """Wraps the edge color map for edge highlighting into HTML.
     The edge color map is a dict, keyed by pairs of integers
-    (the nodes between which there is an edge) and values are RGB colors (as string).
+    (the nodes between which there is an edge) and values are RGB colours (as string).
     Each of the two integers in a pair may also be None (but not both).
     The color of `(n, None)` is used to color the outgoing edges from `n`,
     the color of (`(None, n)` is used to color the incoming edges from `n`.

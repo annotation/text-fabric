@@ -3,7 +3,7 @@
 ## Research data management
 
 TF supports the research data cycle of
-retrieving/analyzing/generating/archiving
+retrieving/analysing/generating/archiving
 research results.
 
 ### Share data
@@ -138,7 +138,7 @@ That leads to exciting *tipping points*:
 
 > In sociology, a tipping point is a point in time when a group - or
   a large number of group members — rapidly and dramatically changes
-  its behavior by widely adopting a previously rare practice.
+  its behaviour by widely adopting a previously rare practice.
 
 > [Wikipedia](https://en.wikipedia.org/wiki/Tipping_point_(sociology))
 

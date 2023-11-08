@@ -42,7 +42,7 @@ A.showProvenance(...)
 ``` python
 A.webLink(n, ...)
 ```
-:   hyperlink to node n on the web
+:   hyperlink to node `n` on the web
 :   `tf.advanced.links.webLink`
 
 ``` python
@@ -1161,7 +1161,7 @@ explode(inLocation, outLocation)
 ``` python
 A.reuse()
 ```
-:   reload config data
+:   reload configuration data
 :   `tf.advanced.app.App.reuse`
 
 ``` python

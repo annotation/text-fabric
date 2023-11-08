@@ -335,7 +335,7 @@ In this way, you can work with data that is under your control.
     including their change histories. There might also be other
     material in the repo, such as source data, tutorials, programs.
 
-    For example, the `ETCBC/bhsa` repo is several GB, but the TF data for a specific
+    For example, the `ETCBC/bhsa` repo is several gigabytes, but the TF data for a specific
     version is only 25MB.
 
 ### Extra data

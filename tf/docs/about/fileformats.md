@@ -100,7 +100,7 @@ improvement in space demands and processing speed.
 ### Node Specification
 
 Every line contains a feature value that pertains to all nodes defined by its
-*node_spec*, or to all edges defined by its pair of *node_spec*s.
+`node_spec`, or to all edges defined by its pair of `node_spec`s.
 
 A node spec denotes a *set* of nodes.
 
@@ -195,11 +195,11 @@ fact that features annotate nodes or edges of a graph.
 
 It is assumed that a node feature assigns only one value to the same node. If
 the data contains multiple assignments to a node, only the last assignment will
-be honored, the previous ones will be discarded.
+be honoured, the previous ones will be discarded.
 
 Likewise, it is assumed that an edge feature assigns only one value to the same
 edge. If the data contains multiple assignments to an edge, only the last
-assignment will be honored.
+assignment will be honoured.
 
 Violations maybe or may not be reported, and processing may continue without
 warnings.

@@ -60,7 +60,7 @@ question, you may need to have a VPN connection with the GitLab back-end.
 
 Additionally, you may need to make your identity known.
 If you have an account on the GitLab instance, go to your settings and request
-a personal token with *api* privileges.
+a personal token with `api` privileges.
 
 On your own system, make an environment variable named `GL_BACKEND_PERS` whose
 content is exactly the value of this token.

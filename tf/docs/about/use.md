@@ -20,7 +20,7 @@ Then your browser will open and there you'll find links to further help.
 **On Windows:**
 You can click the Start Menu, and type the command in the search box, and then Enter.
 
-**On Linux or Macos:**
+**On Linux or MacOS:**
 You can open a terminal, and type the command there.
 
 ## In your own programs

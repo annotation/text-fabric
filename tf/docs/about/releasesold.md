@@ -73,11 +73,11 @@ See `tf.about.releases`.
 
     *   Highlighting
 
-        *   You can highlight different parts of query results with different colors.
+        *   You can highlight different parts of query results with different colours.
             See the control below the query template, where you can specify a color map.
             This was already possible in a Jupyter notebook.
 
-        *   You can highlight edges with different colors.
+        *   You can highlight edges with different colours.
             See the control below the query template, where you can specify an edge
             color map, just as in Jupyter Notebooks with `edgeHighlights`.
             Start with clicking on an edge, and then some entries will be appended
@@ -215,7 +215,7 @@ The XML converter is now easier to use:
 2023-05-08
 
 I conducted an experiment to reduce the TF memory footprint by storing a lot of
-data in `numpy` arrays. That resulted in a reduction from 2.5 GB to 1.65 GB for the
+data in `numpy` arrays. That resulted in a reduction from 2.5GB to 1.65GB for the
 BHSA. However, TF became noticeably slower. Some queries took 10-20 percent
 more time, but sometimes the execution time got several times slower, up to 8x
 slower.
@@ -295,7 +295,7 @@ Fixed a left-over bug introduced by the previous update.
 
 ##### Command-line tasks
 
-I'm going to change the commands that TF provides on the command-line
+I am going to change the commands that TF provides on the command-line
 after installing.
 
 They will all start with `tf-`.
@@ -332,10 +332,10 @@ can pass them arguments which are
     been streamlined; they have the same conventions for passing tasks, parameters, and
     flags. 
 *   You do not have to write an almost trivial program to wrap the TEI conversion,
-    typically `tfFromTei.py`. Instead, put some config info in a `tei.yaml` file and
-    a transformation function in a `tei.py` file, both optional.
-*   You can pass less info to `tf-fromtei`: the converter auto-detects available versions
-    of the TEI source, and selects the latest by default.
+    typically `tfFromTei.py`. Instead, put some configuration info in a
+    `tei.yaml` file and a transformation function in a `tei.py` file, both optional.
+*   You can pass less info to `tf-fromtei`: the converter auto-detects
+    available versions of the TEI source, and selects the latest by default.
     It also auto-detects the generated TF dataset versions, and by default overwrites
     the latest one. But you can easily direct the converter to other versions, both
     of the TEI and the TF.
@@ -489,7 +489,7 @@ If you pass only an input directory, it creates an HTML index for that directory
 You can put that in the top of your `public` folder in GitLab,
 so that readers of the Pages documentation can navigate to all generated docs.
 
-A fix in `tf.tools.xmlschema`: while analyzing definitions in an XSD file,
+A fix in `tf.tools.xmlschema`: while analysing definitions in an XSD file,
 the imports of other XSD files were not heeded. Now they are.
 But not recursively, because in the examples I saw, files imported
 each other mutually or with cycles.
@@ -534,7 +534,7 @@ See `tf.tools.nbconvert`
 #### New command-line tool: `xmlschema`
 
 ``` sh
-xmlschema analyze schema.xsd
+xmlschema analyse schema.xsd
 ```
 
 Derives meaningful information from an XML schema.
@@ -776,7 +776,7 @@ That parameter now accepts different values, although the old
 values still work with nearly the same effect.
 
 The default value for silent results in slightly terser
-behavior than the previous default setting.
+behaviour than the previous default setting.
 
 See `tf.core.timestamp.Timestamp`.
 
@@ -825,7 +825,7 @@ Some minor fixes in defaults and documentation.
 
 2022-07-04
 
-Addition to the `tf.convert.walker` api: `cv.link()` to manually link a node 
+Addition to the `tf.convert.walker` API: `cv.link()` to manually link a node 
 to existing slots instead of relying on the automatic linking.
 
 #### 10.0.3
@@ -978,7 +978,7 @@ That has been fixed, and now the second form leads to the same results as the fi
 
 2022-05-18
 
-New behavior in walking nodes: `tf.core.nodes.Nodes.walk`: with `events=True`
+New behaviour in walking nodes: `tf.core.nodes.Nodes.walk`: with `events=True`
 it generates open / close events for nodes, so that you can do something
 when the node starts and something else when the node ends.
 
@@ -1100,7 +1100,7 @@ Loading an app from an arbitrary location on the local machine has been fixed.
 2022-01-06
 
 A big reorganization, so that all things related to a corpus can be stored in the
-same neighborhood.
+same neighbourhood.
 Before this release we had the situation that
 
 *   a corpus is resides in org/corpus
@@ -1222,10 +1222,10 @@ More information on the metadata of features on the interface.
 *   TF.isLoaded and A.isLoaded (`tf.core.api.Api.isLoaded`) can show / hide more
     information, such as the file path to a feature, its data type, its
     description, and all of its metadata.
-*   importMQL (`tf.convert.mql.importMQL`) accepts a parameter `meta` which
+*   (`tf.convert.mql.importMQL`) accepts a parameter `meta` which
     one can use to specify metadata that is common to all features.
     Now you can use it to pass feature-specific metadata as well.
-*   Several data sources have been converted by means of importMQL:
+*   Several data sources have been converted by means of `importMQL`:
     `bhsa`, `extrabiblical` and `calap`.
     Of these, I have updated the BHSA to have richer metadata in their features
     (only version 2021) including the standard modules `phono`, `parallels`, `trees`.
@@ -1605,7 +1605,7 @@ Minor fixes in the display:
     Sadly one of those circumstances is the default zoom level of the browser:
     if the user enlarges or decreases the zoom level, the dots become better visible.
     It seems that using the `rem` unit for specifying border-sizes contributes to this
-    behavior.  So I specified all border widths in `px`, assuming `20px = 1rem`.
+    behaviour.  So I specified all border widths in `px`, assuming `20px = 1rem`.
 
 #### 8.4.1
 
@@ -1646,8 +1646,8 @@ Various small fixes:
 
 #### 8.3.3
 
-Small fix by Cody Kingham: when calling `use(api=...)` with an TF api constructed
-before, the `TF` attribute of this api is not transported to the app object.
+Small fix by Cody Kingham: when calling `use(api=...)` with an TF API constructed
+before, the `TF` attribute of this API is not transported to the app object.
 
 2020-06-13
 
@@ -1691,7 +1691,7 @@ See `tf.advanced.unravel`.
 The unravel function is also exposed as `A.unravel(node)`,
 see `tf.advanced.unravel.unravel`.
 
-Now you can define your own rendering function, taking the unraveled tree as input.
+Now you can define your own rendering function, taking the unravelled tree as input.
 
 ##### New display settings
 
@@ -1713,8 +1713,8 @@ See `tf.advanced.options`.
 Various fixes:
 
 *   Starting in v8.0.0, the ports through which the TF browser communicates are
-    no longer hardwired in the app config, but are determined at run time: the first
-    available ports are chosen.
+    no longer hardwired in the app configuration, but are determined at run
+    time: the first available ports are chosen.
     This had the negative consequence that different corpora could use the same
     port in turn, thereby wreaking havoc with the sessions for those corpora.
     Now the ports are determined as a function of the arguments to `tf`.
@@ -1727,7 +1727,7 @@ Various fixes:
 
 2020-06-02
 
-When you load a corpus by means of `use`, you can now also override the config
+When you load a corpus by means of `use`, you can now also override the configuration
 settings of the app on the fly. See `tf.advanced.app.App`
 
 #### 8.2.1
@@ -1861,7 +1861,7 @@ Small fix in `webLink()`.
 
 2020-05-10
 
-Small fixes in order to accomodate NBViewer.
+Small fixes in order to accommodate NBViewer.
 
 There were two problems
 
@@ -1957,7 +1957,7 @@ is a section node.
 
 *   In TF browser: passages are not expanded if the user hits the expand icon,
     for some corpora. It happened when the type of level 3 sections is not the
-    same as the type of level 2 sections (`int` vs `str`). TF looked at the
+    same as the type of level 2 sections (`int` versus `str`). TF looked at the
     wrong level when determining the type. Fixed.
 *   When fetching data from GitHub, we got a deprecation warning from `pygithub`.
     Replaced the call to a deprecated method by a call to a new method.
@@ -1989,7 +1989,7 @@ appropriate cases.
 
 GitHub is deprecating its token system for authentication when using the GitHub API.
 TF uses the GitHub API to fetch data from repositories.
-In order to increase the rate limit from 50 x per hour to 5000 x per hour, users
+In order to increase the rate limit from 50 times per hour to 5000 times per hour, users
 were advised to create a pair of client-id and client-token strings.
 
 The advise is now: create a personal access token.
@@ -2013,7 +2013,7 @@ Thanks to Ernst Boogert for spotting them.
 
 2019-12-16
 
-Add behavior to the "tf.compose.modify()"  function
+Add behaviour to the "tf.compose.modify()"  function
 (as of version 9 `tf.dataset.modify()`)
 so that you can output modified features only instead of a whole dataset.
 (Following a suggestion by Cody Kingham).
@@ -2279,7 +2279,7 @@ Method: using arrays instead of tuples for sequences of integers.
 Optimization: the memory footprint of the features has been reduced by ca 30%.
 Method: reusing read-only objects with the same value.
 
-The BHSA now needs 2.2 GB of RAM, instead of the 3.4 before.
+The BHSA now needs 2.2GB of RAM, instead of the 3.4 before.
 
 Bug fixes:
 *   silent means silent again in `A.use()`
@@ -2377,7 +2377,7 @@ Fixed a bug in `cv.meta()` in the conversion walker.
 The walker conversion module has an extra check: if you assign features to None,
 it will be reported.
 
-There is an extra `cv.meta()` function to accomodate a use case brought in by
+There is an extra `cv.meta()` function to accommodate a use case brought in by
 Ernst Boogert.
 
 #### 7.6.3
@@ -2533,7 +2533,7 @@ s1 <: s2
 instead.
 That workaround is not needed anymore.
 
-Thanks to Oliver Glanz for mentioning this behavior.
+Thanks to Oliver Glanz for mentioning this behaviour.
 
 ### 7.5
 
@@ -2603,7 +2603,7 @@ that have an incoming edge from `m` and the nodes that have an outgoing edge to 
     It depended on whether the node type was a section or not.
     Now it depends on whether the node type is small or big. We export text for
     small node types. A node type is small if it is not bigger than the condense
-    type. This behavior is now the same as for pretty displays.
+    type. This behaviour is now the same as for pretty displays.
 
 #### 7.4.9
 
@@ -2729,10 +2729,10 @@ a line break in the display, by means of a `<br>` element.
 
 2019-01-16
 
-Small fix in oslots validation.
-You can save a data set without the oslots feature (a module).
-The previous release wrongly flagged a oslots validation error because of a missing
-oslots feature. 
+Small fix in `oslots` validation.
+You can save a data set without the `oslots` feature (a module).
+The previous release wrongly flagged a `oslots` validation error because of a missing
+`oslots` feature. 
 
 That has been remedied.
 
@@ -2740,21 +2740,21 @@ That has been remedied.
 
 2019-01-16
 
-If the oslots feature is not valid, weird error messages used to occur when TF
+If the `oslots` feature is not valid, weird error messages used to occur when TF
 tried to load a dataset containing it. 
-The oslots feature was loaded, but the computing of derived data threw a deep error.
+The `oslots` feature was loaded, but the computing of derived data threw a deep error.
 
 Not anymore.
 
-When TF saves the oslots feature it checks whether it is valid:
+When TF saves the `oslots` feature it checks whether it is valid:
 It should map all non-slot nodes and only non-slot nodes to slots.
 
-So, right after you have converted a data source to TF you can check whether the oslots
-is valid, during `TF.save()`.
+So, right after you have converted a data source to TF you can check whether
+the `oslots` is valid, during `TF.save()`.
 
-And further down the line, if you somehow have let a faulty oslots pass,
-and try to load a dataset containing such a oslots feature,
-TF checks whether the range of nodes mapped by oslots does not have holes in it.
+And further down the line, if you somehow have let a faulty `oslots` pass,
+and try to load a dataset containing such a `oslots` feature,
+TF checks whether the range of nodes mapped by `oslots` does not have holes in it.
 
 If so, it generates a clear error and stops processing.
 
@@ -2919,7 +2919,7 @@ For more info: see [#38](https://github.com/annotation/text-fabric/issues/38)
         in which `n` is embedded
     *   **Modified function `T.sectionFromNode(n, fillup=False)`**
         It used to give a tuple `(section1, section2, section3)`, also for nodes of type
-        `section1` and `section2` (like book and chapter). The new behavior is
+        `section1` and `section2` (like book and chapter). The new behaviour is
         the same if `fillup=True`. But if `fillup=False` (default), it returns
         a 1-tuple for `section1` nodes and a 2-tuple for `section2` nodes.
     *   New API member `sortKeyTuple` to sort tuples of nodes in the
@@ -3084,7 +3084,7 @@ and then all non-error messages will be suppressed.
 If the underlying TF API needs to pre-compute data, it will still be shown,
 because this may cause an otherwise unexpected delay.
 Since this is a relatively rare case, and since this can be remedied by
-running the call again, I leave this behavior as it is.
+running the call again, I leave this behaviour as it is.
 
 #### 6.3.0
 
@@ -3127,7 +3127,7 @@ on
 *   New app: Peshitta. It works much like the BHSA, but there is one big
     difference: the current Peshitta data does not have linguistic annotations.
     There are just books, chapters, verses and words.
-    We expect to add lemmatizations of words shortly.
+    We expect to add lemmatisation of words shortly.
     After this upgrade you can browse the Peshitta by saying
 
     ```
@@ -3135,7 +3135,7 @@ on
     ```
 
     on the command-line.
-*   Fixed a bug in exportMQL:
+*   Fixed a bug in `exportMQL`:
     when there are no enumerated values, do not write out an empty
     `CREATE ENUMERATION` statement to the MQL file. 
 
@@ -3211,7 +3211,7 @@ arguments have become optional.
 2018-10-08
 
 The TF browser will always print a banner with its name and version.
-If you pass it the argument --help or -h or --version or -v it will show the
+If you pass it the argument `--help` or `-h` or `--version` or `-v` it will show the
 relevant information and stop executing.
 
 #### 6.0.2
@@ -3255,7 +3255,7 @@ However, there is only one version kept in `~/text-fabric-data`, so this is not 
 A big update with several changes:
 
 #####  API change:
-`T.text()` has got more behaviors.
+`T.text()` has got more behaviours.
 
 This change was needed for the TF browser, in order to represent
 *lexemes* in exported files.
@@ -3295,7 +3295,7 @@ Here is how you get the new data release:
 If previously your TF browser has automatically downloaded the data
 for you, it will detect the new release and download it automatically. You do
 not have to do anything, except increase your patience.
-The download (24 MB) takes some time and after that TF will pre-compute
+The download (24MB) takes some time and after that TF will pre-compute
 related data, which may take a few minutes. This is a one-time-step after a data update.
 
 ###### Manually
@@ -3305,7 +3305,7 @@ tutorials in place. Best thing to do is:
 
 *   copy your BHSA tutorial directory to somewhere else;
 *   remove your local BHSA repository entirely;
-*   decide whether you really want the whole repo back (nearly 4 GB).
+*   decide whether you really want the whole repo back (nearly 4GB).
 
 If not: you're done, and TF will download automatically the data it needs.
 
@@ -3328,8 +3328,8 @@ If you want to consult the tutorials, either:
 
 2018-10-04
 
-Solved a font-rendering issue on Safari 12 (Macos Mojave): locally installed
-fonts, such as Ezra SIL are not being honored. So I linked to a style sheet of the
+Solved a font-rendering issue on Safari 12 (MacOS Mojave): locally installed
+fonts, such as Ezra SIL are not being honoured. So I linked to a style sheet of the
 [font library](https://fontlibrary.org)
 which has a web font version of Ezra SIL. That worked.
 
@@ -3818,7 +3818,7 @@ but is also a powerful addition to search in its own right.
 
 Bhsa and Uruk APIs:
 
-*   custom highlight colors also work for condensed results.
+*   custom highlight colours also work for condensed results.
 *   you can pass the `highlights` parameter also to `show` and `prettyTuple`
 
 
@@ -3834,8 +3834,8 @@ Bhsa API: you can customize the features that are shown in pretty displays.
 
 Bhsa and Uruk APIs: you can customize the highlighting of search results:
 
-*   different colors for different parts of the results
-*   you can choose your colors freely from all that CSS has to offer.
+*   different colours for different parts of the results
+*   you can choose your colours freely from all that CSS has to offer.
 
 See the updated search tutorials.
 
@@ -3990,13 +3990,13 @@ Uruk API: `casesByLevel()` returns case nodes in corpus order.
 
 2018-04-18
 
-Change in the Uruk api reflecting that undivided lines have no cases now (was:
+Change in the Uruk API reflecting that undivided lines have no cases now (was:
 they had a single case with the same material as the line). Also: the feature
 `fullNumber` on cases is now called `number`, and contains the full hierarchical
 part leading to a case. There is an extra feature `terminal` on lines and cases
 if they are not subdivided.
 
-Changes in Uruk and Bhsa api:
+Changes in Uruk and Bhsa API:
 
 *   fixed a bug that occurred when working outside a GitHub repository.
 
@@ -4004,7 +4004,7 @@ Changes in Uruk and Bhsa api:
 
 2018-04-18
 
-Change in the Uruk api. `casesByLevel()` now takes an optional argument
+Change in the Uruk API. `casesByLevel()` now takes an optional argument
 `terminal` instead of `withChildren`, with opposite values.
 
 `withChildren=False` is ambiguous: will it deliver only cases that have no
@@ -4019,7 +4019,7 @@ but not intended).
 
 2018-04-14
 
-Small fix in the bhsa api.
+Small fix in the bhsa API.
 
 Bumped the version number because of the inclusion of corpus specific APIs.
 
@@ -4086,7 +4086,7 @@ transcriptions for nodes of certain types.
 account. In the Hebrew Bible, that means that `L.d(sentence)` will not return a
 verse, even if the verse is contained in the sentence.
 
-This might be handy for sentences and verses, but in general this behavior
+This might be handy for sentences and verses, but in general this behaviour
 causes problems. It also disturbs the expectation that with these functions you
 get *all* embedders and embeddees.
 
@@ -4103,7 +4103,7 @@ container type only contains small instances of the contained type and not the
 bigger ones.
 
 Now you can override the computation by TF by means of a key-value in
-the *otext* feature.
+the `otext` feature.
 
 ### 3.1
 
@@ -4194,7 +4194,7 @@ MQL for version 3 of the [BHSA](https://github.com/ETCBC/bhsa).
 
 Little tweak in the `tf.convert.mql.importMQL` function so that it can handle
 more patterns in the MQL dump file. The issue arose when converting MQL for
-[extrabiblical](https://github.com/ETCBC/extrabiblical) material.
+[`extrabiblical`](https://github.com/ETCBC/extrabiblical) material.
 
 #### 3.0.2, 3.0.3
 
@@ -4311,8 +4311,8 @@ TF has a list of default locations to look for data sources: `~/Downloads`,
 
 2017-07-24
 
-The section levels (book, chapter, verse) were supposed to be customizable
-through the otext feature. But in
+The section levels (book, chapter, verse) were supposed to be customisable
+through the `otext` feature. But in
 fact, up till version 2.3.7 this did not work. From now on the names of the
 section types and the features that name / number them, are given in the `otext`
 feature. It is still the case that exactly three levels must be specified,
@@ -4383,12 +4383,12 @@ Small fixes.
 
 2017-01-06
 
-##### New: sortKey
+##### New: `sortKey`
 
 The API has a new member: `sortKey`
 
 New relationships in templates: `nearness`. See for examples the end of the
-[searchTutorial](https://github.com/annotation/text-fabric/blob/master/docs/searchTutorial.ipynb).
+[search tutorial](https://github.com/annotation/text-fabric/blob/master/docs/searchTutorial.ipynb).
 Thanks to James Cuénod for requesting nearness operators.
 
 ##### Fixes
@@ -4417,7 +4417,7 @@ Some relations have been added to search templates:
     same slot and end at same slot*
 *   `<:` and `:>`: *adjacent before* and *adjacent next*.
 
-The latter two can also be used through the `L`-api: `L.p()` and `L.n()`.
+The latter two can also be used through the `L`-API: `L.p()` and `L.n()`.
 
 The data that feeds them is pre-computed and available as `C.boundary`.
 
@@ -4427,7 +4427,7 @@ You can now easily make extra constraints in search templates without naming
 atoms.
 
 See the
-[searchTutorial](https://github.com/annotation/text-fabric/blob/master/docs/searchTutorial.ipynb)
+[search tutorial](https://github.com/annotation/text-fabric/blob/master/docs/searchTutorial.ipynb)
 for an updated exposition on searching.
 
 ### 2.0

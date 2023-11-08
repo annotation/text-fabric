@@ -7,15 +7,15 @@ SET_TYPES = {set, frozenset}
 
 
 class Locality:
-    """Methods by which you can navigate from a node to its neighborhood.
+    """Methods by which you can navigate from a node to its neighbourhood.
 
-    Neighbors are: nodes that have slots in common, embedders and embeddees,
+    Neighbours are: nodes that have slots in common, embedders and embeddees,
     previous and next siblings.
 
     !!! note "L"
         The Locality API is exposed as `L` or `Locality`.
 
-    !!! note "otype parameter"
+    !!! note "`otype` parameter"
         In all of the following `L`-functions, if the `otype` parameter is passed,
         the result is filtered and only nodes with
         `otype=nodeType` or `otype in nodeTypes` are retained.

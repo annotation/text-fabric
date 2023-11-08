@@ -609,7 +609,7 @@ h1.chars {
 ## Punctuation
 
 !!! abstract "Details"
-    Some specialties in the Masoretic system are not reflected
+    Some specialities in the Masoretic system are not reflected
     in the phonetics:
 
     *   `setumah`

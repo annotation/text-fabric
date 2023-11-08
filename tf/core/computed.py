@@ -7,7 +7,7 @@ data needed for the special functions of the `tf.parameters.WARP` features and t
 `tf.core.locality.Locality` API.
 
 Normally, you do not use this data, but since it is there, it might be valuable,
-so we have made it accessible in the `tf.core.computed.Computeds`-api.
+so we have made it accessible in the `tf.core.computed.Computeds`-API.
 
 !!! explanation "Pre-computed data storage"
     Pre-computed data is stored in cache directories in a directory `.tf`

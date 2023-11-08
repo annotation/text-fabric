@@ -9,6 +9,6 @@ see `tf.convert.walker`.
 And there is support for round trips of TF data to annotation tools and back,
 see `tf.convert.recorder`.
 
-You can *explode* plain TF files in big, non-optimized data files,
+You can *explode* plain TF files in big, non-optimised data files,
 see `tf.convert.tf.explode`.
 """

@@ -128,7 +128,7 @@ value.
 The reason for these conventions is practical: edge features usually have empty
 labels, and there are many edges. In case of the Hebrew Text database, there are
 1.5 million edges, so every extra character that is needed on a data line means
-that the file size increases with 1.5 MB.
+that the file size increases with 1.5MB.
 
 Nodes on the other hand, usually do not have empty values, and they are often
 specified in a consecutive way, especially slot (word) nodes. There are quite
@@ -186,7 +186,7 @@ meaning
 1.  node 1 has value: *tab* *newline*
 1.  node 2 has value: 2 *tab* 3
 1.  node 3 has value: foo *newline* bar
-1.  node 1 gets a new value: Escape <tab> as \t
+1.  node 1 gets a new value: Escape <tab> as `\t`
 
 ### Edge features
 

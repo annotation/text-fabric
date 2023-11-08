@@ -35,7 +35,7 @@ The fastest way to set up everything you need to use TF is by installing the
 JupyterLab Desktop application.
 
 This installs both JupyterLab and Python in one go,
-as a desktop application running under  Macos, Linux or Windows.
+as a desktop application running under  MacOS, Linux or Windows.
 
 The Jupyter Desktop App can be downloaded from
 [JupyterLab-desktop](https://github.com/jupyterlab/jupyterlab-desktop),

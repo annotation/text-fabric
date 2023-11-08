@@ -197,7 +197,7 @@ class Settings:
         These configuration values are put in variables in this module, which
         other modules can import.
 
-        There is also customizable configuration, meant to adapt the tool to the
+        There is also customisable configuration, meant to adapt the tool to the
         specifics of a corpus.
         Those configuration values are read from a YAML file, located in a directory
         `ner` next to the `tf` data of the corpus.

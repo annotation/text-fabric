@@ -22,7 +22,7 @@ This module can perform several analysis tasks of XML schemas.
 Transforms a RelaxNG schema into an equivalent XSD schema using James Clark's
 TRANG library.  For this, you must have java installed.
 
-`analyze` task:
+`analyse` task:
 
 Given an XML schema file, produces a tab-separated list of elements defined in
 the schema, with columns
@@ -34,8 +34,8 @@ the schema, with columns
 `tei` task:
 
 Analyses the complete TEI schema plus optional customizations on top of it.  If
-you pass an optional customized TEI schema, it will be analyzed separately, and
-the result will be used to override the result of analyzing the complete TEI
+you pass an optional customised TEI schema, it will be analysed separately, and
+the result will be used to override the result of analysing the complete TEI
 schema.  The complete TEI schema is part of this package, you do not have to
 provide it.  It has been generated on with the online
 [`TEI-Roma` tool](https://roma.tei-c.org/startroma.php).
@@ -55,7 +55,7 @@ This program can be used as a library or as a command-line tool.
 ``` sh
 xmlschema validate schema.rng/xsd doc1.xml doc2.xml ...
 xmlschema fromrelax schema.rng
-xmlschema analyze schema.xsd
+xmlschema analyse schema.xsd
 xmlschema tei customschema.xsd
 xmlschema tei
 ```
@@ -164,7 +164,7 @@ class Elements(CheckImport):
         ----------
         baseSchema: string
             The path of the XSD file that acts as the base schema that we want
-            to analyze.
+            to analyse.
         override: string, optional None
             The path of another schema intended to override parts of the `baseSchema`.
         roots: list, optional None
@@ -489,7 +489,7 @@ class Elements(CheckImport):
 
             The absence of the element *kind* and *mixed* status are indicated
             with `---` in the TSV and with the `None` value in the list.
-            If all went well, there are n such absences!
+            If all went well, there are no such absences!
         """
         defs = self.defs
 
@@ -623,7 +623,7 @@ class Analysis(CheckImport):
             Command-line:
 
             xmlschema tei [customschemafile.xsd]
-            xmlschema analyze {schemafile.xsd}
+            xmlschema analyse {schemafile.xsd}
             xmlschema fromrelax {schemafile.rng}
             xmlschema validate {schemafile.rng} {docfile1.xml} {docfile2.xml} ...
 
@@ -791,8 +791,8 @@ class Analysis(CheckImport):
 
         return (good, info, errors)
 
-    def analyzer(self, baseSchema, override):
-        """Initializes an analyzer for a schema.
+    def analyser(self, baseSchema, override):
+        """Initializes an analyser for a schema.
         """
         if not self.importOK():
             return
@@ -821,9 +821,9 @@ class Analysis(CheckImport):
     def elements(self, baseSchema, override):
         """Makes a list of elements and their properties.
 
-        The elements of `baseSchema` are analyzed and their properties are
+        The elements of `baseSchema` are analysed and their properties are
         determined. If there is an overriding schema, the elements of that
-        schema are analyzed as well and the properties of the elements are
+        schema are analysed as well and the properties of the elements are
         updated with the properties of the overriding elements.
         The properties in question are whether an element is simple or complex,
         and whether its content is mixed or pure.
@@ -831,9 +831,9 @@ class Analysis(CheckImport):
         Parameters
         ----------
         baseSchema: string
-            The base schema to analyze.
+            The base schema to analyse.
         override: string | None
-            The overriding schema to analyze.
+            The overriding schema to analyse.
         write: boolean, optional True
             Whether to write the results to a file.
 
@@ -848,7 +848,7 @@ class Analysis(CheckImport):
         if not self.importOK():
             return
 
-        if not self.analyzer(baseSchema, override):
+        if not self.analyser(baseSchema, override):
             return (False, None)
 
         E = self.analyzers[(baseSchema, override)]
@@ -862,7 +862,7 @@ class Analysis(CheckImport):
         return result
 
     def getElementInfo(self, baseSchema, overrides, verbose=None):
-        """Analyze the schema and its overrides.
+        """Analyse the schema and its overrides.
 
         The XML schema has useful information about the XML elements that
         occur in the source. Here we extract that information and make it
@@ -916,7 +916,7 @@ class Analysis(CheckImport):
         Parameters
         ----------
         task: string
-            The task to execute: `"fromrelax"`, `"analyze"`, `"tei"`, or `"validate"`.
+            The task to execute: `"fromrelax"`, `"analyse"`, `"tei"`, or `"validate"`.
 
         ask: list
             Any arguments for the task.
@@ -941,7 +941,7 @@ class Analysis(CheckImport):
 
         result = True
 
-        if task in {"tei", "analyze"}:
+        if task in {"tei", "analyse"}:
             if task == "tei":
                 baseSchema = self.getBaseSchema()["xsd"]
                 override = args[0] if len(args) else None
@@ -999,7 +999,7 @@ class Analysis(CheckImport):
 
         tasks = dict(
             tei={0, 1},
-            analyze={1},
+            analyse={1},
             fromrelax={1},
             validate=True,
         )

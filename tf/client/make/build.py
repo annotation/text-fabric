@@ -37,7 +37,7 @@ after which it is usable for everyone.
                 mappings between nodes and positions in those texts
 
             The `maker` argument is passed by the builder, and contains
-            the definition of the layers and the api of a loaded TF dataset.
+            the definition of the layers and the API of a loaded TF dataset.
 
 ## Commands
 

@@ -25,8 +25,8 @@ export const BUTTON = {
     off: "use rows for extra layers (export only)",
   },
   multihl: {
-    no: "cannot highlight colors per (group)",
-    on: "highlight colors per (group)",
+    no: "cannot highlight colours per (group)",
+    on: "highlight colours per (group)",
     off: "single highlight color",
   },
   exec: { no: " ", on: "⚫️", off: "🔴" },
@@ -68,7 +68,7 @@ this violates the 1-result-1-row principle, but the results maybe easier to read
 OR
 we can show them in additional columns:
 this keeps every result in a single row, but rows may grow very wide`,
-  multihl: `highlight sub matches for the parts between () with different colors
+  multihl: `highlight sub matches for the parts between () with different colours
 OR
 use a single highlight color for the complete match
 N.B.: this might not be supported in your browser`,

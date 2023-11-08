@@ -552,7 +552,7 @@ This may happen in two ways:
 *   If `webFeature` is not given, or if it is given,
     but the feature has no value for `n`, the web link will be computed from the
     section headings.
-    The following place holders will be honored:
+    The following place holders will be honoured:
 
     *   `{webBase}`: the `webBase` above
     *   `<1>` : value for section heading 1
@@ -590,7 +590,7 @@ Default:
 If present, `webLink(node)` will use this as a template to generate a URL
 to an online edition of the lexeme node.
 
-The following place holders will be honored:
+The following place holders will be honoured:
 *   `{webBase}`: the `webBase` value above
 *   `<lid>` : value for the id of the lexeme
 *   `{version}` version of the TF resource

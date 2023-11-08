@@ -23,7 +23,7 @@ const indices = {
    * See
    * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec
    */
-  capability: `highlight submatches with different colors`,
+  capability: `highlight submatches with different colours`,
   missing: `only highlight the complete matches with one color`,
   support: `
 ✅ Chrome >=90<br>

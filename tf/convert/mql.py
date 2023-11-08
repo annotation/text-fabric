@@ -95,7 +95,7 @@ With these provisos:
 *   the TF `otypes` correspond to the MQL *objects*
 *   the TF `features` correspond to the MQL *features*
 
-The MQL export is usually quite massive (500 MB for the Hebrew Bible).
+The MQL export is usually quite massive (500MB for the Hebrew Bible).
 It can be compressed greatly, especially by the program `bzip2`.
 
 !!! caution "Existing database"

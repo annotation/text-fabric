@@ -5,7 +5,7 @@ When different versions of a TF dataset exist, it makes sense to map the nodes f
 older version to nodes of the newer version.
 
 If we have annotations on the older version
-(possibly created with considerable man-machine labor),
+(possibly created with considerable man-machine labour),
 we can use such node mappings to transfer the annotations to the newer version without
 redoing all the work.
 

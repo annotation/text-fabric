@@ -50,9 +50,9 @@ def director(cv):
         addError,
     )
 ```
-The node type of the "sentence" nodes can be customized, so you can use this
+The node type of the "sentence" nodes can be customised, so you can use this
 module to insert any kind of node based on their boundary information. The name
-of the base text can also be customized. Usually it is `base`, but if one of
+of the base text can also be customised. Usually it is `base`, but if one of
 the witnesses is also called `base`, you should pass another name.
 For more information, see `tf.convert.variants.Variants`.
 
@@ -97,7 +97,7 @@ picture.
 ![](../images/variants/app.png)
 
 In the sequel we will use pictures like this a lot, so here are some points to remember:
-*   a colored area represent an app element its top black bar is the content
+*   a coloured area represent an app element its top black bar is the content
     of the `lem`-element
     *   which may be partly contained in the `lem`-element of a nested app element
 	    the grey bars below are the content of the `rdg`-elements

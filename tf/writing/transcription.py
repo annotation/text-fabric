@@ -53,20 +53,25 @@ class Transcription:
 
     Invoke the transcription functionality as follows:
 
-        from tf.writing.transcription import Transcription
+    ```
+    from tf.writing.transcription import Transcription
+    ```
 
     Some of the attributes and methods below are *class* attributes,
     others are instance attributes.
 
     A class attribute `aaa` can be retrieved by saying
 
-        Transcription.aaa
+    ``` python
+    Transcription.aaa
+    ```
 
     To retrieve an instance attribute, you need an instance first, like
 
-        tr = Transcription()
-
-    and then you can say `tr.aaa`.
+    ``` python
+    tr = Transcription()
+    tr.aaa
+    ```
     """
 
     decomp = {
@@ -176,11 +181,15 @@ class Transcription:
 
     Example: sof-pasuq:
 
-        Transcription.hebrew_mapping['00']
+    ``` python
+    Transcription.hebrew_mapping['00']
+    ```
 
     Output:
 
-        ׃
+    ```
+    ׃
+    ```
     """
 
     hebrew_cons = ">BGDHWZXVJKLMNS<PYQRFCT"
@@ -387,11 +396,15 @@ class Transcription:
 
     Example: semkath-final:
 
-        Transcription.syriac_mapping['s']
+    ``` python
+    Transcription.syriac_mapping['s']
+    ```
 
     Output:
 
-        ܤ
+    ```
+    ܤ
+    ```
     """
 
     trans_syriac_pat = re.compile(r"([AE@IU][12]?|=[.#:\^/\\]|[\^#][!:\\]|.)")
@@ -465,23 +478,29 @@ class Transcription:
 
     Example: beh
 
-        Transcription.syriac_mapping['b']
+    ``` python
+    Transcription.syriac_mapping['b']
+    ```
 
     Output:
 
     ```
-        ب
+    ب
     ```
 
     Maps an Arabic letter in UNICODE to its transliteration
 
     Example: beh transliteration
 
-        Transcription.syriac_mapping['ب']
+    ``` python
+    Transcription.syriac_mapping['ب']
+    ```
 
     Output:
 
-        b
+    ```
+    b
+    ```
     """
 
     arabic_mappingi = {v: k for (k, v) in arabic_mapping.items()}

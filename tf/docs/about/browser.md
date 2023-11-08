@@ -23,7 +23,7 @@ it needs from GitHub / GitLab automatically.
 
     in the search box, and then Enter.
 
-!!! hint "On Linux or Macos?"
+!!! hint "On Linux or MacOS?"
     You can open a terminal (command prompt), and just say
 
     ``` sh

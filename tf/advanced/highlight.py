@@ -8,15 +8,15 @@ def getHlAtt(app, n, highlights, isSlot):
     ----------
     app: obj
         The high-level API object
-    n: int
+    n: integer
         The node to be highlighted
     highlights: set|dict
         The nodes to be highlighted.
         Keys / elements are the nodes to be highlighted.
         This function is only interested in whether `n` is in it,
         and if so, what the value is (in case of a dict).
-        If given as set: use the default highlight color.
-        If given as dict: use the value as color.
+        If given as set: use the default highlight colour.
+        If given as dict: use the value as colour.
     isSlot: boolean
         Whether the node has the slot type
 
@@ -25,7 +25,7 @@ def getHlAtt(app, n, highlights, isSlot):
     hlCls: dict
         Highlight attribute, keyed by boolean 'is pretty'
     hlStyle: dict
-        Highlight color as CSS style, keyed by boolean 'is pretty'
+        Highlight colour as CSS style, keyed by boolean 'is pretty'
     """
 
     noResult = ({True: "", False: ""}, {True: "", False: ""})
@@ -70,15 +70,15 @@ def getEdgeHlAtt(e, pair, highlights):
         be highlighted.
         This function is only interested in whether the value `(f, t)` is in
         `highlights`, and if so, what the value is (in case of a dict).
-        If given as set: use the default highlight color.
-        If given as dict: use the value as color.
+        If given as set: use the default highlight colour.
+        If given as dict: use the value as colour.
 
     Returns
     -------
     hlCls: string
         Highlight attribute
     hlStyle: string
-        Highlight color as CSS style
+        Highlight colour as CSS style
     """
 
     if highlights is None:
@@ -106,7 +106,7 @@ def getTupleHighlights(api, tup, highlights, colorMap, condenseType):
     """Get the highlights for a tuple of nodes.
 
     The idea is to mark the elements of a tuple of nodes with highlights,
-    respecting a given set or dict of highlights and a color map.
+    respecting a given set or dict of highlights and a colour map.
 
     This is a bit of an intricate merging operation.
 
@@ -117,8 +117,8 @@ def getTupleHighlights(api, tup, highlights, colorMap, condenseType):
     tup: tuple of int
         The tuple of nodes to be highlighted
     colorMap: dict
-        A mapping of tuple positions to colors.
-        Member `i` of `tup` should be highlighted with color `colorMap[i]`.
+        A mapping of tuple positions to colours.
+        Member `i` of `tup` should be highlighted with colour `colorMap[i]`.
     condenseType: string
         The type of node that acts as the basis of a pretty display.
         The nodes in the given `tup` will be distributed over as many nodes of
@@ -128,8 +128,8 @@ def getTupleHighlights(api, tup, highlights, colorMap, condenseType):
         Keys / elements are the nodes to be highlighted.
         This function is only interested in whether the members of `tup` are in it,
         and if so, what the values are (in case of a dict).
-        If given as set: use the default highlight color.
-        If given as dict: use the value as color.
+        If given as set: use the default highlight colour.
+        If given as dict: use the value as colour.
     """
 
     F = api.F
@@ -173,8 +173,8 @@ def getPassageHighlights(app, node, query, colorMap, cache):
         A query to run, and whose results will be highlighted (as far they occur
         in the passage)
     colorMap: dict
-        A mapping of tuple positions to colors.
-        Member `i` of a query result should be highlighted with color `colorMap[i]`.
+        A mapping of tuple positions to colours.
+        Member `i` of a query result should be highlighted with colour `colorMap[i]`.
     cache:  dict
         A cache that holds run queries and their results.
         Useful when we browse many chapters and want to show the highlights of
@@ -183,7 +183,7 @@ def getPassageHighlights(app, node, query, colorMap, cache):
     Returns
     -------
     dict
-        Keys are the nodes to be highlighted, values are the highlight colors.
+        Keys are the nodes to be highlighted, values are the highlight colours.
     """
 
     if not query:

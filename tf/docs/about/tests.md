@@ -41,7 +41,7 @@ basic spatial relations (`tf.about.searchusage`)
 that are being used in search deserve thorough unit testing.
 
 There are quite a few of them, they describe refined but abstract relations
-between nodes and the slots they are linked to, and they are optimized for performance,
+between nodes and the slots they are linked to, and they are optimised for performance,
 which make their implementation error-prone.
 
 For every relationship we test whether it holds or holds not between a bunch

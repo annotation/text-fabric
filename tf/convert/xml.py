@@ -137,7 +137,7 @@ tf-fromxml tf=1.8.3  # explicit version
 
 ## Examples
 
-Exactly how you can call the methods of this module and add your own customized
+Exactly how you can call the methods of this module and add your own customised
 conversion code is demonstrated in the Greek New Testament:
 
 *   [`ETCBC/nestle1904`](https://nbviewer.org/github/ETCBC/nestle1904/blob/master/programs/tfFromLowfat.ipynb).
@@ -635,7 +635,7 @@ class XML(CheckImport):
 
         initTree(reportPath)
 
-        def analyze(root, analysis):
+        def analyse(root, analysis):
             NUM_RE = re.compile(r"""[0-9]""", re.S)
 
             def nodeInfo(xnode):
@@ -785,7 +785,7 @@ class XML(CheckImport):
         def doXMLFile(xmlPath):
             tree = etree.parse(xmlPath, parser)
             root = tree.getroot()
-            analyze(root, analysis)
+            analyse(root, analysis)
 
         i = 0
         for xmlFolder, xmlFiles in self.getXML():
@@ -900,7 +900,7 @@ class XML(CheckImport):
         These files are:
 
         *   `config_custom.yaml`:
-            A YAML file with config data that will be *merged* into the generated
+            A YAML file with configuration data that will be *merged* into the generated
             config.yaml.
         *   `app_custom.py`:
             A python file with named snippets of code to be inserted

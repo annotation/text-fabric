@@ -404,7 +404,7 @@ class NLPipeline(CheckImport):
             console(f"{len(lastSlots):>6} end postions")
 
     def getElementInfo(self, verbose=None):
-        """Analyze the schema.
+        """Analyse the schema.
 
         The XML schema has useful information about the XML elements that
         occur in the source. Here we extract that information and make it

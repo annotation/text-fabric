@@ -9,7 +9,7 @@ its value for that node.
 
 It is easiest to think of all node features as a dictionary keyed by nodes.
 
-However, some features have an optimized representation, and do not have
+However, some features have an optimised representation, and do not have
 a dictionary underneath.
 
 But you can still iterate over the data of a feature as if it were a

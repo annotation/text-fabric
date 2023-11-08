@@ -30,15 +30,15 @@ def findAppConfig(
     relative=None,
     straight=False,
 ):
-    """Find the config information of an app.
+    """Find the configuration information of an app.
 
     If there is a `config.yaml` file, read it and check the compatibility
-    of the config settings with the current version of TF.
+    of the configuration settings with the current version of TF.
 
     If there is no such file but a `config.py` is present,
     conclude that this is an older app, not compatible with TF v8.0.0 or higher.
 
-    If there are no such config files, fill in a few basic settings.
+    If there are no such configuration files, fill in a few basic settings.
 
     See Also
     --------

@@ -211,7 +211,7 @@ export class StateProvider {
          */
         exportsr,
 
-        /* whether to highlight groups with different colors
+        /* whether to highlight groups with different colours
          * only if the browser supports it
          */
         multihl: can ? multihl : null,

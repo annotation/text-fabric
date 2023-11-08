@@ -139,7 +139,7 @@ class FabricCore:
     *   caching pre-computed and compressed data
 
     TF is initialized for a corpus.
-    It will search a set of directories and catalog all `.tf` files it finds there.
+    It will search a set of directories and catalogue all `.tf` files it finds there.
     These are the features you can subsequently load.
 
     Here `directories` and `subdirectories` are strings with directory names
@@ -189,7 +189,7 @@ class FabricCore:
         loading features. Used to experiment with performance.
 
 
-    !!! note "otext@ in modules"
+    !!! note "`otext@` in modules"
         If modules contain features with a name starting with `otext@`, then the format
         definitions in these features will be added to the format definitions in the
         regular `otext` feature (which is a `tf.parameters.WARP` feature).
@@ -463,7 +463,7 @@ class FabricCore:
         Notes
         -----
         !!! explanation "`configs`"
-            These are config features, with metadata only, no data. E.g. `otext`.
+            These are configuration features, with metadata only, no data. E.g. `otext`.
 
         !!! explanation "`computeds`"
             These are blocks of pre-computed data, available under the `C` API,
@@ -610,14 +610,14 @@ class FabricCore:
                 These fields will be added to all features in `nodeFeatures` and
                 `edgeFeatures`.
 
-            !!! explanation "config features"
-                If you need to write the *config* feature `otext`,
+            !!! explanation "configuration features"
+                If you need to write the *configuration* feature `otext`,
                 which is a metadata-only feature, just
                 add the metadata under key `otext` in this parameter and make sure
                 that `otext` is not a key in `nodeFeatures` nor in
                 `edgeFeatures`.
-                These fields will be written into the separate config feature `otext`,
-                with no data associated.
+                These fields will be written into the separate configuration
+                feature `otext`, with no data associated.
 
         location: dict
             The (meta)data will be written to the very last directory that TF searched
@@ -665,7 +665,7 @@ class FabricCore:
             if f[0] != "" and f[0] not in nodeFeatures and f[0] not in edgeFeatures
         )
         info(
-            "Exporting {} node and {} edge and {} config features to {}:".format(
+            "Exporting {} node and {} edge and {} configuration features to {}:".format(
                 len(nodeFeatures),
                 len(edgeFeatures),
                 len(configFeatures),

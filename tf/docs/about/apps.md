@@ -89,7 +89,7 @@ so that all its methods can retrieve all names defined by the `image` module.
 ## Implementation
 
 Most parts of the advanced API are implemented in the
-[api](https://github.com/annotation/text-fabric/blob/master/tf/advanced)
+[API](https://github.com/annotation/text-fabric/blob/master/tf/advanced)
 modules of TF.
 
 ### Two contexts

@@ -276,14 +276,14 @@ def webLink(
     section nodes and lexeme nodes, dependent on how they are configured in
     the app's `config.yaml`.
 
-    !!! hint "Customizable"
-        You can customize the behavior of `webLink()` to the needs of your corpus
+    !!! hint "Customisable"
+        You can customize the behaviour of `webLink()` to the needs of your corpus
         by providing appropriate values in its `config.yaml`, especially for
         `webBase`, `webLang`, `webOffset`, `webFeature`, `webUrl`, `webUrlLex`, and `webHint`.
 
     Parameters
     ----------
-    n: int
+    n: integer
         A node
     text: string, optional default `None`
         The text of the link. If left out, a suitable text will be derived from
@@ -971,7 +971,7 @@ def flexLink(app, kind):
     converted to HTML and then published on the Pages of the on-premise GitLab.
 
     What exactly the link to such an on-premise Pages service is, may depend on
-    a config setting.
+    a configuration setting.
 
     This function resolves all that.
 

@@ -217,7 +217,7 @@ class Show:
 
         mayLimit: boolean, optional False
             It is possible that the buckets make up the whole corpus.
-            Although we have optimized things in such a way that the browser can handle
+            Although we have optimised things in such a way that the browser can handle
             a webpage with thousands of pages of material in it, such large pages
             may compromise the performance.
             If the bucket set is potentially very large, and the `start` and `end`

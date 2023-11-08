@@ -193,11 +193,11 @@ def extract(
         See `tf.core.timestamp.Timestamp`
 
     api: object, optional None
-        If given, assume it is the TF api of a loaded work
+        If given, assume it is the TF API of a loaded work
         from which the volumes are to be extracted.
         In this case, the `workLocation` parameter is not used.
         If absent or `None`, the dataset at `workLocation`
-        will be loaded by TF, and its api will be used subsequently.
+        will be loaded by TF, and its API will be used subsequently.
 
     overwrite: boolean, optional None
         If True, the volumes defined by `volumes` will be

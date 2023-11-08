@@ -76,7 +76,7 @@ Before we go on, we invite you to look at a few basic terms in the craft of
 [weaving](https://en.wikipedia.org/wiki/Weaving).
 
 A weaver sets up a set of fixed, parallel threads, the *warp*. He then picks a
-thread, usually a colorful one, and sends it in a perpendicular way through the
+thread, usually a colourful one, and sends it in a perpendicular way through the
 warp. This thread is called the *weft*.
 
 ![Warp](../images/warp.png)
@@ -110,7 +110,7 @@ characters or transliterated characters, with or without the complete set of
 diacritical marks. In TF we do not have to choose between them: we can
 package each representation into a feature, and add it to the fabric.
 
-A TF data set is a warp (*otype*, *oslots*) plus a collection of wefts
+A TF data set is a warp (`otype`, `oslots`) plus a collection of wefts
 (all other features). We may add other features to the same warp. Data sets with
 only wefts, but no warps, are called modules. When you use modules with a
 dataset, the modules must have been constructed around the warp of the dataset.
@@ -126,8 +126,8 @@ so we need a bit of information about which features carry textual
 representations and sectioning information (e.g. books, chapters, verses).
 
 This information is not hard-wired into TF, but it is given in the form
-of a *config* feature. A config feature has no data, only metadata. Every
-TF dataset may contain a config feature called `otext`, which
+of a *configuration* feature. A configuration feature has no data, only metadata. Every
+TF dataset may contain a configuration feature called `otext`, which
 specifies which node types and features correspond to sectional units such as
 books, chapters, and verses. It also contains templates for generating text
 representations for the slots.
@@ -173,7 +173,7 @@ of additional structure. The correspondence is
 *   extent of text objects in terms of slots => a special edge feature called
     `oslots` (read: object slots)
 *   optional specifications for sectioning and representing text => a special
-    config feature called `otext` (read: object text)
+    configuration feature called `otext` (read: object text)
 
 Together, the `otype`, `oslots`, and the optional `otext` features are called
 the `warp` of a TF dataset.
@@ -208,7 +208,7 @@ We represent the elements that make up such a graph as follows:
 The warp / weft distinction is a handy way of separating textual organization from
 textual content. Let us discuss the warp features a bit more.
 
-### otype: node feature
+### `otype`: node feature
 
 Maps each node to a label. The label typically is the kind of object that the
 node represents, with values such as
@@ -245,7 +245,7 @@ type of all subsequent slots and also of the things that fill the slots.
 Note also the sectional features `book chapter verse` here. They will play a
 role in the third, optional, warp feature `otext`.
 
-### oslots: edge feature
+### `oslots`: edge feature
 
 Defines which slots are occupied by which objects. It does so by specifying
 edges from nodes to the slots they contain.
@@ -255,7 +255,7 @@ between all nodes.
 
 It gives also rise to a canonical ordering of nodes, see `tf.core.nodes`.
 
-### otext: config feature (optional)
+### `otext`: configuration feature (optional)
 
 Declares which node types correspond to the first three levels of sectioning,
 usually *book*, *chapter*, *verse*. Also declares the corresponding features to

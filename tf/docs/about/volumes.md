@@ -43,7 +43,7 @@ which can be transformed into annotations to the work as a whole.
 
 ## Challenges
 
-TF is heavily optimized around the idea that the whole corpus
+TF is heavily optimised around the idea that the whole corpus
 is addressed by natural numbers, starting at 1 at the first slot of the text,
 then going to the last word,
 and then continuing by enumerating textual objects of several types, type for type.

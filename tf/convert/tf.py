@@ -1,5 +1,5 @@
 """
-# Raw, unoptimized data from TF files
+# Raw, unoptimised data from TF files
 """
 
 import sys
@@ -23,7 +23,7 @@ DATA_TYPE_STR = ", ".join(DATA_TYPES)
 
 
 def explode(inPath, outPath):
-    """Explodes `.tf` files into non-optimized `.tf` files without metadata.
+    """Explodes `.tf` files into non-optimised `.tf` files without metadata.
 
     An exploded `.tf` feature file is a TF file with explicit node specifiers,
     no optimizations.

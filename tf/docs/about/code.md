@@ -27,12 +27,12 @@ Pre-computation
 which are little graphs of nodes and edges
 that must be instantiated against the corpus.
 
-Search vs MQL
+Search versus MQL
 :   The template language is inspired by
     [MQL](https://emdros.org), but has a different syntax.
     It is both weaker and stronger than MQL.
 
-Search vs hand coding
+Search versus hand coding
 :   Search templates are the most accessible way to get at the data,
     easier than hand-coding your own little programs.
 

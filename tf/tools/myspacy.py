@@ -60,7 +60,7 @@ class Spacy(CheckImport):
         The pipeline is tied to a particular language model, which you can pass
         as a parameter, provided you have installed it.
 
-        For now, we use Spacy in a fairly trivial way: only tokenization and sentence
+        For now, we use Spacy in a fairly trivial way: only tokenisation and sentence
         detection.
         We do not need the parser for this.
 
@@ -194,7 +194,7 @@ class Spacy(CheckImport):
     def read(self, text):
         """Process a plain text.
 
-        A text is ingested and tokenized. Sentences are detected.
+        A text is ingested and tokenised. Sentences are detected.
         This may require quite some processing time, think of 30 seconds for 200,000
         words on a decent laptop.
 

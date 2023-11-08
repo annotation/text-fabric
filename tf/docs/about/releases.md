@@ -66,7 +66,7 @@ pip install -e .
     Then had the Vim spell checker run over those lines and corrected all mistakes
     by hand.
     Still, there might be grammar errors and content inaccuracies.
-*   12.1.4 follows 12.1.3. quickly, because in corpora without a NER config file,
+*   12.1.4 follows 12.1.3. quickly, because in corpora without a NER configuration file,
     TF did not start up properly.
 
 #### 12.1.1,2
@@ -85,7 +85,7 @@ pip install -e .
 ##### New stuff
 
 *   In the TF browser there will be a new tab in the vertical sidebar: 
-    **Annotate**, which will give access to manual annotation tools. I'm developing
+    **Annotate**, which will give access to manual annotation tools. I am developing
     the first one, a tool to annotate named entities efficiently, both in the
     TF browser and in a Jupyter Notebook.
     Reed more in `tf.about.annotate`.
@@ -93,7 +93,7 @@ pip install -e .
     These tools will let you save your work as files on your own computer.
 
 *   In `tf.convert.addnlp` we can now extract more NLP information besides tokens
-    and sentences: part-of-speech, morphological tagging, lemmatization, named
+    and sentences: part-of-speech, morphological tagging, lemmatisation, named
     entity recognition
 
 ##### Fixes

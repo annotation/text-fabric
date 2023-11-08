@@ -31,9 +31,9 @@ class Corpus(Settings):
         Everything that depends on the specifics of a corpus, such as getting its text,
         is collected here.
 
-        If a corpus does not have a config file that tells TF which features to use
-        for text representation, then we flag to the object instance that it is not
-        properly set up.
+        If a corpus does not have a configuration file that tells TF which
+        features to use for text representation, then we flag to the object
+        instance that it is not properly set up.
 
         All methods that might fail because of this, are guarded by a check on this
         flag.

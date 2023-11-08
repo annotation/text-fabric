@@ -320,7 +320,7 @@ def makeTfKernel(app, appName):
             position: integer, optional 1
                 The position that is in focus in the browser.
                 The navigation links take this position as the central point,
-                and enable the user to navigate to neighboring results,
+                and enable the user to navigate to neighbouring results,
                 in ever bigger strides.
 
             opened: set, optional set()

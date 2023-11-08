@@ -594,7 +594,7 @@ def _stitchResults(searchExe):
         searchExe.results = results
         return
 
-    # The next function is optimized, and the lookup of functions and data
+    # The next function is optimised, and the lookup of functions and data
     # should be as direct as possible.
     # Because deliver() below fetches the results,
     # of which there are unpredictably many.

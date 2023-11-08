@@ -362,7 +362,7 @@ def _spinEdge(searchExe, e):
     if type(s) is float:
         return False
 
-    # for other basic relations we have an optimized spin function
+    # for other basic relations we have an optimised spin function
     # if type(s) is types.FunctionType:
     if isinstance(s, types.FunctionType):
         (newYarnF, newYarnT) = s(qnodes[f][0], qnodes[t][0])(yarnF, yarnT)

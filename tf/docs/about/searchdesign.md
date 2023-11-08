@@ -17,7 +17,7 @@ TF fetches all pieces of the big fabric that match your patch.
 ![patch](../images/SearchDesign/SearchDesign.001.png)
 
 The textile metaphor is particularly suited for grasping the search part of
-TF, so I'm going to stick to it for a while. I have used it in the
+TF, so I am going to stick to it for a while. I have used it in the
 actual code as well, and even in the proofs that certain parts of the algorithm
 terminate and are correct. Yet it remains a metaphor, and the fit is not exact.
 
@@ -380,7 +380,7 @@ this one by a qedge has also the chance to get very thin after spinning. In this
 case, the combined filtering effect of all edges can produce a rapid narrowing
 of the search space.
 
-Especially if we can implement edge spinning in an optimized way, this works
+Especially if we can implement edge spinning in an optimised way, this works
 like a charm. When we come to stitching results (which is potentially very
 expensive), we have already achieved a massive reduction of work.
 
@@ -477,7 +477,7 @@ So we want to get as many nodes in our stitch as quickly as possible.
 
 If our search tree is narrowly branching near the root, and broadly branching
 near the leaves, the top `n` levels of the tree contain relatively few nodes. So
-we have relatively few possibilities to stitch n nodes together, and most
+we have relatively few possibilities to stitch `n` nodes together, and most
 reasons to fail will happen while visiting these `n` levels.
 
 If on the other hand our search tree is broadly branching near the root, and

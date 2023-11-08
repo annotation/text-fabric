@@ -84,7 +84,7 @@ There is a separate manual for the simplified interface:
     compared to the statistics of the whole corpus.
 
 <mark>10. options</mark>
-:   Modify the behavior of search/export.
+:   Modify the behaviour of search/export.
     See **Options** below.
 
     !!! hint "Special characters"
@@ -396,7 +396,7 @@ we present all layers that you have selected by means of **hide / show**.
 <mark>5. single or multiple highlights</mark>
 :   If you use `( )` for grouping in your regexes,
     the parts of the results that match these groups
-    can be highlighted with different colors.
+    can be highlighted with different colours.
     
     !!! hint
         Not all browsers support this;
@@ -406,7 +406,7 @@ we present all layers that you have selected by means of **hide / show**.
     !!! hint
         This is handy for cases where you search for twice the same thing in a sentence,
         for instance.
-        You can have both matches colored differently.
+        You can have both matches coloured differently.
     
 
 # Background information

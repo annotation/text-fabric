@@ -107,6 +107,7 @@ To see it in action, see this
 """
 
 
+from textwrap import dedent
 from itertools import chain
 
 from ..core.helpers import (
@@ -125,11 +126,11 @@ class Recorder:
 
         Parameters
         ----------
-        api: obj, optional None
+        api: object, optional None
             The handle of the API of a loaded TF corpus.
             This is needed for operations where the recorder needs
             TF intelligence associated with the nodes, e.g. their types.
-            If you do not pass an api, such methods are unavailable later on.
+            If you do not pass an `api`, such methods are unavailable later on.
         """
         self.api = api
 
@@ -218,7 +219,7 @@ class Recorder:
         byType: boolean, optional False
             If True, makes a separate node mapping per node type.
             For this it is needed that the Recorder has been
-            passed a TF api when it was initialized.
+            passed a TF API when it was initialized.
         simple: boolean, optional False
             In some cases it is known on beforehand that at each textual position
             there is at most 1 node.
@@ -249,14 +250,16 @@ class Recorder:
         api = self.api
         if api is None:
             print(
-                """\
-Cannot determine node types without a TF api.
-You have to call Recorder(`api`) instead of Recorder()
-where `api` is the result of
-    tf.app.use(corpus)
-    or
-    tf.Fabric(locations, modules).load(features)
-"""
+                dedent(
+                    """\
+                    Cannot determine node types without a TF api.
+                    You have to call Recorder(`api`) instead of Recorder()
+                    where `api` is the result of
+                    tf.app.use(corpus)
+                    or
+                    tf.Fabric(locations, modules).load(features)
+                """
+                )
             )
             return None
 
@@ -300,7 +303,7 @@ where `api` is the result of
         byType: boolean, optional False
             If True, makes a separate node mapping per node type.
             For this it is needed that the Recorder has been
-            passed a TF api when it was initialized.
+            passed a TF API when it was initialized.
         logical: boolean, optional True
             If True, specs are represented as tuples of ranges
             and a range is represented as a tuple of a begin and end point,
@@ -325,10 +328,10 @@ where `api` is the result of
 
         method = specFromRangesLogical if logical else specFromRanges
         posByNode = {}
-        for (i, nodeSet) in enumerate(self.nodesByPos):
+        for i, nodeSet in enumerate(self.nodesByPos):
             for node in nodeSet:
                 posByNode.setdefault(node, set()).add(i)
-        for (n, posSet) in posByNode.items():
+        for n, posSet in posByNode.items():
             posByNode[n] = method(rangesFromSet(posSet))
 
         if asEntries:
@@ -339,14 +342,16 @@ where `api` is the result of
         api = self.api
         if api is None:
             print(
-                """\
-Cannot determine node types without a TF api.
-You have to call Recorder(`api`) instead of Recorder()
-where `api` is the result of
-    tf.app.use(corpus)
-    or
-    tf.Fabric(locations, modules).load(features)
-"""
+                dedent(
+                    """\
+                    Cannot determine node types without a TF api.
+                    You have to call Recorder(`api`) instead of Recorder()
+                    where `api` is the result of
+                        tf.app.use(corpus)
+                        or
+                        tf.Fabric(locations, modules).load(features)
+                    """
+                )
             )
             return None
 
@@ -355,11 +360,11 @@ where `api` is the result of
 
         posByNodeType = {}
         if asEntries:
-            for (n, spec) in posByNode:
+            for n, spec in posByNode:
                 nType = Fotypev(n)
                 posByNodeType.setdefault(nType, []).append((n, spec))
         else:
-            for (n, spec) in posByNode.items():
+            for n, spec in posByNode.items():
                 nType = Fotypev(n)
                 posByNodeType.setdefault(nType, {})[n] = spec
 
@@ -390,8 +395,8 @@ where `api` is the result of
         say
 
         *   node `n` starts at position `t0`,
-        *   node *n+1* at position `t1`,
-        *   node *n+m* at position `tm`.
+        *   node `n+1` at position `t1`,
+        *   node `n+m` at position `tm`.
 
         Say position `te` is the position just after the whole text covered by these
         nodes.
@@ -449,7 +454,7 @@ where `api` is the result of
         nonConsecutiveFirst = 0
 
         posByNode = {}
-        for (i, nodeSet) in enumerate(self.nodesByPos):
+        for i, nodeSet in enumerate(self.nodesByPos):
             if (not acceptMaterialOutsideNodes and len(nodeSet) == 0) or len(
                 nodeSet
             ) > 1:
@@ -488,7 +493,7 @@ where `api` is the result of
         offset = sortedPosByNode[0][0] - 1
         posList = [offset]
         prevNode = offset
-        for (node, i) in sortedPosByNode:
+        for node, i in sortedPosByNode:
             if prevNode + 1 != node:
                 good = False
                 if nonConsecutive == 0:
@@ -537,7 +542,7 @@ where `api` is the result of
         byType: boolean, optional False
             If True, writes separate node mappings per node type.
             For this it is needed that the Recorder has been
-            passed a TF api when it was initialized.
+            passed a TF API when it was initialized.
             The file names are extended with the node type.
             This extension occurs just before the last `.` of the inferred `posPath`.
         optimize: boolean, optional True
@@ -606,7 +611,7 @@ where `api` is the result of
 
         indent(level=True, reset=True)
 
-        for (nodeType, mapping) in mapByType.items():
+        for nodeType, mapping in mapByType.items():
             fileName = f"{base}-{nodeType}{ext}"
             info(f"{nodeType:<20} => {fileName}")
             with open(fileName, "w", encoding="utf8") as fh:

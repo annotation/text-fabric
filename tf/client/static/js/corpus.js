@@ -47,7 +47,7 @@ export class CorpusProvider {
   }
 
   async warmUpData() {
-    /* Expand parts of the data that have been optimized before shipping
+    /* Expand parts of the data that have been optimised before shipping
      */
     const { Log } = this
 

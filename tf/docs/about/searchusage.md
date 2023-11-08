@@ -252,9 +252,9 @@ We have these kinds of lines in a template:
 
 #### *atom* lines
 
-##### (simple): **indent name:otype-or-set features**
+##### (simple): **indent name:node-type-or-set features**
 
-The otype-or-set is either a node type that exists in your TF data set,
+The node-type-or-set is either a node type that exists in your TF data set,
 or `.`, which stands for all node types together,
 or it is the name of a set that you have passed in the `sets` parameter alongside
 the query itself when you call `search` or `study`.
@@ -278,7 +278,7 @@ Notes
     in relational comparisons and other atoms.
 *   The query `. n=3` looks for all nodes that have a feature `n` with value `3`,
     irrespective of the node type.
-*   The **otype-or-set** part is optional.
+*   The **node-type-or-set** part is optional.
     If it is absent, the **name** part must be present.
 
 The meaning of
@@ -296,17 +296,17 @@ pnew:phrase vs=qal
 p = pnew
 ```
 
-##### (with `relop`): **indent op name:otype-or-set features**
+##### (with `relop`): **indent operator name:node-type-or-set features**
 
 *   `<: word pos=verb gender=feminine`
 *   The relation operator specifies an extra constraint between a preceding atom
     and this atom.
 *   The preceding atom may be the parent, provided we are at its first child, or
     it may the preceding sibling.
-*   You can leave out the **name:otype-or-set features** bit. In that case, the
+*   You can leave out the **name:node-type-or-set features** bit. In that case, the
     relation holds between the preceding atom and its parent.
 *   The **name:** part is optional. Exactly as in the case without `relop`.
-*   The **otype-or-set** part is optional. Exactly as in the case without
+*   The **node-type-or-set** part is optional. Exactly as in the case without
     `relop`.
 
 #### *feature* lines: **features**
@@ -338,7 +338,7 @@ whole spectrum of relational constraints on nodes.
 
 #### *quantifier* sub-templates:
 
-Atom lines that contain an otype or set may be followed by *quantifiers*.
+Atom lines that contain a node type or set may be followed by *quantifiers*.
 Quantifiers consist of search templates themselves, demarcated by some
 special keywords:
 
@@ -478,7 +478,7 @@ do not have values).
 #### Nearness comparison
 
 Some of the adjacency relations can actually be weakened. Instead of requiring
-that one slot is equal to an other slot, you can require that they are *k-near*,
+that one slot is equal to an other slot, you can require that they are `k`*-near*,
 i.e. they are at most `k` apart. Here are the relationships where you can do
 that. Instead of typing the letter `k`, provide the actual number you want.
 
@@ -537,7 +537,9 @@ Not only equality is covered, also inequality, comparison, and matching.
         and node `m` has feature `lex` with value `donkey_2`,
         then the following holds:
 
-            n .lex~_[0-9]*$~lex. m
+        ```
+        n .lex~_[0-9]*$~lex. m
+        ```
 
         The values are stripped of their final `_1` and `_2` strings before they
         are being compared, leaving the comparison `donkey` = `donkey`, which is True.
@@ -657,7 +659,7 @@ atom
 templateA
 ```
 
-there is a tuple *RH* such that (`r`, `RA`, `RH`)  is a result of
+there is a tuple `RH` such that (`r`, `RA`, `RH`)  is a result of
 
 ```
 atom

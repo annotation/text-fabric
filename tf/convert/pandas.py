@@ -93,12 +93,12 @@ def exportPandas(app, inTypes=None, exportDir=None):
 
         **Backslash**
 
-        `pandas` has two special behaviors:
+        `pandas` has two special behaviours:
 
         *   *backslash* `n` becomes a *newline*;
-        *   *backslash* *blackslash* becomes a single *backslash*.
+        *   *backslash* *backslash* becomes a single *backslash*.
 
-        This is almost what we want: the newline behavior is desired; the
+        This is almost what we want: the newline behaviour is desired; the
         reducing of backslashes not, but we leave it as it is.
 
         **Double quote**

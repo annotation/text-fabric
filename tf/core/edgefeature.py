@@ -14,7 +14,7 @@ and the value is `None`.
 If the value is a dictionary, then the keys are the second node in the pair,
 and the value is the value that the edge feature assigns to this pair.
 
-However, some features have an optimized representation, and do not have
+However, some features have an optimised representation, and do not have
 a dictionary underneath.
 
 But you can still iterate over the data of a feature as if it were a
@@ -188,13 +188,17 @@ class EdgeFeature:
         !!! example "conflicting values"
             Suppose we have
 
-                n == value=4 ==> m
-                m == value=6 ==> n
+            ```
+            n == value=4 ==> m
+            m == value=6 ==> n
+            ```
 
             then
 
-                E.b(n) = (m, 4)
-                E.b(m) = (n, 6)
+            ```
+            E.b(n) = (m, 4)
+            E.b(m) = (n, 6)
+            ```
 
         """
 

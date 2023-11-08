@@ -30,7 +30,7 @@ colorMap: dict, optional None
     If `colorMap` is `None` or missing, all nodes will be highlighted with
     the default highlight color, which is yellow.
 
-    But you can assign different colors to the members of the tuple:
+    But you can assign different colours to the members of the tuple:
     `colorMap` must be a dictionary that maps the positions in a tuple
     to a color.
 
@@ -62,9 +62,9 @@ condensed: boolean, optional False
         This gives the best account of the exact result set.
 
     !!! caution "mixing up highlights"
-        Condensing may mix-up the highlight coloring.
+        Condensing may mix-up the highlight colouring.
         If a node occurs in two results, at different positions
-        in the tuple, the `colorMap` wants to assign it two colors!
+        in the tuple, the `colorMap` wants to assign it two colours!
         Yet one color will be chosen, and it is unpredictable which one.
 
 condenseType: string, optional None
@@ -93,7 +93,7 @@ edgeHighlights: dict
     If the value is a set, the specified edges will be highlighted
     with a default color (blue).
 
-    If it is a dictionary, it should map edges to colors.
+    If it is a dictionary, it should map edges to colours.
     Any color that is a valid
     [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value)
     qualifies.
@@ -102,7 +102,7 @@ edgeHighlights: dict
 
     An edge is a pair of nodes, represented as a tuple of two node numbers.
 
-    You can also map the following pseudo edges to colors:
+    You can also map the following pseudo edges to colours:
 
     *   `(fromNode, None)`: all outgoing edges of `fromNode`;
     *   `(None, toNode)`: all incoming edges of `toNode`.
@@ -185,7 +185,7 @@ highlights: dict | set, optional {}
     If `highlights` is a set, its nodes will be highlighted
     with a default color (yellow).
 
-    If it is a dictionary, it should map nodes to colors.
+    If it is a dictionary, it should map nodes to colours.
     Any color that is a valid
     [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value)
     qualifies.
@@ -193,8 +193,8 @@ highlights: dict | set, optional {}
     If you map a node to the empty string, it will get the default highlight color.
 
     Highlights in plain display will be done, also for nodes deeply buried in the top node.
-    Slots are highlighted by coloring the background,
-    all other nodes by colored frames around their material.
+    Slots are highlighted by colouring the background,
+    all other nodes by coloured frames around their material.
 
     !!! note "one big highlights dictionary"
         It is OK to first compose a big highlights dictionary

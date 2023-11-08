@@ -19,7 +19,7 @@ intermediate levels, etc.
 Whatever we want to display, we have to display in HTML, which is basically a
 hierarchically organized set of presentation elements.
 
-But a node and its constellation of relevant neighborhood nodes
+But a node and its constellation of relevant neighbourhood nodes
 does not have a hierarchical structure, in general, that is.
 
 The unravel algorithm solves the problem of turning a node and its associated piece
@@ -40,14 +40,14 @@ straightforward code, see `tf.advanced.render.render`.
 
 Here is an account of how *unravel* works and which challenges it has to meet.
 
-## Neighborhood
+## Neighbourhood
 
 When we display a node, we consider all the slots to which this node is linked,
 and then collect all other nodes in the corpus that share one or more of these slots.
 (see `tf.core.locality.Locality.i`).
 
 !!! explanation "with some subtleties"
-    We exclude some nodes from the neighborhood, such as lexeme nodes, which have
+    We exclude some nodes from the neighbourhood, such as lexeme nodes, which have
     characteristics that require special treatment.
     We also exclude nodes of types that have a higher rank (read on).
 
@@ -81,7 +81,7 @@ one, while remaining completely disjoint.
 
 ![chunking](../images/DisplayDesign/DisplayDesign.003.png)
 
-We divide each node in our neighborhood into its maximal contiguous chunks.
+We divide each node in our neighbourhood into its maximal contiguous chunks.
 Such chunk are specified by tuples `(n, b, e)`, where `n` is the node (an integer),
 and `b` is the first slot of the chunk and `e` its last slot.
 
@@ -107,7 +107,7 @@ Here you see a cluster that does not respect a word boundary.
 We use the word boundary to break up the cluster in question into two *fragments*.
 A *fragment* is, like a chunk, a continuous part of a node, but not necessarily maximal.
 
-We fragment all node chunks in our neighborhood.
+We fragment all node chunks in our neighbourhood.
 
 !!! explanation "with some subtleties"
     We work from higher levels to lower levels: node chunks of higher levels fragment

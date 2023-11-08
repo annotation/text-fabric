@@ -58,14 +58,14 @@ export class SearchProvider {
 
     /* LONG RUNNING FUNCTIONS
      *
-     * We apply a device to make behavior more conspicuous on the interface.
+     * We apply a device to make behaviour more conspicuous on the interface.
      *
      * There are two problems
      *
      * 1. some actions go so fast, that the user does not see them happening
      * 2. some actions take a lot of time, without the user knowing that he must wait
      *
-     * To solve that, we apply some CSS formatting to background and border colors.
+     * To solve that, we apply some CSS formatting to background and border colours.
      * In order to trigger them, we wrap some functions into this sequence:
      *
      * a. add the CSS class "waiting" to some elements

@@ -87,7 +87,7 @@ def isInt(val):
 
 
 def mathEsc(val):
-    """Escape $ signs to `<span>$</span>`.
+    """Escape dollar signs to `<span>$</span>`.
 
     To prevent them from being interpreted as math in a Jupyter notebook
     in cases where you need them literally.
@@ -134,12 +134,13 @@ def htmlEsc(val, math=False):
     return (
         ""
         if val is None
-        else (str(val).replace("&", "&amp;").replace("<", "&lt;"))
+        else (str(val).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
         if math
         else (
             str(val)
             .replace("&", "&amp;")
             .replace("<", "&lt;")
+            .replace(">", "&gt;")
             .replace("$", "<span>$</span>")
         )
     )
@@ -540,7 +541,7 @@ def mergeDict(source, overrides):
 
 
 def getAllRealFeatures(api):
-    """Get all config features and all loaded node and edge features.
+    """Get all configuration features and all loaded node and edge features.
 
     Except `omap@v-w` features.
     When we take volumes or collections from works,

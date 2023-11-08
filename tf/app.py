@@ -38,7 +38,7 @@ def use(appName, *args, backend=None, **kwargs):
 
     kwargs: mixed
         Used to initialize the corpus app that we use.
-        That is either an uncustomized `tf.advanced.app.App` or
+        That is either an uncustomised `tf.advanced.app.App` or
         a customization of it.
 
     Returns

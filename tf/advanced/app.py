@@ -326,7 +326,7 @@ The app "{appName}" will not work!
         hoist: boolean, optional False
             Same as in `App`.
 
-        !!! hint "the effect of the config settings"
+        !!! hint "the effect of the configuration settings"
             If you are developing a TF app and need to see the effects of
             the configuration settings in detail, you can conveniently
             call `reuse`.
@@ -660,7 +660,7 @@ def useApp(appName, backend):
 
     kwargs: mixed
         Used to initialize the corpus app that we use.
-        That is either an uncustomized `tf.advanced.app.App` or
+        That is either an uncustomised `tf.advanced.app.App` or
         a customization of it.
 
     Returns

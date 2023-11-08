@@ -260,7 +260,8 @@ Concerning the Excel sheets in `ner/sheets`:
 
 ### Good practice
 
-All NER input data (config file and Excel sheets) should reside in the repository.
+All NER input data (configuration file and Excel sheets) should reside in the
+repository.
 The corresponding TF app should specify in its `app/config.yaml`,
 under `provenanceSpecs`:
 

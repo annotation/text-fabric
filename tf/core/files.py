@@ -582,7 +582,7 @@ def dirContents(path):
     return (tuple(files), tuple(dirs))
 
 
-def dirAllFiles(path):
+def dirAllFiles(path, ignore=None):
     """Gets all the files found by `path`.
 
     The result is just `[path]` if `path` is a file, otherwise the list of files under
@@ -594,6 +594,8 @@ def dirAllFiles(path):
     ----------
     path: string
         The path to the file or directory on the file system.
+    ignore: set
+        Names of directories that must be skipped
 
     Returns
     -------
@@ -609,13 +611,18 @@ def dirAllFiles(path):
 
     files = []
 
+    if not ignore:
+        ignore = set()
+
     for entry in os.listdir(path):
         name = f"{path}/{entry}"
 
         if os.path.isfile(name):
             files.append(name)
         elif os.path.isdir(name):
-            files.extend(dirAllFiles(name))
+            if entry in ignore:
+                continue
+            files.extend(dirAllFiles(name, ignore=ignore))
 
     return tuple(sorted(files))
 

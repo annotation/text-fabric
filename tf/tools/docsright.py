@@ -4,9 +4,11 @@ It supports two types of file:
 
 *   `.md`: markdown files
 *   `.py`: python files
+*   `.ipynb`: jupyter notebook files
 
 In markdown files, it treats all lines,
-in python files only the lines in docstrings.
+in python files only the lines in docstrings,
+in notebook files only the markdown contained in markdown cells.
 
 The reason is that in Markdown both list items and code blocks can be marked by
 indentation, and the vim spell-checker cannot see the difference.
@@ -16,6 +18,7 @@ By de-indenting the lines first, we can let the spell-checker do its work.
 import sys
 import ast
 import re
+from nbformat import read as nbRead, NO_CONVERT
 
 from ..core.files import (
     isFile,
@@ -165,8 +168,9 @@ def apply(line):
 def operation(srcFile, dstLines):
     isPy = srcFile.endswith(".py")
     isMd = srcFile.endswith(".md")
+    isIpynb = srcFile.endswith(".ipynb")
 
-    if not isPy and not isMd:
+    if not isPy and not isMd and not isIpynb:
         return True
 
     srcFileX = ux(srcFile)
@@ -179,6 +183,18 @@ def operation(srcFile, dstLines):
         if isMd:
             for line in fh:
                 dstLines.append(apply(line))
+
+        if isIpynb:
+            notebook = nbRead(fh, NO_CONVERT)
+            cells = notebook["cells"]
+            mdCells = [c for c in cells if c["cell_type"] == "markdown"]
+
+            for (cellNr, cell) in enumerate(mdCells):
+                dstLines.append(f"\nCELL\n\n,,\t{cellNr}\n")
+                md = cell["source"]
+
+                for line in md.split("\n"):
+                    dstLines.append(apply(line))
 
         if isPy:
             text = fh.read()

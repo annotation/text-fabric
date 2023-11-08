@@ -1,7 +1,7 @@
 """
 # Unravel
 
-Unraveling means to transform a neighborhood of nodes into a tree of node fragment.
+Unraveling means to transform a neighbourhood of nodes into a tree of node fragment.
 That sounds simple, but quite a few ideas have to work together to make it work.
 
 It is described at length in `tf.about.displaydesign`.
@@ -183,7 +183,7 @@ class TreeInfo:
 
 
 def unravel(app, n, isPlain=True, _inTuple=False, explain=False, **options):
-    """Unravels a node and its graph-neighborhood into a tree of fragments.
+    """Unravels a node and its graph-neighbourhood into a tree of fragments.
 
     Parameters
     ----------

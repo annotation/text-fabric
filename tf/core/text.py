@@ -10,12 +10,12 @@ There are several things to accomplish here, such as
 *   switch between various text representations.
 
 The details of the Text API are dependent on the `tf.parameters.WARP` feature `otext`,
-which is a config feature.
+which is a configuration feature.
 
 !!! hint "T"
     The Text API is exposed as `T` or `Text`.
 
-!!! note "otext is optional"
+!!! note "`otext` is optional"
     If your dataset does not have an `otext` feature,
     the Text API will not be build.
     If it exists, but does not specify structure or sections,
@@ -121,7 +121,7 @@ functions available by which you can make handy use of that information.
     sense that node types that act as containers have a lower level than node types
     that act as containees. So books have the lowest level, words the highest. See
     [levels](#levels). However, if this level assignment turns out to be wrong for
-    your dataset, you can configure the right order in the *otext* feature, by means
+    your dataset, you can configure the right order in the `otext` feature, by means
     of a key `levels` with value a comma separated list of levels. Example:
 
     ```
@@ -183,7 +183,7 @@ For example, if `letters` and `after` are features, this is a text format:
 {letters}{after}
 ```
 
-If you need tabs and newlines in a format, specify them by \\t and \\n.
+If you need tabs and newlines in a format, specify them by `\\t` and `\\n`.
 
 You can also conditionally choose between features, to
 substitute the value of another feature in case of empty values.
@@ -248,7 +248,7 @@ But some features have meaningful values for particular node types only.
 So formats may indicate that they should be applied to nodes of a specific type.
 See `T.text()` below.
 
-Remember that the formats are defined in the `otext` warp config feature of your
+Remember that the formats are defined in the `otext` warp configuration feature of your
 set, not by TF.
 
 !!! note "Freedom of names for formats"
@@ -262,7 +262,7 @@ set, not by TF.
 
 ### The T.text() function
 
-The way th `tf.core.text.Text.text` responds to its parameters may look complicated,
+The way `tf.core.text.Text.text` responds to its parameters may look complicated,
 but the rationale is that the defaults should be sensible.
 
 Consider the simplest call to this function: `T.text(node)`.
@@ -318,7 +318,7 @@ features to furnish a decent representation.
     will lookup all word nodes under `n` and apply the template `{lex}`
     to them.
 
-!!! caution "same and different behaviors"
+!!! caution "same and different behaviours"
     The consequences of the rules might be unexpected in some cases.
     Here are a few observations:
 
