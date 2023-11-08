@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/locality.py#L1-L312" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/locality.py#L1-L312" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Local navigation between nodes.
@@ -38,15 +38,15 @@ SET_TYPES = {set, frozenset}
 
 
 class Locality:
-    &#34;&#34;&#34;Methods by which you can navigate from a node to its neighborhood.
+    &#34;&#34;&#34;Methods by which you can navigate from a node to its neighbourhood.
 
-    Neighbors are: nodes that have slots in common, embedders and embeddees,
+    Neighbours are: nodes that have slots in common, embedders and embeddees,
     previous and next siblings.
 
     !!! note &#34;L&#34;
         The Locality API is exposed as `L` or `Locality`.
 
-    !!! note &#34;otype parameter&#34;
+    !!! note &#34;`otype` parameter&#34;
         In all of the following `L`-functions, if the `otype` parameter is passed,
         the result is filtered and only nodes with
         `otype=nodeType` or `otype in nodeTypes` are retained.
@@ -357,15 +357,15 @@ class Locality:
 <span>(</span><span>api)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Methods by which you can navigate from a node to its neighborhood.</p>
-<p>Neighbors are: nodes that have slots in common, embedders and embeddees,
+<div class="desc"><p>Methods by which you can navigate from a node to its neighbourhood.</p>
+<p>Neighbours are: nodes that have slots in common, embedders and embeddees,
 previous and next siblings.</p>
 <div class="admonition note">
 <p class="admonition-title">L</p>
 <p>The Locality API is exposed as <code>L</code> or <code><a title="tf.core.locality.Locality" href="#tf.core.locality.Locality">Locality</a></code>.</p>
 </div>
 <div class="admonition note">
-<p class="admonition-title">otype parameter</p>
+<p class="admonition-title"><code>otype</code> parameter</p>
 <p>In all of the following <code>L</code>-functions, if the <code>otype</code> parameter is passed,
 the result is filtered and only nodes with
 <code>otype=nodeType</code> or <code>otype in nodeTypes</code> are retained.</p>
@@ -399,18 +399,18 @@ same words, then that is a case where:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/locality.py#L9-L312" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/locality.py#L9-L312" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Locality:
-    &#34;&#34;&#34;Methods by which you can navigate from a node to its neighborhood.
+    &#34;&#34;&#34;Methods by which you can navigate from a node to its neighbourhood.
 
-    Neighbors are: nodes that have slots in common, embedders and embeddees,
+    Neighbours are: nodes that have slots in common, embedders and embeddees,
     previous and next siblings.
 
     !!! note &#34;L&#34;
         The Locality API is exposed as `L` or `Locality`.
 
-    !!! note &#34;otype parameter&#34;
+    !!! note &#34;`otype` parameter&#34;
         In all of the following `L`-functions, if the `otype` parameter is passed,
         the result is filtered and only nodes with
         `otype=nodeType` or `otype in nodeTypes` are retained.
@@ -737,7 +737,7 @@ may count as embeddee nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/locality.py#L153-L214" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/locality.py#L153-L214" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def d(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *downward* nodes.
@@ -831,7 +831,7 @@ may count as intersector nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/locality.py#L51-L105" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/locality.py#L51-L105" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def i(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *intersecting* nodes
@@ -913,7 +913,7 @@ left and big embeddees before right and small embeddees.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/locality.py#L264-L312" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/locality.py#L264-L312" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def n(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *next* nodes.
@@ -989,7 +989,7 @@ but <em>reversed</em>: right and small embedders before left and big embedders.<
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/locality.py#L216-L262" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/locality.py#L216-L262" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def p(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *previous* nodes.
@@ -1070,7 +1070,7 @@ may count as embedder nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/locality.py#L107-L151" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/locality.py#L107-L151" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def u(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *upward* nodes.

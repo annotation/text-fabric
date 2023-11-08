@@ -34,7 +34,7 @@ control over how to customize the annotator for different corpora.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/browser/ner/corpus.py#L1-L364" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/browser/ner/corpus.py#L1-L364" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Access to the corpus.
 
@@ -69,9 +69,9 @@ class Corpus(Settings):
         Everything that depends on the specifics of a corpus, such as getting its text,
         is collected here.
 
-        If a corpus does not have a config file that tells TF which features to use
-        for text representation, then we flag to the object instance that it is not
-        properly set up.
+        If a corpus does not have a configuration file that tells TF which
+        features to use for text representation, then we flag to the object
+        instance that it is not properly set up.
 
         All methods that might fail because of this, are guarded by a check on this
         flag.
@@ -418,15 +418,15 @@ class Corpus(Settings):
 <div class="desc"><p>Corpus dependent methods for the annotator.</p>
 <p>Everything that depends on the specifics of a corpus, such as getting its text,
 is collected here.</p>
-<p>If a corpus does not have a config file that tells TF which features to use
-for text representation, then we flag to the object instance that it is not
-properly set up.</p>
+<p>If a corpus does not have a configuration file that tells TF which
+features to use for text representation, then we flag to the object
+instance that it is not properly set up.</p>
 <p>All methods that might fail because of this, are guarded by a check on this
 flag.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/browser/ner/corpus.py#L27-L364" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/browser/ner/corpus.py#L27-L364" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Corpus(Settings):
     def __init__(self):
@@ -435,9 +435,9 @@ flag.</p></div>
         Everything that depends on the specifics of a corpus, such as getting its text,
         is collected here.
 
-        If a corpus does not have a config file that tells TF which features to use
-        for text representation, then we flag to the object instance that it is not
-        properly set up.
+        If a corpus does not have a configuration file that tells TF which
+        features to use for text representation, then we flag to the object
+        instance that it is not properly set up.
 
         All methods that might fail because of this, are guarded by a check on this
         flag.

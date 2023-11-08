@@ -104,7 +104,7 @@ advanced API; if present, additional settings, code and styling is loaded.</li>
 <h2 id="loading">Loading</h2>
 <p>Loading a corpus consists of 2 separate steps:</p>
 <ol>
-<li>load the <em>app</em> of the corpus (config setting, static material, python code)</li>
+<li>load the <em>app</em> of the corpus (configuration setting, static material, python code)</li>
 <li>load the <em>data</em> of the corpus.</li>
 </ol>
 <p>Both items can be specified independently, in terms of where they reside
@@ -222,7 +222,7 @@ and you can obtain it by</p>
 and the <code>{path}</code> is <code>easter/tf</code> under which
 version <code>c</code> of the feature <code>egg</code>
 is available in TF format.
-You can point to any such directory om the entire GitHub
+You can point to any such directory in the entire GitHub
 if you know that it contains relevant features.</p>
 <p>Your TF app might be configured to download specific modules.
 See <code>moduleSpecs</code> in the app's <code>config.yaml</code> file.
@@ -343,7 +343,7 @@ default selection of features.
 You cannot use these arguments to prevent features from being loaded.
 Read on to see how you can achieve the loading of fewer features.</p>
 </div>
-<h3 id="api">api</h3>
+<h3 id="api">API</h3>
 <p>So far, <code>A = use()</code> will construct an advanced API with a more or less standard set of features
 loaded, and make that API available to you, under <code>A.api</code>.
 But you can also setup a core API yourself by using the lower level method
@@ -404,7 +404,7 @@ the corpus app under <code>provenanceSpec &gt; moduleSpecs</code>:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/about/usefunc.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/about/usefunc.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/usefunc.md
@@ -500,7 +500,7 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><a href="#lower-level">Lower level</a><ul>
 <li><a href="#locations-modules">locations, modules</a></li>
-<li><a href="#api">api</a></li>
+<li><a href="#api">API</a></li>
 </ul>
 </li>
 <li><a href="#silence">Silence</a></li>

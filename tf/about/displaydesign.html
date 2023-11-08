@@ -39,7 +39,7 @@ in order to show of hide features of nodes, call in additional graphics, show or
 intermediate levels, etc.</p>
 <p>Whatever we want to display, we have to display in HTML, which is basically a
 hierarchically organized set of presentation elements.</p>
-<p>But a node and its constellation of relevant neighborhood nodes
+<p>But a node and its constellation of relevant neighbourhood nodes
 does not have a hierarchical structure, in general, that is.</p>
 <p>The unravel algorithm solves the problem of turning a node and its associated piece
 of the textual graph into a tree of node fragments in such a way that the order
@@ -52,13 +52,13 @@ and <em>stacks</em> the fragments into a tree.</p>
 <p>This tree of fragments can then be transformed in various kinds of HTML with rather
 straightforward code, see <code><a title="tf.advanced.render.render" href="../advanced/render.html#tf.advanced.render.render">render()</a></code>.</p>
 <p>Here is an account of how <em>unravel</em> works and which challenges it has to meet.</p>
-<h2 id="neighborhood">Neighborhood</h2>
+<h2 id="neighbourhood">Neighbourhood</h2>
 <p>When we display a node, we consider all the slots to which this node is linked,
 and then collect all other nodes in the corpus that share one or more of these slots.
 (see <code><a title="tf.core.locality.Locality.i" href="../core/locality.html#tf.core.locality.Locality.i">Locality.i()</a></code>).</p>
 <div class="admonition explanation">
 <p class="admonition-title">with some subtleties</p>
-<p>We exclude some nodes from the neighborhood, such as lexeme nodes, which have
+<p>We exclude some nodes from the neighbourhood, such as lexeme nodes, which have
 characteristics that require special treatment.
 We also exclude nodes of types that have a higher rank (read on).</p>
 </div>
@@ -84,7 +84,7 @@ example taken from this <a href="https://nbviewer.jupyter.org/github/annotation/
 <p>You see a sentence fragment with two clauses, of which the second is engulfed by the first
 one, while remaining completely disjoint.</p>
 <p><img alt="chunking" src="../images/DisplayDesign/DisplayDesign.003.png"></p>
-<p>We divide each node in our neighborhood into its maximal contiguous chunks.
+<p>We divide each node in our neighbourhood into its maximal contiguous chunks.
 Such chunk are specified by tuples <code>(n, b, e)</code>, where <code>n</code> is the node (an integer),
 and <code>b</code> is the first slot of the chunk and <code>e</code> its last slot.</p>
 <p>When we display nodes, we will typically generate solid borders at node boundaries and
@@ -102,7 +102,7 @@ example taken from <a href="https://nbviewer.jupyter.org/github/annotation/tutor
 <p><img alt="fragmenting" src="../images/DisplayDesign/DisplayDesign.005.png"></p>
 <p>We use the word boundary to break up the cluster in question into two <em>fragments</em>.
 A <em>fragment</em> is, like a chunk, a continuous part of a node, but not necessarily maximal.</p>
-<p>We fragment all node chunks in our neighborhood.</p>
+<p>We fragment all node chunks in our neighbourhood.</p>
 <div class="admonition explanation">
 <p class="admonition-title">with some subtleties</p>
 <p>We work from higher levels to lower levels: node chunks of higher levels fragment
@@ -146,7 +146,7 @@ For each fragment, the output consists of a contribution by the node of the frag
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/about/displaydesign.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/about/displaydesign.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/displaydesign.md
@@ -218,7 +218,7 @@ setTimeout(() => input.focus(), 100);
 <div class="toc">
 <ul>
 <li><a href="#display-design">Display design</a><ul>
-<li><a href="#neighborhood">Neighborhood</a><ul>
+<li><a href="#neighbourhood">Neighbourhood</a><ul>
 <li><a href="#descendant-types">Descendant types</a></li>
 </ul>
 </li>

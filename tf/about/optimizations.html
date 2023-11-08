@@ -116,7 +116,7 @@ value.</p>
 <p>The reason for these conventions is practical: edge features usually have empty
 labels, and there are many edges. In case of the Hebrew Text database, there are
 1.5 million edges, so every extra character that is needed on a data line means
-that the file size increases with 1.5 MB.</p>
+that the file size increases with 1.5MB.</p>
 <p>Nodes on the other hand, usually do not have empty values, and they are often
 specified in a consecutive way, especially slot (word) nodes. There are quite
 many distinct word features, and it would be a waste to have a column of half a
@@ -161,7 +161,7 @@ above all, the reduced transparency of the <code>.<a title="tf" href="../index.h
 <li>node 1 has value: <em>tab</em> <em>newline</em></li>
 <li>node 2 has value: 2 <em>tab</em> 3</li>
 <li>node 3 has value: foo <em>newline</em> bar</li>
-<li>node 1 gets a new value: Escape <tab> as \t</li>
+<li>node 1 gets a new value: Escape <tab> as <code>\t</code></li>
 </ol>
 <h3 id="edge-features">Edge features</h3>
 <ol>
@@ -182,7 +182,7 @@ edges: 1-&gt;2 and 2-&gt;3.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/about/optimizations.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/about/optimizations.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/optimizations.md

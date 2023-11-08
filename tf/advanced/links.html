@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/links.py#L1-L1015" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/links.py#L1-L1015" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Produce links to TF data and links from nodes to web resources.
@@ -307,14 +307,14 @@ def webLink(
     section nodes and lexeme nodes, dependent on how they are configured in
     the app&#39;s `config.yaml`.
 
-    !!! hint &#34;Customizable&#34;
-        You can customize the behavior of `webLink()` to the needs of your corpus
+    !!! hint &#34;Customisable&#34;
+        You can customize the behaviour of `webLink()` to the needs of your corpus
         by providing appropriate values in its `config.yaml`, especially for
         `webBase`, `webLang`, `webOffset`, `webFeature`, `webUrl`, `webUrlLex`, and `webHint`.
 
     Parameters
     ----------
-    n: int
+    n: integer
         A node
     text: string, optional default `None`
         The text of the link. If left out, a suitable text will be derived from
@@ -1002,7 +1002,7 @@ def flexLink(app, kind):
     converted to HTML and then published on the Pages of the on-premise GitLab.
 
     What exactly the link to such an on-premise Pages service is, may depend on
-    a config setting.
+    a configuration setting.
 
     This function resolves all that.
 
@@ -1063,7 +1063,7 @@ def flexLink(app, kind):
 But if the back-end is on-premise, we assume that notebooks are
 converted to HTML and then published on the Pages of the on-premise GitLab.</p>
 <p>What exactly the link to such an on-premise Pages service is, may depend on
-a config setting.</p>
+a configuration setting.</p>
 <p>This function resolves all that.</p>
 <div class="admonition note">
 <p class="admonition-title">Converting notebooks to HTML</p>
@@ -1090,7 +1090,7 @@ service of the back-end.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/links.py#L964-L1015" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/links.py#L964-L1015" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def flexLink(app, kind):
     &#34;&#34;&#34;Produce documentation links that are heavily dependent on the back-end.
@@ -1102,7 +1102,7 @@ service of the back-end.</li>
     converted to HTML and then published on the Pages of the on-premise GitLab.
 
     What exactly the link to such an on-premise Pages service is, may depend on
-    a config setting.
+    a configuration setting.
 
     This function resolves all that.
 
@@ -1165,7 +1165,7 @@ all that metadata except the description keys.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/links.py#L184-L265" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/links.py#L184-L265" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def header(app, allMeta=False):
     &#34;&#34;&#34;Generate a colophon of the app.
@@ -1275,7 +1275,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/links.py#L35-L181" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/links.py#L35-L181" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linksApi(app, silent=SILENT_D):
     &#34;&#34;&#34;Produce the link API.
@@ -1453,7 +1453,7 @@ If not, a plain text representation of the link will be made.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/links.py#L509-L545" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/links.py#L509-L545" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def outLink(
     text, href, title=None, passage=None, clsName=None, target=&#34;_blank&#34;, asHtml=True
@@ -1525,7 +1525,7 @@ by a back-end repository</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/links.py#L900-L961" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/links.py#L900-L961" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def provenanceLink(
     backend, org, repo, version, branch, commit, local, release, relative
@@ -1612,7 +1612,7 @@ This item will be displayed together with the rest of the provenance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/links.py#L409-L444" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/links.py#L409-L444" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showProvenance(app, jobName=&#34;program code&#34;, author=&#34;program author&#34;):
     &#34;&#34;&#34;Shows the provenance that is normally displayed during data loading.
@@ -1662,14 +1662,14 @@ This item will be displayed together with the rest of the provenance.</dd>
 section nodes and lexeme nodes, dependent on how they are configured in
 the app's <code>config.yaml</code>.</p>
 <div class="admonition hint">
-<p class="admonition-title">Customizable</p>
-<p>You can customize the behavior of <code><a title="tf.advanced.links.webLink" href="#tf.advanced.links.webLink">webLink()</a></code> to the needs of your corpus
+<p class="admonition-title">Customisable</p>
+<p>You can customize the behaviour of <code><a title="tf.advanced.links.webLink" href="#tf.advanced.links.webLink">webLink()</a></code> to the needs of your corpus
 by providing appropriate values in its <code>config.yaml</code>, especially for
 <code>webBase</code>, <code>webLang</code>, <code>webOffset</code>, <code>webFeature</code>, <code>webUrl</code>, <code>webUrlLex</code>, and <code>webHint</code>.</p>
 </div>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>n</code></strong> :&ensp;<code>int</code></dt>
+<dt><strong><code>n</code></strong> :&ensp;<code>integer</code></dt>
 <dd>A node</dd>
 <dt><strong><code>text</code></strong> :&ensp;<code>string</code>, optional <code>default </code>None``</dt>
 <dd>The text of the link. If left out, a suitable text will be derived from
@@ -1695,7 +1695,7 @@ other attributes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/links.py#L268-L406" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/links.py#L268-L406" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def webLink(
     app, n, text=None, clsName=None, urlOnly=False, _asString=False, _noUrl=False
@@ -1708,14 +1708,14 @@ other attributes.</dd>
     section nodes and lexeme nodes, dependent on how they are configured in
     the app&#39;s `config.yaml`.
 
-    !!! hint &#34;Customizable&#34;
-        You can customize the behavior of `webLink()` to the needs of your corpus
+    !!! hint &#34;Customisable&#34;
+        You can customize the behaviour of `webLink()` to the needs of your corpus
         by providing appropriate values in its `config.yaml`, especially for
         `webBase`, `webLang`, `webOffset`, `webFeature`, `webUrl`, `webUrlLex`, and `webHint`.
 
     Parameters
     ----------
-    n: int
+    n: integer
         A node
     text: string, optional default `None`
         The text of the link. If left out, a suitable text will be derived from

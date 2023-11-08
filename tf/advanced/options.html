@@ -54,7 +54,7 @@ The default is app dependent, usually the slot type of the corpus.</dd>
 <p>Which nodes of a tuple (or list of tuples) will be highlighted.
 If <code>colorMap</code> is <code>None</code> or missing, all nodes will be highlighted with
 the default highlight color, which is yellow.</p>
-<p>But you can assign different colors to the members of the tuple:
+<p>But you can assign different colours to the members of the tuple:
 <code>colorMap</code> must be a dictionary that maps the positions in a tuple
 to a color.</p>
 <ul>
@@ -90,9 +90,9 @@ This gives the best account of the exact result set.</li>
 </ul>
 <div class="admonition caution">
 <p class="admonition-title">mixing up highlights</p>
-<p>Condensing may mix-up the highlight coloring.
+<p>Condensing may mix-up the highlight colouring.
 If a node occurs in two results, at different positions
-in the tuple, the <code>colorMap</code> wants to assign it two colors!
+in the tuple, the <code>colorMap</code> wants to assign it two colours!
 Yet one color will be chosen, and it is unpredictable which one.</p>
 </div>
 </dd>
@@ -119,13 +119,13 @@ a set or mapping of edges defined by that edge feature that should be highlighte
 Only edges that are involved in the display will be highlighted.</p>
 <p>If the value is a set, the specified edges will be highlighted
 with a default color (blue).</p>
-<p>If it is a dictionary, it should map edges to colors.
+<p>If it is a dictionary, it should map edges to colours.
 Any color that is a valid
 <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">CSS color</a>
 qualifies.</p>
 <p>If you map an edge to the empty string, it will get the default highlight color.</p>
 <p>An edge is a pair of nodes, represented as a tuple of two node numbers.</p>
-<p>You can also map the following pseudo edges to colors:</p>
+<p>You can also map the following pseudo edges to colours:</p>
 <ul>
 <li><code>(fromNode, None)</code>: all outgoing edges of <code>fromNode</code>;</li>
 <li><code>(None, toNode)</code>: all incoming edges of <code>toNode</code>.</li>
@@ -211,14 +211,14 @@ those parts.</p>
 Only nodes that are involved in the display will be highlighted.</p>
 <p>If <code>highlights</code> is a set, its nodes will be highlighted
 with a default color (yellow).</p>
-<p>If it is a dictionary, it should map nodes to colors.
+<p>If it is a dictionary, it should map nodes to colours.
 Any color that is a valid
 <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">CSS color</a>
 qualifies.</p>
 <p>If you map a node to the empty string, it will get the default highlight color.</p>
 <p>Highlights in plain display will be done, also for nodes deeply buried in the top node.
-Slots are highlighted by coloring the background,
-all other nodes by colored frames around their material.</p>
+Slots are highlighted by colouring the background,
+all other nodes by coloured frames around their material.</p>
 <div class="admonition note">
 <p class="admonition-title">one big highlights dictionary</p>
 <p>It is OK to first compose a big highlights dictionary
@@ -385,7 +385,7 @@ The node type of slot nodes is never displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/options.py#L1-L708" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/options.py#L1-L708" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Display Settings.
@@ -419,7 +419,7 @@ colorMap: dict, optional None
     If `colorMap` is `None` or missing, all nodes will be highlighted with
     the default highlight color, which is yellow.
 
-    But you can assign different colors to the members of the tuple:
+    But you can assign different colours to the members of the tuple:
     `colorMap` must be a dictionary that maps the positions in a tuple
     to a color.
 
@@ -451,9 +451,9 @@ condensed: boolean, optional False
         This gives the best account of the exact result set.
 
     !!! caution &#34;mixing up highlights&#34;
-        Condensing may mix-up the highlight coloring.
+        Condensing may mix-up the highlight colouring.
         If a node occurs in two results, at different positions
-        in the tuple, the `colorMap` wants to assign it two colors!
+        in the tuple, the `colorMap` wants to assign it two colours!
         Yet one color will be chosen, and it is unpredictable which one.
 
 condenseType: string, optional None
@@ -482,7 +482,7 @@ edgeHighlights: dict
     If the value is a set, the specified edges will be highlighted
     with a default color (blue).
 
-    If it is a dictionary, it should map edges to colors.
+    If it is a dictionary, it should map edges to colours.
     Any color that is a valid
     [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value)
     qualifies.
@@ -491,7 +491,7 @@ edgeHighlights: dict
 
     An edge is a pair of nodes, represented as a tuple of two node numbers.
 
-    You can also map the following pseudo edges to colors:
+    You can also map the following pseudo edges to colours:
 
     *   `(fromNode, None)`: all outgoing edges of `fromNode`;
     *   `(None, toNode)`: all incoming edges of `toNode`.
@@ -574,7 +574,7 @@ highlights: dict | set, optional {}
     If `highlights` is a set, its nodes will be highlighted
     with a default color (yellow).
 
-    If it is a dictionary, it should map nodes to colors.
+    If it is a dictionary, it should map nodes to colours.
     Any color that is a valid
     [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value)
     qualifies.
@@ -582,8 +582,8 @@ highlights: dict | set, optional {}
     If you map a node to the empty string, it will get the default highlight color.
 
     Highlights in plain display will be done, also for nodes deeply buried in the top node.
-    Slots are highlighted by coloring the background,
-    all other nodes by colored frames around their material.
+    Slots are highlighted by colouring the background,
+    all other nodes by coloured frames around their material.
 
     !!! note &#34;one big highlights dictionary&#34;
         It is OK to first compose a big highlights dictionary
@@ -1131,7 +1131,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/options.py#L544-L708" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/options.py#L544-L708" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Options:
     def __init__(self, app):
@@ -1309,7 +1309,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/options.py#L642-L691" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/options.py#L642-L691" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def check(self, msg, options):
     app = self.app
@@ -1371,7 +1371,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/options.py#L707-L708" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/options.py#L707-L708" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def consume(self, options, *remove):
     return {o: options[o] for o in options if o not in remove}</code></pre>
@@ -1385,7 +1385,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/options.py#L693-L705" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/options.py#L693-L705" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def distill(self, options):
     defaults = self.defaults
@@ -1410,7 +1410,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/options.py#L588-L640" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/options.py#L588-L640" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def normalize(self, option, value):
     app = self.app
@@ -1475,7 +1475,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/options.py#L562-L577" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/options.py#L562-L577" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reset(self, *options):
     app = self.app
@@ -1503,7 +1503,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/options.py#L579-L586" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/options.py#L579-L586" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setup(self, *options, **overrides):
     current = self.current
@@ -1526,7 +1526,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/options.py#L530-L541" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/options.py#L530-L541" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class OptionsCurrent:
     def __init__(self, options):
@@ -1551,7 +1551,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/options.py#L536-L537" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/options.py#L536-L537" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, k, v=None):
     return getattr(self, k, v)</code></pre>
@@ -1565,7 +1565,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/options.py#L539-L541" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/options.py#L539-L541" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set(self, k, v):
     self.allKeys.add(k)

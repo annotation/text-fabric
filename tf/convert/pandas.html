@@ -56,7 +56,7 @@ programs, such as TF, to process the same data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/convert/pandas.py#L1-L296" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/pandas.py#L1-L296" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Export a TF dataset to a `pandas` data frame.
@@ -153,12 +153,12 @@ def exportPandas(app, inTypes=None, exportDir=None):
 
         **Backslash**
 
-        `pandas` has two special behaviors:
+        `pandas` has two special behaviours:
 
         *   *backslash* `n` becomes a *newline*;
-        *   *backslash* *blackslash* becomes a single *backslash*.
+        *   *backslash* *backslash* becomes a single *backslash*.
 
-        This is almost what we want: the newline behavior is desired; the
+        This is almost what we want: the newline behaviour is desired; the
         reducing of backslashes not, but we leave it as it is.
 
         **Double quote**
@@ -403,12 +403,12 @@ way in combination with specific following characters.</p>
 <p>We instruct the <code>pandas</code> table reading function to use the Control-A as
 escape char and the double quote as quote char.</p>
 <p><strong>Backslash</strong></p>
-<p><code>pandas</code> has two special behaviors:</p>
+<p><code>pandas</code> has two special behaviours:</p>
 <ul>
 <li><em>backslash</em> <code>n</code> becomes a <em>newline</em>;</li>
-<li><em>backslash</em> <em>blackslash</em> becomes a single <em>backslash</em>.</li>
+<li><em>backslash</em> <em>backslash</em> becomes a single <em>backslash</em>.</li>
 </ul>
-<p>This is almost what we want: the newline behavior is desired; the
+<p>This is almost what we want: the newline behaviour is desired; the
 reducing of backslashes not, but we leave it as it is.</p>
 <p><strong>Double quote</strong></p>
 <p><em>Ctrl-A</em> plus <em>double quote</em> becomes <em>double quote</em>.</p>
@@ -435,7 +435,7 @@ If <code>None</code>, it is the <code>/pandas</code> directory in the repo of th
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/convert/pandas.py#L51-L296" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/pandas.py#L51-L296" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exportPandas(app, inTypes=None, exportDir=None):
     &#34;&#34;&#34;Export a currently loaded TF dataset to `pandas`.
@@ -482,12 +482,12 @@ If <code>None</code>, it is the <code>/pandas</code> directory in the repo of th
 
         **Backslash**
 
-        `pandas` has two special behaviors:
+        `pandas` has two special behaviours:
 
         *   *backslash* `n` becomes a *newline*;
-        *   *backslash* *blackslash* becomes a single *backslash*.
+        *   *backslash* *backslash* becomes a single *backslash*.
 
-        This is almost what we want: the newline behavior is desired; the
+        This is almost what we want: the newline behaviour is desired; the
         reducing of backslashes not, but we leave it as it is.
 
         **Double quote**

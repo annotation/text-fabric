@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/highlight.py#L1-L218" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/highlight.py#L1-L218" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from .search import runSearch
 
@@ -38,15 +38,15 @@ def getHlAtt(app, n, highlights, isSlot):
     ----------
     app: obj
         The high-level API object
-    n: int
+    n: integer
         The node to be highlighted
     highlights: set|dict
         The nodes to be highlighted.
         Keys / elements are the nodes to be highlighted.
         This function is only interested in whether `n` is in it,
         and if so, what the value is (in case of a dict).
-        If given as set: use the default highlight color.
-        If given as dict: use the value as color.
+        If given as set: use the default highlight colour.
+        If given as dict: use the value as colour.
     isSlot: boolean
         Whether the node has the slot type
 
@@ -55,7 +55,7 @@ def getHlAtt(app, n, highlights, isSlot):
     hlCls: dict
         Highlight attribute, keyed by boolean &#39;is pretty&#39;
     hlStyle: dict
-        Highlight color as CSS style, keyed by boolean &#39;is pretty&#39;
+        Highlight colour as CSS style, keyed by boolean &#39;is pretty&#39;
     &#34;&#34;&#34;
 
     noResult = ({True: &#34;&#34;, False: &#34;&#34;}, {True: &#34;&#34;, False: &#34;&#34;})
@@ -100,15 +100,15 @@ def getEdgeHlAtt(e, pair, highlights):
         be highlighted.
         This function is only interested in whether the value `(f, t)` is in
         `highlights`, and if so, what the value is (in case of a dict).
-        If given as set: use the default highlight color.
-        If given as dict: use the value as color.
+        If given as set: use the default highlight colour.
+        If given as dict: use the value as colour.
 
     Returns
     -------
     hlCls: string
         Highlight attribute
     hlStyle: string
-        Highlight color as CSS style
+        Highlight colour as CSS style
     &#34;&#34;&#34;
 
     if highlights is None:
@@ -136,7 +136,7 @@ def getTupleHighlights(api, tup, highlights, colorMap, condenseType):
     &#34;&#34;&#34;Get the highlights for a tuple of nodes.
 
     The idea is to mark the elements of a tuple of nodes with highlights,
-    respecting a given set or dict of highlights and a color map.
+    respecting a given set or dict of highlights and a colour map.
 
     This is a bit of an intricate merging operation.
 
@@ -147,8 +147,8 @@ def getTupleHighlights(api, tup, highlights, colorMap, condenseType):
     tup: tuple of int
         The tuple of nodes to be highlighted
     colorMap: dict
-        A mapping of tuple positions to colors.
-        Member `i` of `tup` should be highlighted with color `colorMap[i]`.
+        A mapping of tuple positions to colours.
+        Member `i` of `tup` should be highlighted with colour `colorMap[i]`.
     condenseType: string
         The type of node that acts as the basis of a pretty display.
         The nodes in the given `tup` will be distributed over as many nodes of
@@ -158,8 +158,8 @@ def getTupleHighlights(api, tup, highlights, colorMap, condenseType):
         Keys / elements are the nodes to be highlighted.
         This function is only interested in whether the members of `tup` are in it,
         and if so, what the values are (in case of a dict).
-        If given as set: use the default highlight color.
-        If given as dict: use the value as color.
+        If given as set: use the default highlight colour.
+        If given as dict: use the value as colour.
     &#34;&#34;&#34;
 
     F = api.F
@@ -203,8 +203,8 @@ def getPassageHighlights(app, node, query, colorMap, cache):
         A query to run, and whose results will be highlighted (as far they occur
         in the passage)
     colorMap: dict
-        A mapping of tuple positions to colors.
-        Member `i` of a query result should be highlighted with color `colorMap[i]`.
+        A mapping of tuple positions to colours.
+        Member `i` of a query result should be highlighted with colour `colorMap[i]`.
     cache:  dict
         A cache that holds run queries and their results.
         Useful when we browse many chapters and want to show the highlights of
@@ -213,7 +213,7 @@ def getPassageHighlights(app, node, query, colorMap, cache):
     Returns
     -------
     dict
-        Keys are the nodes to be highlighted, values are the highlight colors.
+        Keys are the nodes to be highlighted, values are the highlight colours.
     &#34;&#34;&#34;
 
     if not query:
@@ -272,20 +272,20 @@ the <em>to</em> node of the edge to be highlighted</dd>
 be highlighted.
 This function is only interested in whether the value <code>(f, t)</code> is in
 <code>highlights</code>, and if so, what the value is (in case of a dict).
-If given as set: use the default highlight color.
-If given as dict: use the value as color.</dd>
+If given as set: use the default highlight colour.
+If given as dict: use the value as colour.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><strong><code>hlCls</code></strong> :&ensp;<code>string</code></dt>
 <dd>Highlight attribute</dd>
 <dt><strong><code>hlStyle</code></strong> :&ensp;<code>string</code></dt>
-<dd>Highlight color as CSS style</dd>
+<dd>Highlight colour as CSS style</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/highlight.py#L58-L102" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/highlight.py#L58-L102" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getEdgeHlAtt(e, pair, highlights):
     &#34;&#34;&#34;Get the edge highlight attribute and style for an edge, only for pretty mode.
@@ -302,15 +302,15 @@ If given as dict: use the value as color.</dd>
         be highlighted.
         This function is only interested in whether the value `(f, t)` is in
         `highlights`, and if so, what the value is (in case of a dict).
-        If given as set: use the default highlight color.
-        If given as dict: use the value as color.
+        If given as set: use the default highlight colour.
+        If given as dict: use the value as colour.
 
     Returns
     -------
     hlCls: string
         Highlight attribute
     hlStyle: string
-        Highlight color as CSS style
+        Highlight colour as CSS style
     &#34;&#34;&#34;
 
     if highlights is None:
@@ -343,15 +343,15 @@ If given as dict: use the value as color.</dd>
 <dl>
 <dt><strong><code>app</code></strong> :&ensp;<code>obj</code></dt>
 <dd>The high-level API object</dd>
-<dt><strong><code>n</code></strong> :&ensp;<code>int</code></dt>
+<dt><strong><code>n</code></strong> :&ensp;<code>integer</code></dt>
 <dd>The node to be highlighted</dd>
 <dt><strong><code>highlights</code></strong> :&ensp;<code>set|dict</code></dt>
 <dd>The nodes to be highlighted.
 Keys / elements are the nodes to be highlighted.
 This function is only interested in whether <code>n</code> is in it,
 and if so, what the value is (in case of a dict).
-If given as set: use the default highlight color.
-If given as dict: use the value as color.</dd>
+If given as set: use the default highlight colour.
+If given as dict: use the value as colour.</dd>
 <dt><strong><code>isSlot</code></strong> :&ensp;<code>boolean</code></dt>
 <dd>Whether the node has the slot type</dd>
 </dl>
@@ -360,12 +360,12 @@ If given as dict: use the value as color.</dd>
 <dt><strong><code>hlCls</code></strong> :&ensp;<code>dict</code></dt>
 <dd>Highlight attribute, keyed by boolean 'is pretty'</dd>
 <dt><strong><code>hlStyle</code></strong> :&ensp;<code>dict</code></dt>
-<dd>Highlight color as CSS style, keyed by boolean 'is pretty'</dd>
+<dd>Highlight colour as CSS style, keyed by boolean 'is pretty'</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/highlight.py#L4-L55" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/highlight.py#L4-L55" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getHlAtt(app, n, highlights, isSlot):
     &#34;&#34;&#34;Get the highlight attribute and style for a node for both pretty and plain modes.
@@ -374,15 +374,15 @@ If given as dict: use the value as color.</dd>
     ----------
     app: obj
         The high-level API object
-    n: int
+    n: integer
         The node to be highlighted
     highlights: set|dict
         The nodes to be highlighted.
         Keys / elements are the nodes to be highlighted.
         This function is only interested in whether `n` is in it,
         and if so, what the value is (in case of a dict).
-        If given as set: use the default highlight color.
-        If given as dict: use the value as color.
+        If given as set: use the default highlight colour.
+        If given as dict: use the value as colour.
     isSlot: boolean
         Whether the node has the slot type
 
@@ -391,7 +391,7 @@ If given as dict: use the value as color.</dd>
     hlCls: dict
         Highlight attribute, keyed by boolean &#39;is pretty&#39;
     hlStyle: dict
-        Highlight color as CSS style, keyed by boolean &#39;is pretty&#39;
+        Highlight colour as CSS style, keyed by boolean &#39;is pretty&#39;
     &#34;&#34;&#34;
 
     noResult = ({True: &#34;&#34;, False: &#34;&#34;}, {True: &#34;&#34;, False: &#34;&#34;})
@@ -437,8 +437,8 @@ page in the browser)</dd>
 <dd>A query to run, and whose results will be highlighted (as far they occur
 in the passage)</dd>
 <dt><strong><code>colorMap</code></strong> :&ensp;<code>dict</code></dt>
-<dd>A mapping of tuple positions to colors.
-Member <code>i</code> of a query result should be highlighted with color <code>colorMap[i]</code>.</dd>
+<dd>A mapping of tuple positions to colours.
+Member <code>i</code> of a query result should be highlighted with colour <code>colorMap[i]</code>.</dd>
 <dt><strong><code>cache</code></strong> :&ensp;<code> dict</code></dt>
 <dd>A cache that holds run queries and their results.
 Useful when we browse many chapters and want to show the highlights of
@@ -447,12 +447,12 @@ the same query.</dd>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>dict</code></dt>
-<dd>Keys are the nodes to be highlighted, values are the highlight colors.</dd>
+<dd>Keys are the nodes to be highlighted, values are the highlight colours.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/highlight.py#L162-L218" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/highlight.py#L162-L218" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getPassageHighlights(app, node, query, colorMap, cache):
     &#34;&#34;&#34;Get the highlights for a whole passage.
@@ -468,8 +468,8 @@ the same query.</dd>
         A query to run, and whose results will be highlighted (as far they occur
         in the passage)
     colorMap: dict
-        A mapping of tuple positions to colors.
-        Member `i` of a query result should be highlighted with color `colorMap[i]`.
+        A mapping of tuple positions to colours.
+        Member `i` of a query result should be highlighted with colour `colorMap[i]`.
     cache:  dict
         A cache that holds run queries and their results.
         Useful when we browse many chapters and want to show the highlights of
@@ -478,7 +478,7 @@ the same query.</dd>
     Returns
     -------
     dict
-        Keys are the nodes to be highlighted, values are the highlight colors.
+        Keys are the nodes to be highlighted, values are the highlight colours.
     &#34;&#34;&#34;
 
     if not query:
@@ -519,7 +519,7 @@ the same query.</dd>
 <dd>
 <div class="desc"><p>Get the highlights for a tuple of nodes.</p>
 <p>The idea is to mark the elements of a tuple of nodes with highlights,
-respecting a given set or dict of highlights and a color map.</p>
+respecting a given set or dict of highlights and a colour map.</p>
 <p>This is a bit of an intricate merging operation.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
@@ -528,8 +528,8 @@ respecting a given set or dict of highlights and a color map.</p>
 <dt><strong><code>tup</code></strong> :&ensp;<code>tuple</code> of <code>int</code></dt>
 <dd>The tuple of nodes to be highlighted</dd>
 <dt><strong><code>colorMap</code></strong> :&ensp;<code>dict</code></dt>
-<dd>A mapping of tuple positions to colors.
-Member <code>i</code> of <code>tup</code> should be highlighted with color <code>colorMap[i]</code>.</dd>
+<dd>A mapping of tuple positions to colours.
+Member <code>i</code> of <code>tup</code> should be highlighted with colour <code>colorMap[i]</code>.</dd>
 <dt><strong><code>condenseType</code></strong> :&ensp;<code>string</code></dt>
 <dd>The type of node that acts as the basis of a pretty display.
 The nodes in the given <code>tup</code> will be distributed over as many nodes of
@@ -539,19 +539,19 @@ The nodes in the given <code>tup</code> will be distributed over as many nodes o
 Keys / elements are the nodes to be highlighted.
 This function is only interested in whether the members of <code>tup</code> are in it,
 and if so, what the values are (in case of a dict).
-If given as set: use the default highlight color.
-If given as dict: use the value as color.</dd>
+If given as set: use the default highlight colour.
+If given as dict: use the value as colour.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/highlight.py#L105-L159" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/highlight.py#L105-L159" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getTupleHighlights(api, tup, highlights, colorMap, condenseType):
     &#34;&#34;&#34;Get the highlights for a tuple of nodes.
 
     The idea is to mark the elements of a tuple of nodes with highlights,
-    respecting a given set or dict of highlights and a color map.
+    respecting a given set or dict of highlights and a colour map.
 
     This is a bit of an intricate merging operation.
 
@@ -562,8 +562,8 @@ If given as dict: use the value as color.</dd>
     tup: tuple of int
         The tuple of nodes to be highlighted
     colorMap: dict
-        A mapping of tuple positions to colors.
-        Member `i` of `tup` should be highlighted with color `colorMap[i]`.
+        A mapping of tuple positions to colours.
+        Member `i` of `tup` should be highlighted with colour `colorMap[i]`.
     condenseType: string
         The type of node that acts as the basis of a pretty display.
         The nodes in the given `tup` will be distributed over as many nodes of
@@ -573,8 +573,8 @@ If given as dict: use the value as color.</dd>
         Keys / elements are the nodes to be highlighted.
         This function is only interested in whether the members of `tup` are in it,
         and if so, what the values are (in case of a dict).
-        If given as set: use the default highlight color.
-        If given as dict: use the value as color.
+        If given as set: use the default highlight colour.
+        If given as dict: use the value as colour.
     &#34;&#34;&#34;
 
     F = api.F

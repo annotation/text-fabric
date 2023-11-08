@@ -36,7 +36,7 @@ By leaving out volume support, volume support can use <code><a title="tf.core.fa
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/fabric.py#L1-L1054" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/fabric.py#L1-L1054" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # `FabricCore`
@@ -179,7 +179,7 @@ class FabricCore:
     *   caching pre-computed and compressed data
 
     TF is initialized for a corpus.
-    It will search a set of directories and catalog all `.tf` files it finds there.
+    It will search a set of directories and catalogue all `.tf` files it finds there.
     These are the features you can subsequently load.
 
     Here `directories` and `subdirectories` are strings with directory names
@@ -229,7 +229,7 @@ class FabricCore:
         loading features. Used to experiment with performance.
 
 
-    !!! note &#34;otext@ in modules&#34;
+    !!! note &#34;`otext@` in modules&#34;
         If modules contain features with a name starting with `otext@`, then the format
         definitions in these features will be added to the format definitions in the
         regular `otext` feature (which is a `tf.parameters.WARP` feature).
@@ -503,7 +503,7 @@ class FabricCore:
         Notes
         -----
         !!! explanation &#34;`configs`&#34;
-            These are config features, with metadata only, no data. E.g. `otext`.
+            These are configuration features, with metadata only, no data. E.g. `otext`.
 
         !!! explanation &#34;`computeds`&#34;
             These are blocks of pre-computed data, available under the `C` API,
@@ -650,14 +650,14 @@ class FabricCore:
                 These fields will be added to all features in `nodeFeatures` and
                 `edgeFeatures`.
 
-            !!! explanation &#34;config features&#34;
-                If you need to write the *config* feature `otext`,
+            !!! explanation &#34;configuration features&#34;
+                If you need to write the *configuration* feature `otext`,
                 which is a metadata-only feature, just
                 add the metadata under key `otext` in this parameter and make sure
                 that `otext` is not a key in `nodeFeatures` nor in
                 `edgeFeatures`.
-                These fields will be written into the separate config feature `otext`,
-                with no data associated.
+                These fields will be written into the separate configuration
+                feature `otext`, with no data associated.
 
         location: dict
             The (meta)data will be written to the very last directory that TF searched
@@ -705,7 +705,7 @@ class FabricCore:
             if f[0] != &#34;&#34; and f[0] not in nodeFeatures and f[0] not in edgeFeatures
         )
         info(
-            &#34;Exporting {} node and {} edge and {} config features to {}:&#34;.format(
+            &#34;Exporting {} node and {} edge and {} configuration features to {}:&#34;.format(
                 len(nodeFeatures),
                 len(edgeFeatures),
                 len(configFeatures),
@@ -1145,7 +1145,7 @@ in <code><a title="tf.core.prepare" href="prepare.html">tf.core.prepare</a></cod
 <li>caching pre-computed and compressed data</li>
 </ul>
 <p>TF is initialized for a corpus.
-It will search a set of directories and catalog all <code>.<a title="tf" href="../index.html">tf</a></code> files it finds there.
+It will search a set of directories and catalogue all <code>.<a title="tf" href="../index.html">tf</a></code> files it finds there.
 These are the features you can subsequently load.</p>
 <p>Here <code>directories</code> and <code>subdirectories</code> are strings with directory names
 separated by newlines, or iterables of directories.</p>
@@ -1187,7 +1187,7 @@ in <code>locations</code>.</p>
 loading features. Used to experiment with performance.</dd>
 </dl>
 <div class="admonition note">
-<p class="admonition-title">otext@ in modules</p>
+<p class="admonition-title"><code>otext@</code> in modules</p>
 <p>If modules contain features with a name starting with <code>otext@</code>, then the format
 definitions in these features will be added to the format definitions in the
 regular <code>otext</code> feature (which is a <code><a title="tf.parameters.WARP" href="../parameters.html#tf.parameters.WARP">WARP</a></code> feature).
@@ -1202,7 +1202,7 @@ also can add new formats to the Text-API.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/fabric.py#L131-L1054" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/fabric.py#L131-L1054" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FabricCore:
     &#34;&#34;&#34;Initialize the core API for a corpus.
@@ -1215,7 +1215,7 @@ also can add new formats to the Text-API.</p>
     *   caching pre-computed and compressed data
 
     TF is initialized for a corpus.
-    It will search a set of directories and catalog all `.tf` files it finds there.
+    It will search a set of directories and catalogue all `.tf` files it finds there.
     These are the features you can subsequently load.
 
     Here `directories` and `subdirectories` are strings with directory names
@@ -1265,7 +1265,7 @@ also can add new formats to the Text-API.</p>
         loading features. Used to experiment with performance.
 
 
-    !!! note &#34;otext@ in modules&#34;
+    !!! note &#34;`otext@` in modules&#34;
         If modules contain features with a name starting with `otext@`, then the format
         definitions in these features will be added to the format definitions in the
         regular `otext` feature (which is a `tf.parameters.WARP` feature).
@@ -1539,7 +1539,7 @@ also can add new formats to the Text-API.</p>
         Notes
         -----
         !!! explanation &#34;`configs`&#34;
-            These are config features, with metadata only, no data. E.g. `otext`.
+            These are configuration features, with metadata only, no data. E.g. `otext`.
 
         !!! explanation &#34;`computeds`&#34;
             These are blocks of pre-computed data, available under the `C` API,
@@ -1686,14 +1686,14 @@ also can add new formats to the Text-API.</p>
                 These fields will be added to all features in `nodeFeatures` and
                 `edgeFeatures`.
 
-            !!! explanation &#34;config features&#34;
-                If you need to write the *config* feature `otext`,
+            !!! explanation &#34;configuration features&#34;
+                If you need to write the *configuration* feature `otext`,
                 which is a metadata-only feature, just
                 add the metadata under key `otext` in this parameter and make sure
                 that `otext` is not a key in `nodeFeatures` nor in
                 `edgeFeatures`.
-                These fields will be written into the separate config feature `otext`,
-                with no data associated.
+                These fields will be written into the separate configuration
+                feature `otext`, with no data associated.
 
         location: dict
             The (meta)data will be written to the very last directory that TF searched
@@ -1741,7 +1741,7 @@ also can add new formats to the Text-API.</p>
             if f[0] != &#34;&#34; and f[0] not in nodeFeatures and f[0] not in edgeFeatures
         )
         info(
-            &#34;Exporting {} node and {} edge and {} config features to {}:&#34;.format(
+            &#34;Exporting {} node and {} edge and {} configuration features to {}:&#34;.format(
                 len(nodeFeatures),
                 len(edgeFeatures),
                 len(configFeatures),
@@ -2188,7 +2188,7 @@ all <code>.tfx</code> files inside the hidden <code>.<a title="tf" href="../inde
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/fabric.py#L537-L560" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/fabric.py#L537-L560" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clearCache(self):
     &#34;&#34;&#34;Clears the cache of compiled TF data.
@@ -2240,7 +2240,7 @@ How this dictionary is delivered, depends on the parameter <em>show</em>.</dd>
 <h2 id="notes">Notes</h2>
 <div class="admonition explanation">
 <p class="admonition-title"><code>configs</code></p>
-<p>These are config features, with metadata only, no data. E.g. <code>otext</code>.</p>
+<p>These are configuration features, with metadata only, no data. E.g. <code>otext</code>.</p>
 </div>
 <div class="admonition explanation">
 <p class="admonition-title"><code>computeds</code></p>
@@ -2253,7 +2253,7 @@ There are other functions that give you the loaded features:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/fabric.py#L445-L519" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/fabric.py#L445-L519" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def explore(self, silent=SILENT_D, show=True):
     &#34;&#34;&#34;Makes categorization of all features in the dataset.
@@ -2276,7 +2276,7 @@ There are other functions that give you the loaded features:
     Notes
     -----
     !!! explanation &#34;`configs`&#34;
-        These are config features, with metadata only, no data. E.g. `otext`.
+        These are configuration features, with metadata only, no data. E.g. `otext`.
 
     !!! explanation &#34;`computeds`&#34;
         These are blocks of pre-computed data, available under the `C` API,
@@ -2362,7 +2362,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/fabric.py#L283-L443" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/fabric.py#L283-L443" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, add=False, silent=SILENT_D):
     &#34;&#34;&#34;Loads features from disk into RAM memory.
@@ -2540,7 +2540,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/fabric.py#L521-L535" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/fabric.py#L521-L535" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadAll(self, silent=SILENT_D):
     &#34;&#34;&#34;Load all loadable features.
@@ -2605,14 +2605,14 @@ These fields will be added to all features in <code>nodeFeatures</code> and
 <code>edgeFeatures</code>.</p>
 </div>
 <div class="admonition explanation">
-<p class="admonition-title">config features</p>
-<p>If you need to write the <em>config</em> feature <code>otext</code>,
+<p class="admonition-title">configuration features</p>
+<p>If you need to write the <em>configuration</em> feature <code>otext</code>,
 which is a metadata-only feature, just
 add the metadata under key <code>otext</code> in this parameter and make sure
 that <code>otext</code> is not a key in <code>nodeFeatures</code> nor in
 <code>edgeFeatures</code>.
-These fields will be written into the separate config feature <code>otext</code>,
-with no data associated.</p>
+These fields will be written into the separate configuration
+feature <code>otext</code>, with no data associated.</p>
 </div>
 </dd>
 <dt><strong><code>location</code></strong> :&ensp;<code>dict</code></dt>
@@ -2641,7 +2641,7 @@ TF will save in <code>path1/path2</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/fabric.py#L562-L787" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/fabric.py#L562-L787" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def save(
     self,
@@ -2694,14 +2694,14 @@ TF will save in <code>path1/path2</code>.</p>
             These fields will be added to all features in `nodeFeatures` and
             `edgeFeatures`.
 
-        !!! explanation &#34;config features&#34;
-            If you need to write the *config* feature `otext`,
+        !!! explanation &#34;configuration features&#34;
+            If you need to write the *configuration* feature `otext`,
             which is a metadata-only feature, just
             add the metadata under key `otext` in this parameter and make sure
             that `otext` is not a key in `nodeFeatures` nor in
             `edgeFeatures`.
-            These fields will be written into the separate config feature `otext`,
-            with no data associated.
+            These fields will be written into the separate configuration
+            feature `otext`, with no data associated.
 
     location: dict
         The (meta)data will be written to the very last directory that TF searched
@@ -2749,7 +2749,7 @@ TF will save in <code>path1/path2</code>.</p>
         if f[0] != &#34;&#34; and f[0] not in nodeFeatures and f[0] not in edgeFeatures
     )
     info(
-        &#34;Exporting {} node and {} edge and {} config features to {}:&#34;.format(
+        &#34;Exporting {} node and {} edge and {} configuration features to {}:&#34;.format(
             len(nodeFeatures),
             len(edgeFeatures),
             len(configFeatures),

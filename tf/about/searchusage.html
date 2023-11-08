@@ -201,8 +201,8 @@ consist of verbs only:</p>
 <li>comment lines are ignored.</li>
 </ul>
 <h4 id="atom-lines"><em>atom</em> lines</h4>
-<h5 id="simple-indent-nameotype-or-set-features">(simple): <strong>indent name:otype-or-set features</strong></h5>
-<p>The otype-or-set is either a node type that exists in your TF data set,
+<h5 id="simple-indent-namenode-type-or-set-features">(simple): <strong>indent name:node-type-or-set features</strong></h5>
+<p>The node-type-or-set is either a node type that exists in your TF data set,
 or <code>.</code>, which stands for all node types together,
 or it is the name of a set that you have passed in the <code>sets</code> parameter alongside
 the query itself when you call <code>search</code> or <code>study</code>.</p>
@@ -224,7 +224,7 @@ If present, it defines a name for this atom that can be used
 in relational comparisons and other atoms.</li>
 <li>The query <code>. n=3</code> looks for all nodes that have a feature <code>n</code> with value <code>3</code>,
 irrespective of the node type.</li>
-<li>The <strong>otype-or-set</strong> part is optional.
+<li>The <strong>node-type-or-set</strong> part is optional.
 If it is absent, the <strong>name</strong> part must be present.</li>
 </ul>
 <p>The meaning of</p>
@@ -236,17 +236,17 @@ p vs=qal
 pnew:phrase vs=qal
 p = pnew
 </code></pre>
-<h5 id="with-relop-indent-op-nameotype-or-set-features">(with <code>relop</code>): <strong>indent op name:otype-or-set features</strong></h5>
+<h5 id="with-relop-indent-operator-namenode-type-or-set-features">(with <code>relop</code>): <strong>indent operator name:node-type-or-set features</strong></h5>
 <ul>
 <li><code>&lt;: word pos=verb gender=feminine</code></li>
 <li>The relation operator specifies an extra constraint between a preceding atom
 and this atom.</li>
 <li>The preceding atom may be the parent, provided we are at its first child, or
 it may the preceding sibling.</li>
-<li>You can leave out the <strong>name:otype-or-set features</strong> bit. In that case, the
+<li>You can leave out the <strong>name:node-type-or-set features</strong> bit. In that case, the
 relation holds between the preceding atom and its parent.</li>
 <li>The <strong>name:</strong> part is optional. Exactly as in the case without <code>relop</code>.</li>
-<li>The <strong>otype-or-set</strong> part is optional. Exactly as in the case without
+<li>The <strong>node-type-or-set</strong> part is optional. Exactly as in the case without
 <code>relop</code>.</li>
 </ul>
 <h4 id="feature-lines-features"><em>feature</em> lines: <strong>features</strong></h4>
@@ -272,7 +272,7 @@ full variety of feature constraints on nodes and edges.</p>
 below for the
 whole spectrum of relational constraints on nodes.</p>
 <h4 id="quantifier-sub-templates"><em>quantifier</em> sub-templates:</h4>
-<p>Atom lines that contain an otype or set may be followed by <em>quantifiers</em>.
+<p>Atom lines that contain a node type or set may be followed by <em>quantifiers</em>.
 Quantifiers consist of search templates themselves, demarcated by some
 special keywords:</p>
 <ul>
@@ -431,7 +431,7 @@ left ends immediately before right starts and vice versa)
 </ul>
 <h4 id="nearness-comparison">Nearness comparison</h4>
 <p>Some of the adjacency relations can actually be weakened. Instead of requiring
-that one slot is equal to an other slot, you can require that they are <em>k-near</em>,
+that one slot is equal to an other slot, you can require that they are <code>k</code><em>-near</em>,
 i.e. they are at most <code>k</code> apart. Here are the relationships where you can do
 that. Instead of typing the letter <code>k</code>, provide the actual number you want.</p>
 <ul>
@@ -495,8 +495,7 @@ This is only legal if both <code>f</code> and <code>g</code> are string valued f
 <p>If node <code>n</code> has feature <code>lex</code> with value <code>donkey_1</code>
 and node <code>m</code> has feature <code>lex</code> with value <code>donkey_2</code>,
 then the following holds:</p>
-<pre><code>n .lex~_[0-9]*$~lex. m
-</code></pre>
+<p><code>n .lex~_[0-9]*$~lex. m</code></p>
 <p>The values are stripped of their final <code>_1</code> and <code>_2</code> strings before they
 are being compared, leaving the comparison <code>donkey</code> = <code>donkey</code>, which is True.</p>
 </div>
@@ -588,7 +587,7 @@ for all tuples (<code>RA</code>) such that (<code>r</code>, <code>RA</code>) is 
 <pre><code>atom
 templateA
 </code></pre>
-<p>there is a tuple <em>RH</em> such that (<code>r</code>, <code>RA</code>, <code>RH</code>)
+<p>there is a tuple <code>RH</code> such that (<code>r</code>, <code>RA</code>, <code>RH</code>)
 is a result of</p>
 <pre><code>atom
 templateA
@@ -771,7 +770,7 @@ fclause
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/about/searchusage.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/about/searchusage.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/searchusage.md
@@ -849,8 +848,8 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#template-lines">Template lines</a><ul>
 <li><a href="#comment-lines">comment lines</a></li>
 <li><a href="#atom-lines">atom lines</a><ul>
-<li><a href="#simple-indent-nameotype-or-set-features">(simple): indent name:otype-or-set features</a></li>
-<li><a href="#with-relop-indent-op-nameotype-or-set-features">(with relop): indent op name:otype-or-set features</a></li>
+<li><a href="#simple-indent-namenode-type-or-set-features">(simple): indent name:node-type-or-set features</a></li>
+<li><a href="#with-relop-indent-operator-namenode-type-or-set-features">(with relop): indent operator name:node-type-or-set features</a></li>
 </ul>
 </li>
 <li><a href="#feature-lines-features">feature lines: features</a></li>

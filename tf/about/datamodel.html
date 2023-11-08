@@ -83,7 +83,7 @@ to the set of slots that have an occurrence of that lexeme.</p>
 <p>Before we go on, we invite you to look at a few basic terms in the craft of
 <a href="https://en.wikipedia.org/wiki/Weaving">weaving</a>.</p>
 <p>A weaver sets up a set of fixed, parallel threads, the <em>warp</em>. He then picks a
-thread, usually a colorful one, and sends it in a perpendicular way through the
+thread, usually a colourful one, and sends it in a perpendicular way through the
 warp. This thread is called the <em>weft</em>.</p>
 <p><img alt="Warp" src="../images/warp.png"></p>
 <p>The instrument that carries the wefts through the warp is called the <em>loom</em>. The
@@ -108,7 +108,7 @@ texts often have several text representations, like original (UNICODE)
 characters or transliterated characters, with or without the complete set of
 diacritical marks. In TF we do not have to choose between them: we can
 package each representation into a feature, and add it to the fabric.</p>
-<p>A TF data set is a warp (<em>otype</em>, <em>oslots</em>) plus a collection of wefts
+<p>A TF data set is a warp (<code>otype</code>, <code>oslots</code>) plus a collection of wefts
 (all other features). We may add other features to the same warp. Data sets with
 only wefts, but no warps, are called modules. When you use modules with a
 dataset, the modules must have been constructed around the warp of the dataset.</p>
@@ -120,8 +120,8 @@ are taken for a set of nodes (warp).</p>
 so we need a bit of information about which features carry textual
 representations and sectioning information (e.g. books, chapters, verses).</p>
 <p>This information is not hard-wired into TF, but it is given in the form
-of a <em>config</em> feature. A config feature has no data, only metadata. Every
-TF dataset may contain a config feature called <code>otext</code>, which
+of a <em>configuration</em> feature. A configuration feature has no data, only metadata. Every
+TF dataset may contain a configuration feature called <code>otext</code>, which
 specifies which node types and features correspond to sectional units such as
 books, chapters, and verses. It also contains templates for generating text
 representations for the slots.</p>
@@ -161,7 +161,7 @@ type)</li>
 <li>extent of text objects in terms of slots =&gt; a special edge feature called
 <code>oslots</code> (read: object slots)</li>
 <li>optional specifications for sectioning and representing text =&gt; a special
-config feature called <code>otext</code> (read: object text)</li>
+configuration feature called <code>otext</code> (read: object text)</li>
 </ul>
 <p>Together, the <code>otype</code>, <code>oslots</code>, and the optional <code>otext</code> features are called
 the <code>warp</code> of a TF dataset.</p>
@@ -194,7 +194,7 @@ containing at least the <em>warp</em> features <code>otype</code>, <code>oslots<
 <h2 id="more-about-the-warp">More about the warp</h2>
 <p>The warp / weft distinction is a handy way of separating textual organization from
 textual content. Let us discuss the warp features a bit more.</p>
-<h3 id="otype-node-feature">otype: node feature</h3>
+<h3 id="otype-node-feature"><code>otype</code>: node feature</h3>
 <p>Maps each node to a label. The label typically is the kind of object that the
 node represents, with values such as</p>
 <pre><code>book
@@ -221,13 +221,13 @@ nodes.</p>
 type of all subsequent slots and also of the things that fill the slots.</p>
 <p>Note also the sectional features <code>book chapter verse</code> here. They will play a
 role in the third, optional, warp feature <code>otext</code>.</p>
-<h3 id="oslots-edge-feature">oslots: edge feature</h3>
+<h3 id="oslots-edge-feature"><code>oslots</code>: edge feature</h3>
 <p>Defines which slots are occupied by which objects. It does so by specifying
 edges from nodes to the slots they contain.</p>
 <p>From the information in <code>oslots</code> we can compute the embedding relationships
 between all nodes.</p>
 <p>It gives also rise to a canonical ordering of nodes, see <code><a title="tf.core.nodes" href="../core/nodes.html">tf.core.nodes</a></code>.</p>
-<h3 id="otext-config-feature-optional">otext: config feature (optional)</h3>
+<h3 id="otext-configuration-feature-optional"><code>otext</code>: configuration feature (optional)</h3>
 <p>Declares which node types correspond to the first three levels of sectioning,
 usually <em>book</em>, <em>chapter</em>, <em>verse</em>. Also declares the corresponding features to
 get the names or numbers of the sections in those levels. TF uses this
@@ -260,7 +260,7 @@ in <code>.<a title="tf" href="../index.html">tf</a></code> cache directories.</l
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/about/datamodel.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/about/datamodel.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/datamodel.md
@@ -339,7 +339,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#more-about-the-warp">More about the warp</a><ul>
 <li><a href="#otype-node-feature">otype: node feature</a></li>
 <li><a href="#oslots-edge-feature">oslots: edge feature</a></li>
-<li><a href="#otext-config-feature-optional">otext: config feature (optional)</a></li>
+<li><a href="#otext-configuration-feature-optional">otext: configuration feature (optional)</a></li>
 </ul>
 </li>
 <li><a href="#serializing-and-pre-computing">Serializing and pre-computing</a></li>

@@ -80,7 +80,7 @@ describe the bits that can be left out, which will lead to significant
 improvement in space demands and processing speed.</p>
 <h3 id="node-specification">Node Specification</h3>
 <p>Every line contains a feature value that pertains to all nodes defined by its
-<em>node_spec</em>, or to all edges defined by its pair of <em>node_spec</em>s.</p>
+<code>node_spec</code>, or to all edges defined by its pair of <code>node_spec</code>s.</p>
 <p>A node spec denotes a <em>set</em> of nodes.</p>
 <p>The simplest form of a node spec is just a single integer. Examples:</p>
 <pre><code>3
@@ -144,16 +144,16 @@ fact that features annotate nodes or edges of a graph.</p>
 <h3 id="single-values">Single values</h3>
 <p>It is assumed that a node feature assigns only one value to the same node. If
 the data contains multiple assignments to a node, only the last assignment will
-be honored, the previous ones will be discarded.</p>
+be honoured, the previous ones will be discarded.</p>
 <p>Likewise, it is assumed that an edge feature assigns only one value to the same
 edge. If the data contains multiple assignments to an edge, only the last
-assignment will be honored.</p>
+assignment will be honoured.</p>
 <p>Violations maybe or may not be reported, and processing may continue without
 warnings.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/about/fileformats.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/about/fileformats.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/fileformats.md

@@ -34,7 +34,7 @@ the order and nature of the steps is configured in
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/prepare.py#L1-L774" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/prepare.py#L1-L775" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Pre-compute data.
@@ -105,7 +105,8 @@ def levels(info, error, otype, oslots, otext):
 
         In general, it is too expensive to try to compute the levels in a sophisticated
         way. In order to remedy cases where the algorithm assigns wrong levels, you can
-        add a `@levels` and / or `@levelsConstraint` key to the `otext` config feature.
+        add a `@levels` and / or `@levelsConstraint` key to the `otext`
+        configuration feature.
         See `tf.core.text`.
     &#34;&#34;&#34;
 
@@ -301,7 +302,7 @@ def levUp(info, error, otype, oslots, rank):
     Returns
     -------
     tuple
-        The n-th member is an tuple of the embedder nodes of n.
+        The `n`-th member is a tuple of the embedder nodes of `n`.
         Those tuples are sorted in canonical order (`tf.core.nodes`).
 
     Notes
@@ -591,7 +592,7 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     Warnings
     --------
     Note that the terms `book`, `chapter`, `verse` are not baked into TF.
-    It is the corpus data, especially the `otext` config feature that
+    It is the corpus data, especially the `otext` configuration feature that
     spells out the names of the sections.
 
     &#34;&#34;&#34;
@@ -866,7 +867,7 @@ reversed canonical order?</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/prepare.py#L443-L505" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/prepare.py#L444-L506" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def boundary(info, error, otype, oslots, rank):
     &#34;&#34;&#34;Computes boundary data.
@@ -965,7 +966,7 @@ of that character in the whole corpus when rendered with that format.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/prepare.py#L388-L440" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/prepare.py#L389-L441" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def characters(info, error, otext, tFormats, *tFeats):
     &#34;&#34;&#34;Computes character data.
@@ -1065,7 +1066,7 @@ this raw data might be a deal.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/prepare.py#L332-L385" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/prepare.py#L333-L386" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levDown(info, error, otype, levUp, rank):
     &#34;&#34;&#34;Computes level-down data.
@@ -1147,7 +1148,7 @@ the level-up data.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>tuple</code></dt>
-<dd>The n-th member is an tuple of the embedder nodes of n.
+<dd>The <code>n</code>-th member is a tuple of the embedder nodes of <code>n</code>.
 Those tuples are sorted in canonical order (<code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code>).</dd>
 </dl>
 <h2 id="notes">Notes</h2>
@@ -1164,7 +1165,7 @@ this raw data might be a deal.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/prepare.py#L242-L329" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/prepare.py#L243-L330" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levUp(info, error, otype, oslots, rank):
     &#34;&#34;&#34;Computes level-up data.
@@ -1190,7 +1191,7 @@ this raw data might be a deal.</p></div>
     Returns
     -------
     tuple
-        The n-th member is an tuple of the embedder nodes of n.
+        The `n`-th member is a tuple of the embedder nodes of `n`.
         Those tuples are sorted in canonical order (`tf.core.nodes`).
 
     Notes
@@ -1307,13 +1308,14 @@ not occur in clusters, then the algorithm may assign a lower rank to clusters
 than to phrases.</p>
 <p>In general, it is too expensive to try to compute the levels in a sophisticated
 way. In order to remedy cases where the algorithm assigns wrong levels, you can
-add a <code>@levels</code> and / or <code>@levelsConstraint</code> key to the <code>otext</code> config feature.
+add a <code>@levels</code> and / or <code>@levelsConstraint</code> key to the <code>otext</code>
+configuration feature.
 See <code><a title="tf.core.text" href="text.html">tf.core.text</a></code>.</p>
 </div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/prepare.py#L21-L132" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/prepare.py#L21-L133" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levels(info, error, otype, oslots, otext):
     &#34;&#34;&#34;Computes level data.
@@ -1364,7 +1366,8 @@ See <code><a title="tf.core.text" href="text.html">tf.core.text</a></code>.</p>
 
         In general, it is too expensive to try to compute the levels in a sophisticated
         way. In order to remedy cases where the algorithm assigns wrong levels, you can
-        add a `@levels` and / or `@levelsConstraint` key to the `otext` config feature.
+        add a `@levels` and / or `@levelsConstraint` key to the `otext`
+        configuration feature.
         See `tf.core.text`.
     &#34;&#34;&#34;
 
@@ -1464,7 +1467,7 @@ account.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/prepare.py#L135-L209" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/prepare.py#L136-L210" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def order(info, error, otype, oslots, levels):
     &#34;&#34;&#34;Computes order data for the canonical ordering.
@@ -1569,7 +1572,7 @@ canonical order (see <code><a title="tf.core.nodes" href="nodes.html">tf.core.no
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/prepare.py#L212-L239" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/prepare.py#L213-L240" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rank(info, error, otype, order):
     &#34;&#34;&#34;Computes rank data.
@@ -1651,12 +1654,12 @@ section-level-3 headings to section-level-3 nodes.</li>
 </dl>
 <h2 id="warnings">Warnings</h2>
 <p>Note that the terms <code>book</code>, <code>chapter</code>, <code>verse</code> are not baked into TF.
-It is the corpus data, especially the <code>otext</code> config feature that
+It is the corpus data, especially the <code>otext</code> configuration feature that
 spells out the names of the sections.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/prepare.py#L508-L634" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/prepare.py#L509-L635" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     &#34;&#34;&#34;Computes section data.
@@ -1706,7 +1709,7 @@ spells out the names of the sections.</p></div>
     Warnings
     --------
     Note that the terms `book`, `chapter`, `verse` are not baked into TF.
-    It is the corpus data, especially the `otext` config feature that
+    It is the corpus data, especially the `otext` configuration feature that
     spells out the names of the sections.
 
     &#34;&#34;&#34;
@@ -1844,7 +1847,7 @@ section key.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/core/prepare.py#L637-L774" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/core/prepare.py#L638-L775" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
     &#34;&#34;&#34;Computes structure data.

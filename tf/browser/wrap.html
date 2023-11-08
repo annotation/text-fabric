@@ -28,7 +28,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/browser/wrap.py#L1-L532" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/browser/wrap.py#L1-L532" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Wrap material into HTML
@@ -174,7 +174,7 @@ def wrapColorMap(form):
     &#34;&#34;&#34;Wraps the color map for query result highlighting into HTML.
 
     The color map is a dict, keyed by integers (the positions of atoms
-    in a query template) and the values are RGB colors (as string) or the
+    in a query template) and the values are RGB colours (as string) or the
     empty string.
 
     This dict is stored in `form[&#34;colorMap&#34;]`.
@@ -240,7 +240,7 @@ def wrapColorMap(form):
 def wrapEColorMap(form):
     &#34;&#34;&#34;Wraps the edge color map for edge highlighting into HTML.
     The edge color map is a dict, keyed by pairs of integers
-    (the nodes between which there is an edge) and values are RGB colors (as string).
+    (the nodes between which there is an edge) and values are RGB colours (as string).
     Each of the two integers in a pair may also be None (but not both).
     The color of `(n, None)` is used to color the outgoing edges from `n`,
     the color of (`(None, n)` is used to color the incoming edges from `n`.
@@ -587,7 +587,7 @@ to <code>position + spread*spread</code>, stepping by <code>spread</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/browser/wrap.py#L26-L90" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/browser/wrap.py#L26-L90" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def pageLinks(nResults, position, spread=10):
     &#34;&#34;&#34;Provide navigation links for results sets, big or small.
@@ -670,7 +670,7 @@ is produced.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/browser/wrap.py#L93-L127" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/browser/wrap.py#L93-L127" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def passageLinks(passages, sec0Type, sec0, sec1, tillLevel):
     &#34;&#34;&#34;Provide navigation links for passages,
@@ -715,7 +715,7 @@ is produced.</p>
 <dd>
 <div class="desc"><p>Wraps the color map for query result highlighting into HTML.</p>
 <p>The color map is a dict, keyed by integers (the positions of atoms
-in a query template) and the values are RGB colors (as string) or the
+in a query template) and the values are RGB colours (as string) or the
 empty string.</p>
 <p>This dict is stored in <code>form["colorMap"]</code>.
 An extra hidden input field <code>colormapn</code> helps to read this dict from the
@@ -723,13 +723,13 @@ other form elements.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/browser/wrap.py#L141-L205" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/browser/wrap.py#L141-L205" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapColorMap(form):
     &#34;&#34;&#34;Wraps the color map for query result highlighting into HTML.
 
     The color map is a dict, keyed by integers (the positions of atoms
-    in a query template) and the values are RGB colors (as string) or the
+    in a query template) and the values are RGB colours (as string) or the
     empty string.
 
     This dict is stored in `form[&#34;colorMap&#34;]`.
@@ -798,7 +798,7 @@ other form elements.</p></div>
 <dd>
 <div class="desc"><p>Wraps the edge color map for edge highlighting into HTML.
 The edge color map is a dict, keyed by pairs of integers
-(the nodes between which there is an edge) and values are RGB colors (as string).
+(the nodes between which there is an edge) and values are RGB colours (as string).
 Each of the two integers in a pair may also be None (but not both).
 The color of <code>(n, None)</code> is used to color the outgoing edges from <code>n</code>,
 the color of (<code>(None, n)</code> is used to color the incoming edges from <code>n</code>.</p>
@@ -808,12 +808,12 @@ other form elements.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/browser/wrap.py#L208-L304" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/browser/wrap.py#L208-L304" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEColorMap(form):
     &#34;&#34;&#34;Wraps the edge color map for edge highlighting into HTML.
     The edge color map is a dict, keyed by pairs of integers
-    (the nodes between which there is an edge) and values are RGB colors (as string).
+    (the nodes between which there is an edge) and values are RGB colours (as string).
     Each of the two integers in a pair may also be None (but not both).
     The color of `(n, None)` is used to color the outgoing edges from `n`,
     the color of (`(None, n)` is used to color the incoming edges from `n`.
@@ -917,7 +917,7 @@ other form elements.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/browser/wrap.py#L307-L334" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/browser/wrap.py#L307-L334" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapOptions(context, form):
     &#34;&#34;&#34;Wraps the boolean options, including the app-specific ones, into HTML.&#34;&#34;&#34;
@@ -957,7 +957,7 @@ other form elements.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/browser/wrap.py#L388-L524" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/browser/wrap.py#L388-L524" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapProvenance(form, provenance, setNames):
     utc_offset_sec = time.altzone if time.localtime().tm_isdst else time.timezone
@@ -1133,7 +1133,7 @@ at most one can be selected.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/browser/wrap.py#L337-L382" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/browser/wrap.py#L337-L382" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapSelect(option, allowedValues, value, group, item, multiple):
     &#34;&#34;&#34;Provides a buttoned chooser for the node types.

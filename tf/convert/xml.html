@@ -122,7 +122,7 @@ tf-fromxml tf=1  # major version, 1.2.3 becomes 2.0.0
 tf-fromxml tf=1.8.3  # explicit version
 </code></pre>
 <h2 id="examples">Examples</h2>
-<p>Exactly how you can call the methods of this module and add your own customized
+<p>Exactly how you can call the methods of this module and add your own customised
 conversion code is demonstrated in the Greek New Testament:</p>
 <ul>
 <li><a href="https://nbviewer.org/github/ETCBC/nestle1904/blob/master/programs/tfFromLowfat.ipynb"><code>ETCBC/nestle1904</code></a>.</li>
@@ -130,7 +130,7 @@ conversion code is demonstrated in the Greek New Testament:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/convert/xml.py#L1-L1240" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L1-L1240" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # XML import
@@ -271,7 +271,7 @@ tf-fromxml tf=1.8.3  # explicit version
 
 ## Examples
 
-Exactly how you can call the methods of this module and add your own customized
+Exactly how you can call the methods of this module and add your own customised
 conversion code is demonstrated in the Greek New Testament:
 
 *   [`ETCBC/nestle1904`](https://nbviewer.org/github/ETCBC/nestle1904/blob/master/programs/tfFromLowfat.ipynb).
@@ -769,7 +769,7 @@ class XML(CheckImport):
 
         initTree(reportPath)
 
-        def analyze(root, analysis):
+        def analyse(root, analysis):
             NUM_RE = re.compile(r&#34;&#34;&#34;[0-9]&#34;&#34;&#34;, re.S)
 
             def nodeInfo(xnode):
@@ -919,7 +919,7 @@ class XML(CheckImport):
         def doXMLFile(xmlPath):
             tree = etree.parse(xmlPath, parser)
             root = tree.getroot()
-            analyze(root, analysis)
+            analyse(root, analysis)
 
         i = 0
         for xmlFolder, xmlFiles in self.getXML():
@@ -1034,7 +1034,7 @@ class XML(CheckImport):
         These files are:
 
         *   `config_custom.yaml`:
-            A YAML file with config data that will be *merged* into the generated
+            A YAML file with configuration data that will be *merged* into the generated
             config.yaml.
         *   `app_custom.py`:
             A python file with named snippets of code to be inserted
@@ -1389,7 +1389,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/convert/xml.py#L1226-L1236" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L1226-L1236" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(
@@ -1529,7 +1529,7 @@ relevant TF version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/convert/xml.py#L192-L1223" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L192-L1223" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class XML(CheckImport):
     def __init__(
@@ -1977,7 +1977,7 @@ relevant TF version:</p>
 
         initTree(reportPath)
 
-        def analyze(root, analysis):
+        def analyse(root, analysis):
             NUM_RE = re.compile(r&#34;&#34;&#34;[0-9]&#34;&#34;&#34;, re.S)
 
             def nodeInfo(xnode):
@@ -2127,7 +2127,7 @@ relevant TF version:</p>
         def doXMLFile(xmlPath):
             tree = etree.parse(xmlPath, parser)
             root = tree.getroot()
-            analyze(root, analysis)
+            analyse(root, analysis)
 
         i = 0
         for xmlFolder, xmlFiles in self.getXML():
@@ -2242,7 +2242,7 @@ relevant TF version:</p>
         These files are:
 
         *   `config_custom.yaml`:
-            A YAML file with config data that will be *merged* into the generated
+            A YAML file with configuration data that will be *merged* into the generated
             config.yaml.
         *   `app_custom.py`:
             A python file with named snippets of code to be inserted
@@ -2582,7 +2582,7 @@ settings in the app derive from it.</p>
 These files are:</p>
 <ul>
 <li><code>config_custom.yaml</code>:
-A YAML file with config data that will be <em>merged</em> into the generated
+A YAML file with configuration data that will be <em>merged</em> into the generated
 config.yaml.</li>
 <li><code>app_custom.py</code>:
 A python file with named snippets of code to be inserted
@@ -2600,7 +2600,7 @@ that code between automatic generation of files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/convert/xml.py#L892-L1120" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L892-L1120" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self, tokenBased=False):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -2613,7 +2613,7 @@ that code between automatic generation of files.</p>
     These files are:
 
     *   `config_custom.yaml`:
-        A YAML file with config data that will be *merged* into the generated
+        A YAML file with configuration data that will be *merged* into the generated
         config.yaml.
     *   `app_custom.py`:
         A python file with named snippets of code to be inserted
@@ -2849,7 +2849,7 @@ There should be a valid TF dataset and app configuration in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/convert/xml.py#L1124-L1160" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L1124-L1160" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def browseTask(self):
     &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
@@ -2915,7 +2915,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/convert/xml.py#L577-L804" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L577-L804" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -2978,7 +2978,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 
     initTree(reportPath)
 
-    def analyze(root, analysis):
+    def analyse(root, analysis):
         NUM_RE = re.compile(r&#34;&#34;&#34;[0-9]&#34;&#34;&#34;, re.S)
 
         def nodeInfo(xnode):
@@ -3128,7 +3128,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
     def doXMLFile(xmlPath):
         tree = etree.parse(xmlPath, parser)
         root = tree.getroot()
-        analyze(root, analysis)
+        analyse(root, analysis)
 
     i = 0
     for xmlFolder, xmlFiles in self.getXML():
@@ -3161,7 +3161,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/convert/xml.py#L808-L826" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L808-L826" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -3197,7 +3197,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/convert/xml.py#L828-L841" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L828-L841" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -3229,7 +3229,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/convert/xml.py#L517-L538" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L517-L538" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getParser(self):
     &#34;&#34;&#34;Configure the LXML parser.
@@ -3271,7 +3271,7 @@ that contains the file names in that folder, sorted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/convert/xml.py#L540-L575" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L540-L575" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the XML source files.
@@ -3331,7 +3331,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/convert/xml.py#L843-L888" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L843-L888" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -3415,7 +3415,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/convert/xml.py#L1162-L1223" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L1162-L1223" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,

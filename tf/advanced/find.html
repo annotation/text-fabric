@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/find.py#L1-L210" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/find.py#L1-L210" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 from importlib import util
@@ -60,15 +60,15 @@ def findAppConfig(
     relative=None,
     straight=False,
 ):
-    &#34;&#34;&#34;Find the config information of an app.
+    &#34;&#34;&#34;Find the configuration information of an app.
 
     If there is a `config.yaml` file, read it and check the compatibility
-    of the config settings with the current version of TF.
+    of the configuration settings with the current version of TF.
 
     If there is no such file but a `config.py` is present,
     conclude that this is an older app, not compatible with TF v8.0.0 or higher.
 
-    If there are no such config files, fill in a few basic settings.
+    If there are no such configuration files, fill in a few basic settings.
 
     See Also
     --------
@@ -264,7 +264,7 @@ Otherwise we return <code>None</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/find.py#L151-L183" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/find.py#L151-L183" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findAppClass(appName, appPath):
     &#34;&#34;&#34;Find the class definition of an app.
@@ -305,12 +305,12 @@ Otherwise we return <code>None</code>.</dd>
 <span>def <span class="ident">findAppConfig</span></span>(<span>appName, appPath, commit, release, local, backend, org=None, repo=None, version=None, relative=None, straight=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Find the config information of an app.</p>
+<div class="desc"><p>Find the configuration information of an app.</p>
 <p>If there is a <code>config.yaml</code> file, read it and check the compatibility
-of the config settings with the current version of TF.</p>
+of the configuration settings with the current version of TF.</p>
 <p>If there is no such file but a <code>config.py</code> is present,
 conclude that this is an older app, not compatible with TF v8.0.0 or higher.</p>
-<p>If there are no such config files, fill in a few basic settings.</p>
+<p>If there are no such configuration files, fill in a few basic settings.</p>
 <h2 id="see-also">See Also</h2>
 <dl>
 <dt><code><a title="tf.advanced.settings" href="settings.html">tf.advanced.settings</a></code></dt>
@@ -319,7 +319,7 @@ conclude that this is an older app, not compatible with TF v8.0.0 or higher.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/find.py#L20-L148" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/find.py#L20-L148" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findAppConfig(
     appName,
@@ -334,15 +334,15 @@ conclude that this is an older app, not compatible with TF v8.0.0 or higher.</p>
     relative=None,
     straight=False,
 ):
-    &#34;&#34;&#34;Find the config information of an app.
+    &#34;&#34;&#34;Find the configuration information of an app.
 
     If there is a `config.yaml` file, read it and check the compatibility
-    of the config settings with the current version of TF.
+    of the configuration settings with the current version of TF.
 
     If there is no such file but a `config.py` is present,
     conclude that this is an older app, not compatible with TF v8.0.0 or higher.
 
-    If there are no such config files, fill in a few basic settings.
+    If there are no such configuration files, fill in a few basic settings.
 
     See Also
     --------
@@ -468,7 +468,7 @@ of which only the <code>appName</code> and the <code>appPath</code> are used.</d
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/advanced/find.py#L186-L210" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/advanced/find.py#L186-L210" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadModule(moduleName, *args):
     &#34;&#34;&#34;Load a module dynamically, by name.

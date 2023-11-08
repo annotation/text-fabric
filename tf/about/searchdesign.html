@@ -35,7 +35,7 @@ together in a specific manner.</p>
 TF fetches all pieces of the big fabric that match your patch.</p>
 <p><img alt="patch" src="../images/SearchDesign/SearchDesign.001.png"></p>
 <p>The textile metaphor is particularly suited for grasping the search part of
-TF, so I'm going to stick to it for a while. I have used it in the
+TF, so I am going to stick to it for a while. I have used it in the
 actual code as well, and even in the proofs that certain parts of the algorithm
 terminate and are correct. Yet it remains a metaphor, and the fit is not exact.</p>
 <p>The basic pattern of search is this:</p>
@@ -330,7 +330,7 @@ that the first yarn is already very thin, then every yarn that is connected to
 this one by a qedge has also the chance to get very thin after spinning. In this
 case, the combined filtering effect of all edges can produce a rapid narrowing
 of the search space.</p>
-<p>Especially if we can implement edge spinning in an optimized way, this works
+<p>Especially if we can implement edge spinning in an optimised way, this works
 like a charm. When we come to stitching results (which is potentially very
 expensive), we have already achieved a massive reduction of work.</p>
 <p>But if none of the yarns is thin at the outset, spinning qedges will not result
@@ -408,7 +408,7 @@ fact does not hold.</p>
 <p>So we want to get as many nodes in our stitch as quickly as possible.</p>
 <p>If our search tree is narrowly branching near the root, and broadly branching
 near the leaves, the top <code>n</code> levels of the tree contain relatively few nodes. So
-we have relatively few possibilities to stitch n nodes together, and most
+we have relatively few possibilities to stitch <code>n</code> nodes together, and most
 reasons to fail will happen while visiting these <code>n</code> levels.</p>
 <p>If on the other hand our search tree is broadly branching near the root, and
 narrowly branching near the leaves, the top <code>n</code> levels of the tree contain many
@@ -472,7 +472,7 @@ only to be filled up again by further searching.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b44a00bd7ee6659fcf5f8e8ce56bc54cc9670e29/tf/about/searchdesign.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/about/searchdesign.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/searchdesign.md
