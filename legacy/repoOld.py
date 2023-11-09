@@ -31,7 +31,7 @@ expected location.
 
 ## Result
 
-The result of a call to checkoutRepo() is a tuple:
+The result of a call to `checkoutRepo()` is a tuple:
 
 ```python
     (commitOffline, releaseOffline, kindLocal, localBase, localDir)
@@ -39,13 +39,13 @@ The result of a call to checkoutRepo() is a tuple:
 
 Here is the meaning:
 
-*   *commitOffline* is the commit hash of the data you have offline afterwards
+*   `commitOffline` is the commit hash of the data you have offline afterwards
 *   *releaseOffline* is the release tag of the data you have offline afterwards
 *   *kindLocal* indicates whether an online check has been performed:
     it is `None` if there has been an online check. Otherwise it is
     `clone` if the data is in your `~/github` directory else it is `local`.
 *   *localBase* where the data is under: `~/github` or `~/text-fabric-data`,
-    or whatever you have passed as *source* and *dest*, see below.
+    or whatever you have passed as *source* and `dest`, see below.
 *   *localDir* releative path from *localBase* to your data.
     If your data has versions, *localDir* points to directory that has the versions,
     not to a specific version.
@@ -55,14 +55,14 @@ Your local copy can be found under your `~/github` or `~/text-fabric-data`
 directory using a relative path *org/repo/folder* if there is a *version*, else
 *org/repo/folder/version*.
 
-## checkout, source and dest
+## `checkout`, `source` and `dest`
 
 The *checkout* parameter determines from which point in the history the copy
 will be taken and where it will be placed.
 That will be either your `~/github` or your `~/text-fabric-data` directories.
 
 You can override the hard-coded `~/github` and `~/text-fabric-data` directories
-by passing *source* and *dest* respectively.
+by passing `source` and `dest` respectively.
 
 See the
 [repo](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb)
@@ -108,7 +108,7 @@ you can increase the limit to 5000 calls per hour by making yourself known.
 
 You might want to read this:
 
-* [Read more about rate limiting on Github](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting)
+* [Read more about rate limiting on GitHub](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting)
 
 How to put your personal access token into an environment variable?
 
@@ -190,7 +190,7 @@ Then quit the command prompt and start a new one.
 With this done, you will automatically get the good rate limit,
 whenever you fire up Text-Fabric in the future.
 
-## Minimize accessing Github
+## Minimize accessing GitHub
 
 Another way te avoid being bitten by the rate limit is to reduce the number
 of your access actions to GitHub.
@@ -267,7 +267,8 @@ Depending on how you got the corpus, it is in your
 `~/github` or in your `~/text-fabric-data` directory tree.
 
 If you cloned it from GitHub or created it yourself, it is in your `~/github` tree;
-if you used the autoload of Text-Fabric it is in your `~/text-fabric-data`.
+if you used the auto-download capability of Text-Fabric it is in your
+`~/text-fabric-data`.
 
 In the first case, do this:
 
@@ -321,7 +322,8 @@ or, in a program,
 A = use('org/repo:clone', checkData='clone', hoist=globals())
 ```
 
-If you have autoloaded it from GitHub, you have to add the `latest` or `hot` specifier:
+If you have auto-downloaded it from GitHub, you have to add the `latest` or
+`hot` specifier:
 
 ``` sh
 text-fabric corpus:latest checkout=latest
