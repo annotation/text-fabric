@@ -130,7 +130,7 @@ conversion code is demonstrated in the Greek New Testament:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L1-L1240" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ced2c120feff907574440f085652d333cead7bc5/tf/convert/xml.py#L1-L1240" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # XML import
@@ -515,7 +515,7 @@ class XML(CheckImport):
                 sys.path.pop(0)
                 self.transform = code.transform
             except Exception as e:
-                print(str(e))
+                console(str(e))
                 self.transform = None
 
         generic = settings.get(&#34;generic&#34;, {})
@@ -1389,7 +1389,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L1226-L1236" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ced2c120feff907574440f085652d333cead7bc5/tf/convert/xml.py#L1226-L1236" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(
@@ -1529,7 +1529,7 @@ relevant TF version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L192-L1223" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ced2c120feff907574440f085652d333cead7bc5/tf/convert/xml.py#L192-L1223" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class XML(CheckImport):
     def __init__(
@@ -1723,7 +1723,7 @@ relevant TF version:</p>
                 sys.path.pop(0)
                 self.transform = code.transform
             except Exception as e:
-                print(str(e))
+                console(str(e))
                 self.transform = None
 
         generic = settings.get(&#34;generic&#34;, {})
@@ -2600,7 +2600,7 @@ that code between automatic generation of files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L892-L1120" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ced2c120feff907574440f085652d333cead7bc5/tf/convert/xml.py#L892-L1120" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self, tokenBased=False):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -2849,7 +2849,7 @@ There should be a valid TF dataset and app configuration in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L1124-L1160" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ced2c120feff907574440f085652d333cead7bc5/tf/convert/xml.py#L1124-L1160" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def browseTask(self):
     &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
@@ -2915,7 +2915,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L577-L804" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ced2c120feff907574440f085652d333cead7bc5/tf/convert/xml.py#L577-L804" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -3161,7 +3161,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L808-L826" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ced2c120feff907574440f085652d333cead7bc5/tf/convert/xml.py#L808-L826" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -3197,7 +3197,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L828-L841" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ced2c120feff907574440f085652d333cead7bc5/tf/convert/xml.py#L828-L841" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -3229,7 +3229,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L517-L538" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ced2c120feff907574440f085652d333cead7bc5/tf/convert/xml.py#L517-L538" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getParser(self):
     &#34;&#34;&#34;Configure the LXML parser.
@@ -3271,7 +3271,7 @@ that contains the file names in that folder, sorted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L540-L575" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ced2c120feff907574440f085652d333cead7bc5/tf/convert/xml.py#L540-L575" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the XML source files.
@@ -3331,7 +3331,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L843-L888" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ced2c120feff907574440f085652d333cead7bc5/tf/convert/xml.py#L843-L888" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -3415,7 +3415,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/convert/xml.py#L1162-L1223" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ced2c120feff907574440f085652d333cead7bc5/tf/convert/xml.py#L1162-L1223" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,

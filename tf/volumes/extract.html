@@ -35,7 +35,7 @@ extract(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/volumes/extract.py#L1-L738" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ced2c120feff907574440f085652d333cead7bc5/tf/volumes/extract.py#L1-L738" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Extract
@@ -58,7 +58,7 @@ import collections
 from ..parameters import OTYPE, OSLOTS, OWORK, OINTERF, OINTERT
 from ..core.fabric import FabricCore
 from ..core.timestamp import Timestamp, SILENT_D, DEEP, silentConvert
-from ..core.helpers import getAllRealFeatures
+from ..core.helpers import getAllRealFeatures, console
 from ..core.files import unexpanduser as ux, dirEmpty, isFile, isDir, dirRemove, scanDir
 
 DEBUG = False
@@ -732,12 +732,12 @@ def extract(
                 if show:
                     for (name, v) in volumeData.items():
                         location = ux(v[&#34;location&#34;])
-                        print(f&#34;{name:&lt;20} @ {location}&#34;)
+                        console(f&#34;{name:&lt;20} @ {location}&#34;)
                 else:
                     return volumeData
             else:
                 if show:
-                    print(&#34;No volumes&#34;)
+                    console(&#34;No volumes&#34;)
                 else:
                     return {}
         if not getTopLevels():
@@ -748,7 +748,7 @@ def extract(
             if show:
                 for (name, v) in volumeData.items():
                     location = ux(v[&#34;location&#34;])
-                    print(f&#34;{name:&lt;20} @ {location}&#34;)
+                    console(f&#34;{name:&lt;20} @ {location}&#34;)
             else:
                 return volumeData
         if not distributeNodes():
@@ -766,7 +766,7 @@ def extract(
             for (name, v) in result.items():
                 new = &#34; (new)&#34; if v[&#34;new&#34;] else &#34; &#34; * 6
                 location = ux(v[&#34;location&#34;])
-                print(f&#34;{name:&lt;20}{new} @ {location}&#34;)
+                console(f&#34;{name:&lt;20}{new} @ {location}&#34;)
         else:
             return result
 
@@ -944,7 +944,7 @@ Top-level section 13 will not be extracted into a volume.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/volumes/extract.py#L80-L738" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ced2c120feff907574440f085652d333cead7bc5/tf/volumes/extract.py#L80-L738" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def extract(
     workLocation,
@@ -1562,12 +1562,12 @@ Top-level section 13 will not be extracted into a volume.</p>
                 if show:
                     for (name, v) in volumeData.items():
                         location = ux(v[&#34;location&#34;])
-                        print(f&#34;{name:&lt;20} @ {location}&#34;)
+                        console(f&#34;{name:&lt;20} @ {location}&#34;)
                 else:
                     return volumeData
             else:
                 if show:
-                    print(&#34;No volumes&#34;)
+                    console(&#34;No volumes&#34;)
                 else:
                     return {}
         if not getTopLevels():
@@ -1578,7 +1578,7 @@ Top-level section 13 will not be extracted into a volume.</p>
             if show:
                 for (name, v) in volumeData.items():
                     location = ux(v[&#34;location&#34;])
-                    print(f&#34;{name:&lt;20} @ {location}&#34;)
+                    console(f&#34;{name:&lt;20} @ {location}&#34;)
             else:
                 return volumeData
         if not distributeNodes():
@@ -1596,7 +1596,7 @@ Top-level section 13 will not be extracted into a volume.</p>
             for (name, v) in result.items():
                 new = &#34; (new)&#34; if v[&#34;new&#34;] else &#34; &#34; * 6
                 location = ux(v[&#34;location&#34;])
-                print(f&#34;{name:&lt;20}{new} @ {location}&#34;)
+                console(f&#34;{name:&lt;20}{new} @ {location}&#34;)
         else:
             return result
 
@@ -1628,7 +1628,7 @@ is returned. Otherwise a list of subdirectories that are modules.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/88280524e064ef0f6695fd52ad0748902eb8cf00/tf/volumes/extract.py#L38-L77" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ced2c120feff907574440f085652d333cead7bc5/tf/volumes/extract.py#L38-L77" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getVolumes(volumesLocation):
     &#34;&#34;&#34;Lists volumes of a work that exist in a given directory.
