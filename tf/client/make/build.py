@@ -64,7 +64,7 @@ from importlib import util
 from tf.app import use
 from tf.fabric import Fabric
 from tf.browser.command import getPort
-from tf.core.helpers import specFromRanges, rangesFromSet
+from tf.core.helpers import specFromRanges, rangesFromSet, console as cs
 from tf.core.files import (
     LS,
     normpath,
@@ -1180,7 +1180,7 @@ class Make:
         chDir(C.siteDir)
         port = getPort(f"{dataset}, {client}")
         if port is None:
-            print("Cannot find a free port between 8000 and 8100")
+            cs("Cannot find a free port between 8000 and 8100")
             return
 
         console(f"HTTP serving files in {C.siteDir} on port {port}")
@@ -1327,7 +1327,7 @@ def makeSearchClients(dataset, folder, appFolder, backend=None, dataDir=None):
 
     A = None if dataDir is None else getDataFromDir()
     for client in clients:
-        print(f"\n\no-o-o-o-o-o-o {client} o-o-o-o-o-o-o-o\n\n")
+        cs(f"\n\no-o-o-o-o-o-o {client} o-o-o-o-o-o-o-o\n\n")
         ThisMk = Make(
             dataset,
             client,

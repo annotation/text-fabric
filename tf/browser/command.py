@@ -11,7 +11,6 @@ from ..core.files import getLocation
 
 
 def getPort(slug):
-    print(f"{slug=}")
     portOffset = crc32(slug.encode("utf8")) % 10000
     return PORT_BASE + portOffset
 
@@ -34,7 +33,6 @@ def argApp(cargs, simple):
         checkout = "clone"
 
     if simple:
-        print(f"{appName=}")
         return appName
 
     locations = _argCollect("locations", cargs)

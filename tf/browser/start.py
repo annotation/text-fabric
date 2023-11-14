@@ -223,6 +223,12 @@ def main(cargs=sys.argv[1:]):
     sleep(1)
     stopped = processWeb.poll()
 
+    if stopped:
+        if processWeb:
+            for line in processWeb.stdout:
+                sys.stdout.write(line)
+            processWeb.terminate()
+
     if not noweb:
         sleep(2)
         stopped = not portWeb or (processWeb and processWeb.poll())

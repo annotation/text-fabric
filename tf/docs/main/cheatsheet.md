@@ -1290,10 +1290,3 @@ tf-addnlp
 :   When run in the repo of a TF dataset, it adds NLP output to it
     after running Spacy to get them.
 :   `tf.convert.addnlp`
-
-``` sh
-tf-docsright tf ~/Downloads/docs.txt
-```
-:   When run in the repo of a TF itself it extracts all documentation
-    and filters it so that you can run a spell-checker over it.
-:   `tf.tools.docsright`

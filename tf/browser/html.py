@@ -4,6 +4,7 @@ To see how this fits among all the modules of this package, see
 `tf.browser.ner.annotate` .
 """
 from ..core.generic import isIterable
+from ..core.helpers import console
 
 
 H_ELEMENT_DEFS = """
@@ -140,11 +141,11 @@ for (elem, close) in H_ELEMENTS:
 
 
 if __name__ == "__main__":
-    print(H.input(type="hidden"))
-    print(H.button("aap", "noot", "mies", type="hidden"))
-    print(H.button(["aap", "noot", "mies"], type="hidden"))
-    print(H.button(["aap", "noot", "mies", range(10)], type="hidden"))
+    console(H.input(type="hidden"))
+    console(H.button("aap", "noot", "mies", type="hidden"))
+    console(H.button(["aap", "noot", "mies"], type="hidden"))
+    console(H.button(["aap", "noot", "mies", range(10)], type="hidden"))
     messages = [("error", "wrong!"), ("info", "succeeded!")]
-    print(H.p((H.span(text, cls=lev) + H.br() for (lev, text) in messages)))
-    print(H.join(range(10)))
-    print(H.join([]))
+    console(H.p((H.span(text, cls=lev) + H.br() for (lev, text) in messages)))
+    console(H.join(range(10)))
+    console(H.join([]))

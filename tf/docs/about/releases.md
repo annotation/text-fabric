@@ -20,6 +20,15 @@ pip install -e .
 
 ### 12.1
 
+#### 12.1.6
+
+Various fixes:
+
+*   Some package data was not included for the NER annotation tool.
+
+Deleted tf.tools.docsright again, but developed it further in 
+[docsright](https://github.com/annotation/docsright).
+
 #### 12.1.5
 
 2023-11-02
@@ -60,7 +69,7 @@ pip install -e .
     [#82](https://github.com/annotation/text-fabric/issues/82)
 
 *   Spell-checked all bits of the TF docs here (33,000 lines).
-    Wrote a script `tf.tools.docsright` to separate the code content from
+    Wrote a script tf.tools.docsright to separate the code content from
     the markdown content, and to strip bits from the markdown content that lead
     to false positives for the spell checker.
     Then had the Vim spell checker run over those lines and corrected all mistakes

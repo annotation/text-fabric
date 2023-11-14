@@ -381,7 +381,7 @@ class XML(CheckImport):
                 sys.path.pop(0)
                 self.transform = code.transform
             except Exception as e:
-                print(str(e))
+                console(str(e))
                 self.transform = None
 
         generic = settings.get("generic", {})

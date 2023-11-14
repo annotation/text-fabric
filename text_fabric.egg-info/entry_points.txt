@@ -1,7 +1,6 @@
 [console_scripts]
 tf = tf.browser.start:main
 tf-addnlp = tf.convert.addnlp:main
-tf-docsright = tf.tools.docsright:main
 tf-fromtei = tf.convert.tei:main
 tf-fromxml = tf.convert.xml:main
 tf-make = tf.client.make.build:main

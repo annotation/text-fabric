@@ -364,6 +364,11 @@ tf/browser/ner/sets.py
 tf/browser/ner/settings.py
 tf/browser/ner/show.py
 tf/browser/ner/web.py
+tf/browser/ner/static/.DS_Store
+tf/browser/ner/static/base.css
+tf/browser/ner/static/index.css
+tf/browser/ner/static/tool.js
+tf/browser/ner/templates/ner/index.html
 tf/browser/static/.DS_Store
 tf/browser/static/base.css
 tf/browser/static/chars.js
@@ -601,7 +606,6 @@ tf/search/stitch.py
 tf/search/syntax.py
 tf/tools/__init__.py
 tf/tools/checkdiffs.py
-tf/tools/docsright.py
 tf/tools/myspacy.py
 tf/tools/nbconvert.py
 tf/tools/pdocs.py

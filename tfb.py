@@ -52,7 +52,7 @@ apps = sorted(apps)
 appStr = ", ".join(apps)
 
 HELP = f"""
-python3 tfb.py command
+python tfb.py command
 
 command:
 
@@ -65,10 +65,11 @@ pdocs : build docs
 pdocsv: serve the built pdocs
 sdocs : ship docs
 clean : clean local develop build
-l     : local develop build
-i     : local non-develop build
+db    : local develop build
+i     : install local non-develop build
 ti    : install from testpypi (uninstall first)
 g     : push to github, code and docs
+pb    : local non-develop buil
 v     : show current version
 r1    : version becomes r1+1.0.0
 r2    : version becomes r1.r2+1.0
@@ -103,10 +104,11 @@ def readArgs():
         "pdocsv",
         "sdocs",
         "clean",
-        "l",
+        "db",
         "i",
         "ti",
         "g",
+        "pb",
         "ship",
         "shipt",
         "shipo",
@@ -165,7 +167,7 @@ def replaceVersion(task, mask):
 def showVersion():
     global currentVersion
     versions = set()
-    for (key, c) in VERSION_CONFIG.items():
+    for key, c in VERSION_CONFIG.items():
         with open(c["file"]) as fh:
             text = fh.read()
         match = c["re"].search(text)
@@ -178,7 +180,7 @@ def showVersion():
 
 
 def adjustVersion(task):
-    for (key, c) in VERSION_CONFIG.items():
+    for key, c in VERSION_CONFIG.items():
         console(f'Adjusting version in {c["file"]}')
         with open(c["file"]) as fh:
             text = fh.read()
@@ -199,9 +201,9 @@ def makeDist(pypi=True, test=False):
     if os.path.exists(DIST):
         rmtree(DIST)
     os.makedirs(DIST, exist_ok=True)
-    # run(["python3", "setup.py", "sdist", "bdist_wheel"])
-    # run(["python3", "setup.py", "bdist_wheel"])
-    run(["python3", "-m", "build"])
+    # run(["python", "setup.py", "sdist", "bdist_wheel"])
+    # run(["python", "setup.py", "bdist_wheel"])
+    run(["python", "-m", "build"])
     if pypi:
         if test:
             run(["twine", "upload", "-r", "testpypi", distPath])
@@ -264,7 +266,7 @@ def tftest(suite, remaining):
         console(f'Cannot find TF test suite "{suite}"')
         return
     rargs = " ".join(remaining)
-    cmdLine = f"python3 {suiteFile} -v {rargs}"
+    cmdLine = f"python {suiteFile} -v {rargs}"
     try:
         run(cmdLine, shell=True)
     except KeyboardInterrupt:
@@ -272,10 +274,10 @@ def tftest(suite, remaining):
 
 
 def clean():
-    # run(["python3", "setup.py", "develop", "-u"])
+    # run(["python", "setup.py", "develop", "-u"])
     if os.path.exists(SCRIPT):
         os.unlink(SCRIPT)
-    run(["pip3", "uninstall", "-y", PACKAGE])
+    run(["pip", "uninstall", "-y", PACKAGE])
 
 
 def main():
@@ -296,34 +298,27 @@ def main():
         shipDocs(ORG, REPO, PKG)
     elif task == "clean":
         clean()
-    elif task == "l":
+    elif task == "db":
         clean()
-        # run(["python3", "setup.py", "develop"])
-        run("pip3 install -e .", shell=True)
-    # elif task == "lp":
-    #     clean()
-    #     run(["python3", "setup.py", "sdist"])
-    #     distFiles = glob(f"dist/{PACKAGE}-*.tar.gz")
-    #     run(["pip3", "install", distFiles[0]])
-    elif task == "i":
+        run("pip install -e .", shell=True)
+    elif task == "pb":
         clean()
         makeDist(pypi=False)
-        # run(
-        #     [
-        #         "pip3",
-        #         "install",
-        #         "--upgrade",
-        #         "--no-index",
-        #         "--find-links",
-        #         f'file://{TF_BASE}/dist"',
-        #         PACKAGE,
-        #     ]
-        #  )
+    elif task == "i":
+        run(
+            [
+                "pip",
+                "install",
+                "--upgrade",
+                "--no-index",
+                "--find-links",
+                f"file://{TF_BASE}/dist",
+                PACKAGE,
+            ]
+        )
     elif task == "ti":
         clean()
-        run(
-            f"pip3 install --index-url {TESTPYPI_URL} --no-deps text-fabric", shell=True
-        )
+        run(f"pip install --index-url {TESTPYPI_URL} --no-deps text-fabric", shell=True)
     elif task == "g":
         shipDocs(ORG, REPO, PKG)
         commit(task, msg)

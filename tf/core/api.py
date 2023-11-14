@@ -20,6 +20,7 @@ from ..parameters import OTYPE, OSLOTS
 from ..search.search import Search
 from ..core.timestamp import SILENT_D, DEEP, silentConvert
 
+
 API_REFS = dict(
     AllComputeds=("Computed", "computedall", "computed-data"),
     AllEdges=("Features", "edgeall", "edge-features"),
@@ -373,7 +374,7 @@ class Api:
                                 metaRep += f"\n\t{k:<20} = {value}"
 
                 msg = f"{heading}{metaRep}"
-                print(msg)
+                console(msg)
             return None
         return info
 

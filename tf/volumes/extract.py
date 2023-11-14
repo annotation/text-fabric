@@ -19,7 +19,7 @@ import collections
 from ..parameters import OTYPE, OSLOTS, OWORK, OINTERF, OINTERT
 from ..core.fabric import FabricCore
 from ..core.timestamp import Timestamp, SILENT_D, DEEP, silentConvert
-from ..core.helpers import getAllRealFeatures
+from ..core.helpers import getAllRealFeatures, console
 from ..core.files import unexpanduser as ux, dirEmpty, isFile, isDir, dirRemove, scanDir
 
 DEBUG = False
@@ -693,12 +693,12 @@ def extract(
                 if show:
                     for (name, v) in volumeData.items():
                         location = ux(v["location"])
-                        print(f"{name:<20} @ {location}")
+                        console(f"{name:<20} @ {location}")
                 else:
                     return volumeData
             else:
                 if show:
-                    print("No volumes")
+                    console("No volumes")
                 else:
                     return {}
         if not getTopLevels():
@@ -709,7 +709,7 @@ def extract(
             if show:
                 for (name, v) in volumeData.items():
                     location = ux(v["location"])
-                    print(f"{name:<20} @ {location}")
+                    console(f"{name:<20} @ {location}")
             else:
                 return volumeData
         if not distributeNodes():
@@ -727,7 +727,7 @@ def extract(
             for (name, v) in result.items():
                 new = " (new)" if v["new"] else " " * 6
                 location = ux(v["location"])
-                print(f"{name:<20}{new} @ {location}")
+                console(f"{name:<20}{new} @ {location}")
         else:
             return result
 

@@ -637,7 +637,7 @@ def deepSize(o, handlers={}, verbose=False, seen=None):
         s = getsizeof(o, default_size)
 
         if verbose:
-            print(s, type(o), repr(o), file=stderr)
+            console(s, type(o), repr(o), file=stderr)
 
         for typ, handler in all_handlers.items():
             if isinstance(o, typ):

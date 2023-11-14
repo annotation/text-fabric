@@ -116,6 +116,8 @@ from ..core.helpers import (
     rangesFromSet,
 )
 from ..core.files import expanduser as ex, splitExt, initTree, dirNm
+from ..core.helpers import console
+
 
 ZWJ = "\u200d"  # zero width joiner
 
@@ -249,7 +251,7 @@ class Recorder:
 
         api = self.api
         if api is None:
-            print(
+            console(
                 dedent(
                     """\
                     Cannot determine node types without a TF api.
@@ -341,7 +343,7 @@ class Recorder:
 
         api = self.api
         if api is None:
-            print(
+            console(
                 dedent(
                     """\
                     Cannot determine node types without a TF api.
@@ -598,7 +600,7 @@ class Recorder:
             else self.positions(byType=True)
         )
         if mapByType is None:
-            print("No position files written")
+            console("No position files written")
             return
 
         (base, ext) = splitExt(posPath)

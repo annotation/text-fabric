@@ -996,7 +996,7 @@ class TEI(CheckImport):
                     hooked.append(method)
 
             except Exception as e:
-                print(str(e))
+                console(str(e))
                 for method in customKeys:
                     if not hasattr(self, method):
                         methodC = f"{method}Custom"
@@ -3955,7 +3955,7 @@ class TEI(CheckImport):
                 valueType = "int" if feat in intFeatures else "str"
                 description = meta.get("description", "")
                 extraFieldRep = "\n".join(
-                    f"*   `{field}`: {value}"
+                    f"*   `{field}`: `{value}`"
                     for (field, value) in meta.items()
                     if field not in {"description", "valueType"}
                 )
@@ -4010,7 +4010,7 @@ class TEI(CheckImport):
                 generic["version"] = version
 
             generic = "\n\n".join(
-                f"## `{key}`\n\n{value}\n" for (key, value) in generic.items()
+                f"## `{key}`\n\n`{value}`\n" for (key, value) in generic.items()
             )
 
             return f"{customText}\n\n{sourceText}\n\n" + (

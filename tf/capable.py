@@ -162,7 +162,7 @@ class CheckImport:
             info = INCIDENTAL_DEPS.get(module, None)
 
             if info is None:
-                print("Unknown module spec: {module}")
+                console("Unknown module spec: {module}")
                 semantic = None
             else:
                 (mod, pipmod) = info
@@ -232,9 +232,9 @@ class CheckImport:
         properlySetup = self.properlySetup
 
         if not properlySetup:
-            print(self.message)
+            console(self.message)
             if hint:
-                print(self.imessage)
+                console(self.imessage)
 
         return properlySetup
 

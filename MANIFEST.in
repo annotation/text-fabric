@@ -1,6 +1,8 @@
 recursive-include tf/client/static *
 recursive-include tf/client/make *
 recursive-include tf/convert/app *
+recursive-include tf/browser/ner/static *
+recursive-include tf/browser/ner/templates *
 recursive-include tf/browser/static *
 recursive-include tf/browser/templates *
 recursive-include tf/tools/tei *
