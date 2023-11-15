@@ -350,10 +350,10 @@ class NER(Annotate):
                 if not name:
                     name = synonyms[0] if synonyms else ""
                     if name == "":
-                        console(f"Row {r:>3}: no entity name and no synonyms")
+                        console(f"Row {r + 1:>3}: no entity name and no synonyms")
                         continue
                     else:
-                        console(f"Row {r:>3}: no entity name, supplied {name}")
+                        console(f"Row {r + 1:>3}: no entity name, supplied {name}")
 
                 if not kind:
                     kind = defaultKind

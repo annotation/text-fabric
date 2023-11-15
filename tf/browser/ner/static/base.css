@@ -21,7 +21,7 @@ p.queried,span.queried {
 span.found {
   background-color: #aaddff;
   border-radius: 0.2rem;
-  padding: 0 0.3rem;
+  padding: 0 0;
 }
 
 div.b {

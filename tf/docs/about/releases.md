@@ -20,11 +20,15 @@ pip install -e .
 
 ### 12.1
 
-#### 12.1.6
+#### 12.1.6,7
+
+2023-11-15
 
 Various fixes:
 
 *   Some package data was not included for the NER annotation tool.
+*   In the NER tool, the highlighting of hits of the search pattern is now exact, it was
+    sometimes off.
 
 Deleted tf.tools.docsright again, but developed it further in 
 [docsright](https://github.com/annotation/docsright).

@@ -112,13 +112,13 @@ class Corpus(Settings):
 
         def getText(slots):
             text = "".join(f"""{strv(s)}{afterv(s) or ""}""" for s in slots).strip()
-            text = WHITE_RE.sub(" ", text)
+            # text = WHITE_RE.sub(" ", text)
             return text
 
         def getTextR(node):
             slots = L.d(node, otype=slotType)
             text = "".join(f"""{strv(s)}{afterv(s) or ""}""" for s in slots).strip()
-            text = WHITE_RE.sub(" ", text)
+            # text = WHITE_RE.sub(" ", text)
             return text
 
         def getTokens(node):

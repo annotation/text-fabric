@@ -184,6 +184,7 @@ class Show:
         mayLimit=True,
         start=None,
         end=None,
+        withNodes=False,
     ):
         """Generates HTML for a given portion of the corpus.
 
@@ -234,6 +235,9 @@ class Show:
         end: integer, optional None
             If passed, stop rendering the buckets at this position.
 
+        withNodes: boolean, optional None
+            Shows the node in each token.
+
         Returns
         -------
         string or void
@@ -274,6 +278,7 @@ class Show:
                 continue
             if end is not None and nB > end:
                 break
+
             if limited and nBshown > limit:
                 content.append(
                     H.div(
@@ -298,8 +303,9 @@ class Show:
                 allMatches = set(chain.from_iterable(matches))
 
             headContent = H.span(
-                H.span(sectionHead(b), node=b, cls="bhl ltr", title="show context"),
+                H.span(sectionHead(b), cls="bhl ltr", title="show context"),
                 cls=f"bh {ltr}",
+                node=b,
             )
             subContent = []
 
@@ -334,22 +340,34 @@ class Show:
                 after = afterv(t) or ""
                 lenW = len(w)
                 lenWa = len(w) + len(after)
-                found = any(charPos + i in positions for i in range(lenW))
+                # found = any(charPos + i in positions for i in range(lenW))
+                foundSet = set(range(charPos, charPos + lenW)) & positions
+                found = len(foundSet) != 0
+
+                if found:
+                    firstFound = min(foundSet) - charPos
+                    lastFound = max(foundSet) - charPos
+                    leading = "" if firstFound == charPos else w[0:firstFound]
+                    trailing = "" if lastFound == lenW - 1 else w[lastFound + 1:]
+                    hit = w[firstFound : lastFound + 1]
+                    wRep = H.join(leading, H.span(hit, cls="found"), trailing)
+                    print(f"{w=} {leading=} {hit=} {trailing=} {wRep=}")
+                else:
+                    wRep = w
                 queried = t in allMatches
 
-                hlClasses = (" found " if found else "") + (
-                    " queried " if queried else ""
-                )
+                hlClasses = " queried " if queried else ""
                 hlClasses += " ei " if inEntity else ""
                 hlClasses += f" {style} " if style else ""
                 hlClass = dict(cls=hlClasses) if hlClasses else {}
 
                 endQueried = annoSet and t in endMatches
                 excl = "x" if t in excludedTokens else "v"
+                nodeRep = H.span(str(t), cls="nd") if withNodes else ""
 
                 subContent.append(
                     H.join(
-                        H.span(w, **hlClass, t=t),
+                        H.span(wRep + nodeRep, **hlClass, t=t),
                         H.span(te=t, st=excl) if endQueried else "",
                         after,
                     )
