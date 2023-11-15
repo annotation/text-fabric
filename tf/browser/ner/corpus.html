@@ -34,7 +34,7 @@ control over how to customize the annotator for different corpora.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ced2c120feff907574440f085652d333cead7bc5/tf/browser/ner/corpus.py#L1-L364" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e54c4ac947658aebfca664ed337518b6f8d1fbf3/tf/browser/ner/corpus.py#L1-L364" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Access to the corpus.
 
@@ -150,13 +150,13 @@ class Corpus(Settings):
 
         def getText(slots):
             text = &#34;&#34;.join(f&#34;&#34;&#34;{strv(s)}{afterv(s) or &#34;&#34;}&#34;&#34;&#34; for s in slots).strip()
-            text = WHITE_RE.sub(&#34; &#34;, text)
+            # text = WHITE_RE.sub(&#34; &#34;, text)
             return text
 
         def getTextR(node):
             slots = L.d(node, otype=slotType)
             text = &#34;&#34;.join(f&#34;&#34;&#34;{strv(s)}{afterv(s) or &#34;&#34;}&#34;&#34;&#34; for s in slots).strip()
-            text = WHITE_RE.sub(&#34; &#34;, text)
+            # text = WHITE_RE.sub(&#34; &#34;, text)
             return text
 
         def getTokens(node):
@@ -426,7 +426,7 @@ flag.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ced2c120feff907574440f085652d333cead7bc5/tf/browser/ner/corpus.py#L27-L364" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e54c4ac947658aebfca664ed337518b6f8d1fbf3/tf/browser/ner/corpus.py#L27-L364" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Corpus(Settings):
     def __init__(self):
@@ -516,13 +516,13 @@ flag.</p></div>
 
         def getText(slots):
             text = &#34;&#34;.join(f&#34;&#34;&#34;{strv(s)}{afterv(s) or &#34;&#34;}&#34;&#34;&#34; for s in slots).strip()
-            text = WHITE_RE.sub(&#34; &#34;, text)
+            # text = WHITE_RE.sub(&#34; &#34;, text)
             return text
 
         def getTextR(node):
             slots = L.d(node, otype=slotType)
             text = &#34;&#34;.join(f&#34;&#34;&#34;{strv(s)}{afterv(s) or &#34;&#34;}&#34;&#34;&#34; for s in slots).strip()
-            text = WHITE_RE.sub(&#34; &#34;, text)
+            # text = WHITE_RE.sub(&#34; &#34;, text)
             return text
 
         def getTokens(node):

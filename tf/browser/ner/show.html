@@ -29,7 +29,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ced2c120feff907574440f085652d333cead7bc5/tf/browser/ner/show.py#L1-L377" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e54c4ac947658aebfca664ed337518b6f8d1fbf3/tf/browser/ner/show.py#L1-L395" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Rendering of corpus extracts with annotations.
 
@@ -217,6 +217,7 @@ class Show:
         mayLimit=True,
         start=None,
         end=None,
+        withNodes=False,
     ):
         &#34;&#34;&#34;Generates HTML for a given portion of the corpus.
 
@@ -267,6 +268,9 @@ class Show:
         end: integer, optional None
             If passed, stop rendering the buckets at this position.
 
+        withNodes: boolean, optional None
+            Shows the node in each token.
+
         Returns
         -------
         string or void
@@ -307,6 +311,7 @@ class Show:
                 continue
             if end is not None and nB &gt; end:
                 break
+
             if limited and nBshown &gt; limit:
                 content.append(
                     H.div(
@@ -331,8 +336,9 @@ class Show:
                 allMatches = set(chain.from_iterable(matches))
 
             headContent = H.span(
-                H.span(sectionHead(b), node=b, cls=&#34;bhl ltr&#34;, title=&#34;show context&#34;),
+                H.span(sectionHead(b), cls=&#34;bhl ltr&#34;, title=&#34;show context&#34;),
                 cls=f&#34;bh {ltr}&#34;,
+                node=b,
             )
             subContent = []
 
@@ -367,22 +373,34 @@ class Show:
                 after = afterv(t) or &#34;&#34;
                 lenW = len(w)
                 lenWa = len(w) + len(after)
-                found = any(charPos + i in positions for i in range(lenW))
+                # found = any(charPos + i in positions for i in range(lenW))
+                foundSet = set(range(charPos, charPos + lenW)) &amp; positions
+                found = len(foundSet) != 0
+
+                if found:
+                    firstFound = min(foundSet) - charPos
+                    lastFound = max(foundSet) - charPos
+                    leading = &#34;&#34; if firstFound == charPos else w[0:firstFound]
+                    trailing = &#34;&#34; if lastFound == lenW - 1 else w[lastFound + 1:]
+                    hit = w[firstFound : lastFound + 1]
+                    wRep = H.join(leading, H.span(hit, cls=&#34;found&#34;), trailing)
+                    print(f&#34;{w=} {leading=} {hit=} {trailing=} {wRep=}&#34;)
+                else:
+                    wRep = w
                 queried = t in allMatches
 
-                hlClasses = (&#34; found &#34; if found else &#34;&#34;) + (
-                    &#34; queried &#34; if queried else &#34;&#34;
-                )
+                hlClasses = &#34; queried &#34; if queried else &#34;&#34;
                 hlClasses += &#34; ei &#34; if inEntity else &#34;&#34;
                 hlClasses += f&#34; {style} &#34; if style else &#34;&#34;
                 hlClass = dict(cls=hlClasses) if hlClasses else {}
 
                 endQueried = annoSet and t in endMatches
                 excl = &#34;x&#34; if t in excludedTokens else &#34;v&#34;
+                nodeRep = H.span(str(t), cls=&#34;nd&#34;) if withNodes else &#34;&#34;
 
                 subContent.append(
                     H.join(
-                        H.span(w, **hlClass, t=t),
+                        H.span(wRep + nodeRep, **hlClass, t=t),
                         H.span(te=t, st=excl) if endQueried else &#34;&#34;,
                         after,
                     )
@@ -427,7 +445,7 @@ class Show:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ced2c120feff907574440f085652d333cead7bc5/tf/browser/ner/show.py#L24-L377" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e54c4ac947658aebfca664ed337518b6f8d1fbf3/tf/browser/ner/show.py#L24-L395" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Show:
     def showEntityOverview(self):
@@ -592,6 +610,7 @@ class Show:
         mayLimit=True,
         start=None,
         end=None,
+        withNodes=False,
     ):
         &#34;&#34;&#34;Generates HTML for a given portion of the corpus.
 
@@ -642,6 +661,9 @@ class Show:
         end: integer, optional None
             If passed, stop rendering the buckets at this position.
 
+        withNodes: boolean, optional None
+            Shows the node in each token.
+
         Returns
         -------
         string or void
@@ -682,6 +704,7 @@ class Show:
                 continue
             if end is not None and nB &gt; end:
                 break
+
             if limited and nBshown &gt; limit:
                 content.append(
                     H.div(
@@ -706,8 +729,9 @@ class Show:
                 allMatches = set(chain.from_iterable(matches))
 
             headContent = H.span(
-                H.span(sectionHead(b), node=b, cls=&#34;bhl ltr&#34;, title=&#34;show context&#34;),
+                H.span(sectionHead(b), cls=&#34;bhl ltr&#34;, title=&#34;show context&#34;),
                 cls=f&#34;bh {ltr}&#34;,
+                node=b,
             )
             subContent = []
 
@@ -742,22 +766,34 @@ class Show:
                 after = afterv(t) or &#34;&#34;
                 lenW = len(w)
                 lenWa = len(w) + len(after)
-                found = any(charPos + i in positions for i in range(lenW))
+                # found = any(charPos + i in positions for i in range(lenW))
+                foundSet = set(range(charPos, charPos + lenW)) &amp; positions
+                found = len(foundSet) != 0
+
+                if found:
+                    firstFound = min(foundSet) - charPos
+                    lastFound = max(foundSet) - charPos
+                    leading = &#34;&#34; if firstFound == charPos else w[0:firstFound]
+                    trailing = &#34;&#34; if lastFound == lenW - 1 else w[lastFound + 1:]
+                    hit = w[firstFound : lastFound + 1]
+                    wRep = H.join(leading, H.span(hit, cls=&#34;found&#34;), trailing)
+                    print(f&#34;{w=} {leading=} {hit=} {trailing=} {wRep=}&#34;)
+                else:
+                    wRep = w
                 queried = t in allMatches
 
-                hlClasses = (&#34; found &#34; if found else &#34;&#34;) + (
-                    &#34; queried &#34; if queried else &#34;&#34;
-                )
+                hlClasses = &#34; queried &#34; if queried else &#34;&#34;
                 hlClasses += &#34; ei &#34; if inEntity else &#34;&#34;
                 hlClasses += f&#34; {style} &#34; if style else &#34;&#34;
                 hlClass = dict(cls=hlClasses) if hlClasses else {}
 
                 endQueried = annoSet and t in endMatches
                 excl = &#34;x&#34; if t in excludedTokens else &#34;v&#34;
+                nodeRep = H.span(str(t), cls=&#34;nd&#34;) if withNodes else &#34;&#34;
 
                 subContent.append(
                     H.join(
-                        H.span(w, **hlClass, t=t),
+                        H.span(wRep + nodeRep, **hlClass, t=t),
                         H.span(te=t, st=excl) if endQueried else &#34;&#34;,
                         after,
                     )
@@ -791,7 +827,7 @@ class Show:
 <h3>Methods</h3>
 <dl>
 <dt id="tf.browser.ner.show.Show.showContent"><code class="name flex">
-<span>def <span class="ident">showContent</span></span>(<span>self, buckets, activeEntity=None, excludedTokens=set(), mayLimit=True, start=None, end=None)</span>
+<span>def <span class="ident">showContent</span></span>(<span>self, buckets, activeEntity=None, excludedTokens=set(), mayLimit=True, start=None, end=None, withNodes=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Generates HTML for a given portion of the corpus.</p>
@@ -836,6 +872,8 @@ case we do not truncate.</p>
 <dd>If passed, start rendering the buckets at this position.</dd>
 <dt><strong><code>end</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
 <dd>If passed, stop rendering the buckets at this position.</dd>
+<dt><strong><code>withNodes</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
+<dd>Shows the node in each token.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -847,7 +885,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ced2c120feff907574440f085652d333cead7bc5/tf/browser/ner/show.py#L179-L377" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e54c4ac947658aebfca664ed337518b6f8d1fbf3/tf/browser/ner/show.py#L179-L395" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showContent(
     self,
@@ -857,6 +895,7 @@ it is a cell in a Jupyter Notebook.</dd>
     mayLimit=True,
     start=None,
     end=None,
+    withNodes=False,
 ):
     &#34;&#34;&#34;Generates HTML for a given portion of the corpus.
 
@@ -907,6 +946,9 @@ it is a cell in a Jupyter Notebook.</dd>
     end: integer, optional None
         If passed, stop rendering the buckets at this position.
 
+    withNodes: boolean, optional None
+        Shows the node in each token.
+
     Returns
     -------
     string or void
@@ -947,6 +989,7 @@ it is a cell in a Jupyter Notebook.</dd>
             continue
         if end is not None and nB &gt; end:
             break
+
         if limited and nBshown &gt; limit:
             content.append(
                 H.div(
@@ -971,8 +1014,9 @@ it is a cell in a Jupyter Notebook.</dd>
             allMatches = set(chain.from_iterable(matches))
 
         headContent = H.span(
-            H.span(sectionHead(b), node=b, cls=&#34;bhl ltr&#34;, title=&#34;show context&#34;),
+            H.span(sectionHead(b), cls=&#34;bhl ltr&#34;, title=&#34;show context&#34;),
             cls=f&#34;bh {ltr}&#34;,
+            node=b,
         )
         subContent = []
 
@@ -1007,22 +1051,34 @@ it is a cell in a Jupyter Notebook.</dd>
             after = afterv(t) or &#34;&#34;
             lenW = len(w)
             lenWa = len(w) + len(after)
-            found = any(charPos + i in positions for i in range(lenW))
+            # found = any(charPos + i in positions for i in range(lenW))
+            foundSet = set(range(charPos, charPos + lenW)) &amp; positions
+            found = len(foundSet) != 0
+
+            if found:
+                firstFound = min(foundSet) - charPos
+                lastFound = max(foundSet) - charPos
+                leading = &#34;&#34; if firstFound == charPos else w[0:firstFound]
+                trailing = &#34;&#34; if lastFound == lenW - 1 else w[lastFound + 1:]
+                hit = w[firstFound : lastFound + 1]
+                wRep = H.join(leading, H.span(hit, cls=&#34;found&#34;), trailing)
+                print(f&#34;{w=} {leading=} {hit=} {trailing=} {wRep=}&#34;)
+            else:
+                wRep = w
             queried = t in allMatches
 
-            hlClasses = (&#34; found &#34; if found else &#34;&#34;) + (
-                &#34; queried &#34; if queried else &#34;&#34;
-            )
+            hlClasses = &#34; queried &#34; if queried else &#34;&#34;
             hlClasses += &#34; ei &#34; if inEntity else &#34;&#34;
             hlClasses += f&#34; {style} &#34; if style else &#34;&#34;
             hlClass = dict(cls=hlClasses) if hlClasses else {}
 
             endQueried = annoSet and t in endMatches
             excl = &#34;x&#34; if t in excludedTokens else &#34;v&#34;
+            nodeRep = H.span(str(t), cls=&#34;nd&#34;) if withNodes else &#34;&#34;
 
             subContent.append(
                 H.join(
-                    H.span(w, **hlClass, t=t),
+                    H.span(wRep + nodeRep, **hlClass, t=t),
                     H.span(te=t, st=excl) if endQueried else &#34;&#34;,
                     after,
                 )
@@ -1101,7 +1157,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ced2c120feff907574440f085652d333cead7bc5/tf/browser/ner/show.py#L61-L177" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e54c4ac947658aebfca664ed337518b6f8d1fbf3/tf/browser/ner/show.py#L61-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showEntities(
     self, activeEntity=None, sortKey=None, sortDir=None, cutOffFreq=None
@@ -1239,7 +1295,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ced2c120feff907574440f085652d333cead7bc5/tf/browser/ner/show.py#L25-L59" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e54c4ac947658aebfca664ed337518b6f8d1fbf3/tf/browser/ner/show.py#L25-L59" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showEntityOverview(self):
     &#34;&#34;&#34;Generates HTML for an overview of the entities.
