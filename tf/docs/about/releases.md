@@ -20,6 +20,16 @@ pip install -e .
 
 ### 12.1
 
+#### 12.1.8
+
+2023-11-?? (upcoming)
+
+Fixed a bug that TF did not fetch an earlier version of a corpus if the newest
+release contains a `complete.zip` (which only has the latest version).
+
+From now on: TF does not try to download `complete.zip` if you pass a `version` argument
+to the `use()` command.
+
 #### 12.1.6,7
 
 2023-11-15

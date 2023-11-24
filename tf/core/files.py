@@ -450,6 +450,19 @@ def baseNm(path):
     return os.path.basename(path)
 
 
+def stripExt(path):
+    """Strip the extension of a file name, if there is one."""
+    (d, f) = (dirNm(path), baseNm(path))
+    sep = "/" if d else ""
+    return f"{d}{sep}{f.rsplit('.', 1)[0]}"
+
+
+def replaceExt(path, newExt):
+    """Replace the extension of a path by another one. Specify it without dot."""
+    (main, ext) = os.path.splitext(path)
+    return f"{main}.{newExt}"
+
+
 def splitPath(path):
     """Split a file name in a directory part and a file part."""
     return os.path.split(path)

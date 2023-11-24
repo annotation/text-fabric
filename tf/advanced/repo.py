@@ -885,9 +885,7 @@ def publishRelease(app, increase, message=None, description=None):
     repoLocation = app.repoLocation
     console(f"Working in repo {ux(repoLocation)}")
 
-    label = (
-        "major" if increase == 1 else "intermediate" if increase == 2 else "minor"
-    )
+    label = "major" if increase == 1 else "intermediate" if increase == 2 else "minor"
     if message is None:
         message = f"New {label} release"
     if description is None:
@@ -1028,7 +1026,12 @@ class Checkout:
         return self.local in {"clone", "local"}
 
     def isExpress(self):
-        return self.local is None and not self.commitChk and self.releaseChk == ""
+        return (
+            self.local is None
+            and self.version is None
+            and not self.commitChk
+            and self.releaseChk == ""
+        )
 
     def __init__(
         self,
@@ -1169,7 +1172,7 @@ class Checkout:
                     backendVersion.extend([0] * (3 - len(backendVersion)))
 
                 canDownloadSubfolders = True
-                for (t, v) in zip(versionThreshold, backendVersion):
+                for t, v in zip(versionThreshold, backendVersion):
                     if t != v:
                         canDownloadSubfolders = t < v
                         break
