@@ -77,6 +77,7 @@ INCIDENTAL_DEPS = dict(
     openpyxl=("openpyxl", "openpyxl"),
     spacy=("spacy", "spacy"),
     spacyd=("spacy.cli.download", "spacy"),
+    pagexml=("pagexml.parser", "pagexml-tools"),
 )
 """The incidendtal dependencies of TF.
 

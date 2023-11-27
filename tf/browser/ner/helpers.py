@@ -2,6 +2,7 @@
 
 To see how this fits among all the modules of this package, see
 `tf.browser.ner.annotate` .
+‹›
 """
 
 import re

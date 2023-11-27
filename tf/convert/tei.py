@@ -885,7 +885,7 @@ class TEI(CheckImport):
         ### `docs`
 
         Location of additional documentation.
-        This can be generated or had-written material, or a mixture of the two.
+        This can be generated or hand-written material, or a mixture of the two.
 
         Parameters
         ----------
