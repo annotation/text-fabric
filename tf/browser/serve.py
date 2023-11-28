@@ -78,7 +78,7 @@ def serveTable(web, kind, getx=None, asDict=False):
     return method(table=table, messages=messages)
 
 
-def serveQuery(web, getx, asDict=False):
+def serveQuery(web, getx=None, asDict=False):
     kernelApi = web.kernelApi
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
@@ -161,7 +161,7 @@ def serveQuery(web, getx, asDict=False):
     )
 
 
-def servePassage(web, getx):
+def servePassage(web, getx=None):
     kernelApi = web.kernelApi
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
@@ -208,9 +208,9 @@ def serveExport(web):
     kernelApi = web.kernelApi
     app = kernelApi.app
 
-    sectionsData = serveTable(web, "sections", None, asDict=True)
-    tuplesData = serveTable(web, "tuples", None, asDict=True)
-    queryData = serveQuery(web, None, asDict=True)
+    sectionsData = serveTable(web, "sections", asDict=True)
+    tuplesData = serveTable(web, "tuples", asDict=True)
+    queryData = serveQuery(web, asDict=True)
 
     form = getFormData(interfaceDefaults)
 

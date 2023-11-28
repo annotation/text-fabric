@@ -20,7 +20,7 @@ pip install -e .
 
 ### 12.2
 
-#### 12.2.0
+#### 12.2.0,1
 
 2023-11-28
 
@@ -36,6 +36,9 @@ Fix:
 
 *   TF did not fetch an earlier version of a corpus if the newest release
     contains a `complete.zip` (which only has the latest version).
+*   For some technical reason that still escapes me, the TF browser was slow to start.
+    Fixed it by saying `threaded=True` to Flask, as suggested on
+    [stackoverflow](https://stackoverflow.com/a/11150849/15236220)
 
 From now on: TF does not try to download `complete.zip` if you pass a `version` argument
 to the `use()` command.

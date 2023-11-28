@@ -9,7 +9,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = '12.2.0'
+VERSION = '12.2.1'
 """Program version.
 
 This value is under control of the update process, as run by
@@ -160,7 +160,7 @@ URL_NB = "https://nbviewer.jupyter.org"
 
 
 PROTOCOL = "http://"
-HOST = "localhost"
+HOST = "localhost"  #
 PORT_BASE = 10000
 
 

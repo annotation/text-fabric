@@ -101,7 +101,7 @@ from .serve import (
 )
 
 # Here we import additional annotation tools
-from .ner.web import factory as nerFactory
+# from .ner.web import factory as nerFactory
 # End of importing additional annotation tools
 
 
@@ -128,7 +128,7 @@ def factory(web):
     app = Flask(__name__)
 
     # Here we add the annotation tools as blue prints
-    app.register_blueprint(nerFactory(web))
+    # app.register_blueprint(nerFactory(web))
     # End of adding annotation tools
 
     aContext = web.context
@@ -152,35 +152,35 @@ def factory(web):
 
     @app.route("/sections", methods=["GET", "POST"])
     def serveSectionsBare():
-        return serveTable(web, "sections", None)
+        return serveTable(web, "sections")
 
     @app.route("/sections/<int:getx>", methods=["GET", "POST"])
     def serveSections(getx):
-        return serveTable(web, "sections", getx)
+        return serveTable(web, "sections", getx=getx)
 
     @app.route("/tuples", methods=["GET", "POST"])
     def serveTuplesBare():
-        return serveTable(web, "tuples", None)
+        return serveTable(web, "tuples")
 
     @app.route("/tuples/<int:getx>", methods=["GET", "POST"])
     def serveTuples(getx):
-        return serveTable(web, "tuples", getx)
+        return serveTable(web, "tuples", getx=getx)
 
     @app.route("/query", methods=["GET", "POST"])
     def serveQueryBare():
-        return serveQuery(web, None)
+        return serveQuery(web)
 
     @app.route("/query/<int:getx>", methods=["GET", "POST"])
     def serveQueryX(getx):
-        return serveQuery(web, getx)
+        return serveQuery(web, getx=getx)
 
     @app.route("/passage", methods=["GET", "POST"])
     def servePassageBare():
-        return servePassage(web, None)
+        return servePassage(web)
 
     @app.route("/passage/<getx>", methods=["GET", "POST"])
     def servePassageX(getx):
-        return servePassage(web, getx)
+        return servePassage(web, getx=getx)
 
     @app.route("/export", methods=["GET", "POST"])
     def serveExportX():
@@ -276,6 +276,7 @@ def main(cargs=sys.argv[1:]):
             webapp,
             use_reloader=debug,
             use_debugger=False,
+            threaded=True,
         )
     except OSError as e:
         cs(str(e))

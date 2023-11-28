@@ -216,6 +216,8 @@ def main(cargs=sys.argv[1:]):
     for line in processWeb.stdout:
         sys.stdout.write(line)
         if line.rstrip() == TF_ERROR:
+            if processWeb:
+                processWeb.terminate()
             return
         if line.rstrip() == TF_DONE:
             break

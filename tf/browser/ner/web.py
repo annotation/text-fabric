@@ -3,7 +3,6 @@
 To see how this fits among all the modules of this package, see
 `tf.browser.ner.annotate` .
 """
-
 from flask import Blueprint, send_file
 
 from ...core.generic import AttrDict
