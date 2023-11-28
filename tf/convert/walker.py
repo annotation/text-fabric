@@ -1394,7 +1394,7 @@ class CV:
 
         if unlinked:
             info(
-                "Removing unlinked (of which {nDeleted} deleted) nodes ... ",
+                f"Removing unlinked (of which {nDeleted} deleted) nodes ... ",
                 force=silent != DEEP,
             )
             indent(level=2)

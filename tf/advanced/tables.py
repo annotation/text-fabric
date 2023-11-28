@@ -51,7 +51,7 @@ def compose(
 
     if getx is not None:
         tup = None
-        for (i, tp) in tuples:
+        for i, tp in tuples:
             if i == getx:
                 tup = tp
                 break
@@ -69,7 +69,7 @@ def compose(
 
     tuplesHtml = []
     doHeader = False
-    for (i, tup) in tuples:
+    for i, tup in tuples:
         if i is None:
             if tup == "results":
                 doHeader = True
@@ -130,7 +130,7 @@ def composeT(
 
     if getx is not None:
         tup = None
-        for (i, tp) in tuples:
+        for i, tp in tuples:
             if i == getx:
                 tup = tp
                 break
@@ -149,7 +149,7 @@ def composeT(
 
     tuplesHtml = []
     doHeader = False
-    for (i, tup) in tuples:
+    for i, tup in tuples:
         if i is None:
             if tup == "results":
                 doHeader = True
@@ -300,7 +300,11 @@ def _plainTextSFinal(
 
     secStr = str(T.sectionFromNode(sNode)[browseNavLevel])
     isOpened = secStr in opened
-    tCls = "" if fmt is None else formatCls[fmt or DEFAULT_FORMAT].lower()
+    tCls = (
+        ""
+        if fmt is None
+        else formatCls.get(fmt or DEFAULT_FORMAT, formatCls[DEFAULT_FORMAT]).lower()
+    )
 
     prettyRep = (
         prettyTuple(

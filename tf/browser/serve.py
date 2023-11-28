@@ -17,6 +17,7 @@ from textwrap import dedent
 from flask import jsonify, redirect, render_template, make_response
 
 from ..core.helpers import console, wrapMessages
+from ..core.text import DEFAULT_FORMAT
 from ..advanced.helpers import RESULT
 from ..advanced.text import specialCharacters
 from .wrap import (
@@ -425,7 +426,7 @@ def serveAll(web, anything):
     colorMapHtml = wrapColorMap(form)
     eColorMapHtml = wrapEColorMap(form)
 
-    characters = specialCharacters(app, fmt=form["textFormat"], _browse=True)
+    characters = specialCharacters(app, fmt=form.get("textFormat", DEFAULT_FORMAT), _browse=True)
 
     templateData = dict(
         css=css,

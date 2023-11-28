@@ -10,6 +10,10 @@ ZWSP = "\u200b"  # zero-width space
 NODE = "node"
 FOLDER = "folder"
 FILE = "file"
+PAGE = "page"
+REGION = "region"
+LINE = "line"
+DOC = "doc"
 CHAPTER = "chapter"
 CHUNK = "chunk"
 
@@ -173,6 +177,30 @@ Examples:
     *   `conversionMethod="derived"
     *   `conversionCode="tt"
 """
+
+
+TOKEN_RE = re.compile(r"""\w+|\W""")
+
+
+def tokenize(line):
+    tokens = []
+
+    for word in line.split():
+        ts = [[t, ""] for t in TOKEN_RE.findall(word)]
+        if len(ts):
+            ts[-1][-1] = " "
+        tokens.extend(ts)
+
+    if len(tokens):
+        tokens[-1][-1] = "\n"
+    return tuple(tokens)
+
+
+def repTokens(tokens):
+    text = []
+    for (t, space) in tokens:
+        text.append(f"‹{t}›{space}")
+    return "".join(text)
 
 
 def checkModel(kind, thisModel):

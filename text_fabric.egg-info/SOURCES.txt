@@ -557,6 +557,7 @@ tf/convert/__init__.py
 tf/convert/addnlp.py
 tf/convert/helpers.py
 tf/convert/mql.py
+tf/convert/pagexml.py
 tf/convert/pandas.py
 tf/convert/recorder.py
 tf/convert/tei.py
@@ -569,6 +570,7 @@ tf/convert/app/.DS_Store
 tf/convert/app/__init__.py
 tf/convert/app/app.py
 tf/convert/app/config.yaml
+tf/convert/app/config2.yaml
 tf/convert/app/transcription.md
 tf/convert/app/__pycache__/__init__.cpython-312.pyc
 tf/convert/app/__pycache__/app.cpython-312.pyc

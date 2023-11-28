@@ -92,7 +92,7 @@ def specialCharacters(app, fmt=None, _browse=False):
     if fmt is None or fmt == "":
         fmt = DEFAULT_FORMAT
 
-    textCls = formatCls[fmt].lower()
+    textCls = formatCls.get(fmt, formatCls[DEFAULT_FORMAT]).lower()
     formats = app.plainFormats
 
     if fmt.startswith("layout-"):

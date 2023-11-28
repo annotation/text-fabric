@@ -4,6 +4,8 @@ from subprocess import run
 from ..capable import CheckImport
 from ..core.command import readArgs
 from ..core.files import (
+    abspath,
+    dirNm,
     dirContents,
     dirExists,
     fileExists,
@@ -15,13 +17,14 @@ from ..core.files import (
     expanduser as ex,
     unexpanduser as ux,
 )
+from ..core.generic import AttrDict
+from ..core.helpers import console, versionSort, mergeDict
+from ..core.timestamp import AUTO, DEEP, TERSE
 from ..parameters import BRANCH_DEFAULT_NEW
 from ..fabric import Fabric
 from ..convert.walker import CV
-from ..core.helpers import console, versionSort, mergeDict
-from ..core.timestamp import AUTO, DEEP, TERSE
 
-from .helpers import FILE
+from .helpers import FILE, PAGE, DOC, REGION, LINE, NODE, tokenize
 
 
 TOKEN = "token"
@@ -283,9 +286,7 @@ class PageXML(CheckImport):
 
         tfVersions = sorted(dirContents(tfDir)[1], key=versionSort)
 
-        latestTfVersion = (
-            tfVersions[-1] if len(tfVersions) else "0.0.0"
-        )
+        latestTfVersion = tfVersions[-1] if len(tfVersions) else "0.0.0"
         if tf in {"latest", "", "0", 0}:
             tfVersion = latestTfVersion
             vRep = "latest"
@@ -339,12 +340,15 @@ class PageXML(CheckImport):
         self.repo = repo
         self.relative = relative
 
+        myDir = dirNm(abspath(__file__))
+        self.myDir = myDir
+
         metaFile = f"{sourcePath}/meta/metadata.yaml"
         self.slotType = TOKEN
 
         self.generic = readYaml(asFile=metaFile, plain=True)
 
-        levelNames = ("document", "page", "line")
+        levelNames = ("doc", "page", "line")
         sectionFeatures = ",".join(levelNames)
         sectionTypes = ",".join(levelNames)
 
@@ -357,14 +361,38 @@ class PageXML(CheckImport):
         self.otext = otext
 
         featureMeta = dict(
+            id=dict(
+                description="the id of the corresponding pagexml object",
+            ),
+            x=dict(
+                description="the leftmost x coordinate of the pagexml object",
+            ),
+            y=dict(
+                description="the lowest y coordinate of the pagexml object",
+            ),
+            w=dict(
+                description="the width of the pagexml object",
+            ),
+            h=dict(
+                description="the height of the pagexml object",
+            ),
             str=dict(
                 description="the text of a word or token",
             ),
             after=dict(
                 description="the text after a word till the next word",
             ),
+            doc=dict(
+                description="the name of the document",
+            ),
+            page=dict(
+                description="the number of the page within the document",
+            ),
+            line=dict(
+                description="the number of the line within the page",
+            ),
         )
-        intFeatures = {"n"}
+        intFeatures = {"page", "line", "x", "y", "w", "h"}
 
         self.featureMeta = featureMeta
         self.intFeatures = intFeatures
@@ -402,6 +430,11 @@ class PageXML(CheckImport):
         function
             The local director function that has been constructed.
         """
+        repo = self.repo
+        sourcePath = self.sourcePath
+        pageSource = f"{sourcePath}/page"
+        pageFiles = sorted(dirContents(pageSource)[0])
+
         if not self.importOK():
             return
 
@@ -409,6 +442,10 @@ class PageXML(CheckImport):
             return
 
         # WALKERS
+
+        def emptySlot(cv):
+            s = cv.slot()
+            cv.feature(s, str="", after="")
 
         def walkObject(cv, cur, xObj):
             """Internal function to deal with a single element.
@@ -429,7 +466,42 @@ class PageXML(CheckImport):
             xode: object
                 An PageXML object.
             """
-            pass
+            tp = xObj.main_type
+            xId = xObj.id
+            box = AttrDict(xObj.coords.box)
+
+            isScan = tp == "scan"
+            nTp = PAGE if isScan else REGION if tp == "text_region" else tp
+            nd = cv.node(nTp)
+            cur[NODE][nTp] = nd
+            cv.feature(nd, id=xId, x=box.x, y=box.y, w=box.w, h=box.h)
+
+            if isScan:
+                cv.feature(nd, page=cur["page"])
+
+            if tp == LINE:
+                tokens = tokenize(xObj.text or "")
+                for tx, sp in tokens:
+                    s = cv.slot()
+                    cv.feature(s, str=tx, after=sp)
+                if len(tokens) == 0:
+                    emptySlot(cv)
+
+                cur["line"] += 1
+                cv.feature(nd, line=cur["line"])
+
+            elif tp in {"scan", "text_region"}:
+                for yObj in xObj.get_text_regions_in_reading_order():
+                    walkObject(cv, cur, yObj)
+                for yObj in xObj.lines:
+                    walkObject(cv, cur, yObj)
+            else:
+                console(f"UNKNOWN TYPE {tp}", error=True)
+                self.good = False
+
+            if not cv.linked(nd):
+                emptySlot(cv)
+            cv.terminate(nd)
 
         def director(cv):
             """Director function.
@@ -443,7 +515,20 @@ class PageXML(CheckImport):
             cv: object
                 The converter object, needed to issue actions.
             """
-            pass
+            cur = {}
+            cur[NODE] = {}
+            nd = cv.node(DOC)
+            cur[NODE][DOC] = nd
+            cv.feature(nd, doc=repo)
+
+            for pageFile in pageFiles:
+                pagePath = f"{pageSource}/{pageFile}"
+                pageDoc = parsePage(pagePath)
+                cur["page"] = int(pageFile.split(".", 1)[0])
+                cur["line"] = 0
+                walkObject(cv, cur, pageDoc)
+
+            cv.terminate(nd)
 
         return director
 
@@ -583,16 +668,15 @@ class PageXML(CheckImport):
         myDir = self.myDir
         tfVersion = self.tfVersion
 
-        # key | parentDir | file | template based
+        # key | parentDir | file | file-default | template based
 
         # if parentDir is a tuple, the first part is the parentDir of the source
         # end the second part is the parentDir of the destination
 
-        itemSpecs = (
-            ("config", "app", "config.yaml", False),
-        )
+        itemSpecs = (("config", "app", "config.yaml", "config2.yaml", False),)
         genTasks = {
-            s[0]: dict(parentDir=s[1], file=s[2], justCopy=s[3]) for s in itemSpecs
+            s[0]: dict(parentDir=s[1], file=s[2], fileOrig=s[3], justCopy=s[4])
+            for s in itemSpecs
         }
 
         version = tfVersion
@@ -622,6 +706,7 @@ class PageXML(CheckImport):
                 parentDir if type(parentDir) is tuple else (parentDir, parentDir)
             )
             file = info[FILE]
+            fileOrig = info["fileOrig"]
             fileParts = file.rsplit(".", 1)
             if len(fileParts) == 1:
                 fileParts = [file, ""]
@@ -635,7 +720,7 @@ class PageXML(CheckImport):
 
             justCopy = info["justCopy"]
             sourceDir = f"{myDir}/{sourceBit}"
-            itemSource = f"{sourceDir}/{file}"
+            itemSource = f"{sourceDir}/{fileOrig}"
 
             # If there is custom info, we do not have to preserve the previous version.
             # Otherwise we save the target before overwriting it; # unless it

@@ -18,17 +18,29 @@ pip install -e .
 
 ## 12
 
-### 12.1
+### 12.2
 
-#### 12.1.8
+#### 12.2.0
 
-2023-11-?? (upcoming)
+2023-11-28
 
-Fixed a bug that TF did not fetch an earlier version of a corpus if the newest
-release contains a `complete.zip` (which only has the latest version).
+New conversion tool: from PageXML. Still in its infancy.
+It uses the
+[PageXML tools](https://github.com/knaw-huc/pagexml)
+by Marijn Koolen.
+
+For an example see
+[translatin/logic](https://gitlab.huc.knaw.nl/translatin/logic/-/blob/main/tools/convertPlain.ipynb?ref_type=heads).
+
+Fix:
+
+*   TF did not fetch an earlier version of a corpus if the newest release
+    contains a `complete.zip` (which only has the latest version).
 
 From now on: TF does not try to download `complete.zip` if you pass a `version` argument
 to the `use()` command.
+
+### 12.1
 
 #### 12.1.6,7
 
