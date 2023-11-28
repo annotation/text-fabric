@@ -38,7 +38,7 @@ and in its top-level directory run the command:</strong></p>
 </code></pre>
 <h2 id="12">12</h2>
 <h3 id="122">12.2</h3>
-<h4 id="1220">12.2.0</h4>
+<h4 id="12201">12.2.0,1</h4>
 <p>2023-11-28</p>
 <p>New conversion tool: from PageXML. Still in its infancy.
 It uses the
@@ -50,6 +50,9 @@ by Marijn Koolen.</p>
 <ul>
 <li>TF did not fetch an earlier version of a corpus if the newest release
 contains a <code>complete.zip</code> (which only has the latest version).</li>
+<li>For some technical reason that still escapes me, the TF browser was slow to start.
+Fixed it by saying <code>threaded=True</code> to Flask, as suggested on
+<a href="https://stackoverflow.com/a/11150849/15236220">stackoverflow</a></li>
 </ul>
 <p>From now on: TF does not try to download <code>complete.zip</code> if you pass a <code>version</code> argument
 to the <code>use()</code> command.</p>
@@ -209,7 +212,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/599cdfa5472a6433cc47f8be3950f348b601c383/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e82d7d1405b0f1cf94dba931f9a1f996d6709eec/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -283,7 +286,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
 <li><a href="#122">12.2</a><ul>
-<li><a href="#1220">12.2.0</a></li>
+<li><a href="#12201">12.2.0,1</a></li>
 </ul>
 </li>
 <li><a href="#121">12.1</a><ul>

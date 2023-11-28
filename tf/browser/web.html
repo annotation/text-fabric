@@ -109,7 +109,7 @@ browsers, not even Edge.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/599cdfa5472a6433cc47f8be3950f348b601c383/tf/browser/web.py#L1-L289" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e82d7d1405b0f1cf94dba931f9a1f996d6709eec/tf/browser/web.py#L1-L290" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Web interface
@@ -214,7 +214,7 @@ from .serve import (
 )
 
 # Here we import additional annotation tools
-from .ner.web import factory as nerFactory
+# from .ner.web import factory as nerFactory
 # End of importing additional annotation tools
 
 
@@ -241,7 +241,7 @@ def factory(web):
     app = Flask(__name__)
 
     # Here we add the annotation tools as blue prints
-    app.register_blueprint(nerFactory(web))
+    # app.register_blueprint(nerFactory(web))
     # End of adding annotation tools
 
     aContext = web.context
@@ -265,35 +265,35 @@ def factory(web):
 
     @app.route(&#34;/sections&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveSectionsBare():
-        return serveTable(web, &#34;sections&#34;, None)
+        return serveTable(web, &#34;sections&#34;)
 
     @app.route(&#34;/sections/&lt;int:getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveSections(getx):
-        return serveTable(web, &#34;sections&#34;, getx)
+        return serveTable(web, &#34;sections&#34;, getx=getx)
 
     @app.route(&#34;/tuples&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveTuplesBare():
-        return serveTable(web, &#34;tuples&#34;, None)
+        return serveTable(web, &#34;tuples&#34;)
 
     @app.route(&#34;/tuples/&lt;int:getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveTuples(getx):
-        return serveTable(web, &#34;tuples&#34;, getx)
+        return serveTable(web, &#34;tuples&#34;, getx=getx)
 
     @app.route(&#34;/query&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveQueryBare():
-        return serveQuery(web, None)
+        return serveQuery(web)
 
     @app.route(&#34;/query/&lt;int:getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveQueryX(getx):
-        return serveQuery(web, getx)
+        return serveQuery(web, getx=getx)
 
     @app.route(&#34;/passage&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def servePassageBare():
-        return servePassage(web, None)
+        return servePassage(web)
 
     @app.route(&#34;/passage/&lt;getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def servePassageX(getx):
-        return servePassage(web, getx)
+        return servePassage(web, getx=getx)
 
     @app.route(&#34;/export&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveExportX():
@@ -389,6 +389,7 @@ def main(cargs=sys.argv[1:]):
             webapp,
             use_reloader=debug,
             use_debugger=False,
+            threaded=True,
         )
     except OSError as e:
         cs(str(e))
@@ -417,13 +418,13 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/599cdfa5472a6433cc47f8be3950f348b601c383/tf/browser/web.py#L127-L202" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e82d7d1405b0f1cf94dba931f9a1f996d6709eec/tf/browser/web.py#L127-L202" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def factory(web):
     app = Flask(__name__)
 
     # Here we add the annotation tools as blue prints
-    app.register_blueprint(nerFactory(web))
+    # app.register_blueprint(nerFactory(web))
     # End of adding annotation tools
 
     aContext = web.context
@@ -447,35 +448,35 @@ if __name__ == &#34;__main__&#34;:
 
     @app.route(&#34;/sections&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveSectionsBare():
-        return serveTable(web, &#34;sections&#34;, None)
+        return serveTable(web, &#34;sections&#34;)
 
     @app.route(&#34;/sections/&lt;int:getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveSections(getx):
-        return serveTable(web, &#34;sections&#34;, getx)
+        return serveTable(web, &#34;sections&#34;, getx=getx)
 
     @app.route(&#34;/tuples&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveTuplesBare():
-        return serveTable(web, &#34;tuples&#34;, None)
+        return serveTable(web, &#34;tuples&#34;)
 
     @app.route(&#34;/tuples/&lt;int:getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveTuples(getx):
-        return serveTable(web, &#34;tuples&#34;, getx)
+        return serveTable(web, &#34;tuples&#34;, getx=getx)
 
     @app.route(&#34;/query&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveQueryBare():
-        return serveQuery(web, None)
+        return serveQuery(web)
 
     @app.route(&#34;/query/&lt;int:getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveQueryX(getx):
-        return serveQuery(web, getx)
+        return serveQuery(web, getx=getx)
 
     @app.route(&#34;/passage&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def servePassageBare():
-        return servePassage(web, None)
+        return servePassage(web)
 
     @app.route(&#34;/passage/&lt;getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def servePassageX(getx):
-        return servePassage(web, getx)
+        return servePassage(web, getx=getx)
 
     @app.route(&#34;/export&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveExportX():
@@ -505,7 +506,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/599cdfa5472a6433cc47f8be3950f348b601c383/tf/browser/web.py#L205-L285" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e82d7d1405b0f1cf94dba931f9a1f996d6709eec/tf/browser/web.py#L205-L286" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv[1:]):
     debug = False
@@ -581,6 +582,7 @@ if __name__ == &#34;__main__&#34;:
             webapp,
             use_reloader=debug,
             use_debugger=False,
+            threaded=True,
         )
     except OSError as e:
         cs(str(e))
@@ -604,7 +606,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/599cdfa5472a6433cc47f8be3950f348b601c383/tf/browser/web.py#L114-L124" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e82d7d1405b0f1cf94dba931f9a1f996d6709eec/tf/browser/web.py#L114-L124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Web:
     def __init__(self, kernelApi):
@@ -628,7 +630,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/599cdfa5472a6433cc47f8be3950f348b601c383/tf/browser/web.py#L122-L124" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e82d7d1405b0f1cf94dba931f9a1f996d6709eec/tf/browser/web.py#L122-L124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(self, msg):
     if self.debug:

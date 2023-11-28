@@ -83,7 +83,7 @@ provided the previous invocation has been terminated.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/599cdfa5472a6433cc47f8be3950f348b601c383/tf/browser/start.py#L1-L282" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e82d7d1405b0f1cf94dba931f9a1f996d6709eec/tf/browser/start.py#L1-L284" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Start the TF browser
@@ -303,6 +303,8 @@ def main(cargs=sys.argv[1:]):
     for line in processWeb.stdout:
         sys.stdout.write(line)
         if line.rstrip() == TF_ERROR:
+            if processWeb:
+                processWeb.terminate()
             return
         if line.rstrip() == TF_DONE:
             break
@@ -384,7 +386,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/599cdfa5472a6433cc47f8be3950f348b601c383/tf/browser/start.py#L160-L278" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e82d7d1405b0f1cf94dba931f9a1f996d6709eec/tf/browser/start.py#L160-L280" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv[1:]):
     console(BANNER)
@@ -445,6 +447,8 @@ if __name__ == &#34;__main__&#34;:
     for line in processWeb.stdout:
         sys.stdout.write(line)
         if line.rstrip() == TF_ERROR:
+            if processWeb:
+                processWeb.terminate()
             return
         if line.rstrip() == TF_DONE:
             break
