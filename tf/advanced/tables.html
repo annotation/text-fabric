@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e755c08ebbf858637ac85959feefb488cee3a3db/tf/advanced/tables.py#L1-L336" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/599cdfa5472a6433cc47f8be3950f348b601c383/tf/advanced/tables.py#L1-L340" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from ..core.text import DEFAULT_FORMAT
 from .helpers import getHeaders, RESULT
@@ -81,7 +81,7 @@ def compose(
 
     if getx is not None:
         tup = None
-        for (i, tp) in tuples:
+        for i, tp in tuples:
             if i == getx:
                 tup = tp
                 break
@@ -99,7 +99,7 @@ def compose(
 
     tuplesHtml = []
     doHeader = False
-    for (i, tup) in tuples:
+    for i, tup in tuples:
         if i is None:
             if tup == &#34;results&#34;:
                 doHeader = True
@@ -160,7 +160,7 @@ def composeT(
 
     if getx is not None:
         tup = None
-        for (i, tp) in tuples:
+        for i, tp in tuples:
             if i == getx:
                 tup = tp
                 break
@@ -179,7 +179,7 @@ def composeT(
 
     tuplesHtml = []
     doHeader = False
-    for (i, tup) in tuples:
+    for i, tup in tuples:
         if i is None:
             if tup == &#34;results&#34;:
                 doHeader = True
@@ -330,7 +330,11 @@ def _plainTextSFinal(
 
     secStr = str(T.sectionFromNode(sNode)[browseNavLevel])
     isOpened = secStr in opened
-    tCls = &#34;&#34; if fmt is None else formatCls[fmt or DEFAULT_FORMAT].lower()
+    tCls = (
+        &#34;&#34;
+        if fmt is None
+        else formatCls.get(fmt or DEFAULT_FORMAT, formatCls[DEFAULT_FORMAT]).lower()
+    )
 
     prettyRep = (
         prettyTuple(
@@ -397,7 +401,7 @@ in order to expand it.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e755c08ebbf858637ac85959feefb488cee3a3db/tf/advanced/tables.py#L6-L100" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/599cdfa5472a6433cc47f8be3950f348b601c383/tf/advanced/tables.py#L6-L100" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def compose(
     app,
@@ -447,7 +451,7 @@ in order to expand it.</dd>
 
     if getx is not None:
         tup = None
-        for (i, tp) in tuples:
+        for i, tp in tuples:
             if i == getx:
                 tup = tp
                 break
@@ -465,7 +469,7 @@ in order to expand it.</dd>
 
     tuplesHtml = []
     doHeader = False
-    for (i, tup) in tuples:
+    for i, tup in tuples:
         if i is None:
             if tup == &#34;results&#34;:
                 doHeader = True
@@ -519,7 +523,7 @@ section node in question. See <code>browseContentPretty</code> in <code><a title
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e755c08ebbf858637ac85959feefb488cee3a3db/tf/advanced/tables.py#L185-L272" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/599cdfa5472a6433cc47f8be3950f348b601c383/tf/advanced/tables.py#L185-L272" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def composeP(
     app,
@@ -622,7 +626,7 @@ in the TF browser.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e755c08ebbf858637ac85959feefb488cee3a3db/tf/advanced/tables.py#L106-L179" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/599cdfa5472a6433cc47f8be3950f348b601c383/tf/advanced/tables.py#L106-L179" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def composeT(
     app,
@@ -651,7 +655,7 @@ in the TF browser.</p></div>
 
     if getx is not None:
         tup = None
-        for (i, tp) in tuples:
+        for i, tp in tuples:
             if i == getx:
                 tup = tp
                 break
@@ -670,7 +674,7 @@ in the TF browser.</p></div>
 
     tuplesHtml = []
     doHeader = False
-    for (i, tup) in tuples:
+    for i, tup in tuples:
         if i is None:
             if tup == &#34;results&#34;:
                 doHeader = True

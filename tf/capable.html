@@ -81,7 +81,7 @@ under section <code>[options.extras_require]</code> .</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e755c08ebbf858637ac85959feefb488cee3a3db/tf/capable.py#L1-L359" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/599cdfa5472a6433cc47f8be3950f348b601c383/tf/capable.py#L1-L360" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Dependency management.
 
@@ -162,6 +162,7 @@ INCIDENTAL_DEPS = dict(
     openpyxl=(&#34;openpyxl&#34;, &#34;openpyxl&#34;),
     spacy=(&#34;spacy&#34;, &#34;spacy&#34;),
     spacyd=(&#34;spacy.cli.download&#34;, &#34;spacy&#34;),
+    pagexml=(&#34;pagexml.parser&#34;, &#34;pagexml-tools&#34;),
 )
 &#34;&#34;&#34;The incidendtal dependencies of TF.
 
@@ -495,7 +496,7 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e755c08ebbf858637ac85959feefb488cee3a3db/tf/capable.py#L258-L359" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/599cdfa5472a6433cc47f8be3950f348b601c383/tf/capable.py#L259-L360" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Capable:
     &#34;&#34;&#34;Import modules for back-end communication if possible.
@@ -610,7 +611,7 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e755c08ebbf858637ac85959feefb488cee3a3db/tf/capable.py#L341-L359" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/599cdfa5472a6433cc47f8be3950f348b601c383/tf/capable.py#L342-L360" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def can(self, extra):
     if extra in {&#34;github&#34;, &#34;gitlab&#34;}:
@@ -641,7 +642,7 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e755c08ebbf858637ac85959feefb488cee3a3db/tf/capable.py#L317-L329" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/599cdfa5472a6433cc47f8be3950f348b601c383/tf/capable.py#L318-L330" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, module):
     modules = self.modules
@@ -666,7 +667,7 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e755c08ebbf858637ac85959feefb488cee3a3db/tf/capable.py#L331-L339" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/599cdfa5472a6433cc47f8be3950f348b601c383/tf/capable.py#L332-L340" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadFrom(self, module, *members):
     loaded = self.load(module)
@@ -687,7 +688,7 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e755c08ebbf858637ac85959feefb488cee3a3db/tf/capable.py#L294-L315" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/599cdfa5472a6433cc47f8be3950f348b601c383/tf/capable.py#L295-L316" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tryImport(self, *extras):
     backendProviders = self.backendProviders
@@ -764,7 +765,7 @@ Right at the beginning of each relevant method, say</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e755c08ebbf858637ac85959feefb488cee3a3db/tf/capable.py#L90-L255" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/599cdfa5472a6433cc47f8be3950f348b601c383/tf/capable.py#L91-L256" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CheckImport:
     def __init__(self, *modules):
@@ -936,6 +937,7 @@ Right at the beginning of each relevant method, say</p>
 <h3>Subclasses</h3>
 <ul class="hlist">
 <li><a title="tf.convert.addnlp.NLPipeline" href="convert/addnlp.html#tf.convert.addnlp.NLPipeline">NLPipeline</a></li>
+<li><a title="tf.convert.pagexml.PageXML" href="convert/pagexml.html#tf.convert.pagexml.PageXML">PageXML</a></li>
 <li><a title="tf.convert.tei.TEI" href="convert/tei.html#tf.convert.tei.TEI">TEI</a></li>
 <li><a title="tf.convert.xml.XML" href="convert/xml.html#tf.convert.xml.XML">XML</a></li>
 <li><a title="tf.tools.myspacy.Spacy" href="tools/myspacy.html#tf.tools.myspacy.Spacy">Spacy</a></li>
@@ -963,7 +965,7 @@ not packed in a 1-element list.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e755c08ebbf858637ac85959feefb488cee3a3db/tf/capable.py#L241-L255" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/599cdfa5472a6433cc47f8be3950f348b601c383/tf/capable.py#L242-L256" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importGet(self):
     &#34;&#34;&#34;Delivers the imported modules.
@@ -1002,7 +1004,7 @@ module.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e755c08ebbf858637ac85959feefb488cee3a3db/tf/capable.py#L216-L239" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/599cdfa5472a6433cc47f8be3950f348b601c383/tf/capable.py#L217-L240" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importOK(self, hint=False):
     &#34;&#34;&#34;Reports the result of the import attempts.
