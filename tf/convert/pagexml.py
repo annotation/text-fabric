@@ -28,6 +28,7 @@ from .helpers import FILE, PAGE, DOC, REGION, LINE, NODE, tokenize
 
 
 TOKEN = "token"
+SOFT_HYPHEN_CHARS = {"¬", "\u00ad"}
 
 
 def setUp():
@@ -71,6 +72,44 @@ def setUp():
 
 
 (HELP, TASKS, TASKS_EXCLUDED, PARAMS, FLAGS) = setUp()
+
+
+def diverge(cv, s, rtx, rsp, ltx, lsp):
+    if ltx != rtx:
+        cv.feature(s, str=ltx, rstr=rtx)
+    if lsp != rsp:
+        cv.feature(s, after=lsp, rafter=rsp)
+
+
+def tokenLogic(cv, s, token, hangover, isFirst, isSecondLast, isLast):
+    (rtx, rsp) = token
+
+    same = not isLast and not isSecondLast and (not isFirst or hangover is None)
+
+    if same:
+        cv.feature(s, str=rtx, after=rsp)
+    else:
+        cv.feature(s, str="", after="", rstr=rtx, rafter=rsp)
+
+    if isFirst and hangover:
+        hangover[3] += rtx
+        hangover[4] = rsp
+
+    if isSecondLast:
+        if hangover is None:
+            hangover = [s, rtx, rsp, rtx, rsp]
+        else:
+            hangover[3] += rtx
+            hangover[4] = rsp
+
+    else:
+        if isLast:
+            cv.feature(s, str="", after="", rstr=rtx, rafter=rsp)
+        elif hangover is not None:
+            diverge(cv, *hangover)
+            hangover = None
+
+    return hangover
 
 
 class PageXML(CheckImport):
@@ -353,8 +392,10 @@ class PageXML(CheckImport):
         sectionTypes = ",".join(levelNames)
 
         textFeatures = "{str}{after}"
+        rawTextFeatures = "{rstr/str}{rafter/after}"
         otext = {
-            "fmt:text-orig-full": textFeatures,
+            "fmt:text-orig-full": rawTextFeatures,
+            "fmt:text-logic-full": textFeatures,
             "sectionFeatures": sectionFeatures,
             "sectionTypes": sectionTypes,
         }
@@ -376,11 +417,25 @@ class PageXML(CheckImport):
             h=dict(
                 description="the height of the pagexml object",
             ),
+            rstr=dict(
+                description=(
+                    "the physical text of a token, "
+                    "if it is different from the logical text"
+                ),
+            ),
             str=dict(
-                description="the text of a word or token",
+                description="the logical text of a token",
+            ),
+            rafter=dict(
+                description=(
+                    "the physical text after a token till the next token, "
+                    "if it is different from the logical after-text"
+                ),
             ),
             after=dict(
-                description="the text after a word till the next word",
+                description=(
+                    "the logical text after a token till the next logical token,"
+                ),
             ),
             doc=dict(
                 description="the name of the document",
@@ -471,26 +526,49 @@ class PageXML(CheckImport):
             box = AttrDict(xObj.coords.box)
 
             isScan = tp == "scan"
-            nTp = PAGE if isScan else REGION if tp == "text_region" else tp
+            isRegion = tp == "text_region"
+            isLine = tp == LINE
+
+            nTp = PAGE if isScan else REGION if isRegion else LINE if isLine else tp
             nd = cv.node(nTp)
             cur[NODE][nTp] = nd
             cv.feature(nd, id=xId, x=box.x, y=box.y, w=box.w, h=box.h)
 
-            if isScan:
-                cv.feature(nd, page=cur["page"])
-
-            if tp == LINE:
-                tokens = tokenize(xObj.text or "")
-                for tx, sp in tokens:
-                    s = cv.slot()
-                    cv.feature(s, str=tx, after=sp)
-                if len(tokens) == 0:
-                    emptySlot(cv)
-
+            if isLine:
                 cur["line"] += 1
                 cv.feature(nd, line=cur["line"])
 
-            elif tp in {"scan", "text_region"}:
+                tokens = tokenize(xObj.text or "")
+                nTokens = len(tokens)
+                slots = []
+
+                hangover = cur["hangover"]
+
+                hasHyphen = len(tokens) > 0 and tokens[-1][0] in SOFT_HYPHEN_CHARS
+
+                for token in tokens:
+                    s = cv.slot()
+                    slots.append(s)
+                    isFirst = len(slots) == 1
+                    isLast = hasHyphen and len(slots) == nTokens
+                    isSecondLast = hasHyphen and len(slots) == nTokens - 1
+                    hangover = tokenLogic(
+                        cv, s, token, hangover, isFirst, isSecondLast, isLast
+                    )
+
+                cur["hangover"] = hangover
+
+                hangover = None
+
+                if len(tokens) == 0:
+                    emptySlot(cv)
+
+            elif isScan or isRegion:
+                if isScan:
+                    cv.feature(nd, page=cur["page"])
+
+                hangover = cur["hangover"]
+
                 for yObj in xObj.get_text_regions_in_reading_order():
                     walkObject(cv, cur, yObj)
                 for yObj in xObj.lines:
@@ -521,12 +599,19 @@ class PageXML(CheckImport):
             cur[NODE][DOC] = nd
             cv.feature(nd, doc=repo)
 
+            cur["hangover"] = None
+
             for pageFile in pageFiles:
                 pagePath = f"{pageSource}/{pageFile}"
+                pageNr = int(pageFile.split(".", 1)[0])
                 pageDoc = parsePage(pagePath)
-                cur["page"] = int(pageFile.split(".", 1)[0])
+                cur["page"] = pageNr
                 cur["line"] = 0
                 walkObject(cv, cur, pageDoc)
+
+                hangover = cur["hangover"]
+                if hangover is not None:
+                    diverge(cv, *hangover)
 
             cv.terminate(nd)
 

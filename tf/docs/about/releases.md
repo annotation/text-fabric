@@ -20,6 +20,18 @@ pip install -e .
 
 ### 12.2
 
+#### 12.2.2
+
+2023-12-?? (upcoming)
+
+Improvements in the PageXML conversion.
+
+*   There are token features `str`, `after` that reflect the logical tokens
+*   There are token features `rstr`, `rafter` that reflect the physical tokens
+*   The distincition between logical and physical is that physical token triplets
+    with the soft hyphen as the middle one, are joined to one logical token;
+    this happens across line boundaries, but also region and page boundaries.
+
 #### 12.2.0,1
 
 2023-11-28
