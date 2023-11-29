@@ -38,6 +38,16 @@ and in its top-level directory run the command:</strong></p>
 </code></pre>
 <h2 id="12">12</h2>
 <h3 id="122">12.2</h3>
+<h4 id="1222">12.2.2</h4>
+<p>2023-12-?? (upcoming)</p>
+<p>Improvements in the PageXML conversion.</p>
+<ul>
+<li>There are token features <code>str</code>, <code>after</code> that reflect the logical tokens</li>
+<li>There are token features <code>rstr</code>, <code>rafter</code> that reflect the physical tokens</li>
+<li>The distincition between logical and physical is that physical token triplets
+with the soft hyphen as the middle one, are joined to one logical token;
+this happens across line boundaries, but also region and page boundaries.</li>
+</ul>
 <h4 id="12201">12.2.0,1</h4>
 <p>2023-11-28</p>
 <p>New conversion tool: from PageXML. Still in its infancy.
@@ -212,7 +222,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e82d7d1405b0f1cf94dba931f9a1f996d6709eec/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -286,6 +296,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
 <li><a href="#122">12.2</a><ul>
+<li><a href="#1222">12.2.2</a></li>
 <li><a href="#12201">12.2.0,1</a></li>
 </ul>
 </li>

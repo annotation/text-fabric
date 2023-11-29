@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e82d7d1405b0f1cf94dba931f9a1f996d6709eec/tf/convert/pagexml.py#L1-L907" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/convert/pagexml.py#L1-L992" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 from subprocess import run
@@ -58,6 +58,7 @@ from .helpers import FILE, PAGE, DOC, REGION, LINE, NODE, tokenize
 
 
 TOKEN = &#34;token&#34;
+SOFT_HYPHEN_CHARS = {&#34;¬&#34;, &#34;\u00ad&#34;}
 
 
 def setUp():
@@ -101,6 +102,44 @@ def setUp():
 
 
 (HELP, TASKS, TASKS_EXCLUDED, PARAMS, FLAGS) = setUp()
+
+
+def diverge(cv, s, rtx, rsp, ltx, lsp):
+    if ltx != rtx:
+        cv.feature(s, str=ltx, rstr=rtx)
+    if lsp != rsp:
+        cv.feature(s, after=lsp, rafter=rsp)
+
+
+def tokenLogic(cv, s, token, hangover, isFirst, isSecondLast, isLast):
+    (rtx, rsp) = token
+
+    same = not isLast and not isSecondLast and (not isFirst or hangover is None)
+
+    if same:
+        cv.feature(s, str=rtx, after=rsp)
+    else:
+        cv.feature(s, str=&#34;&#34;, after=&#34;&#34;, rstr=rtx, rafter=rsp)
+
+    if isFirst and hangover:
+        hangover[3] += rtx
+        hangover[4] = rsp
+
+    if isSecondLast:
+        if hangover is None:
+            hangover = [s, rtx, rsp, rtx, rsp]
+        else:
+            hangover[3] += rtx
+            hangover[4] = rsp
+
+    else:
+        if isLast:
+            cv.feature(s, str=&#34;&#34;, after=&#34;&#34;, rstr=rtx, rafter=rsp)
+        elif hangover is not None:
+            diverge(cv, *hangover)
+            hangover = None
+
+    return hangover
 
 
 class PageXML(CheckImport):
@@ -383,8 +422,10 @@ class PageXML(CheckImport):
         sectionTypes = &#34;,&#34;.join(levelNames)
 
         textFeatures = &#34;{str}{after}&#34;
+        rawTextFeatures = &#34;{rstr/str}{rafter/after}&#34;
         otext = {
-            &#34;fmt:text-orig-full&#34;: textFeatures,
+            &#34;fmt:text-orig-full&#34;: rawTextFeatures,
+            &#34;fmt:text-logic-full&#34;: textFeatures,
             &#34;sectionFeatures&#34;: sectionFeatures,
             &#34;sectionTypes&#34;: sectionTypes,
         }
@@ -406,11 +447,25 @@ class PageXML(CheckImport):
             h=dict(
                 description=&#34;the height of the pagexml object&#34;,
             ),
+            rstr=dict(
+                description=(
+                    &#34;the physical text of a token, &#34;
+                    &#34;if it is different from the logical text&#34;
+                ),
+            ),
             str=dict(
-                description=&#34;the text of a word or token&#34;,
+                description=&#34;the logical text of a token&#34;,
+            ),
+            rafter=dict(
+                description=(
+                    &#34;the physical text after a token till the next token, &#34;
+                    &#34;if it is different from the logical after-text&#34;
+                ),
             ),
             after=dict(
-                description=&#34;the text after a word till the next word&#34;,
+                description=(
+                    &#34;the logical text after a token till the next logical token,&#34;
+                ),
             ),
             doc=dict(
                 description=&#34;the name of the document&#34;,
@@ -501,26 +556,49 @@ class PageXML(CheckImport):
             box = AttrDict(xObj.coords.box)
 
             isScan = tp == &#34;scan&#34;
-            nTp = PAGE if isScan else REGION if tp == &#34;text_region&#34; else tp
+            isRegion = tp == &#34;text_region&#34;
+            isLine = tp == LINE
+
+            nTp = PAGE if isScan else REGION if isRegion else LINE if isLine else tp
             nd = cv.node(nTp)
             cur[NODE][nTp] = nd
             cv.feature(nd, id=xId, x=box.x, y=box.y, w=box.w, h=box.h)
 
-            if isScan:
-                cv.feature(nd, page=cur[&#34;page&#34;])
-
-            if tp == LINE:
-                tokens = tokenize(xObj.text or &#34;&#34;)
-                for tx, sp in tokens:
-                    s = cv.slot()
-                    cv.feature(s, str=tx, after=sp)
-                if len(tokens) == 0:
-                    emptySlot(cv)
-
+            if isLine:
                 cur[&#34;line&#34;] += 1
                 cv.feature(nd, line=cur[&#34;line&#34;])
 
-            elif tp in {&#34;scan&#34;, &#34;text_region&#34;}:
+                tokens = tokenize(xObj.text or &#34;&#34;)
+                nTokens = len(tokens)
+                slots = []
+
+                hangover = cur[&#34;hangover&#34;]
+
+                hasHyphen = len(tokens) &gt; 0 and tokens[-1][0] in SOFT_HYPHEN_CHARS
+
+                for token in tokens:
+                    s = cv.slot()
+                    slots.append(s)
+                    isFirst = len(slots) == 1
+                    isLast = hasHyphen and len(slots) == nTokens
+                    isSecondLast = hasHyphen and len(slots) == nTokens - 1
+                    hangover = tokenLogic(
+                        cv, s, token, hangover, isFirst, isSecondLast, isLast
+                    )
+
+                cur[&#34;hangover&#34;] = hangover
+
+                hangover = None
+
+                if len(tokens) == 0:
+                    emptySlot(cv)
+
+            elif isScan or isRegion:
+                if isScan:
+                    cv.feature(nd, page=cur[&#34;page&#34;])
+
+                hangover = cur[&#34;hangover&#34;]
+
                 for yObj in xObj.get_text_regions_in_reading_order():
                     walkObject(cv, cur, yObj)
                 for yObj in xObj.lines:
@@ -551,12 +629,19 @@ class PageXML(CheckImport):
             cur[NODE][DOC] = nd
             cv.feature(nd, doc=repo)
 
+            cur[&#34;hangover&#34;] = None
+
             for pageFile in pageFiles:
                 pagePath = f&#34;{pageSource}/{pageFile}&#34;
+                pageNr = int(pageFile.split(&#34;.&#34;, 1)[0])
                 pageDoc = parsePage(pagePath)
-                cur[&#34;page&#34;] = int(pageFile.split(&#34;.&#34;, 1)[0])
+                cur[&#34;page&#34;] = pageNr
                 cur[&#34;line&#34;] = 0
                 walkObject(cv, cur, pageDoc)
+
+                hangover = cur[&#34;hangover&#34;]
+                if hangover is not None:
+                    diverge(cv, *hangover)
 
             cv.terminate(nd)
 
@@ -944,6 +1029,23 @@ if __name__ == &#34;__main__&#34;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="tf.convert.pagexml.diverge"><code class="name flex">
+<span>def <span class="ident">diverge</span></span>(<span>cv, s, rtx, rsp, ltx, lsp)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/convert/pagexml.py#L77-L81" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def diverge(cv, s, rtx, rsp, ltx, lsp):
+    if ltx != rtx:
+        cv.feature(s, str=ltx, rstr=rtx)
+    if lsp != rsp:
+        cv.feature(s, after=lsp, rafter=rsp)</code></pre>
+</details>
+</dd>
 <dt id="tf.convert.pagexml.main"><code class="name flex">
 <span>def <span class="ident">main</span></span>(<span>)</span>
 </code></dt>
@@ -952,7 +1054,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e82d7d1405b0f1cf94dba931f9a1f996d6709eec/tf/convert/pagexml.py#L893-L903" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/convert/pagexml.py#L978-L988" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(
@@ -975,7 +1077,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e82d7d1405b0f1cf94dba931f9a1f996d6709eec/tf/convert/pagexml.py#L33-L70" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/convert/pagexml.py#L34-L71" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setUp():
     helpText = &#34;&#34;&#34;
@@ -1015,6 +1117,47 @@ if __name__ == &#34;__main__&#34;:
         verbose=(&#34;Produce less or more progress and reporting messages&#34;, -1, 3),
     )
     return (helpText, taskSpec, taskExcluded, paramSpec, flagSpec)</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.pagexml.tokenLogic"><code class="name flex">
+<span>def <span class="ident">tokenLogic</span></span>(<span>cv, s, token, hangover, isFirst, isSecondLast, isLast)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/convert/pagexml.py#L84-L112" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def tokenLogic(cv, s, token, hangover, isFirst, isSecondLast, isLast):
+    (rtx, rsp) = token
+
+    same = not isLast and not isSecondLast and (not isFirst or hangover is None)
+
+    if same:
+        cv.feature(s, str=rtx, after=rsp)
+    else:
+        cv.feature(s, str=&#34;&#34;, after=&#34;&#34;, rstr=rtx, rafter=rsp)
+
+    if isFirst and hangover:
+        hangover[3] += rtx
+        hangover[4] = rsp
+
+    if isSecondLast:
+        if hangover is None:
+            hangover = [s, rtx, rsp, rtx, rsp]
+        else:
+            hangover[3] += rtx
+            hangover[4] = rsp
+
+    else:
+        if isLast:
+            cv.feature(s, str=&#34;&#34;, after=&#34;&#34;, rstr=rtx, rafter=rsp)
+        elif hangover is not None:
+            diverge(cv, *hangover)
+            hangover = None
+
+    return hangover</code></pre>
 </details>
 </dd>
 </dl>
@@ -1127,7 +1270,7 @@ relevant TF version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e82d7d1405b0f1cf94dba931f9a1f996d6709eec/tf/convert/pagexml.py#L76-L890" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/convert/pagexml.py#L115-L975" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PageXML(CheckImport):
     def __init__(
@@ -1409,8 +1552,10 @@ relevant TF version:</p>
         sectionTypes = &#34;,&#34;.join(levelNames)
 
         textFeatures = &#34;{str}{after}&#34;
+        rawTextFeatures = &#34;{rstr/str}{rafter/after}&#34;
         otext = {
-            &#34;fmt:text-orig-full&#34;: textFeatures,
+            &#34;fmt:text-orig-full&#34;: rawTextFeatures,
+            &#34;fmt:text-logic-full&#34;: textFeatures,
             &#34;sectionFeatures&#34;: sectionFeatures,
             &#34;sectionTypes&#34;: sectionTypes,
         }
@@ -1432,11 +1577,25 @@ relevant TF version:</p>
             h=dict(
                 description=&#34;the height of the pagexml object&#34;,
             ),
+            rstr=dict(
+                description=(
+                    &#34;the physical text of a token, &#34;
+                    &#34;if it is different from the logical text&#34;
+                ),
+            ),
             str=dict(
-                description=&#34;the text of a word or token&#34;,
+                description=&#34;the logical text of a token&#34;,
+            ),
+            rafter=dict(
+                description=(
+                    &#34;the physical text after a token till the next token, &#34;
+                    &#34;if it is different from the logical after-text&#34;
+                ),
             ),
             after=dict(
-                description=&#34;the text after a word till the next word&#34;,
+                description=(
+                    &#34;the logical text after a token till the next logical token,&#34;
+                ),
             ),
             doc=dict(
                 description=&#34;the name of the document&#34;,
@@ -1527,26 +1686,49 @@ relevant TF version:</p>
             box = AttrDict(xObj.coords.box)
 
             isScan = tp == &#34;scan&#34;
-            nTp = PAGE if isScan else REGION if tp == &#34;text_region&#34; else tp
+            isRegion = tp == &#34;text_region&#34;
+            isLine = tp == LINE
+
+            nTp = PAGE if isScan else REGION if isRegion else LINE if isLine else tp
             nd = cv.node(nTp)
             cur[NODE][nTp] = nd
             cv.feature(nd, id=xId, x=box.x, y=box.y, w=box.w, h=box.h)
 
-            if isScan:
-                cv.feature(nd, page=cur[&#34;page&#34;])
-
-            if tp == LINE:
-                tokens = tokenize(xObj.text or &#34;&#34;)
-                for tx, sp in tokens:
-                    s = cv.slot()
-                    cv.feature(s, str=tx, after=sp)
-                if len(tokens) == 0:
-                    emptySlot(cv)
-
+            if isLine:
                 cur[&#34;line&#34;] += 1
                 cv.feature(nd, line=cur[&#34;line&#34;])
 
-            elif tp in {&#34;scan&#34;, &#34;text_region&#34;}:
+                tokens = tokenize(xObj.text or &#34;&#34;)
+                nTokens = len(tokens)
+                slots = []
+
+                hangover = cur[&#34;hangover&#34;]
+
+                hasHyphen = len(tokens) &gt; 0 and tokens[-1][0] in SOFT_HYPHEN_CHARS
+
+                for token in tokens:
+                    s = cv.slot()
+                    slots.append(s)
+                    isFirst = len(slots) == 1
+                    isLast = hasHyphen and len(slots) == nTokens
+                    isSecondLast = hasHyphen and len(slots) == nTokens - 1
+                    hangover = tokenLogic(
+                        cv, s, token, hangover, isFirst, isSecondLast, isLast
+                    )
+
+                cur[&#34;hangover&#34;] = hangover
+
+                hangover = None
+
+                if len(tokens) == 0:
+                    emptySlot(cv)
+
+            elif isScan or isRegion:
+                if isScan:
+                    cv.feature(nd, page=cur[&#34;page&#34;])
+
+                hangover = cur[&#34;hangover&#34;]
+
                 for yObj in xObj.get_text_regions_in_reading_order():
                     walkObject(cv, cur, yObj)
                 for yObj in xObj.lines:
@@ -1577,12 +1759,19 @@ relevant TF version:</p>
             cur[NODE][DOC] = nd
             cv.feature(nd, doc=repo)
 
+            cur[&#34;hangover&#34;] = None
+
             for pageFile in pageFiles:
                 pagePath = f&#34;{pageSource}/{pageFile}&#34;
+                pageNr = int(pageFile.split(&#34;.&#34;, 1)[0])
                 pageDoc = parsePage(pagePath)
-                cur[&#34;page&#34;] = int(pageFile.split(&#34;.&#34;, 1)[0])
+                cur[&#34;page&#34;] = pageNr
                 cur[&#34;line&#34;] = 0
                 walkObject(cv, cur, pageDoc)
+
+                hangover = cur[&#34;hangover&#34;]
+                if hangover is not None:
+                    diverge(cv, *hangover)
 
             cv.terminate(nd)
 
@@ -1988,7 +2177,7 @@ that code between automatic generation of files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e82d7d1405b0f1cf94dba931f9a1f996d6709eec/tf/convert/pagexml.py#L625-L788" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/convert/pagexml.py#L710-L873" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -2172,7 +2361,7 @@ There should be a valid TF dataset and app configuration in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e82d7d1405b0f1cf94dba931f9a1f996d6709eec/tf/convert/pagexml.py#L792-L828" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/convert/pagexml.py#L877-L913" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def browseTask(self):
     &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
@@ -2227,7 +2416,7 @@ There should be a valid TF dataset and app configuration in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e82d7d1405b0f1cf94dba931f9a1f996d6709eec/tf/convert/pagexml.py#L535-L576" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/convert/pagexml.py#L620-L661" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -2286,7 +2475,7 @@ There should be a valid TF dataset and app configuration in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e82d7d1405b0f1cf94dba931f9a1f996d6709eec/tf/convert/pagexml.py#L400-L413" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/convert/pagexml.py#L455-L468" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -2324,7 +2513,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e82d7d1405b0f1cf94dba931f9a1f996d6709eec/tf/convert/pagexml.py#L415-L533" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/convert/pagexml.py#L470-L618" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -2385,26 +2574,49 @@ that has access to this data.</p>
         box = AttrDict(xObj.coords.box)
 
         isScan = tp == &#34;scan&#34;
-        nTp = PAGE if isScan else REGION if tp == &#34;text_region&#34; else tp
+        isRegion = tp == &#34;text_region&#34;
+        isLine = tp == LINE
+
+        nTp = PAGE if isScan else REGION if isRegion else LINE if isLine else tp
         nd = cv.node(nTp)
         cur[NODE][nTp] = nd
         cv.feature(nd, id=xId, x=box.x, y=box.y, w=box.w, h=box.h)
 
-        if isScan:
-            cv.feature(nd, page=cur[&#34;page&#34;])
-
-        if tp == LINE:
-            tokens = tokenize(xObj.text or &#34;&#34;)
-            for tx, sp in tokens:
-                s = cv.slot()
-                cv.feature(s, str=tx, after=sp)
-            if len(tokens) == 0:
-                emptySlot(cv)
-
+        if isLine:
             cur[&#34;line&#34;] += 1
             cv.feature(nd, line=cur[&#34;line&#34;])
 
-        elif tp in {&#34;scan&#34;, &#34;text_region&#34;}:
+            tokens = tokenize(xObj.text or &#34;&#34;)
+            nTokens = len(tokens)
+            slots = []
+
+            hangover = cur[&#34;hangover&#34;]
+
+            hasHyphen = len(tokens) &gt; 0 and tokens[-1][0] in SOFT_HYPHEN_CHARS
+
+            for token in tokens:
+                s = cv.slot()
+                slots.append(s)
+                isFirst = len(slots) == 1
+                isLast = hasHyphen and len(slots) == nTokens
+                isSecondLast = hasHyphen and len(slots) == nTokens - 1
+                hangover = tokenLogic(
+                    cv, s, token, hangover, isFirst, isSecondLast, isLast
+                )
+
+            cur[&#34;hangover&#34;] = hangover
+
+            hangover = None
+
+            if len(tokens) == 0:
+                emptySlot(cv)
+
+        elif isScan or isRegion:
+            if isScan:
+                cv.feature(nd, page=cur[&#34;page&#34;])
+
+            hangover = cur[&#34;hangover&#34;]
+
             for yObj in xObj.get_text_regions_in_reading_order():
                 walkObject(cv, cur, yObj)
             for yObj in xObj.lines:
@@ -2435,12 +2647,19 @@ that has access to this data.</p>
         cur[NODE][DOC] = nd
         cv.feature(nd, doc=repo)
 
+        cur[&#34;hangover&#34;] = None
+
         for pageFile in pageFiles:
             pagePath = f&#34;{pageSource}/{pageFile}&#34;
+            pageNr = int(pageFile.split(&#34;.&#34;, 1)[0])
             pageDoc = parsePage(pagePath)
-            cur[&#34;page&#34;] = int(pageFile.split(&#34;.&#34;, 1)[0])
+            cur[&#34;page&#34;] = pageNr
             cur[&#34;line&#34;] = 0
             walkObject(cv, cur, pageDoc)
+
+            hangover = cur[&#34;hangover&#34;]
+            if hangover is not None:
+                diverge(cv, *hangover)
 
         cv.terminate(nd)
 
@@ -2467,7 +2686,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e82d7d1405b0f1cf94dba931f9a1f996d6709eec/tf/convert/pagexml.py#L578-L623" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/convert/pagexml.py#L663-L708" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -2549,7 +2768,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e82d7d1405b0f1cf94dba931f9a1f996d6709eec/tf/convert/pagexml.py#L830-L890" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/convert/pagexml.py#L915-L975" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,
@@ -2692,8 +2911,10 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="tf.convert.pagexml.diverge" href="#tf.convert.pagexml.diverge">diverge</a></code></li>
 <li><code><a title="tf.convert.pagexml.main" href="#tf.convert.pagexml.main">main</a></code></li>
 <li><code><a title="tf.convert.pagexml.setUp" href="#tf.convert.pagexml.setUp">setUp</a></code></li>
+<li><code><a title="tf.convert.pagexml.tokenLogic" href="#tf.convert.pagexml.tokenLogic">tokenLogic</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
