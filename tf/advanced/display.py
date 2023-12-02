@@ -148,7 +148,7 @@ def displayShow(app, *options):
     return showDict("<b>current display options</b>", data, _browse, inNb, *options)
 
 
-def displaySetup(app, **options):
+def displaySetup(app, *show, **options):
     """Set up all display parameters.
 
     Shows current values of display parameters and/or
@@ -168,9 +168,9 @@ def displaySetup(app, **options):
 
     Parameters
     ----------
-    show: keys
+    show: list
         Options of which the current value will be shown.
-    options: key-values
+    options: dict
         Explicit values for selected options that act as overrides of the defaults.
 
     See Also
@@ -181,7 +181,7 @@ def displaySetup(app, **options):
 
     display = app.display
 
-    display.setup(**options)
+    display.setup(*show, **options)
 
 
 def displayReset(app, *options):
@@ -971,9 +971,11 @@ def pretty(app, n, explain=False, _asString=False, **options):
 
         *   `condenseType`: the standard container to display nodes in;
         *   `full`: whether to display a reference to the material or the material itself;
-        *   `extraFeatures`: additional node / edge features to  display
-        *   `edgeFeatures`: which edge features maybe displayed
-        *   `edgeHighlights`: highlight specs for edges
+        *   `queryFeatures`: whether to display features mentioned in the last query;
+            these features are stored in the `tupleFeatures` option;
+        *   `extraFeatures`: additional node / edge features to  display;
+        *   `edgeFeatures`: which edge features maybe displayed;
+        *   `edgeHighlights`: highlight specs for edges;
         *   `tupleFeatures`: additional features to  display (primarily for `export`).
 
     Parameters

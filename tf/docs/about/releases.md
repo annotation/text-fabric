@@ -22,7 +22,19 @@ pip install -e .
 
 #### 12.2.2
 
-2023-12-?? (upcoming)
+2023-12-02
+
+Fix in display functions, thanks to Tony Jurg:
+
+*   if you do `A.pretty(x, queryFeatures=False, extraFeatures="yy zz")`
+    the extra features were not shown. So there was no obvious way to control
+    exactly the features that you want to show in a display. That has been fixed.
+    Further clarification: the node features that are used by a query are stored in
+    the display option `tupleFeatures`. That is what causes them to be displayed in 
+    subsequent display statements. You can also explicitly set/pass the `tupleFeatures`
+    parameter.
+    However, the fact that `queryFeatures=False` prohibited the display of features
+    mentioned in `extraFeatures` was against the intuitions.
 
 Improvements in the PageXML conversion.
 

@@ -51,10 +51,14 @@ def render(app, isPretty, n, _inTuple, _asString, explain, **options):
         tupleFeatures = dContext.tupleFeatures
         extraFeatures = dContext.extraFeatures
         multiFeatures = dContext.multiFeatures
+        queryFeatures = dContext.queryFeatures
 
         dContext.set(
             "features",
-            sorted(flattenToSet(extraFeatures[0]) | flattenToSet(tupleFeatures)),
+            sorted(
+                flattenToSet(extraFeatures[0])
+                | (flattenToSet(tupleFeatures) if queryFeatures else set())
+            ),
         )
         dContext.set("featuresIndirect", extraFeatures[1])
         if multiFeatures:
@@ -165,7 +169,7 @@ def _render(
     lastCh = len(children) - 1
 
     if not ((isPretty and isBaseNonSlot) or (not isPretty and plainCustom)):
-        for (i, subTree) in enumerate(children):
+        for i, subTree in enumerate(children):
             thisFirst = first and i == 0
             thisLast = last and i == lastCh
             _render(
@@ -542,7 +546,7 @@ def _getEdge(e, n, kv, withNodes, right, highlights):
     sep = " " if hlCls else ""
 
     return dedent(
-        f'''
+        f"""
         <span
             ef="{e}"
             nd="{n}"
@@ -550,7 +554,8 @@ def _getEdge(e, n, kv, withNodes, right, highlights):
             arrow="{arrow}"
             class="etf{sep}{hlCls}" {hlStyle}
         >{plainValue}</span>
-        ''')
+        """
+    )
 
 
 def _getFeatures(info, n, nType):
@@ -566,9 +571,12 @@ def _getFeatures(info, n, nType):
     edgeFeatures = options.edgeFeatures
     forceEdges = options.forceEdges
     multiFeatures = options.multiFeatures
+
     if multiFeatures:
         featuresAll = options.featuresAll
-    queryFeatures = options.queryFeatures
+
+    # queryFeatures = options.queryFeatures
+    tupleFeatures = options.tupleFeatures
     standardFeatures = options.standardFeatures
     suppress = options.suppress
     noneValues = options.noneValues
@@ -616,10 +624,11 @@ def _getFeatures(info, n, nType):
 
     featurePart = ""
 
-    if standardFeatures or queryFeatures or multiFeatures or forceEdges:
+    # if standardFeatures or queryFeatures or multiFeatures or forceEdges:
+    if standardFeatures or tupleFeatures or multiFeatures or forceEdges:
         seen = set()
 
-        for (i, name) in enumerate(featureList):
+        for i, name in enumerate(featureList):
             if name not in suppress and name not in seen:
                 seen.add(name)
 
@@ -690,11 +699,12 @@ def _getFeatures(info, n, nType):
                         not multiFeatures
                         and not (isExtra and forceEdges and name in edgeFeatures)
                         and (
-                            (isExtra and not queryFeatures)
-                            or (
-                                not isExtra
-                                and (not standardFeatures and name not in dFeatures)
-                            )
+                            # (isExtra and not queryFeatures)
+                            # isExtra
+                            # or (
+                            not isExtra
+                            and (not standardFeatures and name not in dFeatures)
+                            # )
                         )
                     ):
                         continue

@@ -316,13 +316,18 @@ suppress: set, optional set()
 
 tupleFeatures: iterable of 2-tuples, optional ()
     A bit like `extraFeatures` above, but more intricate.
-    Only meant to steer the
-    `A.export()` function below into outputting the
-    features you choose.
 
-    It should be a tuple of pairs
+    In the first place, after running a query by means of `A.search()`,
+    an automatic `displaySetup(tupleFeatures=...)` will be performed with
+    the features mentioned in the query for node atoms.
 
-        (i, features)
+    This will influence the effect of subsequent display and export operations.
+
+    When you set it yourself, it should be a tuple of pairs
+
+    ```
+    (i, features)
+    ```
 
     which means that to member `i` of a result tuple we assign extra `features`.
 
@@ -577,7 +582,12 @@ class Options:
             self.current = {k: v for (k, v) in defaults.items()}
 
     def setup(self, *options, **overrides):
+        app = self.app
+        info = app.info
         current = self.current
+
+        for option in options:
+            info(f"{option} = {current.get(option, None)}", tm=False)
 
         for (option, value) in overrides.items():
             normValue = self.normalize(option, value)
