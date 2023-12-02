@@ -64,7 +64,7 @@ following order:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/display.py#L1-L1020" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/display.py#L1-L1022" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Display
@@ -216,7 +216,7 @@ def displayShow(app, *options):
     return showDict(&#34;&lt;b&gt;current display options&lt;/b&gt;&#34;, data, _browse, inNb, *options)
 
 
-def displaySetup(app, **options):
+def displaySetup(app, *show, **options):
     &#34;&#34;&#34;Set up all display parameters.
 
     Shows current values of display parameters and/or
@@ -236,9 +236,9 @@ def displaySetup(app, **options):
 
     Parameters
     ----------
-    show: keys
+    show: list
         Options of which the current value will be shown.
-    options: key-values
+    options: dict
         Explicit values for selected options that act as overrides of the defaults.
 
     See Also
@@ -249,7 +249,7 @@ def displaySetup(app, **options):
 
     display = app.display
 
-    display.setup(**options)
+    display.setup(*show, **options)
 
 
 def displayReset(app, *options):
@@ -1039,9 +1039,11 @@ def pretty(app, n, explain=False, _asString=False, **options):
 
         *   `condenseType`: the standard container to display nodes in;
         *   `full`: whether to display a reference to the material or the material itself;
-        *   `extraFeatures`: additional node / edge features to  display
-        *   `edgeFeatures`: which edge features maybe displayed
-        *   `edgeHighlights`: highlight specs for edges
+        *   `queryFeatures`: whether to display features mentioned in the last query;
+            these features are stored in the `tupleFeatures` option;
+        *   `extraFeatures`: additional node / edge features to  display;
+        *   `edgeFeatures`: which edge features maybe displayed;
+        *   `edgeHighlights`: highlight specs for edges;
         *   `tupleFeatures`: additional features to  display (primarily for `export`).
 
     Parameters
@@ -1121,7 +1123,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/display.py#L79-L124" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/display.py#L79-L124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayApi(app, silent=SILENT_D):
     &#34;&#34;&#34;Produce the display API.
@@ -1188,7 +1190,7 @@ Otherwise, restore all display settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/display.py#L187-L204" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/display.py#L187-L204" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayReset(app, *options):
     &#34;&#34;&#34;Restore display parameters to their defaults.
@@ -1211,7 +1213,7 @@ Otherwise, restore all display settings.</dd>
 </details>
 </dd>
 <dt id="tf.advanced.display.displaySetup"><code class="name flex">
-<span>def <span class="ident">displaySetup</span></span>(<span>app, **options)</span>
+<span>def <span class="ident">displaySetup</span></span>(<span>app, *show, **options)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set up all display parameters.</p>
@@ -1231,9 +1233,9 @@ You can show the current values by means of <code><a title="tf.advanced.display.
 </div>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>show</code></strong> :&ensp;<code>keys</code></dt>
+<dt><strong><code>show</code></strong> :&ensp;<code>list</code></dt>
 <dd>Options of which the current value will be shown.</dd>
-<dt><strong><code>options</code></strong> :&ensp;<code>key-values</code></dt>
+<dt><strong><code>options</code></strong> :&ensp;<code>dict</code></dt>
 <dd>Explicit values for selected options that act as overrides of the defaults.</dd>
 </dl>
 <h2 id="see-also">See Also</h2>
@@ -1246,9 +1248,9 @@ You can show the current values by means of <code><a title="tf.advanced.display.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/display.py#L151-L184" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/display.py#L151-L184" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def displaySetup(app, **options):
+<pre><code class="python">def displaySetup(app, *show, **options):
     &#34;&#34;&#34;Set up all display parameters.
 
     Shows current values of display parameters and/or
@@ -1268,9 +1270,9 @@ You can show the current values by means of <code><a title="tf.advanced.display.
 
     Parameters
     ----------
-    show: keys
+    show: list
         Options of which the current value will be shown.
-    options: key-values
+    options: dict
         Explicit values for selected options that act as overrides of the defaults.
 
     See Also
@@ -1281,7 +1283,7 @@ You can show the current values by means of <code><a title="tf.advanced.display.
 
     display = app.display
 
-    display.setup(**options)</code></pre>
+    display.setup(*show, **options)</code></pre>
 </details>
 </dd>
 <dt id="tf.advanced.display.displayShow"><code class="name flex">
@@ -1304,7 +1306,7 @@ If no option is passes, all options will be shown.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/display.py#L127-L148" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/display.py#L127-L148" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayShow(app, *options):
     &#34;&#34;&#34;Show display parameters.
@@ -1438,7 +1440,7 @@ Excel and Numbers will treat it in a special way.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/display.py#L352-L478" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/display.py#L352-L478" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def export(app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options):
     &#34;&#34;&#34;Exports an iterable of tuples of nodes to an Excel friendly TSV file.
@@ -1585,7 +1587,7 @@ which specify a table layout with right aligned cell contents by default.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/display.py#L259-L286" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/display.py#L259-L286" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getCss(app):
     &#34;&#34;&#34;Export the CSS for this app.
@@ -1635,7 +1637,7 @@ which specify a table layout with right aligned cell contents by default.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/display.py#L327-L349" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/display.py#L327-L349" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getToolCss(app, tool):
     &#34;&#34;&#34;Export the CSS for a tool of this app.
@@ -1685,7 +1687,7 @@ Otherwise, nothing is returned, but the complete CSS is displayed as HTML in the
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/display.py#L207-L256" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/display.py#L207-L256" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadCss(app):
     &#34;&#34;&#34;Load the CSS for this app.
@@ -1764,7 +1766,7 @@ The flag <code>app._browse</code> is used to steer us into this case.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/display.py#L289-L324" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/display.py#L289-L324" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadToolCss(app, tool, extraCss):
     &#34;&#34;&#34;Load the Tool CSS for this app.
@@ -1836,7 +1838,7 @@ Depending on <code>_asString</code> above.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/display.py#L775-L806" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/display.py#L775-L806" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
     &#34;&#34;&#34;Display the plain text of a node.
@@ -1921,7 +1923,7 @@ Depending on <code>asString</code> above.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/display.py#L577-L772" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/display.py#L577-L772" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def plainTuple(
     app,
@@ -2135,10 +2137,12 @@ are particularly relevant to pretty displays:</p>
 <ul>
 <li><code>condenseType</code>: the standard container to display nodes in;</li>
 <li><code>full</code>: whether to display a reference to the material or the material itself;</li>
+<li><code>queryFeatures</code>: whether to display features mentioned in the last query;
+these features are stored in the <code>tupleFeatures</code> option;</li>
 <li><code>extraFeatures</code>: additional node / edge features to
-display</li>
-<li><code>edgeFeatures</code>: which edge features maybe displayed</li>
-<li><code>edgeHighlights</code>: highlight specs for edges</li>
+display;</li>
+<li><code>edgeFeatures</code>: which edge features maybe displayed;</li>
+<li><code>edgeHighlights</code>: highlight specs for edges;</li>
 <li><code>tupleFeatures</code>: additional features to
 display (primarily for <code><a title="tf.advanced.display.export" href="#tf.advanced.display.export">export()</a></code>).</li>
 </ul>
@@ -2164,7 +2168,7 @@ Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/display.py#L962-L1000" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/display.py#L962-L1002" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def pretty(app, n, explain=False, _asString=False, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a node in a graphical way.
@@ -2178,9 +2182,11 @@ Otherwise the result is directly displayed in a notebook.</p></div>
 
         *   `condenseType`: the standard container to display nodes in;
         *   `full`: whether to display a reference to the material or the material itself;
-        *   `extraFeatures`: additional node / edge features to  display
-        *   `edgeFeatures`: which edge features maybe displayed
-        *   `edgeHighlights`: highlight specs for edges
+        *   `queryFeatures`: whether to display features mentioned in the last query;
+            these features are stored in the `tupleFeatures` option;
+        *   `extraFeatures`: additional node / edge features to  display;
+        *   `edgeFeatures`: which edge features maybe displayed;
+        *   `edgeHighlights`: highlight specs for edges;
         *   `tupleFeatures`: additional features to  display (primarily for `export`).
 
     Parameters
@@ -2241,7 +2247,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/display.py#L884-L959" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/display.py#L884-L959" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def prettyTuple(app, tup, seq=None, _asString=False, item=RESULT, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a tuple of nodes in a graphical way.
@@ -2353,7 +2359,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/display.py#L812-L881" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/display.py#L812-L881" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def show(app, tuples, _asString=False, **options):
     &#34;&#34;&#34;Displays an iterable of tuples of nodes.
@@ -2456,7 +2462,7 @@ HTML string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/display.py#L484-L574" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/display.py#L484-L574" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def table(app, tuples, _asString=False, **options):
     &#34;&#34;&#34;Plain displays of an iterable of tuples of nodes in a table.

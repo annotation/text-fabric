@@ -39,7 +39,19 @@ and in its top-level directory run the command:</strong></p>
 <h2 id="12">12</h2>
 <h3 id="122">12.2</h3>
 <h4 id="1222">12.2.2</h4>
-<p>2023-12-?? (upcoming)</p>
+<p>2023-12-02</p>
+<p>Fix in display functions, thanks to Tony Jurg:</p>
+<ul>
+<li>if you do <code>A.pretty(x, queryFeatures=False, extraFeatures="yy zz")</code>
+the extra features were not shown. So there was no obvious way to control
+exactly the features that you want to show in a display. That has been fixed.
+Further clarification: the node features that are used by a query are stored in
+the display option <code>tupleFeatures</code>. That is what causes them to be displayed in
+subsequent display statements. You can also explicitly set/pass the <code>tupleFeatures</code>
+parameter.
+However, the fact that <code>queryFeatures=False</code> prohibited the display of features
+mentioned in <code>extraFeatures</code> was against the intuitions.</li>
+</ul>
 <p>Improvements in the PageXML conversion.</p>
 <ul>
 <li>There are token features <code>str</code>, <code>after</code> that reflect the logical tokens</li>
@@ -222,7 +234,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md

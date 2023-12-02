@@ -49,7 +49,7 @@ text material to transliterated representations and back.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/writing/transcription.py#L1-L1078" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/writing/transcription.py#L1-L1078" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Transcription
@@ -1161,7 +1161,7 @@ tr.aaa
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/writing/transcription.py#L49-L1078" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/writing/transcription.py#L49-L1078" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Transcription:
     &#34;&#34;&#34;Conversion between UNICODE and various transcriptions.
@@ -2360,7 +2360,7 @@ This is the mapping used in the Quran representation on tanzil.net.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/writing/transcription.py#L623-L624" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/writing/transcription.py#L623-L624" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def asciiFromArabic(word):
     return &#34;&#34;.join(Transcription.arabicTransAscii.get(x, x) for x in word)</code></pre>
@@ -2374,7 +2374,7 @@ This is the mapping used in the Quran representation on tanzil.net.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/writing/transcription.py#L1037-L1038" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/writing/transcription.py#L1037-L1038" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def can_from_syriac(self, word):
     return all(c in self.syriac_mappingi for c in word if c != &#34; &#34;)</code></pre>
@@ -2388,7 +2388,7 @@ This is the mapping used in the Quran representation on tanzil.net.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/writing/transcription.py#L1030-L1035" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/writing/transcription.py#L1030-L1035" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def can_to_syriac(self, word):
     return all(
@@ -2413,7 +2413,7 @@ produce the word in transliteration.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/writing/transcription.py#L1060-L1078" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/writing/transcription.py#L1060-L1078" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def from_arabic(word):
     &#34;&#34;&#34;
@@ -2451,7 +2451,7 @@ produce the word in ETCBC transliteration.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/writing/transcription.py#L968-L988" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/writing/transcription.py#L968-L988" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def from_hebrew(self, word):
     &#34;&#34;&#34;
@@ -2491,7 +2491,7 @@ produce the word in ETCBC transliteration.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/writing/transcription.py#L1010-L1028" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/writing/transcription.py#L1010-L1028" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def from_syriac(self, word):
     &#34;&#34;&#34;
@@ -2522,7 +2522,7 @@ produce the word in ETCBC transliteration.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/writing/transcription.py#L626-L627" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/writing/transcription.py#L626-L627" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def latinFromArabic(word):
     return &#34;&#34;.join(Transcription.arabicTransLatin.get(x, x) for x in word)</code></pre>
@@ -2549,7 +2549,7 @@ to the same character.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/writing/transcription.py#L941-L966" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/writing/transcription.py#L941-L966" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ph_simplify(pword):
     &#34;&#34;&#34;
@@ -2587,7 +2587,7 @@ to the same character.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/writing/transcription.py#L620-L621" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/writing/transcription.py#L620-L621" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def quranFromArabic(word):
     return &#34;&#34;.join(Transcription.arabicTransQuran.get(x, x) for x in word)</code></pre>
@@ -2601,7 +2601,7 @@ to the same character.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/writing/transcription.py#L629-L630" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/writing/transcription.py#L629-L630" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def standardFromArabic(word):
     return &#34;&#34;.join(Transcription.arabicTransStandard.get(x, x) for x in word)</code></pre>
@@ -2634,7 +2634,7 @@ Replace the last consonant of the word material by its final form, if applicable
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/writing/transcription.py#L687-L748" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/writing/transcription.py#L687-L748" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def suffix_and_finales(word):
     &#34;&#34;&#34;
@@ -2720,7 +2720,7 @@ None
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/writing/transcription.py#L774-L797" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/writing/transcription.py#L774-L797" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def suppress_space(word):
     &#34;&#34;&#34;
@@ -2756,7 +2756,7 @@ None
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/writing/transcription.py#L674-L675" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/writing/transcription.py#L674-L675" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sycSplitPunc(self):
     pass</code></pre>
@@ -2777,7 +2777,7 @@ produce the word in UNICODE Arabic.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/writing/transcription.py#L1040-L1058" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/writing/transcription.py#L1040-L1058" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_arabic(word):
     &#34;&#34;&#34;
@@ -2817,7 +2817,7 @@ Punctuation will also be stripped.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/writing/transcription.py#L819-L848" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/writing/transcription.py#L819-L848" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_etcbc_c(word):
     &#34;&#34;&#34;
@@ -2866,7 +2866,7 @@ strip all the non-vowel pointing (i.e. the accents).</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/writing/transcription.py#L799-L817" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/writing/transcription.py#L799-L817" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_etcbc_v(word):
     &#34;&#34;&#34;
@@ -2906,7 +2906,7 @@ before accent pointing.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/writing/transcription.py#L850-L871" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/writing/transcription.py#L850-L871" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_hebrew(word):
     &#34;&#34;&#34;
@@ -2948,7 +2948,7 @@ produce the word in UNICODE Hebrew, but without the pointing.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/writing/transcription.py#L895-L917" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/writing/transcription.py#L895-L917" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_hebrew_c(word):
     &#34;&#34;&#34;
@@ -2990,7 +2990,7 @@ produce the word in UNICODE Hebrew, but without the accents.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/writing/transcription.py#L873-L893" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/writing/transcription.py#L873-L893" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_hebrew_v(word):
     &#34;&#34;&#34;
@@ -3032,7 +3032,7 @@ by the input word.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/writing/transcription.py#L919-L939" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/writing/transcription.py#L919-L939" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_hebrew_x(word):
     &#34;&#34;&#34;
@@ -3072,7 +3072,7 @@ produce the word in UNICODE Syriac.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/writing/transcription.py#L990-L1008" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/writing/transcription.py#L990-L1008" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_syriac(self, word):
     &#34;&#34;&#34;

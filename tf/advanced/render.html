@@ -40,7 +40,7 @@ directly from an attribute in the tree.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/render.py#L1-L722" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/render.py#L1-L732" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Render
@@ -95,10 +95,14 @@ def render(app, isPretty, n, _inTuple, _asString, explain, **options):
         tupleFeatures = dContext.tupleFeatures
         extraFeatures = dContext.extraFeatures
         multiFeatures = dContext.multiFeatures
+        queryFeatures = dContext.queryFeatures
 
         dContext.set(
             &#34;features&#34;,
-            sorted(flattenToSet(extraFeatures[0]) | flattenToSet(tupleFeatures)),
+            sorted(
+                flattenToSet(extraFeatures[0])
+                | (flattenToSet(tupleFeatures) if queryFeatures else set())
+            ),
         )
         dContext.set(&#34;featuresIndirect&#34;, extraFeatures[1])
         if multiFeatures:
@@ -209,7 +213,7 @@ def _render(
     lastCh = len(children) - 1
 
     if not ((isPretty and isBaseNonSlot) or (not isPretty and plainCustom)):
-        for (i, subTree) in enumerate(children):
+        for i, subTree in enumerate(children):
             thisFirst = first and i == 0
             thisLast = last and i == lastCh
             _render(
@@ -586,7 +590,7 @@ def _getEdge(e, n, kv, withNodes, right, highlights):
     sep = &#34; &#34; if hlCls else &#34;&#34;
 
     return dedent(
-        f&#39;&#39;&#39;
+        f&#34;&#34;&#34;
         &lt;span
             ef=&#34;{e}&#34;
             nd=&#34;{n}&#34;
@@ -594,7 +598,8 @@ def _getEdge(e, n, kv, withNodes, right, highlights):
             arrow=&#34;{arrow}&#34;
             class=&#34;etf{sep}{hlCls}&#34; {hlStyle}
         &gt;{plainValue}&lt;/span&gt;
-        &#39;&#39;&#39;)
+        &#34;&#34;&#34;
+    )
 
 
 def _getFeatures(info, n, nType):
@@ -610,9 +615,12 @@ def _getFeatures(info, n, nType):
     edgeFeatures = options.edgeFeatures
     forceEdges = options.forceEdges
     multiFeatures = options.multiFeatures
+
     if multiFeatures:
         featuresAll = options.featuresAll
-    queryFeatures = options.queryFeatures
+
+    # queryFeatures = options.queryFeatures
+    tupleFeatures = options.tupleFeatures
     standardFeatures = options.standardFeatures
     suppress = options.suppress
     noneValues = options.noneValues
@@ -660,10 +668,11 @@ def _getFeatures(info, n, nType):
 
     featurePart = &#34;&#34;
 
-    if standardFeatures or queryFeatures or multiFeatures or forceEdges:
+    # if standardFeatures or queryFeatures or multiFeatures or forceEdges:
+    if standardFeatures or tupleFeatures or multiFeatures or forceEdges:
         seen = set()
 
-        for (i, name) in enumerate(featureList):
+        for i, name in enumerate(featureList):
             if name not in suppress and name not in seen:
                 seen.add(name)
 
@@ -734,11 +743,12 @@ def _getFeatures(info, n, nType):
                         not multiFeatures
                         and not (isExtra and forceEdges and name in edgeFeatures)
                         and (
-                            (isExtra and not queryFeatures)
-                            or (
-                                not isExtra
-                                and (not standardFeatures and name not in dFeatures)
-                            )
+                            # (isExtra and not queryFeatures)
+                            # isExtra
+                            # or (
+                            not isExtra
+                            and (not standardFeatures and name not in dFeatures)
+                            # )
                         )
                     ):
                         continue
@@ -783,7 +793,7 @@ chunks / fragments, the graphics only occurs on the first fragment.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/render.py#L32-L92" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/render.py#L32-L96" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render(app, isPretty, n, _inTuple, _asString, explain, **options):
     &#34;&#34;&#34;Renders a node, in plain or pretty mode.
@@ -807,10 +817,14 @@ chunks / fragments, the graphics only occurs on the first fragment.</p></div>
         tupleFeatures = dContext.tupleFeatures
         extraFeatures = dContext.extraFeatures
         multiFeatures = dContext.multiFeatures
+        queryFeatures = dContext.queryFeatures
 
         dContext.set(
             &#34;features&#34;,
-            sorted(flattenToSet(extraFeatures[0]) | flattenToSet(tupleFeatures)),
+            sorted(
+                flattenToSet(extraFeatures[0])
+                | (flattenToSet(tupleFeatures) if queryFeatures else set())
+            ),
         )
         dContext.set(&#34;featuresIndirect&#34;, extraFeatures[1])
         if multiFeatures:

@@ -338,13 +338,13 @@ If you find they clutter the display, you can turn them off
 selectively.</dd>
 <dt><strong><code>tupleFeatures</code></strong> :&ensp;<code>iterable</code> of <code>2-tuples</code>, optional <code>()</code></dt>
 <dd>
-<p>A bit like <code>extraFeatures</code> above, but more intricate.
-Only meant to steer the
-<code>A.export()</code> function below into outputting the
-features you choose.</p>
-<p>It should be a tuple of pairs</p>
-<pre><code>(i, features)
-</code></pre>
+<p>A bit like <code>extraFeatures</code> above, but more intricate.</p>
+<p>In the first place, after running a query by means of <code>A.search()</code>,
+an automatic <code>displaySetup(tupleFeatures=...)</code> will be performed with
+the features mentioned in the query for node atoms.</p>
+<p>This will influence the effect of subsequent display and export operations.</p>
+<p>When you set it yourself, it should be a tuple of pairs</p>
+<p><code>(i, features)</code></p>
 <p>which means that to member <code>i</code> of a result tuple we assign extra <code>features</code>.</p>
 <p><code>features</code> may be given as an iterable or a space separated string of feature names.</p>
 </dd>
@@ -385,7 +385,7 @@ The node type of slot nodes is never displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/options.py#L1-L708" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/options.py#L1-L718" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Display Settings.
@@ -705,13 +705,18 @@ suppress: set, optional set()
 
 tupleFeatures: iterable of 2-tuples, optional ()
     A bit like `extraFeatures` above, but more intricate.
-    Only meant to steer the
-    `A.export()` function below into outputting the
-    features you choose.
 
-    It should be a tuple of pairs
+    In the first place, after running a query by means of `A.search()`,
+    an automatic `displaySetup(tupleFeatures=...)` will be performed with
+    the features mentioned in the query for node atoms.
 
-        (i, features)
+    This will influence the effect of subsequent display and export operations.
+
+    When you set it yourself, it should be a tuple of pairs
+
+    ```
+    (i, features)
+    ```
 
     which means that to member `i` of a result tuple we assign extra `features`.
 
@@ -966,7 +971,12 @@ class Options:
             self.current = {k: v for (k, v) in defaults.items()}
 
     def setup(self, *options, **overrides):
+        app = self.app
+        info = app.info
         current = self.current
+
+        for option in options:
+            info(f&#34;{option} = {current.get(option, None)}&#34;, tm=False)
 
         for (option, value) in overrides.items():
             normValue = self.normalize(option, value)
@@ -1131,7 +1141,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/options.py#L544-L708" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/options.py#L549-L718" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Options:
     def __init__(self, app):
@@ -1169,7 +1179,12 @@ class Options:
             self.current = {k: v for (k, v) in defaults.items()}
 
     def setup(self, *options, **overrides):
+        app = self.app
+        info = app.info
         current = self.current
+
+        for option in options:
+            info(f&#34;{option} = {current.get(option, None)}&#34;, tm=False)
 
         for (option, value) in overrides.items():
             normValue = self.normalize(option, value)
@@ -1309,7 +1324,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/options.py#L642-L691" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/options.py#L652-L701" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def check(self, msg, options):
     app = self.app
@@ -1371,7 +1386,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/options.py#L707-L708" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/options.py#L717-L718" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def consume(self, options, *remove):
     return {o: options[o] for o in options if o not in remove}</code></pre>
@@ -1385,7 +1400,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/options.py#L693-L705" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/options.py#L703-L715" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def distill(self, options):
     defaults = self.defaults
@@ -1410,7 +1425,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/options.py#L588-L640" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/options.py#L598-L650" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def normalize(self, option, value):
     app = self.app
@@ -1475,7 +1490,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/options.py#L562-L577" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/options.py#L567-L582" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reset(self, *options):
     app = self.app
@@ -1503,10 +1518,15 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/options.py#L579-L586" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/options.py#L584-L596" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setup(self, *options, **overrides):
+    app = self.app
+    info = app.info
     current = self.current
+
+    for option in options:
+        info(f&#34;{option} = {current.get(option, None)}&#34;, tm=False)
 
     for (option, value) in overrides.items():
         normValue = self.normalize(option, value)
@@ -1526,7 +1546,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/options.py#L530-L541" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/options.py#L535-L546" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class OptionsCurrent:
     def __init__(self, options):
@@ -1551,7 +1571,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/options.py#L536-L537" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/options.py#L541-L542" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, k, v=None):
     return getattr(self, k, v)</code></pre>
@@ -1565,7 +1585,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57648a055222679c3be5f7f0cb6211751ac016ea/tf/advanced/options.py#L539-L541" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/options.py#L544-L546" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set(self, k, v):
     self.allKeys.add(k)
