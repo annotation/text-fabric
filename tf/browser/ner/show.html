@@ -29,7 +29,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/browser/ner/show.py#L1-L395" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f937d1ab282f0e458d6594fbb04a1328f6176929/tf/browser/ner/show.py#L1-L394" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Rendering of corpus extracts with annotations.
 
@@ -384,7 +384,6 @@ class Show:
                     trailing = &#34;&#34; if lastFound == lenW - 1 else w[lastFound + 1:]
                     hit = w[firstFound : lastFound + 1]
                     wRep = H.join(leading, H.span(hit, cls=&#34;found&#34;), trailing)
-                    print(f&#34;{w=} {leading=} {hit=} {trailing=} {wRep=}&#34;)
                 else:
                     wRep = w
                 queried = t in allMatches
@@ -445,7 +444,7 @@ class Show:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/browser/ner/show.py#L24-L395" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f937d1ab282f0e458d6594fbb04a1328f6176929/tf/browser/ner/show.py#L24-L394" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Show:
     def showEntityOverview(self):
@@ -777,7 +776,6 @@ class Show:
                     trailing = &#34;&#34; if lastFound == lenW - 1 else w[lastFound + 1:]
                     hit = w[firstFound : lastFound + 1]
                     wRep = H.join(leading, H.span(hit, cls=&#34;found&#34;), trailing)
-                    print(f&#34;{w=} {leading=} {hit=} {trailing=} {wRep=}&#34;)
                 else:
                     wRep = w
                 queried = t in allMatches
@@ -885,7 +883,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/browser/ner/show.py#L179-L395" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f937d1ab282f0e458d6594fbb04a1328f6176929/tf/browser/ner/show.py#L179-L394" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showContent(
     self,
@@ -1062,7 +1060,6 @@ it is a cell in a Jupyter Notebook.</dd>
                 trailing = &#34;&#34; if lastFound == lenW - 1 else w[lastFound + 1:]
                 hit = w[firstFound : lastFound + 1]
                 wRep = H.join(leading, H.span(hit, cls=&#34;found&#34;), trailing)
-                print(f&#34;{w=} {leading=} {hit=} {trailing=} {wRep=}&#34;)
             else:
                 wRep = w
             queried = t in allMatches
@@ -1157,7 +1154,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/browser/ner/show.py#L61-L177" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f937d1ab282f0e458d6594fbb04a1328f6176929/tf/browser/ner/show.py#L61-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showEntities(
     self, activeEntity=None, sortKey=None, sortDir=None, cutOffFreq=None
@@ -1295,7 +1292,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/browser/ner/show.py#L25-L59" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f937d1ab282f0e458d6594fbb04a1328f6176929/tf/browser/ner/show.py#L25-L59" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showEntityOverview(self):
     &#34;&#34;&#34;Generates HTML for an overview of the entities.

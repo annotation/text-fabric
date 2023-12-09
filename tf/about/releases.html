@@ -38,10 +38,18 @@ and in its top-level directory run the command:</strong></p>
 </code></pre>
 <h2 id="12">12</h2>
 <h3 id="122">12.2</h3>
-<h4 id="1223">12.2.3</h4>
+<h4 id="12234">12.2.3,4</h4>
 <p>2023-12-09</p>
 <p>Writing support for Ugaritic, thanks to Martijn Naaijer and Christian Højgaard for
 converting a Ugaritic corpus to TF.</p>
+<p>Fix in display functions (continued):</p>
+<ul>
+<li>The logic of feature display, fixed in the previous version, was not effective
+when things are displayed in the TF browser. Because in the TF browser the
+features of the last query were passed as <code>extraFeatures</code> instead of
+<code>tupleFeatures</code>. This has been fixed by using <code>tupleFeatures</code> in the TF browser
+as well.</li>
+</ul>
 <h4 id="1222">12.2.2</h4>
 <p>2023-12-02</p>
 <p>Fix in display functions, thanks to Tony Jurg:</p>
@@ -238,7 +246,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f937d1ab282f0e458d6594fbb04a1328f6176929/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -312,7 +320,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
 <li><a href="#122">12.2</a><ul>
-<li><a href="#1223">12.2.3</a></li>
+<li><a href="#12234">12.2.3,4</a></li>
 <li><a href="#1222">12.2.2</a></li>
 <li><a href="#12201">12.2.0,1</a></li>
 </ul>

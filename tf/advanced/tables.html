@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/advanced/tables.py#L1-L340" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f937d1ab282f0e458d6594fbb04a1328f6176929/tf/advanced/tables.py#L1-L350" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from ..core.text import DEFAULT_FORMAT
 from .helpers import getHeaders, RESULT
@@ -90,8 +90,10 @@ def compose(
                 app,
                 tup,
                 seq=getx,
-                extraFeatures=(features, {}),
-                **display.consume(options, &#34;extraFeatures&#34;),
+                # extraFeatures=(features, {}),
+                tupleFeatures=features,
+                # **display.consume(options, &#34;extraFeatures&#34;),
+                **display.consume(options, &#34;tupleFeatures&#34;),
             )
             if tup is not None
             else &#34;&#34;
@@ -122,8 +124,10 @@ def compose(
                 position=position,
                 opened=i in opened,
                 _asString=True,
-                extraFeatures=(features, {}),
-                **display.consume(options, &#34;extraFeatures&#34;),
+                # extraFeatures=(features, {}),
+                tupleFeatures=features,
+                # **display.consume(options, &#34;extraFeatures&#34;),
+                **display.consume(options, &#34;tupleFeatures&#34;),
             )
         )
 
@@ -274,9 +278,13 @@ def composeP(
                 seq=getx,
                 condensed=False,
                 condenseType=finalSecType,
-                extraFeatures=(features, {}),
+                # extraFeatures=(features, {}),
+                # **display.consume(
+                #     options, &#34;condensed&#34;, &#34;condenseType&#34;, &#34;extraFeatures&#34;
+                # ),
+                tupleFeatures=features,
                 **display.consume(
-                    options, &#34;condensed&#34;, &#34;condenseType&#34;, &#34;extraFeatures&#34;
+                    options, &#34;condensed&#34;, &#34;condenseType&#34;, &#34;tupleFeatures&#34;
                 ),
             )
             if tup is not None
@@ -294,8 +302,10 @@ def composeP(
                 item,
                 opened,
                 secFinal,
-                extraFeatures=(features, {}),
-                **display.consume(options, &#34;extraFeatures&#34;),
+                # extraFeatures=(features, {}),
+                # **display.consume(options, &#34;extraFeatures&#34;),
+                tupleFeatures=features,
+                **display.consume(options, &#34;tupleFeatures&#34;),
             )
         )
 
@@ -401,7 +411,7 @@ in order to expand it.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/advanced/tables.py#L6-L100" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f937d1ab282f0e458d6594fbb04a1328f6176929/tf/advanced/tables.py#L6-L104" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def compose(
     app,
@@ -460,8 +470,10 @@ in order to expand it.</dd>
                 app,
                 tup,
                 seq=getx,
-                extraFeatures=(features, {}),
-                **display.consume(options, &#34;extraFeatures&#34;),
+                # extraFeatures=(features, {}),
+                tupleFeatures=features,
+                # **display.consume(options, &#34;extraFeatures&#34;),
+                **display.consume(options, &#34;tupleFeatures&#34;),
             )
             if tup is not None
             else &#34;&#34;
@@ -492,8 +504,10 @@ in order to expand it.</dd>
                 position=position,
                 opened=i in opened,
                 _asString=True,
-                extraFeatures=(features, {}),
-                **display.consume(options, &#34;extraFeatures&#34;),
+                # extraFeatures=(features, {}),
+                tupleFeatures=features,
+                # **display.consume(options, &#34;extraFeatures&#34;),
+                **display.consume(options, &#34;tupleFeatures&#34;),
             )
         )
 
@@ -523,7 +537,7 @@ section node in question. See <code>browseContentPretty</code> in <code><a title
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/advanced/tables.py#L185-L272" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f937d1ab282f0e458d6594fbb04a1328f6176929/tf/advanced/tables.py#L189-L282" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def composeP(
     app,
@@ -587,9 +601,13 @@ section node in question. See <code>browseContentPretty</code> in <code><a title
                 seq=getx,
                 condensed=False,
                 condenseType=finalSecType,
-                extraFeatures=(features, {}),
+                # extraFeatures=(features, {}),
+                # **display.consume(
+                #     options, &#34;condensed&#34;, &#34;condenseType&#34;, &#34;extraFeatures&#34;
+                # ),
+                tupleFeatures=features,
                 **display.consume(
-                    options, &#34;condensed&#34;, &#34;condenseType&#34;, &#34;extraFeatures&#34;
+                    options, &#34;condensed&#34;, &#34;condenseType&#34;, &#34;tupleFeatures&#34;
                 ),
             )
             if tup is not None
@@ -607,8 +625,10 @@ section node in question. See <code>browseContentPretty</code> in <code><a title
                 item,
                 opened,
                 secFinal,
-                extraFeatures=(features, {}),
-                **display.consume(options, &#34;extraFeatures&#34;),
+                # extraFeatures=(features, {}),
+                # **display.consume(options, &#34;extraFeatures&#34;),
+                tupleFeatures=features,
+                **display.consume(options, &#34;tupleFeatures&#34;),
             )
         )
 
@@ -626,7 +646,7 @@ in the TF browser.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/advanced/tables.py#L106-L179" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f937d1ab282f0e458d6594fbb04a1328f6176929/tf/advanced/tables.py#L110-L183" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def composeT(
     app,
