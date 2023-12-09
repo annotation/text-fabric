@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/convert/pagexml.py#L1-L992" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/convert/pagexml.py#L1-L1044" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 from subprocess import run
@@ -97,6 +97,7 @@ def setUp():
 
     flagSpec = dict(
         verbose=(&#34;Produce less or more progress and reporting messages&#34;, -1, 3),
+        doc=(&#34;Do only this document&#34;, None, 0),
     )
     return (helpText, taskSpec, taskExcluded, paramSpec, flagSpec)
 
@@ -117,20 +118,24 @@ def tokenLogic(cv, s, token, hangover, isFirst, isSecondLast, isLast):
     same = not isLast and not isSecondLast and (not isFirst or hangover is None)
 
     if same:
-        cv.feature(s, str=rtx, after=rsp)
+        cv.feature(s, str=rtx)
+        if rsp == &#34;\n&#34;:
+            cv.feature(s, after=&#34; &#34;, rafter=rsp)
+        else:
+            cv.feature(s, after=rsp)
     else:
         cv.feature(s, str=&#34;&#34;, after=&#34;&#34;, rstr=rtx, rafter=rsp)
 
     if isFirst and hangover:
         hangover[3] += rtx
-        hangover[4] = rsp
+        hangover[4] = &#34; &#34; if rsp == &#34;\n&#34; else rsp
 
     if isSecondLast:
         if hangover is None:
             hangover = [s, rtx, rsp, rtx, rsp]
         else:
             hangover[3] += rtx
-            hangover[4] = rsp
+            hangover[4] = &#34; &#34; if rsp == &#34;\n&#34; else rsp
 
     else:
         if isLast:
@@ -142,6 +147,91 @@ def tokenLogic(cv, s, token, hangover, isFirst, isSecondLast, isLast):
     return hangover
 
 
+# WALKERS
+
+
+def emptySlot(cv):
+    s = cv.slot()
+    cv.feature(s, rstr=&#34;&#34;, rafter=&#34;&#34;, str=&#34;&#34;, after=&#34;&#34;)
+
+
+def walkObject(cv, cur, xObj):
+    &#34;&#34;&#34;Internal function to deal with a single element.
+
+    Will be called recursively.
+
+    Parameters
+    ----------
+    cv: object
+        The converter object, needed to issue actions.
+    cur: dict
+        Various pieces of data collected during walking
+        and relevant for some next steps in the walk.
+
+        The subdictionary `cur[&#34;node&#34;]` is used to store the currently generated
+        nodes by node type.
+    bj
+    xode: object
+        An PageXML object.
+    &#34;&#34;&#34;
+    tp = xObj.main_type
+    xId = xObj.id
+    box = AttrDict(xObj.coords.box)
+
+    isScan = tp == &#34;scan&#34;
+    isRegion = tp == &#34;text_region&#34;
+    isLine = tp == LINE
+
+    nTp = PAGE if isScan else REGION if isRegion else LINE if isLine else tp
+    nd = cv.node(nTp)
+    cur[NODE][nTp] = nd
+    cv.feature(nd, id=xId, x=box.x, y=box.y, w=box.w, h=box.h)
+
+    if isLine:
+        cur[&#34;line&#34;] += 1
+        cv.feature(nd, line=cur[&#34;line&#34;])
+
+        tokens = tokenize(xObj.text or &#34;&#34;)
+        nTokens = len(tokens)
+        slots = []
+
+        hangover = cur[&#34;hangover&#34;]
+
+        hasHyphen = len(tokens) &gt; 0 and tokens[-1][0] in SOFT_HYPHEN_CHARS
+
+        for token in tokens:
+            s = cv.slot()
+            slots.append(s)
+            isFirst = len(slots) == 1
+            isLast = hasHyphen and len(slots) == nTokens
+            isSecondLast = hasHyphen and len(slots) == nTokens - 1
+            hangover = tokenLogic(cv, s, token, hangover, isFirst, isSecondLast, isLast)
+
+        cur[&#34;hangover&#34;] = hangover
+
+        hangover = None
+
+        if len(tokens) == 0:
+            emptySlot(cv)
+
+    elif isScan or isRegion:
+        if isScan:
+            cv.feature(nd, page=cur[&#34;page&#34;])
+
+        hangover = cur[&#34;hangover&#34;]
+
+        for yObj in xObj.get_text_regions_in_reading_order():
+            walkObject(cv, cur, yObj)
+        for yObj in xObj.lines:
+            walkObject(cv, cur, yObj)
+    else:
+        cv.stop(f&#34;UNKNOWN TYPE {tp}&#34;)
+
+    if not cv.linked(nd):
+        emptySlot(cv)
+    cv.terminate(nd)
+
+
 class PageXML(CheckImport):
     def __init__(
         self,
@@ -149,6 +239,7 @@ class PageXML(CheckImport):
         source=PARAMS[&#34;source&#34;][1],
         tf=PARAMS[&#34;tf&#34;][1],
         verbose=FLAGS[&#34;verbose&#34;][1],
+        doc=FLAGS[&#34;doc&#34;][1],
     ):
         &#34;&#34;&#34;Converts PageXML to TF.
 
@@ -188,25 +279,27 @@ class PageXML(CheckImport):
         Relative to this directory the program expects and creates
         input / output directories.
 
-        ## Input directories
+        ## source/version directory
 
-        ### `source`
+        `source` occurs at the toplevel of the repo, and within it are version
+        directories.
 
-        *Location of the PageXML sources.*
+        ## Document directories
 
-        **If it does not exist, the program aborts with an error.**
+        These are the top-level directories within the version directories.
 
-        Several levels of subdirectories are assumed:
+        They correspond to individual documents. Documents typically contain
+        a set of pages.
 
-        1.  the version of the source (this could be a date string).
-        1.  below the version are directories:
-            * `image`: contain the scan images
-            * `meta`: contain metadata files
-            * `page`: contain the PageXML files
+        ## Input directories per document
 
-            The files in `image` and `scan` have names that consist of a 4-digit
-            number with leading zeros, and any two files with the same name in
-            `page` and `image` represent the same document.
+        *   `image`: contain the scan images
+        *   `meta`: contain metadata files
+        *   `page`: contain the PageXML files
+
+        The files in `image` and `page` have names that consist of a 4-digit
+        number with leading zeros, and any two files with the same name in
+        `image` and `page` represent the same document.
 
         ## Output directories
 
@@ -267,14 +360,14 @@ class PageXML(CheckImport):
         &#34;&#34;&#34;
         super().__init__(&#34;pagexml&#34;)
         if self.importOK(hint=True):
-            global parsePage
             pagexml = self.importGet()
-            parsePage = pagexml.parse_pagexml_file
+            self.parsePage = pagexml.parse_pagexml_file
         else:
             return
 
         self.good = True
         self.verbose = verbose
+        self.chosenDoc = doc
 
         (backend, org, repo, relative) = getLocation(targetDir=ex(repoDir))
 
@@ -296,15 +389,17 @@ class PageXML(CheckImport):
         refDir = f&#34;{repoDir}{relative}&#34;
         convertSpec = f&#34;{refDir}/pagexml.yaml&#34;
 
-        settings = readYaml(asFile=convertSpec, plain=True)
+        settings = readYaml(asFile=convertSpec, plain=False)
 
         self.settings = settings
 
         appDir = f&#34;{refDir}/app&#34;
+        metaDir = f&#34;{refDir}/meta&#34;
         sourceDir = f&#34;{refDir}/source&#34;
         tfDir = f&#34;{refDir}/tf&#34;
+        tfVersionFile = f&#34;{refDir}/tfVersions.txt&#34;
 
-        sourceVersions = sorted(dirContents(sourceDir)[1], key=versionSort)
+        sourceVersions = sorted(dirContents(metaDir)[1], key=versionSort)
         nSourceVersions = len(sourceVersions)
 
         if source in {&#34;latest&#34;, &#34;&#34;, &#34;0&#34;, 0} or str(source).lstrip(&#34;-&#34;).isdecimal():
@@ -317,10 +412,10 @@ class PageXML(CheckImport):
                 console(
                     (
                         f&#34;no item in {absIndex} in {nSourceVersions} source versions &#34;
-                        f&#34;in {ux(sourceDir)}&#34;
+                        f&#34;in {ux(metaDir)}&#34;
                     )
                     if len(sourceVersions)
-                    else f&#34;no source versions in {ux(sourceDir)}&#34;,
+                    else f&#34;no source versions in {ux(metaDir)}&#34;,
                     error=True,
                 )
                 self.good = False
@@ -328,11 +423,11 @@ class PageXML(CheckImport):
         else:
             sourceVersion = source
 
-        sourcePath = f&#34;{sourceDir}/{sourceVersion}&#34;
+        metaPath = f&#34;{metaDir}/{sourceVersion}&#34;
 
-        if not dirExists(sourcePath):
+        if not dirExists(metaPath):
             console(
-                f&#34;source version {sourceVersion} does not exists in {ux(sourceDir)}&#34;,
+                f&#34;source version {sourceVersion} does not exists in {ux(metaDir)}&#34;,
                 error=True,
             )
             self.good = False
@@ -351,11 +446,18 @@ class PageXML(CheckImport):
             sourceStatusRep = &#34;oldest&#34;
 
         if verbose &gt;= 0:
-            console(f&#34;TEI data version is {sourceVersion} ({sourceStatusRep})&#34;)
+            console(f&#34;PageXML data version is {sourceVersion} ({sourceStatusRep})&#34;)
 
-        tfVersions = sorted(dirContents(tfDir)[1], key=versionSort)
+        if fileExists(tfVersionFile):
+            with open(tfVersionFile) as fh:
+                latestTfVersion = fh.read().strip() or &#34;0.0.0&#34;
+        else:
+            latestTfVersion = &#34;0.0.0&#34;
+            with open(tfVersionFile, &#34;w&#34;) as fh:
+                fh.write(latestTfVersion)
 
-        latestTfVersion = tfVersions[-1] if len(tfVersions) else &#34;0.0.0&#34;
+        writeVersion = False
+
         if tf in {&#34;latest&#34;, &#34;&#34;, &#34;0&#34;, 0}:
             tfVersion = latestTfVersion
             vRep = &#34;latest&#34;
@@ -387,21 +489,24 @@ class PageXML(CheckImport):
                     &#34;major&#34; if bump == 1 else &#34;intermediate&#34; if bump == 2 else &#34;minor&#34;
                 )
                 vRep = f&#34;next {vRep}&#34;
+                writeVersion = True
         else:
             tfVersion = tf
             status = &#34;existing&#34; if dirExists(f&#34;{tfDir}/{tfVersion}&#34;) else &#34;new&#34;
             vRep = f&#34;explicit {status}&#34;
+            writeVersion = True
 
-        tfPath = f&#34;{tfDir}/{tfVersion}&#34;
+        if writeVersion:
+            with open(tfVersionFile, &#34;w&#34;) as fh:
+                fh.write(tfVersion)
 
         if verbose &gt;= 0:
             console(f&#34;TF data version is {tfVersion} ({vRep})&#34;)
 
         self.refDir = refDir
         self.sourceVersion = sourceVersion
-        self.sourcePath = sourcePath
+        self.sourceDir = sourceDir
         self.tfVersion = tfVersion
-        self.tfPath = tfPath
         self.tfDir = tfDir
         self.appDir = appDir
         self.backend = backend
@@ -411,11 +516,7 @@ class PageXML(CheckImport):
 
         myDir = dirNm(abspath(__file__))
         self.myDir = myDir
-
-        metaFile = f&#34;{sourcePath}/meta/metadata.yaml&#34;
         self.slotType = TOKEN
-
-        self.generic = readYaml(asFile=metaFile, plain=True)
 
         levelNames = (&#34;doc&#34;, &#34;page&#34;, &#34;line&#34;)
         sectionFeatures = &#34;,&#34;.join(levelNames)
@@ -431,31 +532,25 @@ class PageXML(CheckImport):
         }
         self.otext = otext
 
+        self.generic = dict(
+            project=&#34;TransLatin&#34;,
+            conversion=&#34;KNAW/HuC TeamText&#34;,
+            conversionTF=&#34;Dirk Roorda&#34;,
+        )
+
         featureMeta = dict(
-            id=dict(
-                description=&#34;the id of the corresponding pagexml object&#34;,
-            ),
-            x=dict(
-                description=&#34;the leftmost x coordinate of the pagexml object&#34;,
-            ),
-            y=dict(
-                description=&#34;the lowest y coordinate of the pagexml object&#34;,
-            ),
-            w=dict(
-                description=&#34;the width of the pagexml object&#34;,
-            ),
-            h=dict(
-                description=&#34;the height of the pagexml object&#34;,
-            ),
+            id=dict(description=&#34;the id of the corresponding pagexml object&#34;),
+            x=dict(description=&#34;the leftmost x coordinate of the pagexml object&#34;),
+            y=dict(description=&#34;the lowest y coordinate of the pagexml object&#34;),
+            w=dict(description=&#34;the width of the pagexml object&#34;),
+            h=dict(description=&#34;the height of the pagexml object&#34;),
             rstr=dict(
                 description=(
                     &#34;the physical text of a token, &#34;
                     &#34;if it is different from the logical text&#34;
                 ),
             ),
-            str=dict(
-                description=&#34;the logical text of a token&#34;,
-            ),
+            str=dict(description=&#34;the logical text of a token&#34;),
             rafter=dict(
                 description=(
                     &#34;the physical text after a token till the next token, &#34;
@@ -467,37 +562,19 @@ class PageXML(CheckImport):
                     &#34;the logical text after a token till the next logical token,&#34;
                 ),
             ),
-            doc=dict(
-                description=&#34;the name of the document&#34;,
-            ),
-            page=dict(
-                description=&#34;the number of the page within the document&#34;,
-            ),
-            line=dict(
-                description=&#34;the number of the line within the page&#34;,
-            ),
+            page=dict(description=&#34;the number of the page within the document&#34;),
+            line=dict(description=&#34;the number of the line within the page&#34;),
         )
-        intFeatures = {&#34;page&#34;, &#34;line&#34;, &#34;x&#34;, &#34;y&#34;, &#34;w&#34;, &#34;h&#34;}
+        self.intFeatures = {&#34;page&#34;, &#34;line&#34;, &#34;x&#34;, &#34;y&#34;, &#34;w&#34;, &#34;h&#34;}
+
+        customFeatureMeta = settings.featureMeta or {}
+
+        for k, v in customFeatureMeta.items():
+            featureMeta[k] = v
 
         self.featureMeta = featureMeta
-        self.intFeatures = intFeatures
 
-    def getConverter(self):
-        &#34;&#34;&#34;Initializes a converter.
-
-        Returns
-        -------
-        object
-            The `tf.convert.walker.CV` converter object, initialized.
-        &#34;&#34;&#34;
-        verbose = self.verbose
-        tfPath = self.tfPath
-
-        silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
-        TF = Fabric(locations=tfPath, silent=silent)
-        return CV(TF, silent=silent)
-
-    def getDirector(self):
+    def getDirector(self, doc, docMeta, pageSource, pageFiles):
         &#34;&#34;&#34;Factory for the director function.
 
         The `tf.convert.walker` relies on a corpus dependent `director` function
@@ -515,101 +592,7 @@ class PageXML(CheckImport):
         function
             The local director function that has been constructed.
         &#34;&#34;&#34;
-        repo = self.repo
-        sourcePath = self.sourcePath
-        pageSource = f&#34;{sourcePath}/page&#34;
-        pageFiles = sorted(dirContents(pageSource)[0])
-
-        if not self.importOK():
-            return
-
-        if not self.good:
-            return
-
-        # WALKERS
-
-        def emptySlot(cv):
-            s = cv.slot()
-            cv.feature(s, str=&#34;&#34;, after=&#34;&#34;)
-
-        def walkObject(cv, cur, xObj):
-            &#34;&#34;&#34;Internal function to deal with a single element.
-
-            Will be called recursively.
-
-            Parameters
-            ----------
-            cv: object
-                The converter object, needed to issue actions.
-            cur: dict
-                Various pieces of data collected during walking
-                and relevant for some next steps in the walk.
-
-                The subdictionary `cur[&#34;node&#34;]` is used to store the currently generated
-                nodes by node type.
-            bj
-            xode: object
-                An PageXML object.
-            &#34;&#34;&#34;
-            tp = xObj.main_type
-            xId = xObj.id
-            box = AttrDict(xObj.coords.box)
-
-            isScan = tp == &#34;scan&#34;
-            isRegion = tp == &#34;text_region&#34;
-            isLine = tp == LINE
-
-            nTp = PAGE if isScan else REGION if isRegion else LINE if isLine else tp
-            nd = cv.node(nTp)
-            cur[NODE][nTp] = nd
-            cv.feature(nd, id=xId, x=box.x, y=box.y, w=box.w, h=box.h)
-
-            if isLine:
-                cur[&#34;line&#34;] += 1
-                cv.feature(nd, line=cur[&#34;line&#34;])
-
-                tokens = tokenize(xObj.text or &#34;&#34;)
-                nTokens = len(tokens)
-                slots = []
-
-                hangover = cur[&#34;hangover&#34;]
-
-                hasHyphen = len(tokens) &gt; 0 and tokens[-1][0] in SOFT_HYPHEN_CHARS
-
-                for token in tokens:
-                    s = cv.slot()
-                    slots.append(s)
-                    isFirst = len(slots) == 1
-                    isLast = hasHyphen and len(slots) == nTokens
-                    isSecondLast = hasHyphen and len(slots) == nTokens - 1
-                    hangover = tokenLogic(
-                        cv, s, token, hangover, isFirst, isSecondLast, isLast
-                    )
-
-                cur[&#34;hangover&#34;] = hangover
-
-                hangover = None
-
-                if len(tokens) == 0:
-                    emptySlot(cv)
-
-            elif isScan or isRegion:
-                if isScan:
-                    cv.feature(nd, page=cur[&#34;page&#34;])
-
-                hangover = cur[&#34;hangover&#34;]
-
-                for yObj in xObj.get_text_regions_in_reading_order():
-                    walkObject(cv, cur, yObj)
-                for yObj in xObj.lines:
-                    walkObject(cv, cur, yObj)
-            else:
-                console(f&#34;UNKNOWN TYPE {tp}&#34;, error=True)
-                self.good = False
-
-            if not cv.linked(nd):
-                emptySlot(cv)
-            cv.terminate(nd)
+        parsePage = self.parsePage
 
         def director(cv):
             &#34;&#34;&#34;Director function.
@@ -623,11 +606,14 @@ class PageXML(CheckImport):
             cv: object
                 The converter object, needed to issue actions.
             &#34;&#34;&#34;
+            featureMeta = self.featureMeta
+
             cur = {}
             cur[NODE] = {}
             nd = cv.node(DOC)
             cur[NODE][DOC] = nd
-            cv.feature(nd, doc=repo)
+
+            cv.feature(nd, doc=doc, **docMeta)
 
             cur[&#34;hangover&#34;] = None
 
@@ -645,7 +631,27 @@ class PageXML(CheckImport):
 
             cv.terminate(nd)
 
+            for fName in featureMeta:
+                if not cv.occurs(fName):
+                    cv.meta(fName)
+
         return director
+
+    def getConverter(self, doc):
+        &#34;&#34;&#34;Initializes a converter.
+
+        Returns
+        -------
+        object
+            The `tf.convert.walker.CV` converter object, initialized.
+        &#34;&#34;&#34;
+        verbose = self.verbose
+        tfDir = self.tfDir
+        tfVersion = self.tfVersion
+
+        silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
+        TF = Fabric(locations=f&#34;{tfDir}/{doc}/{tfVersion}&#34;, silent=silent)
+        return CV(TF, silent=silent)
 
     def convertTask(self):
         &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -664,31 +670,53 @@ class PageXML(CheckImport):
             return
 
         verbose = self.verbose
+        chosenDoc = self.chosenDoc
         slotType = self.slotType
         generic = self.generic
         otext = self.otext
         featureMeta = self.featureMeta
         intFeatures = self.intFeatures
-
-        tfPath = self.tfPath
-        sourcePath = self.sourcePath
+        sourceDir = self.sourceDir
+        sourceVersion = self.sourceVersion
+        tfDir = self.tfDir
+        tfVersion = self.tfVersion
 
         if verbose == 1:
-            console(f&#34;PageXML to TF converting: {ux(sourcePath)} =&gt; {ux(tfPath)}&#34;)
+            console(
+                f&#34;PageXML to TF converting: {ux(sourceDir)}/Mxx/{sourceVersion}&#34;
+                f&#34; ==&gt; {ux(tfDir)}/Mxx/{tfVersion}&#34;
+            )
 
-        initTree(tfPath, fresh=True, gentle=True)
+        initTree(tfDir, fresh=True, gentle=True)
 
-        cv = self.getConverter()
+        docDirs = sorted(dirContents(sourceDir)[1], key=lambda x: (x[0], int(x[1:])))
 
-        self.good = cv.walk(
-            self.getDirector(),
-            slotType,
-            otext=otext,
-            generic=generic,
-            intFeatures=intFeatures,
-            featureMeta=featureMeta,
-            generateTf=True,
-        )
+        for doc in docDirs:
+            if chosenDoc is not None and chosenDoc != doc:
+                continue
+            pageSource = f&#34;{sourceDir}/{doc}/{sourceVersion}/page&#34;
+            pageFiles = sorted(dirContents(pageSource)[0])
+            if len(pageFiles) == 0:
+                continue
+            console(f&#34;\t\t{doc:&gt;5} ... {len(pageFiles):&gt;4} pages&#34;)
+
+            metaFile = f&#34;{sourceDir}/{doc}/{sourceVersion}/meta/metadata.yaml&#34;
+            docMeta = readYaml(asFile=metaFile)
+            docMeta.title = (docMeta.title or &#34;&#34;).replace(&#34;_&#34;, &#34; &#34;)
+            docMeta.url = (docMeta.url or &#34;&#34;).replace(&#34;&amp;amp;&#34;, &#34;&amp;&#34;)
+
+            cv = self.getConverter(doc)
+
+            if not cv.walk(
+                self.getDirector(doc, docMeta, pageSource, pageFiles),
+                slotType,
+                otext=otext,
+                generic=generic,
+                intFeatures=intFeatures,
+                featureMeta=featureMeta,
+                generateTf=True,
+            ):
+                self.good = False
 
     def loadTask(self):
         &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -715,27 +743,35 @@ class PageXML(CheckImport):
         if not self.good:
             return
 
-        tfPath = self.tfPath
+        tfDir = self.tfDir
+        tfVersion = self.tfVersion
+        chosenDoc = self.chosenDoc
         verbose = self.verbose
         silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
 
-        if not dirExists(tfPath):
-            console(f&#34;Directory {ux(tfPath)} does not exist.&#34;)
+        if not dirExists(tfDir):
+            console(f&#34;Directory {ux(tfDir)} does not exist.&#34;)
             console(&#34;No TF found, nothing to load&#34;)
             self.good = False
             return
 
-        TF = Fabric(locations=[tfPath], silent=silent)
-        allFeatures = TF.explore(silent=True, show=True)
-        loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
-        api = TF.load(loadableFeatures, silent=silent)
-        if api:
-            if verbose &gt;= 0:
-                console(f&#34;max node = {api.F.otype.maxNode}&#34;)
-            self.good = True
-            return
+        docDirs = sorted(dirContents(tfDir)[1], key=lambda x: (x[0], int(x[1:])))
 
-        self.good = False
+        for doc in docDirs:
+            if chosenDoc is not None and chosenDoc != doc:
+                continue
+            tfPath = f&#34;{tfDir}/{doc}/{tfVersion}&#34;
+            console(f&#34;\t\t{doc:&gt;5} ... &#34;, newline=False)
+            TF = Fabric(locations=[tfPath], silent=silent)
+            allFeatures = TF.explore(silent=True, show=True)
+            loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
+            api = TF.load(loadableFeatures, silent=silent)
+            if api:
+                console(f&#34;OK {api.F.otype.maxSlot:&gt;8} slots&#34;)
+                self.good = True
+            else:
+                console(&#34;XX&#34;)
+                self.good = False
 
     def appTask(self):
         &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -927,14 +963,23 @@ class PageXML(CheckImport):
         relative = self.relative
         backend = self.backend
         tfVersion = self.tfVersion
+        chosenDoc = self.chosenDoc
+
+        if chosenDoc is None:
+            console(
+                &#34;You have to choose a particular document by passing the doc parameter&#34;
+            )
+            return
 
         backendOpt = &#34;&#34; if backend == &#34;github&#34; else f&#34;--backend={backend}&#34;
         versionOpt = f&#34;--version={tfVersion}&#34;
         versionOpt = &#34;&#34;
+        docOpt = f&#34;--relative=tf/{chosenDoc}&#34;
+
         try:
             run(
                 (
-                    f&#34;tf {org}/{repo}{relative}:clone --checkout=clone &#34;
+                    f&#34;tf {org}/{repo}{relative}:clone {docOpt} --checkout=clone &#34;
                     f&#34;{versionOpt} {backendOpt}&#34;
                 ),
                 shell=True,
@@ -949,6 +994,7 @@ class PageXML(CheckImport):
         app=False,
         browse=False,
         verbose=None,
+        doc=None,
     ):
         &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
 
@@ -986,6 +1032,10 @@ class PageXML(CheckImport):
             verboseSav = self.verbose
             self.verbose = verbose
 
+        if doc is not None:
+            docSav = self.chosenDoc
+            self.chosenDoc = doc
+
         if not self.good:
             return False
 
@@ -1002,6 +1052,8 @@ class PageXML(CheckImport):
 
         if verbose is not None:
             self.verbose = verboseSav
+        if doc is not None:
+            self.chosenDoc = docSav
         return self.good
 
 
@@ -1037,13 +1089,28 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/convert/pagexml.py#L77-L81" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/convert/pagexml.py#L78-L82" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def diverge(cv, s, rtx, rsp, ltx, lsp):
     if ltx != rtx:
         cv.feature(s, str=ltx, rstr=rtx)
     if lsp != rsp:
         cv.feature(s, after=lsp, rafter=rsp)</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.pagexml.emptySlot"><code class="name flex">
+<span>def <span class="ident">emptySlot</span></span>(<span>cv)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/convert/pagexml.py#L123-L125" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def emptySlot(cv):
+    s = cv.slot()
+    cv.feature(s, rstr=&#34;&#34;, rafter=&#34;&#34;, str=&#34;&#34;, after=&#34;&#34;)</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.pagexml.main"><code class="name flex">
@@ -1054,7 +1121,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/convert/pagexml.py#L978-L988" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/convert/pagexml.py#L1030-L1040" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(
@@ -1077,7 +1144,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/convert/pagexml.py#L34-L71" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/convert/pagexml.py#L34-L72" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setUp():
     helpText = &#34;&#34;&#34;
@@ -1115,6 +1182,7 @@ if __name__ == &#34;__main__&#34;:
 
     flagSpec = dict(
         verbose=(&#34;Produce less or more progress and reporting messages&#34;, -1, 3),
+        doc=(&#34;Do only this document&#34;, None, 0),
     )
     return (helpText, taskSpec, taskExcluded, paramSpec, flagSpec)</code></pre>
 </details>
@@ -1127,7 +1195,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/convert/pagexml.py#L84-L112" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/convert/pagexml.py#L85-L117" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tokenLogic(cv, s, token, hangover, isFirst, isSecondLast, isLast):
     (rtx, rsp) = token
@@ -1135,20 +1203,24 @@ if __name__ == &#34;__main__&#34;:
     same = not isLast and not isSecondLast and (not isFirst or hangover is None)
 
     if same:
-        cv.feature(s, str=rtx, after=rsp)
+        cv.feature(s, str=rtx)
+        if rsp == &#34;\n&#34;:
+            cv.feature(s, after=&#34; &#34;, rafter=rsp)
+        else:
+            cv.feature(s, after=rsp)
     else:
         cv.feature(s, str=&#34;&#34;, after=&#34;&#34;, rstr=rtx, rafter=rsp)
 
     if isFirst and hangover:
         hangover[3] += rtx
-        hangover[4] = rsp
+        hangover[4] = &#34; &#34; if rsp == &#34;\n&#34; else rsp
 
     if isSecondLast:
         if hangover is None:
             hangover = [s, rtx, rsp, rtx, rsp]
         else:
             hangover[3] += rtx
-            hangover[4] = rsp
+            hangover[4] = &#34; &#34; if rsp == &#34;\n&#34; else rsp
 
     else:
         if isLast:
@@ -1160,6 +1232,110 @@ if __name__ == &#34;__main__&#34;:
     return hangover</code></pre>
 </details>
 </dd>
+<dt id="tf.convert.pagexml.walkObject"><code class="name flex">
+<span>def <span class="ident">walkObject</span></span>(<span>cv, cur, xObj)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Internal function to deal with a single element.</p>
+<p>Will be called recursively.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>cv</code></strong> :&ensp;<code>object</code></dt>
+<dd>The converter object, needed to issue actions.</dd>
+<dt><strong><code>cur</code></strong> :&ensp;<code>dict</code></dt>
+<dd>
+<p>Various pieces of data collected during walking
+and relevant for some next steps in the walk.</p>
+<p>The subdictionary <code>cur["node"]</code> is used to store the currently generated
+nodes by node type.</p>
+</dd>
+<dt><strong><code>bj</code></strong></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>xode</code></strong> :&ensp;<code>object</code></dt>
+<dd>An PageXML object.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/convert/pagexml.py#L128-L202" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def walkObject(cv, cur, xObj):
+    &#34;&#34;&#34;Internal function to deal with a single element.
+
+    Will be called recursively.
+
+    Parameters
+    ----------
+    cv: object
+        The converter object, needed to issue actions.
+    cur: dict
+        Various pieces of data collected during walking
+        and relevant for some next steps in the walk.
+
+        The subdictionary `cur[&#34;node&#34;]` is used to store the currently generated
+        nodes by node type.
+    bj
+    xode: object
+        An PageXML object.
+    &#34;&#34;&#34;
+    tp = xObj.main_type
+    xId = xObj.id
+    box = AttrDict(xObj.coords.box)
+
+    isScan = tp == &#34;scan&#34;
+    isRegion = tp == &#34;text_region&#34;
+    isLine = tp == LINE
+
+    nTp = PAGE if isScan else REGION if isRegion else LINE if isLine else tp
+    nd = cv.node(nTp)
+    cur[NODE][nTp] = nd
+    cv.feature(nd, id=xId, x=box.x, y=box.y, w=box.w, h=box.h)
+
+    if isLine:
+        cur[&#34;line&#34;] += 1
+        cv.feature(nd, line=cur[&#34;line&#34;])
+
+        tokens = tokenize(xObj.text or &#34;&#34;)
+        nTokens = len(tokens)
+        slots = []
+
+        hangover = cur[&#34;hangover&#34;]
+
+        hasHyphen = len(tokens) &gt; 0 and tokens[-1][0] in SOFT_HYPHEN_CHARS
+
+        for token in tokens:
+            s = cv.slot()
+            slots.append(s)
+            isFirst = len(slots) == 1
+            isLast = hasHyphen and len(slots) == nTokens
+            isSecondLast = hasHyphen and len(slots) == nTokens - 1
+            hangover = tokenLogic(cv, s, token, hangover, isFirst, isSecondLast, isLast)
+
+        cur[&#34;hangover&#34;] = hangover
+
+        hangover = None
+
+        if len(tokens) == 0:
+            emptySlot(cv)
+
+    elif isScan or isRegion:
+        if isScan:
+            cv.feature(nd, page=cur[&#34;page&#34;])
+
+        hangover = cur[&#34;hangover&#34;]
+
+        for yObj in xObj.get_text_regions_in_reading_order():
+            walkObject(cv, cur, yObj)
+        for yObj in xObj.lines:
+            walkObject(cv, cur, yObj)
+    else:
+        cv.stop(f&#34;UNKNOWN TYPE {tp}&#34;)
+
+    if not cv.linked(nd):
+        emptySlot(cv)
+    cv.terminate(nd)</code></pre>
+</details>
+</dd>
 </dl>
 </section>
 <section>
@@ -1167,7 +1343,7 @@ if __name__ == &#34;__main__&#34;:
 <dl>
 <dt id="tf.convert.pagexml.PageXML"><code class="flex name class">
 <span>class <span class="ident">PageXML</span></span>
-<span>(</span><span>repoDir, source='latest', tf='latest', verbose=-1)</span>
+<span>(</span><span>repoDir, source='latest', tf='latest', verbose=-1, doc=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Converts PageXML to TF.</p>
@@ -1198,25 +1374,22 @@ Even your local repository does not have to be a git repository.</p>
 as a sequence of <code>home/backend/org/repo/relative</code>.</p>
 <p>Relative to this directory the program expects and creates
 input / output directories.</p>
-<h2 id="input-directories">Input directories</h2>
-<h3 id="source"><code>source</code></h3>
-<p><em>Location of the PageXML sources.</em></p>
-<p><strong>If it does not exist, the program aborts with an error.</strong></p>
-<p>Several levels of subdirectories are assumed:</p>
-<ol>
-<li>the version of the source (this could be a date string).</li>
-<li>
-<p>below the version are directories:</p>
+<h2 id="sourceversion-directory">source/version directory</h2>
+<p><code>source</code> occurs at the toplevel of the repo, and within it are version
+directories.</p>
+<h2 id="document-directories">Document directories</h2>
+<p>These are the top-level directories within the version directories.</p>
+<p>They correspond to individual documents. Documents typically contain
+a set of pages.</p>
+<h2 id="input-directories-per-document">Input directories per document</h2>
 <ul>
 <li><code>image</code>: contain the scan images</li>
 <li><code>meta</code>: contain metadata files</li>
 <li><code>page</code>: contain the PageXML files</li>
 </ul>
-<p>The files in <code>image</code> and <code>scan</code> have names that consist of a 4-digit
+<p>The files in <code>image</code> and <code>page</code> have names that consist of a 4-digit
 number with leading zeros, and any two files with the same name in
-<code>page</code> and <code>image</code> represent the same document.</p>
-</li>
-</ol>
+<code>image</code> and <code>page</code> represent the same document.</p>
 <h2 id="output-directories">Output directories</h2>
 <h3 id="tf"><code><a title="tf" href="../index.html">tf</a></code></h3>
 <p>The directory under which the TF output file (with extension <code>.<a title="tf" href="../index.html">tf</a></code>)
@@ -1270,7 +1443,7 @@ relevant TF version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/convert/pagexml.py#L115-L975" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/convert/pagexml.py#L205-L1027" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PageXML(CheckImport):
     def __init__(
@@ -1279,6 +1452,7 @@ relevant TF version:</p>
         source=PARAMS[&#34;source&#34;][1],
         tf=PARAMS[&#34;tf&#34;][1],
         verbose=FLAGS[&#34;verbose&#34;][1],
+        doc=FLAGS[&#34;doc&#34;][1],
     ):
         &#34;&#34;&#34;Converts PageXML to TF.
 
@@ -1318,25 +1492,27 @@ relevant TF version:</p>
         Relative to this directory the program expects and creates
         input / output directories.
 
-        ## Input directories
+        ## source/version directory
 
-        ### `source`
+        `source` occurs at the toplevel of the repo, and within it are version
+        directories.
 
-        *Location of the PageXML sources.*
+        ## Document directories
 
-        **If it does not exist, the program aborts with an error.**
+        These are the top-level directories within the version directories.
 
-        Several levels of subdirectories are assumed:
+        They correspond to individual documents. Documents typically contain
+        a set of pages.
 
-        1.  the version of the source (this could be a date string).
-        1.  below the version are directories:
-            * `image`: contain the scan images
-            * `meta`: contain metadata files
-            * `page`: contain the PageXML files
+        ## Input directories per document
 
-            The files in `image` and `scan` have names that consist of a 4-digit
-            number with leading zeros, and any two files with the same name in
-            `page` and `image` represent the same document.
+        *   `image`: contain the scan images
+        *   `meta`: contain metadata files
+        *   `page`: contain the PageXML files
+
+        The files in `image` and `page` have names that consist of a 4-digit
+        number with leading zeros, and any two files with the same name in
+        `image` and `page` represent the same document.
 
         ## Output directories
 
@@ -1397,14 +1573,14 @@ relevant TF version:</p>
         &#34;&#34;&#34;
         super().__init__(&#34;pagexml&#34;)
         if self.importOK(hint=True):
-            global parsePage
             pagexml = self.importGet()
-            parsePage = pagexml.parse_pagexml_file
+            self.parsePage = pagexml.parse_pagexml_file
         else:
             return
 
         self.good = True
         self.verbose = verbose
+        self.chosenDoc = doc
 
         (backend, org, repo, relative) = getLocation(targetDir=ex(repoDir))
 
@@ -1426,15 +1602,17 @@ relevant TF version:</p>
         refDir = f&#34;{repoDir}{relative}&#34;
         convertSpec = f&#34;{refDir}/pagexml.yaml&#34;
 
-        settings = readYaml(asFile=convertSpec, plain=True)
+        settings = readYaml(asFile=convertSpec, plain=False)
 
         self.settings = settings
 
         appDir = f&#34;{refDir}/app&#34;
+        metaDir = f&#34;{refDir}/meta&#34;
         sourceDir = f&#34;{refDir}/source&#34;
         tfDir = f&#34;{refDir}/tf&#34;
+        tfVersionFile = f&#34;{refDir}/tfVersions.txt&#34;
 
-        sourceVersions = sorted(dirContents(sourceDir)[1], key=versionSort)
+        sourceVersions = sorted(dirContents(metaDir)[1], key=versionSort)
         nSourceVersions = len(sourceVersions)
 
         if source in {&#34;latest&#34;, &#34;&#34;, &#34;0&#34;, 0} or str(source).lstrip(&#34;-&#34;).isdecimal():
@@ -1447,10 +1625,10 @@ relevant TF version:</p>
                 console(
                     (
                         f&#34;no item in {absIndex} in {nSourceVersions} source versions &#34;
-                        f&#34;in {ux(sourceDir)}&#34;
+                        f&#34;in {ux(metaDir)}&#34;
                     )
                     if len(sourceVersions)
-                    else f&#34;no source versions in {ux(sourceDir)}&#34;,
+                    else f&#34;no source versions in {ux(metaDir)}&#34;,
                     error=True,
                 )
                 self.good = False
@@ -1458,11 +1636,11 @@ relevant TF version:</p>
         else:
             sourceVersion = source
 
-        sourcePath = f&#34;{sourceDir}/{sourceVersion}&#34;
+        metaPath = f&#34;{metaDir}/{sourceVersion}&#34;
 
-        if not dirExists(sourcePath):
+        if not dirExists(metaPath):
             console(
-                f&#34;source version {sourceVersion} does not exists in {ux(sourceDir)}&#34;,
+                f&#34;source version {sourceVersion} does not exists in {ux(metaDir)}&#34;,
                 error=True,
             )
             self.good = False
@@ -1481,11 +1659,18 @@ relevant TF version:</p>
             sourceStatusRep = &#34;oldest&#34;
 
         if verbose &gt;= 0:
-            console(f&#34;TEI data version is {sourceVersion} ({sourceStatusRep})&#34;)
+            console(f&#34;PageXML data version is {sourceVersion} ({sourceStatusRep})&#34;)
 
-        tfVersions = sorted(dirContents(tfDir)[1], key=versionSort)
+        if fileExists(tfVersionFile):
+            with open(tfVersionFile) as fh:
+                latestTfVersion = fh.read().strip() or &#34;0.0.0&#34;
+        else:
+            latestTfVersion = &#34;0.0.0&#34;
+            with open(tfVersionFile, &#34;w&#34;) as fh:
+                fh.write(latestTfVersion)
 
-        latestTfVersion = tfVersions[-1] if len(tfVersions) else &#34;0.0.0&#34;
+        writeVersion = False
+
         if tf in {&#34;latest&#34;, &#34;&#34;, &#34;0&#34;, 0}:
             tfVersion = latestTfVersion
             vRep = &#34;latest&#34;
@@ -1517,21 +1702,24 @@ relevant TF version:</p>
                     &#34;major&#34; if bump == 1 else &#34;intermediate&#34; if bump == 2 else &#34;minor&#34;
                 )
                 vRep = f&#34;next {vRep}&#34;
+                writeVersion = True
         else:
             tfVersion = tf
             status = &#34;existing&#34; if dirExists(f&#34;{tfDir}/{tfVersion}&#34;) else &#34;new&#34;
             vRep = f&#34;explicit {status}&#34;
+            writeVersion = True
 
-        tfPath = f&#34;{tfDir}/{tfVersion}&#34;
+        if writeVersion:
+            with open(tfVersionFile, &#34;w&#34;) as fh:
+                fh.write(tfVersion)
 
         if verbose &gt;= 0:
             console(f&#34;TF data version is {tfVersion} ({vRep})&#34;)
 
         self.refDir = refDir
         self.sourceVersion = sourceVersion
-        self.sourcePath = sourcePath
+        self.sourceDir = sourceDir
         self.tfVersion = tfVersion
-        self.tfPath = tfPath
         self.tfDir = tfDir
         self.appDir = appDir
         self.backend = backend
@@ -1541,11 +1729,7 @@ relevant TF version:</p>
 
         myDir = dirNm(abspath(__file__))
         self.myDir = myDir
-
-        metaFile = f&#34;{sourcePath}/meta/metadata.yaml&#34;
         self.slotType = TOKEN
-
-        self.generic = readYaml(asFile=metaFile, plain=True)
 
         levelNames = (&#34;doc&#34;, &#34;page&#34;, &#34;line&#34;)
         sectionFeatures = &#34;,&#34;.join(levelNames)
@@ -1561,31 +1745,25 @@ relevant TF version:</p>
         }
         self.otext = otext
 
+        self.generic = dict(
+            project=&#34;TransLatin&#34;,
+            conversion=&#34;KNAW/HuC TeamText&#34;,
+            conversionTF=&#34;Dirk Roorda&#34;,
+        )
+
         featureMeta = dict(
-            id=dict(
-                description=&#34;the id of the corresponding pagexml object&#34;,
-            ),
-            x=dict(
-                description=&#34;the leftmost x coordinate of the pagexml object&#34;,
-            ),
-            y=dict(
-                description=&#34;the lowest y coordinate of the pagexml object&#34;,
-            ),
-            w=dict(
-                description=&#34;the width of the pagexml object&#34;,
-            ),
-            h=dict(
-                description=&#34;the height of the pagexml object&#34;,
-            ),
+            id=dict(description=&#34;the id of the corresponding pagexml object&#34;),
+            x=dict(description=&#34;the leftmost x coordinate of the pagexml object&#34;),
+            y=dict(description=&#34;the lowest y coordinate of the pagexml object&#34;),
+            w=dict(description=&#34;the width of the pagexml object&#34;),
+            h=dict(description=&#34;the height of the pagexml object&#34;),
             rstr=dict(
                 description=(
                     &#34;the physical text of a token, &#34;
                     &#34;if it is different from the logical text&#34;
                 ),
             ),
-            str=dict(
-                description=&#34;the logical text of a token&#34;,
-            ),
+            str=dict(description=&#34;the logical text of a token&#34;),
             rafter=dict(
                 description=(
                     &#34;the physical text after a token till the next token, &#34;
@@ -1597,37 +1775,19 @@ relevant TF version:</p>
                     &#34;the logical text after a token till the next logical token,&#34;
                 ),
             ),
-            doc=dict(
-                description=&#34;the name of the document&#34;,
-            ),
-            page=dict(
-                description=&#34;the number of the page within the document&#34;,
-            ),
-            line=dict(
-                description=&#34;the number of the line within the page&#34;,
-            ),
+            page=dict(description=&#34;the number of the page within the document&#34;),
+            line=dict(description=&#34;the number of the line within the page&#34;),
         )
-        intFeatures = {&#34;page&#34;, &#34;line&#34;, &#34;x&#34;, &#34;y&#34;, &#34;w&#34;, &#34;h&#34;}
+        self.intFeatures = {&#34;page&#34;, &#34;line&#34;, &#34;x&#34;, &#34;y&#34;, &#34;w&#34;, &#34;h&#34;}
+
+        customFeatureMeta = settings.featureMeta or {}
+
+        for k, v in customFeatureMeta.items():
+            featureMeta[k] = v
 
         self.featureMeta = featureMeta
-        self.intFeatures = intFeatures
 
-    def getConverter(self):
-        &#34;&#34;&#34;Initializes a converter.
-
-        Returns
-        -------
-        object
-            The `tf.convert.walker.CV` converter object, initialized.
-        &#34;&#34;&#34;
-        verbose = self.verbose
-        tfPath = self.tfPath
-
-        silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
-        TF = Fabric(locations=tfPath, silent=silent)
-        return CV(TF, silent=silent)
-
-    def getDirector(self):
+    def getDirector(self, doc, docMeta, pageSource, pageFiles):
         &#34;&#34;&#34;Factory for the director function.
 
         The `tf.convert.walker` relies on a corpus dependent `director` function
@@ -1645,101 +1805,7 @@ relevant TF version:</p>
         function
             The local director function that has been constructed.
         &#34;&#34;&#34;
-        repo = self.repo
-        sourcePath = self.sourcePath
-        pageSource = f&#34;{sourcePath}/page&#34;
-        pageFiles = sorted(dirContents(pageSource)[0])
-
-        if not self.importOK():
-            return
-
-        if not self.good:
-            return
-
-        # WALKERS
-
-        def emptySlot(cv):
-            s = cv.slot()
-            cv.feature(s, str=&#34;&#34;, after=&#34;&#34;)
-
-        def walkObject(cv, cur, xObj):
-            &#34;&#34;&#34;Internal function to deal with a single element.
-
-            Will be called recursively.
-
-            Parameters
-            ----------
-            cv: object
-                The converter object, needed to issue actions.
-            cur: dict
-                Various pieces of data collected during walking
-                and relevant for some next steps in the walk.
-
-                The subdictionary `cur[&#34;node&#34;]` is used to store the currently generated
-                nodes by node type.
-            bj
-            xode: object
-                An PageXML object.
-            &#34;&#34;&#34;
-            tp = xObj.main_type
-            xId = xObj.id
-            box = AttrDict(xObj.coords.box)
-
-            isScan = tp == &#34;scan&#34;
-            isRegion = tp == &#34;text_region&#34;
-            isLine = tp == LINE
-
-            nTp = PAGE if isScan else REGION if isRegion else LINE if isLine else tp
-            nd = cv.node(nTp)
-            cur[NODE][nTp] = nd
-            cv.feature(nd, id=xId, x=box.x, y=box.y, w=box.w, h=box.h)
-
-            if isLine:
-                cur[&#34;line&#34;] += 1
-                cv.feature(nd, line=cur[&#34;line&#34;])
-
-                tokens = tokenize(xObj.text or &#34;&#34;)
-                nTokens = len(tokens)
-                slots = []
-
-                hangover = cur[&#34;hangover&#34;]
-
-                hasHyphen = len(tokens) &gt; 0 and tokens[-1][0] in SOFT_HYPHEN_CHARS
-
-                for token in tokens:
-                    s = cv.slot()
-                    slots.append(s)
-                    isFirst = len(slots) == 1
-                    isLast = hasHyphen and len(slots) == nTokens
-                    isSecondLast = hasHyphen and len(slots) == nTokens - 1
-                    hangover = tokenLogic(
-                        cv, s, token, hangover, isFirst, isSecondLast, isLast
-                    )
-
-                cur[&#34;hangover&#34;] = hangover
-
-                hangover = None
-
-                if len(tokens) == 0:
-                    emptySlot(cv)
-
-            elif isScan or isRegion:
-                if isScan:
-                    cv.feature(nd, page=cur[&#34;page&#34;])
-
-                hangover = cur[&#34;hangover&#34;]
-
-                for yObj in xObj.get_text_regions_in_reading_order():
-                    walkObject(cv, cur, yObj)
-                for yObj in xObj.lines:
-                    walkObject(cv, cur, yObj)
-            else:
-                console(f&#34;UNKNOWN TYPE {tp}&#34;, error=True)
-                self.good = False
-
-            if not cv.linked(nd):
-                emptySlot(cv)
-            cv.terminate(nd)
+        parsePage = self.parsePage
 
         def director(cv):
             &#34;&#34;&#34;Director function.
@@ -1753,11 +1819,14 @@ relevant TF version:</p>
             cv: object
                 The converter object, needed to issue actions.
             &#34;&#34;&#34;
+            featureMeta = self.featureMeta
+
             cur = {}
             cur[NODE] = {}
             nd = cv.node(DOC)
             cur[NODE][DOC] = nd
-            cv.feature(nd, doc=repo)
+
+            cv.feature(nd, doc=doc, **docMeta)
 
             cur[&#34;hangover&#34;] = None
 
@@ -1775,7 +1844,27 @@ relevant TF version:</p>
 
             cv.terminate(nd)
 
+            for fName in featureMeta:
+                if not cv.occurs(fName):
+                    cv.meta(fName)
+
         return director
+
+    def getConverter(self, doc):
+        &#34;&#34;&#34;Initializes a converter.
+
+        Returns
+        -------
+        object
+            The `tf.convert.walker.CV` converter object, initialized.
+        &#34;&#34;&#34;
+        verbose = self.verbose
+        tfDir = self.tfDir
+        tfVersion = self.tfVersion
+
+        silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
+        TF = Fabric(locations=f&#34;{tfDir}/{doc}/{tfVersion}&#34;, silent=silent)
+        return CV(TF, silent=silent)
 
     def convertTask(self):
         &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -1794,31 +1883,53 @@ relevant TF version:</p>
             return
 
         verbose = self.verbose
+        chosenDoc = self.chosenDoc
         slotType = self.slotType
         generic = self.generic
         otext = self.otext
         featureMeta = self.featureMeta
         intFeatures = self.intFeatures
-
-        tfPath = self.tfPath
-        sourcePath = self.sourcePath
+        sourceDir = self.sourceDir
+        sourceVersion = self.sourceVersion
+        tfDir = self.tfDir
+        tfVersion = self.tfVersion
 
         if verbose == 1:
-            console(f&#34;PageXML to TF converting: {ux(sourcePath)} =&gt; {ux(tfPath)}&#34;)
+            console(
+                f&#34;PageXML to TF converting: {ux(sourceDir)}/Mxx/{sourceVersion}&#34;
+                f&#34; ==&gt; {ux(tfDir)}/Mxx/{tfVersion}&#34;
+            )
 
-        initTree(tfPath, fresh=True, gentle=True)
+        initTree(tfDir, fresh=True, gentle=True)
 
-        cv = self.getConverter()
+        docDirs = sorted(dirContents(sourceDir)[1], key=lambda x: (x[0], int(x[1:])))
 
-        self.good = cv.walk(
-            self.getDirector(),
-            slotType,
-            otext=otext,
-            generic=generic,
-            intFeatures=intFeatures,
-            featureMeta=featureMeta,
-            generateTf=True,
-        )
+        for doc in docDirs:
+            if chosenDoc is not None and chosenDoc != doc:
+                continue
+            pageSource = f&#34;{sourceDir}/{doc}/{sourceVersion}/page&#34;
+            pageFiles = sorted(dirContents(pageSource)[0])
+            if len(pageFiles) == 0:
+                continue
+            console(f&#34;\t\t{doc:&gt;5} ... {len(pageFiles):&gt;4} pages&#34;)
+
+            metaFile = f&#34;{sourceDir}/{doc}/{sourceVersion}/meta/metadata.yaml&#34;
+            docMeta = readYaml(asFile=metaFile)
+            docMeta.title = (docMeta.title or &#34;&#34;).replace(&#34;_&#34;, &#34; &#34;)
+            docMeta.url = (docMeta.url or &#34;&#34;).replace(&#34;&amp;amp;&#34;, &#34;&amp;&#34;)
+
+            cv = self.getConverter(doc)
+
+            if not cv.walk(
+                self.getDirector(doc, docMeta, pageSource, pageFiles),
+                slotType,
+                otext=otext,
+                generic=generic,
+                intFeatures=intFeatures,
+                featureMeta=featureMeta,
+                generateTf=True,
+            ):
+                self.good = False
 
     def loadTask(self):
         &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -1845,27 +1956,35 @@ relevant TF version:</p>
         if not self.good:
             return
 
-        tfPath = self.tfPath
+        tfDir = self.tfDir
+        tfVersion = self.tfVersion
+        chosenDoc = self.chosenDoc
         verbose = self.verbose
         silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
 
-        if not dirExists(tfPath):
-            console(f&#34;Directory {ux(tfPath)} does not exist.&#34;)
+        if not dirExists(tfDir):
+            console(f&#34;Directory {ux(tfDir)} does not exist.&#34;)
             console(&#34;No TF found, nothing to load&#34;)
             self.good = False
             return
 
-        TF = Fabric(locations=[tfPath], silent=silent)
-        allFeatures = TF.explore(silent=True, show=True)
-        loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
-        api = TF.load(loadableFeatures, silent=silent)
-        if api:
-            if verbose &gt;= 0:
-                console(f&#34;max node = {api.F.otype.maxNode}&#34;)
-            self.good = True
-            return
+        docDirs = sorted(dirContents(tfDir)[1], key=lambda x: (x[0], int(x[1:])))
 
-        self.good = False
+        for doc in docDirs:
+            if chosenDoc is not None and chosenDoc != doc:
+                continue
+            tfPath = f&#34;{tfDir}/{doc}/{tfVersion}&#34;
+            console(f&#34;\t\t{doc:&gt;5} ... &#34;, newline=False)
+            TF = Fabric(locations=[tfPath], silent=silent)
+            allFeatures = TF.explore(silent=True, show=True)
+            loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
+            api = TF.load(loadableFeatures, silent=silent)
+            if api:
+                console(f&#34;OK {api.F.otype.maxSlot:&gt;8} slots&#34;)
+                self.good = True
+            else:
+                console(&#34;XX&#34;)
+                self.good = False
 
     def appTask(self):
         &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -2057,14 +2176,23 @@ relevant TF version:</p>
         relative = self.relative
         backend = self.backend
         tfVersion = self.tfVersion
+        chosenDoc = self.chosenDoc
+
+        if chosenDoc is None:
+            console(
+                &#34;You have to choose a particular document by passing the doc parameter&#34;
+            )
+            return
 
         backendOpt = &#34;&#34; if backend == &#34;github&#34; else f&#34;--backend={backend}&#34;
         versionOpt = f&#34;--version={tfVersion}&#34;
         versionOpt = &#34;&#34;
+        docOpt = f&#34;--relative=tf/{chosenDoc}&#34;
+
         try:
             run(
                 (
-                    f&#34;tf {org}/{repo}{relative}:clone --checkout=clone &#34;
+                    f&#34;tf {org}/{repo}{relative}:clone {docOpt} --checkout=clone &#34;
                     f&#34;{versionOpt} {backendOpt}&#34;
                 ),
                 shell=True,
@@ -2079,6 +2207,7 @@ relevant TF version:</p>
         app=False,
         browse=False,
         verbose=None,
+        doc=None,
     ):
         &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
 
@@ -2116,6 +2245,10 @@ relevant TF version:</p>
             verboseSav = self.verbose
             self.verbose = verbose
 
+        if doc is not None:
+            docSav = self.chosenDoc
+            self.chosenDoc = doc
+
         if not self.good:
             return False
 
@@ -2132,6 +2265,8 @@ relevant TF version:</p>
 
         if verbose is not None:
             self.verbose = verboseSav
+        if doc is not None:
+            self.chosenDoc = docSav
         return self.good</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -2177,7 +2312,7 @@ that code between automatic generation of files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/convert/pagexml.py#L710-L873" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/convert/pagexml.py#L746-L909" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -2361,7 +2496,7 @@ There should be a valid TF dataset and app configuration in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/convert/pagexml.py#L877-L913" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/convert/pagexml.py#L913-L958" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def browseTask(self):
     &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
@@ -2386,14 +2521,23 @@ There should be a valid TF dataset and app configuration in place</p>
     relative = self.relative
     backend = self.backend
     tfVersion = self.tfVersion
+    chosenDoc = self.chosenDoc
+
+    if chosenDoc is None:
+        console(
+            &#34;You have to choose a particular document by passing the doc parameter&#34;
+        )
+        return
 
     backendOpt = &#34;&#34; if backend == &#34;github&#34; else f&#34;--backend={backend}&#34;
     versionOpt = f&#34;--version={tfVersion}&#34;
     versionOpt = &#34;&#34;
+    docOpt = f&#34;--relative=tf/{chosenDoc}&#34;
+
     try:
         run(
             (
-                f&#34;tf {org}/{repo}{relative}:clone --checkout=clone &#34;
+                f&#34;tf {org}/{repo}{relative}:clone {docOpt} --checkout=clone &#34;
                 f&#34;{versionOpt} {backendOpt}&#34;
             ),
             shell=True,
@@ -2416,7 +2560,7 @@ There should be a valid TF dataset and app configuration in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/convert/pagexml.py#L620-L661" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/convert/pagexml.py#L626-L689" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -2435,35 +2579,57 @@ There should be a valid TF dataset and app configuration in place</p>
         return
 
     verbose = self.verbose
+    chosenDoc = self.chosenDoc
     slotType = self.slotType
     generic = self.generic
     otext = self.otext
     featureMeta = self.featureMeta
     intFeatures = self.intFeatures
-
-    tfPath = self.tfPath
-    sourcePath = self.sourcePath
+    sourceDir = self.sourceDir
+    sourceVersion = self.sourceVersion
+    tfDir = self.tfDir
+    tfVersion = self.tfVersion
 
     if verbose == 1:
-        console(f&#34;PageXML to TF converting: {ux(sourcePath)} =&gt; {ux(tfPath)}&#34;)
+        console(
+            f&#34;PageXML to TF converting: {ux(sourceDir)}/Mxx/{sourceVersion}&#34;
+            f&#34; ==&gt; {ux(tfDir)}/Mxx/{tfVersion}&#34;
+        )
 
-    initTree(tfPath, fresh=True, gentle=True)
+    initTree(tfDir, fresh=True, gentle=True)
 
-    cv = self.getConverter()
+    docDirs = sorted(dirContents(sourceDir)[1], key=lambda x: (x[0], int(x[1:])))
 
-    self.good = cv.walk(
-        self.getDirector(),
-        slotType,
-        otext=otext,
-        generic=generic,
-        intFeatures=intFeatures,
-        featureMeta=featureMeta,
-        generateTf=True,
-    )</code></pre>
+    for doc in docDirs:
+        if chosenDoc is not None and chosenDoc != doc:
+            continue
+        pageSource = f&#34;{sourceDir}/{doc}/{sourceVersion}/page&#34;
+        pageFiles = sorted(dirContents(pageSource)[0])
+        if len(pageFiles) == 0:
+            continue
+        console(f&#34;\t\t{doc:&gt;5} ... {len(pageFiles):&gt;4} pages&#34;)
+
+        metaFile = f&#34;{sourceDir}/{doc}/{sourceVersion}/meta/metadata.yaml&#34;
+        docMeta = readYaml(asFile=metaFile)
+        docMeta.title = (docMeta.title or &#34;&#34;).replace(&#34;_&#34;, &#34; &#34;)
+        docMeta.url = (docMeta.url or &#34;&#34;).replace(&#34;&amp;amp;&#34;, &#34;&amp;&#34;)
+
+        cv = self.getConverter(doc)
+
+        if not cv.walk(
+            self.getDirector(doc, docMeta, pageSource, pageFiles),
+            slotType,
+            otext=otext,
+            generic=generic,
+            intFeatures=intFeatures,
+            featureMeta=featureMeta,
+            generateTf=True,
+        ):
+            self.good = False</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.pagexml.PageXML.getConverter"><code class="name flex">
-<span>def <span class="ident">getConverter</span></span>(<span>self)</span>
+<span>def <span class="ident">getConverter</span></span>(<span>self, doc)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Initializes a converter.</p>
@@ -2475,9 +2641,9 @@ There should be a valid TF dataset and app configuration in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/convert/pagexml.py#L455-L468" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/convert/pagexml.py#L610-L624" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def getConverter(self):
+<pre><code class="python">def getConverter(self, doc):
     &#34;&#34;&#34;Initializes a converter.
 
     Returns
@@ -2486,15 +2652,16 @@ There should be a valid TF dataset and app configuration in place</p>
         The `tf.convert.walker.CV` converter object, initialized.
     &#34;&#34;&#34;
     verbose = self.verbose
-    tfPath = self.tfPath
+    tfDir = self.tfDir
+    tfVersion = self.tfVersion
 
     silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
-    TF = Fabric(locations=tfPath, silent=silent)
+    TF = Fabric(locations=f&#34;{tfDir}/{doc}/{tfVersion}&#34;, silent=silent)
     return CV(TF, silent=silent)</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.pagexml.PageXML.getDirector"><code class="name flex">
-<span>def <span class="ident">getDirector</span></span>(<span>self)</span>
+<span>def <span class="ident">getDirector</span></span>(<span>self, doc, docMeta, pageSource, pageFiles)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Factory for the director function.</p>
@@ -2513,9 +2680,9 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/convert/pagexml.py#L470-L618" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/convert/pagexml.py#L547-L608" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def getDirector(self):
+<pre><code class="python">def getDirector(self, doc, docMeta, pageSource, pageFiles):
     &#34;&#34;&#34;Factory for the director function.
 
     The `tf.convert.walker` relies on a corpus dependent `director` function
@@ -2533,101 +2700,7 @@ that has access to this data.</p>
     function
         The local director function that has been constructed.
     &#34;&#34;&#34;
-    repo = self.repo
-    sourcePath = self.sourcePath
-    pageSource = f&#34;{sourcePath}/page&#34;
-    pageFiles = sorted(dirContents(pageSource)[0])
-
-    if not self.importOK():
-        return
-
-    if not self.good:
-        return
-
-    # WALKERS
-
-    def emptySlot(cv):
-        s = cv.slot()
-        cv.feature(s, str=&#34;&#34;, after=&#34;&#34;)
-
-    def walkObject(cv, cur, xObj):
-        &#34;&#34;&#34;Internal function to deal with a single element.
-
-        Will be called recursively.
-
-        Parameters
-        ----------
-        cv: object
-            The converter object, needed to issue actions.
-        cur: dict
-            Various pieces of data collected during walking
-            and relevant for some next steps in the walk.
-
-            The subdictionary `cur[&#34;node&#34;]` is used to store the currently generated
-            nodes by node type.
-        bj
-        xode: object
-            An PageXML object.
-        &#34;&#34;&#34;
-        tp = xObj.main_type
-        xId = xObj.id
-        box = AttrDict(xObj.coords.box)
-
-        isScan = tp == &#34;scan&#34;
-        isRegion = tp == &#34;text_region&#34;
-        isLine = tp == LINE
-
-        nTp = PAGE if isScan else REGION if isRegion else LINE if isLine else tp
-        nd = cv.node(nTp)
-        cur[NODE][nTp] = nd
-        cv.feature(nd, id=xId, x=box.x, y=box.y, w=box.w, h=box.h)
-
-        if isLine:
-            cur[&#34;line&#34;] += 1
-            cv.feature(nd, line=cur[&#34;line&#34;])
-
-            tokens = tokenize(xObj.text or &#34;&#34;)
-            nTokens = len(tokens)
-            slots = []
-
-            hangover = cur[&#34;hangover&#34;]
-
-            hasHyphen = len(tokens) &gt; 0 and tokens[-1][0] in SOFT_HYPHEN_CHARS
-
-            for token in tokens:
-                s = cv.slot()
-                slots.append(s)
-                isFirst = len(slots) == 1
-                isLast = hasHyphen and len(slots) == nTokens
-                isSecondLast = hasHyphen and len(slots) == nTokens - 1
-                hangover = tokenLogic(
-                    cv, s, token, hangover, isFirst, isSecondLast, isLast
-                )
-
-            cur[&#34;hangover&#34;] = hangover
-
-            hangover = None
-
-            if len(tokens) == 0:
-                emptySlot(cv)
-
-        elif isScan or isRegion:
-            if isScan:
-                cv.feature(nd, page=cur[&#34;page&#34;])
-
-            hangover = cur[&#34;hangover&#34;]
-
-            for yObj in xObj.get_text_regions_in_reading_order():
-                walkObject(cv, cur, yObj)
-            for yObj in xObj.lines:
-                walkObject(cv, cur, yObj)
-        else:
-            console(f&#34;UNKNOWN TYPE {tp}&#34;, error=True)
-            self.good = False
-
-        if not cv.linked(nd):
-            emptySlot(cv)
-        cv.terminate(nd)
+    parsePage = self.parsePage
 
     def director(cv):
         &#34;&#34;&#34;Director function.
@@ -2641,11 +2714,14 @@ that has access to this data.</p>
         cv: object
             The converter object, needed to issue actions.
         &#34;&#34;&#34;
+        featureMeta = self.featureMeta
+
         cur = {}
         cur[NODE] = {}
         nd = cv.node(DOC)
         cur[NODE][DOC] = nd
-        cv.feature(nd, doc=repo)
+
+        cv.feature(nd, doc=doc, **docMeta)
 
         cur[&#34;hangover&#34;] = None
 
@@ -2662,6 +2738,10 @@ that has access to this data.</p>
                 diverge(cv, *hangover)
 
         cv.terminate(nd)
+
+        for fName in featureMeta:
+            if not cv.occurs(fName):
+                cv.meta(fName)
 
     return director</code></pre>
 </details>
@@ -2686,7 +2766,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/convert/pagexml.py#L663-L708" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/convert/pagexml.py#L691-L744" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -2713,31 +2793,39 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
     if not self.good:
         return
 
-    tfPath = self.tfPath
+    tfDir = self.tfDir
+    tfVersion = self.tfVersion
+    chosenDoc = self.chosenDoc
     verbose = self.verbose
     silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
 
-    if not dirExists(tfPath):
-        console(f&#34;Directory {ux(tfPath)} does not exist.&#34;)
+    if not dirExists(tfDir):
+        console(f&#34;Directory {ux(tfDir)} does not exist.&#34;)
         console(&#34;No TF found, nothing to load&#34;)
         self.good = False
         return
 
-    TF = Fabric(locations=[tfPath], silent=silent)
-    allFeatures = TF.explore(silent=True, show=True)
-    loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
-    api = TF.load(loadableFeatures, silent=silent)
-    if api:
-        if verbose &gt;= 0:
-            console(f&#34;max node = {api.F.otype.maxNode}&#34;)
-        self.good = True
-        return
+    docDirs = sorted(dirContents(tfDir)[1], key=lambda x: (x[0], int(x[1:])))
 
-    self.good = False</code></pre>
+    for doc in docDirs:
+        if chosenDoc is not None and chosenDoc != doc:
+            continue
+        tfPath = f&#34;{tfDir}/{doc}/{tfVersion}&#34;
+        console(f&#34;\t\t{doc:&gt;5} ... &#34;, newline=False)
+        TF = Fabric(locations=[tfPath], silent=silent)
+        allFeatures = TF.explore(silent=True, show=True)
+        loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
+        api = TF.load(loadableFeatures, silent=silent)
+        if api:
+            console(f&#34;OK {api.F.otype.maxSlot:&gt;8} slots&#34;)
+            self.good = True
+        else:
+            console(&#34;XX&#34;)
+            self.good = False</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.pagexml.PageXML.task"><code class="name flex">
-<span>def <span class="ident">task</span></span>(<span>self, convert=False, load=False, app=False, browse=False, verbose=None)</span>
+<span>def <span class="ident">task</span></span>(<span>self, convert=False, load=False, app=False, browse=False, verbose=None, doc=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Carry out any task, possibly modified by any flag.</p>
@@ -2768,7 +2856,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/convert/pagexml.py#L915-L975" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/convert/pagexml.py#L960-L1027" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,
@@ -2777,6 +2865,7 @@ will not be executed.</p>
     app=False,
     browse=False,
     verbose=None,
+    doc=None,
 ):
     &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
 
@@ -2814,6 +2903,10 @@ will not be executed.</p>
         verboseSav = self.verbose
         self.verbose = verbose
 
+    if doc is not None:
+        docSav = self.chosenDoc
+        self.chosenDoc = doc
+
     if not self.good:
         return False
 
@@ -2830,6 +2923,8 @@ will not be executed.</p>
 
     if verbose is not None:
         self.verbose = verboseSav
+    if doc is not None:
+        self.chosenDoc = docSav
     return self.good</code></pre>
 </details>
 </dd>
@@ -2910,11 +3005,13 @@ setTimeout(() => input.focus(), 100);
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="tf.convert.pagexml.diverge" href="#tf.convert.pagexml.diverge">diverge</a></code></li>
+<li><code><a title="tf.convert.pagexml.emptySlot" href="#tf.convert.pagexml.emptySlot">emptySlot</a></code></li>
 <li><code><a title="tf.convert.pagexml.main" href="#tf.convert.pagexml.main">main</a></code></li>
 <li><code><a title="tf.convert.pagexml.setUp" href="#tf.convert.pagexml.setUp">setUp</a></code></li>
 <li><code><a title="tf.convert.pagexml.tokenLogic" href="#tf.convert.pagexml.tokenLogic">tokenLogic</a></code></li>
+<li><code><a title="tf.convert.pagexml.walkObject" href="#tf.convert.pagexml.walkObject">walkObject</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>

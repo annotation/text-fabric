@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/app.py#L1-L723" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/advanced/app.py#L1-L729" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import types
 import traceback
@@ -148,7 +148,7 @@ class App:
         mergeDict(cfg, configOverrides)
         self.cfgSpecs = cfg
 
-        for (key, value) in dict(
+        for key, value in dict(
             isCompatible=cfg.get(&#34;isCompatible&#34;, None),
             backend=backend,
             appName=appName,
@@ -511,17 +511,19 @@ def findApp(
         elif &#34;/&#34; in appName:
             (dataOrg, rest) = appName.split(&#34;/&#34;, maxsplit=1)
             (dataRepo, *rest) = rest.split(&#34;/&#34;)
+            dataRelative = kwargs.get(&#34;relative&#34;, None) or RELATIVE
+
             if len(rest) &gt; 0 and rest[-1] == APP_APP:
                 appParts = rest
-                dataParts = rest[0:-1] + [RELATIVE]
+                dataParts = rest[0:-1] + [dataRelative]
             elif len(rest) &gt; 0 and rest[-1] == RELATIVE:
                 appParts = rest[0:-1] + [APP_APP]
                 dataParts = rest
             else:
-                dataParts = rest + [RELATIVE]
+                dataParts = rest + [dataRelative]
                 appParts = rest + [APP_APP]
             appFolder = prefixSlash(&#34;/&#34;.join(appParts))
-            dataFolder = prefixSlash(&#34;/&#34;.join(dataParts))
+            dataFolder = prefixSlash(&#34;/&#34;.join(x for x in dataParts if x))
 
             (commit, release, local, appBase, appDir) = checkoutRepo(
                 backend,
@@ -717,7 +719,7 @@ def useApp(appName, backend):
             parts.append(&#34;&#34;)
         (appName, checkoutApp) = parts
 
-    backend = backendRep(backend, &#39;norm&#39;)
+    backend = backendRep(backend, &#34;norm&#34;)
 
     return (appName, checkoutApp, dataLoc, backend)
 
@@ -748,9 +750,13 @@ def loadApp(silent=DEEP):
         )
         return None
 
-    (appName, checkoutApp, dataLoc, backend) = useApp(f&#34;{org}/{repo}{relative}:clone&#34;, backend)
+    (appName, checkoutApp, dataLoc, backend) = useApp(
+        f&#34;{org}/{repo}{relative}:clone&#34;, backend
+    )
 
-    return findApp(appName, checkoutApp, dataLoc, backend, False, checkout=&#34;clone&#34;, silent=silent)</code></pre>
+    return findApp(
+        appName, checkoutApp, dataLoc, backend, False, checkout=&#34;clone&#34;, silent=silent
+    )</code></pre>
 </details>
 </section>
 <section>
@@ -811,7 +817,7 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/app.py#L377-L641" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/advanced/app.py#L377-L643" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findApp(
     appName,
@@ -920,17 +926,19 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
         elif &#34;/&#34; in appName:
             (dataOrg, rest) = appName.split(&#34;/&#34;, maxsplit=1)
             (dataRepo, *rest) = rest.split(&#34;/&#34;)
+            dataRelative = kwargs.get(&#34;relative&#34;, None) or RELATIVE
+
             if len(rest) &gt; 0 and rest[-1] == APP_APP:
                 appParts = rest
-                dataParts = rest[0:-1] + [RELATIVE]
+                dataParts = rest[0:-1] + [dataRelative]
             elif len(rest) &gt; 0 and rest[-1] == RELATIVE:
                 appParts = rest[0:-1] + [APP_APP]
                 dataParts = rest
             else:
-                dataParts = rest + [RELATIVE]
+                dataParts = rest + [dataRelative]
                 appParts = rest + [APP_APP]
             appFolder = prefixSlash(&#34;/&#34;.join(appParts))
-            dataFolder = prefixSlash(&#34;/&#34;.join(dataParts))
+            dataFolder = prefixSlash(&#34;/&#34;.join(x for x in dataParts if x))
 
             (commit, release, local, appBase, appDir) = checkoutRepo(
                 backend,
@@ -1101,7 +1109,7 @@ The default is as silent as possible.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/app.py#L695-L723" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/advanced/app.py#L697-L729" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadApp(silent=DEEP):
     &#34;&#34;&#34;Loads a given TF app or loads the TF app based on the working directory.
@@ -1129,9 +1137,13 @@ The default is as silent as possible.</dd>
         )
         return None
 
-    (appName, checkoutApp, dataLoc, backend) = useApp(f&#34;{org}/{repo}{relative}:clone&#34;, backend)
+    (appName, checkoutApp, dataLoc, backend) = useApp(
+        f&#34;{org}/{repo}{relative}:clone&#34;, backend
+    )
 
-    return findApp(appName, checkoutApp, dataLoc, backend, False, checkout=&#34;clone&#34;, silent=silent)</code></pre>
+    return findApp(
+        appName, checkoutApp, dataLoc, backend, False, checkout=&#34;clone&#34;, silent=silent
+    )</code></pre>
 </details>
 </dd>
 <dt id="tf.advanced.app.useApp"><code class="name flex">
@@ -1165,7 +1177,7 @@ a customization of it.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/app.py#L644-L692" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/advanced/app.py#L646-L694" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def useApp(appName, backend):
     &#34;&#34;&#34;Make use of a corpus.
@@ -1213,7 +1225,7 @@ a customization of it.</dd>
             parts.append(&#34;&#34;)
         (appName, checkoutApp) = parts
 
-    backend = backendRep(backend, &#39;norm&#39;)
+    backend = backendRep(backend, &#34;norm&#34;)
 
     return (appName, checkoutApp, dataLoc, backend)</code></pre>
 </details>
@@ -1265,7 +1277,7 @@ loading features. Used to experiment with performance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/app.py#L58-L374" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/advanced/app.py#L58-L374" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class App:
     def __init__(
@@ -1330,7 +1342,7 @@ loading features. Used to experiment with performance.</dd>
         mergeDict(cfg, configOverrides)
         self.cfgSpecs = cfg
 
-        for (key, value) in dict(
+        for key, value in dict(
             isCompatible=cfg.get(&#34;isCompatible&#34;, None),
             backend=backend,
             appName=appName,
@@ -1622,7 +1634,7 @@ from <code>self</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/app.py#L239-L278" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/advanced/app.py#L239-L278" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def hoist(self, hoist, silent=None):
     &#34;&#34;&#34;Hoist the API handles of this TF app to the global scope.
@@ -1690,7 +1702,7 @@ without directory information and without extension.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/app.py#L280-L304" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/advanced/app.py#L280-L304" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, silent=SILENT_D):
     &#34;&#34;&#34;Loads extra features in addition to the main dataset.
@@ -1728,7 +1740,7 @@ It is called by <code>reuse</code>. Hence it needs to be present.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/app.py#L306-L311" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/advanced/app.py#L306-L311" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reinit(self):
     &#34;&#34;&#34;TF Apps may override this method.
@@ -1763,7 +1775,7 @@ call <code>reuse</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/advanced/app.py#L313-L374" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/advanced/app.py#L313-L374" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reuse(self, hoist=False):
     &#34;&#34;&#34;Re-initialize the app.

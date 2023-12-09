@@ -47,6 +47,7 @@ provide.</p>
     &quot;org/repo:specapp&quot;,
     backend=None,     # e.g. &quot;gitlab.huc.knaw.nl&quot;
     checkout=None, # e.g. &quot;latest&quot;
+    relative=None, # e.g. &quot;path/to/dir&quot;
     version=None,  # e.g. &quot;1.2.3&quot;
     mod=None,      # e.g. &quot;org1/repo1/path1:specmod1,org2/repo2/path2:specmod2&quot;
     setFile=None,  # e.g. &quot;path/to/file&quot;
@@ -144,13 +145,19 @@ in the parameter <code>backend</code>, e.g.</p>
 <em>app-path</em><code>:</code><em>app-checkout-specifier</em>
 The normal case is where <em>app-path</em> has the form <code>org/repo</code> pointing to
 a repository that holds the corpus, both app and data.
-If we find an app under <em>app-path</em>, it will have information about where the data is, so the
-<em>data-path</em> is known. The <em>data-checkout-specifier</em> is passed as an optional
-argument:
+If we find an app under <em>app-path</em>, it will have information about where the
+data is, so the <em>data-path</em> is known. The <em>data-checkout-specifier</em> is passed
+as an optional argument:
 <code>checkout=</code><em>data-checkout-specifier</em>.</p>
 <p>So far we have described how to use a TF corpus which has an <code>app</code> inside in the
-standard location, i.e. as org/repo/<code>app</code> .
-But app and data may also reside in arbitrary places, and for that there
+standard location, i.e. as org/repo/<code>app</code>, and also the data is in the standard
+location, i.e. org/repo/<code><a title="tf" href="../index.html">tf</a></code>.</p>
+<p>If the app resides in the standard location, but the data is somewhere else in the
+repository, you may pass <code>relative="path/to/data</code> to customise the location of the
+data.</p>
+<p>You can use this is you have one <code>app</code> and multiple corpora in one repo, all using
+the same <code>app</code>.</p>
+<p>For the case where both app and data reside in arbitrary places, there
 is additional syntax in the first argument:</p>
 <ul>
 <li>
@@ -404,7 +411,7 @@ the corpus app under <code>provenanceSpec &gt; moduleSpecs</code>:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/about/usefunc.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/about/usefunc.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/usefunc.md

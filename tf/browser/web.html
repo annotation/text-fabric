@@ -109,7 +109,7 @@ browsers, not even Edge.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/browser/web.py#L1-L290" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/browser/web.py#L1-L292" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Web interface
@@ -342,6 +342,7 @@ def main(cargs=sys.argv[1:]):
     appName = appSpecs[&#34;appName&#34;]
     checkout = appSpecs[&#34;checkout&#34;]
     checkoutApp = appSpecs[&#34;checkoutApp&#34;]
+    relative = appSpecs[&#34;relative&#34;]
     dataLoc = appSpecs[&#34;dataLoc&#34;]
     moduleRefs = appSpecs[&#34;moduleRefs&#34;]
     locations = appSpecs[&#34;locations&#34;]
@@ -365,6 +366,7 @@ def main(cargs=sys.argv[1:]):
         True,
         silent=AUTO,
         checkout=checkout,
+        relative=relative,
         mod=moduleRefs,
         locations=locations,
         modules=modules,
@@ -418,7 +420,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/browser/web.py#L127-L202" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/browser/web.py#L127-L202" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def factory(web):
     app = Flask(__name__)
@@ -506,7 +508,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/browser/web.py#L205-L286" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/browser/web.py#L205-L288" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv[1:]):
     debug = False
@@ -535,6 +537,7 @@ if __name__ == &#34;__main__&#34;:
     appName = appSpecs[&#34;appName&#34;]
     checkout = appSpecs[&#34;checkout&#34;]
     checkoutApp = appSpecs[&#34;checkoutApp&#34;]
+    relative = appSpecs[&#34;relative&#34;]
     dataLoc = appSpecs[&#34;dataLoc&#34;]
     moduleRefs = appSpecs[&#34;moduleRefs&#34;]
     locations = appSpecs[&#34;locations&#34;]
@@ -558,6 +561,7 @@ if __name__ == &#34;__main__&#34;:
         True,
         silent=AUTO,
         checkout=checkout,
+        relative=relative,
         mod=moduleRefs,
         locations=locations,
         modules=modules,
@@ -606,7 +610,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/browser/web.py#L114-L124" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/browser/web.py#L114-L124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Web:
     def __init__(self, kernelApi):
@@ -630,7 +634,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/browser/web.py#L122-L124" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/browser/web.py#L122-L124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(self, msg):
     if self.debug:

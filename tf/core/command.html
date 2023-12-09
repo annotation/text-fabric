@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/core/command.py#L1-L157" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/core/command.py#L1-L160" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 from textwrap import dedent
@@ -102,12 +102,15 @@ def readArgs(
             ((&#34;-&#34;, False, &#34;no&#34;), (&#34;+&#34;, True, &#34;yes&#34;))
             if nValues == 2
             else ((&#34;-&#34;, -1, &#34;no&#34;), (&#34;+&#34;, 0, &#34;a bit&#34;), (&#34;++&#34;, 1, &#34;more&#34;))
+            if nValues == 3
+            else None
         )
 
-        for (sigil, value, rep) in valueCoding:
-            helpFlags.append(f&#34;\t\t{sigil}{flag}: {rep} {flag}&#34;)
-            flagArgsDef[flag] = default
-            flagArgs[f&#34;{sigil}{flag}&#34;] = value
+        if valueCoding is not None:
+            for (sigil, value, rep) in valueCoding:
+                helpFlags.append(f&#34;\t\t{sigil}{flag}: {rep} {flag}&#34;)
+                flagArgsDef[flag] = default
+                flagArgs[f&#34;{sigil}{flag}&#34;] = value
 
     helpText = (
         f&#34;{command} [tasks/params/flags] [--help]\n\n{descr}\n\n&#34;
@@ -242,7 +245,7 @@ as an argument to the command.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/core/command.py#L10-L157" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/core/command.py#L10-L160" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readArgs(
     command, descr, possibleTasks, possibleParams, possibleFlags, notInAll=set()
@@ -309,12 +312,15 @@ as an argument to the command.</dd>
             ((&#34;-&#34;, False, &#34;no&#34;), (&#34;+&#34;, True, &#34;yes&#34;))
             if nValues == 2
             else ((&#34;-&#34;, -1, &#34;no&#34;), (&#34;+&#34;, 0, &#34;a bit&#34;), (&#34;++&#34;, 1, &#34;more&#34;))
+            if nValues == 3
+            else None
         )
 
-        for (sigil, value, rep) in valueCoding:
-            helpFlags.append(f&#34;\t\t{sigil}{flag}: {rep} {flag}&#34;)
-            flagArgsDef[flag] = default
-            flagArgs[f&#34;{sigil}{flag}&#34;] = value
+        if valueCoding is not None:
+            for (sigil, value, rep) in valueCoding:
+                helpFlags.append(f&#34;\t\t{sigil}{flag}: {rep} {flag}&#34;)
+                flagArgsDef[flag] = default
+                flagArgs[f&#34;{sigil}{flag}&#34;] = value
 
     helpText = (
         f&#34;{command} [tasks/params/flags] [--help]\n\n{descr}\n\n&#34;

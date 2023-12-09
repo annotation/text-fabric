@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/convert/xmlCustom.py#L1-L338" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/convert/xmlCustom.py#L1-L334" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 from io import BytesIO
@@ -37,11 +37,7 @@ from tf.core.files import initTree, unexpanduser as ux
 from tf.convert.helpers import ZWSP, XNEST, TNEST, CHAR, FOLDER, FILE
 
 
-def convertTaskDefault(etreeGiven):
-    global etree
-
-    etree = etreeGiven
-
+def convertTaskDefault(etree):
     if etree is None:
         def dummy(self):
             pass
@@ -105,7 +101,7 @@ def convertTaskDefault(etreeGiven):
         cv = self.getConverter()
 
         self.good = cv.walk(
-            getDirector(self),
+            getDirector(self, etree),
             slotType,
             otext=otext,
             generic=generic,
@@ -117,7 +113,7 @@ def convertTaskDefault(etreeGiven):
     return convertTaskDefaultInner
 
 
-def getDirector(self):
+def getDirector(self, etree):
     &#34;&#34;&#34;Factory for the director function.
 
     The `tf.convert.walker` relies on a corpus dependent `director` function
@@ -376,20 +372,16 @@ def getDirector(self):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.convert.xmlCustom.convertTaskDefault"><code class="name flex">
-<span>def <span class="ident">convertTaskDefault</span></span>(<span>etreeGiven)</span>
+<span>def <span class="ident">convertTaskDefault</span></span>(<span>etree)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/convert/xmlCustom.py#L10-L87" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/convert/xmlCustom.py#L10-L83" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def convertTaskDefault(etreeGiven):
-    global etree
-
-    etree = etreeGiven
-
+<pre><code class="python">def convertTaskDefault(etree):
     if etree is None:
         def dummy(self):
             pass
@@ -453,7 +445,7 @@ def getDirector(self):
         cv = self.getConverter()
 
         self.good = cv.walk(
-            getDirector(self),
+            getDirector(self, etree),
             slotType,
             otext=otext,
             generic=generic,
@@ -466,7 +458,7 @@ def getDirector(self):
 </details>
 </dd>
 <dt id="tf.convert.xmlCustom.getDirector"><code class="name flex">
-<span>def <span class="ident">getDirector</span></span>(<span>self)</span>
+<span>def <span class="ident">getDirector</span></span>(<span>self, etree)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Factory for the director function.</p>
@@ -485,9 +477,9 @@ object. If you then tweak it, you can pass it to the XML() object constructor.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/convert/xmlCustom.py#L90-L338" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/convert/xmlCustom.py#L86-L334" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def getDirector(self):
+<pre><code class="python">def getDirector(self, etree):
     &#34;&#34;&#34;Factory for the director function.
 
     The `tf.convert.walker` relies on a corpus dependent `director` function

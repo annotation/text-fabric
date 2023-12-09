@@ -59,6 +59,7 @@ first argument of the <code>use()</code> function:</p>
 prepended with <code>--</code>:</p>
 <ul>
 <li><code>--checkout</code></li>
+<li><code>--relative</code></li>
 <li><code>--mod</code></li>
 <li><code>--set</code></li>
 <li><code>--locations</code></li>
@@ -83,7 +84,7 @@ provided the previous invocation has been terminated.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/browser/start.py#L1-L284" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/browser/start.py#L1-L287" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Start the TF browser
@@ -131,6 +132,7 @@ The following arguments of the `use()` function can be used on the command-line,
 prepended with `--`:
 
 *   `--checkout`
+*   `--relative`
 *   `--mod`
 *   `--set`
 *   `--locations`
@@ -192,6 +194,7 @@ where all args are optional and args have one of these forms:
   -noweb
   --tool={&#34;|&#34;.join(sorted(TOOLS))}
   --checkout=specifier
+  --relative=string
   --backend=backend name (github, gitlab, gitlab.domain)
   --mod=modules
   --set=file
@@ -300,6 +303,7 @@ def main(cargs=sys.argv[1:]):
         encoding=&#34;utf8&#34;,
     )
     console(&#34;Loading TF corpus data. Please wait ...&#34;)
+
     for line in processWeb.stdout:
         sys.stdout.write(line)
         if line.rstrip() == TF_ERROR:
@@ -386,7 +390,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ecfd38119fd04a075b00480047ee2becd3058f4/tf/browser/start.py#L160-L280" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d2b5ddd19be981cf71dceb9798cd89b451058cd/tf/browser/start.py#L162-L283" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv[1:]):
     console(BANNER)
@@ -444,6 +448,7 @@ if __name__ == &#34;__main__&#34;:
         encoding=&#34;utf8&#34;,
     )
     console(&#34;Loading TF corpus data. Please wait ...&#34;)
+
     for line in processWeb.stdout:
         sys.stdout.write(line)
         if line.rstrip() == TF_ERROR:
