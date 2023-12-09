@@ -351,7 +351,6 @@ class Show:
                     trailing = "" if lastFound == lenW - 1 else w[lastFound + 1:]
                     hit = w[firstFound : lastFound + 1]
                     wRep = H.join(leading, H.span(hit, cls="found"), trailing)
-                    print(f"{w=} {leading=} {hit=} {trailing=} {wRep=}")
                 else:
                     wRep = w
                 queried = t in allMatches

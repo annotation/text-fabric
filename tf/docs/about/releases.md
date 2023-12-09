@@ -20,12 +20,21 @@ pip install -e .
 
 ### 12.2
 
-#### 12.2.3
+#### 12.2.3,4
 
 2023-12-09
 
 Writing support for Ugaritic, thanks to Martijn Naaijer and Christian Højgaard for
 converting a Ugaritic corpus to TF.
+
+Fix in display functions (continued):
+
+*   The logic of feature display, fixed in the previous version, was not effective 
+    when things are displayed in the TF browser. Because in the TF browser the
+    features of the last query were passed as `extraFeatures` instead of
+    `tupleFeatures`. This has been fixed by using `tupleFeatures` in the TF browser
+    as well.
+
 
 #### 12.2.2
 

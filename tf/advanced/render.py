@@ -26,7 +26,7 @@ from textwrap import dedent
 from .helpers import htmlSafe, NB, dh
 from .highlight import getEdgeHlAtt
 from .unravel import _unravel
-from ..core.helpers import NBSP, TO_SYM, FROM_SYM, htmlEsc, flattenToSet
+from ..core.helpers import NBSP, TO_SYM, FROM_SYM, htmlEsc, flattenToSet, console
 
 
 def render(app, isPretty, n, _inTuple, _asString, explain, **options):

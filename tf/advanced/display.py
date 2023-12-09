@@ -976,7 +976,7 @@ def pretty(app, n, explain=False, _asString=False, **options):
         *   `extraFeatures`: additional node / edge features to  display;
         *   `edgeFeatures`: which edge features maybe displayed;
         *   `edgeHighlights`: highlight specs for edges;
-        *   `tupleFeatures`: additional features to  display (primarily for `export`).
+        *   `tupleFeatures`: additional features to  display (`export` and queryresults).
 
     Parameters
     ----------
