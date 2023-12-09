@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.core.command API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.core.command</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/core/command.py#L1-L160" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">import sys
+from textwrap import dedent
+
+from .helpers import console
+
+
+# (good, tasks, params, flags, defaults) = readArgs(&#34;tf-addnlp&#34;, HELP, TASKS, PARAMS, FLAGS)
+
+
+def readArgs(
+    command, descr, possibleTasks, possibleParams, possibleFlags, notInAll=set()
+):
+    &#34;&#34;&#34;Interpret tasks, parameters and flags specified.
+
+    Parameters
+    ----------
+    command:
+        The name of the command, as entered on the command-line
+    descr: string
+        A description of the task
+    possibleTasks: dict
+        Keyed by the names of tasks, the values are a short description of the task.
+    possibleParams: dict
+        Keyed by the names of the parameters, the values are tuples with a short
+        description of the parameter plus a default value for it.
+    possibleFlags: dict
+        Keyed by the name of the flags, the values are tuples with a short
+        description of the flag, plus a default value for it, plus the number
+        of values it can take.
+        There are these possibilities:
+
+        *   `2`: values are False or True, represented by `-` and `+`;
+        *   `3`: values are `-1`, `0` or `1`, represented by `-`, `+` and `++`.
+
+    notInAll: set, optional set()
+        A set of tasks which are excluded from execution if `all` is passed as a task
+        argument. Such tasks will only by executed if they are explicitly passed
+        as an argument to the command.
+
+    Returns
+    -------
+    tuple
+        The tuple returned consists of
+
+        *   a boolean whether there is an error in the arguments
+        *   a dict keyed by the tasks, values are True or False
+        *   a dict of the parameters, values are strings
+        *   a dict of the flags, values are -1, 0 or 1
+    &#34;&#34;&#34;
+
+    taskArgs = set()
+    helpTasks = []
+    for (task, helpStr) in possibleTasks.items():
+        helpTasks.append(f&#34;\t{task}:\n\t\t{helpStr}\n&#34;)
+        taskArgs.add(task)
+    notInAllRep = f&#34; except {&#39;, &#39;.join(notInAll)}&#34; if len(notInAll) else &#34;&#34;
+    helpTasks.append(f&#34;all:\n\t\tall tasks{notInAllRep}&#34;)
+    taskArgs.add(&#34;all&#34;)
+
+    paramArgsDef = {}
+    helpParams = []
+    for (param, (helpStr, default)) in possibleParams.items():
+        helpParams.append(f&#34;\t{param}={default}:\n\t\t{helpStr}\n&#34;)
+        paramArgsDef[param] = default
+
+    flagArgsDef = {}
+    flagArgs = {}
+    helpFlags = []
+    for (flag, (helpStr, default, nValues)) in possibleFlags.items():
+        helpFlags.append(f&#34;\t{flag}={default}:\n\t\t{helpStr}\n&#34;)
+        valueCoding = (
+            ((&#34;-&#34;, False, &#34;no&#34;), (&#34;+&#34;, True, &#34;yes&#34;))
+            if nValues == 2
+            else ((&#34;-&#34;, -1, &#34;no&#34;), (&#34;+&#34;, 0, &#34;a bit&#34;), (&#34;++&#34;, 1, &#34;more&#34;))
+            if nValues == 3
+            else None
+        )
+
+        if valueCoding is not None:
+            for (sigil, value, rep) in valueCoding:
+                helpFlags.append(f&#34;\t\t{sigil}{flag}: {rep} {flag}&#34;)
+                flagArgsDef[flag] = default
+                flagArgs[f&#34;{sigil}{flag}&#34;] = value
+
+    helpText = (
+        f&#34;{command} [tasks/params/flags] [--help]\n\n{descr}\n\n&#34;
+        + dedent(
+            &#34;&#34;&#34;
+        --help: show this text and exit
+
+        tasks:
+        «tasks»
+
+        parameters:
+        «params»
+
+        flags:
+        «flags»
+        &#34;&#34;&#34;
+        )
+        .replace(&#34;«tasks»&#34;, &#34;&#34;.join(helpTasks))
+        .replace(&#34;«params»&#34;, &#34;&#34;.join(helpParams))
+        .replace(&#34;«flags»&#34;, &#34;&#34;.join(helpFlags))
+    )
+
+    possibleArgs = set(taskArgs) | set(flagArgs)
+
+    args = set(sys.argv[1:])
+
+    if not len(args) or &#34;--help&#34; in args or &#34;-h&#34; in args:
+        console(helpText)
+        if not len(args):
+            console(&#34;No task specified&#34;)
+        return (True, {}, {}, {})
+
+    illegalArgs = {
+        arg
+        for arg in args
+        if not (arg in possibleArgs or arg.split(&#34;=&#34;, 1)[0] in paramArgsDef)
+    }
+
+    if len(illegalArgs):
+        console(helpText)
+        for arg in illegalArgs:
+            console(f&#34;Illegal argument `{arg}`&#34;)
+        return (False, {}, {}, {})
+
+    tasks = {}
+    flags = {}
+    params = {}
+
+    for arg in args:
+        if arg in taskArgs:
+            tasks[arg] = True
+        elif arg in flagArgs:
+            flags[arg.lstrip(&#34;+-&#34;)] = flagArgs[arg]
+        else:
+            parts = arg.split(&#34;=&#34;, 1)
+            (p, val) = parts
+            params[p] = val or paramArgsDef[p]
+
+    for (f, default) in flagArgsDef.items():
+        if f not in flags:
+            flags[f] = default
+
+    for (p, default) in paramArgsDef.items():
+        if p not in params:
+            params[p] = default
+
+    if &#34;all&#34; in tasks:
+        if tasks[&#34;all&#34;]:
+            tasks = {
+                arg: True
+                for arg in possibleTasks
+                if arg != &#34;all&#34; and arg not in notInAll
+            }
+        else:
+            del tasks[&#34;all&#34;]
+
+    return (True, tasks, params, flags)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.core.command.readArgs"><code class="name flex">
+<span>def <span class="ident">readArgs</span></span>(<span>command, descr, possibleTasks, possibleParams, possibleFlags, notInAll=set())</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Interpret tasks, parameters and flags specified.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt>command:</dt>
+<dt>The name of the command, as entered on the command-line</dt>
+<dt><strong><code>descr</code></strong> :&ensp;<code>string</code></dt>
+<dd>A description of the task</dd>
+<dt><strong><code>possibleTasks</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Keyed by the names of tasks, the values are a short description of the task.</dd>
+<dt><strong><code>possibleParams</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Keyed by the names of the parameters, the values are tuples with a short
+description of the parameter plus a default value for it.</dd>
+<dt><strong><code>possibleFlags</code></strong> :&ensp;<code>dict</code></dt>
+<dd>
+<p>Keyed by the name of the flags, the values are tuples with a short
+description of the flag, plus a default value for it, plus the number
+of values it can take.
+There are these possibilities:</p>
+<ul>
+<li><code>2</code>: values are False or True, represented by <code>-</code> and <code>+</code>;</li>
+<li><code>3</code>: values are <code>-1</code>, <code>0</code> or <code>1</code>, represented by <code>-</code>, <code>+</code> and <code>++</code>.</li>
+</ul>
+</dd>
+<dt><strong><code>notInAll</code></strong> :&ensp;<code>set</code>, optional <code>set()</code></dt>
+<dd>A set of tasks which are excluded from execution if <code>all</code> is passed as a task
+argument. Such tasks will only by executed if they are explicitly passed
+as an argument to the command.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>
+<p>The tuple returned consists of</p>
+<ul>
+<li>a boolean whether there is an error in the arguments</li>
+<li>a dict keyed by the tasks, values are True or False</li>
+<li>a dict of the parameters, values are strings</li>
+<li>a dict of the flags, values are -1, 0 or 1</li>
+</ul>
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/core/command.py#L10-L160" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def readArgs(
+    command, descr, possibleTasks, possibleParams, possibleFlags, notInAll=set()
+):
+    &#34;&#34;&#34;Interpret tasks, parameters and flags specified.
+
+    Parameters
+    ----------
+    command:
+        The name of the command, as entered on the command-line
+    descr: string
+        A description of the task
+    possibleTasks: dict
+        Keyed by the names of tasks, the values are a short description of the task.
+    possibleParams: dict
+        Keyed by the names of the parameters, the values are tuples with a short
+        description of the parameter plus a default value for it.
+    possibleFlags: dict
+        Keyed by the name of the flags, the values are tuples with a short
+        description of the flag, plus a default value for it, plus the number
+        of values it can take.
+        There are these possibilities:
+
+        *   `2`: values are False or True, represented by `-` and `+`;
+        *   `3`: values are `-1`, `0` or `1`, represented by `-`, `+` and `++`.
+
+    notInAll: set, optional set()
+        A set of tasks which are excluded from execution if `all` is passed as a task
+        argument. Such tasks will only by executed if they are explicitly passed
+        as an argument to the command.
+
+    Returns
+    -------
+    tuple
+        The tuple returned consists of
+
+        *   a boolean whether there is an error in the arguments
+        *   a dict keyed by the tasks, values are True or False
+        *   a dict of the parameters, values are strings
+        *   a dict of the flags, values are -1, 0 or 1
+    &#34;&#34;&#34;
+
+    taskArgs = set()
+    helpTasks = []
+    for (task, helpStr) in possibleTasks.items():
+        helpTasks.append(f&#34;\t{task}:\n\t\t{helpStr}\n&#34;)
+        taskArgs.add(task)
+    notInAllRep = f&#34; except {&#39;, &#39;.join(notInAll)}&#34; if len(notInAll) else &#34;&#34;
+    helpTasks.append(f&#34;all:\n\t\tall tasks{notInAllRep}&#34;)
+    taskArgs.add(&#34;all&#34;)
+
+    paramArgsDef = {}
+    helpParams = []
+    for (param, (helpStr, default)) in possibleParams.items():
+        helpParams.append(f&#34;\t{param}={default}:\n\t\t{helpStr}\n&#34;)
+        paramArgsDef[param] = default
+
+    flagArgsDef = {}
+    flagArgs = {}
+    helpFlags = []
+    for (flag, (helpStr, default, nValues)) in possibleFlags.items():
+        helpFlags.append(f&#34;\t{flag}={default}:\n\t\t{helpStr}\n&#34;)
+        valueCoding = (
+            ((&#34;-&#34;, False, &#34;no&#34;), (&#34;+&#34;, True, &#34;yes&#34;))
+            if nValues == 2
+            else ((&#34;-&#34;, -1, &#34;no&#34;), (&#34;+&#34;, 0, &#34;a bit&#34;), (&#34;++&#34;, 1, &#34;more&#34;))
+            if nValues == 3
+            else None
+        )
+
+        if valueCoding is not None:
+            for (sigil, value, rep) in valueCoding:
+                helpFlags.append(f&#34;\t\t{sigil}{flag}: {rep} {flag}&#34;)
+                flagArgsDef[flag] = default
+                flagArgs[f&#34;{sigil}{flag}&#34;] = value
+
+    helpText = (
+        f&#34;{command} [tasks/params/flags] [--help]\n\n{descr}\n\n&#34;
+        + dedent(
+            &#34;&#34;&#34;
+        --help: show this text and exit
+
+        tasks:
+        «tasks»
+
+        parameters:
+        «params»
+
+        flags:
+        «flags»
+        &#34;&#34;&#34;
+        )
+        .replace(&#34;«tasks»&#34;, &#34;&#34;.join(helpTasks))
+        .replace(&#34;«params»&#34;, &#34;&#34;.join(helpParams))
+        .replace(&#34;«flags»&#34;, &#34;&#34;.join(helpFlags))
+    )
+
+    possibleArgs = set(taskArgs) | set(flagArgs)
+
+    args = set(sys.argv[1:])
+
+    if not len(args) or &#34;--help&#34; in args or &#34;-h&#34; in args:
+        console(helpText)
+        if not len(args):
+            console(&#34;No task specified&#34;)
+        return (True, {}, {}, {})
+
+    illegalArgs = {
+        arg
+        for arg in args
+        if not (arg in possibleArgs or arg.split(&#34;=&#34;, 1)[0] in paramArgsDef)
+    }
+
+    if len(illegalArgs):
+        console(helpText)
+        for arg in illegalArgs:
+            console(f&#34;Illegal argument `{arg}`&#34;)
+        return (False, {}, {}, {})
+
+    tasks = {}
+    flags = {}
+    params = {}
+
+    for arg in args:
+        if arg in taskArgs:
+            tasks[arg] = True
+        elif arg in flagArgs:
+            flags[arg.lstrip(&#34;+-&#34;)] = flagArgs[arg]
+        else:
+            parts = arg.split(&#34;=&#34;, 1)
+            (p, val) = parts
+            params[p] = val or paramArgsDef[p]
+
+    for (f, default) in flagArgsDef.items():
+        if f not in flags:
+            flags[f] = default
+
+    for (p, default) in paramArgsDef.items():
+        if p not in params:
+            params[p] = default
+
+    if &#34;all&#34; in tasks:
+        if tasks[&#34;all&#34;]:
+            tasks = {
+                arg: True
+                for arg in possibleTasks
+                if arg != &#34;all&#34; and arg not in notInAll
+            }
+        else:
+            del tasks[&#34;all&#34;]
+
+    return (True, tasks, params, flags)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.core" href="index.html">tf.core</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.core.command.readArgs" href="#tf.core.command.readArgs">readArgs</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.about.displaydesign API documentation</title>
+<meta name="description" content="Display design …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.about.displaydesign</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="display-design">Display design</h1>
+<p>In TF we want to display pieces of corpus material in insightful ways.</p>
+<p>We have implemented two types of displaying:</p>
+<ul>
+<li><code>plain</code>: almost as the plain text of nodes, but with optional in-line
+formatting</li>
+<li><code>pretty</code>: almost as a tree-bank view, but for the fact that the text objects
+are not merely trees, but graphs.</li>
+</ul>
+<p>In both types of display it is possible to optionally show node numbers to the
+relevant pieces of text, and to highlight nodes.</p>
+<p>In addition to highlighting, the displays can be tweaked by passing a fair number of options,
+in order to show of hide features of nodes, call in additional graphics, show or hide
+intermediate levels, etc.</p>
+<p>Whatever we want to display, we have to display in HTML, which is basically a
+hierarchically organized set of presentation elements.</p>
+<p>But a node and its constellation of relevant neighbourhood nodes
+does not have a hierarchical structure, in general, that is.</p>
+<p>The unravel algorithm solves the problem of turning a node and its associated piece
+of the textual graph into a tree of node fragments in such a way that the order
+of the slots is preserved.</p>
+<p><img alt="unravel" src="../images/DisplayDesign/DisplayDesign.001.png"></p>
+<p>Unraveling is the core of the display algorithm in TF.
+When nodes violate the hierarchy, the algorithm <em>chunks</em> and <em>fragments</em> them
+and <em>stacks</em> the fragments into a tree.</p>
+<p>See <code><a title="tf.advanced.unravel" href="../advanced/unravel.html">tf.advanced.unravel</a></code>.</p>
+<p>This tree of fragments can then be transformed in various kinds of HTML with rather
+straightforward code, see <code><a title="tf.advanced.render.render" href="../advanced/render.html#tf.advanced.render.render">render()</a></code>.</p>
+<p>Here is an account of how <em>unravel</em> works and which challenges it has to meet.</p>
+<h2 id="neighbourhood">Neighbourhood</h2>
+<p>When we display a node, we consider all the slots to which this node is linked,
+and then collect all other nodes in the corpus that share one or more of these slots.
+(see <code><a title="tf.core.locality.Locality.i" href="../core/locality.html#tf.core.locality.Locality.i">Locality.i()</a></code>).</p>
+<div class="admonition explanation">
+<p class="admonition-title">with some subtleties</p>
+<p>We exclude some nodes from the neighbourhood, such as lexeme nodes, which have
+characteristics that require special treatment.
+We also exclude nodes of types that have a higher rank (read on).</p>
+</div>
+<h3 id="descendant-types">Descendant types</h3>
+<p>Node types are ranked: node types whose nodes occupy more slots on average have a higher rank
+than types whose nodes occupy less slots on average.
+You can inspect the ranking of the types in your dataset by <code><a title="tf.core.nodes.Nodes.otypeRank" href="../core/nodes.html#tf.core.nodes.Nodes.otypeRank">Nodes.otypeRank</a></code>.</p>
+<p>For each node type, we collect the set of descendant types: the types with lower or equal rank.
+So each type is its own descendant. But we prevent the slot type from being its own
+descendant.</p>
+<h2 id="discontinuity-and-chunking">Discontinuity and chunking</h2>
+<p>The first problematic thing of nodes is that they can be linked to discontinuous sets
+of slots, in other words: nodes may have gaps.
+When nodes have gaps, and their holes are filled with other nodes, there is no way of
+walking through the nodes one by one and generating HTML boxes for them without
+mixing up the order of the slots in the final display.</p>
+<p>Here is an example from the Hebrew Bible:</p>
+<p><img alt="discontinuity" src="../images/DisplayDesign/DisplayDesign.002.png"></p>
+<blockquote>
+<p><a href="https://shebanq.ancient-data.org/hebrew/text?book=Genesis&amp;chapter=4&amp;verse=14&amp;version=c&amp;mr=m&amp;qw=q&amp;tp=txt_p&amp;tr=hb&amp;wget=v&amp;qget=v&amp;nget=vt">Genesis 4:14</a>,
+example taken from this <a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/zz_test/030-bhsa.ipynb">notebook</a>.</p>
+</blockquote>
+<p>You see a sentence fragment with two clauses, of which the second is engulfed by the first
+one, while remaining completely disjoint.</p>
+<p><img alt="chunking" src="../images/DisplayDesign/DisplayDesign.003.png"></p>
+<p>We divide each node in our neighbourhood into its maximal contiguous chunks.
+Such chunk are specified by tuples <code>(n, b, e)</code>, where <code>n</code> is the node (an integer),
+and <code>b</code> is the first slot of the chunk and <code>e</code> its last slot.</p>
+<p>When we display nodes, we will typically generate solid borders at node boundaries and
+dotted borders at internal chunk boundaries.</p>
+<h2 id="overlapping-hierarchy-and-fragmenting">Overlapping hierarchy and fragmenting</h2>
+<p>Chunks of nodes do not necessarily respect the borders of chunks of nodes that are higher in the
+tentative hierarchy.</p>
+<p>Here is an example from a corpus of Old Babylonian letters (cuneiform):</p>
+<p><img alt="overlap" src="../images/DisplayDesign/DisplayDesign.004.png"></p>
+<blockquote>
+<p><a href="https://cdli.ucla.edu/search/search_results.php?SearchMode=Text&amp;ObjectID=P509373"><code>Tablet P509373 reverse:6'</code></a>,
+example taken from <a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/zz_test/062-obb-clusters.ipynb">notebook</a>.</p>
+</blockquote>
+<p>Here you see a cluster that does not respect a word boundary.</p>
+<p><img alt="fragmenting" src="../images/DisplayDesign/DisplayDesign.005.png"></p>
+<p>We use the word boundary to break up the cluster in question into two <em>fragments</em>.
+A <em>fragment</em> is, like a chunk, a continuous part of a node, but not necessarily maximal.</p>
+<p>We fragment all node chunks in our neighbourhood.</p>
+<div class="admonition explanation">
+<p class="admonition-title">with some subtleties</p>
+<p>We work from higher levels to lower levels: node chunks of higher levels fragment
+node chunks of lower levels, not vice versa.
+And for nodes at the same level: bigger nodes chunk smaller nodes, not vice versa.</p>
+</div>
+<h3 id="levels">Levels</h3>
+<p>As an example why levels are important, see Genesis 4:14 again.</p>
+<p><img alt="levels" src="../images/DisplayDesign/DisplayDesign.006.png"></p>
+<p>In the Hebrew Bible, as encoded in the
+<a href="https://github.com/ETCBC/bhsa">BHSA</a>, the usual sequence of division is:
+sentence, sentence atom, clause, clause atom, phrase, phrase atom word.
+Look at the middle clause. It coincides with its clause atom, phrase and phrase atom.
+Without ranking information, TF cannot know which of these is the outer node and which
+the inner node.
+TF has computed this information when it loaded the corpus for the first time,
+based on the average size of nodes. It is also possible that the corpus designer has overridden
+this by an explicit ranking in the settings of the corpus app.</p>
+<p>We end up with a rather fine partition of all nodes in fragments, in such a way
+that no fragment crosses the boundaries of enclosing fragments.</p>
+<h3 id="canonical-order">Canonical order</h3>
+<p>Before we feed fragments to the display, we sort them in <em>canonical order</em>, based on their
+slots and node type. The following criteria will be checked <em>in that order</em>:</p>
+<ul>
+<li>Chunks have different begin slots: those with earlier first slots have precedence;</li>
+<li>Chunks with nodes with higher ranked types have precedence;</li>
+<li>Look at the slots the chunks do <em>not</em> have in common.
+The chunk with the earlier such slot has precedence.</li>
+<li>Chunks with nodes that are smaller as integer have precedence.</li>
+</ul>
+<p>See <code><a title="tf.core.nodes.Nodes.sortKeyChunk" href="../core/nodes.html#tf.core.nodes.Nodes.sortKeyChunk">Nodes.sortKeyChunk</a></code>.</p>
+<h3 id="stacking">Stacking</h3>
+<p>When we have a list of canonically ordered fragments, we can stack them into a tree.
+Each new fragment is tried against the right-most branch of the tree under construction,
+from bottom to top.
+If there is no place on that branch, a new right-most branch is started.</p>
+<p><img alt="stack" src="../images/DisplayDesign/DisplayDesign.007.png"></p>
+<h3 id="output">Output</h3>
+<p>When we render a tree of fragments, we produce output for the fragments, one by one.
+For each fragment, the output consists of a contribution by the node of the fragment.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/about/displaydesign.py#L1-L3" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+.. include:: ../docs/about/displaydesign.md
+&#34;&#34;&#34;</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#display-design">Display design</a><ul>
+<li><a href="#neighbourhood">Neighbourhood</a><ul>
+<li><a href="#descendant-types">Descendant types</a></li>
+</ul>
+</li>
+<li><a href="#discontinuity-and-chunking">Discontinuity and chunking</a></li>
+<li><a href="#overlapping-hierarchy-and-fragmenting">Overlapping hierarchy and fragmenting</a><ul>
+<li><a href="#levels">Levels</a></li>
+<li><a href="#canonical-order">Canonical order</a></li>
+<li><a href="#stacking">Stacking</a></li>
+<li><a href="#output">Output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.about" href="index.html">tf.about</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

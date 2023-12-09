@@ -1,0 +1,5126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.convert.walker API documentation</title>
+<meta name="description" content="Walker …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.convert.walker</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="walker">Walker</h1>
+<p>You can convert a dataset to TF by writing a function that walks through it.</p>
+<p>That function must trigger a sequence of actions when reading the data.
+These actions drive TF to build a valid TF dataset.
+Many checks will be performed.</p>
+<div class="admonition hint">
+<p class="admonition-title">to and from MQL</p>
+<p>If your source is MQL, you are even better off: TF has a
+module to import from MQL and to export to MQL.
+See <code><a title="tf.convert.mql.importMQL" href="mql.html#tf.convert.mql.importMQL">importMQL()</a></code> and <code><a title="tf.convert.mql.exportMQL" href="mql.html#tf.convert.mql.exportMQL">exportMQL()</a></code>.</p>
+</div>
+<h2 id="set-up">Set up</h2>
+<p>Here is a schematic set up of such a conversion program.</p>
+<pre><code class="language-python">from tf.fabric import Fabric
+from tf.convert.walker import CV
+
+TF = Fabric(locations=OUT_DIR)
+cv = CV(TF)
+
+def director(cv):
+  # your code to unwrap your source data and trigger
+  # the generation of TF nodes, edges and features
+
+slotType = 'word'  # or whatever you choose
+otext = {  # dictionary of config data for sections and text formats
+    ...
+}
+generic = {  # dictionary of metadata meant for all features
+    ...
+}
+intFeatures = {  # set of integer valued feature names
+    ...
+}
+featureMeta = {  # per feature dictionaries with metadata
+   ...
+}
+
+good = cv.walk(
+    director,
+    slotType,
+    otext=otext,
+    generic=generic,
+    intFeatures=intFeatures,
+    featureMeta=featureMeta,
+    warn=True,
+    force=False,
+)
+
+if good:
+  ... load the new TF data ...
+</code></pre>
+<p>See <code><a title="tf.convert.walker.CV.walk" href="#tf.convert.walker.CV.walk">CV.walk()</a></code>.</p>
+<h2 id="walking">Walking</h2>
+<p>When you walk through the input data source, you'll encounter things
+that have to become slots, non-slot nodes, edges and features in the new data set.</p>
+<p>You issue these things by means of an <em>action method</em> from <code>cv</code>, such as
+<code>cv.slot()</code> or <code>cv.node(nodeType)</code>.</p>
+<p>When your action creates slots or non slot nodes,
+TF will return you a reference to that node,
+that you can use later for more actions related to that node.</p>
+<pre><code class="language-python">curPara = cv.node('para')
+</code></pre>
+<p>To add features to nodes, use a <code>cv.feature()</code> action.
+It will apply to a node passed as argument.</p>
+<p>To add features to edges, issue a <code>cv.edge()</code> action.
+It will require two node arguments: the <em>from</em> node and the <em>to</em> node.</p>
+<p>There is always a set of current <em>embedder nodes</em>.
+When you create a slot node</p>
+<pre><code class="language-python">curWord = cv.slot()
+</code></pre>
+<p>then TF will link all current embedder nodes to the resulting slot.</p>
+<p>There are actions to add nodes to the set of embedder nodes,
+to remove them from it,
+and to add them again.</p>
+<p>If your data is organized in such a way that you see the slots in a different
+order than the intended order, you can pass a key value to the slot, like so</p>
+<pre><code class="language-python">curWord = cv.slot(key=wordNumber)
+</code></pre>
+<p>After the walk is completed, the slots will be sorted by their keys, while keeping
+all feature assignments to them intact. All nodes will be linked to the same slots
+after sorting, and all edges that start from or arrive at slots will do that after
+the sorting.</p>
+<p>For an example, see
+<a href="https://github.com/ETCBC/nestle1904/blob/master/programs/lowfat.py"><code>lowfat.py</code></a>.</p>
+<h2 id="dynamic-metadata">Dynamic Metadata</h2>
+<p>When the director runs, you may have already specified all your feature
+metadata, including the value types.</p>
+<p>But if some of that information is dependent on what you encounter in the
+data, you can do two things:</p>
+<p>(A) Run a preliminary pass over the data and gather the required information,
+before running the director.</p>
+<p>(B) Update the metadata later on
+by issuing <code>cv.meta()</code> actions from within your director, see below.</p>
+<p>In doing this, you can remove the metadata from unused features,
+but you can also add metadata to features that have not got them yet.</p>
+<p>If the set of possible features is not known on beforehand,
+you can ask for the list of all feature names by means of
+<code>cv.features()</code>.</p>
+<h2 id="action-methods">Action methods</h2>
+<p>The <code>cv</code> class contains methods that are responsible for particular <em>actions</em>
+that steer the graph building:</p>
+<ul>
+<li><code><a title="tf.convert.walker.CV.slot" href="#tf.convert.walker.CV.slot">CV.slot()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.node" href="#tf.convert.walker.CV.node">CV.node()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.terminate" href="#tf.convert.walker.CV.terminate">CV.terminate()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.resume" href="#tf.convert.walker.CV.resume">CV.resume()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.link" href="#tf.convert.walker.CV.link">CV.link()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.linked" href="#tf.convert.walker.CV.linked">CV.linked()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.feature" href="#tf.convert.walker.CV.feature">CV.feature()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.features" href="#tf.convert.walker.CV.features">CV.features()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.edge" href="#tf.convert.walker.CV.edge">CV.edge()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.meta" href="#tf.convert.walker.CV.meta">CV.meta()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.occurs" href="#tf.convert.walker.CV.occurs">CV.occurs()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.active" href="#tf.convert.walker.CV.active">CV.active()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.activeNodes" href="#tf.convert.walker.CV.activeNodes">CV.activeNodes()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.activeTypes" href="#tf.convert.walker.CV.activeTypes">CV.activeTypes()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.get" href="#tf.convert.walker.CV.get">CV.get()</a></code> and <code>cv.get(feature, nf, nt)</code></li>
+<li><code><a title="tf.convert.walker.CV.stop" href="#tf.convert.walker.CV.stop">CV.stop()</a></code></li>
+</ul>
+<div class="admonition hint">
+<p class="admonition-title">Example</p>
+<p>Follow the
+<a href="https://nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/convert.ipynb">conversion tutorial</a></p>
+<p>Or study a more involved example:
+<a href="https://github.com/Nino-cunei/oldbabylonian/blob/master/programs/tfFromATF.py">Old Babylonian</a></p>
+</div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/convert/walker.py#L1-L1787" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+# Walker
+
+You can convert a dataset to TF by writing a function that walks through it.
+
+That function must trigger a sequence of actions when reading the data.
+These actions drive TF to build a valid TF dataset.
+Many checks will be performed.
+
+!!! hint &#34;to and from MQL&#34;
+    If your source is MQL, you are even better off: TF has a
+    module to import from MQL and to export to MQL.
+    See `tf.convert.mql.importMQL` and `tf.convert.mql.exportMQL`.
+
+## Set up
+
+Here is a schematic set up of such a conversion program.
+
+``` python
+from tf.fabric import Fabric
+from tf.convert.walker import CV
+
+TF = Fabric(locations=OUT_DIR)
+cv = CV(TF)
+
+def director(cv):
+  # your code to unwrap your source data and trigger
+  # the generation of TF nodes, edges and features
+
+slotType = &#39;word&#39;  # or whatever you choose
+otext = {  # dictionary of config data for sections and text formats
+    ...
+}
+generic = {  # dictionary of metadata meant for all features
+    ...
+}
+intFeatures = {  # set of integer valued feature names
+    ...
+}
+featureMeta = {  # per feature dictionaries with metadata
+   ...
+}
+
+good = cv.walk(
+    director,
+    slotType,
+    otext=otext,
+    generic=generic,
+    intFeatures=intFeatures,
+    featureMeta=featureMeta,
+    warn=True,
+    force=False,
+)
+
+if good:
+  ... load the new TF data ...
+```
+
+See `tf.convert.walker.CV.walk`.
+
+## Walking
+
+When you walk through the input data source, you&#39;ll encounter things
+that have to become slots, non-slot nodes, edges and features in the new data set.
+
+You issue these things by means of an *action method* from `cv`, such as
+`cv.slot()` or `cv.node(nodeType)`.
+
+When your action creates slots or non slot nodes,
+TF will return you a reference to that node,
+that you can use later for more actions related to that node.
+
+``` python
+curPara = cv.node(&#39;para&#39;)
+```
+
+To add features to nodes, use a `cv.feature()` action.
+It will apply to a node passed as argument.
+
+To add features to edges, issue a `cv.edge()` action.
+It will require two node arguments: the *from* node and the *to* node.
+
+There is always a set of current *embedder nodes*.
+When you create a slot node
+
+``` python
+curWord = cv.slot()
+```
+
+then TF will link all current embedder nodes to the resulting slot.
+
+There are actions to add nodes to the set of embedder nodes,
+to remove them from it,
+and to add them again.
+
+If your data is organized in such a way that you see the slots in a different
+order than the intended order, you can pass a key value to the slot, like so
+
+``` python
+curWord = cv.slot(key=wordNumber)
+```
+
+After the walk is completed, the slots will be sorted by their keys, while keeping
+all feature assignments to them intact. All nodes will be linked to the same slots
+after sorting, and all edges that start from or arrive at slots will do that after
+the sorting.
+
+For an example, see
+[`lowfat.py`](https://github.com/ETCBC/nestle1904/blob/master/programs/lowfat.py).
+
+## Dynamic Metadata
+
+When the director runs, you may have already specified all your feature
+metadata, including the value types.
+
+But if some of that information is dependent on what you encounter in the
+data, you can do two things:
+
+(A) Run a preliminary pass over the data and gather the required information,
+before running the director.
+
+(B) Update the metadata later on
+by issuing `cv.meta()` actions from within your director, see below.
+
+In doing this, you can remove the metadata from unused features,
+but you can also add metadata to features that have not got them yet.
+
+If the set of possible features is not known on beforehand,
+you can ask for the list of all feature names by means of
+`cv.features()`.
+
+## Action methods
+
+The `cv` class contains methods that are responsible for particular *actions*
+that steer the graph building:
+
+*   `tf.convert.walker.CV.slot`
+*   `tf.convert.walker.CV.node`
+*   `tf.convert.walker.CV.terminate`
+*   `tf.convert.walker.CV.resume`
+*   `tf.convert.walker.CV.link`
+*   `tf.convert.walker.CV.linked`
+*   `tf.convert.walker.CV.feature`
+*   `tf.convert.walker.CV.features`
+*   `tf.convert.walker.CV.edge`
+*   `tf.convert.walker.CV.meta`
+*   `tf.convert.walker.CV.occurs`
+*   `tf.convert.walker.CV.active`
+*   `tf.convert.walker.CV.activeNodes`
+*   `tf.convert.walker.CV.activeTypes`
+*   `tf.convert.walker.CV.get` and `cv.get(feature, nf, nt)`
+*   `tf.convert.walker.CV.stop`
+
+!!! hint &#34;Example&#34;
+    Follow the
+    [conversion tutorial](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/convert.ipynb)
+
+    Or study a more involved example:
+    [Old Babylonian](https://github.com/Nino-cunei/oldbabylonian/blob/master/programs/tfFromATF.py)
+&#34;&#34;&#34;
+
+import collections
+import functools
+import re
+
+from ..parameters import WARP, OTYPE, OSLOTS, OTEXT
+from ..core.helpers import itemize, isInt
+from ..core.timestamp import SILENT_D, DEEP, silentConvert
+
+
+class CV:
+    S = &#34;slot&#34;
+    N = &#34;node&#34;
+    T = &#34;terminate&#34;
+    R = &#34;resume&#34;
+    D = &#34;delete&#34;
+    F = &#34;feature&#34;
+    E = &#34;edge&#34;
+
+    def __init__(self, TF, silent=SILENT_D):
+        &#34;&#34;&#34;The object that contains the walker conversion machinery.
+
+        silent: string, optional tf.core.timestamp.SILENT_D
+            See `tf.core.timestamp.Timestamp`
+        &#34;&#34;&#34;
+
+        self.TF = TF
+        self.silent = silent
+        tmObj = TF.tmObj
+        isSilent = tmObj.isSilent
+        setSilent = tmObj.setSilent
+
+        silent = silentConvert(silent)
+        self.wasSilent = isSilent()
+        setSilent(silent)
+
+    def _showWarnings(self):
+        silent = self.silent
+        tmObj = self.TF.tmObj
+        error = tmObj.error
+        info = tmObj.info
+        indent = tmObj.indent
+
+        warnings = self.warnings
+        warn = self.warn
+
+        if warn is None:
+            if warnings:
+                info(&#34;use `cv.walk(..., warn=False)` to make warnings visible&#34;)
+                info(&#34;use `cv.walk(..., warn=True)` to stop on warnings&#34;)
+        else:
+            method = error if warn else info
+
+            if warnings:
+                for (kind, msgs) in sorted(warnings.items()):
+                    method(f&#34;WARNING {kind} ({len(msgs)} x):&#34;, force=silent != DEEP)
+                    indent(level=2)
+                    for msg in sorted(set(msgs))[0:20]:
+                        if msg:
+                            method(f&#34;{msg}&#34;, tm=False, force=silent != DEEP)
+                self.warnings = {}
+                if warn:
+                    info(&#34;use `cv.walk(..., warn=False)` to continue after warnings&#34;)
+                    info(&#34;use `cv.walk(..., warn=None)` to suppress warnings&#34;)
+                    self.good = False
+                else:
+                    info(&#34;use `cv.walk(..., warn=True)` to stop after warnings&#34;)
+                    info(&#34;use `cv.walk(..., warn=None)` to suppress warnings&#34;)
+
+    def _showErrors(self):
+        silent = self.silent
+        tmObj = self.TF.tmObj
+        error = tmObj.error
+        info = tmObj.info
+        indent = tmObj.indent
+        forcedStop = self.forcedStop
+
+        errors = self.errors
+
+        if errors:
+            for (kind, msgs) in sorted(errors.items()):
+                error(f&#34;ERROR {kind} ({len(msgs)} x):&#34;)
+                indent(level=2)
+                for msg in sorted(set(msgs))[0:20]:
+                    if msg:
+                        error(f&#34;{msg}&#34;, tm=False)
+            self.errors = {}
+            self.good = False
+
+        if forcedStop:
+            error(&#34;STOPPED by the stop() instruction&#34;)
+        elif not errors:
+            if self.good:
+                info(&#34;OK&#34;, force=silent != DEEP)
+            else:
+                error(&#34;STOPPED because of warnings&#34;)
+
+    def walk(
+        self,
+        director,
+        slotType,
+        otext={},
+        generic={},
+        intFeatures=set(),
+        featureMeta={},
+        warn=True,
+        generateTf=True,
+        force=False,
+    ):
+        &#34;&#34;&#34;Asks a director function to walk through source data and receives its actions.
+
+        The `director` function should unravel the source.
+        You have to program the `director`, which takes one argument: `cv`.
+        From the `cv` you can use a few standard actions that instruct TF
+        to build a graph.
+
+        This function will check whether the metadata makes sense and is minimally
+        complete.
+
+        During node creation the section structure will be watched,
+        and you will be warned if irregularities occur.
+
+        After the creation of the feature data, some extra checks will be performed
+        to see whether the metadata matches the data and vice versa.
+
+        If the slots need to be sorted by their keys, it will happen at this point,
+        and the generated features will be adapted to the sorted slots.
+
+        The new feature data will be written to the output directory of the
+        underlying TF object.  In fact, the rules are exactly the same as for
+        `tf.fabric.Fabric.save`.
+
+        Parameters
+        ----------
+        slotType: string
+            The node type that acts as the type of the slots in the data set.
+
+        oText: dict
+            The configuration information to be stored in the `otext` feature
+            (see `tf.core.text`):
+
+            *   section types
+            *   section features
+            *   structure types
+            *   structure features
+            *   text formats
+
+        generic: dict
+            Metadata that will be written into the header of all generated TF features.
+
+            You can make changes to this later on, dynamically in your director.
+
+        intFeatures: iterable
+            The set of features that have integer values only.
+
+            You can make changes to this later on, dynamically in your director.
+
+        featureMeta: dict of dict
+            For each node or edge feature descriptive metadata can be supplied.
+
+            You can make changes to this later on, dynamically in your director.
+
+        warn: boolean, optional True
+            This regulates the response to warnings:
+
+            `True` (default): stop after warnings (as if they are errors);
+
+            `False` continue after warnings but do show them;
+
+            `None` suppress all warnings.
+
+        force: boolean, optional False
+            This forces the process to continue after errors.
+            Your TF set might not be valid.
+            Yet this can be useful during testing, when you know
+            that not everything is OK, but you want to check some results.
+            Especially when dealing with large datasets, you might want to test
+            with little pieces. But then you get a kind of non-fatal errors that
+            stand in the way of testing. For those cases: `force=True`.
+
+        generateTf: boolean, optional True
+            You can pass `False` here to suppress the actual writing of TF data.
+            In that way you can dry-run the director to check for errors and warnings
+
+        director: function
+            An ordinary function that takes one argument, the `cv` object, and
+            should not deliver anything.
+
+            Writing this function is the main job to do when you want to convert a data source
+            to TF.
+
+            See `tf.convert.walker` for more details.
+
+        Returns
+        -------
+        boolean
+            Whether the operation was successful
+        &#34;&#34;&#34;
+
+        tmObj = self.TF.tmObj
+        info = tmObj.info
+        indent = tmObj.indent
+        setSilent = tmObj.setSilent
+        silent = self.silent
+
+        indent(level=0, reset=True)
+        info(&#34;Importing data from walking through the source ...&#34;, force=silent != DEEP)
+
+        self.force = force
+        self.good = True
+        self.forcedStop = False
+        self.errors = collections.defaultdict(list)
+        self.warnings = collections.defaultdict(list)
+        self.warn = warn
+        self.slotType = slotType
+
+        self.intFeatures = set(intFeatures)
+        self.featureMeta = featureMeta
+        self.metaData = {}
+        self.nodeFeatures = {}
+        self.edgeFeatures = {}
+        self.slotKeys = {}
+        self.discardables = set()
+
+        indent(level=1, reset=True)
+        self._prepareMeta(otext, generic)
+
+        indent(level=1, reset=True)
+        self._follow(director)
+
+        indent(level=1, reset=True)
+        self._removeUnlinked()
+
+        indent(level=1, reset=True)
+        self._checkGraph()
+
+        indent(level=1, reset=True)
+        self._checkFeatures()
+
+        indent(level=1, reset=True)
+        self._reorderNodes()
+
+        indent(level=1, reset=True)
+        self._reassignFeatures()
+
+        indent(level=0)
+        info(&#34;Features ready to write&#34;)
+
+        if generateTf:
+            if self.good or self.force:
+                self.good = self.TF.save(
+                    metaData=self.metaData,
+                    nodeFeatures=self.nodeFeatures,
+                    edgeFeatures=self.edgeFeatures,
+                    silent=silent,
+                )
+
+        self._showWarnings()
+        setSilent(self.wasSilent)
+
+        return self.good
+
+    def _prepareMeta(self, otext, generic):
+        silent = self.silent
+        varRe = re.compile(r&#34;\{([^}]+)\}&#34;)
+
+        tmObj = self.TF.tmObj
+        info = tmObj.info
+        indent = tmObj.indent
+
+        if not self.good and not self.force:
+            return
+
+        info(&#34;Preparing metadata... &#34;, force=silent != DEEP)
+
+        intFeatures = self.intFeatures
+        featureMeta = self.featureMeta
+
+        errors = self.errors
+
+        self.metaData = {
+            &#34;&#34;: generic,
+            OTYPE: {&#34;valueType&#34;: &#34;str&#34;},
+            OSLOTS: {&#34;valueType&#34;: &#34;str&#34;},
+            OTEXT: otext,
+        }
+        metaData = self.metaData
+
+        self.intFeatures = intFeatures
+        self.sectionTypes = []
+        self.sectionFeatures = []
+        self.sectionFromLevel = {}
+        self.levelFromSection = {}
+        self.structureTypes = []
+        self.structureFeatures = []
+        self.structureLevel = {}
+        self.textFormats = {}
+        self.textFeatures = set()
+
+        if not generic:
+            errors[&#39;Missing feature meta data in &#34;generic&#34;&#39;].append(
+                &#34;Consider adding provenance metadata to all features&#34;
+            )
+        if not otext:
+            errors[&#39;Missing &#34;otext&#34; configuration&#39;].append(
+                &#34;Consider adding configuration for text representation and section levels&#34;
+            )
+        else:
+            sectionInfo = {}
+            for f in (&#34;sectionTypes&#34;, &#34;sectionFeatures&#34;):
+                if f not in otext:
+                    errors[&#39;Incomplete section specs in &#34;otext&#34;&#39;].append(
+                        f&#39;no key &#34;{f}&#34;&#39;
+                    )
+                    sectionInfo[f] = []
+                else:
+                    sFields = itemize(otext[f], sep=&#34;,&#34;)
+                    sectionInfo[f] = sFields
+                    if f == &#34;sectionTypes&#34;:
+                        for (i, s) in enumerate(sFields):
+                            self.levelFromSection[s] = i + 1
+                            self.sectionFromLevel[i + 1] = s
+            sLevels = {f: len(sectionInfo[f]) for f in sectionInfo}
+            if min(sLevels.values()) != max(sLevels.values()):
+                errors[&#34;Inconsistent section info&#34;].append(
+                    &#34; but &#34;.join(f&#39;&#34;{f}&#34; has {sLevels[f]} levels&#39; for f in sLevels)
+                )
+            self.sectionFeatures = sectionInfo[&#34;sectionFeatures&#34;]
+            self.sectionTypes = sectionInfo[&#34;sectionTypes&#34;]
+            self.featFromSectionType = {
+                typ: feat
+                for (typ, feat) in zip(self.sectionTypes, self.sectionFeatures)
+            }
+            self.sectionSet = set(self.sectionTypes)
+
+            structureInfo = {}
+            for f in (&#34;structureTypes&#34;, &#34;structureFeatures&#34;):
+                if f not in otext:
+                    structureInfo[f] = []
+                    continue
+                sFields = itemize(otext[f], sep=&#34;,&#34;)
+                structureInfo[f] = sFields
+            if not structureInfo:
+                info(&#34;No structure definition found in otext&#34;)
+            sLevels = {f: len(structureInfo[f]) for f in structureInfo}
+            if min(sLevels.values()) != max(sLevels.values()):
+                errors[&#34;Inconsistent structure info&#34;].append(
+                    &#34; but &#34;.join(f&#39;&#34;{f}&#34; has {sLevels[f]} levels&#39; for f in sLevels)
+                )
+                structureInfo = {}
+            if not structureInfo or all(
+                len(info) == 0 for (s, info) in structureInfo.items()
+            ):
+                info(&#34;No structure nodes will be set up&#34;)
+                self.structureFeatures = []
+                self.structureTypes = []
+            self.structureFeatures = structureInfo[&#34;structureFeatures&#34;]
+            self.structureTypes = structureInfo[&#34;structureTypes&#34;]
+            self.featFromStructureType = {
+                typ: feat
+                for (typ, feat) in zip(self.structureTypes, self.structureFeatures)
+            }
+            self.structureSet = set(self.structureTypes)
+
+            textFormats = {}
+            textFeatures = set()
+            for (k, v) in sorted(otext.items()):
+                if k.startswith(&#34;fmt:&#34;):
+                    featureSet = set()
+                    features = varRe.findall(v)
+                    for ff in features:
+                        fr = ff.rsplit(&#34;:&#34;, maxsplit=1)[0]
+                        for f in fr.split(&#34;/&#34;):
+                            featureSet.add(f)
+                    textFormats[k[4:]] = featureSet
+                    textFeatures |= featureSet
+            if not textFormats:
+                errors[&#39;No text formats in &#34;otext&#34;&#39;].append(&#39;add &#34;fmt:text-orig-full&#34;&#39;)
+            elif &#34;text-orig-full&#34; not in textFormats:
+                errors[&#34;No default text format in otext&#34;].append(
+                    &#39;add &#34;fmt:text-orig-full&#34;&#39;
+                )
+            self.textFormats = textFormats
+            self.textFeatures = textFeatures
+
+        info(f&#39;SECTION   TYPES:    {&#34;, &#34;.join(self.sectionTypes)}&#39;, tm=False)
+        info(f&#39;SECTION   FEATURES: {&#34;, &#34;.join(self.sectionFeatures)}&#39;, tm=False)
+        info(f&#39;STRUCTURE TYPES:    {&#34;, &#34;.join(self.structureTypes)}&#39;, tm=False)
+        info(f&#39;STRUCTURE FEATURES: {&#34;, &#34;.join(self.structureFeatures)}&#39;, tm=False)
+        info(&#34;TEXT      FEATURES:&#34;, tm=False)
+        indent(level=2)
+        for (fmt, feats) in sorted(textFormats.items()):
+            info(f&#39;{fmt:&lt;20} {&#34;, &#34;.join(sorted(feats))}&#39;, tm=False)
+        indent(level=1)
+
+        for feat in WARP + (&#34;&#34;,):
+            if feat in intFeatures:
+                if feat == &#34;&#34;:
+                    errors[&#34;intFeatures&#34;].append(
+                        &#39;Do not declare the &#34;valueType&#34; for all features&#39;
+                    )
+                else:
+                    errors[&#34;intFeatures&#34;].append(
+                        f&#39;Do not mark the &#34;{feat}&#34; feature as integer valued&#39;
+                    )
+                self.good = False
+
+        for (feat, featMeta) in sorted(featureMeta.items()):
+            good = self._checkFeatMeta(
+                feat,
+                featMeta,
+                checkRegular=True,
+                valueTypeAllowed=False,
+                showErrors=False,
+            )
+            if not good:
+                self.good = False
+            metaData.setdefault(feat, {}).update(featMeta)
+            metaData[feat][&#34;valueType&#34;] = &#34;int&#34; if feat in intFeatures else &#34;str&#34;
+
+        self._showErrors()
+
+    def _checkFeatMeta(
+        self,
+        feat,
+        featMeta,
+        checkRegular=False,
+        valueTypeAllowed=True,
+        showErrors=True,
+    ):
+        errors = collections.defaultdict(list)
+        good = True
+
+        if checkRegular:
+            if feat in WARP + (&#34;&#34;,):
+                if feat == &#34;&#34;:
+                    errors[&#34;featureMeta&#34;].append(
+                        &#39;Specify the generic feature meta data in &#34;generic&#34;&#39;
+                    )
+                    good = False
+                elif feat == OTEXT:
+                    errors[&#34;featureMeta&#34;].append(
+                        f&#39;Specify the &#34;{OTEXT}&#34; feature in &#34;otext&#34;&#39;
+                    )
+                    good = False
+                else:
+                    errors[&#34;featureMeta&#34;].append(
+                        f&#39;Do not pass metaData for the &#34;{feat}&#34; feature in &#34;featureMeta&#34;&#39;
+                    )
+                    good = False
+        if &#34;valueType&#34; in featMeta:
+            if not valueTypeAllowed:
+                errors[&#34;featureMeta&#34;].append(
+                    f&#39;Do not specify &#34;valueType&#34; for the &#34;{feat}&#34; feature in &#34;featureMeta&#34;&#39;
+                )
+                good = False
+            elif featMeta[&#34;valueType&#34;] not in {&#34;int&#34;, &#34;str&#34;}:
+                errors[&#34;featureMeta&#34;].append(&#39;valueType must be &#34;int&#34; or &#34;str&#34;&#39;)
+                good = False
+
+        for (e, eData) in errors.items():
+            self.errors[e].extend(eData)
+        if showErrors:
+            self._showErrors
+        return good
+
+    def stop(self, msg):
+        &#34;&#34;&#34;Stops the director. No further input will be read.
+
+        ```
+        cv.stop(msg)
+        ```
+
+        The director will exit with a non-good status  and issue the message `msg`.
+        If you have called `walk()` with `force=True`, indicating that the
+        director must proceed after errors, then this stop command will cause
+        termination nevertheless.
+
+        Parameters
+        ----------
+        msg: string
+            A message to display upon stopping.
+
+        Returns
+        -------
+        None
+        &#34;&#34;&#34;
+
+        tmObj = self.TF.tmObj
+        error = tmObj.error
+
+        error(f&#34;Forced stop: {msg}&#34;)
+        self.good = False
+        self.force = False
+        self.forcedStop = True
+
+    def slot(self, key=None):
+        &#34;&#34;&#34;Make a slot node and return the handle to it in `n`.
+
+        ```
+        n = cv.slot()
+        ```
+
+        No further information is needed.
+        Remember that you can add features to the node by later
+
+        ```
+        cv.feature(n, key=value, ...)
+        ```
+
+        calls.
+
+        Parameters
+        ----------
+        key: string, optional None
+            If passed, it acts as a sort key on the slot.
+            At the end of the walk, all slots will be sorted by their key and then
+            by their original order. Care will be taken that slots retain their
+            features and linkages.
+
+            !!! note &#34;Keys are strings&#34;
+            Note that the key must be a string. If you want to sort on numbers,
+            make sure to pad all numbers with leading zeros.
+
+        Returns
+        -------
+        node reference: tuple
+            The node reference consists of a node type and a sequence number,
+            but normally you do not have to dig these out.
+            Just pass the tuple as a whole to actions that require a node argument.
+        &#34;&#34;&#34;
+
+        curSeq = self.curSeq
+        curEmbedders = self.curEmbedders
+        oslots = self.oslots
+        slotKeys = self.slotKeys
+        levelFromSection = self.levelFromSection
+        warnings = self.warnings
+
+        self.stats[self.S] += 1
+        nType = self.slotType
+
+        curSeq[nType] += 1
+        seq = curSeq[nType]
+        if key is not None:
+            slotKeys[seq] = key
+
+        inSection = False
+        for eNode in curEmbedders:
+            if eNode[0] in levelFromSection:
+                inSection = True
+            oslots[eNode].add(seq)
+
+        if levelFromSection and not inSection:
+            warnings[&#34;slot outside sections&#34;].append(f&#34;{seq}&#34;)
+
+        return (nType, seq)
+
+    def node(self, nType, slots=None):
+        &#34;&#34;&#34;Make a non-slot node and return the handle to it in `n`.
+
+        ```
+        n = cv.node(nodeType)
+        ```
+
+        You have to pass its *node type*, i.e. a string.
+        Think of `sentence`, `paragraph`, `phrase`, `word`, `sign`, whatever.
+
+        There are two modes for this function:
+
+        *   Auto: (`slots=None`):
+            Non slot nodes will be automatically added to the set of embedders.
+        *   Explicit: (`slots=iterable`):
+            The slots in iterable will be assigned to this node and nothing else.
+            The node will not be added to the set of embedders.
+            Put otherwise: the node will be terminated after construction.
+            However: you could resume it later to add other slots.
+
+        Remember that you can add features to the node by later
+
+        ```
+        cv.feature(n, key=value, ...)
+        ```
+
+        calls.
+
+        Parameters
+        ----------
+        nType: string
+            A node type, not the slot type
+        slots: iterable of int, optional None
+            The slots to assign to this node.
+            If left out, the node is left as an embedding node and
+            subsequent slots will be added to it automatically.
+            All slots in the iterable must have been generated before
+            by means of the `cv.slot()` action.
+
+        Returns
+        -------
+        node reference or None
+            If an error occurred, `None` is returned.
+            The node reference consists of a node type and a sequence number,
+            but normally you do not have to dig these out.
+            Just pass the tuple as a whole to actions that require a node argument.
+        &#34;&#34;&#34;
+
+        slotType = self.slotType
+        errors = self.errors
+
+        if nType == slotType:
+            errors[f&#39;use `cv.slot()` instead of `cv.node(&#34;{nType}&#34;)`&#39;].append(None)
+            return
+
+        curSeq = self.curSeq
+        curEmbedders = self.curEmbedders
+
+        self.stats[self.N] += 1
+
+        curSeq[nType] += 1
+        seq = curSeq[nType]
+        node = (nType, seq)
+
+        self._checkSecLevel(node, before=True)
+
+        if slots:
+            maxSlot = curSeq[slotType]
+
+            for s in slots:
+                if not 1 &lt;= s &lt;= maxSlot:
+                    errors[f&#34;slot out of range in `cv.node(({nType}, {seq}))`&#34;].append(
+                        f&#34;{s}&#34;
+                    )
+                else:
+                    oslots = self.oslots
+                    oslots[node].add(s)
+
+            self.stats[self.T] += 1
+        else:
+            curEmbedders.add(node)
+
+        return node
+
+    def terminate(self, node):
+        &#34;&#34;&#34;**terminate** a node.
+
+        ```
+        cv.terminate(n)
+        ```
+
+        The node `n` will be removed from the set of current embedders.
+        This `n` must be the result of a previous `cv.slot()` or `cv.node()` action.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+
+        Returns
+        -------
+        None
+        &#34;&#34;&#34;
+
+        self.stats[self.T] += 1
+        if node is not None:
+            self.curEmbedders.discard(node)
+            self._checkSecLevel(node, before=False)
+
+    def delete(self, node):
+        &#34;&#34;&#34;**deletes** a node.
+
+        ```
+        cv.delete(n)
+        ```
+
+        The node `n` will be deleted from the set of nodes that will be created.
+        This `n` must be the result of a previous `cv.node()` action.
+        slots cannot be deleted.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by the actions `node`.
+
+        Returns
+        -------
+        None
+        &#34;&#34;&#34;
+
+        self.stats[self.D] += 1
+        if node is not None:
+            slotType = self.slotType
+            nType = node[0]
+
+            if nType == slotType:
+                errors = self.errors
+                errors[&#34;cannot delete a slot&#34;].append(node[1])
+                return
+
+            self.discardables.add(node)
+
+    def resume(self, node):
+        &#34;&#34;&#34;**resume** a node.
+
+        ```
+        cv.resume(n)
+        ```
+
+        If you resume a non-slot node, you add it again to the set of embedders.
+        No new node will be created.
+
+        If you resume a slot node, it will be added to the set of current embedders.
+        No new slot will be created.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+
+        Returns
+        -------
+        None
+        &#34;&#34;&#34;
+
+        curEmbedders = self.curEmbedders
+        oslots = self.oslots
+
+        self.stats[self.R] += 1
+
+        (nType, seq) = node
+        if nType == self.slotType:
+            for eNode in curEmbedders:
+                oslots[eNode].add(seq)
+        else:
+            self._checkSecLevel(node, before=None)
+            curEmbedders.add(node)
+
+    def link(self, node, slots):
+        &#34;&#34;&#34;Link the given, existing slots to a node.
+
+        ```
+        cv.link(n, [s1, s2])
+        ```
+
+        Sometimes the automatic linking of slots to nodes is not sufficient.
+
+        This happens when you feel the need to construct a node retro-actively,
+        when the slots that need to be linked to it have already been created.
+
+        This action is precisely meant for that.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+        slots: iterable of integer
+
+        Returns
+        -------
+        boolean
+        &#34;&#34;&#34;
+
+        oslots = self.oslots
+
+        good = True
+
+        for seq in slots:
+            oslots[node].add(seq)
+
+        return good
+
+    def linked(self, node):
+        &#34;&#34;&#34;Returns the slots `ss` to which a node is currently linked.
+
+        ```
+        ss = cv.linked(n)
+        ```
+
+        If you construct non-slot nodes without linking them to slots,
+        they will be removed when TF validates the collective result
+        of the action methods.
+
+        If you want to prevent that, you can insert an extra slot, but in order
+        to do so, you have to detect that a node is still unlinked.
+
+        This action is precisely meant for that.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+
+        Returns
+        -------
+        tuple of integer
+
+        The slots are returned as a tuple of integers, sorted.
+        &#34;&#34;&#34;
+
+        oslots = self.oslots
+        return tuple(sorted(oslots.get(node, [])))
+
+    def feature(self, node, **features):
+        &#34;&#34;&#34;Add **node features**.
+
+        ```
+        cv.feature(n, name=value, ... , name=value)
+        ```
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+        **features: keyword arguments
+            The names and values of features to assign to this node.
+
+        Returns
+        -------
+        None
+
+        !!! caution &#34;None values&#34;
+            If a feature value is `None` it will not be added!
+        &#34;&#34;&#34;
+
+        nodeFeatures = self.nodeFeatures
+
+        self.stats[self.F] += 1
+
+        for (k, v) in features.items():
+            if v is None:
+                continue
+            # self._checkType(k, v, self.N)
+            nodeFeatures[k][node] = v
+
+    def edge(self, nodeFrom, nodeTo, **features):
+        &#34;&#34;&#34;Add **edge features**.
+
+        ```
+        cv.edge(nf, nt, name=value, ... , name=value)
+        ```
+
+        Parameters
+        ----------
+        nodeFrom, nodeTo: tuple
+            Two node references, obtained by one of the actions `slot` or `node`.
+        **features: keyword arguments
+            The names and values of features to assign to this edge
+            (i.e. pair of nodes).
+
+        Returns
+        -------
+        None
+
+        !!! note &#34;None values&#34;
+            You may pass values that are `None`,
+            and a corresponding edge will be created.
+            If for all edges the value is `None`,
+            an edge without values will be created.
+            For every `nodeFrom`, such a feature
+            essentially specifies a set of nodes `{ nodeTo }`.
+        &#34;&#34;&#34;
+
+        edgeFeatures = self.edgeFeatures
+
+        self.stats[self.E] += 1
+
+        for (k, v) in features.items():
+            # self._checkType(k, v, self.E)
+            edgeFeatures[k][nodeFrom][nodeTo] = v
+
+    def occurs(self, feat):
+        &#34;&#34;&#34;Whether the feature `featureName` occurs in the resulting data so far.
+
+        ```
+        occurs = cv.occurs(featureName)
+        ```
+
+        If you have assigned None values to a feature, that will count, i.e.
+        that feature occurs in the data.
+
+        If you add feature values conditionally, it might happen that some
+        features will not be used at all.
+        For example, if your conversion produces errors, you might
+        add the error information to the result in the form of error features.
+
+        Later on, when the errors have been weeded out, these features will
+        not occur any more in the result, but then TF will complain that
+        such is feature is declared but not used.
+        At the end of your director you can remove unused features
+        conditionally, using this function.
+
+        Parameters
+        ----------
+        feat: string
+            The name of a feature
+
+        Returns
+        -------
+        boolean
+        &#34;&#34;&#34;
+
+        nodeFeatures = self.nodeFeatures
+        edgeFeatures = self.edgeFeatures
+        if feat in nodeFeatures or feat in edgeFeatures:
+            return True
+        return False
+
+    def meta(self, feat, **metadata):
+        &#34;&#34;&#34;Add, modify, delete metadata fields of features.
+
+        ```
+        cv.meta(feature, name=value, ... , name=value)
+        ```
+
+        Parameters
+        ----------
+        feat: string
+            The name of a feature
+        metadata: dict
+            If a `value` is `None`, that `name` will be deleted from the
+            metadata fields of the feature.
+            A bare `cv.meta(feature)` will remove the all metadata from the feature.
+            If you modify the field `valueType` of a feature, that feature will be
+            added or removed from the set of `intFeatures`.
+            It will be checked whether you specify either `int` or `str`.
+
+
+        Returns
+        -------
+        None
+        &#34;&#34;&#34;
+
+        errors = self.errors
+        intFeatures = self.intFeatures
+        metaData = self.metaData
+        featMeta = metaData.get(feat, {})
+
+        good = True
+
+        if not metadata:
+            if feat in metaData:
+                del metaData[feat]
+                intFeatures.discard(feat)
+
+        for (field, text) in metadata.items():
+            if text is None:
+                if field == &#34;valueType&#34;:
+                    errors[&#39;did not delete metadata field &#34;valueType&#34;&#39;].append(feat)
+                    good = False
+                else:
+                    if feat in metaData and field in metaData[feat]:
+                        del metaData[feat][field]
+            else:
+                metaData.setdefault(feat, {})[field] = text
+                if field == &#34;valueType&#34;:
+                    if text == &#34;int&#34;:
+                        intFeatures.add(feat)
+                    else:
+                        intFeatures.discard(feat)
+
+        self.good = self._checkFeatMeta(feat, featMeta) and good and self.good
+
+    def features(self):
+        &#34;&#34;&#34;Get the list of all features.
+
+        ```
+        featureNames = cv.features()
+        ```
+
+        Returns
+        -------
+        list
+        &#34;&#34;&#34;
+
+        nodeFeatures = self.nodeFeatures
+        edgeFeatures = self.edgeFeatures
+        return sorted(list(nodeFeatures) + list(edgeFeatures))
+
+    def active(self, node):
+        &#34;&#34;&#34;Returns whether a node is currently active.
+
+        Active nodes are the nodes in the set of current embedders.
+
+        ```
+        isActive = cv.active(n)
+        ```
+
+        If you construct your nodes in a very dynamic way, it might be
+        hard to keep track for each node whether it has been created, terminated,
+        or resumed, in other words, whether it is active or not.
+
+        This action is provides a direct and precise way to know
+        whether a node is active.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+
+        Returns
+        -------
+        boolean
+        &#34;&#34;&#34;
+
+        return node in self.curEmbedders
+
+    def activeNodes(self, nTypes=None):
+        &#34;&#34;&#34;The currently active nodes, i.e. the embedders.
+
+        ```
+        nodes = cv.activeNodes()
+        nodes = cv.activeNodes(nTypes=(&#34;sentence&#34;, &#34;clause&#34;))
+        ```
+
+        Parameters
+        ----------
+        nTypes: iterable optional None
+            If None, all active nodes are returned.
+            Else the iterable lists a few node types,
+            and only active nodes in these types are returned.
+
+        Returns
+        -------
+        set
+        &#34;&#34;&#34;
+
+        if nTypes is None:
+            return set(self.curEmbedders)
+        nTypes = set(nTypes)
+        return {n for n in self.curEmbedders if n[0] in nTypes}
+
+    def activeTypes(self):
+        &#34;&#34;&#34;The node types of the currently active nodes, i.e. the embedders.
+
+        ```
+        nTypes = cv.activeTypes()
+        ```
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        set
+        &#34;&#34;&#34;
+
+        return {node[0] for node in self.curEmbedders}
+
+    def get(self, feature, *args):
+        &#34;&#34;&#34;Retrieve feature values.
+
+        ```
+        cv.get(feature, n) and cv.get(feature, nf, nt)
+        ```
+
+        `feature` is the name of the feature.
+
+        For node features, `n` is the node which carries the value.
+
+        For edge features, `nf, nt` is the pair of from-to nodes which carries the value.
+
+        Parameters
+        ----------
+        feature: string
+            The name of a feature
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+            The node in question when retrieving the value of a node feature.
+        nodeFrom, nodeTo: tuple
+            Two node references, obtained by one of the actions `slot` or `node`.
+            The nodes in question when retrieving the value of an edge feature.
+
+        Returns
+        -------
+        string or integer
+        &#34;&#34;&#34;
+
+        errors = self.errors
+        nodeFeatures = self.nodeFeatures
+        edgeFeatures = self.edgeFeatures
+        nArgs = len(args)
+        if nArgs == 0 or nArgs &gt; 2:
+            errors[&#34;use `cv.get(ft, n)` or `cv.get(ft, nf, nt)`&#34;].append(None)
+            return None
+
+        return (
+            nodeFeatures.get(feature, {}).get(args[0], None)
+            if len(args) == 1
+            else edgeFeatures.get(feature, {}).get(args[0], {}).get(args[1], None)
+        )
+
+    def _checkSecLevel(self, node, before=True):
+        levelFromSection = self.levelFromSection
+        sectionFeatures = self.sectionFeatures
+        nodeFeatures = self.nodeFeatures
+        warnings = self.warnings
+        curEmbedders = self.curEmbedders
+
+        (nType, seq) = node
+
+        msg = &#34;starts&#34; if before is True else &#34;ends&#34; if before is False else &#34;resumes&#34;
+
+        if levelFromSection:
+            level = levelFromSection.get(nType, None)
+            if level is None:
+                return
+
+            headingFeature = sectionFeatures[level - 1]
+            nHeading = nodeFeatures.get(headingFeature, {}).get(node, &#34;??&#34;)
+
+            for em in curEmbedders:
+                eType = em[0]
+                if eType in levelFromSection:
+                    eLevel = levelFromSection.get(eType, None)
+                    eHeadingFeature = sectionFeatures[eLevel - 1]
+                    eHeading = nodeFeatures.get(eHeadingFeature, {}).get(em, &#34;??&#34;)
+
+                if eType == nType:
+                    warnings[
+                        f&#39;section {nType} &#34;{nHeading}&#34; of level {level}&#39;
+                        f&#34; enclosed in another {nType}: {eHeading}&#34;
+                    ].append(None)
+                elif eType in levelFromSection:
+                    eLevel = levelFromSection[eType]
+                    if eLevel &gt; level:
+                        warnings[
+                            f&#39;section {nType} &#34;{nHeading}&#34; of level {level} {msg}&#39;
+                            f&#39; inside a {eType} &#34;{eHeading}&#34; of level {eLevel}&#39;
+                        ].append(None)
+
+    def _follow(self, director):
+
+        # after node = yield (&#39;N&#39;, nodeType) all slot nodes that are yielded
+        # will be linked to node, until a (&#39;T&#39;, node) is yielded.
+        # If needed, you can resume this node again, after which new slot nodes
+        # continue to be linked to this node.
+        # If you resume a slot node, it all non slot nodes in the current context
+        # will be linked to it.
+
+        silent = self.silent
+        tmObj = self.TF.tmObj
+        info = tmObj.info
+
+        if not self.good:
+            return
+
+        info(&#34;Following director... &#34;, force=silent != DEEP)
+
+        slotType = self.slotType
+        errors = self.errors
+
+        self.oslots = collections.defaultdict(set)
+        self.nodeFeatures = collections.defaultdict(dict)
+        self.edgeFeatures = collections.defaultdict(
+            lambda: collections.defaultdict(dict)
+        )
+        self.nodes = collections.defaultdict(set)
+        nodes = self.nodes
+
+        self.curSeq = collections.Counter()
+        self.curEmbedders = set()
+        curEmbedders = self.curEmbedders
+
+        self.stats = {
+            actionType: 0
+            for actionType in (self.S, self.N, self.T, self.R, self.D, self.F, self.E)
+        }
+
+        director(self)
+
+        if not self.stats:
+            self.good = False
+            return
+
+        for (actionType, amount) in sorted(self.stats.items()):
+            info(f&#39;&#34;{actionType}&#34; actions: {amount}&#39;, force=silent != DEEP)
+
+        totalNodes = 0
+
+        for (nType, lastSeq) in sorted(self.curSeq.items()):
+            for seq in range(1, lastSeq + 1):
+                nodes[nType].add(seq)
+            slotRep = &#34; = slot type&#34; if nType == slotType else &#34;&#34;
+            info(f&#39;{lastSeq:&gt;8} x &#34;{nType}&#34; node {slotRep}&#39;, tm=False)
+            totalNodes += lastSeq
+        info(f&#34;{totalNodes:&gt;8} nodes of all types&#34;, tm=False, force=silent != DEEP)
+
+        self.totalNodes = totalNodes
+
+        if curEmbedders:
+            embedCount = collections.Counter()
+            for (nType, seq) in curEmbedders:
+                embedCount[nType] += 1
+            for (nType, amount) in sorted(
+                embedCount.items(),
+                key=lambda x: (-x[1], x[0]),
+            ):
+                errors[&#34;Unterminated nodes&#34;].append(f&#34;{nType}: {amount} x&#34;)
+
+        self._showErrors()
+
+    def _removeUnlinked(self):
+        silent = self.silent
+        tmObj = self.TF.tmObj
+        info = tmObj.info
+        indent = tmObj.indent
+
+        if not self.good and not self.force:
+            return
+
+        nodeTypes = self.curSeq
+        nodes = self.nodes
+        slotType = self.slotType
+        oslots = self.oslots
+        discardables = self.discardables
+        nodeFeatures = self.nodeFeatures
+        edgeFeatures = self.edgeFeatures
+
+        unlinked = {}
+        nDeleted = 0
+
+        for (nType, seq) in discardables:
+            unlinked.setdefault(nType, set()).add(seq)
+            nDeleted += 1
+            if (nType, seq) in oslots:
+                del oslots[(nType, seq)]
+
+        for nType in nodeTypes:
+            if nType == slotType:
+                continue
+            for seq in range(1, nodeTypes[nType] + 1):
+                if (nType, seq) not in oslots:
+                    unlinked.setdefault(nType, set()).add(seq)
+
+        if unlinked:
+            info(
+                f&#34;Removing unlinked (of which {nDeleted} deleted) nodes ... &#34;,
+                force=silent != DEEP,
+            )
+            indent(level=2)
+            totalRemoved = 0
+            for (nType, seqs) in unlinked.items():
+                seqs = sorted(seqs)
+                theseNodes = nodes[nType]
+                lSeqs = len(seqs)
+                totalRemoved += lSeqs
+                rep = &#34; ...&#34; if lSeqs &gt; 5 else &#34;&#34;
+                pl = &#34;&#34; if lSeqs == 1 else &#34;s&#34;
+                info(
+                    f&#39;{lSeqs:&gt;6} unlinked &#34;{nType}&#34; node{pl}: {seqs[0:5]}{rep}&#39;,
+                    force=silent != DEEP,
+                )
+                for seq in seqs:
+                    node = (nType, seq)
+                    theseNodes.discard(seq)
+                    for (f, fData) in nodeFeatures.items():
+                        if node in fData:
+                            del fData[node]
+                    for (f, fData) in edgeFeatures.items():
+                        if node in fData:
+                            del fData[node]
+                            for (fNode, toValues) in fData:
+                                if node in toValues:
+                                    del toValues[node]
+            pl = &#34;&#34; if totalRemoved == 1 else &#34;s&#34;
+            info(f&#34;{totalRemoved:&gt;6} unlinked node{pl}&#34;, force=silent != DEEP)
+            self.totalNodes -= totalRemoved
+            info(f&#34;Leaving {self.totalNodes:&gt;6} nodes&#34;, force=silent != DEEP)
+            indent(level=1)
+
+    def _checkGraph(self):
+        silent = self.silent
+        tmObj = self.TF.tmObj
+        info = tmObj.info
+
+        if not self.good and not self.force:
+            return
+
+        info(&#34;checking for nodes and edges ... &#34;, force=silent != DEEP)
+
+        nodes = self.nodes
+        errors = self.errors
+        edgeFeatures = self.edgeFeatures
+
+        # edges refer to nodes
+
+        for (k, featureData) in edgeFeatures.items():
+            for nFrom in featureData:
+                (nType, seq) = nFrom
+                if nType not in nodes or seq not in nodes[nType]:
+                    errors[&#34;Edge feature: illegal node&#34;].append(
+                        f&#39;&#34;{k}&#34;: from-node  {nFrom} not in node set&#39;
+                    )
+                    continue
+                for nTo in featureData[nFrom]:
+                    (nType, seq) = nTo
+                    if nType not in nodes or seq not in nodes[nType]:
+                        errors[&#34;Edge feature: illegal node&#34;].append(
+                            f&#39;&#34;{k}&#34;: to-node  {nTo} not in node set&#39;
+                        )
+
+        self._showErrors()
+
+    def _checkFeatures(self):
+        silent = self.silent
+        tmObj = self.TF.tmObj
+        info = tmObj.info
+
+        if not self.good and not self.force:
+            return
+
+        info(&#34;checking (section) features ... &#34;, force=silent != DEEP)
+
+        intFeatures = self.intFeatures
+        metaData = self.metaData
+
+        nodes = self.nodes
+        nodeFeatures = self.nodeFeatures
+        edgeFeatures = self.edgeFeatures
+
+        errors = self.errors
+
+        for feat in intFeatures:
+            if (
+                feat not in WARP
+                and feat not in nodeFeatures
+                and feat not in edgeFeatures
+            ):
+                errors[&#34;intFeatures&#34;].append(
+                    f&#39;&#34;{feat}&#34; is declared as integer valued, &#39;
+                    &#34;but this feature does not occur&#34;
+                )
+        for nType in self.sectionTypes:
+            if nType not in nodes:
+                errors[&#34;sections&#34;].append(
+                    f&#39;node type &#34;{nType}&#34; is declared as a section type, &#39;
+                    &#34;but this node type does not occur&#34;
+                )
+        for feat in self.sectionFeatures:
+            if feat not in nodeFeatures:
+                errors[&#34;sections&#34;].append(
+                    f&#39;&#34;{feat}&#34; is declared as a section feature, &#39;
+                    &#34;but this node feature does not occur&#34;
+                )
+        for nType in self.structureTypes:
+            if nType not in nodes:
+                errors[&#34;structure&#34;].append(
+                    f&#39;node type &#34;{nType}&#34; is declared as a structure type,&#39;
+                    f&#34; but this node type does not occur&#34;
+                )
+        for feat in self.structureFeatures:
+            if feat not in nodeFeatures:
+                errors[&#34;structure&#34;].append(
+                    f&#39;&#34;{feat}&#34; is declared as a structure feature, &#39;
+                    &#34;but this node feature does not occur&#34;
+                )
+                nodeFeatures[feat] = {}
+
+        sectionSet = self.sectionSet
+        structureSet = self.structureSet
+        featFromSectionType = self.featFromSectionType
+        featFromStructureType = self.featFromStructureType
+
+        for nType in nodes:
+            if nType in structureSet:
+                feat = featFromStructureType[nType]
+                for seq in nodes[nType]:
+                    if (nType, seq) not in nodeFeatures[feat]:
+                        errors[&#34;structure features&#34;].append(
+                            f&#39;&#34;structure element &#34;{nType}&#34; {seq} &#39;
+                            f&#39;has no value for &#34;{feat}&#34;&#39;
+                        )
+            if nType in sectionSet:
+                feat = featFromSectionType[nType]
+                for seq in nodes[nType]:
+                    if (nType, seq) not in nodeFeatures[feat]:
+                        errors[&#34;section features&#34;].append(
+                            f&#39;&#34;section element &#34;{nType}&#34; {seq} &#39;
+                            f&#39;has no value for &#34;{feat}&#34;&#39;
+                        )
+
+        for feat in self.textFeatures:
+            if feat not in nodeFeatures:
+                errors[&#34;text formats&#34;].append(
+                    f&#39;&#34;{feat}&#34; is used in a text format, &#39;
+                    &#34;but this node feature does not occur&#34;
+                )
+
+        for feat in WARP:
+            if feat in nodeFeatures or feat in edgeFeatures:
+                errors[feat].append(f&#39;Do not construct the &#34;{feat}&#34; feature yourself&#39;)
+
+        for feat in sorted(nodeFeatures) + sorted(edgeFeatures):
+            if feat not in self.metaData:
+                errors[&#34;feature metadata&#34;].append(
+                    f&#39;node feature &#34;{feat}&#34; has no metadata&#39;
+                )
+
+        for feat in sorted(metaData):
+            if (
+                feat
+                and feat not in WARP
+                and feat not in nodeFeatures
+                and feat not in edgeFeatures
+            ):
+                errors[&#34;feature metadata&#34;].append(
+                    f&#39;node feature &#34;{feat}&#34; has metadata but does not occur&#39;
+                )
+
+        for (feat, featData) in sorted(nodeFeatures.items()):
+            if None in featData:
+                errors[&#34;feature values assigned to None&#34;].append(
+                    f&#39;node feature &#34;{feat}&#34; has a node None&#39;
+                )
+        for (feat, featData) in sorted(edgeFeatures.items()):
+            if None in featData:
+                errors[&#34;feature values assigned to None&#34;].append(
+                    f&#39;edge feature &#34;{feat}&#34; has a from-node None&#39;
+                )
+            for toValues in featData.values():
+                if None in toValues:
+                    errors[&#34;feature values assigned to None&#34;].append(
+                        f&#39;edge feature &#34;{feat}&#34; has a to-node None&#39;
+                    )
+
+        for (feat, featData) in sorted(edgeFeatures.items()):
+            if feat in WARP:
+                continue
+            hasValues = False
+            for (nodeTo, toValues) in featData.items():
+                if any(v is not None for v in toValues.values()):
+                    hasValues = True
+                    break
+
+            if not hasValues:
+                edgeFeatures[feat] = {
+                    nodeTo: set(toValues) for (nodeTo, toValues) in featData.items()
+                }
+            metaData.setdefault(feat, {})[&#34;edgeValues&#34;] = hasValues
+
+        for feat in intFeatures:
+            if feat in WARP:
+                continue
+            if feat in nodeFeatures:
+                featData = nodeFeatures[feat]
+                for (k, v) in featData.items():
+                    if not isInt(v):
+                        (nType, node) = k
+                        errors[&#34;Not a number&#34;].append(
+                            f&#39;&#34;node feature &#34;{feat}&#34;: {nType} {node} =&gt; &#34;{v}&#34;&#39;
+                        )
+            if feat in edgeFeatures and metaData[feat][&#34;edgeValues&#34;]:
+                featData = edgeFeatures[feat]
+                for (fromNode, toValues) in featData.items():
+                    (fType, fNode) = fromNode
+                    for (toNode, v) in toValues.items():
+                        (tType, tNode) = toNode
+                        if not isInt(v):
+                            errors[&#34;Not a number&#34;].append(
+                                f&#39;&#34;edge feature &#34;{feat}&#34;:&#39;
+                                f&#39; {fType} {fNode} =&#34;{v}&#34;=&gt; {tType} {tNode}&#39;
+                            )
+
+        self._showErrors()
+
+    def _reorderNodes(self):
+        silent = self.silent
+        tmObj = self.TF.tmObj
+        info = tmObj.info
+
+        if not self.good and not self.force:
+            return
+
+        info(&#34;reordering nodes ...&#34;, force=silent != DEEP)
+
+        nodeTypes = self.curSeq
+        nodes = self.nodes
+        oslots = self.oslots
+        slotType = self.slotType
+        slotKeys = self.slotKeys
+
+        nTypes = (slotType,) + tuple(
+            sorted(nType for nType in nodes if nType != slotType)
+        )
+
+        self.nodeMap = {}
+        self.maxSlot = nodeTypes[slotType]
+
+        nodeMap = self.nodeMap
+        maxSlot = self.maxSlot
+
+        newN = 0
+
+        # we build a node map that we use later on to remap the features
+        # However, we do not have to remap the otype feature.
+        # And we only have to remap the oslots feature if the order of the slots
+        # is changed.
+
+        # first we reorder the slots, if needed. As a consequence, we have to
+        # 1. map the old slot nodes to the new slot nodes
+        # 2. adapt the oslots: each node must be linked to the new slots
+        # Because of the node map, _reassign features will adjust the other
+        # node and edge features for the slots
+
+        sortedSeqs = range(1, maxSlot + 1)
+        if len(slotKeys) &gt; 0:
+            info(f&#39;Sorting {maxSlot} slots (node type &#34;{slotType}&#34;)&#39;)
+            sortedSeqs = sorted(sortedSeqs, key=lambda x: (slotKeys.get(x, &#34;&#34;), x))
+        else:
+            info(&#34;No slot sorting needed&#34;)
+        for seq in sortedSeqs:
+            newN += 1
+            nodeMap[(slotType, seq)] = newN
+
+        # now we adapt the oslots feature
+        if len(slotKeys) &gt; 0:
+            self.oslots = {
+                n: {nodeMap[(slotType, s)] for s in slots}
+                for (n, slots) in oslots.items()
+            }
+            oslots = self.oslots
+
+        for nType in nTypes:
+            canonical = self._canonical(nType)
+            if nType == slotType:
+                continue
+
+            seqs = nodes[nType]
+            info(f&#39;Sorting {len(seqs)} nodes of type &#34;{nType}&#34;&#39;)
+            sortedSeqs = sorted(seqs, key=canonical)
+
+            for seq in sortedSeqs:
+                newN += 1
+                nodeMap[(nType, seq)] = newN
+
+        self.maxNode = newN
+        info(f&#34;Max node = {newN}&#34;, force=silent != DEEP)
+
+        self._showErrors()
+
+    def _canonical(self, nType):
+        oslots = self.oslots
+
+        def before(nodeA, nodeB):
+            slotsA = oslots[(nType, nodeA)]
+            slotsB = oslots[(nType, nodeB)]
+            if slotsA == slotsB:
+                return 0
+
+            aWithoutB = slotsA - slotsB
+            if not aWithoutB:
+                return 1
+
+            bWithoutA = slotsB - slotsA
+            if not bWithoutA:
+                return -1
+
+            aMin = min(aWithoutB)
+            bMin = min(bWithoutA)
+            return -1 if aMin &lt; bMin else 1
+
+        return functools.cmp_to_key(before)
+
+    def _reassignFeatures(self):
+        silent = self.silent
+        tmObj = self.TF.tmObj
+        info = tmObj.info
+        indent = tmObj.indent
+
+        if not self.good and not self.force:
+            return
+
+        info(&#34;reassigning feature values ...&#34;, force=silent != DEEP)
+
+        nodeMap = self.nodeMap
+        oslots = self.oslots
+        nodeFeatures = self.nodeFeatures
+        edgeFeatures = self.edgeFeatures
+
+        otype = {n: nType for ((nType, seq), n) in nodeMap.items()}
+        oslots = {nodeMap[node]: slots for (node, slots) in oslots.items()}
+
+        nodeFeaturesProto = self.nodeFeatures
+        edgeFeaturesProto = self.edgeFeatures
+
+        nodeFeatures = collections.defaultdict(dict)
+        edgeFeatures = collections.defaultdict(lambda: collections.defaultdict(dict))
+
+        indent(level=2)
+
+        for k in sorted(nodeFeaturesProto):
+            featureDataProto = nodeFeaturesProto[k]
+            ln = len(featureDataProto)
+            pl = &#34;&#34; if ln == 1 else &#34;s&#34;
+            info(f&#39;node feature &#34;{k}&#34; with {ln} node{pl}&#39;, tm=False)
+            featureData = {}
+            for (node, value) in featureDataProto.items():
+                featureData[nodeMap[node]] = value
+            nodeFeatures[k] = featureData
+
+        for k in sorted(edgeFeaturesProto):
+            featureDataProto = edgeFeaturesProto[k]
+            ln = len(featureDataProto)
+            pl = &#34;&#34; if ln == 1 else &#34;s&#34;
+            info(f&#39;edge feature &#34;{k}&#34; with {ln} start node{pl}&#39;, tm=False)
+            featureData = {}
+            for (nodeFrom, toValues) in featureDataProto.items():
+                if type(toValues) is set:
+                    toData = {nodeMap[nodeTo] for nodeTo in toValues}
+                else:
+                    toData = {}
+                    for (nodeTo, value) in toValues.items():
+                        toData[nodeMap[nodeTo]] = value
+                featureData[nodeMap[nodeFrom]] = toData
+            edgeFeatures[k] = featureData
+
+        nodeFeatures[&#34;otype&#34;] = otype
+        edgeFeatures[&#34;oslots&#34;] = oslots
+
+        indent(level=1)
+
+        self.oslots = None
+        self.otype = None
+        self.nodeFeatures = nodeFeatures
+        self.edgeFeatures = edgeFeatures
+
+        self._showErrors()</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.convert.walker.CV"><code class="flex name class">
+<span>class <span class="ident">CV</span></span>
+<span>(</span><span>TF, silent='auto')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>The object that contains the walker conversion machinery.</p>
+<p>silent: string, optional tf.core.timestamp.SILENT_D
+See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/convert/walker.py#L171-L1787" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class CV:
+    S = &#34;slot&#34;
+    N = &#34;node&#34;
+    T = &#34;terminate&#34;
+    R = &#34;resume&#34;
+    D = &#34;delete&#34;
+    F = &#34;feature&#34;
+    E = &#34;edge&#34;
+
+    def __init__(self, TF, silent=SILENT_D):
+        &#34;&#34;&#34;The object that contains the walker conversion machinery.
+
+        silent: string, optional tf.core.timestamp.SILENT_D
+            See `tf.core.timestamp.Timestamp`
+        &#34;&#34;&#34;
+
+        self.TF = TF
+        self.silent = silent
+        tmObj = TF.tmObj
+        isSilent = tmObj.isSilent
+        setSilent = tmObj.setSilent
+
+        silent = silentConvert(silent)
+        self.wasSilent = isSilent()
+        setSilent(silent)
+
+    def _showWarnings(self):
+        silent = self.silent
+        tmObj = self.TF.tmObj
+        error = tmObj.error
+        info = tmObj.info
+        indent = tmObj.indent
+
+        warnings = self.warnings
+        warn = self.warn
+
+        if warn is None:
+            if warnings:
+                info(&#34;use `cv.walk(..., warn=False)` to make warnings visible&#34;)
+                info(&#34;use `cv.walk(..., warn=True)` to stop on warnings&#34;)
+        else:
+            method = error if warn else info
+
+            if warnings:
+                for (kind, msgs) in sorted(warnings.items()):
+                    method(f&#34;WARNING {kind} ({len(msgs)} x):&#34;, force=silent != DEEP)
+                    indent(level=2)
+                    for msg in sorted(set(msgs))[0:20]:
+                        if msg:
+                            method(f&#34;{msg}&#34;, tm=False, force=silent != DEEP)
+                self.warnings = {}
+                if warn:
+                    info(&#34;use `cv.walk(..., warn=False)` to continue after warnings&#34;)
+                    info(&#34;use `cv.walk(..., warn=None)` to suppress warnings&#34;)
+                    self.good = False
+                else:
+                    info(&#34;use `cv.walk(..., warn=True)` to stop after warnings&#34;)
+                    info(&#34;use `cv.walk(..., warn=None)` to suppress warnings&#34;)
+
+    def _showErrors(self):
+        silent = self.silent
+        tmObj = self.TF.tmObj
+        error = tmObj.error
+        info = tmObj.info
+        indent = tmObj.indent
+        forcedStop = self.forcedStop
+
+        errors = self.errors
+
+        if errors:
+            for (kind, msgs) in sorted(errors.items()):
+                error(f&#34;ERROR {kind} ({len(msgs)} x):&#34;)
+                indent(level=2)
+                for msg in sorted(set(msgs))[0:20]:
+                    if msg:
+                        error(f&#34;{msg}&#34;, tm=False)
+            self.errors = {}
+            self.good = False
+
+        if forcedStop:
+            error(&#34;STOPPED by the stop() instruction&#34;)
+        elif not errors:
+            if self.good:
+                info(&#34;OK&#34;, force=silent != DEEP)
+            else:
+                error(&#34;STOPPED because of warnings&#34;)
+
+    def walk(
+        self,
+        director,
+        slotType,
+        otext={},
+        generic={},
+        intFeatures=set(),
+        featureMeta={},
+        warn=True,
+        generateTf=True,
+        force=False,
+    ):
+        &#34;&#34;&#34;Asks a director function to walk through source data and receives its actions.
+
+        The `director` function should unravel the source.
+        You have to program the `director`, which takes one argument: `cv`.
+        From the `cv` you can use a few standard actions that instruct TF
+        to build a graph.
+
+        This function will check whether the metadata makes sense and is minimally
+        complete.
+
+        During node creation the section structure will be watched,
+        and you will be warned if irregularities occur.
+
+        After the creation of the feature data, some extra checks will be performed
+        to see whether the metadata matches the data and vice versa.
+
+        If the slots need to be sorted by their keys, it will happen at this point,
+        and the generated features will be adapted to the sorted slots.
+
+        The new feature data will be written to the output directory of the
+        underlying TF object.  In fact, the rules are exactly the same as for
+        `tf.fabric.Fabric.save`.
+
+        Parameters
+        ----------
+        slotType: string
+            The node type that acts as the type of the slots in the data set.
+
+        oText: dict
+            The configuration information to be stored in the `otext` feature
+            (see `tf.core.text`):
+
+            *   section types
+            *   section features
+            *   structure types
+            *   structure features
+            *   text formats
+
+        generic: dict
+            Metadata that will be written into the header of all generated TF features.
+
+            You can make changes to this later on, dynamically in your director.
+
+        intFeatures: iterable
+            The set of features that have integer values only.
+
+            You can make changes to this later on, dynamically in your director.
+
+        featureMeta: dict of dict
+            For each node or edge feature descriptive metadata can be supplied.
+
+            You can make changes to this later on, dynamically in your director.
+
+        warn: boolean, optional True
+            This regulates the response to warnings:
+
+            `True` (default): stop after warnings (as if they are errors);
+
+            `False` continue after warnings but do show them;
+
+            `None` suppress all warnings.
+
+        force: boolean, optional False
+            This forces the process to continue after errors.
+            Your TF set might not be valid.
+            Yet this can be useful during testing, when you know
+            that not everything is OK, but you want to check some results.
+            Especially when dealing with large datasets, you might want to test
+            with little pieces. But then you get a kind of non-fatal errors that
+            stand in the way of testing. For those cases: `force=True`.
+
+        generateTf: boolean, optional True
+            You can pass `False` here to suppress the actual writing of TF data.
+            In that way you can dry-run the director to check for errors and warnings
+
+        director: function
+            An ordinary function that takes one argument, the `cv` object, and
+            should not deliver anything.
+
+            Writing this function is the main job to do when you want to convert a data source
+            to TF.
+
+            See `tf.convert.walker` for more details.
+
+        Returns
+        -------
+        boolean
+            Whether the operation was successful
+        &#34;&#34;&#34;
+
+        tmObj = self.TF.tmObj
+        info = tmObj.info
+        indent = tmObj.indent
+        setSilent = tmObj.setSilent
+        silent = self.silent
+
+        indent(level=0, reset=True)
+        info(&#34;Importing data from walking through the source ...&#34;, force=silent != DEEP)
+
+        self.force = force
+        self.good = True
+        self.forcedStop = False
+        self.errors = collections.defaultdict(list)
+        self.warnings = collections.defaultdict(list)
+        self.warn = warn
+        self.slotType = slotType
+
+        self.intFeatures = set(intFeatures)
+        self.featureMeta = featureMeta
+        self.metaData = {}
+        self.nodeFeatures = {}
+        self.edgeFeatures = {}
+        self.slotKeys = {}
+        self.discardables = set()
+
+        indent(level=1, reset=True)
+        self._prepareMeta(otext, generic)
+
+        indent(level=1, reset=True)
+        self._follow(director)
+
+        indent(level=1, reset=True)
+        self._removeUnlinked()
+
+        indent(level=1, reset=True)
+        self._checkGraph()
+
+        indent(level=1, reset=True)
+        self._checkFeatures()
+
+        indent(level=1, reset=True)
+        self._reorderNodes()
+
+        indent(level=1, reset=True)
+        self._reassignFeatures()
+
+        indent(level=0)
+        info(&#34;Features ready to write&#34;)
+
+        if generateTf:
+            if self.good or self.force:
+                self.good = self.TF.save(
+                    metaData=self.metaData,
+                    nodeFeatures=self.nodeFeatures,
+                    edgeFeatures=self.edgeFeatures,
+                    silent=silent,
+                )
+
+        self._showWarnings()
+        setSilent(self.wasSilent)
+
+        return self.good
+
+    def _prepareMeta(self, otext, generic):
+        silent = self.silent
+        varRe = re.compile(r&#34;\{([^}]+)\}&#34;)
+
+        tmObj = self.TF.tmObj
+        info = tmObj.info
+        indent = tmObj.indent
+
+        if not self.good and not self.force:
+            return
+
+        info(&#34;Preparing metadata... &#34;, force=silent != DEEP)
+
+        intFeatures = self.intFeatures
+        featureMeta = self.featureMeta
+
+        errors = self.errors
+
+        self.metaData = {
+            &#34;&#34;: generic,
+            OTYPE: {&#34;valueType&#34;: &#34;str&#34;},
+            OSLOTS: {&#34;valueType&#34;: &#34;str&#34;},
+            OTEXT: otext,
+        }
+        metaData = self.metaData
+
+        self.intFeatures = intFeatures
+        self.sectionTypes = []
+        self.sectionFeatures = []
+        self.sectionFromLevel = {}
+        self.levelFromSection = {}
+        self.structureTypes = []
+        self.structureFeatures = []
+        self.structureLevel = {}
+        self.textFormats = {}
+        self.textFeatures = set()
+
+        if not generic:
+            errors[&#39;Missing feature meta data in &#34;generic&#34;&#39;].append(
+                &#34;Consider adding provenance metadata to all features&#34;
+            )
+        if not otext:
+            errors[&#39;Missing &#34;otext&#34; configuration&#39;].append(
+                &#34;Consider adding configuration for text representation and section levels&#34;
+            )
+        else:
+            sectionInfo = {}
+            for f in (&#34;sectionTypes&#34;, &#34;sectionFeatures&#34;):
+                if f not in otext:
+                    errors[&#39;Incomplete section specs in &#34;otext&#34;&#39;].append(
+                        f&#39;no key &#34;{f}&#34;&#39;
+                    )
+                    sectionInfo[f] = []
+                else:
+                    sFields = itemize(otext[f], sep=&#34;,&#34;)
+                    sectionInfo[f] = sFields
+                    if f == &#34;sectionTypes&#34;:
+                        for (i, s) in enumerate(sFields):
+                            self.levelFromSection[s] = i + 1
+                            self.sectionFromLevel[i + 1] = s
+            sLevels = {f: len(sectionInfo[f]) for f in sectionInfo}
+            if min(sLevels.values()) != max(sLevels.values()):
+                errors[&#34;Inconsistent section info&#34;].append(
+                    &#34; but &#34;.join(f&#39;&#34;{f}&#34; has {sLevels[f]} levels&#39; for f in sLevels)
+                )
+            self.sectionFeatures = sectionInfo[&#34;sectionFeatures&#34;]
+            self.sectionTypes = sectionInfo[&#34;sectionTypes&#34;]
+            self.featFromSectionType = {
+                typ: feat
+                for (typ, feat) in zip(self.sectionTypes, self.sectionFeatures)
+            }
+            self.sectionSet = set(self.sectionTypes)
+
+            structureInfo = {}
+            for f in (&#34;structureTypes&#34;, &#34;structureFeatures&#34;):
+                if f not in otext:
+                    structureInfo[f] = []
+                    continue
+                sFields = itemize(otext[f], sep=&#34;,&#34;)
+                structureInfo[f] = sFields
+            if not structureInfo:
+                info(&#34;No structure definition found in otext&#34;)
+            sLevels = {f: len(structureInfo[f]) for f in structureInfo}
+            if min(sLevels.values()) != max(sLevels.values()):
+                errors[&#34;Inconsistent structure info&#34;].append(
+                    &#34; but &#34;.join(f&#39;&#34;{f}&#34; has {sLevels[f]} levels&#39; for f in sLevels)
+                )
+                structureInfo = {}
+            if not structureInfo or all(
+                len(info) == 0 for (s, info) in structureInfo.items()
+            ):
+                info(&#34;No structure nodes will be set up&#34;)
+                self.structureFeatures = []
+                self.structureTypes = []
+            self.structureFeatures = structureInfo[&#34;structureFeatures&#34;]
+            self.structureTypes = structureInfo[&#34;structureTypes&#34;]
+            self.featFromStructureType = {
+                typ: feat
+                for (typ, feat) in zip(self.structureTypes, self.structureFeatures)
+            }
+            self.structureSet = set(self.structureTypes)
+
+            textFormats = {}
+            textFeatures = set()
+            for (k, v) in sorted(otext.items()):
+                if k.startswith(&#34;fmt:&#34;):
+                    featureSet = set()
+                    features = varRe.findall(v)
+                    for ff in features:
+                        fr = ff.rsplit(&#34;:&#34;, maxsplit=1)[0]
+                        for f in fr.split(&#34;/&#34;):
+                            featureSet.add(f)
+                    textFormats[k[4:]] = featureSet
+                    textFeatures |= featureSet
+            if not textFormats:
+                errors[&#39;No text formats in &#34;otext&#34;&#39;].append(&#39;add &#34;fmt:text-orig-full&#34;&#39;)
+            elif &#34;text-orig-full&#34; not in textFormats:
+                errors[&#34;No default text format in otext&#34;].append(
+                    &#39;add &#34;fmt:text-orig-full&#34;&#39;
+                )
+            self.textFormats = textFormats
+            self.textFeatures = textFeatures
+
+        info(f&#39;SECTION   TYPES:    {&#34;, &#34;.join(self.sectionTypes)}&#39;, tm=False)
+        info(f&#39;SECTION   FEATURES: {&#34;, &#34;.join(self.sectionFeatures)}&#39;, tm=False)
+        info(f&#39;STRUCTURE TYPES:    {&#34;, &#34;.join(self.structureTypes)}&#39;, tm=False)
+        info(f&#39;STRUCTURE FEATURES: {&#34;, &#34;.join(self.structureFeatures)}&#39;, tm=False)
+        info(&#34;TEXT      FEATURES:&#34;, tm=False)
+        indent(level=2)
+        for (fmt, feats) in sorted(textFormats.items()):
+            info(f&#39;{fmt:&lt;20} {&#34;, &#34;.join(sorted(feats))}&#39;, tm=False)
+        indent(level=1)
+
+        for feat in WARP + (&#34;&#34;,):
+            if feat in intFeatures:
+                if feat == &#34;&#34;:
+                    errors[&#34;intFeatures&#34;].append(
+                        &#39;Do not declare the &#34;valueType&#34; for all features&#39;
+                    )
+                else:
+                    errors[&#34;intFeatures&#34;].append(
+                        f&#39;Do not mark the &#34;{feat}&#34; feature as integer valued&#39;
+                    )
+                self.good = False
+
+        for (feat, featMeta) in sorted(featureMeta.items()):
+            good = self._checkFeatMeta(
+                feat,
+                featMeta,
+                checkRegular=True,
+                valueTypeAllowed=False,
+                showErrors=False,
+            )
+            if not good:
+                self.good = False
+            metaData.setdefault(feat, {}).update(featMeta)
+            metaData[feat][&#34;valueType&#34;] = &#34;int&#34; if feat in intFeatures else &#34;str&#34;
+
+        self._showErrors()
+
+    def _checkFeatMeta(
+        self,
+        feat,
+        featMeta,
+        checkRegular=False,
+        valueTypeAllowed=True,
+        showErrors=True,
+    ):
+        errors = collections.defaultdict(list)
+        good = True
+
+        if checkRegular:
+            if feat in WARP + (&#34;&#34;,):
+                if feat == &#34;&#34;:
+                    errors[&#34;featureMeta&#34;].append(
+                        &#39;Specify the generic feature meta data in &#34;generic&#34;&#39;
+                    )
+                    good = False
+                elif feat == OTEXT:
+                    errors[&#34;featureMeta&#34;].append(
+                        f&#39;Specify the &#34;{OTEXT}&#34; feature in &#34;otext&#34;&#39;
+                    )
+                    good = False
+                else:
+                    errors[&#34;featureMeta&#34;].append(
+                        f&#39;Do not pass metaData for the &#34;{feat}&#34; feature in &#34;featureMeta&#34;&#39;
+                    )
+                    good = False
+        if &#34;valueType&#34; in featMeta:
+            if not valueTypeAllowed:
+                errors[&#34;featureMeta&#34;].append(
+                    f&#39;Do not specify &#34;valueType&#34; for the &#34;{feat}&#34; feature in &#34;featureMeta&#34;&#39;
+                )
+                good = False
+            elif featMeta[&#34;valueType&#34;] not in {&#34;int&#34;, &#34;str&#34;}:
+                errors[&#34;featureMeta&#34;].append(&#39;valueType must be &#34;int&#34; or &#34;str&#34;&#39;)
+                good = False
+
+        for (e, eData) in errors.items():
+            self.errors[e].extend(eData)
+        if showErrors:
+            self._showErrors
+        return good
+
+    def stop(self, msg):
+        &#34;&#34;&#34;Stops the director. No further input will be read.
+
+        ```
+        cv.stop(msg)
+        ```
+
+        The director will exit with a non-good status  and issue the message `msg`.
+        If you have called `walk()` with `force=True`, indicating that the
+        director must proceed after errors, then this stop command will cause
+        termination nevertheless.
+
+        Parameters
+        ----------
+        msg: string
+            A message to display upon stopping.
+
+        Returns
+        -------
+        None
+        &#34;&#34;&#34;
+
+        tmObj = self.TF.tmObj
+        error = tmObj.error
+
+        error(f&#34;Forced stop: {msg}&#34;)
+        self.good = False
+        self.force = False
+        self.forcedStop = True
+
+    def slot(self, key=None):
+        &#34;&#34;&#34;Make a slot node and return the handle to it in `n`.
+
+        ```
+        n = cv.slot()
+        ```
+
+        No further information is needed.
+        Remember that you can add features to the node by later
+
+        ```
+        cv.feature(n, key=value, ...)
+        ```
+
+        calls.
+
+        Parameters
+        ----------
+        key: string, optional None
+            If passed, it acts as a sort key on the slot.
+            At the end of the walk, all slots will be sorted by their key and then
+            by their original order. Care will be taken that slots retain their
+            features and linkages.
+
+            !!! note &#34;Keys are strings&#34;
+            Note that the key must be a string. If you want to sort on numbers,
+            make sure to pad all numbers with leading zeros.
+
+        Returns
+        -------
+        node reference: tuple
+            The node reference consists of a node type and a sequence number,
+            but normally you do not have to dig these out.
+            Just pass the tuple as a whole to actions that require a node argument.
+        &#34;&#34;&#34;
+
+        curSeq = self.curSeq
+        curEmbedders = self.curEmbedders
+        oslots = self.oslots
+        slotKeys = self.slotKeys
+        levelFromSection = self.levelFromSection
+        warnings = self.warnings
+
+        self.stats[self.S] += 1
+        nType = self.slotType
+
+        curSeq[nType] += 1
+        seq = curSeq[nType]
+        if key is not None:
+            slotKeys[seq] = key
+
+        inSection = False
+        for eNode in curEmbedders:
+            if eNode[0] in levelFromSection:
+                inSection = True
+            oslots[eNode].add(seq)
+
+        if levelFromSection and not inSection:
+            warnings[&#34;slot outside sections&#34;].append(f&#34;{seq}&#34;)
+
+        return (nType, seq)
+
+    def node(self, nType, slots=None):
+        &#34;&#34;&#34;Make a non-slot node and return the handle to it in `n`.
+
+        ```
+        n = cv.node(nodeType)
+        ```
+
+        You have to pass its *node type*, i.e. a string.
+        Think of `sentence`, `paragraph`, `phrase`, `word`, `sign`, whatever.
+
+        There are two modes for this function:
+
+        *   Auto: (`slots=None`):
+            Non slot nodes will be automatically added to the set of embedders.
+        *   Explicit: (`slots=iterable`):
+            The slots in iterable will be assigned to this node and nothing else.
+            The node will not be added to the set of embedders.
+            Put otherwise: the node will be terminated after construction.
+            However: you could resume it later to add other slots.
+
+        Remember that you can add features to the node by later
+
+        ```
+        cv.feature(n, key=value, ...)
+        ```
+
+        calls.
+
+        Parameters
+        ----------
+        nType: string
+            A node type, not the slot type
+        slots: iterable of int, optional None
+            The slots to assign to this node.
+            If left out, the node is left as an embedding node and
+            subsequent slots will be added to it automatically.
+            All slots in the iterable must have been generated before
+            by means of the `cv.slot()` action.
+
+        Returns
+        -------
+        node reference or None
+            If an error occurred, `None` is returned.
+            The node reference consists of a node type and a sequence number,
+            but normally you do not have to dig these out.
+            Just pass the tuple as a whole to actions that require a node argument.
+        &#34;&#34;&#34;
+
+        slotType = self.slotType
+        errors = self.errors
+
+        if nType == slotType:
+            errors[f&#39;use `cv.slot()` instead of `cv.node(&#34;{nType}&#34;)`&#39;].append(None)
+            return
+
+        curSeq = self.curSeq
+        curEmbedders = self.curEmbedders
+
+        self.stats[self.N] += 1
+
+        curSeq[nType] += 1
+        seq = curSeq[nType]
+        node = (nType, seq)
+
+        self._checkSecLevel(node, before=True)
+
+        if slots:
+            maxSlot = curSeq[slotType]
+
+            for s in slots:
+                if not 1 &lt;= s &lt;= maxSlot:
+                    errors[f&#34;slot out of range in `cv.node(({nType}, {seq}))`&#34;].append(
+                        f&#34;{s}&#34;
+                    )
+                else:
+                    oslots = self.oslots
+                    oslots[node].add(s)
+
+            self.stats[self.T] += 1
+        else:
+            curEmbedders.add(node)
+
+        return node
+
+    def terminate(self, node):
+        &#34;&#34;&#34;**terminate** a node.
+
+        ```
+        cv.terminate(n)
+        ```
+
+        The node `n` will be removed from the set of current embedders.
+        This `n` must be the result of a previous `cv.slot()` or `cv.node()` action.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+
+        Returns
+        -------
+        None
+        &#34;&#34;&#34;
+
+        self.stats[self.T] += 1
+        if node is not None:
+            self.curEmbedders.discard(node)
+            self._checkSecLevel(node, before=False)
+
+    def delete(self, node):
+        &#34;&#34;&#34;**deletes** a node.
+
+        ```
+        cv.delete(n)
+        ```
+
+        The node `n` will be deleted from the set of nodes that will be created.
+        This `n` must be the result of a previous `cv.node()` action.
+        slots cannot be deleted.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by the actions `node`.
+
+        Returns
+        -------
+        None
+        &#34;&#34;&#34;
+
+        self.stats[self.D] += 1
+        if node is not None:
+            slotType = self.slotType
+            nType = node[0]
+
+            if nType == slotType:
+                errors = self.errors
+                errors[&#34;cannot delete a slot&#34;].append(node[1])
+                return
+
+            self.discardables.add(node)
+
+    def resume(self, node):
+        &#34;&#34;&#34;**resume** a node.
+
+        ```
+        cv.resume(n)
+        ```
+
+        If you resume a non-slot node, you add it again to the set of embedders.
+        No new node will be created.
+
+        If you resume a slot node, it will be added to the set of current embedders.
+        No new slot will be created.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+
+        Returns
+        -------
+        None
+        &#34;&#34;&#34;
+
+        curEmbedders = self.curEmbedders
+        oslots = self.oslots
+
+        self.stats[self.R] += 1
+
+        (nType, seq) = node
+        if nType == self.slotType:
+            for eNode in curEmbedders:
+                oslots[eNode].add(seq)
+        else:
+            self._checkSecLevel(node, before=None)
+            curEmbedders.add(node)
+
+    def link(self, node, slots):
+        &#34;&#34;&#34;Link the given, existing slots to a node.
+
+        ```
+        cv.link(n, [s1, s2])
+        ```
+
+        Sometimes the automatic linking of slots to nodes is not sufficient.
+
+        This happens when you feel the need to construct a node retro-actively,
+        when the slots that need to be linked to it have already been created.
+
+        This action is precisely meant for that.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+        slots: iterable of integer
+
+        Returns
+        -------
+        boolean
+        &#34;&#34;&#34;
+
+        oslots = self.oslots
+
+        good = True
+
+        for seq in slots:
+            oslots[node].add(seq)
+
+        return good
+
+    def linked(self, node):
+        &#34;&#34;&#34;Returns the slots `ss` to which a node is currently linked.
+
+        ```
+        ss = cv.linked(n)
+        ```
+
+        If you construct non-slot nodes without linking them to slots,
+        they will be removed when TF validates the collective result
+        of the action methods.
+
+        If you want to prevent that, you can insert an extra slot, but in order
+        to do so, you have to detect that a node is still unlinked.
+
+        This action is precisely meant for that.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+
+        Returns
+        -------
+        tuple of integer
+
+        The slots are returned as a tuple of integers, sorted.
+        &#34;&#34;&#34;
+
+        oslots = self.oslots
+        return tuple(sorted(oslots.get(node, [])))
+
+    def feature(self, node, **features):
+        &#34;&#34;&#34;Add **node features**.
+
+        ```
+        cv.feature(n, name=value, ... , name=value)
+        ```
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+        **features: keyword arguments
+            The names and values of features to assign to this node.
+
+        Returns
+        -------
+        None
+
+        !!! caution &#34;None values&#34;
+            If a feature value is `None` it will not be added!
+        &#34;&#34;&#34;
+
+        nodeFeatures = self.nodeFeatures
+
+        self.stats[self.F] += 1
+
+        for (k, v) in features.items():
+            if v is None:
+                continue
+            # self._checkType(k, v, self.N)
+            nodeFeatures[k][node] = v
+
+    def edge(self, nodeFrom, nodeTo, **features):
+        &#34;&#34;&#34;Add **edge features**.
+
+        ```
+        cv.edge(nf, nt, name=value, ... , name=value)
+        ```
+
+        Parameters
+        ----------
+        nodeFrom, nodeTo: tuple
+            Two node references, obtained by one of the actions `slot` or `node`.
+        **features: keyword arguments
+            The names and values of features to assign to this edge
+            (i.e. pair of nodes).
+
+        Returns
+        -------
+        None
+
+        !!! note &#34;None values&#34;
+            You may pass values that are `None`,
+            and a corresponding edge will be created.
+            If for all edges the value is `None`,
+            an edge without values will be created.
+            For every `nodeFrom`, such a feature
+            essentially specifies a set of nodes `{ nodeTo }`.
+        &#34;&#34;&#34;
+
+        edgeFeatures = self.edgeFeatures
+
+        self.stats[self.E] += 1
+
+        for (k, v) in features.items():
+            # self._checkType(k, v, self.E)
+            edgeFeatures[k][nodeFrom][nodeTo] = v
+
+    def occurs(self, feat):
+        &#34;&#34;&#34;Whether the feature `featureName` occurs in the resulting data so far.
+
+        ```
+        occurs = cv.occurs(featureName)
+        ```
+
+        If you have assigned None values to a feature, that will count, i.e.
+        that feature occurs in the data.
+
+        If you add feature values conditionally, it might happen that some
+        features will not be used at all.
+        For example, if your conversion produces errors, you might
+        add the error information to the result in the form of error features.
+
+        Later on, when the errors have been weeded out, these features will
+        not occur any more in the result, but then TF will complain that
+        such is feature is declared but not used.
+        At the end of your director you can remove unused features
+        conditionally, using this function.
+
+        Parameters
+        ----------
+        feat: string
+            The name of a feature
+
+        Returns
+        -------
+        boolean
+        &#34;&#34;&#34;
+
+        nodeFeatures = self.nodeFeatures
+        edgeFeatures = self.edgeFeatures
+        if feat in nodeFeatures or feat in edgeFeatures:
+            return True
+        return False
+
+    def meta(self, feat, **metadata):
+        &#34;&#34;&#34;Add, modify, delete metadata fields of features.
+
+        ```
+        cv.meta(feature, name=value, ... , name=value)
+        ```
+
+        Parameters
+        ----------
+        feat: string
+            The name of a feature
+        metadata: dict
+            If a `value` is `None`, that `name` will be deleted from the
+            metadata fields of the feature.
+            A bare `cv.meta(feature)` will remove the all metadata from the feature.
+            If you modify the field `valueType` of a feature, that feature will be
+            added or removed from the set of `intFeatures`.
+            It will be checked whether you specify either `int` or `str`.
+
+
+        Returns
+        -------
+        None
+        &#34;&#34;&#34;
+
+        errors = self.errors
+        intFeatures = self.intFeatures
+        metaData = self.metaData
+        featMeta = metaData.get(feat, {})
+
+        good = True
+
+        if not metadata:
+            if feat in metaData:
+                del metaData[feat]
+                intFeatures.discard(feat)
+
+        for (field, text) in metadata.items():
+            if text is None:
+                if field == &#34;valueType&#34;:
+                    errors[&#39;did not delete metadata field &#34;valueType&#34;&#39;].append(feat)
+                    good = False
+                else:
+                    if feat in metaData and field in metaData[feat]:
+                        del metaData[feat][field]
+            else:
+                metaData.setdefault(feat, {})[field] = text
+                if field == &#34;valueType&#34;:
+                    if text == &#34;int&#34;:
+                        intFeatures.add(feat)
+                    else:
+                        intFeatures.discard(feat)
+
+        self.good = self._checkFeatMeta(feat, featMeta) and good and self.good
+
+    def features(self):
+        &#34;&#34;&#34;Get the list of all features.
+
+        ```
+        featureNames = cv.features()
+        ```
+
+        Returns
+        -------
+        list
+        &#34;&#34;&#34;
+
+        nodeFeatures = self.nodeFeatures
+        edgeFeatures = self.edgeFeatures
+        return sorted(list(nodeFeatures) + list(edgeFeatures))
+
+    def active(self, node):
+        &#34;&#34;&#34;Returns whether a node is currently active.
+
+        Active nodes are the nodes in the set of current embedders.
+
+        ```
+        isActive = cv.active(n)
+        ```
+
+        If you construct your nodes in a very dynamic way, it might be
+        hard to keep track for each node whether it has been created, terminated,
+        or resumed, in other words, whether it is active or not.
+
+        This action is provides a direct and precise way to know
+        whether a node is active.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+
+        Returns
+        -------
+        boolean
+        &#34;&#34;&#34;
+
+        return node in self.curEmbedders
+
+    def activeNodes(self, nTypes=None):
+        &#34;&#34;&#34;The currently active nodes, i.e. the embedders.
+
+        ```
+        nodes = cv.activeNodes()
+        nodes = cv.activeNodes(nTypes=(&#34;sentence&#34;, &#34;clause&#34;))
+        ```
+
+        Parameters
+        ----------
+        nTypes: iterable optional None
+            If None, all active nodes are returned.
+            Else the iterable lists a few node types,
+            and only active nodes in these types are returned.
+
+        Returns
+        -------
+        set
+        &#34;&#34;&#34;
+
+        if nTypes is None:
+            return set(self.curEmbedders)
+        nTypes = set(nTypes)
+        return {n for n in self.curEmbedders if n[0] in nTypes}
+
+    def activeTypes(self):
+        &#34;&#34;&#34;The node types of the currently active nodes, i.e. the embedders.
+
+        ```
+        nTypes = cv.activeTypes()
+        ```
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        set
+        &#34;&#34;&#34;
+
+        return {node[0] for node in self.curEmbedders}
+
+    def get(self, feature, *args):
+        &#34;&#34;&#34;Retrieve feature values.
+
+        ```
+        cv.get(feature, n) and cv.get(feature, nf, nt)
+        ```
+
+        `feature` is the name of the feature.
+
+        For node features, `n` is the node which carries the value.
+
+        For edge features, `nf, nt` is the pair of from-to nodes which carries the value.
+
+        Parameters
+        ----------
+        feature: string
+            The name of a feature
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+            The node in question when retrieving the value of a node feature.
+        nodeFrom, nodeTo: tuple
+            Two node references, obtained by one of the actions `slot` or `node`.
+            The nodes in question when retrieving the value of an edge feature.
+
+        Returns
+        -------
+        string or integer
+        &#34;&#34;&#34;
+
+        errors = self.errors
+        nodeFeatures = self.nodeFeatures
+        edgeFeatures = self.edgeFeatures
+        nArgs = len(args)
+        if nArgs == 0 or nArgs &gt; 2:
+            errors[&#34;use `cv.get(ft, n)` or `cv.get(ft, nf, nt)`&#34;].append(None)
+            return None
+
+        return (
+            nodeFeatures.get(feature, {}).get(args[0], None)
+            if len(args) == 1
+            else edgeFeatures.get(feature, {}).get(args[0], {}).get(args[1], None)
+        )
+
+    def _checkSecLevel(self, node, before=True):
+        levelFromSection = self.levelFromSection
+        sectionFeatures = self.sectionFeatures
+        nodeFeatures = self.nodeFeatures
+        warnings = self.warnings
+        curEmbedders = self.curEmbedders
+
+        (nType, seq) = node
+
+        msg = &#34;starts&#34; if before is True else &#34;ends&#34; if before is False else &#34;resumes&#34;
+
+        if levelFromSection:
+            level = levelFromSection.get(nType, None)
+            if level is None:
+                return
+
+            headingFeature = sectionFeatures[level - 1]
+            nHeading = nodeFeatures.get(headingFeature, {}).get(node, &#34;??&#34;)
+
+            for em in curEmbedders:
+                eType = em[0]
+                if eType in levelFromSection:
+                    eLevel = levelFromSection.get(eType, None)
+                    eHeadingFeature = sectionFeatures[eLevel - 1]
+                    eHeading = nodeFeatures.get(eHeadingFeature, {}).get(em, &#34;??&#34;)
+
+                if eType == nType:
+                    warnings[
+                        f&#39;section {nType} &#34;{nHeading}&#34; of level {level}&#39;
+                        f&#34; enclosed in another {nType}: {eHeading}&#34;
+                    ].append(None)
+                elif eType in levelFromSection:
+                    eLevel = levelFromSection[eType]
+                    if eLevel &gt; level:
+                        warnings[
+                            f&#39;section {nType} &#34;{nHeading}&#34; of level {level} {msg}&#39;
+                            f&#39; inside a {eType} &#34;{eHeading}&#34; of level {eLevel}&#39;
+                        ].append(None)
+
+    def _follow(self, director):
+
+        # after node = yield (&#39;N&#39;, nodeType) all slot nodes that are yielded
+        # will be linked to node, until a (&#39;T&#39;, node) is yielded.
+        # If needed, you can resume this node again, after which new slot nodes
+        # continue to be linked to this node.
+        # If you resume a slot node, it all non slot nodes in the current context
+        # will be linked to it.
+
+        silent = self.silent
+        tmObj = self.TF.tmObj
+        info = tmObj.info
+
+        if not self.good:
+            return
+
+        info(&#34;Following director... &#34;, force=silent != DEEP)
+
+        slotType = self.slotType
+        errors = self.errors
+
+        self.oslots = collections.defaultdict(set)
+        self.nodeFeatures = collections.defaultdict(dict)
+        self.edgeFeatures = collections.defaultdict(
+            lambda: collections.defaultdict(dict)
+        )
+        self.nodes = collections.defaultdict(set)
+        nodes = self.nodes
+
+        self.curSeq = collections.Counter()
+        self.curEmbedders = set()
+        curEmbedders = self.curEmbedders
+
+        self.stats = {
+            actionType: 0
+            for actionType in (self.S, self.N, self.T, self.R, self.D, self.F, self.E)
+        }
+
+        director(self)
+
+        if not self.stats:
+            self.good = False
+            return
+
+        for (actionType, amount) in sorted(self.stats.items()):
+            info(f&#39;&#34;{actionType}&#34; actions: {amount}&#39;, force=silent != DEEP)
+
+        totalNodes = 0
+
+        for (nType, lastSeq) in sorted(self.curSeq.items()):
+            for seq in range(1, lastSeq + 1):
+                nodes[nType].add(seq)
+            slotRep = &#34; = slot type&#34; if nType == slotType else &#34;&#34;
+            info(f&#39;{lastSeq:&gt;8} x &#34;{nType}&#34; node {slotRep}&#39;, tm=False)
+            totalNodes += lastSeq
+        info(f&#34;{totalNodes:&gt;8} nodes of all types&#34;, tm=False, force=silent != DEEP)
+
+        self.totalNodes = totalNodes
+
+        if curEmbedders:
+            embedCount = collections.Counter()
+            for (nType, seq) in curEmbedders:
+                embedCount[nType] += 1
+            for (nType, amount) in sorted(
+                embedCount.items(),
+                key=lambda x: (-x[1], x[0]),
+            ):
+                errors[&#34;Unterminated nodes&#34;].append(f&#34;{nType}: {amount} x&#34;)
+
+        self._showErrors()
+
+    def _removeUnlinked(self):
+        silent = self.silent
+        tmObj = self.TF.tmObj
+        info = tmObj.info
+        indent = tmObj.indent
+
+        if not self.good and not self.force:
+            return
+
+        nodeTypes = self.curSeq
+        nodes = self.nodes
+        slotType = self.slotType
+        oslots = self.oslots
+        discardables = self.discardables
+        nodeFeatures = self.nodeFeatures
+        edgeFeatures = self.edgeFeatures
+
+        unlinked = {}
+        nDeleted = 0
+
+        for (nType, seq) in discardables:
+            unlinked.setdefault(nType, set()).add(seq)
+            nDeleted += 1
+            if (nType, seq) in oslots:
+                del oslots[(nType, seq)]
+
+        for nType in nodeTypes:
+            if nType == slotType:
+                continue
+            for seq in range(1, nodeTypes[nType] + 1):
+                if (nType, seq) not in oslots:
+                    unlinked.setdefault(nType, set()).add(seq)
+
+        if unlinked:
+            info(
+                f&#34;Removing unlinked (of which {nDeleted} deleted) nodes ... &#34;,
+                force=silent != DEEP,
+            )
+            indent(level=2)
+            totalRemoved = 0
+            for (nType, seqs) in unlinked.items():
+                seqs = sorted(seqs)
+                theseNodes = nodes[nType]
+                lSeqs = len(seqs)
+                totalRemoved += lSeqs
+                rep = &#34; ...&#34; if lSeqs &gt; 5 else &#34;&#34;
+                pl = &#34;&#34; if lSeqs == 1 else &#34;s&#34;
+                info(
+                    f&#39;{lSeqs:&gt;6} unlinked &#34;{nType}&#34; node{pl}: {seqs[0:5]}{rep}&#39;,
+                    force=silent != DEEP,
+                )
+                for seq in seqs:
+                    node = (nType, seq)
+                    theseNodes.discard(seq)
+                    for (f, fData) in nodeFeatures.items():
+                        if node in fData:
+                            del fData[node]
+                    for (f, fData) in edgeFeatures.items():
+                        if node in fData:
+                            del fData[node]
+                            for (fNode, toValues) in fData:
+                                if node in toValues:
+                                    del toValues[node]
+            pl = &#34;&#34; if totalRemoved == 1 else &#34;s&#34;
+            info(f&#34;{totalRemoved:&gt;6} unlinked node{pl}&#34;, force=silent != DEEP)
+            self.totalNodes -= totalRemoved
+            info(f&#34;Leaving {self.totalNodes:&gt;6} nodes&#34;, force=silent != DEEP)
+            indent(level=1)
+
+    def _checkGraph(self):
+        silent = self.silent
+        tmObj = self.TF.tmObj
+        info = tmObj.info
+
+        if not self.good and not self.force:
+            return
+
+        info(&#34;checking for nodes and edges ... &#34;, force=silent != DEEP)
+
+        nodes = self.nodes
+        errors = self.errors
+        edgeFeatures = self.edgeFeatures
+
+        # edges refer to nodes
+
+        for (k, featureData) in edgeFeatures.items():
+            for nFrom in featureData:
+                (nType, seq) = nFrom
+                if nType not in nodes or seq not in nodes[nType]:
+                    errors[&#34;Edge feature: illegal node&#34;].append(
+                        f&#39;&#34;{k}&#34;: from-node  {nFrom} not in node set&#39;
+                    )
+                    continue
+                for nTo in featureData[nFrom]:
+                    (nType, seq) = nTo
+                    if nType not in nodes or seq not in nodes[nType]:
+                        errors[&#34;Edge feature: illegal node&#34;].append(
+                            f&#39;&#34;{k}&#34;: to-node  {nTo} not in node set&#39;
+                        )
+
+        self._showErrors()
+
+    def _checkFeatures(self):
+        silent = self.silent
+        tmObj = self.TF.tmObj
+        info = tmObj.info
+
+        if not self.good and not self.force:
+            return
+
+        info(&#34;checking (section) features ... &#34;, force=silent != DEEP)
+
+        intFeatures = self.intFeatures
+        metaData = self.metaData
+
+        nodes = self.nodes
+        nodeFeatures = self.nodeFeatures
+        edgeFeatures = self.edgeFeatures
+
+        errors = self.errors
+
+        for feat in intFeatures:
+            if (
+                feat not in WARP
+                and feat not in nodeFeatures
+                and feat not in edgeFeatures
+            ):
+                errors[&#34;intFeatures&#34;].append(
+                    f&#39;&#34;{feat}&#34; is declared as integer valued, &#39;
+                    &#34;but this feature does not occur&#34;
+                )
+        for nType in self.sectionTypes:
+            if nType not in nodes:
+                errors[&#34;sections&#34;].append(
+                    f&#39;node type &#34;{nType}&#34; is declared as a section type, &#39;
+                    &#34;but this node type does not occur&#34;
+                )
+        for feat in self.sectionFeatures:
+            if feat not in nodeFeatures:
+                errors[&#34;sections&#34;].append(
+                    f&#39;&#34;{feat}&#34; is declared as a section feature, &#39;
+                    &#34;but this node feature does not occur&#34;
+                )
+        for nType in self.structureTypes:
+            if nType not in nodes:
+                errors[&#34;structure&#34;].append(
+                    f&#39;node type &#34;{nType}&#34; is declared as a structure type,&#39;
+                    f&#34; but this node type does not occur&#34;
+                )
+        for feat in self.structureFeatures:
+            if feat not in nodeFeatures:
+                errors[&#34;structure&#34;].append(
+                    f&#39;&#34;{feat}&#34; is declared as a structure feature, &#39;
+                    &#34;but this node feature does not occur&#34;
+                )
+                nodeFeatures[feat] = {}
+
+        sectionSet = self.sectionSet
+        structureSet = self.structureSet
+        featFromSectionType = self.featFromSectionType
+        featFromStructureType = self.featFromStructureType
+
+        for nType in nodes:
+            if nType in structureSet:
+                feat = featFromStructureType[nType]
+                for seq in nodes[nType]:
+                    if (nType, seq) not in nodeFeatures[feat]:
+                        errors[&#34;structure features&#34;].append(
+                            f&#39;&#34;structure element &#34;{nType}&#34; {seq} &#39;
+                            f&#39;has no value for &#34;{feat}&#34;&#39;
+                        )
+            if nType in sectionSet:
+                feat = featFromSectionType[nType]
+                for seq in nodes[nType]:
+                    if (nType, seq) not in nodeFeatures[feat]:
+                        errors[&#34;section features&#34;].append(
+                            f&#39;&#34;section element &#34;{nType}&#34; {seq} &#39;
+                            f&#39;has no value for &#34;{feat}&#34;&#39;
+                        )
+
+        for feat in self.textFeatures:
+            if feat not in nodeFeatures:
+                errors[&#34;text formats&#34;].append(
+                    f&#39;&#34;{feat}&#34; is used in a text format, &#39;
+                    &#34;but this node feature does not occur&#34;
+                )
+
+        for feat in WARP:
+            if feat in nodeFeatures or feat in edgeFeatures:
+                errors[feat].append(f&#39;Do not construct the &#34;{feat}&#34; feature yourself&#39;)
+
+        for feat in sorted(nodeFeatures) + sorted(edgeFeatures):
+            if feat not in self.metaData:
+                errors[&#34;feature metadata&#34;].append(
+                    f&#39;node feature &#34;{feat}&#34; has no metadata&#39;
+                )
+
+        for feat in sorted(metaData):
+            if (
+                feat
+                and feat not in WARP
+                and feat not in nodeFeatures
+                and feat not in edgeFeatures
+            ):
+                errors[&#34;feature metadata&#34;].append(
+                    f&#39;node feature &#34;{feat}&#34; has metadata but does not occur&#39;
+                )
+
+        for (feat, featData) in sorted(nodeFeatures.items()):
+            if None in featData:
+                errors[&#34;feature values assigned to None&#34;].append(
+                    f&#39;node feature &#34;{feat}&#34; has a node None&#39;
+                )
+        for (feat, featData) in sorted(edgeFeatures.items()):
+            if None in featData:
+                errors[&#34;feature values assigned to None&#34;].append(
+                    f&#39;edge feature &#34;{feat}&#34; has a from-node None&#39;
+                )
+            for toValues in featData.values():
+                if None in toValues:
+                    errors[&#34;feature values assigned to None&#34;].append(
+                        f&#39;edge feature &#34;{feat}&#34; has a to-node None&#39;
+                    )
+
+        for (feat, featData) in sorted(edgeFeatures.items()):
+            if feat in WARP:
+                continue
+            hasValues = False
+            for (nodeTo, toValues) in featData.items():
+                if any(v is not None for v in toValues.values()):
+                    hasValues = True
+                    break
+
+            if not hasValues:
+                edgeFeatures[feat] = {
+                    nodeTo: set(toValues) for (nodeTo, toValues) in featData.items()
+                }
+            metaData.setdefault(feat, {})[&#34;edgeValues&#34;] = hasValues
+
+        for feat in intFeatures:
+            if feat in WARP:
+                continue
+            if feat in nodeFeatures:
+                featData = nodeFeatures[feat]
+                for (k, v) in featData.items():
+                    if not isInt(v):
+                        (nType, node) = k
+                        errors[&#34;Not a number&#34;].append(
+                            f&#39;&#34;node feature &#34;{feat}&#34;: {nType} {node} =&gt; &#34;{v}&#34;&#39;
+                        )
+            if feat in edgeFeatures and metaData[feat][&#34;edgeValues&#34;]:
+                featData = edgeFeatures[feat]
+                for (fromNode, toValues) in featData.items():
+                    (fType, fNode) = fromNode
+                    for (toNode, v) in toValues.items():
+                        (tType, tNode) = toNode
+                        if not isInt(v):
+                            errors[&#34;Not a number&#34;].append(
+                                f&#39;&#34;edge feature &#34;{feat}&#34;:&#39;
+                                f&#39; {fType} {fNode} =&#34;{v}&#34;=&gt; {tType} {tNode}&#39;
+                            )
+
+        self._showErrors()
+
+    def _reorderNodes(self):
+        silent = self.silent
+        tmObj = self.TF.tmObj
+        info = tmObj.info
+
+        if not self.good and not self.force:
+            return
+
+        info(&#34;reordering nodes ...&#34;, force=silent != DEEP)
+
+        nodeTypes = self.curSeq
+        nodes = self.nodes
+        oslots = self.oslots
+        slotType = self.slotType
+        slotKeys = self.slotKeys
+
+        nTypes = (slotType,) + tuple(
+            sorted(nType for nType in nodes if nType != slotType)
+        )
+
+        self.nodeMap = {}
+        self.maxSlot = nodeTypes[slotType]
+
+        nodeMap = self.nodeMap
+        maxSlot = self.maxSlot
+
+        newN = 0
+
+        # we build a node map that we use later on to remap the features
+        # However, we do not have to remap the otype feature.
+        # And we only have to remap the oslots feature if the order of the slots
+        # is changed.
+
+        # first we reorder the slots, if needed. As a consequence, we have to
+        # 1. map the old slot nodes to the new slot nodes
+        # 2. adapt the oslots: each node must be linked to the new slots
+        # Because of the node map, _reassign features will adjust the other
+        # node and edge features for the slots
+
+        sortedSeqs = range(1, maxSlot + 1)
+        if len(slotKeys) &gt; 0:
+            info(f&#39;Sorting {maxSlot} slots (node type &#34;{slotType}&#34;)&#39;)
+            sortedSeqs = sorted(sortedSeqs, key=lambda x: (slotKeys.get(x, &#34;&#34;), x))
+        else:
+            info(&#34;No slot sorting needed&#34;)
+        for seq in sortedSeqs:
+            newN += 1
+            nodeMap[(slotType, seq)] = newN
+
+        # now we adapt the oslots feature
+        if len(slotKeys) &gt; 0:
+            self.oslots = {
+                n: {nodeMap[(slotType, s)] for s in slots}
+                for (n, slots) in oslots.items()
+            }
+            oslots = self.oslots
+
+        for nType in nTypes:
+            canonical = self._canonical(nType)
+            if nType == slotType:
+                continue
+
+            seqs = nodes[nType]
+            info(f&#39;Sorting {len(seqs)} nodes of type &#34;{nType}&#34;&#39;)
+            sortedSeqs = sorted(seqs, key=canonical)
+
+            for seq in sortedSeqs:
+                newN += 1
+                nodeMap[(nType, seq)] = newN
+
+        self.maxNode = newN
+        info(f&#34;Max node = {newN}&#34;, force=silent != DEEP)
+
+        self._showErrors()
+
+    def _canonical(self, nType):
+        oslots = self.oslots
+
+        def before(nodeA, nodeB):
+            slotsA = oslots[(nType, nodeA)]
+            slotsB = oslots[(nType, nodeB)]
+            if slotsA == slotsB:
+                return 0
+
+            aWithoutB = slotsA - slotsB
+            if not aWithoutB:
+                return 1
+
+            bWithoutA = slotsB - slotsA
+            if not bWithoutA:
+                return -1
+
+            aMin = min(aWithoutB)
+            bMin = min(bWithoutA)
+            return -1 if aMin &lt; bMin else 1
+
+        return functools.cmp_to_key(before)
+
+    def _reassignFeatures(self):
+        silent = self.silent
+        tmObj = self.TF.tmObj
+        info = tmObj.info
+        indent = tmObj.indent
+
+        if not self.good and not self.force:
+            return
+
+        info(&#34;reassigning feature values ...&#34;, force=silent != DEEP)
+
+        nodeMap = self.nodeMap
+        oslots = self.oslots
+        nodeFeatures = self.nodeFeatures
+        edgeFeatures = self.edgeFeatures
+
+        otype = {n: nType for ((nType, seq), n) in nodeMap.items()}
+        oslots = {nodeMap[node]: slots for (node, slots) in oslots.items()}
+
+        nodeFeaturesProto = self.nodeFeatures
+        edgeFeaturesProto = self.edgeFeatures
+
+        nodeFeatures = collections.defaultdict(dict)
+        edgeFeatures = collections.defaultdict(lambda: collections.defaultdict(dict))
+
+        indent(level=2)
+
+        for k in sorted(nodeFeaturesProto):
+            featureDataProto = nodeFeaturesProto[k]
+            ln = len(featureDataProto)
+            pl = &#34;&#34; if ln == 1 else &#34;s&#34;
+            info(f&#39;node feature &#34;{k}&#34; with {ln} node{pl}&#39;, tm=False)
+            featureData = {}
+            for (node, value) in featureDataProto.items():
+                featureData[nodeMap[node]] = value
+            nodeFeatures[k] = featureData
+
+        for k in sorted(edgeFeaturesProto):
+            featureDataProto = edgeFeaturesProto[k]
+            ln = len(featureDataProto)
+            pl = &#34;&#34; if ln == 1 else &#34;s&#34;
+            info(f&#39;edge feature &#34;{k}&#34; with {ln} start node{pl}&#39;, tm=False)
+            featureData = {}
+            for (nodeFrom, toValues) in featureDataProto.items():
+                if type(toValues) is set:
+                    toData = {nodeMap[nodeTo] for nodeTo in toValues}
+                else:
+                    toData = {}
+                    for (nodeTo, value) in toValues.items():
+                        toData[nodeMap[nodeTo]] = value
+                featureData[nodeMap[nodeFrom]] = toData
+            edgeFeatures[k] = featureData
+
+        nodeFeatures[&#34;otype&#34;] = otype
+        edgeFeatures[&#34;oslots&#34;] = oslots
+
+        indent(level=1)
+
+        self.oslots = None
+        self.otype = None
+        self.nodeFeatures = nodeFeatures
+        self.edgeFeatures = edgeFeatures
+
+        self._showErrors()</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="tf.convert.walker.CV.D"><code class="name">var <span class="ident">D</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.convert.walker.CV.E"><code class="name">var <span class="ident">E</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.convert.walker.CV.F"><code class="name">var <span class="ident">F</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.convert.walker.CV.N"><code class="name">var <span class="ident">N</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.convert.walker.CV.R"><code class="name">var <span class="ident">R</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.convert.walker.CV.S"><code class="name">var <span class="ident">S</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.convert.walker.CV.T"><code class="name">var <span class="ident">T</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.convert.walker.CV.active"><code class="name flex">
+<span>def <span class="ident">active</span></span>(<span>self, node)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns whether a node is currently active.</p>
+<p>Active nodes are the nodes in the set of current embedders.</p>
+<pre><code>isActive = cv.active(n)
+</code></pre>
+<p>If you construct your nodes in a very dynamic way, it might be
+hard to keep track for each node whether it has been created, terminated,
+or resumed, in other words, whether it is active or not.</p>
+<p>This action is provides a direct and precise way to know
+whether a node is active.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>A node reference, obtained by one of the actions <code>slot</code> or <code>node</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>boolean</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/convert/walker.py#L1138-L1164" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def active(self, node):
+    &#34;&#34;&#34;Returns whether a node is currently active.
+
+    Active nodes are the nodes in the set of current embedders.
+
+    ```
+    isActive = cv.active(n)
+    ```
+
+    If you construct your nodes in a very dynamic way, it might be
+    hard to keep track for each node whether it has been created, terminated,
+    or resumed, in other words, whether it is active or not.
+
+    This action is provides a direct and precise way to know
+    whether a node is active.
+
+    Parameters
+    ----------
+    node: tuple
+        A node reference, obtained by one of the actions `slot` or `node`.
+
+    Returns
+    -------
+    boolean
+    &#34;&#34;&#34;
+
+    return node in self.curEmbedders</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.walker.CV.activeNodes"><code class="name flex">
+<span>def <span class="ident">activeNodes</span></span>(<span>self, nTypes=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>The currently active nodes, i.e. the embedders.</p>
+<pre><code>nodes = cv.activeNodes()
+nodes = cv.activeNodes(nTypes=(&quot;sentence&quot;, &quot;clause&quot;))
+</code></pre>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>nTypes</code></strong> :&ensp;<code>iterable optional None</code></dt>
+<dd>If None, all active nodes are returned.
+Else the iterable lists a few node types,
+and only active nodes in these types are returned.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>set</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/convert/walker.py#L1166-L1189" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def activeNodes(self, nTypes=None):
+    &#34;&#34;&#34;The currently active nodes, i.e. the embedders.
+
+    ```
+    nodes = cv.activeNodes()
+    nodes = cv.activeNodes(nTypes=(&#34;sentence&#34;, &#34;clause&#34;))
+    ```
+
+    Parameters
+    ----------
+    nTypes: iterable optional None
+        If None, all active nodes are returned.
+        Else the iterable lists a few node types,
+        and only active nodes in these types are returned.
+
+    Returns
+    -------
+    set
+    &#34;&#34;&#34;
+
+    if nTypes is None:
+        return set(self.curEmbedders)
+    nTypes = set(nTypes)
+    return {n for n in self.curEmbedders if n[0] in nTypes}</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.walker.CV.activeTypes"><code class="name flex">
+<span>def <span class="ident">activeTypes</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>The node types of the currently active nodes, i.e. the embedders.</p>
+<pre><code>nTypes = cv.activeTypes()
+</code></pre>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>None</code></strong></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>set</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/convert/walker.py#L1191-L1207" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def activeTypes(self):
+    &#34;&#34;&#34;The node types of the currently active nodes, i.e. the embedders.
+
+    ```
+    nTypes = cv.activeTypes()
+    ```
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    set
+    &#34;&#34;&#34;
+
+    return {node[0] for node in self.curEmbedders}</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.walker.CV.delete"><code class="name flex">
+<span>def <span class="ident">delete</span></span>(<span>self, node)</span>
+</code></dt>
+<dd>
+<div class="desc"><p><strong>deletes</strong> a node.</p>
+<pre><code>cv.delete(n)
+</code></pre>
+<p>The node <code>n</code> will be deleted from the set of nodes that will be created.
+This <code>n</code> must be the result of a previous <code>cv.node()</code> action.
+slots cannot be deleted.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>A node reference, obtained by the actions <code>node</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/convert/walker.py#L828-L859" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def delete(self, node):
+    &#34;&#34;&#34;**deletes** a node.
+
+    ```
+    cv.delete(n)
+    ```
+
+    The node `n` will be deleted from the set of nodes that will be created.
+    This `n` must be the result of a previous `cv.node()` action.
+    slots cannot be deleted.
+
+    Parameters
+    ----------
+    node: tuple
+        A node reference, obtained by the actions `node`.
+
+    Returns
+    -------
+    None
+    &#34;&#34;&#34;
+
+    self.stats[self.D] += 1
+    if node is not None:
+        slotType = self.slotType
+        nType = node[0]
+
+        if nType == slotType:
+            errors = self.errors
+            errors[&#34;cannot delete a slot&#34;].append(node[1])
+            return
+
+        self.discardables.add(node)</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.walker.CV.edge"><code class="name flex">
+<span>def <span class="ident">edge</span></span>(<span>self, nodeFrom, nodeTo, **features)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add <strong>edge features</strong>.</p>
+<pre><code>cv.edge(nf, nt, name=value, ... , name=value)
+</code></pre>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>nodeFrom</code></strong>, <strong><code>nodeTo</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>Two node references, obtained by one of the actions <code>slot</code> or <code>node</code>.</dd>
+<dt><strong><code>**features</code></strong> :&ensp;<code>keyword arguments</code></dt>
+<dd>The names and values of features to assign to this edge
+(i.e. pair of nodes).</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">None values</p>
+<p>You may pass values that are <code>None</code>,
+and a corresponding edge will be created.
+If for all edges the value is <code>None</code>,
+an edge without values will be created.
+For every <code>nodeFrom</code>, such a feature
+essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
+</div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/convert/walker.py#L994-L1028" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def edge(self, nodeFrom, nodeTo, **features):
+    &#34;&#34;&#34;Add **edge features**.
+
+    ```
+    cv.edge(nf, nt, name=value, ... , name=value)
+    ```
+
+    Parameters
+    ----------
+    nodeFrom, nodeTo: tuple
+        Two node references, obtained by one of the actions `slot` or `node`.
+    **features: keyword arguments
+        The names and values of features to assign to this edge
+        (i.e. pair of nodes).
+
+    Returns
+    -------
+    None
+
+    !!! note &#34;None values&#34;
+        You may pass values that are `None`,
+        and a corresponding edge will be created.
+        If for all edges the value is `None`,
+        an edge without values will be created.
+        For every `nodeFrom`, such a feature
+        essentially specifies a set of nodes `{ nodeTo }`.
+    &#34;&#34;&#34;
+
+    edgeFeatures = self.edgeFeatures
+
+    self.stats[self.E] += 1
+
+    for (k, v) in features.items():
+        # self._checkType(k, v, self.E)
+        edgeFeatures[k][nodeFrom][nodeTo] = v</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.walker.CV.feature"><code class="name flex">
+<span>def <span class="ident">feature</span></span>(<span>self, node, **features)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add <strong>node features</strong>.</p>
+<pre><code>cv.feature(n, name=value, ... , name=value)
+</code></pre>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>A node reference, obtained by one of the actions <code>slot</code> or <code>node</code>.</dd>
+<dt><strong><code>**features</code></strong> :&ensp;<code>keyword arguments</code></dt>
+<dd>The names and values of features to assign to this node.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<div class="admonition caution">
+<p class="admonition-title">None values</p>
+<p>If a feature value is <code>None</code> it will not be added!</p>
+</div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/convert/walker.py#L962-L992" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def feature(self, node, **features):
+    &#34;&#34;&#34;Add **node features**.
+
+    ```
+    cv.feature(n, name=value, ... , name=value)
+    ```
+
+    Parameters
+    ----------
+    node: tuple
+        A node reference, obtained by one of the actions `slot` or `node`.
+    **features: keyword arguments
+        The names and values of features to assign to this node.
+
+    Returns
+    -------
+    None
+
+    !!! caution &#34;None values&#34;
+        If a feature value is `None` it will not be added!
+    &#34;&#34;&#34;
+
+    nodeFeatures = self.nodeFeatures
+
+    self.stats[self.F] += 1
+
+    for (k, v) in features.items():
+        if v is None:
+            continue
+        # self._checkType(k, v, self.N)
+        nodeFeatures[k][node] = v</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.walker.CV.features"><code class="name flex">
+<span>def <span class="ident">features</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the list of all features.</p>
+<pre><code>featureNames = cv.features()
+</code></pre>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/convert/walker.py#L1122-L1136" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def features(self):
+    &#34;&#34;&#34;Get the list of all features.
+
+    ```
+    featureNames = cv.features()
+    ```
+
+    Returns
+    -------
+    list
+    &#34;&#34;&#34;
+
+    nodeFeatures = self.nodeFeatures
+    edgeFeatures = self.edgeFeatures
+    return sorted(list(nodeFeatures) + list(edgeFeatures))</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.walker.CV.get"><code class="name flex">
+<span>def <span class="ident">get</span></span>(<span>self, feature, *args)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Retrieve feature values.</p>
+<pre><code>cv.get(feature, n) and cv.get(feature, nf, nt)
+</code></pre>
+<p><code>feature</code> is the name of the feature.</p>
+<p>For node features, <code>n</code> is the node which carries the value.</p>
+<p>For edge features, <code>nf, nt</code> is the pair of from-to nodes which carries the value.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>feature</code></strong> :&ensp;<code>string</code></dt>
+<dd>The name of a feature</dd>
+<dt><strong><code>node</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>A node reference, obtained by one of the actions <code>slot</code> or <code>node</code>.
+The node in question when retrieving the value of a node feature.</dd>
+<dt><strong><code>nodeFrom</code></strong>, <strong><code>nodeTo</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>Two node references, obtained by one of the actions <code>slot</code> or <code>node</code>.
+The nodes in question when retrieving the value of an edge feature.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>string</code> or <code>integer</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/convert/walker.py#L1209-L1250" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def get(self, feature, *args):
+    &#34;&#34;&#34;Retrieve feature values.
+
+    ```
+    cv.get(feature, n) and cv.get(feature, nf, nt)
+    ```
+
+    `feature` is the name of the feature.
+
+    For node features, `n` is the node which carries the value.
+
+    For edge features, `nf, nt` is the pair of from-to nodes which carries the value.
+
+    Parameters
+    ----------
+    feature: string
+        The name of a feature
+    node: tuple
+        A node reference, obtained by one of the actions `slot` or `node`.
+        The node in question when retrieving the value of a node feature.
+    nodeFrom, nodeTo: tuple
+        Two node references, obtained by one of the actions `slot` or `node`.
+        The nodes in question when retrieving the value of an edge feature.
+
+    Returns
+    -------
+    string or integer
+    &#34;&#34;&#34;
+
+    errors = self.errors
+    nodeFeatures = self.nodeFeatures
+    edgeFeatures = self.edgeFeatures
+    nArgs = len(args)
+    if nArgs == 0 or nArgs &gt; 2:
+        errors[&#34;use `cv.get(ft, n)` or `cv.get(ft, nf, nt)`&#34;].append(None)
+        return None
+
+    return (
+        nodeFeatures.get(feature, {}).get(args[0], None)
+        if len(args) == 1
+        else edgeFeatures.get(feature, {}).get(args[0], {}).get(args[1], None)
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.walker.CV.link"><code class="name flex">
+<span>def <span class="ident">link</span></span>(<span>self, node, slots)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Link the given, existing slots to a node.</p>
+<pre><code>cv.link(n, [s1, s2])
+</code></pre>
+<p>Sometimes the automatic linking of slots to nodes is not sufficient.</p>
+<p>This happens when you feel the need to construct a node retro-actively,
+when the slots that need to be linked to it have already been created.</p>
+<p>This action is precisely meant for that.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>A node reference, obtained by one of the actions <code>slot</code> or <code>node</code>.</dd>
+<dt><strong><code>slots</code></strong> :&ensp;<code>iterable</code> of <code>integer</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>boolean</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/convert/walker.py#L897-L929" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def link(self, node, slots):
+    &#34;&#34;&#34;Link the given, existing slots to a node.
+
+    ```
+    cv.link(n, [s1, s2])
+    ```
+
+    Sometimes the automatic linking of slots to nodes is not sufficient.
+
+    This happens when you feel the need to construct a node retro-actively,
+    when the slots that need to be linked to it have already been created.
+
+    This action is precisely meant for that.
+
+    Parameters
+    ----------
+    node: tuple
+        A node reference, obtained by one of the actions `slot` or `node`.
+    slots: iterable of integer
+
+    Returns
+    -------
+    boolean
+    &#34;&#34;&#34;
+
+    oslots = self.oslots
+
+    good = True
+
+    for seq in slots:
+        oslots[node].add(seq)
+
+    return good</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.walker.CV.linked"><code class="name flex">
+<span>def <span class="ident">linked</span></span>(<span>self, node)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the slots <code>ss</code> to which a node is currently linked.</p>
+<pre><code>ss = cv.linked(n)
+</code></pre>
+<p>If you construct non-slot nodes without linking them to slots,
+they will be removed when TF validates the collective result
+of the action methods.</p>
+<p>If you want to prevent that, you can insert an extra slot, but in order
+to do so, you have to detect that a node is still unlinked.</p>
+<p>This action is precisely meant for that.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>A node reference, obtained by one of the actions <code>slot</code> or <code>node</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code> of <code>integer</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<p>The slots are returned as a tuple of integers, sorted.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/convert/walker.py#L931-L960" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def linked(self, node):
+    &#34;&#34;&#34;Returns the slots `ss` to which a node is currently linked.
+
+    ```
+    ss = cv.linked(n)
+    ```
+
+    If you construct non-slot nodes without linking them to slots,
+    they will be removed when TF validates the collective result
+    of the action methods.
+
+    If you want to prevent that, you can insert an extra slot, but in order
+    to do so, you have to detect that a node is still unlinked.
+
+    This action is precisely meant for that.
+
+    Parameters
+    ----------
+    node: tuple
+        A node reference, obtained by one of the actions `slot` or `node`.
+
+    Returns
+    -------
+    tuple of integer
+
+    The slots are returned as a tuple of integers, sorted.
+    &#34;&#34;&#34;
+
+    oslots = self.oslots
+    return tuple(sorted(oslots.get(node, [])))</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.walker.CV.meta"><code class="name flex">
+<span>def <span class="ident">meta</span></span>(<span>self, feat, **metadata)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add, modify, delete metadata fields of features.</p>
+<pre><code>cv.meta(feature, name=value, ... , name=value)
+</code></pre>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>feat</code></strong> :&ensp;<code>string</code></dt>
+<dd>The name of a feature</dd>
+<dt><strong><code>metadata</code></strong> :&ensp;<code>dict</code></dt>
+<dd>If a <code>value</code> is <code>None</code>, that <code>name</code> will be deleted from the
+metadata fields of the feature.
+A bare <code>cv.meta(feature)</code> will remove the all metadata from the feature.
+If you modify the field <code>valueType</code> of a feature, that feature will be
+added or removed from the set of <code>intFeatures</code>.
+It will be checked whether you specify either <code>int</code> or <code>str</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/convert/walker.py#L1067-L1120" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def meta(self, feat, **metadata):
+    &#34;&#34;&#34;Add, modify, delete metadata fields of features.
+
+    ```
+    cv.meta(feature, name=value, ... , name=value)
+    ```
+
+    Parameters
+    ----------
+    feat: string
+        The name of a feature
+    metadata: dict
+        If a `value` is `None`, that `name` will be deleted from the
+        metadata fields of the feature.
+        A bare `cv.meta(feature)` will remove the all metadata from the feature.
+        If you modify the field `valueType` of a feature, that feature will be
+        added or removed from the set of `intFeatures`.
+        It will be checked whether you specify either `int` or `str`.
+
+
+    Returns
+    -------
+    None
+    &#34;&#34;&#34;
+
+    errors = self.errors
+    intFeatures = self.intFeatures
+    metaData = self.metaData
+    featMeta = metaData.get(feat, {})
+
+    good = True
+
+    if not metadata:
+        if feat in metaData:
+            del metaData[feat]
+            intFeatures.discard(feat)
+
+    for (field, text) in metadata.items():
+        if text is None:
+            if field == &#34;valueType&#34;:
+                errors[&#39;did not delete metadata field &#34;valueType&#34;&#39;].append(feat)
+                good = False
+            else:
+                if feat in metaData and field in metaData[feat]:
+                    del metaData[feat][field]
+        else:
+            metaData.setdefault(feat, {})[field] = text
+            if field == &#34;valueType&#34;:
+                if text == &#34;int&#34;:
+                    intFeatures.add(feat)
+                else:
+                    intFeatures.discard(feat)
+
+    self.good = self._checkFeatMeta(feat, featMeta) and good and self.good</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.walker.CV.node"><code class="name flex">
+<span>def <span class="ident">node</span></span>(<span>self, nType, slots=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Make a non-slot node and return the handle to it in <code>n</code>.</p>
+<pre><code>n = cv.node(nodeType)
+</code></pre>
+<p>You have to pass its <em>node type</em>, i.e. a string.
+Think of <code>sentence</code>, <code>paragraph</code>, <code>phrase</code>, <code>word</code>, <code>sign</code>, whatever.</p>
+<p>There are two modes for this function:</p>
+<ul>
+<li>Auto: (<code>slots=None</code>):
+Non slot nodes will be automatically added to the set of embedders.</li>
+<li>Explicit: (<code>slots=iterable</code>):
+The slots in iterable will be assigned to this node and nothing else.
+The node will not be added to the set of embedders.
+Put otherwise: the node will be terminated after construction.
+However: you could resume it later to add other slots.</li>
+</ul>
+<p>Remember that you can add features to the node by later</p>
+<pre><code>cv.feature(n, key=value, ...)
+</code></pre>
+<p>calls.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>nType</code></strong> :&ensp;<code>string</code></dt>
+<dd>A node type, not the slot type</dd>
+<dt><strong><code>slots</code></strong> :&ensp;<code>iterable</code> of <code>int</code>, optional <code>None</code></dt>
+<dd>The slots to assign to this node.
+If left out, the node is left as an embedding node and
+subsequent slots will be added to it automatically.
+All slots in the iterable must have been generated before
+by means of the <code>cv.slot()</code> action.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>node reference</code> or <code>None</code></dt>
+<dd>If an error occurred, <code>None</code> is returned.
+The node reference consists of a node type and a sequence number,
+but normally you do not have to dig these out.
+Just pass the tuple as a whole to actions that require a node argument.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/convert/walker.py#L719-L801" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def node(self, nType, slots=None):
+    &#34;&#34;&#34;Make a non-slot node and return the handle to it in `n`.
+
+    ```
+    n = cv.node(nodeType)
+    ```
+
+    You have to pass its *node type*, i.e. a string.
+    Think of `sentence`, `paragraph`, `phrase`, `word`, `sign`, whatever.
+
+    There are two modes for this function:
+
+    *   Auto: (`slots=None`):
+        Non slot nodes will be automatically added to the set of embedders.
+    *   Explicit: (`slots=iterable`):
+        The slots in iterable will be assigned to this node and nothing else.
+        The node will not be added to the set of embedders.
+        Put otherwise: the node will be terminated after construction.
+        However: you could resume it later to add other slots.
+
+    Remember that you can add features to the node by later
+
+    ```
+    cv.feature(n, key=value, ...)
+    ```
+
+    calls.
+
+    Parameters
+    ----------
+    nType: string
+        A node type, not the slot type
+    slots: iterable of int, optional None
+        The slots to assign to this node.
+        If left out, the node is left as an embedding node and
+        subsequent slots will be added to it automatically.
+        All slots in the iterable must have been generated before
+        by means of the `cv.slot()` action.
+
+    Returns
+    -------
+    node reference or None
+        If an error occurred, `None` is returned.
+        The node reference consists of a node type and a sequence number,
+        but normally you do not have to dig these out.
+        Just pass the tuple as a whole to actions that require a node argument.
+    &#34;&#34;&#34;
+
+    slotType = self.slotType
+    errors = self.errors
+
+    if nType == slotType:
+        errors[f&#39;use `cv.slot()` instead of `cv.node(&#34;{nType}&#34;)`&#39;].append(None)
+        return
+
+    curSeq = self.curSeq
+    curEmbedders = self.curEmbedders
+
+    self.stats[self.N] += 1
+
+    curSeq[nType] += 1
+    seq = curSeq[nType]
+    node = (nType, seq)
+
+    self._checkSecLevel(node, before=True)
+
+    if slots:
+        maxSlot = curSeq[slotType]
+
+        for s in slots:
+            if not 1 &lt;= s &lt;= maxSlot:
+                errors[f&#34;slot out of range in `cv.node(({nType}, {seq}))`&#34;].append(
+                    f&#34;{s}&#34;
+                )
+            else:
+                oslots = self.oslots
+                oslots[node].add(s)
+
+        self.stats[self.T] += 1
+    else:
+        curEmbedders.add(node)
+
+    return node</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.walker.CV.occurs"><code class="name flex">
+<span>def <span class="ident">occurs</span></span>(<span>self, feat)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Whether the feature <code>featureName</code> occurs in the resulting data so far.</p>
+<pre><code>occurs = cv.occurs(featureName)
+</code></pre>
+<p>If you have assigned None values to a feature, that will count, i.e.
+that feature occurs in the data.</p>
+<p>If you add feature values conditionally, it might happen that some
+features will not be used at all.
+For example, if your conversion produces errors, you might
+add the error information to the result in the form of error features.</p>
+<p>Later on, when the errors have been weeded out, these features will
+not occur any more in the result, but then TF will complain that
+such is feature is declared but not used.
+At the end of your director you can remove unused features
+conditionally, using this function.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>feat</code></strong> :&ensp;<code>string</code></dt>
+<dd>The name of a feature</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>boolean</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/convert/walker.py#L1030-L1065" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def occurs(self, feat):
+    &#34;&#34;&#34;Whether the feature `featureName` occurs in the resulting data so far.
+
+    ```
+    occurs = cv.occurs(featureName)
+    ```
+
+    If you have assigned None values to a feature, that will count, i.e.
+    that feature occurs in the data.
+
+    If you add feature values conditionally, it might happen that some
+    features will not be used at all.
+    For example, if your conversion produces errors, you might
+    add the error information to the result in the form of error features.
+
+    Later on, when the errors have been weeded out, these features will
+    not occur any more in the result, but then TF will complain that
+    such is feature is declared but not used.
+    At the end of your director you can remove unused features
+    conditionally, using this function.
+
+    Parameters
+    ----------
+    feat: string
+        The name of a feature
+
+    Returns
+    -------
+    boolean
+    &#34;&#34;&#34;
+
+    nodeFeatures = self.nodeFeatures
+    edgeFeatures = self.edgeFeatures
+    if feat in nodeFeatures or feat in edgeFeatures:
+        return True
+    return False</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.walker.CV.resume"><code class="name flex">
+<span>def <span class="ident">resume</span></span>(<span>self, node)</span>
+</code></dt>
+<dd>
+<div class="desc"><p><strong>resume</strong> a node.</p>
+<pre><code>cv.resume(n)
+</code></pre>
+<p>If you resume a non-slot node, you add it again to the set of embedders.
+No new node will be created.</p>
+<p>If you resume a slot node, it will be added to the set of current embedders.
+No new slot will be created.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>A node reference, obtained by one of the actions <code>slot</code> or <code>node</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/convert/walker.py#L861-L895" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def resume(self, node):
+    &#34;&#34;&#34;**resume** a node.
+
+    ```
+    cv.resume(n)
+    ```
+
+    If you resume a non-slot node, you add it again to the set of embedders.
+    No new node will be created.
+
+    If you resume a slot node, it will be added to the set of current embedders.
+    No new slot will be created.
+
+    Parameters
+    ----------
+    node: tuple
+        A node reference, obtained by one of the actions `slot` or `node`.
+
+    Returns
+    -------
+    None
+    &#34;&#34;&#34;
+
+    curEmbedders = self.curEmbedders
+    oslots = self.oslots
+
+    self.stats[self.R] += 1
+
+    (nType, seq) = node
+    if nType == self.slotType:
+        for eNode in curEmbedders:
+            oslots[eNode].add(seq)
+    else:
+        self._checkSecLevel(node, before=None)
+        curEmbedders.add(node)</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.walker.CV.slot"><code class="name flex">
+<span>def <span class="ident">slot</span></span>(<span>self, key=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Make a slot node and return the handle to it in <code>n</code>.</p>
+<pre><code>n = cv.slot()
+</code></pre>
+<p>No further information is needed.
+Remember that you can add features to the node by later</p>
+<pre><code>cv.feature(n, key=value, ...)
+</code></pre>
+<p>calls.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>key</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>
+<p>If passed, it acts as a sort key on the slot.
+At the end of the walk, all slots will be sorted by their key and then
+by their original order. Care will be taken that slots retain their
+features and linkages.</p>
+<div class="admonition note">
+<p class="admonition-title">Keys are strings</p>
+</div>
+<p>Note that the key must be a string. If you want to sort on numbers,
+make sure to pad all numbers with leading zeros.</p>
+</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>node reference: tuple</code></dt>
+<dd>The node reference consists of a node type and a sequence number,
+but normally you do not have to dig these out.
+Just pass the tuple as a whole to actions that require a node argument.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/convert/walker.py#L657-L717" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def slot(self, key=None):
+    &#34;&#34;&#34;Make a slot node and return the handle to it in `n`.
+
+    ```
+    n = cv.slot()
+    ```
+
+    No further information is needed.
+    Remember that you can add features to the node by later
+
+    ```
+    cv.feature(n, key=value, ...)
+    ```
+
+    calls.
+
+    Parameters
+    ----------
+    key: string, optional None
+        If passed, it acts as a sort key on the slot.
+        At the end of the walk, all slots will be sorted by their key and then
+        by their original order. Care will be taken that slots retain their
+        features and linkages.
+
+        !!! note &#34;Keys are strings&#34;
+        Note that the key must be a string. If you want to sort on numbers,
+        make sure to pad all numbers with leading zeros.
+
+    Returns
+    -------
+    node reference: tuple
+        The node reference consists of a node type and a sequence number,
+        but normally you do not have to dig these out.
+        Just pass the tuple as a whole to actions that require a node argument.
+    &#34;&#34;&#34;
+
+    curSeq = self.curSeq
+    curEmbedders = self.curEmbedders
+    oslots = self.oslots
+    slotKeys = self.slotKeys
+    levelFromSection = self.levelFromSection
+    warnings = self.warnings
+
+    self.stats[self.S] += 1
+    nType = self.slotType
+
+    curSeq[nType] += 1
+    seq = curSeq[nType]
+    if key is not None:
+        slotKeys[seq] = key
+
+    inSection = False
+    for eNode in curEmbedders:
+        if eNode[0] in levelFromSection:
+            inSection = True
+        oslots[eNode].add(seq)
+
+    if levelFromSection and not inSection:
+        warnings[&#34;slot outside sections&#34;].append(f&#34;{seq}&#34;)
+
+    return (nType, seq)</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.walker.CV.stop"><code class="name flex">
+<span>def <span class="ident">stop</span></span>(<span>self, msg)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Stops the director. No further input will be read.</p>
+<pre><code>cv.stop(msg)
+</code></pre>
+<p>The director will exit with a non-good status
+and issue the message <code>msg</code>.
+If you have called <code>walk()</code> with <code>force=True</code>, indicating that the
+director must proceed after errors, then this stop command will cause
+termination nevertheless.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>msg</code></strong> :&ensp;<code>string</code></dt>
+<dd>A message to display upon stopping.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/convert/walker.py#L627-L655" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def stop(self, msg):
+    &#34;&#34;&#34;Stops the director. No further input will be read.
+
+    ```
+    cv.stop(msg)
+    ```
+
+    The director will exit with a non-good status  and issue the message `msg`.
+    If you have called `walk()` with `force=True`, indicating that the
+    director must proceed after errors, then this stop command will cause
+    termination nevertheless.
+
+    Parameters
+    ----------
+    msg: string
+        A message to display upon stopping.
+
+    Returns
+    -------
+    None
+    &#34;&#34;&#34;
+
+    tmObj = self.TF.tmObj
+    error = tmObj.error
+
+    error(f&#34;Forced stop: {msg}&#34;)
+    self.good = False
+    self.force = False
+    self.forcedStop = True</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.walker.CV.terminate"><code class="name flex">
+<span>def <span class="ident">terminate</span></span>(<span>self, node)</span>
+</code></dt>
+<dd>
+<div class="desc"><p><strong>terminate</strong> a node.</p>
+<pre><code>cv.terminate(n)
+</code></pre>
+<p>The node <code>n</code> will be removed from the set of current embedders.
+This <code>n</code> must be the result of a previous <code>cv.slot()</code> or <code>cv.node()</code> action.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>A node reference, obtained by one of the actions <code>slot</code> or <code>node</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/convert/walker.py#L803-L826" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def terminate(self, node):
+    &#34;&#34;&#34;**terminate** a node.
+
+    ```
+    cv.terminate(n)
+    ```
+
+    The node `n` will be removed from the set of current embedders.
+    This `n` must be the result of a previous `cv.slot()` or `cv.node()` action.
+
+    Parameters
+    ----------
+    node: tuple
+        A node reference, obtained by one of the actions `slot` or `node`.
+
+    Returns
+    -------
+    None
+    &#34;&#34;&#34;
+
+    self.stats[self.T] += 1
+    if node is not None:
+        self.curEmbedders.discard(node)
+        self._checkSecLevel(node, before=False)</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.walker.CV.walk"><code class="name flex">
+<span>def <span class="ident">walk</span></span>(<span>self, director, slotType, otext={}, generic={}, intFeatures=set(), featureMeta={}, warn=True, generateTf=True, force=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Asks a director function to walk through source data and receives its actions.</p>
+<p>The <code>director</code> function should unravel the source.
+You have to program the <code>director</code>, which takes one argument: <code>cv</code>.
+From the <code>cv</code> you can use a few standard actions that instruct TF
+to build a graph.</p>
+<p>This function will check whether the metadata makes sense and is minimally
+complete.</p>
+<p>During node creation the section structure will be watched,
+and you will be warned if irregularities occur.</p>
+<p>After the creation of the feature data, some extra checks will be performed
+to see whether the metadata matches the data and vice versa.</p>
+<p>If the slots need to be sorted by their keys, it will happen at this point,
+and the generated features will be adapted to the sorted slots.</p>
+<p>The new feature data will be written to the output directory of the
+underlying TF object.
+In fact, the rules are exactly the same as for
+<code><a title="tf.fabric.Fabric.save" href="../core/fabric.html#tf.core.fabric.FabricCore.save">FabricCore.save()</a></code>.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>slotType</code></strong> :&ensp;<code>string</code></dt>
+<dd>The node type that acts as the type of the slots in the data set.</dd>
+<dt><strong><code>oText</code></strong> :&ensp;<code>dict</code></dt>
+<dd>
+<p>The configuration information to be stored in the <code>otext</code> feature
+(see <code><a title="tf.core.text" href="../core/text.html">tf.core.text</a></code>):</p>
+<ul>
+<li>section types</li>
+<li>section features</li>
+<li>structure types</li>
+<li>structure features</li>
+<li>text formats</li>
+</ul>
+</dd>
+<dt><strong><code>generic</code></strong> :&ensp;<code>dict</code></dt>
+<dd>
+<p>Metadata that will be written into the header of all generated TF features.</p>
+<p>You can make changes to this later on, dynamically in your director.</p>
+</dd>
+<dt><strong><code>intFeatures</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>
+<p>The set of features that have integer values only.</p>
+<p>You can make changes to this later on, dynamically in your director.</p>
+</dd>
+<dt><strong><code>featureMeta</code></strong> :&ensp;<code>dict</code> of <code>dict</code></dt>
+<dd>
+<p>For each node or edge feature descriptive metadata can be supplied.</p>
+<p>You can make changes to this later on, dynamically in your director.</p>
+</dd>
+<dt><strong><code>warn</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>
+<p>This regulates the response to warnings:</p>
+<p><code>True</code> (default): stop after warnings (as if they are errors);</p>
+<p><code>False</code> continue after warnings but do show them;</p>
+<p><code>None</code> suppress all warnings.</p>
+</dd>
+<dt><strong><code>force</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>This forces the process to continue after errors.
+Your TF set might not be valid.
+Yet this can be useful during testing, when you know
+that not everything is OK, but you want to check some results.
+Especially when dealing with large datasets, you might want to test
+with little pieces. But then you get a kind of non-fatal errors that
+stand in the way of testing. For those cases: <code>force=True</code>.</dd>
+<dt><strong><code>generateTf</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>You can pass <code>False</code> here to suppress the actual writing of TF data.
+In that way you can dry-run the director to check for errors and warnings</dd>
+<dt><strong><code>director</code></strong> :&ensp;<code>function</code></dt>
+<dd>
+<p>An ordinary function that takes one argument, the <code>cv</code> object, and
+should not deliver anything.</p>
+<p>Writing this function is the main job to do when you want to convert a data source
+to TF.</p>
+<p>See <code><a title="tf.convert.walker" href="#tf.convert.walker">tf.convert.walker</a></code> for more details.</p>
+</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>boolean</code></dt>
+<dd>Whether the operation was successful</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/convert/walker.py#L258-L421" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def walk(
+    self,
+    director,
+    slotType,
+    otext={},
+    generic={},
+    intFeatures=set(),
+    featureMeta={},
+    warn=True,
+    generateTf=True,
+    force=False,
+):
+    &#34;&#34;&#34;Asks a director function to walk through source data and receives its actions.
+
+    The `director` function should unravel the source.
+    You have to program the `director`, which takes one argument: `cv`.
+    From the `cv` you can use a few standard actions that instruct TF
+    to build a graph.
+
+    This function will check whether the metadata makes sense and is minimally
+    complete.
+
+    During node creation the section structure will be watched,
+    and you will be warned if irregularities occur.
+
+    After the creation of the feature data, some extra checks will be performed
+    to see whether the metadata matches the data and vice versa.
+
+    If the slots need to be sorted by their keys, it will happen at this point,
+    and the generated features will be adapted to the sorted slots.
+
+    The new feature data will be written to the output directory of the
+    underlying TF object.  In fact, the rules are exactly the same as for
+    `tf.fabric.Fabric.save`.
+
+    Parameters
+    ----------
+    slotType: string
+        The node type that acts as the type of the slots in the data set.
+
+    oText: dict
+        The configuration information to be stored in the `otext` feature
+        (see `tf.core.text`):
+
+        *   section types
+        *   section features
+        *   structure types
+        *   structure features
+        *   text formats
+
+    generic: dict
+        Metadata that will be written into the header of all generated TF features.
+
+        You can make changes to this later on, dynamically in your director.
+
+    intFeatures: iterable
+        The set of features that have integer values only.
+
+        You can make changes to this later on, dynamically in your director.
+
+    featureMeta: dict of dict
+        For each node or edge feature descriptive metadata can be supplied.
+
+        You can make changes to this later on, dynamically in your director.
+
+    warn: boolean, optional True
+        This regulates the response to warnings:
+
+        `True` (default): stop after warnings (as if they are errors);
+
+        `False` continue after warnings but do show them;
+
+        `None` suppress all warnings.
+
+    force: boolean, optional False
+        This forces the process to continue after errors.
+        Your TF set might not be valid.
+        Yet this can be useful during testing, when you know
+        that not everything is OK, but you want to check some results.
+        Especially when dealing with large datasets, you might want to test
+        with little pieces. But then you get a kind of non-fatal errors that
+        stand in the way of testing. For those cases: `force=True`.
+
+    generateTf: boolean, optional True
+        You can pass `False` here to suppress the actual writing of TF data.
+        In that way you can dry-run the director to check for errors and warnings
+
+    director: function
+        An ordinary function that takes one argument, the `cv` object, and
+        should not deliver anything.
+
+        Writing this function is the main job to do when you want to convert a data source
+        to TF.
+
+        See `tf.convert.walker` for more details.
+
+    Returns
+    -------
+    boolean
+        Whether the operation was successful
+    &#34;&#34;&#34;
+
+    tmObj = self.TF.tmObj
+    info = tmObj.info
+    indent = tmObj.indent
+    setSilent = tmObj.setSilent
+    silent = self.silent
+
+    indent(level=0, reset=True)
+    info(&#34;Importing data from walking through the source ...&#34;, force=silent != DEEP)
+
+    self.force = force
+    self.good = True
+    self.forcedStop = False
+    self.errors = collections.defaultdict(list)
+    self.warnings = collections.defaultdict(list)
+    self.warn = warn
+    self.slotType = slotType
+
+    self.intFeatures = set(intFeatures)
+    self.featureMeta = featureMeta
+    self.metaData = {}
+    self.nodeFeatures = {}
+    self.edgeFeatures = {}
+    self.slotKeys = {}
+    self.discardables = set()
+
+    indent(level=1, reset=True)
+    self._prepareMeta(otext, generic)
+
+    indent(level=1, reset=True)
+    self._follow(director)
+
+    indent(level=1, reset=True)
+    self._removeUnlinked()
+
+    indent(level=1, reset=True)
+    self._checkGraph()
+
+    indent(level=1, reset=True)
+    self._checkFeatures()
+
+    indent(level=1, reset=True)
+    self._reorderNodes()
+
+    indent(level=1, reset=True)
+    self._reassignFeatures()
+
+    indent(level=0)
+    info(&#34;Features ready to write&#34;)
+
+    if generateTf:
+        if self.good or self.force:
+            self.good = self.TF.save(
+                metaData=self.metaData,
+                nodeFeatures=self.nodeFeatures,
+                edgeFeatures=self.edgeFeatures,
+                silent=silent,
+            )
+
+    self._showWarnings()
+    setSilent(self.wasSilent)
+
+    return self.good</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#walker">Walker</a><ul>
+<li><a href="#set-up">Set up</a></li>
+<li><a href="#walking">Walking</a></li>
+<li><a href="#dynamic-metadata">Dynamic Metadata</a></li>
+<li><a href="#action-methods">Action methods</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.convert" href="index.html">tf.convert</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.convert.walker.CV" href="#tf.convert.walker.CV">CV</a></code></h4>
+<ul class="two-column">
+<li><code><a title="tf.convert.walker.CV.D" href="#tf.convert.walker.CV.D">D</a></code></li>
+<li><code><a title="tf.convert.walker.CV.E" href="#tf.convert.walker.CV.E">E</a></code></li>
+<li><code><a title="tf.convert.walker.CV.F" href="#tf.convert.walker.CV.F">F</a></code></li>
+<li><code><a title="tf.convert.walker.CV.N" href="#tf.convert.walker.CV.N">N</a></code></li>
+<li><code><a title="tf.convert.walker.CV.R" href="#tf.convert.walker.CV.R">R</a></code></li>
+<li><code><a title="tf.convert.walker.CV.S" href="#tf.convert.walker.CV.S">S</a></code></li>
+<li><code><a title="tf.convert.walker.CV.T" href="#tf.convert.walker.CV.T">T</a></code></li>
+<li><code><a title="tf.convert.walker.CV.active" href="#tf.convert.walker.CV.active">active</a></code></li>
+<li><code><a title="tf.convert.walker.CV.activeNodes" href="#tf.convert.walker.CV.activeNodes">activeNodes</a></code></li>
+<li><code><a title="tf.convert.walker.CV.activeTypes" href="#tf.convert.walker.CV.activeTypes">activeTypes</a></code></li>
+<li><code><a title="tf.convert.walker.CV.delete" href="#tf.convert.walker.CV.delete">delete</a></code></li>
+<li><code><a title="tf.convert.walker.CV.edge" href="#tf.convert.walker.CV.edge">edge</a></code></li>
+<li><code><a title="tf.convert.walker.CV.feature" href="#tf.convert.walker.CV.feature">feature</a></code></li>
+<li><code><a title="tf.convert.walker.CV.features" href="#tf.convert.walker.CV.features">features</a></code></li>
+<li><code><a title="tf.convert.walker.CV.get" href="#tf.convert.walker.CV.get">get</a></code></li>
+<li><code><a title="tf.convert.walker.CV.link" href="#tf.convert.walker.CV.link">link</a></code></li>
+<li><code><a title="tf.convert.walker.CV.linked" href="#tf.convert.walker.CV.linked">linked</a></code></li>
+<li><code><a title="tf.convert.walker.CV.meta" href="#tf.convert.walker.CV.meta">meta</a></code></li>
+<li><code><a title="tf.convert.walker.CV.node" href="#tf.convert.walker.CV.node">node</a></code></li>
+<li><code><a title="tf.convert.walker.CV.occurs" href="#tf.convert.walker.CV.occurs">occurs</a></code></li>
+<li><code><a title="tf.convert.walker.CV.resume" href="#tf.convert.walker.CV.resume">resume</a></code></li>
+<li><code><a title="tf.convert.walker.CV.slot" href="#tf.convert.walker.CV.slot">slot</a></code></li>
+<li><code><a title="tf.convert.walker.CV.stop" href="#tf.convert.walker.CV.stop">stop</a></code></li>
+<li><code><a title="tf.convert.walker.CV.terminate" href="#tf.convert.walker.CV.terminate">terminate</a></code></li>
+<li><code><a title="tf.convert.walker.CV.walk" href="#tf.convert.walker.CV.walk">walk</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,1107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.browser.serve API documentation</title>
+<meta name="description" content="Dress TF nodes up for serving on the web …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.browser.serve</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="dress-tf-nodes-up-for-serving-on-the-web">Dress TF nodes up for serving on the web</h1>
+<p>When the TF kernel has retrieved data, it comes in the form of nodes.</p>
+<p>But the kernel is the one that is able to dress those nodes up with
+meaningful data.</p>
+<p>That dressing up is happening in this module, it has the higher level
+functions for composing tables and passages.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/browser/serve.py#L1-L474" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+# Dress TF nodes up for serving on the web
+
+When the TF kernel has retrieved data, it comes in the form of nodes.
+
+But the kernel is the one that is able to dress those nodes up with
+meaningful data.
+
+That dressing up is happening in this module, it has the higher level
+functions for composing tables and passages.
+&#34;&#34;&#34;
+
+import json
+import markdown
+from textwrap import dedent
+
+from flask import jsonify, redirect, render_template, make_response
+
+from ..core.helpers import console, wrapMessages
+from ..core.text import DEFAULT_FORMAT
+from ..advanced.helpers import RESULT
+from ..advanced.text import specialCharacters
+from .wrap import (
+    pageLinks,
+    passageLinks,
+    wrapColorMap,
+    wrapEColorMap,
+    wrapOptions,
+    wrapSelect,
+    wrapProvenance,
+)
+from .servelib import getAbout, getFormData, zipTables, BATCH
+
+
+TIMEOUT = 180
+
+
+def serveTable(web, kind, getx=None, asDict=False):
+    kernelApi = web.kernelApi
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+
+    form = getFormData(interfaceDefaults)
+    textFormat = form[&#34;textFormat&#34;] or None
+    task = form[kind].strip()
+    openedKey = f&#34;{kind}Opened&#34;
+    openedSet = (
+        {int(n) for n in form[openedKey].split(&#34;,&#34;)} if form[openedKey] else set()
+    )
+
+    method = dict if asDict else jsonify
+
+    messages = &#34;&#34;
+    table = None
+    if task:
+        options = {
+            k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
+        }
+        options[&#34;colorMap&#34;] = form.get(&#34;colorMap&#34;, {})
+        options[&#34;edgeHighlights&#34;] = form.get(&#34;edgeHighlights&#34;, {})
+
+        (table, messages) = kernelApi.table(
+            kind,
+            task,
+            form[&#34;features&#34;],
+            opened=openedSet,
+            fmt=textFormat,
+            baseTypes=form[&#34;baseTypes&#34;],
+            hiddenTypes=form[&#34;hiddenTypes&#34;],
+            edgeFeatures=form[&#34;edgeFeatures&#34;],
+            getx=int(getx) if getx else None,
+            **options,
+        )
+
+        if messages:
+            (status, messages) = wrapMessages(messages)
+
+    return method(table=table, messages=messages)
+
+
+def serveQuery(web, getx=None, asDict=False):
+    kernelApi = web.kernelApi
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+    wildQueries = web.wildQueries
+
+    kind = &#34;query&#34;
+    form = getFormData(interfaceDefaults)
+    task = form[kind]
+    condenseType = form[&#34;condenseType&#34;] or None
+    resultKind = condenseType if form[&#34;condensed&#34;] else RESULT
+    textFormat = form[&#34;textFormat&#34;] or None
+    openedKey = f&#34;{kind}Opened&#34;
+    openedSet = (
+        {int(n) for n in form[openedKey].split(&#34;,&#34;)} if form[openedKey] else set()
+    )
+
+    pages = &#34;&#34;
+    features = &#34;&#34;
+
+    method = dict if asDict else jsonify
+    total = 0
+
+    if task:
+        messages = &#34;&#34;
+        table = None
+        status = True
+        if task in wildQueries:
+            messages = (
+                f&#34;Aborted because query is known to take longer than {TIMEOUT} second&#34;
+                + (&#34;&#34; if TIMEOUT == 1 else &#34;s&#34;)
+            )
+            status = False
+        else:
+            options = {
+                k: form.get(k, v)
+                for (k, v) in interfaceDefaults.items()
+                if v is not None
+            }
+            options[&#34;colorMap&#34;] = form.get(&#34;colorMap&#34;, {})
+            options[&#34;edgeHighlights&#34;] = form.get(&#34;edgeHighlights&#34;, {})
+
+            try:
+                (table, status, messages, features, start, total) = kernelApi.search(
+                    task,
+                    form[&#34;batch&#34;],
+                    position=form[&#34;position&#34;],
+                    opened=openedSet,
+                    condenseType=condenseType,
+                    fmt=textFormat,
+                    baseTypes=form[&#34;baseTypes&#34;],
+                    hiddenTypes=form[&#34;hiddenTypes&#34;],
+                    edgeFeatures=form[&#34;edgeFeatures&#34;],
+                    getx=int(getx) if getx else None,
+                    **options,
+                )
+            except TimeoutError:
+                messages = (
+                    f&#34;Aborted because query takes longer than {TIMEOUT} second&#34;
+                    + (&#34;&#34; if TIMEOUT == 1 else &#34;s&#34;)
+                )
+                console(f&#34;{task}\n{messages}&#34;, error=True)
+                wildQueries.add(task)
+                total = 0
+                status = False
+
+        if status and table is not None:
+            pages = pageLinks(total, form[&#34;position&#34;])
+    else:
+        table = f&#34;no {resultKind}s&#34;
+        messages = &#34;&#34;
+        status = True
+
+    return method(
+        pages=pages,
+        table=table,
+        nResults=total,
+        status=status,
+        messages=messages.strip(),
+        features=features,
+    )
+
+
+def servePassage(web, getx=None):
+    kernelApi = web.kernelApi
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+
+    form = getFormData(interfaceDefaults)
+    textFormat = form[&#34;textFormat&#34;] or None
+
+    passages = &#34;&#34;
+
+    openedKey = &#34;passageOpened&#34;
+    openedSet = set(form[openedKey].split(&#34;,&#34;)) if form[openedKey] else set()
+
+    sec0 = form[&#34;sec0&#34;]
+    sec1 = form[&#34;sec1&#34;]
+    sec2 = form[&#34;sec2&#34;]
+    options = {
+        k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
+    }
+    options[&#34;colorMap&#34;] = form.get(&#34;colorMap&#34;, {})
+    options[&#34;edgeHighlights&#34;] = form.get(&#34;edgeHighlights&#34;, {})
+
+    (table, sec0Type, passages, browseNavLevel) = kernelApi.passage(
+        form[&#34;features&#34;],
+        form[&#34;query&#34;],
+        sec0,
+        sec1=sec1,
+        sec2=sec2,
+        opened=openedSet,
+        fmt=textFormat,
+        baseTypes=form[&#34;baseTypes&#34;],
+        hiddenTypes=form[&#34;hiddenTypes&#34;],
+        edgeFeatures=form[&#34;edgeFeatures&#34;],
+        getx=getx,
+        **options,
+    )
+    passages = passageLinks(passages, sec0Type, sec0, sec1, browseNavLevel)
+    return jsonify(table=table, passages=passages)
+
+
+def serveExport(web):
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+    appName = aContext.appName
+    kernelApi = web.kernelApi
+    app = kernelApi.app
+
+    sectionsData = serveTable(web, &#34;sections&#34;, asDict=True)
+    tuplesData = serveTable(web, &#34;tuples&#34;, asDict=True)
+    queryData = serveQuery(web, asDict=True)
+
+    form = getFormData(interfaceDefaults)
+
+    (colophon, header, appLogo, tfLogo) = app.header()
+    css = kernelApi.css()
+    provenance = kernelApi.provenance()
+    setNames = kernelApi.setNames()
+    setNamesRep = &#34;, &#34;.join(setNames)
+    setNameHtml = (
+        f&#39;&lt;p class=&#34;setnames&#34;&gt;Sets: &lt;span class=&#34;setnames&#34;&gt;{setNamesRep}&lt;/span&gt;&lt;/p&gt;&#39;
+        if setNames
+        else &#34;&#34;
+    )
+    (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
+
+    descriptionMd = markdown.markdown(
+        form[&#34;description&#34;],
+        extensions=[&#34;markdown.extensions.tables&#34;, &#34;markdown.extensions.fenced_code&#34;],
+    )
+
+    sectionsMessages = sectionsData[&#34;messages&#34;]
+    sectionsTable = sectionsData[&#34;table&#34;]
+    tuplesMessages = tuplesData[&#34;messages&#34;]
+    tuplesTable = tuplesData[&#34;table&#34;]
+    queryMessages = queryData[&#34;messages&#34;]
+    queryTable = queryData[&#34;table&#34;]
+
+    # maybe this is a hack. Needed to prevent appName from specified twice
+
+    form[&#34;appName&#34;] = appName
+
+    return render_template(
+        &#34;export.html&#34;,
+        # appName=appName,
+        css=css,
+        descriptionMd=descriptionMd,
+        sectionsTable=(
+            sectionsMessages
+            if sectionsMessages or sectionsTable is None
+            else sectionsTable
+        ),
+        tuplesTable=(
+            tuplesMessages if tuplesMessages or tuplesTable is None else tuplesTable
+        ),
+        queryTable=(
+            queryMessages if queryMessages or queryTable is None else queryTable
+        ),
+        colophon=f&#34;{appLogo}{colophon}{tfLogo}&#34;,
+        provenance=provenanceHtml,
+        setNames=setNameHtml,
+        **form,
+    )
+
+
+def serveDownload(web, jobOnly):
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+    form = getFormData(interfaceDefaults)
+
+    if jobOnly:
+        appName = form[&#34;appName&#34;]
+        jobName = form[&#34;jobName&#34;]
+        fileName = f&#34;{appName}-{jobName}.json&#34;
+
+        headers = {
+            &#34;Expires&#34;: &#34;0&#34;,
+            &#34;Cache-Control&#34;: &#34;no-cache, no-store, must-revalidate&#34;,
+            &#34;Content-Type&#34;: &#34;application/json&#34;,
+            &#34;Content-Disposition&#34;: f&#39;attachment; filename=&#34;{fileName}&#34;&#39;,
+            &#34;Content-Encoding&#34;: &#34;identity&#34;,
+        }
+
+        buffer = json.dumps(
+            {k: v for (k, v) in form.items() if k not in {&#34;edgeHighlights&#34;, &#34;colorMap&#34;}}
+        ).encode(&#34;utf8&#34;)
+        return make_response(buffer, headers)
+
+    kernelApi = web.kernelApi
+    app = kernelApi.app
+    wildQueries = web.wildQueries
+
+    task = form[&#34;query&#34;]
+    condensed = form[&#34;condensed&#34;]
+    condenseType = form[&#34;condenseType&#34;] or None
+    textFormat = form[&#34;textFormat&#34;] or None
+    csvs = None
+    queryStatus = True
+    tupleResultsX = None
+    queryResultsX = None
+    messages = &#34;&#34;
+    if task in wildQueries:
+        messages = (
+            f&#34;Aborted because query is known to take longer than {TIMEOUT} second&#34;
+            + (&#34;&#34; if TIMEOUT == 1 else &#34;s&#34;)
+        )
+    else:
+        try:
+            (
+                queryStatus,
+                queryMessages,
+                csvs,
+                tupleResultsX,
+                queryResultsX,
+            ) = kernelApi.csvs(
+                task,
+                form[&#34;tuples&#34;],
+                form[&#34;sections&#34;],
+                condensed=condensed,
+                condenseType=condenseType,
+                fmt=textFormat,
+            )
+        except TimeoutError:
+            queryStatus = False
+            messages = f&#34;Aborted because query takes longer than {TIMEOUT} second&#34; + (
+                &#34;&#34; if TIMEOUT == 1 else &#34;s&#34;
+            )
+            console(f&#34;{task}\n{messages}&#34;, error=True)
+            wildQueries.add(task)
+            return jsonify(messages=messages)
+
+    if not queryStatus:
+        redirect(&#34;/&#34;)
+        return jsonify(status=queryStatus, messages=queryMessages)
+
+    (colophon, header, appLogo, tfLogo) = app.header()
+    provenance = kernelApi.provenance()
+    setNames = kernelApi.setNames()
+    (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
+
+    about = getAbout(colophon, header, provenanceMd, form)
+    (fileName, zipBuffer) = zipTables(csvs, tupleResultsX, queryResultsX, about, form)
+
+    headers = {
+        &#34;Expires&#34;: &#34;0&#34;,
+        &#34;Cache-Control&#34;: &#34;no-cache, no-store, must-revalidate&#34;,
+        &#34;Content-Type&#34;: &#34;application/octet-stream&#34;,
+        &#34;Content-Disposition&#34;: f&#39;attachment; filename=&#34;{fileName}&#34;&#39;,
+        &#34;Content-Encoding&#34;: &#34;identity&#34;,
+    }
+    return make_response(zipBuffer, headers)
+
+
+def serveAll(web, anything):
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+    appName = aContext.appName
+    defaultCondenseType = aContext.condenseType
+    defaultTextFormat = aContext.textFormat
+    exampleSection = aContext.exampleSection
+    exampleSectionHtml = aContext.exampleSectionHtml
+    allowedValues = aContext.allowedValues
+    showMath = aContext.interfaceDefaults[&#34;showMath&#34;]
+
+    mathjax = (
+        dedent(
+            &#34;&#34;&#34;
+        &lt;script&gt;
+        globalThis.MathJax = {
+            tex: {
+                inlineMath: [[&#39;$&#39;, &#39;$&#39;]],
+                displayMath: [[&#39;$$&#39;, &#39;$$&#39;]],
+            }
+        };
+        &lt;/script&gt;
+        &lt;script
+            src=&#34;/browser/static/mathjax/tex-chtml.js&#34;
+            id=&#34;MathJax-script&#34;
+            async
+        &gt;&lt;/script&gt;
+        &#34;&#34;&#34;
+        )
+        if showMath
+        else &#34;&#34;
+    )
+
+    kernelApi = web.kernelApi
+    app = kernelApi.app
+
+    form = getFormData(interfaceDefaults)
+    resetForm = form[&#34;resetForm&#34;]
+
+    pages = &#34;&#34;
+    passages = &#34;&#34;
+
+    (colophon, header, appLogo, tfLogo) = app.header()
+    css = kernelApi.css()
+    provenance = kernelApi.provenance()
+    setNames = kernelApi.setNames()
+    setNamesRep = &#34;, &#34;.join(setNames)
+    setNameHtml = (
+        f&#39;&lt;p class=&#34;setnames&#34;&gt;Sets: &lt;span class=&#34;setnames&#34;&gt;{setNamesRep}&lt;/span&gt;&lt;/p&gt;&#39;
+        if setNames
+        else &#34;&#34;
+    )
+    (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
+
+    chooser = {}
+    typeCss = (&#34;cline&#34;, &#34;ctype&#34;)
+    formatCss = (&#34;tfline&#34;, &#34;ttext&#34;)
+
+    for (option, group, item, multiple) in (
+        (&#34;baseTypes&#34;, &#34;bcheck&#34;, typeCss, True),
+        (&#34;condenseType&#34;, &#34;cradio&#34;, typeCss, False),
+        (&#34;hiddenTypes&#34;, &#34;hcheck&#34;, typeCss, True),
+        (&#34;edgeFeatures&#34;, &#34;echeck&#34;, typeCss, True),
+        (&#34;textFormat&#34;, &#34;tradio&#34;, formatCss, False),
+    ):
+        value = aContext.get(option, None) if resetForm else form[option]
+        options = wrapSelect(option, allowedValues, value, group, item, multiple)
+        chooser[option] = options
+
+    (options, optionsMoved, optionsHelp) = wrapOptions(aContext, form)
+    colorMapHtml = wrapColorMap(form)
+    eColorMapHtml = wrapEColorMap(form)
+
+    characters = specialCharacters(app, fmt=form.get(&#34;textFormat&#34;, DEFAULT_FORMAT), _browse=True)
+
+    templateData = dict(
+        css=css,
+        mathjax=mathjax,
+        characters=characters,
+        colorMapHtml=colorMapHtml,
+        eColorMapHtml=eColorMapHtml,
+        colophon=f&#34;{appLogo}{colophon}{tfLogo}&#34;,
+        header=header,
+        setNames=setNameHtml,
+        options=options,
+        optionsHelp=optionsHelp,
+        chooser=chooser,
+        condensedOption=optionsMoved[&#34;condensed&#34;],
+        forceEdgesOption=optionsMoved[&#34;forceEdges&#34;],
+        hideTypesOption=optionsMoved[&#34;hideTypes&#34;],
+        defaultCondenseType=defaultCondenseType,
+        defaultTextFormat=defaultTextFormat,
+        exampleSectionHtml=exampleSectionHtml,
+        exampleSection=exampleSection,
+        pages=pages,
+        passages=passages,
+        author=&#34;&#34;,
+        title=&#34;&#34;,
+        description=&#34;&#34;,
+        messages=&#34;&#34;,
+        sections=&#34;&#34;,
+        tuples=&#34;&#34;,
+        query=&#34;&#34;,
+        position=1,
+        batch=BATCH,
+        passageOpened=&#34;&#34;,
+        sectionsOpened=&#34;&#34;,
+        tuplesOpened=&#34;&#34;,
+        queryOpened=&#34;&#34;,
+    )
+    for (k, v) in form.items():
+        if not resetForm or k not in templateData:
+            templateData[k] = v
+    templateData[&#34;appName&#34;] = appName
+    templateData[&#34;resetForm&#34;] = &#34;&#34;
+    return render_template(
+        &#34;index.html&#34;,
+        **templateData,
+    )</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.browser.serve.serveAll"><code class="name flex">
+<span>def <span class="ident">serveAll</span></span>(<span>web, anything)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/browser/serve.py#L356-L474" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def serveAll(web, anything):
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+    appName = aContext.appName
+    defaultCondenseType = aContext.condenseType
+    defaultTextFormat = aContext.textFormat
+    exampleSection = aContext.exampleSection
+    exampleSectionHtml = aContext.exampleSectionHtml
+    allowedValues = aContext.allowedValues
+    showMath = aContext.interfaceDefaults[&#34;showMath&#34;]
+
+    mathjax = (
+        dedent(
+            &#34;&#34;&#34;
+        &lt;script&gt;
+        globalThis.MathJax = {
+            tex: {
+                inlineMath: [[&#39;$&#39;, &#39;$&#39;]],
+                displayMath: [[&#39;$$&#39;, &#39;$$&#39;]],
+            }
+        };
+        &lt;/script&gt;
+        &lt;script
+            src=&#34;/browser/static/mathjax/tex-chtml.js&#34;
+            id=&#34;MathJax-script&#34;
+            async
+        &gt;&lt;/script&gt;
+        &#34;&#34;&#34;
+        )
+        if showMath
+        else &#34;&#34;
+    )
+
+    kernelApi = web.kernelApi
+    app = kernelApi.app
+
+    form = getFormData(interfaceDefaults)
+    resetForm = form[&#34;resetForm&#34;]
+
+    pages = &#34;&#34;
+    passages = &#34;&#34;
+
+    (colophon, header, appLogo, tfLogo) = app.header()
+    css = kernelApi.css()
+    provenance = kernelApi.provenance()
+    setNames = kernelApi.setNames()
+    setNamesRep = &#34;, &#34;.join(setNames)
+    setNameHtml = (
+        f&#39;&lt;p class=&#34;setnames&#34;&gt;Sets: &lt;span class=&#34;setnames&#34;&gt;{setNamesRep}&lt;/span&gt;&lt;/p&gt;&#39;
+        if setNames
+        else &#34;&#34;
+    )
+    (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
+
+    chooser = {}
+    typeCss = (&#34;cline&#34;, &#34;ctype&#34;)
+    formatCss = (&#34;tfline&#34;, &#34;ttext&#34;)
+
+    for (option, group, item, multiple) in (
+        (&#34;baseTypes&#34;, &#34;bcheck&#34;, typeCss, True),
+        (&#34;condenseType&#34;, &#34;cradio&#34;, typeCss, False),
+        (&#34;hiddenTypes&#34;, &#34;hcheck&#34;, typeCss, True),
+        (&#34;edgeFeatures&#34;, &#34;echeck&#34;, typeCss, True),
+        (&#34;textFormat&#34;, &#34;tradio&#34;, formatCss, False),
+    ):
+        value = aContext.get(option, None) if resetForm else form[option]
+        options = wrapSelect(option, allowedValues, value, group, item, multiple)
+        chooser[option] = options
+
+    (options, optionsMoved, optionsHelp) = wrapOptions(aContext, form)
+    colorMapHtml = wrapColorMap(form)
+    eColorMapHtml = wrapEColorMap(form)
+
+    characters = specialCharacters(app, fmt=form.get(&#34;textFormat&#34;, DEFAULT_FORMAT), _browse=True)
+
+    templateData = dict(
+        css=css,
+        mathjax=mathjax,
+        characters=characters,
+        colorMapHtml=colorMapHtml,
+        eColorMapHtml=eColorMapHtml,
+        colophon=f&#34;{appLogo}{colophon}{tfLogo}&#34;,
+        header=header,
+        setNames=setNameHtml,
+        options=options,
+        optionsHelp=optionsHelp,
+        chooser=chooser,
+        condensedOption=optionsMoved[&#34;condensed&#34;],
+        forceEdgesOption=optionsMoved[&#34;forceEdges&#34;],
+        hideTypesOption=optionsMoved[&#34;hideTypes&#34;],
+        defaultCondenseType=defaultCondenseType,
+        defaultTextFormat=defaultTextFormat,
+        exampleSectionHtml=exampleSectionHtml,
+        exampleSection=exampleSection,
+        pages=pages,
+        passages=passages,
+        author=&#34;&#34;,
+        title=&#34;&#34;,
+        description=&#34;&#34;,
+        messages=&#34;&#34;,
+        sections=&#34;&#34;,
+        tuples=&#34;&#34;,
+        query=&#34;&#34;,
+        position=1,
+        batch=BATCH,
+        passageOpened=&#34;&#34;,
+        sectionsOpened=&#34;&#34;,
+        tuplesOpened=&#34;&#34;,
+        queryOpened=&#34;&#34;,
+    )
+    for (k, v) in form.items():
+        if not resetForm or k not in templateData:
+            templateData[k] = v
+    templateData[&#34;appName&#34;] = appName
+    templateData[&#34;resetForm&#34;] = &#34;&#34;
+    return render_template(
+        &#34;index.html&#34;,
+        **templateData,
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.serve.serveDownload"><code class="name flex">
+<span>def <span class="ident">serveDownload</span></span>(<span>web, jobOnly)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/browser/serve.py#L268-L353" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def serveDownload(web, jobOnly):
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+    form = getFormData(interfaceDefaults)
+
+    if jobOnly:
+        appName = form[&#34;appName&#34;]
+        jobName = form[&#34;jobName&#34;]
+        fileName = f&#34;{appName}-{jobName}.json&#34;
+
+        headers = {
+            &#34;Expires&#34;: &#34;0&#34;,
+            &#34;Cache-Control&#34;: &#34;no-cache, no-store, must-revalidate&#34;,
+            &#34;Content-Type&#34;: &#34;application/json&#34;,
+            &#34;Content-Disposition&#34;: f&#39;attachment; filename=&#34;{fileName}&#34;&#39;,
+            &#34;Content-Encoding&#34;: &#34;identity&#34;,
+        }
+
+        buffer = json.dumps(
+            {k: v for (k, v) in form.items() if k not in {&#34;edgeHighlights&#34;, &#34;colorMap&#34;}}
+        ).encode(&#34;utf8&#34;)
+        return make_response(buffer, headers)
+
+    kernelApi = web.kernelApi
+    app = kernelApi.app
+    wildQueries = web.wildQueries
+
+    task = form[&#34;query&#34;]
+    condensed = form[&#34;condensed&#34;]
+    condenseType = form[&#34;condenseType&#34;] or None
+    textFormat = form[&#34;textFormat&#34;] or None
+    csvs = None
+    queryStatus = True
+    tupleResultsX = None
+    queryResultsX = None
+    messages = &#34;&#34;
+    if task in wildQueries:
+        messages = (
+            f&#34;Aborted because query is known to take longer than {TIMEOUT} second&#34;
+            + (&#34;&#34; if TIMEOUT == 1 else &#34;s&#34;)
+        )
+    else:
+        try:
+            (
+                queryStatus,
+                queryMessages,
+                csvs,
+                tupleResultsX,
+                queryResultsX,
+            ) = kernelApi.csvs(
+                task,
+                form[&#34;tuples&#34;],
+                form[&#34;sections&#34;],
+                condensed=condensed,
+                condenseType=condenseType,
+                fmt=textFormat,
+            )
+        except TimeoutError:
+            queryStatus = False
+            messages = f&#34;Aborted because query takes longer than {TIMEOUT} second&#34; + (
+                &#34;&#34; if TIMEOUT == 1 else &#34;s&#34;
+            )
+            console(f&#34;{task}\n{messages}&#34;, error=True)
+            wildQueries.add(task)
+            return jsonify(messages=messages)
+
+    if not queryStatus:
+        redirect(&#34;/&#34;)
+        return jsonify(status=queryStatus, messages=queryMessages)
+
+    (colophon, header, appLogo, tfLogo) = app.header()
+    provenance = kernelApi.provenance()
+    setNames = kernelApi.setNames()
+    (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
+
+    about = getAbout(colophon, header, provenanceMd, form)
+    (fileName, zipBuffer) = zipTables(csvs, tupleResultsX, queryResultsX, about, form)
+
+    headers = {
+        &#34;Expires&#34;: &#34;0&#34;,
+        &#34;Cache-Control&#34;: &#34;no-cache, no-store, must-revalidate&#34;,
+        &#34;Content-Type&#34;: &#34;application/octet-stream&#34;,
+        &#34;Content-Disposition&#34;: f&#39;attachment; filename=&#34;{fileName}&#34;&#39;,
+        &#34;Content-Encoding&#34;: &#34;identity&#34;,
+    }
+    return make_response(zipBuffer, headers)</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.serve.serveExport"><code class="name flex">
+<span>def <span class="ident">serveExport</span></span>(<span>web)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/browser/serve.py#L204-L265" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def serveExport(web):
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+    appName = aContext.appName
+    kernelApi = web.kernelApi
+    app = kernelApi.app
+
+    sectionsData = serveTable(web, &#34;sections&#34;, asDict=True)
+    tuplesData = serveTable(web, &#34;tuples&#34;, asDict=True)
+    queryData = serveQuery(web, asDict=True)
+
+    form = getFormData(interfaceDefaults)
+
+    (colophon, header, appLogo, tfLogo) = app.header()
+    css = kernelApi.css()
+    provenance = kernelApi.provenance()
+    setNames = kernelApi.setNames()
+    setNamesRep = &#34;, &#34;.join(setNames)
+    setNameHtml = (
+        f&#39;&lt;p class=&#34;setnames&#34;&gt;Sets: &lt;span class=&#34;setnames&#34;&gt;{setNamesRep}&lt;/span&gt;&lt;/p&gt;&#39;
+        if setNames
+        else &#34;&#34;
+    )
+    (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
+
+    descriptionMd = markdown.markdown(
+        form[&#34;description&#34;],
+        extensions=[&#34;markdown.extensions.tables&#34;, &#34;markdown.extensions.fenced_code&#34;],
+    )
+
+    sectionsMessages = sectionsData[&#34;messages&#34;]
+    sectionsTable = sectionsData[&#34;table&#34;]
+    tuplesMessages = tuplesData[&#34;messages&#34;]
+    tuplesTable = tuplesData[&#34;table&#34;]
+    queryMessages = queryData[&#34;messages&#34;]
+    queryTable = queryData[&#34;table&#34;]
+
+    # maybe this is a hack. Needed to prevent appName from specified twice
+
+    form[&#34;appName&#34;] = appName
+
+    return render_template(
+        &#34;export.html&#34;,
+        # appName=appName,
+        css=css,
+        descriptionMd=descriptionMd,
+        sectionsTable=(
+            sectionsMessages
+            if sectionsMessages or sectionsTable is None
+            else sectionsTable
+        ),
+        tuplesTable=(
+            tuplesMessages if tuplesMessages or tuplesTable is None else tuplesTable
+        ),
+        queryTable=(
+            queryMessages if queryMessages or queryTable is None else queryTable
+        ),
+        colophon=f&#34;{appLogo}{colophon}{tfLogo}&#34;,
+        provenance=provenanceHtml,
+        setNames=setNameHtml,
+        **form,
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.serve.servePassage"><code class="name flex">
+<span>def <span class="ident">servePassage</span></span>(<span>web, getx=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/browser/serve.py#L164-L201" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def servePassage(web, getx=None):
+    kernelApi = web.kernelApi
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+
+    form = getFormData(interfaceDefaults)
+    textFormat = form[&#34;textFormat&#34;] or None
+
+    passages = &#34;&#34;
+
+    openedKey = &#34;passageOpened&#34;
+    openedSet = set(form[openedKey].split(&#34;,&#34;)) if form[openedKey] else set()
+
+    sec0 = form[&#34;sec0&#34;]
+    sec1 = form[&#34;sec1&#34;]
+    sec2 = form[&#34;sec2&#34;]
+    options = {
+        k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
+    }
+    options[&#34;colorMap&#34;] = form.get(&#34;colorMap&#34;, {})
+    options[&#34;edgeHighlights&#34;] = form.get(&#34;edgeHighlights&#34;, {})
+
+    (table, sec0Type, passages, browseNavLevel) = kernelApi.passage(
+        form[&#34;features&#34;],
+        form[&#34;query&#34;],
+        sec0,
+        sec1=sec1,
+        sec2=sec2,
+        opened=openedSet,
+        fmt=textFormat,
+        baseTypes=form[&#34;baseTypes&#34;],
+        hiddenTypes=form[&#34;hiddenTypes&#34;],
+        edgeFeatures=form[&#34;edgeFeatures&#34;],
+        getx=getx,
+        **options,
+    )
+    passages = passageLinks(passages, sec0Type, sec0, sec1, browseNavLevel)
+    return jsonify(table=table, passages=passages)</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.serve.serveQuery"><code class="name flex">
+<span>def <span class="ident">serveQuery</span></span>(<span>web, getx=None, asDict=False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/browser/serve.py#L81-L161" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def serveQuery(web, getx=None, asDict=False):
+    kernelApi = web.kernelApi
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+    wildQueries = web.wildQueries
+
+    kind = &#34;query&#34;
+    form = getFormData(interfaceDefaults)
+    task = form[kind]
+    condenseType = form[&#34;condenseType&#34;] or None
+    resultKind = condenseType if form[&#34;condensed&#34;] else RESULT
+    textFormat = form[&#34;textFormat&#34;] or None
+    openedKey = f&#34;{kind}Opened&#34;
+    openedSet = (
+        {int(n) for n in form[openedKey].split(&#34;,&#34;)} if form[openedKey] else set()
+    )
+
+    pages = &#34;&#34;
+    features = &#34;&#34;
+
+    method = dict if asDict else jsonify
+    total = 0
+
+    if task:
+        messages = &#34;&#34;
+        table = None
+        status = True
+        if task in wildQueries:
+            messages = (
+                f&#34;Aborted because query is known to take longer than {TIMEOUT} second&#34;
+                + (&#34;&#34; if TIMEOUT == 1 else &#34;s&#34;)
+            )
+            status = False
+        else:
+            options = {
+                k: form.get(k, v)
+                for (k, v) in interfaceDefaults.items()
+                if v is not None
+            }
+            options[&#34;colorMap&#34;] = form.get(&#34;colorMap&#34;, {})
+            options[&#34;edgeHighlights&#34;] = form.get(&#34;edgeHighlights&#34;, {})
+
+            try:
+                (table, status, messages, features, start, total) = kernelApi.search(
+                    task,
+                    form[&#34;batch&#34;],
+                    position=form[&#34;position&#34;],
+                    opened=openedSet,
+                    condenseType=condenseType,
+                    fmt=textFormat,
+                    baseTypes=form[&#34;baseTypes&#34;],
+                    hiddenTypes=form[&#34;hiddenTypes&#34;],
+                    edgeFeatures=form[&#34;edgeFeatures&#34;],
+                    getx=int(getx) if getx else None,
+                    **options,
+                )
+            except TimeoutError:
+                messages = (
+                    f&#34;Aborted because query takes longer than {TIMEOUT} second&#34;
+                    + (&#34;&#34; if TIMEOUT == 1 else &#34;s&#34;)
+                )
+                console(f&#34;{task}\n{messages}&#34;, error=True)
+                wildQueries.add(task)
+                total = 0
+                status = False
+
+        if status and table is not None:
+            pages = pageLinks(total, form[&#34;position&#34;])
+    else:
+        table = f&#34;no {resultKind}s&#34;
+        messages = &#34;&#34;
+        status = True
+
+    return method(
+        pages=pages,
+        table=table,
+        nResults=total,
+        status=status,
+        messages=messages.strip(),
+        features=features,
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.serve.serveTable"><code class="name flex">
+<span>def <span class="ident">serveTable</span></span>(<span>web, kind, getx=None, asDict=False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/browser/serve.py#L38-L78" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def serveTable(web, kind, getx=None, asDict=False):
+    kernelApi = web.kernelApi
+    aContext = web.context
+    interfaceDefaults = aContext.interfaceDefaults
+
+    form = getFormData(interfaceDefaults)
+    textFormat = form[&#34;textFormat&#34;] or None
+    task = form[kind].strip()
+    openedKey = f&#34;{kind}Opened&#34;
+    openedSet = (
+        {int(n) for n in form[openedKey].split(&#34;,&#34;)} if form[openedKey] else set()
+    )
+
+    method = dict if asDict else jsonify
+
+    messages = &#34;&#34;
+    table = None
+    if task:
+        options = {
+            k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
+        }
+        options[&#34;colorMap&#34;] = form.get(&#34;colorMap&#34;, {})
+        options[&#34;edgeHighlights&#34;] = form.get(&#34;edgeHighlights&#34;, {})
+
+        (table, messages) = kernelApi.table(
+            kind,
+            task,
+            form[&#34;features&#34;],
+            opened=openedSet,
+            fmt=textFormat,
+            baseTypes=form[&#34;baseTypes&#34;],
+            hiddenTypes=form[&#34;hiddenTypes&#34;],
+            edgeFeatures=form[&#34;edgeFeatures&#34;],
+            getx=int(getx) if getx else None,
+            **options,
+        )
+
+        if messages:
+            (status, messages) = wrapMessages(messages)
+
+    return method(table=table, messages=messages)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#dress-tf-nodes-up-for-serving-on-the-web">Dress TF nodes up for serving on the web</a></li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.browser" href="index.html">tf.browser</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="tf.browser.serve.serveAll" href="#tf.browser.serve.serveAll">serveAll</a></code></li>
+<li><code><a title="tf.browser.serve.serveDownload" href="#tf.browser.serve.serveDownload">serveDownload</a></code></li>
+<li><code><a title="tf.browser.serve.serveExport" href="#tf.browser.serve.serveExport">serveExport</a></code></li>
+<li><code><a title="tf.browser.serve.servePassage" href="#tf.browser.serve.servePassage">servePassage</a></code></li>
+<li><code><a title="tf.browser.serve.serveQuery" href="#tf.browser.serve.serveQuery">serveQuery</a></code></li>
+<li><code><a title="tf.browser.serve.serveTable" href="#tf.browser.serve.serveTable">serveTable</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.about.annotateBrowser API documentation</title>
+<meta name="description" content="Annotate tool in TF Browser …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.about.annotateBrowser</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="annotate-tool-in-tf-browser">Annotate tool in TF Browser</h1>
+<p>We explain the manual annotation process with a leading example:
+<a href="https://github.com/HuygensING/suriano"><code>HuygensING/suriano</code></a>.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li><a href="https://www.python.org">Python</a> must be installed;</li>
+<li>You must know how to start up a terminal
+(macos or linux) or command prompt (windows);</li>
+<li>
+<p>TF must be installed: in a terminal or command prompt say</p>
+<p><code>pip install text-fabric</code></p>
+<p>On some systems you have to say <code>pip3</code> instead of <code>pip</code>.
+If by chance you already have an older version of TF,
+say</p>
+<p><code>pip install --upgrade text-fabric</code></p>
+</li>
+</ul>
+<h2 id="start-up">Start up</h2>
+<p>Start a terminal or command prompt.
+You need not go to a specific directory.
+Give the command</p>
+<pre><code class="language-sh">tf HuygensING/suriano --tool=ner --chrome
+</code></pre>
+<p>The tool opens in a new window in the Chrome browser.
+Currently the tool works best in Chrome, but it is not required.
+If you leave out the <code>--chrome</code> bit, the tool starts in your default browser.</p>
+<p>You can restart the tool without navigating away from the web page as follows:</p>
+<pre><code class="language-sh">tf HuygensING/suriano --tool=ner --chrome -noweb
+</code></pre>
+<p>Because of <code>-noweb</code> it will not open a new browser window and you can continue in the
+already open browser tab.</p>
+<p>The start-up window looks like this:</p>
+<p><img alt="browser" src="../images/Annotate/browser-start.png"></p>
+<ul>
+<li>
+<p><strong>Left column</strong>:</p>
+<p>Manage annotation <em>sets</em>. Your work ends up in an annotation set.
+Here you can choose in which set.</p>
+<p>You can create a new, empty set or duplicate an existing set.
+You can also rename a set or delete it.</p>
+<p>There is one special set, here it is called <code>ent-nodes</code>.
+These are the entities that are already in the corpus.
+This is a read-only set. You can inspect it, but you cannot add annotations
+or modify its annotations.</p>
+<p>However, you can duplicate this set, and the copy can be modified.
+So, if the existing set is a good one, requiring only a few tweaks,
+this is a good way to start.</p>
+</li>
+<li>
+<p><strong>Entities column</strong>:</p>
+<p>See the entities in the chosen set.</p>
+<p>At the top you see an overview of the kinds of entities and how many entities
+there are of each kind.</p>
+<p>At the bottom is the list of all entities, which you can filter and sort by the
+controls in between.</p>
+<p>You can click on each entity. Let's click on <code>Francia</code>:</p>
+<p><img alt="browser" src="../images/Annotate/browser-entity.png"></p>
+<p>On the right you see all occurrences of this entity, highlighted.</p>
+</li>
+<li>
+<p><strong>Right column</strong>:</p>
+<p>See a list of buckets (i.e. paragraphs in this corpus).</p>
+<p>If you have clicked on an entity, you see the buckets that contain an occurrence
+of that entity.</p>
+<p>If you have not clicked on anything, you see the whole corpus, truncated to the
+first 100 buckets.</p>
+<p>We got here by clicking on an entity. If we click the ❌ next to the entity on top,
+we reset the viewer.</p>
+<p>From this point, we can do a succession of steps.</p>
+</li>
+</ul>
+<h2 id="annotation-workflow">Annotation workflow</h2>
+<h3 id="viewing-text">Viewing text</h3>
+<p>We focus on the right column in the initial view, without anything highlighted.</p>
+<p>On top you see a section <strong>Appearance</strong> with a button <code>plain</code>.
+Click that button. It changes to <code>decorated</code> plus a row of buttons next to it.</p>
+<p>Below, in the text, you see that something has changed:</p>
+<p><img alt="browser" src="../images/Annotate/entities-decorated.png"></p>
+<ul>
+<li>every occurrence of an entity in the set is now underlined;</li>
+<li>the whole entity is wrapped between <code>|</code> with a little number indicating how
+many tokens the occurrence has.</li>
+<li>right before each occurrence there is a small number: it indicates how many
+occurrences there are of that entity;</li>
+<li>reading to the right, you see <code>LOC</code> or <code>PER</code> or <code>MISC</code>: the kind of the entity;</li>
+<li>further to the right you see the identifier of the entity;
+if you click on the identifier, you load all of its occurrences, to the same
+effect as when you had it clicked it from the Entities column.</li>
+<li>you can hide these pieces of information selectively, by clicking in the
+row of buttons above (<code>eid</code>, <code>kind</code>, <code>stats</code>, <code>underlining</code>).</li>
+</ul>
+<p>Click an identifier in order to load all its occurrences, e.g. <code>ernesto.di.nassau</code>.
+If you need more context around an occurrence, click the blue section indicator
+at the left of the relevant paragraph.</p>
+<p>You will get a scrollable view of the whole section (letter) in which that paragraph
+occurs. </p>
+<p><img alt="browser" src="../images/Annotate/context.png"></p>
+<p>The paragraph you started from is in the center. You can scroll up and down the
+whole letter that the paragraph is contained in.
+If you want to return to the paragraph you started from, click the blue dot.
+If you want to remove the context, click the blue section indicator again.</p>
+<h3 id="finding-occurrences">Finding occurrences</h3>
+<p>Suppose you want to find occurrences of <code>Gio. Erneso di Nassau</code> and mark them all
+as named entities with the same identifier. You can achieve that in the following
+steps:</p>
+<ol>
+<li>
+<p><strong>Make a new set</strong></p>
+<p>First of all you should create a set where your new annotations will end up.
+In the right column, click the <code>+</code> button and enter a name for the new set,
+e.g. <code>test</code>.</p>
+</li>
+<li>
+<p><strong>Filter step</strong></p>
+<p>In the filter box, type <code>ernesto</code> and then click the 🔎 button.
+The text view now shows only the paragraphs with <code>ernesto</code> in it, and it shows
+<em>all</em> of them in the whole corpus.</p>
+</li>
+<li>
+<p><strong>Mark step</strong></p>
+<p>Now click the word <code>Gio</code> and then click the subsequent <code>Nassau</code>, both around
+<code>Ernesto</code>.
+The whole stretch <code>Gio. Ernesto di Nassau</code> becomes yellow highlighted.
+Above the text you see a new control section, titled <strong>Mark</strong>:</p>
+<p><img alt="browser" src="../images/Annotate/mark.png"></p>
+<p>Click the ✅ button that you see there.</p>
+<p>The text below will contain all paragraphs in which the string
+<code>Gio. Ernesto di Nassau</code> occurs, with all those occurrences highlighted.
+There are 15 of them.</p>
+<p>Moreover two more control sections will show up.</p>
+</li>
+<li>
+<p><strong>Select step</strong></p>
+<p>The yellow occurrences might be instances of other entities. If so, the select step
+shows you the identifiers and kinds of those entities.
+You may select values here in order to restrict the modification actions in the
+next step to these cases. </p>
+<p><img alt="browser" src="../images/Annotate/select.png"></p>
+<p>You also see the values <code>⌀</code>: they select occurrences that are <em>not</em> instances
+of any entity in the currently developed set.
+Since we just started with an empty set, these are the only values that you can
+select, and the app has already selected them for you.</p>
+</li>
+<li>
+<p><strong>Modify step</strong></p>
+<p>Now you can act on the selected occurrences. There are two possible actions:
+<em>add</em> entities for these occurrences or <em>delete</em> existing entities for these
+occurrences. Since our set of entities is still empty, we can only add.</p>
+<p><img alt="browser" src="../images/Annotate/add.png"></p>
+<p>You have to tell the annotator the values for the entity identifier and kind that
+you will assign. The tool has already prefilled sensible values for you, but you
+can change them.</p>
+<p>Before you click <code>add</code>, click on the ✅ button after the first occurrence.
+That will deselect this occurrence from the <code>add</code> operation.
+More about that below.</p>
+<p>The result looks like this:</p>
+<p><img alt="browser" src="../images/Annotate/results-para1.png"></p>
+<p>(the first occurrence is unaffected)</p>
+<p><img alt="browser" src="../images/Annotate/results-para2.png"></p>
+<p>(new entity markings show up!).</p>
+<p>Also the control sections look different now:</p>
+<p><img alt="browser" src="../images/Annotate/result-controls.png"></p>
+<p>Note the lines with the black background: they report the result of the
+previous action.</p>
+<p>The <strong>select</strong> control now shows additional values under the selected occurrences:
+the identifier and kind of the entity markings we have just added.</p>
+<p>The <strong>modify</strong> control shows the <code>delete</code> action: we can remove the entities
+we just added.</p>
+<p>In order to do so, we have to click on the values that we want to delete,
+and then press the delete button. If we do that,
+we have effectively undone the previous addition.</p>
+</li>
+</ol>
+<p>Using a succession of these steps, it is possible to assign entity information to many
+occurrences using only a few steps.</p>
+<p>But it is not always enough to crudely assign entities to all occurrences of a pattern.
+And sometimes you want to modify existing entities, and give them a different kind,
+but not all of them.
+For those reasons, there is a bit more sophistication built into the tool.</p>
+<h2 id="sophistication">Sophistication</h2>
+<p><strong>Filter step</strong></p>
+<p>There is a button <code>with or without</code>, which changes to <code>with</code> and <code>without</code>.
+This enables you to filter the paragraphs that contain entities, or the paragraphs
+that do not contain entities.</p>
+<p><strong>Mark step</strong></p>
+<p>There is a button <code>all</code> that changes to <code>free</code> and <code>intersecting</code>.
+This enables you to mark only occurrences that do not overlap with existing entities,
+or occurrences that do overlap with existing entities.</p>
+<p><strong>Select step</strong></p>
+<p>There is a button <code>all</code>. If you click on it, it changes
+to <code>filtered</code>, and you see the totals as <code>15 of 15</code> instead of <code>15</code>.</p>
+<p><img alt="browser" src="../images/Annotate/select-filtered.png"></p>
+<p>What does this mean?</p>
+<p>You can work with the <code>filtered</code> paragraphs only (the ones that contain the word
+<code>ernesto</code>, marked as blue), or you can work with all paragraphs, including the ones
+that are not in the filtered view.
+In this case, both options coincide, because the filter pattern <code>ernesto</code> is also
+part of the entity pattern <code>Gio. Ernesto di Nassau</code>.</p>
+<p>If you replace <code>ernesto</code> by <code>paesi</code> in the filter, you'll see this:</p>
+<p><img alt="browser" src="../images/Annotate/filtered-paesi.png"></p>
+<p>Now you see that when you choose <code>filtered</code>, you act on 6 occurrences, instead
+of all 15.</p>
+<p><strong>Modify step</strong></p>
+<p>Before you click the <code>add</code> or <code>delete</code> buttons, you can fine tune things, by further
+selecting or deselecting specific occurrences that should be affected.</p>
+<p>All occurrences of the candidate entity that are shown in the paragraphs below
+have a ✅ button after them. If you click it, it turns into a ❌ button,
+and the occurrence becomes deselected. The <code>add</code> operation will forego this
+occurrence and leave it unaffected.
+You can also select or deselect all occurrences in one go.</p>
+<p><strong>N.B.</strong>
+If you have filtered the paragraphs, and under <strong>select</strong> you have chosen to work with
+<code>all</code> results, selecting and deselecting only work for the occurrences in the filtered paragraphs.
+The other results are not selectable or deselectable, and will all be
+affected.</p>
+<p><strong>Several surface forms for one entity</strong></p>
+<p>If you have added an entity, and you mark another one, you'll see a new button next to
+the ✅, namely ❎. It has mostly the same effect, namely marking all occurrences
+in the corpus, but the differences are in what happens below the <code>add</code> button.
+Whereas the ✅ button fills the <code>eid</code> field with a value derived from the occurrence,
+the ❎ leaves the previous value unchanged. So you can just click <code>add</code> to mark
+the new occurrences with the values of the same entity as before.</p>
+<h1 id="programming">Programming</h1>
+<p>The workflow sketched above works fine if you know what to look for, and if there are
+not too many distinct named entities in the corpus.</p>
+<p>Probably you soon discover that there are quite a bit of distinct named entities,
+and each entity has quite a bit of surface forms.
+Then the work load may not feel doable any more.</p>
+<p>For that purpose, there is also a way of annotating-by-programming, where you run the
+annotator tool in a Jupyter Notebook, driven by a spreadsheet with names and
+surface forms.</p>
+<p>See <code><a title="tf.browser.ner.ner" href="../browser/ner/ner.html">tf.browser.ner.ner</a></code>.</p>
+<p>You can then still use this tool after the fact to check the entity assignments
+and make fine-tuning corrections.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/about/annotateBrowser.py#L1-L3" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+.. include:: ../docs/about/annotateBrowser.md
+&#34;&#34;&#34;</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#annotate-tool-in-tf-browser">Annotate tool in TF Browser</a><ul>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#start-up">Start up</a></li>
+<li><a href="#annotation-workflow">Annotation workflow</a><ul>
+<li><a href="#viewing-text">Viewing text</a></li>
+<li><a href="#finding-occurrences">Finding occurrences</a></li>
+</ul>
+</li>
+<li><a href="#sophistication">Sophistication</a></li>
+</ul>
+</li>
+<li><a href="#programming">Programming</a></li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.about" href="index.html">tf.about</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

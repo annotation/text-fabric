@@ -1,0 +1,746 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.browser.web API documentation</title>
+<meta name="description" content="Web interface …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.browser.web</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="web-interface">Web interface</h1>
+<h2 id="about">About</h2>
+<p>TF contains a web interface
+in which you can enter a search template and view the results.</p>
+<p>This is realized by a web app based on
+<a href="http://flask.pocoo.org/docs/1.0/">Flask</a>.</p>
+<p>This web app initializes by loading a TF corpus from which it obtains data.
+In response to requests, it merges the retrieved data into a set of
+<a href="https://github.com/annotation/text-fabric/tree/master/tf/browser/views">templates</a>.</p>
+<h2 id="start-up">Start up</h2>
+<p>Web server and browser page are started
+up by means of a script called <code><a title="tf" href="../index.html">tf</a></code>, which will be installed in an executable
+directory by the <code>pip</code> installer.</p>
+<h2 id="routes">Routes</h2>
+<p>There are 4 kinds of routes in the web app:</p>
+<table>
+<thead>
+<tr>
+<th>URL pattern</th>
+<th>effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/browser/static/...</code></td>
+<td>serves a static file from the server-wide <a href="https://github.com/annotation/text-fabric/tree/master/tf/browser/static">static folder</a></td>
+</tr>
+<tr>
+<td><code>/data/static/...</code></td>
+<td>serves a static file from the app specific static folder</td>
+</tr>
+<tr>
+<td><code>/local/static/...</code></td>
+<td>serves a static file from a local directory specified by the app</td>
+</tr>
+<tr>
+<td>anything else</td>
+<td>submits the form with user data and return the processed request</td>
+</tr>
+</tbody>
+</table>
+<h2 id="templates">Templates</h2>
+<p>There are two templates in
+<a href="https://github.com/annotation/text-fabric/tree/master/tf/browser/views">views</a>
+:</p>
+<ul>
+<li><em>index</em>: the normal template for returning responses
+to user requests;</li>
+<li><em>export</em>: the template used for exporting results; it
+has printer / PDF-friendly formatting: good page breaks.
+Pretty displays always occur on a page by their own.
+It has very few user interaction controls.
+When saved as PDF from the browser, it is a neat record
+of work done, with DOI links to the corpus and to TF.</li>
+</ul>
+<h2 id="css">CSS</h2>
+<p>We format the web pages with CSS, with extensive use of
+<a href="https://css-tricks.com/snippets/css/a-guide-to-flexbox">flexbox</a>.</p>
+<p>There are several sources of CSS formatting:</p>
+<ul>
+<li>the CSS loaded from the app dependent <code>extraApi</code>, used
+for pretty displays;</li>
+<li><a href="https://github.com/annotation/text-fabric/blob/master/tf/browser/static/index.css">index.css</a>:
+the formatting of the <em>index</em> web page with which the user interacts;</li>
+<li><a href="https://github.com/annotation/text-fabric/blob/master/tf/browser/views/export.css">export.css</a>
+the formatting of the export page;</li>
+<li><a href="https://github.com/annotation/text-fabric/blob/master/tf/browser/views/base.css">base.css</a>
+shared formatting between the index and export pages.</li>
+</ul>
+<h2 id="javascript">JavaScript</h2>
+<p>We use a
+<a href="https://github.com/annotation/text-fabric/blob/master/tf/browser/static/tf.js">modest amount of JavaScript</a>
+on top of
+<a href="https://api.jquery.com">JQuery</a>.</p>
+<p>For collapsing and expanding elements we use the
+<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details">details</a>
+element. This is a convenient, JavaScript-free way to manage
+collapsing. Unfortunately it is not supported by the Microsoft
+browsers, not even Edge.</p>
+<div class="admonition caution">
+<p class="admonition-title">On Windows?</p>
+<p>Windows users should install Chrome of Firefox.</p>
+</div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/browser/web.py#L1-L292" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+# Web interface
+
+## About
+
+TF contains a web interface
+in which you can enter a search template and view the results.
+
+This is realized by a web app based on
+[Flask](http://flask.pocoo.org/docs/1.0/).
+
+This web app initializes by loading a TF corpus from which it obtains data.
+In response to requests, it merges the retrieved data into a set of
+[templates](https://github.com/annotation/text-fabric/tree/master/tf/browser/views).
+
+## Start up
+
+Web server and browser page are started
+up by means of a script called `tf`, which will be installed in an executable
+directory by the `pip` installer.
+
+## Routes
+
+There are 4 kinds of routes in the web app:
+
+URL pattern | effect
+--- | ---
+`/browser/static/...` | serves a static file from the server-wide [static folder](https://github.com/annotation/text-fabric/tree/master/tf/browser/static)
+`/data/static/...` | serves a static file from the app specific static folder
+`/local/static/...` | serves a static file from a local directory specified by the app
+anything else | submits the form with user data and return the processed request
+
+## Templates
+
+There are two templates in
+[views](https://github.com/annotation/text-fabric/tree/master/tf/browser/views)
+:
+
+*   *index*: the normal template for returning responses
+    to user requests;
+*   *export*: the template used for exporting results; it
+    has printer / PDF-friendly formatting: good page breaks.
+    Pretty displays always occur on a page by their own.
+    It has very few user interaction controls.
+    When saved as PDF from the browser, it is a neat record
+    of work done, with DOI links to the corpus and to TF.
+
+## CSS
+
+We format the web pages with CSS, with extensive use of
+[flexbox](https://css-tricks.com/snippets/css/a-guide-to-flexbox).
+
+There are several sources of CSS formatting:
+
+*   the CSS loaded from the app dependent `extraApi`, used
+    for pretty displays;
+*   [index.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/static/index.css):
+    the formatting of the *index* web page with which the user interacts;
+*   [export.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/views/export.css)
+    the formatting of the export page;
+*   [base.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/views/base.css)
+    shared formatting between the index and export pages.
+
+## JavaScript
+
+We use a
+[modest amount of JavaScript](https://github.com/annotation/text-fabric/blob/master/tf/browser/static/tf.js)
+on top of
+[JQuery](https://api.jquery.com).
+
+For collapsing and expanding elements we use the
+[details](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details)
+element. This is a convenient, JavaScript-free way to manage
+collapsing. Unfortunately it is not supported by the Microsoft
+browsers, not even Edge.
+
+!!! caution &#34;On Windows?&#34;
+    Windows users should install Chrome of Firefox.
+&#34;&#34;&#34;
+
+import sys
+
+from flask import Flask, send_file
+from werkzeug.serving import run_simple
+
+from ..parameters import HOST, GH
+from ..core.helpers import console as cs
+from ..core.files import abspath, fileExists, dirNm
+from ..core.timestamp import AUTO
+from ..advanced.app import findApp
+
+from .command import argApp
+from .kernel import makeTfKernel
+from .serve import (
+    serveTable,
+    serveQuery,
+    servePassage,
+    serveExport,
+    serveDownload,
+    serveAll,
+)
+
+# Here we import additional annotation tools
+# from .ner.web import factory as nerFactory
+# End of importing additional annotation tools
+
+
+TF_DONE = &#34;TF setup done.&#34;
+TF_ERROR = &#34;Could not set up TF&#34;
+
+MY_DIR = dirNm(abspath(__file__))
+
+
+class Web:
+    def __init__(self, kernelApi):
+        self.debug = False
+        self.kernelApi = kernelApi
+        app = kernelApi.app
+        self.context = app.context
+        self.wildQueries = set()
+
+    def console(self, msg):
+        if self.debug:
+            cs(msg)
+
+
+def factory(web):
+    app = Flask(__name__)
+
+    # Here we add the annotation tools as blue prints
+    # app.register_blueprint(nerFactory(web))
+    # End of adding annotation tools
+
+    aContext = web.context
+    appPath = aContext.appPath
+    localDir = aContext.localDir
+
+    @app.route(&#34;/browser/static/&lt;path:filepath&gt;&#34;)
+    def serveStatic(filepath):
+        theFile = f&#34;{MY_DIR}/static/{filepath}&#34;
+        return send_file(theFile) if fileExists(theFile) else &#34;&#34;
+
+    @app.route(&#34;/data/static/&lt;path:filepath&gt;&#34;)
+    def serveData(filepath):
+        theFile = f&#34;{appPath}/static/{filepath}&#34;
+        return send_file(theFile) if appPath and fileExists(theFile) else &#34;&#34;
+
+    @app.route(&#34;/local/&lt;path:filepath&gt;&#34;)
+    def serveLocal(filepath):
+        theFile = f&#34;{localDir}/{filepath}&#34;
+        return send_file(theFile) if fileExists(theFile) else &#34;&#34;
+
+    @app.route(&#34;/sections&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveSectionsBare():
+        return serveTable(web, &#34;sections&#34;)
+
+    @app.route(&#34;/sections/&lt;int:getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveSections(getx):
+        return serveTable(web, &#34;sections&#34;, getx=getx)
+
+    @app.route(&#34;/tuples&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveTuplesBare():
+        return serveTable(web, &#34;tuples&#34;)
+
+    @app.route(&#34;/tuples/&lt;int:getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveTuples(getx):
+        return serveTable(web, &#34;tuples&#34;, getx=getx)
+
+    @app.route(&#34;/query&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveQueryBare():
+        return serveQuery(web)
+
+    @app.route(&#34;/query/&lt;int:getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveQueryX(getx):
+        return serveQuery(web, getx=getx)
+
+    @app.route(&#34;/passage&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def servePassageBare():
+        return servePassage(web)
+
+    @app.route(&#34;/passage/&lt;getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def servePassageX(getx):
+        return servePassage(web, getx=getx)
+
+    @app.route(&#34;/export&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveExportX():
+        return serveExport(web)
+
+    @app.route(&#34;/download&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveDownloadX():
+        return serveDownload(web, False)
+
+    @app.route(&#34;/downloadj&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveDownloadJ():
+        return serveDownload(web, True)
+
+    @app.route(&#34;/&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    @app.route(&#34;/&lt;path:anything&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveAllX(anything=None):
+        return serveAll(web, anything)
+
+    return app
+
+
+def main(cargs=sys.argv[1:]):
+    debug = False
+
+    if len(cargs) == 0:
+        args = []
+    else:
+        debugRep = cargs[0]
+        debug = debugRep == &#34;debug&#34;
+        args = cargs[1:]
+
+    if len(args) == 0:
+        cs(&#34;No port number specified&#34;)
+        cs(f&#34;{TF_ERROR}&#34;)
+        return
+
+    (portWeb, args) = (args[0], args[1:])
+
+    appSpecs = argApp(args, False)
+
+    if not appSpecs:
+        cs(&#34;No TF dataset specified&#34;)
+        return
+
+    backend = appSpecs.get(&#34;backend&#34;, GH) or GH
+    appName = appSpecs[&#34;appName&#34;]
+    checkout = appSpecs[&#34;checkout&#34;]
+    checkoutApp = appSpecs[&#34;checkoutApp&#34;]
+    relative = appSpecs[&#34;relative&#34;]
+    dataLoc = appSpecs[&#34;dataLoc&#34;]
+    moduleRefs = appSpecs[&#34;moduleRefs&#34;]
+    locations = appSpecs[&#34;locations&#34;]
+    modules = appSpecs[&#34;modules&#34;]
+    setFile = appSpecs[&#34;setFile&#34;]
+    version = appSpecs[&#34;version&#34;]
+
+    if checkout is None:
+        checkout = &#34;&#34;
+
+    versionRep = &#34;&#34; if version is None else f&#34; version {version}&#34;
+    cs(
+        f&#34;Setting up TF browser for {appName} {moduleRefs or &#39;&#39;} &#34;
+        f&#34;{setFile or &#39;&#39;}{versionRep}&#34;
+    )
+    app = findApp(
+        appName,
+        checkoutApp,
+        dataLoc,
+        backend,
+        True,
+        silent=AUTO,
+        checkout=checkout,
+        relative=relative,
+        mod=moduleRefs,
+        locations=locations,
+        modules=modules,
+        setFile=setFile,
+        version=version,
+    )
+    if app is None:
+        cs(f&#34;{TF_ERROR}&#34;)
+        return
+
+    try:
+        web = Web(makeTfKernel(app, appName))
+        cs(f&#34;{TF_DONE}&#34;)
+
+        webapp = factory(web)
+        if debug:
+            webapp.config[&#39;TEMPLATES_AUTO_RELOAD&#39;] = True
+        web.debug = debug
+        run_simple(
+            HOST,
+            int(portWeb),
+            webapp,
+            use_reloader=debug,
+            use_debugger=False,
+            threaded=True,
+        )
+    except OSError as e:
+        cs(str(e))
+        cs(f&#34;{TF_ERROR}&#34;)
+        return 1
+
+    return 0
+
+
+if __name__ == &#34;__main__&#34;:
+    sys.exit(main())</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.browser.web.factory"><code class="name flex">
+<span>def <span class="ident">factory</span></span>(<span>web)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/browser/web.py#L127-L202" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def factory(web):
+    app = Flask(__name__)
+
+    # Here we add the annotation tools as blue prints
+    # app.register_blueprint(nerFactory(web))
+    # End of adding annotation tools
+
+    aContext = web.context
+    appPath = aContext.appPath
+    localDir = aContext.localDir
+
+    @app.route(&#34;/browser/static/&lt;path:filepath&gt;&#34;)
+    def serveStatic(filepath):
+        theFile = f&#34;{MY_DIR}/static/{filepath}&#34;
+        return send_file(theFile) if fileExists(theFile) else &#34;&#34;
+
+    @app.route(&#34;/data/static/&lt;path:filepath&gt;&#34;)
+    def serveData(filepath):
+        theFile = f&#34;{appPath}/static/{filepath}&#34;
+        return send_file(theFile) if appPath and fileExists(theFile) else &#34;&#34;
+
+    @app.route(&#34;/local/&lt;path:filepath&gt;&#34;)
+    def serveLocal(filepath):
+        theFile = f&#34;{localDir}/{filepath}&#34;
+        return send_file(theFile) if fileExists(theFile) else &#34;&#34;
+
+    @app.route(&#34;/sections&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveSectionsBare():
+        return serveTable(web, &#34;sections&#34;)
+
+    @app.route(&#34;/sections/&lt;int:getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveSections(getx):
+        return serveTable(web, &#34;sections&#34;, getx=getx)
+
+    @app.route(&#34;/tuples&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveTuplesBare():
+        return serveTable(web, &#34;tuples&#34;)
+
+    @app.route(&#34;/tuples/&lt;int:getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveTuples(getx):
+        return serveTable(web, &#34;tuples&#34;, getx=getx)
+
+    @app.route(&#34;/query&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveQueryBare():
+        return serveQuery(web)
+
+    @app.route(&#34;/query/&lt;int:getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveQueryX(getx):
+        return serveQuery(web, getx=getx)
+
+    @app.route(&#34;/passage&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def servePassageBare():
+        return servePassage(web)
+
+    @app.route(&#34;/passage/&lt;getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def servePassageX(getx):
+        return servePassage(web, getx=getx)
+
+    @app.route(&#34;/export&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveExportX():
+        return serveExport(web)
+
+    @app.route(&#34;/download&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveDownloadX():
+        return serveDownload(web, False)
+
+    @app.route(&#34;/downloadj&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveDownloadJ():
+        return serveDownload(web, True)
+
+    @app.route(&#34;/&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    @app.route(&#34;/&lt;path:anything&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveAllX(anything=None):
+        return serveAll(web, anything)
+
+    return app</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.web.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>cargs=['--force', '--html', '--output-dir', 'site', '--template-dir', 'tf/docs/templates', 'tf'])</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/browser/web.py#L205-L288" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def main(cargs=sys.argv[1:]):
+    debug = False
+
+    if len(cargs) == 0:
+        args = []
+    else:
+        debugRep = cargs[0]
+        debug = debugRep == &#34;debug&#34;
+        args = cargs[1:]
+
+    if len(args) == 0:
+        cs(&#34;No port number specified&#34;)
+        cs(f&#34;{TF_ERROR}&#34;)
+        return
+
+    (portWeb, args) = (args[0], args[1:])
+
+    appSpecs = argApp(args, False)
+
+    if not appSpecs:
+        cs(&#34;No TF dataset specified&#34;)
+        return
+
+    backend = appSpecs.get(&#34;backend&#34;, GH) or GH
+    appName = appSpecs[&#34;appName&#34;]
+    checkout = appSpecs[&#34;checkout&#34;]
+    checkoutApp = appSpecs[&#34;checkoutApp&#34;]
+    relative = appSpecs[&#34;relative&#34;]
+    dataLoc = appSpecs[&#34;dataLoc&#34;]
+    moduleRefs = appSpecs[&#34;moduleRefs&#34;]
+    locations = appSpecs[&#34;locations&#34;]
+    modules = appSpecs[&#34;modules&#34;]
+    setFile = appSpecs[&#34;setFile&#34;]
+    version = appSpecs[&#34;version&#34;]
+
+    if checkout is None:
+        checkout = &#34;&#34;
+
+    versionRep = &#34;&#34; if version is None else f&#34; version {version}&#34;
+    cs(
+        f&#34;Setting up TF browser for {appName} {moduleRefs or &#39;&#39;} &#34;
+        f&#34;{setFile or &#39;&#39;}{versionRep}&#34;
+    )
+    app = findApp(
+        appName,
+        checkoutApp,
+        dataLoc,
+        backend,
+        True,
+        silent=AUTO,
+        checkout=checkout,
+        relative=relative,
+        mod=moduleRefs,
+        locations=locations,
+        modules=modules,
+        setFile=setFile,
+        version=version,
+    )
+    if app is None:
+        cs(f&#34;{TF_ERROR}&#34;)
+        return
+
+    try:
+        web = Web(makeTfKernel(app, appName))
+        cs(f&#34;{TF_DONE}&#34;)
+
+        webapp = factory(web)
+        if debug:
+            webapp.config[&#39;TEMPLATES_AUTO_RELOAD&#39;] = True
+        web.debug = debug
+        run_simple(
+            HOST,
+            int(portWeb),
+            webapp,
+            use_reloader=debug,
+            use_debugger=False,
+            threaded=True,
+        )
+    except OSError as e:
+        cs(str(e))
+        cs(f&#34;{TF_ERROR}&#34;)
+        return 1
+
+    return 0</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.browser.web.Web"><code class="flex name class">
+<span>class <span class="ident">Web</span></span>
+<span>(</span><span>kernelApi)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/browser/web.py#L114-L124" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class Web:
+    def __init__(self, kernelApi):
+        self.debug = False
+        self.kernelApi = kernelApi
+        app = kernelApi.app
+        self.context = app.context
+        self.wildQueries = set()
+
+    def console(self, msg):
+        if self.debug:
+            cs(msg)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.browser.web.Web.console"><code class="name flex">
+<span>def <span class="ident">console</span></span>(<span>self, msg)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/browser/web.py#L122-L124" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def console(self, msg):
+    if self.debug:
+        cs(msg)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#web-interface">Web interface</a><ul>
+<li><a href="#about">About</a></li>
+<li><a href="#start-up">Start up</a></li>
+<li><a href="#routes">Routes</a></li>
+<li><a href="#templates">Templates</a></li>
+<li><a href="#css">CSS</a></li>
+<li><a href="#javascript">JavaScript</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.browser" href="index.html">tf.browser</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.browser.web.factory" href="#tf.browser.web.factory">factory</a></code></li>
+<li><code><a title="tf.browser.web.main" href="#tf.browser.web.main">main</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.browser.web.Web" href="#tf.browser.web.Web">Web</a></code></h4>
+<ul class="">
+<li><code><a title="tf.browser.web.Web.console" href="#tf.browser.web.Web.console">console</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
