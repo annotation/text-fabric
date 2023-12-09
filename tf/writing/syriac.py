@@ -1,3 +1,4 @@
 """
-.. include:: ../docs/writing/syriac.md
+.. include:: ../docs/writing/ugaritic
+.md
 """
