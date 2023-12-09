@@ -7,11 +7,7 @@ from tf.core.files import initTree, unexpanduser as ux
 from tf.convert.helpers import ZWSP, XNEST, TNEST, CHAR, FOLDER, FILE
 
 
-def convertTaskDefault(etreeGiven):
-    global etree
-
-    etree = etreeGiven
-
+def convertTaskDefault(etree):
     if etree is None:
         def dummy(self):
             pass
@@ -75,7 +71,7 @@ def convertTaskDefault(etreeGiven):
         cv = self.getConverter()
 
         self.good = cv.walk(
-            getDirector(self),
+            getDirector(self, etree),
             slotType,
             otext=otext,
             generic=generic,
@@ -87,7 +83,7 @@ def convertTaskDefault(etreeGiven):
     return convertTaskDefaultInner
 
 
-def getDirector(self):
+def getDirector(self, etree):
     """Factory for the director function.
 
     The `tf.convert.walker` relies on a corpus dependent `director` function

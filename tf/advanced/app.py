@@ -118,7 +118,7 @@ class App:
         mergeDict(cfg, configOverrides)
         self.cfgSpecs = cfg
 
-        for (key, value) in dict(
+        for key, value in dict(
             isCompatible=cfg.get("isCompatible", None),
             backend=backend,
             appName=appName,
@@ -481,17 +481,19 @@ def findApp(
         elif "/" in appName:
             (dataOrg, rest) = appName.split("/", maxsplit=1)
             (dataRepo, *rest) = rest.split("/")
+            dataRelative = kwargs.get("relative", None) or RELATIVE
+
             if len(rest) > 0 and rest[-1] == APP_APP:
                 appParts = rest
-                dataParts = rest[0:-1] + [RELATIVE]
+                dataParts = rest[0:-1] + [dataRelative]
             elif len(rest) > 0 and rest[-1] == RELATIVE:
                 appParts = rest[0:-1] + [APP_APP]
                 dataParts = rest
             else:
-                dataParts = rest + [RELATIVE]
+                dataParts = rest + [dataRelative]
                 appParts = rest + [APP_APP]
             appFolder = prefixSlash("/".join(appParts))
-            dataFolder = prefixSlash("/".join(dataParts))
+            dataFolder = prefixSlash("/".join(x for x in dataParts if x))
 
             (commit, release, local, appBase, appDir) = checkoutRepo(
                 backend,
@@ -687,7 +689,7 @@ def useApp(appName, backend):
             parts.append("")
         (appName, checkoutApp) = parts
 
-    backend = backendRep(backend, 'norm')
+    backend = backendRep(backend, "norm")
 
     return (appName, checkoutApp, dataLoc, backend)
 
@@ -718,6 +720,10 @@ def loadApp(silent=DEEP):
         )
         return None
 
-    (appName, checkoutApp, dataLoc, backend) = useApp(f"{org}/{repo}{relative}:clone", backend)
+    (appName, checkoutApp, dataLoc, backend) = useApp(
+        f"{org}/{repo}{relative}:clone", backend
+    )
 
-    return findApp(appName, checkoutApp, dataLoc, backend, False, checkout="clone", silent=silent)
+    return findApp(
+        appName, checkoutApp, dataLoc, backend, False, checkout="clone", silent=silent
+    )

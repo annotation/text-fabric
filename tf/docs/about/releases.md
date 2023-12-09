@@ -20,6 +20,13 @@ pip install -e .
 
 ### 12.2
 
+#### 12.2.3
+
+2023-12-09
+
+Writing support for Ugaritic, thanks to Martijn Naaijer and Christian Højgaard for
+converting a Ugaritic corpus to TF.
+
 #### 12.2.2
 
 2023-12-02

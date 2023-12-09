@@ -337,8 +337,7 @@ class XML(CheckImport):
         """
         super().__init__("lxml")
         if self.importOK(hint=True):
-            global etree
-            etree = self.importGet()
+            self.etree = self.importGet()
         else:
             return
 
@@ -527,6 +526,7 @@ class XML(CheckImport):
         if not self.importOK():
             return None
 
+        etree = self.etree
         procins = self.procins
 
         return etree.XMLParser(
@@ -603,6 +603,7 @@ class XML(CheckImport):
         if not self.good:
             return
 
+        etree = self.etree
         verbose = self.verbose
         procins = self.procins
 
@@ -818,7 +819,9 @@ class XML(CheckImport):
         if not self.importOK():
             return
 
+        etree = self.etree
         convertTaskCustom = self.convertTaskCustom
+
         return (
             convertTaskDefault(etree)
             if convertTaskCustom is None

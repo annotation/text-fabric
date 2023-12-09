@@ -1021,6 +1021,10 @@ WRITING_DEFAULTS = dict(
         language="syriac",
         direction="rtl",
     ),
+    uga=dict(
+        language="ugaritic",
+        direction="ltr",
+    ),
     ara=dict(
         language="arabic",
         direction="rtl",

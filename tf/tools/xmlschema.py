@@ -146,8 +146,7 @@ class Elements(CheckImport):
         """
         super().__init__("lxml")
         if self.importOK(hint=True):
-            global etree
-            etree = self.importGet()
+            self.etree = self.importGet()
         else:
             return
 
@@ -178,6 +177,7 @@ class Elements(CheckImport):
         if not self.good:
             return
 
+        etree = self.etree
         verbose = self.verbose
 
         self.baseSchema = baseSchema
@@ -334,6 +334,7 @@ class Elements(CheckImport):
         if not self.good:
             return
 
+        etree = self.etree
         verbose = self.verbose
         debug = self.debug
         roots = self.roots
@@ -642,10 +643,7 @@ class Analysis(CheckImport):
             Produce no (-1), some (0) or many (1) progress and reporting messages
         """
         super().__init__("lxml")
-        if self.importOK(hint=True):
-            global etree
-            etree = self.importGet()
-        else:
+        if not self.importOK(hint=True):
             return
 
         self.verbose = verbose

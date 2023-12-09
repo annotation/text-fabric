@@ -533,9 +533,6 @@ from ..core.files import (
 from ..tools.xmlschema import Analysis
 
 
-etree = None
-
-
 (HELP, TASKS, TASKS_EXCLUDED, PARAMS, FLAGS) = setUp("TEI")
 
 CSS_REND = dict(
@@ -924,8 +921,7 @@ class TEI(CheckImport):
         """
         super().__init__("lxml")
         if self.importOK(hint=True):
-            global etree
-            etree = self.importGet()
+            self.etree = self.importGet()
         else:
             return
 
@@ -1490,6 +1486,7 @@ class TEI(CheckImport):
         if not self.importOK():
             return None
 
+        etree = self.etree
         procins = self.procins
 
         return etree.XMLParser(
@@ -1614,6 +1611,7 @@ class TEI(CheckImport):
         modelInv = self.modelInv
         modelXsd = self.modelXsd
         A = self.A
+        etree = self.etree
 
         teiPath = self.teiPath
         reportPath = self.reportPath
@@ -2340,6 +2338,7 @@ class TEI(CheckImport):
         modelInfo = self.modelInfo
         modelXsd = self.modelXsd
         A = self.A
+        etree = self.etree
 
         transformFunc = (
             (lambda x: BytesIO(x.encode("utf-8")))

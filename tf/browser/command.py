@@ -19,6 +19,7 @@ def argApp(cargs, simple):
     (appName, checkoutApp, dataLoc) = argParam(cargs)
     backend = _argCollect("backend", cargs)
     checkout = _argCollect("checkout", cargs)
+    dataRelative = _argCollect("relative", cargs)
 
     if (
         appName is None
@@ -50,6 +51,7 @@ def argApp(cargs, simple):
             checkoutApp=checkoutApp,
             dataLoc=dataLoc,
             checkout=checkout,
+            relative=dataRelative,
             locations=locations,
             modules=modules,
             moduleRefs=moduleRefs,

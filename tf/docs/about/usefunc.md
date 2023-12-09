@@ -36,6 +36,7 @@ A = use(
     "org/repo:specapp",
     backend=None,     # e.g. "gitlab.huc.knaw.nl"
     checkout=None, # e.g. "latest"
+    relative=None, # e.g. "path/to/dir"
     version=None,  # e.g. "1.2.3"
     mod=None,      # e.g. "org1/repo1/path1:specmod1,org2/repo2/path2:specmod2"
     setFile=None,  # e.g. "path/to/file"
@@ -151,14 +152,23 @@ The specification of the app is in the first argument:
 *app-path*`:`*app-checkout-specifier*
 The normal case is where *app-path* has the form `org/repo` pointing to
 a repository that holds the corpus, both app and data.
-If we find an app under *app-path*, it will have information about where the data is, so the
-*data-path* is known. The *data-checkout-specifier* is passed as an optional
-argument:
+If we find an app under *app-path*, it will have information about where the
+data is, so the *data-path* is known. The *data-checkout-specifier* is passed
+as an optional argument:
 `checkout=`*data-checkout-specifier*.
 
 So far we have described how to use a TF corpus which has an `app` inside in the
-standard location, i.e. as org/repo/`app` .
-But app and data may also reside in arbitrary places, and for that there
+standard location, i.e. as org/repo/`app`, and also the data is in the standard
+location, i.e. org/repo/`tf`.
+
+If the app resides in the standard location, but the data is somewhere else in the
+repository, you may pass `relative="path/to/data` to customise the location of the
+data.
+
+You can use this is you have one `app` and multiple corpora in one repo, all using
+the same `app`.
+
+For the case where both app and data reside in arbitrary places, there
 is additional syntax in the first argument:
 
 *   `app:full/path/to/tf/app`

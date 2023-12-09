@@ -129,7 +129,6 @@ class CheckImport:
         ``` python
         super().__init__("module1", "module2", ...)
         if self.importOK(hint=True):
-            global module1, module2, ...
             (module1, module2, ... ) = self.importGet()
         else:
             return

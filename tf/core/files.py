@@ -663,12 +663,14 @@ def chDir(directory):
 
 
 def readYaml(text=None, plain=False, asFile=None, preferTuples=True):
+    kwargs = dict(Loader=yaml.FullLoader)
+
     if asFile is None:
-        cfg = yaml.load(text, Loader=yaml.FullLoader)
+        cfg = yaml.load(text, **kwargs)
     else:
         if fileExists(asFile):
             with open(asFile, encoding="utf8") as fh:
-                cfg = yaml.load(fh, Loader=yaml.FullLoader)
+                cfg = yaml.load(fh, **kwargs)
         else:
             cfg = {}
 
@@ -676,8 +678,10 @@ def readYaml(text=None, plain=False, asFile=None, preferTuples=True):
 
 
 def writeYaml(data, asFile=None):
+    kwargs = dict(allow_unicode=True, sort_keys=False)
+
     if asFile is None:
-        return yaml.dump(data, allow_unicode=True)
+        return yaml.dump(data, **kwargs)
 
     with open(asFile, "w", encoding="utf8") as fh:
-        yaml.dump(data, fh, allow_unicode=True)
+        yaml.dump(data, fh, **kwargs)

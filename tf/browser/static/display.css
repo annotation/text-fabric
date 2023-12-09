@@ -80,6 +80,12 @@ div#notebook {
     direction: ltr ! important;
     unicode-bidi: embed;
 }
+.txtu.uga,.lex.uga {
+    font-family: Santakku, sans-serif;
+    font-size: large;
+    direction: ltr ! important;
+    unicode-bidi: embed;
+}
 /* greek */
 .txtu.grc,.lex.grc a:link {
     font-family: Gentium, sans-serif;

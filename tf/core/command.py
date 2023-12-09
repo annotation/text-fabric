@@ -72,12 +72,15 @@ def readArgs(
             (("-", False, "no"), ("+", True, "yes"))
             if nValues == 2
             else (("-", -1, "no"), ("+", 0, "a bit"), ("++", 1, "more"))
+            if nValues == 3
+            else None
         )
 
-        for (sigil, value, rep) in valueCoding:
-            helpFlags.append(f"\t\t{sigil}{flag}: {rep} {flag}")
-            flagArgsDef[flag] = default
-            flagArgs[f"{sigil}{flag}"] = value
+        if valueCoding is not None:
+            for (sigil, value, rep) in valueCoding:
+                helpFlags.append(f"\t\t{sigil}{flag}: {rep} {flag}")
+                flagArgsDef[flag] = default
+                flagArgs[f"{sigil}{flag}"] = value
 
     helpText = (
         f"{command} [tasks/params/flags] [--help]\n\n{descr}\n\n"

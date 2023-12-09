@@ -77,8 +77,6 @@ class Spacy(CheckImport):
         """
         super().__init__("spacy", "spacyd")
         if self.importOK(hint=True):
-            global spacy
-            global download
             (spacy, download) = self.importGet()
         else:
             return

@@ -44,6 +44,7 @@ The following arguments of the `use()` function can be used on the command-line,
 prepended with `--`:
 
 *   `--checkout`
+*   `--relative`
 *   `--mod`
 *   `--set`
 *   `--locations`
@@ -105,6 +106,7 @@ where all args are optional and args have one of these forms:
   -noweb
   --tool={"|".join(sorted(TOOLS))}
   --checkout=specifier
+  --relative=string
   --backend=backend name (github, gitlab, gitlab.domain)
   --mod=modules
   --set=file
@@ -213,6 +215,7 @@ def main(cargs=sys.argv[1:]):
         encoding="utf8",
     )
     console("Loading TF corpus data. Please wait ...")
+
     for line in processWeb.stdout:
         sys.stdout.write(line)
         if line.rstrip() == TF_ERROR:

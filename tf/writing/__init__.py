@@ -15,6 +15,7 @@ Here are the ones that have an effect:
 `akk` | `akkadian`
 `hbo` | `hebrew`
 `syc` | `syriac`
+`uga` | `ugaritic`
 `ara` | `arabic`
 `grc` | `greek`
 `cld` | `neo aramaic`

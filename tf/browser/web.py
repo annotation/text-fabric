@@ -229,6 +229,7 @@ def main(cargs=sys.argv[1:]):
     appName = appSpecs["appName"]
     checkout = appSpecs["checkout"]
     checkoutApp = appSpecs["checkoutApp"]
+    relative = appSpecs["relative"]
     dataLoc = appSpecs["dataLoc"]
     moduleRefs = appSpecs["moduleRefs"]
     locations = appSpecs["locations"]
@@ -252,6 +253,7 @@ def main(cargs=sys.argv[1:]):
         True,
         silent=AUTO,
         checkout=checkout,
+        relative=relative,
         mod=moduleRefs,
         locations=locations,
         modules=modules,

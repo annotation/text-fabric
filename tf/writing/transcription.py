@@ -38,6 +38,10 @@ Font `Gentium`.
 
 Font `Santakku`.
 
+### `uga` Ugaritic
+
+Font `Santakku`.
+
 ### `cld` Neo Aramaic
 
 Font `CharisSIL-R`.
@@ -224,6 +228,54 @@ class Transcription:
     """,
         re.X,
     )
+
+    ugaritic_mappingi = {
+        "𐎀": "a",
+        "𐎁": "b",
+        "𐎂": "g",
+        "𐎃": "ḫ",
+        "𐎄": "d",
+        "𐎅": "h",
+        "𐎆": "w",
+        "𐎇": "z",
+        "𐎈": "ḥ",
+        "𐎉": "ṭ",
+        "𐎊": "y",
+        "𐎋": "k",
+        "𐎌": "š",
+        "𐎍": "l",
+        "𐎎": "m",
+        "𐎏": "ḏ",
+        "𐎐": "n",
+        "𐎑": "ẓ",
+        "𐎒": "s",
+        "𐎓": "ˤ",
+        "𐎔": "p",
+        "𐎕": "ṣ",
+        "𐎖": "q",
+        "𐎗": "r",
+        "𐎘": "ṯ",
+        "𐎙": "ġ",
+        "𐎚": "t",
+        "𐎛": "i",
+        "𐎜": "u",
+        "𐎝": "s2",
+        "𐎟": ".",
+    }
+    """
+    Maps Ugaritic unicode characters to their conventional transliteration characters.
+
+    Unidentified characters:
+
+    * `x` (damaged ?)
+    * `/` (alternative ?) only twice, in `atypˤtba/r` and `xxxxl/d…`
+    * `,` (comma) only once in a very long word starting at 551 ... `km,ad` ...
+    * `<` `>` (brackets marking uncertainty ?)
+    * `…` (unreadable ?)
+    * `00a0` (non-breaking space)
+    """
+
+    ugaritic_mapping = {v: k for (k, v) in ugaritic_mappingi.items()}
 
     syriac_mapping_simple = {
         ">": "\u0710",  # alaph
@@ -1037,6 +1089,50 @@ class Transcription:
     def can_from_syriac(self, word):
         return all(c in self.syriac_mappingi for c in word if c != " ")
 
+    def to_ugaritic(word):
+        """
+        Given a word in transliteration,
+        produce the word in UNICODE Ugaritic.
+
+        kṯbx
+        𐎋𐎘𐎁x
+
+
+        Example:
+
+        ``` python
+        Transcription.to_ugaritic('kṯbx')
+        ```
+
+        Output:
+
+        ```
+        𐎋𐎘𐎁x
+        ```
+        """
+
+        return "".join(Transcription.ugaritic_mapping.get(x, x) for x in word)
+
+    def from_ugaritic(word):
+        """
+        Given a word in UNICODE Ugaritic,
+        produce the word in transliteration.
+
+        Example:
+
+        ``` python
+        Transcription.from_ugaritic('𐎋𐎘𐎁x')
+        ```
+
+        Output:
+
+        ```
+        kṯbx
+        ```
+        """
+
+        return "".join(Transcription.ugaritic_mappingi.get(x, x) for x in word)
+
     def to_arabic(word):
         """
         Given a word in transliteration,
@@ -1045,7 +1141,7 @@ class Transcription:
         Example:
 
         ``` python
-        tr.to_arabic('bisomi')
+        Transcription.to_arabic('bisomi')
         ```
 
         Output:
@@ -1065,7 +1161,7 @@ class Transcription:
         Example:
 
         ``` python
-        tr.from_arabic('بِسْمِ')
+        Transcription.from_arabic('بِسْمِ')
         ```
 
         Output:
