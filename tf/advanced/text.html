@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/advanced/text.py#L1-L149" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0d07b00b8ffe570c921306750c3b47d72083f48/tf/advanced/text.py#L1-L149" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import types
 from textwrap import dedent
@@ -162,7 +162,7 @@ def specialCharacters(app, fmt=None, _browse=False):
         cc = ord(c)
         charReps.append(
             (
-                f&#34;&#34;&#34;&lt;span class=&#34;ccoff {extraCls}&#34; &#34;&#34;&#34;
+                f&#34;&#34;&#34;&lt;span class=&#34;ccoff {extraCls}&#34; title=&#34;{cc:&gt;05x}&#34; &#34;&#34;&#34;
                 f&#34;&#34;&#34;onclick=&#34;copyChar(this, {cc})&#34;&gt;{htmlEsc(c)}&lt;/span&gt;&#34;&#34;&#34;
             )
         )
@@ -194,7 +194,7 @@ def specialCharacters(app, fmt=None, _browse=False):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/advanced/text.py#L39-L63" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0d07b00b8ffe570c921306750c3b47d72083f48/tf/advanced/text.py#L39-L63" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showFormats(app):
     inNb = app.inNb
@@ -248,7 +248,7 @@ If not passed, the default format will be chosen.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/advanced/text.py#L66-L149" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0d07b00b8ffe570c921306750c3b47d72083f48/tf/advanced/text.py#L66-L149" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def specialCharacters(app, fmt=None, _browse=False):
     &#34;&#34;&#34;Generate a widget for hard to type characters.
@@ -319,7 +319,7 @@ If not passed, the default format will be chosen.</dd>
         cc = ord(c)
         charReps.append(
             (
-                f&#34;&#34;&#34;&lt;span class=&#34;ccoff {extraCls}&#34; &#34;&#34;&#34;
+                f&#34;&#34;&#34;&lt;span class=&#34;ccoff {extraCls}&#34; title=&#34;{cc:&gt;05x}&#34; &#34;&#34;&#34;
                 f&#34;&#34;&#34;onclick=&#34;copyChar(this, {cc})&#34;&gt;{htmlEsc(c)}&lt;/span&gt;&#34;&#34;&#34;
             )
         )
@@ -344,7 +344,7 @@ If not passed, the default format will be chosen.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/2b9ac274006557ddb07044305b4eea345aadf048/tf/advanced/text.py#L10-L36" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0d07b00b8ffe570c921306750c3b47d72083f48/tf/advanced/text.py#L10-L36" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def textApi(app):
     api = app.api
