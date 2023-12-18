@@ -1015,8 +1015,21 @@ const modifyControls = () => {
   updateModControls()
 }
 
+const inhibitEnter = () => {
+  /* prevent submission of the form if the focus is in a textarea or input
+   * element that does not have type=submit
+   */
+  const go = document.querySelector("form")
+  $(go).on("keydown", ":input:not(textarea):not(:submit)", e => {
+    if (e.key == "Enter") {
+      e.preventDefault()
+    }
+  })
+}
+
 const initForm = () => {
   storeForm()
+  inhibitEnter()
   globalThis.toolkey = $("#toolkey").val()
   globalThis.features = $("#featurelist").val().split(",")
   globalThis.slotType = $("#slottype").val()

@@ -81,7 +81,8 @@ div#notebook {
     unicode-bidi: embed;
 }
 .txtu.uga,.lex.uga {
-    font-family: Santakku, sans-serif;
+    font-family: sans-serif;
+    /*font-family: Noto Sans Ugaritic, sans-serif;*/
     font-size: large;
     direction: ltr ! important;
     unicode-bidi: embed;

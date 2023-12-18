@@ -20,6 +20,13 @@ pip install -e .
 
 ### 12.2
 
+#### 12.2.5
+
+2023-12-18
+
+Small fix in NER browser: prevent submitting the form if the focus is in a textarea 
+field or in an input field that does not have type=submit.
+
 #### 12.2.3,4
 
 2023-12-09

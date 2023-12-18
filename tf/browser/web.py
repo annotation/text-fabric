@@ -101,7 +101,7 @@ from .serve import (
 )
 
 # Here we import additional annotation tools
-# from .ner.web import factory as nerFactory
+from .ner.web import factory as nerFactory
 # End of importing additional annotation tools
 
 
@@ -128,7 +128,7 @@ def factory(web):
     app = Flask(__name__)
 
     # Here we add the annotation tools as blue prints
-    # app.register_blueprint(nerFactory(web))
+    app.register_blueprint(nerFactory(web))
     # End of adding annotation tools
 
     aContext = web.context

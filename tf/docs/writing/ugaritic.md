@@ -58,6 +58,8 @@ h1.chars {
 </style>
 
 ## Letters and word separator
+΃
+Ό 
 
 <table class="chars">
     <thead>

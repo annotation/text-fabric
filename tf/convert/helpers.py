@@ -192,13 +192,13 @@ def tokenize(line):
         tokens.extend(ts)
 
     if len(tokens):
-        tokens[-1][-1] = "\n"
+        tokens[-1][-1] = ""
     return tuple(tokens)
 
 
 def repTokens(tokens):
     text = []
-    for (t, space) in tokens:
+    for t, space in tokens:
         text.append(f"‹{t}›{space}")
     return "".join(text)
 
@@ -239,7 +239,7 @@ def checkModel(kind, thisModel):
     good = True
     delKeys = []
 
-    for (k, v) in properties.items():
+    for k, v in properties.items():
         if k not in modelProperties:
             console(f"WARNING: ignoring unknown {kind} model property {k}={v}")
             delKeys.append(k)
@@ -253,7 +253,7 @@ def checkModel(kind, thisModel):
         for k in delKeys:
             del properties[k]
 
-    for (k, v) in modelProperties.items():
+    for k, v in modelProperties.items():
         if k not in properties:
             console(
                 f"WARNING: {kind} model property {k} not specified, "
@@ -271,7 +271,7 @@ def matchModel(properties, tag, atts):
     if tag == properties["element"]:
         criticalAtts = properties["attributes"]
         match = True
-        for (k, cVal) in criticalAtts.items():
+        for k, cVal in criticalAtts.items():
             aVal = atts.get(k, None)
 
             thisNoMatch = (
@@ -541,7 +541,7 @@ def lookupSource(cv, cur, specs):
     nest = cur[XNEST]
     nNest = len(nest)
 
-    for (path, nodeType, feature) in specs:
+    for path, nodeType, feature in specs:
         nPath = len(path)
 
         if nPath > nNest:
@@ -550,7 +550,7 @@ def lookupSource(cv, cur, specs):
         ok = True
         extractAttr = None
 
-        for (p, (lookForTag, lookForAtts)) in enumerate(path):
+        for p, (lookForTag, lookForAtts) in enumerate(path):
             (compareToTag, compareToAtts) = nest[-(p + 1)]
 
             if p == 0:
@@ -565,7 +565,7 @@ def lookupSource(cv, cur, specs):
                 break
 
             if lookForAtts is not None:
-                for (att, val) in lookForAtts.items():
+                for att, val in lookForAtts.items():
                     if att not in compareToAtts or compareToAtts[att] != val:
                         ok = False
                         break

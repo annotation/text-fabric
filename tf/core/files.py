@@ -450,6 +450,16 @@ def baseNm(path):
     return os.path.basename(path)
 
 
+def extNm(path):
+    """Get the extension part of a file name.
+
+    The dot is not included.
+    If there is no extension, the empty string is returned.
+    """
+    parts = baseNm(path).rsplit(".", 1)
+    return "" if len(parts) == 0 else parts[-1]
+
+
 def stripExt(path):
     """Strip the extension of a file name, if there is one."""
     (d, f) = (dirNm(path), baseNm(path))
@@ -677,8 +687,8 @@ def readYaml(text=None, plain=False, asFile=None, preferTuples=True):
     return cfg if plain else deepAttrDict(cfg, preferTuples=preferTuples)
 
 
-def writeYaml(data, asFile=None):
-    kwargs = dict(allow_unicode=True, sort_keys=False)
+def writeYaml(data, asFile=None, sorted=False):
+    kwargs = dict(allow_unicode=True, sort_keys=sorted)
 
     if asFile is None:
         return yaml.dump(data, **kwargs)

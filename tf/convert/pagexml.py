@@ -88,24 +88,27 @@ def tokenLogic(cv, s, token, hangover, isFirst, isSecondLast, isLast):
     same = not isLast and not isSecondLast and (not isFirst or hangover is None)
 
     if same:
-        cv.feature(s, str=rtx)
-        if rsp == "\n":
-            cv.feature(s, after=" ", rafter=rsp)
-        else:
-            cv.feature(s, after=rsp)
+        cv.feature(s, str=rtx, after=rsp)
+        # cv.feature(s, str=rtx)
+        # if rsp == "\n":
+        #     cv.feature(s, after=" ", rafter=rsp)
+        # else:
+        #     cv.feature(s, after=rsp)
     else:
         cv.feature(s, str="", after="", rstr=rtx, rafter=rsp)
 
     if isFirst and hangover:
         hangover[3] += rtx
-        hangover[4] = " " if rsp == "\n" else rsp
+        # hangover[4] = " " if rsp == "\n" else rsp
+        hangover[4] = rsp
 
     if isSecondLast:
         if hangover is None:
             hangover = [s, rtx, rsp, rtx, rsp]
         else:
             hangover[3] += rtx
-            hangover[4] = " " if rsp == "\n" else rsp
+            # hangover[4] = " " if rsp == "\n" else rsp
+            hangover[4] = rsp
 
     else:
         if isLast:
@@ -123,6 +126,11 @@ def tokenLogic(cv, s, token, hangover, isFirst, isSecondLast, isLast):
 def emptySlot(cv):
     s = cv.slot()
     cv.feature(s, rstr="", rafter="", str="", after="")
+
+
+def linebreakSlot(cv):
+    s = cv.slot()
+    cv.feature(s, rstr="", rafter="\n", str="", after="")
 
 
 def walkObject(cv, cur, xObj):
@@ -181,8 +189,7 @@ def walkObject(cv, cur, xObj):
 
         hangover = None
 
-        if len(tokens) == 0:
-            emptySlot(cv)
+        linebreakSlot(cv)
 
     elif isScan or isRegion:
         if isScan:
@@ -205,6 +212,7 @@ def walkObject(cv, cur, xObj):
 class PageXML(CheckImport):
     def __init__(
         self,
+        sourceDir,
         repoDir,
         source=PARAMS["source"][1],
         tf=PARAMS["tf"][1],
@@ -251,7 +259,7 @@ class PageXML(CheckImport):
 
         ## source/version directory
 
-        `source` occurs at the toplevel of the repo, and within it are version
+        The source directory is specified by `sourceDir`, and within it are version
         directories.
 
         ## Document directories
@@ -296,6 +304,10 @@ class PageXML(CheckImport):
 
         Parameters
         ----------
+        sourceDir: string
+            The location of the source directory
+        repoDir: string
+            The location of the target repo where the TF data is generated.
         source: string, optional ""
             If empty, use the latest version under the `source` directory with sources.
             Otherwise it should be a valid integer, and it is the index in the
@@ -365,7 +377,6 @@ class PageXML(CheckImport):
 
         appDir = f"{refDir}/app"
         metaDir = f"{refDir}/meta"
-        sourceDir = f"{refDir}/source"
         tfDir = f"{refDir}/tf"
         tfVersionFile = f"{refDir}/tfVersions.txt"
 
@@ -475,7 +486,7 @@ class PageXML(CheckImport):
 
         self.refDir = refDir
         self.sourceVersion = sourceVersion
-        self.sourceDir = sourceDir
+        self.sourceDir = ex(sourceDir)
         self.tfVersion = tfVersion
         self.tfDir = tfDir
         self.appDir = appDir
@@ -666,8 +677,10 @@ class PageXML(CheckImport):
                 continue
             pageSource = f"{sourceDir}/{doc}/{sourceVersion}/page"
             pageFiles = sorted(dirContents(pageSource)[0])
+
             if len(pageFiles) == 0:
                 continue
+
             console(f"\t\t{doc:>5} ... {len(pageFiles):>4} pages")
 
             metaFile = f"{sourceDir}/{doc}/{sourceVersion}/meta/metadata.yaml"

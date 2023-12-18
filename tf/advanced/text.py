@@ -132,7 +132,7 @@ def specialCharacters(app, fmt=None, _browse=False):
         cc = ord(c)
         charReps.append(
             (
-                f"""<span class="ccoff {extraCls}" """
+                f"""<span class="ccoff {extraCls}" title="{cc:>05x}" """
                 f"""onclick="copyChar(this, {cc})">{htmlEsc(c)}</span>"""
             )
         )

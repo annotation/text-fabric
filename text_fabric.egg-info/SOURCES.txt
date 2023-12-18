@@ -645,3 +645,4 @@ tf/writing/hebrew.py
 tf/writing/neoaramaic.py
 tf/writing/syriac.py
 tf/writing/transcription.py
+tf/writing/ugaritic.py
