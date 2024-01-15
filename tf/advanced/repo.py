@@ -1028,9 +1028,9 @@ class Checkout:
     def isExpress(self):
         return (
             self.local is None
-            and self.version is None
+            and not self.version
             and not self.commitChk
-            and self.releaseChk == ""
+            and not self.releaseChk
         )
 
     def __init__(

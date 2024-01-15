@@ -20,6 +20,14 @@ pip install -e .
 
 ### 12.2
 
+#### 12.2.6
+
+2024-01-15
+
+Somehow the express way of downloading data (via complete.zip attached to the latest
+release) did not get triggered in all cases where it should.
+It is now triggered in more cases than before.
+
 #### 12.2.5
 
 2023-12-18
