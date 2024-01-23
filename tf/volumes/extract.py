@@ -20,7 +20,15 @@ from ..parameters import OTYPE, OSLOTS, OWORK, OINTERF, OINTERT
 from ..core.fabric import FabricCore
 from ..core.timestamp import Timestamp, SILENT_D, DEEP, silentConvert
 from ..core.helpers import getAllRealFeatures, console
-from ..core.files import unexpanduser as ux, dirEmpty, isFile, isDir, dirRemove, scanDir
+from ..core.files import (
+    fileOpen,
+    unexpanduser as ux,
+    dirEmpty,
+    isFile,
+    isDir,
+    dirRemove,
+    scanDir,
+)
 
 DEBUG = False
 OWORKI = "oworki"
@@ -65,7 +73,7 @@ def getVolumes(volumesLocation):
                 triggerFile = f"{volumesLocation}/{vol}/{OTYPE}.tf"
                 triggerLine = f"@volume={vol}\n"
                 if isFile(triggerFile):
-                    with open(triggerFile, encoding="utf8") as fh:
+                    with fileOpen(triggerFile) as fh:
                         triggered = False
                         for line in fh:
                             if line == triggerLine:
@@ -291,7 +299,7 @@ def extract(
         good = True
 
         removable = set()
-        for (name, v) in volumeData.items():
+        for name, v in volumeData.items():
             loc = f"{volumesLocation}/{name}"
             v["location"] = loc
             if not dirEmpty(loc):
@@ -324,7 +332,7 @@ def extract(
             givenVolumes.clear()
 
             if type(volumes) is dict:
-                for (name, heads) in volumes.items():
+                for name, heads in volumes.items():
                     volumeData[name] = dict(heads=heads)
                     givenVolumes.add(name)
             else:
@@ -335,7 +343,7 @@ def extract(
 
             headIndex = {}
 
-            for (name, v) in volumeData.items():
+            for name, v in volumeData.items():
                 heads = v["heads"]
                 if not heads:
                     error("Empty volumes not allowed")
@@ -367,7 +375,7 @@ def extract(
         good = True
         errors = set()
 
-        for (name, v) in volumeData.items():
+        for name, v in volumeData.items():
             thisGood = True
             for head in v["heads"]:
                 if head not in toplevels:
@@ -439,7 +447,7 @@ def extract(
     }
 
     nTypeInfo = {}
-    for (nType, av, nF, nT) in C.levels.data[0:-1]:
+    for nType, av, nF, nT in C.levels.data[0:-1]:
         nTypeInfo[nType] = (nF, nT)
 
     toplevels = {}
@@ -447,7 +455,7 @@ def extract(
     def getTopLevels():
         nodes = F.otype.s(toplevelType)
 
-        for (i, nW) in enumerate(nodes):
+        for i, nW in enumerate(nodes):
             head = T.sectionFromNode(nW)[0] if byTitle else i + 1
             toplevels[head] = dict(
                 firstSlot=L.d(nW, otype=slotType)[0],
@@ -457,7 +465,7 @@ def extract(
         info(f"Work consists of {len(toplevels)} {toplevelType}s:", tm=False)
         indent(level=1, reset=True)
 
-        for (head, lv) in toplevels.items():
+        for head, lv in toplevels.items():
             firstSlot = lv["firstSlot"]
             lastSlot = lv["lastSlot"]
             nSlots = lastSlot - firstSlot + 1
@@ -473,7 +481,7 @@ def extract(
         indent(level=1, reset=True)
         up = C.levUp.data
 
-        for (name, v) in volumeData.items():
+        for name, v in volumeData.items():
             info(f"volume {name} ...")
             indent(level=2, reset=True)
 
@@ -509,7 +517,7 @@ def extract(
             nV = sV + 1
 
             indent(level=2)
-            for (nType, nodesW) in nodesByType.items():
+            for nType, nodesW in nodesByType.items():
                 startV = nV
                 for nW in nodesW:
                     owork[nV] = nW
@@ -534,7 +542,7 @@ def extract(
         info("Remap features ...")
         indent(level=1, reset=True)
 
-        for (name, v) in volumeData.items():
+        for name, v in volumeData.items():
             owork = v[OWORK]
             oworki = v[OWORKI]
             allSlots = v[ALLSLOTS]
@@ -548,11 +556,11 @@ def extract(
             headStr = "-".join(str(head) for head in v["heads"])
             volumeMeta = name if headStr == str(name) else f"{name}:{headStr}"
 
-            for (feat, meta) in metaDataTotal.items():
+            for feat, meta in metaDataTotal.items():
                 metaData[feat] = {k: m for (k, m) in meta.items()}
                 metaData[feat]["volume"] = volumeMeta
 
-            for (tp, feat, desc) in (
+            for tp, feat, desc in (
                 ("int", OWORK, "mapping from nodes in the volume to nodes in the work"),
                 ("str", OINTERF, "all outgoing inter-volume edges"),
                 ("str", OINTERT, "all incoming inter-volume edges"),
@@ -583,7 +591,7 @@ def extract(
             oslots = {}
             edgeFeatures[OSLOTS] = oslots
 
-            for (nV, nW) in owork.items():
+            for nV, nW in owork.items():
                 otype[nV] = slotType if nW <= maxSlot else fOtypeData[nW - maxSlot - 1]
 
                 if nW > maxSlot:
@@ -595,12 +603,12 @@ def extract(
                     if not oslots[nV]:
                         error(f"{otype[nV]} node v={nV} w={nW} has no slots", tm=False)
 
-                for (feat, featD) in nodeFeatureData.items():
+                for feat, featD in nodeFeatureData.items():
                     val = featD.get(nW, None)
                     if val is not None:
                         nodeFeatures.setdefault(feat, {})[nV] = val
 
-                for (feat, (doValues, valTp, featF, featT)) in edgeFeatureData.items():
+                for feat, (doValues, valTp, featF, featT) in edgeFeatureData.items():
                     # outgoing edges are used to construct the in-volume edge
                     # and the inter-volume outgoing edges
                     if doValues:
@@ -663,7 +671,7 @@ def extract(
 
         good = True
 
-        for (name, v) in volumeData.items():
+        for name, v in volumeData.items():
             info(f"Writing volume {name}")
             metaData = v["metaData"]
             nodeFeatures = v["nodeFeatures"]
@@ -691,7 +699,7 @@ def extract(
         if checkOnly:
             if volumeData:
                 if show:
-                    for (name, v) in volumeData.items():
+                    for name, v in volumeData.items():
                         location = ux(v["location"])
                         console(f"{name:<20} @ {location}")
                 else:
@@ -707,7 +715,7 @@ def extract(
             return None if show else False
         if checkOnly:
             if show:
-                for (name, v) in volumeData.items():
+                for name, v in volumeData.items():
                     location = ux(v["location"])
                     console(f"{name:<20} @ {location}")
             else:
@@ -724,7 +732,7 @@ def extract(
             for name in sorted(givenVolumes | set(volumeData))
         }
         if show:
-            for (name, v) in result.items():
+            for name, v in result.items():
                 new = " (new)" if v["new"] else " " * 6
                 location = ux(v["location"])
                 console(f"{name:<20}{new} @ {location}")

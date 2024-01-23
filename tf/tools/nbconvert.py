@@ -4,7 +4,14 @@ from subprocess import run
 from textwrap import dedent
 
 from ..core.helpers import console
-from ..core.files import unexpanduser as ux, isDir, fileCopy, scanDir, initTree
+from ..core.files import (
+    fileOpen,
+    unexpanduser as ux,
+    isDir,
+    fileCopy,
+    scanDir,
+    initTree,
+)
 
 
 __pdoc__ = {}
@@ -142,7 +149,7 @@ def makeIndex(inputDir):
     html = f"{htmlStart}{html}{htmlEnd}"
     filePath = INDEX if inputDir == "" else f"{inputDir}/{INDEX}"
 
-    with open(filePath, "w", encoding="utf8") as fh:
+    with fileOpen(filePath, mode="w") as fh:
         fh.write(html)
 
     console(f"Created {ux(filePath)}")
@@ -192,9 +199,7 @@ def convertDir(inputDir, outputDir):
             commandLine = f"{command} --output-dir={destDir} {inFiles}"
             run(commandLine, shell=True)
             for thisNotebook in theseNotebooks:
-                convertedNotebooks.append(
-                    (destDir, thisNotebook.replace(NB_EXT, ""))
-                )
+                convertedNotebooks.append((destDir, thisNotebook.replace(NB_EXT, "")))
 
     doSubDir("")
     convertedPat = ")|(?:".join(re.escape(c[1]) for c in convertedNotebooks)
@@ -229,13 +234,13 @@ def convertDir(inputDir, outputDir):
         return LINK_RE.sub(r"\1.html\2", text)
 
     console("fixing links to converted notebooks:")
-    for (path, name) in convertedNotebooks:
+    for path, name in convertedNotebooks:
         pathName = f"{path}/{name}.html"
         console(pathName)
-        with open(pathName, encoding="utf8") as fh:
+        with fileOpen(pathName) as fh:
             text = fh.read()
         text = processLinks(text)
-        with open(pathName, "w", encoding="utf8") as fh:
+        with fileOpen(pathName, mode="w") as fh:
             fh.write(text)
 
 

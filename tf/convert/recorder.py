@@ -115,7 +115,7 @@ from ..core.helpers import (
     specFromRanges,
     rangesFromSet,
 )
-from ..core.files import expanduser as ex, splitExt, initTree, dirNm
+from ..core.files import fileOpen, expanduser as ex, splitExt, initTree, dirNm
 from ..core.helpers import console
 
 
@@ -568,13 +568,13 @@ class Recorder:
         textDir = dirNm(textPath)
         initTree(textDir)
 
-        with open(textPath, "w", encoding="utf8") as fh:
+        with fileOpen(textPath, mode="w") as fh:
             fh.write(self.text())
 
         if not byType:
             posDir = dirNm(posPath)
             initTree(posDir)
-            with open(posPath, "w", encoding="utf8") as fh:
+            with fileOpen(posPath, mode="w") as fh:
                 if inverted:
                     fh.write(
                         "\n".join(
@@ -616,7 +616,7 @@ class Recorder:
         for nodeType, mapping in mapByType.items():
             fileName = f"{base}-{nodeType}{ext}"
             info(f"{nodeType:<20} => {fileName}")
-            with open(fileName, "w", encoding="utf8") as fh:
+            with fileOpen(fileName, mode="w") as fh:
                 if inverted:
                     fh.write(
                         "\n".join(
@@ -674,10 +674,10 @@ class Recorder:
         posPath = ex(posPath or f"{textPath}.pos")
         self.context = {}
 
-        with open(textPath, encoding="utf8") as fh:
+        with fileOpen(textPath) as fh:
             self.material = list(fh)
 
-        with open(posPath, encoding="utf8") as fh:
+        with fileOpen(posPath) as fh:
             self.nodesByPos = [
                 {int(n) for n in line.rstrip("\n").split("\t")}
                 if line != "\n"
@@ -721,7 +721,7 @@ class Recorder:
 
         features = {}
 
-        with open(featurePath, encoding="utf8") as fh:
+        with fileOpen(featurePath) as fh:
             if headers is True:
                 names = next(fh).rstrip("\n").split("\t")[2:]
             elif headers is not None:

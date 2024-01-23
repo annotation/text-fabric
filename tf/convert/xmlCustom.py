@@ -2,7 +2,7 @@ import re
 from io import BytesIO
 
 from tf.core.helpers import console
-from tf.core.files import initTree, unexpanduser as ux
+from tf.core.files import fileOpen, initTree, unexpanduser as ux
 
 from tf.convert.helpers import ZWSP, XNEST, TNEST, CHAR, FOLDER, FILE
 
@@ -298,7 +298,7 @@ def getDirector(self, etree):
                 cur[FILE] = cv.node(FILE)
                 cv.feature(cur[FILE], file=xmlFile.removesuffix(".xml"))
 
-                with open(f"{xmlPath}/{xmlFolder}/{xmlFile}", encoding="utf8") as fh:
+                with fileOpen(f"{xmlPath}/{xmlFolder}/{xmlFile}") as fh:
                     text = fh.read()
                     text = transformFunc(text)
                     tree = etree.parse(text, parser)

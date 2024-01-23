@@ -20,6 +20,19 @@ from ..parameters import (
 from .generic import deepAttrDict
 
 
+def fileOpen(*args, **kwargs):
+    """Wrapper around `open()`, making sure `encoding="utf8" is passed.
+
+    This function calls `open()` with the same arguments, but if the optional
+    argument `encoding` is missing and the mode argument does not contain a `b`
+    (binary file), then `encoding="utf8"` is supplied.
+    """
+
+    if "encoding" in kwargs or ("mode" in kwargs and "b" in kwargs["mode"]):
+        return open(*args, **kwargs)
+    return open(*args, **kwargs, encoding="utf8")
+
+
 def normpath(path):
     if path is None:
         return None
@@ -679,7 +692,7 @@ def readYaml(text=None, plain=False, asFile=None, preferTuples=True):
         cfg = yaml.load(text, **kwargs)
     else:
         if fileExists(asFile):
-            with open(asFile, encoding="utf8") as fh:
+            with fileOpen(asFile) as fh:
                 cfg = yaml.load(fh, **kwargs)
         else:
             cfg = {}
@@ -693,5 +706,5 @@ def writeYaml(data, asFile=None, sorted=False):
     if asFile is None:
         return yaml.dump(data, **kwargs)
 
-    with open(asFile, "w", encoding="utf8") as fh:
+    with fileOpen(asFile, mode="w") as fh:
         yaml.dump(data, fh, **kwargs)

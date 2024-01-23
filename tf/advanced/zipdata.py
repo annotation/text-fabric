@@ -6,6 +6,7 @@ from .helpers import splitModRef
 from ..parameters import ZIP_OPTIONS, RELATIVE
 from ..core.helpers import console, run
 from ..core.files import (
+    fileOpen,
     normpath,
     expanduser as ex,
     unexpanduser as ux,
@@ -223,7 +224,7 @@ def addCheckout(path):
             console(stdErr, error=True)
 
     if release is not None or commit is not None:
-        with open(f"{path}/{EXPRESS_SYNC}", "w", encoding="utf8") as fh:
+        with fileOpen(f"{path}/{EXPRESS_SYNC}", mode="w") as fh:
             if release is not None:
                 fh.write(f"{release}\n")
             if commit is not None:

@@ -8,6 +8,7 @@ import errno
 import time
 import unicodedata
 
+from ..core.files import fileOpen
 
 SITE = "site"
 REMOTE = "origin"
@@ -97,7 +98,7 @@ def _start_commit(pipe, branch, message):
 
 
 def _add_file(pipe, srcpath, tgtpath):
-    with open(srcpath, "rb") as handle:
+    with fileOpen(srcpath, mode="rb") as handle:
         if os.access(srcpath, os.X_OK):
             _write(pipe, _enc("M 100755 inline %s\n" % tgtpath))
         else:

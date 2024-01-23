@@ -161,6 +161,7 @@ from ..core.text import DEFAULT_FORMAT
 from ..core.command import readArgs
 from ..core.helpers import mergeDict
 from ..core.files import (
+    fileOpen,
     abspath,
     expanduser as ex,
     unexpanduser as ux,
@@ -684,7 +685,7 @@ class XML(CheckImport):
 
             nErrors = 0
 
-            with open(errorFile, "w", encoding="utf8") as fh:
+            with fileOpen(errorFile, mode="w") as fh:
                 for xmlFile, lines in errors:
                     fh.write(f"{xmlFile}\n")
                     for line in lines:
@@ -705,7 +706,7 @@ class XML(CheckImport):
 
             nTags = len(tagByNs)
 
-            with open(errorFile, "w", encoding="utf8") as fh:
+            with fileOpen(errorFile, mode="w") as fh:
                 for tag, nsInfo in sorted(
                     tagByNs.items(), key=lambda x: (-len(x[1]), x[0])
                 ):
@@ -732,7 +733,7 @@ class XML(CheckImport):
 
         def writeReport():
             reportFile = f"{reportPath}/elements.txt"
-            with open(reportFile, "w", encoding="utf8") as fh:
+            with fileOpen(reportFile, mode="w") as fh:
                 fh.write(
                     "Inventory of tags and attributes in the source XML file(s).\n"
                     "Contains the following sections:\n"
@@ -1086,13 +1087,13 @@ class XML(CheckImport):
                     fileCopy(itemSource, itemTarget)
             else:
                 if fileExists(itemSource):
-                    with open(itemSource, encoding="utf8") as fh:
+                    with fileOpen(itemSource) as fh:
                         sourceText = fh.read()
                 else:
                     sourceText = ""
 
                 if fileExists(itemCustom):
-                    with open(itemCustom, encoding="utf8") as fh:
+                    with fileOpen(itemCustom) as fh:
                         customText = fh.read()
                 else:
                     customText = None
@@ -1111,7 +1112,7 @@ class XML(CheckImport):
                     fileRemove(itemTarget)
                     msg = "(deleted)"
                 else:
-                    with open(itemTarget, "w", encoding="utf8") as fh:
+                    with fileOpen(itemTarget, mode="w") as fh:
                         fh.write(targetText)
 
             if verbose >= 0:

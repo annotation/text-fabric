@@ -9,6 +9,7 @@ from ..core.files import (
     APP_CONFIG,
     APP_CONFIG_OLD,
     APP_DISPLAY,
+    fileOpen,
     prefixSlash,
     fileExists,
     normpath,
@@ -140,7 +141,7 @@ Hint:
     cfg["isCompatible"] = isCompatible
 
     if fileExists(cssPath):
-        with open(cssPath, encoding="utf8") as fh:
+        with fileOpen(cssPath) as fh:
             cfg["css"] = fh.read()
     else:
         cfg["css"] = ""

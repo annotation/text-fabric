@@ -4,6 +4,7 @@ from subprocess import run
 from ..capable import CheckImport
 from ..core.command import readArgs
 from ..core.files import (
+    fileOpen,
     abspath,
     dirNm,
     dirContents,
@@ -430,11 +431,11 @@ class PageXML(CheckImport):
             console(f"PageXML data version is {sourceVersion} ({sourceStatusRep})")
 
         if fileExists(tfVersionFile):
-            with open(tfVersionFile) as fh:
+            with fileOpen(tfVersionFile) as fh:
                 latestTfVersion = fh.read().strip() or "0.0.0"
         else:
             latestTfVersion = "0.0.0"
-            with open(tfVersionFile, "w") as fh:
+            with fileOpen(tfVersionFile, mode="w") as fh:
                 fh.write(latestTfVersion)
 
         writeVersion = False
@@ -478,7 +479,7 @@ class PageXML(CheckImport):
             writeVersion = True
 
         if writeVersion:
-            with open(tfVersionFile, "w") as fh:
+            with fileOpen(tfVersionFile, mode="w") as fh:
                 fh.write(tfVersion)
 
         if verbose >= 0:
@@ -893,13 +894,13 @@ class PageXML(CheckImport):
                     fileCopy(itemSource, itemTarget)
             else:
                 if fileExists(itemSource):
-                    with open(itemSource, encoding="utf8") as fh:
+                    with fileOpen(itemSource) as fh:
                         sourceText = fh.read()
                 else:
                     sourceText = ""
 
                 if fileExists(itemCustom):
-                    with open(itemCustom, encoding="utf8") as fh:
+                    with fileOpen(itemCustom) as fh:
                         customText = fh.read()
                 else:
                     customText = ""
@@ -910,7 +911,7 @@ class PageXML(CheckImport):
                     else fileCopy  # this cannot occur because justCopy is False
                 )(sourceText, customText)
 
-                with open(itemTarget, "w", encoding="utf8") as fh:
+                with fileOpen(itemTarget, mode="w") as fh:
                     fh.write(targetText)
 
             if verbose >= 0:

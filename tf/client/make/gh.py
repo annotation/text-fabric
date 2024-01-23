@@ -7,6 +7,8 @@ import errno
 import time
 import unicodedata
 
+from tf.core.files import fileOpen
+
 REMOTE = "origin"
 BRANCH = "gh-pages"
 SITE = "site"
@@ -94,7 +96,7 @@ def _start_commit(pipe, branch, message):
 
 
 def _add_file(pipe, srcpath, tgtpath):
-    with open(srcpath, "rb") as handle:
+    with fileOpen(srcpath, mode="rb") as handle:
         if os.access(srcpath, os.X_OK):
             _write(pipe, _enc("M 100755 inline %s\n" % tgtpath))
         else:

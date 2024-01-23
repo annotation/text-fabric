@@ -112,7 +112,7 @@ import re
 
 from ..capable import CheckImport
 from ..core.helpers import console, run
-from ..core.files import fileExists, baseNm, dirNm, abspath
+from ..core.files import fileOpen, fileExists, baseNm, dirNm, abspath
 
 
 class Elements(CheckImport):
@@ -230,7 +230,7 @@ class Elements(CheckImport):
 
         try:
             if doParseBaseSchema:
-                with open(baseSchema, encoding="utf8") as fh:
+                with fileOpen(baseSchema) as fh:
                     tree = etree.parse(fh)
 
                 root = tree.getroot()
@@ -241,13 +241,13 @@ class Elements(CheckImport):
                 findImports(root)
 
                 for dependent in dependents:
-                    with open(dependent, encoding="utf8") as fh:
+                    with fileOpen(dependent) as fh:
                         dTree = etree.parse(fh)
                         dRoot = dTree.getroot()
                         roots.append(dRoot)
 
             if override is not None:
-                with open(override, encoding="utf8") as fh:
+                with fileOpen(override) as fh:
                     tree = etree.parse(fh)
 
                 oroot = tree.getroot()
@@ -258,7 +258,7 @@ class Elements(CheckImport):
                 findImports(oroot)
 
                 for dependent in dependents:
-                    with open(dependent, encoding="utf8") as fh:
+                    with fileOpen(dependent) as fh:
                         dTree = etree.parse(fh)
                         dRoot = dTree.getroot()
                         oroots.append(dRoot)
@@ -468,7 +468,7 @@ class Elements(CheckImport):
         outputFile = self.outputFile
 
         outputPath = f"{outputDir}/{outputFile}"
-        with open(outputPath, "w", encoding="utf8") as fh:
+        with fileOpen(outputPath, mode="w") as fh:
             fh.write(self.getDefs(asTsv=True))
         if verbose >= 0:
             console(f"Analysis written to {outputPath}\n")

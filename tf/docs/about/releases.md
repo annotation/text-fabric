@@ -20,6 +20,21 @@ pip install -e .
 
 ### 12.2
 
+#### 12.2.7
+
+2024-01-23
+
+There were issues with starting up the Text-Fabric browser:
+
+*   If the system could not start the browser, the TF stopped the webserver. That is
+    not helpful, because one can always open a browser and enter the url in the
+    address bar. Now TF shows the url rather prominently when it does not open
+    a browser.
+*   If debug mode is on, Flask reloads the whole process, and that might include 
+    opening the browser as well. Now Flask only opens the browser after the startup of
+    the webserver, and not anymore after successive reloads.
+
+
 #### 12.2.6
 
 2024-01-15

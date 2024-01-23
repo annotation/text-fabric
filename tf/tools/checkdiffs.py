@@ -2,20 +2,20 @@ import sys
 from itertools import zip_longest
 from glob import glob
 from tf.core.helpers import console
-from tf.core.files import baseNm, splitExt
+from tf.core.files import fileOpen, baseNm, splitExt
 
 
 def checkDiffs(path1, path2):
     """Check differences between runs of TF generations.
     """
     def diffFeature(f):
-        with open(f"{path1}/{f}.tf", encoding="utf8") as h:
+        with fileOpen(f"{path1}/{f}.tf") as h:
             eLines = (
                 h.readlines()
                 if f == "otext"
                 else (d for d in h.readlines() if not d.startswith("@"))
             )
-        with open(f"{path2}/{f}.tf", encoding="utf8") as h:
+        with fileOpen(f"{path2}/{f}.tf") as h:
             nLines = (
                 h.readlines()
                 if f == "otext"

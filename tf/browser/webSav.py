@@ -78,6 +78,8 @@ browsers, not even Edge.
     Windows users should install Chrome of Firefox.
 """
 
+import sys
+
 from flask import Flask, send_file
 from werkzeug.serving import run_simple
 
@@ -200,7 +202,23 @@ def factory(web):
     return app
 
 
-def setup(debug, *args):
+def main(cargs=sys.argv[1:]):
+    debug = False
+
+    if len(cargs) == 0:
+        args = []
+    else:
+        debugRep = cargs[0]
+        debug = debugRep == "debug"
+        args = cargs[1:]
+
+    if len(args) == 0:
+        cs("No port number specified")
+        cs(f"{TF_ERROR}")
+        return
+
+    (portWeb, args) = (args[0], args[1:])
+
     appSpecs = argApp(args, False)
 
     if not appSpecs:
@@ -247,28 +265,32 @@ def setup(debug, *args):
         cs(f"{TF_ERROR}")
         return
 
-    cs("Loading TF corpus data. Please wait ...")
+    try:
+        web = Web(makeTfKernel(app, appName))
 
-    web = Web(makeTfKernel(app, appName))
-    webapp = factory(web)
+        webapp = factory(web)
 
-    if debug:
-        webapp.config['TEMPLATES_AUTO_RELOAD'] = True
-    web.debug = debug
-    cs(f"{TF_DONE}")
+        if debug:
+            webapp.config['TEMPLATES_AUTO_RELOAD'] = True
+        web.debug = debug
+        cs(f"{TF_DONE}")
 
-    return webapp
-
-
-def runWeb(webapp, debug, portWeb):
-    run_simple(
-        HOST,
-        int(portWeb),
-        webapp,
-        use_reloader=debug,
-        use_debugger=debug,
-        use_evalex=debug,
-        threaded=True,
-    )
+        run_simple(
+            HOST,
+            int(portWeb),
+            webapp,
+            use_reloader=debug,
+            use_debugger=debug,
+            use_evalex=debug,
+            threaded=True,
+        )
+    except OSError as e:
+        cs(str(e))
+        cs(f"{TF_ERROR}")
+        return 1
 
     return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

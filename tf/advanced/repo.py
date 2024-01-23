@@ -413,6 +413,7 @@ from ..parameters import (
 )
 from ..core.helpers import console, htmlEsc, var
 from ..core.files import (
+    fileOpen,
     expanduser as ex,
     unexpanduser as ux,
     backendRep,
@@ -955,7 +956,7 @@ def publishRelease(app, increase, message=None, description=None):
     )
     console(uploadUrl)
 
-    with open(ex(binPath), "rb") as file:
+    with fileOpen(ex(binPath), mode="rb") as file:
         response = requests.post(uploadUrl, data=file, headers=headers)
 
     console(f"Release {newTag} created")
@@ -1823,7 +1824,7 @@ class Checkout:
                             fileContent = g.get_git_blob(content.sha)
                             fileData = base64.b64decode(fileContent.content)
                             fileDest = f"{destSave}/{thisPath}"
-                            with open(fileDest, "wb") as fd:
+                            with fileOpen(fileDest, mode="wb") as fd:
                                 fd.write(fileData)
                             self.info("downloaded")
                         except Exception as e:
@@ -2012,7 +2013,7 @@ class Checkout:
 
     def readInfo(self):
         if fileExists(self.filePathLocal):
-            with open(self.filePathLocal, encoding="utf8") as f:
+            with fileOpen(self.filePathLocal) as f:
                 for line in f:
                     string = line.strip()
                     (commit, release, local) = self.fromString(string)
@@ -2025,7 +2026,7 @@ class Checkout:
         releaseOff = self.releaseOff if release is None else release
         commitOff = self.commitOff if commit is None else commit
         dirMake(self.dirPathLocal)
-        with open(self.filePathLocal, "w", encoding="utf8") as f:
+        with fileOpen(self.filePathLocal, mode="w") as f:
             if releaseOff:
                 f.write(f"{releaseOff}\n")
             if commitOff:

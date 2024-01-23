@@ -5,6 +5,7 @@
 import sys
 
 from ..core.files import (
+    fileOpen,
     expanduser as ex,
     unexpanduser as ux,
     normpath,
@@ -139,7 +140,7 @@ def explode(inPath, outPath):
 
 
 def _readTf(path):
-    fh = open(path, encoding="utf8")
+    fh = fileOpen(path)
     i = 0
     metaData = {}
     isEdge = False
@@ -273,7 +274,7 @@ def _readDataTf(fh, firstI, valueType, isEdge, edgeValues):
 
 def _writeTf(outFile, data, valueType, isEdge):
     isInt = valueType == "int"
-    with open(outFile, "w", encoding="utf8") as fh:
+    with fileOpen(outFile, mode="w") as fh:
         if isEdge:
             if isInt:
                 for ((n, m), v) in sorted(data.items()):

@@ -71,17 +71,17 @@ The ports are computed from the `org`, `repo` and `path` arguments with which
 """
 
 import sys
-import os
 
 import webbrowser
-from multiprocessing import Process
 from time import sleep
+from subprocess import Popen, PIPE
+from platform import system
 
 from ..core.helpers import console
 from ..parameters import BANNER, PROTOCOL, HOST
 
 from .command import argNoweb, argApp, getPort
-from .web import setup, runWeb
+from .web import TF_DONE, TF_ERROR
 
 
 TOOLS = set(
@@ -159,54 +159,6 @@ FLAGS = set(
 )
 
 
-def bMsg(url):
-    return f"\n\tOpen a webbrowser and navigate to url {url}\n"
-
-
-def startBrowser(url, forceChrome, debug):
-    opened = False
-    new = 0
-    autoraise = True
-
-    sleep(1)
-    runMain = os.environ.get("WERKZEUG_RUN_MAIN")
-
-    if debug and runMain:
-        console("browser has been opened when the initial process started")
-        return
-
-    if forceChrome:
-        browser = "Chrome browser"
-        try:
-            console(f"trying {browser} ...")
-            controller = webbrowser.get("chrome")
-            opened = controller.open(url, new=new, autoraise=autoraise)
-        except Exception:
-            opened = False
-
-        if opened:
-            console(f"corpus opened in {browser}.")
-        else:
-            console(f"could not start {browser}!")
-
-    if not opened:
-        browser = "default browser"
-        extra = " instead" if forceChrome else ""
-        try:
-            console(f"trying {browser}{extra} ...")
-            opened = webbrowser.open(url, new=new, autoraise=autoraise)
-        except Exception:
-            opened = False
-
-        if opened:
-            console(f"corpus opened in {browser}{extra}.")
-        else:
-            console(f"could not start {browser}{extra}!")
-
-    if not opened:
-        console(bMsg(url))
-
-
 def main(cargs=sys.argv[1:]):
     console(BANNER)
     if len(cargs) >= 1 and any(
@@ -217,8 +169,15 @@ def main(cargs=sys.argv[1:]):
     if len(cargs) >= 1 and any(arg == "-v" for arg in cargs):
         return
 
-    forceChrome = "--chrome" in cargs
-    debug = "debug" in cargs
+    forceChrome = False
+    debugRep = "nodebug"
+
+    if "--chrome" in cargs:
+        forceChrome = True
+
+    if "debug" in cargs:
+        debugRep = "debug"
+
     cargs = [c for c in cargs if c not in {"debug", "--chrome"}]
 
     newCargs = []
@@ -234,26 +193,105 @@ def main(cargs=sys.argv[1:]):
         else:
             newCargs.append(x)
 
-    toolUrl = "" if tool is None else f"/{tool}/index"
-
     cargs = newCargs
 
     portWeb = getPort(argApp(cargs, True))
     noweb = argNoweb(cargs)
-    url = f"{PROTOCOL}{HOST}:{portWeb}{toolUrl}"
 
-    webapp = setup(debug, *cargs)
+    isWin = system().lower().startswith("win")
+    pythonExe = "python" if isWin else "python3"
 
-    if not webapp:
-        return
+    processWeb = Popen(
+        [
+            pythonExe,
+            "-m",
+            "tf.browser.web",
+            debugRep,
+            str(portWeb),
+            *cargs,
+        ],
+        stdout=PIPE,
+        bufsize=0,
+        encoding="utf8",
+    )
+    console("Loading TF corpus data. Please wait ...")
 
-    if noweb:
-        console(bMsg(url))
-        runWeb(webapp, debug, portWeb)
-    else:
-        p = Process(target=startBrowser, args=(url, forceChrome, debug))
-        p.start()
-        runWeb(webapp, debug, portWeb)
+    for line in processWeb.stdout:
+        line = line.rstrip()
+        console(line)
+
+        if line == TF_ERROR:
+            if processWeb:
+                processWeb.terminate()
+            return
+        if line == TF_DONE:
+            break
+
+    sleep(1)
+    stopped = processWeb.poll()
+
+    if stopped:
+        if processWeb:
+            for line in processWeb.stdout:
+                sys.stdout.write(line)
+            processWeb.terminate()
+
+    if not noweb:
+        sleep(2)
+        stopped = not portWeb or (processWeb and processWeb.poll())
+
+        if not stopped:
+            opened = False
+            new = 0
+            toolUrl = "" if tool is None else f"/{tool}/index"
+            url = f"{PROTOCOL}{HOST}:{portWeb}{toolUrl}"
+            autoraise = True
+
+            if forceChrome:
+                browser = "Chrome browser"
+                try:
+                    console(f"trying {browser} ...")
+                    raise
+                    controller = webbrowser.get("chrome")
+                    opened = controller.open(url, new=new, autoraise=autoraise)
+                except Exception:
+                    opened = False
+
+                if opened:
+                    console(f"corpus opened in {browser}.")
+                else:
+                    console(f"could not start {browser}!")
+
+            if not opened:
+                browser = "default browser"
+                extra = " instead" if forceChrome else ""
+                try:
+                    console(f"trying {browser}{extra} ...")
+                    raise
+                    opened = webbrowser.open(url, new=new, autoraise=autoraise)
+                except Exception:
+                    opened = False
+
+                if opened:
+                    console(f"corpus opened in {browser}{extra}.")
+                else:
+                    console(f"could not start {browser}{extra}!")
+
+            if not opened:
+                console(f"\n\tOpen a webbrowser and navigate to url {url}\n")
+
+    stopped = not portWeb or (processWeb and processWeb.poll())
+
+    if not stopped:
+        try:
+            console("Press <Ctrl+C> to stop the TF browser")
+            if processWeb:
+                for line in processWeb.stdout:
+                    sys.stdout.write(line)
+        except KeyboardInterrupt:
+            if processWeb:
+                processWeb.terminate()
+            console("TF web server has stopped")
 
 
 if __name__ == "__main__":

@@ -8,7 +8,7 @@ import pickle
 import gzip
 from .parameters import PICKLE_PROTOCOL, GZIP_LEVEL
 from .core.helpers import console
-from .core.files import expanduser as ex, fileExists, dirMake, splitPath
+from .core.files import fileOpen, expanduser as ex, fileExists, dirMake, splitPath
 
 
 def writeList(data, dest, intCols=None):
@@ -54,7 +54,7 @@ def writeList(data, dest, intCols=None):
 
     dirMake(baseDir)
 
-    with open(destPath, "w", encoding="utf8") as fh:
+    with fileOpen(destPath, mode="w") as fh:
         if intCols is None:
             intCols = {i: False for i in range(len(data[0]))} if len(data) else {}
         else:
@@ -98,7 +98,7 @@ def readList(source):
 
     data = []
 
-    with open(sourcePath, encoding="utf8") as fh:
+    with fileOpen(sourcePath) as fh:
         colInt = {
             i: tp == "int" for (i, tp) in enumerate(next(fh).rstrip("\n").split("\t"))
         }
@@ -139,7 +139,7 @@ def writeSets(sets, dest):
 
     dirMake(baseDir)
 
-    with gzip.open(destPath, "wb", compresslevel=GZIP_LEVEL) as f:
+    with gzip.open(destPath, mode="wb", compresslevel=GZIP_LEVEL) as f:
         pickle.dump(sets, f, protocol=PICKLE_PROTOCOL)
     return True
 
@@ -167,6 +167,6 @@ def readSets(source):
     if not fileExists(sourcePath):
         console(f'Sets file "{source}" does not exist.')
         return False
-    with gzip.open(sourcePath, "rb") as f:
+    with gzip.open(sourcePath, mode="rb") as f:
         sets = pickle.load(f)
     return sets

@@ -22,6 +22,7 @@ import time
 
 from ...core.generic import AttrDict
 from ...core.files import (
+    fileOpen,
     mTime,
     fileExists,
     initTree,
@@ -155,7 +156,7 @@ class Data(Corpus):
                 entities = {}
 
                 if fileExists(dataFile):
-                    with open(dataFile) as df:
+                    with fileOpen(dataFile) as df:
                         for e, line in enumerate(df):
                             fields = tuple(line.rstrip("\n").split("\t"))
                             entities[e] = (
@@ -869,7 +870,7 @@ class Data(Corpus):
 
         newEntities = []
 
-        with open(dataFile) as fh:
+        with fileOpen(dataFile) as fh:
             for line in fh:
                 fields = tuple(line.rstrip("\n").split("\t"))
                 fVals = tuple(fields[0:nF])
@@ -879,7 +880,7 @@ class Data(Corpus):
                     continue
                 newEntities.append(line)
 
-        with open(dataFile, "w") as fh:
+        with fileOpen(dataFile, mode="w") as fh:
             fh.write("".join(newEntities))
 
     def mergeEntities(self, newEntities):
@@ -908,7 +909,7 @@ class Data(Corpus):
 
         dataFile = f"{annoDir}/{annoSet}/entities.tsv"
 
-        with open(dataFile, "a") as fh:
+        with fileOpen(dataFile, mode="a") as fh:
             for fVals, slots in newEntities:
                 fh.write("\t".join(str(x) for x in (*fVals, *slots)) + "\n")
 
@@ -929,6 +930,6 @@ class Data(Corpus):
         setData = self.getSetData()
         entities = setData.entities
 
-        with open(dataFile, "a") as fh:
+        with fileOpen(dataFile, mode="a") as fh:
             for fVals, slots in entities.values():
                 fh.write("\t".join(str(x) for x in (*fVals, *slots)) + "\n")

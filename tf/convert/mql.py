@@ -131,6 +131,7 @@ from ..core.helpers import (
     console,
 )
 from ..core.files import (
+    fileOpen,
     expanduser as ex,
     unexpanduser as ux,
     expandDir,
@@ -311,7 +312,7 @@ class MQL:
 
         mqlFile = f"{self.exportDir}/{self.mqlDb}.mql"
         try:
-            fm = open(mqlFile, "w", encoding="utf8")
+            fm = fileOpen(mqlFile, mode="w")
         except Exception:
             error(f"Could not write to {ux(mqlFile)}")
             self.good = False
@@ -711,7 +712,7 @@ def parseMql(mqlFile, tmObj):
     error = tmObj.error
 
     info("Parsing MQL source ...")
-    fh = open(mqlFile, encoding="utf8")
+    fh = fileOpen(mqlFile)
 
     objectTypes = dict()
     tables = dict()

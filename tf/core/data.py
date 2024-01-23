@@ -17,6 +17,7 @@ from .helpers import (
     console,
 )
 from .files import (
+    fileOpen,
     unexpanduser as ux,
     fileExists,
     fileRemove,
@@ -232,7 +233,7 @@ class Data:
         if not fileExists(path):
             error(f'TF reading: feature file "{path}" does not exist')
             return False
-        fh = open(path, encoding="utf8")
+        fh = fileOpen(path)
         i = 0
         self.metaData = {}
         self.isConfig = False
@@ -510,7 +511,7 @@ class Data:
                     )
                     return False
         try:
-            fh = open(fpath, "w", encoding="utf8")
+            fh = fileOpen(fpath, mode="w")
         except Exception:
             error(f'Cannot write to feature file "{fpath}"')
             return False
@@ -662,7 +663,7 @@ class Data:
         good = True
 
         try:
-            with gzip.open(self.binPath, "rb") as f:
+            with gzip.open(self.binPath, mode="rb") as f:
                 self.data = pickle.load(f)
             good = True
         except Exception:
@@ -684,7 +685,7 @@ class Data:
         dirMake(self.binDir)
 
         try:
-            with gzip.open(self.binPath, "wb", compresslevel=GZIP_LEVEL) as f:
+            with gzip.open(self.binPath, mode="wb", compresslevel=GZIP_LEVEL) as f:
                 # pickle.dump(self.data, f, protocol=PICKLE_PROTOCOL)
                 f.write(optimize(pickle.dumps(self.data, protocol=PICKLE_PROTOCOL)))
         except Exception as e:

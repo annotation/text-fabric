@@ -53,6 +53,7 @@ from textwrap import dedent
 
 from ..core.helpers import mdEsc, tsvEsc
 from ..core.files import (
+    fileOpen,
     normpath,
     abspath,
     dirMake,
@@ -276,7 +277,7 @@ def getCss(app):
     cssPath = normpath(cssPath)
     genericCss = ""
     for cssFile in SERVER_DISPLAY:
-        with open(f"{cssPath}/{cssFile}", encoding="utf8") as fh:
+        with fileOpen(f"{cssPath}/{cssFile}") as fh:
             genericCss += fh.read()
 
     tableCss = (
@@ -343,7 +344,7 @@ def getToolCss(app, tool):
     toolCss = ""
 
     for cssFile in TOOL_DISPLAY:
-        with open(f"{cssPath}/{cssFile}", encoding="utf8") as fh:
+        with fileOpen(f"{cssPath}/{cssFile}") as fh:
             toolCss += fh.read()
 
     return f"<style>{toolCss}</style>"
@@ -468,7 +469,7 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
 
     resultsX = getRowsX(app, tuples, tupleFeatures, condenseType, fmt=fmt)
 
-    with open(toPath, "w", encoding="utf_16_le") as fh:
+    with fileOpen(toPath, mode="w", encoding="utf_16_le") as fh:
         fh.write(
             "\ufeff"
             + "".join(

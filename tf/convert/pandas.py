@@ -35,7 +35,7 @@ programs, such as TF, to process the same data.
 
 from ..capable import CheckImport
 from ..parameters import OTYPE, OSLOTS
-from ..core.files import TEMP_DIR, unexpanduser as ux, expandDir, dirMake
+from ..core.files import TEMP_DIR, fileOpen, unexpanduser as ux, expandDir, dirMake
 from ..core.helpers import fitemize, pandasEsc, PANDAS_QUOTE, PANDAS_ESCAPE
 
 
@@ -199,7 +199,7 @@ def exportPandas(app, inTypes=None, exportDir=None):
     app.info("Create tsv file ...")
     app.indent(level=True, reset=True)
 
-    with open(tableFile, "w", encoding="utf8") as hr:
+    with fileOpen(tableFile, mode="w") as hr:
         cells = (
             "nd",
             "otype",
@@ -255,7 +255,7 @@ def exportPandas(app, inTypes=None, exportDir=None):
 
     app.info(f"TSV file is {ux(tableFile)}")
 
-    with open(tableFile, "r", encoding="utf8") as hr:
+    with fileOpen(tableFile, mode="r") as hr:
         rows = 0
         chars = 0
         columns = 0

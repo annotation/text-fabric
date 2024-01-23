@@ -514,6 +514,7 @@ from ..convert.walker import CV
 from ..core.timestamp import AUTO, DEEP, TERSE
 from ..core.command import readArgs
 from ..core.files import (
+    fileOpen,
     abspath,
     expanduser as ex,
     unexpanduser as ux,
@@ -1449,7 +1450,7 @@ class TEI(CheckImport):
             ("template", templates),
         ):
             if text is None:
-                with open(xmlPath, encoding="utf8") as fh:
+                with fileOpen(xmlPath) as fh:
                     text = fh.read()
 
             found[kind] = None
@@ -1750,7 +1751,7 @@ class TEI(CheckImport):
             nErrors = 0
             nFiles = 0
 
-            with open(errorFile, "w", encoding="utf8") as fh:
+            with fileOpen(errorFile, mode="w") as fh:
                 prevFolder = None
                 prevFile = None
 
@@ -1791,7 +1792,7 @@ class TEI(CheckImport):
 
             nTags = len(tagByNs)
 
-            with open(errorFile, "w", encoding="utf8") as fh:
+            with fileOpen(errorFile, mode="w") as fh:
                 for tag, nsInfo in sorted(
                     tagByNs.items(), key=lambda x: (-len(x[1]), x[0])
                 ):
@@ -1822,7 +1823,7 @@ class TEI(CheckImport):
 
         def writeReport():
             reportFile = f"{reportPath}/elements.txt"
-            with open(reportFile, "w", encoding="utf8") as fh:
+            with fileOpen(reportFile, mode="w") as fh:
                 fh.write(
                     "Inventory of tags and attributes in the source XML file(s).\n"
                     "Contains the following sections:\n"
@@ -1929,7 +1930,7 @@ class TEI(CheckImport):
                         tagLines.append((tag, [model], typRep, mixedRep))
 
             reportFile = f"{reportPath}/types.txt"
-            with open(reportFile, "w", encoding="utf8") as fh:
+            with fileOpen(reportFile, mode="w") as fh:
                 for tag in sorted(tagReport):
                     tagLines = tagReport[tag]
                     for tag, mds, typ, mixed in tagLines:
@@ -1945,8 +1946,8 @@ class TEI(CheckImport):
             reportIdFile = f"{reportPath}/ids.txt"
             reportRefFile = f"{reportPath}/refs.txt"
 
-            ih = open(reportIdFile, "w", encoding="utf8")
-            rh = open(reportRefFile, "w", encoding="utf8")
+            ih = fileOpen(reportIdFile, mode="w")
+            rh = fileOpen(reportRefFile, mode="w")
 
             refdIds = collections.Counter()
             missingIds = set()
@@ -2088,7 +2089,7 @@ class TEI(CheckImport):
             elUrlPrefix = f"{teiUrl}/ref-"
             attUrlPrefix = f"{teiUrl}/REF-ATTS.html#"
             docFile = f"{docsDir}/elements.md"
-            with open(docFile, "w", encoding="utf8") as fh:
+            with fileOpen(docFile, mode="w") as fh:
                 fh.write(
                     dedent(
                         """
@@ -3481,7 +3482,7 @@ class TEI(CheckImport):
                             cur[NODE][tpl] = cv.node(tpl)
                             cv.feature(cur[NODE][tpl], **value)
 
-                        with open(xmlPath, encoding="utf8") as fh:
+                        with fileOpen(xmlPath) as fh:
                             text = fh.read()
                             if transformFunc is not None:
                                 text = transformFunc(text)
@@ -3529,7 +3530,7 @@ class TEI(CheckImport):
                     xmlPath
                 )
 
-                with open(f"{teiPath}/{xmlFile}", encoding="utf8") as fh:
+                with fileOpen(f"{teiPath}/{xmlFile}") as fh:
                     cur["xmlFile"] = xmlFile
                     text = fh.read()
                     if transformFunc is not None:
@@ -4097,13 +4098,13 @@ class TEI(CheckImport):
                     fileCopy(itemSource, itemTarget)
             else:
                 if fileExists(itemSource):
-                    with open(itemSource, encoding="utf8") as fh:
+                    with fileOpen(itemSource) as fh:
                         sourceText = fh.read()
                 else:
                     sourceText = ""
 
                 if fileExists(itemCustom):
-                    with open(itemCustom, encoding="utf8") as fh:
+                    with fileOpen(itemCustom) as fh:
                         customText = fh.read()
                 else:
                     customText = ""
@@ -4122,7 +4123,7 @@ class TEI(CheckImport):
                     else fileCopy  # this cannot occur because justCopy is False
                 )(sourceText, customText)
 
-                with open(itemTarget, "w", encoding="utf8") as fh:
+                with fileOpen(itemTarget, mode="w") as fh:
                     fh.write(targetText)
 
             if verbose >= 0:

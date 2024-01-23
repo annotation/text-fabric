@@ -67,6 +67,7 @@ from tf.browser.command import getPort
 from tf.core.helpers import specFromRanges, rangesFromSet, console as cs
 from tf.core.files import (
     LS,
+    fileOpen,
     normpath,
     abspath,
     backendRep,
@@ -756,7 +757,7 @@ class Make:
 
         fileNameConfig = f"{destData}/config.js"
 
-        with open(fileNameConfig, "w", encoding="utf8") as fh:
+        with fileOpen(fileNameConfig, mode="w") as fh:
             fh.write("const configData = ")
             json.dump(clientConfig, fh, ensure_ascii=False, indent=1)
         A.info(f"Config written to file {fileNameConfig}")
@@ -847,7 +848,7 @@ class Make:
             file = name.lower() + (".txt" if debug and asString else ".js")
             path = f"{parent}/{file}"
             heading = f"corpusData[{address}] = "
-            with open(path, "w", encoding="utf8") as fh:
+            with fileOpen(path, mode="w") as fh:
                 fh.write(heading)
                 if asString:
                     fh.write("`")
@@ -890,7 +891,7 @@ class Make:
                             )
             else:
                 writeDataFile(partName, f'"{partName}"', partData)
-        with open(C.jsInit, "w", encoding="utf8") as fh:
+        with fileOpen(C.jsInit, mode="w") as fh:
             fh.write("".join(init))
 
         return good
@@ -905,7 +906,7 @@ class Make:
         nlRe = re.compile(r"""\n\n+""")
 
         def getJSModule(module):
-            with open(f"{C.jsOutDir}/{module}", encoding="utf8") as fh:
+            with fileOpen(f"{C.jsOutDir}/{module}") as fh:
                 text = fh.read()
             text = importRe.sub("", text)
             text = exportRe.sub("", text)
@@ -950,7 +951,7 @@ class Make:
             + "\n\n"
             + content[C.jsApp]
         )
-        with open(C.jsAllPath, "w", encoding="utf8") as fh:
+        with fileOpen(C.jsAllPath, mode="w") as fh:
             fh.write(combined)
         console(f"Combined js file written to {C.jsAllPath}")
 
@@ -967,7 +968,7 @@ class Make:
             desc = readYaml(asFile=thisConfig, plain=True).get("short", "")
             clients[thisClient] = desc
 
-        with open(C.index, encoding="utf8") as fh:
+        with fileOpen(C.index) as fh:
             template = fh.read()
             htmlIndex = template.replace("«org»", C.org).replace("«repo»", C.repo)
             htmlIndex = htmlIndex.replace("«client»", C.client)
@@ -985,7 +986,7 @@ class Make:
 
             htmlIndex = htmlIndex.replace("«clients»", "".join(html))
 
-        with open(C.htmlIndex, "w", encoding="utf8") as fh:
+        with fileOpen(C.htmlIndex, mode="w") as fh:
             fh.write(htmlIndex)
         console(f"html file written to {C.htmlIndex}")
 
@@ -1001,7 +1002,7 @@ class Make:
                     scripts.append(f'<script defer src="corpus/{file}«v»"></script>')
             corpusScripts = "\n".join(scripts)
 
-        with open(C.template, encoding="utf8") as fh:
+        with fileOpen(C.template) as fh:
             template = fh.read()
             htmlNormal = template.replace(
                 "«js»", '''type="module" src="js/app.js«v»"'''
@@ -1016,11 +1017,11 @@ class Make:
             htmlLocal = htmlLocal.replace("«org»", C.org).replace("«repo»", C.repo)
             htmlLocal = htmlLocal.replace("«client»", C.client)
 
-        with open(C.htmlClient, "w", encoding="utf8") as fh:
+        with fileOpen(C.htmlClient, mode="w") as fh:
             fh.write(htmlNormal)
         console(f"html file written to {C.htmlClient}")
 
-        with open(C.htmlLocal, "w", encoding="utf8") as fh:
+        with fileOpen(C.htmlLocal, mode="w") as fh:
             fh.write(htmlLocal)
         console(f"html file (for use with file://) written to {C.htmlLocal}")
 
@@ -1246,7 +1247,7 @@ class Make:
 
         for (key, c) in C.debugConfig.items():
             cfile = c["file"]
-            with open(cfile, encoding="utf8") as fh:
+            with fileOpen(cfile) as fh:
                 text = fh.read()
             match = c["re"].search(text)
             if not match:
@@ -1280,10 +1281,10 @@ class Make:
 
         for (key, c) in C.debugConfig.items():
             console(f'Adjusting debug in {c["file"]}')
-            with open(c["file"], encoding="utf8") as fh:
+            with fileOpen(c["file"]) as fh:
                 text = fh.read()
             text = c["re"].sub(self.replaceDebug(c["mask"], newValue), text)
-            with open(c["file"], "w", encoding="utf8") as fh:
+            with fileOpen(c["file"], mode="w") as fh:
                 fh.write(text)
 
         console(f"Debug set to {newValue}")
