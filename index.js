@@ -113,6 +113,8 @@ URLS=[
 "tf/browser/html.html",
 "tf/browser/serve.html",
 "tf/browser/start.html",
+"tf/browser/startSav.html",
+"tf/browser/webSav.html",
 "tf/browser/wrap.html",
 "tf/app.html",
 "tf/parameters.html",
@@ -1927,6 +1929,12 @@ INDEX=[
 "doc":""
 },
 {
+"ref":"tf.core.files.fileOpen",
+"url":33,
+"doc":"Wrapper around  open() , making sure  encoding=\"utf8\" is passed. This function calls  open() with the same arguments, but if the optional argument  encoding is missing and the mode argument does not contain a  b (binary file), then  encoding=\"utf8\" is supplied.",
+"func":1
+},
+{
 "ref":"tf.core.files.normpath",
 "url":33,
 "doc":"",
@@ -3566,7 +3574,7 @@ INDEX=[
 {
 "ref":"tf.about.releases",
 "url":72,
-"doc":" Release notes  ! hint \"Consult the tutorials after changes\" When we change the API, we make sure that the tutorials show off all possibilities. See the app-specific tutorials via  tf.about.corpora .  -  The TEI converter is still in active development. If you need the latest version, clone the TF repo and in its top-level directory run the command:  sh pip install -e .    12  12.2  12.2.6 2024-01-15 Somehow the express way of downloading data (via complete.zip attached to the latest release) did not get triggered in all cases where it should. It is now triggered in more cases than before.  12.2.5 2023-12-18 Small fix in NER browser: prevent submitting the form if the focus is in a textarea field or in an input field that does not have type=submit.  12.2.3,4 2023-12-09 Writing support for Ugaritic, thanks to Martijn Naaijer and Christian H\u00f8jgaard for converting a Ugaritic corpus to TF. Fix in display functions (continued):  The logic of feature display, fixed in the previous version, was not effective when things are displayed in the TF browser. Because in the TF browser the features of the last query were passed as  extraFeatures instead of  tupleFeatures . This has been fixed by using  tupleFeatures in the TF browser as well.  12.2.2 2023-12-02 Fix in display functions, thanks to Tony Jurg:  if you do  A.pretty(x, queryFeatures=False, extraFeatures=\"yy zz\") the extra features were not shown. So there was no obvious way to control exactly the features that you want to show in a display. That has been fixed. Further clarification: the node features that are used by a query are stored in the display option  tupleFeatures . That is what causes them to be displayed in subsequent display statements. You can also explicitly set/pass the  tupleFeatures parameter. However, the fact that  queryFeatures=False prohibited the display of features mentioned in  extraFeatures was against the intuitions. Improvements in the PageXML conversion.  There are token features  str ,  after that reflect the logical tokens  There are token features  rstr ,  rafter that reflect the physical tokens  The distincition between logical and physical is that physical token triplets with the soft hyphen as the middle one, are joined to one logical token; this happens across line boundaries, but also region and page boundaries.  12.2.0,1 2023-11-28 New conversion tool: from PageXML. Still in its infancy. It uses the [PageXML tools](https: github.com/knaw-huc/pagexml) by Marijn Koolen. For an example see [translatin/logic](https: gitlab.huc.knaw.nl/translatin/logic/-/blob/main/tools/convertPlain.ipynb?ref_type=heads). Fix:  TF did not fetch an earlier version of a corpus if the newest release contains a  complete.zip (which only has the latest version).  For some technical reason that still escapes me, the TF browser was slow to start. Fixed it by saying  threaded=True to Flask, as suggested on [stackoverflow](https: stackoverflow.com/a/11150849/15236220) From now on: TF does not try to download  complete.zip if you pass a  version argument to the  use() command.  12.1  12.1.6,7 2023-11-15 Various fixes:  Some package data was not included for the NER annotation tool.  In the NER tool, the highlighting of hits of the search pattern is now exact, it was sometimes off. Deleted tf.tools.docsright again, but developed it further in [docsright](https: github.com/annotation/docsright).  12.1.5 2023-11-02  Improvement in dependencies. Text-Fabric is no longer mandatory dependent on  openpyxl ,  pandas ,  pyarrow ,  lxml . The optional dependencies on  pygithub and  python-gitlab remain, but most users will never need them, because TF can also fetch the  complete.zip that is available as release asset for most corpora. Whenever TF invokes a module that is not in the mandatory dependencies, it will act gracefully, providing hints to install the modules in question.  12.1.3,4 2023-11-01  API change in the Annotator: Calling the annotator is now easier:  python A.makeNer()  (No need to make an additional  import statement.) This will give you access to all annotation methods, including using a spreadsheet to read annotation instructions from.  Removal of deprecated commands (on the command line) in version 11:   text-fabric (has become  tf )   text-fabric-zip (has become  tf-zip )   text-fabric-make (has become  tf-make )  Bug fixes: [ 81](https: github.com/annotation/text-fabric/issues/81) and [ 82](https: github.com/annotation/text-fabric/issues/82)  Spell-checked all bits of the TF docs here (33,000 lines). Wrote a script tf.tools.docsright to separate the code content from the markdown content, and to strip bits from the markdown content that lead to false positives for the spell checker. Then had the Vim spell checker run over those lines and corrected all mistakes by hand. Still, there might be grammar errors and content inaccuracies.  12.1.4 follows 12.1.3. quickly, because in corpora without a NER configuration file, TF did not start up properly.  12.1.1,2 2023-10-29  Bug fix: the mechanism to make individual exceptions when adding named entities in the  tf.browser.ner.annotate tool was broken. Thanks to Daniel Swanson for spotting it.  Additional fixes and enhancements.  12.1.0 2023-10-28  New stuff  In the TF browser there will be a new tab in the vertical sidebar:  Annotate , which will give access to manual annotation tools. I am developing the first one, a tool to annotate named entities efficiently, both in the TF browser and in a Jupyter Notebook. Reed more in  tf.about.annotate . These tools will let you save your work as files on your own computer.  In  tf.convert.addnlp we can now extract more NLP information besides tokens and sentences: part-of-speech, morphological tagging, lemmatisation, named entity recognition  Fixes  in the TEI converter.  12.0  12.0.6,7 2023-09-13 Trivial fix in code that exports the data from a job in the TF browser. In the meanwhile there is unfinished business in the  Annotate tab in the TF browser, that will come into production in the upcoming 12.1 release. The Chrome browser has an attractive feature that other browsers such as Safari lack: It supports the CSS property [content-visibility](https: developer.mozilla.org/en-US/docs/Web/CSS/content-visibility). With this property you can prevent the browser to do the expensive rendering of content that is not visible on the screen. That makes it possible to load a lot of content in a single page without tripping up the browser. You also need the [ IntersectionObserver API](https: developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API), but that is generally supported by browsers. With the help of that API you can restrict the binding of event listeners to elements that are visible on the screen. So, you can open the TF browser in Chrome by passing the option   chrome . But if Chrome is not installed, it will open in the default browser anyway. Also, when the opening of the browser fails somehow, the web server is stopped.  12.0.5 2023-07-10 Fixed references to static files that still went to  /server instead of  /browser . This has to do with the new approach to the TF browser.  12.0.0-4 2023-07-05  Simplification  The TF browser no longer works with a separate process that holds the TF corpus data. Instead, the web server (flask) loads the corpus itself. This will restrict the usage of the TF browser to local-single-user scenarios.  TF no longer exposes the installation options  [browser, pandas]  pip install 'text-fabric[browser]' pip install 'text-fabric[pandas]'  If you work with Pandas (like exporting to Pandas) you have to install it yourself:  pip install pandas pyarrow  The TF browser is always supported. The reason to have these distinct capabilities was that there are python libraries involved that do not install on the iPad. The simplification of the TF browser makes it possible to be no longer dependent on these modules. Hence, TF can be installed on the iPad, although the TF browser works is not working there yet. But the auto-downloading of data from GitHub / GitLab works.  Minor things  Header. After loading a dataset, a header is shown with shows all kinds of information about the corpus. But so far, it did not show the TF app settings. Now they are included in the header. There are two kinds: the explicitly given settings and the derived and computed settings. The latter ones will be suppressed when loading a dataset in a Jupyter notebook, because these settings can become quite big. You can still get them with  A.showContext() . In the TF browser they will be always included, you find it in the  Corpus tab.  -  Older releases See  tf.about.releasesold ."
+"doc":" Release notes  ! hint \"Consult the tutorials after changes\" When we change the API, we make sure that the tutorials show off all possibilities. See the app-specific tutorials via  tf.about.corpora .  -  The TEI converter is still in active development. If you need the latest version, clone the TF repo and in its top-level directory run the command:  sh pip install -e .    12  12.2  12.2.7 2024-01-23 There were issues with starting up the Text-Fabric browser:  If the system could not start the browser, the TF stopped the webserver. That is not helpful, because one can always open a browser and enter the url in the address bar. Now TF shows the url rather prominently when it does not open a browser.  If debug mode is on, Flask reloads the whole process, and that might include opening the browser as well. Now Flask only opens the browser after the startup of the webserver, and not anymore after successive reloads.  12.2.6 2024-01-15 Somehow the express way of downloading data (via complete.zip attached to the latest release) did not get triggered in all cases where it should. It is now triggered in more cases than before.  12.2.5 2023-12-18 Small fix in NER browser: prevent submitting the form if the focus is in a textarea field or in an input field that does not have type=submit.  12.2.3,4 2023-12-09 Writing support for Ugaritic, thanks to Martijn Naaijer and Christian H\u00f8jgaard for converting a Ugaritic corpus to TF. Fix in display functions (continued):  The logic of feature display, fixed in the previous version, was not effective when things are displayed in the TF browser. Because in the TF browser the features of the last query were passed as  extraFeatures instead of  tupleFeatures . This has been fixed by using  tupleFeatures in the TF browser as well.  12.2.2 2023-12-02 Fix in display functions, thanks to Tony Jurg:  if you do  A.pretty(x, queryFeatures=False, extraFeatures=\"yy zz\") the extra features were not shown. So there was no obvious way to control exactly the features that you want to show in a display. That has been fixed. Further clarification: the node features that are used by a query are stored in the display option  tupleFeatures . That is what causes them to be displayed in subsequent display statements. You can also explicitly set/pass the  tupleFeatures parameter. However, the fact that  queryFeatures=False prohibited the display of features mentioned in  extraFeatures was against the intuitions. Improvements in the PageXML conversion.  There are token features  str ,  after that reflect the logical tokens  There are token features  rstr ,  rafter that reflect the physical tokens  The distincition between logical and physical is that physical token triplets with the soft hyphen as the middle one, are joined to one logical token; this happens across line boundaries, but also region and page boundaries.  12.2.0,1 2023-11-28 New conversion tool: from PageXML. Still in its infancy. It uses the [PageXML tools](https: github.com/knaw-huc/pagexml) by Marijn Koolen. For an example see [translatin/logic](https: gitlab.huc.knaw.nl/translatin/logic/-/blob/main/tools/convertPlain.ipynb?ref_type=heads). Fix:  TF did not fetch an earlier version of a corpus if the newest release contains a  complete.zip (which only has the latest version).  For some technical reason that still escapes me, the TF browser was slow to start. Fixed it by saying  threaded=True to Flask, as suggested on [stackoverflow](https: stackoverflow.com/a/11150849/15236220) From now on: TF does not try to download  complete.zip if you pass a  version argument to the  use() command.  12.1  12.1.6,7 2023-11-15 Various fixes:  Some package data was not included for the NER annotation tool.  In the NER tool, the highlighting of hits of the search pattern is now exact, it was sometimes off. Deleted tf.tools.docsright again, but developed it further in [docsright](https: github.com/annotation/docsright).  12.1.5 2023-11-02  Improvement in dependencies. Text-Fabric is no longer mandatory dependent on  openpyxl ,  pandas ,  pyarrow ,  lxml . The optional dependencies on  pygithub and  python-gitlab remain, but most users will never need them, because TF can also fetch the  complete.zip that is available as release asset for most corpora. Whenever TF invokes a module that is not in the mandatory dependencies, it will act gracefully, providing hints to install the modules in question.  12.1.3,4 2023-11-01  API change in the Annotator: Calling the annotator is now easier:  python A.makeNer()  (No need to make an additional  import statement.) This will give you access to all annotation methods, including using a spreadsheet to read annotation instructions from.  Removal of deprecated commands (on the command line) in version 11:   text-fabric (has become  tf )   text-fabric-zip (has become  tf-zip )   text-fabric-make (has become  tf-make )  Bug fixes: [ 81](https: github.com/annotation/text-fabric/issues/81) and [ 82](https: github.com/annotation/text-fabric/issues/82)  Spell-checked all bits of the TF docs here (33,000 lines). Wrote a script tf.tools.docsright to separate the code content from the markdown content, and to strip bits from the markdown content that lead to false positives for the spell checker. Then had the Vim spell checker run over those lines and corrected all mistakes by hand. Still, there might be grammar errors and content inaccuracies.  12.1.4 follows 12.1.3. quickly, because in corpora without a NER configuration file, TF did not start up properly.  12.1.1,2 2023-10-29  Bug fix: the mechanism to make individual exceptions when adding named entities in the  tf.browser.ner.annotate tool was broken. Thanks to Daniel Swanson for spotting it.  Additional fixes and enhancements.  12.1.0 2023-10-28  New stuff  In the TF browser there will be a new tab in the vertical sidebar:  Annotate , which will give access to manual annotation tools. I am developing the first one, a tool to annotate named entities efficiently, both in the TF browser and in a Jupyter Notebook. Reed more in  tf.about.annotate . These tools will let you save your work as files on your own computer.  In  tf.convert.addnlp we can now extract more NLP information besides tokens and sentences: part-of-speech, morphological tagging, lemmatisation, named entity recognition  Fixes  in the TEI converter.  12.0  12.0.6,7 2023-09-13 Trivial fix in code that exports the data from a job in the TF browser. In the meanwhile there is unfinished business in the  Annotate tab in the TF browser, that will come into production in the upcoming 12.1 release. The Chrome browser has an attractive feature that other browsers such as Safari lack: It supports the CSS property [content-visibility](https: developer.mozilla.org/en-US/docs/Web/CSS/content-visibility). With this property you can prevent the browser to do the expensive rendering of content that is not visible on the screen. That makes it possible to load a lot of content in a single page without tripping up the browser. You also need the [ IntersectionObserver API](https: developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API), but that is generally supported by browsers. With the help of that API you can restrict the binding of event listeners to elements that are visible on the screen. So, you can open the TF browser in Chrome by passing the option   chrome . But if Chrome is not installed, it will open in the default browser anyway. Also, when the opening of the browser fails somehow, the web server is stopped.  12.0.5 2023-07-10 Fixed references to static files that still went to  /server instead of  /browser . This has to do with the new approach to the TF browser.  12.0.0-4 2023-07-05  Simplification  The TF browser no longer works with a separate process that holds the TF corpus data. Instead, the web server (flask) loads the corpus itself. This will restrict the usage of the TF browser to local-single-user scenarios.  TF no longer exposes the installation options  [browser, pandas]  pip install 'text-fabric[browser]' pip install 'text-fabric[pandas]'  If you work with Pandas (like exporting to Pandas) you have to install it yourself:  pip install pandas pyarrow  The TF browser is always supported. The reason to have these distinct capabilities was that there are python libraries involved that do not install on the iPad. The simplification of the TF browser makes it possible to be no longer dependent on these modules. Hence, TF can be installed on the iPad, although the TF browser works is not working there yet. But the auto-downloading of data from GitHub / GitLab works.  Minor things  Header. After loading a dataset, a header is shown with shows all kinds of information about the corpus. But so far, it did not show the TF app settings. Now they are included in the header. There are two kinds: the explicitly given settings and the derived and computed settings. The latter ones will be suppressed when loading a dataset in a Jupyter notebook, because these settings can become quite big. You can still get them with  A.showContext() . In the TF browser they will be always included, you find it in the  Corpus tab.  -  Older releases See  tf.about.releasesold ."
 },
 {
 "ref":"tf.about.clientmanual",
@@ -3983,7 +3991,13 @@ INDEX=[
 "func":1
 },
 {
-"ref":"tf.browser.web.main",
+"ref":"tf.browser.web.setup",
+"url":92,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.web.runWeb",
 "url":92,
 "doc":"",
 "func":1
@@ -6023,545 +6037,596 @@ INDEX=[
 "doc":" Start the TF browser What the  tf script does is the same as:  sh python -m tf.browser.start   During start up the following happens: Load TF corpus data. : This can take a while. When it has loaded the data, it hands the TF API over to the web server. Start TF web server : With the TF data in hand the TF web server is started. Load web page : After a short while, the default web browser will be started with a URL and port at which the web server will listen. You see your browser being started up and the TF page being loaded. Wait : The script now waits till the web server is finished. You finish it by pressing Ctrl-C, and if you have used the  -d flag, you have to press it twice.  Additional arguments You can direct the loading of corpus data by means of additional arguments, analogously to the  use() command, documented in  tf.about.usefunc . The main argument specifies the data source in the same way as the first argument of the  use() function:   org/repo   org/repo:specifier   app:path/to/app   data:path/to/data The following arguments of the  use() function can be used on the command-line, prepended with    :    checkout    relative    mod    set    locations    modules    version The following argument does not come from the  use() function:    tool If you pass   tool=ner for example, the TF browser opens navigated to the  ner tool page (named entity annotator).  Implementation notes Different corpora will use different ports for web server. The ports are computed from the  org ,  repo and  path arguments with which  tf is called.  Invocations of  tf with different corpora lead to different ports  Repeated invocations of  tf with the same corpus lead to the same port, provided the previous invocation has been terminated."
 },
 {
+"ref":"tf.browser.start.bMsg",
+"url":113,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.start.startBrowser",
+"url":113,
+"doc":"",
+"func":1
+},
+{
 "ref":"tf.browser.start.main",
 "url":113,
 "doc":"",
 "func":1
 },
 {
-"ref":"tf.browser.wrap",
+"ref":"tf.browser.startSav",
 "url":114,
+"doc":" Start the TF browser What the  tf script does is the same as:  sh python -m tf.browser.start   During start up the following happens: Load TF corpus data. : This can take a while. When it has loaded the data, it hands the TF API over to the web server. Start TF web server : With the TF data in hand the TF web server is started. Load web page : After a short while, the default web browser will be started with a URL and port at which the web server will listen. You see your browser being started up and the TF page being loaded. Wait : The script now waits till the web server is finished. You finish it by pressing Ctrl-C, and if you have used the  -d flag, you have to press it twice.  Additional arguments You can direct the loading of corpus data by means of additional arguments, analogously to the  use() command, documented in  tf.about.usefunc . The main argument specifies the data source in the same way as the first argument of the  use() function:   org/repo   org/repo:specifier   app:path/to/app   data:path/to/data The following arguments of the  use() function can be used on the command-line, prepended with    :    checkout    relative    mod    set    locations    modules    version The following argument does not come from the  use() function:    tool If you pass   tool=ner for example, the TF browser opens navigated to the  ner tool page (named entity annotator).  Implementation notes Different corpora will use different ports for web server. The ports are computed from the  org ,  repo and  path arguments with which  tf is called.  Invocations of  tf with different corpora lead to different ports  Repeated invocations of  tf with the same corpus lead to the same port, provided the previous invocation has been terminated."
+},
+{
+"ref":"tf.browser.startSav.main",
+"url":114,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.webSav",
+"url":115,
+"doc":" Web interface  About TF contains a web interface in which you can enter a search template and view the results. This is realized by a web app based on [Flask](http: flask.pocoo.org/docs/1.0/). This web app initializes by loading a TF corpus from which it obtains data. In response to requests, it merges the retrieved data into a set of [templates](https: github.com/annotation/text-fabric/tree/master/tf/browser/views).  Start up Web server and browser page are started up by means of a script called  tf , which will be installed in an executable directory by the  pip installer.  Routes There are 4 kinds of routes in the web app: URL pattern | effect  - |  -  /browser/static/ . | serves a static file from the server-wide [static folder](https: github.com/annotation/text-fabric/tree/master/tf/browser/static)  /data/static/ . | serves a static file from the app specific static folder  /local/static/ . | serves a static file from a local directory specified by the app anything else | submits the form with user data and return the processed request  Templates There are two templates in [views](https: github.com/annotation/text-fabric/tree/master/tf/browser/views) :   index : the normal template for returning responses to user requests;   export : the template used for exporting results; it has printer / PDF-friendly formatting: good page breaks. Pretty displays always occur on a page by their own. It has very few user interaction controls. When saved as PDF from the browser, it is a neat record of work done, with DOI links to the corpus and to TF.  CSS We format the web pages with CSS, with extensive use of [flexbox](https: css-tricks.com/snippets/css/a-guide-to-flexbox). There are several sources of CSS formatting:  the CSS loaded from the app dependent  extraApi , used for pretty displays;  [index.css](https: github.com/annotation/text-fabric/blob/master/tf/browser/static/index.css): the formatting of the  index web page with which the user interacts;  [export.css](https: github.com/annotation/text-fabric/blob/master/tf/browser/views/export.css) the formatting of the export page;  [base.css](https: github.com/annotation/text-fabric/blob/master/tf/browser/views/base.css) shared formatting between the index and export pages.  JavaScript We use a [modest amount of JavaScript](https: github.com/annotation/text-fabric/blob/master/tf/browser/static/tf.js) on top of [JQuery](https: api.jquery.com). For collapsing and expanding elements we use the [details](https: developer.mozilla.org/en-US/docs/Web/HTML/Element/details) element. This is a convenient, JavaScript-free way to manage collapsing. Unfortunately it is not supported by the Microsoft browsers, not even Edge.  ! caution \"On Windows?\" Windows users should install Chrome of Firefox."
+},
+{
+"ref":"tf.browser.webSav.Web",
+"url":115,
+"doc":""
+},
+{
+"ref":"tf.browser.webSav.Web.console",
+"url":115,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.webSav.factory",
+"url":115,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.webSav.main",
+"url":115,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.wrap",
+"url":116,
 "doc":" Wrap material into HTML Lower level functions for wrapping TF data into actual HTML that can be served."
 },
 {
 "ref":"tf.browser.wrap.pageLinks",
-"url":114,
+"url":116,
 "doc":"Provide navigation links for results sets, big or small. It creates links around  position in a set of  nResults . The spread indicates how many links before and after  position are generated in each column. There will be multiple columns. The right most column contains links to results  position - spread to  position + spread . Left of that there is a column for results  position - spread spread to  position + spread spread , stepping by  spread . And so on, until the stepping factor becomes bigger than the result set.",
 "func":1
 },
 {
 "ref":"tf.browser.wrap.passageLinks",
-"url":114,
+"url":116,
 "doc":"Provide navigation links for passages, in the form of links to sections of level 0, 1 and 2 (books, chapters and verses). If  sec0 is not given, only a list of  sec0 links is produced. If  sec0 is given, but  sec1 not, a list of links for  sec1 within the given  sec0 is produced. If both  sec0 and  sec1 are given, the  sec1 entry is focused.",
 "func":1
 },
 {
 "ref":"tf.browser.wrap.wrapColorMap",
-"url":114,
+"url":116,
 "doc":"Wraps the color map for query result highlighting into HTML. The color map is a dict, keyed by integers (the positions of atoms in a query template) and the values are RGB colours (as string) or the empty string. This dict is stored in  form[\"colorMap\"] . An extra hidden input field  colormapn helps to read this dict from the other form elements.",
 "func":1
 },
 {
 "ref":"tf.browser.wrap.wrapEColorMap",
-"url":114,
+"url":116,
 "doc":"Wraps the edge color map for edge highlighting into HTML. The edge color map is a dict, keyed by pairs of integers (the nodes between which there is an edge) and values are RGB colours (as string). Each of the two integers in a pair may also be None (but not both). The color of  (n, None) is used to color the outgoing edges from  n , the color of ( (None, n) is used to color the incoming edges from  n . This dict is stored in  form[\"edgeHighlights\"] . An extra hidden input field  ecolormapn helps to read this dict from the other form elements.",
 "func":1
 },
 {
 "ref":"tf.browser.wrap.wrapOptions",
-"url":114,
+"url":116,
 "doc":"Wraps the boolean options, including the app-specific ones, into HTML.",
 "func":1
 },
 {
 "ref":"tf.browser.wrap.wrapSelect",
-"url":114,
+"url":116,
 "doc":"Provides a buttoned chooser for the node types. Some options need node types as values:  baseTypes ,  condenseType ,  hiddenType . See  tf.advanced.options . The chooser supports single value and multiple value mode. Parameters      option: string The name of the option allowedValues: dict Keyed by option, the values are tuples of allowed values for that option in the right order. value: string | set of string The current value of the option. In the case of multiple values, this is a set of values. group: string An extra class name helping to group the relevant buttons together item: string An extra pair of class names for formatting each option line multiple: boolean If  True , the options appear as check boxes, and multiple values can be selected. Otherwise, the options appear as radio boxes, of which at most one can be selected. Returns    - string A HTML fragment containing the options with the current value(s) selected.",
 "func":1
 },
 {
 "ref":"tf.browser.wrap.wrapProvenance",
-"url":114,
+"url":116,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.app",
-"url":115,
+"url":117,
 "doc":"Make use of a corpus. The advanced-API provides extra functionality of top of the core of TF. The most notable things are downloading corpus data and methods for (pretty) display corpus material. The real power of the advanced API is unleashed when there are well-tuned configuration settings for a corpus, and possibly some supporting application code and CSS styling. This power can be invoked by a very simple command:  use(\"org/repo\") . For a detailed description, see  tf.about.usefunc ."
 },
 {
 "ref":"tf.app.use",
-"url":115,
+"url":117,
 "doc":"Make use of a corpus. For a detailed description, see  tf.about.usefunc . Parameters      appName: string backend: string, optional None If present, it is  github or  gitlab or a GitLab instance such as  gitlab.huc.knaw.nl . If absent,  None or empty, it is  github . args: mixed Do not pass any other positional argument! kwargs: mixed Used to initialize the corpus app that we use. That is either an uncustomised  tf.advanced.app.App or a customization of it. Returns    - A: object The object whose attributes and methods constitute the advanced API. See Also     tf.advanced.app.App",
 "func":1
 },
 {
 "ref":"tf.parameters",
-"url":116,
+"url":118,
 "doc":" Parameters Fixed values for the whole program."
 },
 {
 "ref":"tf.parameters.VERSION",
-"url":116,
+"url":118,
 "doc":"Program version. This value is under control of the update process, as run by  build.py in the top-level directory of the repo."
 },
 {
 "ref":"tf.parameters.NAME",
-"url":116,
+"url":118,
 "doc":"The name of the game: this program."
 },
 {
 "ref":"tf.parameters.PACK_VERSION",
-"url":116,
+"url":118,
 "doc":"Data serialization version. Plain text feature files will be compressed to zipped,  pickled data structures that load must faster. These methods evolve, sometimes in incompatible ways. In those cases we bump this version number. That will cause TF not to use compressed files that have been compressed by older, incompatible methods. Instead, TF will produce freshly compressed data files. The compressed data files are stored in a directory  .tf/{PVN}/ next to the original  tf files, where  {PVN} is the package version number. See Also     tf.clean"
 },
 {
 "ref":"tf.parameters.API_VERSION",
-"url":116,
+"url":118,
 "doc":"TF API version. TF offers and API to TF apps. This is the version that the current TF offers to its apps. Apps require a version. The provided version and the required version must match exactly in order to get a working system. We do not aim for backward compatibility, since it is very easy to obtain a new version of an app. When TF loads a TF app, it will check the api version that the app requires against this version. App requirement higher than TF API version : The user is advised to upgrade TF, or, alternatively, select an older version of the app App requirement lower than TF API version : The user is advised to obtain a newer version of the app, or alternatively, downgrade TF"
 },
 {
 "ref":"tf.parameters.OTYPE",
-"url":116,
+"url":118,
 "doc":"Name of a central feature in a TF data set:  otype maps nodes to their types."
 },
 {
 "ref":"tf.parameters.OSLOTS",
-"url":116,
+"url":118,
 "doc":"Name of a central feature in a TF data set:  oslots maps non-slot nodes to the sets of slots they occupy."
 },
 {
 "ref":"tf.parameters.OTEXT",
-"url":116,
+"url":118,
 "doc":"Name of a central (but optional) feature in a TF data set:  otext has configuration settings for sections, structure, and text formats."
 },
 {
 "ref":"tf.parameters.OVOLUME",
-"url":116,
+"url":118,
 "doc":"Name of the feature that maps nodes of a work dataset to nodes in individual volumes in that work."
 },
 {
 "ref":"tf.parameters.OWORK",
-"url":116,
+"url":118,
 "doc":"Name of the feature that maps nodes in an individual volume of a work to nodes in that work."
 },
 {
 "ref":"tf.parameters.OINTERF",
-"url":116,
+"url":118,
 "doc":"Name of the feature that stores the outgoing inter-volume edges of a volume."
 },
 {
 "ref":"tf.parameters.OINTERT",
-"url":116,
+"url":118,
 "doc":"Name of the feature that stores the incoming inter-volume edges of a volume."
 },
 {
 "ref":"tf.parameters.OMAP",
-"url":116,
+"url":118,
 "doc":"Name prefix of features with a node map from an older version to a newer version. The full name of such a feature is  omap@ oldversion - newversion "
 },
 {
 "ref":"tf.parameters.WARP",
-"url":116,
+"url":118,
 "doc":"The names of the central features of TF datasets. The features  otype and  oslots are crucial to every TF dataset. Without them, a dataset is not a TF dataset, although it could still be a TF data module."
 },
 {
 "ref":"tf.parameters.GZIP_LEVEL",
-"url":116,
+"url":118,
 "doc":"Compression level when compressing TF files."
 },
 {
 "ref":"tf.parameters.PICKLE_PROTOCOL",
-"url":116,
+"url":118,
 "doc":"Pickle protocol level when pickling TF files."
 },
 {
 "ref":"tf.parameters.ORG",
-"url":116,
+"url":118,
 "doc":"GitHub organization or GitLab group. This is where the repo that contains TF resides."
 },
 {
 "ref":"tf.parameters.REPO",
-"url":116,
+"url":118,
 "doc":"GitHub repo or GitLab project. This is the name of the repo that contains TF."
 },
 {
 "ref":"tf.parameters.RELATIVE",
-"url":116,
+"url":118,
 "doc":"Default relative path with a repo to the directory with TF files."
 },
 {
 "ref":"tf.parameters.GH",
-"url":116,
+"url":118,
 "doc":"Name of GitHub backend."
 },
 {
 "ref":"tf.parameters.GL",
-"url":116,
+"url":118,
 "doc":"Name of GitLab backend."
 },
 {
 "ref":"tf.parameters.URL_GH",
-"url":116,
+"url":118,
 "doc":"Base URL of GitHub."
 },
 {
 "ref":"tf.parameters.URL_GH_API",
-"url":116,
+"url":118,
 "doc":"Base URL of GitHub API."
 },
 {
 "ref":"tf.parameters.URL_GH_UPLOAD",
-"url":116,
+"url":118,
 "doc":"Base URL of GitHub upload end point."
 },
 {
 "ref":"tf.parameters.URL_GL",
-"url":116,
+"url":118,
 "doc":"Base URL of GitLab."
 },
 {
 "ref":"tf.parameters.URL_GL_API",
-"url":116,
+"url":118,
 "doc":"Base URL of GitLab API."
 },
 {
 "ref":"tf.parameters.URL_GL_UPLOAD",
-"url":116,
+"url":118,
 "doc":"Base URL of GitLab upload end point."
 },
 {
 "ref":"tf.parameters.URL_NB",
-"url":116,
+"url":118,
 "doc":"Base URL of NB-viewer."
 },
 {
 "ref":"tf.parameters.DOI_TF",
-"url":116,
+"url":118,
 "doc":"DOI of an archived copy of this repo at Zenodo."
 },
 {
 "ref":"tf.parameters.BRANCH_DEFAULT",
-"url":116,
+"url":118,
 "doc":"Default branch in repositories, older value."
 },
 {
 "ref":"tf.parameters.BRANCH_DEFAULT_NEW",
-"url":116,
+"url":118,
 "doc":"Default branch in repositories, modern value."
 },
 {
 "ref":"tf.parameters.ZIP_OPTIONS",
-"url":116,
+"url":118,
 "doc":"Options for zip when packing TF files. This is for packaging collections of plain TF files into zip files to be attached to releases on GitHub / GitLab.  ! caution \"Not for  .tfx files\" This is not the zipping as done when  .tf files are  pickled and compressed to  .tfx files."
 },
 {
 "ref":"tf.parameters.YARN_RATIO",
-"url":116,
+"url":118,
 "doc":"Performance parameter in the  tf.search.search module."
 },
 {
 "ref":"tf.parameters.TRY_LIMIT_FROM",
-"url":116,
+"url":118,
 "doc":"Performance parameter in the  tf.search.search module."
 },
 {
 "ref":"tf.parameters.TRY_LIMIT_TO",
-"url":116,
+"url":118,
 "doc":"Performance parameter in the  tf.search.search module."
 },
 {
 "ref":"tf.parameters.SEARCH_FAIL_FACTOR",
-"url":116,
+"url":118,
 "doc":"Limits fetching of search results to this times maxNode (corpus dependent)"
 },
 {
 "ref":"tf.cheatsheet",
-"url":117,
+"url":119,
 "doc":"  A. Advanced API  Initialization, configuration, meta data, and linking  python A = use('org/repo')   : start up and load a corpus from a repository and deliver its API. : See  tf.about.usefunc  python A.hoist(globals(   : Make the API handles  F ,  E ,  T ,  L etc available in the global scope. :  tf.advanced.app.App.load  python A.load(features)   : Load an extra bunch of features. :  tf.advanced.app.App.load  python A.showContext( .)   : show app settings :  tf.advanced.settings.showContext  python A.header(allMeta=False)   : show colophon :  tf.advanced.links.header  python A.showProvenance( .)   : show provenance of code and data :  tf.advanced.links.showProvenance  python A.webLink(n,  .)   : hyperlink to node  n on the web :  tf.advanced.links.webLink  python A.flexLink(\"pages\") A.flexLink(\"tut\")   : hyperlink to app tutorial and documentation :  tf.advanced.links.flexLink  python A.isLoaded(features=None)   : Show information about loaded features :  tf.core.api.Api.isLoaded  python A.footprint()   : Show memory footprint per feature :  tf.core.api.Api.footprint  -  Displaying  python A.specialCharacters()   : show all hard-to-type characters in the corpus in a widget :  tf.advanced.text.specialCharacters  python A.showFormats()   : show all text formats and their definitions :  tf.advanced.text.showFormats  python A.dm(markdownString)   : display markdown string in notebook :  tf.advanced.helpers.dm  python A.dh(htmlString)   : display HTML string in notebook :  tf.advanced.helpers.dh  python A.method(option1=value1, option2=value2,  .)   : Many of the following methods accept these options as keyword arguments: :  tf.advanced.options  python A.displayShow( .)   : show display options :  tf.advanced.display.displayShow  python A.displayReset( .)   : reset display options :  tf.advanced.display.displayReset  python A.displaySetup( .)   : set up display options :  tf.advanced.display.displaySetup  python A.table(results,  .)   : plain rendering of tuple of tuples of node :  tf.advanced.display.table  python A.plainTuple(tup,  .)   : plain rendering of tuple of node :  tf.advanced.display.plainTuple  python A.plain(node,  .)   : plain rendering of node :  tf.advanced.display.plain  python A.show(results,  .)   : pretty rendering of tuple of tuples of node :  tf.advanced.display.show  python A.prettyTuple(tup,  .)   : pretty rendering of tuple of node :  tf.advanced.display.prettyTuple  python A.pretty(node,  .)   : pretty rendering of node :  tf.advanced.display.pretty  python A.unravel(node,  .)   : convert a graph to a tree :  tf.advanced.unravel.unravel  python A.getCss()   : get the complete CSS style sheet for this app :  tf.advanced.display.getCss  -  Search (high level)  python A.search( .)   : search, collect and deliver results, report number of results :  tf.advanced.search.search  -  Sections and Structure  python A.nodeFromSectionStr( .)   : lookup node for section heading :  tf.advanced.sections.nodeFromSectionStr  python A.sectionStrFromNode( .)   : lookup section heading for node :  tf.advanced.sections.sectionStrFromNode  python A.structureStrFromNode( .)   : lookup structure heading for node :  tf.advanced.sections.structureStrFromNode  -  Volumes and collections See also  tf.about.volumes .  python A.getVolumes()   : list all volumes of this dataset :  tf.fabric.Fabric.getVolumes  python A.extract(volumes,  .)   : export volumes based on a volume specification :  tf.fabric.Fabric.extract  python A.collect(volumes,  .)   : collect several volumes into a new collection :  tf.advanced.display.export :  tf.fabric.Fabric.collect  -  Export to Excel  python A.export(results,  .)   : export formatted data :  tf.advanced.display.export  -  Logging  python A.dm(markdownString)   : display markdown string in notebook :  tf.advanced.helpers.dm  python A.dh(htmlString)   : display HTML string in notebook :  tf.advanced.helpers.dh  python A.version   : version number of data of the corpus. :  tf.fabric.Fabric.version The following methods work also for  TF. instead of  A. :  python A.banner   : banner of the TF program. :  tf.fabric.Fabric.banner  python A.isSilent()   : report the verbosity of TF :  tf.core.timestamp.Timestamp.isSilent  python A.silentOn(deep=False)   : make TF (deeply) silent from now on. :  tf.core.timestamp.Timestamp.silentOn  python A.silentOff()   : make TF talkative from now on. :  tf.core.timestamp.Timestamp.silentOff  python A.setSilent(silent)   : set the verbosity of TF. :  tf.core.timestamp.Timestamp.setSilent  python A.indent(level=None, reset=False)   : Sets up indentation and timing of following messages :  tf.core.timestamp.Timestamp.indent  python A.info(msg, tm=True, nl=True,  .)   : informational message :  tf.core.timestamp.Timestamp.info  python A.warning(msg, tm=True, nl=True,  .)   : warning message :  tf.core.timestamp.Timestamp.warning  python A.error(msg, tm=True, nl=True,  .)   : error message :  tf.core.timestamp.Timestamp.error  -   N. F. E. L. T. S. C. Core API   N. Nodes Read about the canonical ordering here:  tf.core.nodes .  python N.walk()   : generator of all nodes in canonical ordering :  tf.core.nodes.Nodes.walk  python N.sortNodes(nodes)   : sorts  nodes in the canonical ordering :  tf.core.nodes.Nodes.sortNodes  python N.otypeRank[nodeType]   : ranking position of  nodeType :  tf.core.nodes.Nodes.otypeRank  python N.sortKey(node)   : defines the canonical ordering on nodes :  tf.core.nodes.Nodes.sortKey  python N.sortKeyTuple(tup)   : extends the canonical ordering on nodes to tuples of nodes :  tf.core.nodes.Nodes.sortKeyTuple  python N.sortKeyChunk(node)   : defines the canonical ordering on node chunks :  tf.core.nodes.Nodes.sortKeyChunk  -   F. Node features  python Fall()   : all loaded feature names (node features only) :  tf.core.api.Api.Fall  python F.fff.v(node)   : get value of node feature  fff :  tf.core.nodefeature.NodeFeature.v  python F.fff.s(value)   : get nodes where feature  fff has  value :  tf.core.nodefeature.NodeFeature.s  python F.fff.freqList( .)   : frequency list of values of  fff :  tf.core.nodefeature.NodeFeature.freqList  python F.fff.items( .)   : generator of all entries of  fff as mapping from nodes to values :  tf.core.nodefeature.NodeFeature.items  python F.fff.meta   : meta data of feature  fff :  tf.core.nodefeature.NodeFeature.meta  python Fs('fff')   : identical to  F.ffff , usable if name of feature is variable :  tf.core.api.Api.Fs  -  Special node feature  otype Maps nodes to their types.  python F.otype.v(node)   : get type of  node :  tf.core.otypefeature.OtypeFeature.v  python F.otype.s(nodeType)   : get all nodes of type  nodeType :  tf.core.otypefeature.OtypeFeature.s  python F.otype.sInterval(nodeType)   : gives start and ending nodes of  nodeType :  tf.core.otypefeature.OtypeFeature.sInterval  python F.otype.items( .)   : generator of all (node, type) pairs. :  tf.core.otypefeature.OtypeFeature.items  python F.otype.meta   : meta data of feature  otype :  tf.core.otypefeature.OtypeFeature.meta  python F.otype.maxSlot   : the last slot node :  tf.core.otypefeature.OtypeFeature.maxSlot  python F.otype.maxNode   : the last node :  tf.core.otypefeature.OtypeFeature.maxNode  python F.otype.slotType   : the slot type :  tf.core.otypefeature.OtypeFeature.slotType  python F.otype.all   : sorted list of all node types :  tf.core.otypefeature.OtypeFeature.all  -   E. Edge features  python Eall()   : all loaded feature names (edge features only) :  tf.core.api.Api.Eall  python E.fff.f(node)   : get value of feature  fff for edges  from node :  tf.core.edgefeature.EdgeFeature.f  python E.fff.t(node)   : get value of feature  fff for edges  to node :  tf.core.edgefeature.EdgeFeature.t  python E.fff.freqList( .)   : frequency list of values of  fff :  tf.core.edgefeature.EdgeFeature.freqList  python E.fff.items( .)   : generator of all entries of  fff as mapping from edges to values :  tf.core.edgefeature.EdgeFeature.items  python E.fff.b(node)   : get value of feature  fff for edges  from and  to node :  tf.core.edgefeature.EdgeFeature.b  python E.fff.meta   : all meta data of feature  fff :  tf.core.edgefeature.EdgeFeature.meta  python Es('fff')   : identical to  E.fff , usable if name of feature is variable :  tf.core.api.Api.Es  -  Special edge feature  oslots Maps nodes to the set of slots they occupy.  python E.oslots.items( .)   : generator of all entries of  oslots as mapping from nodes to sets of slots :  tf.core.oslotsfeature.OslotsFeature.items  python E.oslots.s(node)   : set of slots linked to  node :  tf.core.oslotsfeature.OslotsFeature.s  python E.oslots.meta   : all meta data of feature  oslots :  tf.core.oslotsfeature.OslotsFeature.meta  -   L. Locality  python L.i(node, otype= .)   : go to intersecting nodes :  tf.core.locality.Locality.i  python L.u(node, otype= .)   : go one level up :  tf.core.locality.Locality.u  python L.d(node, otype= .)   : go one level down :  tf.core.locality.Locality.d  python L.p(node, otype= .)   : go to adjacent previous nodes :  tf.core.locality.Locality.p  python L.n(node, otype= .)   : go to adjacent next nodes :  tf.core.locality.Locality.n  -   T. Text  python T.text(node, fmt= .,  .)   : give formatted text associated with node :  tf.core.text.Text.text  -  Sections Rigid 1 or 2 or 3 sectioning system  python T.sectionTuple(node)   : give tuple of section nodes that contain node :  tf.core.text.Text.sectionTuple  python T.sectionFromNode(node)   : give section heading of node :  tf.core.text.Text.sectionFromNode  python T.nodeFromSection(section)   : give node for section heading :  tf.core.text.Text.nodeFromSection  -  Structure Flexible multilevel sectioning system  python T.headingFromNode(node)   : give structure heading of node :  tf.core.text.Text.headingFromNode  python T.nodeFromHeading(heading)   : give node for structure heading :  tf.core.text.Text.nodeFromHeading  python T.structureInfo()   : give summary of dataset structure :  tf.core.text.Text.structureInfo  python T.structure(node)   : give structure of  node and all in it. :  tf.core.text.Text.structure  python T.structurePretty(node)   : pretty print structure of  node and all in it. :  tf.core.text.Text.structurePretty  python T.top()   : give all top-level structural nodes in the dataset :  tf.core.text.Text.top  python T.up(node)   : gives parent of structural node :  tf.core.text.Text.up  python T.down(node)   : gives children of structural node :  tf.core.text.Text.down  -   S. Search (low level) [ searchRough ](https: nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/searchRough.ipynb)  Preparation  python S.search(query, limit=None)   : Query the TF dataset with a template :  tf.search.search.Search.search  python S.study(query,  .)   : Study the query in order to set up a plan :  tf.search.search.Search.study  python S.showPlan(details=False)   : Show the search plan resulting from the last study. :  tf.search.search.Search.showPlan  python S.relationsLegend()   : Catalog of all relational devices in search templates :  tf.search.search.Search.relationsLegend  -  Fetching results  python S.count(progress=None, limit=None)   : Count the results, up to a limit :  tf.search.search.Search.count  python S.fetch(limit=None,  .)   : Fetches the results, up to a limit :  tf.search.search.Search.fetch  python S.glean(tup)   : Renders a single result into something human readable. :  tf.search.search.Search.glean  -  Implementation  python S.tweakPerformance( .)   : Set certain parameters that influence the performance of search. :  tf.search.search.Search.tweakPerformance  -   C. Computed data components. Access to pre-computed data:  tf.core.computed.Computeds . All components have just one useful attribute:  .data .  python Call()   : all pre-computed data component names :  tf.core.api.Api.Call  python Cs('ccc')   : identical to  C.ccc , usable if name of component is variable :  tf.core.api.Api.Cs  python C.levels.data   : various statistics on node types :  tf.core.prepare.levels  python C.order.data   : the canonical order of the nodes ( tf.core.nodes ) :  tf.core.prepare.order  python C.rank.data   : the rank of the nodes in the canonical order ( tf.core.nodes ) :  tf.core.prepare.rank  python C.levUp.data   : feeds the  tf.core.locality.Locality.u function :  tf.core.prepare.levUp  python C.levDown.data   : feeds the  tf.core.locality.Locality.d function :  tf.core.prepare.levDown  python C.boundary.data   : feeds the  tf.core.locality.Locality.p and  tf.core.locality.Locality.n functions :  tf.core.prepare.boundary  python C.characters.data   : frequency list of characters in a corpus, separately for all the text formats :  tf.core.prepare.characters  python C.sections.data   : feeds the section part of  tf.core.text :  tf.core.prepare.sections  python C.structure.data   : feeds the structure part of  tf.core.text :  tf.core.prepare.structure  -   TF. Dataset  Loading  python TF = Fabric(locations=dirs, modules=subdirs, volume=None, collection=None, silent=\"auto\")   : Initialize API on work or single volume or collection of a work from explicit directories. Use  tf.app.use instead wherever you can. See also  tf.about.volumes . :  tf.fabric.Fabric  python TF.isLoaded(features=None)   : Show information about loaded features :  tf.core.api.Api.isLoaded  python TF.explore(show=True)   : Get features by category, loaded or unloaded :  tf.fabric.Fabric.explore  python TF.loadAll(silent=\"auto\")   : Load all loadable features. :  tf.fabric.Fabric.loadAll  python TF.load(features, add=False)   : Load a bunch of features from scratch or additionally. :  tf.fabric.Fabric.load  python TF.ensureLoaded(features)   : Make sure that features are loaded. :  tf.core.api.Api.ensureLoaded  python TF.makeAvailableIn(globals(   : Make the members of the core API available in the global scope :  tf.core.api.Api.makeAvailableIn  python TF.ignored   : Which features have been overridden. :  tf.core.api.Api.ignored  python TF.footprint()   : Show memory footprint per feature :  tf.core.api.Api.footprint  -  Volumes See also  tf.about.volumes .  python TF.getVolumes()   : list all volumes of this dataset :  tf.fabric.Fabric.getVolumes  python TF.extract(volumes,  .)   : export volumes based on a volume specification :  tf.fabric.Fabric.extract  python TF.collect(volumes,  .)   : collect several volumes into a new collection :  tf.advanced.display.export :  tf.fabric.Fabric.collect  Saving and Publishing  python TF.save(nodeFeatures={}, edgeFeatures={}, metaData={}  .)   : Save a bunch of newly generated features to disk. :  tf.fabric.Fabric.save  python A.publishRelease(increase, message=None, description=None  .)   : Commit the dataset repo, tag it, release it, and attach the complete zipped data to it. :  tf.advanced.repo.publishRelease  -  House keeping  python TF.version   : version number of TF. :  tf.fabric.Fabric.version  python TF.clearCache()   : clears the cache of compiled TF data :  tf.fabric.Fabric.clearCache  python from tf.clean import clean    python clean()   : clears the cache of compiled TF data :  tf.clean  -  Volume support TF datasets per volume or collection of a work. See also  tf.about.volumes .  python from tf.volumes import getVolumes getVolumes(volumeDir)   : List volumes in a directory. :  tf.volumes.extract.getVolumes  python from tf.volumes import extract extract(work, volumes,  .)   : Extracts volumes from a work :  tf.volumes.extract  python from tf.volumes import collect collect(volumes, work,  .)   : Collects several volumes into a new collection :  tf.volumes.collect  -  Dataset Operations  python from tf.dataset import modify modify(source, target,  .)   : Modifies a TF dataset into a new TF dataset :  tf.dataset.modify  python from tf.dataset import Versions Versions(api, va, vb, slotMap)   : Extends a slot mapping between versions of a TF dataset to a complete node mapping :  tf.dataset.nodemaps  -  Data Interchange  Custom node sets for search  python from tf.lib import readSets from tf.lib import writeSets    python readSets(sourceFile)   : reads a named sets from file :  tf.lib.readSets  python writeSets(sets, destFile)   : writes a named sets to file :  tf.lib.writeSets  -  Export to Excel  python A.export(results,  .)   : export formatted data :  tf.advanced.display.export  -  Export to ZIP  python A.zipAll()   : store the complete corpus data in a file  complete.zip :  tf.advanced.zipdata.zipAll  -  Interchange with external annotation tools  python from tf.convert.addnlp import NLPipeline    python NLPipeline()   : generate plain text, feed into NLP, ingest results :  tf.convert.addnlp  -  python from convert.recorder import Recorder    python Recorder()   : generate annotatable plain text and import annotations :  tf.convert.recorder  -  XML / TEI import  python from tf.convert.xml import XML    python X = XML( .)   : convert XML source to full-fledged TF dataset plus app but no docs; put in your own conversion code, if you wish; see [Greek New Testament](https: nbviewer.org/github/ETCBC/nestle1904/blob/master/programs/tfFromLowfat.ipynb) :  tf.convert.xml  python from tf.convert.tei import TEI    python T = TEI( .)   : convert TEI source to full-fledged TF dataset plus app plus docs :  tf.convert.tei  -  NLP import  in order to use this, install Spacy, see  tf.tools.myspacy  python from tf.convert.addnlp import addTokensAndSentences    python newVersion = addTokensAndSenteces(A)   : add NLP output from Spacy to an existing TF dataset. See the docs how this is broken down in separate steps. :  tf.convert.addnlp  -   pandas export  python A.exportPandas()   : export dataset as  pandas data frame :  tf.convert.pandas  -  MQL interchange  python TF.exportMQL(mqlDb, exportDir=None) A.exportMQL(mqlDb, exportDir=None)   : export loaded dataset to MQL :  tf.convert.mql.exportMQL  python from tf.convert.mql import importMQL TF = importMQL(mqlFile, saveDir)   : convert MQL file to TF dataset :  tf.convert.mql.importMQL  -  Walker conversion  python from tf.convert.walker import CV    python cv = CV(TF)   : convert structured data to TF dataset :  tf.convert.walker  -  Exploding  python from tf.convert.tf import explode    python explode(inLocation, outLocation)   : explode TF feature files to straight data files without optimizations :  tf.convert.tf.explode  -  TF App development  python A.reuse()   : reload configuration data :  tf.advanced.app.App.reuse  python from tf.advanced.find import loadModule    python mmm = loadModule(\"mmm\",  args)   : load specific module supporting the corpus app :  tf.advanced.find.loadModule   ~/mypath/myname/app/config.yaml   : settings for a TF App :  tf.advanced.settings  -  Layered search (these work on the command-line if TF is installed)  sh tf-make {dataset} {client} ship   : generate a static site with a search interface in client-side JavaScript and publish it to GitHub pages. If  {client} is left out, generate all clients that are defined for this dataset. Clients are defined in the  app-{dataset} repo, under  layeredsearch . More commands [here](https: github.com/annotation/text-fabric/blob/master/tf/client/make/help.py). :  tf.client.make.build  sh tf-make {dataset} serve   : serve the search interfaces defined for  {dataset} locally. More commands [here](https: github.com/annotation/text-fabric/blob/master/tf/client/make/help.py).  -  Annotation tools (these work in the TF browser and in Jupyter Notebooks)  Named Entity Annotation  sh tf {org}/{repo}  tool=ner   : Starts the TF browser for the corpus in  org / repo and opens the manual annotation tool. :  tf.about.annotateBrowser  python NE = A.makeNer()   : Sets up the 'manual' annotation API for the corpus in  A . :  tf.browser.ner.ner : More info and examples in  tf.about.annotate .  -  Command-line tools (these work on the command-line if TF is installed)  sh tf {org}/{repo} tf {org}/{repo}   : Starts the TF browser for the corpus in  org / repo . :  tf.browser.start  sh tf-zipall   : Zips the TF dataset located by the current directory,  with all its additional data modules , but only  the latest version , so that it can be attached to a release on GitHub / GitLab. :  tf.advanced.zipdata.zipAll and  tf.zip  sh tf-zip {org}/{repo}   : Zips the TF dataset in  org / repo so that it can be attached to a release on GitHub / GitLab. :  tf.advanced.zipdata  sh tf-nbconvert {inDirectory} {outDirectory}   : Converts notebooks in  inDirectory to HTML and stores them in  outDirectory . :  tf.tools.nbconvert  sh tf-xmlschema analysis {schema}.xsd   : Analyses an XML  schema file and extracts meaningful information for processing the XML that adheres to that schema. :  tf.tools.xmlschema  sh tf-fromxml   : When run in a repo it finds an XML source and converts it to TF. The resulting TF data is delivered in the repo. There is a hook to put your own conversion code in. :  tf.convert.xml  sh tf-fromtei   : When run in a repo it finds a TEI source and converts it to TF. The resulting TF data is delivered in the repo. :  tf.convert.tei  sh tf-addnlp   : When run in the repo of a TF dataset, it adds NLP output to it after running Spacy to get them. :  tf.convert.addnlp "
 },
 {
 "ref":"tf.volumes",
-"url":118,
+"url":120,
 "doc":" Volume operations This package contains functions to support works and their volumes in TF. There are the following basic operations:  Collect, see  tf.volumes.collect , (collect several volumes into one work)  Extract, see  tf.volumes.extract , (extract volumes from a work)"
 },
 {
 "ref":"tf.volumes.collect",
-"url":119,
+"url":121,
 "doc":" Collect  Usage  python from tf.volumes import collect collect( ( location1, location2, ), workLocation, )    python collect( ( (name1, location1), (name2, location2), ), workLocation, volumeType=None, volumeFeature=None, featureMeta=None,  otext, )  "
 },
 {
 "ref":"tf.volumes.collect.collect",
-"url":119,
+"url":121,
 "doc":"Creates a collection out of a number of volumes. The volumes are individual TF datasets, the work is a new TF data set. You may pass as many volume data sources as you want. The work will be the union of all nodes of the volumes, rearranged according to their types, where node types with the same names will be merged. The slots of the work are the concatenation of the slots of the volumes, which must all have the same slot type. The node and edge features will be remapped, so that they have the same values in the work as they had in the individual volumes.  ! caution \"inter-volume edges\" The edge features of each volume only contain edges between nodes in that volume. But the work as a whole may have had edges between nodes of different volumes. These can be restored from two extra features that may exist in the volumes:  ointerfrom and  ointerto . See also  tf.volumes.extract . The volumes may contain a feature  owork which maps each node in a volume to the corresponding node in the work. Some non-slot nodes in the work may have slots in multiple volumes.  ! hint \"Lexeme nodes\" Think of lexeme nodes that have slots for all occurrences of that lexeme. When a work is split into volumes, the lexeme nodes map to separate lexeme nodes in each volume where these lexemes occur. When we collect volumes into works, we want to merge these lexeme nodes again. When non-slot nodes across volumes have the same value for their  owork feature, they will be merged into the work. That means: only one node will be created in the work, and the slots of that node will be the union of the slots these nodes have in the individual volumes.  ! caution \"Overlapping slots\" It is an error if volumes have overlapping slots. Overlapping slots are those whose values of  owork are identical. A feature  ovolume will be created which maps each node of the work to the corresponding node(s) in the individual volume(s). Optionally, nodes corresponding to the volumes themselves will be added to the work. Care will be taken of the metadata of the features and the contents of the  otext.tf feature, which consists of metadata only. All details of the work can be steered by means of parameters. You can use this function to recombine volumes that have been obtained by extracting them from a work by means of  tf.volumes.extract . In this case, there is no need to pass  volumeType and  volumeFeature . Parameters      volumes: dict or tuple of (string or tuple) You can either pass just the locations of the volumes, or you can give them a name and pass  (name, location) instead, or pass them as a dictionary with names as keys and locations as values. If you do not give names to volumes, their locations will be used as name. However, names are only used if you pass  volumeType and /or  volumeFeature .  ! caution \"Disjointness\" A collection can not contain the same volume more than once. workLocation: string The directory into which the feature files of the work will be written. overwrite: boolean, optional None If True, the target collection will be be created and will replace any existing collection / volume of the same name. If None, the collection will only be created if it does not exist. No check will be performed as to whether an existing collection is equal to what would have been created by this call. If False, refuses to proceed if the collection directory already exists. volumeType, volumeFeature: string, optional None If a string value for one of these is passed, a new node type will be added to the work, with one new node for each volume: the volume node. There will also be a new feature, that assigns the name of a volume to the node of that volume. The name of the new node type is the value of  volumeType if it is a non-empty string, else it is the value of  volumeFeature . The name of the new feature is  volumeFeature if it is a non-empty string, else it is the value of  volumeType .  ! caution \" volumeType must be fresh\" It is an error if the  volumeType is a node type that already occurs in one of the volumes.  ! note \" volumeFeature may exist\" The  volumeFeature may already exist in one or more volumes. In that case the new feature values for nodes of  volumeType will just be added to it. Example    -  python collect( dict( banks='banks/tf/0.2', river='banks/tf/0.4', ), 'riverbanks/tf/1.0', volumeType='volume', volumeFeature='vol', )  This results in a work with nodes and features from the volumes found at the indicated places on your file system. After combination, the volumes are visible in the work as nodes of type  volume , and the feature  vol provides the names  banks and  river for those nodes. featureMeta: dict, optional None The meta data of the volumes involved will be merged. If feature metadata of the same feature is encountered in different volumes, and if volumes specify different values for the same keys, the different values will be stored under a key with the name of the volume appended to the key, separated by a  ! . The special metadata field  valueType will just be reduced to one single value  str if some volumes have it as  str and others as  int . If the volumes assign the same value type to a feature, that value type will be assigned to the combined feature. If you want to assign other meta data to specific features, or pass meta data for new features that originate from the merging process, you can pass them in the parameter  featureMeta as in the following example, where we pass meta data for a feature called  level with integer values. The contents of the  otext.tf features are also metadata, and their contents will be merged in exactly the same way. So if the section / structure specifications and the formats are not the same for all volumes, you will see them spread out in fields qualified by the volume name with a  ! sign between the key and the volume. But you can add new specifications explicitly, as meta data of the  otext feature. by passing them as keyword arguments. They will be passed directly to the combined  otext.tf feature and will override anything with the same key that is already in one of the volumes. silent: string, optional tf.core.timestamp.SILENT_D See  tf.core.timestamp.Timestamp Returns    - boolean Whether the creation was successful. All features in the resulting collection will get a metadata key  volume with as value the name of the collection and its component volumes. Example    -  python collect( dict( banks='banks/tf/0.2', river='banks/tf/0.4', ), 'riverbanks/tf/1.0', featureMeta=dict( level=dict( valueType='int', description='level of a section node', ), ), )   Example    -  python collect( dict( banks='banks/tf/0.2', river='banks/tf/0.4', ), 'riverbanks/tf/1.0', featureMeta=dict( otext=dict( volumeType='volume', volumeFeature='vol', sectionTypes='volume,chapter,line', sectionFeatures='title,number,number', ), ), silent=SILENT_D, )   This will give rise to something like this (assuming that  banks and  rivers have some deviating material in their  otext.tf :   @config @compiler=Dirk Roorda @dateWritten=2019-05-20T19:12:23Z @fmt:line-default={letters:XXX}{terminator} @fmt:line-term=line {terminator} @fmt:text-orig-extra={letters}{punc}{gap} @fmt:text-orig-full={letters} @fmt:text-orig-full!banks={letters}{punc} @fmt:text-orig-full!rivers={letters}{gap} @name=Culture quotes from Iain Banks @purpose=exposition @sectionFeatures=title,number,number @sectionFeatures!banks=title,number,number @sectionFeatures!rivers=number,number,number @sectionTypes=volume,chapter,line @sectionTypes!banks=book,chapter,sentence @sectionTypes!rivers=chapter,sentence,line @source=Good Reads @status=with for similarities in a separate module @structureFeatures!banks=title,number,number,number @structureFeatures!rivers=title,number,number @structureTypes!banks=book,chapter,sentence,line @structureTypes!rivers=book,chapter,sentence @url=https: www.goodreads.com/work/quotes/14366-consider-phlebas @version=0.2 @writtenBy=Text-Fabric @writtenBy=Text-Fabric @dateWritten=2019-05-28T10:55:06Z    ! caution \"inter-version edges\" Features with names starting in  omap@ contain node maps from older to newer versions. These will be excluded from collection.",
 "func":1
 },
 {
 "ref":"tf.volumes.extract",
-"url":120,
+"url":122,
 "doc":" Extract  Usage  python from tf.volumes import extract extract( workLocation, volumesLocation, volumes=None or dict of top-level section titles/numbers )  "
 },
 {
 "ref":"tf.volumes.extract.getVolumes",
-"url":120,
+"url":122,
 "doc":"Lists volumes of a work that exist in a given directory. A directory is a volume if it contains the file  otype.tf and that file has a line starting with  @volume= xxx where  xxx is the name of the directory. Parameters      volumesLocation: string The directory to search for volumes. Returns    - None or list If  volumesLocation does not exist or is not a directory, None is returned. Otherwise a list of subdirectories that are modules.",
 "func":1
 },
 {
 "ref":"tf.volumes.extract.extract",
-"url":120,
+"url":122,
 "doc":"Extracts volumes of a work. The volumes are new TF datasets, the work is an existing TF data set. Volumes of a work consist of collections of its top-level sections. You can define volumes by passing a volume specification. If the specification  True is given, a volume will be created for every single top-level section. Volumes will get a node feature  owork which maps nodes in the volume to nodes in the work.  ! note \"use of feature  owork \" If volumes are combined to a work, nodes in distinct volumes may correspond to a single node in the work. In that case, they have the same value in the  owork feature. When combining, such nodes are merged into one node in the work, with slots the union of the slots of those nodes in the volumes. See also  tf.volumes.collect .  ! caution \"inter-volume edges\" Some edge features may link nodes across volumes. When creating a volume, we leave out those edges. Doing so, we loose information, which prevents us to reinstate inter volume edges when we collect volumes. That's why we'll save those inter-volume edges in two special features.  ! caution \"inter-version edges\" Features with names starting in  omap@ contain node maps from older to newer versions. These will be excluded from volumes. Volumes will also get two node features  ointerfrom and  ointerto . For each node  f in the volume,  ointerfrom has a value composed of all work nodes  t outside the volume that are reached by an edge named  e from  f with value  val . For each node  t in the volume,  ointerto has a value composed of all work nodes  f outside the volume that reach  t by an edge named  e with value  val . More precisely, the keys of  ointerf and  ointert are nodes  nW of the  original work that correspond with nodes in the volume that have outgoing resp. incoming edges to resp. from other volumes. Each value of  oninterf and  ointert is a semicolon separated list of  mW ,  e ,  doValues ,  valueType ,  value where  mW is the node in the  original work reached by  nW or that reaches  nW  e is the name of the edge feature in question  doValues is  v if the edge feature has values and  x otherwise  valueType is  i ( int ) or  s ( str )  value is the value assigned by the edge feature to the edge from  nW to  mW or from  mW to  nW . If the edge does not have values it is a dummy value  x . Parameters      workLocation: string The directory where the dataset resides. volumesLocation: string The directory under which the feature files of the volumes will be written. volumes: boolean or dict or set, optional True If True, extracts all top-level sections into separate volumes. If it is a dict, the keys are names for the volumes, and the values are tuples or lists of top-level sections that make up the volumes. If it is a set, each member is an tuple of top-level sections that belong to that volume. In this case, each volume gets a generated name. The top-level sections must be specified by their title if  byTitle is True, else by their sequence number. If names for volumes have to be generated, they will consist of the top-level section specifications, separated by a \"-\".  ! caution \"Disjointness\" All volumes must be disjoint, they cannot have top-level sections in common. byTitle: boolean, optional True Whether the top-level sections are named by their sequence numbers (starting at 1). or by their titles. Default: by their titles. Note, that depending on the work, section titles may be strings or integers. silent: string, optional tf.core.timestamp.SILENT_D See  tf.core.timestamp.Timestamp api: object, optional None If given, assume it is the TF API of a loaded work from which the volumes are to be extracted. In this case, the  workLocation parameter is not used. If absent or  None , the dataset at  workLocation will be loaded by TF, and its API will be used subsequently. overwrite: boolean, optional None If True, the volumes defined by  volumes will be all be created and will replace any existing volumes of the same names. If None, only missing volumes will be created. No check will be performed as to whether existing volumes conform to the volume specifications. If False, refuses to proceed if any of the volume directories already exist. checkOnly: boolean, optional False If True, only checks whether there is work to do based on the values of the  volumes and  overwrite parameters. If there is an error, returns False, otherwise returns the volumes in as far as they have to be extracted. show: boolean, optional False If True, does not return anything, but pretty prints the result to the screen. Returns    - dict For each volume an item, whose key is the name of the volume and whose value is a dict with items  location (on disk) and  new (whether the volume has been created by this call). Example    -  python volumeList = extract( 'clariah-gm/tf/0.9.1', 'clariah-gm/asvolumes/tf/0.9.1', )   This will extract the top-level sections of the missives corpus into that many volumes. Example    -  python volumeList = extract( 'clariah-gm/tf/0.9.1', 'clariah-gm/asvolumes/tf/0.9.1', volumes=dict( early=(1,2,3,4,5,6,7,8), late=(9, 10, 11, 12), ) )   This will create 2 volumes, named  early and  late , where  early consists of top-level sections 1-8, and  late consists of top-level sections 9-12. Top-level section 13 will not be extracted into a volume. Example    -  python volumeList = extract( 'bhsa/tf/2021', 'bhsa/asvolumes/tf/2021', )   This will extract the books of the bible as separate volumes. Example    -  python volumeList = extract( 'bhsa/tf/2021', 'bhsa/asvolumes/tf/2021', volumes=dict( thora=(\"Genesis\", \"Exodus\", \"Leviticus\", \"Numeri\", \"Deuteronomy\"), poetry=(\"Psalms\", \"Proverbs\"), ), )   This will extract two volumes of the bible:  thora with the first 5 books and  poetry with two poetic books.",
 "func":1
 },
 {
 "ref":"tf.client",
-"url":121,
+"url":123,
 "doc":" Layered Search A search interface for TF datasets. The interface is purely client side, written in JavaScript. It depends on corpus data generated from the underlying TF data of a corpus. This repo contains the machinery to generate such an interface, based on essentially two parameters:  a bunch of configuration details;  a piece of code that generates the search data. See also:   tf.about.clientmanual   tf.client.make.build  Author  Author : [Dirk Roorda](https: pure.knaw.nl/portal/en/persons/dirk-roorda)  Acknowledgments Layered search has been developed first in a project for the [NENA corpus developed at Cambridge](https: github.com/CambridgeSemiticsLab/nena_tf). Thanks to Cody Kingham for developing the foundational ideas and to Geoffrey Khan for funding the project. Thanks to DANS for giving me the space to turn these ideas into a product and developing them further."
 },
 {
 "ref":"tf.client.make",
-"url":122,
+"url":124,
 "doc":"The search app make program"
 },
 {
 "ref":"tf.client.make.build",
-"url":123,
+"url":125,
 "doc":" Usage After installing TF, you have a new command  tf-make . You can use this on the command-line to build new search interfaces for existing TF apps. Such a search interface is a static HTML page, powered by a JavaScript program that reads the corpus data from JavaScript variables. You can build the interface and deploy the HTML page to GitHub Pages (GitLab pages not yet supported), after which it is usable for everyone.  Prerequisites 1. A TF dataset that has a TF App, e.g.  CambridgeSemiticsLab/nena_tf [github.com/CambridgeSemiticsLab/nena_tf](https: github.com/CambridgeSemiticsLab/nena_tf). This is the normative example for now. 1. An accompanying repository in the same organization, with the same name but with  -search appended to the name. 1. Within that  -search repo, a subdirectory [ layeredsearch ](https: github.com/CambridgeSemiticsLab/nena_tf-search/tree/master/layeredsearch) with definitions of search interfaces (you can define multiple search interfaces for one dataset). Within this directory: 1.  config.yaml : common metadata of all defined search interfaces 1. for each search interface a folder whose name is the name of the search interface, containing 1.  config.yaml : definition of this specific search interface 1.  logo.png : a logo 1.  custom.css : additional styling (may be empty) 1.  mkdata.py : a module containing a few functions that wrap the corpus data into JavaScript variables: 1.  makeLegends(maker) : produce abbreviation lists for some layers 1.  record(maker) : produce all the search data: full texts of layers and mappings between nodes and positions in those texts The  maker argument is passed by the builder, and contains the definition of the layers and the API of a loaded TF dataset.  Commands See also:   tf.client.make.help   tf.about.clientmanual "
 },
 {
 "ref":"tf.client.make.build.console",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.invertMap",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.readArgsLegacy",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make",
-"url":123,
+"url":125,
 "doc":""
 },
 {
 "ref":"tf.client.make.build.Make.doCommand",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.config",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.importMake",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.makeClientSettings",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.loadTf",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.makeConfig",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.makeLinks",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.makeCorpus",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.dumpConfig",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.compress",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.dumpCorpus",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.makeCombined",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.makeHtml",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.makeClient",
-"url":123,
+"url":125,
 "doc":"We create a client app in the target directory. The client consists of HTML/CSS/PNG files plus a modular JavaScript program. Module loading does not work when you open the HTML file locally (i.e. when the HTML is not served by a server). N.B. There is a difference between a local web server serving at  localhost and opening the file directly into your browser by double clicking on it. In the first case, you see in the URL bar of your browser something that starts with  http:  or  https:  , in the second case you see  file:  instead. Modular JavaScript does not work with  file:  origins. For that case, we bundle the modules into one, and let a \u00abclient\u00bb-local.html include it We also zip the client into {C.client}.zip so that users can download it easily However, if the  debugState is on, we skip all steps that are unnecessary to see the updated client working. But we do save an extra copy of the texts to the local directory in such a way that they can be easily inspected.",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.zipApp",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.publish",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.ship",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.make",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.serve",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.incVersion",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.showVersion",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.adjustVersion",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.replaceDebug",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.getDebugs",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.showDebug",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.adjustDebug",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.Make.getAllClients",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.makeSearchClients",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.build.main",
-"url":123,
+"url":125,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.gh",
-"url":124,
+"url":126,
 "doc":""
 },
 {
 "ref":"tf.client.make.gh.console",
-"url":124,
+"url":126,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.gh.deploy",
-"url":124,
+"url":126,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.client.make.help",
-"url":125,
-"doc":""
-},
-{
-"ref":"tf.convert",
-"url":126,
-"doc":" Various forms of data interchange TF can interchange data with MQL, see  tf.convert.mql . It has also support for converting streams of data to TF format, see  tf.convert.walker . And there is support for round trips of TF data to annotation tools and back, see  tf.convert.recorder . You can  explode plain TF files in big, non-optimised data files, see  tf.convert.tf.explode ."
-},
-{
-"ref":"tf.convert.app",
 "url":127,
 "doc":""
 },
 {
-"ref":"tf.convert.app.app",
+"ref":"tf.convert",
 "url":128,
+"doc":" Various forms of data interchange TF can interchange data with MQL, see  tf.convert.mql . It has also support for converting streams of data to TF format, see  tf.convert.walker . And there is support for round trips of TF data to annotation tools and back, see  tf.convert.recorder . You can  explode plain TF files in big, non-optimised data files, see  tf.convert.tf.explode ."
+},
+{
+"ref":"tf.convert.app",
+"url":129,
+"doc":""
+},
+{
+"ref":"tf.convert.app.app",
+"url":130,
 "doc":""
 },
 {
 "ref":"tf.convert.app.app.fmt_layout",
-"url":128,
+"url":130,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.app.app.TfApp",
-"url":128,
+"url":130,
 "doc":"Set up the advanced TF API. The parameters are explained in  tf.about.usefunc . Parameters      appName, appPath, checkout, version: string commit, release, local: string backend: string checkout: string, optional  mod: string or iterable, optional [] version: string, optional None locations, modules: string, optional None collection, volume: string, optional None api: object, optional,  None setFile: string, optional,  None silent: string, optional tf.core.timestamp.SILENT_D See  tf.core.timestamp.Timestamp hoist: dict, optional False configOverrides: list of tuple _withGc: boolean, optional True If False, it disables the Python garbage collector before loading features. Used to experiment with performance."
 },
 {
@@ -6595,383 +6660,383 @@ INDEX=[
 },
 {
 "ref":"tf.convert.variants",
-"url":129,
+"url":131,
 "doc":" Variants This module contains functions to help you constructing nodes when you convert TEI material and encounter elements from the [Critical Apparatus Module](https: www.tei-c.org/release/doc/tei-p5-doc/en/html/examples-lem.html TC). An extensive description of the problems and solutions is in  tf.about.variants ."
 },
 {
 "ref":"tf.convert.variants.Variants",
-"url":129,
+"url":131,
 "doc":"Handlers to turn boundaries into nodes even across variants. This class works inside converters of the type  tf.convert.walker . Import it as  python from tf.convert.variants import Variants   It should typically be instantiated inside the  director() function, at a point where  cv and  cur are known. Then issue  Variants.initApps , either once or for each volume in the corpus. After initialization you should call  Variants.collectWitnesses() for each TEI file in the corpus. After collecting the witnesses you should prepare for the final walk through the data by  Variants.resetApps() . This should match the call(s) to  Variants.initApps . Then, at the start of each  app -,  lem -,  rdg - element, call  Variants.startApp(tag) with tag the corresponding tag name (  app ,  lem , or  rdg ). Likewise, at the end, call  Variants.endApp(tag) . Whenever you create slots, issue a  Variants.startSent() first, and a  Variants.checkSent() after. Close every TEI file with a  Variants.endSent() , to finish off all pending sentences. Parameters      cv: object The  tf.convert.walker.CV object. This is the machinery that constructs nodes and assigns features. cur: dict Keys and values by which a conversion program maintains current information. The conversion proceeds by executing a custom  director() function, and this director walks through the source material and fires  cv actions. During the walk, the director can remember incoming data as needed in a dict, and it is this dict that should be passed. The  Variants object stores additional information here under specific keys. Those keys are mentioned in constants in the source code and there are a few keys dependent on the  sentType parameter, namely  f\"n{sentType}\" f\"stack{sentType}\" f\"var{sentType}\"  baseWitness: string The name of the base text. Take care that it is different from the names of the witnesses. sentType: string The name of the node type of the nodes that will be constructed on the basis of boundaries. It could be \"sentence\", but it could also be any other name, and it is not assumed that the nodes in question represent sentences. It could be anything, provided we have access to its boundaries. checkPunc: function(string, string, punc): boolean Given the texts of the last two slots and the punctuation after that, it determines whether is contains a boundary. This function should be written in the converter program. Hence it is up to the conversion code to define what constitutes a boundary, and whether it are sentences or some things else that are being bounded. This function is called and depending on the outcome sentence nodes are terminated and / or created, or nothing is done. addWarning, addError: function(string, dict) Functions taking a message string and a dict with current information (typically cur). They will be called if a warning or error has to be issued. When they is called,  cur will be passed as dict. This function should be defined in the conversion program. It may use values in  cur to generate an indication where the warning / error occurred."
 },
 {
 "ref":"tf.convert.variants.Variants.collectWitnesses",
-"url":129,
+"url":131,
 "doc":"Collect all witnesses. Call this for the root nodes of every TEI file of the corpus. Collects the witnesses from all  rdg -elements. For each  lem -element the set of witnesses of its  rdg siblings is collected in such a way that it can be retrieved later on. We also store a pointer to the parent  app -element of each nested  app -element. We also check that multiple direct- rdg children of the same app have disjoint witnesses.",
 "func":1
 },
 {
 "ref":"tf.convert.variants.Variants.initApps",
-"url":129,
+"url":131,
 "doc":"Initialize app- processing and witness collection. You can issue this command once for the whole corpus, or each time before entering a volume.",
 "func":1
 },
 {
 "ref":"tf.convert.variants.Variants.resetApps",
-"url":129,
+"url":131,
 "doc":"Initialize app- and \"sentence\" processing. Set up the data store for collecting information and \"sentence\" processing. Do this after collecting the witnesses. You can issue this command once for the whole corpus, or each time before entering a volume. But it should be kept in tandem with  Variants.initApps .",
 "func":1
 },
 {
 "ref":"tf.convert.variants.Variants.startApp",
-"url":129,
+"url":131,
 "doc":"Actions at the start of  app -  lem - and  rdg -elements. Use this each time you enter one of these XML elements. Parameters      tag: string The tag name of the XML element that is being entered atts: dict The attributes of the XML element that is being entered",
 "func":1
 },
 {
 "ref":"tf.convert.variants.Variants.endApp",
-"url":129,
+"url":131,
 "doc":"Actions at the end of  app -  lem - and  rdg -elements. Use this each time you leave one of these XML elements. Parameters      tag: string The tag name of the XML element that is being left",
 "func":1
 },
 {
 "ref":"tf.convert.variants.Variants.checkSent",
-"url":129,
+"url":131,
 "doc":"Checks whether there is a \"sentence\" boundary at this point. Use this every time you have added a slot node. Parameters      trans: string The text of the newly added slot node. If this is empty, the text of the slot before that will be consulted. This value is taken from the context information. This very function is responsible for putting the last text value into the context. punc: string The non-alphanumeric text material after the text of the last slot. Will be used to determine whether there is a \"sentence\" break here. The actual check will be done by the function  checkPunc , which has been passed as parameter when the  Variants object was created.",
 "func":1
 },
 {
 "ref":"tf.convert.variants.Variants.startSent",
-"url":129,
+"url":131,
 "doc":"Starts a \"sentence\" if there is no current sentence. When in an  rdg -element, witness-dependent \"sentence\" nodes are created for each witness for the  rdg . Use this before creating a slot and / or at the start of certain elements such as paragraphs.",
 "func":1
 },
 {
 "ref":"tf.convert.variants.Variants.endSent",
-"url":129,
+"url":131,
 "doc":"Ends a \"sentence\" if there is a current sentence. Use this at the end of each XML file if you are sure that there should not remain pending sentences. You can also call this at the end of certain elements, such as paragraphs. When in a  lem -element, all pending \"sentences\" of all witnesses that agree with the base text here are also ended. No new sentences for these witnesses are started, since we are in the base text.",
 "func":1
 },
 {
 "ref":"tf.convert.tf",
-"url":130,
+"url":132,
 "doc":" Raw, unoptimised data from TF files"
 },
 {
 "ref":"tf.convert.tf.explode",
-"url":130,
+"url":132,
 "doc":"Explodes  .tf files into non-optimised  .tf files without metadata. An exploded  .tf feature file is a TF file with explicit node specifiers, no optimizations. The format of each line is:  Node features : node value If the value is None for a certain  node , there will be no such line.  Edge features without values : node node  Edge features with values : node node value If the value is  None , it will be left out, together with the preceding  . This way, the empty string is distinguished from a  None value.  ! caution \"Ambiguity\" In the resulting data file, all metadata is gone. It is not always possible to infer from the data alone what data type a feature has:  1 2 could be a node feature assigning integer 2 to node 1, or string  2 to node 1. It could also be an edge feature assigning  None to the node pair (1, 2). Parameters      inPath: string Source file(s). If pointing to a file, it should be file containing TF feature data. If pointing to a directory, all  .tf files in that directory will be exploded (non-recursively). The path may contain  ~ which will be expanded to the user's home directory. outPath: string Destination of the exploded file(s). If pointing to a non-existing location, a file or directory will be created there, depending on whether  inPath is a file or directory. If pointing to an existing directory, exploded file(s) will be put there. Returns    - boolean whether the operation was successful.",
 "func":1
 },
 {
 "ref":"tf.convert.pandas",
-"url":131,
+"url":133,
 "doc":" Export a TF dataset to a  pandas data frame. There is a natural mapping of a TF dataset with its nodes, edges and features to a rectangular data frame with rows and columns:  the  nodes correspond to  rows ;  the node  features correspond to  columns ;  the  value of a feature for a node is in the row that corresponds with the node and the column that corresponds with the feature.  the  edge features correspond to columns, in that column you find for each row the nodes where edges arrive, i.e. the edges from the node that correspond with the row. We also write the data that says which nodes are contained in which other nodes. To each row we add the following columns:  for each node type, except the slot type, there is a column with named  in_nodeType , that contains the node of the smallest object that contains the node of the row; We compose the big table and save it as a tab delimited file. This temporary result can be processed by  R and  pandas . It turns out that for this size of the data  pandas is a bit quicker than R. It is also more Pythonic, which is a pro if you use other Python programs, such as TF, to process the same data.  Examples  [BHSA](https: nbviewer.org/github/ETCBC/bhsa/blob/master/tutorial/export.ipynb)  [Moby Dick](https: nbviewer.org/github/CLARIAH/wp6-mobydick/blob/main/tutorial/export.ipynb)  [Ferdinand Huyck](https: nbviewer.org/github/CLARIAH/wp6-ferdinandhuyck/blob/main/tutorial/export.ipynb)"
 },
 {
 "ref":"tf.convert.pandas.exportPandas",
-"url":131,
+"url":133,
 "doc":"Export a currently loaded TF dataset to  pandas . The function proceeds by first producing a TSV file as an intermediate result. This is usually too big for GitHub, to it is produced in a  /_temp directory that is usually in the  .gitignore of the repo. This file serves as the basis for the export to a  pandas data frame.  ! hint \"R\" You can import this file in other programs as well, e.g. [R](https: www.r-project.org)  ! note \"Quotation, newlines, tabs, backslashes and escaping\" If the data as it comes from TF contains newlines or tabs or double quotes, we put them escaped into the TSV, as follows:   newline becomes  backslash plus  n ;   tab becomes a single space;   double quote becomes  Control-A plus  double quote ;   backslash remains  backslash . In this way, the TSV file is not disturbed by non-delimiting tabs, i.e. tabs that are part of the content of a field. No field will contain a tab! Also, no field will contain a newline, so the lines are not disturbed by newlines that are part of the content of a field. No field will contain a newline! Double quotes in a TSV file might pose a problem. Several programs interpret double quotes as a way to include tabs and newlines in the content of a field, especially if the quote occurs at the beginning of a field. That's why we escape it by putting a character in front of it that is very unlikely to occur in the text of a corpus: Ctrl A, which is ASCII character 1. Backslashes are no problem, but programs might interpret them in a special way in combination with specific following characters. Now what happens to these characters when  pandas reads the file? We instruct the  pandas table reading function to use the Control-A as escape char and the double quote as quote char.  Backslash  pandas has two special behaviours:   backslash  n becomes a  newline ;   backslash  backslash becomes a single  backslash . This is almost what we want: the newline behaviour is desired; the reducing of backslashes not, but we leave it as it is.  Double quote  Ctrl-A plus  double quote becomes  double quote . That is exactly what we want. Parameters      app: object A  tf.advanced.app.App object that represent a loaded corpus, together with all its loaded data modules. inTypes: string | iterable, optional None A bunch of node types for which columns should be made that contain nodes in which the row node is contained. If  None , all node types will have such columns. But for certain TEI corpora this might lead to overly many columns. So, if you specify    or  {} , there will only be columns for sectional node types. But you can also specify the list of such node types explicitly. In all cases, there will be columns for sectional node types. exportDir: string, optional None The directory to which the  pandas file will be exported. If  None , it is the  /pandas directory in the repo of the app.",
 "func":1
 },
 {
 "ref":"tf.convert.walker",
-"url":132,
+"url":134,
 "doc":" Walker You can convert a dataset to TF by writing a function that walks through it. That function must trigger a sequence of actions when reading the data. These actions drive TF to build a valid TF dataset. Many checks will be performed.  ! hint \"to and from MQL\" If your source is MQL, you are even better off: TF has a module to import from MQL and to export to MQL. See  tf.convert.mql.importMQL and  tf.convert.mql.exportMQL .  Set up Here is a schematic set up of such a conversion program.  python from tf.fabric import Fabric from tf.convert.walker import CV TF = Fabric(locations=OUT_DIR) cv = CV(TF) def director(cv):  your code to unwrap your source data and trigger  the generation of TF nodes, edges and features slotType = 'word'  or whatever you choose otext = {  dictionary of config data for sections and text formats  . } generic = {  dictionary of metadata meant for all features  . } intFeatures = {  set of integer valued feature names  . } featureMeta = {  per feature dictionaries with metadata  . } good = cv.walk( director, slotType, otext=otext, generic=generic, intFeatures=intFeatures, featureMeta=featureMeta, warn=True, force=False, ) if good:  . load the new TF data  .   See  tf.convert.walker.CV.walk .  Walking When you walk through the input data source, you'll encounter things that have to become slots, non-slot nodes, edges and features in the new data set. You issue these things by means of an  action method from  cv , such as  cv.slot() or  cv.node(nodeType) . When your action creates slots or non slot nodes, TF will return you a reference to that node, that you can use later for more actions related to that node.  python curPara = cv.node('para')   To add features to nodes, use a  cv.feature() action. It will apply to a node passed as argument. To add features to edges, issue a  cv.edge() action. It will require two node arguments: the  from node and the  to node. There is always a set of current  embedder nodes . When you create a slot node  python curWord = cv.slot()   then TF will link all current embedder nodes to the resulting slot. There are actions to add nodes to the set of embedder nodes, to remove them from it, and to add them again. If your data is organized in such a way that you see the slots in a different order than the intended order, you can pass a key value to the slot, like so  python curWord = cv.slot(key=wordNumber)   After the walk is completed, the slots will be sorted by their keys, while keeping all feature assignments to them intact. All nodes will be linked to the same slots after sorting, and all edges that start from or arrive at slots will do that after the sorting. For an example, see [ lowfat.py ](https: github.com/ETCBC/nestle1904/blob/master/programs/lowfat.py).  Dynamic Metadata When the director runs, you may have already specified all your feature metadata, including the value types. But if some of that information is dependent on what you encounter in the data, you can do two things: (A) Run a preliminary pass over the data and gather the required information, before running the director. (B) Update the metadata later on by issuing  cv.meta() actions from within your director, see below. In doing this, you can remove the metadata from unused features, but you can also add metadata to features that have not got them yet. If the set of possible features is not known on beforehand, you can ask for the list of all feature names by means of  cv.features() .  Action methods The  cv class contains methods that are responsible for particular  actions that steer the graph building:   tf.convert.walker.CV.slot   tf.convert.walker.CV.node   tf.convert.walker.CV.terminate   tf.convert.walker.CV.resume   tf.convert.walker.CV.link   tf.convert.walker.CV.linked   tf.convert.walker.CV.feature   tf.convert.walker.CV.features   tf.convert.walker.CV.edge   tf.convert.walker.CV.meta   tf.convert.walker.CV.occurs   tf.convert.walker.CV.active   tf.convert.walker.CV.activeNodes   tf.convert.walker.CV.activeTypes   tf.convert.walker.CV.get and  cv.get(feature, nf, nt)   tf.convert.walker.CV.stop  ! hint \"Example\" Follow the [conversion tutorial](https: nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/convert.ipynb) Or study a more involved example: [Old Babylonian](https: github.com/Nino-cunei/oldbabylonian/blob/master/programs/tfFromATF.py)"
 },
 {
 "ref":"tf.convert.walker.CV",
-"url":132,
+"url":134,
 "doc":"The object that contains the walker conversion machinery. silent: string, optional tf.core.timestamp.SILENT_D See  tf.core.timestamp.Timestamp "
 },
 {
 "ref":"tf.convert.walker.CV.S",
-"url":132,
+"url":134,
 "doc":""
 },
 {
 "ref":"tf.convert.walker.CV.N",
-"url":132,
+"url":134,
 "doc":""
 },
 {
 "ref":"tf.convert.walker.CV.T",
-"url":132,
+"url":134,
 "doc":""
 },
 {
 "ref":"tf.convert.walker.CV.R",
-"url":132,
+"url":134,
 "doc":""
 },
 {
 "ref":"tf.convert.walker.CV.D",
-"url":132,
+"url":134,
 "doc":""
 },
 {
 "ref":"tf.convert.walker.CV.F",
-"url":132,
+"url":134,
 "doc":""
 },
 {
 "ref":"tf.convert.walker.CV.E",
-"url":132,
+"url":134,
 "doc":""
 },
 {
 "ref":"tf.convert.walker.CV.walk",
-"url":132,
+"url":134,
 "doc":"Asks a director function to walk through source data and receives its actions. The  director function should unravel the source. You have to program the  director , which takes one argument:  cv . From the  cv you can use a few standard actions that instruct TF to build a graph. This function will check whether the metadata makes sense and is minimally complete. During node creation the section structure will be watched, and you will be warned if irregularities occur. After the creation of the feature data, some extra checks will be performed to see whether the metadata matches the data and vice versa. If the slots need to be sorted by their keys, it will happen at this point, and the generated features will be adapted to the sorted slots. The new feature data will be written to the output directory of the underlying TF object. In fact, the rules are exactly the same as for  tf.fabric.Fabric.save . Parameters      slotType: string The node type that acts as the type of the slots in the data set. oText: dict The configuration information to be stored in the  otext feature (see  tf.core.text ):  section types  section features  structure types  structure features  text formats generic: dict Metadata that will be written into the header of all generated TF features. You can make changes to this later on, dynamically in your director. intFeatures: iterable The set of features that have integer values only. You can make changes to this later on, dynamically in your director. featureMeta: dict of dict For each node or edge feature descriptive metadata can be supplied. You can make changes to this later on, dynamically in your director. warn: boolean, optional True This regulates the response to warnings:  True (default): stop after warnings (as if they are errors);  False continue after warnings but do show them;  None suppress all warnings. force: boolean, optional False This forces the process to continue after errors. Your TF set might not be valid. Yet this can be useful during testing, when you know that not everything is OK, but you want to check some results. Especially when dealing with large datasets, you might want to test with little pieces. But then you get a kind of non-fatal errors that stand in the way of testing. For those cases:  force=True . generateTf: boolean, optional True You can pass  False here to suppress the actual writing of TF data. In that way you can dry-run the director to check for errors and warnings director: function An ordinary function that takes one argument, the  cv object, and should not deliver anything. Writing this function is the main job to do when you want to convert a data source to TF. See  tf.convert.walker for more details. Returns    - boolean Whether the operation was successful",
 "func":1
 },
 {
 "ref":"tf.convert.walker.CV.stop",
-"url":132,
+"url":134,
 "doc":"Stops the director. No further input will be read.   cv.stop(msg)   The director will exit with a non-good status and issue the message  msg . If you have called  walk() with  force=True , indicating that the director must proceed after errors, then this stop command will cause termination nevertheless. Parameters      msg: string A message to display upon stopping. Returns    - None",
 "func":1
 },
 {
 "ref":"tf.convert.walker.CV.slot",
-"url":132,
+"url":134,
 "doc":"Make a slot node and return the handle to it in  n .   n = cv.slot()   No further information is needed. Remember that you can add features to the node by later   cv.feature(n, key=value,  .)   calls. Parameters      key: string, optional None If passed, it acts as a sort key on the slot. At the end of the walk, all slots will be sorted by their key and then by their original order. Care will be taken that slots retain their features and linkages.  ! note \"Keys are strings\" Note that the key must be a string. If you want to sort on numbers, make sure to pad all numbers with leading zeros. Returns    - node reference: tuple The node reference consists of a node type and a sequence number, but normally you do not have to dig these out. Just pass the tuple as a whole to actions that require a node argument.",
 "func":1
 },
 {
 "ref":"tf.convert.walker.CV.node",
-"url":132,
+"url":134,
 "doc":"Make a non-slot node and return the handle to it in  n .   n = cv.node(nodeType)   You have to pass its  node type , i.e. a string. Think of  sentence ,  paragraph ,  phrase ,  word ,  sign , whatever. There are two modes for this function:  Auto: ( slots=None ): Non slot nodes will be automatically added to the set of embedders.  Explicit: ( slots=iterable ): The slots in iterable will be assigned to this node and nothing else. The node will not be added to the set of embedders. Put otherwise: the node will be terminated after construction. However: you could resume it later to add other slots. Remember that you can add features to the node by later   cv.feature(n, key=value,  .)   calls. Parameters      nType: string A node type, not the slot type slots: iterable of int, optional None The slots to assign to this node. If left out, the node is left as an embedding node and subsequent slots will be added to it automatically. All slots in the iterable must have been generated before by means of the  cv.slot() action. Returns    - node reference or None If an error occurred,  None is returned. The node reference consists of a node type and a sequence number, but normally you do not have to dig these out. Just pass the tuple as a whole to actions that require a node argument.",
 "func":1
 },
 {
 "ref":"tf.convert.walker.CV.terminate",
-"url":132,
+"url":134,
 "doc":" terminate a node.   cv.terminate(n)   The node  n will be removed from the set of current embedders. This  n must be the result of a previous  cv.slot() or  cv.node() action. Parameters      node: tuple A node reference, obtained by one of the actions  slot or  node . Returns    - None",
 "func":1
 },
 {
 "ref":"tf.convert.walker.CV.delete",
-"url":132,
+"url":134,
 "doc":" deletes a node.   cv.delete(n)   The node  n will be deleted from the set of nodes that will be created. This  n must be the result of a previous  cv.node() action. slots cannot be deleted. Parameters      node: tuple A node reference, obtained by the actions  node . Returns    - None",
 "func":1
 },
 {
 "ref":"tf.convert.walker.CV.resume",
-"url":132,
+"url":134,
 "doc":" resume a node.   cv.resume(n)   If you resume a non-slot node, you add it again to the set of embedders. No new node will be created. If you resume a slot node, it will be added to the set of current embedders. No new slot will be created. Parameters      node: tuple A node reference, obtained by one of the actions  slot or  node . Returns    - None",
 "func":1
 },
 {
 "ref":"tf.convert.walker.CV.link",
-"url":132,
+"url":134,
 "doc":"Link the given, existing slots to a node.   cv.link(n, [s1, s2])   Sometimes the automatic linking of slots to nodes is not sufficient. This happens when you feel the need to construct a node retro-actively, when the slots that need to be linked to it have already been created. This action is precisely meant for that. Parameters      node: tuple A node reference, obtained by one of the actions  slot or  node . slots: iterable of integer Returns    - boolean",
 "func":1
 },
 {
 "ref":"tf.convert.walker.CV.linked",
-"url":132,
+"url":134,
 "doc":"Returns the slots  ss to which a node is currently linked.   ss = cv.linked(n)   If you construct non-slot nodes without linking them to slots, they will be removed when TF validates the collective result of the action methods. If you want to prevent that, you can insert an extra slot, but in order to do so, you have to detect that a node is still unlinked. This action is precisely meant for that. Parameters      node: tuple A node reference, obtained by one of the actions  slot or  node . Returns    - tuple of integer The slots are returned as a tuple of integers, sorted.",
 "func":1
 },
 {
 "ref":"tf.convert.walker.CV.feature",
-"url":132,
+"url":134,
 "doc":"Add  node features .   cv.feature(n, name=value,  . , name=value)   Parameters      node: tuple A node reference, obtained by one of the actions  slot or  node .  features: keyword arguments The names and values of features to assign to this node. Returns    - None  ! caution \"None values\" If a feature value is  None it will not be added!",
 "func":1
 },
 {
 "ref":"tf.convert.walker.CV.edge",
-"url":132,
+"url":134,
 "doc":"Add  edge features .   cv.edge(nf, nt, name=value,  . , name=value)   Parameters      nodeFrom, nodeTo: tuple Two node references, obtained by one of the actions  slot or  node .  features: keyword arguments The names and values of features to assign to this edge (i.e. pair of nodes). Returns    - None  ! note \"None values\" You may pass values that are  None , and a corresponding edge will be created. If for all edges the value is  None , an edge without values will be created. For every  nodeFrom , such a feature essentially specifies a set of nodes  { nodeTo } .",
 "func":1
 },
 {
 "ref":"tf.convert.walker.CV.occurs",
-"url":132,
+"url":134,
 "doc":"Whether the feature  featureName occurs in the resulting data so far.   occurs = cv.occurs(featureName)   If you have assigned None values to a feature, that will count, i.e. that feature occurs in the data. If you add feature values conditionally, it might happen that some features will not be used at all. For example, if your conversion produces errors, you might add the error information to the result in the form of error features. Later on, when the errors have been weeded out, these features will not occur any more in the result, but then TF will complain that such is feature is declared but not used. At the end of your director you can remove unused features conditionally, using this function. Parameters      feat: string The name of a feature Returns    - boolean",
 "func":1
 },
 {
 "ref":"tf.convert.walker.CV.meta",
-"url":132,
+"url":134,
 "doc":"Add, modify, delete metadata fields of features.   cv.meta(feature, name=value,  . , name=value)   Parameters      feat: string The name of a feature metadata: dict If a  value is  None , that  name will be deleted from the metadata fields of the feature. A bare  cv.meta(feature) will remove the all metadata from the feature. If you modify the field  valueType of a feature, that feature will be added or removed from the set of  intFeatures . It will be checked whether you specify either  int or  str . Returns    - None",
 "func":1
 },
 {
 "ref":"tf.convert.walker.CV.features",
-"url":132,
+"url":134,
 "doc":"Get the list of all features.   featureNames = cv.features()   Returns    - list",
 "func":1
 },
 {
 "ref":"tf.convert.walker.CV.active",
-"url":132,
+"url":134,
 "doc":"Returns whether a node is currently active. Active nodes are the nodes in the set of current embedders.   isActive = cv.active(n)   If you construct your nodes in a very dynamic way, it might be hard to keep track for each node whether it has been created, terminated, or resumed, in other words, whether it is active or not. This action is provides a direct and precise way to know whether a node is active. Parameters      node: tuple A node reference, obtained by one of the actions  slot or  node . Returns    - boolean",
 "func":1
 },
 {
 "ref":"tf.convert.walker.CV.activeNodes",
-"url":132,
+"url":134,
 "doc":"The currently active nodes, i.e. the embedders.   nodes = cv.activeNodes() nodes = cv.activeNodes(nTypes=(\"sentence\", \"clause\"   Parameters      nTypes: iterable optional None If None, all active nodes are returned. Else the iterable lists a few node types, and only active nodes in these types are returned. Returns    - set",
 "func":1
 },
 {
 "ref":"tf.convert.walker.CV.activeTypes",
-"url":132,
+"url":134,
 "doc":"The node types of the currently active nodes, i.e. the embedders.   nTypes = cv.activeTypes()   Parameters      None Returns    - set",
 "func":1
 },
 {
 "ref":"tf.convert.walker.CV.get",
-"url":132,
+"url":134,
 "doc":"Retrieve feature values.   cv.get(feature, n) and cv.get(feature, nf, nt)    feature is the name of the feature. For node features,  n is the node which carries the value. For edge features,  nf, nt is the pair of from-to nodes which carries the value. Parameters      feature: string The name of a feature node: tuple A node reference, obtained by one of the actions  slot or  node . The node in question when retrieving the value of a node feature. nodeFrom, nodeTo: tuple Two node references, obtained by one of the actions  slot or  node . The nodes in question when retrieving the value of an edge feature. Returns    - string or integer",
 "func":1
 },
 {
 "ref":"tf.convert.recorder",
-"url":133,
+"url":135,
 "doc":" Recorder Support for round trips of TF data to annotation tools and back. The scenario is:  Prepare a piece of corpus material for plain text use in an annotation tool, e.g. [BRAT](https: brat.nlplab.org).  Alongside the plain text, generate a mapping file that maps nodes to character positions in the plain text  Use an annotation tool to annotate the plain text  Read the output of the annotation tools and convert it into TF features, using the mapping file.  Explanation The recorder object is an engine to which you can send text material, interspersed with commands that say:  start node  n ;  end node  n . The recorder stores the accumulating text as a plain text, without any trace of the  start and  end commands. However, it also maintains a mapping between character positions in the accumulated text and the nodes. At any moment, there is a set of  active nodes: the ones that have been started, but not yet ended. Every character of text that has been sent to the recorder will add an entry to the position mapping: it maps the position of that character to the set of active nodes at that point.  Usage We suppose you have a corpus loaded, either by  python from tf.app import use A = use(corpus) api = A.api   or by  python from tf.fabric import Fabric TF = Fabric(locations, modules) api = TF.load(features)    python from tf.convert.recorder import Recorder rec = Recorder(api) rec.add(\"a\") rec.start(n1) rec.add(\"bc\") rec.start(n2) rec.add(\"def\") rec.end(n1) rec.add(\"ghij\") rec.end(n2) rec.add(\"klmno\")   This leads to the following mapping: position | text | active nodes  - |  - |  - 0 |  a |  {} 1 |  b |  {n1} 2 |  c |  {n1} 3 |  d |  {n1, n2} 4 |  e |  {n1, n2} 5 |  f |  {n1, n2} 6 |  g |  {n2} 7 |  h |  {n2} 8 |  i |  {n2} 9 |  j |  {n2} 10 |  k |  {} 11 |  l |  {} 12 |  m |  {} 13 |  n |  {} 14 |  o |  {} There are methods to obtain the accumulated text and the mapped positions from the recorder. You can write the information of a recorder to disk and read it back later. And you can generate features from a CSV file using the mapped positions. To see it in action, see this [tutorial](https: nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/annotate.ipynb)"
 },
 {
 "ref":"tf.convert.recorder.Recorder",
-"url":133,
+"url":135,
 "doc":"Accumulator of generated text that remembers node positions. Parameters      api: object, optional None The handle of the API of a loaded TF corpus. This is needed for operations where the recorder needs TF intelligence associated with the nodes, e.g. their types. If you do not pass an  api , such methods are unavailable later on."
 },
 {
 "ref":"tf.convert.recorder.Recorder.start",
-"url":133,
+"url":135,
 "doc":"Start a node. That means: add it to the context, i.e. make the node active. Parameters      n: integer A node. The node can be any node type.",
 "func":1
 },
 {
 "ref":"tf.convert.recorder.Recorder.end",
-"url":133,
+"url":135,
 "doc":"End a node. That means: delete it from the context, i.e. make the node inactive. Parameters      n: integer A node. The node can be of any node type.",
 "func":1
 },
 {
 "ref":"tf.convert.recorder.Recorder.add",
-"url":133,
+"url":135,
 "doc":"Add text to the accumulator. Parameters      string: string | None Material to add. If it is a string, the string will be added to the accumulator. If it is  None , a default value will be added. The default value is passed through parameter  empty . empty: string, optional zero-width-joiner If the string parameter is  None , this is the default value that will be added to the accumulator. If this parameter is absent, the zero-width joiner is used.",
 "func":1
 },
 {
 "ref":"tf.convert.recorder.Recorder.text",
-"url":133,
+"url":135,
 "doc":"Get the accumulated text. Returns    - string The join of all accumulated text chunks.",
 "func":1
 },
 {
 "ref":"tf.convert.recorder.Recorder.positions",
-"url":133,
+"url":135,
 "doc":"Get the node positions as mapping from character positions. Character positions start at  0 . For each character position we get the set of nodes whose material occupies that character position. Parameters      byType: boolean, optional False If True, makes a separate node mapping per node type. For this it is needed that the Recorder has been passed a TF API when it was initialized. simple: boolean, optional False In some cases it is known on beforehand that at each textual position there is at most 1 node. Then it is more economical to fill the list with single nodes rather than with sets of nodes. If this parameter is True, we pick the first node from the set. Returns    - list|dict|None If  byType , the result is a dictionary, keyed by node type, valued by mappings of textual positions to nodes of that type. This mapping takes the shape of a list where entry  i contains the frozen set of all nodes of that type that were active at character position  i in the text. If not  byType then a single mapping is returned (as list), where entry  i contains the frozen set of all nodes, irrespective of their type that were active at character position  i in the text.",
 "func":1
 },
 {
 "ref":"tf.convert.recorder.Recorder.iPositions",
-"url":133,
+"url":135,
 "doc":"Get the character positions as mapping from nodes. Parameters      byType: boolean, optional False If True, makes a separate node mapping per node type. For this it is needed that the Recorder has been passed a TF API when it was initialized. logical: boolean, optional True If True, specs are represented as tuples of ranges and a range is represented as a tuple of a begin and end point, or as a single point. Points are integers. If False, ranges are represented by strings:  , separated ranges, a range is  b-e or  p . asEntries: boolean, optional False If True, do not return the dict, but rather its entries. Returns    - list|dict|None If  byType , the result is a dictionary, keyed by node type, valued by mappings for nodes of that type. Entry  n in this mapping contains the intervals of all character positions in the text where node  n is active. If not  byType then a single mapping is returned, where each node is mapped to the intervals where that node is active.",
 "func":1
 },
 {
 "ref":"tf.convert.recorder.Recorder.rPositions",
-"url":133,
+"url":135,
 "doc":"Get the first textual position for each node The position information is a big amount of data, in the general case. Under certain assumptions we can economize on this data usage. Strong assumptions: 1. every textual position is covered by  exactly one node ; 1. the nodes are consecutive: every next node is equal to the previous node plus 1; 1. the positions of the nodes are monotonous in the nodes, i.e. if node  n < m , then the position of  n is before the position of  m . Imagine the text partitioned in consecutive non-overlapping chunks, where each node corresponds to exactly one chunk, and the order of the nodes is the same as the order of the corresponding chunks. We compute a list of positions that encode the mapping from nodes to textual positions as follows: Suppose we need map nodes  n ,  n+1 ,  .,  n+m to textual positions; say  node  n starts at position  t0 ,  node  n+1 at position  t1 ,  node  n+m at position  tm . Say position  te is the position just after the whole text covered by these nodes. Then we deliver the mapping as a sequence of these numbers:   n-1   t0   t1   .   tm   te So the first element of the list is used to specify the offset to be applied for all subsequent nodes. The  te value is added as a sentinel, to facilitate the determination of the last position of each node. Users of this list can find the start and end positions of node  m as follows   start = posList[m - posList[0 end = posList[m - posList[0] + 1] - 1   Parameters      acceptMaterialOutsideNodes: boolean, optional False If this is True, we accept that the text contains extra material that is not covered by any node. That means that condition 1 above is relaxed to that we accept that some textual positions do not correspond to any node. Applications that make use of the positions must realize that in this case the material associated with a node also includes the subsequent material outside any node. Returns    - list | string The result is a list of numbers as described above. We only return the  posList if the assumptions hold. If not, we return a string with diagnostic information.",
 "func":1
 },
 {
 "ref":"tf.convert.recorder.Recorder.write",
-"url":133,
+"url":135,
 "doc":"Write the recorder information to disk. The recorded text is written as a plain text file, and the remembered node positions are written as a TSV file. You can also have the node positions be written out by node type. In that case you can also optimize the file size. Optimization means that consecutive equal values are prepended by the number of repetitions and a  . Parameters      textPath: string The file path to which the accumulated text is written. inverted: boolean, optional False If False, the positions are taken as mappings from character positions to nodes. If True, they are a mapping from nodes to character positions. posPath: string, optional None The file path to which the mapped positions are written. If absent, it equals  textPath with a  .pos extension, or  .ipos if  inverted is True. The file format is: one line for each character position, on each line a tab-separated list of active nodes. byType: boolean, optional False If True, writes separate node mappings per node type. For this it is needed that the Recorder has been passed a TF API when it was initialized. The file names are extended with the node type. This extension occurs just before the last  . of the inferred  posPath . optimize: boolean, optional True Optimize file size. Only relevant if  byType is True and  inverted is False. The format of each line is:  rep  nodes where  rep is a number that indicates repetition and  nodes is a tab-separated list of node numbers. The meaning is that the following  rep character positions are associated with these  nodes .",
 "func":1
 },
 {
 "ref":"tf.convert.recorder.Recorder.read",
-"url":133,
+"url":135,
 "doc":"Read recorder information from disk. Parameters      textPath: string The file path from which the accumulated text is read. posPath: string, optional None The file path from which the mapped positions are read. If absent, it equals  textPath with the extension  .pos . The file format is: one line for each character position, on each line a tab-separated list of active nodes.  ! caution Position files that have been written with  optimize=True cannot be read back.",
 "func":1
 },
 {
 "ref":"tf.convert.recorder.Recorder.makeFeatures",
-"url":133,
+"url":135,
 "doc":"Read a tab-separated file of annotation data and convert it to features. An external annotation tool typically annotates text by assigning values to character positions or ranges of character positions. In TF, annotations are values assigned to nodes. If a  recorded text has been annotated by an external tool, we can use the position-to-node mapping to construct TF features out of it. The annotation file is assumed to be a tab-separated file. Every line corresponds to an annotation. The first two columns have the start and end positions, as character positions in the text. The remaining columns contain annotation values for that stretch of text. If there is a heading column, the values of the headers translate to names of the new TF features. Parameters      featurePath: string Path to the annotation file. headers: boolean or iterable, optional True Indicates whether the annotation file has headers. If not True, it may be an iterable of names, which will be used as headers.",
 "func":1
 },
 {
 "ref":"tf.convert.recorder.Recorder.material",
-"url":133,
+"url":135,
 "doc":"Accumulated text. It is a list of chunks of text. The text is just the concatenation of all these chunks."
 },
 {
 "ref":"tf.convert.recorder.Recorder.nodesByPos",
-"url":133,
+"url":135,
 "doc":"Mapping from textual positions to nodes. It is a list. Entry  p in this list stores the set of active nodes for character position  p ."
 },
 {
 "ref":"tf.convert.recorder.Recorder.context",
-"url":133,
+"url":135,
 "doc":"The currently active nodes."
 },
 {
 "ref":"tf.convert.xml",
-"url":134,
+"url":136,
 "doc":" XML import You can convert any XML source into TF by specifying a few details about the source. TF then invokes the  tf.convert.walker machinery to produce a TF dataset out of the source. The converter goes one extra mile: it generates a TF app, in such a way that the TF browser is instantly usable.  ! caution \"As an example\" This is more intended as an example of how to tackle the conversion of XML to TF than as a production engine. Most XML corpora use elements for special things, and a good conversion to TF should deal with the intention behind the elements. See  tf.convert.tei for a production converter of TEI XML to TF.  White-space This converter does not read schemas and has no extra knowledge about the elements. Because of the lack of schema information we do not know exactly which white-space is significant. The only thing we do to white-space is to condense each stretch of white-space to a single space. Whether some of these spaces around tags must be ignored is a matter of further customization.  Configuration We assume that you have a  programs directory at the top-level of your repo. In this directory we'll look for two optional files:  a file  xml.yaml in which you specify a bunch of values Last, but not least, you can assemble all the input parameters needed to get the conversion off the ground.  a file  xml.py in which you define a function  transform(text) which takes a text string argument and delivers a text string as result. The converter will call this on every XML input file it reads  before feeding it to the XML parser.  Keys and values of the  xml.yaml file   generic dict, optional  {} Metadata for all generated TF features. The actual source version of the XML files does not have to be stated here, it will be inserted based on the version that the converter will actually use. That version depends on the  xml argument passed to the program. The key under which the source version will be inserted is  xmlVersion .   intFeatures list, optional  [] The features (nodes and edges) that are integer-valued.   featureDescriptions dict, optional  {} Short descriptions for the features. Will be included in the metadata of the feature files, after  @description .   procins boolean, optional  False If True, processing instructions will be treated. Processing instruction    will be converted as if it were an empty element named  foo with attribute  bar with value  xxx .  Usage  Command-line  sh tf-fromxml tasks flags    From Python  python from tf.convert.xml import XML X = XML() X.task( tasks,  flags)   For a short overview the tasks and flags, see  HELP .  Tasks We have the following conversion tasks: 1.  check : makes and inventory of all XML elements and attributes used. 1.  convert : produces actual TF files by converting XML files. 1.  load : loads the generated TF for the first time, by which the pre-computation step is triggered. During pre-computation some checks are performed. Once this has succeeded, we have a workable TF dataset. 1.  app : creates or updates a corpus specific TF app with minimal sensible settings. 1.  browse : starts the TF browser on the newly created dataset. Tasks can be run by passing any choice of task keywords to the  XML.task() method.  Note on versions The XML source files come in versions, indicated with a data. The converter picks the most recent one, unless you specify an other one:  python tf-fromxml xml=-2  previous version tf-fromxml xml=0  first version tf-fromxml xml=3  third version tf-fromxml xml=2019-12-23  explicit version   The resulting TF data is independently versioned, like  1.2.3 . When the converter runs, by default it overwrites the most recent version, unless you specify another one. It looks at the latest version and then bumps a part of the version number.  python tf-fromxml tf=3  minor version, 1.2.3 becomes 1.2.4 tf-fromxml tf=2  intermediate version, 1.2.3 becomes 1.3.0 tf-fromxml tf=1  major version, 1.2.3 becomes 2.0.0 tf-fromxml tf=1.8.3  explicit version    Examples Exactly how you can call the methods of this module and add your own customised conversion code is demonstrated in the Greek New Testament:  [ ETCBC/nestle1904 ](https: nbviewer.org/github/ETCBC/nestle1904/blob/master/programs/tfFromLowfat.ipynb)."
 },
 {
 "ref":"tf.convert.xml.XML",
-"url":134,
+"url":136,
 "doc":"Converts XML to TF. For documentation of the resulting encoding, read the [transcription template](https: github.com/annotation/text-fabric/blob/master/tf/convert/app/transcription.md). Below we describe how to control the conversion machinery. We adopt a fair bit of \"convention over configuration\" here, in order to lessen the burden for the user of specifying so many details. Based on current directory from where the script is called, it defines all the ingredients to carry out a  tf.convert.walker conversion of the XML input. This function is assumed to work in the context of a repository, i.e. a directory on your computer relative to which the input directory exists, and various output directories:  tf ,  app . Your current directory must be at   ~/backend/org/repo/relative   where   ~ is your home directory;   backend is an online back-end name, like  github ,  gitlab ,  git.huc.knaw.nl ;   org is an organization, person, or group in the back-end;   repo is a repository in the  org .   relative is a directory path within the repo (0 or more components) This is only about the directory structure on your local computer; it is not required that you have online incarnations of your repository in that back-end. Even your local repository does not have to be a git repository. The only thing that matters is that the full path to your repo can be parsed as a sequence of  home/backend/org/repo/relative . Relative to this directory the program expects and creates input / output directories.  Input directories   xml  Location of the XML sources.  If it does not exist, the program aborts with an error. Several levels of subdirectories are assumed: 1. the version of the source (this could be a date string). 1. volumes / collections of documents. The subdirectory  __ignore__ is ignored. 1. the XML documents themselves.  Output directories   report Directory to write the results of the  check task to: an inventory of elements / attributes encountered. If the directory does not exist, it will be created. The default value is  . (i.e. the current directory in which the script is invoked).   tf The directory under which the TF output file (with extension  .tf ) are placed. If it does not exist, it will be created. The TF files will be generated in a folder named by a version number, passed as  tfVersion .   app Location of additional TF app configuration files. If they do not exist, they will be created with some sensible default settings and generated documentation. These settings can be overridden in the  app/config_custom.yaml file. Also a default  display.css file and a logo are added. Custom content for these files can be provided in files with  _custom appended to their base name. Parameters      convertTaskCustom: function, optional None You can pass a replacement for the  convertTask method. If you do that, it will be used instead. By means of this approach you can use the generic machinery of the XML converter as much as possible, and you only have to adapt the bits that process the XML sources. trimAtts: iterable of string, optional set() You can pass the names of attributes whose values you do not have to see spelled out in the report files generated by the check task. keywordAtts: iterable of string, optional set() You can pass the names of attributes whose values are a limited set of keywords that you want to see spelled out in the report files generated by the check task. renameAtts: dict, optional {} You can change attribute names systematically on the fly. xml: string, optional  If empty, use the latest version under the  xml directory with sources. Otherwise it should be a valid integer, and it is the index in the sorted list of versions there.   0 or  latest : latest version;   -1 ,  -2 ,  . : previous version, version before previous,  .;   1 ,  2 ,  .: first version, second version,    everything else that is not a number is an explicit version If the value cannot be parsed as an integer, it is used as the exact version name. tf: string, optional  If empty, the TF version used will be the latest one under the  tf directory. If it can be parsed as the integers 1, 2, or 3 it will bump the latest relevant TF version:   0 or  latest : overwrite the latest version   1 will bump the major version   2 will bump the intermediate version   3 will bump the minor version  everything else is an explicit version Otherwise, the value is taken as the exact version name. verbose: integer, optional -1 Produce no (-1), some (0) or many (1) progress and reporting messages"
 },
 {
 "ref":"tf.convert.xml.XML.getParser",
-"url":134,
+"url":136,
 "doc":"Configure the LXML parser. See [parser options](https: lxml.de/parsing.html parser-options). Returns    - object A configured LXML parse object.",
 "func":1
 },
 {
 "ref":"tf.convert.xml.XML.getXML",
-"url":134,
+"url":136,
 "doc":"Make an inventory of the XML source files. Returns    - tuple of tuple | string The outer tuple has sorted entries corresponding to folders under the XML input directory. Each such entry consists of the folder name and an inner tuple that contains the file names in that folder, sorted.",
 "func":1
 },
 {
 "ref":"tf.convert.xml.XML.checkTask",
-"url":134,
+"url":136,
 "doc":"Implementation of the \"check\" task. Then it makes an inventory of all elements and attributes in the XML files. If tags are used in multiple namespaces, it will be reported.  ! caution \"Conflation of namespaces\" The XML to TF conversion does construct node types and attributes without taking namespaces into account. However, the parsing process is namespace aware. The inventory lists all elements and attributes, and many attribute values. But is represents any digit with  n , and some attributes that contain ids or keywords, are reduced to the value  x . This information reduction helps to get a clear overview. It writes reports to the  reportPath :   errors.txt : validation errors   elements.txt : element / attribute inventory.",
 "func":1
 },
 {
 "ref":"tf.convert.xml.XML.convertTask",
-"url":134,
+"url":136,
 "doc":"Implementation of the \"convert\" task. It sets up the  tf.convert.walker machinery and runs it. Returns    - boolean Whether the conversion was successful.",
 "func":1
 },
 {
 "ref":"tf.convert.xml.XML.getConverter",
-"url":134,
+"url":136,
 "doc":"Initializes a converter. Returns    - object The  tf.convert.walker.CV converter object, initialized.",
 "func":1
 },
 {
 "ref":"tf.convert.xml.XML.loadTask",
-"url":134,
+"url":136,
 "doc":"Implementation of the \"load\" task. It loads the TF data that resides in the directory where the \"convert\" task deliver its results. During loading there are additional checks. If they succeed, we have evidence that we have a valid TF dataset. Also, during the first load intensive pre-computation of TF data takes place, the results of which will be cached in the invisible  .tf directory there. That makes the TF data ready to be loaded fast, next time it is needed. Returns    - boolean Whether the loading was successful.",
 "func":1
 },
 {
 "ref":"tf.convert.xml.XML.appTask",
-"url":134,
+"url":136,
 "doc":"Implementation of the \"app\" task. It creates / updates a corpus-specific app. There should be a valid TF dataset in place, because some settings in the app derive from it. It will also read custom additions that are present in the target app directory. These files are:   config_custom.yaml : A YAML file with configuration data that will be  merged into the generated config.yaml.   app_custom.py : A python file with named snippets of code to be inserted at corresponding places in the generated  app.py   display_custom.css : Additional CSS definitions that will be put in place. If the TF app for this resource needs custom code, this is the way to retain that code between automatic generation of files. Returns    - boolean Whether the operation was successful.",
 "func":1
 },
 {
 "ref":"tf.convert.xml.XML.browseTask",
-"url":134,
+"url":136,
 "doc":"Implementation of the \"browse\" task. It gives a shell command to start the TF browser on the newly created corpus. There should be a valid TF dataset and app configuration in place Returns    - boolean Whether the operation was successful.",
 "func":1
 },
 {
 "ref":"tf.convert.xml.XML.task",
-"url":134,
+"url":136,
 "doc":"Carry out any task, possibly modified by any flag. This is a higher level function that can execute a selection of tasks. The tasks will be executed in a fixed order:  check ,  convert ,  load ,  app ,  apptoken ,  browse . But you can select which one(s) must be executed. If multiple tasks must be executed and one fails, the subsequent tasks will not be executed. Parameters      check: boolean, optional False Whether to carry out the \"check\" task. convert: boolean, optional False Whether to carry out the \"convert\" task. load: boolean, optional False Whether to carry out the \"load\" task. app: boolean, optional False Whether to carry out the \"app\" task. browse: boolean, optional False Whether to carry out the \"browse\" task\" verbose: integer, optional -1 Produce no (-1), some (0) or many (1) progress and reporting messages Returns    - boolean Whether all tasks have executed successfully.",
 "func":1
 },
@@ -6989,91 +7054,91 @@ INDEX=[
 },
 {
 "ref":"tf.convert.xml.main",
-"url":134,
+"url":136,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.xmlCustom",
-"url":135,
+"url":137,
 "doc":""
 },
 {
 "ref":"tf.convert.xmlCustom.convertTaskDefault",
-"url":135,
+"url":137,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.xmlCustom.getDirector",
-"url":135,
+"url":137,
 "doc":"Factory for the director function. The  tf.convert.walker relies on a corpus dependent  director function that walks through the source data and spits out actions that produces the TF dataset. We collect all needed data, store it, and define a local director function that has access to this data. You can also include a copy of this file in the script that constructs the object. If you then tweak it, you can pass it to the XML() object constructor. Returns    - function The local director function that has been constructed.",
 "func":1
 },
 {
 "ref":"tf.convert.addnlp",
-"url":136,
+"url":138,
 "doc":"Add data from an NLP pipeline. When you have used  tf.convert.tei to convert a TEI data source into a TF dataset, the situation with words and sentences is usually not satisfactory. In most TEI sources, words and sentences are not explicitly marked up, and it is really hard to build token detection and sentence boundary detection into the conversion program. There is a better way. You can use this module to have tokens, sentences and entities detected by NLP pipelines (currently only Spacy is supported). The NLP output will then be transformed to nodes and attributes and inserted in the TF dataset as a new version. The original slots in the TF dataset (characters) will be discarded, because the new tokens will be used as slots.  ! caution \"Complications\" It is possible that tokens cross element boundaries. If we did not do anything about that, we would loose resolution, especially in the case of inline formatting within tokens. We could not express that anymore. That's why we split the tokens across element boundaries. However, we then loose the correspondence between tokens and words. To overcome that, we turn the tokens into two types:  atomic tokens, by default type  t  full tokens, by default type  token  This is work in progress. Details of the workflow may change rather often!  Requirements  The initial data set should be one that has characters as slots.  The version of the initial data should end with the string  pre , e.g.  0.8pre .  Effect  A new version of the data (whose label is the old version minus the  pre ) will be produced:  with new node types  sentence and  token ;  with  token as slot type;  with the old slot type removed;  with the feature that contains the text of the slots removed;  with other slot features translated to equally named features on  token ;  with other node and edge features translated faithfully to the new situation.  Homework  The new data needs a slightly different TF app than the original version. You can generate that with the program that created the TF from the TEI, typically  sh python tfFromTei.py apptoken   Usage  Command-line  sh tf-addnlp tasks params flags    From Python  python from tf.convert.addnlp import NLPipeline from tf.app import use ORG = \"yourOrg\" REPO = \"yourRepo\" Apre = use(f\"{ORG}/{REPO}:clone\", checkout=\"clone\") NLP = NLPipeline( params,  flags) NLP.loadApp(Apre) NLP.task( tasks,  flags)   For the tasks, parameters and flags, see  TASKS ,  PARAMS ,  FLAGS and expand the code. The parameters have defaults that are exactly suited to corpora that have been converted from TEI by  tf.convert.tei .  Examples Exactly how you can call the methods of this module is demonstrated in the small corpus of 14 letter by the Dutch artist Piet Mondriaan.  [Mondriaan](https: nbviewer.org/github/annotation/mondriaan/blob/master/programs/convertExpress.ipynb)."
 },
 {
 "ref":"tf.convert.addnlp.TASKS",
-"url":136,
+"url":138,
 "doc":"Possible tasks."
 },
 {
 "ref":"tf.convert.addnlp.PARAMS",
-"url":136,
+"url":138,
 "doc":"Possible parameters."
 },
 {
 "ref":"tf.convert.addnlp.FLAGS",
-"url":136,
+"url":138,
 "doc":"Possible flags."
 },
 {
 "ref":"tf.convert.addnlp.NLPipeline",
-"url":136,
+"url":138,
 "doc":"Enrich a TF dataset with annotations generated by an NLP pipeline. Parameters      lang: string, optional en The language for which the NLP tool will be set up app: object, None A loaded TF app. If None, the TF App that is nearby in the file system will be loaded. We assume that the original data resides in the current version, which has the string  pre appended to it, e.g. in version  1.3pre . We create a new version of the dataset, with the same number, but without the  pre . slotFeature: string, optional ch The feature on slots that provides the text of a slot to be included in the generated text. removeSlotFeatures: string A tuple is distilled from comma-separated values. The names of features defined on original slots that do not have to be carried over to the new slots of type of the atomic tokens. There should be at least one feature: the character content of the slot. emptyFeature: string, optional \"empty\" Name of feature that identifies the empty slots. ignoreTypes: set, optional \"word\" A set is distilled from comma-separated values. Node types that will be ignored when generating the plain text. outOfFlow: string, optional \"note,orig,del\" A set is distilled from comma-separated values. A set of node types whose content will be put in separate text flows at the end of the document. sentenceSkipFlow: string, optional \"orig,del\" A set is distilled from comma-separated values. The elements whose flows in the sentence stream should be ignored tkType: string, optional t The node type for the atomic tokens tokenType: string, optional token The node type for the full tokens tokenFeatures: tuple, optional (\"str\", \"after\") A tuple is distilled from comma-separated values. The names of the features that the atomic token stream contains. There must be at least two features: the first one should give the token content, the second one the non-token material until the next token. The rest are additional features that the pipeline might supply. tokenNFeature: string, optional None If not None, the name of the atomic token feature that will hold the sequence number of the atomic token in the data stream, starting at 1. sentenceType: string, optional sentence The node type for the sentences sentenceFeatures: tuple, optional () A tuple is distilled from comma-separated values. The names of the features that the sentence stream contains. sentenceNFeature: string, optional nsent If not None, the name of the sentence feature that will hold the sequence number of the sentence in the data stream, starting at 1. ner: boolean, optional False Whether to perform named entity recognition during NLP processing. parser: boolean, optional False Whether to run the NLP parser. entityType: string, optional ent The node type for the full entities entityFeatures: tuple, optional (\"str\", \"kind\") A tuple is distilled from comma-separated values. The names of the features that the entity stream contains. There must be at least two features: the first one should give the entity content, the second one the entity kind (or label). The rest are additional features that the pipeline might supply. entityNFeature: string, optional None If not None, the name of the entity feature that will hold the sequence number of the entity in the data stream, starting at 1."
 },
 {
 "ref":"tf.convert.addnlp.NLPipeline.loadApp",
-"url":136,
+"url":138,
 "doc":"Loads a given TF app or loads the TF app based on the working directory. After loading, all slots where non-slot node boundaries occur are computed, except for nodes of type word. Parameters      app: object, optional None The handle to the original TF dataset, already loaded. If not given, we load the TF app that is nearby in the file system. verbose: integer, optional None Produce more progress and reporting messages If not passed, take the verbose member of this object.",
 "func":1
 },
 {
 "ref":"tf.convert.addnlp.NLPipeline.getElementInfo",
-"url":136,
+"url":138,
 "doc":"Analyse the schema. The XML schema has useful information about the XML elements that occur in the source. Here we extract that information and make it fast-accessible. Parameters      verbose: integer, optional None Produce more progress and reporting messages If not passed, take the verbose member of this object. Returns    - dict Keyed by element name (without namespaces), where the value for each name is a tuple of booleans: whether the element is simple or complex; whether the element allows mixed content or only pure content.",
 "func":1
 },
 {
 "ref":"tf.convert.addnlp.NLPipeline.generatePlain",
-"url":136,
+"url":138,
 "doc":"Generates a plain text out of a data source. The text is generated in such a way that out of flow elements are collected and put at the end. Examples of such elements are notes. Leaving them at their original positions will interfere with sentence detection. We separate the flows clearly in the output, so that they are discernible in the output of the NLP pipeline. Afterwards, when we collect the tokens, we will notice which tokens cross element boundaries and need to be split into atomic tokens. Returns    - tuple The result is a tuple consisting of   text : the generated text   positions : a list of nodes such that list item  i contains the original slot that corresponds to the character  i in the generated text (counting from zero).",
 "func":1
 },
 {
 "ref":"tf.convert.addnlp.NLPipeline.lingo",
-"url":136,
+"url":138,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.addnlp.NLPipeline.ingest",
-"url":136,
+"url":138,
 "doc":"Ingests a stream of NLP data and transforms it into nodes and features. The data is a stream of values associated with a spans of text. For each span a node will be created of the given type, and a feature of the given name will assign a value to that span. The value assigned is by default the value that is present in the data stream, but it is possible to specify a method to change the value.  ! caution The plain text on which the NLP pipeline has run may not correspond exactly with the text as defined by the corpus. When the plain text was generated, some extra convenience material may have been inserted. Items in the stream that refer to these pieces of text will be ignored. When items refer partly to proper corpus text and partly to convenience text, they will be narrowed down to the proper text.  ! caution The plain text may exhibit another order of material than the proper corpus text. For example, notes may have been collected and moved out of the main text flow to the end of the text. That means that if an item specifies a span in the plain text, it may not refer to a single span in the proper text, but to various spans. We take care to map all spans in the generated plain text back to  sets of slots in the proper text. Parameters      isTk: boolean Whether the data specifies (atomic) tokens or something else. Tokens are special because they are intended to become the new slot type. isEnt: boolean Whether the data specifies entities or something else. Entities are special because they come with a text string which may contain generated text that must be stripped. positions: list which slot node corresponds to which position in the plain text. stream: list of tuple The tuples should consist of   start : a start number (character position in the plain text, starting at  0 )   end : an end number (character position in the plain text plus one)   values : values for feature assignment tp: string The type of the nodes that will be generated. features: tuple The names of the features that will be generated. nFeature: string, optional None If not None, the name of a feature that will hold the sequence number of the element in the data stream, starting at 1. emptyFeature: string, optional empty Name of feature that identifies the empty slots. skipBlanks: boolean, optional False If True, rows whose text component is only white-space will be skipped. skipFlows: set set of elements whose resulting data in the stream should be ignored Returns    - tuple We deliver the following pieces of information in a tuple:  the last node  the mapping of the new nodes to the slots they occupy;  the data of the new features. However, when we deliver the token results, they come in two such tuples: one for the atomic tokens and one for the full tokens.",
 "func":1
 },
 {
 "ref":"tf.convert.addnlp.NLPipeline.ingestNlpOutput",
-"url":136,
+"url":138,
 "doc":"Ingests NLP output such as tokens in a dataset. Tokens become the new slots. By default:  tokens become nodes of a new type  t ;  the texts of tokens ends up in the feature  str ;  if there is a space after a token, it ends up in the feature  after ;  sentences become nodes of a new type  sentence ;  the sentence number ends up in the feature  nsent .  token nodes become the new slots.  entities become noes of a new type  ent ;  the texts of the entities end up in feature  str ;  the labels of the entities end up in feature  kind ;  entity nodes are linked to the tokens they occupy. But this function can also be adapted to token, sentence, and entity streams that have additional names and values, see below. The streams of NLP output may contain more fields. In the parameters  tokenFeatures ,  sentenceFeatures and  entityFeatures you may pass the feature names for the data in those fields. When the streams are read, for each feature name in the  tokenFeatures (resp.  sentenceFeatures ,  entityFeatures  the corresponding field in the stream will be read, and the value found there will be assigned to that feature. If there are more fields in the stream than there are declared in the  tokenFeatures (resp.  sentenceFeatures ) parameter, these extra fields will be ignored. The last feature name in these parameters is special. If it is None, it will be ignored. Otherwise, an extra feature with that name will be created, and it will be filled with the node numbers of the newly generated nodes.  ! hint \"Look at the defaults\" The default  tokenFeatures=(\"str\", \"after\") specifies that two fields from the token stream will be read, and those values will be assigned to features  str and  after . There will be no field with the node itself in it. The default  sentenceFeatures=() specifies that no field from the token stream will be read. But that there is a feature  nsent that has the node of each sentence as value. We have to ignore the sentence boundaries in some flows, e.g. the material coming from    and    elements. However, in the flow coming from the    elements, we want to retain the sentence boundaries. Parameters      positions: list which slot node corresponds to which position in the plain text. tkStream: list The list of tokens as delivered by the NLP pipe. sentenceStream: list The list of sentences as delivered by the NLP pipe. Returns    - string The new version number of the data that contains the NLP output ",
 "func":1
 },
 {
 "ref":"tf.convert.addnlp.NLPipeline.task",
-"url":136,
+"url":138,
 "doc":"Carry out tasks, possibly modified by flags. This is a higher level function that can execute a selection of tasks. The tasks will be executed in a fixed order:  plaintext ,  lingo ,  ingest . But you can select which one(s) must be executed. If multiple tasks must be executed and one fails, the subsequent tasks will not be executed. Parameters      plaintext: boolean, optional False Whether to generate the plain text and position files. lingo: boolean, optional False Whether to carry out NLP pipeline (Spacy). ingest: boolean, optional False Whether to ingest the NLP results into the dataset verbose: integer, optional -1 Produce no (-1), some (0) or many (1) progress and reporting messages write: boolean, optional False Whether to write the generated plain text and position files to disk. kwargs: dict remaining arguments that can serve as input for the task Returns    - boolean | any False if a task failed, otherwise whatever the last task delivered.",
 "func":1
 },
@@ -7091,101 +7156,101 @@ INDEX=[
 },
 {
 "ref":"tf.convert.addnlp.main",
-"url":136,
+"url":138,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.tei",
-"url":137,
+"url":139,
 "doc":" TEI import You can convert any TEI source into TF by specifying a few details about the source. TF then invokes the  tf.convert.walker machinery to produce a TF dataset out of the source. TF knows the TEI elements, because it will read and parse the complete TEI schema. From this the set of complex, mixed elements is distilled. If the TEI source conforms to a customised TEI schema, it will be detected and the importer will read it and override the generic information of the TEI elements. It is also possible to pass a choice of template and adaptation in a processing instruction. This does not influence validation, but it may influence further processing. If the TEI consists of multiple source files, it is possible to specify different templates and adaptations for different files. The possible values for models, templates, and adaptations should be declared in the configuration file. For each model there should be corresponding schema in the schema directory, either an RNG or an XSD file. The converter goes the extra mile: it generates a TF app and documentation (an  about.md file and a  transcription.md file), in such a way that the TF browser is instantly usable. The TEI conversion is rather straightforward because of some conventions that cannot be changed.  Configuration and customization We assume that you have a  programs directory at the top-level of your repo. In this directory we'll look for two optional files:  a file  tei.yaml in which you specify a bunch of values Last, but not least, you can assemble all the input parameters needed to get the conversion off the ground.  a file  tei.py in which you define custom functions that are executed at certain specific hooks:   transform(text) which takes a text string argument and delivers a text string as result. The converter will call this on every TEI input file it reads  before feeding it to the XML parser.   beforeTag : just before the walker starts processing the start tag of a TEI element;   beforeChildren : just after processing the start tag, but before processing the element content (text and child elements);   afterChildren : just after processing the complete element content (text and child elements), but before processing the end tag of the TEI element;   afterTag : just after processing the end tag of a TEI element. The  before and  after functions should take the following arguments   cv : the walker converter object;   cur : the dictionary with information that has gathered during the conversion so far and that can be used to dump new information into; it is nonlocal, i.e. all invocations of the hooks get the same dictionary object passed to them;   xnode : the LXML node corresponding to the TEI element;   tag : the tag name of the element, without namespaces; this is a bit redundant, because it can also be extracted from the  xnode , but it is convenient.   atts : the attributes (names and values) of the element, without namespaces; this is a bit redundant, because it can also be extracted from the  xnode , but it is convenient. These functions should not return anything, but they can write things to the  cur dictionary. And they can create slots, nodes, and terminate them, in short, they can do every  cv -based action that is needed. You can define these functions out of this context, but it is good to know what information in  cur is guaranteed to be available:   xnest : the stack of XML tag names seen at this point;   tnest : the stack of TF nodes built at this point;   tsiblings (only if sibling nodes are being recorded): the list of preceding TF nodes corresponding to the TEI sibling elements of the current TEI element.  Keys and values of the  tei.yaml file   generic dict, optional  {} Metadata for all generated TF features. The actual source version of the TEI files does not have to be stated here, it will be inserted based on the version that the converter will actually use. That version depends on the  tei argument passed to the program. The key under which the source version will be inserted is  teiVersion .   extra dict, optional  {} Instructions and metadata for specific generated TF features, namely those that have not been generated by the vanilla TEI conversion, but by extra code in one of the customised hooks. The dict is keyed by feature name, the values are again dictionaries. These value dictionaries have a key meta under which any number of metadata key value pairs, such as  description=\"xxx\" . If you put the string \u00abbase\u00bb in such a field, it will be expanded on the basis of the contents of the  path key, see below. You must provide the key  valueType and pass  int or  str there, depending on the values of the feature. You may provide extra keys, such as  conversionMethod=\"derived\" , so that other programs can determine what to do with these features. The information in this dict will also end up in the generated feature docs. Besides the  meta key, there may also be the keys  path , and  nodeType . Together they contain an instruction to produce a feature value from element content that can be found on the current stack of XML nodes and attributes. The value found will be put in the feature in question for the node of type specified in  nodeType that is recently constructed. Example:  yaml extra: letterid: meta: description: The identifier of a letter; \u00abbase\u00bb valueType: str conversionMethod: derived conversionCode: tt path: - idno: type: letterId - altIdentifier - msIdentifier - msDesc - sourceDesc nodeType: letter feature: letterid   The meaning is:  if, while parsing the XML, I encounter an element  idno ,  and if that element has an attribute  type with value  letterId ,  and if it has parent  altIdentifier ,  and grandparent  msIdentifier ,  and great-grandparent  msDesc ,  and great-great-grandparent  sourceDesc ,  then look up the last created node of type  letter  and get the text content of the current XML node (the  idno one),  and put it in the feature  letterid for that node.  Moreover, the feature  letterid gets metadata as specified under the key  meta , where the  description will be filled with the text  The identifier of a letter; the content is taken from sourceDesc/msDesc/msIdentifier/altIdentifier/idno[type=letterId]    models list, optional  [] Which TEI-based schemas are to be used. For each model there should be an XSD or RNG file with that name in the  schema directory. The  tei_all schema is know to TF, no need to specify that one. We'll try a RelaxNG schema ( .rng ) first. If that exists, we use it for validation with JING, and we also convert it with TRANG to an XSD schema, which we use for analysing the schema: we want to know which elements are mixed and pure. If there is no RelaxNG schema, we try an XSD schema ( .xsd ). If that exists, we can do the analysis, and we will use it also for validation.  ! note \"Problems with RelaxNG validation\" RelaxNG validation is not always reliable when performed with LXML, or any tool based on  libxml , for that matter. That's why we try to avoid it. Even if we translate the RelaxNG schema to an XSD schema by means of TRANG, the resulting validation is not always reliable. So we use JING to validate the RelaxNG schema. See also [JING-TRANG](https: code.google.com/archive/p/jing-trang/downloads).   templates list, optional  [] Which template(s) are to be used. A template is just a keyword, associated with an XML file, that can be used to switch to a specific kind of processing, such as  letter ,  bibliolist ,  artworklist . You may specify an element or processing instruction with an attribute that triggers the template for the file in which it is found. This will be retrieved from the file before XML parsing starts. For example,  python templateTrigger=\"?editem@template\"   will read the file and extract the value of the  template attribute of the  editem processing instruction and use that as the template for this file. If no template is found in this way, the empty template is assumed.   adaptations list, optional  [] Which adaptations(s) are to be used. An adaptation is just a keyword, associated with an XML file, that can be used to switch to a specific kind of processing. It is meant to trigger tweaks on top of the behaviour of a template. You may specify an element or processing instruction with an attribute that triggers the adaptation for the file in which it is found. This will be retrieved from the file before XML parsing starts. For example,  python adaptationTrigger=\"?editem@adaptation\"   will read the file and extract the value of the  adaptation attribute of the  editem processing instruction and use that as the adaptation for this file. If no adaptation is found in this way, the empty adaptation is assumed.   prelim boolean, optional  True Whether to work with the  pre TF versions. Use this if you convert TEI to a preliminary TF dataset, which will receive NLP additions later on. That version will then lose the  pre .   wordAsSlot boolean, optional  False Whether to take words as the basic entities (slots). If not, the characters are taken as basic entities.   parentEdges boolean, optional  True Whether to create edges between nodes that correspond to XML elements and their parents.   siblingEdges boolean, optional  False Whether to create edges between nodes that correspond to XML elements and siblings. Edges will be created between each sibling and its  preceding siblings. If you use these edges in the binary way, you can also find the following siblings. The edges are labeled with the distance between the siblings, adjacent siblings get distance 1.  ! caution \"Overwhelming space requirement\" If the corpus is divided into relatively few elements that each have very many direct children, the number of sibling edges is comparable to the size of the corpus squared. That means that the TF dataset will consist for 50-99% of sibling edges! An example is [ ETCBC/nestle1904 ](https: github.com/ETCBC/nestle1904) (Greek New Testament) where each book element has all of its sentences as direct children. In that dataset, the siblings would occupy 40% of the size, and we have taken care not to produce sibling edges for sentences.   pageModel dict, optional  False If not passed, or an empty dict, page model I is assumed. A page model must be specified with the parameters relevant for the model:  python dict( model=\"I\", )   (model I does not require any parameters) or  python dict( model=\"II\", element=\"div\", attributes=dict(type=[\"original\", \"translation\"]), pbAtTop=True, nodeType=\"page\", )   For model II, the default parameters are:  python element=\"div\", pbAtTop=True, nodeType=\"page\", attributes={},   Model I is the default, and nothing special happens to the    elements. In model II the    elements translate to nodes of type  page , which span content, whereas the original  pb elements just mark positions. Instead of  page , you can also specify another node type by the parameter  element . We assume that the material that the    elements divide up is the material that corresponds to their    parent element. Instead of    , you can also specify another element in the parameter  element . If you want to restrict the parent elements of pages, you can do so by specifying attributes, like  type=\"original\" . Then only parents that carry those attributes will be chopped up into pages. You can specify multiple values for each attribute. Elements that carry one of these values are candidates for having their content divided into pages. We assume that the material to be divided starts with a    and we translate it to a page element that we close either at the next    or at the end of the  div . But if you specify  pbAtTop=False , we assume that the    marks the end of the corresponding page element. We start the first page at the start of the enclosing element. If there is material at between the last    til the end of the enclosing element, we generate an extra page node without features.   sectionModel dict, optional  {} If not passed, or an empty dict, section model I is assumed. A section model must be specified with the parameters relevant for the model:  python dict( model=\"II\", levels=[\"chapter\", \"chunk\"], element=\"head\", attributes=dict(rend=\"h3\"), )   (model I does not require the  element and  attribute parameters) or  python dict( model=\"I\", levels=[\"folder\", \"file\", \"chunk\"], )   This section model (I) accepts a few other parameters:  python backMatter=\"backmatter\"   This is the name of the folder that should not be treated as an ordinary folder, but as the folder with the sources for the back-matter, such as references, lists, indices, bibliography, biographies, etc.  python drillDownDivs=True   Whether the chunks are the immediate children of  body elements, or whether we should drill through all intervening  div levels. For model II, the default parameters are:  python element=\"head\" levels=[\"chapter\", \"chunk\"], attributes={}   In model I, there are three section levels in total. The corpus is divided in folders (section level 1), files (section level 2), and chunks within files. The parameter  levels allows you to choose names for the node types of these section levels. In model II, there are 2 section levels in total. The corpus consists of a single file, and section nodes will be added for nodes at various levels, mainly outermost    and    elements and their siblings of other element types. The section heading for the second level is taken from elements in the neighbourhood, whose name is given in the parameter  element , but only if they carry some attributes, which can be specified in the  attributes parameter.   procins boolean, optional  False If True, processing instructions will be treated. Processing instruction    will be converted as if it were an empty element named  foo with attribute  bar with value  xxx .  Usage  Command-line  sh tf-fromtei tasks flags    From Python  python from tf.convert.tei import TEI T = TEI() T.task( tasks,  flags)   For a short overview the tasks and flags, see  HELP .  Tasks We have the following conversion tasks: 1.  check : makes and inventory of all XML elements and attributes used. 1.  convert : produces actual TF files by converting XML files. 1.  load : loads the generated TF for the first time, by which the pre-computation step is triggered. During pre-computation some checks are performed. Once this has succeeded, we have a workable TF dataset. 1.  app : creates or updates a corpus specific TF app with minimal sensible settings, plus basic documentation. 1.  apptoken : updates a corpus specific TF app from a character-based dataset to a token-based dataset. 1.  browse : starts the TF browser on the newly created dataset. Tasks can be run by passing any choice of task keywords to the  TEI.task() method.  Note on versions The TEI source files come in versions, indicated with a data. The converter picks the most recent one, unless you specify an other one:  python tf-from-tei tei=-2  previous version tf-from-tei tei=0  first version tf-from-tei tei=3  third version tf-from-tei tei=2019-12-23  explicit version   The resulting TF data is independently versioned, like  1.2.3 or  1.2.3pre . When the converter runs, by default it overwrites the most recent version, unless you specify another one. It looks at the latest version and then bumps a part of the version number.  python tf-fromtei tf=3  minor version, 1.2.3 becomes 1.2.4; 1.2.3pre becomes 1.2.4pre tf-fromtei tf=2  intermediate version, 1.2.3 becomes 1.3.0 tf-fromtei tf=1  major version, 1.2.3 becomes 2.0.0 tf-fromtei tf=1.8.3  explicit version    Examples Exactly how you can call the methods of this module is demonstrated in the small corpus of 14 letter by the Dutch artist Piet Mondriaan.  [Mondriaan](https: nbviewer.org/github/annotation/mondriaan/blob/master/programs/convertExpress.ipynb)."
 },
 {
 "ref":"tf.convert.tei.makeCssInfo",
-"url":137,
+"url":139,
 "doc":"Make the CSS info for the style sheet.",
 "func":1
 },
 {
 "ref":"tf.convert.tei.getRefs",
-"url":137,
+"url":139,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.tei.TEI",
-"url":137,
+"url":139,
 "doc":"Converts TEI to TF. For documentation of the resulting encoding, read the [transcription template](https: github.com/annotation/text-fabric/blob/master/tf/convert/app/transcription.md). Below we describe how to control the conversion machinery. We adopt a fair bit of \"convention over configuration\" here, in order to lessen the burden for the user of specifying so many details. Based on current directory from where the script is called, it defines all the ingredients to carry out a  tf.convert.walker conversion of the TEI input. This function is assumed to work in the context of a repository, i.e. a directory on your computer relative to which the input directory exists, and various output directories:  tf ,  app ,  docs . Your current directory must be at   ~/backend/org/repo/relative   where   ~ is your home directory;   backend is an online back-end name, like  github ,  gitlab ,  git.huc.knaw.nl ;   org is an organization, person, or group in the back-end;   repo is a repository in the  org .   relative is a directory path within the repo (0 or more components) This is only about the directory structure on your local computer; it is not required that you have online incarnations of your repository in that back-end. Even your local repository does not have to be a git repository. The only thing that matters is that the full path to your repo can be parsed as a sequence of  home/backend/org/repo/relative . Relative to this directory the program expects and creates input / output directories.  Input directories   tei  Location of the TEI-XML sources.  If it does not exist, the program aborts with an error. Several levels of subdirectories are assumed: 1. the version of the source (this could be a date string). 1. volumes / collections of documents. The subdirectory  __ignore__ is ignored. 1. the TEI documents themselves, conforming to the TEI schema or some customization of it.   schema  TEI or other XML schemas against which the sources can be validated. They should be XSD or RNG files.  ! note \"Multiple XSD files\" When you started with a RNG file and used  tf.tools.xmlschema to convert it to XSD, you may have got multiple XSD files. One of them has the same base name as the original RNG file, and you should pass that name. It will import the remaining XSD files, so do not throw them away. We use these files as custom TEI schemas, but to be sure, we still analyse the full TEI schema and use the schemas here as a set of overriding element definitions.  Output directories   report Directory to write the results of the  check task to: an inventory of elements / attributes encountered, and possible validation errors. If the directory does not exist, it will be created. The default value is  . (i.e. the current directory in which the script is invoked).   tf The directory under which the TF output file (with extension  .tf ) are placed. If it does not exist, it will be created. The TF files will be generated in a folder named by a version number, passed as  tfVersion .   app and  docs Location of additional TF app configuration and documentation files. If they do not exist, they will be created with some sensible default settings and generated documentation. These settings can be overridden in the  app/config_custom.yaml file. Also a default  display.css file and a logo are added. Custom content for these files can be provided in files with  _custom appended to their base name.   docs Location of additional documentation. This can be generated or hand-written material, or a mixture of the two. Parameters      tei: string, optional  If empty, use the latest version under the  tei directory with sources. Otherwise it should be a valid integer, and it is the index in the sorted list of versions there.   0 or  latest : latest version;   -1 ,  -2 ,  . : previous version, version before previous,  .;   1 ,  2 ,  .: first version, second version,    everything else that is not a number is an explicit version If the value cannot be parsed as an integer, it is used as the exact version name. tf: string, optional  If empty, the TF version used will be the latest one under the  tf directory. If the parameter  prelim was used in the initialization of the TEI object, only versions ending in  pre will be taken into account. If it can be parsed as the integers 1, 2, or 3 it will bump the latest relevant TF version:   0 or  latest : overwrite the latest version   1 will bump the major version   2 will bump the intermediate version   3 will bump the minor version  everything else is an explicit version Otherwise, the value is taken as the exact version name. verbose: integer, optional -1 Produce no (-1), some (0) or many (1) progress and reporting messages"
 },
 {
 "ref":"tf.convert.tei.TEI.readSchemas",
-"url":137,
+"url":139,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.tei.TEI.getSwitches",
-"url":137,
+"url":139,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.tei.TEI.getParser",
-"url":137,
+"url":139,
 "doc":"Configure the LXML parser. See [parser options](https: lxml.de/parsing.html parser-options). Returns    - object A configured LXML parse object.",
 "func":1
 },
 {
 "ref":"tf.convert.tei.TEI.getXML",
-"url":137,
+"url":139,
 "doc":"Make an inventory of the TEI source files. Returns    - tuple of tuple | string If section model I is in force: The outer tuple has sorted entries corresponding to folders under the TEI input directory. Each such entry consists of the folder name and an inner tuple that contains the file names in that folder, sorted. If section model II is in force: It is the name of the single XML file.",
 "func":1
 },
 {
 "ref":"tf.convert.tei.TEI.checkTask",
-"url":137,
+"url":139,
 "doc":"Implementation of the \"check\" task. It validates the TEI, but only if a schema file has been passed explicitly when constructing the  TEI() object. Then it makes an inventory of all elements and attributes in the TEI files. If tags are used in multiple namespaces, it will be reported.  ! caution \"Conflation of namespaces\" The TEI to TF conversion does construct node types and attributes without taking namespaces into account. However, the parsing process is namespace aware. The inventory lists all elements and attributes, and many attribute values. But is represents any digit with  n , and some attributes that contain ids or keywords, are reduced to the value  x . This information reduction helps to get a clear overview. It writes reports to the  reportPath :   errors.txt : validation errors   elements.txt : element / attribute inventory.",
 "func":1
 },
 {
 "ref":"tf.convert.tei.TEI.getConverter",
-"url":137,
+"url":139,
 "doc":"Initializes a converter. Returns    - object The  tf.convert.walker.CV converter object, initialized.",
 "func":1
 },
 {
 "ref":"tf.convert.tei.TEI.getDirector",
-"url":137,
+"url":139,
 "doc":"Factory for the director function. The  tf.convert.walker relies on a corpus dependent  director function that walks through the source data and spits out actions that produces the TF dataset. The director function that walks through the TEI input must be conditioned by the properties defined in the TEI schema and the customised schema, if any, that describes the source. Also some special additions need to be programmed, such as an extra section level, word boundaries, etc. We collect all needed data, store it, and define a local director function that has access to this data. Returns    - function The local director function that has been constructed.",
 "func":1
 },
 {
 "ref":"tf.convert.tei.TEI.convertTask",
-"url":137,
+"url":139,
 "doc":"Implementation of the \"convert\" task. It sets up the  tf.convert.walker machinery and runs it. Returns    - boolean Whether the conversion was successful.",
 "func":1
 },
 {
 "ref":"tf.convert.tei.TEI.loadTask",
-"url":137,
+"url":139,
 "doc":"Implementation of the \"load\" task. It loads the TF data that resides in the directory where the \"convert\" task deliver its results. During loading there are additional checks. If they succeed, we have evidence that we have a valid TF dataset. Also, during the first load intensive pre-computation of TF data takes place, the results of which will be cached in the invisible  .tf directory there. That makes the TF data ready to be loaded fast, next time it is needed. Returns    - boolean Whether the loading was successful.",
 "func":1
 },
 {
 "ref":"tf.convert.tei.TEI.appTask",
-"url":137,
+"url":139,
 "doc":"Implementation of the \"app\" task. It creates / updates a corpus-specific app plus specific documentation files. There should be a valid TF dataset in place, because some settings in the app derive from it. It will also read custom additions that are present in the target app directory. These files are:   about_custom.md : A markdown file with specific colophon information about the dataset. In the generated file, this information will be put at the start.   transcription_custom.md : A markdown file with specific encoding information about the dataset. In the generated file, this information will be put at the start.   config_custom.yaml : A YAML file with configuration data that will be  merged into the generated config.yaml.   app_custom.py : A python file with named snippets of code to be inserted at corresponding places in the generated  app.py   display_custom.css : Additional CSS definitions that will be appended to the generated  display.css . If the TF app for this resource needs custom code, this is the way to retain that code between automatic generation of files. Returns    - boolean Whether the operation was successful.",
 "func":1
 },
 {
 "ref":"tf.convert.tei.TEI.browseTask",
-"url":137,
+"url":139,
 "doc":"Implementation of the \"browse\" task. It gives a shell command to start the TF browser on the newly created corpus. There should be a valid TF dataset and app configuration in place Returns    - boolean Whether the operation was successful.",
 "func":1
 },
 {
 "ref":"tf.convert.tei.TEI.task",
-"url":137,
+"url":139,
 "doc":"Carry out any task, possibly modified by any flag. This is a higher level function that can execute a selection of tasks. The tasks will be executed in a fixed order:  check ,  convert ,  load ,  app ,  apptoken ,  browse . But you can select which one(s) must be executed. If multiple tasks must be executed and one fails, the subsequent tasks will not be executed. Parameters      check: boolean, optional False Whether to carry out the  check task. convert: boolean, optional False Whether to carry out the  convert task. load: boolean, optional False Whether to carry out the  load task. app: boolean, optional False Whether to carry out the  app task. apptoken: boolean, optional False Whether to carry out the  apptoken task. browse: boolean, optional False Whether to carry out the  browse task\" verbose: integer, optional -1 Produce no (-1), some (0) or many (1) progress and reporting messages validate: boolean, optional True Whether to perform XML validation during the check task Returns    - boolean Whether all tasks have executed successfully.",
 "func":1
 },
@@ -7203,240 +7268,240 @@ INDEX=[
 },
 {
 "ref":"tf.convert.tei.main",
-"url":137,
+"url":139,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.mql",
-"url":138,
+"url":140,
 "doc":" MQL You can interchange with [MQL data](https: emdros.org). TF can read and write MQL dumps. An MQL dump is a text file, like an SQL dump. It contains the instructions to create and fill a complete database.  Correspondence TF and MQL After exporting a TF dataset to MQL, the resulting MQL database has the following properties with respect to the TF dataset it comes from:  the TF  slots correspond exactly with the MQL  monads and have the same numbers; provided the monad numbers in the MQL dump are consecutive. In MQL this is not obligatory. Even if there gaps in the monads sequence, we will fill the holes during conversion, so the slots are tightly consecutive;  the TF  nodes correspond exactly with the MQL  objects and have the same numbers  Node features in MQL The values of TF features are of two types,  int and  str , and they translate to corresponding MQL types  integer and  string . The actual values do not undergo any transformation. That means that in MQL queries, you use quotes if the feature is a string feature. Only if the feature is a number feature, you may omit the quotes:   [word sp='verb'] [verse chapter=1 and verse=1]    Enumeration types It is attractive to use enumeration types for the values of a feature, where ever possible, because then you can query those features in MQL with  IN and without quotes:   [chapter book IN (Genesis, Exodus)]   We will generate enumerations for eligible features. Integer values can already be queried like this, even if they are not part of an enumeration. So we restrict ourselves to node features with string values. We put the following extra restrictions:  the number of distinct values is less than 1000  all values must be legal C names, in practice: starting with a letter, followed by letters, digits, or  _ . The letters can only be plain ASCII letters, uppercase and lowercase. Features that comply with these restrictions will get an enumeration type. Currently, we provide no ways to configure this in more detail. Instead of creating separate enumeration types for individual features, we collect all enumerated values for all those features into one big enumeration type. The reason is that MQL considers equal values in different types as distinct values. If we had separate types, we could never compare values for different features. There is no place for edge values in MQL. There is only one concept of feature in MQL: object features, which are node features. But TF edges without values can be seen as node features: nodes are mapped onto sets of nodes to which the edges go. And that notion is supported by MQL: edge features are translated into MQL features of type  LIST OF id_d , i.e. lists of object identifiers.  ! caution \"Legal names in MQL\" MQL names for databases, object types and features must be valid C identifiers (yes, the computer language C). The requirements are for names are:  start with a letter (ASCII, upper-case or lower-case)  follow by any sequence of ASCII upper / lower-case letters or digits or underscores ( _ )  avoid being a reserved word in the C language So, we have to change names coming from TF if they are invalid in MQL. We do that by replacing illegal characters by  _ , and, if the result does not start with a letter, we prepend an  x . We do not check whether the name is a reserved C word. With these provisos:  the given  dbName correspond to the MQL  database name  the TF  otypes correspond to the MQL  objects  the TF  features correspond to the MQL  features The MQL export is usually quite massive (500MB for the Hebrew Bible). It can be compressed greatly, especially by the program  bzip2 .  ! caution \"Existing database\" If you try to import an MQL file in Emdros, and there exists already a file or directory with the same name as the MQL database, your import will fail spectacularly. So do not do that. A good way to prevent clashes:  export the MQL to outside your  ~/text-fabric-data directory, e.g. to  ~/Downloads ;  before importing the MQL file, delete the previous copy; Delete existing copy:  sh cd ~/Downloads rm dataset ; mql -b 3 < dataset.mql  "
 },
 {
 "ref":"tf.convert.mql.exportMQL",
-"url":138,
+"url":140,
 "doc":"Exports the complete TF dataset into single MQL database. Parameters      app: object A  tf.advanced.app.App object, which holds the corpus data that will be exported to MQL. mqlDb: string Name of the MQL database exportDir: string, optional None Directory where the MQL data will be saved. If None is given, it will end up in the same repo as the dataset, in a new top-level subdirectory called  mql . The exported data will be written to file  exportDir/mqlDb.mql . If  exportDir starts with  ~ , the  ~ will be expanded to your home directory. Likewise,    will be expanded to the parent of the current directory, and  . to the current directory, both only at the start of  exportDir . Returns    - None See Also     tf.convert.mql",
 "func":1
 },
 {
 "ref":"tf.convert.mql.importMQL",
-"url":138,
+"url":140,
 "doc":"Converts an MQL database dump to a TF dataset. Parameters      mqlFile: string Path to the file which contains the MQL code. saveDir: string Path to where a new TF app will be created. silent: string How silent the newly created TF object must be. slotType: string You have to tell which object type in the MQL file acts as the slot type, because TF cannot see that on its own. otext: dict You can pass the information about sections and text formats as the parameter  otext . This info will end up in the  otext.tf feature. Pass it as a dictionary of keys and values, like so:  otext = { 'fmt:text-trans-plain': '{glyphs}{trailer}', 'sectionFeatures': 'book,chapter,verse', }  meta: dict Likewise, you can add a dictionary keyed by features that will added to the metadata of the corresponding features. You may also add metadata for the empty feature    , this will be added to the metadata of all features. Handy to add provenance data there. Example:  meta = {  : dict( dataset='DLC', datasetName='Digital Language Corpus', author=\"That 's me\", ), \"sp\": dict( description: \"part-of-speech\", ), }   ! note \"description\" TF will display all metadata information under the key  description in a more prominent place than the other metadata.  ! caution \" value type \" Do not pass the value types of the features here. Returns    - object A  tf.core.fabric.FabricCore object holding the conversion result of the MQL data into TF.",
 "func":1
 },
 {
 "ref":"tf.convert.mql.MQL",
-"url":138,
+"url":140,
 "doc":""
 },
 {
 "ref":"tf.convert.mql.MQL.write",
-"url":138,
+"url":140,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.mql.makeuni",
-"url":138,
+"url":140,
 "doc":"Make proper UNICODE of a text that contains byte escape codes such as backslash  xb6 ",
 "func":1
 },
 {
 "ref":"tf.convert.mql.uni",
-"url":138,
+"url":140,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.mql.tfFromMql",
-"url":138,
+"url":140,
 "doc":"Generate TF from MQL Parameters      tmObj: object A  tf.core.timestamp.Timestamp object mqlFile, slotType, otype, meta: mixed See  tf.convert.mql.importMQL ",
 "func":1
 },
 {
 "ref":"tf.convert.mql.parseMql",
-"url":138,
+"url":140,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.mql.tfFromData",
-"url":138,
+"url":140,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.helpers",
-"url":139,
+"url":141,
 "doc":""
 },
 {
 "ref":"tf.convert.helpers.SECTION_MODELS",
-"url":139,
+"url":141,
 "doc":"Models for sections. A section is a part of the corpus that is defined by a set of files, or by elements within a single TEI source file. A model"
 },
 {
 "ref":"tf.convert.helpers.SECTION_MODEL_DEFAULT",
-"url":139,
+"url":141,
 "doc":"Default model for sections."
 },
 {
 "ref":"tf.convert.helpers.CM_LIT",
-"url":139,
+"url":141,
 "doc":"The value is taken literally from a TEI attribute. Code  tei , since there is a 1-1 correspondence with the TEI source."
 },
 {
 "ref":"tf.convert.helpers.CM_LITP",
-"url":139,
+"url":141,
 "doc":"The value results from straightforward processing of material in the TEI. Code  tei , since there is a direct correspondence with the TEI source.  Straightforward means: by taking into account the semantics of XML. Examples:  Generated white-space based on whether elements are pure or mixed;  Edges between parent and child elements, or sibling elements."
 },
 {
 "ref":"tf.convert.helpers.CM_LITC",
-"url":139,
+"url":141,
 "doc":"The value is results from more intricate processing of material in the TEI.  More intricate means : we derive data that goes beyond pure XML syntax. Examples:  The values of the  rend attributes are translated into  rend_ value features;  Adding features  is_meta (being inside the TEI-header) and  is_note (being inside a note);  The feature that gives the content of a (character) slot;  Decomposing strings into words material and after-word material. Code  tf , since this is for the benefit of the resulting TF dataset."
 },
 {
 "ref":"tf.convert.helpers.CM_PROV",
-"url":139,
+"url":141,
 "doc":"The value is added by the conversion to TF w.r.t. the material in the TEI. Examples:  Slots in empty elements, in order to anchor the element to the text sequence;  Section levels, based on the folder and file that the TEI source is in;  A section level within the TEI, defined from several elements and the way they are nested; Code  tf , since this is for the benefit of the resulting TF dataset."
 },
 {
 "ref":"tf.convert.helpers.CM_NLP",
-"url":139,
+"url":141,
 "doc":"The value is added by an NLP pipeline w.r.t. the material in the TEI. Code  nlp , since this comes from third party software. Examples:  The feature  nsent which gives the sentence number in the corpus. Sentences are not encoded in the TEI, but detected by an NLP program such as Spacy."
 },
 {
 "ref":"tf.convert.helpers.CONVERSION_METHODS",
-"url":139,
+"url":141,
 "doc":"Information about the conversion. When we produce TF features, we specify a bit of information in the feature metadata as how we arrived at the specific value. That information ends up in two keys:   conversionMethod : with values any of:   CM_LIT   CM_LITP   CM_LITC   CM_PROV   CM_NLP   conversionCode : the value is derived from  conversionMethod by looking it up in this table. These values can be used to qualify the name of the attribute for further processing. For example, if you have a feature  n that originates literally from the TEI, you could pass it on as  tei:n . But if you have a feature  chapter that is provided by the conversion, you could pass it on as  tf:chapter . This passing on is a matter of other software, that takes the generated TF as input and processes it further, e.g. as annotations.  ! note \"More methods and codes\" The TEI conversion is customizable by providing your own methods to several hooks in the program. These hooks may generate extra features, which you can give metadata in the  tei.yaml file next to the  tei.py file where you define the custom functions. It is advised to state appropriate values for the  conversionMethod and  conversionCode fields of these features. Examples:  A feature  country is derived from specific elements in the TEI Header, and defined for nodes of type  letter . This happens in order to support the software of Team Text that shows the text on a webpage. In such a case you could define   conversionMethod=\"derived\"   conversionCode=\"tt\""
 },
 {
 "ref":"tf.convert.helpers.tokenize",
-"url":139,
+"url":141,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.helpers.repTokens",
-"url":139,
+"url":141,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.helpers.checkModel",
-"url":139,
+"url":141,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.helpers.matchModel",
-"url":139,
+"url":141,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.helpers.setUp",
-"url":139,
+"url":141,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.helpers.tweakTrans",
-"url":139,
+"url":141,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.helpers.lookupSource",
-"url":139,
+"url":141,
 "doc":"Looks up information from the current XML stack. The current XML stack contains the ancestry of the current node, including the current node itself. It is a list of components, corresponding to the path from the root node to the current node. Each component is a tuple, consisting of the tag name and the attributes of an XML node. Against this stack a sequence of instructions, given in  specs , is executed. These instructions collect information from the stack, under certain conditions, and put that information into a feature, as value for a certain node. Here is an example of a single instruction: Parameters      cv: object The converter object, needed to issue actions. cur: dict Various pieces of data collected during walking and relevant for some next steps in the walk. specs: tuple A sequence of instructions what to look for. Each instruction has the following parts:   pathSpec   nodeType   featureName The effect is: The  pathSpec is compared to the current XML stack. If it matches the current node, the text content of the current node or one of its attributes will be collected and put in a feature with name  featureName , for the current TF node of type  nodeType . The  pathSpec is a list of components. The first component should match the top of the XML stack, the second component the element that is below the top, etc. Each component is a tuple of  a tag name;  a dictionary of attribute values; The first component may have a tag name that has  @ plus an attribute name appended to it. That means that the information will be extracted from that attribute, not from the content of the element.",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml",
-"url":140,
+"url":142,
 "doc":""
 },
 {
 "ref":"tf.convert.pagexml.setUp",
-"url":140,
+"url":142,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.diverge",
-"url":140,
+"url":142,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.tokenLogic",
-"url":140,
+"url":142,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.emptySlot",
-"url":140,
+"url":142,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.linebreakSlot",
-"url":140,
+"url":142,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.walkObject",
-"url":140,
+"url":142,
 "doc":"Internal function to deal with a single element. Will be called recursively. Parameters      cv: object The converter object, needed to issue actions. cur: dict Various pieces of data collected during walking and relevant for some next steps in the walk. The subdictionary  cur[\"node\"] is used to store the currently generated nodes by node type. bj xode: object An PageXML object.",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.PageXML",
-"url":140,
+"url":142,
 "doc":"Converts PageXML to TF. Below we describe how to control the conversion machinery. Based on current directory from where the script is called, it defines all the ingredients to carry out a  tf.convert.walker conversion of the PageXML input. This function is assumed to work in the context of a repository, i.e. a directory on your computer relative to which the input directory exists, and various output directories:  tf ,  app ,  docs . The  repoDir must be at   ~/backend/org/repo/relative   where   ~ is your home directory;   backend is an online back-end name, like  github ,  gitlab ,  git.huc.knaw.nl ;   org is an organization, person, or group in the back-end;   repo is a repository in the  org .   relative is a directory path within the repo (0 or more components) This is only about the directory structure on your local computer; it is not required that you have online incarnations of your repository in that back-end. Even your local repository does not have to be a git repository. The only thing that matters is that the full path to your repo can be parsed as a sequence of  home/backend/org/repo/relative . Relative to this directory the program expects and creates input / output directories.  source/version directory The source directory is specified by  sourceDir , and within it are version directories.  Document directories These are the top-level directories within the version directories. They correspond to individual documents. Documents typically contain a set of pages.  Input directories per document   image : contain the scan images   meta : contain metadata files   page : contain the PageXML files The files in  image and  page have names that consist of a 4-digit number with leading zeros, and any two files with the same name in  image and  page represent the same document.  Output directories   tf The directory under which the TF output file (with extension  .tf ) are placed. If it does not exist, it will be created. The TF files will be generated in a folder named by a version number, passed as  tfVersion .   app and  docs Location of additional TF app configuration and documentation files. If they do not exist, they will be created with some sensible default settings and generated documentation. These settings can be overridden in the  app/config_custom.yaml file. Also a default  display.css file and a logo are added.   docs Location of additional documentation. This can be generated or hand-written material, or a mixture of the two. Parameters      sourceDir: string The location of the source directory repoDir: string The location of the target repo where the TF data is generated. source: string, optional  If empty, use the latest version under the  source directory with sources. Otherwise it should be a valid integer, and it is the index in the sorted list of versions there.   0 or  latest : latest version;   -1 ,  -2 ,  . : previous version, version before previous,  .;   1 ,  2 ,  .: first version, second version,    everything else that is not a number is an explicit version If the value cannot be parsed as an integer, it is used as the exact version name. tf: string, optional  If empty, the TF version used will be the latest one under the  tf directory. If it can be parsed as the integers 1, 2, or 3 it will bump the latest relevant TF version:   0 or  latest : overwrite the latest version   1 will bump the major version   2 will bump the intermediate version   3 will bump the minor version  everything else is an explicit version Otherwise, the value is taken as the exact version name. verbose: integer, optional -1 Produce no (-1), some (0) or many (1) progress and reporting messages"
 },
 {
 "ref":"tf.convert.pagexml.PageXML.getDirector",
-"url":140,
+"url":142,
 "doc":"Factory for the director function. The  tf.convert.walker relies on a corpus dependent  director function that walks through the source data and spits out actions that produces the TF dataset. Also some special additions need to be programmed, such as an extra section level, word boundaries, etc. We collect all needed data, store it, and define a local director function that has access to this data. Returns    - function The local director function that has been constructed.",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.PageXML.getConverter",
-"url":140,
+"url":142,
 "doc":"Initializes a converter. Returns    - object The  tf.convert.walker.CV converter object, initialized.",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.PageXML.convertTask",
-"url":140,
+"url":142,
 "doc":"Implementation of the \"convert\" task. It sets up the  tf.convert.walker machinery and runs it. Returns    - boolean Whether the conversion was successful.",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.PageXML.loadTask",
-"url":140,
+"url":142,
 "doc":"Implementation of the \"load\" task. It loads the TF data that resides in the directory where the \"convert\" task deliver its results. During loading there are additional checks. If they succeed, we have evidence that we have a valid TF dataset. Also, during the first load intensive pre-computation of TF data takes place, the results of which will be cached in the invisible  .tf directory there. That makes the TF data ready to be loaded fast, next time it is needed. Returns    - boolean Whether the loading was successful.",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.PageXML.appTask",
-"url":140,
+"url":142,
 "doc":"Implementation of the \"app\" task. It creates / updates a corpus-specific app plus specific documentation files. There should be a valid TF dataset in place, because some settings in the app derive from it. It will also read custom additions that are present in the target app directory. These files are:   about_custom.md : A markdown file with specific colophon information about the dataset. In the generated file, this information will be put at the start.   transcription_custom.md : A markdown file with specific encoding information about the dataset. In the generated file, this information will be put at the start.   config_custom.yaml : A YAML file with configuration data that will be  merged into the generated config.yaml.   app_custom.py : A python file with named snippets of code to be inserted at corresponding places in the generated  app.py   display_custom.css : Additional CSS definitions that will be appended to the generated  display.css . If the TF app for this resource needs custom code, this is the way to retain that code between automatic generation of files. Returns    - boolean Whether the operation was successful.",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.PageXML.browseTask",
-"url":140,
+"url":142,
 "doc":"Implementation of the \"browse\" task. It gives a shell command to start the TF browser on the newly created corpus. There should be a valid TF dataset and app configuration in place Returns    - boolean Whether the operation was successful.",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.PageXML.task",
-"url":140,
+"url":142,
 "doc":"Carry out any task, possibly modified by any flag. This is a higher level function that can execute a selection of tasks. The tasks will be executed in a fixed order:  convert ,  load ,  app ,  browse . But you can select which one(s) must be executed. If multiple tasks must be executed and one fails, the subsequent tasks will not be executed. Parameters      convert: boolean, optional False Whether to carry out the  convert task. load: boolean, optional False Whether to carry out the  load task. app: boolean, optional False Whether to carry out the  app task. browse: boolean, optional False Whether to carry out the  browse task\" verbose: integer, optional -1 Produce no (-1), some (0) or many (1) progress and reporting messages Returns    - boolean Whether all tasks have executed successfully.",
 "func":1
 },
@@ -7454,346 +7519,346 @@ INDEX=[
 },
 {
 "ref":"tf.convert.pagexml.main",
-"url":140,
+"url":142,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.writing",
-"url":141,
+"url":143,
 "doc":" Writing systems support Transliteration tables for various writing systems. One can pass a language code to TF. When TF displays text (e.g. in  tf.advanced.display ) the language code may trigger the writing direction and the choice of font. Here are the ones that have an effect:  iso |  language  - |  -  akk |  akkadian  hbo |  hebrew  syc |  syriac  uga |  ugaritic  ara |  arabic  grc |  greek  cld |  neo aramaic Default: : string    "
 },
 {
 "ref":"tf.writing.transcription",
-"url":142,
+"url":144,
 "doc":" Transcription TF has support for several writing systems, by means of transcription tables and fonts that will be invoked when displaying the main text. It also calls functions to use these tables for converting Hebrew and Syriac text material to transliterated representations and back. There is also a phonetic transcription for Hebrew, designed in [phono.ipynb](https: nbviewer.jupyter.org/github/etcbc/phono/blob/master/programs/phono.ipynb)  Character tables and fonts   hbo Hebrew  tf.writing.hebrew : full list of characters covered by the ETCBC and phonetic transcriptions Font  Ezra SIL .   syc Syriac  tf.writing.syriac : full list of characters covered by the ETCBC transcriptions Font  Estrangelo Edessa .   ara Arabic  tf.writing.arabic : full list of characters covered by the transcription used for the Quran Font  AmiriQuran .   grc Greek Font  Gentium .   akk Akkadian Font  Santakku .   uga Ugaritic Font  Santakku .   cld Neo Aramaic Font  CharisSIL-R ."
 },
 {
 "ref":"tf.writing.transcription.Transcription",
-"url":142,
+"url":144,
 "doc":"Conversion between UNICODE and various transcriptions. Usage notes: Invoke the transcription functionality as follows:   from tf.writing.transcription import Transcription   Some of the attributes and methods below are  class attributes, others are instance attributes. A class attribute  aaa can be retrieved by saying  python Transcription.aaa   To retrieve an instance attribute, you need an instance first, like  python tr = Transcription() tr.aaa  "
 },
 {
 "ref":"tf.writing.transcription.Transcription.decomp",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.hebrew_mapping",
-"url":142,
+"url":144,
 "doc":"Maps all ETCBC transliteration character combinations for Hebrew to UNICODE. Example: sof-pasuq:  python Transcription.hebrew_mapping['00']   Output:   \u05c3  "
 },
 {
 "ref":"tf.writing.transcription.Transcription.hebrew_cons",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.trans_final_pat",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.trans_hebrew_pat",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.swap_accent_pat",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.remove_accent_pat",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.remove_point_pat",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.remove_psn_pat",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.remove_psq_pat",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.shin_pat",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.ph_simple_pat",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.noorigspace",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.ugaritic_mappingi",
-"url":142,
+"url":144,
 "doc":"Maps Ugaritic unicode characters to their conventional transliteration characters. Unidentified characters:   x (damaged ?)   / (alternative ?) only twice, in  atyp\u02e4tba/r and  xxxxl/d\u2026   , (comma) only once in a very long word starting at 551  .  km,ad  .     (brackets marking uncertainty ?)   \u2026 (unreadable ?)   00a0 (non-breaking space)"
 },
 {
 "ref":"tf.writing.transcription.Transcription.ugaritic_mapping",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.syriac_mapping_simple",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.syriac_mapping_pil",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.syriac_mapping",
-"url":142,
+"url":144,
 "doc":"Maps all ETCBC transliteration character combinations for Syriac to UNICODE. Example: semkath-final:  python Transcription.syriac_mapping['s']   Output:   \u0724  "
 },
 {
 "ref":"tf.writing.transcription.Transcription.trans_syriac_pat",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.arabic_mapping",
-"url":142,
+"url":144,
 "doc":"Maps an Arabic transliteration character to UNICODE. This is the mapping used in the Quran representation on tanzil.net. Example: beh  python Transcription.syriac_mapping['b']   Output:   \u0628   Maps an Arabic letter in UNICODE to its transliteration Example: beh transliteration  python Transcription.syriac_mapping['\u0628']   Output:   b  "
 },
 {
 "ref":"tf.writing.transcription.Transcription.arabic_mappingi",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.arabicTrans",
-"url":142,
+"url":144,
 "doc":"More Arabic transcriptions:  column 1:  custom [Quran-tanzil](http: tanzil.net/ 1:1), slightly extended  column 2:  ascii resp.  latin plus diacritics also known as betacode. We use a list compiled by [Peter Verkinderen](https: pverkind.github.io/betacodeTranscriber/js/betacode.js)  column 4:  standard (Library of Congress) (to-be filled). We use the [arabic romanization list of 2012](https: www.loc.gov/catdir/cpso/romanization/arabic.pdf) We refrain of from applying rules that cannot be computed without lexical/grammatical/dialectical knowledge of the arabic language."
 },
 {
 "ref":"tf.writing.transcription.Transcription.arabicTransQuran",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.arabicTransAscii",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.arabicTransLatin",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.arabicTransStandard",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.ara",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.qur",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.asc",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.lat",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.std",
-"url":142,
+"url":144,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.quranFromArabic",
-"url":142,
+"url":144,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.asciiFromArabic",
-"url":142,
+"url":144,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.latinFromArabic",
-"url":142,
+"url":144,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.standardFromArabic",
-"url":142,
+"url":144,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.sycSplitPunc",
-"url":142,
+"url":144,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.suffix_and_finales",
-"url":142,
+"url":144,
 "doc":"Given an ETCBC transliteration, split it into the word material and the interword material that follows it (space, punctuation). Replace the last consonant of the word material by its final form, if applicable. Output a tuple with the modified word material and the interword material. Example:  python Transcription.suffix_and_finales('71T_H@>@95REY00')  Output:  ('71T_H@>@95REy', '00 ')  Note that the  Y has been replaced by  y .",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.suppress_space",
-"url":142,
+"url":144,
 "doc":"Given an ETCBC transliteration of a word, match the end of the word for punctuation and spacing characters ( sof pasuq ,  paseq ,  nun hafukha ,  setumah ,  petuhah , space, no-space) Example:  python Transcription.suppress_space('B.:&') Transcription.suppress_space('B.@R@74>') Transcription.suppress_space('71T_H@>@95REY00')   Output:    None   ",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.to_etcbc_v",
-"url":142,
+"url":144,
 "doc":"Given an ETCBC transliteration of a fully pointed word, strip all the non-vowel pointing (i.e. the accents). Example:  python Transcription.to_etcbc_v('HAC.@MA73JIm')   Output:   HAC.@MAJIm  ",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.to_etcbc_c",
-"url":142,
+"url":144,
 "doc":"Given an ETCBC transliteration of a fully pointed word, strip everything except the consonants. Punctuation will also be stripped. Example:  python Transcription.to_etcbc_c('HAC.@MA73JIm')   Output:   H MJM   Note that the pointed shin ( C ) is replaced by an unpointed one ( ).",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.to_hebrew",
-"url":142,
+"url":144,
 "doc":"Given a transliteration of a fully pointed word, produce the word in UNICODE Hebrew. Care will be taken that vowel pointing will be added to consonants before accent pointing. Example:  python Transcription.to_hebrew('HAC.@MA73JIm')   Output:   \u05d4\u05b7\ufb2a\u05bc\u05b8\u05de\u05b7\u0596\u05d9\u05b4\u05dd  ",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.to_hebrew_v",
-"url":142,
+"url":144,
 "doc":"Given a transliteration of a fully pointed word, produce the word in UNICODE Hebrew, but without the accents. Example:  python Transcription.to_hebrew_v('HAC.@MA73JIm')   Output:   \u05d4\u05b7\ufb2a\u05bc\u05b8\u05de\u05b7\u05d9\u05b4\u05dd  ",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.to_hebrew_c",
-"url":142,
+"url":144,
 "doc":"Given a transliteration of a fully pointed word, produce the word in UNICODE Hebrew, but without the pointing. Example:  python Transcription.to_hebrew_c('HAC.@MA73JIm')   Output:   \u05d4\u05e9\u05de\u05d9\u05de   Note that final consonant forms are not being used.",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.to_hebrew_x",
-"url":142,
+"url":144,
 "doc":"Given a transliteration of a fully pointed word, produce the word in UNICODE Hebrew, but without the pointing. Vowel pointing and accent pointing will be applied in the order given by the input word. Example:  python Transcription.to_hebrew_x('HAC.@MA73JIm')   Output:   \u05d4\u05b7\ufb2a\u05bc\u05b8\u05de\u05b7\u0596\u05d9\u05b4\u05dd  ",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.ph_simplify",
-"url":142,
+"url":144,
 "doc":"Given a phonological transliteration of a fully pointed word, produce a more coarse phonological transliteration. Example:  python Transcription.ph_simplify('\u0294\u1d49l\u014dh\u02c8\u00eem') Transcription.ph_simplify('m\u0101q\u02c8\u00f4m') Transcription.ph_simplify('kol')   Output:   \u0294l\u014dh\u00eem m\u00e5q\u00f4m k\u00e5l   Note that the simplified version transliterates the  qamets gadol and  qatan to the same character.",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.from_hebrew",
-"url":142,
+"url":144,
 "doc":"Given a fully pointed word in UNICODE Hebrew, produce the word in ETCBC transliteration. Example:  python tr.from_hebrew('\u05d4\u05b8\u05d0\u05b8\u05bd\u05e8\u05b6\u05e5\u05c3')   Output:   H@>@95REy00  ",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.to_syriac",
-"url":142,
+"url":144,
 "doc":"Given a word in ETCBC transliteration, produce the word in UNICODE Syriac. Example:  python tr.to_syriac('MKSJN')   Output:   \u0721\u071f\u0723\u071d\u0722  ",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.from_syriac",
-"url":142,
+"url":144,
 "doc":"Given a word in UNICODE Syriac, produce the word in ETCBC transliteration. Example:  python tr.from_syriac('\u0721\u071f\u0723\u071d\u0722')   Output:   MKSJN  ",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.can_to_syriac",
-"url":142,
+"url":144,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.can_from_syriac",
-"url":142,
+"url":144,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.to_ugaritic",
-"url":142,
+"url":144,
 "doc":"Given a word in transliteration, produce the word in UNICODE Ugaritic. k\u1e6fbx \ud800\udf8b\ud800\udf98\ud800\udf81x Example:  python Transcription.to_ugaritic('k\u1e6fbx')   Output:   \ud800\udf8b\ud800\udf98\ud800\udf81x  ",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.from_ugaritic",
-"url":142,
+"url":144,
 "doc":"Given a word in UNICODE Ugaritic, produce the word in transliteration. Example:  python Transcription.from_ugaritic('\ud800\udf8b\ud800\udf98\ud800\udf81x')   Output:   k\u1e6fbx  ",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.to_arabic",
-"url":142,
+"url":144,
 "doc":"Given a word in transliteration, produce the word in UNICODE Arabic. Example:  python Transcription.to_arabic('bisomi')   Output:   \u0628\u0650\u0633\u0652\u0645\u0650  ",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.from_arabic",
-"url":142,
+"url":144,
 "doc":"Given a word in UNICODE Arabic, produce the word in transliteration. Example:  python Transcription.from_arabic('\u0628\u0650\u0633\u0652\u0645\u0650')   Output:   bisomi  ",
 "func":1
 },
 {
 "ref":"tf.writing.greek",
-"url":143,
+"url":145,
 "doc":" Greek characters [Greek script in UNICODE](https: en.wikipedia.org/wiki/Greek_alphabet Greek_in_Unicode)"
 },
 {
 "ref":"tf.writing.arabic",
-"url":144,
+"url":146,
 "doc":" Arabic characters  @font-face { font-family: AmiriQuran; src: url('https: github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/AmiriQuran.woff2') format('woff2'), url('https: github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/AmiriQuran.woff') format('woff'), url('https: github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/AmiriQuran.ttf') format('truetype'); }   body { font-family: sans-serif; } table.chars { border-collapse: collapse; } table.chars thead tr { color:  ffffff; background-color:  444444; } table.chars tbody td { border: 2px solid  bbbbbb; padding: 0.1em 0.5em; } h1.chars { margin-top: 1em; } .t { font-family: monospace; font-size: large; color:  0000ff; } .g { font-family: \"AmiriQuran\", sans-serif; font-size: x-large; } .p { font-family: monospace; font-size: large; color:  666600; } .r { font-family: sans-serif; font-size: small; color:  555555; } .n { font-family: sans-serif; color:  990000; font-size: small; } .u { font-family: monospace; color:  990000; }   Letters     quran / tanzil  ASCII  latin  standard  glyph  remarks  name  UNICODE      '  '  \u02be  '  \u0621    ARABIC LETTER HAMZA  0621    A  & x005f;a  \u0101  \u0101  \u0627    ARABIC LETTER ALEF  0627    b  b  b  b  \u0628    ARABIC LETTER BEH  0628    p  =t  \u0167  t  \u0629    ARABIC LETTER TEH MARBUTA  0629    t  t  t  t  \u062a    ARABIC LETTER TEH  062a    v  & x005f;t  \u1e6f  th  \u062b    ARABIC LETTER THEH  062b    j  j  \u01e7  j  \u062c    ARABIC LETTER JEEM  062c    H  & x002a;h  \u1e25  \u1e25  \u062d    ARABIC LETTER HAH  062d    x  & x005f;h  \u1e2b  kh  \u062e    ARABIC LETTER KHAH  062e    d  d  d  d  \u062f    ARABIC LETTER DAL  062f    & x002a;  & x005f;d  \u1e0f  dh  \u0630    ARABIC LETTER THAL  0630    r  r  r  r  \u0631    ARABIC LETTER REH  0631    z  z  z  z  \u0632    ARABIC LETTER ZAIN  0632    s  s  s  s  \u0633    ARABIC LETTER SEEN  0633    $  ^s  \u0161  sh  \u0634    ARABIC LETTER SHEEN  0634    S  & x002a;s  \u1e63  \u1e63  \u0635    ARABIC LETTER SAD  0635    D  & x002a;d  \u1e0d  \u1e0d  \u0636    ARABIC LETTER DAD  0636    T  & x002a;t  \u1e6d  \u1e6d  \u0637    ARABIC LETTER TAH  0637    Z  & x002a;z  \u1e93  \u1e93  \u0638    ARABIC LETTER ZAH  0638    E     \u02bf     \u0639    ARABIC LETTER AIN  0639    g  & x002a;g  \u0121  gh  \u063a    ARABIC LETTER GHAIN  063a    f  f  f  f  \u0641    ARABIC LETTER FEH  0641    q  & x002a;k  \u1e33  q  \u0642    ARABIC LETTER QAF  0642    k  k  k  k  \u0643    ARABIC LETTER KAF  0643    l  l  l  l  \u0644    ARABIC LETTER LAM  0644    m  m  m  m  \u0645    ARABIC LETTER MEEM  0645    n  n  n  n  \u0646    ARABIC LETTER NOON  0646    h  h  h  h  \u0647    ARABIC LETTER HEH  0647    w  w  w  w  \u0648    ARABIC LETTER WAW  0648    Y  /a  \u00e1  \u0101  \u0649    ARABIC LETTER ALEF MAKSURA  0649    y  y  y  y  \u064a    ARABIC LETTER YEH  064a    {  a  a  a  \u0671    ARABIC LETTER ALEF WASLA  0671    G  g  g  g  \u06af    ARABIC LETTER GAF  06af    J   y  Y  y  \u06af    ARABIC LETTER FARSI YEH  06cc     Numerals     quran / tanzil  ASCII  latin  standard  glyph  remarks  name  UNICODE      0  0  0  0  & x0660;    ARABIC INDIC DIGIT ZERO  0660    1  1  1  1  & x0661;    ARABIC INDIC DIGIT ONE  0661    2  2  2  2  & x0662;    ARABIC INDIC DIGIT TWO  0662    3  3  3  3  & x0663;    ARABIC INDIC DIGIT THREE  0663    4  4  4  4  & x0664;    ARABIC INDIC DIGIT FOUR  0664    5  5  5  5  & x0665;    ARABIC INDIC DIGIT FIVE  0665    6  6  6  6  & x0666;    ARABIC INDIC DIGIT SIX  0666    7  7  7  7  & x0667;    ARABIC INDIC DIGIT SEVEN  0667    8  8  8  8  & x0668;    ARABIC INDIC DIGIT EIGHT  0668    9  9  9  9  & x0669;    ARABIC INDIC DIGIT NINE  0669     Stops     quran / tanzil  ASCII  latin  standard  glyph  remarks  name  UNICODE      -  .  .  .  \u06ea    ARABIC EMPTY CENTRE LOW STOP  06ea    +  .  .  .  \u06eb    ARABIC EMPTY CENTRE HIGH STOP  06eb    %  .  .  .  \u06ec    ARABIC ROUNDED HIGH STOP WITH FILLED CENTRE  06ec     Letters (modified)     quran / tanzil  ASCII  latin  standard  glyph  remarks  name  UNICODE      & x0060;  ~a  \u00e3    \u0670    ARABIC LETTER SUPERSCRIPT ALEF  0670    \u00bb  & x005f;a  \u0101  \u0101  \u0670\u0622    ARABIC LETTER ALEF WITH MADDA ABOVE  0622    :   s  S  s  \u06dc    ARABIC SMALL HIGH SEEN  06dc    [   m  M  M  \u06e2    ARABIC SMALL HIGH MEEM ISOLATED FORM  06e2    ;   s  S  S  \u06e3    ARABIC SMALL LOW SEEN  06e3    ,   w  W  W  \u06e5    ARABIC SMALL WAW  06e5    .   y  Y  Y  \u06e6    ARABIC SMALL YEH  06e6    M   j  J  j  \u06da    ARABIC SMALL HIGH JEEM  06da    !   n  N  N  \u06e8    ARABIC SMALL HIGH NOON  06e8    ]   m  M  M  \u06ed    ARABIC SMALL LOW MEEM  06ed     Letters (combined)     quran / tanzil  ASCII  latin  standard  glyph  remarks  name  UNICODE      >  & x005f;a  \u0101  \u0101  \u0623    ARABIC LETTER ALEF WITH HAMZA ABOVE  0623    &  '  \u02be  '  \u0624    ARABIC LETTER WAW WITH HAMZA ABOVE  0624     /td>  & x005f;a  \u0101  \u0101  \u0625    ARABIC LETTER ALEF WITH HAMZA BELOW  0625    }  '  \u02be  y  \u0626    ARABIC LETTER YEH WITH HAMZA ABOVE  0626    SlY  & x002a;sl/a  \u1e63l\u00e1  \u1e63la  \u06d6    ARABIC SMALL HIGH LIGATURE SAD WITH LAM WITH ALEF MAKSURA  06d6     Lengthening     quran / tanzil  ASCII  latin  standard  glyph  remarks  name  UNICODE      & x005f;        \u0640    ARABIC TATWEEL  0640     Vowel diacritics     quran / tanzil  ASCII  latin  standard  glyph  remarks  name  UNICODE      F  a& x002a;n  a\u207f  an  \u064b    ARABIC FATHATAN  064b    N  u& x002a;n  u\u207f  un  \u064c    ARABIC DAMMATAN  064c    K  i& x002a;n  i\u207f  in  \u064d    ARABIC KASRATAN  064d    a  a  a  a  \u064e    ARABIC FATHA  064e    u  u  u  u  \u064f    ARABIC DAMMA  064f    i  i  i  i  \u0650    ARABIC KASRA  0650     Non-vocalic diacritics     quran / tanzil  ASCII  latin  standard  glyph  remarks  name  UNICODE      ~  u  u  \u016bw  \u0651    ARABIC SHADDA  0651    o  a  a  a  \u0652    ARABIC SUKUN  0652    ^  & x005f;a  \u0101  \u0101  \u0653    ARABIC MADDAH ABOVE  0653       '  \u02be  \u0101  \u0654    ARABIC HAMZA ABOVE  0654    =  '  \u02be  \u0101  \u0655    ARABIC HAMZA BELOW  0655    @  0  0  0  \u06df    ARABIC SMALL HIGH ROUNDED ZERO  06df    \"  0  0  0  \u06e0    ARABIC SMALL HIGH UPRIGHT RECTANGULAR ZERO  06e0     Separators     quran / tanzil  ASCII  latin  standard  glyph  remarks  name  UNICODE                  SPACE  0020     See also  [Arabic script in UNICODE](https: en.wikipedia.org/wiki/Arabic_script_in_Unicode)  [Arabic diacritics](https: en.wikipedia.org/wiki/Arabic_diacritics harakat)  [Beta code](https: pverkind.github.io/betacodeTranscriber/js/betacode.js)  [Library of Congress](https: www.loc.gov/catdir/cpso/romanization/arabic.pdf)"
 },
 {
 "ref":"tf.writing.hebrew",
-"url":145,
+"url":147,
 "doc":" Hebrew characters  @font-face { font-family: \"Ezra SIL\"; src: url('https: github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/SILEOT.ttf?raw=true'); src: url('https: github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/SILEOT.woff?raw=true') format('woff'); }   body { font-family: sans-serif; } table.chars { border-collapse: collapse; } table.chars thead tr { color:  ffffff; background-color:  444444; } table.chars tbody td { border: 2px solid  bbbbbb; padding: 0.1em 0.5em; } h1.chars { margin-top: 1em; } .t { font-family: monospace; font-size: large; color:  0000ff; } .g { font-family: \"Ezra SIL\", sans-serif; font-size: x-large; } .p { font-family: monospace; font-size: large; color:  666600; } .r { font-family: sans-serif; font-size: small; color:  555555; } .n { font-family: sans-serif; color:  990000; font-size: small; } .u { font-family: monospace; color:  990000; }   ! note \"Disclaimer\" This just a look-up table, not a full exposition of the organization of the Masoretic system.  ! abstract \"Transcriptions\" The ETCBC transcription is used by the ETCBC. It has entries for all accents, but not for text-critical annotations such as uncertainty, and correction. The Abegg transcription is used in the Dead Sea scrolls. It has no entries for accents, but it has a repertoire of text-critical marks. We have back translated the latter to  ETCBC -compatible variants and entered them in the  ETCBC column, although they are not strictly  ETCBC marks.  ! abstract \"Phonetics\" The phonetic representation is meant as a tentative 1-1 correspondence with pronunciation, not with the script. See [phono.ipynb](https: nbviewer.jupyter.org/github/ETCBC/phono/blob/master/programs/phono.ipynb), where the phonetic transcription is computed and thoroughly documented.  Consonants  ! abstract \"Details\"  For most consonants: an inner dot is a  dagesh forte .  For the  \u05d1\u05d2\u05d3\u05db\u05e4\u05ea consonants: an inner dot is either a  dagesh forte or a  dagesh lene .  When the  \u05d4 contains a dot, it is called a  mappiq .     transcription ( ETCBC )  transcription (Abegg)  glyph  phonetic  remarks  name  UNICODE      &gt;  a  \u05d0  \u0294  when not  mater lectionis    letter alef  05D0    B  b  \u05d1  bb b v  forte lene normal   letter bet  05D1    G  g  \u05d2  gg g \u1e21  forte lene normal   letter gimel  05D2    D  d  \u05d3  dd d \u1e0f  forte lene normal   letter dalet  05D3    H  h  \u05d4  h  also with  mappiq ; when not  mater lectionis    letter he  05D4    W  w  \u05d5  ww w \u00fb  forte when not part of a long vowel with dagesh as vowel   letter vav  05D5    Z  z  \u05d6  zz z  forte normal   letter zayin  05D6    X  j  \u05d7  \u1e25     letter het  05D7    V  f  \u05d8  \u1e6d     letter tet  05D8    J  y  \u05d9  yy y \u02b8  forte when not part of long vowel in front of final  \u05d5    letter yod  05D9    K  k  \u05db  kk k \u1e35  forte lene normal   letter kaf  05DB    k  K  \u05da  k \u1e35  forte normal   letter final kaf  05DA    L  l  \u05dc  ll l  forte normal   letter lamed  05DC    M  m  \u05de  mm m  forte normal   letter mem  05DE    m  M  \u05dd  m     letter final mem  05DD    N  n  \u05e0  nn n  forte normal   letter nun  05E0    n  N  \u05df  n     letter final nun  05DF    S  s  \u05e1  ss s  forte normal   letter samekh  05E1    &lt;  o  \u05e2  \u0295     letter ayin  05E2    P  p  \u05e4  pp p f  forte lene normal   letter pe  05E4    p  P  \u05e3  p f  forte normal   letter final pe  05E3    Y  x  \u05e6  \u1e63\u1e63 \u1e63  forte normal   letter tsadi  05E6    y  X  \u05e5  \u1e63     letter final tsadi  05E5    Q  q  \u05e7  qq q  forte normal   letter qof  05E7    R  r  \u05e8  rr r  forte normal   letter resh  05E8       C  \u05e9  \u015d     letter shin without dot  05E9    C  v  \u05e9\u05c1  \u0161\u0161 \u0161  forte normal   letter shin with shin dot  FB2A    F  c  \u05e9\u05c2  \u015b\u015b \u015b  forte normal   letter shin with sin dot  FB2B    T  t  \u05ea  tt t \u1e6f  forte lene normal   letter tav  05EA     Vowels  ! caution \"Qere Ketiv\" The phonetics follows the  qere , not the  ketiv , when they are different. In that case a  is added.  ! caution \"Tetragrammaton\" The tetragrammaton  \u05d9\u05d4\u05d5\u05d4 is (vowel)-pointed in different ways; the phonetics follows the pointing, but the tetragrammaton is put between  [ ] .     transcription ( ETCBC )  transcription (Abegg)  glyph  phonetic  remarks  name  UNICODE      A  A \u00c5  \u05b7  a \u2090  normal  furtive    point patah  05B7    :A  S  \u05b2  \u1d43     point hataf patah  05B2    @  D \u2202 \u00ce  \u05b8  \u0101 o  gadol qatan   point qamats  05B8    :@  F \u0192 \u00cf  \u05b3  \u1d52     point hataf qamats  05B3    E  R \u00ae \u2030  \u05b6  e e\u02b8  normal with following  \u05d9    point segol  05B6    :E  T  \u05b1  \u1d49 \u1d49\u02b8  normal with following  \u05d9    point hataf segol  05B1    ;  E \u00e9 \u00b4  \u05b5  \u00ea \u0113  with following  \u05d9  alone   point tsere  05B5    I  I \u02c6 \u00ee \u00ca  \u05b4  \u00ee i  with following  \u05d9  alone   point hiriq  05B4    O  O \u00f8  \u05b9  \u00f4 \u014d  with following  \u05d5  alone   point holam  05B9    U  U \u00fc \u00a8  \u05bb  u     point qubuts  05BB    :  V \u221a J \u25ca  \u05b0  \u1d4a  left out if silent   point sheva  05B0     Other points and marks     transcription ( ETCBC )  transcription (Abegg)  glyph  phonetic  remarks  name  UNICODE      .  ; \u2026 \u00da \u00a5 \u03a9  \u05bc       point dagesh or mapiq  05BC    .c    \u05c1       point shin dot  05C1    .f    \u05c2       point sin dot  05C2    ,    \u05bf       point rafe  05BF    35    \u05bd  \u02c8     point meteg  05BD    45    \u05bd  \u02c8     point meteg  05BD    75    \u05bd  \u02c8     point meteg  05BD    95    \u05bd  \u02c8     point meteg  05BD    52    \u05c4  \u02c8     mark upper dot  05C4    53    \u05c5  \u02c8     mark lower dot  05C5    & 42;    \u05af       mark masora circle  05AF     Punctuation  ! abstract \"Details\" Some specialities in the Masoretic system are not reflected in the phonetics:   setumah  \u05e1 ;   petuhah  \u05e3 ;   nun-hafuka  \u0307\u05c6 .     transcription ( ETCBC )  transcription (Abegg)  glyph  phonetic  remarks  name  UNICODE      00  .  \u05c3  .     punctuation sof pasuq  05C3    n\u0303    \u05c6       punctuation nun hafukha  05C6    &amp;  -  \u05be  -     punctuation maqaf  05BE    & 95;  &nbsp; (non breaking space)  &nbsp;      space  0020    0000  \u00b1       Dead Sea scrolls. We use as Hebrew character a double sof pasuq.  paleo-divider  05C3 05C3    '  /  \u05f3    Dead Sea scrolls. We use as Hebrew character a geresh.  morpheme-break  05F3     Hybrid  ! abstract \"Details\" There is a character that is mostly punctuation, but that can also influence the nature of some accents occurring in the word before. Such a character is a hybrid between punctuation and accent. See also the documentation of the BHSA about [cantillation](https: ETCBC.github.io/bhsa/cantillation/).     transcription  glyph  phonetic  remarks  name  UNICODE      05    \u05c0       punctuation paseq  05C0     Accents  ! abstract \"Details\" Some accents play a role in deciding whether a  schwa is silent or mobile and whether a  qamets is  gadol or  qatan . In the phonetics those accents appear as  \u02c8 or  \u02cc . Implied accents are also added.     transcription  glyph  phonetic  remarks  name  UNICODE      94  \u05a7  \u02c8     accent darga  05A7    13  \u05ad  \u02c8     accent dehi  05AD    92  \u0591  \u02c8     accent etnahta  0591    61  \u059c  \u02c8     accent geresh  059C    11  \u059d  \u02c8     accent geresh muqdam  059D    62  \u059e  \u02c8     accent gershayim  059E    64  \u05ac  \u02c8     accent iluy  05AC    70  \u05a4  \u02c8     accent mahapakh  05A4    71  \u05a5  \u02cc     accent merkha  05A5    72  \u05a6  \u02c8     accent merkha kefula  05A6    74  \u05a3  \u02c8     accent munah  05A3    60  \u05ab  \u02c8     accent ole  05AB    03  \u0599       accent pashta  0599    83  \u05a1  \u02c8     accent pazer  05A1    33  \u05a8  \u02c8     accent qadma  05A8    63  \u05a8  \u02cc     accent qadma  05A8    84  \u059f  \u02c8     accent qarney para  059F    81  \u0597  \u02c8     accent revia  0597    01  \u0592       accent segol  0592    65  \u0593  \u02c8     accent shalshelet  0593    04  \u05a9       accent telisha qetana  05A9    24  \u05a9       accent telisha qetana  05A9    14  \u05a0       accent telisha gedola  05A0    44  \u05a0       accent telisha gedola  05A0    91  \u059b  \u02c8     accent tevir  059B    73  \u0596  \u02cc     accent tipeha  0596    93  \u05aa  \u02c8     accent yerah ben yomo  05AA    10  \u059a  \u02c8     accent yetiv  059A    80  \u0594  \u02c8     accent zaqef qatan  0594    85  \u0595  \u02c8     accent zaqef gadol  0595    82  \u0598  \u02c8     accent zarqa  0598    02  \u05ae  \u02c8     accent zinor  05AE     Numerals  ! abstract \"Details\" These signs occur in the Dead Sea scrolls. We represent them with conventional Hebrew characters for numbers and use the  geresh accent or another accent to mark the letter as a numeral. The ETCBC codes are obtained by translating back from the UNICODE.     transcription (ETCBC)  transcription (Abegg)  glyph  remarks  name      &gt;'  A  \u05d0\u059c     number 1    &gt;52  \u00e5  \u05d0\u05c4  alternative for 1, often at the end of a number, we use the upper dot to distinguish it from the other 1   number 1    &gt;53  B  \u05d0\u05c5  alternative for 1, often at the end of a number, we use the lower dot to distinguish it from the other 1   number 1    &gt;35  \u222b  \u05d0\u05bd  alternative for 1, often at the end of a number, we use the meteg to distinguish it from the other 1   number 1    J'  C  \u05d9\u059c     number 10    k'  D  \u05da\u059c     number 20    Q'  F  \u05e7\u059c     number 100    &amp;  +  \u05be  we use the maqaf to represent addition between numbers  add     Text-critical  ! abstract \"Details\" These signs occur in the Dead Sea scrolls. They are used to indicate uncertainty and editing acts by ancient scribes or modern editors. They do not have an associated glyph in UNICODE. The ETCBC does not have codes for them, but we propose an ETCBC-compatible encoding for them. The ETCBC codes are surrounded by space, except for the brackets, where a space at the side of the ( or ) is not necessary. Codes that are marked as  flag apply to the preceding character. Codes that are marked as  brackets apply to the material within them.     transcription (Abegg)  transcription ( ETCBC )  remarks  name      0  \u03b5  token  missing    ?  ?   token  uncertain (degree 1)    & 92;     token  uncertain (degree 2)    \ufffd   ?   token  uncertain (degree 3)    \u00d8  ?  flag, applies to preceding character  uncertain (degree 1)    \u00ab     flag, applies to preceding character  uncertain (degree 2)    \u00bb   ?  flag, applies to preceding character  uncertain (degree 3)    & 124;     flag, applies to preceding character  uncertain (degree 4)    \u00ab \u00bb  (  )  brackets  uncertain (degree 2)    \u2264 \u2265  (- -)  brackets  vacat (empty space)    ( )  ( )  brackets  alternative    [ ]  [ ]  brackets  reconstruction (modern)    { }  { }  brackets  removed (modern)    {& 123;    {& 123;    brackets  removed (ancient)    &lt; &gt;  (&lt; &gt;)  brackets  correction (modern)    &lt;&lt; &gt;&gt;  (&lt;&lt; &gt;&gt;)  brackets  correction (ancient)    ^ ^  (^ ^)  brackets  correction (supralinear, ancient)    "
 },
 {
 "ref":"tf.writing.syriac",
-"url":146,
+"url":148,
 "doc":" Syriac Characters  @font-face { font-family: \"Estrangelo Edessa\"; src: url('https: github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/SyrCOMEdessa.otf?raw=true'); src: url('https: github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/SyrCOMEdessa.woff?raw=true') format('woff'); }   body { font-family: sans-serif; } table.chars { border-collapse: collapse; } table.chars thead tr { color:  ffffff; background-color:  444444; } table.chars tbody td { border: 2px solid  bbbbbb; padding: 0.1em 0.5em; } h1.chars { margin-top: 1em; } .t { font-family: monospace; font-size: large; color:  0000ff; } .g { font-family: \"Estrangelo Edessa\", sans-serif; font-size: x-large; } .p { font-family: monospace; font-size: large; color:  666600; } .r { font-family: sans-serif; font-size: small; color:  555555; } .n { font-family: sans-serif; color:  990000; font-size: small; } .u { font-family: monospace; color:  990000; }   Letters     transcription  glyph  phonetic  remarks  name  UNICODE      &gt;  \u0710      alaph  0710    B  \u0712      beth  0712    G  \u0713      gamal  0713    D  \u0715      dalat  0715    H  \u0717      he  0717    W  \u0718      waw  0718    Z  \u0719      zain  0719    X  \u071a      heth  071A    V  \u071b      teth  071B    J  \u071d      yod  071D    K  \u071f      kaf  071F    L  \u0720      lamad  0720    M  \u0721      mim  0721    N  \u0722      nun  0722    S  \u0723      semkath  0723    &lt;  \u0725      e  0725    P  \u0726      pe  0726    Y  \u0728      tsade  0728    Q  \u0729      qof  0729    R  \u072a      resh  072A    C  \u072b      shin  072B    T  \u072c      taw  072C     Word-bound diacritics     transcription  glyph  phonetic  remarks  name  UNICODE      \"   \u0308      seyame  0308        \u0323      diacritical dot below  0323    ^   \u0307      diacritical dot above  0307     Non-vocalic letter-bound diacritics     transcription  glyph  phonetic  remarks  name  UNICODE      ^!   \u0743      unclear (syriac two vertical dots above)  0743     vocalic letter-bound diacritics     transcription  glyph  phonetic  remarks  name  UNICODE      :        shewa       A   \u0733      qamets  0733    A1   \u0734      zeqapa  0734    A2   \u0735      zeqofo  0735    O   \u073f      holem, rewaha  073F    @   \u0730      patah  0730    @1   \u0731      petaha  0731    @2   \u0732      petoho  0732    E   \u0736      segol  0736    E1   \u0737      revasa arrika  0737    E2   \u0738      revoso  0738    I   \u073a      hireq  073A    I1   \u073b      hevoso  073B    U   \u073d      qubbuts  073D    U1   \u073e      esoso  073E     Punctuation     transcription  glyph  phonetic  remarks  name  UNICODE       & 92;  \u0709      tahtaya, metkashpana (WS), meshalyana (WS)  0709    =.  .      pasuqa  002E    =   \u0707      elaya  0707    =:  :      shewaya (WS), zauga (ES)  003A    =^  \u0706      unclear (SYRIAC COLON SKEWED LEFT)  0706    =/  \u0707      elaya  0707    =& 92;  \u0706      unclear (SYRIAC COLON SKEWED LEFT)  0706    ^:  \u0703      taksa (WS), zauga elaya (ES)  0703    ^& 92;  \u0708      unclear (SYRIAC SUPRALINEAR COLON SKEWED LEFT)  0708     Pericope markers     transcription  glyph  phonetic  remarks  name  UNICODE      & 42;  \u0700      rosette  0700    .  \u00b7      common dot in caesuras  00B7    & 95;  \u2014      dash in caesuras  2014    o  \u2022      large dot in caesuras  2022    .md"
 },
 {
 "ref":"tf.writing.neoaramaic",
-"url":147,
+"url":149,
 "doc":" Neo Aramaic transcriptions  body { font-family: sans-serif; } pre.chars { border-collapse: collapse; color:  000080; font-family: monospace; font-size: medium; line-height: 1.0; }  The following table is provided by the collectors of the [NENA](https: github.com/CambridgeSemiticsLab/nena_corpus) corpus at [Cambridge Semitics Lab](https: github.com/CambridgeSemiticsLab). There is also a [PDF]( /images/neoaramaic.pdf) of the table below.  Vowel inventory and conversions  Special vowel signs  \u250f      \u2501\u2533 \u252f \u252f \u252f \u2501\u252f \u2501\u252f \u252f \u2501\u252f \u2501\u252f\u2501\u252f \u252f\u2501\u252f\u2501\u252f \u252f \u252f\u2501\u252f\u2501\u252f \u252f\u2501\u252f \u252f \u252f\u2501\u252f\u2501\u2513\u0010 \u2503 \u2503\u00e1 \u2502\u00e0 \u2502\u0101 \u2502\u0101\u0300 \u2502\u0101\u0301 \u2502\u0103 \u2502\u1eaf \u2502\u1eb1 \u2502e\u2502\u0113 \u2502\u025b\u2502i\u2502\u012b \u2502\u012d \u2502\u0259\u2502o\u2502\u014d \u2502u\u2502\u016b \u2502\u016d \u2502\u0131\u2502\u0251\u2503 \u2520      \u2500\u2542 \u253c \u253c \u253c \u2500\u253c \u2500\u253c \u253c \u2500\u253c \u2500\u253c\u2500\u253c \u253c\u2500\u253c\u2500\u253c \u253c \u253c\u2500\u253c\u2500\u253c \u253c\u2500\u253c \u253c \u253c\u2500\u253c\u2500\u2528 \u2503precise match\u2503a'\u2502a \u2502a-\u2502a- \u2502a-'\u2502a>\u2502a>'\u2502a> \u2502e\u2502e-\u25023\u2502i\u2502i-\u2502i>\u25029\u2502o\u2502o-\u2502u\u2502u-\u2502u  Symbol inventory for conversions  Special signs alphabetical  \u250f      \u2501\u2533   \u252f\u2501\u252f\u2501\u252f \u252f \u252f \u2501\u252f \u2501\u252f \u252f\u2501\u252f\u2501\u252f \u252f \u252f\u2501\u252f \u252f \u252f \u252f \u2501\u252f \u252f \u252f \u252f \u252f \u252f\u2501\u252f\u2501\u252f \u252f \u2513\u0010 \u2503 \u2503\u02be \u2502\u02bf\u2502c\u2502c\u032d \u2502\u010d \u2502\u010d\u032d \u2502\u010d\u0323 \u2502\u1e0d \u2502\u00f0\u2502\u00f0\u0323\u2502\u0121 \u2502\u1e25 \u2502\u025f\u2502k\u032d \u2502\u1e37 \u2502\u1e43 \u2502p\u032d,p\u030c\u2502p\u0323 \u2502\u1e5b \u2502\u1e63 \u2502\u0161 \u2502\u1e71 \u2502\u1e6d\u2502\u03b8\u2502\u017e \u2502\u1e93 \u2503 \u2520      \u2500\u2542   \u253c\u2500\u253c\u2500\u253c \u253c \u253c \u2500\u253c \u2500\u253c \u253c\u2500\u253c\u2500\u253c \u253c \u253c\u2500\u253c \u253c \u253c \u253c \u2500\u253c \u253c \u253c \u253c \u253c \u253c\u2500\u253c\u2500\u253c \u253c \u2528 \u2503precise match\u2503) \u2502(\u2502c\u2502c c\u2502>c c.\u2502d.\u25026\u25026\u2502g.\u2502h.\u25024\u2502k s\u2502t z\u2502z.\u2503 \u2503lite \u2503) \u2502(\u2502c\u2502c \u25025 \u2502 \u2502% \u2502D \u25026\u2502^\u2502G \u2502H \u25024\u2502& \u2502L \u2502M \u2502p \u2502P \u2502R \u2502S \u2502$ \u2502+ \u2502T\u25028\u25027 \u2502Z \u2503 \u2503fuzzy_all \u2503ignore\u2502(\u2502 \u2502 \u25025 \u25025 \u25025 \u2502d \u2502d\u2502d\u2502g \u2502h \u2502 \u2502 \u2502l \u2502m \u2502p \u2502p \u2502r \u2502s \u2502s \u2502t \u2502t\u2502 \u2502z \u2502z \u2503 \u2503fuzzy_Urmi \u2503 \u2502 \u2502k\u2502k \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502g\u2502q \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2503 \u2503fuzzy_Barwar \u2503 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502d\u2502 \u2502 \u2502 \u2502 \u2502k \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502t\u2502 \u2502 \u2503 \u2517      \u2501\u253b   \u2537\u2501\u2537\u2501\u2537 \u2537 \u2537 \u2501\u2537 \u2501\u2537 \u2537\u2501\u2537\u2501\u2537 \u2537 \u2537\u2501\u2537 \u2537 \u2537 \u2537 \u2501\u2537 \u2537 \u2537 \u2537 \u2537 \u2537\u2501\u2537\u2501\u2537 \u2537 \u251b\u0010   Capitals  \u250f      \u2501\u2533\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u2513\u0010 \u2503 \u2503\u1e0d\u2502\u0121\u2502\u1e25\u2502\u1e37\u2502\u1e43\u2502p\u0323\u2502\u1e5b\u2502\u1e63\u2502\u1e6d\u2502\u1e93\u2502\u0101\u2502\u0113\u2502\u012b\u2502\u014d\u2502\u016b\u2503 \u2520      \u2500\u2542\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u2528 \u2503lite \u2503D\u2502G\u2502H\u2502L\u2502M\u2502P\u2502R\u2502S\u2502T\u2502Z\u2502A\u2502E\u2502I\u2502O\u2502U\u2503 \u2517      \u2501\u253b\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u251b\u0010   Special symbols  \u250f      \u2501\u2533\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u2513\u0010 \u2503 \u2503\u010d\u032d\u2502\u010d\u0323\u2502\u00f0\u0323\u2502k\u032d\u2502\u1e71\u2502\u0161\u2502\u0103\u2503 \u2520      \u2500\u2542\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u2528 \u2503lite \u2503 \u2502%\u2502^\u2502&\u2502+\u2502$\u2502@\u2503 \u2517      \u2501\u253b\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u251b\u0010   Numbers  \u250f      \u2501\u2533\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u2513\u0010 \u2503 \u2503\u016d\u2502\u025b\u2502\u025f\u2502\u010d\u2502\u00f0\u2502\u017e\u2502\u03b8\u2502\u0259\u2503 \u2520      \u2500\u2542\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u2528 \u2503lite \u25032\u25023\u25024\u25025\u25026\u25027\u25028\u25029\u2503 \u2517      \u2501\u253b\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u251b\u0010   Consonant phoneme inventory: Lite and fuzzy conversions  Legend  lt =  lite  fz =  fuzzy  fzUr =  fuzzy Urmi  \u0454 = empty  \u250f          \u2533    \u2501\u2533    \u2533    \u2533   \u2501\u2533   \u2501\u2533   \u2533   \u2501\u2533   \u2501\u2513\u0010 \u2503 \u2503labial \u2503dental- \u2503palatal-\u2503palatal\u2503(post-)\u2503uvular\u2503pharyn-\u2503laryn- \u2503 \u2503 \u2503 \u2503alveolar\u2503alveolar\u2503 \u2503velar \u2503 \u2503geal \u2503geal \u2503 \u2523          \u254b \u2501\u252f \u252f \u254b\u2501\u252f \u252f \u2501\u254b\u2501\u252f \u252f \u2501\u254b\u2501\u252f \u252f \u254b\u2501\u252f \u252f \u254b \u252f \u2501\u254b\u2501\u252f \u252f \u254b\u2501\u252f \u252f \u252b \u2503Stops/affricates \u2503 \u2502lt\u2502fz\u2503 \u2502lt\u2502fz \u2503 \u2502lt\u2502fz \u2503 \u2502lt\u2502fz\u2503 \u2502lt\u2502fz\u2503 \u2502 \u2503 \u2502lt\u2502fz\u2503 \u2502lt\u2502fz\u2503 \u2503 \u2503 \u2502 \u2502 \u2503 \u2502 \u2502 \u2503 \u2502 \u2502 \u2503 \u2502 \u2502Ur\u2503 \u2502 \u2502Ur\u2503 \u2502 \u2503 \u2502 \u2502 \u2503 \u2502 \u2502 \u2503 \u2520          \u2542 \u2500\u253c \u253c \u2542\u2500\u253c \u253c \u2500\u2542\u2500\u253c \u253c \u2500\u2542\u2500\u253c \u253c \u2542\u2500\u253c \u253c \u2542 \u253c \u2500\u2542\u2500\u2534 \u2534 \u2542\u2500\u253c \u253c \u2528 \u2503Unvoiced aspirated \u2503p \u2502p \u2502 \u2503t\u2502t \u2502t \u2503\u010d\u25025 \u25025 \u2503c\u2502c \u2502k \u2503k\u2502k \u2502k \u2503 q\u2502q \u2503 \u2503\u02be\u2502) \u2502\u0454 \u2503 \u2503Unvoiced unaspirated\u2503p\u032d,p\u030c\u2502p \u2502p \u2503\u1e71\u2502+ \u2502t \u2503\u010d\u032d\u2502 \u25025 \u2503c\u032d\u2502c \u2502k \u2503k\u032d\u2502& \u2502q \u2503 \u2502 \u2503 \u2503 \u2502 \u2502 \u2503 \u2503Voiced \u2503b \u2502b \u2502 \u2503d\u2502d \u2502d \u2503j\u2502j \u2502j \u2503\u025f\u25024 \u2502g \u2503g\u2502g \u2502g \u2503 \u2502 \u2503 \u2503 \u2502 \u2502 \u2503 \u2503Emphatic \u2503p\u0323 \u2502P \u2502p \u2503\u1e6d\u2502T \u2502t \u2503\u010d\u2502% \u25025 \u2503 \u2502 \u2502 \u2503 \u2502 \u2502 \u2503 \u2502 \u2503 \u2503 \u2502 \u2502 \u2503 \u2503 \u2503 \u2502 \u2502 \u2503\u1e0d\u2502D \u2502d \u2503 \u2502 \u2502 \u2503 \u2502 \u2502 \u2503 \u2502 \u2502 \u2503 \u2502 \u2503 \u2503 \u2502 \u2502 \u2503 \u2523          \u254b \u2501\u2537 \u2537 \u254b\u2501\u2537 \u2537 \u2501\u254b\u2501\u2537 \u2537 \u2501\u253b\u2501\u2537 \u2537 \u254b\u2501\u2537 \u2537 \u254b \u2537 \u2501\u254b   \u2501\u254b\u2501\u2537 \u2537 \u252b \u2503Fricatives \u2503 \u2503 \u2503 \u2503 \u2503 \u2503 \u2503 \u2503 \u2520          \u2542 \u2500\u252c \u252c \u2542\u2500\u252c \u252c \u2500\u2528 \u2520\u2500\u252c \u252c \u2528 \u2520\u2500\u252c \u252c \u2542\u2500\u252c \u252c \u2528 \u2503Unvoiced \u2503f \u2502f \u2502f \u2503\u03b8\u25028 \u2502t \u2503 \u2503x\u2502x \u2502x \u2503 \u2503\u1e25\u2502H \u2502h \u2503h\u2502h \u2502h \u2503 \u2503Voiced \u2503v \u2502v \u2502w \u2503\u00f0\u25026 \u2502d \u2503 \u2503\u0121\u2502G \u2502g \u2503 \u2503 \u2502 \u2502 \u2503 \u2502 \u2502 \u2503 \u2503Emphatic \u2503 \u2502 \u2502 \u2503\u00f0\u0323\u2502^ \u2502d \u2503 \u2503 \u2502 \u2502 \u2503 \u2503\u02bf\u2502( \u2502( \u2503 \u2502 \u2502 \u2503 \u2523          \u254b \u2501\u2537 \u2537 \u254b\u2501\u2537 \u2537 \u2501\u254b    \u2513 \u2517\u2501\u2537 \u2537 \u251b \u2517\u2501\u2537 \u2537 \u253b\u2501\u2537 \u2537 \u252b \u2503Sibilants \u2503 \u2503 \u2503 \u2503 \u2503 \u2520          \u2528 \u2520\u2500\u252c \u252c \u2500\u2542\u2500\u252c \u252c \u2500\u2528 \u2503 \u2503Unvoiced \u2503 \u2503s\u2502s \u2502s \u2503\u0161\u2502$ \u2502s \u2503 \u2503 \u2503Voiced \u2503 \u2503z\u2502z \u2502z \u2503\u017e\u25027 \u2502z \u2503 \u2503 \u2503Emphatic \u2503 \u2503\u1e63\u2502S \u2502s \u2503 \u2502 \u2502 \u2503 \u2503 \u2503 \u2503 \u2503\u1e93\u2502Z \u2502z \u2503 \u2502 \u2502 \u2503 \u2503 \u2523          \u254b    \u2501\u254b\u2501\u2537 \u2537 \u2501\u254b\u2501\u2537 \u2537 \u2501\u251b \u2503 \u2503Nasals \u2503 \u2503 \u2503 \u2503 \u2520          \u2542 \u2500\u252c \u252c \u2542\u2500\u252c \u252c \u2500\u2528 \u2503 \u2503Plain \u2503m \u2502m \u2502m \u2503n\u2502n \u2502n \u2503 \u2503 \u2503Emphatic \u2503\u1e43 \u2502M \u2502m \u2503 \u2502 \u2502 \u2503 \u2503 \u2523          \u254b \u2501\u2537 \u2537 \u254b\u2501\u2537 \u2537 \u2501\u252b \u2503 \u2503Laterals \u2503 \u2503 \u2503 \u2503 \u2520          \u2528 \u2520\u2500\u252c \u252c \u2500\u2528 \u2503 \u2503Plain \u2503 \u2503l\u2502l \u2502l \u2503 \u2503 \u2503Emphatic \u2503 \u2503\u1e37\u2502L \u2502l \u2503 \u2503 \u2523          \u254b    \u2501\u254b\u2501\u2537 \u2537 \u2501\u252b \u250f   \u2501\u2513 \u2503 \u2503Other approximants \u2503 \u2503 \u2503 \u2503 \u2503 \u2503 \u2520          \u2542 \u2500\u252c \u252c \u2542\u2500\u252c \u252c \u2500\u2528 \u2520\u2500\u252c \u252c \u2528 \u2503 \u2503Plain \u2503w \u2502w \u2502w \u2503r\u2502r \u2502r \u2503 \u2503y\u2502y \u2502y \u2503 \u2503 \u2503Emphatic \u2503 \u2502 \u2502 \u2503\u1e5b\u2502R \u2502r \u2503 \u2503 \u2502 \u2502 \u2503 \u2503 \u2517          \u253b \u2501\u2537 \u2537 \u253b\u2501\u2537 \u2537 \u2501\u253b    \u253b\u2501\u2537 \u2537 \u253b               \u251b\u0010  "
 },
 {
 "ref":"tf.writing.ugaritic",
-"url":148,
+"url":150,
 "doc":" Ugaritic Characters  @font-face { font-family: \"Santakku\"; src: local('Santakku'), url('/browser/static/fonts/Santakku.woff') format('woff'), url('https: github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/Santakku.woff?raw=true') format('woff'); }   body { font-family: sans-serif; } table.chars { border-collapse: collapse; } table.chars thead tr { color:  ffffff; background-color:  444444; } table.chars tbody td { border: 2px solid  bbbbbb; padding: 0.1em 0.5em; } h1.chars { margin-top: 1em; } .t { font-family: monospace; font-size: large; color:  0000ff; } .g { font-family: \"Santakku\", sans-serif; font-size: x-large; } .p { font-family: monospace; font-size: large; color:  666600; } .r { font-family: sans-serif; font-size: small; color:  555555; } .n { font-family: sans-serif; color:  990000; font-size: small; } .u { font-family: monospace; color:  990000; }   Letters and word separator \u0383 \u038c     transcription  glyph  phonetic  remarks  name  UNICODE      a  \ud800\udf80  \u0294a    alpa  10380    b  \ud800\udf81  b    beta  10381    g  \ud800\udf82  g    gamla  10382    \u1e2b  \ud800\udf83  x    kha  10383    d  \ud800\udf84  d    delta  10384    h  \ud800\udf85  h    ho  10385    w  \ud800\udf86  w    wo  10386    z  \ud800\udf87  z    zeta  10387    \u1e25  \ud800\udf88  \u0127    hota  10388    \u1e6d  \ud800\udf89  t\u02e4    tet  10389    y  \ud800\udf8a  j    yod  1038A    k  \ud800\udf8b  k    kaf  1038B    \u0161  \ud800\udf8c  \u0283    shin  1038C    l  \ud800\udf8d  l    lamda  1038D    m  \ud800\udf8e  m    mem  1038E    \u1e0f  \ud800\udf8f  \u00f0    dhal  1038F    n  \ud800\udf90  n    nun  10390    \u1e93  \ud800\udf91  \u03b8\u02e4    zu  10391    s  \ud800\udf92  s    samka  10392    \u02e4  \ud800\udf93  \u0295    ain  10393    p  \ud800\udf94  p    pu  10394    \u1e63  \ud800\udf95  s\u02e4    sade  10395    q  \ud800\udf96  q    qopa  10396    r  \ud800\udf97  r    rasha  10397    \u1e6f  \ud800\udf98  \u03b8    thanna  10398    \u0121  \ud800\udf99  \u0263    ghain  10399    t  \ud800\udf9a  t    to  1039A    i  \ud800\udf9b  \u0294i    i  1039B    u  \ud800\udf9c  \u0294u    u  1039C    s2  \ud800\udf9d  su    ssu  1039D    .  \ud800\udf9f      divider  1039F    "
 }
 ]

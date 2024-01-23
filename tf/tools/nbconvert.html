@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/tools/nbconvert.py#L1-L255" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/tools/nbconvert.py#L1-L260" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 import re
@@ -34,7 +34,14 @@ from subprocess import run
 from textwrap import dedent
 
 from ..core.helpers import console
-from ..core.files import unexpanduser as ux, isDir, fileCopy, scanDir, initTree
+from ..core.files import (
+    fileOpen,
+    unexpanduser as ux,
+    isDir,
+    fileCopy,
+    scanDir,
+    initTree,
+)
 
 
 __pdoc__ = {}
@@ -172,7 +179,7 @@ def makeIndex(inputDir):
     html = f&#34;{htmlStart}{html}{htmlEnd}&#34;
     filePath = INDEX if inputDir == &#34;&#34; else f&#34;{inputDir}/{INDEX}&#34;
 
-    with open(filePath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+    with fileOpen(filePath, mode=&#34;w&#34;) as fh:
         fh.write(html)
 
     console(f&#34;Created {ux(filePath)}&#34;)
@@ -222,9 +229,7 @@ def convertDir(inputDir, outputDir):
             commandLine = f&#34;{command} --output-dir={destDir} {inFiles}&#34;
             run(commandLine, shell=True)
             for thisNotebook in theseNotebooks:
-                convertedNotebooks.append(
-                    (destDir, thisNotebook.replace(NB_EXT, &#34;&#34;))
-                )
+                convertedNotebooks.append((destDir, thisNotebook.replace(NB_EXT, &#34;&#34;)))
 
     doSubDir(&#34;&#34;)
     convertedPat = &#34;)|(?:&#34;.join(re.escape(c[1]) for c in convertedNotebooks)
@@ -259,13 +264,13 @@ def convertDir(inputDir, outputDir):
         return LINK_RE.sub(r&#34;\1.html\2&#34;, text)
 
     console(&#34;fixing links to converted notebooks:&#34;)
-    for (path, name) in convertedNotebooks:
+    for path, name in convertedNotebooks:
         pathName = f&#34;{path}/{name}.html&#34;
         console(pathName)
-        with open(pathName, encoding=&#34;utf8&#34;) as fh:
+        with fileOpen(pathName) as fh:
             text = fh.read()
         text = processLinks(text)
-        with open(pathName, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+        with fileOpen(pathName, mode=&#34;w&#34;) as fh:
             fh.write(text)
 
 
@@ -300,7 +305,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/tools/nbconvert.py#L151-L239" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/tools/nbconvert.py#L158-L244" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertDir(inputDir, outputDir):
     inPlace = outputDir == &#34;-&#34;
@@ -346,9 +351,7 @@ if __name__ == &#34;__main__&#34;:
             commandLine = f&#34;{command} --output-dir={destDir} {inFiles}&#34;
             run(commandLine, shell=True)
             for thisNotebook in theseNotebooks:
-                convertedNotebooks.append(
-                    (destDir, thisNotebook.replace(NB_EXT, &#34;&#34;))
-                )
+                convertedNotebooks.append((destDir, thisNotebook.replace(NB_EXT, &#34;&#34;)))
 
     doSubDir(&#34;&#34;)
     convertedPat = &#34;)|(?:&#34;.join(re.escape(c[1]) for c in convertedNotebooks)
@@ -383,13 +386,13 @@ if __name__ == &#34;__main__&#34;:
         return LINK_RE.sub(r&#34;\1.html\2&#34;, text)
 
     console(&#34;fixing links to converted notebooks:&#34;)
-    for (path, name) in convertedNotebooks:
+    for path, name in convertedNotebooks:
         pathName = f&#34;{path}/{name}.html&#34;
         console(pathName)
-        with open(pathName, encoding=&#34;utf8&#34;) as fh:
+        with fileOpen(pathName) as fh:
             text = fh.read()
         text = processLinks(text)
-        with open(pathName, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+        with fileOpen(pathName, mode=&#34;w&#34;) as fh:
             fh.write(text)</code></pre>
 </details>
 </dd>
@@ -401,7 +404,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/tools/nbconvert.py#L242-L248" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/tools/nbconvert.py#L247-L253" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     args = sys.argv[1:]
@@ -420,7 +423,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/tools/nbconvert.py#L76-L148" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/tools/nbconvert.py#L83-L155" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeIndex(inputDir):
     htmlStart = dedent(
@@ -491,7 +494,7 @@ if __name__ == &#34;__main__&#34;:
     html = f&#34;{htmlStart}{html}{htmlEnd}&#34;
     filePath = INDEX if inputDir == &#34;&#34; else f&#34;{inputDir}/{INDEX}&#34;
 
-    with open(filePath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+    with fileOpen(filePath, mode=&#34;w&#34;) as fh:
         fh.write(html)
 
     console(f&#34;Created {ux(filePath)}&#34;)</code></pre>
@@ -528,7 +531,7 @@ to all HTML files that can be recursively found inside the inputDir.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/tools/nbconvert.py#L63-L73" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/tools/nbconvert.py#L70-L80" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(*args):
     inputDir = args[0]

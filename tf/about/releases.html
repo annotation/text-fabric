@@ -38,6 +38,18 @@ and in its top-level directory run the command:</strong></p>
 </code></pre>
 <h2 id="12">12</h2>
 <h3 id="122">12.2</h3>
+<h4 id="1227">12.2.7</h4>
+<p>2024-01-23</p>
+<p>There were issues with starting up the Text-Fabric browser:</p>
+<ul>
+<li>If the system could not start the browser, the TF stopped the webserver. That is
+not helpful, because one can always open a browser and enter the url in the
+address bar. Now TF shows the url rather prominently when it does not open
+a browser.</li>
+<li>If debug mode is on, Flask reloads the whole process, and that might include
+opening the browser as well. Now Flask only opens the browser after the startup of
+the webserver, and not anymore after successive reloads.</li>
+</ul>
 <h4 id="1226">12.2.6</h4>
 <p>2024-01-15</p>
 <p>Somehow the express way of downloading data (via complete.zip attached to the latest
@@ -255,7 +267,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -329,6 +341,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
 <li><a href="#122">12.2</a><ul>
+<li><a href="#1227">12.2.7</a></li>
 <li><a href="#1226">12.2.6</a></li>
 <li><a href="#1225">12.2.5</a></li>
 <li><a href="#12234">12.2.3,4</a></li>

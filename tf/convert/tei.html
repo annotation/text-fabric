@@ -390,7 +390,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/tei.py#L1-L4267" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/tei.py#L1-L4268" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -908,6 +908,7 @@ from ..convert.walker import CV
 from ..core.timestamp import AUTO, DEEP, TERSE
 from ..core.command import readArgs
 from ..core.files import (
+    fileOpen,
     abspath,
     expanduser as ex,
     unexpanduser as ux,
@@ -1843,7 +1844,7 @@ class TEI(CheckImport):
             (&#34;template&#34;, templates),
         ):
             if text is None:
-                with open(xmlPath, encoding=&#34;utf8&#34;) as fh:
+                with fileOpen(xmlPath) as fh:
                     text = fh.read()
 
             found[kind] = None
@@ -2144,7 +2145,7 @@ class TEI(CheckImport):
             nErrors = 0
             nFiles = 0
 
-            with open(errorFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+            with fileOpen(errorFile, mode=&#34;w&#34;) as fh:
                 prevFolder = None
                 prevFile = None
 
@@ -2185,7 +2186,7 @@ class TEI(CheckImport):
 
             nTags = len(tagByNs)
 
-            with open(errorFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+            with fileOpen(errorFile, mode=&#34;w&#34;) as fh:
                 for tag, nsInfo in sorted(
                     tagByNs.items(), key=lambda x: (-len(x[1]), x[0])
                 ):
@@ -2216,7 +2217,7 @@ class TEI(CheckImport):
 
         def writeReport():
             reportFile = f&#34;{reportPath}/elements.txt&#34;
-            with open(reportFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+            with fileOpen(reportFile, mode=&#34;w&#34;) as fh:
                 fh.write(
                     &#34;Inventory of tags and attributes in the source XML file(s).\n&#34;
                     &#34;Contains the following sections:\n&#34;
@@ -2323,7 +2324,7 @@ class TEI(CheckImport):
                         tagLines.append((tag, [model], typRep, mixedRep))
 
             reportFile = f&#34;{reportPath}/types.txt&#34;
-            with open(reportFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+            with fileOpen(reportFile, mode=&#34;w&#34;) as fh:
                 for tag in sorted(tagReport):
                     tagLines = tagReport[tag]
                     for tag, mds, typ, mixed in tagLines:
@@ -2339,8 +2340,8 @@ class TEI(CheckImport):
             reportIdFile = f&#34;{reportPath}/ids.txt&#34;
             reportRefFile = f&#34;{reportPath}/refs.txt&#34;
 
-            ih = open(reportIdFile, &#34;w&#34;, encoding=&#34;utf8&#34;)
-            rh = open(reportRefFile, &#34;w&#34;, encoding=&#34;utf8&#34;)
+            ih = fileOpen(reportIdFile, mode=&#34;w&#34;)
+            rh = fileOpen(reportRefFile, mode=&#34;w&#34;)
 
             refdIds = collections.Counter()
             missingIds = set()
@@ -2482,7 +2483,7 @@ class TEI(CheckImport):
             elUrlPrefix = f&#34;{teiUrl}/ref-&#34;
             attUrlPrefix = f&#34;{teiUrl}/REF-ATTS.html#&#34;
             docFile = f&#34;{docsDir}/elements.md&#34;
-            with open(docFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+            with fileOpen(docFile, mode=&#34;w&#34;) as fh:
                 fh.write(
                     dedent(
                         &#34;&#34;&#34;
@@ -3875,7 +3876,7 @@ class TEI(CheckImport):
                             cur[NODE][tpl] = cv.node(tpl)
                             cv.feature(cur[NODE][tpl], **value)
 
-                        with open(xmlPath, encoding=&#34;utf8&#34;) as fh:
+                        with fileOpen(xmlPath) as fh:
                             text = fh.read()
                             if transformFunc is not None:
                                 text = transformFunc(text)
@@ -3923,7 +3924,7 @@ class TEI(CheckImport):
                     xmlPath
                 )
 
-                with open(f&#34;{teiPath}/{xmlFile}&#34;, encoding=&#34;utf8&#34;) as fh:
+                with fileOpen(f&#34;{teiPath}/{xmlFile}&#34;) as fh:
                     cur[&#34;xmlFile&#34;] = xmlFile
                     text = fh.read()
                     if transformFunc is not None:
@@ -4491,13 +4492,13 @@ class TEI(CheckImport):
                     fileCopy(itemSource, itemTarget)
             else:
                 if fileExists(itemSource):
-                    with open(itemSource, encoding=&#34;utf8&#34;) as fh:
+                    with fileOpen(itemSource) as fh:
                         sourceText = fh.read()
                 else:
                     sourceText = &#34;&#34;
 
                 if fileExists(itemCustom):
-                    with open(itemCustom, encoding=&#34;utf8&#34;) as fh:
+                    with fileOpen(itemCustom) as fh:
                         customText = fh.read()
                 else:
                     customText = &#34;&#34;
@@ -4516,7 +4517,7 @@ class TEI(CheckImport):
                     else fileCopy  # this cannot occur because justCopy is False
                 )(sourceText, customText)
 
-                with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+                with fileOpen(itemTarget, mode=&#34;w&#34;) as fh:
                     fh.write(targetText)
 
             if verbose &gt;= 0:
@@ -4676,7 +4677,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/tei.py#L749-L766" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/tei.py#L750-L767" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRefs(tag, atts, xmlFile):
     refAtt = REFERENCING.get(tag, None)
@@ -4706,7 +4707,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/tei.py#L4253-L4263" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/tei.py#L4254-L4264" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(
@@ -4729,7 +4730,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/tei.py#L732-L746" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/tei.py#L733-L747" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCssInfo():
     &#34;&#34;&#34;Make the CSS info for the style sheet.&#34;&#34;&#34;
@@ -4877,7 +4878,7 @@ relevant TF version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/tei.py#L769-L4250" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/tei.py#L770-L4251" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI(CheckImport):
     def __init__(
@@ -5562,7 +5563,7 @@ relevant TF version:</p>
             (&#34;template&#34;, templates),
         ):
             if text is None:
-                with open(xmlPath, encoding=&#34;utf8&#34;) as fh:
+                with fileOpen(xmlPath) as fh:
                     text = fh.read()
 
             found[kind] = None
@@ -5863,7 +5864,7 @@ relevant TF version:</p>
             nErrors = 0
             nFiles = 0
 
-            with open(errorFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+            with fileOpen(errorFile, mode=&#34;w&#34;) as fh:
                 prevFolder = None
                 prevFile = None
 
@@ -5904,7 +5905,7 @@ relevant TF version:</p>
 
             nTags = len(tagByNs)
 
-            with open(errorFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+            with fileOpen(errorFile, mode=&#34;w&#34;) as fh:
                 for tag, nsInfo in sorted(
                     tagByNs.items(), key=lambda x: (-len(x[1]), x[0])
                 ):
@@ -5935,7 +5936,7 @@ relevant TF version:</p>
 
         def writeReport():
             reportFile = f&#34;{reportPath}/elements.txt&#34;
-            with open(reportFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+            with fileOpen(reportFile, mode=&#34;w&#34;) as fh:
                 fh.write(
                     &#34;Inventory of tags and attributes in the source XML file(s).\n&#34;
                     &#34;Contains the following sections:\n&#34;
@@ -6042,7 +6043,7 @@ relevant TF version:</p>
                         tagLines.append((tag, [model], typRep, mixedRep))
 
             reportFile = f&#34;{reportPath}/types.txt&#34;
-            with open(reportFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+            with fileOpen(reportFile, mode=&#34;w&#34;) as fh:
                 for tag in sorted(tagReport):
                     tagLines = tagReport[tag]
                     for tag, mds, typ, mixed in tagLines:
@@ -6058,8 +6059,8 @@ relevant TF version:</p>
             reportIdFile = f&#34;{reportPath}/ids.txt&#34;
             reportRefFile = f&#34;{reportPath}/refs.txt&#34;
 
-            ih = open(reportIdFile, &#34;w&#34;, encoding=&#34;utf8&#34;)
-            rh = open(reportRefFile, &#34;w&#34;, encoding=&#34;utf8&#34;)
+            ih = fileOpen(reportIdFile, mode=&#34;w&#34;)
+            rh = fileOpen(reportRefFile, mode=&#34;w&#34;)
 
             refdIds = collections.Counter()
             missingIds = set()
@@ -6201,7 +6202,7 @@ relevant TF version:</p>
             elUrlPrefix = f&#34;{teiUrl}/ref-&#34;
             attUrlPrefix = f&#34;{teiUrl}/REF-ATTS.html#&#34;
             docFile = f&#34;{docsDir}/elements.md&#34;
-            with open(docFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+            with fileOpen(docFile, mode=&#34;w&#34;) as fh:
                 fh.write(
                     dedent(
                         &#34;&#34;&#34;
@@ -7594,7 +7595,7 @@ relevant TF version:</p>
                             cur[NODE][tpl] = cv.node(tpl)
                             cv.feature(cur[NODE][tpl], **value)
 
-                        with open(xmlPath, encoding=&#34;utf8&#34;) as fh:
+                        with fileOpen(xmlPath) as fh:
                             text = fh.read()
                             if transformFunc is not None:
                                 text = transformFunc(text)
@@ -7642,7 +7643,7 @@ relevant TF version:</p>
                     xmlPath
                 )
 
-                with open(f&#34;{teiPath}/{xmlFile}&#34;, encoding=&#34;utf8&#34;) as fh:
+                with fileOpen(f&#34;{teiPath}/{xmlFile}&#34;) as fh:
                     cur[&#34;xmlFile&#34;] = xmlFile
                     text = fh.read()
                     if transformFunc is not None:
@@ -8210,13 +8211,13 @@ relevant TF version:</p>
                     fileCopy(itemSource, itemTarget)
             else:
                 if fileExists(itemSource):
-                    with open(itemSource, encoding=&#34;utf8&#34;) as fh:
+                    with fileOpen(itemSource) as fh:
                         sourceText = fh.read()
                 else:
                     sourceText = &#34;&#34;
 
                 if fileExists(itemCustom):
-                    with open(itemCustom, encoding=&#34;utf8&#34;) as fh:
+                    with fileOpen(itemCustom) as fh:
                         customText = fh.read()
                 else:
                     customText = &#34;&#34;
@@ -8235,7 +8236,7 @@ relevant TF version:</p>
                     else fileCopy  # this cannot occur because justCopy is False
                 )(sourceText, customText)
 
-                with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+                with fileOpen(itemTarget, mode=&#34;w&#34;) as fh:
                     fh.write(targetText)
 
             if verbose &gt;= 0:
@@ -8405,7 +8406,7 @@ that code between automatic generation of files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/tei.py#L3770-L4134" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/tei.py#L3771-L4135" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self, tokenBased=False):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -8737,13 +8738,13 @@ that code between automatic generation of files.</p>
                 fileCopy(itemSource, itemTarget)
         else:
             if fileExists(itemSource):
-                with open(itemSource, encoding=&#34;utf8&#34;) as fh:
+                with fileOpen(itemSource) as fh:
                     sourceText = fh.read()
             else:
                 sourceText = &#34;&#34;
 
             if fileExists(itemCustom):
-                with open(itemCustom, encoding=&#34;utf8&#34;) as fh:
+                with fileOpen(itemCustom) as fh:
                     customText = fh.read()
             else:
                 customText = &#34;&#34;
@@ -8762,7 +8763,7 @@ that code between automatic generation of files.</p>
                 else fileCopy  # this cannot occur because justCopy is False
             )(sourceText, customText)
 
-            with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+            with fileOpen(itemTarget, mode=&#34;w&#34;) as fh:
                 fh.write(targetText)
 
         if verbose &gt;= 0:
@@ -8790,7 +8791,7 @@ There should be a valid TF dataset and app configuration in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/tei.py#L4138-L4174" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/tei.py#L4139-L4175" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def browseTask(self):
     &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
@@ -8858,7 +8859,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/tei.py#L1575-L2244" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/tei.py#L1576-L2245" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -9038,7 +9039,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
         nErrors = 0
         nFiles = 0
 
-        with open(errorFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+        with fileOpen(errorFile, mode=&#34;w&#34;) as fh:
             prevFolder = None
             prevFile = None
 
@@ -9079,7 +9080,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 
         nTags = len(tagByNs)
 
-        with open(errorFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+        with fileOpen(errorFile, mode=&#34;w&#34;) as fh:
             for tag, nsInfo in sorted(
                 tagByNs.items(), key=lambda x: (-len(x[1]), x[0])
             ):
@@ -9110,7 +9111,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 
     def writeReport():
         reportFile = f&#34;{reportPath}/elements.txt&#34;
-        with open(reportFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+        with fileOpen(reportFile, mode=&#34;w&#34;) as fh:
             fh.write(
                 &#34;Inventory of tags and attributes in the source XML file(s).\n&#34;
                 &#34;Contains the following sections:\n&#34;
@@ -9217,7 +9218,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
                     tagLines.append((tag, [model], typRep, mixedRep))
 
         reportFile = f&#34;{reportPath}/types.txt&#34;
-        with open(reportFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+        with fileOpen(reportFile, mode=&#34;w&#34;) as fh:
             for tag in sorted(tagReport):
                 tagLines = tagReport[tag]
                 for tag, mds, typ, mixed in tagLines:
@@ -9233,8 +9234,8 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
         reportIdFile = f&#34;{reportPath}/ids.txt&#34;
         reportRefFile = f&#34;{reportPath}/refs.txt&#34;
 
-        ih = open(reportIdFile, &#34;w&#34;, encoding=&#34;utf8&#34;)
-        rh = open(reportRefFile, &#34;w&#34;, encoding=&#34;utf8&#34;)
+        ih = fileOpen(reportIdFile, mode=&#34;w&#34;)
+        rh = fileOpen(reportRefFile, mode=&#34;w&#34;)
 
         refdIds = collections.Counter()
         missingIds = set()
@@ -9376,7 +9377,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
         elUrlPrefix = f&#34;{teiUrl}/ref-&#34;
         attUrlPrefix = f&#34;{teiUrl}/REF-ATTS.html#&#34;
         docFile = f&#34;{docsDir}/elements.md&#34;
-        with open(docFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+        with fileOpen(docFile, mode=&#34;w&#34;) as fh:
             fh.write(
                 dedent(
                     &#34;&#34;&#34;
@@ -9546,7 +9547,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/tei.py#L3661-L3719" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/tei.py#L3662-L3720" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -9622,7 +9623,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/tei.py#L2248-L2261" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/tei.py#L2249-L2262" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -9663,7 +9664,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/tei.py#L2265-L3659" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/tei.py#L2266-L3660" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -10884,7 +10885,7 @@ that has access to this data.</p>
                         cur[NODE][tpl] = cv.node(tpl)
                         cv.feature(cur[NODE][tpl], **value)
 
-                    with open(xmlPath, encoding=&#34;utf8&#34;) as fh:
+                    with fileOpen(xmlPath) as fh:
                         text = fh.read()
                         if transformFunc is not None:
                             text = transformFunc(text)
@@ -10932,7 +10933,7 @@ that has access to this data.</p>
                 xmlPath
             )
 
-            with open(f&#34;{teiPath}/{xmlFile}&#34;, encoding=&#34;utf8&#34;) as fh:
+            with fileOpen(f&#34;{teiPath}/{xmlFile}&#34;) as fh:
                 cur[&#34;xmlFile&#34;] = xmlFile
                 text = fh.read()
                 if transformFunc is not None:
@@ -11076,7 +11077,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/tei.py#L1476-L1498" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/tei.py#L1477-L1499" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getParser(self):
     &#34;&#34;&#34;Configure the LXML parser.
@@ -11111,7 +11112,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/tei.py#L1434-L1474" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/tei.py#L1435-L1475" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getSwitches(self, xmlPath):
     verbose = self.verbose
@@ -11131,7 +11132,7 @@ that has access to this data.</p>
         (&#34;template&#34;, templates),
     ):
         if text is None:
-            with open(xmlPath, encoding=&#34;utf8&#34;) as fh:
+            with fileOpen(xmlPath) as fh:
                 text = fh.read()
 
         found[kind] = None
@@ -11177,7 +11178,7 @@ that contains the file names in that folder, sorted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/tei.py#L1500-L1573" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/tei.py#L1501-L1574" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the TEI source files.
@@ -11275,7 +11276,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/tei.py#L3721-L3766" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/tei.py#L3722-L3767" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -11333,7 +11334,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/tei.py#L1391-L1432" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/tei.py#L1392-L1433" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readSchemas(self):
     schemaDir = self.schemaDir
@@ -11417,7 +11418,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/tei.py#L4176-L4250" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/tei.py#L4177-L4251" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,

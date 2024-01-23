@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/advanced/zipdata.py#L1-L422" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/advanced/zipdata.py#L1-L423" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 import types
@@ -36,6 +36,7 @@ from .helpers import splitModRef
 from ..parameters import ZIP_OPTIONS, RELATIVE
 from ..core.helpers import console, run
 from ..core.files import (
+    fileOpen,
     normpath,
     expanduser as ex,
     unexpanduser as ux,
@@ -253,7 +254,7 @@ def addCheckout(path):
             console(stdErr, error=True)
 
     if release is not None or commit is not None:
-        with open(f&#34;{path}/{EXPRESS_SYNC}&#34;, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+        with fileOpen(f&#34;{path}/{EXPRESS_SYNC}&#34;, mode=&#34;w&#34;) as fh:
             if release is not None:
                 fh.write(f&#34;{release}\n&#34;)
             if commit is not None:
@@ -467,7 +468,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/advanced/zipdata.py#L205-L231" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/advanced/zipdata.py#L206-L232" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addCheckout(path):
     release = None
@@ -490,7 +491,7 @@ if __name__ == &#34;__main__&#34;:
             console(stdErr, error=True)
 
     if release is not None or commit is not None:
-        with open(f&#34;{path}/{EXPRESS_SYNC}&#34;, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+        with fileOpen(f&#34;{path}/{EXPRESS_SYNC}&#34;, mode=&#34;w&#34;) as fh:
             if release is not None:
                 fh.write(f&#34;{release}\n&#34;)
             if commit is not None:
@@ -506,7 +507,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/advanced/zipdata.py#L234-L249" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/advanced/zipdata.py#L235-L250" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def collectFiles(base, path, results, zipBase=None):
     if zipBase is None:
@@ -554,7 +555,7 @@ and the are named <code>relative-version.zip</code>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/advanced/zipdata.py#L379-L415" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/advanced/zipdata.py#L380-L416" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     if len(cargs) &lt; 2 or any(
@@ -634,7 +635,7 @@ coming.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/advanced/zipdata.py#L79-L202" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/advanced/zipdata.py#L80-L203" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipAll(app):
     &#34;&#34;&#34;Gathers all data for a TF resource and zips it into one file.
@@ -775,7 +776,7 @@ coming.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/advanced/zipdata.py#L67-L76" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/advanced/zipdata.py#L68-L77" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipApi(app):
     &#34;&#34;&#34;Produce the zip creation API.
@@ -821,7 +822,7 @@ the back-end: <code>~/Downloads/github</code>, <code>~/Downloads/gitlab</code>, 
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/advanced/zipdata.py#L260-L376" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/advanced/zipdata.py#L261-L377" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipData(
     backend,
@@ -950,7 +951,7 @@ the back-end: <code>~/Downloads/github</code>, <code>~/Downloads/gitlab</code>, 
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/advanced/zipdata.py#L252-L257" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/advanced/zipdata.py#L253-L258" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipDataPart(source, results):
     if not dirExists(source):

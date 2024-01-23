@@ -35,7 +35,7 @@ extract(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/volumes/extract.py#L1-L738" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/volumes/extract.py#L1-L746" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Extract
@@ -59,7 +59,15 @@ from ..parameters import OTYPE, OSLOTS, OWORK, OINTERF, OINTERT
 from ..core.fabric import FabricCore
 from ..core.timestamp import Timestamp, SILENT_D, DEEP, silentConvert
 from ..core.helpers import getAllRealFeatures, console
-from ..core.files import unexpanduser as ux, dirEmpty, isFile, isDir, dirRemove, scanDir
+from ..core.files import (
+    fileOpen,
+    unexpanduser as ux,
+    dirEmpty,
+    isFile,
+    isDir,
+    dirRemove,
+    scanDir,
+)
 
 DEBUG = False
 OWORKI = &#34;oworki&#34;
@@ -104,7 +112,7 @@ def getVolumes(volumesLocation):
                 triggerFile = f&#34;{volumesLocation}/{vol}/{OTYPE}.tf&#34;
                 triggerLine = f&#34;@volume={vol}\n&#34;
                 if isFile(triggerFile):
-                    with open(triggerFile, encoding=&#34;utf8&#34;) as fh:
+                    with fileOpen(triggerFile) as fh:
                         triggered = False
                         for line in fh:
                             if line == triggerLine:
@@ -330,7 +338,7 @@ def extract(
         good = True
 
         removable = set()
-        for (name, v) in volumeData.items():
+        for name, v in volumeData.items():
             loc = f&#34;{volumesLocation}/{name}&#34;
             v[&#34;location&#34;] = loc
             if not dirEmpty(loc):
@@ -363,7 +371,7 @@ def extract(
             givenVolumes.clear()
 
             if type(volumes) is dict:
-                for (name, heads) in volumes.items():
+                for name, heads in volumes.items():
                     volumeData[name] = dict(heads=heads)
                     givenVolumes.add(name)
             else:
@@ -374,7 +382,7 @@ def extract(
 
             headIndex = {}
 
-            for (name, v) in volumeData.items():
+            for name, v in volumeData.items():
                 heads = v[&#34;heads&#34;]
                 if not heads:
                     error(&#34;Empty volumes not allowed&#34;)
@@ -406,7 +414,7 @@ def extract(
         good = True
         errors = set()
 
-        for (name, v) in volumeData.items():
+        for name, v in volumeData.items():
             thisGood = True
             for head in v[&#34;heads&#34;]:
                 if head not in toplevels:
@@ -478,7 +486,7 @@ def extract(
     }
 
     nTypeInfo = {}
-    for (nType, av, nF, nT) in C.levels.data[0:-1]:
+    for nType, av, nF, nT in C.levels.data[0:-1]:
         nTypeInfo[nType] = (nF, nT)
 
     toplevels = {}
@@ -486,7 +494,7 @@ def extract(
     def getTopLevels():
         nodes = F.otype.s(toplevelType)
 
-        for (i, nW) in enumerate(nodes):
+        for i, nW in enumerate(nodes):
             head = T.sectionFromNode(nW)[0] if byTitle else i + 1
             toplevels[head] = dict(
                 firstSlot=L.d(nW, otype=slotType)[0],
@@ -496,7 +504,7 @@ def extract(
         info(f&#34;Work consists of {len(toplevels)} {toplevelType}s:&#34;, tm=False)
         indent(level=1, reset=True)
 
-        for (head, lv) in toplevels.items():
+        for head, lv in toplevels.items():
             firstSlot = lv[&#34;firstSlot&#34;]
             lastSlot = lv[&#34;lastSlot&#34;]
             nSlots = lastSlot - firstSlot + 1
@@ -512,7 +520,7 @@ def extract(
         indent(level=1, reset=True)
         up = C.levUp.data
 
-        for (name, v) in volumeData.items():
+        for name, v in volumeData.items():
             info(f&#34;volume {name} ...&#34;)
             indent(level=2, reset=True)
 
@@ -548,7 +556,7 @@ def extract(
             nV = sV + 1
 
             indent(level=2)
-            for (nType, nodesW) in nodesByType.items():
+            for nType, nodesW in nodesByType.items():
                 startV = nV
                 for nW in nodesW:
                     owork[nV] = nW
@@ -573,7 +581,7 @@ def extract(
         info(&#34;Remap features ...&#34;)
         indent(level=1, reset=True)
 
-        for (name, v) in volumeData.items():
+        for name, v in volumeData.items():
             owork = v[OWORK]
             oworki = v[OWORKI]
             allSlots = v[ALLSLOTS]
@@ -587,11 +595,11 @@ def extract(
             headStr = &#34;-&#34;.join(str(head) for head in v[&#34;heads&#34;])
             volumeMeta = name if headStr == str(name) else f&#34;{name}:{headStr}&#34;
 
-            for (feat, meta) in metaDataTotal.items():
+            for feat, meta in metaDataTotal.items():
                 metaData[feat] = {k: m for (k, m) in meta.items()}
                 metaData[feat][&#34;volume&#34;] = volumeMeta
 
-            for (tp, feat, desc) in (
+            for tp, feat, desc in (
                 (&#34;int&#34;, OWORK, &#34;mapping from nodes in the volume to nodes in the work&#34;),
                 (&#34;str&#34;, OINTERF, &#34;all outgoing inter-volume edges&#34;),
                 (&#34;str&#34;, OINTERT, &#34;all incoming inter-volume edges&#34;),
@@ -622,7 +630,7 @@ def extract(
             oslots = {}
             edgeFeatures[OSLOTS] = oslots
 
-            for (nV, nW) in owork.items():
+            for nV, nW in owork.items():
                 otype[nV] = slotType if nW &lt;= maxSlot else fOtypeData[nW - maxSlot - 1]
 
                 if nW &gt; maxSlot:
@@ -634,12 +642,12 @@ def extract(
                     if not oslots[nV]:
                         error(f&#34;{otype[nV]} node v={nV} w={nW} has no slots&#34;, tm=False)
 
-                for (feat, featD) in nodeFeatureData.items():
+                for feat, featD in nodeFeatureData.items():
                     val = featD.get(nW, None)
                     if val is not None:
                         nodeFeatures.setdefault(feat, {})[nV] = val
 
-                for (feat, (doValues, valTp, featF, featT)) in edgeFeatureData.items():
+                for feat, (doValues, valTp, featF, featT) in edgeFeatureData.items():
                     # outgoing edges are used to construct the in-volume edge
                     # and the inter-volume outgoing edges
                     if doValues:
@@ -702,7 +710,7 @@ def extract(
 
         good = True
 
-        for (name, v) in volumeData.items():
+        for name, v in volumeData.items():
             info(f&#34;Writing volume {name}&#34;)
             metaData = v[&#34;metaData&#34;]
             nodeFeatures = v[&#34;nodeFeatures&#34;]
@@ -730,7 +738,7 @@ def extract(
         if checkOnly:
             if volumeData:
                 if show:
-                    for (name, v) in volumeData.items():
+                    for name, v in volumeData.items():
                         location = ux(v[&#34;location&#34;])
                         console(f&#34;{name:&lt;20} @ {location}&#34;)
                 else:
@@ -746,7 +754,7 @@ def extract(
             return None if show else False
         if checkOnly:
             if show:
-                for (name, v) in volumeData.items():
+                for name, v in volumeData.items():
                     location = ux(v[&#34;location&#34;])
                     console(f&#34;{name:&lt;20} @ {location}&#34;)
             else:
@@ -763,7 +771,7 @@ def extract(
             for name in sorted(givenVolumes | set(volumeData))
         }
         if show:
-            for (name, v) in result.items():
+            for name, v in result.items():
                 new = &#34; (new)&#34; if v[&#34;new&#34;] else &#34; &#34; * 6
                 location = ux(v[&#34;location&#34;])
                 console(f&#34;{name:&lt;20}{new} @ {location}&#34;)
@@ -944,7 +952,7 @@ Top-level section 13 will not be extracted into a volume.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/volumes/extract.py#L80-L738" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/volumes/extract.py#L88-L746" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def extract(
     workLocation,
@@ -1160,7 +1168,7 @@ Top-level section 13 will not be extracted into a volume.</p>
         good = True
 
         removable = set()
-        for (name, v) in volumeData.items():
+        for name, v in volumeData.items():
             loc = f&#34;{volumesLocation}/{name}&#34;
             v[&#34;location&#34;] = loc
             if not dirEmpty(loc):
@@ -1193,7 +1201,7 @@ Top-level section 13 will not be extracted into a volume.</p>
             givenVolumes.clear()
 
             if type(volumes) is dict:
-                for (name, heads) in volumes.items():
+                for name, heads in volumes.items():
                     volumeData[name] = dict(heads=heads)
                     givenVolumes.add(name)
             else:
@@ -1204,7 +1212,7 @@ Top-level section 13 will not be extracted into a volume.</p>
 
             headIndex = {}
 
-            for (name, v) in volumeData.items():
+            for name, v in volumeData.items():
                 heads = v[&#34;heads&#34;]
                 if not heads:
                     error(&#34;Empty volumes not allowed&#34;)
@@ -1236,7 +1244,7 @@ Top-level section 13 will not be extracted into a volume.</p>
         good = True
         errors = set()
 
-        for (name, v) in volumeData.items():
+        for name, v in volumeData.items():
             thisGood = True
             for head in v[&#34;heads&#34;]:
                 if head not in toplevels:
@@ -1308,7 +1316,7 @@ Top-level section 13 will not be extracted into a volume.</p>
     }
 
     nTypeInfo = {}
-    for (nType, av, nF, nT) in C.levels.data[0:-1]:
+    for nType, av, nF, nT in C.levels.data[0:-1]:
         nTypeInfo[nType] = (nF, nT)
 
     toplevels = {}
@@ -1316,7 +1324,7 @@ Top-level section 13 will not be extracted into a volume.</p>
     def getTopLevels():
         nodes = F.otype.s(toplevelType)
 
-        for (i, nW) in enumerate(nodes):
+        for i, nW in enumerate(nodes):
             head = T.sectionFromNode(nW)[0] if byTitle else i + 1
             toplevels[head] = dict(
                 firstSlot=L.d(nW, otype=slotType)[0],
@@ -1326,7 +1334,7 @@ Top-level section 13 will not be extracted into a volume.</p>
         info(f&#34;Work consists of {len(toplevels)} {toplevelType}s:&#34;, tm=False)
         indent(level=1, reset=True)
 
-        for (head, lv) in toplevels.items():
+        for head, lv in toplevels.items():
             firstSlot = lv[&#34;firstSlot&#34;]
             lastSlot = lv[&#34;lastSlot&#34;]
             nSlots = lastSlot - firstSlot + 1
@@ -1342,7 +1350,7 @@ Top-level section 13 will not be extracted into a volume.</p>
         indent(level=1, reset=True)
         up = C.levUp.data
 
-        for (name, v) in volumeData.items():
+        for name, v in volumeData.items():
             info(f&#34;volume {name} ...&#34;)
             indent(level=2, reset=True)
 
@@ -1378,7 +1386,7 @@ Top-level section 13 will not be extracted into a volume.</p>
             nV = sV + 1
 
             indent(level=2)
-            for (nType, nodesW) in nodesByType.items():
+            for nType, nodesW in nodesByType.items():
                 startV = nV
                 for nW in nodesW:
                     owork[nV] = nW
@@ -1403,7 +1411,7 @@ Top-level section 13 will not be extracted into a volume.</p>
         info(&#34;Remap features ...&#34;)
         indent(level=1, reset=True)
 
-        for (name, v) in volumeData.items():
+        for name, v in volumeData.items():
             owork = v[OWORK]
             oworki = v[OWORKI]
             allSlots = v[ALLSLOTS]
@@ -1417,11 +1425,11 @@ Top-level section 13 will not be extracted into a volume.</p>
             headStr = &#34;-&#34;.join(str(head) for head in v[&#34;heads&#34;])
             volumeMeta = name if headStr == str(name) else f&#34;{name}:{headStr}&#34;
 
-            for (feat, meta) in metaDataTotal.items():
+            for feat, meta in metaDataTotal.items():
                 metaData[feat] = {k: m for (k, m) in meta.items()}
                 metaData[feat][&#34;volume&#34;] = volumeMeta
 
-            for (tp, feat, desc) in (
+            for tp, feat, desc in (
                 (&#34;int&#34;, OWORK, &#34;mapping from nodes in the volume to nodes in the work&#34;),
                 (&#34;str&#34;, OINTERF, &#34;all outgoing inter-volume edges&#34;),
                 (&#34;str&#34;, OINTERT, &#34;all incoming inter-volume edges&#34;),
@@ -1452,7 +1460,7 @@ Top-level section 13 will not be extracted into a volume.</p>
             oslots = {}
             edgeFeatures[OSLOTS] = oslots
 
-            for (nV, nW) in owork.items():
+            for nV, nW in owork.items():
                 otype[nV] = slotType if nW &lt;= maxSlot else fOtypeData[nW - maxSlot - 1]
 
                 if nW &gt; maxSlot:
@@ -1464,12 +1472,12 @@ Top-level section 13 will not be extracted into a volume.</p>
                     if not oslots[nV]:
                         error(f&#34;{otype[nV]} node v={nV} w={nW} has no slots&#34;, tm=False)
 
-                for (feat, featD) in nodeFeatureData.items():
+                for feat, featD in nodeFeatureData.items():
                     val = featD.get(nW, None)
                     if val is not None:
                         nodeFeatures.setdefault(feat, {})[nV] = val
 
-                for (feat, (doValues, valTp, featF, featT)) in edgeFeatureData.items():
+                for feat, (doValues, valTp, featF, featT) in edgeFeatureData.items():
                     # outgoing edges are used to construct the in-volume edge
                     # and the inter-volume outgoing edges
                     if doValues:
@@ -1532,7 +1540,7 @@ Top-level section 13 will not be extracted into a volume.</p>
 
         good = True
 
-        for (name, v) in volumeData.items():
+        for name, v in volumeData.items():
             info(f&#34;Writing volume {name}&#34;)
             metaData = v[&#34;metaData&#34;]
             nodeFeatures = v[&#34;nodeFeatures&#34;]
@@ -1560,7 +1568,7 @@ Top-level section 13 will not be extracted into a volume.</p>
         if checkOnly:
             if volumeData:
                 if show:
-                    for (name, v) in volumeData.items():
+                    for name, v in volumeData.items():
                         location = ux(v[&#34;location&#34;])
                         console(f&#34;{name:&lt;20} @ {location}&#34;)
                 else:
@@ -1576,7 +1584,7 @@ Top-level section 13 will not be extracted into a volume.</p>
             return None if show else False
         if checkOnly:
             if show:
-                for (name, v) in volumeData.items():
+                for name, v in volumeData.items():
                     location = ux(v[&#34;location&#34;])
                     console(f&#34;{name:&lt;20} @ {location}&#34;)
             else:
@@ -1593,7 +1601,7 @@ Top-level section 13 will not be extracted into a volume.</p>
             for name in sorted(givenVolumes | set(volumeData))
         }
         if show:
-            for (name, v) in result.items():
+            for name, v in result.items():
                 new = &#34; (new)&#34; if v[&#34;new&#34;] else &#34; &#34; * 6
                 location = ux(v[&#34;location&#34;])
                 console(f&#34;{name:&lt;20}{new} @ {location}&#34;)
@@ -1628,7 +1636,7 @@ is returned. Otherwise a list of subdirectories that are modules.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/volumes/extract.py#L38-L77" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/volumes/extract.py#L46-L85" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getVolumes(volumesLocation):
     &#34;&#34;&#34;Lists volumes of a work that exist in a given directory.
@@ -1660,7 +1668,7 @@ is returned. Otherwise a list of subdirectories that are modules.</dd>
                 triggerFile = f&#34;{volumesLocation}/{vol}/{OTYPE}.tf&#34;
                 triggerLine = f&#34;@volume={vol}\n&#34;
                 if isFile(triggerFile):
-                    with open(triggerFile, encoding=&#34;utf8&#34;) as fh:
+                    with fileOpen(triggerFile) as fh:
                         triggered = False
                         for line in fh:
                             if line == triggerLine:

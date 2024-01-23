@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>tf.browser.web API documentation</title>
+<title>tf.browser.webSav API documentation</title>
 <meta name="description" content="Web interface …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
@@ -20,7 +20,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.browser.web</code></h1>
+<h1 class="title">Module <code>tf.browser.webSav</code></h1>
 </header>
 <section id="section-intro">
 <h1 id="web-interface">Web interface</h1>
@@ -109,7 +109,7 @@ browsers, not even Edge.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/browser/web.py#L1-L274" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/browser/webSav.py#L1-L296" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Web interface
@@ -190,6 +190,8 @@ browsers, not even Edge.
 !!! caution &#34;On Windows?&#34;
     Windows users should install Chrome of Firefox.
 &#34;&#34;&#34;
+
+import sys
 
 from flask import Flask, send_file
 from werkzeug.serving import run_simple
@@ -313,7 +315,23 @@ def factory(web):
     return app
 
 
-def setup(debug, *args):
+def main(cargs=sys.argv[1:]):
+    debug = False
+
+    if len(cargs) == 0:
+        args = []
+    else:
+        debugRep = cargs[0]
+        debug = debugRep == &#34;debug&#34;
+        args = cargs[1:]
+
+    if len(args) == 0:
+        cs(&#34;No port number specified&#34;)
+        cs(f&#34;{TF_ERROR}&#34;)
+        return
+
+    (portWeb, args) = (args[0], args[1:])
+
     appSpecs = argApp(args, False)
 
     if not appSpecs:
@@ -360,31 +378,35 @@ def setup(debug, *args):
         cs(f&#34;{TF_ERROR}&#34;)
         return
 
-    cs(&#34;Loading TF corpus data. Please wait ...&#34;)
+    try:
+        web = Web(makeTfKernel(app, appName))
 
-    web = Web(makeTfKernel(app, appName))
-    webapp = factory(web)
+        webapp = factory(web)
 
-    if debug:
-        webapp.config[&#39;TEMPLATES_AUTO_RELOAD&#39;] = True
-    web.debug = debug
-    cs(f&#34;{TF_DONE}&#34;)
+        if debug:
+            webapp.config[&#39;TEMPLATES_AUTO_RELOAD&#39;] = True
+        web.debug = debug
+        cs(f&#34;{TF_DONE}&#34;)
 
-    return webapp
+        run_simple(
+            HOST,
+            int(portWeb),
+            webapp,
+            use_reloader=debug,
+            use_debugger=debug,
+            use_evalex=debug,
+            threaded=True,
+        )
+    except OSError as e:
+        cs(str(e))
+        cs(f&#34;{TF_ERROR}&#34;)
+        return 1
+
+    return 0
 
 
-def runWeb(webapp, debug, portWeb):
-    run_simple(
-        HOST,
-        int(portWeb),
-        webapp,
-        use_reloader=debug,
-        use_debugger=debug,
-        use_evalex=debug,
-        threaded=True,
-    )
-
-    return 0</code></pre>
+if __name__ == &#34;__main__&#34;:
+    sys.exit(main())</code></pre>
 </details>
 </section>
 <section>
@@ -394,7 +416,7 @@ def runWeb(webapp, debug, portWeb):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.browser.web.factory"><code class="name flex">
+<dt id="tf.browser.webSav.factory"><code class="name flex">
 <span>def <span class="ident">factory</span></span>(<span>web)</span>
 </code></dt>
 <dd>
@@ -402,7 +424,7 @@ def runWeb(webapp, debug, portWeb):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/browser/web.py#L125-L200" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/browser/webSav.py#L127-L202" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def factory(web):
     app = Flask(__name__)
@@ -482,41 +504,33 @@ def runWeb(webapp, debug, portWeb):
     return app</code></pre>
 </details>
 </dd>
-<dt id="tf.browser.web.runWeb"><code class="name flex">
-<span>def <span class="ident">runWeb</span></span>(<span>webapp, debug, portWeb)</span>
+<dt id="tf.browser.webSav.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>cargs=['--force', '--html', '--output-dir', 'site', '--template-dir', 'tf/docs/templates', 'tf'])</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/browser/web.py#L263-L274" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/browser/webSav.py#L205-L292" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def runWeb(webapp, debug, portWeb):
-    run_simple(
-        HOST,
-        int(portWeb),
-        webapp,
-        use_reloader=debug,
-        use_debugger=debug,
-        use_evalex=debug,
-        threaded=True,
-    )
+<pre><code class="python">def main(cargs=sys.argv[1:]):
+    debug = False
 
-    return 0</code></pre>
-</details>
-</dd>
-<dt id="tf.browser.web.setup"><code class="name flex">
-<span>def <span class="ident">setup</span></span>(<span>debug, *args)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/browser/web.py#L203-L260" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def setup(debug, *args):
+    if len(cargs) == 0:
+        args = []
+    else:
+        debugRep = cargs[0]
+        debug = debugRep == &#34;debug&#34;
+        args = cargs[1:]
+
+    if len(args) == 0:
+        cs(&#34;No port number specified&#34;)
+        cs(f&#34;{TF_ERROR}&#34;)
+        return
+
+    (portWeb, args) = (args[0], args[1:])
+
     appSpecs = argApp(args, False)
 
     if not appSpecs:
@@ -563,17 +577,31 @@ def runWeb(webapp, debug, portWeb):
         cs(f&#34;{TF_ERROR}&#34;)
         return
 
-    cs(&#34;Loading TF corpus data. Please wait ...&#34;)
+    try:
+        web = Web(makeTfKernel(app, appName))
 
-    web = Web(makeTfKernel(app, appName))
-    webapp = factory(web)
+        webapp = factory(web)
 
-    if debug:
-        webapp.config[&#39;TEMPLATES_AUTO_RELOAD&#39;] = True
-    web.debug = debug
-    cs(f&#34;{TF_DONE}&#34;)
+        if debug:
+            webapp.config[&#39;TEMPLATES_AUTO_RELOAD&#39;] = True
+        web.debug = debug
+        cs(f&#34;{TF_DONE}&#34;)
 
-    return webapp</code></pre>
+        run_simple(
+            HOST,
+            int(portWeb),
+            webapp,
+            use_reloader=debug,
+            use_debugger=debug,
+            use_evalex=debug,
+            threaded=True,
+        )
+    except OSError as e:
+        cs(str(e))
+        cs(f&#34;{TF_ERROR}&#34;)
+        return 1
+
+    return 0</code></pre>
 </details>
 </dd>
 </dl>
@@ -581,7 +609,7 @@ def runWeb(webapp, debug, portWeb):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="tf.browser.web.Web"><code class="flex name class">
+<dt id="tf.browser.webSav.Web"><code class="flex name class">
 <span>class <span class="ident">Web</span></span>
 <span>(</span><span>kernelApi)</span>
 </code></dt>
@@ -590,7 +618,7 @@ def runWeb(webapp, debug, portWeb):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/browser/web.py#L112-L122" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/browser/webSav.py#L114-L124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Web:
     def __init__(self, kernelApi):
@@ -606,7 +634,7 @@ def runWeb(webapp, debug, portWeb):
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="tf.browser.web.Web.console"><code class="name flex">
+<dt id="tf.browser.webSav.Web.console"><code class="name flex">
 <span>def <span class="ident">console</span></span>(<span>self, msg)</span>
 </code></dt>
 <dd>
@@ -614,7 +642,7 @@ def runWeb(webapp, debug, portWeb):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/browser/web.py#L120-L122" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/browser/webSav.py#L122-L124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(self, msg):
     if self.debug:
@@ -700,17 +728,16 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="tf.browser.web.factory" href="#tf.browser.web.factory">factory</a></code></li>
-<li><code><a title="tf.browser.web.runWeb" href="#tf.browser.web.runWeb">runWeb</a></code></li>
-<li><code><a title="tf.browser.web.setup" href="#tf.browser.web.setup">setup</a></code></li>
+<li><code><a title="tf.browser.webSav.factory" href="#tf.browser.webSav.factory">factory</a></code></li>
+<li><code><a title="tf.browser.webSav.main" href="#tf.browser.webSav.main">main</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="tf.browser.web.Web" href="#tf.browser.web.Web">Web</a></code></h4>
+<h4><code><a title="tf.browser.webSav.Web" href="#tf.browser.webSav.Web">Web</a></code></h4>
 <ul class="">
-<li><code><a title="tf.browser.web.Web.console" href="#tf.browser.web.Web.console">console</a></code></li>
+<li><code><a title="tf.browser.webSav.Web.console" href="#tf.browser.webSav.Web.console">console</a></code></li>
 </ul>
 </li>
 </ul>

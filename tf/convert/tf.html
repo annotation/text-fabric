@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/tf.py#L1-L324" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/tf.py#L1-L325" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Raw, unoptimised data from TF files
@@ -36,6 +36,7 @@
 import sys
 
 from ..core.files import (
+    fileOpen,
     expanduser as ex,
     unexpanduser as ux,
     normpath,
@@ -170,7 +171,7 @@ def explode(inPath, outPath):
 
 
 def _readTf(path):
-    fh = open(path, encoding=&#34;utf8&#34;)
+    fh = fileOpen(path)
     i = 0
     metaData = {}
     isEdge = False
@@ -304,7 +305,7 @@ def _readDataTf(fh, firstI, valueType, isEdge, edgeValues):
 
 def _writeTf(outFile, data, valueType, isEdge):
     isInt = valueType == &#34;int&#34;
-    with open(outFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+    with fileOpen(outFile, mode=&#34;w&#34;) as fh:
         if isEdge:
             if isInt:
                 for ((n, m), v) in sorted(data.items()):
@@ -413,7 +414,7 @@ If pointing to an existing directory, exploded file(s) will be put there.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/tf.py#L25-L138" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/tf.py#L26-L139" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def explode(inPath, outPath):
     &#34;&#34;&#34;Explodes `.tf` files into non-optimised `.tf` files without metadata.

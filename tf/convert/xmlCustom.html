@@ -26,13 +26,13 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/xmlCustom.py#L1-L334" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/xmlCustom.py#L1-L334" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 from io import BytesIO
 
 from tf.core.helpers import console
-from tf.core.files import initTree, unexpanduser as ux
+from tf.core.files import fileOpen, initTree, unexpanduser as ux
 
 from tf.convert.helpers import ZWSP, XNEST, TNEST, CHAR, FOLDER, FILE
 
@@ -328,7 +328,7 @@ def getDirector(self, etree):
                 cur[FILE] = cv.node(FILE)
                 cv.feature(cur[FILE], file=xmlFile.removesuffix(&#34;.xml&#34;))
 
-                with open(f&#34;{xmlPath}/{xmlFolder}/{xmlFile}&#34;, encoding=&#34;utf8&#34;) as fh:
+                with fileOpen(f&#34;{xmlPath}/{xmlFolder}/{xmlFile}&#34;) as fh:
                     text = fh.read()
                     text = transformFunc(text)
                     tree = etree.parse(text, parser)
@@ -379,7 +379,7 @@ def getDirector(self, etree):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/xmlCustom.py#L10-L83" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/xmlCustom.py#L10-L83" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTaskDefault(etree):
     if etree is None:
@@ -477,7 +477,7 @@ object. If you then tweak it, you can pass it to the XML() object constructor.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/xmlCustom.py#L86-L334" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/xmlCustom.py#L86-L334" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self, etree):
     &#34;&#34;&#34;Factory for the director function.
@@ -694,7 +694,7 @@ object. If you then tweak it, you can pass it to the XML() object constructor.</
                 cur[FILE] = cv.node(FILE)
                 cv.feature(cur[FILE], file=xmlFile.removesuffix(&#34;.xml&#34;))
 
-                with open(f&#34;{xmlPath}/{xmlFolder}/{xmlFile}&#34;, encoding=&#34;utf8&#34;) as fh:
+                with fileOpen(f&#34;{xmlPath}/{xmlFolder}/{xmlFile}&#34;) as fh:
                     text = fh.read()
                     text = transformFunc(text)
                     tree = etree.parse(text, parser)

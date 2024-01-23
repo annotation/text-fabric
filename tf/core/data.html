@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/data.py#L1-L721" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/data.py#L1-L722" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import array
 import gc
@@ -47,6 +47,7 @@ from .helpers import (
     console,
 )
 from .files import (
+    fileOpen,
     unexpanduser as ux,
     fileExists,
     fileRemove,
@@ -262,7 +263,7 @@ class Data:
         if not fileExists(path):
             error(f&#39;TF reading: feature file &#34;{path}&#34; does not exist&#39;)
             return False
-        fh = open(path, encoding=&#34;utf8&#34;)
+        fh = fileOpen(path)
         i = 0
         self.metaData = {}
         self.isConfig = False
@@ -540,7 +541,7 @@ class Data:
                     )
                     return False
         try:
-            fh = open(fpath, &#34;w&#34;, encoding=&#34;utf8&#34;)
+            fh = fileOpen(fpath, mode=&#34;w&#34;)
         except Exception:
             error(f&#39;Cannot write to feature file &#34;{fpath}&#34;&#39;)
             return False
@@ -692,7 +693,7 @@ class Data:
         good = True
 
         try:
-            with gzip.open(self.binPath, &#34;rb&#34;) as f:
+            with gzip.open(self.binPath, mode=&#34;rb&#34;) as f:
                 self.data = pickle.load(f)
             good = True
         except Exception:
@@ -714,7 +715,7 @@ class Data:
         dirMake(self.binDir)
 
         try:
-            with gzip.open(self.binPath, &#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
+            with gzip.open(self.binPath, mode=&#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
                 # pickle.dump(self.data, f, protocol=PICKLE_PROTOCOL)
                 f.write(optimize(pickle.dumps(self.data, protocol=PICKLE_PROTOCOL)))
         except Exception as e:
@@ -769,7 +770,7 @@ class Data:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/data.py#L44-L721" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/data.py#L45-L722" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Data:
     def __init__(
@@ -962,7 +963,7 @@ class Data:
         if not fileExists(path):
             error(f&#39;TF reading: feature file &#34;{path}&#34; does not exist&#39;)
             return False
-        fh = open(path, encoding=&#34;utf8&#34;)
+        fh = fileOpen(path)
         i = 0
         self.metaData = {}
         self.isConfig = False
@@ -1240,7 +1241,7 @@ class Data:
                     )
                     return False
         try:
-            fh = open(fpath, &#34;w&#34;, encoding=&#34;utf8&#34;)
+            fh = fileOpen(fpath, mode=&#34;w&#34;)
         except Exception:
             error(f&#39;Cannot write to feature file &#34;{fpath}&#34;&#39;)
             return False
@@ -1392,7 +1393,7 @@ class Data:
         good = True
 
         try:
-            with gzip.open(self.binPath, &#34;rb&#34;) as f:
+            with gzip.open(self.binPath, mode=&#34;rb&#34;) as f:
                 self.data = pickle.load(f)
             good = True
         except Exception:
@@ -1414,7 +1415,7 @@ class Data:
         dirMake(self.binDir)
 
         try:
-            with gzip.open(self.binPath, &#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
+            with gzip.open(self.binPath, mode=&#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
                 # pickle.dump(self.data, f, protocol=PICKLE_PROTOCOL)
                 f.write(optimize(pickle.dumps(self.data, protocol=PICKLE_PROTOCOL)))
         except Exception as e:
@@ -1460,7 +1461,7 @@ class Data:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/data.py#L676-L677" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/data.py#L677-L678" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cleanDataBin(self):
     fileRemove(self.binPath)</code></pre>
@@ -1477,7 +1478,7 @@ loading features. Used to experiment with performance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/data.py#L77-L185" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/data.py#L78-L186" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, metaOnly=False, silent=SILENT_D, _withGc=True):
     &#34;&#34;&#34;Load a feature.
@@ -1598,7 +1599,7 @@ loading features. Used to experiment with performance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/data.py#L191-L201" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/data.py#L192-L202" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def save(self, overwrite=False, nodeRanges=False, silent=SILENT_D):
     silent = silentConvert(silent)
@@ -1621,7 +1622,7 @@ loading features. Used to experiment with performance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/data.py#L187-L189" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/data.py#L188-L190" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def unload(self):
     self.data = None

@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L1-L697" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L1-L710" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import yaml
@@ -48,6 +48,19 @@ from ..parameters import (
     REPO,
 )
 from .generic import deepAttrDict
+
+
+def fileOpen(*args, **kwargs):
+    &#34;&#34;&#34;Wrapper around `open()`, making sure `encoding=&#34;utf8&#34; is passed.
+
+    This function calls `open()` with the same arguments, but if the optional
+    argument `encoding` is missing and the mode argument does not contain a `b`
+    (binary file), then `encoding=&#34;utf8&#34;` is supplied.
+    &#34;&#34;&#34;
+
+    if &#34;encoding&#34; in kwargs or (&#34;mode&#34; in kwargs and &#34;b&#34; in kwargs[&#34;mode&#34;]):
+        return open(*args, **kwargs)
+    return open(*args, **kwargs, encoding=&#34;utf8&#34;)
 
 
 def normpath(path):
@@ -709,7 +722,7 @@ def readYaml(text=None, plain=False, asFile=None, preferTuples=True):
         cfg = yaml.load(text, **kwargs)
     else:
         if fileExists(asFile):
-            with open(asFile, encoding=&#34;utf8&#34;) as fh:
+            with fileOpen(asFile) as fh:
                 cfg = yaml.load(fh, **kwargs)
         else:
             cfg = {}
@@ -723,7 +736,7 @@ def writeYaml(data, asFile=None, sorted=False):
     if asFile is None:
         return yaml.dump(data, **kwargs)
 
-    with open(asFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+    with fileOpen(asFile, mode=&#34;w&#34;) as fh:
         yaml.dump(data, fh, **kwargs)</code></pre>
 </details>
 </section>
@@ -849,7 +862,7 @@ Put a line</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L40-L41" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L53-L54" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def abspath(path):
     return normpath(os.path.abspath(path))</code></pre>
@@ -880,7 +893,7 @@ the corpus</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L248-L270" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L261-L283" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def annotateDir(app, tool):
     &#34;&#34;&#34;Return the input and output directories for a specific annotation tool.
@@ -962,7 +975,7 @@ but only if that module has a different back-end than the main module.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L139-L245" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L152-L258" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def backendRep(be, kind, default=None):
     &#34;&#34;&#34;Various back-end dependent values.
@@ -1081,7 +1094,7 @@ but only if that module has a different back-end than the main module.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L448-L450" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L461-L463" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def baseNm(path):
     &#34;&#34;&#34;Get the file part of a file name.&#34;&#34;&#34;
@@ -1101,7 +1114,7 @@ but only if that module has a different back-end than the main module.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L664-L672" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L677-L685" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def chDir(directory):
     &#34;&#34;&#34;Change to other directory.
@@ -1129,7 +1142,7 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L380-L408" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L393-L421" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clearTree(path):
     &#34;&#34;&#34;Remove all files from a directory, recursively, but leave subdirectories.
@@ -1186,7 +1199,7 @@ by the bit relative to <code>path</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L608-L650" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L621-L663" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirAllFiles(path, ignore=None):
     &#34;&#34;&#34;Gets all the files found by `path`.
@@ -1255,7 +1268,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L574-L605" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L587-L618" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirContents(path):
     &#34;&#34;&#34;Gets the contents of a directory.
@@ -1300,7 +1313,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L552-L565" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L565-L578" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirCopy(pathSrc, pathDst, noclobber=False):
     &#34;&#34;&#34;Copies a directory if it exists as directory.
@@ -1326,7 +1339,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L375-L377" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L388-L390" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirEmpty(target):
     target = normpath(target)
@@ -1341,7 +1354,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L522-L532" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L535-L545" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirExists(path):
     &#34;&#34;&#34;Whether a path exists as directory on the file system.&#34;&#34;&#34;
@@ -1364,7 +1377,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L568-L571" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L581-L584" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirMake(path):
     &#34;&#34;&#34;Creates a directory if it does not already exist as directory.&#34;&#34;&#34;
@@ -1381,7 +1394,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L541-L549" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L554-L562" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirMove(pathSrc, pathDst):
     &#34;&#34;&#34;Moves a directory if it exists as directory.
@@ -1402,7 +1415,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L443-L445" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L456-L458" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirNm(path):
     &#34;&#34;&#34;Get the directory part of a file name.&#34;&#34;&#34;
@@ -1417,7 +1430,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L535-L538" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L548-L551" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirRemove(path):
     &#34;&#34;&#34;Removes a directory if it exists as directory.&#34;&#34;&#34;
@@ -1433,7 +1446,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L66-L73" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L79-L86" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def expandDir(obj, dirName):
     if dirName.startswith(&#34;~&#34;):
@@ -1453,7 +1466,7 @@ There is no attempt to sort the files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L44-L49" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L57-L62" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def expanduser(path):
     nPath = normpath(path)
@@ -1473,7 +1486,7 @@ If there is no extension, the empty string is returned.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L453-L460" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L466-L473" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def extNm(path):
     &#34;&#34;&#34;Get the extension part of a file name.
@@ -1494,7 +1507,7 @@ If there is no extension, the empty string is returned.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L502-L509" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L515-L522" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fileCopy(pathSrc, pathDst):
     &#34;&#34;&#34;Copies a file if it exists as file.
@@ -1514,7 +1527,7 @@ If there is no extension, the empty string is returned.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L491-L493" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L504-L506" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fileExists(path):
     &#34;&#34;&#34;Whether a path exists as file on the file system.&#34;&#34;&#34;
@@ -1530,7 +1543,7 @@ If there is no extension, the empty string is returned.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L512-L519" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L525-L532" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fileMove(pathSrc, pathDst):
     &#34;&#34;&#34;Moves a file if it exists as file.
@@ -1542,6 +1555,32 @@ If there is no extension, the empty string is returned.</p></div>
     os.rename(pathSrc, pathDst)</code></pre>
 </details>
 </dd>
+<dt id="tf.core.files.fileOpen"><code class="name flex">
+<span>def <span class="ident">fileOpen</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Wrapper around <code>open()</code>, making sure `encoding="utf8" is passed.</p>
+<p>This function calls <code>open()</code> with the same arguments, but if the optional
+argument <code>encoding</code> is missing and the mode argument does not contain a <code>b</code>
+(binary file), then <code>encoding="utf8"</code> is supplied.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L23-L33" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def fileOpen(*args, **kwargs):
+    &#34;&#34;&#34;Wrapper around `open()`, making sure `encoding=&#34;utf8&#34; is passed.
+
+    This function calls `open()` with the same arguments, but if the optional
+    argument `encoding` is missing and the mode argument does not contain a `b`
+    (binary file), then `encoding=&#34;utf8&#34;` is supplied.
+    &#34;&#34;&#34;
+
+    if &#34;encoding&#34; in kwargs or (&#34;mode&#34; in kwargs and &#34;b&#34; in kwargs[&#34;mode&#34;]):
+        return open(*args, **kwargs)
+    return open(*args, **kwargs, encoding=&#34;utf8&#34;)</code></pre>
+</details>
+</dd>
 <dt id="tf.core.files.fileRemove"><code class="name flex">
 <span>def <span class="ident">fileRemove</span></span>(<span>path)</span>
 </code></dt>
@@ -1550,7 +1589,7 @@ If there is no extension, the empty string is returned.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L496-L499" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L509-L512" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fileRemove(path):
     &#34;&#34;&#34;Removes a file if it exists as file.&#34;&#34;&#34;
@@ -1571,7 +1610,7 @@ If there is no extension, the empty string is returned.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L653-L661" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L666-L674" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getCwd():
     &#34;&#34;&#34;Get current directory.
@@ -1613,7 +1652,7 @@ goes into the <code>relative</code> component, preceded with a backslash if it i
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L81-L136" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L94-L149" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getLocation(targetDir=None):
     &#34;&#34;&#34;Get back-end, org, repo, relative of directory.
@@ -1694,7 +1733,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L411-L440" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L424-L453" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def initTree(path, fresh=False, gentle=False):
     &#34;&#34;&#34;Make sure a directory exists, optionally clean it.
@@ -1736,7 +1775,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L486-L488" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L499-L501" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isDir(path):
     &#34;&#34;&#34;Whether path exists and is a directory.&#34;&#34;&#34;
@@ -1751,7 +1790,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L481-L483" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L494-L496" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isFile(path):
     &#34;&#34;&#34;Whether path exists and is a file.&#34;&#34;&#34;
@@ -1766,7 +1805,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L23-L27" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L36-L40" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def normpath(path):
     if path is None:
@@ -1783,7 +1822,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L76-L78" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L89-L91" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def prefixSlash(path):
     &#34;&#34;&#34;Prefix a / before a path if it is non-empty and not already starts with it.&#34;&#34;&#34;
@@ -1798,7 +1837,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L675-L687" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L688-L700" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readYaml(text=None, plain=False, asFile=None, preferTuples=True):
     kwargs = dict(Loader=yaml.FullLoader)
@@ -1807,7 +1846,7 @@ subdirectories.</dd>
         cfg = yaml.load(text, **kwargs)
     else:
         if fileExists(asFile):
-            with open(asFile, encoding=&#34;utf8&#34;) as fh:
+            with fileOpen(asFile) as fh:
                 cfg = yaml.load(fh, **kwargs)
         else:
             cfg = {}
@@ -1823,7 +1862,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L470-L473" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L483-L486" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def replaceExt(path, newExt):
     &#34;&#34;&#34;Replace the extension of a path by another one. Specify it without dot.&#34;&#34;&#34;
@@ -1839,7 +1878,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L60-L63" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L73-L76" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setDir(obj):
     obj.homeDir = expanduser(&#34;~&#34;)
@@ -1855,7 +1894,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L476-L478" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L489-L491" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def splitPath(path):
     &#34;&#34;&#34;Split a file name in a directory part and a file part.&#34;&#34;&#34;
@@ -1870,7 +1909,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L463-L467" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L476-L480" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def stripExt(path):
     &#34;&#34;&#34;Strip the extension of a file name, if there is one.&#34;&#34;&#34;
@@ -1887,7 +1926,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L52-L57" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L65-L70" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def unexpanduser(path):
     nPath = normpath(path)
@@ -1905,7 +1944,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/core/files.py#L690-L697" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/core/files.py#L703-L710" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeYaml(data, asFile=None, sorted=False):
     kwargs = dict(allow_unicode=True, sort_keys=sorted)
@@ -1913,7 +1952,7 @@ subdirectories.</dd>
     if asFile is None:
         return yaml.dump(data, **kwargs)
 
-    with open(asFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+    with fileOpen(asFile, mode=&#34;w&#34;) as fh:
         yaml.dump(data, fh, **kwargs)</code></pre>
 </details>
 </dd>
@@ -2031,6 +2070,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.core.files.fileCopy" href="#tf.core.files.fileCopy">fileCopy</a></code></li>
 <li><code><a title="tf.core.files.fileExists" href="#tf.core.files.fileExists">fileExists</a></code></li>
 <li><code><a title="tf.core.files.fileMove" href="#tf.core.files.fileMove">fileMove</a></code></li>
+<li><code><a title="tf.core.files.fileOpen" href="#tf.core.files.fileOpen">fileOpen</a></code></li>
 <li><code><a title="tf.core.files.fileRemove" href="#tf.core.files.fileRemove">fileRemove</a></code></li>
 <li><code><a title="tf.core.files.getCwd" href="#tf.core.files.getCwd">getCwd</a></code></li>
 <li><code><a title="tf.core.files.getLocation" href="#tf.core.files.getLocation">getLocation</a></code></li>

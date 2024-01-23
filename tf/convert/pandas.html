@@ -56,7 +56,7 @@ programs, such as TF, to process the same data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/pandas.py#L1-L296" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/pandas.py#L1-L296" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Export a TF dataset to a `pandas` data frame.
@@ -95,7 +95,7 @@ programs, such as TF, to process the same data.
 
 from ..capable import CheckImport
 from ..parameters import OTYPE, OSLOTS
-from ..core.files import TEMP_DIR, unexpanduser as ux, expandDir, dirMake
+from ..core.files import TEMP_DIR, fileOpen, unexpanduser as ux, expandDir, dirMake
 from ..core.helpers import fitemize, pandasEsc, PANDAS_QUOTE, PANDAS_ESCAPE
 
 
@@ -259,7 +259,7 @@ def exportPandas(app, inTypes=None, exportDir=None):
     app.info(&#34;Create tsv file ...&#34;)
     app.indent(level=True, reset=True)
 
-    with open(tableFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as hr:
+    with fileOpen(tableFile, mode=&#34;w&#34;) as hr:
         cells = (
             &#34;nd&#34;,
             &#34;otype&#34;,
@@ -315,7 +315,7 @@ def exportPandas(app, inTypes=None, exportDir=None):
 
     app.info(f&#34;TSV file is {ux(tableFile)}&#34;)
 
-    with open(tableFile, &#34;r&#34;, encoding=&#34;utf8&#34;) as hr:
+    with fileOpen(tableFile, mode=&#34;r&#34;) as hr:
         rows = 0
         chars = 0
         columns = 0
@@ -435,7 +435,7 @@ If <code>None</code>, it is the <code>/pandas</code> directory in the repo of th
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/convert/pandas.py#L51-L296" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/convert/pandas.py#L51-L296" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exportPandas(app, inTypes=None, exportDir=None):
     &#34;&#34;&#34;Export a currently loaded TF dataset to `pandas`.
@@ -588,7 +588,7 @@ If <code>None</code>, it is the <code>/pandas</code> directory in the repo of th
     app.info(&#34;Create tsv file ...&#34;)
     app.indent(level=True, reset=True)
 
-    with open(tableFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as hr:
+    with fileOpen(tableFile, mode=&#34;w&#34;) as hr:
         cells = (
             &#34;nd&#34;,
             &#34;otype&#34;,
@@ -644,7 +644,7 @@ If <code>None</code>, it is the <code>/pandas</code> directory in the repo of th
 
     app.info(f&#34;TSV file is {ux(tableFile)}&#34;)
 
-    with open(tableFile, &#34;r&#34;, encoding=&#34;utf8&#34;) as hr:
+    with fileOpen(tableFile, mode=&#34;r&#34;) as hr:
         rows = 0
         chars = 0
         columns = 0

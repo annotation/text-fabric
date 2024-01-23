@@ -28,7 +28,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/lib.py#L1-L172" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/lib.py#L1-L172" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Utility functions
@@ -40,7 +40,7 @@ import pickle
 import gzip
 from .parameters import PICKLE_PROTOCOL, GZIP_LEVEL
 from .core.helpers import console
-from .core.files import expanduser as ex, fileExists, dirMake, splitPath
+from .core.files import fileOpen, expanduser as ex, fileExists, dirMake, splitPath
 
 
 def writeList(data, dest, intCols=None):
@@ -86,7 +86,7 @@ def writeList(data, dest, intCols=None):
 
     dirMake(baseDir)
 
-    with open(destPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+    with fileOpen(destPath, mode=&#34;w&#34;) as fh:
         if intCols is None:
             intCols = {i: False for i in range(len(data[0]))} if len(data) else {}
         else:
@@ -130,7 +130,7 @@ def readList(source):
 
     data = []
 
-    with open(sourcePath, encoding=&#34;utf8&#34;) as fh:
+    with fileOpen(sourcePath) as fh:
         colInt = {
             i: tp == &#34;int&#34; for (i, tp) in enumerate(next(fh).rstrip(&#34;\n&#34;).split(&#34;\t&#34;))
         }
@@ -171,7 +171,7 @@ def writeSets(sets, dest):
 
     dirMake(baseDir)
 
-    with gzip.open(destPath, &#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
+    with gzip.open(destPath, mode=&#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
         pickle.dump(sets, f, protocol=PICKLE_PROTOCOL)
     return True
 
@@ -199,7 +199,7 @@ def readSets(source):
     if not fileExists(sourcePath):
         console(f&#39;Sets file &#34;{source}&#34; does not exist.&#39;)
         return False
-    with gzip.open(sourcePath, &#34;rb&#34;) as f:
+    with gzip.open(sourcePath, mode=&#34;rb&#34;) as f:
         sets = pickle.load(f)
     return sets</code></pre>
 </details>
@@ -232,7 +232,7 @@ This file must contain a <code>gzipped</code>, <code>pickled</code> data structu
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/lib.py#L75-L112" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/lib.py#L75-L112" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readList(source):
     &#34;&#34;&#34;Reads list of tuples from a TSV file.
@@ -260,7 +260,7 @@ This file must contain a <code>gzipped</code>, <code>pickled</code> data structu
 
     data = []
 
-    with open(sourcePath, encoding=&#34;utf8&#34;) as fh:
+    with fileOpen(sourcePath) as fh:
         colInt = {
             i: tp == &#34;int&#34; for (i, tp) in enumerate(next(fh).rstrip(&#34;\n&#34;).split(&#34;\t&#34;))
         }
@@ -295,7 +295,7 @@ This file must contain a <code>gzipped</code>, <code>pickled</code> data structu
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/lib.py#L147-L172" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/lib.py#L147-L172" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readSets(source):
     &#34;&#34;&#34;Reads a dictionary of named sets from file.
@@ -320,7 +320,7 @@ This file must contain a <code>gzipped</code>, <code>pickled</code> data structu
     if not fileExists(sourcePath):
         console(f&#39;Sets file &#34;{source}&#34; does not exist.&#39;)
         return False
-    with gzip.open(sourcePath, &#34;rb&#34;) as f:
+    with gzip.open(sourcePath, mode=&#34;rb&#34;) as f:
         sets = pickle.load(f)
     return sets</code></pre>
 </details>
@@ -365,7 +365,7 @@ If None, all columns are of type string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/lib.py#L14-L72" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/lib.py#L14-L72" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeList(data, dest, intCols=None):
     &#34;&#34;&#34;Writes a list of tuples sets to a TSV file.
@@ -410,7 +410,7 @@ If None, all columns are of type string.</dd>
 
     dirMake(baseDir)
 
-    with open(destPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+    with fileOpen(destPath, mode=&#34;w&#34;) as fh:
         if intCols is None:
             intCols = {i: False for i in range(len(data[0]))} if len(data) else {}
         else:
@@ -452,7 +452,7 @@ The result will be written from this file.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0521fcc1b2d8c2da4c26eb6dbd7262d494522679/tf/lib.py#L115-L144" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/lib.py#L115-L144" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeSets(sets, dest):
     &#34;&#34;&#34;Writes a dictionary of named sets to file.
@@ -481,7 +481,7 @@ The result will be written from this file.</dd>
 
     dirMake(baseDir)
 
-    with gzip.open(destPath, &#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
+    with gzip.open(destPath, mode=&#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
         pickle.dump(sets, f, protocol=PICKLE_PROTOCOL)
     return True</code></pre>
 </details>
