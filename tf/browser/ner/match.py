@@ -26,7 +26,7 @@ def occMatch(getTokens, b, qTokenSet, results):
         A single occurrence is represented as a tuple of slots.
     """
     bTokensAll = getTokens(b)
-    bTokens = [x for x in bTokensAll if x[1].strip()]
+    bTokens = [x for x in bTokensAll if (x[1] or '').strip()]
     bStrings = {s for (t, s) in bTokens}
     nBTokens = len(bTokens)
 
@@ -118,7 +118,7 @@ def entityMatch(
             fits = True
 
     bTokensAll = getTokens(b)
-    bTokens = [x for x in bTokensAll if x[1].strip()]
+    bTokens = [x for x in bTokensAll if (x[1] or "").strip()]
 
     if fits is None or fits:
         if anyEnt is not None:

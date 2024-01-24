@@ -20,6 +20,21 @@ pip install -e .
 
 ### 12.2
 
+#### 12.2.8
+
+2024-01-24
+
+TF can auto-download extra data with a TF dataset, e.g. a directory with named entities
+(`ner`) as in the [suriano corpus](https://gitlab.huc.knaw.nl/suriano/letters).
+
+However, this only worked when the repo was in the `github` backend and the extra
+data had been packed for express-download and attached to a release.
+
+Now it also works with the normal download methods using the GitHub and GitLab APIs.
+
+So, after the move of Suriano from GitHub to GitLab, this functionality is still
+available.
+
 #### 12.2.7
 
 2024-01-23

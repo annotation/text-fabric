@@ -10,7 +10,15 @@ from .links import provenanceLink
 
 class AppData:
     def __init__(
-        self, app, backend, moduleRefs, locations, modules, version, checkout, silent
+        self,
+        app,
+        backend,
+        moduleRefs,
+        locations,
+        modules,
+        version,
+        checkout,
+        silent,
     ):
         """Collects TF data according to specifications.
 
@@ -137,6 +145,45 @@ class AppData:
             ):
                 self.good = False
 
+    def getExtra(self):
+        """Get the extra data specified by the settings of the corpus.
+
+        These are specified in the `extraData` setting under
+        `provenanceSpecs` in `config.yaml`.
+
+        This data will be downloaded if needed, but it will not be loaded.
+        It probably is not even TF data.
+
+        See Also
+        --------
+        tf.advanced.settings: options allowed in `config.yaml`
+        """
+
+        app = self.app
+        loadData = app.loadData
+
+        if not loadData or loadData == "core":
+            return
+
+        aContext = app.context
+        extraData = aContext.extraData
+        checkout = self.checkout
+        backend = self.backend
+
+        org = aContext.org
+        repo = aContext.repo
+        relative = extraData
+
+        if not self.getModule(
+            org,
+            repo,
+            relative,
+            checkout,
+            backend=backend,
+            isExtra=True,
+        ):
+            self.good = False
+
     def getRefs(self):
         """Get data from additional modules.
 
@@ -185,6 +232,7 @@ class AppData:
         self.getMain()
         self.getRefs()
         self.getStandard()
+        self.getExtra()
 
         version = self.version
         good = self.good
@@ -222,7 +270,15 @@ class AppData:
         self.modules = mModules + givenModules
 
     def getModule(
-        self, org, repo, relative, checkout, backend=None, isBase=False, specs=None
+        self,
+        org,
+        repo,
+        relative,
+        checkout,
+        backend=None,
+        isBase=False,
+        isExtra=False,
+        specs=None,
     ):
         """Prepare to load a single module.
 
@@ -244,6 +300,9 @@ class AppData:
             A specifier to use a specific release or commit of a data repository.
         backend: string
             The back-end if different from the back-end of the main module
+        isExtra: boolean, optional False
+            If this is True, we are dealing with extra (non-TF) data.
+            The data must be obtained, but not loaded.
         isBase: boolean, optional False
             Whether this module is the main data of the corpus.
         specs: dict, optional False
@@ -271,7 +330,8 @@ class AppData:
         if org is None or repo is None:
             relativeBare = relative.removeprefix("/")
             repoLocation = relativeBare
-            mLocations.append(relativeBare)
+            if not isExtra:
+                mLocations.append(relativeBare)
             (commit, local, release) = (None, None, None)
         else:
             (commit, release, local, localBase, localDir) = checkoutRepo(
@@ -280,21 +340,25 @@ class AppData:
                 org=org,
                 repo=repo,
                 folder=relative,
-                version=version,
+                version=None if isExtra else version,
                 checkout=checkout,
-                withPaths=False,
-                keep=False,
+                withPaths=True if isExtra else False,
+                keep=True if isExtra else False,
                 silent=silent,
             )
             if not localBase:
                 return False
 
             repoLocation = f"{localBase}/{org}/{repo}"
-            mLocations.append(f"{localBase}/{localDir}")
+            if not isExtra:
+                mLocations.append(f"{localBase}/{localDir}")
 
         seen.add(moduleRef)
         if isBase:
             app.repoLocation = repoLocation
+
+        if isExtra:
+            return True
 
         info = {}
         for item in (
@@ -318,7 +382,15 @@ class AppData:
                 (
                     "live",
                     provenanceLink(
-                        backend, org, repo, version, branch, commit, local, release, relative
+                        backend,
+                        org,
+                        repo,
+                        version,
+                        branch,
+                        commit,
+                        local,
+                        release,
+                        relative,
                     ),
                 ),
                 ("doi", info["doi"]),

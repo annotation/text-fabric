@@ -7,7 +7,7 @@ TF contains a web interface
 in which you can enter a search template and view the results.
 
 This is realized by a web app based on
-[Flask](http://flask.pocoo.org/docs/1.0/).
+[Flask](https://flask.palletsprojects.com/en/3.0.x/).
 
 This web app initializes by loading a TF corpus from which it obtains data.
 In response to requests, it merges the retrieved data into a set of

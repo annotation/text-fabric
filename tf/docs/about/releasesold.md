@@ -2869,7 +2869,7 @@ For more info: see [#38](https://github.com/annotation/text-fabric/issues/38)
     The dependency on
     [Bottle](https://bottlepy.org)
     as web server has been replaced by
-    [Flask](http://flask.pocoo.org/docs/1.0/)
+    [Flask](https://flask.palletsprojects.com/en/3.0.x/)
     because Bottle is lagging behind in support for Python 3.7.
 
 !!! abstract "Plain display in Uruk"
