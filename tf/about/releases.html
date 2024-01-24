@@ -38,7 +38,7 @@ and in its top-level directory run the command:</strong></p>
 </code></pre>
 <h2 id="12">12</h2>
 <h3 id="122">12.2</h3>
-<h4 id="1228">12.2.8</h4>
+<h4 id="12289">12.2.8,9</h4>
 <p>2024-01-24</p>
 <p>TF can auto-download extra data with a TF dataset, e.g. a directory with named entities
 (<code>ner</code>) as in the <a href="https://gitlab.huc.knaw.nl/suriano/letters">suriano corpus</a>.</p>
@@ -47,6 +47,9 @@ data had been packed for express-download and attached to a release.</p>
 <p>Now it also works with the normal download methods using the GitHub and GitLab APIs.</p>
 <p>So, after the move of Suriano from GitHub to GitLab, this functionality is still
 available.</p>
+<p>There was a glitch in the layout of the NER tool which caused section labels to be
+chopped off at the margin, only in notebooks. Thats has been fixed by moving some
+CSS code from one file to an other.</p>
 <h4 id="1227">12.2.7</h4>
 <p>2024-01-23</p>
 <p>There were issues with starting up the Text-Fabric browser:</p>
@@ -276,7 +279,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cb6f36400fe27f01a283b20cdac6ce35f22051be/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/39d3daf4164e61ed0f4af53ab8197a4919284509/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -350,7 +353,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
 <li><a href="#122">12.2</a><ul>
-<li><a href="#1228">12.2.8</a></li>
+<li><a href="#12289">12.2.8,9</a></li>
 <li><a href="#1227">12.2.7</a></li>
 <li><a href="#1226">12.2.6</a></li>
 <li><a href="#1225">12.2.5</a></li>
