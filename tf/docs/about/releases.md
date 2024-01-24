@@ -20,7 +20,7 @@ pip install -e .
 
 ### 12.2
 
-#### 12.2.8
+#### 12.2.8,9
 
 2024-01-24
 
@@ -34,6 +34,10 @@ Now it also works with the normal download methods using the GitHub and GitLab A
 
 So, after the move of Suriano from GitHub to GitLab, this functionality is still
 available.
+
+There was a glitch in the layout of the NER tool which caused section labels to be
+chopped off at the margin, only in notebooks. Thats has been fixed by moving some
+CSS code from one file to an other.
 
 #### 12.2.7
 

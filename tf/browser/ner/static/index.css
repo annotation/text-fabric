@@ -87,22 +87,6 @@ div.page {
   flex: 1 1 auto;
   overflow: auto;
 }
-#bucketsq {
-  flex: 0 0 auto;
-}
-
-#buckets {
-  flex: 2 1 auto;
-  overflow: auto;
-}
-
-.buckets,#buckets {
-  padding-inline-start: 2rem;
-}
-.buckets.rtl,#buckets.rtl {
-  padding-inline-start: 4rem;
-}
-
 #qtextentshow {
   border-radius: 0.2rem;
   background-color: yellow;
