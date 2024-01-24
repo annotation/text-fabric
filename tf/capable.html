@@ -81,7 +81,7 @@ under section <code>[options.extras_require]</code> .</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/capable.py#L1-L359" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cb6f36400fe27f01a283b20cdac6ce35f22051be/tf/capable.py#L1-L359" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Dependency management.
 
@@ -495,7 +495,7 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/capable.py#L258-L359" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cb6f36400fe27f01a283b20cdac6ce35f22051be/tf/capable.py#L258-L359" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Capable:
     &#34;&#34;&#34;Import modules for back-end communication if possible.
@@ -610,7 +610,7 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/capable.py#L341-L359" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cb6f36400fe27f01a283b20cdac6ce35f22051be/tf/capable.py#L341-L359" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def can(self, extra):
     if extra in {&#34;github&#34;, &#34;gitlab&#34;}:
@@ -641,7 +641,7 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/capable.py#L317-L329" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cb6f36400fe27f01a283b20cdac6ce35f22051be/tf/capable.py#L317-L329" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, module):
     modules = self.modules
@@ -666,7 +666,7 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/capable.py#L331-L339" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cb6f36400fe27f01a283b20cdac6ce35f22051be/tf/capable.py#L331-L339" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadFrom(self, module, *members):
     loaded = self.load(module)
@@ -687,7 +687,7 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/capable.py#L294-L315" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cb6f36400fe27f01a283b20cdac6ce35f22051be/tf/capable.py#L294-L315" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tryImport(self, *extras):
     backendProviders = self.backendProviders
@@ -763,7 +763,7 @@ Right at the beginning of each relevant method, say</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/capable.py#L91-L255" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cb6f36400fe27f01a283b20cdac6ce35f22051be/tf/capable.py#L91-L255" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CheckImport:
     def __init__(self, *modules):
@@ -962,7 +962,7 @@ not packed in a 1-element list.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/capable.py#L241-L255" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cb6f36400fe27f01a283b20cdac6ce35f22051be/tf/capable.py#L241-L255" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importGet(self):
     &#34;&#34;&#34;Delivers the imported modules.
@@ -1001,7 +1001,7 @@ module.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/capable.py#L216-L239" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cb6f36400fe27f01a283b20cdac6ce35f22051be/tf/capable.py#L216-L239" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importOK(self, hint=False):
     &#34;&#34;&#34;Reports the result of the import attempts.

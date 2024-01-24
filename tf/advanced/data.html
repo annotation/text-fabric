@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/advanced/data.py#L1-L346" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cb6f36400fe27f01a283b20cdac6ce35f22051be/tf/advanced/data.py#L1-L418" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from ..core.helpers import itemize
 from ..core.files import backendRep, expandDir, prefixSlash, normpath
@@ -40,7 +40,15 @@ from .links import provenanceLink
 
 class AppData:
     def __init__(
-        self, app, backend, moduleRefs, locations, modules, version, checkout, silent
+        self,
+        app,
+        backend,
+        moduleRefs,
+        locations,
+        modules,
+        version,
+        checkout,
+        silent,
     ):
         &#34;&#34;&#34;Collects TF data according to specifications.
 
@@ -167,6 +175,45 @@ class AppData:
             ):
                 self.good = False
 
+    def getExtra(self):
+        &#34;&#34;&#34;Get the extra data specified by the settings of the corpus.
+
+        These are specified in the `extraData` setting under
+        `provenanceSpecs` in `config.yaml`.
+
+        This data will be downloaded if needed, but it will not be loaded.
+        It probably is not even TF data.
+
+        See Also
+        --------
+        tf.advanced.settings: options allowed in `config.yaml`
+        &#34;&#34;&#34;
+
+        app = self.app
+        loadData = app.loadData
+
+        if not loadData or loadData == &#34;core&#34;:
+            return
+
+        aContext = app.context
+        extraData = aContext.extraData
+        checkout = self.checkout
+        backend = self.backend
+
+        org = aContext.org
+        repo = aContext.repo
+        relative = extraData
+
+        if not self.getModule(
+            org,
+            repo,
+            relative,
+            checkout,
+            backend=backend,
+            isExtra=True,
+        ):
+            self.good = False
+
     def getRefs(self):
         &#34;&#34;&#34;Get data from additional modules.
 
@@ -215,6 +262,7 @@ class AppData:
         self.getMain()
         self.getRefs()
         self.getStandard()
+        self.getExtra()
 
         version = self.version
         good = self.good
@@ -252,7 +300,15 @@ class AppData:
         self.modules = mModules + givenModules
 
     def getModule(
-        self, org, repo, relative, checkout, backend=None, isBase=False, specs=None
+        self,
+        org,
+        repo,
+        relative,
+        checkout,
+        backend=None,
+        isBase=False,
+        isExtra=False,
+        specs=None,
     ):
         &#34;&#34;&#34;Prepare to load a single module.
 
@@ -274,6 +330,9 @@ class AppData:
             A specifier to use a specific release or commit of a data repository.
         backend: string
             The back-end if different from the back-end of the main module
+        isExtra: boolean, optional False
+            If this is True, we are dealing with extra (non-TF) data.
+            The data must be obtained, but not loaded.
         isBase: boolean, optional False
             Whether this module is the main data of the corpus.
         specs: dict, optional False
@@ -301,7 +360,8 @@ class AppData:
         if org is None or repo is None:
             relativeBare = relative.removeprefix(&#34;/&#34;)
             repoLocation = relativeBare
-            mLocations.append(relativeBare)
+            if not isExtra:
+                mLocations.append(relativeBare)
             (commit, local, release) = (None, None, None)
         else:
             (commit, release, local, localBase, localDir) = checkoutRepo(
@@ -310,21 +370,25 @@ class AppData:
                 org=org,
                 repo=repo,
                 folder=relative,
-                version=version,
+                version=None if isExtra else version,
                 checkout=checkout,
-                withPaths=False,
-                keep=False,
+                withPaths=True if isExtra else False,
+                keep=True if isExtra else False,
                 silent=silent,
             )
             if not localBase:
                 return False
 
             repoLocation = f&#34;{localBase}/{org}/{repo}&#34;
-            mLocations.append(f&#34;{localBase}/{localDir}&#34;)
+            if not isExtra:
+                mLocations.append(f&#34;{localBase}/{localDir}&#34;)
 
         seen.add(moduleRef)
         if isBase:
             app.repoLocation = repoLocation
+
+        if isExtra:
+            return True
 
         info = {}
         for item in (
@@ -348,7 +412,15 @@ class AppData:
                 (
                     &#34;live&#34;,
                     provenanceLink(
-                        backend, org, repo, version, branch, commit, local, release, relative
+                        backend,
+                        org,
+                        repo,
+                        version,
+                        branch,
+                        commit,
+                        local,
+                        release,
+                        relative,
                     ),
                 ),
                 (&#34;doi&#34;, info[&#34;doi&#34;]),
@@ -397,7 +469,7 @@ They are the same as are needed to construct an <code><a title="tf.advanced.data
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/advanced/data.py#L330-L346" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cb6f36400fe27f01a283b20cdac6ce35f22051be/tf/advanced/data.py#L402-L418" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModulesData(*args):
     &#34;&#34;&#34;Retrieve all data for a corpus.
@@ -457,11 +529,19 @@ level just below the search locations.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/advanced/data.py#L11-L327" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cb6f36400fe27f01a283b20cdac6ce35f22051be/tf/advanced/data.py#L11-L399" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AppData:
     def __init__(
-        self, app, backend, moduleRefs, locations, modules, version, checkout, silent
+        self,
+        app,
+        backend,
+        moduleRefs,
+        locations,
+        modules,
+        version,
+        checkout,
+        silent,
     ):
         &#34;&#34;&#34;Collects TF data according to specifications.
 
@@ -588,6 +668,45 @@ level just below the search locations.</dd>
             ):
                 self.good = False
 
+    def getExtra(self):
+        &#34;&#34;&#34;Get the extra data specified by the settings of the corpus.
+
+        These are specified in the `extraData` setting under
+        `provenanceSpecs` in `config.yaml`.
+
+        This data will be downloaded if needed, but it will not be loaded.
+        It probably is not even TF data.
+
+        See Also
+        --------
+        tf.advanced.settings: options allowed in `config.yaml`
+        &#34;&#34;&#34;
+
+        app = self.app
+        loadData = app.loadData
+
+        if not loadData or loadData == &#34;core&#34;:
+            return
+
+        aContext = app.context
+        extraData = aContext.extraData
+        checkout = self.checkout
+        backend = self.backend
+
+        org = aContext.org
+        repo = aContext.repo
+        relative = extraData
+
+        if not self.getModule(
+            org,
+            repo,
+            relative,
+            checkout,
+            backend=backend,
+            isExtra=True,
+        ):
+            self.good = False
+
     def getRefs(self):
         &#34;&#34;&#34;Get data from additional modules.
 
@@ -636,6 +755,7 @@ level just below the search locations.</dd>
         self.getMain()
         self.getRefs()
         self.getStandard()
+        self.getExtra()
 
         version = self.version
         good = self.good
@@ -673,7 +793,15 @@ level just below the search locations.</dd>
         self.modules = mModules + givenModules
 
     def getModule(
-        self, org, repo, relative, checkout, backend=None, isBase=False, specs=None
+        self,
+        org,
+        repo,
+        relative,
+        checkout,
+        backend=None,
+        isBase=False,
+        isExtra=False,
+        specs=None,
     ):
         &#34;&#34;&#34;Prepare to load a single module.
 
@@ -695,6 +823,9 @@ level just below the search locations.</dd>
             A specifier to use a specific release or commit of a data repository.
         backend: string
             The back-end if different from the back-end of the main module
+        isExtra: boolean, optional False
+            If this is True, we are dealing with extra (non-TF) data.
+            The data must be obtained, but not loaded.
         isBase: boolean, optional False
             Whether this module is the main data of the corpus.
         specs: dict, optional False
@@ -722,7 +853,8 @@ level just below the search locations.</dd>
         if org is None or repo is None:
             relativeBare = relative.removeprefix(&#34;/&#34;)
             repoLocation = relativeBare
-            mLocations.append(relativeBare)
+            if not isExtra:
+                mLocations.append(relativeBare)
             (commit, local, release) = (None, None, None)
         else:
             (commit, release, local, localBase, localDir) = checkoutRepo(
@@ -731,21 +863,25 @@ level just below the search locations.</dd>
                 org=org,
                 repo=repo,
                 folder=relative,
-                version=version,
+                version=None if isExtra else version,
                 checkout=checkout,
-                withPaths=False,
-                keep=False,
+                withPaths=True if isExtra else False,
+                keep=True if isExtra else False,
                 silent=silent,
             )
             if not localBase:
                 return False
 
             repoLocation = f&#34;{localBase}/{org}/{repo}&#34;
-            mLocations.append(f&#34;{localBase}/{localDir}&#34;)
+            if not isExtra:
+                mLocations.append(f&#34;{localBase}/{localDir}&#34;)
 
         seen.add(moduleRef)
         if isBase:
             app.repoLocation = repoLocation
+
+        if isExtra:
+            return True
 
         info = {}
         for item in (
@@ -769,7 +905,15 @@ level just below the search locations.</dd>
                 (
                     &#34;live&#34;,
                     provenanceLink(
-                        backend, org, repo, version, branch, commit, local, release, relative
+                        backend,
+                        org,
+                        repo,
+                        version,
+                        branch,
+                        commit,
+                        local,
+                        release,
+                        relative,
                     ),
                 ),
                 (&#34;doi&#34;, info[&#34;doi&#34;]),
@@ -779,6 +923,65 @@ level just below the search locations.</dd>
 </details>
 <h3>Methods</h3>
 <dl>
+<dt id="tf.advanced.data.AppData.getExtra"><code class="name flex">
+<span>def <span class="ident">getExtra</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the extra data specified by the settings of the corpus.</p>
+<p>These are specified in the <code>extraData</code> setting under
+<code>provenanceSpecs</code> in <code>config.yaml</code>.</p>
+<p>This data will be downloaded if needed, but it will not be loaded.
+It probably is not even TF data.</p>
+<h2 id="see-also">See Also</h2>
+<dl>
+<dt><code><a title="tf.advanced.settings" href="settings.html">tf.advanced.settings</a></code></dt>
+<dd>options allowed in <code>config.yaml</code></dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/cb6f36400fe27f01a283b20cdac6ce35f22051be/tf/advanced/data.py#L148-L185" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getExtra(self):
+    &#34;&#34;&#34;Get the extra data specified by the settings of the corpus.
+
+    These are specified in the `extraData` setting under
+    `provenanceSpecs` in `config.yaml`.
+
+    This data will be downloaded if needed, but it will not be loaded.
+    It probably is not even TF data.
+
+    See Also
+    --------
+    tf.advanced.settings: options allowed in `config.yaml`
+    &#34;&#34;&#34;
+
+    app = self.app
+    loadData = app.loadData
+
+    if not loadData or loadData == &#34;core&#34;:
+        return
+
+    aContext = app.context
+    extraData = aContext.extraData
+    checkout = self.checkout
+    backend = self.backend
+
+    org = aContext.org
+    repo = aContext.repo
+    relative = extraData
+
+    if not self.getModule(
+        org,
+        repo,
+        relative,
+        checkout,
+        backend=backend,
+        isExtra=True,
+    ):
+        self.good = False</code></pre>
+</details>
+</dd>
 <dt id="tf.advanced.data.AppData.getMain"><code class="name flex">
 <span>def <span class="ident">getMain</span></span>(<span>self)</span>
 </code></dt>
@@ -794,7 +997,7 @@ level just below the search locations.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/advanced/data.py#L59-L88" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cb6f36400fe27f01a283b20cdac6ce35f22051be/tf/advanced/data.py#L67-L96" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getMain(self):
     &#34;&#34;&#34;Get the main data of the corpus.
@@ -829,7 +1032,7 @@ level just below the search locations.</dd>
 </details>
 </dd>
 <dt id="tf.advanced.data.AppData.getModule"><code class="name flex">
-<span>def <span class="ident">getModule</span></span>(<span>self, org, repo, relative, checkout, backend=None, isBase=False, specs=None)</span>
+<span>def <span class="ident">getModule</span></span>(<span>self, org, repo, relative, checkout, backend=None, isBase=False, isExtra=False, specs=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Prepare to load a single module.</p>
@@ -849,6 +1052,9 @@ location paths and the module paths.</p>
 <dd>A specifier to use a specific release or commit of a data repository.</dd>
 <dt><strong><code>backend</code></strong> :&ensp;<code>string</code></dt>
 <dd>The back-end if different from the back-end of the main module</dd>
+<dt><strong><code>isExtra</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If this is True, we are dealing with extra (non-TF) data.
+The data must be obtained, but not loaded.</dd>
 <dt><strong><code>isBase</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>Whether this module is the main data of the corpus.</dd>
 <dt><strong><code>specs</code></strong> :&ensp;<code>dict</code>, optional <code>False</code></dt>
@@ -857,10 +1063,18 @@ location paths and the module paths.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/advanced/data.py#L224-L327" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cb6f36400fe27f01a283b20cdac6ce35f22051be/tf/advanced/data.py#L272-L399" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModule(
-    self, org, repo, relative, checkout, backend=None, isBase=False, specs=None
+    self,
+    org,
+    repo,
+    relative,
+    checkout,
+    backend=None,
+    isBase=False,
+    isExtra=False,
+    specs=None,
 ):
     &#34;&#34;&#34;Prepare to load a single module.
 
@@ -882,6 +1096,9 @@ location paths and the module paths.</p>
         A specifier to use a specific release or commit of a data repository.
     backend: string
         The back-end if different from the back-end of the main module
+    isExtra: boolean, optional False
+        If this is True, we are dealing with extra (non-TF) data.
+        The data must be obtained, but not loaded.
     isBase: boolean, optional False
         Whether this module is the main data of the corpus.
     specs: dict, optional False
@@ -909,7 +1126,8 @@ location paths and the module paths.</p>
     if org is None or repo is None:
         relativeBare = relative.removeprefix(&#34;/&#34;)
         repoLocation = relativeBare
-        mLocations.append(relativeBare)
+        if not isExtra:
+            mLocations.append(relativeBare)
         (commit, local, release) = (None, None, None)
     else:
         (commit, release, local, localBase, localDir) = checkoutRepo(
@@ -918,21 +1136,25 @@ location paths and the module paths.</p>
             org=org,
             repo=repo,
             folder=relative,
-            version=version,
+            version=None if isExtra else version,
             checkout=checkout,
-            withPaths=False,
-            keep=False,
+            withPaths=True if isExtra else False,
+            keep=True if isExtra else False,
             silent=silent,
         )
         if not localBase:
             return False
 
         repoLocation = f&#34;{localBase}/{org}/{repo}&#34;
-        mLocations.append(f&#34;{localBase}/{localDir}&#34;)
+        if not isExtra:
+            mLocations.append(f&#34;{localBase}/{localDir}&#34;)
 
     seen.add(moduleRef)
     if isBase:
         app.repoLocation = repoLocation
+
+    if isExtra:
+        return True
 
     info = {}
     for item in (
@@ -956,7 +1178,15 @@ location paths and the module paths.</p>
             (
                 &#34;live&#34;,
                 provenanceLink(
-                    backend, org, repo, version, branch, commit, local, release, relative
+                    backend,
+                    org,
+                    repo,
+                    version,
+                    branch,
+                    commit,
+                    local,
+                    release,
+                    relative,
                 ),
             ),
             (&#34;doi&#34;, info[&#34;doi&#34;]),
@@ -974,7 +1204,7 @@ location paths and the module paths.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/advanced/data.py#L168-L222" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cb6f36400fe27f01a283b20cdac6ce35f22051be/tf/advanced/data.py#L215-L270" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModules(self):
     &#34;&#34;&#34;Get data from additional local directories.
@@ -996,6 +1226,7 @@ location paths and the module paths.</p>
     self.getMain()
     self.getRefs()
     self.getStandard()
+    self.getExtra()
 
     version = self.version
     good = self.good
@@ -1044,7 +1275,7 @@ later when we are loading the standard modules.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/advanced/data.py#L140-L166" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cb6f36400fe27f01a283b20cdac6ce35f22051be/tf/advanced/data.py#L187-L213" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRefs(self):
     &#34;&#34;&#34;Get data from additional modules.
@@ -1094,7 +1325,7 @@ checkout specifiers to the standard modules.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/69c3f8c35133bfdd1e62af1d1705bac20abb14d0/tf/advanced/data.py#L90-L138" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cb6f36400fe27f01a283b20cdac6ce35f22051be/tf/advanced/data.py#L98-L146" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getStandard(self):
     &#34;&#34;&#34;Get the data of the standard modules specified by the settings of the corpus.
@@ -1223,7 +1454,8 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li>
 <h4><code><a title="tf.advanced.data.AppData" href="#tf.advanced.data.AppData">AppData</a></code></h4>
-<ul class="">
+<ul class="two-column">
+<li><code><a title="tf.advanced.data.AppData.getExtra" href="#tf.advanced.data.AppData.getExtra">getExtra</a></code></li>
 <li><code><a title="tf.advanced.data.AppData.getMain" href="#tf.advanced.data.AppData.getMain">getMain</a></code></li>
 <li><code><a title="tf.advanced.data.AppData.getModule" href="#tf.advanced.data.AppData.getModule">getModule</a></code></li>
 <li><code><a title="tf.advanced.data.AppData.getModules" href="#tf.advanced.data.AppData.getModules">getModules</a></code></li>
