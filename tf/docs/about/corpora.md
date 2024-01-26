@@ -182,7 +182,7 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
     **Novum Testamentum Syriace**,
     Hannes Vlaardingerbroek, Dirk Roorda
 
-## [`KNAW/HuygensING`](https://github.com/HuygensING)
+## [`KNAW/HuygensING`](https://github.com/HuygensING) and [gitlab.huc.knaw.nl](https://gitlab.huc.knaw.nl)
 
 [`hermans/works`](https://gitlab.huc.knaw.nl/hermans/works)
 :   *Dutch*
@@ -210,7 +210,7 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 
     *with NLP output from Spacy woven in*
 
-[`HuygensING/suriano`](https://github.com/HuygensING/suriano)
+[`suriano/letters`](https://gitlab.huc.knaw.nl/suriano/letters)
 :   *Italian*
     Correspondence of Christofforo Suriano , 1616-1623.
     Straight conversion from TEI to TF,
@@ -219,6 +219,15 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
     ** Work in progress*.*
 
     *with NLP output from Spacy woven in*
+
+[`translatin/corpus`](https://gitlab.huc.knaw.nl/translatin/corpus)
+:   *Latin*
+    The transnational impact of Latin drama from the early modern Netherlands,
+    a qualitative and computational analysis.
+    Conversion from PageXML to TF,
+    Jirsi Reinders, Hayco de Jong, et al., Dirk Roorda
+
+    ** Work in progress*.*
 
 ## [NINO Cuneiform](https://github.com/Nino-cunei)
 

@@ -167,6 +167,10 @@ class AppData:
 
         aContext = app.context
         extraData = aContext.extraData
+
+        if not extraData:
+            return
+
         checkout = self.checkout
         backend = self.backend
 

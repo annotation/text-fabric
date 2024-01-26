@@ -20,9 +20,9 @@ pip install -e .
 
 ### 12.2
 
-#### 12.2.8,9
+#### 12.2.8,9,10
 
-2024-01-24
+2024-01-24/25
 
 TF can auto-download extra data with a TF dataset, e.g. a directory with named entities
 (`ner`) as in the [suriano corpus](https://gitlab.huc.knaw.nl/suriano/letters).
