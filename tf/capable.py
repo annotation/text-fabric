@@ -99,18 +99,14 @@ class CheckImport:
 
         Try to load a bunch of modules:
 
-        ``` python
-        CI = CheckImport("module1", "module2", ...)
-        ```
+            CI = CheckImport("module1", "module2", ...)
 
         Then check the success and load the modules by
 
-        ``` python
-        if CI.importOK(hint=True):
-            (module1, module2, ...) = CI.importGet()
-        else:
-            return
-        ```
+            if CI.importOK(hint=True):
+                (module1, module2, ...) = CI.importGet()
+            else:
+                return
 
         If all modules have successfully been imported, their semantics is now stored
         in the variables `module1`, `module2`, ...
@@ -126,22 +122,18 @@ class CheckImport:
         So, in the initialization function of your class, right at the beginning,
         say:
 
-        ``` python
-        super().__init__("module1", "module2", ...)
-        if self.importOK(hint=True):
-            (module1, module2, ... ) = self.importGet()
-        else:
-            return
-        ```
+            super().__init__("module1", "module2", ...)
+            if self.importOK(hint=True):
+                (module1, module2, ... ) = self.importGet()
+            else:
+                return
 
         You can put a check in every method invocation easily.
         Right at the beginning of each relevant method, say
 
 
-        ``` python
-        if not self.importOK():
-            return
-        ```
+            if not self.importOK():
+                return
 
         At this point, you'll probably not need to repeat the installation hint.
 

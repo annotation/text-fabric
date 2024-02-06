@@ -20,6 +20,20 @@ from ..parameters import (
 from .generic import deepAttrDict
 
 
+def str_presenter(dumper, data):
+    """configures yaml for dumping multiline strings
+    Ref: https://stackoverflow.com/questions/8640959
+    """
+    if data.count('\n') > 0:  # check for multiline string
+        return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
+
+    return dumper.represent_scalar('tag:yaml.org,2002:str', data)
+
+
+yaml.add_representer(str, str_presenter)
+yaml.representer.SafeRepresenter.add_representer(str, str_presenter)
+
+
 def fileOpen(*args, **kwargs):
     """Wrapper around `open()`, making sure `encoding="utf8" is passed.
 

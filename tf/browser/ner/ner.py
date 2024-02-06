@@ -28,15 +28,11 @@ Load your corpus. There are two ways:
 
 *   Work with a local GitHub clone of the corpus in `~/HuygensING/suriano`:
 
-    ```
-    A = use("HuygensING/suriano:clone", checkout="clone")
-    ```
+        A = use("HuygensING/suriano:clone", checkout="clone")
 
 *   Or let TF auto-download the latest version and work with that:
 
-    ```
-    A = use("HuygensING/suriano")
-    ```
+        A = use("HuygensING/suriano")
 
 Load the `Ner` module:
 

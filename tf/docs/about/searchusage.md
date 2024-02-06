@@ -537,9 +537,7 @@ Not only equality is covered, also inequality, comparison, and matching.
         and node `m` has feature `lex` with value `donkey_2`,
         then the following holds:
 
-        ```
-        n .lex~_[0-9]*$~lex. m
-        ```
+            n .lex~_[0-9]*$~lex. m
 
         The values are stripped of their final `_1` and `_2` strings before they
         are being compared, leaving the comparison `donkey` = `donkey`, which is True.

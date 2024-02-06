@@ -178,9 +178,7 @@ Repetitions
 
     Suppose we search the string
 
-    ```
-    mute aaaa nase bbbb nase cccc
-    ```
+        mute aaaa nase bbbb nase cccc
 
     *   `mute .* nase` matches `mute aaaa nase bbbb nase`
     *   `mute .*? nase` matches `mute aaaa nase`

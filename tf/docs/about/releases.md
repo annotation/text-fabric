@@ -20,6 +20,13 @@ pip install -e .
 
 ### 12.2
 
+#### 12.2.11
+
+2024-02-?? Upcoming
+
+*   Small fixes in `tf.convert.addnlp`: when the NLP data is integrated in the
+    TF dataset, the NLP-generated features will get some metadata
+
 #### 12.2.8,9,10
 
 2024-01-24/25
@@ -167,9 +174,7 @@ Deleted tf.tools.docsright again, but developed it further in
 *   API change in the Annotator:
     Calling the annotator is now easier: 
 
-    ``` python
-    A.makeNer()
-    ```
+        A.makeNer()
 
     (No need to make an additional `import` statement.)
 
@@ -271,16 +276,12 @@ This has to do with the new approach to the TF browser.
 
 *   TF no longer exposes the installation options `[browser, pandas]`
 
-    ```
-    pip install 'text-fabric[browser]'
-    pip install 'text-fabric[pandas]'
-    ```
+        pip install 'text-fabric[browser]'
+        pip install 'text-fabric[pandas]'
 
     If you work with Pandas (like exporting to Pandas) you have to install it yourself:
 
-    ```
-    pip install pandas pyarrow
-    ```
+        pip install pandas pyarrow
 
     The TF browser is always supported.
 

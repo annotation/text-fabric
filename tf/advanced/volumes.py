@@ -58,9 +58,7 @@ def getVolumes(app, *args, **kwargs):
         This function works even if no data has been loaded,
         so you can use it after
 
-        ```
-        A = use(xxx, loadData=False)
-        ```
+            A = use(xxx, loadData=False)
     """
 
     TF = app.TF

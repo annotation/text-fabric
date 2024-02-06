@@ -234,28 +234,24 @@ def extract(
 
     Example
     -------
-    ``` python
-    volumeList = extract(
-        'clariah-gm/tf/0.9.1',
-        'clariah-gm/asvolumes/tf/0.9.1',
-    )
-    ```
+        volumeList = extract(
+            'clariah-gm/tf/0.9.1',
+            'clariah-gm/asvolumes/tf/0.9.1',
+        )
 
     This will extract the top-level sections of the missives corpus
     into that many volumes.
 
     Example
     -------
-    ``` python
-    volumeList = extract(
-        'clariah-gm/tf/0.9.1',
-        'clariah-gm/asvolumes/tf/0.9.1',
-        volumes=dict(
-            early=(1,2,3,4,5,6,7,8),
-            late=(9, 10, 11, 12),
+        volumeList = extract(
+            'clariah-gm/tf/0.9.1',
+            'clariah-gm/asvolumes/tf/0.9.1',
+            volumes=dict(
+                early=(1,2,3,4,5,6,7,8),
+                late=(9, 10, 11, 12),
+            )
         )
-    )
-    ```
 
     This will create 2 volumes, named `early` and `late`,
     where `early` consists of top-level sections 1-8,
@@ -264,27 +260,23 @@ def extract(
 
     Example
     -------
-    ``` python
-    volumeList = extract(
-        'bhsa/tf/2021',
-        'bhsa/asvolumes/tf/2021',
-    )
-    ```
+        volumeList = extract(
+            'bhsa/tf/2021',
+            'bhsa/asvolumes/tf/2021',
+        )
 
     This will extract the books of the bible as separate volumes.
 
     Example
     -------
-    ``` python
-    volumeList = extract(
-        'bhsa/tf/2021',
-        'bhsa/asvolumes/tf/2021',
-        volumes=dict(
-            thora=("Genesis", "Exodus", "Leviticus", "Numeri", "Deuteronomy"),
-            poetry=("Psalms", "Proverbs"),
-        ),
-    )
-    ```
+        volumeList = extract(
+            'bhsa/tf/2021',
+            'bhsa/asvolumes/tf/2021',
+            volumes=dict(
+                thora=("Genesis", "Exodus", "Leviticus", "Numeri", "Deuteronomy"),
+                poetry=("Psalms", "Proverbs"),
+            ),
+        )
 
     This will extract two volumes of the bible:
     `thora` with the first 5 books and `poetry` with two poetic books.

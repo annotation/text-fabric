@@ -124,9 +124,7 @@ functions available by which you can make handy use of that information.
     your dataset, you can configure the right order in the `otext` feature, by means
     of a key `levels` with value a comma separated list of levels. Example:
 
-    ```
-    @levels=tablet,face,column,line,case,cluster,quad,comment,sign
-    ```
+        @levels=tablet,face,column,line,case,cluster,quad,comment,sign
 
     If you only want to ensure that a certain type is smaller than other types,
     you can add a key `levelConstraints` with a `;`-separated list of
@@ -136,9 +134,7 @@ functions available by which you can make handy use of that information.
 
     Example:
 
-    ```
-    @levelConstraints=note < chunk, p ; opener < chunk
-    ```
+        @levelConstraints=note < chunk, p ; opener < chunk
 
 ## Book names and languages
 
@@ -208,9 +204,7 @@ This tries the feature `special` first, and if that is undefined, it takes
 !!! hint "longer chains"
     You can chain multiple features with `/`, as many as you want:
 
-    ```
-    {veryspecial/special/often/normal}
-    ```
+        {veryspecial/special/often/normal}
 
 You can also add a fixed default. If you want to display a `.` if
 neither `special` nor `normal` exist, you can say
@@ -301,9 +295,7 @@ features to furnish a decent representation.
     For example, if words are associated with lexemes, stored in a word
     feature `lex`, we can define a text format
 
-    ```
-    lex-orig-full=word#{lex}
-    ```
+        lex-orig-full=word#{lex}
 
     When you call `T.text(n)` for a non-slot, non-word node,
     normally the node will be replaced by the slot nodes it contains,
@@ -311,9 +303,7 @@ features to furnish a decent representation.
     But if you pass a format that specifies a different node type,
     nodes will be replaced by contained nodes of that type. So
 
-    ```
-    T.text(n, fmt='lex-orig-full')
-    ```
+        T.text(n, fmt='lex-orig-full')
 
     will lookup all word nodes under `n` and apply the template `{lex}`
     to them.
@@ -386,10 +376,8 @@ class Text:
 
         Here we take the BHSA as example: `bookName()` and `bookNode()`
 
-        ```
-        T.bookName(node, lang='en')
-        T.bookNode(name, lang='en')
-        ```
+            T.bookName(node, lang='en')
+            T.bookNode(name, lang='en')
 
         with `node:int` the node in question, `name:str` the name in question,
         and `lang='en'` the language of the book name.

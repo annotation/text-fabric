@@ -10,17 +10,13 @@ We explain the manual annotation process with a leading example:
     (macos or linux) or command prompt (windows);
 *   TF must be installed: in a terminal or command prompt say
 
-    ```
-    pip install text-fabric
-    ```
+        pip install text-fabric
 
     On some systems you have to say `pip3` instead of `pip`.
     If by chance you already have an older version of TF,
     say
 
-    ```
-    pip install --upgrade text-fabric
-    ```
+        pip install --upgrade text-fabric
 
 ## Start up
 

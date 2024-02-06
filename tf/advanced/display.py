@@ -399,10 +399,8 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
                 run, then an appropriate call to `displaySetup(tupleFeatures=...)`
                 has already been issued, so you can just say:
 
-                ```
-                results = A.search(query)
-                A.export(results)
-                ```
+                    results = A.search(query)
+                    A.export(results)
 
     Results
     -------
@@ -611,9 +609,7 @@ def plainTuple(
         Whether this tuple should be expandable to a `pretty` display.
         The normal output of this row will be wrapped in a
 
-        ```
-        <details><summary>plain</summary>pretty</details>
-        ```
+            <details><summary>plain</summary>pretty</details>
 
         pattern, so that the user can click a triangle to switch between plain
         and pretty display.

@@ -313,16 +313,14 @@ The list of possible settings is spelled out in
     version, we run into this issue.
     But we can still load the 0.4 version by means of
 
-    ```
-    A = use(
-        "missieven:v0.4",
-        checkout="clone",
-        version="0.4",
-        hoist=globals(),
-        legacy=True,
-        provenanceSpec=dict(org="clariah", repo="wp6-missieven"),
-    )
-    ```
+        A = use(
+            "missieven:v0.4",
+            checkout="clone",
+            version="0.4",
+            hoist=globals(),
+            legacy=True,
+            provenanceSpec=dict(org="clariah", repo="wp6-missieven"),
+        )
 
 ## Hoisting
 
@@ -430,16 +428,12 @@ etc.
     In the case where you need an available feature
     that has not been loaded, you can load it by demanding
 
-    ```
-    TF.load('feature1 feature2', add=True)
-    ```
+        TF.load('feature1 feature2', add=True)
 
     provided you have used the `hoist=globals()` parameter earlier.
     If not, you have to say
 
-    ```
-    A.api.TF.load('feature1 feature2', add=True)
-    ```
+        A.api.TF.load('feature1 feature2', add=True)
 
 ## Silence
 

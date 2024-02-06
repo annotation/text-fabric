@@ -220,12 +220,10 @@ def importMQL(mqlFile, saveDir, silent=None, slotType=None, otext=None, meta=Non
         the parameter `otext`. This info will end up in the `otext.tf` feature.
         Pass it as a dictionary of keys and values, like so:
 
-        ```
-        otext = {
-            'fmt:text-trans-plain': '{glyphs}{trailer}',
-            'sectionFeatures': 'book,chapter,verse',
-        }
-        ```
+            otext = {
+                'fmt:text-trans-plain': '{glyphs}{trailer}',
+                'sectionFeatures': 'book,chapter,verse',
+            }
 
     meta: dict
         Likewise, you can add a dictionary keyed by features
@@ -237,18 +235,16 @@ def importMQL(mqlFile, saveDir, silent=None, slotType=None, otext=None, meta=Non
 
         Example:
 
-        ```
-        meta = {
-            "": dict(
-                dataset='DLC',
-                datasetName='Digital Language Corpus',
-                author="That 's me",
-            ),
-            "sp": dict(
-                description: "part-of-speech",
-            ),
-        }
-        ```
+            meta = {
+                "": dict(
+                    dataset='DLC',
+                    datasetName='Digital Language Corpus',
+                    author="That 's me",
+                ),
+                "sp": dict(
+                    description: "part-of-speech",
+                ),
+            }
 
         !!! note "description"
             TF will display all metadata information under the

@@ -158,9 +158,7 @@ The meaning is:
 *   Moreover, the feature `letterid` gets metadata as specified under the key `meta`,
     where the `description` will be filled with the text
 
-    ```
-    The identifier of a letter; the content is taken from sourceDesc/msDesc/msIdentifier/altIdentifier/idno[type=letterId]
-    ```
+        The identifier of a letter; the content is taken from sourceDesc/msDesc/msIdentifier/altIdentifier/idno[type=letterId]
 
 ### `models`
 
@@ -1358,7 +1356,7 @@ class TEI(CheckImport):
             featPathLogical = []
 
             sep = ""
-            for comp in reversed(featPath):
+            for comp in reversed(featPath or []):
                 if type(comp) is str:
                     featPathRep += f"{sep}{comp}"
                     featPathLogical.append((comp, None))

@@ -51,19 +51,19 @@ def nodeFromSectionStr(app, sectionStr, lang="en"):
         (book / tablet; chapter / column; verse / line).
 
         !!! hint "examples"
-            ```
-            Genesis
+            A few sections:
 
-            Genesis 1
+                Genesis
 
-            Genesis 1:1
+                Genesis 1
 
-            P005381
+                Genesis 1:1
 
-            P005381 1
+                P005381
 
-            P005381 1:1
-            ```
+                P005381 1
+
+                P005381 1:1
 
     lang: string, optional en
         The language assumed for the section parts,

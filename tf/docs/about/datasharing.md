@@ -147,9 +147,7 @@ get data
     repository, check the latest release, find the zip file,
     download and expand it to your local
 
-    ```
-    ~/text-fabric/data/{org}/{repo}/{path}
-    ```
+        ~/text-fabric/data/{org}/{repo}/{path}
 
     If there are no releases, it will find the latest commit and use the
     data from there.

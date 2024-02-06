@@ -81,10 +81,8 @@ def search(
         that have a gap, you can pass `sets=dict(gphrase=gappedPhrases)`,
         and then in your query you can say
 
-        ```
-        gphrase function=Pred
-          word sp=verb
-        ```
+            gphrase function=Pred
+              word sp=verb
 
         etc.
 
@@ -107,9 +105,7 @@ def search(
         !!! note "canonical sort key for tuples"
             This sort is achieved by using the function
 
-            ```
-            tf.core.nodes.Nodes.sortKeyTuple
-            ```
+                tf.core.nodes.Nodes.sortKeyTuple
 
             as sort key.
 

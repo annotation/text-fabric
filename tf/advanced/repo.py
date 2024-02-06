@@ -110,9 +110,7 @@ Whatever is your case, pick the file indicated above and edit it.
     Assuming that you want to edit the `.zshrc` in your home directory,
     go to your terminal and say this:
 
-    ```
-    nano ~/.zshrc
-    ```
+        nano ~/.zshrc
 
     Then you get a view on your file. Then
 

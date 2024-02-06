@@ -91,11 +91,9 @@ class Variants:
             Those keys are mentioned in constants in the source code and there are
             a few keys dependent on the `sentType` parameter, namely
 
-            ```
-            f"n{sentType}"
-            f"stack{sentType}"
-            f"var{sentType}"
-            ```
+                f"n{sentType}"
+                f"stack{sentType}"
+                f"var{sentType}"
 
         baseWitness: string
             The name of the base text. Take care that it is different from the names

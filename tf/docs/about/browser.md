@@ -17,18 +17,14 @@ it needs from GitHub / GitLab automatically.
 !!! hint "On Windows?"
     You can click the Start Menu, and type
 
-    ``` sh
-    tf app
-    ```
+        tf app
 
     in the search box, and then Enter.
 
 !!! hint "On Linux or MacOS?"
     You can open a terminal (command prompt), and just say
 
-    ``` sh
-    tf app
-    ```
+        tf app
 
 !!! explanation "All platforms"
     The corpus data will be downloaded automatically,

@@ -22,9 +22,7 @@ See `tf.about.releases`.
     If you want to search for any node, regardless of its type, that has feature `xxx`
     with value `vvv`, you can do so by means of this query:
 
-    ```
-    . xxx=vvv
-    ```
+        . xxx=vvv
 
 ##### Fixes
 
@@ -198,10 +196,9 @@ The XML converter is now easier to use:
         `array.array`. Semantically, this should not matter, but the `pickler` seems to
         be fussy about it. I got an error like this:
 
-        ```
-        Can't pickle <built-in function _array_reconstructor>:
-        it's not the same object as array._array_reconstructor
-        ```
+            Can't pickle <built-in function _array_reconstructor>:
+            it's not the same object as array._array_reconstructor
+
     *   Catch all errors when TF is loading / computing features, not only memory errors,
         and show the message.
 
@@ -240,15 +237,11 @@ Note, that when TF pre-computes data, it will store the results in
 *   Moved the dependency on `pandas` and `pyarrow` (used in the `pandas`
     export) to an extra install option `pandas`. You get it if you do 
 
-    ```
-    pip install 'text-fabric[pandas]'
-    ```
+        pip install 'text-fabric[pandas]'
 
     or
 
-    ```
-    pip install 'text-fabric[all]'
-    ```
+        pip install 'text-fabric[all]'
 
     See `tf.about.install`
 
@@ -3114,9 +3107,7 @@ running the call again, I leave this behaviour as it is.
     the SyrNT data has linguistic annotations at the word and lexeme levels.
     After this upgrade you can browse the SyrNT by saying
 
-    ```
-    tf syrnt
-    ```
+        tf syrnt
 on
     the command-line.
 
@@ -3130,9 +3121,7 @@ on
     We expect to add lemmatisation of words shortly.
     After this upgrade you can browse the Peshitta by saying
 
-    ```
-    tf peshitta
-    ```
+        tf peshitta
 
     on the command-line.
 *   Fixed a bug in `exportMQL`:
@@ -3747,25 +3736,19 @@ Docs and metadata update
 
     In search templates I recently added things like
 
-    ```
-    word vt!
-    ```
+        word vt!
 
     which checks for words that do not have a value for feature `vt`.
 
     The syntax for this has now changed to
 
-    ```
-    word vt#
-    ```
+        word vt#
 
 *   Unequal (#) in feature value conditions.
 
     Now you can say things like
 
-    ```
-    word vt#infa|infc
-    ```
+        word vt#infa|infc
 
     meaning that the value of feature is not one of `infa`, `infc`.
 
