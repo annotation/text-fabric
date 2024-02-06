@@ -264,7 +264,8 @@ and part of speech on clause atoms, all with value <code>None</code>.</p>
 <p class="admonition-title">Suppress common values</p>
 <p>You can use <code>noneValues</code> also to suppress the normal values of a feature,
 in order to attract attention to the more special values, e.g.</p>
-<p><code>noneValues={None, 'NA', 'unknown', 'm', 'sg', 'p3'}</code></p>
+<pre><code>noneValues={None, 'NA', 'unknown', 'm', 'sg', 'p3'}
+</code></pre>
 </div>
 <div class="admonition caution">
 <p class="admonition-title">None values affect all features</p>
@@ -344,7 +345,8 @@ an automatic <code>displaySetup(tupleFeatures=...)</code> will be performed with
 the features mentioned in the query for node atoms.</p>
 <p>This will influence the effect of subsequent display and export operations.</p>
 <p>When you set it yourself, it should be a tuple of pairs</p>
-<p><code>(i, features)</code></p>
+<pre><code>(i, features)
+</code></pre>
 <p>which means that to member <code>i</code> of a result tuple we assign extra <code>features</code>.</p>
 <p><code>features</code> may be given as an iterable or a space separated string of feature names.</p>
 </dd>
@@ -385,7 +387,7 @@ The node type of slot nodes is never displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/advanced/options.py#L1-L718" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/advanced/options.py#L1-L714" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Display Settings.
@@ -626,9 +628,7 @@ noneValues: set, optional None
         You can use `noneValues` also to suppress the normal values of a feature,
         in order to attract attention to the more special values, e.g.
 
-        ```
-        noneValues={None, &#39;NA&#39;, &#39;unknown&#39;, &#39;m&#39;, &#39;sg&#39;, &#39;p3&#39;}
-        ```
+            noneValues={None, &#39;NA&#39;, &#39;unknown&#39;, &#39;m&#39;, &#39;sg&#39;, &#39;p3&#39;}
 
     !!! caution &#34;None values affect all features&#34;
         Beware of putting to much in `noneValues`.
@@ -714,9 +714,7 @@ tupleFeatures: iterable of 2-tuples, optional ()
 
     When you set it yourself, it should be a tuple of pairs
 
-    ```
-    (i, features)
-    ```
+        (i, features)
 
     which means that to member `i` of a result tuple we assign extra `features`.
 
@@ -1141,7 +1139,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/advanced/options.py#L549-L718" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/advanced/options.py#L545-L714" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Options:
     def __init__(self, app):
@@ -1324,7 +1322,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/advanced/options.py#L652-L701" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/advanced/options.py#L648-L697" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def check(self, msg, options):
     app = self.app
@@ -1386,7 +1384,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/advanced/options.py#L717-L718" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/advanced/options.py#L713-L714" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def consume(self, options, *remove):
     return {o: options[o] for o in options if o not in remove}</code></pre>
@@ -1400,7 +1398,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/advanced/options.py#L703-L715" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/advanced/options.py#L699-L711" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def distill(self, options):
     defaults = self.defaults
@@ -1425,7 +1423,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/advanced/options.py#L598-L650" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/advanced/options.py#L594-L646" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def normalize(self, option, value):
     app = self.app
@@ -1490,7 +1488,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/advanced/options.py#L567-L582" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/advanced/options.py#L563-L578" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reset(self, *options):
     app = self.app
@@ -1518,7 +1516,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/advanced/options.py#L584-L596" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/advanced/options.py#L580-L592" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setup(self, *options, **overrides):
     app = self.app
@@ -1546,7 +1544,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/advanced/options.py#L535-L546" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/advanced/options.py#L531-L542" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class OptionsCurrent:
     def __init__(self, options):
@@ -1571,7 +1569,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/advanced/options.py#L541-L542" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/advanced/options.py#L537-L538" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, k, v=None):
     return getattr(self, k, v)</code></pre>
@@ -1585,7 +1583,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/advanced/options.py#L544-L546" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/advanced/options.py#L540-L542" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set(self, k, v):
     self.allKeys.add(k)

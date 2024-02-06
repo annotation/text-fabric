@@ -49,7 +49,7 @@ collect(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/volumes/collect.py#L1-L901" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/volumes/collect.py#L1-L893" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Collect
@@ -230,17 +230,15 @@ def collect(
 
         Example
         -------
-        ``` python
-        collect(
-            dict(
-                banks=&#39;banks/tf/0.2&#39;,
-                river=&#39;banks/tf/0.4&#39;,
-            ),
-            &#39;riverbanks/tf/1.0&#39;,
-            volumeType=&#39;volume&#39;,
-            volumeFeature=&#39;vol&#39;,
-        )
-        ```
+            collect(
+                dict(
+                    banks=&#39;banks/tf/0.2&#39;,
+                    river=&#39;banks/tf/0.4&#39;,
+                ),
+                &#39;riverbanks/tf/1.0&#39;,
+                volumeType=&#39;volume&#39;,
+                volumeFeature=&#39;vol&#39;,
+            )
 
         This results in a work with nodes and features from the volumes
         found at the indicated places on your file system.
@@ -293,76 +291,70 @@ def collect(
 
     Example
     -------
-    ``` python
-    collect(
-        dict(
-            banks=&#39;banks/tf/0.2&#39;,
-            river=&#39;banks/tf/0.4&#39;,
-        ),
-        &#39;riverbanks/tf/1.0&#39;,
-        featureMeta=dict(
-          level=dict(
-            valueType=&#39;int&#39;,
-            description=&#39;level of a section node&#39;,
-          ),
-        ),
-    )
-    ```
+        collect(
+            dict(
+                banks=&#39;banks/tf/0.2&#39;,
+                river=&#39;banks/tf/0.4&#39;,
+            ),
+            &#39;riverbanks/tf/1.0&#39;,
+            featureMeta=dict(
+              level=dict(
+                valueType=&#39;int&#39;,
+                description=&#39;level of a section node&#39;,
+              ),
+            ),
+        )
 
     Example
     -------
-    ``` python
-    collect(
-        dict(
-            banks=&#39;banks/tf/0.2&#39;,
-            river=&#39;banks/tf/0.4&#39;,
-        ),
-        &#39;riverbanks/tf/1.0&#39;,
-        featureMeta=dict(
-            otext=dict(
-                volumeType=&#39;volume&#39;,
-                volumeFeature=&#39;vol&#39;,
-                sectionTypes=&#39;volume,chapter,line&#39;,
-                sectionFeatures=&#39;title,number,number&#39;,
+        collect(
+            dict(
+                banks=&#39;banks/tf/0.2&#39;,
+                river=&#39;banks/tf/0.4&#39;,
             ),
-        ),
-        silent=SILENT_D,
-    )
-    ```
+            &#39;riverbanks/tf/1.0&#39;,
+            featureMeta=dict(
+                otext=dict(
+                    volumeType=&#39;volume&#39;,
+                    volumeFeature=&#39;vol&#39;,
+                    sectionTypes=&#39;volume,chapter,line&#39;,
+                    sectionFeatures=&#39;title,number,number&#39;,
+                ),
+            ),
+            silent=SILENT_D,
+        )
 
     This will give rise to something like this (assuming that `banks` and
     `rivers` have some deviating material in their `otext.tf`:
 
-    ```
-    @config
-    @compiler=Dirk Roorda
-    @dateWritten=2019-05-20T19:12:23Z
-    @fmt:line-default={letters:XXX}{terminator}
-    @fmt:line-term=line#{terminator}
-    @fmt:text-orig-extra={letters}{punc}{gap}
-    @fmt:text-orig-full={letters}
-    @fmt:text-orig-full!banks={letters}{punc}
-    @fmt:text-orig-full!rivers={letters}{gap}
-    @name=Culture quotes from Iain Banks
-    @purpose=exposition
-    @sectionFeatures=title,number,number
-    @sectionFeatures!banks=title,number,number
-    @sectionFeatures!rivers=number,number,number
-    @sectionTypes=volume,chapter,line
-    @sectionTypes!banks=book,chapter,sentence
-    @sectionTypes!rivers=chapter,sentence,line
-    @source=Good Reads
-    @status=with for similarities in a separate module
-    @structureFeatures!banks=title,number,number,number
-    @structureFeatures!rivers=title,number,number
-    @structureTypes!banks=book,chapter,sentence,line
-    @structureTypes!rivers=book,chapter,sentence
-    @url=https://www.goodreads.com/work/quotes/14366-consider-phlebas
-    @version=0.2
-    @writtenBy=Text-Fabric
-    @writtenBy=Text-Fabric
-    @dateWritten=2019-05-28T10:55:06Z
-    ```
+        @config
+        @compiler=Dirk Roorda
+        @dateWritten=2019-05-20T19:12:23Z
+        @fmt:line-default={letters:XXX}{terminator}
+        @fmt:line-term=line#{terminator}
+        @fmt:text-orig-extra={letters}{punc}{gap}
+        @fmt:text-orig-full={letters}
+        @fmt:text-orig-full!banks={letters}{punc}
+        @fmt:text-orig-full!rivers={letters}{gap}
+        @name=Culture quotes from Iain Banks
+        @purpose=exposition
+        @sectionFeatures=title,number,number
+        @sectionFeatures!banks=title,number,number
+        @sectionFeatures!rivers=number,number,number
+        @sectionTypes=volume,chapter,line
+        @sectionTypes!banks=book,chapter,sentence
+        @sectionTypes!rivers=chapter,sentence,line
+        @source=Good Reads
+        @status=with for similarities in a separate module
+        @structureFeatures!banks=title,number,number,number
+        @structureFeatures!rivers=title,number,number
+        @structureTypes!banks=book,chapter,sentence,line
+        @structureTypes!rivers=book,chapter,sentence
+        @url=https://www.goodreads.com/work/quotes/14366-consider-phlebas
+        @version=0.2
+        @writtenBy=Text-Fabric
+        @writtenBy=Text-Fabric
+        @dateWritten=2019-05-28T10:55:06Z
 
     !!! caution &#34;inter-version edges&#34;
         Features with names starting in `omap@` contain node maps from
@@ -1061,16 +1053,16 @@ In that case the new feature values for nodes of <code>volumeType</code> will
 just be added to it.</p>
 </div>
 <h2 id="example">Example</h2>
-<p><code>python
-collect(
-dict(
-banks='banks/tf/0.2',
-river='banks/tf/0.4',
-),
-'riverbanks/tf/1.0',
-volumeType='volume',
-volumeFeature='vol',
-)</code></p>
+<pre><code>collect(
+    dict(
+        banks='banks/tf/0.2',
+        river='banks/tf/0.4',
+    ),
+    'riverbanks/tf/1.0',
+    volumeType='volume',
+    volumeFeature='vol',
+)
+</code></pre>
 <p>This results in a work with nodes and features from the volumes
 found at the indicated places on your file system.
 After combination, the volumes are visible in the work as nodes
@@ -1118,7 +1110,7 @@ that is already in one of the volumes.</p>
 </dd>
 </dl>
 <h2 id="example_1">Example</h2>
-<pre><code class="language-python">collect(
+<pre><code>collect(
     dict(
         banks='banks/tf/0.2',
         river='banks/tf/0.4',
@@ -1133,7 +1125,7 @@ that is already in one of the volumes.</p>
 )
 </code></pre>
 <h2 id="example_2">Example</h2>
-<pre><code class="language-python">collect(
+<pre><code>collect(
     dict(
         banks='banks/tf/0.2',
         river='banks/tf/0.4',
@@ -1175,7 +1167,7 @@ that is already in one of the volumes.</p>
 @structureFeatures!rivers=title,number,number
 @structureTypes!banks=book,chapter,sentence,line
 @structureTypes!rivers=book,chapter,sentence
-@url=https://www.goodreads.com/work/quotes/14366-consider-phlebas
+@url=&lt;https://www.goodreads.com/work/quotes/14366-consider-phlebas&gt;
 @version=0.2
 @writtenBy=Text-Fabric
 @writtenBy=Text-Fabric
@@ -1190,7 +1182,7 @@ These will be excluded from collection.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/volumes/collect.py#L60-L901" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/volumes/collect.py#L60-L893" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def collect(
     volumes,
@@ -1312,17 +1304,15 @@ These will be excluded from collection.</p>
 
         Example
         -------
-        ``` python
-        collect(
-            dict(
-                banks=&#39;banks/tf/0.2&#39;,
-                river=&#39;banks/tf/0.4&#39;,
-            ),
-            &#39;riverbanks/tf/1.0&#39;,
-            volumeType=&#39;volume&#39;,
-            volumeFeature=&#39;vol&#39;,
-        )
-        ```
+            collect(
+                dict(
+                    banks=&#39;banks/tf/0.2&#39;,
+                    river=&#39;banks/tf/0.4&#39;,
+                ),
+                &#39;riverbanks/tf/1.0&#39;,
+                volumeType=&#39;volume&#39;,
+                volumeFeature=&#39;vol&#39;,
+            )
 
         This results in a work with nodes and features from the volumes
         found at the indicated places on your file system.
@@ -1375,76 +1365,70 @@ These will be excluded from collection.</p>
 
     Example
     -------
-    ``` python
-    collect(
-        dict(
-            banks=&#39;banks/tf/0.2&#39;,
-            river=&#39;banks/tf/0.4&#39;,
-        ),
-        &#39;riverbanks/tf/1.0&#39;,
-        featureMeta=dict(
-          level=dict(
-            valueType=&#39;int&#39;,
-            description=&#39;level of a section node&#39;,
-          ),
-        ),
-    )
-    ```
+        collect(
+            dict(
+                banks=&#39;banks/tf/0.2&#39;,
+                river=&#39;banks/tf/0.4&#39;,
+            ),
+            &#39;riverbanks/tf/1.0&#39;,
+            featureMeta=dict(
+              level=dict(
+                valueType=&#39;int&#39;,
+                description=&#39;level of a section node&#39;,
+              ),
+            ),
+        )
 
     Example
     -------
-    ``` python
-    collect(
-        dict(
-            banks=&#39;banks/tf/0.2&#39;,
-            river=&#39;banks/tf/0.4&#39;,
-        ),
-        &#39;riverbanks/tf/1.0&#39;,
-        featureMeta=dict(
-            otext=dict(
-                volumeType=&#39;volume&#39;,
-                volumeFeature=&#39;vol&#39;,
-                sectionTypes=&#39;volume,chapter,line&#39;,
-                sectionFeatures=&#39;title,number,number&#39;,
+        collect(
+            dict(
+                banks=&#39;banks/tf/0.2&#39;,
+                river=&#39;banks/tf/0.4&#39;,
             ),
-        ),
-        silent=SILENT_D,
-    )
-    ```
+            &#39;riverbanks/tf/1.0&#39;,
+            featureMeta=dict(
+                otext=dict(
+                    volumeType=&#39;volume&#39;,
+                    volumeFeature=&#39;vol&#39;,
+                    sectionTypes=&#39;volume,chapter,line&#39;,
+                    sectionFeatures=&#39;title,number,number&#39;,
+                ),
+            ),
+            silent=SILENT_D,
+        )
 
     This will give rise to something like this (assuming that `banks` and
     `rivers` have some deviating material in their `otext.tf`:
 
-    ```
-    @config
-    @compiler=Dirk Roorda
-    @dateWritten=2019-05-20T19:12:23Z
-    @fmt:line-default={letters:XXX}{terminator}
-    @fmt:line-term=line#{terminator}
-    @fmt:text-orig-extra={letters}{punc}{gap}
-    @fmt:text-orig-full={letters}
-    @fmt:text-orig-full!banks={letters}{punc}
-    @fmt:text-orig-full!rivers={letters}{gap}
-    @name=Culture quotes from Iain Banks
-    @purpose=exposition
-    @sectionFeatures=title,number,number
-    @sectionFeatures!banks=title,number,number
-    @sectionFeatures!rivers=number,number,number
-    @sectionTypes=volume,chapter,line
-    @sectionTypes!banks=book,chapter,sentence
-    @sectionTypes!rivers=chapter,sentence,line
-    @source=Good Reads
-    @status=with for similarities in a separate module
-    @structureFeatures!banks=title,number,number,number
-    @structureFeatures!rivers=title,number,number
-    @structureTypes!banks=book,chapter,sentence,line
-    @structureTypes!rivers=book,chapter,sentence
-    @url=https://www.goodreads.com/work/quotes/14366-consider-phlebas
-    @version=0.2
-    @writtenBy=Text-Fabric
-    @writtenBy=Text-Fabric
-    @dateWritten=2019-05-28T10:55:06Z
-    ```
+        @config
+        @compiler=Dirk Roorda
+        @dateWritten=2019-05-20T19:12:23Z
+        @fmt:line-default={letters:XXX}{terminator}
+        @fmt:line-term=line#{terminator}
+        @fmt:text-orig-extra={letters}{punc}{gap}
+        @fmt:text-orig-full={letters}
+        @fmt:text-orig-full!banks={letters}{punc}
+        @fmt:text-orig-full!rivers={letters}{gap}
+        @name=Culture quotes from Iain Banks
+        @purpose=exposition
+        @sectionFeatures=title,number,number
+        @sectionFeatures!banks=title,number,number
+        @sectionFeatures!rivers=number,number,number
+        @sectionTypes=volume,chapter,line
+        @sectionTypes!banks=book,chapter,sentence
+        @sectionTypes!rivers=chapter,sentence,line
+        @source=Good Reads
+        @status=with for similarities in a separate module
+        @structureFeatures!banks=title,number,number,number
+        @structureFeatures!rivers=title,number,number
+        @structureTypes!banks=book,chapter,sentence,line
+        @structureTypes!rivers=book,chapter,sentence
+        @url=https://www.goodreads.com/work/quotes/14366-consider-phlebas
+        @version=0.2
+        @writtenBy=Text-Fabric
+        @writtenBy=Text-Fabric
+        @dateWritten=2019-05-28T10:55:06Z
 
     !!! caution &#34;inter-version edges&#34;
         Features with names starting in `omap@` contain node maps from

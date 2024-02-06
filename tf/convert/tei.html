@@ -161,10 +161,9 @@ for the node of type specified in <code>nodeType</code> that is recently constru
 <li>then look up the last created node of type <code>letter</code></li>
 <li>and get the text content of the current XML node (the <code>idno</code> one),</li>
 <li>and put it in the feature <code>letterid</code> for that node.</li>
-<li>
-<p>Moreover, the feature <code>letterid</code> gets metadata as specified under the key <code>meta</code>,
-where the <code>description</code> will be filled with the text</p>
-<p><code>The identifier of a letter; the content is taken from sourceDesc/msDesc/msIdentifier/altIdentifier/idno[type=letterId]</code></p>
+<li>Moreover, the feature <code>letterid</code> gets metadata as specified under the key <code>meta</code>,
+where the <code>description</code> will be filled with the text<pre><code>The identifier of a letter; the content is taken from sourceDesc/msDesc/msIdentifier/altIdentifier/idno[type=letterId]
+</code></pre>
 </li>
 </ul>
 <h3 id="models"><code>models</code></h3>
@@ -390,7 +389,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/tei.py#L1-L4268" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/tei.py#L1-L4266" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -552,9 +551,7 @@ The meaning is:
 *   Moreover, the feature `letterid` gets metadata as specified under the key `meta`,
     where the `description` will be filled with the text
 
-    ```
-    The identifier of a letter; the content is taken from sourceDesc/msDesc/msIdentifier/altIdentifier/idno[type=letterId]
-    ```
+        The identifier of a letter; the content is taken from sourceDesc/msDesc/msIdentifier/altIdentifier/idno[type=letterId]
 
 ### `models`
 
@@ -1752,7 +1749,7 @@ class TEI(CheckImport):
             featPathLogical = []
 
             sep = &#34;&#34;
-            for comp in reversed(featPath):
+            for comp in reversed(featPath or []):
                 if type(comp) is str:
                     featPathRep += f&#34;{sep}{comp}&#34;
                     featPathLogical.append((comp, None))
@@ -4677,7 +4674,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/tei.py#L750-L767" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/tei.py#L748-L765" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRefs(tag, atts, xmlFile):
     refAtt = REFERENCING.get(tag, None)
@@ -4707,7 +4704,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/tei.py#L4254-L4264" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/tei.py#L4252-L4262" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(
@@ -4730,7 +4727,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/tei.py#L733-L747" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/tei.py#L731-L745" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCssInfo():
     &#34;&#34;&#34;Make the CSS info for the style sheet.&#34;&#34;&#34;
@@ -4878,7 +4875,7 @@ relevant TF version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/tei.py#L770-L4251" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/tei.py#L768-L4249" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI(CheckImport):
     def __init__(
@@ -5471,7 +5468,7 @@ relevant TF version:</p>
             featPathLogical = []
 
             sep = &#34;&#34;
-            for comp in reversed(featPath):
+            for comp in reversed(featPath or []):
                 if type(comp) is str:
                     featPathRep += f&#34;{sep}{comp}&#34;
                     featPathLogical.append((comp, None))
@@ -8406,7 +8403,7 @@ that code between automatic generation of files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/tei.py#L3771-L4135" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/tei.py#L3769-L4133" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self, tokenBased=False):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -8791,7 +8788,7 @@ There should be a valid TF dataset and app configuration in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/tei.py#L4139-L4175" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/tei.py#L4137-L4173" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def browseTask(self):
     &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
@@ -8859,7 +8856,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/tei.py#L1576-L2245" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/tei.py#L1574-L2243" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -9547,7 +9544,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/tei.py#L3662-L3720" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/tei.py#L3660-L3718" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -9623,7 +9620,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/tei.py#L2249-L2262" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/tei.py#L2247-L2260" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -9664,7 +9661,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/tei.py#L2266-L3660" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/tei.py#L2264-L3658" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -11077,7 +11074,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/tei.py#L1477-L1499" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/tei.py#L1475-L1497" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getParser(self):
     &#34;&#34;&#34;Configure the LXML parser.
@@ -11112,7 +11109,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/tei.py#L1435-L1475" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/tei.py#L1433-L1473" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getSwitches(self, xmlPath):
     verbose = self.verbose
@@ -11178,7 +11175,7 @@ that contains the file names in that folder, sorted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/tei.py#L1501-L1574" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/tei.py#L1499-L1572" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the TEI source files.
@@ -11276,7 +11273,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/tei.py#L3722-L3767" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/tei.py#L3720-L3765" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -11334,7 +11331,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/tei.py#L1392-L1433" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/tei.py#L1390-L1431" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readSchemas(self):
     schemaDir = self.schemaDir
@@ -11418,7 +11415,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/tei.py#L4177-L4251" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/tei.py#L4175-L4249" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,

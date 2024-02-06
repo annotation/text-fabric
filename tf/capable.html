@@ -81,7 +81,7 @@ under section <code>[options.extras_require]</code> .</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/capable.py#L1-L359" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/capable.py#L1-L351" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Dependency management.
 
@@ -184,18 +184,14 @@ class CheckImport:
 
         Try to load a bunch of modules:
 
-        ``` python
-        CI = CheckImport(&#34;module1&#34;, &#34;module2&#34;, ...)
-        ```
+            CI = CheckImport(&#34;module1&#34;, &#34;module2&#34;, ...)
 
         Then check the success and load the modules by
 
-        ``` python
-        if CI.importOK(hint=True):
-            (module1, module2, ...) = CI.importGet()
-        else:
-            return
-        ```
+            if CI.importOK(hint=True):
+                (module1, module2, ...) = CI.importGet()
+            else:
+                return
 
         If all modules have successfully been imported, their semantics is now stored
         in the variables `module1`, `module2`, ...
@@ -211,22 +207,18 @@ class CheckImport:
         So, in the initialization function of your class, right at the beginning,
         say:
 
-        ``` python
-        super().__init__(&#34;module1&#34;, &#34;module2&#34;, ...)
-        if self.importOK(hint=True):
-            (module1, module2, ... ) = self.importGet()
-        else:
-            return
-        ```
+            super().__init__(&#34;module1&#34;, &#34;module2&#34;, ...)
+            if self.importOK(hint=True):
+                (module1, module2, ... ) = self.importGet()
+            else:
+                return
 
         You can put a check in every method invocation easily.
         Right at the beginning of each relevant method, say
 
 
-        ``` python
-        if not self.importOK():
-            return
-        ```
+            if not self.importOK():
+                return
 
         At this point, you&#39;ll probably not need to repeat the installation hint.
 
@@ -495,7 +487,7 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/capable.py#L258-L359" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/capable.py#L250-L351" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Capable:
     &#34;&#34;&#34;Import modules for back-end communication if possible.
@@ -610,7 +602,7 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/capable.py#L341-L359" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/capable.py#L333-L351" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def can(self, extra):
     if extra in {&#34;github&#34;, &#34;gitlab&#34;}:
@@ -641,7 +633,7 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/capable.py#L317-L329" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/capable.py#L309-L321" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, module):
     modules = self.modules
@@ -666,7 +658,7 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/capable.py#L331-L339" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/capable.py#L323-L331" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadFrom(self, module, *members):
     loaded = self.load(module)
@@ -687,7 +679,7 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/capable.py#L294-L315" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/capable.py#L286-L307" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tryImport(self, *extras):
     backendProviders = self.backendProviders
@@ -725,10 +717,10 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 modules are needed whose presence is needed but not assumed.</p>
 <p>The sequence is this:</p>
 <p>Try to load a bunch of modules:</p>
-<pre><code class="language-python">CI = CheckImport(&quot;module1&quot;, &quot;module2&quot;, ...)
+<pre><code>CI = CheckImport("module1", "module2", ...)
 </code></pre>
 <p>Then check the success and load the modules by</p>
-<pre><code class="language-python">if CI.importOK(hint=True):
+<pre><code>if CI.importOK(hint=True):
     (module1, module2, ...) = CI.importGet()
 else:
     return
@@ -743,7 +735,7 @@ When you create an instance of the class, you check whether all modules
 can be loaded. The result of this check is now stored in the object.</p>
 <p>So, in the initialization function of your class, right at the beginning,
 say:</p>
-<pre><code class="language-python">super().__init__(&quot;module1&quot;, &quot;module2&quot;, ...)
+<pre><code>super().__init__("module1", "module2", ...)
 if self.importOK(hint=True):
     (module1, module2, ... ) = self.importGet()
 else:
@@ -751,7 +743,7 @@ else:
 </code></pre>
 <p>You can put a check in every method invocation easily.
 Right at the beginning of each relevant method, say</p>
-<pre><code class="language-python">if not self.importOK():
+<pre><code>if not self.importOK():
     return
 </code></pre>
 <p>At this point, you'll probably not need to repeat the installation hint.</p>
@@ -763,7 +755,7 @@ Right at the beginning of each relevant method, say</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/capable.py#L91-L255" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/capable.py#L91-L247" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CheckImport:
     def __init__(self, *modules):
@@ -776,18 +768,14 @@ Right at the beginning of each relevant method, say</p>
 
         Try to load a bunch of modules:
 
-        ``` python
-        CI = CheckImport(&#34;module1&#34;, &#34;module2&#34;, ...)
-        ```
+            CI = CheckImport(&#34;module1&#34;, &#34;module2&#34;, ...)
 
         Then check the success and load the modules by
 
-        ``` python
-        if CI.importOK(hint=True):
-            (module1, module2, ...) = CI.importGet()
-        else:
-            return
-        ```
+            if CI.importOK(hint=True):
+                (module1, module2, ...) = CI.importGet()
+            else:
+                return
 
         If all modules have successfully been imported, their semantics is now stored
         in the variables `module1`, `module2`, ...
@@ -803,22 +791,18 @@ Right at the beginning of each relevant method, say</p>
         So, in the initialization function of your class, right at the beginning,
         say:
 
-        ``` python
-        super().__init__(&#34;module1&#34;, &#34;module2&#34;, ...)
-        if self.importOK(hint=True):
-            (module1, module2, ... ) = self.importGet()
-        else:
-            return
-        ```
+            super().__init__(&#34;module1&#34;, &#34;module2&#34;, ...)
+            if self.importOK(hint=True):
+                (module1, module2, ... ) = self.importGet()
+            else:
+                return
 
         You can put a check in every method invocation easily.
         Right at the beginning of each relevant method, say
 
 
-        ``` python
-        if not self.importOK():
-            return
-        ```
+            if not self.importOK():
+                return
 
         At this point, you&#39;ll probably not need to repeat the installation hint.
 
@@ -962,7 +946,7 @@ not packed in a 1-element list.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/capable.py#L241-L255" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/capable.py#L233-L247" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importGet(self):
     &#34;&#34;&#34;Delivers the imported modules.
@@ -1001,7 +985,7 @@ module.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/capable.py#L216-L239" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/capable.py#L208-L231" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importOK(self, hint=False):
     &#34;&#34;&#34;Reports the result of the import attempts.

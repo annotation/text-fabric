@@ -42,11 +42,13 @@ and then use the YAML as instructions to add entity annotations to the corpus.</
 <ul>
 <li>
 <p>Work with a local GitHub clone of the corpus in <code>~/HuygensING/suriano</code>:</p>
-<p><code>A = use("HuygensING/suriano:clone", checkout="clone")</code></p>
+<pre><code>A = use("HuygensING/suriano:clone", checkout="clone")
+</code></pre>
 </li>
 <li>
 <p>Or let TF auto-download the latest version and work with that:</p>
-<p><code>A = use("HuygensING/suriano")</code></p>
+<pre><code>A = use("HuygensING/suriano")
+</code></pre>
 </li>
 </ul>
 <p>Load the <code>Ner</code> module:</p>
@@ -189,7 +191,7 @@ slots.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/browser/ner/ner.py#L1-L525" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/browser/ner/ner.py#L1-L521" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;API for rule-based entity marking.
 
@@ -221,15 +223,11 @@ Load your corpus. There are two ways:
 
 *   Work with a local GitHub clone of the corpus in `~/HuygensING/suriano`:
 
-    ```
-    A = use(&#34;HuygensING/suriano:clone&#34;, checkout=&#34;clone&#34;)
-    ```
+        A = use(&#34;HuygensING/suriano:clone&#34;, checkout=&#34;clone&#34;)
 
 *   Or let TF auto-download the latest version and work with that:
 
-    ```
-    A = use(&#34;HuygensING/suriano&#34;)
-    ```
+        A = use(&#34;HuygensING/suriano&#34;)
 
 Load the `Ner` module:
 
@@ -746,7 +744,7 @@ by the Annotate class on which it is based.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/browser/ner/ner.py#L236-L525" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/browser/ner/ner.py#L232-L521" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Annotate):
     def __init__(self, app):
@@ -1074,7 +1072,7 @@ slot sequences where those token sequences occur in the corpus.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/browser/ner/ner.py#L424-L448" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/browser/ner/ner.py#L420-L444" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeInventory(self):
     &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
@@ -1115,7 +1113,7 @@ If there is no inventory yet, it will be created.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/browser/ner/ner.py#L481-L525" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/browser/ner/ner.py#L477-L521" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def markEntities(self):
     &#34;&#34;&#34;Marks up the members of the inventory as entities.
@@ -1192,7 +1190,7 @@ the Excel sheet exists.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/browser/ner/ner.py#L263-L422" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/browser/ner/ner.py#L259-L418" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readInstructions(self, sheetName, force=False):
     &#34;&#34;&#34;Reads an Excel or YAML file with entity recognition instructions.
@@ -1366,7 +1364,7 @@ of which they are surface forms.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/browser/ner/ner.py#L450-L479" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/browser/ner/ner.py#L446-L475" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showInventory(self):
     &#34;&#34;&#34;Shows the inventory.

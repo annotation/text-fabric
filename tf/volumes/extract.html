@@ -35,7 +35,7 @@ extract(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/volumes/extract.py#L1-L746" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/volumes/extract.py#L1-L738" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Extract
@@ -273,28 +273,24 @@ def extract(
 
     Example
     -------
-    ``` python
-    volumeList = extract(
-        &#39;clariah-gm/tf/0.9.1&#39;,
-        &#39;clariah-gm/asvolumes/tf/0.9.1&#39;,
-    )
-    ```
+        volumeList = extract(
+            &#39;clariah-gm/tf/0.9.1&#39;,
+            &#39;clariah-gm/asvolumes/tf/0.9.1&#39;,
+        )
 
     This will extract the top-level sections of the missives corpus
     into that many volumes.
 
     Example
     -------
-    ``` python
-    volumeList = extract(
-        &#39;clariah-gm/tf/0.9.1&#39;,
-        &#39;clariah-gm/asvolumes/tf/0.9.1&#39;,
-        volumes=dict(
-            early=(1,2,3,4,5,6,7,8),
-            late=(9, 10, 11, 12),
+        volumeList = extract(
+            &#39;clariah-gm/tf/0.9.1&#39;,
+            &#39;clariah-gm/asvolumes/tf/0.9.1&#39;,
+            volumes=dict(
+                early=(1,2,3,4,5,6,7,8),
+                late=(9, 10, 11, 12),
+            )
         )
-    )
-    ```
 
     This will create 2 volumes, named `early` and `late`,
     where `early` consists of top-level sections 1-8,
@@ -303,27 +299,23 @@ def extract(
 
     Example
     -------
-    ``` python
-    volumeList = extract(
-        &#39;bhsa/tf/2021&#39;,
-        &#39;bhsa/asvolumes/tf/2021&#39;,
-    )
-    ```
+        volumeList = extract(
+            &#39;bhsa/tf/2021&#39;,
+            &#39;bhsa/asvolumes/tf/2021&#39;,
+        )
 
     This will extract the books of the bible as separate volumes.
 
     Example
     -------
-    ``` python
-    volumeList = extract(
-        &#39;bhsa/tf/2021&#39;,
-        &#39;bhsa/asvolumes/tf/2021&#39;,
-        volumes=dict(
-            thora=(&#34;Genesis&#34;, &#34;Exodus&#34;, &#34;Leviticus&#34;, &#34;Numeri&#34;, &#34;Deuteronomy&#34;),
-            poetry=(&#34;Psalms&#34;, &#34;Proverbs&#34;),
-        ),
-    )
-    ```
+        volumeList = extract(
+            &#39;bhsa/tf/2021&#39;,
+            &#39;bhsa/asvolumes/tf/2021&#39;,
+            volumes=dict(
+                thora=(&#34;Genesis&#34;, &#34;Exodus&#34;, &#34;Leviticus&#34;, &#34;Numeri&#34;, &#34;Deuteronomy&#34;),
+                poetry=(&#34;Psalms&#34;, &#34;Proverbs&#34;),
+            ),
+        )
 
     This will extract two volumes of the bible:
     `thora` with the first 5 books and `poetry` with two poetic books.
@@ -909,7 +901,7 @@ items <code>location</code> (on disk) and <code>new</code> (whether the volume h
 by this call).</dd>
 </dl>
 <h2 id="example">Example</h2>
-<pre><code class="language-python">volumeList = extract(
+<pre><code>volumeList = extract(
     'clariah-gm/tf/0.9.1',
     'clariah-gm/asvolumes/tf/0.9.1',
 )
@@ -917,7 +909,7 @@ by this call).</dd>
 <p>This will extract the top-level sections of the missives corpus
 into that many volumes.</p>
 <h2 id="example_1">Example</h2>
-<pre><code class="language-python">volumeList = extract(
+<pre><code>volumeList = extract(
     'clariah-gm/tf/0.9.1',
     'clariah-gm/asvolumes/tf/0.9.1',
     volumes=dict(
@@ -931,19 +923,19 @@ where <code>early</code> consists of top-level sections 1-8,
 and <code>late</code> consists of top-level sections 9-12.
 Top-level section 13 will not be extracted into a volume.</p>
 <h2 id="example_2">Example</h2>
-<pre><code class="language-python">volumeList = extract(
+<pre><code>volumeList = extract(
     'bhsa/tf/2021',
     'bhsa/asvolumes/tf/2021',
 )
 </code></pre>
 <p>This will extract the books of the bible as separate volumes.</p>
 <h2 id="example_3">Example</h2>
-<pre><code class="language-python">volumeList = extract(
+<pre><code>volumeList = extract(
     'bhsa/tf/2021',
     'bhsa/asvolumes/tf/2021',
     volumes=dict(
-        thora=(&quot;Genesis&quot;, &quot;Exodus&quot;, &quot;Leviticus&quot;, &quot;Numeri&quot;, &quot;Deuteronomy&quot;),
-        poetry=(&quot;Psalms&quot;, &quot;Proverbs&quot;),
+        thora=("Genesis", "Exodus", "Leviticus", "Numeri", "Deuteronomy"),
+        poetry=("Psalms", "Proverbs"),
     ),
 )
 </code></pre>
@@ -952,7 +944,7 @@ Top-level section 13 will not be extracted into a volume.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/volumes/extract.py#L88-L746" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/volumes/extract.py#L88-L738" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def extract(
     workLocation,
@@ -1103,28 +1095,24 @@ Top-level section 13 will not be extracted into a volume.</p>
 
     Example
     -------
-    ``` python
-    volumeList = extract(
-        &#39;clariah-gm/tf/0.9.1&#39;,
-        &#39;clariah-gm/asvolumes/tf/0.9.1&#39;,
-    )
-    ```
+        volumeList = extract(
+            &#39;clariah-gm/tf/0.9.1&#39;,
+            &#39;clariah-gm/asvolumes/tf/0.9.1&#39;,
+        )
 
     This will extract the top-level sections of the missives corpus
     into that many volumes.
 
     Example
     -------
-    ``` python
-    volumeList = extract(
-        &#39;clariah-gm/tf/0.9.1&#39;,
-        &#39;clariah-gm/asvolumes/tf/0.9.1&#39;,
-        volumes=dict(
-            early=(1,2,3,4,5,6,7,8),
-            late=(9, 10, 11, 12),
+        volumeList = extract(
+            &#39;clariah-gm/tf/0.9.1&#39;,
+            &#39;clariah-gm/asvolumes/tf/0.9.1&#39;,
+            volumes=dict(
+                early=(1,2,3,4,5,6,7,8),
+                late=(9, 10, 11, 12),
+            )
         )
-    )
-    ```
 
     This will create 2 volumes, named `early` and `late`,
     where `early` consists of top-level sections 1-8,
@@ -1133,27 +1121,23 @@ Top-level section 13 will not be extracted into a volume.</p>
 
     Example
     -------
-    ``` python
-    volumeList = extract(
-        &#39;bhsa/tf/2021&#39;,
-        &#39;bhsa/asvolumes/tf/2021&#39;,
-    )
-    ```
+        volumeList = extract(
+            &#39;bhsa/tf/2021&#39;,
+            &#39;bhsa/asvolumes/tf/2021&#39;,
+        )
 
     This will extract the books of the bible as separate volumes.
 
     Example
     -------
-    ``` python
-    volumeList = extract(
-        &#39;bhsa/tf/2021&#39;,
-        &#39;bhsa/asvolumes/tf/2021&#39;,
-        volumes=dict(
-            thora=(&#34;Genesis&#34;, &#34;Exodus&#34;, &#34;Leviticus&#34;, &#34;Numeri&#34;, &#34;Deuteronomy&#34;),
-            poetry=(&#34;Psalms&#34;, &#34;Proverbs&#34;),
-        ),
-    )
-    ```
+        volumeList = extract(
+            &#39;bhsa/tf/2021&#39;,
+            &#39;bhsa/asvolumes/tf/2021&#39;,
+            volumes=dict(
+                thora=(&#34;Genesis&#34;, &#34;Exodus&#34;, &#34;Leviticus&#34;, &#34;Numeri&#34;, &#34;Deuteronomy&#34;),
+                poetry=(&#34;Psalms&#34;, &#34;Proverbs&#34;),
+            ),
+        )
 
     This will extract two volumes of the bible:
     `thora` with the first 5 books and `poetry` with two poetic books.
@@ -1636,7 +1620,7 @@ is returned. Otherwise a list of subdirectories that are modules.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/volumes/extract.py#L46-L85" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/volumes/extract.py#L46-L85" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getVolumes(volumesLocation):
     &#34;&#34;&#34;Lists volumes of a work that exist in a given directory.

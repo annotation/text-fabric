@@ -41,7 +41,7 @@ dictionary: <code><a title="tf.core.edgefeature.EdgeFeature.items" href="#tf.cor
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/core/edgefeature.py#L1-L282" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/core/edgefeature.py#L1-L278" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Mappings from edges to values.
@@ -233,17 +233,13 @@ class EdgeFeature:
         !!! example &#34;conflicting values&#34;
             Suppose we have
 
-            ```
-            n == value=4 ==&gt; m
-            m == value=6 ==&gt; n
-            ```
+                n == value=4 ==&gt; m
+                m == value=6 ==&gt; n
 
             then
 
-            ```
-            E.b(n) = (m, 4)
-            E.b(m) = (n, 6)
-            ```
+                E.b(n) = (m, 4)
+                E.b(m) = (n, 6)
 
         &#34;&#34;&#34;
 
@@ -346,7 +342,7 @@ class EdgeFeature:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/core/edgefeature.py#L33-L282" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/core/edgefeature.py#L33-L278" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class EdgeFeature:
     &#34;&#34;&#34;Provides access to (edge) feature data.
@@ -506,17 +502,13 @@ class EdgeFeature:
         !!! example &#34;conflicting values&#34;
             Suppose we have
 
-            ```
-            n == value=4 ==&gt; m
-            m == value=6 ==&gt; n
-            ```
+                n == value=4 ==&gt; m
+                m == value=6 ==&gt; n
 
             then
 
-            ```
-            E.b(n) = (m, 4)
-            E.b(m) = (n, 6)
-            ```
+                E.b(n) = (m, 4)
+                E.b(m) = (n, 6)
 
         &#34;&#34;&#34;
 
@@ -664,16 +656,18 @@ different values for the two directions.</p>
 <div class="admonition example">
 <p class="admonition-title">conflicting values</p>
 <p>Suppose we have</p>
-<p><code>n == value=4 ==&gt; m
-m == value=6 ==&gt; n</code></p>
+<pre><code>n == value=4 ==&gt; m
+m == value=6 ==&gt; n
+</code></pre>
 <p>then</p>
-<p><code>E.b(n) = (m, 4)
-E.b(m) = (n, 6)</code></p>
+<pre><code>E.b(n) = (m, 4)
+E.b(m) = (n, 6)
+</code></pre>
 </div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/core/edgefeature.py#L139-L221" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/core/edgefeature.py#L139-L217" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def b(self, n):
     &#34;&#34;&#34;Query *both* incoming edges to, and outgoing edges from a node.
@@ -727,17 +721,13 @@ E.b(m) = (n, 6)</code></p>
     !!! example &#34;conflicting values&#34;
         Suppose we have
 
-        ```
-        n == value=4 ==&gt; m
-        m == value=6 ==&gt; n
-        ```
+            n == value=4 ==&gt; m
+            m == value=6 ==&gt; n
 
         then
 
-        ```
-        E.b(n) = (m, 4)
-        E.b(m) = (n, 6)
-        ```
+            E.b(n) = (m, 4)
+            E.b(m) = (n, 6)
 
     &#34;&#34;&#34;
 
@@ -788,7 +778,7 @@ rather than <code>None</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/core/edgefeature.py#L73-L103" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/core/edgefeature.py#L73-L103" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def f(self, n):
     &#34;&#34;&#34;Get outgoing edges *from* a node.
@@ -853,7 +843,7 @@ highest frequencies first.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/core/edgefeature.py#L223-L282" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/core/edgefeature.py#L219-L278" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def freqList(self, nodeTypesFrom=None, nodeTypesTo=None):
     &#34;&#34;&#34;Frequency list of the values of this feature.
@@ -930,7 +920,7 @@ you can store the result as follows:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/core/edgefeature.py#L58-L71" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/core/edgefeature.py#L58-L71" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def items(self):
     &#34;&#34;&#34;A generator that yields the items of the feature, seen as a mapping.
@@ -976,7 +966,7 @@ rather than <code>None</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/core/edgefeature.py#L105-L137" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/core/edgefeature.py#L105-L137" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def t(self, n):
     &#34;&#34;&#34;Get incoming edges *to* a node.
@@ -1023,7 +1013,7 @@ rather than <code>None</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/core/edgefeature.py#L29-L30" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/core/edgefeature.py#L29-L30" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class EdgeFeatures:
     pass</code></pre>

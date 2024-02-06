@@ -495,7 +495,8 @@ This is only legal if both <code>f</code> and <code>g</code> are string valued f
 <p>If node <code>n</code> has feature <code>lex</code> with value <code>donkey_1</code>
 and node <code>m</code> has feature <code>lex</code> with value <code>donkey_2</code>,
 then the following holds:</p>
-<p><code>n .lex~_[0-9]*$~lex. m</code></p>
+<pre><code>n .lex~_[0-9]*$~lex. m
+</code></pre>
 <p>The values are stripped of their final <code>_1</code> and <code>_2</code> strings before they
 are being compared, leaving the comparison <code>donkey</code> = <code>donkey</code>, which is True.</p>
 </div>
@@ -770,7 +771,7 @@ fclause
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/about/searchusage.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/about/searchusage.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/searchusage.md

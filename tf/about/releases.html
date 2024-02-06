@@ -38,6 +38,12 @@ and in its top-level directory run the command:</strong></p>
 </code></pre>
 <h2 id="12">12</h2>
 <h3 id="122">12.2</h3>
+<h4 id="12211">12.2.11</h4>
+<p>2024-02-?? Upcoming</p>
+<ul>
+<li>Small fixes in <code><a title="tf.convert.addnlp" href="../convert/addnlp.html">tf.convert.addnlp</a></code>: when the NLP data is integrated in the
+TF dataset, the NLP-generated features will get some metadata</li>
+</ul>
 <h4 id="1228910">12.2.8,9,10</h4>
 <p>2024-01-24/25</p>
 <p>TF can auto-download extra data with a TF dataset, e.g. a directory with named entities
@@ -153,8 +159,8 @@ it will act gracefully, providing hints to install the modules in question.</p>
 <li>
 <p>API change in the Annotator:
 Calling the annotator is now easier: </p>
-<p><code>python
-A.makeNer()</code></p>
+<pre><code>A.makeNer()
+</code></pre>
 <p>(No need to make an additional <code>import</code> statement.)</p>
 <p>This will give you access to all annotation methods, including using a spreadsheet
 to read annotation instructions from.
@@ -248,10 +254,12 @@ This will restrict the usage of the TF browser to local-single-user scenarios.</
 </li>
 <li>
 <p>TF no longer exposes the installation options <code>[browser, pandas]</code></p>
-<p><code>pip install 'text-fabric[browser]'
-pip install 'text-fabric[pandas]'</code></p>
+<pre><code>pip install 'text-fabric[browser]'
+pip install 'text-fabric[pandas]'
+</code></pre>
 <p>If you work with Pandas (like exporting to Pandas) you have to install it yourself:</p>
-<p><code>pip install pandas pyarrow</code></p>
+<pre><code>pip install pandas pyarrow
+</code></pre>
 <p>The TF browser is always supported.</p>
 <p>The reason to have these distinct capabilities was that there are python libraries
 involved that do not install on the iPad.
@@ -279,7 +287,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -353,6 +361,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
 <li><a href="#122">12.2</a><ul>
+<li><a href="#12211">12.2.11</a></li>
 <li><a href="#1228910">12.2.8,9,10</a></li>
 <li><a href="#1227">12.2.7</a></li>
 <li><a href="#1226">12.2.6</a></li>

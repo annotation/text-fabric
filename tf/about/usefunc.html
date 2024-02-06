@@ -284,14 +284,15 @@ which resided in <code>annotation/clariah-gm</code> before, and in <code>Dans-la
 <p>When we want to migrate manual annotations made against the 0.4 version to the 0.7
 version, we run into this issue.
 But we can still load the 0.4 version by means of</p>
-<p><code>A = use(
-"missieven:v0.4",
-checkout="clone",
-version="0.4",
-hoist=globals(),
-legacy=True,
-provenanceSpec=dict(org="clariah", repo="wp6-missieven"),
-)</code></p>
+<pre><code>A = use(
+    "missieven:v0.4",
+    checkout="clone",
+    version="0.4",
+    hoist=globals(),
+    legacy=True,
+    provenanceSpec=dict(org="clariah", repo="wp6-missieven"),
+)
+</code></pre>
 </div>
 <h2 id="hoisting">Hoisting</h2>
 <p>The result of <code>A = use()</code> is that the variable <code>A</code> holds an object,
@@ -375,10 +376,12 @@ that most people never need.
 Loading them cost time and takes a lot of RAM.</p>
 <p>In the case where you need an available feature
 that has not been loaded, you can load it by demanding</p>
-<p><code>TF.load('feature1 feature2', add=True)</code></p>
+<pre><code>TF.load('feature1 feature2', add=True)
+</code></pre>
 <p>provided you have used the <code>hoist=globals()</code> parameter earlier.
 If not, you have to say</p>
-<p><code>A.api.TF.load('feature1 feature2', add=True)</code></p>
+<pre><code>A.api.TF.load('feature1 feature2', add=True)
+</code></pre>
 </div>
 <h2 id="silence">Silence</h2>
 <p>Loading a corpus can be quite noisy in the output.
@@ -411,7 +414,7 @@ the corpus app under <code>provenanceSpec &gt; moduleSpecs</code>:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/about/usefunc.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/about/usefunc.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/usefunc.md

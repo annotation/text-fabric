@@ -34,11 +34,10 @@
 <p>2023-06-22</p>
 <h5 id="new-features">New features</h5>
 <ul>
-<li>
-<p>New query primitive: any node: the <code>.</code> stands for any node type.
+<li>New query primitive: any node: the <code>.</code> stands for any node type.
 If you want to search for any node, regardless of its type, that has feature <code>xxx</code>
-with value <code>vvv</code>, you can do so by means of this query:</p>
-<p><code>. xxx=vvv</code></p>
+with value <code>vvv</code>, you can do so by means of this query:<pre><code>. xxx=vvv
+</code></pre>
 </li>
 </ul>
 <h5 id="fixes">Fixes</h5>
@@ -219,10 +218,12 @@ easily and feed it to the converter.</li>
 <p>Instead of <code>from array import array</code> we do <code>import array</code> and refer to
 <code>array.array</code>. Semantically, this should not matter, but the <code>pickler</code> seems to
 be fussy about it. I got an error like this:</p>
-<p><code>Can't pickle &lt;built-in function _array_reconstructor&gt;:
-it's not the same object as array._array_reconstructor</code>
-*
-Catch all errors when TF is loading / computing features, not only memory errors,
+<pre><code>Can't pickle &lt;built-in function _array_reconstructor&gt;:
+it's not the same object as array._array_reconstructor
+</code></pre>
+</li>
+<li>
+<p>Catch all errors when TF is loading / computing features, not only memory errors,
 and show the message.</p>
 </li>
 <li>
@@ -258,9 +259,11 @@ of a repo that contains a TF dataset.</li>
 <li>
 <p>Moved the dependency on <code>pandas</code> and <code>pyarrow</code> (used in the <code>pandas</code>
 export) to an extra install option <code>pandas</code>. You get it if you do </p>
-<p><code>pip install 'text-fabric[pandas]'</code></p>
+<pre><code>pip install 'text-fabric[pandas]'
+</code></pre>
 <p>or</p>
-<p><code>pip install 'text-fabric[all]'</code></p>
+<pre><code>pip install 'text-fabric[all]'
+</code></pre>
 <p>See <code><a title="tf.about.install" href="install.html">tf.about.install</a></code></p>
 <p>If you want to install TF on the iPad, you should avoid this extra.
 Thanks Oliver Glanz for reporting this.</p>
@@ -2437,12 +2440,11 @@ and Syriac New Testament have ETCBC transcriptions.</li>
 <h4 id="621">6.2.1</h4>
 <p>2018-10-17</p>
 <ul>
-<li>
-<p>New app: SyrNT (Syriac New Testament. It works much like the Peshitta, but
+<li>New app: SyrNT (Syriac New Testament. It works much like the Peshitta, but
 the SyrNT data has linguistic annotations at the word and lexeme levels.
-After this upgrade you can browse the SyrNT by saying</p>
-<p><code>tf syrnt</code>
-on
+After this upgrade you can browse the SyrNT by saying<pre><code>tf syrnt
+</code></pre>
+<p>on
 the command-line.</p>
 </li>
 </ul>
@@ -2455,7 +2457,8 @@ difference: the current Peshitta data does not have linguistic annotations.
 There are just books, chapters, verses and words.
 We expect to add lemmatisation of words shortly.
 After this upgrade you can browse the Peshitta by saying</p>
-<p><code>tf peshitta</code></p>
+<pre><code>tf peshitta
+</code></pre>
 <p>on the command-line.
 *
 Fixed a bug in <code>exportMQL</code>:
@@ -2885,15 +2888,18 @@ constructs with <code>p = q</code></li>
 <li>
 <p>API Change in Search.</p>
 <p>In search templates I recently added things like</p>
-<p><code>word vt!</code></p>
+<pre><code>word vt!
+</code></pre>
 <p>which checks for words that do not have a value for feature <code>vt</code>.</p>
 <p>The syntax for this has now changed to</p>
-<p><code>word vt#</code></p>
+<pre><code>word vt#
+</code></pre>
 </li>
 <li>
 <p>Unequal (#) in feature value conditions.</p>
 <p>Now you can say things like</p>
-<p><code>word vt#infa|infc</code></p>
+<pre><code>word vt#infa|infc
+</code></pre>
 <p>meaning that the value of feature is not one of <code>infa</code>, <code>infc</code>.</p>
 <p>So, in addition to <code>=</code> we have <code>#</code> for "not equal".
 *
@@ -3419,7 +3425,7 @@ see in TF if they want to use it in MQL and vice versa.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/about/releasesold.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/about/releasesold.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releasesold.md

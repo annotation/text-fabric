@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/advanced/search.py#L1-L268" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/advanced/search.py#L1-L264" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Calls from the advanced API to the Search API.
@@ -112,10 +112,8 @@ def search(
         that have a gap, you can pass `sets=dict(gphrase=gappedPhrases)`,
         and then in your query you can say
 
-        ```
-        gphrase function=Pred
-          word sp=verb
-        ```
+            gphrase function=Pred
+              word sp=verb
 
         etc.
 
@@ -138,9 +136,7 @@ def search(
         !!! note &#34;canonical sort key for tuples&#34;
             This sort is achieved by using the function
 
-            ```
-            tf.core.nodes.Nodes.sortKeyTuple
-            ```
+                tf.core.nodes.Nodes.sortKeyTuple
 
             as sort key.
 
@@ -314,7 +310,7 @@ def runSearchCondensed(app, query, cache, condenseType):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/advanced/search.py#L16-L35" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/advanced/search.py#L16-L35" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getQueryFeatures(exe):
     qnodes = getattr(exe, &#34;qnodes&#34;, [])
@@ -354,7 +350,7 @@ and returned.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/advanced/search.py#L196-L242" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/advanced/search.py#L192-L238" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def runSearch(app, query, cache):
     &#34;&#34;&#34;A wrapper around the generic search interface of TF.
@@ -423,7 +419,7 @@ Then it condenses the results, puts them in the <em>cache</em>, and returns them
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/advanced/search.py#L245-L268" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/advanced/search.py#L241-L264" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def runSearchCondensed(app, query, cache, condenseType):
     &#34;&#34;&#34;A wrapper around the generic search interface of TF.
@@ -489,8 +485,9 @@ In <code>query</code> you can refer to those names to invoke those sets.</p>
 <p>For example, if you have a set <code>gappedPhrases</code> of all phrase nodes
 that have a gap, you can pass <code>sets=dict(gphrase=gappedPhrases)</code>,
 and then in your query you can say</p>
-<p><code>gphrase function=Pred
-word sp=verb</code></p>
+<pre><code>gphrase function=Pred
+  word sp=verb
+</code></pre>
 <p>etc.</p>
 <p>This is handy when you need node sets that cannot be conveniently queried.
 You can produce them by hand-coding.
@@ -510,7 +507,8 @@ canonical order (<code><a title="tf.core.nodes" href="../core/nodes.html">tf.cor
 <div class="admonition note">
 <p class="admonition-title">canonical sort key for tuples</p>
 <p>This sort is achieved by using the function</p>
-<p><code>tf.core.nodes.Nodes.sortKeyTuple</code></p>
+<pre><code>tf.core.nodes.Nodes.sortKeyTuple
+</code></pre>
 <p>as sort key.</p>
 </div>
 <p>If it is a <em>sort key</em>, i.e. function that can be applied to tuples of nodes
@@ -541,7 +539,7 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/advanced/search.py#L38-L193" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/advanced/search.py#L38-L189" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def search(
     app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, limit=None
@@ -589,10 +587,8 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
         that have a gap, you can pass `sets=dict(gphrase=gappedPhrases)`,
         and then in your query you can say
 
-        ```
-        gphrase function=Pred
-          word sp=verb
-        ```
+            gphrase function=Pred
+              word sp=verb
 
         etc.
 
@@ -615,9 +611,7 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
         !!! note &#34;canonical sort key for tuples&#34;
             This sort is achieved by using the function
 
-            ```
-            tf.core.nodes.Nodes.sortKeyTuple
-            ```
+                tf.core.nodes.Nodes.sortKeyTuple
 
             as sort key.
 
@@ -709,7 +703,7 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/advanced/search.py#L12-L13" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/advanced/search.py#L12-L13" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def searchApi(app):
     app.search = types.MethodType(search, app)</code></pre>

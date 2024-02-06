@@ -123,7 +123,7 @@ rm dataset ; mql -b 3 &lt; dataset.mql
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/mql.py#L1-L1023" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/mql.py#L1-L1019" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # MQL
@@ -347,12 +347,10 @@ def importMQL(mqlFile, saveDir, silent=None, slotType=None, otext=None, meta=Non
         the parameter `otext`. This info will end up in the `otext.tf` feature.
         Pass it as a dictionary of keys and values, like so:
 
-        ```
-        otext = {
-            &#39;fmt:text-trans-plain&#39;: &#39;{glyphs}{trailer}&#39;,
-            &#39;sectionFeatures&#39;: &#39;book,chapter,verse&#39;,
-        }
-        ```
+            otext = {
+                &#39;fmt:text-trans-plain&#39;: &#39;{glyphs}{trailer}&#39;,
+                &#39;sectionFeatures&#39;: &#39;book,chapter,verse&#39;,
+            }
 
     meta: dict
         Likewise, you can add a dictionary keyed by features
@@ -364,18 +362,16 @@ def importMQL(mqlFile, saveDir, silent=None, slotType=None, otext=None, meta=Non
 
         Example:
 
-        ```
-        meta = {
-            &#34;&#34;: dict(
-                dataset=&#39;DLC&#39;,
-                datasetName=&#39;Digital Language Corpus&#39;,
-                author=&#34;That &#39;s me&#34;,
-            ),
-            &#34;sp&#34;: dict(
-                description: &#34;part-of-speech&#34;,
-            ),
-        }
-        ```
+            meta = {
+                &#34;&#34;: dict(
+                    dataset=&#39;DLC&#39;,
+                    datasetName=&#39;Digital Language Corpus&#39;,
+                    author=&#34;That &#39;s me&#34;,
+                ),
+                &#34;sp&#34;: dict(
+                    description: &#34;part-of-speech&#34;,
+                ),
+            }
 
         !!! note &#34;description&#34;
             TF will display all metadata information under the
@@ -1189,7 +1185,7 @@ and <code>.</code> to the current directory, both only at the start of <code>exp
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/mql.py#L152-L199" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/mql.py#L152-L199" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exportMQL(app, mqlDb, exportDir=None):
     &#34;&#34;&#34;Exports the complete TF dataset into single MQL database.
@@ -1258,14 +1254,13 @@ and <code>.</code> to the current directory, both only at the start of <code>exp
 <dd>You have to tell which object type in the MQL file acts as the slot type,
 because TF cannot see that on its own.</dd>
 <dt><strong><code>otext</code></strong> :&ensp;<code>dict</code></dt>
-<dd>
-<p>You can pass the information about sections and text formats as
+<dd>You can pass the information about sections and text formats as
 the parameter <code>otext</code>. This info will end up in the <code>otext.tf</code> feature.
-Pass it as a dictionary of keys and values, like so:</p>
-<p><code>otext = {
-'fmt:text-trans-plain': '{glyphs}{trailer}',
-'sectionFeatures': 'book,chapter,verse',
-}</code></p>
+Pass it as a dictionary of keys and values, like so:<pre><code>otext = {
+    'fmt:text-trans-plain': '{glyphs}{trailer}',
+    'sectionFeatures': 'book,chapter,verse',
+}
+</code></pre>
 </dd>
 <dt><strong><code>meta</code></strong> :&ensp;<code>dict</code></dt>
 <dd>
@@ -1275,16 +1270,17 @@ that will added to the metadata of the corresponding features.</p>
 this will be added to the metadata of all features.
 Handy to add provenance data there.</p>
 <p>Example:</p>
-<p><code>meta = {
-"": dict(
-dataset='DLC',
-datasetName='Digital Language Corpus',
-author="That 's me",
-),
-"sp": dict(
-description: "part-of-speech",
-),
-}</code></p>
+<pre><code>meta = {
+    "": dict(
+        dataset='DLC',
+        datasetName='Digital Language Corpus',
+        author="That 's me",
+    ),
+    "sp": dict(
+        description: "part-of-speech",
+    ),
+}
+</code></pre>
 <div class="admonition note">
 <p class="admonition-title">description</p>
 <p>TF will display all metadata information under the
@@ -1306,7 +1302,7 @@ MQL data into TF.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/mql.py#L202-L278" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/mql.py#L202-L274" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importMQL(mqlFile, saveDir, silent=None, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Converts an MQL database dump to a TF dataset.
@@ -1329,12 +1325,10 @@ MQL data into TF.</dd>
         the parameter `otext`. This info will end up in the `otext.tf` feature.
         Pass it as a dictionary of keys and values, like so:
 
-        ```
-        otext = {
-            &#39;fmt:text-trans-plain&#39;: &#39;{glyphs}{trailer}&#39;,
-            &#39;sectionFeatures&#39;: &#39;book,chapter,verse&#39;,
-        }
-        ```
+            otext = {
+                &#39;fmt:text-trans-plain&#39;: &#39;{glyphs}{trailer}&#39;,
+                &#39;sectionFeatures&#39;: &#39;book,chapter,verse&#39;,
+            }
 
     meta: dict
         Likewise, you can add a dictionary keyed by features
@@ -1346,18 +1340,16 @@ MQL data into TF.</dd>
 
         Example:
 
-        ```
-        meta = {
-            &#34;&#34;: dict(
-                dataset=&#39;DLC&#39;,
-                datasetName=&#39;Digital Language Corpus&#39;,
-                author=&#34;That &#39;s me&#34;,
-            ),
-            &#34;sp&#34;: dict(
-                description: &#34;part-of-speech&#34;,
-            ),
-        }
-        ```
+            meta = {
+                &#34;&#34;: dict(
+                    dataset=&#39;DLC&#39;,
+                    datasetName=&#39;Digital Language Corpus&#39;,
+                    author=&#34;That &#39;s me&#34;,
+                ),
+                &#34;sp&#34;: dict(
+                    description: &#34;part-of-speech&#34;,
+                ),
+            }
 
         !!! note &#34;description&#34;
             TF will display all metadata information under the
@@ -1396,7 +1388,7 @@ such as backslash <code>xb6</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/mql.py#L676-L681" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/mql.py#L672-L677" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeuni(match):
     &#34;&#34;&#34;Make proper UNICODE of a text that contains byte escape codes
@@ -1414,7 +1406,7 @@ such as backslash <code>xb6</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/mql.py#L710-L911" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/mql.py#L706-L907" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def parseMql(mqlFile, tmObj):
     info = tmObj.info
@@ -1628,7 +1620,7 @@ such as backslash <code>xb6</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/mql.py#L914-L1023" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/mql.py#L910-L1019" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tfFromData(tmObj, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
     info = tmObj.info
@@ -1757,7 +1749,7 @@ such as backslash <code>xb6</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/mql.py#L688-L707" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/mql.py#L684-L703" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tfFromMql(mqlFile, tmObj, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Generate TF from MQL
@@ -1789,7 +1781,7 @@ such as backslash <code>xb6</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/mql.py#L684-L685" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/mql.py#L680-L681" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def uni(line):
     return uniscan.sub(makeuni, line)</code></pre>
@@ -1809,7 +1801,7 @@ such as backslash <code>xb6</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/mql.py#L281-L668" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/mql.py#L277-L664" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class MQL:
     def __init__(self, app, mqlDb, exportDir, silent=SILENT_D):
@@ -2210,7 +2202,7 @@ GO
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/207dd83ba491914b8bb76346c79d98cf3ac74366/tf/convert/mql.py#L300-L334" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6e363a4d004478c07d52ac30b1434f8959a1e9a2/tf/convert/mql.py#L296-L330" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def write(self):
     silent = self.silent
