@@ -1,0 +1,1422 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.browser.ner.show API documentation</title>
+<meta name="description" content="Rendering of corpus extracts with annotations …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.browser.ner.show</code></h1>
+</header>
+<section id="section-intro">
+<p>Rendering of corpus extracts with annotations.</p>
+<p>To see how this fits among all the modules of this package, see
+<code><a title="tf.browser.ner.annotate" href="annotate.html">tf.browser.ner.annotate</a></code> .</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/browser/ner/show.py#L1-L394" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Rendering of corpus extracts with annotations.
+
+To see how this fits among all the modules of this package, see
+`tf.browser.ner.annotate` .
+&#34;&#34;&#34;
+
+from itertools import chain
+
+from ...advanced.helpers import dh
+
+from .helpers import repIdent, repSummary
+from ..html import H
+
+from .settings import (
+    SORT_DEFAULT,
+    SORTKEY_DEFAULT,
+    SORTDIR_DEFAULT,
+    SORTDIR_DESC,
+    LIMIT_BROWSER,
+    LIMIT_NB,
+)
+
+
+class Show:
+    def showEntityOverview(self):
+        &#34;&#34;&#34;Generates HTML for an overview of the entities.
+
+        The entity overview consists of a listing of the possible
+        entity kinds with for each kind how many entities there are of that kind.
+
+        Returns
+        -------
+        string or void
+            If called by the browser, it returns the HTML string.
+            Otherwise, it displays the HTML string in the output, assuming
+            it is a cell in a Jupyter Notebook.
+        &#34;&#34;&#34;
+        settings = self.settings
+        keywordFeatures = settings.keywordFeatures
+
+        browse = self.browse
+        setData = self.getSetData()
+
+        content = H.p(
+            H.span(
+                H.code(f&#34;{len(es):&gt;5}&#34;),
+                &#34; x &#34;,
+                H.span(repSummary(keywordFeatures, fVals)),
+            )
+            + H.br()
+            for (fVals, es) in sorted(
+                setData.entitySummary.items(), key=lambda x: (-len(x[1]), x[0])
+            )
+        )
+
+        if browse:
+            return content
+
+        dh(content)
+
+    def showEntities(
+        self, activeEntity=None, sortKey=None, sortDir=None, cutOffFreq=None
+    ):
+        &#34;&#34;&#34;Generates HTML for a sorted list of the entities.
+
+        The entity list consists of a table of entity identifiers, with the columns for
+        the kind and frequency of the entities.
+
+        There may be one active entity, and that one will be highlighted.
+
+        Parameters
+        ----------
+        activeEntity: tuple, optional None
+            The entity that must be highlighted.
+
+        sortKey: string, optional None
+            The key by which the entity list is sorted.
+
+            Possible values:
+
+            *   `freqsort`: by frequency
+            *   `sort_0` or `sort_eid`: by entity identifier
+            *   `sort_1` or `sort_kind`: by entity kind
+
+            If `None` is passed, `freqsort` is filled in.
+
+        sortDir: string, optional None
+            The direction of the sort.
+
+            Possible values:
+
+            *   `a`: ascending
+            *   `d`: descending
+
+            If `None` is passed, `a` is filled in.
+            However, if `None` is passed for both `sortKey` and `sortDir`,
+            a `d` is filled in.
+
+            As a consequence, the default sort order is by frequency, most
+            frequent on top.
+
+        cutOffFreq: integer, optional None
+            If passed, it is a lower limit on the frequency of the entities that
+            will be shown. Every entity with a lower frequency will be skipped.
+
+        Returns
+        -------
+        string or void
+            If called by the browser, it returns the HTML string.
+            Otherwise, it displays the HTML string in the output, assuming
+            it is a cell in a Jupyter Notebook.
+        &#34;&#34;&#34;
+        settings = self.settings
+        features = settings.features
+
+        browse = self.browse
+        setData = self.getSetData()
+
+        hasEnt = activeEntity is not None
+
+        entries = setData.entityIdent.items()
+        sortKeyMap = {feat: i for (i, feat) in enumerate(features)}
+
+        if sortKey is None and sortDir is None:
+            (sortKey, sortDir) = SORT_DEFAULT
+        else:
+            if sortKey is None:
+                sortKey = SORTKEY_DEFAULT
+            if sortDir is None:
+                sortDir = SORTDIR_DEFAULT
+
+        if sortKey == SORTKEY_DEFAULT:
+            entries = sorted(entries, key=lambda x: (len(x[1]), x[0]))
+        else:
+            if sortKey.startswith(&#34;sort_&#34;):
+                index = sortKey[5:]
+                if index.isdecimal():
+                    index = int(index)
+                    if index &gt;= len(features):
+                        index = 0
+                else:
+                    index = sortKeyMap.get(index, 0)
+            else:
+                index = 0
+
+            entries = sorted(entries, key=lambda x: (x[0][index], -len(x[1])))
+
+        if sortDir == SORTDIR_DESC:
+            entries = reversed(entries)
+
+        content = []
+
+        for vals, es in entries:
+            x = len(es)
+
+            if cutOffFreq is not None and x &lt; cutOffFreq:
+                continue
+            identRep = &#34;⊙&#34;.join(vals)
+
+            active = &#34; queried &#34; if hasEnt and vals == activeEntity else &#34;&#34;
+
+            content.append(
+                H.p(
+                    H.code(f&#34;{x:&gt;5}&#34;, cls=&#34;w&#34;),
+                    &#34; x &#34;,
+                    repIdent(features, vals, active=active),
+                    cls=f&#34;e {active}&#34;,
+                    enm=identRep,
+                )
+            )
+
+        content = H.join(content)
+
+        if browse:
+            return content
+
+        dh(content)
+
+    def showContent(
+        self,
+        buckets,
+        activeEntity=None,
+        excludedTokens=set(),
+        mayLimit=True,
+        start=None,
+        end=None,
+        withNodes=False,
+    ):
+        &#34;&#34;&#34;Generates HTML for a given portion of the corpus.
+
+        The corpus text will be marked up with entities, the positions of
+        these entities are present in the input parameter `buckets`.
+
+        It is recommended to apply this function to the outcome of
+        `tf.browser.ner.annotate.Annotate.filterContent`
+
+        !!! caution &#34;Truncated&#34;
+            Unless the user has selected an entity or forced a start and end
+            boundary to the list of buckets, the display may be truncated.
+            See the parameter `mayLimit` below.
+
+        Parameters
+        ----------
+        buckets: iterable of tuple
+            A selection of buckets (chunks / paragraphs) of the corpus.
+            Each bucket is given as a tuple.
+            The exact form is this data structure is equal to what the
+            function `tf.browser.ner.annotate.Annotate.filterContent`
+            returns.
+
+        activeEntity: tuple, optional None
+            The entity that must be highlighted.
+
+        excludedTokens: set, optional None
+            If passed, it is a set of tokens where a ❌ has been placed by the
+            user. They correspond to occurrences that have been deselected from
+            being subject to add / delete operations.
+
+        mayLimit: boolean, optional False
+            It is possible that the buckets make up the whole corpus.
+            Although we have optimised things in such a way that the browser can handle
+            a webpage with thousands of pages of material in it, such large pages
+            may compromise the performance.
+            If the bucket set is potentially very large, and the `start` and `end`
+            parameters are not both specified, we will truncate the list of buckets
+            to a smallish value (see `settings.LIMIT_BROWSER` and `settings.LIMIT_NB`).
+
+            However, when there is an `activeEntity`, we assume the buckets are those
+            containing that entity, and that it is a limited set anyway, and in that
+            case we do not truncate.
+
+        start: integer, optional None
+            If passed, start rendering the buckets at this position.
+
+        end: integer, optional None
+            If passed, stop rendering the buckets at this position.
+
+        withNodes: boolean, optional None
+            Shows the node in each token.
+
+        Returns
+        -------
+        string or void
+            If called by the browser, it returns the HTML string.
+            Otherwise, it displays the HTML string in the output, assuming
+            it is a cell in a Jupyter Notebook.
+        &#34;&#34;&#34;
+
+        settings = self.settings
+        bucketType = settings.bucketType
+        features = settings.features
+        style = self.style
+        ltr = self.ltr
+
+        browse = self.browse
+        setData = self.getSetData()
+        annoSet = self.annoSet
+        afterv = self.getAfter()
+        sectionHead = self.sectionHead
+
+        entityIdent = setData.entityIdent
+        entitySlotIndex = setData.entitySlotIndex
+
+        hasEnt = activeEntity is not None
+
+        limited = mayLimit and not hasEnt and (start is None or end is None)
+        limit = LIMIT_BROWSER if browse else LIMIT_NB
+
+        content = []
+
+        nB = 0
+        nBshown = 0
+
+        for b, bTokens, matches, positions in buckets:
+            nB += 1
+
+            if start is not None and nB &lt; start:
+                continue
+            if end is not None and nB &gt; end:
+                break
+
+            if limited and nBshown &gt; limit:
+                content.append(
+                    H.div(
+                        f&#34;Showing only the first {limit} {bucketType}s of all &#34;
+                        f&#34;{len(buckets)} ones.&#34;,
+                        cls=&#34;report&#34;,
+                    )
+                )
+                break
+
+            nBshown += 1
+            charPos = 0
+
+            if annoSet:
+                allMatches = set()
+                endMatches = set()
+                for match in matches:
+                    allMatches |= set(match)
+                    endMatches.add(match[-1])
+
+            else:
+                allMatches = set(chain.from_iterable(matches))
+
+            headContent = H.span(
+                H.span(sectionHead(b), cls=&#34;bhl ltr&#34;, title=&#34;show context&#34;),
+                cls=f&#34;bh {ltr}&#34;,
+                node=b,
+            )
+            subContent = []
+
+            for t, w in bTokens:
+                info = entitySlotIndex.get(t, None)
+                inEntity = False
+
+                if info is not None:
+                    inEntity = True
+                    for item in sorted(
+                        (x for x in info if x is not None), key=lambda z: z[1]
+                    ):
+                        (status, lg, ident) = item
+                        # e = eFirst[ident]
+                        identRep = &#34;⊙&#34;.join(ident)
+
+                        if status:
+                            active = (
+                                &#34; queried &#34; if hasEnt and ident == activeEntity else &#34;&#34;
+                            )
+                            subContent.append(
+                                H.span(
+                                    H.span(abs(lg), cls=&#34;lgb&#34;),
+                                    repIdent(features, ident, active=active),
+                                    &#34; &#34;,
+                                    H.span(len(entityIdent[ident]), cls=&#34;n&#34;),
+                                    cls=&#34;es&#34;,
+                                    enm=identRep,
+                                )
+                            )
+
+                after = afterv(t) or &#34;&#34;
+                lenW = len(w)
+                lenWa = len(w) + len(after)
+                # found = any(charPos + i in positions for i in range(lenW))
+                foundSet = set(range(charPos, charPos + lenW)) &amp; positions
+                found = len(foundSet) != 0
+
+                if found:
+                    firstFound = min(foundSet) - charPos
+                    lastFound = max(foundSet) - charPos
+                    leading = &#34;&#34; if firstFound == charPos else w[0:firstFound]
+                    trailing = &#34;&#34; if lastFound == lenW - 1 else w[lastFound + 1:]
+                    hit = w[firstFound : lastFound + 1]
+                    wRep = H.join(leading, H.span(hit, cls=&#34;found&#34;), trailing)
+                else:
+                    wRep = w
+                queried = t in allMatches
+
+                hlClasses = &#34; queried &#34; if queried else &#34;&#34;
+                hlClasses += &#34; ei &#34; if inEntity else &#34;&#34;
+                hlClasses += f&#34; {style} &#34; if style else &#34;&#34;
+                hlClass = dict(cls=hlClasses) if hlClasses else {}
+
+                endQueried = annoSet and t in endMatches
+                excl = &#34;x&#34; if t in excludedTokens else &#34;v&#34;
+                nodeRep = H.span(str(t), cls=&#34;nd&#34;) if withNodes else &#34;&#34;
+
+                subContent.append(
+                    H.join(
+                        H.span(wRep + nodeRep, **hlClass, t=t),
+                        H.span(te=t, st=excl) if endQueried else &#34;&#34;,
+                        after,
+                    )
+                )
+
+                if info is not None:
+                    for item in sorted(
+                        (x for x in info if x is not None), key=lambda z: z[1]
+                    ):
+                        (status, lg, ident) = item
+                        if not status:
+                            subContent.append(
+                                H.span(H.span(abs(lg), cls=&#34;lge&#34;), cls=&#34;ee&#34;)
+                            )
+
+                charPos += lenWa
+
+            content.append(
+                H.div(headContent, H.nb, H.span(subContent, cls=ltr), cls=f&#34;b {ltr}&#34;)
+            )
+
+        if browse:
+            return H.div(content, id=&#34;buckets&#34;, cls=f&#34;buckets {ltr}&#34;)
+
+        dh(H.div(content, cls=f&#34;buckets {ltr}&#34;))</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.browser.ner.show.Show"><code class="flex name class">
+<span>class <span class="ident">Show</span></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/browser/ner/show.py#L24-L394" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class Show:
+    def showEntityOverview(self):
+        &#34;&#34;&#34;Generates HTML for an overview of the entities.
+
+        The entity overview consists of a listing of the possible
+        entity kinds with for each kind how many entities there are of that kind.
+
+        Returns
+        -------
+        string or void
+            If called by the browser, it returns the HTML string.
+            Otherwise, it displays the HTML string in the output, assuming
+            it is a cell in a Jupyter Notebook.
+        &#34;&#34;&#34;
+        settings = self.settings
+        keywordFeatures = settings.keywordFeatures
+
+        browse = self.browse
+        setData = self.getSetData()
+
+        content = H.p(
+            H.span(
+                H.code(f&#34;{len(es):&gt;5}&#34;),
+                &#34; x &#34;,
+                H.span(repSummary(keywordFeatures, fVals)),
+            )
+            + H.br()
+            for (fVals, es) in sorted(
+                setData.entitySummary.items(), key=lambda x: (-len(x[1]), x[0])
+            )
+        )
+
+        if browse:
+            return content
+
+        dh(content)
+
+    def showEntities(
+        self, activeEntity=None, sortKey=None, sortDir=None, cutOffFreq=None
+    ):
+        &#34;&#34;&#34;Generates HTML for a sorted list of the entities.
+
+        The entity list consists of a table of entity identifiers, with the columns for
+        the kind and frequency of the entities.
+
+        There may be one active entity, and that one will be highlighted.
+
+        Parameters
+        ----------
+        activeEntity: tuple, optional None
+            The entity that must be highlighted.
+
+        sortKey: string, optional None
+            The key by which the entity list is sorted.
+
+            Possible values:
+
+            *   `freqsort`: by frequency
+            *   `sort_0` or `sort_eid`: by entity identifier
+            *   `sort_1` or `sort_kind`: by entity kind
+
+            If `None` is passed, `freqsort` is filled in.
+
+        sortDir: string, optional None
+            The direction of the sort.
+
+            Possible values:
+
+            *   `a`: ascending
+            *   `d`: descending
+
+            If `None` is passed, `a` is filled in.
+            However, if `None` is passed for both `sortKey` and `sortDir`,
+            a `d` is filled in.
+
+            As a consequence, the default sort order is by frequency, most
+            frequent on top.
+
+        cutOffFreq: integer, optional None
+            If passed, it is a lower limit on the frequency of the entities that
+            will be shown. Every entity with a lower frequency will be skipped.
+
+        Returns
+        -------
+        string or void
+            If called by the browser, it returns the HTML string.
+            Otherwise, it displays the HTML string in the output, assuming
+            it is a cell in a Jupyter Notebook.
+        &#34;&#34;&#34;
+        settings = self.settings
+        features = settings.features
+
+        browse = self.browse
+        setData = self.getSetData()
+
+        hasEnt = activeEntity is not None
+
+        entries = setData.entityIdent.items()
+        sortKeyMap = {feat: i for (i, feat) in enumerate(features)}
+
+        if sortKey is None and sortDir is None:
+            (sortKey, sortDir) = SORT_DEFAULT
+        else:
+            if sortKey is None:
+                sortKey = SORTKEY_DEFAULT
+            if sortDir is None:
+                sortDir = SORTDIR_DEFAULT
+
+        if sortKey == SORTKEY_DEFAULT:
+            entries = sorted(entries, key=lambda x: (len(x[1]), x[0]))
+        else:
+            if sortKey.startswith(&#34;sort_&#34;):
+                index = sortKey[5:]
+                if index.isdecimal():
+                    index = int(index)
+                    if index &gt;= len(features):
+                        index = 0
+                else:
+                    index = sortKeyMap.get(index, 0)
+            else:
+                index = 0
+
+            entries = sorted(entries, key=lambda x: (x[0][index], -len(x[1])))
+
+        if sortDir == SORTDIR_DESC:
+            entries = reversed(entries)
+
+        content = []
+
+        for vals, es in entries:
+            x = len(es)
+
+            if cutOffFreq is not None and x &lt; cutOffFreq:
+                continue
+            identRep = &#34;⊙&#34;.join(vals)
+
+            active = &#34; queried &#34; if hasEnt and vals == activeEntity else &#34;&#34;
+
+            content.append(
+                H.p(
+                    H.code(f&#34;{x:&gt;5}&#34;, cls=&#34;w&#34;),
+                    &#34; x &#34;,
+                    repIdent(features, vals, active=active),
+                    cls=f&#34;e {active}&#34;,
+                    enm=identRep,
+                )
+            )
+
+        content = H.join(content)
+
+        if browse:
+            return content
+
+        dh(content)
+
+    def showContent(
+        self,
+        buckets,
+        activeEntity=None,
+        excludedTokens=set(),
+        mayLimit=True,
+        start=None,
+        end=None,
+        withNodes=False,
+    ):
+        &#34;&#34;&#34;Generates HTML for a given portion of the corpus.
+
+        The corpus text will be marked up with entities, the positions of
+        these entities are present in the input parameter `buckets`.
+
+        It is recommended to apply this function to the outcome of
+        `tf.browser.ner.annotate.Annotate.filterContent`
+
+        !!! caution &#34;Truncated&#34;
+            Unless the user has selected an entity or forced a start and end
+            boundary to the list of buckets, the display may be truncated.
+            See the parameter `mayLimit` below.
+
+        Parameters
+        ----------
+        buckets: iterable of tuple
+            A selection of buckets (chunks / paragraphs) of the corpus.
+            Each bucket is given as a tuple.
+            The exact form is this data structure is equal to what the
+            function `tf.browser.ner.annotate.Annotate.filterContent`
+            returns.
+
+        activeEntity: tuple, optional None
+            The entity that must be highlighted.
+
+        excludedTokens: set, optional None
+            If passed, it is a set of tokens where a ❌ has been placed by the
+            user. They correspond to occurrences that have been deselected from
+            being subject to add / delete operations.
+
+        mayLimit: boolean, optional False
+            It is possible that the buckets make up the whole corpus.
+            Although we have optimised things in such a way that the browser can handle
+            a webpage with thousands of pages of material in it, such large pages
+            may compromise the performance.
+            If the bucket set is potentially very large, and the `start` and `end`
+            parameters are not both specified, we will truncate the list of buckets
+            to a smallish value (see `settings.LIMIT_BROWSER` and `settings.LIMIT_NB`).
+
+            However, when there is an `activeEntity`, we assume the buckets are those
+            containing that entity, and that it is a limited set anyway, and in that
+            case we do not truncate.
+
+        start: integer, optional None
+            If passed, start rendering the buckets at this position.
+
+        end: integer, optional None
+            If passed, stop rendering the buckets at this position.
+
+        withNodes: boolean, optional None
+            Shows the node in each token.
+
+        Returns
+        -------
+        string or void
+            If called by the browser, it returns the HTML string.
+            Otherwise, it displays the HTML string in the output, assuming
+            it is a cell in a Jupyter Notebook.
+        &#34;&#34;&#34;
+
+        settings = self.settings
+        bucketType = settings.bucketType
+        features = settings.features
+        style = self.style
+        ltr = self.ltr
+
+        browse = self.browse
+        setData = self.getSetData()
+        annoSet = self.annoSet
+        afterv = self.getAfter()
+        sectionHead = self.sectionHead
+
+        entityIdent = setData.entityIdent
+        entitySlotIndex = setData.entitySlotIndex
+
+        hasEnt = activeEntity is not None
+
+        limited = mayLimit and not hasEnt and (start is None or end is None)
+        limit = LIMIT_BROWSER if browse else LIMIT_NB
+
+        content = []
+
+        nB = 0
+        nBshown = 0
+
+        for b, bTokens, matches, positions in buckets:
+            nB += 1
+
+            if start is not None and nB &lt; start:
+                continue
+            if end is not None and nB &gt; end:
+                break
+
+            if limited and nBshown &gt; limit:
+                content.append(
+                    H.div(
+                        f&#34;Showing only the first {limit} {bucketType}s of all &#34;
+                        f&#34;{len(buckets)} ones.&#34;,
+                        cls=&#34;report&#34;,
+                    )
+                )
+                break
+
+            nBshown += 1
+            charPos = 0
+
+            if annoSet:
+                allMatches = set()
+                endMatches = set()
+                for match in matches:
+                    allMatches |= set(match)
+                    endMatches.add(match[-1])
+
+            else:
+                allMatches = set(chain.from_iterable(matches))
+
+            headContent = H.span(
+                H.span(sectionHead(b), cls=&#34;bhl ltr&#34;, title=&#34;show context&#34;),
+                cls=f&#34;bh {ltr}&#34;,
+                node=b,
+            )
+            subContent = []
+
+            for t, w in bTokens:
+                info = entitySlotIndex.get(t, None)
+                inEntity = False
+
+                if info is not None:
+                    inEntity = True
+                    for item in sorted(
+                        (x for x in info if x is not None), key=lambda z: z[1]
+                    ):
+                        (status, lg, ident) = item
+                        # e = eFirst[ident]
+                        identRep = &#34;⊙&#34;.join(ident)
+
+                        if status:
+                            active = (
+                                &#34; queried &#34; if hasEnt and ident == activeEntity else &#34;&#34;
+                            )
+                            subContent.append(
+                                H.span(
+                                    H.span(abs(lg), cls=&#34;lgb&#34;),
+                                    repIdent(features, ident, active=active),
+                                    &#34; &#34;,
+                                    H.span(len(entityIdent[ident]), cls=&#34;n&#34;),
+                                    cls=&#34;es&#34;,
+                                    enm=identRep,
+                                )
+                            )
+
+                after = afterv(t) or &#34;&#34;
+                lenW = len(w)
+                lenWa = len(w) + len(after)
+                # found = any(charPos + i in positions for i in range(lenW))
+                foundSet = set(range(charPos, charPos + lenW)) &amp; positions
+                found = len(foundSet) != 0
+
+                if found:
+                    firstFound = min(foundSet) - charPos
+                    lastFound = max(foundSet) - charPos
+                    leading = &#34;&#34; if firstFound == charPos else w[0:firstFound]
+                    trailing = &#34;&#34; if lastFound == lenW - 1 else w[lastFound + 1:]
+                    hit = w[firstFound : lastFound + 1]
+                    wRep = H.join(leading, H.span(hit, cls=&#34;found&#34;), trailing)
+                else:
+                    wRep = w
+                queried = t in allMatches
+
+                hlClasses = &#34; queried &#34; if queried else &#34;&#34;
+                hlClasses += &#34; ei &#34; if inEntity else &#34;&#34;
+                hlClasses += f&#34; {style} &#34; if style else &#34;&#34;
+                hlClass = dict(cls=hlClasses) if hlClasses else {}
+
+                endQueried = annoSet and t in endMatches
+                excl = &#34;x&#34; if t in excludedTokens else &#34;v&#34;
+                nodeRep = H.span(str(t), cls=&#34;nd&#34;) if withNodes else &#34;&#34;
+
+                subContent.append(
+                    H.join(
+                        H.span(wRep + nodeRep, **hlClass, t=t),
+                        H.span(te=t, st=excl) if endQueried else &#34;&#34;,
+                        after,
+                    )
+                )
+
+                if info is not None:
+                    for item in sorted(
+                        (x for x in info if x is not None), key=lambda z: z[1]
+                    ):
+                        (status, lg, ident) = item
+                        if not status:
+                            subContent.append(
+                                H.span(H.span(abs(lg), cls=&#34;lge&#34;), cls=&#34;ee&#34;)
+                            )
+
+                charPos += lenWa
+
+            content.append(
+                H.div(headContent, H.nb, H.span(subContent, cls=ltr), cls=f&#34;b {ltr}&#34;)
+            )
+
+        if browse:
+            return H.div(content, id=&#34;buckets&#34;, cls=f&#34;buckets {ltr}&#34;)
+
+        dh(H.div(content, cls=f&#34;buckets {ltr}&#34;))</code></pre>
+</details>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="tf.browser.ner.annotate.Annotate" href="annotate.html#tf.browser.ner.annotate.Annotate">Annotate</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.browser.ner.show.Show.showContent"><code class="name flex">
+<span>def <span class="ident">showContent</span></span>(<span>self, buckets, activeEntity=None, excludedTokens=set(), mayLimit=True, start=None, end=None, withNodes=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generates HTML for a given portion of the corpus.</p>
+<p>The corpus text will be marked up with entities, the positions of
+these entities are present in the input parameter <code>buckets</code>.</p>
+<p>It is recommended to apply this function to the outcome of
+<code><a title="tf.browser.ner.annotate.Annotate.filterContent" href="annotate.html#tf.browser.ner.annotate.Annotate.filterContent">Annotate.filterContent()</a></code></p>
+<div class="admonition caution">
+<p class="admonition-title">Truncated</p>
+<p>Unless the user has selected an entity or forced a start and end
+boundary to the list of buckets, the display may be truncated.
+See the parameter <code>mayLimit</code> below.</p>
+</div>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>buckets</code></strong> :&ensp;<code>iterable</code> of <code>tuple</code></dt>
+<dd>A selection of buckets (chunks / paragraphs) of the corpus.
+Each bucket is given as a tuple.
+The exact form is this data structure is equal to what the
+function <code><a title="tf.browser.ner.annotate.Annotate.filterContent" href="annotate.html#tf.browser.ner.annotate.Annotate.filterContent">Annotate.filterContent()</a></code>
+returns.</dd>
+<dt><strong><code>activeEntity</code></strong> :&ensp;<code>tuple</code>, optional <code>None</code></dt>
+<dd>The entity that must be highlighted.</dd>
+<dt><strong><code>excludedTokens</code></strong> :&ensp;<code>set</code>, optional <code>None</code></dt>
+<dd>If passed, it is a set of tokens where a ❌ has been placed by the
+user. They correspond to occurrences that have been deselected from
+being subject to add / delete operations.</dd>
+<dt><strong><code>mayLimit</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>
+<p>It is possible that the buckets make up the whole corpus.
+Although we have optimised things in such a way that the browser can handle
+a webpage with thousands of pages of material in it, such large pages
+may compromise the performance.
+If the bucket set is potentially very large, and the <code>start</code> and <code>end</code>
+parameters are not both specified, we will truncate the list of buckets
+to a smallish value (see <code>settings.LIMIT_BROWSER</code> and <code>settings.LIMIT_NB</code>).</p>
+<p>However, when there is an <code>activeEntity</code>, we assume the buckets are those
+containing that entity, and that it is a limited set anyway, and in that
+case we do not truncate.</p>
+</dd>
+<dt><strong><code>start</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>If passed, start rendering the buckets at this position.</dd>
+<dt><strong><code>end</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>If passed, stop rendering the buckets at this position.</dd>
+<dt><strong><code>withNodes</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
+<dd>Shows the node in each token.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>string</code> or <code>void</code></dt>
+<dd>If called by the browser, it returns the HTML string.
+Otherwise, it displays the HTML string in the output, assuming
+it is a cell in a Jupyter Notebook.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/browser/ner/show.py#L179-L394" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def showContent(
+    self,
+    buckets,
+    activeEntity=None,
+    excludedTokens=set(),
+    mayLimit=True,
+    start=None,
+    end=None,
+    withNodes=False,
+):
+    &#34;&#34;&#34;Generates HTML for a given portion of the corpus.
+
+    The corpus text will be marked up with entities, the positions of
+    these entities are present in the input parameter `buckets`.
+
+    It is recommended to apply this function to the outcome of
+    `tf.browser.ner.annotate.Annotate.filterContent`
+
+    !!! caution &#34;Truncated&#34;
+        Unless the user has selected an entity or forced a start and end
+        boundary to the list of buckets, the display may be truncated.
+        See the parameter `mayLimit` below.
+
+    Parameters
+    ----------
+    buckets: iterable of tuple
+        A selection of buckets (chunks / paragraphs) of the corpus.
+        Each bucket is given as a tuple.
+        The exact form is this data structure is equal to what the
+        function `tf.browser.ner.annotate.Annotate.filterContent`
+        returns.
+
+    activeEntity: tuple, optional None
+        The entity that must be highlighted.
+
+    excludedTokens: set, optional None
+        If passed, it is a set of tokens where a ❌ has been placed by the
+        user. They correspond to occurrences that have been deselected from
+        being subject to add / delete operations.
+
+    mayLimit: boolean, optional False
+        It is possible that the buckets make up the whole corpus.
+        Although we have optimised things in such a way that the browser can handle
+        a webpage with thousands of pages of material in it, such large pages
+        may compromise the performance.
+        If the bucket set is potentially very large, and the `start` and `end`
+        parameters are not both specified, we will truncate the list of buckets
+        to a smallish value (see `settings.LIMIT_BROWSER` and `settings.LIMIT_NB`).
+
+        However, when there is an `activeEntity`, we assume the buckets are those
+        containing that entity, and that it is a limited set anyway, and in that
+        case we do not truncate.
+
+    start: integer, optional None
+        If passed, start rendering the buckets at this position.
+
+    end: integer, optional None
+        If passed, stop rendering the buckets at this position.
+
+    withNodes: boolean, optional None
+        Shows the node in each token.
+
+    Returns
+    -------
+    string or void
+        If called by the browser, it returns the HTML string.
+        Otherwise, it displays the HTML string in the output, assuming
+        it is a cell in a Jupyter Notebook.
+    &#34;&#34;&#34;
+
+    settings = self.settings
+    bucketType = settings.bucketType
+    features = settings.features
+    style = self.style
+    ltr = self.ltr
+
+    browse = self.browse
+    setData = self.getSetData()
+    annoSet = self.annoSet
+    afterv = self.getAfter()
+    sectionHead = self.sectionHead
+
+    entityIdent = setData.entityIdent
+    entitySlotIndex = setData.entitySlotIndex
+
+    hasEnt = activeEntity is not None
+
+    limited = mayLimit and not hasEnt and (start is None or end is None)
+    limit = LIMIT_BROWSER if browse else LIMIT_NB
+
+    content = []
+
+    nB = 0
+    nBshown = 0
+
+    for b, bTokens, matches, positions in buckets:
+        nB += 1
+
+        if start is not None and nB &lt; start:
+            continue
+        if end is not None and nB &gt; end:
+            break
+
+        if limited and nBshown &gt; limit:
+            content.append(
+                H.div(
+                    f&#34;Showing only the first {limit} {bucketType}s of all &#34;
+                    f&#34;{len(buckets)} ones.&#34;,
+                    cls=&#34;report&#34;,
+                )
+            )
+            break
+
+        nBshown += 1
+        charPos = 0
+
+        if annoSet:
+            allMatches = set()
+            endMatches = set()
+            for match in matches:
+                allMatches |= set(match)
+                endMatches.add(match[-1])
+
+        else:
+            allMatches = set(chain.from_iterable(matches))
+
+        headContent = H.span(
+            H.span(sectionHead(b), cls=&#34;bhl ltr&#34;, title=&#34;show context&#34;),
+            cls=f&#34;bh {ltr}&#34;,
+            node=b,
+        )
+        subContent = []
+
+        for t, w in bTokens:
+            info = entitySlotIndex.get(t, None)
+            inEntity = False
+
+            if info is not None:
+                inEntity = True
+                for item in sorted(
+                    (x for x in info if x is not None), key=lambda z: z[1]
+                ):
+                    (status, lg, ident) = item
+                    # e = eFirst[ident]
+                    identRep = &#34;⊙&#34;.join(ident)
+
+                    if status:
+                        active = (
+                            &#34; queried &#34; if hasEnt and ident == activeEntity else &#34;&#34;
+                        )
+                        subContent.append(
+                            H.span(
+                                H.span(abs(lg), cls=&#34;lgb&#34;),
+                                repIdent(features, ident, active=active),
+                                &#34; &#34;,
+                                H.span(len(entityIdent[ident]), cls=&#34;n&#34;),
+                                cls=&#34;es&#34;,
+                                enm=identRep,
+                            )
+                        )
+
+            after = afterv(t) or &#34;&#34;
+            lenW = len(w)
+            lenWa = len(w) + len(after)
+            # found = any(charPos + i in positions for i in range(lenW))
+            foundSet = set(range(charPos, charPos + lenW)) &amp; positions
+            found = len(foundSet) != 0
+
+            if found:
+                firstFound = min(foundSet) - charPos
+                lastFound = max(foundSet) - charPos
+                leading = &#34;&#34; if firstFound == charPos else w[0:firstFound]
+                trailing = &#34;&#34; if lastFound == lenW - 1 else w[lastFound + 1:]
+                hit = w[firstFound : lastFound + 1]
+                wRep = H.join(leading, H.span(hit, cls=&#34;found&#34;), trailing)
+            else:
+                wRep = w
+            queried = t in allMatches
+
+            hlClasses = &#34; queried &#34; if queried else &#34;&#34;
+            hlClasses += &#34; ei &#34; if inEntity else &#34;&#34;
+            hlClasses += f&#34; {style} &#34; if style else &#34;&#34;
+            hlClass = dict(cls=hlClasses) if hlClasses else {}
+
+            endQueried = annoSet and t in endMatches
+            excl = &#34;x&#34; if t in excludedTokens else &#34;v&#34;
+            nodeRep = H.span(str(t), cls=&#34;nd&#34;) if withNodes else &#34;&#34;
+
+            subContent.append(
+                H.join(
+                    H.span(wRep + nodeRep, **hlClass, t=t),
+                    H.span(te=t, st=excl) if endQueried else &#34;&#34;,
+                    after,
+                )
+            )
+
+            if info is not None:
+                for item in sorted(
+                    (x for x in info if x is not None), key=lambda z: z[1]
+                ):
+                    (status, lg, ident) = item
+                    if not status:
+                        subContent.append(
+                            H.span(H.span(abs(lg), cls=&#34;lge&#34;), cls=&#34;ee&#34;)
+                        )
+
+            charPos += lenWa
+
+        content.append(
+            H.div(headContent, H.nb, H.span(subContent, cls=ltr), cls=f&#34;b {ltr}&#34;)
+        )
+
+    if browse:
+        return H.div(content, id=&#34;buckets&#34;, cls=f&#34;buckets {ltr}&#34;)
+
+    dh(H.div(content, cls=f&#34;buckets {ltr}&#34;))</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.show.Show.showEntities"><code class="name flex">
+<span>def <span class="ident">showEntities</span></span>(<span>self, activeEntity=None, sortKey=None, sortDir=None, cutOffFreq=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generates HTML for a sorted list of the entities.</p>
+<p>The entity list consists of a table of entity identifiers, with the columns for
+the kind and frequency of the entities.</p>
+<p>There may be one active entity, and that one will be highlighted.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>activeEntity</code></strong> :&ensp;<code>tuple</code>, optional <code>None</code></dt>
+<dd>The entity that must be highlighted.</dd>
+<dt><strong><code>sortKey</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>
+<p>The key by which the entity list is sorted.</p>
+<p>Possible values:</p>
+<ul>
+<li><code>freqsort</code>: by frequency</li>
+<li><code>sort_0</code> or <code>sort_eid</code>: by entity identifier</li>
+<li><code>sort_1</code> or <code>sort_kind</code>: by entity kind</li>
+</ul>
+<p>If <code>None</code> is passed, <code>freqsort</code> is filled in.</p>
+</dd>
+<dt><strong><code>sortDir</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>
+<p>The direction of the sort.</p>
+<p>Possible values:</p>
+<ul>
+<li><code>a</code>: ascending</li>
+<li><code>d</code>: descending</li>
+</ul>
+<p>If <code>None</code> is passed, <code>a</code> is filled in.
+However, if <code>None</code> is passed for both <code>sortKey</code> and <code>sortDir</code>,
+a <code>d</code> is filled in.</p>
+<p>As a consequence, the default sort order is by frequency, most
+frequent on top.</p>
+</dd>
+<dt><strong><code>cutOffFreq</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>If passed, it is a lower limit on the frequency of the entities that
+will be shown. Every entity with a lower frequency will be skipped.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>string</code> or <code>void</code></dt>
+<dd>If called by the browser, it returns the HTML string.
+Otherwise, it displays the HTML string in the output, assuming
+it is a cell in a Jupyter Notebook.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/browser/ner/show.py#L61-L177" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def showEntities(
+    self, activeEntity=None, sortKey=None, sortDir=None, cutOffFreq=None
+):
+    &#34;&#34;&#34;Generates HTML for a sorted list of the entities.
+
+    The entity list consists of a table of entity identifiers, with the columns for
+    the kind and frequency of the entities.
+
+    There may be one active entity, and that one will be highlighted.
+
+    Parameters
+    ----------
+    activeEntity: tuple, optional None
+        The entity that must be highlighted.
+
+    sortKey: string, optional None
+        The key by which the entity list is sorted.
+
+        Possible values:
+
+        *   `freqsort`: by frequency
+        *   `sort_0` or `sort_eid`: by entity identifier
+        *   `sort_1` or `sort_kind`: by entity kind
+
+        If `None` is passed, `freqsort` is filled in.
+
+    sortDir: string, optional None
+        The direction of the sort.
+
+        Possible values:
+
+        *   `a`: ascending
+        *   `d`: descending
+
+        If `None` is passed, `a` is filled in.
+        However, if `None` is passed for both `sortKey` and `sortDir`,
+        a `d` is filled in.
+
+        As a consequence, the default sort order is by frequency, most
+        frequent on top.
+
+    cutOffFreq: integer, optional None
+        If passed, it is a lower limit on the frequency of the entities that
+        will be shown. Every entity with a lower frequency will be skipped.
+
+    Returns
+    -------
+    string or void
+        If called by the browser, it returns the HTML string.
+        Otherwise, it displays the HTML string in the output, assuming
+        it is a cell in a Jupyter Notebook.
+    &#34;&#34;&#34;
+    settings = self.settings
+    features = settings.features
+
+    browse = self.browse
+    setData = self.getSetData()
+
+    hasEnt = activeEntity is not None
+
+    entries = setData.entityIdent.items()
+    sortKeyMap = {feat: i for (i, feat) in enumerate(features)}
+
+    if sortKey is None and sortDir is None:
+        (sortKey, sortDir) = SORT_DEFAULT
+    else:
+        if sortKey is None:
+            sortKey = SORTKEY_DEFAULT
+        if sortDir is None:
+            sortDir = SORTDIR_DEFAULT
+
+    if sortKey == SORTKEY_DEFAULT:
+        entries = sorted(entries, key=lambda x: (len(x[1]), x[0]))
+    else:
+        if sortKey.startswith(&#34;sort_&#34;):
+            index = sortKey[5:]
+            if index.isdecimal():
+                index = int(index)
+                if index &gt;= len(features):
+                    index = 0
+            else:
+                index = sortKeyMap.get(index, 0)
+        else:
+            index = 0
+
+        entries = sorted(entries, key=lambda x: (x[0][index], -len(x[1])))
+
+    if sortDir == SORTDIR_DESC:
+        entries = reversed(entries)
+
+    content = []
+
+    for vals, es in entries:
+        x = len(es)
+
+        if cutOffFreq is not None and x &lt; cutOffFreq:
+            continue
+        identRep = &#34;⊙&#34;.join(vals)
+
+        active = &#34; queried &#34; if hasEnt and vals == activeEntity else &#34;&#34;
+
+        content.append(
+            H.p(
+                H.code(f&#34;{x:&gt;5}&#34;, cls=&#34;w&#34;),
+                &#34; x &#34;,
+                repIdent(features, vals, active=active),
+                cls=f&#34;e {active}&#34;,
+                enm=identRep,
+            )
+        )
+
+    content = H.join(content)
+
+    if browse:
+        return content
+
+    dh(content)</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.show.Show.showEntityOverview"><code class="name flex">
+<span>def <span class="ident">showEntityOverview</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generates HTML for an overview of the entities.</p>
+<p>The entity overview consists of a listing of the possible
+entity kinds with for each kind how many entities there are of that kind.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>string</code> or <code>void</code></dt>
+<dd>If called by the browser, it returns the HTML string.
+Otherwise, it displays the HTML string in the output, assuming
+it is a cell in a Jupyter Notebook.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/browser/ner/show.py#L25-L59" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def showEntityOverview(self):
+    &#34;&#34;&#34;Generates HTML for an overview of the entities.
+
+    The entity overview consists of a listing of the possible
+    entity kinds with for each kind how many entities there are of that kind.
+
+    Returns
+    -------
+    string or void
+        If called by the browser, it returns the HTML string.
+        Otherwise, it displays the HTML string in the output, assuming
+        it is a cell in a Jupyter Notebook.
+    &#34;&#34;&#34;
+    settings = self.settings
+    keywordFeatures = settings.keywordFeatures
+
+    browse = self.browse
+    setData = self.getSetData()
+
+    content = H.p(
+        H.span(
+            H.code(f&#34;{len(es):&gt;5}&#34;),
+            &#34; x &#34;,
+            H.span(repSummary(keywordFeatures, fVals)),
+        )
+        + H.br()
+        for (fVals, es) in sorted(
+            setData.entitySummary.items(), key=lambda x: (-len(x[1]), x[0])
+        )
+    )
+
+    if browse:
+        return content
+
+    dh(content)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../../tf/index.html">tf home</a> -
+<a href="../../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.browser.ner" href="index.html">tf.browser.ner</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.browser.ner.show.Show" href="#tf.browser.ner.show.Show">Show</a></code></h4>
+<ul class="">
+<li><code><a title="tf.browser.ner.show.Show.showContent" href="#tf.browser.ner.show.Show.showContent">showContent</a></code></li>
+<li><code><a title="tf.browser.ner.show.Show.showEntities" href="#tf.browser.ner.show.Show.showEntities">showEntities</a></code></li>
+<li><code><a title="tf.browser.ner.show.Show.showEntityOverview" href="#tf.browser.ner.show.Show.showEntityOverview">showEntityOverview</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

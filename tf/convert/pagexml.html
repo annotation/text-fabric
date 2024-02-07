@@ -1,0 +1,3086 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.convert.pagexml API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.convert.pagexml</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/pagexml.py#L1-L1058" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">import sys
+from subprocess import run
+
+from ..capable import CheckImport
+from ..core.command import readArgs
+from ..core.files import (
+    fileOpen,
+    abspath,
+    dirNm,
+    dirContents,
+    dirExists,
+    fileExists,
+    fileCopy,
+    initTree,
+    getLocation,
+    readYaml,
+    writeYaml,
+    expanduser as ex,
+    unexpanduser as ux,
+)
+from ..core.generic import AttrDict
+from ..core.helpers import console, versionSort, mergeDict
+from ..core.timestamp import AUTO, DEEP, TERSE
+from ..parameters import BRANCH_DEFAULT_NEW
+from ..fabric import Fabric
+from ..convert.walker import CV
+
+from .helpers import FILE, PAGE, DOC, REGION, LINE, NODE, tokenize
+
+
+TOKEN = &#34;token&#34;
+SOFT_HYPHEN_CHARS = {&#34;¬&#34;, &#34;\u00ad&#34;}
+
+
+def setUp():
+    helpText = &#34;&#34;&#34;
+    Convert PageXML to TF.
+
+    There are also commands to check the to load and browse the resulting TF.&#34;&#34;&#34;
+
+    taskSpec = dict(
+        convert=&#34;converts PageXML to TF&#34;,
+        load=&#34;loads the generated TF&#34;,
+        app=&#34;configures the TF app for the result&#34;,
+        browse=&#34;starts the TF browser on the result&#34;,
+    )
+    taskExcluded = {&#34;browse&#34;}
+
+    paramSpec = {
+        &#34;tf&#34;: (
+            (
+                &#34;0 or latest: update latest version;\n\t\t&#34;
+                &#34;1 2 3: increase major, intermediate, minor TF version;\n\t\t&#34;
+                &#34;rest: explicit version.&#34;
+            ),
+            &#34;latest&#34;,
+        ),
+        &#34;source&#34;: (
+            (
+                &#34;0 or latest: latest version;\n\t\t&#34;
+                &#34;-1 -2 etc: previous version, before previous, ...;\n\t\t&#34;
+                &#34;1 2 etc: first version, second version, ...;\n\t\t&#34;
+                &#34;rest: explicit version.&#34;
+            ),
+            &#34;latest&#34;,
+        ),
+    }
+
+    flagSpec = dict(
+        verbose=(&#34;Produce less or more progress and reporting messages&#34;, -1, 3),
+        doc=(&#34;Do only this document&#34;, None, 0),
+    )
+    return (helpText, taskSpec, taskExcluded, paramSpec, flagSpec)
+
+
+(HELP, TASKS, TASKS_EXCLUDED, PARAMS, FLAGS) = setUp()
+
+
+def diverge(cv, s, rtx, rsp, ltx, lsp):
+    if ltx != rtx:
+        cv.feature(s, str=ltx, rstr=rtx)
+    if lsp != rsp:
+        cv.feature(s, after=lsp, rafter=rsp)
+
+
+def tokenLogic(cv, s, token, hangover, isFirst, isSecondLast, isLast):
+    (rtx, rsp) = token
+
+    same = not isLast and not isSecondLast and (not isFirst or hangover is None)
+
+    if same:
+        cv.feature(s, str=rtx, after=rsp)
+        # cv.feature(s, str=rtx)
+        # if rsp == &#34;\n&#34;:
+        #     cv.feature(s, after=&#34; &#34;, rafter=rsp)
+        # else:
+        #     cv.feature(s, after=rsp)
+    else:
+        cv.feature(s, str=&#34;&#34;, after=&#34;&#34;, rstr=rtx, rafter=rsp)
+
+    if isFirst and hangover:
+        hangover[3] += rtx
+        # hangover[4] = &#34; &#34; if rsp == &#34;\n&#34; else rsp
+        hangover[4] = rsp
+
+    if isSecondLast:
+        if hangover is None:
+            hangover = [s, rtx, rsp, rtx, rsp]
+        else:
+            hangover[3] += rtx
+            # hangover[4] = &#34; &#34; if rsp == &#34;\n&#34; else rsp
+            hangover[4] = rsp
+
+    else:
+        if isLast:
+            cv.feature(s, str=&#34;&#34;, after=&#34;&#34;, rstr=rtx, rafter=rsp)
+        elif hangover is not None:
+            diverge(cv, *hangover)
+            hangover = None
+
+    return hangover
+
+
+# WALKERS
+
+
+def emptySlot(cv):
+    s = cv.slot()
+    cv.feature(s, rstr=&#34;&#34;, rafter=&#34;&#34;, str=&#34;&#34;, after=&#34;&#34;)
+
+
+def linebreakSlot(cv):
+    s = cv.slot()
+    cv.feature(s, rstr=&#34;&#34;, rafter=&#34;\n&#34;, str=&#34;&#34;, after=&#34;&#34;)
+
+
+def walkObject(cv, cur, xObj):
+    &#34;&#34;&#34;Internal function to deal with a single element.
+
+    Will be called recursively.
+
+    Parameters
+    ----------
+    cv: object
+        The converter object, needed to issue actions.
+    cur: dict
+        Various pieces of data collected during walking
+        and relevant for some next steps in the walk.
+
+        The subdictionary `cur[&#34;node&#34;]` is used to store the currently generated
+        nodes by node type.
+    bj
+    xode: object
+        An PageXML object.
+    &#34;&#34;&#34;
+    tp = xObj.main_type
+    xId = xObj.id
+    box = AttrDict(xObj.coords.box)
+
+    isScan = tp == &#34;scan&#34;
+    isRegion = tp == &#34;text_region&#34;
+    isLine = tp == LINE
+
+    nTp = PAGE if isScan else REGION if isRegion else LINE if isLine else tp
+    nd = cv.node(nTp)
+    cur[NODE][nTp] = nd
+    cv.feature(nd, id=xId, x=box.x, y=box.y, w=box.w, h=box.h)
+
+    if isLine:
+        cur[&#34;line&#34;] += 1
+        cv.feature(nd, line=cur[&#34;line&#34;])
+
+        tokens = tokenize(xObj.text or &#34;&#34;)
+        nTokens = len(tokens)
+        slots = []
+
+        hangover = cur[&#34;hangover&#34;]
+
+        hasHyphen = len(tokens) &gt; 0 and tokens[-1][0] in SOFT_HYPHEN_CHARS
+
+        for token in tokens:
+            s = cv.slot()
+            slots.append(s)
+            isFirst = len(slots) == 1
+            isLast = hasHyphen and len(slots) == nTokens
+            isSecondLast = hasHyphen and len(slots) == nTokens - 1
+            hangover = tokenLogic(cv, s, token, hangover, isFirst, isSecondLast, isLast)
+
+        cur[&#34;hangover&#34;] = hangover
+
+        hangover = None
+
+        linebreakSlot(cv)
+
+    elif isScan or isRegion:
+        if isScan:
+            cv.feature(nd, page=cur[&#34;page&#34;])
+
+        hangover = cur[&#34;hangover&#34;]
+
+        for yObj in xObj.get_text_regions_in_reading_order():
+            walkObject(cv, cur, yObj)
+        for yObj in xObj.lines:
+            walkObject(cv, cur, yObj)
+    else:
+        cv.stop(f&#34;UNKNOWN TYPE {tp}&#34;)
+
+    if not cv.linked(nd):
+        emptySlot(cv)
+    cv.terminate(nd)
+
+
+class PageXML(CheckImport):
+    def __init__(
+        self,
+        sourceDir,
+        repoDir,
+        source=PARAMS[&#34;source&#34;][1],
+        tf=PARAMS[&#34;tf&#34;][1],
+        verbose=FLAGS[&#34;verbose&#34;][1],
+        doc=FLAGS[&#34;doc&#34;][1],
+    ):
+        &#34;&#34;&#34;Converts PageXML to TF.
+
+        Below we describe how to control the conversion machinery.
+
+        Based on current directory from where the script is called,
+        it defines all the ingredients to carry out
+        a `tf.convert.walker` conversion of the PageXML input.
+
+        This function is assumed to work in the context of a repository,
+        i.e. a directory on your computer relative to which the input directory exists,
+        and various output directories: `tf`, `app`, `docs`.
+
+        The `repoDir` must be at
+
+        ```
+        ~/backend/org/repo/relative
+        ```
+
+        where
+
+        *   `~` is your home directory;
+        *   `backend` is an online back-end name,
+            like `github`, `gitlab`, `git.huc.knaw.nl`;
+        *   `org` is an organization, person, or group in the back-end;
+        *   `repo` is a repository in the `org`.
+        *   `relative` is a directory path within the repo (0 or more components)
+
+        This is only about the directory structure on your local computer;
+        it is not required that you have online incarnations of your repository
+        in that back-end.
+        Even your local repository does not have to be a git repository.
+
+        The only thing that matters is that the full path to your repo can be parsed
+        as a sequence of `home/backend/org/repo/relative`.
+
+        Relative to this directory the program expects and creates
+        input / output directories.
+
+        ## source/version directory
+
+        The source directory is specified by `sourceDir`, and within it are version
+        directories.
+
+        ## Document directories
+
+        These are the top-level directories within the version directories.
+
+        They correspond to individual documents. Documents typically contain
+        a set of pages.
+
+        ## Input directories per document
+
+        *   `image`: contain the scan images
+        *   `meta`: contain metadata files
+        *   `page`: contain the PageXML files
+
+        The files in `image` and `page` have names that consist of a 4-digit
+        number with leading zeros, and any two files with the same name in
+        `image` and `page` represent the same document.
+
+        ## Output directories
+
+        ### `tf`
+
+        The directory under which the TF output file (with extension `.tf`)
+        are placed.
+        If it does not exist, it will be created.
+        The TF files will be generated in a folder named by a version number,
+        passed as `tfVersion`.
+
+        ### `app` and `docs`
+
+        Location of additional TF app configuration and documentation files.
+        If they do not exist, they will be created with some sensible default
+        settings and generated documentation.
+        These settings can be overridden in the `app/config_custom.yaml` file.
+        Also a default `display.css` file and a logo are added.
+
+        ### `docs`
+
+        Location of additional documentation.
+        This can be generated or hand-written material, or a mixture of the two.
+
+        Parameters
+        ----------
+        sourceDir: string
+            The location of the source directory
+        repoDir: string
+            The location of the target repo where the TF data is generated.
+        source: string, optional &#34;&#34;
+            If empty, use the latest version under the `source` directory with sources.
+            Otherwise it should be a valid integer, and it is the index in the
+            sorted list of versions there.
+
+            *   `0` or `latest`: latest version;
+            *   `-1`, `-2`, ... : previous version, version before previous, ...;
+            *   `1`, `2`, ...: first version, second version, ....
+            *   everything else that is not a number is an explicit version
+
+            If the value cannot be parsed as an integer, it is used as the exact
+            version name.
+
+        tf: string, optional &#34;&#34;
+            If empty, the TF version used will be the latest one under the `tf`
+            directory.
+
+            If it can be parsed as the integers 1, 2, or 3 it will bump the latest
+            relevant TF version:
+
+            *   `0` or `latest`: overwrite the latest version
+            *   `1` will bump the major version
+            *   `2` will bump the intermediate version
+            *   `3` will bump the minor version
+            *   everything else is an explicit version
+
+            Otherwise, the value is taken as the exact version name.
+
+        verbose: integer, optional -1
+            Produce no (-1), some (0) or many (1) progress and reporting messages
+
+        &#34;&#34;&#34;
+        super().__init__(&#34;pagexml&#34;)
+        if self.importOK(hint=True):
+            pagexml = self.importGet()
+            self.parsePage = pagexml.parse_pagexml_file
+        else:
+            return
+
+        self.good = True
+        self.verbose = verbose
+        self.chosenDoc = doc
+
+        (backend, org, repo, relative) = getLocation(targetDir=ex(repoDir))
+
+        if any(s is None for s in (backend, org, repo, relative)):
+            console(
+                &#34;Not working in a repo: &#34;
+                f&#34;backend={backend} org={org} repo={repo} relative={relative}&#34;
+            )
+            self.good = False
+            return
+
+        if verbose == 1:
+            console(
+                f&#34;Working in repository {org}/{repo}{relative} in back-end {backend}&#34;
+            )
+
+        base = ex(f&#34;~/{backend}&#34;)
+        repoDir = f&#34;{base}/{org}/{repo}&#34;
+        refDir = f&#34;{repoDir}{relative}&#34;
+        convertSpec = f&#34;{refDir}/pagexml.yaml&#34;
+
+        settings = readYaml(asFile=convertSpec, plain=False)
+
+        self.settings = settings
+
+        appDir = f&#34;{refDir}/app&#34;
+        metaDir = f&#34;{refDir}/meta&#34;
+        tfDir = f&#34;{refDir}/tf&#34;
+        tfVersionFile = f&#34;{refDir}/tfVersions.txt&#34;
+
+        sourceVersions = sorted(dirContents(metaDir)[1], key=versionSort)
+        nSourceVersions = len(sourceVersions)
+
+        if source in {&#34;latest&#34;, &#34;&#34;, &#34;0&#34;, 0} or str(source).lstrip(&#34;-&#34;).isdecimal():
+            sourceIndex = (0 if source == &#34;latest&#34; else int(source)) - 1
+
+            try:
+                sourceVersion = sourceVersions[sourceIndex]
+            except Exception:
+                absIndex = sourceIndex + (nSourceVersions if sourceIndex &lt; 0 else 0) + 1
+                console(
+                    (
+                        f&#34;no item in {absIndex} in {nSourceVersions} source versions &#34;
+                        f&#34;in {ux(metaDir)}&#34;
+                    )
+                    if len(sourceVersions)
+                    else f&#34;no source versions in {ux(metaDir)}&#34;,
+                    error=True,
+                )
+                self.good = False
+                return
+        else:
+            sourceVersion = source
+
+        metaPath = f&#34;{metaDir}/{sourceVersion}&#34;
+
+        if not dirExists(metaPath):
+            console(
+                f&#34;source version {sourceVersion} does not exists in {ux(metaDir)}&#34;,
+                error=True,
+            )
+            self.good = False
+            return
+
+        sourceStatuses = {tv: i for (i, tv) in enumerate(reversed(sourceVersions))}
+        sourceStatus = sourceStatuses[sourceVersion]
+        sourceStatusRep = (
+            &#34;most recent&#34;
+            if sourceStatus == 0
+            else &#34;previous&#34;
+            if sourceStatus == 1
+            else f&#34;{sourceStatus - 1} before previous&#34;
+        )
+        if sourceStatus == len(sourceVersions) - 1 and len(sourceVersions) &gt; 1:
+            sourceStatusRep = &#34;oldest&#34;
+
+        if verbose &gt;= 0:
+            console(f&#34;PageXML data version is {sourceVersion} ({sourceStatusRep})&#34;)
+
+        if fileExists(tfVersionFile):
+            with fileOpen(tfVersionFile) as fh:
+                latestTfVersion = fh.read().strip() or &#34;0.0.0&#34;
+        else:
+            latestTfVersion = &#34;0.0.0&#34;
+            with fileOpen(tfVersionFile, mode=&#34;w&#34;) as fh:
+                fh.write(latestTfVersion)
+
+        writeVersion = False
+
+        if tf in {&#34;latest&#34;, &#34;&#34;, &#34;0&#34;, 0}:
+            tfVersion = latestTfVersion
+            vRep = &#34;latest&#34;
+        elif tf in {&#34;1&#34;, &#34;2&#34;, &#34;3&#34;, 1, 2, 3}:
+            bump = int(tf)
+            parts = latestTfVersion.split(&#34;.&#34;)
+
+            def getVer(b):
+                return int(parts[b])
+
+            def setVer(b, val):
+                parts[b] = val
+
+            if bump &gt; len(parts):
+                console(
+                    f&#34;Cannot bump part {bump} of latest TF version {latestTfVersion}&#34;,
+                    error=True,
+                )
+                self.good = False
+                return
+            else:
+                b1 = bump - 1
+                old = getVer(b1)
+                setVer(b1, old + 1)
+                for b in range(b1 + 1, len(parts)):
+                    setVer(b, 0)
+                tfVersion = &#34;.&#34;.join(str(p) for p in parts)
+                vRep = (
+                    &#34;major&#34; if bump == 1 else &#34;intermediate&#34; if bump == 2 else &#34;minor&#34;
+                )
+                vRep = f&#34;next {vRep}&#34;
+                writeVersion = True
+        else:
+            tfVersion = tf
+            status = &#34;existing&#34; if dirExists(f&#34;{tfDir}/{tfVersion}&#34;) else &#34;new&#34;
+            vRep = f&#34;explicit {status}&#34;
+            writeVersion = True
+
+        if writeVersion:
+            with fileOpen(tfVersionFile, mode=&#34;w&#34;) as fh:
+                fh.write(tfVersion)
+
+        if verbose &gt;= 0:
+            console(f&#34;TF data version is {tfVersion} ({vRep})&#34;)
+
+        self.refDir = refDir
+        self.sourceVersion = sourceVersion
+        self.sourceDir = ex(sourceDir)
+        self.tfVersion = tfVersion
+        self.tfDir = tfDir
+        self.appDir = appDir
+        self.backend = backend
+        self.org = org
+        self.repo = repo
+        self.relative = relative
+
+        myDir = dirNm(abspath(__file__))
+        self.myDir = myDir
+        self.slotType = TOKEN
+
+        levelNames = (&#34;doc&#34;, &#34;page&#34;, &#34;line&#34;)
+        sectionFeatures = &#34;,&#34;.join(levelNames)
+        sectionTypes = &#34;,&#34;.join(levelNames)
+
+        textFeatures = &#34;{str}{after}&#34;
+        rawTextFeatures = &#34;{rstr/str}{rafter/after}&#34;
+        otext = {
+            &#34;fmt:text-orig-full&#34;: rawTextFeatures,
+            &#34;fmt:text-logic-full&#34;: textFeatures,
+            &#34;sectionFeatures&#34;: sectionFeatures,
+            &#34;sectionTypes&#34;: sectionTypes,
+        }
+        self.otext = otext
+
+        self.generic = dict(
+            project=&#34;TransLatin&#34;,
+            conversion=&#34;KNAW/HuC TeamText&#34;,
+            conversionTF=&#34;Dirk Roorda&#34;,
+        )
+
+        featureMeta = dict(
+            id=dict(description=&#34;the id of the corresponding pagexml object&#34;),
+            x=dict(description=&#34;the leftmost x coordinate of the pagexml object&#34;),
+            y=dict(description=&#34;the lowest y coordinate of the pagexml object&#34;),
+            w=dict(description=&#34;the width of the pagexml object&#34;),
+            h=dict(description=&#34;the height of the pagexml object&#34;),
+            rstr=dict(
+                description=(
+                    &#34;the physical text of a token, &#34;
+                    &#34;if it is different from the logical text&#34;
+                ),
+            ),
+            str=dict(description=&#34;the logical text of a token&#34;),
+            rafter=dict(
+                description=(
+                    &#34;the physical text after a token till the next token, &#34;
+                    &#34;if it is different from the logical after-text&#34;
+                ),
+            ),
+            after=dict(
+                description=(
+                    &#34;the logical text after a token till the next logical token,&#34;
+                ),
+            ),
+            page=dict(description=&#34;the number of the page within the document&#34;),
+            line=dict(description=&#34;the number of the line within the page&#34;),
+        )
+        self.intFeatures = {&#34;page&#34;, &#34;line&#34;, &#34;x&#34;, &#34;y&#34;, &#34;w&#34;, &#34;h&#34;}
+
+        customFeatureMeta = settings.featureMeta or {}
+
+        for k, v in customFeatureMeta.items():
+            featureMeta[k] = v
+
+        self.featureMeta = featureMeta
+
+    def getDirector(self, doc, docMeta, pageSource, pageFiles):
+        &#34;&#34;&#34;Factory for the director function.
+
+        The `tf.convert.walker` relies on a corpus dependent `director` function
+        that walks through the source data and spits out actions that
+        produces the TF dataset.
+
+        Also some special additions need to be programmed, such as an extra section
+        level, word boundaries, etc.
+
+        We collect all needed data, store it, and define a local director function
+        that has access to this data.
+
+        Returns
+        -------
+        function
+            The local director function that has been constructed.
+        &#34;&#34;&#34;
+        parsePage = self.parsePage
+
+        def director(cv):
+            &#34;&#34;&#34;Director function.
+
+            Here we program a walk through the PageXML sources.
+            At every step of the walk we fire some actions that build TF nodes
+            and assign features for them.
+
+            Parameters
+            ----------
+            cv: object
+                The converter object, needed to issue actions.
+            &#34;&#34;&#34;
+            featureMeta = self.featureMeta
+
+            cur = {}
+            cur[NODE] = {}
+            nd = cv.node(DOC)
+            cur[NODE][DOC] = nd
+
+            cv.feature(nd, doc=doc, **docMeta)
+
+            cur[&#34;hangover&#34;] = None
+
+            for pageFile in pageFiles:
+                pagePath = f&#34;{pageSource}/{pageFile}&#34;
+                pageNr = int(pageFile.split(&#34;.&#34;, 1)[0])
+                pageDoc = parsePage(pagePath)
+                cur[&#34;page&#34;] = pageNr
+                cur[&#34;line&#34;] = 0
+                walkObject(cv, cur, pageDoc)
+
+                hangover = cur[&#34;hangover&#34;]
+                if hangover is not None:
+                    diverge(cv, *hangover)
+
+            cv.terminate(nd)
+
+            for fName in featureMeta:
+                if not cv.occurs(fName):
+                    cv.meta(fName)
+
+        return director
+
+    def getConverter(self, doc):
+        &#34;&#34;&#34;Initializes a converter.
+
+        Returns
+        -------
+        object
+            The `tf.convert.walker.CV` converter object, initialized.
+        &#34;&#34;&#34;
+        verbose = self.verbose
+        tfDir = self.tfDir
+        tfVersion = self.tfVersion
+
+        silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
+        TF = Fabric(locations=f&#34;{tfDir}/{doc}/{tfVersion}&#34;, silent=silent)
+        return CV(TF, silent=silent)
+
+    def convertTask(self):
+        &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
+
+        It sets up the `tf.convert.walker` machinery and runs it.
+
+        Returns
+        -------
+        boolean
+            Whether the conversion was successful.
+        &#34;&#34;&#34;
+        if not self.importOK():
+            return
+
+        if not self.good:
+            return
+
+        verbose = self.verbose
+        chosenDoc = self.chosenDoc
+        slotType = self.slotType
+        generic = self.generic
+        otext = self.otext
+        featureMeta = self.featureMeta
+        intFeatures = self.intFeatures
+        sourceDir = self.sourceDir
+        sourceVersion = self.sourceVersion
+        tfDir = self.tfDir
+        tfVersion = self.tfVersion
+
+        if verbose == 1:
+            console(
+                f&#34;PageXML to TF converting: {ux(sourceDir)}/Mxx/{sourceVersion}&#34;
+                f&#34; ==&gt; {ux(tfDir)}/Mxx/{tfVersion}&#34;
+            )
+
+        initTree(tfDir, fresh=True, gentle=True)
+
+        docDirs = sorted(dirContents(sourceDir)[1], key=lambda x: (x[0], int(x[1:])))
+
+        for doc in docDirs:
+            if chosenDoc is not None and chosenDoc != doc:
+                continue
+            pageSource = f&#34;{sourceDir}/{doc}/{sourceVersion}/page&#34;
+            pageFiles = sorted(dirContents(pageSource)[0])
+
+            if len(pageFiles) == 0:
+                continue
+
+            console(f&#34;\t\t{doc:&gt;5} ... {len(pageFiles):&gt;4} pages&#34;)
+
+            metaFile = f&#34;{sourceDir}/{doc}/{sourceVersion}/meta/metadata.yaml&#34;
+            docMeta = readYaml(asFile=metaFile)
+            docMeta.title = (docMeta.title or &#34;&#34;).replace(&#34;_&#34;, &#34; &#34;)
+            docMeta.url = (docMeta.url or &#34;&#34;).replace(&#34;&amp;amp;&#34;, &#34;&amp;&#34;)
+
+            cv = self.getConverter(doc)
+
+            if not cv.walk(
+                self.getDirector(doc, docMeta, pageSource, pageFiles),
+                slotType,
+                otext=otext,
+                generic=generic,
+                intFeatures=intFeatures,
+                featureMeta=featureMeta,
+                generateTf=True,
+            ):
+                self.good = False
+
+    def loadTask(self):
+        &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
+
+        It loads the TF data that resides in the directory where the &#34;convert&#34; task
+        deliver its results.
+
+        During loading there are additional checks. If they succeed, we have evidence
+        that we have a valid TF dataset.
+
+        Also, during the first load intensive pre-computation of TF data takes place,
+        the results of which will be cached in the invisible `.tf` directory there.
+
+        That makes the TF data ready to be loaded fast, next time it is needed.
+
+        Returns
+        -------
+        boolean
+            Whether the loading was successful.
+        &#34;&#34;&#34;
+        if not self.importOK():
+            return
+
+        if not self.good:
+            return
+
+        tfDir = self.tfDir
+        tfVersion = self.tfVersion
+        chosenDoc = self.chosenDoc
+        verbose = self.verbose
+        silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
+
+        if not dirExists(tfDir):
+            console(f&#34;Directory {ux(tfDir)} does not exist.&#34;)
+            console(&#34;No TF found, nothing to load&#34;)
+            self.good = False
+            return
+
+        docDirs = sorted(dirContents(tfDir)[1], key=lambda x: (x[0], int(x[1:])))
+
+        for doc in docDirs:
+            if chosenDoc is not None and chosenDoc != doc:
+                continue
+            tfPath = f&#34;{tfDir}/{doc}/{tfVersion}&#34;
+            console(f&#34;\t\t{doc:&gt;5} ... &#34;, newline=False)
+            TF = Fabric(locations=[tfPath], silent=silent)
+            allFeatures = TF.explore(silent=True, show=True)
+            loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
+            api = TF.load(loadableFeatures, silent=silent)
+            if api:
+                console(f&#34;OK {api.F.otype.maxSlot:&gt;8} slots&#34;)
+                self.good = True
+            else:
+                console(&#34;XX&#34;)
+                self.good = False
+
+    def appTask(self):
+        &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
+
+        It creates / updates a corpus-specific app plus specific documentation files.
+        There should be a valid TF dataset in place, because some
+        settings in the app derive from it.
+
+        It will also read custom additions that are present in the target app directory.
+        These files are:
+
+        *   `about_custom.md`:
+            A markdown file with specific colophon information about the dataset.
+            In the generated file, this information will be put at the start.
+        *   `transcription_custom.md`:
+            A markdown file with specific encoding information about the dataset.
+            In the generated file, this information will be put at the start.
+        *   `config_custom.yaml`:
+            A YAML file with configuration data that will be *merged* into the generated
+            config.yaml.
+        *   `app_custom.py`:
+            A python file with named snippets of code to be inserted
+            at corresponding places in the generated `app.py`
+        *   `display_custom.css`:
+            Additional CSS definitions that will be appended to the generated
+            `display.css`.
+
+        If the TF app for this resource needs custom code, this is the way to retain
+        that code between automatic generation of files.
+
+        Returns
+        -------
+        boolean
+            Whether the operation was successful.
+        &#34;&#34;&#34;
+        if not self.importOK():
+            return
+
+        if not self.good:
+            return
+
+        verbose = self.verbose
+
+        refDir = self.refDir
+        myDir = self.myDir
+        tfVersion = self.tfVersion
+
+        # key | parentDir | file | file-default | template based
+
+        # if parentDir is a tuple, the first part is the parentDir of the source
+        # end the second part is the parentDir of the destination
+
+        itemSpecs = ((&#34;config&#34;, &#34;app&#34;, &#34;config.yaml&#34;, &#34;config2.yaml&#34;, False),)
+        genTasks = {
+            s[0]: dict(parentDir=s[1], file=s[2], fileOrig=s[3], justCopy=s[4])
+            for s in itemSpecs
+        }
+
+        version = tfVersion
+
+        def createConfig(sourceText, customText):
+            text = sourceText.replace(&#34;«version»&#34;, f&#39;&#34;{version}&#34;&#39;)
+
+            settings = readYaml(text=text, plain=True)
+            settings.setdefault(&#34;provenanceSpec&#34;, {})[&#34;branch&#34;] = BRANCH_DEFAULT_NEW
+
+            customSettings = (
+                {} if not customText else readYaml(text=customText, plain=True)
+            )
+
+            mergeDict(settings, customSettings)
+
+            text = writeYaml(settings)
+
+            return text
+
+        if verbose &gt;= 0:
+            console(&#34;App updating ...&#34;)
+
+        for name, info in genTasks.items():
+            parentDir = info[&#34;parentDir&#34;]
+            (sourceBit, targetBit) = (
+                parentDir if type(parentDir) is tuple else (parentDir, parentDir)
+            )
+            file = info[FILE]
+            fileOrig = info[&#34;fileOrig&#34;]
+            fileParts = file.rsplit(&#34;.&#34;, 1)
+            if len(fileParts) == 1:
+                fileParts = [file, &#34;&#34;]
+            (fileBase, fileExt) = fileParts
+            if fileExt:
+                fileExt = f&#34;.{fileExt}&#34;
+            targetDir = f&#34;{refDir}/{targetBit}&#34;
+            itemTarget = f&#34;{targetDir}/{file}&#34;
+            itemCustom = f&#34;{targetDir}/{fileBase}_custom{fileExt}&#34;
+            itemPre = f&#34;{targetDir}/{fileBase}_orig{fileExt}&#34;
+
+            justCopy = info[&#34;justCopy&#34;]
+            sourceDir = f&#34;{myDir}/{sourceBit}&#34;
+            itemSource = f&#34;{sourceDir}/{fileOrig}&#34;
+
+            # If there is custom info, we do not have to preserve the previous version.
+            # Otherwise we save the target before overwriting it; # unless it
+            # has been saved before
+
+            preExists = fileExists(itemPre)
+            targetExists = fileExists(itemTarget)
+            customExists = fileExists(itemCustom)
+
+            msg = &#34;&#34;
+
+            if justCopy:
+                if targetExists:
+                    msg = &#34;(already exists, not overwritten)&#34;
+                    safe = False
+                else:
+                    msg = &#34;(copied)&#34;
+                    safe = True
+            else:
+                if targetExists:
+                    if customExists:
+                        msg = &#34;(generated with custom info)&#34;
+                    else:
+                        if preExists:
+                            msg = &#34;(no custom info, older original exists)&#34;
+                        else:
+                            msg = &#34;(no custom info, original preserved)&#34;
+                            fileCopy(itemTarget, itemPre)
+                else:
+                    msg = &#34;(created)&#34;
+
+            initTree(targetDir, fresh=False)
+
+            if justCopy:
+                if safe:
+                    fileCopy(itemSource, itemTarget)
+            else:
+                if fileExists(itemSource):
+                    with fileOpen(itemSource) as fh:
+                        sourceText = fh.read()
+                else:
+                    sourceText = &#34;&#34;
+
+                if fileExists(itemCustom):
+                    with fileOpen(itemCustom) as fh:
+                        customText = fh.read()
+                else:
+                    customText = &#34;&#34;
+
+                targetText = (
+                    createConfig
+                    if name == &#34;config&#34;
+                    else fileCopy  # this cannot occur because justCopy is False
+                )(sourceText, customText)
+
+                with fileOpen(itemTarget, mode=&#34;w&#34;) as fh:
+                    fh.write(targetText)
+
+            if verbose &gt;= 0:
+                console(f&#34;\t{ux(itemTarget):30} {msg}&#34;)
+
+        if verbose &gt;= 0:
+            console(&#34;Done&#34;)
+        else:
+            console(&#34;App updated&#34;)
+
+    # START the TEXT-FABRIC BROWSER on this CORPUS
+
+    def browseTask(self):
+        &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
+
+        It gives a shell command to start the TF browser on
+        the newly created corpus.
+        There should be a valid TF dataset and app configuration in place
+
+        Returns
+        -------
+        boolean
+            Whether the operation was successful.
+        &#34;&#34;&#34;
+        if not self.importOK():
+            return
+
+        if not self.good:
+            return
+
+        org = self.org
+        repo = self.repo
+        relative = self.relative
+        backend = self.backend
+        tfVersion = self.tfVersion
+        chosenDoc = self.chosenDoc
+
+        if chosenDoc is None:
+            console(
+                &#34;You have to choose a particular document by passing the doc parameter&#34;
+            )
+            return
+
+        backendOpt = &#34;&#34; if backend == &#34;github&#34; else f&#34;--backend={backend}&#34;
+        versionOpt = f&#34;--version={tfVersion}&#34;
+        versionOpt = &#34;&#34;
+        docOpt = f&#34;--relative=tf/{chosenDoc}&#34;
+
+        try:
+            run(
+                (
+                    f&#34;tf {org}/{repo}{relative}:clone {docOpt} --checkout=clone &#34;
+                    f&#34;{versionOpt} {backendOpt}&#34;
+                ),
+                shell=True,
+            )
+        except KeyboardInterrupt:
+            pass
+
+    def task(
+        self,
+        convert=False,
+        load=False,
+        app=False,
+        browse=False,
+        verbose=None,
+        doc=None,
+    ):
+        &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
+
+        This is a higher level function that can execute a selection of tasks.
+
+        The tasks will be executed in a fixed order:
+        `convert`, `load`, `app`, `browse`.
+        But you can select which one(s) must be executed.
+
+        If multiple tasks must be executed and one fails, the subsequent tasks
+        will not be executed.
+
+        Parameters
+        ----------
+        convert: boolean, optional False
+            Whether to carry out the `convert` task.
+        load: boolean, optional False
+            Whether to carry out the `load` task.
+        app: boolean, optional False
+            Whether to carry out the `app` task.
+        browse: boolean, optional False
+            Whether to carry out the `browse` task&#34;
+        verbose: integer, optional -1
+            Produce no (-1), some (0) or many (1) progress and reporting messages
+
+        Returns
+        -------
+        boolean
+            Whether all tasks have executed successfully.
+        &#34;&#34;&#34;
+        if not self.importOK():
+            return
+
+        if verbose is not None:
+            verboseSav = self.verbose
+            self.verbose = verbose
+
+        if doc is not None:
+            docSav = self.chosenDoc
+            self.chosenDoc = doc
+
+        if not self.good:
+            return False
+
+        for condition, method, kwargs in (
+            (convert, self.convertTask, {}),
+            (load, self.loadTask, {}),
+            (app, self.appTask, {}),
+            (browse, self.browseTask, {}),
+        ):
+            if condition:
+                method(**kwargs)
+                if not self.good:
+                    break
+
+        if verbose is not None:
+            self.verbose = verboseSav
+        if doc is not None:
+            self.chosenDoc = docSav
+        return self.good
+
+
+def main():
+    (good, tasks, params, flags) = readArgs(
+        &#34;pagexml&#34;, HELP, TASKS, PARAMS, FLAGS, notInAll=TASKS_EXCLUDED
+    )
+    if not good:
+        return False
+
+    Obj = PageXML(**params, **flags)
+    Obj.task(**tasks, **flags)
+
+    return Obj.good
+
+
+if __name__ == &#34;__main__&#34;:
+    sys.exit(0 if main() else 1)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.convert.pagexml.diverge"><code class="name flex">
+<span>def <span class="ident">diverge</span></span>(<span>cv, s, rtx, rsp, ltx, lsp)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/pagexml.py#L79-L83" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def diverge(cv, s, rtx, rsp, ltx, lsp):
+    if ltx != rtx:
+        cv.feature(s, str=ltx, rstr=rtx)
+    if lsp != rsp:
+        cv.feature(s, after=lsp, rafter=rsp)</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.pagexml.emptySlot"><code class="name flex">
+<span>def <span class="ident">emptySlot</span></span>(<span>cv)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/pagexml.py#L127-L129" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def emptySlot(cv):
+    s = cv.slot()
+    cv.feature(s, rstr=&#34;&#34;, rafter=&#34;&#34;, str=&#34;&#34;, after=&#34;&#34;)</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.pagexml.linebreakSlot"><code class="name flex">
+<span>def <span class="ident">linebreakSlot</span></span>(<span>cv)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/pagexml.py#L132-L134" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def linebreakSlot(cv):
+    s = cv.slot()
+    cv.feature(s, rstr=&#34;&#34;, rafter=&#34;\n&#34;, str=&#34;&#34;, after=&#34;&#34;)</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.pagexml.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/pagexml.py#L1044-L1054" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def main():
+    (good, tasks, params, flags) = readArgs(
+        &#34;pagexml&#34;, HELP, TASKS, PARAMS, FLAGS, notInAll=TASKS_EXCLUDED
+    )
+    if not good:
+        return False
+
+    Obj = PageXML(**params, **flags)
+    Obj.task(**tasks, **flags)
+
+    return Obj.good</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.pagexml.setUp"><code class="name flex">
+<span>def <span class="ident">setUp</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/pagexml.py#L35-L73" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def setUp():
+    helpText = &#34;&#34;&#34;
+    Convert PageXML to TF.
+
+    There are also commands to check the to load and browse the resulting TF.&#34;&#34;&#34;
+
+    taskSpec = dict(
+        convert=&#34;converts PageXML to TF&#34;,
+        load=&#34;loads the generated TF&#34;,
+        app=&#34;configures the TF app for the result&#34;,
+        browse=&#34;starts the TF browser on the result&#34;,
+    )
+    taskExcluded = {&#34;browse&#34;}
+
+    paramSpec = {
+        &#34;tf&#34;: (
+            (
+                &#34;0 or latest: update latest version;\n\t\t&#34;
+                &#34;1 2 3: increase major, intermediate, minor TF version;\n\t\t&#34;
+                &#34;rest: explicit version.&#34;
+            ),
+            &#34;latest&#34;,
+        ),
+        &#34;source&#34;: (
+            (
+                &#34;0 or latest: latest version;\n\t\t&#34;
+                &#34;-1 -2 etc: previous version, before previous, ...;\n\t\t&#34;
+                &#34;1 2 etc: first version, second version, ...;\n\t\t&#34;
+                &#34;rest: explicit version.&#34;
+            ),
+            &#34;latest&#34;,
+        ),
+    }
+
+    flagSpec = dict(
+        verbose=(&#34;Produce less or more progress and reporting messages&#34;, -1, 3),
+        doc=(&#34;Do only this document&#34;, None, 0),
+    )
+    return (helpText, taskSpec, taskExcluded, paramSpec, flagSpec)</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.pagexml.tokenLogic"><code class="name flex">
+<span>def <span class="ident">tokenLogic</span></span>(<span>cv, s, token, hangover, isFirst, isSecondLast, isLast)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/pagexml.py#L86-L121" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def tokenLogic(cv, s, token, hangover, isFirst, isSecondLast, isLast):
+    (rtx, rsp) = token
+
+    same = not isLast and not isSecondLast and (not isFirst or hangover is None)
+
+    if same:
+        cv.feature(s, str=rtx, after=rsp)
+        # cv.feature(s, str=rtx)
+        # if rsp == &#34;\n&#34;:
+        #     cv.feature(s, after=&#34; &#34;, rafter=rsp)
+        # else:
+        #     cv.feature(s, after=rsp)
+    else:
+        cv.feature(s, str=&#34;&#34;, after=&#34;&#34;, rstr=rtx, rafter=rsp)
+
+    if isFirst and hangover:
+        hangover[3] += rtx
+        # hangover[4] = &#34; &#34; if rsp == &#34;\n&#34; else rsp
+        hangover[4] = rsp
+
+    if isSecondLast:
+        if hangover is None:
+            hangover = [s, rtx, rsp, rtx, rsp]
+        else:
+            hangover[3] += rtx
+            # hangover[4] = &#34; &#34; if rsp == &#34;\n&#34; else rsp
+            hangover[4] = rsp
+
+    else:
+        if isLast:
+            cv.feature(s, str=&#34;&#34;, after=&#34;&#34;, rstr=rtx, rafter=rsp)
+        elif hangover is not None:
+            diverge(cv, *hangover)
+            hangover = None
+
+    return hangover</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.pagexml.walkObject"><code class="name flex">
+<span>def <span class="ident">walkObject</span></span>(<span>cv, cur, xObj)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Internal function to deal with a single element.</p>
+<p>Will be called recursively.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>cv</code></strong> :&ensp;<code>object</code></dt>
+<dd>The converter object, needed to issue actions.</dd>
+<dt><strong><code>cur</code></strong> :&ensp;<code>dict</code></dt>
+<dd>
+<p>Various pieces of data collected during walking
+and relevant for some next steps in the walk.</p>
+<p>The subdictionary <code>cur["node"]</code> is used to store the currently generated
+nodes by node type.</p>
+</dd>
+<dt><strong><code>bj</code></strong></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>xode</code></strong> :&ensp;<code>object</code></dt>
+<dd>An PageXML object.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/pagexml.py#L137-L210" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def walkObject(cv, cur, xObj):
+    &#34;&#34;&#34;Internal function to deal with a single element.
+
+    Will be called recursively.
+
+    Parameters
+    ----------
+    cv: object
+        The converter object, needed to issue actions.
+    cur: dict
+        Various pieces of data collected during walking
+        and relevant for some next steps in the walk.
+
+        The subdictionary `cur[&#34;node&#34;]` is used to store the currently generated
+        nodes by node type.
+    bj
+    xode: object
+        An PageXML object.
+    &#34;&#34;&#34;
+    tp = xObj.main_type
+    xId = xObj.id
+    box = AttrDict(xObj.coords.box)
+
+    isScan = tp == &#34;scan&#34;
+    isRegion = tp == &#34;text_region&#34;
+    isLine = tp == LINE
+
+    nTp = PAGE if isScan else REGION if isRegion else LINE if isLine else tp
+    nd = cv.node(nTp)
+    cur[NODE][nTp] = nd
+    cv.feature(nd, id=xId, x=box.x, y=box.y, w=box.w, h=box.h)
+
+    if isLine:
+        cur[&#34;line&#34;] += 1
+        cv.feature(nd, line=cur[&#34;line&#34;])
+
+        tokens = tokenize(xObj.text or &#34;&#34;)
+        nTokens = len(tokens)
+        slots = []
+
+        hangover = cur[&#34;hangover&#34;]
+
+        hasHyphen = len(tokens) &gt; 0 and tokens[-1][0] in SOFT_HYPHEN_CHARS
+
+        for token in tokens:
+            s = cv.slot()
+            slots.append(s)
+            isFirst = len(slots) == 1
+            isLast = hasHyphen and len(slots) == nTokens
+            isSecondLast = hasHyphen and len(slots) == nTokens - 1
+            hangover = tokenLogic(cv, s, token, hangover, isFirst, isSecondLast, isLast)
+
+        cur[&#34;hangover&#34;] = hangover
+
+        hangover = None
+
+        linebreakSlot(cv)
+
+    elif isScan or isRegion:
+        if isScan:
+            cv.feature(nd, page=cur[&#34;page&#34;])
+
+        hangover = cur[&#34;hangover&#34;]
+
+        for yObj in xObj.get_text_regions_in_reading_order():
+            walkObject(cv, cur, yObj)
+        for yObj in xObj.lines:
+            walkObject(cv, cur, yObj)
+    else:
+        cv.stop(f&#34;UNKNOWN TYPE {tp}&#34;)
+
+    if not cv.linked(nd):
+        emptySlot(cv)
+    cv.terminate(nd)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.convert.pagexml.PageXML"><code class="flex name class">
+<span>class <span class="ident">PageXML</span></span>
+<span>(</span><span>sourceDir, repoDir, source='latest', tf='latest', verbose=-1, doc=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Converts PageXML to TF.</p>
+<p>Below we describe how to control the conversion machinery.</p>
+<p>Based on current directory from where the script is called,
+it defines all the ingredients to carry out
+a <code><a title="tf.convert.walker" href="walker.html">tf.convert.walker</a></code> conversion of the PageXML input.</p>
+<p>This function is assumed to work in the context of a repository,
+i.e. a directory on your computer relative to which the input directory exists,
+and various output directories: <code><a title="tf" href="../index.html">tf</a></code>, <code>app</code>, <code>docs</code>.</p>
+<p>The <code>repoDir</code> must be at</p>
+<pre><code>~/backend/org/repo/relative
+</code></pre>
+<p>where</p>
+<ul>
+<li><code>~</code> is your home directory;</li>
+<li><code>backend</code> is an online back-end name,
+like <code>github</code>, <code>gitlab</code>, <code>git.huc.knaw.nl</code>;</li>
+<li><code>org</code> is an organization, person, or group in the back-end;</li>
+<li><code>repo</code> is a repository in the <code>org</code>.</li>
+<li><code>relative</code> is a directory path within the repo (0 or more components)</li>
+</ul>
+<p>This is only about the directory structure on your local computer;
+it is not required that you have online incarnations of your repository
+in that back-end.
+Even your local repository does not have to be a git repository.</p>
+<p>The only thing that matters is that the full path to your repo can be parsed
+as a sequence of <code>home/backend/org/repo/relative</code>.</p>
+<p>Relative to this directory the program expects and creates
+input / output directories.</p>
+<h2 id="sourceversion-directory">source/version directory</h2>
+<p>The source directory is specified by <code>sourceDir</code>, and within it are version
+directories.</p>
+<h2 id="document-directories">Document directories</h2>
+<p>These are the top-level directories within the version directories.</p>
+<p>They correspond to individual documents. Documents typically contain
+a set of pages.</p>
+<h2 id="input-directories-per-document">Input directories per document</h2>
+<ul>
+<li><code>image</code>: contain the scan images</li>
+<li><code>meta</code>: contain metadata files</li>
+<li><code>page</code>: contain the PageXML files</li>
+</ul>
+<p>The files in <code>image</code> and <code>page</code> have names that consist of a 4-digit
+number with leading zeros, and any two files with the same name in
+<code>image</code> and <code>page</code> represent the same document.</p>
+<h2 id="output-directories">Output directories</h2>
+<h3 id="tf"><code><a title="tf" href="../index.html">tf</a></code></h3>
+<p>The directory under which the TF output file (with extension <code>.<a title="tf" href="../index.html">tf</a></code>)
+are placed.
+If it does not exist, it will be created.
+The TF files will be generated in a folder named by a version number,
+passed as <code>tfVersion</code>.</p>
+<h3 id="app-and-docs"><code>app</code> and <code>docs</code></h3>
+<p>Location of additional TF app configuration and documentation files.
+If they do not exist, they will be created with some sensible default
+settings and generated documentation.
+These settings can be overridden in the <code>app/config_custom.yaml</code> file.
+Also a default <code>display.css</code> file and a logo are added.</p>
+<h3 id="docs"><code>docs</code></h3>
+<p>Location of additional documentation.
+This can be generated or hand-written material, or a mixture of the two.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>sourceDir</code></strong> :&ensp;<code>string</code></dt>
+<dd>The location of the source directory</dd>
+<dt><strong><code>repoDir</code></strong> :&ensp;<code>string</code></dt>
+<dd>The location of the target repo where the TF data is generated.</dd>
+<dt><strong><code>source</code></strong> :&ensp;<code>string</code>, optional <code>""</code></dt>
+<dd>
+<p>If empty, use the latest version under the <code>source</code> directory with sources.
+Otherwise it should be a valid integer, and it is the index in the
+sorted list of versions there.</p>
+<ul>
+<li><code>0</code> or <code>latest</code>: latest version;</li>
+<li><code>-1</code>, <code>-2</code>, &hellip; : previous version, version before previous, &hellip;;</li>
+<li><code>1</code>, <code>2</code>, &hellip;: first version, second version, ....</li>
+<li>everything else that is not a number is an explicit version</li>
+</ul>
+<p>If the value cannot be parsed as an integer, it is used as the exact
+version name.</p>
+</dd>
+<dt><strong><code>tf</code></strong> :&ensp;<code>string</code>, optional <code>""</code></dt>
+<dd>
+<p>If empty, the TF version used will be the latest one under the <code><a title="tf" href="../index.html">tf</a></code>
+directory.</p>
+<p>If it can be parsed as the integers 1, 2, or 3 it will bump the latest
+relevant TF version:</p>
+<ul>
+<li><code>0</code> or <code>latest</code>: overwrite the latest version</li>
+<li><code>1</code> will bump the major version</li>
+<li><code>2</code> will bump the intermediate version</li>
+<li><code>3</code> will bump the minor version</li>
+<li>everything else is an explicit version</li>
+</ul>
+<p>Otherwise, the value is taken as the exact version name.</p>
+</dd>
+<dt><strong><code>verbose</code></strong> :&ensp;<code>integer</code>, optional <code>-1</code></dt>
+<dd>Produce no (-1), some (0) or many (1) progress and reporting messages</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/pagexml.py#L213-L1041" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class PageXML(CheckImport):
+    def __init__(
+        self,
+        sourceDir,
+        repoDir,
+        source=PARAMS[&#34;source&#34;][1],
+        tf=PARAMS[&#34;tf&#34;][1],
+        verbose=FLAGS[&#34;verbose&#34;][1],
+        doc=FLAGS[&#34;doc&#34;][1],
+    ):
+        &#34;&#34;&#34;Converts PageXML to TF.
+
+        Below we describe how to control the conversion machinery.
+
+        Based on current directory from where the script is called,
+        it defines all the ingredients to carry out
+        a `tf.convert.walker` conversion of the PageXML input.
+
+        This function is assumed to work in the context of a repository,
+        i.e. a directory on your computer relative to which the input directory exists,
+        and various output directories: `tf`, `app`, `docs`.
+
+        The `repoDir` must be at
+
+        ```
+        ~/backend/org/repo/relative
+        ```
+
+        where
+
+        *   `~` is your home directory;
+        *   `backend` is an online back-end name,
+            like `github`, `gitlab`, `git.huc.knaw.nl`;
+        *   `org` is an organization, person, or group in the back-end;
+        *   `repo` is a repository in the `org`.
+        *   `relative` is a directory path within the repo (0 or more components)
+
+        This is only about the directory structure on your local computer;
+        it is not required that you have online incarnations of your repository
+        in that back-end.
+        Even your local repository does not have to be a git repository.
+
+        The only thing that matters is that the full path to your repo can be parsed
+        as a sequence of `home/backend/org/repo/relative`.
+
+        Relative to this directory the program expects and creates
+        input / output directories.
+
+        ## source/version directory
+
+        The source directory is specified by `sourceDir`, and within it are version
+        directories.
+
+        ## Document directories
+
+        These are the top-level directories within the version directories.
+
+        They correspond to individual documents. Documents typically contain
+        a set of pages.
+
+        ## Input directories per document
+
+        *   `image`: contain the scan images
+        *   `meta`: contain metadata files
+        *   `page`: contain the PageXML files
+
+        The files in `image` and `page` have names that consist of a 4-digit
+        number with leading zeros, and any two files with the same name in
+        `image` and `page` represent the same document.
+
+        ## Output directories
+
+        ### `tf`
+
+        The directory under which the TF output file (with extension `.tf`)
+        are placed.
+        If it does not exist, it will be created.
+        The TF files will be generated in a folder named by a version number,
+        passed as `tfVersion`.
+
+        ### `app` and `docs`
+
+        Location of additional TF app configuration and documentation files.
+        If they do not exist, they will be created with some sensible default
+        settings and generated documentation.
+        These settings can be overridden in the `app/config_custom.yaml` file.
+        Also a default `display.css` file and a logo are added.
+
+        ### `docs`
+
+        Location of additional documentation.
+        This can be generated or hand-written material, or a mixture of the two.
+
+        Parameters
+        ----------
+        sourceDir: string
+            The location of the source directory
+        repoDir: string
+            The location of the target repo where the TF data is generated.
+        source: string, optional &#34;&#34;
+            If empty, use the latest version under the `source` directory with sources.
+            Otherwise it should be a valid integer, and it is the index in the
+            sorted list of versions there.
+
+            *   `0` or `latest`: latest version;
+            *   `-1`, `-2`, ... : previous version, version before previous, ...;
+            *   `1`, `2`, ...: first version, second version, ....
+            *   everything else that is not a number is an explicit version
+
+            If the value cannot be parsed as an integer, it is used as the exact
+            version name.
+
+        tf: string, optional &#34;&#34;
+            If empty, the TF version used will be the latest one under the `tf`
+            directory.
+
+            If it can be parsed as the integers 1, 2, or 3 it will bump the latest
+            relevant TF version:
+
+            *   `0` or `latest`: overwrite the latest version
+            *   `1` will bump the major version
+            *   `2` will bump the intermediate version
+            *   `3` will bump the minor version
+            *   everything else is an explicit version
+
+            Otherwise, the value is taken as the exact version name.
+
+        verbose: integer, optional -1
+            Produce no (-1), some (0) or many (1) progress and reporting messages
+
+        &#34;&#34;&#34;
+        super().__init__(&#34;pagexml&#34;)
+        if self.importOK(hint=True):
+            pagexml = self.importGet()
+            self.parsePage = pagexml.parse_pagexml_file
+        else:
+            return
+
+        self.good = True
+        self.verbose = verbose
+        self.chosenDoc = doc
+
+        (backend, org, repo, relative) = getLocation(targetDir=ex(repoDir))
+
+        if any(s is None for s in (backend, org, repo, relative)):
+            console(
+                &#34;Not working in a repo: &#34;
+                f&#34;backend={backend} org={org} repo={repo} relative={relative}&#34;
+            )
+            self.good = False
+            return
+
+        if verbose == 1:
+            console(
+                f&#34;Working in repository {org}/{repo}{relative} in back-end {backend}&#34;
+            )
+
+        base = ex(f&#34;~/{backend}&#34;)
+        repoDir = f&#34;{base}/{org}/{repo}&#34;
+        refDir = f&#34;{repoDir}{relative}&#34;
+        convertSpec = f&#34;{refDir}/pagexml.yaml&#34;
+
+        settings = readYaml(asFile=convertSpec, plain=False)
+
+        self.settings = settings
+
+        appDir = f&#34;{refDir}/app&#34;
+        metaDir = f&#34;{refDir}/meta&#34;
+        tfDir = f&#34;{refDir}/tf&#34;
+        tfVersionFile = f&#34;{refDir}/tfVersions.txt&#34;
+
+        sourceVersions = sorted(dirContents(metaDir)[1], key=versionSort)
+        nSourceVersions = len(sourceVersions)
+
+        if source in {&#34;latest&#34;, &#34;&#34;, &#34;0&#34;, 0} or str(source).lstrip(&#34;-&#34;).isdecimal():
+            sourceIndex = (0 if source == &#34;latest&#34; else int(source)) - 1
+
+            try:
+                sourceVersion = sourceVersions[sourceIndex]
+            except Exception:
+                absIndex = sourceIndex + (nSourceVersions if sourceIndex &lt; 0 else 0) + 1
+                console(
+                    (
+                        f&#34;no item in {absIndex} in {nSourceVersions} source versions &#34;
+                        f&#34;in {ux(metaDir)}&#34;
+                    )
+                    if len(sourceVersions)
+                    else f&#34;no source versions in {ux(metaDir)}&#34;,
+                    error=True,
+                )
+                self.good = False
+                return
+        else:
+            sourceVersion = source
+
+        metaPath = f&#34;{metaDir}/{sourceVersion}&#34;
+
+        if not dirExists(metaPath):
+            console(
+                f&#34;source version {sourceVersion} does not exists in {ux(metaDir)}&#34;,
+                error=True,
+            )
+            self.good = False
+            return
+
+        sourceStatuses = {tv: i for (i, tv) in enumerate(reversed(sourceVersions))}
+        sourceStatus = sourceStatuses[sourceVersion]
+        sourceStatusRep = (
+            &#34;most recent&#34;
+            if sourceStatus == 0
+            else &#34;previous&#34;
+            if sourceStatus == 1
+            else f&#34;{sourceStatus - 1} before previous&#34;
+        )
+        if sourceStatus == len(sourceVersions) - 1 and len(sourceVersions) &gt; 1:
+            sourceStatusRep = &#34;oldest&#34;
+
+        if verbose &gt;= 0:
+            console(f&#34;PageXML data version is {sourceVersion} ({sourceStatusRep})&#34;)
+
+        if fileExists(tfVersionFile):
+            with fileOpen(tfVersionFile) as fh:
+                latestTfVersion = fh.read().strip() or &#34;0.0.0&#34;
+        else:
+            latestTfVersion = &#34;0.0.0&#34;
+            with fileOpen(tfVersionFile, mode=&#34;w&#34;) as fh:
+                fh.write(latestTfVersion)
+
+        writeVersion = False
+
+        if tf in {&#34;latest&#34;, &#34;&#34;, &#34;0&#34;, 0}:
+            tfVersion = latestTfVersion
+            vRep = &#34;latest&#34;
+        elif tf in {&#34;1&#34;, &#34;2&#34;, &#34;3&#34;, 1, 2, 3}:
+            bump = int(tf)
+            parts = latestTfVersion.split(&#34;.&#34;)
+
+            def getVer(b):
+                return int(parts[b])
+
+            def setVer(b, val):
+                parts[b] = val
+
+            if bump &gt; len(parts):
+                console(
+                    f&#34;Cannot bump part {bump} of latest TF version {latestTfVersion}&#34;,
+                    error=True,
+                )
+                self.good = False
+                return
+            else:
+                b1 = bump - 1
+                old = getVer(b1)
+                setVer(b1, old + 1)
+                for b in range(b1 + 1, len(parts)):
+                    setVer(b, 0)
+                tfVersion = &#34;.&#34;.join(str(p) for p in parts)
+                vRep = (
+                    &#34;major&#34; if bump == 1 else &#34;intermediate&#34; if bump == 2 else &#34;minor&#34;
+                )
+                vRep = f&#34;next {vRep}&#34;
+                writeVersion = True
+        else:
+            tfVersion = tf
+            status = &#34;existing&#34; if dirExists(f&#34;{tfDir}/{tfVersion}&#34;) else &#34;new&#34;
+            vRep = f&#34;explicit {status}&#34;
+            writeVersion = True
+
+        if writeVersion:
+            with fileOpen(tfVersionFile, mode=&#34;w&#34;) as fh:
+                fh.write(tfVersion)
+
+        if verbose &gt;= 0:
+            console(f&#34;TF data version is {tfVersion} ({vRep})&#34;)
+
+        self.refDir = refDir
+        self.sourceVersion = sourceVersion
+        self.sourceDir = ex(sourceDir)
+        self.tfVersion = tfVersion
+        self.tfDir = tfDir
+        self.appDir = appDir
+        self.backend = backend
+        self.org = org
+        self.repo = repo
+        self.relative = relative
+
+        myDir = dirNm(abspath(__file__))
+        self.myDir = myDir
+        self.slotType = TOKEN
+
+        levelNames = (&#34;doc&#34;, &#34;page&#34;, &#34;line&#34;)
+        sectionFeatures = &#34;,&#34;.join(levelNames)
+        sectionTypes = &#34;,&#34;.join(levelNames)
+
+        textFeatures = &#34;{str}{after}&#34;
+        rawTextFeatures = &#34;{rstr/str}{rafter/after}&#34;
+        otext = {
+            &#34;fmt:text-orig-full&#34;: rawTextFeatures,
+            &#34;fmt:text-logic-full&#34;: textFeatures,
+            &#34;sectionFeatures&#34;: sectionFeatures,
+            &#34;sectionTypes&#34;: sectionTypes,
+        }
+        self.otext = otext
+
+        self.generic = dict(
+            project=&#34;TransLatin&#34;,
+            conversion=&#34;KNAW/HuC TeamText&#34;,
+            conversionTF=&#34;Dirk Roorda&#34;,
+        )
+
+        featureMeta = dict(
+            id=dict(description=&#34;the id of the corresponding pagexml object&#34;),
+            x=dict(description=&#34;the leftmost x coordinate of the pagexml object&#34;),
+            y=dict(description=&#34;the lowest y coordinate of the pagexml object&#34;),
+            w=dict(description=&#34;the width of the pagexml object&#34;),
+            h=dict(description=&#34;the height of the pagexml object&#34;),
+            rstr=dict(
+                description=(
+                    &#34;the physical text of a token, &#34;
+                    &#34;if it is different from the logical text&#34;
+                ),
+            ),
+            str=dict(description=&#34;the logical text of a token&#34;),
+            rafter=dict(
+                description=(
+                    &#34;the physical text after a token till the next token, &#34;
+                    &#34;if it is different from the logical after-text&#34;
+                ),
+            ),
+            after=dict(
+                description=(
+                    &#34;the logical text after a token till the next logical token,&#34;
+                ),
+            ),
+            page=dict(description=&#34;the number of the page within the document&#34;),
+            line=dict(description=&#34;the number of the line within the page&#34;),
+        )
+        self.intFeatures = {&#34;page&#34;, &#34;line&#34;, &#34;x&#34;, &#34;y&#34;, &#34;w&#34;, &#34;h&#34;}
+
+        customFeatureMeta = settings.featureMeta or {}
+
+        for k, v in customFeatureMeta.items():
+            featureMeta[k] = v
+
+        self.featureMeta = featureMeta
+
+    def getDirector(self, doc, docMeta, pageSource, pageFiles):
+        &#34;&#34;&#34;Factory for the director function.
+
+        The `tf.convert.walker` relies on a corpus dependent `director` function
+        that walks through the source data and spits out actions that
+        produces the TF dataset.
+
+        Also some special additions need to be programmed, such as an extra section
+        level, word boundaries, etc.
+
+        We collect all needed data, store it, and define a local director function
+        that has access to this data.
+
+        Returns
+        -------
+        function
+            The local director function that has been constructed.
+        &#34;&#34;&#34;
+        parsePage = self.parsePage
+
+        def director(cv):
+            &#34;&#34;&#34;Director function.
+
+            Here we program a walk through the PageXML sources.
+            At every step of the walk we fire some actions that build TF nodes
+            and assign features for them.
+
+            Parameters
+            ----------
+            cv: object
+                The converter object, needed to issue actions.
+            &#34;&#34;&#34;
+            featureMeta = self.featureMeta
+
+            cur = {}
+            cur[NODE] = {}
+            nd = cv.node(DOC)
+            cur[NODE][DOC] = nd
+
+            cv.feature(nd, doc=doc, **docMeta)
+
+            cur[&#34;hangover&#34;] = None
+
+            for pageFile in pageFiles:
+                pagePath = f&#34;{pageSource}/{pageFile}&#34;
+                pageNr = int(pageFile.split(&#34;.&#34;, 1)[0])
+                pageDoc = parsePage(pagePath)
+                cur[&#34;page&#34;] = pageNr
+                cur[&#34;line&#34;] = 0
+                walkObject(cv, cur, pageDoc)
+
+                hangover = cur[&#34;hangover&#34;]
+                if hangover is not None:
+                    diverge(cv, *hangover)
+
+            cv.terminate(nd)
+
+            for fName in featureMeta:
+                if not cv.occurs(fName):
+                    cv.meta(fName)
+
+        return director
+
+    def getConverter(self, doc):
+        &#34;&#34;&#34;Initializes a converter.
+
+        Returns
+        -------
+        object
+            The `tf.convert.walker.CV` converter object, initialized.
+        &#34;&#34;&#34;
+        verbose = self.verbose
+        tfDir = self.tfDir
+        tfVersion = self.tfVersion
+
+        silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
+        TF = Fabric(locations=f&#34;{tfDir}/{doc}/{tfVersion}&#34;, silent=silent)
+        return CV(TF, silent=silent)
+
+    def convertTask(self):
+        &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
+
+        It sets up the `tf.convert.walker` machinery and runs it.
+
+        Returns
+        -------
+        boolean
+            Whether the conversion was successful.
+        &#34;&#34;&#34;
+        if not self.importOK():
+            return
+
+        if not self.good:
+            return
+
+        verbose = self.verbose
+        chosenDoc = self.chosenDoc
+        slotType = self.slotType
+        generic = self.generic
+        otext = self.otext
+        featureMeta = self.featureMeta
+        intFeatures = self.intFeatures
+        sourceDir = self.sourceDir
+        sourceVersion = self.sourceVersion
+        tfDir = self.tfDir
+        tfVersion = self.tfVersion
+
+        if verbose == 1:
+            console(
+                f&#34;PageXML to TF converting: {ux(sourceDir)}/Mxx/{sourceVersion}&#34;
+                f&#34; ==&gt; {ux(tfDir)}/Mxx/{tfVersion}&#34;
+            )
+
+        initTree(tfDir, fresh=True, gentle=True)
+
+        docDirs = sorted(dirContents(sourceDir)[1], key=lambda x: (x[0], int(x[1:])))
+
+        for doc in docDirs:
+            if chosenDoc is not None and chosenDoc != doc:
+                continue
+            pageSource = f&#34;{sourceDir}/{doc}/{sourceVersion}/page&#34;
+            pageFiles = sorted(dirContents(pageSource)[0])
+
+            if len(pageFiles) == 0:
+                continue
+
+            console(f&#34;\t\t{doc:&gt;5} ... {len(pageFiles):&gt;4} pages&#34;)
+
+            metaFile = f&#34;{sourceDir}/{doc}/{sourceVersion}/meta/metadata.yaml&#34;
+            docMeta = readYaml(asFile=metaFile)
+            docMeta.title = (docMeta.title or &#34;&#34;).replace(&#34;_&#34;, &#34; &#34;)
+            docMeta.url = (docMeta.url or &#34;&#34;).replace(&#34;&amp;amp;&#34;, &#34;&amp;&#34;)
+
+            cv = self.getConverter(doc)
+
+            if not cv.walk(
+                self.getDirector(doc, docMeta, pageSource, pageFiles),
+                slotType,
+                otext=otext,
+                generic=generic,
+                intFeatures=intFeatures,
+                featureMeta=featureMeta,
+                generateTf=True,
+            ):
+                self.good = False
+
+    def loadTask(self):
+        &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
+
+        It loads the TF data that resides in the directory where the &#34;convert&#34; task
+        deliver its results.
+
+        During loading there are additional checks. If they succeed, we have evidence
+        that we have a valid TF dataset.
+
+        Also, during the first load intensive pre-computation of TF data takes place,
+        the results of which will be cached in the invisible `.tf` directory there.
+
+        That makes the TF data ready to be loaded fast, next time it is needed.
+
+        Returns
+        -------
+        boolean
+            Whether the loading was successful.
+        &#34;&#34;&#34;
+        if not self.importOK():
+            return
+
+        if not self.good:
+            return
+
+        tfDir = self.tfDir
+        tfVersion = self.tfVersion
+        chosenDoc = self.chosenDoc
+        verbose = self.verbose
+        silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
+
+        if not dirExists(tfDir):
+            console(f&#34;Directory {ux(tfDir)} does not exist.&#34;)
+            console(&#34;No TF found, nothing to load&#34;)
+            self.good = False
+            return
+
+        docDirs = sorted(dirContents(tfDir)[1], key=lambda x: (x[0], int(x[1:])))
+
+        for doc in docDirs:
+            if chosenDoc is not None and chosenDoc != doc:
+                continue
+            tfPath = f&#34;{tfDir}/{doc}/{tfVersion}&#34;
+            console(f&#34;\t\t{doc:&gt;5} ... &#34;, newline=False)
+            TF = Fabric(locations=[tfPath], silent=silent)
+            allFeatures = TF.explore(silent=True, show=True)
+            loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
+            api = TF.load(loadableFeatures, silent=silent)
+            if api:
+                console(f&#34;OK {api.F.otype.maxSlot:&gt;8} slots&#34;)
+                self.good = True
+            else:
+                console(&#34;XX&#34;)
+                self.good = False
+
+    def appTask(self):
+        &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
+
+        It creates / updates a corpus-specific app plus specific documentation files.
+        There should be a valid TF dataset in place, because some
+        settings in the app derive from it.
+
+        It will also read custom additions that are present in the target app directory.
+        These files are:
+
+        *   `about_custom.md`:
+            A markdown file with specific colophon information about the dataset.
+            In the generated file, this information will be put at the start.
+        *   `transcription_custom.md`:
+            A markdown file with specific encoding information about the dataset.
+            In the generated file, this information will be put at the start.
+        *   `config_custom.yaml`:
+            A YAML file with configuration data that will be *merged* into the generated
+            config.yaml.
+        *   `app_custom.py`:
+            A python file with named snippets of code to be inserted
+            at corresponding places in the generated `app.py`
+        *   `display_custom.css`:
+            Additional CSS definitions that will be appended to the generated
+            `display.css`.
+
+        If the TF app for this resource needs custom code, this is the way to retain
+        that code between automatic generation of files.
+
+        Returns
+        -------
+        boolean
+            Whether the operation was successful.
+        &#34;&#34;&#34;
+        if not self.importOK():
+            return
+
+        if not self.good:
+            return
+
+        verbose = self.verbose
+
+        refDir = self.refDir
+        myDir = self.myDir
+        tfVersion = self.tfVersion
+
+        # key | parentDir | file | file-default | template based
+
+        # if parentDir is a tuple, the first part is the parentDir of the source
+        # end the second part is the parentDir of the destination
+
+        itemSpecs = ((&#34;config&#34;, &#34;app&#34;, &#34;config.yaml&#34;, &#34;config2.yaml&#34;, False),)
+        genTasks = {
+            s[0]: dict(parentDir=s[1], file=s[2], fileOrig=s[3], justCopy=s[4])
+            for s in itemSpecs
+        }
+
+        version = tfVersion
+
+        def createConfig(sourceText, customText):
+            text = sourceText.replace(&#34;«version»&#34;, f&#39;&#34;{version}&#34;&#39;)
+
+            settings = readYaml(text=text, plain=True)
+            settings.setdefault(&#34;provenanceSpec&#34;, {})[&#34;branch&#34;] = BRANCH_DEFAULT_NEW
+
+            customSettings = (
+                {} if not customText else readYaml(text=customText, plain=True)
+            )
+
+            mergeDict(settings, customSettings)
+
+            text = writeYaml(settings)
+
+            return text
+
+        if verbose &gt;= 0:
+            console(&#34;App updating ...&#34;)
+
+        for name, info in genTasks.items():
+            parentDir = info[&#34;parentDir&#34;]
+            (sourceBit, targetBit) = (
+                parentDir if type(parentDir) is tuple else (parentDir, parentDir)
+            )
+            file = info[FILE]
+            fileOrig = info[&#34;fileOrig&#34;]
+            fileParts = file.rsplit(&#34;.&#34;, 1)
+            if len(fileParts) == 1:
+                fileParts = [file, &#34;&#34;]
+            (fileBase, fileExt) = fileParts
+            if fileExt:
+                fileExt = f&#34;.{fileExt}&#34;
+            targetDir = f&#34;{refDir}/{targetBit}&#34;
+            itemTarget = f&#34;{targetDir}/{file}&#34;
+            itemCustom = f&#34;{targetDir}/{fileBase}_custom{fileExt}&#34;
+            itemPre = f&#34;{targetDir}/{fileBase}_orig{fileExt}&#34;
+
+            justCopy = info[&#34;justCopy&#34;]
+            sourceDir = f&#34;{myDir}/{sourceBit}&#34;
+            itemSource = f&#34;{sourceDir}/{fileOrig}&#34;
+
+            # If there is custom info, we do not have to preserve the previous version.
+            # Otherwise we save the target before overwriting it; # unless it
+            # has been saved before
+
+            preExists = fileExists(itemPre)
+            targetExists = fileExists(itemTarget)
+            customExists = fileExists(itemCustom)
+
+            msg = &#34;&#34;
+
+            if justCopy:
+                if targetExists:
+                    msg = &#34;(already exists, not overwritten)&#34;
+                    safe = False
+                else:
+                    msg = &#34;(copied)&#34;
+                    safe = True
+            else:
+                if targetExists:
+                    if customExists:
+                        msg = &#34;(generated with custom info)&#34;
+                    else:
+                        if preExists:
+                            msg = &#34;(no custom info, older original exists)&#34;
+                        else:
+                            msg = &#34;(no custom info, original preserved)&#34;
+                            fileCopy(itemTarget, itemPre)
+                else:
+                    msg = &#34;(created)&#34;
+
+            initTree(targetDir, fresh=False)
+
+            if justCopy:
+                if safe:
+                    fileCopy(itemSource, itemTarget)
+            else:
+                if fileExists(itemSource):
+                    with fileOpen(itemSource) as fh:
+                        sourceText = fh.read()
+                else:
+                    sourceText = &#34;&#34;
+
+                if fileExists(itemCustom):
+                    with fileOpen(itemCustom) as fh:
+                        customText = fh.read()
+                else:
+                    customText = &#34;&#34;
+
+                targetText = (
+                    createConfig
+                    if name == &#34;config&#34;
+                    else fileCopy  # this cannot occur because justCopy is False
+                )(sourceText, customText)
+
+                with fileOpen(itemTarget, mode=&#34;w&#34;) as fh:
+                    fh.write(targetText)
+
+            if verbose &gt;= 0:
+                console(f&#34;\t{ux(itemTarget):30} {msg}&#34;)
+
+        if verbose &gt;= 0:
+            console(&#34;Done&#34;)
+        else:
+            console(&#34;App updated&#34;)
+
+    # START the TEXT-FABRIC BROWSER on this CORPUS
+
+    def browseTask(self):
+        &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
+
+        It gives a shell command to start the TF browser on
+        the newly created corpus.
+        There should be a valid TF dataset and app configuration in place
+
+        Returns
+        -------
+        boolean
+            Whether the operation was successful.
+        &#34;&#34;&#34;
+        if not self.importOK():
+            return
+
+        if not self.good:
+            return
+
+        org = self.org
+        repo = self.repo
+        relative = self.relative
+        backend = self.backend
+        tfVersion = self.tfVersion
+        chosenDoc = self.chosenDoc
+
+        if chosenDoc is None:
+            console(
+                &#34;You have to choose a particular document by passing the doc parameter&#34;
+            )
+            return
+
+        backendOpt = &#34;&#34; if backend == &#34;github&#34; else f&#34;--backend={backend}&#34;
+        versionOpt = f&#34;--version={tfVersion}&#34;
+        versionOpt = &#34;&#34;
+        docOpt = f&#34;--relative=tf/{chosenDoc}&#34;
+
+        try:
+            run(
+                (
+                    f&#34;tf {org}/{repo}{relative}:clone {docOpt} --checkout=clone &#34;
+                    f&#34;{versionOpt} {backendOpt}&#34;
+                ),
+                shell=True,
+            )
+        except KeyboardInterrupt:
+            pass
+
+    def task(
+        self,
+        convert=False,
+        load=False,
+        app=False,
+        browse=False,
+        verbose=None,
+        doc=None,
+    ):
+        &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
+
+        This is a higher level function that can execute a selection of tasks.
+
+        The tasks will be executed in a fixed order:
+        `convert`, `load`, `app`, `browse`.
+        But you can select which one(s) must be executed.
+
+        If multiple tasks must be executed and one fails, the subsequent tasks
+        will not be executed.
+
+        Parameters
+        ----------
+        convert: boolean, optional False
+            Whether to carry out the `convert` task.
+        load: boolean, optional False
+            Whether to carry out the `load` task.
+        app: boolean, optional False
+            Whether to carry out the `app` task.
+        browse: boolean, optional False
+            Whether to carry out the `browse` task&#34;
+        verbose: integer, optional -1
+            Produce no (-1), some (0) or many (1) progress and reporting messages
+
+        Returns
+        -------
+        boolean
+            Whether all tasks have executed successfully.
+        &#34;&#34;&#34;
+        if not self.importOK():
+            return
+
+        if verbose is not None:
+            verboseSav = self.verbose
+            self.verbose = verbose
+
+        if doc is not None:
+            docSav = self.chosenDoc
+            self.chosenDoc = doc
+
+        if not self.good:
+            return False
+
+        for condition, method, kwargs in (
+            (convert, self.convertTask, {}),
+            (load, self.loadTask, {}),
+            (app, self.appTask, {}),
+            (browse, self.browseTask, {}),
+        ):
+            if condition:
+                method(**kwargs)
+                if not self.good:
+                    break
+
+        if verbose is not None:
+            self.verbose = verboseSav
+        if doc is not None:
+            self.chosenDoc = docSav
+        return self.good</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="tf.capable.CheckImport" href="../capable.html#tf.capable.CheckImport">CheckImport</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.convert.pagexml.PageXML.appTask"><code class="name flex">
+<span>def <span class="ident">appTask</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Implementation of the "app" task.</p>
+<p>It creates / updates a corpus-specific app plus specific documentation files.
+There should be a valid TF dataset in place, because some
+settings in the app derive from it.</p>
+<p>It will also read custom additions that are present in the target app directory.
+These files are:</p>
+<ul>
+<li><code>about_custom.md</code>:
+A markdown file with specific colophon information about the dataset.
+In the generated file, this information will be put at the start.</li>
+<li><code>transcription_custom.md</code>:
+A markdown file with specific encoding information about the dataset.
+In the generated file, this information will be put at the start.</li>
+<li><code>config_custom.yaml</code>:
+A YAML file with configuration data that will be <em>merged</em> into the generated
+config.yaml.</li>
+<li><code>app_custom.py</code>:
+A python file with named snippets of code to be inserted
+at corresponding places in the generated <code>app.py</code></li>
+<li><code>display_custom.css</code>:
+Additional CSS definitions that will be appended to the generated
+<code>display.css</code>.</li>
+</ul>
+<p>If the TF app for this resource needs custom code, this is the way to retain
+that code between automatic generation of files.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>boolean</code></dt>
+<dd>Whether the operation was successful.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/pagexml.py#L760-L923" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def appTask(self):
+    &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
+
+    It creates / updates a corpus-specific app plus specific documentation files.
+    There should be a valid TF dataset in place, because some
+    settings in the app derive from it.
+
+    It will also read custom additions that are present in the target app directory.
+    These files are:
+
+    *   `about_custom.md`:
+        A markdown file with specific colophon information about the dataset.
+        In the generated file, this information will be put at the start.
+    *   `transcription_custom.md`:
+        A markdown file with specific encoding information about the dataset.
+        In the generated file, this information will be put at the start.
+    *   `config_custom.yaml`:
+        A YAML file with configuration data that will be *merged* into the generated
+        config.yaml.
+    *   `app_custom.py`:
+        A python file with named snippets of code to be inserted
+        at corresponding places in the generated `app.py`
+    *   `display_custom.css`:
+        Additional CSS definitions that will be appended to the generated
+        `display.css`.
+
+    If the TF app for this resource needs custom code, this is the way to retain
+    that code between automatic generation of files.
+
+    Returns
+    -------
+    boolean
+        Whether the operation was successful.
+    &#34;&#34;&#34;
+    if not self.importOK():
+        return
+
+    if not self.good:
+        return
+
+    verbose = self.verbose
+
+    refDir = self.refDir
+    myDir = self.myDir
+    tfVersion = self.tfVersion
+
+    # key | parentDir | file | file-default | template based
+
+    # if parentDir is a tuple, the first part is the parentDir of the source
+    # end the second part is the parentDir of the destination
+
+    itemSpecs = ((&#34;config&#34;, &#34;app&#34;, &#34;config.yaml&#34;, &#34;config2.yaml&#34;, False),)
+    genTasks = {
+        s[0]: dict(parentDir=s[1], file=s[2], fileOrig=s[3], justCopy=s[4])
+        for s in itemSpecs
+    }
+
+    version = tfVersion
+
+    def createConfig(sourceText, customText):
+        text = sourceText.replace(&#34;«version»&#34;, f&#39;&#34;{version}&#34;&#39;)
+
+        settings = readYaml(text=text, plain=True)
+        settings.setdefault(&#34;provenanceSpec&#34;, {})[&#34;branch&#34;] = BRANCH_DEFAULT_NEW
+
+        customSettings = (
+            {} if not customText else readYaml(text=customText, plain=True)
+        )
+
+        mergeDict(settings, customSettings)
+
+        text = writeYaml(settings)
+
+        return text
+
+    if verbose &gt;= 0:
+        console(&#34;App updating ...&#34;)
+
+    for name, info in genTasks.items():
+        parentDir = info[&#34;parentDir&#34;]
+        (sourceBit, targetBit) = (
+            parentDir if type(parentDir) is tuple else (parentDir, parentDir)
+        )
+        file = info[FILE]
+        fileOrig = info[&#34;fileOrig&#34;]
+        fileParts = file.rsplit(&#34;.&#34;, 1)
+        if len(fileParts) == 1:
+            fileParts = [file, &#34;&#34;]
+        (fileBase, fileExt) = fileParts
+        if fileExt:
+            fileExt = f&#34;.{fileExt}&#34;
+        targetDir = f&#34;{refDir}/{targetBit}&#34;
+        itemTarget = f&#34;{targetDir}/{file}&#34;
+        itemCustom = f&#34;{targetDir}/{fileBase}_custom{fileExt}&#34;
+        itemPre = f&#34;{targetDir}/{fileBase}_orig{fileExt}&#34;
+
+        justCopy = info[&#34;justCopy&#34;]
+        sourceDir = f&#34;{myDir}/{sourceBit}&#34;
+        itemSource = f&#34;{sourceDir}/{fileOrig}&#34;
+
+        # If there is custom info, we do not have to preserve the previous version.
+        # Otherwise we save the target before overwriting it; # unless it
+        # has been saved before
+
+        preExists = fileExists(itemPre)
+        targetExists = fileExists(itemTarget)
+        customExists = fileExists(itemCustom)
+
+        msg = &#34;&#34;
+
+        if justCopy:
+            if targetExists:
+                msg = &#34;(already exists, not overwritten)&#34;
+                safe = False
+            else:
+                msg = &#34;(copied)&#34;
+                safe = True
+        else:
+            if targetExists:
+                if customExists:
+                    msg = &#34;(generated with custom info)&#34;
+                else:
+                    if preExists:
+                        msg = &#34;(no custom info, older original exists)&#34;
+                    else:
+                        msg = &#34;(no custom info, original preserved)&#34;
+                        fileCopy(itemTarget, itemPre)
+            else:
+                msg = &#34;(created)&#34;
+
+        initTree(targetDir, fresh=False)
+
+        if justCopy:
+            if safe:
+                fileCopy(itemSource, itemTarget)
+        else:
+            if fileExists(itemSource):
+                with fileOpen(itemSource) as fh:
+                    sourceText = fh.read()
+            else:
+                sourceText = &#34;&#34;
+
+            if fileExists(itemCustom):
+                with fileOpen(itemCustom) as fh:
+                    customText = fh.read()
+            else:
+                customText = &#34;&#34;
+
+            targetText = (
+                createConfig
+                if name == &#34;config&#34;
+                else fileCopy  # this cannot occur because justCopy is False
+            )(sourceText, customText)
+
+            with fileOpen(itemTarget, mode=&#34;w&#34;) as fh:
+                fh.write(targetText)
+
+        if verbose &gt;= 0:
+            console(f&#34;\t{ux(itemTarget):30} {msg}&#34;)
+
+    if verbose &gt;= 0:
+        console(&#34;Done&#34;)
+    else:
+        console(&#34;App updated&#34;)</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.pagexml.PageXML.browseTask"><code class="name flex">
+<span>def <span class="ident">browseTask</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Implementation of the "browse" task.</p>
+<p>It gives a shell command to start the TF browser on
+the newly created corpus.
+There should be a valid TF dataset and app configuration in place</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>boolean</code></dt>
+<dd>Whether the operation was successful.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/pagexml.py#L927-L972" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def browseTask(self):
+    &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
+
+    It gives a shell command to start the TF browser on
+    the newly created corpus.
+    There should be a valid TF dataset and app configuration in place
+
+    Returns
+    -------
+    boolean
+        Whether the operation was successful.
+    &#34;&#34;&#34;
+    if not self.importOK():
+        return
+
+    if not self.good:
+        return
+
+    org = self.org
+    repo = self.repo
+    relative = self.relative
+    backend = self.backend
+    tfVersion = self.tfVersion
+    chosenDoc = self.chosenDoc
+
+    if chosenDoc is None:
+        console(
+            &#34;You have to choose a particular document by passing the doc parameter&#34;
+        )
+        return
+
+    backendOpt = &#34;&#34; if backend == &#34;github&#34; else f&#34;--backend={backend}&#34;
+    versionOpt = f&#34;--version={tfVersion}&#34;
+    versionOpt = &#34;&#34;
+    docOpt = f&#34;--relative=tf/{chosenDoc}&#34;
+
+    try:
+        run(
+            (
+                f&#34;tf {org}/{repo}{relative}:clone {docOpt} --checkout=clone &#34;
+                f&#34;{versionOpt} {backendOpt}&#34;
+            ),
+            shell=True,
+        )
+    except KeyboardInterrupt:
+        pass</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.pagexml.PageXML.convertTask"><code class="name flex">
+<span>def <span class="ident">convertTask</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Implementation of the "convert" task.</p>
+<p>It sets up the <code><a title="tf.convert.walker" href="walker.html">tf.convert.walker</a></code> machinery and runs it.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>boolean</code></dt>
+<dd>Whether the conversion was successful.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/pagexml.py#L638-L703" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def convertTask(self):
+    &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
+
+    It sets up the `tf.convert.walker` machinery and runs it.
+
+    Returns
+    -------
+    boolean
+        Whether the conversion was successful.
+    &#34;&#34;&#34;
+    if not self.importOK():
+        return
+
+    if not self.good:
+        return
+
+    verbose = self.verbose
+    chosenDoc = self.chosenDoc
+    slotType = self.slotType
+    generic = self.generic
+    otext = self.otext
+    featureMeta = self.featureMeta
+    intFeatures = self.intFeatures
+    sourceDir = self.sourceDir
+    sourceVersion = self.sourceVersion
+    tfDir = self.tfDir
+    tfVersion = self.tfVersion
+
+    if verbose == 1:
+        console(
+            f&#34;PageXML to TF converting: {ux(sourceDir)}/Mxx/{sourceVersion}&#34;
+            f&#34; ==&gt; {ux(tfDir)}/Mxx/{tfVersion}&#34;
+        )
+
+    initTree(tfDir, fresh=True, gentle=True)
+
+    docDirs = sorted(dirContents(sourceDir)[1], key=lambda x: (x[0], int(x[1:])))
+
+    for doc in docDirs:
+        if chosenDoc is not None and chosenDoc != doc:
+            continue
+        pageSource = f&#34;{sourceDir}/{doc}/{sourceVersion}/page&#34;
+        pageFiles = sorted(dirContents(pageSource)[0])
+
+        if len(pageFiles) == 0:
+            continue
+
+        console(f&#34;\t\t{doc:&gt;5} ... {len(pageFiles):&gt;4} pages&#34;)
+
+        metaFile = f&#34;{sourceDir}/{doc}/{sourceVersion}/meta/metadata.yaml&#34;
+        docMeta = readYaml(asFile=metaFile)
+        docMeta.title = (docMeta.title or &#34;&#34;).replace(&#34;_&#34;, &#34; &#34;)
+        docMeta.url = (docMeta.url or &#34;&#34;).replace(&#34;&amp;amp;&#34;, &#34;&amp;&#34;)
+
+        cv = self.getConverter(doc)
+
+        if not cv.walk(
+            self.getDirector(doc, docMeta, pageSource, pageFiles),
+            slotType,
+            otext=otext,
+            generic=generic,
+            intFeatures=intFeatures,
+            featureMeta=featureMeta,
+            generateTf=True,
+        ):
+            self.good = False</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.pagexml.PageXML.getConverter"><code class="name flex">
+<span>def <span class="ident">getConverter</span></span>(<span>self, doc)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Initializes a converter.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>object</code></dt>
+<dd>The <code><a title="tf.convert.walker.CV" href="walker.html#tf.convert.walker.CV">CV</a></code> converter object, initialized.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/pagexml.py#L622-L636" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getConverter(self, doc):
+    &#34;&#34;&#34;Initializes a converter.
+
+    Returns
+    -------
+    object
+        The `tf.convert.walker.CV` converter object, initialized.
+    &#34;&#34;&#34;
+    verbose = self.verbose
+    tfDir = self.tfDir
+    tfVersion = self.tfVersion
+
+    silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
+    TF = Fabric(locations=f&#34;{tfDir}/{doc}/{tfVersion}&#34;, silent=silent)
+    return CV(TF, silent=silent)</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.pagexml.PageXML.getDirector"><code class="name flex">
+<span>def <span class="ident">getDirector</span></span>(<span>self, doc, docMeta, pageSource, pageFiles)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Factory for the director function.</p>
+<p>The <code><a title="tf.convert.walker" href="walker.html">tf.convert.walker</a></code> relies on a corpus dependent <code>director</code> function
+that walks through the source data and spits out actions that
+produces the TF dataset.</p>
+<p>Also some special additions need to be programmed, such as an extra section
+level, word boundaries, etc.</p>
+<p>We collect all needed data, store it, and define a local director function
+that has access to this data.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>function</code></dt>
+<dd>The local director function that has been constructed.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/pagexml.py#L559-L620" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getDirector(self, doc, docMeta, pageSource, pageFiles):
+    &#34;&#34;&#34;Factory for the director function.
+
+    The `tf.convert.walker` relies on a corpus dependent `director` function
+    that walks through the source data and spits out actions that
+    produces the TF dataset.
+
+    Also some special additions need to be programmed, such as an extra section
+    level, word boundaries, etc.
+
+    We collect all needed data, store it, and define a local director function
+    that has access to this data.
+
+    Returns
+    -------
+    function
+        The local director function that has been constructed.
+    &#34;&#34;&#34;
+    parsePage = self.parsePage
+
+    def director(cv):
+        &#34;&#34;&#34;Director function.
+
+        Here we program a walk through the PageXML sources.
+        At every step of the walk we fire some actions that build TF nodes
+        and assign features for them.
+
+        Parameters
+        ----------
+        cv: object
+            The converter object, needed to issue actions.
+        &#34;&#34;&#34;
+        featureMeta = self.featureMeta
+
+        cur = {}
+        cur[NODE] = {}
+        nd = cv.node(DOC)
+        cur[NODE][DOC] = nd
+
+        cv.feature(nd, doc=doc, **docMeta)
+
+        cur[&#34;hangover&#34;] = None
+
+        for pageFile in pageFiles:
+            pagePath = f&#34;{pageSource}/{pageFile}&#34;
+            pageNr = int(pageFile.split(&#34;.&#34;, 1)[0])
+            pageDoc = parsePage(pagePath)
+            cur[&#34;page&#34;] = pageNr
+            cur[&#34;line&#34;] = 0
+            walkObject(cv, cur, pageDoc)
+
+            hangover = cur[&#34;hangover&#34;]
+            if hangover is not None:
+                diverge(cv, *hangover)
+
+        cv.terminate(nd)
+
+        for fName in featureMeta:
+            if not cv.occurs(fName):
+                cv.meta(fName)
+
+    return director</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.pagexml.PageXML.loadTask"><code class="name flex">
+<span>def <span class="ident">loadTask</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Implementation of the "load" task.</p>
+<p>It loads the TF data that resides in the directory where the "convert" task
+deliver its results.</p>
+<p>During loading there are additional checks. If they succeed, we have evidence
+that we have a valid TF dataset.</p>
+<p>Also, during the first load intensive pre-computation of TF data takes place,
+the results of which will be cached in the invisible <code>.<a title="tf" href="../index.html">tf</a></code> directory there.</p>
+<p>That makes the TF data ready to be loaded fast, next time it is needed.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>boolean</code></dt>
+<dd>Whether the loading was successful.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/pagexml.py#L705-L758" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def loadTask(self):
+    &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
+
+    It loads the TF data that resides in the directory where the &#34;convert&#34; task
+    deliver its results.
+
+    During loading there are additional checks. If they succeed, we have evidence
+    that we have a valid TF dataset.
+
+    Also, during the first load intensive pre-computation of TF data takes place,
+    the results of which will be cached in the invisible `.tf` directory there.
+
+    That makes the TF data ready to be loaded fast, next time it is needed.
+
+    Returns
+    -------
+    boolean
+        Whether the loading was successful.
+    &#34;&#34;&#34;
+    if not self.importOK():
+        return
+
+    if not self.good:
+        return
+
+    tfDir = self.tfDir
+    tfVersion = self.tfVersion
+    chosenDoc = self.chosenDoc
+    verbose = self.verbose
+    silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
+
+    if not dirExists(tfDir):
+        console(f&#34;Directory {ux(tfDir)} does not exist.&#34;)
+        console(&#34;No TF found, nothing to load&#34;)
+        self.good = False
+        return
+
+    docDirs = sorted(dirContents(tfDir)[1], key=lambda x: (x[0], int(x[1:])))
+
+    for doc in docDirs:
+        if chosenDoc is not None and chosenDoc != doc:
+            continue
+        tfPath = f&#34;{tfDir}/{doc}/{tfVersion}&#34;
+        console(f&#34;\t\t{doc:&gt;5} ... &#34;, newline=False)
+        TF = Fabric(locations=[tfPath], silent=silent)
+        allFeatures = TF.explore(silent=True, show=True)
+        loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
+        api = TF.load(loadableFeatures, silent=silent)
+        if api:
+            console(f&#34;OK {api.F.otype.maxSlot:&gt;8} slots&#34;)
+            self.good = True
+        else:
+            console(&#34;XX&#34;)
+            self.good = False</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.pagexml.PageXML.task"><code class="name flex">
+<span>def <span class="ident">task</span></span>(<span>self, convert=False, load=False, app=False, browse=False, verbose=None, doc=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Carry out any task, possibly modified by any flag.</p>
+<p>This is a higher level function that can execute a selection of tasks.</p>
+<p>The tasks will be executed in a fixed order:
+<code>convert</code>, <code>load</code>, <code>app</code>, <code>browse</code>.
+But you can select which one(s) must be executed.</p>
+<p>If multiple tasks must be executed and one fails, the subsequent tasks
+will not be executed.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>convert</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to carry out the <code>convert</code> task.</dd>
+<dt><strong><code>load</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to carry out the <code>load</code> task.</dd>
+<dt><strong><code>app</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to carry out the <code>app</code> task.</dd>
+<dt><strong><code>browse</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to carry out the <code>browse</code> task"</dd>
+<dt><strong><code>verbose</code></strong> :&ensp;<code>integer</code>, optional <code>-1</code></dt>
+<dd>Produce no (-1), some (0) or many (1) progress and reporting messages</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>boolean</code></dt>
+<dd>Whether all tasks have executed successfully.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/pagexml.py#L974-L1041" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def task(
+    self,
+    convert=False,
+    load=False,
+    app=False,
+    browse=False,
+    verbose=None,
+    doc=None,
+):
+    &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
+
+    This is a higher level function that can execute a selection of tasks.
+
+    The tasks will be executed in a fixed order:
+    `convert`, `load`, `app`, `browse`.
+    But you can select which one(s) must be executed.
+
+    If multiple tasks must be executed and one fails, the subsequent tasks
+    will not be executed.
+
+    Parameters
+    ----------
+    convert: boolean, optional False
+        Whether to carry out the `convert` task.
+    load: boolean, optional False
+        Whether to carry out the `load` task.
+    app: boolean, optional False
+        Whether to carry out the `app` task.
+    browse: boolean, optional False
+        Whether to carry out the `browse` task&#34;
+    verbose: integer, optional -1
+        Produce no (-1), some (0) or many (1) progress and reporting messages
+
+    Returns
+    -------
+    boolean
+        Whether all tasks have executed successfully.
+    &#34;&#34;&#34;
+    if not self.importOK():
+        return
+
+    if verbose is not None:
+        verboseSav = self.verbose
+        self.verbose = verbose
+
+    if doc is not None:
+        docSav = self.chosenDoc
+        self.chosenDoc = doc
+
+    if not self.good:
+        return False
+
+    for condition, method, kwargs in (
+        (convert, self.convertTask, {}),
+        (load, self.loadTask, {}),
+        (app, self.appTask, {}),
+        (browse, self.browseTask, {}),
+    ):
+        if condition:
+            method(**kwargs)
+            if not self.good:
+                break
+
+    if verbose is not None:
+        self.verbose = verboseSav
+    if doc is not None:
+        self.chosenDoc = docSav
+    return self.good</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="tf.capable.CheckImport" href="../capable.html#tf.capable.CheckImport">CheckImport</a></b></code>:
+<ul class="hlist">
+<li><code><a title="tf.capable.CheckImport.importGet" href="../capable.html#tf.capable.CheckImport.importGet">importGet</a></code></li>
+<li><code><a title="tf.capable.CheckImport.importOK" href="../capable.html#tf.capable.CheckImport.importOK">importOK</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.convert" href="index.html">tf.convert</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="tf.convert.pagexml.diverge" href="#tf.convert.pagexml.diverge">diverge</a></code></li>
+<li><code><a title="tf.convert.pagexml.emptySlot" href="#tf.convert.pagexml.emptySlot">emptySlot</a></code></li>
+<li><code><a title="tf.convert.pagexml.linebreakSlot" href="#tf.convert.pagexml.linebreakSlot">linebreakSlot</a></code></li>
+<li><code><a title="tf.convert.pagexml.main" href="#tf.convert.pagexml.main">main</a></code></li>
+<li><code><a title="tf.convert.pagexml.setUp" href="#tf.convert.pagexml.setUp">setUp</a></code></li>
+<li><code><a title="tf.convert.pagexml.tokenLogic" href="#tf.convert.pagexml.tokenLogic">tokenLogic</a></code></li>
+<li><code><a title="tf.convert.pagexml.walkObject" href="#tf.convert.pagexml.walkObject">walkObject</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.convert.pagexml.PageXML" href="#tf.convert.pagexml.PageXML">PageXML</a></code></h4>
+<ul class="two-column">
+<li><code><a title="tf.convert.pagexml.PageXML.appTask" href="#tf.convert.pagexml.PageXML.appTask">appTask</a></code></li>
+<li><code><a title="tf.convert.pagexml.PageXML.browseTask" href="#tf.convert.pagexml.PageXML.browseTask">browseTask</a></code></li>
+<li><code><a title="tf.convert.pagexml.PageXML.convertTask" href="#tf.convert.pagexml.PageXML.convertTask">convertTask</a></code></li>
+<li><code><a title="tf.convert.pagexml.PageXML.getConverter" href="#tf.convert.pagexml.PageXML.getConverter">getConverter</a></code></li>
+<li><code><a title="tf.convert.pagexml.PageXML.getDirector" href="#tf.convert.pagexml.PageXML.getDirector">getDirector</a></code></li>
+<li><code><a title="tf.convert.pagexml.PageXML.loadTask" href="#tf.convert.pagexml.PageXML.loadTask">loadTask</a></code></li>
+<li><code><a title="tf.convert.pagexml.PageXML.task" href="#tf.convert.pagexml.PageXML.task">task</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

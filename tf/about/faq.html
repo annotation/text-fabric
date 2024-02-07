@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.about.faq API documentation</title>
+<meta name="description" content="FAQ …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.about.faq</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="faq">FAQ</h1>
+<p><strong>It does not work. Why?</strong></p>
+<h2 id="stay-up-to-date">Stay up to date!</h2>
+<p>Always use the latest version of TF, because there is still
+a lot of development going on.</p>
+<p>A working installation contains three parts that are updated occasionally,
+sometimes slowly, other times rapidly:</p>
+<ul>
+<li>TF itself, the Python library that you obtained by <code>pip install text-fabric</code>;</li>
+<li>TF apps, the apps that are specialized in a specific corpus; you obtained it when you said
+<code>tf org/repo</code> or <code>A = use("org/repo")</code>;</li>
+<li>TF data, which was downloaded by that same statement that downloaded the app.</li>
+</ul>
+<p>See <code><a title="tf.about.install" href="install.html">tf.about.install</a></code> for instructions how to upgrade these things.</p>
+<h2 id="latest-tf">Latest TF</h2>
+<h3 id="tf-cannot-be-found">TF cannot be found!</h3>
+<p>Most likely, you installed TF into another Python than you use when you run your
+Python programs. See Python Setup below.</p>
+<h3 id="failed-to-upgrade-tf">Failed to upgrade TF!</h3>
+<p>When you get errors doing <code>pip install text-fabric</code>, there is probably an older version around.
+You have to say</p>
+<pre><code class="language-sh">pip install --upgrade text-fabric
+</code></pre>
+<p>If this still does not download the most recent version of <code>text-fabric</code>,
+it may have been caused by caching. Then say:</p>
+<pre><code class="language-sh">pip install --upgrade --no-cache-dir text-fabric
+</code></pre>
+<p>You can check what the newest distributed version of TF is on
+<a href="https://pypi.org/project/text-fabric/">PyPi</a>.</p>
+<h3 id="failed-to-upgrade-tf-still">Failed to upgrade TF (still)!</h3>
+<p>Old versions on your system might get in the way.</p>
+<p>Sometimes <code>pip uninstall text-fabric</code> fails to remove all traces of TF.
+Here is how you can remove them manually:</p>
+<ul>
+<li>
+<p>locate the <code>bin</code> directory of the current Python, it is something like</p>
+<ul>
+<li>(MacOS regular Python) <code>/Library/Frameworks/Python.framework/Versions/3.7/bin</code></li>
+<li>(Windows Anaconda) <code>C:\Users\You\Anaconda3\Scripts</code></li>
+</ul>
+<p>Remove the file <code>text-fabric</code> from this directory if it exists.</p>
+</li>
+<li>
+<p>locate the <code>site-packages</code> directory of the current Python, it is something like</p>
+<ul>
+<li>
+<p>(MacOS regular Python)
+<code>/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages</code></p>
+<p>Remove the subdirectory <code><a title="tf" href="../index.html">tf</a></code> from this location, plus all files with
+<code>text-fabric</code> in the name.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>After this, you can make a fresh install of <code>text-fabric</code>:</p>
+</li>
+</ul>
+<pre><code class="language-sh">pip install text-fabric
+</code></pre>
+<h2 id="python-setup">Python setup</h2>
+<p>If you are new to Python, it might be tricky to set up Python the right way.
+If you make unlucky choices, and work with trial and error, things might get messed up.
+Most of the times when TF does not appear to work, it is because of this.
+Here are some hints to recover from that.</p>
+<h3 id="upgrade-of-tf-does-not-have-any-effect">Upgrade of TF does not have any effect!</h3>
+<p>Most likely, you have multiple Pythons on your system.
+You installed TF in one Python, but you are using it in another Python.</p>
+<p>This can happen if you installed Python from <a href="https://www.python.org">python.org</a>
+and then later installed Jupyter from Anaconda, which brings its own Python.</p>
+<p>You can check whether you are in this situation.</p>
+<p>First, on the command-line, do </p>
+<pre><code class="language-sh">tf
+</code></pre>
+<p>You will see the version of TF that is used when you call the TF browser.</p>
+<p>Then, in a Jupyter notebook, say</p>
+<pre><code class="language-python">from tf.parameters import VERSION
+print(VERSION)
+</code></pre>
+<p>You will see the version of TF that you use in a Jupyter notebook.</p>
+<p>If they are equal, you might use the same Python in both cases.</p>
+<p>If they are different, you have to clean up your Python installation.
+Ask a local guru, or google your way out. Or read on.</p>
+<h3 id="other-python-versions">Other Python versions</h3>
+<p>The following hygienic measures are known to be beneficial
+when you have multiple versions of Python on your system.</p>
+<p>When you have upgraded Python, remove PATH statements for older versions
+from your system startup files.</p>
+<ul>
+<li>For the MacOS: look at <code>.zshrc</code>, <code>.bashrc</code>, and <code>.bash_profile</code> in your home directory.</li>
+<li>For Windows: on the command prompt, say <code>echo %path%</code> to see what the content
+of your PATH variable is. If you see references to older versions of python
+than you actually work with, they need to be removed.
+<a href="https://www.computerhope.com/issues/ch000549.htm">Here is how</a></li>
+</ul>
+<p>Do not remove references to Python <code>2.*</code>, but only outdated Python <code>3.*</code> versions. </p>
+<h2 id="tf-browser">TF browser</h2>
+<h3 id="internal-server-error">Internal Server Error!</h3>
+<p>When the TF browser opens with an Internal Server error, the most likely reason is that
+the TF web server has not started up without errors.</p>
+<p>Look back at the terminal or command prompt where you started <code><a title="tf" href="../index.html">tf</a></code>.</p>
+<p>If somewhere down the road you see <code>Error</code>, I offer you my apologies!</p>
+<p>Copy and paste that error and send it to <a href="mailto:text.annotation@icloud.com">me</a>,
+and I'll fix it as soon as I can, and I let you know on the
+<a href="https://github.com/annotation/text-fabric/issues">issue list</a>.</p>
+<h3 id="out-of-memory">Out of memory!</h3>
+<p>If TF has run out of memory, you might be able to do something about it.</p>
+<p>In this case, during loading TF did not have access too enough RAM memory.
+Maybe you had too many programs (or browser tabs) open at that time.</p>
+<p>Close as many programs as possible (even better, restart your machine) and try again.
+TF is know to work on Windows 10 machines with only 3GB RAM on board,
+but only in the best of circumstances.</p>
+<p>If your machine has 4GB of RAM, it should be possible to run TF, with care.</p>
+<h2 id="github">GitHub</h2>
+<p>TF uses the GitHub API to get its apps and data on the fly.</p>
+<h3 id="github-rate-limit-exceeded">GitHub Rate Limit Exceeded!</h3>
+<p>Several solutions:</p>
+<ol>
+<li>(<em>recommended</em>) ask the provider of the dataset to use
+<code><a title="tf.advanced.zipdata.zipAll" href="../advanced/zipdata.html#tf.advanced.zipdata.zipAll">zipAll()</a></code> to create a zip file of the complete dataset
+and attach it to the latest release on GitHub.
+Then TF uses a method to get your data which does not involve the GitHub API, and
+your problem is gone.</li>
+<li>use previously downloaded data or get data manually from GitHub, e.g. by <em>cloning</em>
+the GitHub repository that holds the dataset.
+This requires confidence with <code>git</code> / GitHub operations such as cloning and pulling.</li>
+<li>increase your rate limit by making yourself known to GitHub.
+The work needed to increase the rate is fairly simple, but it assumes a bit
+more knowledge about how your terminal and operating system works.</li>
+</ol>
+<p>See also <code><a title="tf.advanced.repo" href="../advanced/repo.html">tf.advanced.repo</a></code>.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/about/faq.py#L1-L3" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+.. include:: ../docs/about/faq.md
+&#34;&#34;&#34;</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#faq">FAQ</a><ul>
+<li><a href="#stay-up-to-date">Stay up to date!</a></li>
+<li><a href="#latest-tf">Latest TF</a><ul>
+<li><a href="#tf-cannot-be-found">TF cannot be found!</a></li>
+<li><a href="#failed-to-upgrade-tf">Failed to upgrade TF!</a></li>
+<li><a href="#failed-to-upgrade-tf-still">Failed to upgrade TF (still)!</a></li>
+</ul>
+</li>
+<li><a href="#python-setup">Python setup</a><ul>
+<li><a href="#upgrade-of-tf-does-not-have-any-effect">Upgrade of TF does not have any effect!</a></li>
+<li><a href="#other-python-versions">Other Python versions</a></li>
+</ul>
+</li>
+<li><a href="#tf-browser">TF browser</a><ul>
+<li><a href="#internal-server-error">Internal Server Error!</a></li>
+<li><a href="#out-of-memory">Out of memory!</a></li>
+</ul>
+</li>
+<li><a href="#github">GitHub</a><ul>
+<li><a href="#github-rate-limit-exceeded">GitHub Rate Limit Exceeded!</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.about" href="index.html">tf.about</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

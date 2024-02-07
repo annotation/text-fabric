@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.about.optimizations API documentation</title>
+<meta name="description" content="File format Optimizations …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.about.optimizations</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="file-format-optimizations">File format Optimizations</h1>
+<h2 id="rationale">Rationale</h2>
+<p>It is important to avoid an explosion of redundant data in <code>.<a title="tf" href="../index.html">tf</a></code> files. We want
+the <code>.<a title="tf" href="../index.html">tf</a></code> format to be suitable for archiving, transparent to the human eye, and
+easy (i.e. fast) to process.</p>
+<h2 id="using-the-implicit-node">Using the implicit node</h2>
+<p>You may leave out the node spec for node features, and the first node spec for
+edge features. When leaving out a node spec, you must also leave out the tab
+following the node spec.</p>
+<p>A line with the first node spec left out denotes the singleton node set
+consisting of the <em>implicit node</em>. Here are the rules for implicit nodes.</p>
+<ul>
+<li>On a line where there is an explicit node spec, the implicit node is equal to
+the highest node denoted by the explicit node spec;</li>
+<li>On a line without an explicit node spec, the implicit node is determined from
+the previous line as follows:<ul>
+<li>if there is no previous line, take <code>1</code>;</li>
+<li>else take the implicit node of the previous line and increment it by <code>1</code>.</li>
+</ul>
+</li>
+</ul>
+<p>For edges, this optimization only happens for the <em>first</em> node spec. The second
+node spec must always be explicit.</p>
+<p>This optimizes some feature files greatly, e.g. the feature that contains the
+actual text of each word.</p>
+<p>Instead of</p>
+<pre><code>1 be
+2 reshit
+3 bara
+4 elohim
+5 et
+6 ha
+7 shamajim
+8 we
+9 et
+10 ha
+11 arets
+</code></pre>
+<p>you can just say</p>
+<pre><code>be
+reshit
+bara
+elohim
+et
+ha
+shamajim
+we
+et
+ha
+arets
+</code></pre>
+<p>This optimization is not obligatory. It is a device that may be used if you want
+to optimize the size of data files that you want to distribute.</p>
+<h2 id="omitting-empty-values">Omitting empty values</h2>
+<p>If the value is the empty string, you may also leave out the preceding tab (if
+there is one). This is especially good for edge features, because most edges
+just consist of a node pair without any value.</p>
+<p>This optimization will cause a conceptual ambiguity if there is only one field
+present in a node feature, or if there are only two fields in an edge feature.
+It could mean that the (first) node spec has been left out, or that the value
+has been left out.</p>
+<p>In those cases we will assume that the node spec has been left out for node
+features.</p>
+<p>For edge features, it depends on whether the edge is declared to have values
+(with <code>@edgeValues</code>). If the edge has values, then, as in the case of node
+features, we assume that the first node spec has been left out. But if the edge
+has no values, then we assume that both fields are node specs.</p>
+<p>So, in a node feature a line like this</p>
+<pre><code>42
+</code></pre>
+<p>means that the implicit node gets value <code>42</code>, and not that node <code>42</code> gets the
+empty value.</p>
+<p>Likewise, a line in an edge feature (without values) like this</p>
+<pre><code>42 43
+</code></pre>
+<p>means that there is an edge from <code>42</code> to <code>43</code> with empty value, and not that
+there is an edge from the implicit node to <code>42</code> with value 43.</p>
+<p>And, in the same edge, a line like this</p>
+<pre><code>42
+</code></pre>
+<p>means that there is an edge from the implicit node to <code>42</code> with the empty value.</p>
+<p>But, in an edge with values, the same lines are interpreted thus:</p>
+<pre><code>42 43
+</code></pre>
+<p>means that there is an edge from the implicit node to node <code>42</code> with value <code>43</code>.</p>
+<p>And</p>
+<pre><code>42
+</code></pre>
+<p>means that there is an edge from the implicit node to node <code>42</code> with empty
+value.</p>
+<p>The reason for these conventions is practical: edge features usually have empty
+labels, and there are many edges. In case of the Hebrew Text database, there are
+1.5 million edges, so every extra character that is needed on a data line means
+that the file size increases with 1.5MB.</p>
+<p>Nodes on the other hand, usually do not have empty values, and they are often
+specified in a consecutive way, especially slot (word) nodes. There are quite
+many distinct word features, and it would be a waste to have a column of half a
+million incremental integers in those files.</p>
+<h2 id="absence-of-values">Absence of values</h2>
+<p>Say you have a node feature assigning a value to only 2000 of 400,000 nodes.
+(The Hebrew <code>qere</code> would be an example). It is better to make sure that the
+absent values are not coded as the empty string. So the feature data will look
+like 2000 lines, each with a node spec, rather than a sequence of 400,000 lines,
+most empty.</p>
+<p>If you want to leave out just a few isolated cases in a feature where most nodes
+get a value, you can do it like this:</p>
+<pre><code>@node
+
+x0000
+...
+x1000
+1002 x1002
+x1003
+...
+x9999
+</code></pre>
+<p>Here all 10,000 nodes get a value, except node <code>1001</code>.</p>
+<h2 id="note-on-redundancy">Note on redundancy</h2>
+<p>Some features assign the same value to many nodes. It is tempting to make a
+value definition facility, so that values are coded by short codes, the most
+frequent values getting the shortest codes. After some experiments, it turned
+out that the overall gain was just 50%.</p>
+<p>I find this advantage too small to justify the increased code complexity, and
+above all, the reduced transparency of the <code>.<a title="tf" href="../index.html">tf</a></code> files.</p>
+<h2 id="examples">Examples</h2>
+<p>Here are a few more and less contrived examples of legal feature data lines.</p>
+<h3 id="node-features">Node features</h3>
+<ol>
+<li><code>\t\n</code></li>
+<li><code>2 2\t3</code></li>
+<li><code>foo\nbar</code></li>
+<li><code>1 Escape \t as \\t</code></li>
+</ol>
+<p>meaning</p>
+<ol>
+<li>node 1 has value: <em>tab</em> <em>newline</em></li>
+<li>node 2 has value: 2 <em>tab</em> 3</li>
+<li>node 3 has value: foo <em>newline</em> bar</li>
+<li>node 1 gets a new value: Escape <tab> as <code>\t</code></li>
+</ol>
+<h3 id="edge-features">Edge features</h3>
+<ol>
+<li><code>1</code></li>
+<li><code>1 2</code></li>
+<li><code>2 3 foo</code></li>
+<li><code>1-2 2-3 bar</code></li>
+</ol>
+<p>meaning</p>
+<ol>
+<li>edge from 1 to 1 with no value</li>
+<li>edge from 1 to 2 with no value</li>
+<li>edge from 2 to 3 with value foo</li>
+<li>four edges: 1-&gt;2, 1-&gt;3, 2-&gt;2, 2-&gt;3, all with value bar. Note that edges can
+go from a node to itself. Note also that this line reassigns a value to two
+edges: 1-&gt;2 and 2-&gt;3.</li>
+</ol>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/about/optimizations.py#L1-L3" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+.. include:: ../docs/about/optimizations.md
+&#34;&#34;&#34;</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#file-format-optimizations">File format Optimizations</a><ul>
+<li><a href="#rationale">Rationale</a></li>
+<li><a href="#using-the-implicit-node">Using the implicit node</a></li>
+<li><a href="#omitting-empty-values">Omitting empty values</a></li>
+<li><a href="#absence-of-values">Absence of values</a></li>
+<li><a href="#note-on-redundancy">Note on redundancy</a></li>
+<li><a href="#examples">Examples</a><ul>
+<li><a href="#node-features">Node features</a></li>
+<li><a href="#edge-features">Edge features</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.about" href="index.html">tf.about</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

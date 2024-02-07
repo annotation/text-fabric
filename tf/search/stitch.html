@@ -1,0 +1,1062 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.search.stitch API documentation</title>
+<meta name="description" content="Search result finding" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.search.stitch</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="search-result-finding">Search result finding</h1>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/search/stitch.py#L1-L886" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+# Search result finding
+&#34;&#34;&#34;
+
+import types
+from itertools import chain
+from inspect import signature
+from .spin import estimateSpreads
+from .graph import multiEdges
+
+# STITCHING: STRATEGIES ###
+
+STRATEGY = &#34;&#34;&#34;
+    small_choice_multi
+    small_choice_first
+    by_yarn_size
+    spread_1_first
+    big_choice_first
+&#34;&#34;&#34;.strip().split()
+
+
+def setStrategy(searchExe, strategy, keep=False):
+    error = searchExe.api.TF.error
+    _msgCache = searchExe._msgCache
+    if strategy is None:
+        if keep:
+            return
+        strategy = STRATEGY[0]
+    if strategy not in STRATEGY:
+        error(f&#39;Strategy not defined: &#34;{strategy}&#34;&#39;, cache=_msgCache)
+        error(
+            &#34;Allowed strategies:\n{}&#34;.format(&#34;\n&#34;.join(f&#34;    {s}&#34; for s in STRATEGY)),
+            tm=False,
+            cache=_msgCache,
+        )
+        searchExe.good = False
+
+    func = globals().get(f&#34;_{strategy}&#34;, None)
+    if not func:
+        error(f&#39;Strategy is defined, but not implemented: &#34;{strategy}&#34;&#39;, cache=_msgCache)
+        searchExe.good = False
+    searchExe.strategy = types.MethodType(func, searchExe)
+    searchExe.strategyName = strategy
+
+
+def _spread_1_first(searchExe):
+    qedges = searchExe.qedges
+    qnodes = searchExe.qnodes
+
+    s1Edges = []
+    for (e, (f, rela, t)) in enumerate(qedges):
+        if searchExe.spreads[e] &lt;= 1:
+            s1Edges.append((e, 1))
+        if searchExe.spreadsC[e] &lt;= 1:
+            s1Edges.append((e, -1))
+    # s1Edges contain all edges with spread &lt;= 1, or whose converse has spread &lt;= 1
+    # now we want to build the largest graph
+    # with the original nodes and these edges,
+    # such that you can walk from a starting point
+    # over directed s1 edges to every other point
+    # we initialize candidate graphs: for each node: singletons graph, no edges.
+    candidates = []
+    # add s1 edges and nodes to all candidates
+    for q in range(len(qnodes)):
+        cnodes = {q}
+        cedges = set()
+        cedgesOrder = []
+        while 1:
+            added = False
+            for (e, dir) in s1Edges:
+                (f, rela, t) = qedges[e]
+                if dir == -1:
+                    (t, f) = (f, t)
+                if f in cnodes:
+                    if t not in cnodes:
+                        cnodes.add(t)
+                        added = True
+                    if (e, dir) not in cedges:
+                        cedges.add((e, dir))
+                        cedgesOrder.append((e, dir))
+                        added = True
+            if not added:
+                break
+        candidates.append((cnodes, cedgesOrder))
+
+    # pick the biggest graph (nodes and edges count for 1)
+    startS1 = sorted(candidates, key=lambda x: len(x[0]) + len(x[1]))[-1]
+
+    newNodes = startS1[0]
+    newEdges = startS1[1]
+    doneEdges = {e[0] for e in newEdges}
+
+    # we add all edges that are not yet in our startS1.
+    # we add them two-fold: also with converse,
+    # and we sort the result by spread
+    # then we start a big loop:
+    # in every iteration, we take the edge with smallest spread
+    # that can be connected
+    # to the graph under construction
+    # then we start a new iteration, because the graph has grown,
+    # and new edges might
+    # have become connectable by that
+
+    # in order to fail early, we can also add edges
+    # if their from-nodes and to-nodes both have been
+    # targeted.
+    # That means: an earlier edge went to f,
+    # an other earlier edge went to t, and if we
+    # have an edge from f to t, we&#39;d better add it now,
+    # since it is an extra constraint
+    # and by testing it here we can avoid a lot of work.
+
+    remainingEdges = set()
+    for e in range(len(qedges)):
+        if e not in doneEdges:
+            remainingEdges.add((e, 1))
+            remainingEdges.add((e, -1))
+    remainingEdgesO = sorted(
+        remainingEdges,
+        key=lambda e: (
+            searchExe.spreads[e[0]] if e[1] == 1 else searchExe.spreadsC[e[0]]
+        ),
+    )
+
+    while 1:
+        added = False
+        for (e, dir) in remainingEdgesO:
+            if e in doneEdges:
+                continue
+            (f, rela, t) = qedges[e]
+            if dir == -1:
+                (f, t) = (t, f)
+            if f in newNodes and t in newNodes:
+                newEdges.append((e, dir))
+                doneEdges.add(e)
+                added = True
+        for (e, dir) in remainingEdgesO:
+            if e in doneEdges:
+                continue
+            (f, rela, t) = qedges[e]
+            if dir == -1:
+                (f, t) = (t, f)
+            if f in newNodes:
+                newNodes.add(t)
+                newEdges.append((e, dir))
+                doneEdges.add(e)
+                added = True
+                break
+        if not added:
+            break
+
+    searchExe.newNodes = newNodes
+    searchExe.newEdges = newEdges
+    searchExe.removedEdges = set()
+
+
+def _small_choice_first(searchExe):
+
+    # This strategy does not try to make a big subgraph of
+    # edges with spread 1.
+    # The problem is that before the edges work,
+    # the initial yarn may have an enormous spread.
+    # Here we try out the strategy of postponing
+    # broad choices as long as possible.
+    # The intuition is that while we are making smaller choices,
+    # constraints are encountered,
+    # severely limiting the broader choices later on.
+
+    # So, we pick the yarn with the least amount of nodes
+    # as our starting point.
+    # The corresponding node is our singleton start set.
+    # In every iteration we do the following:
+    # - we pick all edges of which from- and to-nodes
+    #   are already in the node set
+    # - we pick the edge with least spread
+    #   that has a starting point in the set
+    # Until nothing changes anymore
+
+    qedges = searchExe.qedges
+    qnodes = searchExe.qnodes
+
+    newNodes = {sorted(range(len(qnodes)), key=lambda x: len(searchExe.yarns[x]))[0]}
+    newEdges = []
+    doneEdges = set()
+
+    remainingEdges = set()
+    for e in range(len(qedges)):
+        remainingEdges.add((e, 1))
+        remainingEdges.add((e, -1))
+    remainingEdgesO = sorted(
+        remainingEdges,
+        key=lambda e: (
+            searchExe.spreads[e[0]] if e[1] == 1 else searchExe.spreadsC[e[0]]
+        ),
+    )
+
+    while 1:
+        added = False
+        for (e, dir) in remainingEdgesO:
+            if e in doneEdges:
+                continue
+            (f, rela, t) = qedges[e]
+            if dir == -1:
+                (f, t) = (t, f)
+            if f in newNodes and t in newNodes:
+                newEdges.append((e, dir))
+                doneEdges.add(e)
+                added = True
+        for (e, dir) in remainingEdgesO:
+            if e in doneEdges:
+                continue
+            (f, rela, t) = qedges[e]
+            if dir == -1:
+                (f, t) = (t, f)
+            if f in newNodes:
+                newNodes.add(t)
+                newEdges.append((e, dir))
+                doneEdges.add(e)
+                added = True
+                break
+        if not added:
+            break
+
+    searchExe.newNodes = newNodes
+    searchExe.newEdges = newEdges
+    searchExe.removedEdges = set()
+
+
+def _small_choice_multi(searchExe):
+
+    # This strategy is like small_choice_first
+    # but it tries to combine multi-edges as much as possible.
+
+    # A multi edge is a collection of half-bound edges from the same node,
+    # some of which provide an upper bound for that node, and some a lower bound.
+    # So, a multi edge constrains choices much more than each of the individual edges.
+
+    qedges = searchExe.qedges
+    qnodes = searchExe.qnodes
+    converse = searchExe.converse
+    spreads = searchExe.spreads
+    spreadsC = searchExe.spreadsC
+    yarns = searchExe.yarns
+
+    # add the multiedges to the qedges and determine their spreads
+
+    firstMulti = searchExe.firstMulti  # has been set to len(qedges)
+
+    multiEdges(searchExe)
+    medges = searchExe.medges
+    isMulti = {}
+    inMulti = {}
+
+    for (i, me) in enumerate(medges):
+        curE = firstMulti + i
+        fs = []
+        relas = []
+        ts = set()  # should end up as a singleton
+        minSpread = None
+        for (e, dir) in me:
+            isMulti.setdefault(curE, []).append((e, dir))
+            inMulti[e] = curE
+            (a, ru, b) = qedges[e]
+            (f, t) = (a, b) if dir == 1 else (b, a)
+            spread = spreads[e] if dir == 1 else spreadsC[e]
+            if minSpread is None or spread &lt; minSpread:
+                minSpread = spread
+            r = ru if dir == 1 else converse[ru]
+            fs.append(f)
+            relas.append(r)
+            ts.add(t)
+        qedges.append((tuple(fs), tuple(relas), sorted(ts)[0]))
+        spreads[curE] = minSpread / 10
+        curE += 1
+
+    newNodes = {sorted(range(len(qnodes)), key=lambda x: len(yarns[x]))[0]}
+    newEdges = []
+    doneEdges = set()
+
+    remainingEdges = set()
+    for e in range(len(qedges)):
+        remainingEdges.add((e, 1))
+        if e &lt; firstMulti:
+            remainingEdges.add((e, -1))
+    remainingEdgesO = sorted(
+        remainingEdges,
+        key=lambda e: (
+            searchExe.spreads[e[0]] if e[1] == 1 else searchExe.spreadsC[e[0]]
+        ),
+    )
+    removedEdges = set()
+
+    while 1:
+        added = False
+        for (e, dir) in remainingEdgesO:
+            if e in doneEdges:
+                continue
+            (f, rela, t) = qedges[e]
+            if dir == -1:
+                (f, t) = (t, f)
+            if e in isMulti:
+                if all(x in newNodes for x in chain(f, (t,))):
+                    newEdges.append((e, dir))
+                    doneEdges.add(e)
+                    for ed in isMulti[e]:
+                        ex = ed[0]
+                        if ex not in doneEdges:
+                            removedEdges.add(ex)
+                        doneEdges.add(ex)
+                    added = True
+            else:
+                if f in newNodes and t in newNodes:
+                    newEdges.append((e, dir))
+                    doneEdges.add(e)
+                    if e in inMulti:
+                        ex = inMulti[e]
+                        if ex not in doneEdges:
+                            removedEdges.add(ex)
+                        doneEdges.add(ex)
+                    added = True
+        for (e, dir) in remainingEdgesO:
+            if e in doneEdges:
+                continue
+            (f, rela, t) = qedges[e]
+            if dir == -1:
+                (f, t) = (t, f)
+            if e in isMulti:
+                if all(x in newNodes for x in f):
+                    newNodes.add(t)
+                    newEdges.append((e, dir))
+                    doneEdges.add(e)
+                    for ed in isMulti[e]:
+                        ex = ed[0]
+                        if ex not in doneEdges:
+                            removedEdges.add(ex)
+                        doneEdges.add(ex)
+                    added = True
+                    break
+            else:
+                if f in newNodes:
+                    newNodes.add(t)
+                    newEdges.append((e, dir))
+                    doneEdges.add(e)
+                    if e in inMulti:
+                        ex = inMulti[e]
+                        if ex not in doneEdges:
+                            removedEdges.add(ex)
+                        doneEdges.add(ex)
+                    added = True
+                    break
+        if not added:
+            break
+
+    searchExe.newNodes = newNodes
+    searchExe.newEdges = newEdges
+    searchExe.removedEdges = removedEdges
+
+
+def _by_yarn_size(searchExe):
+
+    # This strategy is like small choice first,
+    # but we measure the choices differently,
+    # namely by yarn size and spread.
+
+    # So, we pick the yarn with the least amount of nodes
+    # as our starting point.
+    # The corresponding node is our singleton start set.
+    # In every iteration we do the following:
+    # - we pick all edges of which from- and to-nodes
+    #   are already in the node set
+    # - we pick the edge with biggest yarn ratio
+    #   that has a starting point in the set
+    # Until nothing changes anymore
+
+    qedges = searchExe.qedges
+    qnodes = searchExe.qnodes
+    yarns = searchExe.yarns
+    spreads = searchExe.spreads
+    spreadsC = searchExe.spreadsC
+
+    def eKey(e, dr):
+        (f, rela, t) = qedges[e]
+        spr = spreads
+        if dr == -1:
+            (t, f) = (f, t)
+            spr = spreadsC
+        yFl = len(yarns[f])
+        yTl = len(yarns[t])
+        spre = spr[e]
+        return spre * yFl * yTl
+
+    newNodes = {sorted(range(len(qnodes)), key=lambda x: len(searchExe.yarns[x]))[0]}
+    newEdges = []
+    doneEdges = set()
+
+    remainingEdges = set()
+    for e in range(len(qedges)):
+        remainingEdges.add((e, 1))
+        remainingEdges.add((e, -1))
+    remainingEdgesO = sorted(remainingEdges, key=lambda e: eKey(*e))
+
+    while 1:
+        added = False
+        for (e, dir) in remainingEdgesO:
+            if e in doneEdges:
+                continue
+            (f, rela, t) = qedges[e]
+            if dir == -1:
+                (f, t) = (t, f)
+            if f in newNodes and t in newNodes:
+                newEdges.append((e, dir))
+                doneEdges.add(e)
+                added = True
+        for (e, dir) in remainingEdgesO:
+            if e in doneEdges:
+                continue
+            (f, rela, t) = qedges[e]
+            if dir == -1:
+                (f, t) = (t, f)
+            if f in newNodes:
+                newNodes.add(t)
+                newEdges.append((e, dir))
+                doneEdges.add(e)
+                added = True
+                break
+        if not added:
+            break
+
+    searchExe.newNodes = newNodes
+    searchExe.newEdges = newEdges
+    searchExe.removedEdges = set()
+
+
+def _big_choice_first(searchExe):
+
+    # For comparison: the opposite of _small_choice_first.
+    # Just to see what the performance difference is.
+
+    qedges = searchExe.qedges
+    qnodes = searchExe.qnodes
+
+    newNodes = {sorted(range(len(qnodes)), key=lambda x: -len(searchExe.yarns[x]))[0]}
+    newEdges = []
+    doneEdges = set()
+
+    remainingEdges = set()
+    for e in range(len(qedges)):
+        remainingEdges.add((e, 1))
+        remainingEdges.add((e, -1))
+    remainingEdgesO = sorted(
+        remainingEdges,
+        key=lambda e: (
+            -searchExe.spreads[e[0]] if e[1] == 1 else -searchExe.spreadsC[e[0]]
+        ),
+    )
+
+    while 1:
+        added = False
+        for (e, dir) in remainingEdgesO:
+            if e in doneEdges:
+                continue
+            (f, rela, t) = qedges[e]
+            if dir == -1:
+                (f, t) = (t, f)
+            if f in newNodes and t in newNodes:
+                newEdges.append((e, dir))
+                doneEdges.add(e)
+                added = True
+        for (e, dir) in remainingEdgesO:
+            if e in doneEdges:
+                continue
+            (f, rela, t) = qedges[e]
+            if dir == -1:
+                (f, t) = (t, f)
+            if f in newNodes:
+                newNodes.add(t)
+                newEdges.append((e, dir))
+                doneEdges.add(e)
+                added = True
+                break
+        if not added:
+            break
+
+    searchExe.newNodes = newNodes
+    searchExe.newEdges = newEdges
+    searchExe.removedEdges = set()
+
+
+# STITCHING ###
+
+
+def stitch(searchExe):
+    estimateSpreads(searchExe, both=True)
+    _stitchPlan(searchExe)
+    if searchExe.good:
+        _stitchResults(searchExe)
+
+
+# STITCHING: PLANNING ###
+
+
+def _stitchPlan(searchExe, strategy=None):
+    qnodes = searchExe.qnodes
+    qedges = searchExe.qedges
+    error = searchExe.api.TF.error
+    _msgCache = searchExe._msgCache
+
+    setStrategy(searchExe, strategy, keep=True)
+    if not searchExe.good:
+        return
+
+    good = True
+
+    # Apply the chosen strategy
+    searchExe.firstMulti = len(qedges)
+    searchExe.strategy()
+
+    # remove spurious edges:
+    # if we have both the 1 and -1 version of an edge,
+    # we can leave out the one that we encounter in the second place
+
+    newNodes = searchExe.newNodes
+    newEdges = searchExe.newEdges
+    removedEdges = searchExe.removedEdges
+
+    newCedges = set()
+    newCedgesOrder = []
+    for (e, dir) in newEdges:
+        if e not in newCedges:
+            newCedgesOrder.append((e, dir))
+            newCedges.add(e)
+
+    # conjecture: we have all edges and all nodes now
+    # reason: we work in a connected component, so all nodes are reachable
+    # by edges or inverses
+    # we check nevertheless
+
+    qnodesO = tuple(range(len(qnodes)))
+    newNodesO = tuple(sorted(newNodes))
+    if newNodesO != qnodesO:
+        error(
+            f&#34;&#34;&#34;Object mismatch in plan:
+In template: {qnodesO}
+In plan    : {newNodesO}&#34;&#34;&#34;,
+            tm=False,
+            cache=_msgCache,
+        )
+        good = False
+
+    qedgesO = tuple(range(len(qedges)))
+    newCedgesO = tuple(sorted(chain(newCedges, removedEdges)))
+    if newCedgesO != qedgesO:
+        error(
+            f&#34;&#34;&#34;Relation mismatch in plan:
+In template: {qedgesO}
+In plan    : {newCedgesO}&#34;&#34;&#34;,
+            tm=False,
+            cache=_msgCache,
+        )
+        # good = False
+
+    if not good:
+        searchExe.good = False
+    else:
+        searchExe.stitchPlan = (newNodes, newCedgesOrder)
+
+
+# STITCHING: DELIVERING ###
+
+
+def _stitchResults(searchExe):
+    qnodes = searchExe.qnodes
+    qedges = searchExe.qedges
+    plan = searchExe.stitchPlan
+    relations = searchExe.relations
+    converse = searchExe.converse
+    yarns = searchExe.yarns
+    firstMulti = searchExe.firstMulti
+
+    planEdges = plan[1]
+    if len(planEdges) == 0:
+        # no edges, hence a single node (because of connectedness,
+        # hence we must deliver everything of its yarn
+        yarn = yarns[0]
+
+        def deliver(remap=True):
+            for n in yarn:
+                yield (n,)
+
+        if searchExe.shallow:
+            results = yarn
+        else:
+            results = deliver
+        searchExe.results = results
+        return
+
+    # The next function is optimised, and the lookup of functions and data
+    # should be as direct as possible.
+    # Because deliver() below fetches the results,
+    # of which there are unpredictably many.
+
+    # We are going to build-up and deliver stitches,
+    # which are instantiations of all the query nodes
+    # by text nodes in a specific sequence
+    # which is the same for all stitches.
+    # We can compile stitching in such a way, that the stitcher thinks it is
+    # instantiating q node 0, then 1, and so on.
+    # I.e. we are going to permute every thing that the stitching process sees,
+    # so that it happens in this order.
+
+    # We build up the stitch in a recursive process.
+    # When there is choice between a and b, we essentially say
+    #
+    # def build(stitch)
+    #     if there is choice
+    #        build(stitch+a)
+    #        build(stitch+b)
+    #
+    # But we do not have to pass on the stitch as an immutable data structure.
+    # We can just keep it as one single mutable data structure, provided we
+    # do something between the two recursive calls above.
+    # Suppose stitch is an list, and in the outer build n elements are filled
+    # (the rest contains -1)
+    #
+    # Then we say
+    #     if there is choice
+    #        build(stitch+a)
+    #        for k in range(n, len(stitch)): stitch[k] = -1
+    #        build(stitch+b)
+    #
+    # It turns out that the data in stitch that is shared between calls
+    # is not modified by them.
+    # The only thing that happens, is that -1 values get new values.
+    # So coming out calls only requires us to restore -1&#39;s.
+    # And if the stitch is ordered in the right way,
+    # the -1&#39;s are always at the end.
+
+    # We start compiling and permuting
+
+    edgesCompiled = []
+    qPermuted = []  # row of nodes in the order as will be created during stitching
+    qPermutedPos = (
+        {}
+    )  # mapping from original q node number to index in the permuted order
+
+    for (i, (e, dir)) in enumerate(planEdges):
+        isMulti = e &gt;= firstMulti
+        (f, rela, t) = qedges[e]
+        if dir == -1:
+            relai = tuple(converse[r] for r in rela) if isMulti else converse[rela]
+            (f, rela, t) = (t, relai, f)
+        r = (
+            tuple(
+                relations[r][&#34;func&#34;](qnodes[f[i]][0], qnodes[t][0])
+                for (i, r) in enumerate(rela)
+            )
+            if isMulti
+            else relations[rela][&#34;func&#34;](qnodes[f][0], qnodes[t][0])
+        )
+
+        # in case of a multi edge, we use the following implementation detail:
+        # the function that computes the relation takes two parameters, not one.
+        # Multi-edges are combinations of edges based on &lt; &gt; &lt;&lt; &gt;&gt;,
+        # and these all have arity 2.
+
+        nparams = 2 if isMulti else len(signature(r).parameters)
+        if i == 0:
+            # we cannot have a multi-edge here
+            # because they are only in play if all its from nodes
+            # have been stitched
+            qPermuted.append(f)
+            qPermutedPos[f] = len(qPermuted) - 1
+        if t not in qPermuted:
+            qPermuted.append(t)
+            qPermutedPos[t] = len(qPermuted) - 1
+
+        compiledF = tuple(qPermutedPos[x] for x in f) if isMulti else qPermutedPos[f]
+        compiledT = qPermutedPos[t]
+
+        edgesCompiled.append((compiledF, compiledT, r, nparams, isMulti))
+
+    # now permute the yarns
+
+    yarnsPermuted = [yarns[q] for q in qPermuted]
+
+    shallow = searchExe.shallow
+
+    def deliver(remap=True):
+        stitch = [None for q in range(len(qPermuted))]
+        lStitch = len(stitch)
+        qs = tuple(range(lStitch))
+        edgesC = edgesCompiled
+        yarnsP = yarnsPermuted
+
+        def stitchOn(e):
+            if e &gt;= len(edgesC):
+                if remap:
+                    yield tuple(stitch[qPermutedPos[q]] for q in qs)
+                else:
+                    yield tuple(stitch)
+                return
+            (f, t, r, nparams, isMulti) = edgesC[e]
+            yarnT = yarnsP[t]
+            if e == 0 and stitch[f] is None:
+                # this cannot happen for a multi-edge
+                yarnF = yarnsP[f]
+                for sN in yarnF:
+                    stitch[f] = sN
+                    for s in stitchOn(e):
+                        yield s
+                return
+
+            sM = stitch[t]
+
+            # case where sM is already in the graph: just check the conditions
+
+            if sM is not None:
+                if isMulti:
+                    satisfied = True
+                    for (i, x) in enumerate(f):
+                        if not r[i](stitch[x], sM):
+                            satisfied = False
+                            break
+                    if satisfied:
+                        for s in stitchOn(e + 1):
+                            yield s
+                else:
+                    sN = stitch[f]
+                    if nparams == 1:
+                        if sM in r(sN) or ():
+                            for s in stitchOn(e + 1):
+                                yield s
+                    else:
+                        if r(sN, sM):
+                            for s in stitchOn(e + 1):
+                                yield s
+                return
+
+            # case where we have to visit all choices in the target yarn
+
+            if isMulti:
+                for m in yarnT:
+                    satisfied = True
+                    for (i, x) in enumerate(f):
+                        if not r[i](stitch[x], m):
+                            satisfied = False
+                            break
+                    if satisfied:
+                        stitch[t] = m
+                        for s in stitchOn(e + 1):
+                            yield s
+            else:
+                sN = stitch[f]
+                if nparams == 1:
+                    for m in r(sN) or ():
+                        if m in yarnT:
+                            stitch[t] = m
+                            for s in stitchOn(e + 1):
+                                yield s
+                else:
+                    for m in yarnT:
+                        if r(sN, m):
+                            stitch[t] = m
+                            for s in stitchOn(e + 1):
+                                yield s
+
+            stitch[t] = None
+
+        for s in stitchOn(0):
+            yield s
+
+    def delivered():
+        tupleSize = len(qPermuted)
+        shallowTupleSize = max(tupleSize, shallow)
+        stitch = [None for q in range(tupleSize)]
+        edgesC = edgesCompiled
+        yarnsP = yarnsPermuted
+        resultQ = qPermutedPos[0]
+        resultQmax = max(qPermutedPos[q] for q in range(shallowTupleSize))
+        resultSet = set()
+        qs = tuple(range(shallow))
+
+        def stitchOn(e):
+            if e &gt;= len(edgesC):
+                yield tuple(stitch)
+                return
+            (f, t, r, nparams, isMulti) = edgesC[e]
+            yarnT = yarnsP[t]
+            if e == 0 and stitch[f] is None:
+                # this cannot happen for a multi-edge
+                yarnF = yarnsP[f]
+                if f == resultQmax:
+                    for sN in yarnF:
+                        if sN in resultSet:
+                            continue
+                        stitch[f] = sN
+                        for s in stitchOn(e):
+                            yield s
+                else:
+                    for sN in yarnF:
+                        stitch[f] = sN
+                        for s in stitchOn(e):
+                            yield s
+                return
+
+            if isMulti and resultQmax in f or not isMulti and resultQmax == f:
+                result = tuple(stitch[qPermutedPos[q]] for q in qs)
+                if result in resultSet:
+                    return
+
+            sM = stitch[t]
+
+            # case where sM is already in the graph: just check the conditions
+
+            if sM is not None:
+                if t == resultQmax:
+                    result = tuple(stitch[qPermutedPos[q]] for q in qs)
+                    if result in resultSet:
+                        return
+
+                if isMulti:
+                    satisfied = True
+                    for (i, x) in enumerate(f):
+                        if not r[i](stitch[x], sM):
+                            satisfied = False
+                            break
+                    if satisfied:
+                        for s in stitchOn(e + 1):
+                            yield s
+                else:
+                    sN = stitch[f]
+                    if nparams == 1:
+                        if sM in r(sN):
+                            for s in stitchOn(e + 1):
+                                yield s
+                    else:
+                        if r(sN, sM):
+                            for s in stitchOn(e + 1):
+                                yield s
+                return
+
+            # case where we have to visit all choices in the target yarn
+
+            if isMulti:
+                for m in yarnT:
+                    satisfied = True
+                    for (i, x) in enumerate(f):
+                        if not r[i](stitch[x], m):
+                            satisfied = False
+                            break
+                    if satisfied:
+                        stitch[t] = m
+                        for s in stitchOn(e + 1):
+                            yield s
+            else:
+                sN = stitch[f]
+                if nparams == 1:
+                    for m in r(sN):
+                        if m in yarnT:
+                            stitch[t] = m
+                            for s in stitchOn(e + 1):
+                                yield s
+                else:
+                    for m in yarnT:
+                        if r(sN, m):
+                            stitch[t] = m
+                            for s in stitchOn(e + 1):
+                                yield s
+
+            stitch[t] = None
+
+        if shallow == 1:
+            for s in stitchOn(0):
+                result = s[resultQ]
+                resultSet.add(result)
+        else:  # shallow &gt; 1
+            for s in stitchOn(0):
+                result = tuple(s[qPermutedPos[q]] for q in qs)
+                resultSet.add(result)
+
+        return resultSet
+
+    if shallow:
+        searchExe.results = delivered()
+    else:
+        searchExe.results = deliver</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.search.stitch.setStrategy"><code class="name flex">
+<span>def <span class="ident">setStrategy</span></span>(<span>searchExe, strategy, keep=False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/search/stitch.py#L22-L43" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def setStrategy(searchExe, strategy, keep=False):
+    error = searchExe.api.TF.error
+    _msgCache = searchExe._msgCache
+    if strategy is None:
+        if keep:
+            return
+        strategy = STRATEGY[0]
+    if strategy not in STRATEGY:
+        error(f&#39;Strategy not defined: &#34;{strategy}&#34;&#39;, cache=_msgCache)
+        error(
+            &#34;Allowed strategies:\n{}&#34;.format(&#34;\n&#34;.join(f&#34;    {s}&#34; for s in STRATEGY)),
+            tm=False,
+            cache=_msgCache,
+        )
+        searchExe.good = False
+
+    func = globals().get(f&#34;_{strategy}&#34;, None)
+    if not func:
+        error(f&#39;Strategy is defined, but not implemented: &#34;{strategy}&#34;&#39;, cache=_msgCache)
+        searchExe.good = False
+    searchExe.strategy = types.MethodType(func, searchExe)
+    searchExe.strategyName = strategy</code></pre>
+</details>
+</dd>
+<dt id="tf.search.stitch.stitch"><code class="name flex">
+<span>def <span class="ident">stitch</span></span>(<span>searchExe)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/search/stitch.py#L492-L496" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def stitch(searchExe):
+    estimateSpreads(searchExe, both=True)
+    _stitchPlan(searchExe)
+    if searchExe.good:
+        _stitchResults(searchExe)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#search-result-finding">Search result finding</a></li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.search" href="index.html">tf.search</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.search.stitch.setStrategy" href="#tf.search.stitch.setStrategy">setStrategy</a></code></li>
+<li><code><a title="tf.search.stitch.stitch" href="#tf.search.stitch.stitch">stitch</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

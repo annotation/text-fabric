@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.about.usefunc API documentation</title>
+<meta name="description" content="Summary …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.about.usefunc</code></h1>
+</header>
+<section id="section-intro">
+<h2 id="summary">Summary</h2>
+<p>The function <code><a title="tf.app.use" href="../app.html#tf.app.use">use()</a></code> lets you make use of a corpus
+in the same way as the <code>use</code> statements in MySQL and MongoDb let you
+make use of a database.
+It loads the features of a corpus plus extra modules, it loads the
+TF app or a customization of it, and makes it all available in an
+API.
+If any of the above mentioned ingredients is not locally available on your
+computer, it will auto-download it, subject to checkout specifiers that you
+provide.</p>
+<h3 id="basic-usage">Basic usage:</h3>
+<pre><code class="language-python">A = use(&quot;org/repo&quot;)
+</code></pre>
+<p>or</p>
+<pre><code class="language-python">A = use(&quot;org/repo:specapp&quot;, checkout=&quot;specdata&quot;)
+</code></pre>
+<pre><code class="language-python">A = use(&quot;org/repo:specapp&quot;, checkout=&quot;specdata&quot;, backend=&quot;gitlab.huc.knaw.nl&quot;)
+</code></pre>
+<p>See <code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code> for a list of known corpora that can be loaded this way.</p>
+<h3 id="full-usage">Full usage</h3>
+<pre><code class="language-python">A = use(
+    &quot;org/repo:specapp&quot;,
+    backend=None,     # e.g. &quot;gitlab.huc.knaw.nl&quot;
+    checkout=None, # e.g. &quot;latest&quot;
+    relative=None, # e.g. &quot;path/to/dir&quot;
+    version=None,  # e.g. &quot;1.2.3&quot;
+    mod=None,      # e.g. &quot;org1/repo1/path1:specmod1,org2/repo2/path2:specmod2&quot;
+    setFile=None,  # e.g. &quot;path/to/file&quot;
+    legacy=False,
+    hoist=globals(),
+    locations=None,
+    modules=None,
+    volume=None,
+    collection=None,
+    silent=&quot;auto&quot;,
+    loadData=True,
+    **configOverrides,
+)
+</code></pre>
+<h3 id="legacy-usage">Legacy usage:</h3>
+<pre><code class="language-python">A = use(&quot;corpus&quot;)
+</code></pre>
+<p>or</p>
+<pre><code class="language-python">A = use(&quot;corpus&quot;, legacy=True)
+</code></pre>
+<h2 id="security">Security</h2>
+<div class="admonition caution">
+<p class="admonition-title">Security warning</p>
+<p>TF apps may be downloaded from GitHub / GitLab and then
+imported as a module and then <em>executed</em>.</p>
+<p>Do you trust the downloaded code?
+Make sure you know the repository where the code comes from, and the people
+who own the repository.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Security note</p>
+<p>TF data maybe downloaded from arbitrary repositories on GitHub / GitLab,
+but the downloaded material will be read as <em>data</em> and not executed as code.</p>
+</div>
+<h2 id="details">Details</h2>
+<p>When loading a corpus via this method, most of the features in view will
+be loaded and made available.
+However, some TF apps may exclude some features from being
+automatically loaded.
+And in general, features whose names start with <code>omap@</code> will not be
+automatically loaded.
+Any of these features can be loaded on demand later by means of
+<code><a title="tf.advanced.app.App.load" href="../advanced/app.html#tf.advanced.app.App.load">App.load()</a></code>.</p>
+<p>During start-up the following happens:</p>
+<ol>
+<li>the corpus data may be downloaded to your
+<code>~/text-fabric-data</code> directory,
+if not already present there;</li>
+<li>if your data has been freshly downloaded,
+a series of optimizations is executed;</li>
+<li>most features of the corpus are loaded into memory.</li>
+<li>the data is inspected to derive configuration information for the
+advanced API; if present, additional settings, code and styling is loaded.</li>
+</ol>
+<h2 id="loading">Loading</h2>
+<p>Loading a corpus consists of 2 separate steps:</p>
+<ol>
+<li>load the <em>app</em> of the corpus (configuration setting, static material, python code)</li>
+<li>load the <em>data</em> of the corpus.</li>
+</ol>
+<p>Both items can be specified independently, in terms of where they reside
+locally or online.
+Such a specification consists of a <em>path</em> and a <em>checkout specifier</em>.
+The <em>path</em> part looks like a directory, and specifies a location inside
+a repository, e.g. <code>ETCBC/bhsa</code>.
+The <em>checkout specifier</em> part is a keyword:</p>
+<ul>
+<li><code>local</code> under your local directory <code>~/text-fabric-data</code></li>
+<li><code>clone</code> under your local directory <code>~/github</code></li>
+<li><code>latest</code> under the latest release, to be checked with online back-end</li>
+<li><code>hot</code> under the latest commit, to be checked with online back-end</li>
+<li><code>v1.2.3</code> under release <code>v1.2.3</code>, to be fetched from online back-end</li>
+<li><code>123aef</code> under commit <code>123aef</code>, to be fetched from online back-end</li>
+<li><em>absent</em> under your local directory <code>~/text-fabric-data</code> if present,
+otherwise the latest release on back-end, if present, otherwise the latest
+commit on back-end.</li>
+</ul>
+<p>For a demo, see
+<a href="https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb"><code>banks/repo</code></a>.</p>
+<h2 id="specifying-app-and-or-data">Specifying app and / or data</h2>
+<p>By default, the online repository for apps and data is
+<a href="https://github.com">GitHub</a>.</p>
+<p>But you can also use GitLab instances. You do that by specifying the server location
+in the parameter <code>backend</code>, e.g.</p>
+<pre><code class="language-python">    backend=&quot;gitlab&quot;
+</code></pre>
+<pre><code class="language-python">    backend=&quot;gitlab.knaw.huc.nl&quot;
+</code></pre>
+<p>Synonyms:</p>
+<ul>
+<li><code>None</code>, <code>""</code>, <code>github.com</code>, <code>github</code></li>
+<li><code>gitlab.com</code>, <code>gitlab</code></li>
+</ul>
+<p>The specification of the app is in the first argument:
+<em>app-path</em><code>:</code><em>app-checkout-specifier</em>
+The normal case is where <em>app-path</em> has the form <code>org/repo</code> pointing to
+a repository that holds the corpus, both app and data.
+If we find an app under <em>app-path</em>, it will have information about where the
+data is, so the <em>data-path</em> is known. The <em>data-checkout-specifier</em> is passed
+as an optional argument:
+<code>checkout=</code><em>data-checkout-specifier</em>.</p>
+<p>So far we have described how to use a TF corpus which has an <code>app</code> inside in the
+standard location, i.e. as org/repo/<code>app</code>, and also the data is in the standard
+location, i.e. org/repo/<code><a title="tf" href="../index.html">tf</a></code>.</p>
+<p>If the app resides in the standard location, but the data is somewhere else in the
+repository, you may pass <code>relative="path/to/data</code> to customise the location of the
+data.</p>
+<p>You can use this is you have one <code>app</code> and multiple corpora in one repo, all using
+the same <code>app</code>.</p>
+<p>For the case where both app and data reside in arbitrary places, there
+is additional syntax in the first argument:</p>
+<ul>
+<li>
+<p><code>app:full/path/to/tf/app</code>
+<strong>Specify the location of the app</strong>.
+You may not append a <em>checkout specifier</em> to this.</p>
+</li>
+<li>
+<p><code>data:full/path/to/tf/data/version</code>
+<strong>Do not try to find an app, but point to the data instead</strong>
+(a generic TF app with default settings will be used).
+You may pass a <em>checkout specifier</em> by appending <code>:</code><em>xxx</em>.</p>
+</li>
+<li>
+<p><em>corpus</em>
+<strong>legacy way of calling an app by its name only</strong>.
+Find a TF app in repo <code>annotation/app-corpus</code>.</p>
+<p>Without <code>legacy=True</code>,
+you get a warning, and TF assumes the TF app has been migrated
+from <code>annotation/app-corpus</code> to <code>org/repo/app</code>, and it loads the app from there.</p>
+<p>If you pass <code>legacy=True</code> you do not get that warning, and TF loads
+the app from <code>annotation/app-corpus</code>.</p>
+<p>You have to use this if you go back in the history to times where
+the legacy method was the only method of loading a corpus.
+The older history of the app is preserved in <code>annotation/app-corpus</code>,
+but not in the migrated org/repo/app.</p>
+</li>
+</ul>
+<h2 id="versions">Versions</h2>
+<p>TF expects that the data resides in version directories.
+The configuration of a corpus app specifies which version will be used.
+You can override that by passing
+the optional argument <code>version="x.y.z"</code>.
+Where we do not have a corpus app that specifies the version,
+i.e. if you pass a <code>data:path/to/tf/data</code> string
+you must either:</p>
+<ul>
+<li>specify the paths so that they include the version directory</li>
+<li>specify the path to the parent of the version directories
+and pass <code>version="x.y.z"</code></li>
+</ul>
+<div class="admonition caution">
+<p class="admonition-title">Modules</p>
+<p>If you also ask for extra data modules by means of the <code>mod</code> argument,
+then the corresponding version of those modules will be chosen.
+Every properly designed data module must refer to a specific
+version of the main source!</p>
+</div>
+<h2 id="modules-and-sets">Modules and sets</h2>
+<p>Besides the main corpus data, you can also draw in other data.</p>
+<h3 id="modules">Modules</h3>
+<p>They are typically sets of features provides by others to enrich or comment
+the main corpus.
+A module is specified in much the same way as the main corpus data.
+The optional <code>mod</code> argument is a comma-separated list
+or an iterable of modules in one of the forms</p>
+<pre><code>{org}/{repo}/{path}
+</code></pre>
+<p>or</p>
+<pre><code>{org}/{repo}/{path}:data-checkout-specifier
+</code></pre>
+<p>All features of all those modules will be loaded.
+If they are not yet present, they will be downloaded from a back-end first.
+For example, there is an Easter egg module on GitHub,
+and you can obtain it by</p>
+<pre><code class="language-python">mod='ETCBC/lingo/easter/tf'
+</code></pre>
+<p>Here the <code>{org}</code> is <code>ETCBC</code>, the <code>{repo}</code> is <code>lingo</code>,
+and the <code>{path}</code> is <code>easter/tf</code> under which
+version <code>c</code> of the feature <code>egg</code>
+is available in TF format.
+You can point to any such directory in the entire GitHub
+if you know that it contains relevant features.</p>
+<p>Your TF app might be configured to download specific modules.
+See <code>moduleSpecs</code> in the app's <code>config.yaml</code> file.
+If you need these specific module with a different checkout specifier,
+you can override those by passing those modules in this parameter
+explicitly.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>This is needed for example if you specify a specific release
+for the core data module. The associated standard modules probably
+do not have that exact same release, so you have to look up their
+releases in GitHub / GitLab, and attach the release numbers found
+to the module specifiers.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Let TF manage your text-fabric-data directory</p>
+<p>It is better not to fiddle with your <code>~/text-fabric-data</code> directory
+manually. Let it be filled with auto-downloaded data.
+You can then delete data sources and modules when needed,
+and have them re-downloaded at your wish,
+without any hassle or data loss.</p>
+</div>
+<h3 id="sets">Sets</h3>
+<p>They are named node sets, that, when imported, can be used in
+<a href="https://annotation.github.io/text-fabric/tf/about/searchusage.html#simple-indent-nameotype-or-set-features">search templates</a>
+as if they were node types.
+You can construct them in a Python program and then write them to disk
+with <code><a title="tf.lib.writeSets" href="../lib.html#tf.lib.writeSets">writeSets()</a></code>.
+When you pass that file path with <code>setFile=path/to/file</code>,
+the named sets will be loaded by TF.</p>
+<p>See also <code><a title="tf.search.search.Search.search" href="../search/search.html#tf.search.search.Search.search">Search.search()</a></code> and <code><a title="tf.lib.readSets" href="../lib.html#tf.lib.readSets">readSets()</a></code>.</p>
+<h2 id="overrides">Overrides</h2>
+<p>Sometimes you need to deviate from settings that have been specified in the TF app
+that you invoke. Or you want to set things explicitly when you do not invoke
+a TF app.
+You can prepare a dictionary of such settings, say <code>configOverrides</code>,
+and pass the contents as keyword arguments: <code>**configOverrides</code>.
+The list of possible settings is spelled out in
+<code><a title="tf.advanced.settings" href="../advanced/settings.html">tf.advanced.settings</a></code>.</p>
+<div class="admonition hint">
+<p class="admonition-title">Corpus has moved</p>
+<p>Suppose you want to work with an older version of the corpus.
+A complication occurs if the repo has been renamed and / or moved
+to an other organization.
+When you go back in the history and download an older version of the app,
+its configuration settings specify a different org, repo and relative path
+than what is currently the case. Here the possibility to override settings
+come to the rescue.</p>
+<p>A good example is in
+<a href="https://nbviewer.org/github/clariah/wp6-missieven/blob/master/tutorial/annotate.ipynb"><code>clariah/wp6-missieven</code></a>
+which resided in <code>annotation/clariah-gm</code> before, and in <code>Dans-labs/clariah-gm</code> even earlier.</p>
+<p>When we want to migrate manual annotations made against the 0.4 version to the 0.7
+version, we run into this issue.
+But we can still load the 0.4 version by means of</p>
+<pre><code>A = use(
+    "missieven:v0.4",
+    checkout="clone",
+    version="0.4",
+    hoist=globals(),
+    legacy=True,
+    provenanceSpec=dict(org="clariah", repo="wp6-missieven"),
+)
+</code></pre>
+</div>
+<h2 id="hoisting">Hoisting</h2>
+<p>The result of <code>A = use()</code> is that the variable <code>A</code> holds an object,
+the corpus app, loaded in memory, offering an API to the corpus data.
+You get that API by <code>api = A.api</code>, and then you have access to the particular members
+such as</p>
+<ul>
+<li><code>F = api.F</code> (see <code><a title="tf.core.nodefeature.NodeFeature" href="../core/nodefeature.html#tf.core.nodefeature.NodeFeature">NodeFeature</a></code>)</li>
+<li><code>L = api.L</code> (see <code><a title="tf.core.locality.Locality" href="../core/locality.html#tf.core.locality.Locality">Locality</a></code>)</li>
+<li><code>T = api.T</code> (see <code><a title="tf.core.text.Text" href="../core/text.html#tf.core.text.Text">Text</a></code>)</li>
+<li><code>TF = api.TF</code> (see <code><a title="tf.core.fabric.FabricCore" href="../core/fabric.html#tf.core.fabric.FabricCore">FabricCore</a></code>)</li>
+</ul>
+<p>If you work with one corpus in a notebook, this gets cumbersome.
+You can inject the global variables <code>F</code>, <code>L</code>, <code>T</code>, <code>TF</code> and a few others
+directly into your program by passing <code>hoist=globals()</code>.
+See the output for a list of the new globals that you have got this way.
+Do not do this if you work with several corpora or several versions of a corpus
+in the same program!</p>
+<h2 id="volumes-and-collections">Volumes and collections</h2>
+<p>Instead of loading a whole corpus, you can also load individual volumes
+or collections of individual volumes of it.
+If your work is confined to a volume or collection, it might pay off
+to load only the relevant pieces of the corpus.
+TF will maintain the details of the relationship between the parts
+and the whole.</p>
+<div class="admonition caution">
+<p class="admonition-title">Volumes and collections</p>
+<p>It is an error to load a volume as a collection and vice-versa</p>
+<p>You get a warning if you pass both a volume and a collection.
+The collection takes precedence, and the volume is ignored in that case.</p>
+</div>
+<h3 id="volumes">Volumes</h3>
+<p>If you pass <code>volume=volume-heading</code>
+TF will load a single volume of
+the work, specified by its heading.
+The volume is stored in a directory with <code>.<a title="tf" href="../index.html">tf</a></code> files,
+located under the directory <code>_local</code> which is in the
+same directory as the <code>.<a title="tf" href="../index.html">tf</a></code> files of the work.
+See <code><a title="tf.about.volumes" href="volumes.html">tf.about.volumes</a></code>.</p>
+<h3 id="collections">Collections</h3>
+<p>If you pass <code>collection="collection-name"</code>
+TF will load a single named collection of volumes of the work.
+The collection is stored in a directory with <code>.<a title="tf" href="../index.html">tf</a></code> files,
+located under the directory <code>_local</code> which is in the
+same directory as the <code>.<a title="tf" href="../index.html">tf</a></code> files of the work.
+See <code><a title="tf.about.volumes" href="volumes.html">tf.about.volumes</a></code>.</p>
+<h2 id="lower-level">Lower level</h2>
+<h3 id="locations-modules">locations, modules</h3>
+<p>You can add other directories that TF will search for feature files.
+They can be passed with the <code>locations</code> and <code>modules</code> optional parameters.
+For the precise meaning of these parameters see <code><a title="tf.core.fabric.FabricCore" href="../core/fabric.html#tf.core.fabric.FabricCore">FabricCore</a></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">More, not less</p>
+<p>Using these arguments will load features on top of the
+default selection of features.
+You cannot use these arguments to prevent features from being loaded.
+Read on to see how you can achieve the loading of fewer features.</p>
+</div>
+<h3 id="api">API</h3>
+<p>So far, <code>A = use()</code> will construct an advanced API with a more or less standard set of features
+loaded, and make that API available to you, under <code>A.api</code>.
+But you can also setup a core API yourself by using the lower level method
+<code><a title="tf.core.fabric.FabricCore" href="../core/fabric.html#tf.core.fabric.FabricCore">FabricCore</a></code> with your choice of locations and modules:</p>
+<pre><code class="language-python">from tf.fabric import Fabric
+TF = Fabric(locations=..., modules=...)
+api = TF.load(features)
+</code></pre>
+<p>Here you have full control over what you load and what not.
+If you want the extra power of the TF app, you can wrap this <code>api</code>:</p>
+<pre><code class="language-python">A = use(&quot;org/repo&quot;, api=api)
+</code></pre>
+<p>or</p>
+<pre><code class="language-python">A = use(&quot;app:path/to/app&quot;, api=api)
+</code></pre>
+<p>etc.</p>
+<div class="admonition hint">
+<p class="admonition-title">Unloaded features</p>
+<p>Some apps do not load all available features of the corpus by default.</p>
+<p>This happens when a corpus contains quite a number of features
+that most people never need.
+Loading them cost time and takes a lot of RAM.</p>
+<p>In the case where you need an available feature
+that has not been loaded, you can load it by demanding</p>
+<pre><code>TF.load('feature1 feature2', add=True)
+</code></pre>
+<p>provided you have used the <code>hoist=globals()</code> parameter earlier.
+If not, you have to say</p>
+<pre><code>A.api.TF.load('feature1 feature2', add=True)
+</code></pre>
+</div>
+<h2 id="silence">Silence</h2>
+<p>Loading a corpus can be quite noisy in the output.
+You can reduce that by means of the <code>silent</code> parameter.</p>
+<p>The default is <code>auto</code>, which suppresses most messages of the loading of individual
+features, except the potentially time-consuming ones.</p>
+<p>If you pass <code>terse</code>, also these time-consuming operations will not be displayed.</p>
+<p>If you pass <code>clean</code>, nearly all output of this call will be suppressed,
+including the links to the loaded data, features, and the API methods.
+Error messages will still come through.</p>
+<p>If <code>deep</code>, all output will be suppressed, except errors.</p>
+<p>The value <code>verbose</code> is like <code>auto</code>, with the following extras:
+after a corpus has been loaded, a header is produced showing information
+about all features loaded, including their descriptions as given in the metadata
+of the features.
+With <code>verbose</code>, not only the descriptions, but <em>all</em> metadata fields
+of the features are included.</p>
+<p>Usually this will generate a big HTML string with a lot of redundant information.</p>
+<h2 id="prevent-data-loading">Prevent data loading</h2>
+<p>Data loading is costly.
+If you need to get some information of a TF dataset that is not dependent on loaded
+data features, you can suppress the loading of data by</p>
+<pre><code class="language-python">A = use(&quot;org/repo&quot;, loadData=False)
+</code></pre>
+<p>You can also prevent loading data of modules that are associated with the code
+data by default. These are the ones specified in the <code>config.yaml</code> file of
+the corpus app under <code>provenanceSpec &gt; moduleSpecs</code>:</p>
+<pre><code class="language-python">A = use(&quot;org/repo&quot;, loadData=&quot;core&quot;)
+</code></pre>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/about/usefunc.py#L1-L3" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+.. include:: ../docs/about/usefunc.md
+&#34;&#34;&#34;</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#summary">Summary</a><ul>
+<li><a href="#basic-usage">Basic usage:</a></li>
+<li><a href="#full-usage">Full usage</a></li>
+<li><a href="#legacy-usage">Legacy usage:</a></li>
+</ul>
+</li>
+<li><a href="#security">Security</a></li>
+<li><a href="#details">Details</a></li>
+<li><a href="#loading">Loading</a></li>
+<li><a href="#specifying-app-and-or-data">Specifying app and / or data</a></li>
+<li><a href="#versions">Versions</a></li>
+<li><a href="#modules-and-sets">Modules and sets</a><ul>
+<li><a href="#modules">Modules</a></li>
+<li><a href="#sets">Sets</a></li>
+</ul>
+</li>
+<li><a href="#overrides">Overrides</a></li>
+<li><a href="#hoisting">Hoisting</a></li>
+<li><a href="#volumes-and-collections">Volumes and collections</a><ul>
+<li><a href="#volumes">Volumes</a></li>
+<li><a href="#collections">Collections</a></li>
+</ul>
+</li>
+<li><a href="#lower-level">Lower level</a><ul>
+<li><a href="#locations-modules">locations, modules</a></li>
+<li><a href="#api">API</a></li>
+</ul>
+</li>
+<li><a href="#silence">Silence</a></li>
+<li><a href="#prevent-data-loading">Prevent data loading</a></li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.about" href="index.html">tf.about</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

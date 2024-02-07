@@ -1,0 +1,3745 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.search.relations API documentation</title>
+<meta name="description" content="Search by relational patterns between nodes" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-GjqubOlYA6/wOZV7F31o2t4ogk4JGDGFa6XmL+BfAG0=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-qDPJ4nH38AgHyK3U6cvI6DBifA+7hPBo8mVoH6pyN9c=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.search.relations</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="search-by-relational-patterns-between-nodes">Search by relational patterns between nodes</h1>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/search/relations.py#L1-L1814" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+# Search by relational patterns between nodes
+&#34;&#34;&#34;
+
+import collections
+import types
+import re
+from itertools import chain
+import array
+
+from ..parameters import OTYPE, OSLOTS, OMAP
+from ..core.helpers import makeIndex
+from ..core.timestamp import DEEP
+from .syntax import reTp
+
+# LOW-LEVEL NODE RELATIONS SEMANTICS ###
+
+
+def _l_em(n):
+    return ()
+
+
+def _l_eq(n):
+    return (n,)
+
+
+def _l_uneq(n, m):
+    return n != m
+
+
+def _l_lt(n, m):
+    return n &lt; m
+
+
+def _l_gt(n, m):
+    return n &gt; m
+
+
+def _l_ranklt(Crank):
+    def func(n, m):
+        return Crank[n - 1] &lt; Crank[m - 1]
+
+    return func
+
+
+def _l_rankgt(Crank):
+    def func(n, m):
+        return Crank[n - 1] &gt; Crank[m - 1]
+
+    return func
+
+
+def basicRelations(searchExe, api):
+    C = api.C
+    F = api.F
+    Fs = api.Fs
+    E = api.E
+    Crank = C.rank.data
+    ClevDown = C.levDown.data
+    ClevUp = C.levUp.data
+    (CfirstSlots, ClastSlots) = C.boundary.data
+    Eoslots = E.oslots.data
+    slotType = F.otype.slotType
+    maxSlot = F.otype.maxSlot
+    maxSlotP = maxSlot + 1
+    sets = searchExe.sets
+    setInfo = searchExe.setInfo
+    searchExe.featureValueIndex = {}
+    Sindex = searchExe.featureValueIndex
+
+    def isSlotType(nType):
+        if nType == &#34;.&#34;:
+            return None
+        if sets is not None and nType in sets:
+            if nType in setInfo:
+                return setInfo[nType]
+            nodes = sets[nType]
+            allSlots = all(n &lt; maxSlotP for n in nodes)
+            if allSlots:
+                setInfo[nType] = True
+                return True
+            allNonSlots = all(n &gt; maxSlot for n in nodes)
+            if allNonSlots:
+                setInfo[nType] = False
+                return False
+            setInfo[nType] = None
+            return None
+        return nType == slotType
+
+    # EQUAL
+
+    def spinEqual(fTp, tTp):
+        def doyarns(yF, yT):
+            x = set(yF) &amp; set(yT)
+            return (x, x)
+
+        return doyarns
+
+    def equalR(fTp, tTp):
+        return _l_eq
+
+    # UNEQUAL
+
+    def unequalR(fTp, tTp):
+        return _l_uneq
+
+    # CANONICAL BEFORE
+
+    def canonicalBeforeR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_lt
+
+        return _l_ranklt(Crank)
+
+    # CANONICAL AFTER
+
+    def canonicalAfterR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_gt
+
+        return _l_rankgt(Crank)
+
+    # SAME SLOTS
+
+    def spinSameSlots(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+
+            def doyarns(yF, yT):
+                x = set(yF) &amp; set(yT)
+                return (x, x)
+
+            return doyarns
+
+        elif isSlotF or isSlotT:
+
+            def doyarns(yS, y2):
+                sindex = {}
+                for m in y2:
+                    ss = Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,)
+                    if len(ss) == 1:
+                        sindex.setdefault(ss[0], set()).add(m)
+                nyS = yS &amp; set(sindex.keys())
+                ny2 = set(chain.from_iterable(sindex[s] for s in nyS))
+                return (nyS, ny2)
+
+            if isSlotF:
+                return doyarns
+
+            else:
+
+                def xx(yF, yT):
+                    (nyT, nyF) = doyarns(yT, yF)
+                    return (nyF, nyT)
+
+                return xx
+
+        else:
+
+            def doyarns(yF, yT):
+                sindexF = {}
+                for n in yF:
+                    s = frozenset(Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,))
+                    sindexF.setdefault(s, set()).add(n)
+                sindexT = {}
+                for m in yT:
+                    s = frozenset(Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,))
+                    sindexT.setdefault(s, set()).add(m)
+                nyS = set(sindexF.keys()) &amp; set(sindexT.keys())
+                nyF = set(chain.from_iterable(sindexF[s] for s in nyS))
+                nyT = set(chain.from_iterable(sindexT[s] for s in nyS))
+                return (nyF, nyT)
+
+            return doyarns
+
+    def sameSlotsR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_eq
+        else:
+
+            def xx(n):
+                nmin = n - 1
+                if n &lt; maxSlotP:
+                    nA = array.array(&#34;I&#34;, (n,))
+                    # nA = (n,)
+                    yield n
+                    for m in ClevUp[nmin]:
+                        if Eoslots[m - maxSlotP] == nA:
+                            yield m
+                    return
+                nSlots = Eoslots[n - maxSlotP]
+                if len(nSlots) == 1:
+                    slot1 = nSlots[0]
+                    nA = array.array(&#34;I&#34;, (slot1,))
+                    # nA = tuple(slot1,)
+                    yield n
+                    yield slot1
+                    for m in ClevUp[nmin]:
+                        if Eoslots[m - maxSlotP] == nA:
+                            yield m
+                    return
+                yield n
+                for m in ClevUp[nmin]:
+                    if n in ClevUp[m - 1]:
+                        yield m
+
+            return xx
+
+    # OVERLAP
+
+    def spinOverlap(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+
+        if isSlotF and isSlotT:
+
+            def doyarns(yF, yT):
+                x = set(yF) &amp; set(yT)
+                return (x, x)
+
+            return doyarns
+
+        elif isSlotF or isSlotT:
+
+            def doyarns(yS, y2):
+                sindex = {}
+                for m in y2:
+                    for s in Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,):
+                        sindex.setdefault(s, set()).add(m)
+                nyS = yS &amp; set(sindex.keys())
+                ny2 = set(chain.from_iterable(sindex[s] for s in nyS))
+                return (nyS, ny2)
+
+            if isSlotF:
+                return doyarns
+
+            else:
+
+                def xx(yF, yT):
+                    (nyT, nyF) = doyarns(yT, yF)
+                    return (nyF, nyT)
+
+                return xx
+        else:
+
+            def doyarns(yF, yT):
+                REDUCE_FACTOR = 0.4
+                SIZE_LIMIT = 10000
+                sindexF = {}
+                for n in yF:
+                    for s in Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,):
+                        sindexF.setdefault(s, set()).add(n)
+                sindexT = {}
+                for m in yT:
+                    for s in Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,):
+                        sindexT.setdefault(s, set()).add(m)
+                nyS = set(sindexF.keys()) &amp; set(sindexT.keys())
+
+                lsF = len(sindexF)
+                lsT = len(sindexT)
+                lsI = len(nyS)
+                if lsF == lsT:  # spinning is completely useless
+                    return (yF, yT)
+                if lsI &gt; REDUCE_FACTOR * lsT and lsT &gt; SIZE_LIMIT:
+                    # spinning is not worth it
+                    return (yF, yT)
+
+                nyF = set(chain.from_iterable(sindexF[s] for s in nyS))
+                nyT = set(chain.from_iterable(sindexT[s] for s in nyS))
+                return (nyF, nyT)
+
+            return doyarns
+
+    def overlapR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_eq
+        elif isSlotT:
+
+            def func(n):
+                return Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)
+
+            return func
+        elif isSlotF:
+
+            def func(n):
+                return chain(ClevUp[n - 1], (n,))
+
+            return func
+        else:
+
+            def xx(n):
+                nSlots = Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)
+                return chain(
+                    nSlots, set(chain.from_iterable(ClevUp[s - 1] for s in nSlots))
+                )
+
+            return xx
+
+    # DIFFERENT SLOTS
+
+    def diffSlotsR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_uneq
+        elif isSlotT:
+
+            def func(n, m):
+                return (Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,)) != (n,)
+
+            return func
+        elif isSlotF:
+
+            def func(n, m):
+                return (Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)) != (m,)
+
+            return func
+        else:
+
+            def func(n, m):
+                return frozenset(
+                    Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)
+                ) != frozenset(Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,))
+
+            return func
+
+    # DISJOINT SLOTS
+
+    def disjointSlotsR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_uneq
+        elif isSlotT:
+
+            def func(n, m):
+                return m not in frozenset(
+                    Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)
+                )
+
+            return func
+        elif isSlotF:
+
+            def func(n, m):
+                return n not in frozenset(
+                    Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,)
+                )
+
+            return func
+        else:
+
+            def func(n, m):
+                return (
+                    len(
+                        frozenset(Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,))
+                        &amp; frozenset(Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,))
+                    )
+                    == 0
+                )
+
+            return func
+
+    # EMBEDDED IN
+
+    def inR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_em
+        elif isSlotT:
+            return _l_em
+        elif isSlotF:
+
+            def func(n):
+                return ClevUp[n - 1]
+
+            return func
+        else:
+
+            def func(n):
+                return ClevUp[n - 1]
+
+            return func
+
+    # EMBEDS
+
+    def hasR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_em
+        elif isSlotF:
+            return _l_em
+        elif isSlotT:
+
+            def func(n):
+                return Eoslots[n - maxSlotP] if n &gt; maxSlot else ()
+
+            return func
+        else:
+            if isSlotT is None:
+
+                def func(n):
+                    return (
+                        chain(ClevDown[n - maxSlotP], Eoslots[n - maxSlotP])
+                        if n &gt; maxSlot
+                        else ()
+                    )
+
+                return func
+            else:
+
+                def func(n):
+                    return ClevDown[n - maxSlotP] if n &gt; maxSlot else ()
+
+                return func
+
+    # BEFORE WRT SLOTS
+
+    def slotBeforeR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_lt
+        elif isSlotF:
+
+            def func(n, m):
+                return n &lt; (Eoslots[m - maxSlotP][0] if m &gt; maxSlot else m)
+
+            return func
+        elif isSlotT:
+
+            def func(n, m):
+                return (Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n) &lt; m
+
+            return func
+        else:
+
+            def func(n, m):
+                return (Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n) &lt; (
+                    Eoslots[m - maxSlotP][0] if m &gt; maxSlot else m
+                )
+
+            return func
+
+    # AFTER WRT SLOTS
+
+    def slotAfterR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_gt
+        elif isSlotF:
+
+            def func(n, m):
+                return n &gt; (Eoslots[m - maxSlotP][-1] if m &gt; maxSlot else m)
+
+            return func
+        elif isSlotT:
+
+            def func(n, m):
+                return (Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n) &gt; m
+
+            return func
+        else:
+
+            def func(n, m):
+                return (Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n) &gt; (
+                    Eoslots[m - maxSlotP][-1] if m &gt; maxSlot else m
+                )
+
+            return func
+
+    # START AT SAME SLOT
+
+    def sameFirstSlotR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_eq
+        elif isSlotF:
+            if isSlotT is None:
+
+                def func(n):
+                    return chain(CfirstSlots[n - 1], (n,))
+
+                return func
+            else:
+
+                def func(n):
+                    return CfirstSlots[n - 1]
+
+                return func
+        elif isSlotT:
+
+            def func(n):
+                return ((Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n),)
+
+            return func
+        else:
+
+            def xx(n):
+                fn = Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n
+                fnmin = fn - 1
+                if isSlotT is None:
+                    return chain(CfirstSlots[fnmin], (fn,))
+                else:
+                    return CfirstSlots[fnmin]
+
+            return xx
+
+    # ENDS AT SAME SLOT
+
+    def sameLastSlotR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_eq
+        elif isSlotF:
+            if isSlotT is None:
+
+                def func(n):
+                    return chain(ClastSlots[n - 1], (n,))
+
+                return func
+            else:
+
+                def func(n):
+                    return ClastSlots[n - 1]
+
+                return func
+        elif isSlotT:
+
+            def func(n):
+                return ((Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n),)
+
+            return func
+        else:
+
+            def xx(n):
+                ln = Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n
+                lnmin = ln - 1
+                if isSlotT is None:
+                    return chain(ClastSlots[lnmin], (ln,))
+                else:
+                    return ClastSlots[lnmin]
+
+            return xx
+
+    # START AND END AT SAME SLOT
+
+    def sameBoundaryR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_eq
+        elif isSlotF:
+            if isSlotT is None:
+
+                def xx(n):
+                    nmin = n - 1
+                    fok = set(chain(CfirstSlots[nmin], (n,)))
+                    lok = set(chain(ClastSlots[nmin], (n,)))
+                    return fok &amp; lok
+
+            else:
+
+                def xx(n):
+                    nmin = n - 1
+                    fok = set(CfirstSlots[nmin])
+                    lok = set(ClastSlots[nmin])
+                    return fok &amp; lok
+
+            return xx
+
+        elif isSlotT:
+
+            def xx(n):
+                slots = Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)
+                fs = slots[0]
+                ls = slots[-1]
+                return (fs,) if fs == ls else ()
+
+            return xx
+
+        else:
+            if isSlotT is None:
+
+                def xx(n):
+                    fn = Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n
+                    ln = Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n
+                    fnmin = fn - 1
+                    lnmin = ln - 1
+                    fok = set(chain(CfirstSlots[fnmin], (fn,)))
+                    lok = set(chain(ClastSlots[lnmin], (ln,)))
+                    return fok &amp; lok
+
+            else:
+
+                def xx(n):
+                    fn = Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n
+                    ln = Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n
+                    fnmin = fn - 1
+                    lnmin = ln - 1
+                    fok = set(CfirstSlots[fnmin])
+                    lok = set(ClastSlots[lnmin])
+                    return fok &amp; lok
+
+            return xx
+
+    # FIRST SLOTS ARE k-CLOSE
+
+    def nearFirstSlotR(k):
+        def zz(fTp, tTp):
+            isSlotF = isSlotType(fTp)
+            isSlotT = isSlotType(tTp)
+            if isSlotF and isSlotT:
+
+                def func(n):
+                    return range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+
+                return func
+            elif isSlotF:
+                if isSlotT is None:
+
+                    def xx(n):
+                        near = range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+                        return chain(
+                            near,
+                            chain.from_iterable(CfirstSlots[lf - 1] for lf in near),
+                        )
+
+                else:
+
+                    def xx(n):
+                        near = range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+                        return chain.from_iterable(CfirstSlots[lf - 1] for lf in near)
+
+                return xx
+            elif isSlotT:
+
+                def xx(n):
+                    fn = Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n
+                    return range(max((1, fn - k)), min((maxSlot, fn + k)) + 1)
+
+                return xx
+
+            else:
+                if isSlotT is None:
+
+                    def xx(n):
+                        fn = Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n
+                        near = range(max((1, fn - k)), min((maxSlot, fn + k)) + 1)
+                        return chain(
+                            near,
+                            chain.from_iterable(CfirstSlots[lf - 1] for lf in near),
+                        )
+
+                else:
+
+                    def xx(n):
+                        fn = Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n
+                        near = range(max((1, fn - k)), min((maxSlot, fn + k)) + 1)
+                        return chain.from_iterable(CfirstSlots[lf - 1] for lf in near)
+
+                return xx
+
+        return zz
+
+    # LAST SLOTS ARE k-CLOSE
+
+    def nearLastSlotR(k):
+        def zz(fTp, tTp):
+            isSlotF = isSlotType(fTp)
+            isSlotT = isSlotType(tTp)
+            if isSlotF and isSlotT:
+
+                def func(n):
+                    return range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+
+                return func
+            elif isSlotF:
+                if isSlotT is None:
+
+                    def xx(n):
+                        near = range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+                        return chain(
+                            near, chain.from_iterable(ClastSlots[lf - 1] for lf in near)
+                        )
+
+                else:
+
+                    def xx(n):
+                        near = range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+                        return chain.from_iterable(ClastSlots[lf - 1] for lf in near)
+
+                return xx
+            elif isSlotT:
+
+                def xx(n):
+                    ln = Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n
+                    return range(max((1, ln - k)), min((maxSlot, ln + k)) + 1)
+
+                return xx
+            else:
+                if isSlotT is None:
+
+                    def xx(n):
+                        ln = Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n
+                        near = range(max((1, ln - k)), min((maxSlot, ln + k)) + 1)
+                        return chain(
+                            near, chain.from_iterable(ClastSlots[lf - 1] for lf in near)
+                        )
+
+                else:
+
+                    def xx(n):
+                        ln = Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n
+                        near = range(max((1, ln - k)), min((maxSlot, ln + k)) + 1)
+                        return chain.from_iterable(ClastSlots[lf - 1] for lf in near)
+
+                return xx
+
+        return zz
+
+    # FIRST SLOTS ARE k-CLOSE and LAST SLOTS ARE k-CLOSE
+
+    def nearBoundaryR(k):
+        def zz(fTp, tTp):
+            isSlotF = isSlotType(fTp)
+            isSlotT = isSlotType(tTp)
+            if isSlotF and isSlotT:
+
+                def func(n):
+                    return range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+
+                return func
+            elif isSlotF:
+                if isSlotT is None:
+
+                    def xx(n):
+                        near = set(range(max((1, n - k)), min((maxSlot, n + k)) + 1))
+                        fok = set(
+                            chain.from_iterable(CfirstSlots[lf - 1] for lf in near)
+                        )
+                        lok = set(
+                            chain.from_iterable(ClastSlots[lf - 1] for lf in near)
+                        )
+                        return near | (fok &amp; lok)
+
+                else:
+
+                    def xx(n):
+                        near = range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+                        fok = set(
+                            chain.from_iterable(CfirstSlots[lf - 1] for lf in near)
+                        )
+                        lok = set(
+                            chain.from_iterable(ClastSlots[lf - 1] for lf in near)
+                        )
+                        return fok &amp; lok
+
+                return xx
+            elif isSlotT:
+
+                def xx(n):
+                    slots = Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)
+                    fs = slots[0]
+                    ls = slots[-1]
+                    fok = set(range(max((1, fs - k)), min((maxSlot, fs + k)) + 1))
+                    lok = set(range(max((1, ls - k)), min((maxSlot, ls + k)) + 1))
+                    return fok &amp; lok
+
+                return xx
+            else:
+                if isSlotT is None:
+
+                    def xx(n):
+                        fn = Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n
+                        ln = Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n
+                        nearf = range(max((1, fn - k)), min((maxSlot, fn + k)) + 1)
+                        nearl = range(max((1, ln - k)), min((maxSlot, ln + k)) + 1)
+                        fok = set(
+                            chain(
+                                nearf,
+                                chain.from_iterable(
+                                    CfirstSlots[lf - 1] for lf in nearf
+                                ),
+                            )
+                        )
+                        lok = set(
+                            chain(
+                                nearl,
+                                chain.from_iterable(ClastSlots[lf - 1] for lf in nearl),
+                            )
+                        )
+                        return fok &amp; lok
+
+                else:
+
+                    def xx(n):
+                        fn = Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n
+                        ln = Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n
+                        nearf = range(max((1, fn - k)), min((maxSlot, fn + k)) + 1)
+                        nearl = range(max((1, ln - k)), min((maxSlot, ln + k)) + 1)
+                        fok = set(
+                            chain.from_iterable(CfirstSlots[lf - 1] for lf in nearf)
+                        )
+                        lok = set(
+                            chain.from_iterable(ClastSlots[lf - 1] for lf in nearl)
+                        )
+                        return fok &amp; lok
+
+                return xx
+
+        return zz
+
+    # FIRST ENDS WHERE SECOND STARTS
+
+    def adjBeforeR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+
+            def func(n):
+                return (n + 1,) if n &lt; maxSlot else ()
+
+            return func
+        else:
+            if isSlotT:
+
+                def xx(n):
+                    if n == maxSlot:
+                        return ()
+                    myNext = n + 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][-1] + 1
+                    if myNext &gt; maxSlot:
+                        return ()
+                    return (myNext,)
+
+            elif isSlotT is None:
+
+                def xx(n):
+                    if n == maxSlot:
+                        return ()
+                    myNext = n + 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][-1] + 1
+                    if myNext &gt; maxSlot:
+                        return ()
+                    return chain(CfirstSlots[myNext - 1], (myNext,))
+
+            else:
+
+                def xx(n):
+                    if n == maxSlot:
+                        return ()
+                    myNext = n + 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][-1] + 1
+                    if myNext &gt; maxSlot:
+                        return ()
+                    return CfirstSlots[myNext - 1]
+
+            return xx
+
+    # FIRST STARTS WHERE SECOND ENDS
+
+    def adjAfterR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+
+            def func(n):
+                return (n - 1,) if n &gt; 1 else ()
+
+            return func
+        else:
+
+            if isSlotT:
+
+                def xx(n):
+                    if n &lt;= 1:
+                        return ()
+                    myPrev = n - 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][0] - 1
+                    if myPrev &lt;= 1:
+                        return ()
+                    return (myPrev,)
+
+            elif isSlotT is None:
+
+                def xx(n):
+                    if n &lt;= 1:
+                        return ()
+                    myPrev = n - 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][0] - 1
+                    if myPrev &lt;= 1:
+                        return ()
+                    return chain((myPrev,), ClastSlots[myPrev - 1])
+
+            else:
+
+                def xx(n):
+                    if n &lt;= 1:
+                        return ()
+                    myPrev = n - 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][0] - 1
+                    if myPrev &lt;= 1:
+                        return ()
+                    return ClastSlots[myPrev - 1]
+
+            return xx
+
+    # FIRST ENDS WHERE SECOND STARTS WITHIN k-SLOTS
+
+    def nearBeforeR(k):
+        def zz(fTp, tTp):
+            isSlotF = isSlotType(fTp)
+            isSlotT = isSlotType(tTp)
+            if isSlotF and isSlotT:
+
+                def func(n):
+                    return range(max((1, n + 1 - k)), min((maxSlot, n + 1 + k)) + 1)
+
+                return func
+            else:
+                if isSlotT:
+
+                    def xx(n):
+                        myNext = n + 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][-1] + 1
+                        return range(
+                            max((1, myNext - k)), min((maxSlot, myNext + k)) + 1
+                        )
+
+                elif isSlotT is None:
+
+                    def xx(n):
+                        myNext = n + 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][-1] + 1
+                        near = range(
+                            max((1, myNext - k)), min((maxSlot, myNext + k)) + 1
+                        )
+                        return chain(
+                            near,
+                            chain.from_iterable(CfirstSlots[ls - 1] for ls in near),
+                        )
+
+                else:
+
+                    def xx(n):
+                        myNext = n + 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][-1] + 1
+                        near = range(
+                            max((1, myNext - k)), min((maxSlot, myNext + k)) + 1
+                        )
+                        return chain.from_iterable(CfirstSlots[ls - 1] for ls in near)
+
+                return xx
+
+        return zz
+
+    # FIRST STARTS WHERE SECOND ENDS WITHIN k-SLOTS
+
+    def nearAfterR(k):
+        def zz(fTp, tTp):
+            isSlotF = isSlotType(fTp)
+            isSlotT = isSlotType(tTp)
+            if isSlotF and isSlotT:
+
+                def func(n):
+                    return range(max((1, n - 1 - k)), min((maxSlot, n - 1 + k)) + 1)
+
+                return func
+            else:
+                if isSlotT:
+
+                    def xx(n):
+                        myPrev = n - 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][0] - 1
+                        return tuple(
+                            range(max((1, myPrev - k)), min((maxSlot, myPrev + k)) + 1)
+                        )
+
+                elif isSlotT is None:
+
+                    def xx(n):
+                        myPrev = n - 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][0] - 1
+                        near = range(
+                            max((1, myPrev - k)), min((maxSlot, myPrev + k)) + 1
+                        )
+                        return chain(
+                            near, chain.from_iterable(ClastSlots[lf - 1] for lf in near)
+                        )
+
+                else:
+
+                    def xx(n):
+                        myPrev = n - 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][0] - 1
+                        near = range(
+                            max((1, myPrev - k)), min((maxSlot, myPrev + k)) + 1
+                        )
+                        return chain.from_iterable(ClastSlots[lf - 1] for lf in near)
+
+                return xx
+
+        return zz
+
+    # SAME FEATURE VALUES
+
+    def spinLeftFisRightG(f, g):
+        def zz(fTp, tTp):
+            if f not in Sindex:
+                Sindex[f] = makeIndex(Fs(f).data)
+            if f != g:
+                if g not in Sindex:
+                    Sindex[g] = makeIndex(Fs(g).data)
+            indF = Sindex[f]
+            indG = Sindex[g]
+            commonValues = set(indF) if f == g else set(indF) &amp; set(indG)
+
+            def doyarns(yF, yT):
+                fNodes = {
+                    n
+                    for n in chain.from_iterable(indF[v] for v in commonValues)
+                    if n in yF
+                }
+                gNodes = {
+                    n
+                    for n in chain.from_iterable(indG[v] for v in commonValues)
+                    if n in yT
+                }
+                return (fNodes, gNodes)
+
+            return doyarns
+
+        return zz
+
+    def spinLeftGisRightF(f, g):
+        return spinLeftFisRightG(g, f)
+
+    def leftFisRightGR_ORIG(f, g):
+        def zz(fTp, tTp):
+            fData = Fs(f).v
+            gData = Fs(g).v
+
+            def uu(n, m):
+                nVal = fData(n)
+                return False if nVal is None else nVal == gData(m)
+
+            return uu
+
+        return zz
+
+    def leftFisRightGR(f, g):
+        def zz(fTp, tTp):
+            fData = Fs(f).v if f == OTYPE else Fs(f).data
+            gData = Fs(g).v if g == OTYPE else Fs(g).data
+
+            if f == OTYPE and g == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData(n)
+                    return False if nVal is None else nVal == gData(m)
+
+                return uu
+
+            if f == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData(n)
+                    return False if nVal is None else nVal == gData.get(m, None)
+
+                return uu
+
+            if g == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData.get(n, None)
+                    return False if nVal is None else nVal == gData(m)
+
+                return uu
+
+            def uu(n, m):
+                nVal = fData.get(n, None)
+                return False if nVal is None else nVal == gData.get(m, None)
+
+            return uu
+
+        return zz
+
+    def leftGisRightFR(g, f):
+        return leftFisRightGR(f, g)
+
+    # MATCH FEATURE VALUES
+
+    def spinLeftFmatchRightG(f, rPat, rRe, g):
+        def zz(fTp, tTp):
+            fR = f&#34;{f}~{rPat}&#34;
+            gR = f&#34;{g}~{rPat}&#34;
+
+            if fR not in Sindex:
+                if f not in Sindex:
+                    Sindex[f] = makeIndex(Fs(f).data)
+                indFR = {}
+                for (v, ns) in Sindex[f].items():
+                    vR = rRe.sub(&#34;&#34;, v)
+                    for n in ns:
+                        indFR.setdefault(vR, set()).add(n)
+                Sindex[fR] = indFR
+            if gR not in Sindex:
+                if g not in Sindex:
+                    Sindex[g] = makeIndex(Fs(g).data)
+                indGR = {}
+                for (v, ns) in Sindex[g].items():
+                    vR = rRe.sub(&#34;&#34;, v)
+                    for n in ns:
+                        indGR.setdefault(vR, set()).add(n)
+                Sindex[gR] = indGR
+
+            indFR = Sindex[fR]
+            indGR = Sindex[gR]
+
+            commonValues = set(indFR) &amp; set(indGR)
+
+            def doyarns(yF, yT):
+                fNodes = {
+                    n
+                    for n in chain.from_iterable(indFR[v] for v in commonValues)
+                    if n in yF
+                }
+                gNodes = {
+                    n
+                    for n in chain.from_iterable(indGR[v] for v in commonValues)
+                    if n in yT
+                }
+                return (fNodes, gNodes)
+
+            return doyarns
+
+        return zz
+
+    def spinLeftGmatchRightF(f, rPat, rRe, g):
+        return spinLeftFmatchRightG(g, rPat, rRe, f)
+
+    def leftFmatchRightGR(f, rPat, rRe, g):
+        def zz(fTp, tTp):
+            fData = Fs(f).v if f == OTYPE else Fs(f).data
+            gData = Fs(g).v if g == OTYPE else Fs(g).data
+
+            if f == OTYPE and g == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData(n)
+                    if nVal is None:
+                        return False
+                    nVal = rRe.sub(&#34;&#34;, nVal)
+                    mVal = gData(m)
+                    if mVal is None:
+                        return False
+                    mVal = rRe.sub(&#34;&#34;, mVal)
+                    return nVal == mVal
+
+                return uu
+
+            if f == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData(n)
+                    if nVal is None:
+                        return False
+                    nVal = rRe.sub(&#34;&#34;, nVal)
+                    mVal = gData.get(m, None)
+                    if mVal is None:
+                        return False
+                    mVal = rRe.sub(&#34;&#34;, mVal)
+                    return nVal == mVal
+
+                return uu
+
+            if g == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData.get(n, None)
+                    if nVal is None:
+                        return False
+                    nVal = rRe.sub(&#34;&#34;, nVal)
+                    mVal = gData(m)
+                    if mVal is None:
+                        return False
+                    mVal = rRe.sub(&#34;&#34;, mVal)
+                    return nVal == mVal
+
+                return uu
+
+            def uu(n, m):
+                nVal = fData.get(n, None)
+                if nVal is None:
+                    return False
+                nVal = rRe.sub(&#34;&#34;, nVal)
+                mVal = gData.get(m, None)
+                if mVal is None:
+                    return False
+                mVal = rRe.sub(&#34;&#34;, mVal)
+                return nVal == mVal
+
+            return uu
+
+        return zz
+
+    def leftGmatchRightFR(g, rPat, rRe, f):
+        return leftFmatchRightGR(f, rPat, rRe, g)
+
+    # UNEQUAL FEATURE VALUES
+
+    def leftFunequalRightGR(f, g):
+        def zz(fTp, tTp):
+            fData = Fs(f).v if f == OTYPE else Fs(f).data
+            gData = Fs(g).v if g == OTYPE else Fs(g).data
+
+            if f == OTYPE and g == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData(n)
+                    mVal = gData(m)
+                    return nVal is None and mVal is None or nVal != mVal
+
+                return uu
+
+            if f == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData(n)
+                    mVal = gData.get(m, None)
+                    return nVal is None and mVal is None or nVal != mVal
+
+                return uu
+
+            if g == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData.get(n, None)
+                    mVal = gData(m)
+                    return nVal is None and mVal is None or nVal != mVal
+
+                return uu
+
+            def uu(n, m):
+                nVal = fData.get(n, None)
+                mVal = gData.get(m, None)
+                return nVal is None and mVal is None or nVal != mVal
+
+            return uu
+
+        return zz
+
+    def leftGunequalRightFR(g, f):
+        return leftFunequalRightGR(f, g)
+
+    # GREATER FEATURE VALUES
+
+    def leftFgreaterRightGR(f, g):
+        def zz(fTp, tTp):
+            fData = Fs(f).v if f == OTYPE else Fs(f).data
+            gData = Fs(g).v if g == OTYPE else Fs(g).data
+
+            if f == OTYPE and g == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData(n)
+                    mVal = gData(m)
+                    return nVal is not None and mVal is not None and nVal &gt; mVal
+
+                return uu
+
+            if f == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData(n)
+                    mVal = gData.get(m, None)
+                    return nVal is not None and mVal is not None and nVal &gt; mVal
+
+                return uu
+
+            if g == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData.get(n, None)
+                    mVal = gData(m)
+                    return nVal is not None and mVal is not None and nVal &gt; mVal
+
+                return uu
+
+            def uu(n, m):
+                nVal = fData.get(n, None)
+                mVal = gData.get(m, None)
+                return nVal is not None and mVal is not None and nVal &gt; mVal
+
+            return uu
+
+        return zz
+
+    def leftGlesserRightFR(g, f):
+        return leftFgreaterRightGR(f, g)
+
+    # LESSER FEATURE VALUES
+
+    def leftFlesserRightGR(f, g):
+        def zz(fTp, tTp):
+            fData = Fs(f).v if f == OTYPE else Fs(f).data
+            gData = Fs(g).v if g == OTYPE else Fs(g).data
+
+            if f == OTYPE and g == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData(n)
+                    mVal = gData(m)
+                    return nVal is not None and mVal is not None and nVal &lt; mVal
+
+                return uu
+
+            if f == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData(n)
+                    mVal = gData.get(m, None)
+                    return nVal is not None and mVal is not None and nVal &lt; mVal
+
+                return uu
+
+            if g == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData.get(n, None)
+                    mVal = gData(m)
+                    return nVal is not None and mVal is not None and nVal &lt; mVal
+
+                return uu
+
+            def uu(n, m):
+                nVal = fData.get(n, None)
+                mVal = gData.get(m, None)
+                return nVal is not None and mVal is not None and nVal &lt; mVal
+
+            return uu
+
+        return zz
+
+    def leftGgreaterRightFR(g, f):
+        return leftFlesserRightGR(f, g)
+
+    # EDGES
+
+    def makeEdgeMaps(efName):
+        def edgeAccess(eFunc, doValues, value):
+            if doValues:
+                if value is None:
+
+                    def func(n):
+                        return (m[0] for m in eFunc(n) if m[1] is None)
+
+                    return func
+                elif value is True:
+
+                    def func(n):
+                        return (m[0] for m in eFunc(n))
+
+                    return func
+                elif isinstance(value, types.FunctionType):
+
+                    def func(n):
+                        return (m[0] for m in eFunc(n) if value(m[1]))
+
+                    return func
+                elif isinstance(value, reTp):
+
+                    def func(n):
+                        return (
+                            m[0]
+                            for m in eFunc(n)
+                            if value is not None and value.search(m[1])
+                        )
+
+                    return func
+                else:
+                    (ident, value) = value
+                    if ident is None and value is True:
+
+                        def func(n):
+                            return (m[0] for m in eFunc(n))
+
+                        return func
+                    elif ident:
+
+                        def func(n):
+                            return (m[0] for m in eFunc(n) if m[1] in value)
+
+                        return func
+                    else:
+
+                        def func(n):
+                            return (m[0] for m in eFunc(n) if m[1] not in value)
+
+                        return func
+            else:
+
+                def func(n):
+                    return eFunc(n)
+
+                return func
+
+        def edgeRV(value):
+            def edgeR(fTp, tTp):
+                Es = api.Es
+                Edata = Es(efName)
+                doValues = Edata.doValues
+                return edgeAccess(Edata.f, doValues, value)
+
+            return edgeR
+
+        def edgeIRV(value):
+            def edgeIR(fTp, tTp):
+                Es = api.Es
+                Edata = Es(efName)
+                doValues = Edata.doValues
+                return edgeAccess(Edata.t, doValues, value)
+
+            return edgeIR
+
+        def edgeSRV(value):
+            def edgeSR(fTp, tTp):
+                Es = api.Es
+                Edata = Es(efName)
+                doValues = Edata.doValues
+                return edgeAccess(Edata.b, doValues, value)
+
+            return edgeSR
+
+        return (edgeRV, edgeIRV, edgeSRV)
+
+    # COLLECT ALL RELATIONS IN A TUPLE
+
+    relations = [
+        (
+            (&#34;=&#34;, spinEqual, equalR, &#34;left equal to right (as node)&#34;),
+            (&#34;=&#34;, spinEqual, equalR, None),
+        ),
+        (
+            (&#34;#&#34;, 0.999, unequalR, &#34;left unequal to right (as node)&#34;),
+            (&#34;#&#34;, 0.999, unequalR, None),
+        ),
+        (
+            (
+                &#34;&lt;&#34;,
+                0.500,
+                canonicalBeforeR,
+                &#34;left before right (in canonical node ordering)&#34;,
+            ),
+            (
+                &#34;&gt;&#34;,
+                0.500,
+                canonicalAfterR,
+                &#34;left after right (in canonical node ordering)&#34;,
+            ),
+        ),
+        (
+            (&#34;==&#34;, spinSameSlots, sameSlotsR, &#34;left occupies same slots as right&#34;),
+            (&#34;==&#34;, spinSameSlots, sameSlotsR, None),
+        ),
+        (
+            (&#34;&amp;&amp;&#34;, spinOverlap, overlapR, &#34;left has overlapping slots with right&#34;),
+            (&#34;&amp;&amp;&#34;, spinOverlap, overlapR, None),
+        ),
+        (
+            (&#34;##&#34;, 0.990, diffSlotsR, &#34;left and right do not have the same slot set&#34;),
+            (&#34;##&#34;, 0.990, diffSlotsR, None),
+        ),
+        (
+            (&#34;||&#34;, 0.900, disjointSlotsR, &#34;left and right do not have common slots&#34;),
+            (&#34;||&#34;, 0.900, disjointSlotsR, None),
+        ),
+        (
+            (&#34;[[&#34;, True, hasR, &#34;left embeds right&#34;),
+            (&#34;]]&#34;, True, inR, &#34;left embedded in right&#34;),
+        ),
+        (
+            (&#34;&lt;&lt;&#34;, 0.490, slotBeforeR, &#34;left completely before right&#34;),
+            (&#34;&gt;&gt;&#34;, 0.490, slotAfterR, &#34;left completely after right&#34;),
+        ),
+        (
+            (&#34;=:&#34;, True, sameFirstSlotR, &#34;left and right start at the same slot&#34;),
+            (&#34;=:&#34;, True, sameFirstSlotR, None),
+        ),
+        (
+            (&#34;:=&#34;, True, sameLastSlotR, &#34;left and right end at the same slot&#34;),
+            (&#34;:=&#34;, True, sameLastSlotR, None),
+        ),
+        (
+            (
+                &#34;::&#34;,
+                True,
+                sameBoundaryR,
+                &#34;left and right start and end at the same slot&#34;,
+            ),
+            (&#34;::&#34;, True, sameBoundaryR, None),
+        ),
+        (
+            (&#34;&lt;:&#34;, True, adjBeforeR, &#34;left immediately before right&#34;),
+            (&#34;:&gt;&#34;, True, adjAfterR, &#34;left immediately after right&#34;),
+        ),
+        (
+            (
+                &#34;=k:&#34;,
+                True,
+                nearFirstSlotR,
+                &#34;left and right start at k-nearly the same slot&#34;,
+            ),
+            (&#34;=k:&#34;, True, nearFirstSlotR, None),
+        ),
+        (
+            (
+                &#34;:k=&#34;,
+                True,
+                nearLastSlotR,
+                &#34;left and right end at k-nearly the same slot&#34;,
+            ),
+            (&#34;:k=&#34;, True, nearLastSlotR, None),
+        ),
+        (
+            (
+                &#34;:k:&#34;,
+                True,
+                nearBoundaryR,
+                &#34;left and right start and end at k-near slots&#34;,
+            ),
+            (&#34;:k:&#34;, True, nearBoundaryR, None),
+        ),
+        (
+            (&#34;&lt;k:&#34;, True, nearBeforeR, &#34;left k-nearly before right&#34;),
+            (&#34;:k&gt;&#34;, True, nearAfterR, &#34;left k-nearly after right&#34;),
+        ),
+        (
+            (&#34;.f.&#34;, spinLeftFisRightG, leftFisRightGR, &#34;left.f = right.f&#34;),
+            (&#34;.f.&#34;, spinLeftGisRightF, leftGisRightFR, None),
+        ),
+        (
+            (&#34;.f=g.&#34;, spinLeftFisRightG, leftFisRightGR, &#34;left.f = right.g&#34;),
+            (&#34;.g=f.&#34;, spinLeftGisRightF, leftGisRightFR, None),
+        ),
+        (
+            (
+                &#34;.f~r~g.&#34;,
+                spinLeftFmatchRightG,
+                leftFmatchRightGR,
+                &#34;left.f matches right.g&#34;,
+            ),
+            (&#34;.g~r~f.&#34;, spinLeftGmatchRightF, leftGmatchRightFR, None),
+        ),
+        (
+            (&#34;.f#g.&#34;, 0.8, leftFunequalRightGR, &#34;left.f # right.g&#34;),
+            (&#34;.g#f.&#34;, 0.8, leftGunequalRightFR, None),
+        ),
+        (
+            (&#34;.f&gt;g.&#34;, 0.4, leftFgreaterRightGR, &#34;left.f &gt; right.g&#34;),
+            (&#34;.f&lt;g.&#34;, 0.4, leftFlesserRightGR, None),
+        ),
+        (
+            (&#34;.f&lt;g.&#34;, 0.4, leftFlesserRightGR, &#34;left.f &lt; right.g&#34;),
+            (&#34;.f&gt;g.&#34;, 0.4, leftFgreaterRightGR, None),
+        ),
+    ]
+
+    # BUILD AND INITIALIZE ALL RELATIONAL FUNCTIONS
+
+    api.TF.explore(silent=DEEP)
+    edgeMap = {}
+    nodeMap = {}
+
+    for efName in sorted(api.TF.featureSets[&#34;edges&#34;]):
+        if efName == OSLOTS or efName.startswith(OMAP):
+            continue
+        r = len(relations)
+
+        (edgeRV, edgeIRV, edgeSRV) = makeEdgeMaps(efName)
+        doValues = api.TF.features[efName].edgeValues
+        extra = &#34; with value specification allowed&#34; if doValues else &#34;&#34;
+        relations.append(
+            (
+                (f&#34;-{efName}&gt;&#34;, True, edgeRV, f&#39;edge feature &#34;{efName}&#34;{extra}&#39;),
+                (
+                    f&#34;&lt;{efName}-&#34;,
+                    True,
+                    edgeIRV,
+                    f&#39;edge feature &#34;{efName}&#34;{extra} (opposite direction)&#39;,
+                ),
+            )
+        )
+        edgeMap[2 * r] = (efName, 1)
+        edgeMap[2 * r + 1] = (efName, -1)
+
+        r = len(relations)
+        relations.append(
+            (
+                (
+                    f&#34;&lt;{efName}&gt;&#34;,
+                    True,
+                    edgeSRV,
+                    f&#39;edge feature &#34;{efName}&#34;{extra} (either direction)&#39;,
+                ),
+                (f&#34;&lt;{efName}&gt;&#34;, True, edgeSRV, None),
+            )
+        )
+        edgeMap[2 * r] = (efName, 0)
+        edgeMap[2 * r + 1] = (efName, 0)
+    lr = len(relations)
+
+    relationsAll = []
+    for (r, rc) in relations:
+        relationsAll.extend([r, rc])
+
+    searchExe.relations = [
+        dict(
+            acro=r[0],
+            spin=r[1],
+            func=r[2],
+            desc=r[3],
+        )
+        for r in relationsAll
+    ]
+    searchExe.relationFromName = dict(
+        ((r[&#34;acro&#34;], i) for (i, r) in enumerate(searchExe.relations))
+    )
+    searchExe.relationLegend = &#34;\n&#34;.join(
+        f&#39;{r[&#34;acro&#34;]:&gt;23} {r[&#34;desc&#34;]}&#39;
+        for r in searchExe.relations
+        if r[&#34;desc&#34;] is not None
+    )
+    searchExe.relationLegend += f&#34;&#34;&#34;
+The warp feature &#34;{OSLOTS}&#34; and {OMAP} features cannot be used in searches.
+One of the above relations on nodes and / or slots will suit you better.
+&#34;&#34;&#34;
+    searchExe.converse = dict(
+        tuple((2 * i, 2 * i + 1) for i in range(lr))
+        + tuple((2 * i + 1, 2 * i) for i in range(lr))
+    )
+    searchExe.edgeMap = edgeMap
+    searchExe.nodeMap = nodeMap
+
+
+def add_K_Relations(searchExe, varRels):
+    relations = searchExe.relations
+    tasks = collections.defaultdict(set)
+    for (acro, ks) in varRels.items():
+        j = searchExe.relationFromName[acro]
+        ji = searchExe.converse[j]
+        if ji &lt; j:
+            (j, ji) = (ji, j)
+        acro = relations[j][&#34;acro&#34;]
+        acroi = relations[ji][&#34;acro&#34;]
+        tasks[(j, acro, ji, acroi)] |= ks
+
+    for ((j, acro, ji, acroi), ks) in tasks.items():
+        for k in ks:
+            newAcro = acro.replace(&#34;k&#34;, str(k))
+            newAcroi = acroi.replace(&#34;k&#34;, str(k))
+            r = relations[j]
+            ri = relations[ji]
+            lr = len(relations)
+            relations.extend(
+                [
+                    dict(
+                        name=acro,
+                        acro=newAcro,
+                        spin=r[&#34;spin&#34;],
+                        func=r[&#34;func&#34;](k),
+                        desc=r[&#34;desc&#34;],
+                    ),
+                    dict(
+                        name=acroi,
+                        acro=newAcroi,
+                        spin=ri[&#34;spin&#34;],
+                        func=ri[&#34;func&#34;](k),
+                        desc=ri[&#34;desc&#34;],
+                    ),
+                ]
+            )
+            searchExe.relationFromName[newAcro] = lr
+            searchExe.relationFromName[newAcroi] = lr + 1
+            searchExe.converse[lr] = lr + 1
+            searchExe.converse[lr + 1] = lr
+
+
+def add_F_Relations(searchExe, varRels):
+    relations = searchExe.relations
+    tasks = collections.defaultdict(set)
+    for (acro, feats) in varRels.items():
+        j = searchExe.relationFromName[acro]
+        ji = searchExe.converse[j]
+        if ji &lt; j:
+            (j, ji) = (ji, j)
+        acro = relations[j][&#34;acro&#34;]
+        acroi = relations[ji][&#34;acro&#34;]
+        tasks[(j, acro, ji, acroi)] |= feats
+
+    for ((j, acro, ji, acroi), feats) in tasks.items():
+        for featInfo in feats:
+            if len(featInfo) == 2:
+                ((f, fF), (t, gF)) = featInfo
+                acroFmt = acro.replace(&#34;f&#34;, &#34;{f}&#34;).replace(&#34;g&#34;, &#34;{g}&#34;)
+                acroiFmt = acroi.replace(&#34;f&#34;, &#34;{f}&#34;).replace(&#34;g&#34;, &#34;{g}&#34;)
+                newAcro = acroFmt.format(f=fF, g=gF)
+                newAcroi = acroiFmt.format(f=fF, g=gF)
+                fArgs = (fF, gF)
+            else:
+                ((f, fF), rPat, (t, gF)) = featInfo
+                acroFmt = (
+                    acro.replace(&#34;f&#34;, &#34;{f}&#34;).replace(&#34;r&#34;, &#34;{r}&#34;).replace(&#34;g&#34;, &#34;{g}&#34;)
+                )
+                acroiFmt = (
+                    acroi.replace(&#34;f&#34;, &#34;{f}&#34;).replace(&#34;r&#34;, &#34;{r}&#34;).replace(&#34;g&#34;, &#34;{g}&#34;)
+                )
+                newAcro = acroFmt.format(f=fF, r=rPat, g=gF)
+                newAcroi = acroiFmt.format(f=fF, r=rPat, g=gF)
+                rRe = re.compile(rPat)
+                fArgs = (fF, rPat, rRe, gF)
+
+            r = relations[j]
+            ri = relations[ji]
+            lr = len(relations)
+            spin = r[&#34;spin&#34;]
+            if isinstance(spin, types.FunctionType):
+                spin = spin(*fArgs)
+            spini = ri[&#34;spin&#34;]
+            if isinstance(spini, types.FunctionType):
+                spini = spini(*fArgs)
+            func = r[&#34;func&#34;](*fArgs)
+            funci = ri[&#34;func&#34;](*fArgs)
+            relations.extend(
+                [
+                    dict(
+                        name=acro,
+                        acro=newAcro,
+                        spin=spin,
+                        func=func,
+                        desc=r[&#34;desc&#34;],
+                    ),
+                    dict(
+                        name=acroi,
+                        acro=newAcroi,
+                        spin=spini,
+                        func=funci,
+                        desc=ri[&#34;desc&#34;],
+                    ),
+                ]
+            )
+            searchExe.relationFromName[newAcro] = lr
+            searchExe.relationFromName[newAcroi] = lr + 1
+            searchExe.nodeMap.setdefault(f, set()).add(fF)
+            searchExe.nodeMap.setdefault(t, set()).add(gF)
+            searchExe.converse[lr] = lr + 1
+            searchExe.converse[lr + 1] = lr
+
+
+def add_V_Relations(searchExe, varRels):
+    relations = searchExe.relations
+    tasks = collections.defaultdict(set)
+    for (acro, vals) in sorted(varRels.items()):
+        for (eName, val) in vals:
+            (b, mid, e) = (acro[0], acro[1:-1], acro[-1])
+            norm = b == &#34;-&#34; and e == &#34;&gt;&#34;
+            conv = b == &#34;&lt;&#34; and e == &#34;-&#34;
+            eRel = f&#34;-{eName}&gt;&#34;
+            eReli = f&#34;&lt;{eName}-&#34;
+            eRels = f&#34;&lt;{eName}&gt;&#34;
+            acroi = f&#34;-{mid}&gt;&#34; if conv else f&#34;&lt;{mid}-&#34; if norm else f&#34;&lt;{mid}&gt;&#34;
+            if conv:
+                (acro, acroi) = (acroi, acro)
+            j = searchExe.relationFromName[eRel]
+            ji = searchExe.relationFromName[eReli]
+            js = searchExe.relationFromName[eRels]
+            if norm or conv:
+                tasks[(eName, j, acro, ji, acroi)].add(val)
+            else:
+                tasks[(eName, js, acro, js, acro)].add(val)
+
+    for ((eName, j, acro, ji, acroi), vals) in sorted(tasks.items()):
+        for val in vals:
+            r = relations[j]
+            ri = relations[ji]
+            lr = len(relations)
+            relations.extend(
+                [
+                    dict(
+                        acro=acro,
+                        spin=r[&#34;spin&#34;],
+                        func=r[&#34;func&#34;](val),
+                        desc=r[&#34;desc&#34;],
+                    ),
+                    dict(
+                        acro=acroi,
+                        spin=ri[&#34;spin&#34;],
+                        func=ri[&#34;func&#34;](val),
+                        desc=ri[&#34;desc&#34;],
+                    ),
+                ]
+            )
+            searchExe.relationFromName[acro] = lr
+            searchExe.relationFromName[acroi] = lr + 1
+            if j == ji:
+                searchExe.edgeMap[lr] = (eName, 0)
+                searchExe.edgeMap[lr + 1] = (eName, 0)
+            else:
+                searchExe.edgeMap[lr] = (eName, 1)
+                searchExe.edgeMap[lr + 1] = (eName, -1)
+            searchExe.converse[lr] = lr + 1
+            searchExe.converse[lr + 1] = lr</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.search.relations.add_F_Relations"><code class="name flex">
+<span>def <span class="ident">add_F_Relations</span></span>(<span>searchExe, varRels)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/search/relations.py#L1691-L1759" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def add_F_Relations(searchExe, varRels):
+    relations = searchExe.relations
+    tasks = collections.defaultdict(set)
+    for (acro, feats) in varRels.items():
+        j = searchExe.relationFromName[acro]
+        ji = searchExe.converse[j]
+        if ji &lt; j:
+            (j, ji) = (ji, j)
+        acro = relations[j][&#34;acro&#34;]
+        acroi = relations[ji][&#34;acro&#34;]
+        tasks[(j, acro, ji, acroi)] |= feats
+
+    for ((j, acro, ji, acroi), feats) in tasks.items():
+        for featInfo in feats:
+            if len(featInfo) == 2:
+                ((f, fF), (t, gF)) = featInfo
+                acroFmt = acro.replace(&#34;f&#34;, &#34;{f}&#34;).replace(&#34;g&#34;, &#34;{g}&#34;)
+                acroiFmt = acroi.replace(&#34;f&#34;, &#34;{f}&#34;).replace(&#34;g&#34;, &#34;{g}&#34;)
+                newAcro = acroFmt.format(f=fF, g=gF)
+                newAcroi = acroiFmt.format(f=fF, g=gF)
+                fArgs = (fF, gF)
+            else:
+                ((f, fF), rPat, (t, gF)) = featInfo
+                acroFmt = (
+                    acro.replace(&#34;f&#34;, &#34;{f}&#34;).replace(&#34;r&#34;, &#34;{r}&#34;).replace(&#34;g&#34;, &#34;{g}&#34;)
+                )
+                acroiFmt = (
+                    acroi.replace(&#34;f&#34;, &#34;{f}&#34;).replace(&#34;r&#34;, &#34;{r}&#34;).replace(&#34;g&#34;, &#34;{g}&#34;)
+                )
+                newAcro = acroFmt.format(f=fF, r=rPat, g=gF)
+                newAcroi = acroiFmt.format(f=fF, r=rPat, g=gF)
+                rRe = re.compile(rPat)
+                fArgs = (fF, rPat, rRe, gF)
+
+            r = relations[j]
+            ri = relations[ji]
+            lr = len(relations)
+            spin = r[&#34;spin&#34;]
+            if isinstance(spin, types.FunctionType):
+                spin = spin(*fArgs)
+            spini = ri[&#34;spin&#34;]
+            if isinstance(spini, types.FunctionType):
+                spini = spini(*fArgs)
+            func = r[&#34;func&#34;](*fArgs)
+            funci = ri[&#34;func&#34;](*fArgs)
+            relations.extend(
+                [
+                    dict(
+                        name=acro,
+                        acro=newAcro,
+                        spin=spin,
+                        func=func,
+                        desc=r[&#34;desc&#34;],
+                    ),
+                    dict(
+                        name=acroi,
+                        acro=newAcroi,
+                        spin=spini,
+                        func=funci,
+                        desc=ri[&#34;desc&#34;],
+                    ),
+                ]
+            )
+            searchExe.relationFromName[newAcro] = lr
+            searchExe.relationFromName[newAcroi] = lr + 1
+            searchExe.nodeMap.setdefault(f, set()).add(fF)
+            searchExe.nodeMap.setdefault(t, set()).add(gF)
+            searchExe.converse[lr] = lr + 1
+            searchExe.converse[lr + 1] = lr</code></pre>
+</details>
+</dd>
+<dt id="tf.search.relations.add_K_Relations"><code class="name flex">
+<span>def <span class="ident">add_K_Relations</span></span>(<span>searchExe, varRels)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/search/relations.py#L1648-L1688" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def add_K_Relations(searchExe, varRels):
+    relations = searchExe.relations
+    tasks = collections.defaultdict(set)
+    for (acro, ks) in varRels.items():
+        j = searchExe.relationFromName[acro]
+        ji = searchExe.converse[j]
+        if ji &lt; j:
+            (j, ji) = (ji, j)
+        acro = relations[j][&#34;acro&#34;]
+        acroi = relations[ji][&#34;acro&#34;]
+        tasks[(j, acro, ji, acroi)] |= ks
+
+    for ((j, acro, ji, acroi), ks) in tasks.items():
+        for k in ks:
+            newAcro = acro.replace(&#34;k&#34;, str(k))
+            newAcroi = acroi.replace(&#34;k&#34;, str(k))
+            r = relations[j]
+            ri = relations[ji]
+            lr = len(relations)
+            relations.extend(
+                [
+                    dict(
+                        name=acro,
+                        acro=newAcro,
+                        spin=r[&#34;spin&#34;],
+                        func=r[&#34;func&#34;](k),
+                        desc=r[&#34;desc&#34;],
+                    ),
+                    dict(
+                        name=acroi,
+                        acro=newAcroi,
+                        spin=ri[&#34;spin&#34;],
+                        func=ri[&#34;func&#34;](k),
+                        desc=ri[&#34;desc&#34;],
+                    ),
+                ]
+            )
+            searchExe.relationFromName[newAcro] = lr
+            searchExe.relationFromName[newAcroi] = lr + 1
+            searchExe.converse[lr] = lr + 1
+            searchExe.converse[lr + 1] = lr</code></pre>
+</details>
+</dd>
+<dt id="tf.search.relations.add_V_Relations"><code class="name flex">
+<span>def <span class="ident">add_V_Relations</span></span>(<span>searchExe, varRels)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/search/relations.py#L1762-L1814" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def add_V_Relations(searchExe, varRels):
+    relations = searchExe.relations
+    tasks = collections.defaultdict(set)
+    for (acro, vals) in sorted(varRels.items()):
+        for (eName, val) in vals:
+            (b, mid, e) = (acro[0], acro[1:-1], acro[-1])
+            norm = b == &#34;-&#34; and e == &#34;&gt;&#34;
+            conv = b == &#34;&lt;&#34; and e == &#34;-&#34;
+            eRel = f&#34;-{eName}&gt;&#34;
+            eReli = f&#34;&lt;{eName}-&#34;
+            eRels = f&#34;&lt;{eName}&gt;&#34;
+            acroi = f&#34;-{mid}&gt;&#34; if conv else f&#34;&lt;{mid}-&#34; if norm else f&#34;&lt;{mid}&gt;&#34;
+            if conv:
+                (acro, acroi) = (acroi, acro)
+            j = searchExe.relationFromName[eRel]
+            ji = searchExe.relationFromName[eReli]
+            js = searchExe.relationFromName[eRels]
+            if norm or conv:
+                tasks[(eName, j, acro, ji, acroi)].add(val)
+            else:
+                tasks[(eName, js, acro, js, acro)].add(val)
+
+    for ((eName, j, acro, ji, acroi), vals) in sorted(tasks.items()):
+        for val in vals:
+            r = relations[j]
+            ri = relations[ji]
+            lr = len(relations)
+            relations.extend(
+                [
+                    dict(
+                        acro=acro,
+                        spin=r[&#34;spin&#34;],
+                        func=r[&#34;func&#34;](val),
+                        desc=r[&#34;desc&#34;],
+                    ),
+                    dict(
+                        acro=acroi,
+                        spin=ri[&#34;spin&#34;],
+                        func=ri[&#34;func&#34;](val),
+                        desc=ri[&#34;desc&#34;],
+                    ),
+                ]
+            )
+            searchExe.relationFromName[acro] = lr
+            searchExe.relationFromName[acroi] = lr + 1
+            if j == ji:
+                searchExe.edgeMap[lr] = (eName, 0)
+                searchExe.edgeMap[lr + 1] = (eName, 0)
+            else:
+                searchExe.edgeMap[lr] = (eName, 1)
+                searchExe.edgeMap[lr + 1] = (eName, -1)
+            searchExe.converse[lr] = lr + 1
+            searchExe.converse[lr + 1] = lr</code></pre>
+</details>
+</dd>
+<dt id="tf.search.relations.basicRelations"><code class="name flex">
+<span>def <span class="ident">basicRelations</span></span>(<span>searchExe, api)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/search/relations.py#L53-L1645" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def basicRelations(searchExe, api):
+    C = api.C
+    F = api.F
+    Fs = api.Fs
+    E = api.E
+    Crank = C.rank.data
+    ClevDown = C.levDown.data
+    ClevUp = C.levUp.data
+    (CfirstSlots, ClastSlots) = C.boundary.data
+    Eoslots = E.oslots.data
+    slotType = F.otype.slotType
+    maxSlot = F.otype.maxSlot
+    maxSlotP = maxSlot + 1
+    sets = searchExe.sets
+    setInfo = searchExe.setInfo
+    searchExe.featureValueIndex = {}
+    Sindex = searchExe.featureValueIndex
+
+    def isSlotType(nType):
+        if nType == &#34;.&#34;:
+            return None
+        if sets is not None and nType in sets:
+            if nType in setInfo:
+                return setInfo[nType]
+            nodes = sets[nType]
+            allSlots = all(n &lt; maxSlotP for n in nodes)
+            if allSlots:
+                setInfo[nType] = True
+                return True
+            allNonSlots = all(n &gt; maxSlot for n in nodes)
+            if allNonSlots:
+                setInfo[nType] = False
+                return False
+            setInfo[nType] = None
+            return None
+        return nType == slotType
+
+    # EQUAL
+
+    def spinEqual(fTp, tTp):
+        def doyarns(yF, yT):
+            x = set(yF) &amp; set(yT)
+            return (x, x)
+
+        return doyarns
+
+    def equalR(fTp, tTp):
+        return _l_eq
+
+    # UNEQUAL
+
+    def unequalR(fTp, tTp):
+        return _l_uneq
+
+    # CANONICAL BEFORE
+
+    def canonicalBeforeR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_lt
+
+        return _l_ranklt(Crank)
+
+    # CANONICAL AFTER
+
+    def canonicalAfterR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_gt
+
+        return _l_rankgt(Crank)
+
+    # SAME SLOTS
+
+    def spinSameSlots(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+
+            def doyarns(yF, yT):
+                x = set(yF) &amp; set(yT)
+                return (x, x)
+
+            return doyarns
+
+        elif isSlotF or isSlotT:
+
+            def doyarns(yS, y2):
+                sindex = {}
+                for m in y2:
+                    ss = Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,)
+                    if len(ss) == 1:
+                        sindex.setdefault(ss[0], set()).add(m)
+                nyS = yS &amp; set(sindex.keys())
+                ny2 = set(chain.from_iterable(sindex[s] for s in nyS))
+                return (nyS, ny2)
+
+            if isSlotF:
+                return doyarns
+
+            else:
+
+                def xx(yF, yT):
+                    (nyT, nyF) = doyarns(yT, yF)
+                    return (nyF, nyT)
+
+                return xx
+
+        else:
+
+            def doyarns(yF, yT):
+                sindexF = {}
+                for n in yF:
+                    s = frozenset(Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,))
+                    sindexF.setdefault(s, set()).add(n)
+                sindexT = {}
+                for m in yT:
+                    s = frozenset(Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,))
+                    sindexT.setdefault(s, set()).add(m)
+                nyS = set(sindexF.keys()) &amp; set(sindexT.keys())
+                nyF = set(chain.from_iterable(sindexF[s] for s in nyS))
+                nyT = set(chain.from_iterable(sindexT[s] for s in nyS))
+                return (nyF, nyT)
+
+            return doyarns
+
+    def sameSlotsR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_eq
+        else:
+
+            def xx(n):
+                nmin = n - 1
+                if n &lt; maxSlotP:
+                    nA = array.array(&#34;I&#34;, (n,))
+                    # nA = (n,)
+                    yield n
+                    for m in ClevUp[nmin]:
+                        if Eoslots[m - maxSlotP] == nA:
+                            yield m
+                    return
+                nSlots = Eoslots[n - maxSlotP]
+                if len(nSlots) == 1:
+                    slot1 = nSlots[0]
+                    nA = array.array(&#34;I&#34;, (slot1,))
+                    # nA = tuple(slot1,)
+                    yield n
+                    yield slot1
+                    for m in ClevUp[nmin]:
+                        if Eoslots[m - maxSlotP] == nA:
+                            yield m
+                    return
+                yield n
+                for m in ClevUp[nmin]:
+                    if n in ClevUp[m - 1]:
+                        yield m
+
+            return xx
+
+    # OVERLAP
+
+    def spinOverlap(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+
+        if isSlotF and isSlotT:
+
+            def doyarns(yF, yT):
+                x = set(yF) &amp; set(yT)
+                return (x, x)
+
+            return doyarns
+
+        elif isSlotF or isSlotT:
+
+            def doyarns(yS, y2):
+                sindex = {}
+                for m in y2:
+                    for s in Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,):
+                        sindex.setdefault(s, set()).add(m)
+                nyS = yS &amp; set(sindex.keys())
+                ny2 = set(chain.from_iterable(sindex[s] for s in nyS))
+                return (nyS, ny2)
+
+            if isSlotF:
+                return doyarns
+
+            else:
+
+                def xx(yF, yT):
+                    (nyT, nyF) = doyarns(yT, yF)
+                    return (nyF, nyT)
+
+                return xx
+        else:
+
+            def doyarns(yF, yT):
+                REDUCE_FACTOR = 0.4
+                SIZE_LIMIT = 10000
+                sindexF = {}
+                for n in yF:
+                    for s in Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,):
+                        sindexF.setdefault(s, set()).add(n)
+                sindexT = {}
+                for m in yT:
+                    for s in Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,):
+                        sindexT.setdefault(s, set()).add(m)
+                nyS = set(sindexF.keys()) &amp; set(sindexT.keys())
+
+                lsF = len(sindexF)
+                lsT = len(sindexT)
+                lsI = len(nyS)
+                if lsF == lsT:  # spinning is completely useless
+                    return (yF, yT)
+                if lsI &gt; REDUCE_FACTOR * lsT and lsT &gt; SIZE_LIMIT:
+                    # spinning is not worth it
+                    return (yF, yT)
+
+                nyF = set(chain.from_iterable(sindexF[s] for s in nyS))
+                nyT = set(chain.from_iterable(sindexT[s] for s in nyS))
+                return (nyF, nyT)
+
+            return doyarns
+
+    def overlapR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_eq
+        elif isSlotT:
+
+            def func(n):
+                return Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)
+
+            return func
+        elif isSlotF:
+
+            def func(n):
+                return chain(ClevUp[n - 1], (n,))
+
+            return func
+        else:
+
+            def xx(n):
+                nSlots = Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)
+                return chain(
+                    nSlots, set(chain.from_iterable(ClevUp[s - 1] for s in nSlots))
+                )
+
+            return xx
+
+    # DIFFERENT SLOTS
+
+    def diffSlotsR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_uneq
+        elif isSlotT:
+
+            def func(n, m):
+                return (Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,)) != (n,)
+
+            return func
+        elif isSlotF:
+
+            def func(n, m):
+                return (Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)) != (m,)
+
+            return func
+        else:
+
+            def func(n, m):
+                return frozenset(
+                    Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)
+                ) != frozenset(Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,))
+
+            return func
+
+    # DISJOINT SLOTS
+
+    def disjointSlotsR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_uneq
+        elif isSlotT:
+
+            def func(n, m):
+                return m not in frozenset(
+                    Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)
+                )
+
+            return func
+        elif isSlotF:
+
+            def func(n, m):
+                return n not in frozenset(
+                    Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,)
+                )
+
+            return func
+        else:
+
+            def func(n, m):
+                return (
+                    len(
+                        frozenset(Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,))
+                        &amp; frozenset(Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,))
+                    )
+                    == 0
+                )
+
+            return func
+
+    # EMBEDDED IN
+
+    def inR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_em
+        elif isSlotT:
+            return _l_em
+        elif isSlotF:
+
+            def func(n):
+                return ClevUp[n - 1]
+
+            return func
+        else:
+
+            def func(n):
+                return ClevUp[n - 1]
+
+            return func
+
+    # EMBEDS
+
+    def hasR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_em
+        elif isSlotF:
+            return _l_em
+        elif isSlotT:
+
+            def func(n):
+                return Eoslots[n - maxSlotP] if n &gt; maxSlot else ()
+
+            return func
+        else:
+            if isSlotT is None:
+
+                def func(n):
+                    return (
+                        chain(ClevDown[n - maxSlotP], Eoslots[n - maxSlotP])
+                        if n &gt; maxSlot
+                        else ()
+                    )
+
+                return func
+            else:
+
+                def func(n):
+                    return ClevDown[n - maxSlotP] if n &gt; maxSlot else ()
+
+                return func
+
+    # BEFORE WRT SLOTS
+
+    def slotBeforeR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_lt
+        elif isSlotF:
+
+            def func(n, m):
+                return n &lt; (Eoslots[m - maxSlotP][0] if m &gt; maxSlot else m)
+
+            return func
+        elif isSlotT:
+
+            def func(n, m):
+                return (Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n) &lt; m
+
+            return func
+        else:
+
+            def func(n, m):
+                return (Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n) &lt; (
+                    Eoslots[m - maxSlotP][0] if m &gt; maxSlot else m
+                )
+
+            return func
+
+    # AFTER WRT SLOTS
+
+    def slotAfterR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_gt
+        elif isSlotF:
+
+            def func(n, m):
+                return n &gt; (Eoslots[m - maxSlotP][-1] if m &gt; maxSlot else m)
+
+            return func
+        elif isSlotT:
+
+            def func(n, m):
+                return (Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n) &gt; m
+
+            return func
+        else:
+
+            def func(n, m):
+                return (Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n) &gt; (
+                    Eoslots[m - maxSlotP][-1] if m &gt; maxSlot else m
+                )
+
+            return func
+
+    # START AT SAME SLOT
+
+    def sameFirstSlotR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_eq
+        elif isSlotF:
+            if isSlotT is None:
+
+                def func(n):
+                    return chain(CfirstSlots[n - 1], (n,))
+
+                return func
+            else:
+
+                def func(n):
+                    return CfirstSlots[n - 1]
+
+                return func
+        elif isSlotT:
+
+            def func(n):
+                return ((Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n),)
+
+            return func
+        else:
+
+            def xx(n):
+                fn = Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n
+                fnmin = fn - 1
+                if isSlotT is None:
+                    return chain(CfirstSlots[fnmin], (fn,))
+                else:
+                    return CfirstSlots[fnmin]
+
+            return xx
+
+    # ENDS AT SAME SLOT
+
+    def sameLastSlotR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_eq
+        elif isSlotF:
+            if isSlotT is None:
+
+                def func(n):
+                    return chain(ClastSlots[n - 1], (n,))
+
+                return func
+            else:
+
+                def func(n):
+                    return ClastSlots[n - 1]
+
+                return func
+        elif isSlotT:
+
+            def func(n):
+                return ((Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n),)
+
+            return func
+        else:
+
+            def xx(n):
+                ln = Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n
+                lnmin = ln - 1
+                if isSlotT is None:
+                    return chain(ClastSlots[lnmin], (ln,))
+                else:
+                    return ClastSlots[lnmin]
+
+            return xx
+
+    # START AND END AT SAME SLOT
+
+    def sameBoundaryR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+            return _l_eq
+        elif isSlotF:
+            if isSlotT is None:
+
+                def xx(n):
+                    nmin = n - 1
+                    fok = set(chain(CfirstSlots[nmin], (n,)))
+                    lok = set(chain(ClastSlots[nmin], (n,)))
+                    return fok &amp; lok
+
+            else:
+
+                def xx(n):
+                    nmin = n - 1
+                    fok = set(CfirstSlots[nmin])
+                    lok = set(ClastSlots[nmin])
+                    return fok &amp; lok
+
+            return xx
+
+        elif isSlotT:
+
+            def xx(n):
+                slots = Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)
+                fs = slots[0]
+                ls = slots[-1]
+                return (fs,) if fs == ls else ()
+
+            return xx
+
+        else:
+            if isSlotT is None:
+
+                def xx(n):
+                    fn = Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n
+                    ln = Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n
+                    fnmin = fn - 1
+                    lnmin = ln - 1
+                    fok = set(chain(CfirstSlots[fnmin], (fn,)))
+                    lok = set(chain(ClastSlots[lnmin], (ln,)))
+                    return fok &amp; lok
+
+            else:
+
+                def xx(n):
+                    fn = Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n
+                    ln = Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n
+                    fnmin = fn - 1
+                    lnmin = ln - 1
+                    fok = set(CfirstSlots[fnmin])
+                    lok = set(ClastSlots[lnmin])
+                    return fok &amp; lok
+
+            return xx
+
+    # FIRST SLOTS ARE k-CLOSE
+
+    def nearFirstSlotR(k):
+        def zz(fTp, tTp):
+            isSlotF = isSlotType(fTp)
+            isSlotT = isSlotType(tTp)
+            if isSlotF and isSlotT:
+
+                def func(n):
+                    return range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+
+                return func
+            elif isSlotF:
+                if isSlotT is None:
+
+                    def xx(n):
+                        near = range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+                        return chain(
+                            near,
+                            chain.from_iterable(CfirstSlots[lf - 1] for lf in near),
+                        )
+
+                else:
+
+                    def xx(n):
+                        near = range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+                        return chain.from_iterable(CfirstSlots[lf - 1] for lf in near)
+
+                return xx
+            elif isSlotT:
+
+                def xx(n):
+                    fn = Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n
+                    return range(max((1, fn - k)), min((maxSlot, fn + k)) + 1)
+
+                return xx
+
+            else:
+                if isSlotT is None:
+
+                    def xx(n):
+                        fn = Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n
+                        near = range(max((1, fn - k)), min((maxSlot, fn + k)) + 1)
+                        return chain(
+                            near,
+                            chain.from_iterable(CfirstSlots[lf - 1] for lf in near),
+                        )
+
+                else:
+
+                    def xx(n):
+                        fn = Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n
+                        near = range(max((1, fn - k)), min((maxSlot, fn + k)) + 1)
+                        return chain.from_iterable(CfirstSlots[lf - 1] for lf in near)
+
+                return xx
+
+        return zz
+
+    # LAST SLOTS ARE k-CLOSE
+
+    def nearLastSlotR(k):
+        def zz(fTp, tTp):
+            isSlotF = isSlotType(fTp)
+            isSlotT = isSlotType(tTp)
+            if isSlotF and isSlotT:
+
+                def func(n):
+                    return range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+
+                return func
+            elif isSlotF:
+                if isSlotT is None:
+
+                    def xx(n):
+                        near = range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+                        return chain(
+                            near, chain.from_iterable(ClastSlots[lf - 1] for lf in near)
+                        )
+
+                else:
+
+                    def xx(n):
+                        near = range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+                        return chain.from_iterable(ClastSlots[lf - 1] for lf in near)
+
+                return xx
+            elif isSlotT:
+
+                def xx(n):
+                    ln = Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n
+                    return range(max((1, ln - k)), min((maxSlot, ln + k)) + 1)
+
+                return xx
+            else:
+                if isSlotT is None:
+
+                    def xx(n):
+                        ln = Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n
+                        near = range(max((1, ln - k)), min((maxSlot, ln + k)) + 1)
+                        return chain(
+                            near, chain.from_iterable(ClastSlots[lf - 1] for lf in near)
+                        )
+
+                else:
+
+                    def xx(n):
+                        ln = Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n
+                        near = range(max((1, ln - k)), min((maxSlot, ln + k)) + 1)
+                        return chain.from_iterable(ClastSlots[lf - 1] for lf in near)
+
+                return xx
+
+        return zz
+
+    # FIRST SLOTS ARE k-CLOSE and LAST SLOTS ARE k-CLOSE
+
+    def nearBoundaryR(k):
+        def zz(fTp, tTp):
+            isSlotF = isSlotType(fTp)
+            isSlotT = isSlotType(tTp)
+            if isSlotF and isSlotT:
+
+                def func(n):
+                    return range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+
+                return func
+            elif isSlotF:
+                if isSlotT is None:
+
+                    def xx(n):
+                        near = set(range(max((1, n - k)), min((maxSlot, n + k)) + 1))
+                        fok = set(
+                            chain.from_iterable(CfirstSlots[lf - 1] for lf in near)
+                        )
+                        lok = set(
+                            chain.from_iterable(ClastSlots[lf - 1] for lf in near)
+                        )
+                        return near | (fok &amp; lok)
+
+                else:
+
+                    def xx(n):
+                        near = range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+                        fok = set(
+                            chain.from_iterable(CfirstSlots[lf - 1] for lf in near)
+                        )
+                        lok = set(
+                            chain.from_iterable(ClastSlots[lf - 1] for lf in near)
+                        )
+                        return fok &amp; lok
+
+                return xx
+            elif isSlotT:
+
+                def xx(n):
+                    slots = Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)
+                    fs = slots[0]
+                    ls = slots[-1]
+                    fok = set(range(max((1, fs - k)), min((maxSlot, fs + k)) + 1))
+                    lok = set(range(max((1, ls - k)), min((maxSlot, ls + k)) + 1))
+                    return fok &amp; lok
+
+                return xx
+            else:
+                if isSlotT is None:
+
+                    def xx(n):
+                        fn = Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n
+                        ln = Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n
+                        nearf = range(max((1, fn - k)), min((maxSlot, fn + k)) + 1)
+                        nearl = range(max((1, ln - k)), min((maxSlot, ln + k)) + 1)
+                        fok = set(
+                            chain(
+                                nearf,
+                                chain.from_iterable(
+                                    CfirstSlots[lf - 1] for lf in nearf
+                                ),
+                            )
+                        )
+                        lok = set(
+                            chain(
+                                nearl,
+                                chain.from_iterable(ClastSlots[lf - 1] for lf in nearl),
+                            )
+                        )
+                        return fok &amp; lok
+
+                else:
+
+                    def xx(n):
+                        fn = Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n
+                        ln = Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n
+                        nearf = range(max((1, fn - k)), min((maxSlot, fn + k)) + 1)
+                        nearl = range(max((1, ln - k)), min((maxSlot, ln + k)) + 1)
+                        fok = set(
+                            chain.from_iterable(CfirstSlots[lf - 1] for lf in nearf)
+                        )
+                        lok = set(
+                            chain.from_iterable(ClastSlots[lf - 1] for lf in nearl)
+                        )
+                        return fok &amp; lok
+
+                return xx
+
+        return zz
+
+    # FIRST ENDS WHERE SECOND STARTS
+
+    def adjBeforeR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+
+            def func(n):
+                return (n + 1,) if n &lt; maxSlot else ()
+
+            return func
+        else:
+            if isSlotT:
+
+                def xx(n):
+                    if n == maxSlot:
+                        return ()
+                    myNext = n + 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][-1] + 1
+                    if myNext &gt; maxSlot:
+                        return ()
+                    return (myNext,)
+
+            elif isSlotT is None:
+
+                def xx(n):
+                    if n == maxSlot:
+                        return ()
+                    myNext = n + 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][-1] + 1
+                    if myNext &gt; maxSlot:
+                        return ()
+                    return chain(CfirstSlots[myNext - 1], (myNext,))
+
+            else:
+
+                def xx(n):
+                    if n == maxSlot:
+                        return ()
+                    myNext = n + 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][-1] + 1
+                    if myNext &gt; maxSlot:
+                        return ()
+                    return CfirstSlots[myNext - 1]
+
+            return xx
+
+    # FIRST STARTS WHERE SECOND ENDS
+
+    def adjAfterR(fTp, tTp):
+        isSlotF = isSlotType(fTp)
+        isSlotT = isSlotType(tTp)
+        if isSlotF and isSlotT:
+
+            def func(n):
+                return (n - 1,) if n &gt; 1 else ()
+
+            return func
+        else:
+
+            if isSlotT:
+
+                def xx(n):
+                    if n &lt;= 1:
+                        return ()
+                    myPrev = n - 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][0] - 1
+                    if myPrev &lt;= 1:
+                        return ()
+                    return (myPrev,)
+
+            elif isSlotT is None:
+
+                def xx(n):
+                    if n &lt;= 1:
+                        return ()
+                    myPrev = n - 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][0] - 1
+                    if myPrev &lt;= 1:
+                        return ()
+                    return chain((myPrev,), ClastSlots[myPrev - 1])
+
+            else:
+
+                def xx(n):
+                    if n &lt;= 1:
+                        return ()
+                    myPrev = n - 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][0] - 1
+                    if myPrev &lt;= 1:
+                        return ()
+                    return ClastSlots[myPrev - 1]
+
+            return xx
+
+    # FIRST ENDS WHERE SECOND STARTS WITHIN k-SLOTS
+
+    def nearBeforeR(k):
+        def zz(fTp, tTp):
+            isSlotF = isSlotType(fTp)
+            isSlotT = isSlotType(tTp)
+            if isSlotF and isSlotT:
+
+                def func(n):
+                    return range(max((1, n + 1 - k)), min((maxSlot, n + 1 + k)) + 1)
+
+                return func
+            else:
+                if isSlotT:
+
+                    def xx(n):
+                        myNext = n + 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][-1] + 1
+                        return range(
+                            max((1, myNext - k)), min((maxSlot, myNext + k)) + 1
+                        )
+
+                elif isSlotT is None:
+
+                    def xx(n):
+                        myNext = n + 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][-1] + 1
+                        near = range(
+                            max((1, myNext - k)), min((maxSlot, myNext + k)) + 1
+                        )
+                        return chain(
+                            near,
+                            chain.from_iterable(CfirstSlots[ls - 1] for ls in near),
+                        )
+
+                else:
+
+                    def xx(n):
+                        myNext = n + 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][-1] + 1
+                        near = range(
+                            max((1, myNext - k)), min((maxSlot, myNext + k)) + 1
+                        )
+                        return chain.from_iterable(CfirstSlots[ls - 1] for ls in near)
+
+                return xx
+
+        return zz
+
+    # FIRST STARTS WHERE SECOND ENDS WITHIN k-SLOTS
+
+    def nearAfterR(k):
+        def zz(fTp, tTp):
+            isSlotF = isSlotType(fTp)
+            isSlotT = isSlotType(tTp)
+            if isSlotF and isSlotT:
+
+                def func(n):
+                    return range(max((1, n - 1 - k)), min((maxSlot, n - 1 + k)) + 1)
+
+                return func
+            else:
+                if isSlotT:
+
+                    def xx(n):
+                        myPrev = n - 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][0] - 1
+                        return tuple(
+                            range(max((1, myPrev - k)), min((maxSlot, myPrev + k)) + 1)
+                        )
+
+                elif isSlotT is None:
+
+                    def xx(n):
+                        myPrev = n - 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][0] - 1
+                        near = range(
+                            max((1, myPrev - k)), min((maxSlot, myPrev + k)) + 1
+                        )
+                        return chain(
+                            near, chain.from_iterable(ClastSlots[lf - 1] for lf in near)
+                        )
+
+                else:
+
+                    def xx(n):
+                        myPrev = n - 1 if n &lt; maxSlot else Eoslots[n - maxSlotP][0] - 1
+                        near = range(
+                            max((1, myPrev - k)), min((maxSlot, myPrev + k)) + 1
+                        )
+                        return chain.from_iterable(ClastSlots[lf - 1] for lf in near)
+
+                return xx
+
+        return zz
+
+    # SAME FEATURE VALUES
+
+    def spinLeftFisRightG(f, g):
+        def zz(fTp, tTp):
+            if f not in Sindex:
+                Sindex[f] = makeIndex(Fs(f).data)
+            if f != g:
+                if g not in Sindex:
+                    Sindex[g] = makeIndex(Fs(g).data)
+            indF = Sindex[f]
+            indG = Sindex[g]
+            commonValues = set(indF) if f == g else set(indF) &amp; set(indG)
+
+            def doyarns(yF, yT):
+                fNodes = {
+                    n
+                    for n in chain.from_iterable(indF[v] for v in commonValues)
+                    if n in yF
+                }
+                gNodes = {
+                    n
+                    for n in chain.from_iterable(indG[v] for v in commonValues)
+                    if n in yT
+                }
+                return (fNodes, gNodes)
+
+            return doyarns
+
+        return zz
+
+    def spinLeftGisRightF(f, g):
+        return spinLeftFisRightG(g, f)
+
+    def leftFisRightGR_ORIG(f, g):
+        def zz(fTp, tTp):
+            fData = Fs(f).v
+            gData = Fs(g).v
+
+            def uu(n, m):
+                nVal = fData(n)
+                return False if nVal is None else nVal == gData(m)
+
+            return uu
+
+        return zz
+
+    def leftFisRightGR(f, g):
+        def zz(fTp, tTp):
+            fData = Fs(f).v if f == OTYPE else Fs(f).data
+            gData = Fs(g).v if g == OTYPE else Fs(g).data
+
+            if f == OTYPE and g == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData(n)
+                    return False if nVal is None else nVal == gData(m)
+
+                return uu
+
+            if f == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData(n)
+                    return False if nVal is None else nVal == gData.get(m, None)
+
+                return uu
+
+            if g == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData.get(n, None)
+                    return False if nVal is None else nVal == gData(m)
+
+                return uu
+
+            def uu(n, m):
+                nVal = fData.get(n, None)
+                return False if nVal is None else nVal == gData.get(m, None)
+
+            return uu
+
+        return zz
+
+    def leftGisRightFR(g, f):
+        return leftFisRightGR(f, g)
+
+    # MATCH FEATURE VALUES
+
+    def spinLeftFmatchRightG(f, rPat, rRe, g):
+        def zz(fTp, tTp):
+            fR = f&#34;{f}~{rPat}&#34;
+            gR = f&#34;{g}~{rPat}&#34;
+
+            if fR not in Sindex:
+                if f not in Sindex:
+                    Sindex[f] = makeIndex(Fs(f).data)
+                indFR = {}
+                for (v, ns) in Sindex[f].items():
+                    vR = rRe.sub(&#34;&#34;, v)
+                    for n in ns:
+                        indFR.setdefault(vR, set()).add(n)
+                Sindex[fR] = indFR
+            if gR not in Sindex:
+                if g not in Sindex:
+                    Sindex[g] = makeIndex(Fs(g).data)
+                indGR = {}
+                for (v, ns) in Sindex[g].items():
+                    vR = rRe.sub(&#34;&#34;, v)
+                    for n in ns:
+                        indGR.setdefault(vR, set()).add(n)
+                Sindex[gR] = indGR
+
+            indFR = Sindex[fR]
+            indGR = Sindex[gR]
+
+            commonValues = set(indFR) &amp; set(indGR)
+
+            def doyarns(yF, yT):
+                fNodes = {
+                    n
+                    for n in chain.from_iterable(indFR[v] for v in commonValues)
+                    if n in yF
+                }
+                gNodes = {
+                    n
+                    for n in chain.from_iterable(indGR[v] for v in commonValues)
+                    if n in yT
+                }
+                return (fNodes, gNodes)
+
+            return doyarns
+
+        return zz
+
+    def spinLeftGmatchRightF(f, rPat, rRe, g):
+        return spinLeftFmatchRightG(g, rPat, rRe, f)
+
+    def leftFmatchRightGR(f, rPat, rRe, g):
+        def zz(fTp, tTp):
+            fData = Fs(f).v if f == OTYPE else Fs(f).data
+            gData = Fs(g).v if g == OTYPE else Fs(g).data
+
+            if f == OTYPE and g == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData(n)
+                    if nVal is None:
+                        return False
+                    nVal = rRe.sub(&#34;&#34;, nVal)
+                    mVal = gData(m)
+                    if mVal is None:
+                        return False
+                    mVal = rRe.sub(&#34;&#34;, mVal)
+                    return nVal == mVal
+
+                return uu
+
+            if f == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData(n)
+                    if nVal is None:
+                        return False
+                    nVal = rRe.sub(&#34;&#34;, nVal)
+                    mVal = gData.get(m, None)
+                    if mVal is None:
+                        return False
+                    mVal = rRe.sub(&#34;&#34;, mVal)
+                    return nVal == mVal
+
+                return uu
+
+            if g == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData.get(n, None)
+                    if nVal is None:
+                        return False
+                    nVal = rRe.sub(&#34;&#34;, nVal)
+                    mVal = gData(m)
+                    if mVal is None:
+                        return False
+                    mVal = rRe.sub(&#34;&#34;, mVal)
+                    return nVal == mVal
+
+                return uu
+
+            def uu(n, m):
+                nVal = fData.get(n, None)
+                if nVal is None:
+                    return False
+                nVal = rRe.sub(&#34;&#34;, nVal)
+                mVal = gData.get(m, None)
+                if mVal is None:
+                    return False
+                mVal = rRe.sub(&#34;&#34;, mVal)
+                return nVal == mVal
+
+            return uu
+
+        return zz
+
+    def leftGmatchRightFR(g, rPat, rRe, f):
+        return leftFmatchRightGR(f, rPat, rRe, g)
+
+    # UNEQUAL FEATURE VALUES
+
+    def leftFunequalRightGR(f, g):
+        def zz(fTp, tTp):
+            fData = Fs(f).v if f == OTYPE else Fs(f).data
+            gData = Fs(g).v if g == OTYPE else Fs(g).data
+
+            if f == OTYPE and g == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData(n)
+                    mVal = gData(m)
+                    return nVal is None and mVal is None or nVal != mVal
+
+                return uu
+
+            if f == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData(n)
+                    mVal = gData.get(m, None)
+                    return nVal is None and mVal is None or nVal != mVal
+
+                return uu
+
+            if g == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData.get(n, None)
+                    mVal = gData(m)
+                    return nVal is None and mVal is None or nVal != mVal
+
+                return uu
+
+            def uu(n, m):
+                nVal = fData.get(n, None)
+                mVal = gData.get(m, None)
+                return nVal is None and mVal is None or nVal != mVal
+
+            return uu
+
+        return zz
+
+    def leftGunequalRightFR(g, f):
+        return leftFunequalRightGR(f, g)
+
+    # GREATER FEATURE VALUES
+
+    def leftFgreaterRightGR(f, g):
+        def zz(fTp, tTp):
+            fData = Fs(f).v if f == OTYPE else Fs(f).data
+            gData = Fs(g).v if g == OTYPE else Fs(g).data
+
+            if f == OTYPE and g == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData(n)
+                    mVal = gData(m)
+                    return nVal is not None and mVal is not None and nVal &gt; mVal
+
+                return uu
+
+            if f == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData(n)
+                    mVal = gData.get(m, None)
+                    return nVal is not None and mVal is not None and nVal &gt; mVal
+
+                return uu
+
+            if g == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData.get(n, None)
+                    mVal = gData(m)
+                    return nVal is not None and mVal is not None and nVal &gt; mVal
+
+                return uu
+
+            def uu(n, m):
+                nVal = fData.get(n, None)
+                mVal = gData.get(m, None)
+                return nVal is not None and mVal is not None and nVal &gt; mVal
+
+            return uu
+
+        return zz
+
+    def leftGlesserRightFR(g, f):
+        return leftFgreaterRightGR(f, g)
+
+    # LESSER FEATURE VALUES
+
+    def leftFlesserRightGR(f, g):
+        def zz(fTp, tTp):
+            fData = Fs(f).v if f == OTYPE else Fs(f).data
+            gData = Fs(g).v if g == OTYPE else Fs(g).data
+
+            if f == OTYPE and g == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData(n)
+                    mVal = gData(m)
+                    return nVal is not None and mVal is not None and nVal &lt; mVal
+
+                return uu
+
+            if f == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData(n)
+                    mVal = gData.get(m, None)
+                    return nVal is not None and mVal is not None and nVal &lt; mVal
+
+                return uu
+
+            if g == OTYPE:
+
+                def uu(n, m):
+                    nVal = fData.get(n, None)
+                    mVal = gData(m)
+                    return nVal is not None and mVal is not None and nVal &lt; mVal
+
+                return uu
+
+            def uu(n, m):
+                nVal = fData.get(n, None)
+                mVal = gData.get(m, None)
+                return nVal is not None and mVal is not None and nVal &lt; mVal
+
+            return uu
+
+        return zz
+
+    def leftGgreaterRightFR(g, f):
+        return leftFlesserRightGR(f, g)
+
+    # EDGES
+
+    def makeEdgeMaps(efName):
+        def edgeAccess(eFunc, doValues, value):
+            if doValues:
+                if value is None:
+
+                    def func(n):
+                        return (m[0] for m in eFunc(n) if m[1] is None)
+
+                    return func
+                elif value is True:
+
+                    def func(n):
+                        return (m[0] for m in eFunc(n))
+
+                    return func
+                elif isinstance(value, types.FunctionType):
+
+                    def func(n):
+                        return (m[0] for m in eFunc(n) if value(m[1]))
+
+                    return func
+                elif isinstance(value, reTp):
+
+                    def func(n):
+                        return (
+                            m[0]
+                            for m in eFunc(n)
+                            if value is not None and value.search(m[1])
+                        )
+
+                    return func
+                else:
+                    (ident, value) = value
+                    if ident is None and value is True:
+
+                        def func(n):
+                            return (m[0] for m in eFunc(n))
+
+                        return func
+                    elif ident:
+
+                        def func(n):
+                            return (m[0] for m in eFunc(n) if m[1] in value)
+
+                        return func
+                    else:
+
+                        def func(n):
+                            return (m[0] for m in eFunc(n) if m[1] not in value)
+
+                        return func
+            else:
+
+                def func(n):
+                    return eFunc(n)
+
+                return func
+
+        def edgeRV(value):
+            def edgeR(fTp, tTp):
+                Es = api.Es
+                Edata = Es(efName)
+                doValues = Edata.doValues
+                return edgeAccess(Edata.f, doValues, value)
+
+            return edgeR
+
+        def edgeIRV(value):
+            def edgeIR(fTp, tTp):
+                Es = api.Es
+                Edata = Es(efName)
+                doValues = Edata.doValues
+                return edgeAccess(Edata.t, doValues, value)
+
+            return edgeIR
+
+        def edgeSRV(value):
+            def edgeSR(fTp, tTp):
+                Es = api.Es
+                Edata = Es(efName)
+                doValues = Edata.doValues
+                return edgeAccess(Edata.b, doValues, value)
+
+            return edgeSR
+
+        return (edgeRV, edgeIRV, edgeSRV)
+
+    # COLLECT ALL RELATIONS IN A TUPLE
+
+    relations = [
+        (
+            (&#34;=&#34;, spinEqual, equalR, &#34;left equal to right (as node)&#34;),
+            (&#34;=&#34;, spinEqual, equalR, None),
+        ),
+        (
+            (&#34;#&#34;, 0.999, unequalR, &#34;left unequal to right (as node)&#34;),
+            (&#34;#&#34;, 0.999, unequalR, None),
+        ),
+        (
+            (
+                &#34;&lt;&#34;,
+                0.500,
+                canonicalBeforeR,
+                &#34;left before right (in canonical node ordering)&#34;,
+            ),
+            (
+                &#34;&gt;&#34;,
+                0.500,
+                canonicalAfterR,
+                &#34;left after right (in canonical node ordering)&#34;,
+            ),
+        ),
+        (
+            (&#34;==&#34;, spinSameSlots, sameSlotsR, &#34;left occupies same slots as right&#34;),
+            (&#34;==&#34;, spinSameSlots, sameSlotsR, None),
+        ),
+        (
+            (&#34;&amp;&amp;&#34;, spinOverlap, overlapR, &#34;left has overlapping slots with right&#34;),
+            (&#34;&amp;&amp;&#34;, spinOverlap, overlapR, None),
+        ),
+        (
+            (&#34;##&#34;, 0.990, diffSlotsR, &#34;left and right do not have the same slot set&#34;),
+            (&#34;##&#34;, 0.990, diffSlotsR, None),
+        ),
+        (
+            (&#34;||&#34;, 0.900, disjointSlotsR, &#34;left and right do not have common slots&#34;),
+            (&#34;||&#34;, 0.900, disjointSlotsR, None),
+        ),
+        (
+            (&#34;[[&#34;, True, hasR, &#34;left embeds right&#34;),
+            (&#34;]]&#34;, True, inR, &#34;left embedded in right&#34;),
+        ),
+        (
+            (&#34;&lt;&lt;&#34;, 0.490, slotBeforeR, &#34;left completely before right&#34;),
+            (&#34;&gt;&gt;&#34;, 0.490, slotAfterR, &#34;left completely after right&#34;),
+        ),
+        (
+            (&#34;=:&#34;, True, sameFirstSlotR, &#34;left and right start at the same slot&#34;),
+            (&#34;=:&#34;, True, sameFirstSlotR, None),
+        ),
+        (
+            (&#34;:=&#34;, True, sameLastSlotR, &#34;left and right end at the same slot&#34;),
+            (&#34;:=&#34;, True, sameLastSlotR, None),
+        ),
+        (
+            (
+                &#34;::&#34;,
+                True,
+                sameBoundaryR,
+                &#34;left and right start and end at the same slot&#34;,
+            ),
+            (&#34;::&#34;, True, sameBoundaryR, None),
+        ),
+        (
+            (&#34;&lt;:&#34;, True, adjBeforeR, &#34;left immediately before right&#34;),
+            (&#34;:&gt;&#34;, True, adjAfterR, &#34;left immediately after right&#34;),
+        ),
+        (
+            (
+                &#34;=k:&#34;,
+                True,
+                nearFirstSlotR,
+                &#34;left and right start at k-nearly the same slot&#34;,
+            ),
+            (&#34;=k:&#34;, True, nearFirstSlotR, None),
+        ),
+        (
+            (
+                &#34;:k=&#34;,
+                True,
+                nearLastSlotR,
+                &#34;left and right end at k-nearly the same slot&#34;,
+            ),
+            (&#34;:k=&#34;, True, nearLastSlotR, None),
+        ),
+        (
+            (
+                &#34;:k:&#34;,
+                True,
+                nearBoundaryR,
+                &#34;left and right start and end at k-near slots&#34;,
+            ),
+            (&#34;:k:&#34;, True, nearBoundaryR, None),
+        ),
+        (
+            (&#34;&lt;k:&#34;, True, nearBeforeR, &#34;left k-nearly before right&#34;),
+            (&#34;:k&gt;&#34;, True, nearAfterR, &#34;left k-nearly after right&#34;),
+        ),
+        (
+            (&#34;.f.&#34;, spinLeftFisRightG, leftFisRightGR, &#34;left.f = right.f&#34;),
+            (&#34;.f.&#34;, spinLeftGisRightF, leftGisRightFR, None),
+        ),
+        (
+            (&#34;.f=g.&#34;, spinLeftFisRightG, leftFisRightGR, &#34;left.f = right.g&#34;),
+            (&#34;.g=f.&#34;, spinLeftGisRightF, leftGisRightFR, None),
+        ),
+        (
+            (
+                &#34;.f~r~g.&#34;,
+                spinLeftFmatchRightG,
+                leftFmatchRightGR,
+                &#34;left.f matches right.g&#34;,
+            ),
+            (&#34;.g~r~f.&#34;, spinLeftGmatchRightF, leftGmatchRightFR, None),
+        ),
+        (
+            (&#34;.f#g.&#34;, 0.8, leftFunequalRightGR, &#34;left.f # right.g&#34;),
+            (&#34;.g#f.&#34;, 0.8, leftGunequalRightFR, None),
+        ),
+        (
+            (&#34;.f&gt;g.&#34;, 0.4, leftFgreaterRightGR, &#34;left.f &gt; right.g&#34;),
+            (&#34;.f&lt;g.&#34;, 0.4, leftFlesserRightGR, None),
+        ),
+        (
+            (&#34;.f&lt;g.&#34;, 0.4, leftFlesserRightGR, &#34;left.f &lt; right.g&#34;),
+            (&#34;.f&gt;g.&#34;, 0.4, leftFgreaterRightGR, None),
+        ),
+    ]
+
+    # BUILD AND INITIALIZE ALL RELATIONAL FUNCTIONS
+
+    api.TF.explore(silent=DEEP)
+    edgeMap = {}
+    nodeMap = {}
+
+    for efName in sorted(api.TF.featureSets[&#34;edges&#34;]):
+        if efName == OSLOTS or efName.startswith(OMAP):
+            continue
+        r = len(relations)
+
+        (edgeRV, edgeIRV, edgeSRV) = makeEdgeMaps(efName)
+        doValues = api.TF.features[efName].edgeValues
+        extra = &#34; with value specification allowed&#34; if doValues else &#34;&#34;
+        relations.append(
+            (
+                (f&#34;-{efName}&gt;&#34;, True, edgeRV, f&#39;edge feature &#34;{efName}&#34;{extra}&#39;),
+                (
+                    f&#34;&lt;{efName}-&#34;,
+                    True,
+                    edgeIRV,
+                    f&#39;edge feature &#34;{efName}&#34;{extra} (opposite direction)&#39;,
+                ),
+            )
+        )
+        edgeMap[2 * r] = (efName, 1)
+        edgeMap[2 * r + 1] = (efName, -1)
+
+        r = len(relations)
+        relations.append(
+            (
+                (
+                    f&#34;&lt;{efName}&gt;&#34;,
+                    True,
+                    edgeSRV,
+                    f&#39;edge feature &#34;{efName}&#34;{extra} (either direction)&#39;,
+                ),
+                (f&#34;&lt;{efName}&gt;&#34;, True, edgeSRV, None),
+            )
+        )
+        edgeMap[2 * r] = (efName, 0)
+        edgeMap[2 * r + 1] = (efName, 0)
+    lr = len(relations)
+
+    relationsAll = []
+    for (r, rc) in relations:
+        relationsAll.extend([r, rc])
+
+    searchExe.relations = [
+        dict(
+            acro=r[0],
+            spin=r[1],
+            func=r[2],
+            desc=r[3],
+        )
+        for r in relationsAll
+    ]
+    searchExe.relationFromName = dict(
+        ((r[&#34;acro&#34;], i) for (i, r) in enumerate(searchExe.relations))
+    )
+    searchExe.relationLegend = &#34;\n&#34;.join(
+        f&#39;{r[&#34;acro&#34;]:&gt;23} {r[&#34;desc&#34;]}&#39;
+        for r in searchExe.relations
+        if r[&#34;desc&#34;] is not None
+    )
+    searchExe.relationLegend += f&#34;&#34;&#34;
+The warp feature &#34;{OSLOTS}&#34; and {OMAP} features cannot be used in searches.
+One of the above relations on nodes and / or slots will suit you better.
+&#34;&#34;&#34;
+    searchExe.converse = dict(
+        tuple((2 * i, 2 * i + 1) for i in range(lr))
+        + tuple((2 * i + 1, 2 * i) for i in range(lr))
+    )
+    searchExe.edgeMap = edgeMap
+    searchExe.nodeMap = nodeMap</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#search-by-relational-patterns-between-nodes">Search by relational patterns between nodes</a></li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.search" href="index.html">tf.search</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.search.relations.add_F_Relations" href="#tf.search.relations.add_F_Relations">add_F_Relations</a></code></li>
+<li><code><a title="tf.search.relations.add_K_Relations" href="#tf.search.relations.add_K_Relations">add_K_Relations</a></code></li>
+<li><code><a title="tf.search.relations.add_V_Relations" href="#tf.search.relations.add_V_Relations">add_V_Relations</a></code></li>
+<li><code><a title="tf.search.relations.basicRelations" href="#tf.search.relations.basicRelations">basicRelations</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
