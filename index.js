@@ -139,7 +139,6 @@ URLS=[
 "tf/convert/tei.html",
 "tf/convert/watm.html",
 "tf/convert/mql.html",
-"tf/convert/watm_translatin.html",
 "tf/convert/helpers.html",
 "tf/convert/pagexml.html",
 "tf/writing/index.html",
@@ -3586,7 +3585,7 @@ INDEX=[
 {
 "ref":"tf.about.releases",
 "url":72,
-"doc":" Release notes  ! hint \"Consult the tutorials after changes\" When we change the API, we make sure that the tutorials show off all possibilities. See the app-specific tutorials via  tf.about.corpora .  -  The TEI converter is still in active development. If you need the latest version, clone the TF repo and in its top-level directory run the command:  sh pip install -e .    12  12.2  12.2.11 2024-02- Upcoming  Small fixes in  tf.convert.addnlp : when the NLP data is integrated in the TF dataset, the NLP-generated features will get some metadata  12.2.8,9,10 2024-01-24/25 TF can auto-download extra data with a TF dataset, e.g. a directory with named entities ( ner ) as in the [suriano corpus](https: gitlab.huc.knaw.nl/suriano/letters). However, this only worked when the repo was in the  github backend and the extra data had been packed for express-download and attached to a release. Now it also works with the normal download methods using the GitHub and GitLab APIs. So, after the move of Suriano from GitHub to GitLab, this functionality is still available. There was a glitch in the layout of the NER tool which caused section labels to be chopped off at the margin, only in notebooks. Thats has been fixed by moving some CSS code from one file to an other.  12.2.7 2024-01-23 There were issues with starting up the Text-Fabric browser:  If the system could not start the browser, the TF stopped the webserver. That is not helpful, because one can always open a browser and enter the url in the address bar. Now TF shows the url rather prominently when it does not open a browser.  If debug mode is on, Flask reloads the whole process, and that might include opening the browser as well. Now Flask only opens the browser after the startup of the webserver, and not anymore after successive reloads.  12.2.6 2024-01-15 Somehow the express way of downloading data (via complete.zip attached to the latest release) did not get triggered in all cases where it should. It is now triggered in more cases than before.  12.2.5 2023-12-18 Small fix in NER browser: prevent submitting the form if the focus is in a textarea field or in an input field that does not have type=submit.  12.2.3,4 2023-12-09 Writing support for Ugaritic, thanks to Martijn Naaijer and Christian H\u00f8jgaard for converting a Ugaritic corpus to TF. Fix in display functions (continued):  The logic of feature display, fixed in the previous version, was not effective when things are displayed in the TF browser. Because in the TF browser the features of the last query were passed as  extraFeatures instead of  tupleFeatures . This has been fixed by using  tupleFeatures in the TF browser as well.  12.2.2 2023-12-02 Fix in display functions, thanks to Tony Jurg:  if you do  A.pretty(x, queryFeatures=False, extraFeatures=\"yy zz\") the extra features were not shown. So there was no obvious way to control exactly the features that you want to show in a display. That has been fixed. Further clarification: the node features that are used by a query are stored in the display option  tupleFeatures . That is what causes them to be displayed in subsequent display statements. You can also explicitly set/pass the  tupleFeatures parameter. However, the fact that  queryFeatures=False prohibited the display of features mentioned in  extraFeatures was against the intuitions. Improvements in the PageXML conversion.  There are token features  str ,  after that reflect the logical tokens  There are token features  rstr ,  rafter that reflect the physical tokens  The distincition between logical and physical is that physical token triplets with the soft hyphen as the middle one, are joined to one logical token; this happens across line boundaries, but also region and page boundaries.  12.2.0,1 2023-11-28 New conversion tool: from PageXML. Still in its infancy. It uses the [PageXML tools](https: github.com/knaw-huc/pagexml) by Marijn Koolen. For an example see [translatin/logic](https: gitlab.huc.knaw.nl/translatin/logic/-/blob/main/tools/convertPlain.ipynb?ref_type=heads). Fix:  TF did not fetch an earlier version of a corpus if the newest release contains a  complete.zip (which only has the latest version).  For some technical reason that still escapes me, the TF browser was slow to start. Fixed it by saying  threaded=True to Flask, as suggested on [stackoverflow](https: stackoverflow.com/a/11150849/15236220) From now on: TF does not try to download  complete.zip if you pass a  version argument to the  use() command.  12.1  12.1.6,7 2023-11-15 Various fixes:  Some package data was not included for the NER annotation tool.  In the NER tool, the highlighting of hits of the search pattern is now exact, it was sometimes off. Deleted tf.tools.docsright again, but developed it further in [docsright](https: github.com/annotation/docsright).  12.1.5 2023-11-02  Improvement in dependencies. Text-Fabric is no longer mandatory dependent on  openpyxl ,  pandas ,  pyarrow ,  lxml . The optional dependencies on  pygithub and  python-gitlab remain, but most users will never need them, because TF can also fetch the  complete.zip that is available as release asset for most corpora. Whenever TF invokes a module that is not in the mandatory dependencies, it will act gracefully, providing hints to install the modules in question.  12.1.3,4 2023-11-01  API change in the Annotator: Calling the annotator is now easier: A.makeNer() (No need to make an additional  import statement.) This will give you access to all annotation methods, including using a spreadsheet to read annotation instructions from.  Removal of deprecated commands (on the command line) in version 11:   text-fabric (has become  tf )   text-fabric-zip (has become  tf-zip )   text-fabric-make (has become  tf-make )  Bug fixes: [ 81](https: github.com/annotation/text-fabric/issues/81) and [ 82](https: github.com/annotation/text-fabric/issues/82)  Spell-checked all bits of the TF docs here (33,000 lines). Wrote a script tf.tools.docsright to separate the code content from the markdown content, and to strip bits from the markdown content that lead to false positives for the spell checker. Then had the Vim spell checker run over those lines and corrected all mistakes by hand. Still, there might be grammar errors and content inaccuracies.  12.1.4 follows 12.1.3. quickly, because in corpora without a NER configuration file, TF did not start up properly.  12.1.1,2 2023-10-29  Bug fix: the mechanism to make individual exceptions when adding named entities in the  tf.browser.ner.annotate tool was broken. Thanks to Daniel Swanson for spotting it.  Additional fixes and enhancements.  12.1.0 2023-10-28  New stuff  In the TF browser there will be a new tab in the vertical sidebar:  Annotate , which will give access to manual annotation tools. I am developing the first one, a tool to annotate named entities efficiently, both in the TF browser and in a Jupyter Notebook. Reed more in  tf.about.annotate . These tools will let you save your work as files on your own computer.  In  tf.convert.addnlp we can now extract more NLP information besides tokens and sentences: part-of-speech, morphological tagging, lemmatisation, named entity recognition  Fixes  in the TEI converter.  12.0  12.0.6,7 2023-09-13 Trivial fix in code that exports the data from a job in the TF browser. In the meanwhile there is unfinished business in the  Annotate tab in the TF browser, that will come into production in the upcoming 12.1 release. The Chrome browser has an attractive feature that other browsers such as Safari lack: It supports the CSS property [content-visibility](https: developer.mozilla.org/en-US/docs/Web/CSS/content-visibility). With this property you can prevent the browser to do the expensive rendering of content that is not visible on the screen. That makes it possible to load a lot of content in a single page without tripping up the browser. You also need the [ IntersectionObserver API](https: developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API), but that is generally supported by browsers. With the help of that API you can restrict the binding of event listeners to elements that are visible on the screen. So, you can open the TF browser in Chrome by passing the option   chrome . But if Chrome is not installed, it will open in the default browser anyway. Also, when the opening of the browser fails somehow, the web server is stopped.  12.0.5 2023-07-10 Fixed references to static files that still went to  /server instead of  /browser . This has to do with the new approach to the TF browser.  12.0.0-4 2023-07-05  Simplification  The TF browser no longer works with a separate process that holds the TF corpus data. Instead, the web server (flask) loads the corpus itself. This will restrict the usage of the TF browser to local-single-user scenarios.  TF no longer exposes the installation options  [browser, pandas] pip install 'text-fabric[browser]' pip install 'text-fabric[pandas]' If you work with Pandas (like exporting to Pandas) you have to install it yourself: pip install pandas pyarrow The TF browser is always supported. The reason to have these distinct capabilities was that there are python libraries involved that do not install on the iPad. The simplification of the TF browser makes it possible to be no longer dependent on these modules. Hence, TF can be installed on the iPad, although the TF browser works is not working there yet. But the auto-downloading of data from GitHub / GitLab works.  Minor things  Header. After loading a dataset, a header is shown with shows all kinds of information about the corpus. But so far, it did not show the TF app settings. Now they are included in the header. There are two kinds: the explicitly given settings and the derived and computed settings. The latter ones will be suppressed when loading a dataset in a Jupyter notebook, because these settings can become quite big. You can still get them with  A.showContext() . In the TF browser they will be always included, you find it in the  Corpus tab.  -  Older releases See  tf.about.releasesold ."
+"doc":" Release notes  ! hint \"Consult the tutorials after changes\" When we change the API, we make sure that the tutorials show off all possibilities. See the app-specific tutorials via  tf.about.corpora .  -  The TEI converter is still in active development. If you need the latest version, clone the TF repo and in its top-level directory run the command:  sh pip install -e .    12  12.3  12.3.0 2024-02-08  A new data export conversion, from TF to WATM. See  tf.convert.watm . WATM is a not yet hardened data format that powers the publishing line for text and annotations built by Team Text at [KNAW/HuC Digital Infrastructure](https: di.huc.knaw.nl/text-analysis-en.html). Currently this export is used for the corpora  [Mondriaan Proeftuin](https: github.com/annotation/mondriaan)  [Suriano Letters](https: gitlab.huc.knaw.nl/suriano/letters)  [TransLatin Corpus](https: gitlab.huc.knaw.nl/translatin/corpus)  Small fixes in  tf.convert.addnlp : when the NLP data is integrated in the TF dataset, the NLP-generated features will get some metadata  12.2  12.2.8,9,10 2024-01-24/25 TF can auto-download extra data with a TF dataset, e.g. a directory with named entities ( ner ) as in the [suriano corpus](https: gitlab.huc.knaw.nl/suriano/letters). However, this only worked when the repo was in the  github backend and the extra data had been packed for express-download and attached to a release. Now it also works with the normal download methods using the GitHub and GitLab APIs. So, after the move of Suriano from GitHub to GitLab, this functionality is still available. There was a glitch in the layout of the NER tool which caused section labels to be chopped off at the margin, only in notebooks. Thats has been fixed by moving some CSS code from one file to an other.  12.2.7 2024-01-23 There were issues with starting up the Text-Fabric browser:  If the system could not start the browser, the TF stopped the webserver. That is not helpful, because one can always open a browser and enter the url in the address bar. Now TF shows the url rather prominently when it does not open a browser.  If debug mode is on, Flask reloads the whole process, and that might include opening the browser as well. Now Flask only opens the browser after the startup of the webserver, and not anymore after successive reloads.  12.2.6 2024-01-15 Somehow the express way of downloading data (via complete.zip attached to the latest release) did not get triggered in all cases where it should. It is now triggered in more cases than before.  12.2.5 2023-12-18 Small fix in NER browser: prevent submitting the form if the focus is in a textarea field or in an input field that does not have type=submit.  12.2.3,4 2023-12-09 Writing support for Ugaritic, thanks to Martijn Naaijer and Christian H\u00f8jgaard for converting a Ugaritic corpus to TF. Fix in display functions (continued):  The logic of feature display, fixed in the previous version, was not effective when things are displayed in the TF browser. Because in the TF browser the features of the last query were passed as  extraFeatures instead of  tupleFeatures . This has been fixed by using  tupleFeatures in the TF browser as well.  12.2.2 2023-12-02 Fix in display functions, thanks to Tony Jurg:  if you do  A.pretty(x, queryFeatures=False, extraFeatures=\"yy zz\") the extra features were not shown. So there was no obvious way to control exactly the features that you want to show in a display. That has been fixed. Further clarification: the node features that are used by a query are stored in the display option  tupleFeatures . That is what causes them to be displayed in subsequent display statements. You can also explicitly set/pass the  tupleFeatures parameter. However, the fact that  queryFeatures=False prohibited the display of features mentioned in  extraFeatures was against the intuitions. Improvements in the PageXML conversion.  There are token features  str ,  after that reflect the logical tokens  There are token features  rstr ,  rafter that reflect the physical tokens  The distincition between logical and physical is that physical token triplets with the soft hyphen as the middle one, are joined to one logical token; this happens across line boundaries, but also region and page boundaries.  12.2.0,1 2023-11-28 New conversion tool: from PageXML. Still in its infancy. It uses the [PageXML tools](https: github.com/knaw-huc/pagexml) by Marijn Koolen. For an example see [translatin/logic](https: gitlab.huc.knaw.nl/translatin/logic/-/blob/main/tools/convertPlain.ipynb?ref_type=heads). Fix:  TF did not fetch an earlier version of a corpus if the newest release contains a  complete.zip (which only has the latest version).  For some technical reason that still escapes me, the TF browser was slow to start. Fixed it by saying  threaded=True to Flask, as suggested on [stackoverflow](https: stackoverflow.com/a/11150849/15236220) From now on: TF does not try to download  complete.zip if you pass a  version argument to the  use() command.  12.1  12.1.6,7 2023-11-15 Various fixes:  Some package data was not included for the NER annotation tool.  In the NER tool, the highlighting of hits of the search pattern is now exact, it was sometimes off. Deleted tf.tools.docsright again, but developed it further in [docsright](https: github.com/annotation/docsright).  12.1.5 2023-11-02  Improvement in dependencies. Text-Fabric is no longer mandatory dependent on  openpyxl ,  pandas ,  pyarrow ,  lxml . The optional dependencies on  pygithub and  python-gitlab remain, but most users will never need them, because TF can also fetch the  complete.zip that is available as release asset for most corpora. Whenever TF invokes a module that is not in the mandatory dependencies, it will act gracefully, providing hints to install the modules in question.  12.1.3,4 2023-11-01  API change in the Annotator: Calling the annotator is now easier: A.makeNer() (No need to make an additional  import statement.) This will give you access to all annotation methods, including using a spreadsheet to read annotation instructions from.  Removal of deprecated commands (on the command line) in version 11:   text-fabric (has become  tf )   text-fabric-zip (has become  tf-zip )   text-fabric-make (has become  tf-make )  Bug fixes: [ 81](https: github.com/annotation/text-fabric/issues/81) and [ 82](https: github.com/annotation/text-fabric/issues/82)  Spell-checked all bits of the TF docs here (33,000 lines). Wrote a script tf.tools.docsright to separate the code content from the markdown content, and to strip bits from the markdown content that lead to false positives for the spell checker. Then had the Vim spell checker run over those lines and corrected all mistakes by hand. Still, there might be grammar errors and content inaccuracies.  12.1.4 follows 12.1.3. quickly, because in corpora without a NER configuration file, TF did not start up properly.  12.1.1,2 2023-10-29  Bug fix: the mechanism to make individual exceptions when adding named entities in the  tf.browser.ner.annotate tool was broken. Thanks to Daniel Swanson for spotting it.  Additional fixes and enhancements.  12.1.0 2023-10-28  New stuff  In the TF browser there will be a new tab in the vertical sidebar:  Annotate , which will give access to manual annotation tools. I am developing the first one, a tool to annotate named entities efficiently, both in the TF browser and in a Jupyter Notebook. Reed more in  tf.about.annotate . These tools will let you save your work as files on your own computer.  In  tf.convert.addnlp we can now extract more NLP information besides tokens and sentences: part-of-speech, morphological tagging, lemmatisation, named entity recognition  Fixes  in the TEI converter.  12.0  12.0.6,7 2023-09-13 Trivial fix in code that exports the data from a job in the TF browser. In the meanwhile there is unfinished business in the  Annotate tab in the TF browser, that will come into production in the upcoming 12.1 release. The Chrome browser has an attractive feature that other browsers such as Safari lack: It supports the CSS property [content-visibility](https: developer.mozilla.org/en-US/docs/Web/CSS/content-visibility). With this property you can prevent the browser to do the expensive rendering of content that is not visible on the screen. That makes it possible to load a lot of content in a single page without tripping up the browser. You also need the [ IntersectionObserver API](https: developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API), but that is generally supported by browsers. With the help of that API you can restrict the binding of event listeners to elements that are visible on the screen. So, you can open the TF browser in Chrome by passing the option   chrome . But if Chrome is not installed, it will open in the default browser anyway. Also, when the opening of the browser fails somehow, the web server is stopped.  12.0.5 2023-07-10 Fixed references to static files that still went to  /server instead of  /browser . This has to do with the new approach to the TF browser.  12.0.0-4 2023-07-05  Simplification  The TF browser no longer works with a separate process that holds the TF corpus data. Instead, the web server (flask) loads the corpus itself. This will restrict the usage of the TF browser to local-single-user scenarios.  TF no longer exposes the installation options  [browser, pandas] pip install 'text-fabric[browser]' pip install 'text-fabric[pandas]' If you work with Pandas (like exporting to Pandas) you have to install it yourself: pip install pandas pyarrow The TF browser is always supported. The reason to have these distinct capabilities was that there are python libraries involved that do not install on the iPad. The simplification of the TF browser makes it possible to be no longer dependent on these modules. Hence, TF can be installed on the iPad, although the TF browser works is not working there yet. But the auto-downloading of data from GitHub / GitLab works.  Minor things  Header. After loading a dataset, a header is shown with shows all kinds of information about the corpus. But so far, it did not show the TF app settings. Now they are included in the header. There are two kinds: the explicitly given settings and the derived and computed settings. The latter ones will be suppressed when loading a dataset in a Jupyter notebook, because these settings can become quite big. You can still get them with  A.showContext() . In the TF browser they will be always included, you find it in the  Corpus tab.  -  Older releases See  tf.about.releasesold ."
 },
 {
 "ref":"tf.about.clientmanual",
@@ -3626,7 +3625,7 @@ INDEX=[
 {
 "ref":"tf.about.corpora",
 "url":80,
-"doc":" Corpora TF corpora are usually stored on GitHub / GitLab and TF knows how to download a corpus from GitHub / GitLab if you specify the  org/repo . Most corpora are configured by metadata in a directory  app in the repo. You can load a corpus into a Python data structure by  python from tf.app import use A = use(\"org/repo\")   And you can get it in the TF browser by saying this on a command prompt:  sh tf org/repo   Here is a list of corpora that can be loaded this way. Since everybody can put a TF corpus on GitHub / GitLab, the list may not be complete! [ annotation/banks ](https: github.com/annotation/banks) :  modern English Iain M. Banks, 1954 - 2013, 99 words from the SF novel  [Consider Phlebas](https: read.amazon.com/kp/kshare?asin=B002TXZRQI&id=NpPGzf_HT5aADabyiDDSIQ&reshareId=RZ91SGMZJPWK9S1Y4EZX&reshareChannel=system) , Dirk Roorda  to see the details [ annotation/mobydick ](https: github.com/annotation/mobydick) :  English Herman Melville, 1819 - 1891, Novel, 1851; converted from TEI in the Oxford Text Archive, Dirk Roorda  with NLP output from Spacy woven in [ annotation/mondriaan ](https: github.com/annotation/mondriaan) :  English Piet Mondriaan, 1872 - 1944, Test corpus of 14 letters; converted from TEI from the Huygens Institute, together with RKD and HuC; many people involved  with NLP output from Spacy woven in  [Cambridge Semitics Lab](https: github.com/CambridgeSemiticsLab) [ CambridgeSemiticsLab/nena_tf ](https: github.com/CambridgeSemiticsLab/nena_tf) :  Aramaic North Eastern Neo-Aramaic Corpus, 2000,  [Nena Cambridge](https: nena.ames.cam.ac.uk) , Cody Kingham  with a client-side, offline search interface in JavaScript  [CenterBLC Andrews University](https: github.com/CenterBLC) [ CenterBLC/LXX ](https: github.com/CenterBLC/LXX) :  Greek [Septuagint](https: en.wikipedia.org/wiki/Septuagint), 300 - 100 BCE,  LXX Rahlf's edition 1935 plus additional features by CenterBLC ; earliest extant Greek translation of Hebrew Bible books; Oliver Glanz, Adrian Negrea [ CenterBLC/NA ](https: github.com/CenterBLC/NA) :  Greek New Testament, 100 - 400,  GNT Nestle-Aland edition 1904 with new features by CenterBLC , converted from [ biblicalhumanities/Nestle1904 ](https: github.com/biblicalhumanities/Nestle1904) contributed by Ulrik Sandborg Petersen, Jonathan Robie; Oliver Glanz [ CenterBLC/SBLGNT ](https: github.com/CenterBLC/SBLGNT) :  Greek New Testament, 100 - 400, converted from  James Tauber's [ morphgnt /  sblgnt ](https: github.com/morphgnt/sblgnt) with additional features by CenterBLC ; Adrian Negrea, Clacir Virmes, Oliver Glanz, Krysten Thomas  [CLARIAH](https: github.com/CLARIAH) [ CLARIAH/descartes-tf ](https: github.com/CLARIAH/descartes-tf) :  French ,  Latin ,  Dutch Letters from and to Descartes, 1619 - 1650,  Ren\u00e9 Descartes - Correspondance ; Ch. Adam et G. Milhaud (eds. and illustrations, 1896-1911); Katsuzo Murakami, Meguru Sasaki, Takehumi Tokoro (ASCII digitization, 1998); Erik-Jan Bos (ed, 2011); Dirk Roorda (converter TEI, 2011 and TF 2023)  with math display and illustrations [ CLARIAH/wp6-ferdinandhuyck ](https: github.com/CLARIAH/wp6-ferdinandhuyck) :  Dutch a novel by Jacob van Lennep, 1840,  Jacob van Lennep - Ferdinand Huyck ; From [DBNL](https: www.dbnl.org/tekst/lenn006lotg01_01/), TEI-Lite; Dirk Roorda (converter TEI to TF), see also  tf.convert.tei  with NLP output from Spacy woven in [ CLARIAH/wp6-missieven ](https: github.com/CLARIAH/wp6-missieven) :  Dutch General Missives, 1600 - 1800,  General Missives, Dutch East-Indian Company , Jesse van der Does, Sophie Arnoult, Dirk Roorda [ CLARIAH/wp6-daghregisters ](https: github.com/CLARIAH/wp6-daghregisters) :  Dutch Dagh Registers Batavia, 1640 - 1641,  Daily events at Batavia, Indonesia, historical source for the operation of the Dutch East-Indian Company , Lodewijk Petram, Dirk Roorda.  work in progress, currently only volume 4  with many OCR errors and an attempt to detect them  [Cody Kingham](https: github.com/codykingham) [ codykingham/tischendorf_tf ](https: github.com/codykingham/tischendorf_tf) :  Greek New Testament, 50 - 450,  Tischendorf 8th Edition , Cody Kingham, Dirk Roorda  [Digital Theologians of the University of Copenhagen](https: github.com/DT-UCPH) [ DT-UCPH/sp ](https: github.com/DT-UCPH) :  Hebrew [Samaritan Pentateuch](https: en.wikipedia.org/wiki/Samaritan_Pentateuch) , 516 BCE - 70 AD,  MS Dublin Chester Beatty Library 751 + MS Garizim 1 , Martijn Naaijer, Christian Canu H\u00f8jgaard  [Eep Talstra Center for Bible and Computer](https: github.com/ETCBC) [ ETCBC/bhsa ](https: github.com/ETCBC/bhsa) :  Hebrew Bible (Old Testament), 1000 BCE - 900 AD,  [Biblia Hebraica Stuttgartensia (Amstelodamensis)](https: ETCBC.github.io/bhsa/) , ETCBC + Dirk Roorda  the canonical TF dataset, where it all started [ ETCBC/dhammapada ](https: github.com/ETCBC/dhammapada) :  P\u0101li and  Latin Ancient Buddhist verses, 300 BCE and 1855 AD,  Transcription with Latin translations based on Viggo Fausb\u00f8ll's book , Bee Scherer, Yvonne Mataar, Dirk Roorda [ ETCBC/dss ](https: github.com/ETCBC/dss) :  Hebrew Dead Sea Scrolls, 300 BCE - 100 AD,  Transcriptions with morphology based on Martin Abegg's data files , Martijn Naaijer, Jarod Jacobs, Dirk Roorda [ ETCBC/nestle1904 ](https: github.com/ETCBC/nestle1904) :  Greek New Testament, 100 - 400,  GNT Nestle-Aland edition 1904 from LOWFAT-XML syntax trees , converted from [ biblicalhumanities/greek-new-testament ](https: github.com/biblicalhumanities/greek-new-testament/tree/master/syntax-trees/sblgnt-lowfat) contributed by Jonathan Robie and Micheal Palmer; Oliver Glanz, Tony Jurg, Saulo de Oliveira Cantanh\u00eade, Dirk Roorda [ ETCBC/peshitta ](https: github.com/ETCBC/peshitta) :  Syriac Peshitta (Old Testament), 1000 BCE - 900 AD,  Vetus Testamentum Syriace , Hannes Vlaardingerbroek, Dirk Roorda [ ETCBC/syrnt ](https: github.com/ETCBC/syrnt) :  Syriac New Testament, 0 - 1000,  Novum Testamentum Syriace , Hannes Vlaardingerbroek, Dirk Roorda  [ KNAW/HuygensING ](https: github.com/HuygensING) and [gitlab.huc.knaw.nl](https: gitlab.huc.knaw.nl) [ hermans/works ](https: gitlab.huc.knaw.nl/hermans/works) :  Dutch Complete Works of W.F. Hermans. The conversion to TF is work in progress. So far these works have been done:  Paranoia  Sadistisch Universum  Nooit meer slapen Bram Oostveen, Peter Kegel, Dirk Roorda  Not publicly accessible, the book is under copyright.  with a critical apparatus [ mondriaan/letters ](https: git.diginfra.nl/mondriaan/letters) :  Dutch Letters of Piet Mondriaan , 1892-1923. Straight conversion from TEI to TF, Peter Boot et al., Dirk Roorda  Work in progress, not yet public .  with NLP output from Spacy woven in [ suriano/letters ](https: gitlab.huc.knaw.nl/suriano/letters) :  Italian Correspondence of Christofforo Suriano , 1616-1623. Straight conversion from TEI to TF, Nina Lamal et al., Dirk Roorda  Work in progress .  with NLP output from Spacy woven in [ translatin/corpus ](https: gitlab.huc.knaw.nl/translatin/corpus) :  Latin The transnational impact of Latin drama from the early modern Netherlands, a qualitative and computational analysis. Conversion from PageXML to TF, Jirsi Reinders, Hayco de Jong, et al., Dirk Roorda  Work in progress .  [NINO Cuneiform](https: github.com/Nino-cunei) [ Nino-cunei/ninmed ](https: github.com/Nino-cunei/ninmed) :  Akkadian / cuneiform Medical Encyclopedia from Nineveh, ca. 800 BCE,  Medical documents with lemma annotations , Cale Johnson, Dirk Roorda [ Nino-cunei/oldassyrian ](https: github.com/Nino-cunei/oldassyrian) :  Akkadian / cuneiform Old Assyrian documents, 2000 - 1600 BCE,  Documents from Ashur Cale Johnson, Alba de Ridder, Martijn Kokken, Dirk Roorda [ Nino-cunei/oldbabylonian ](https: github.com/Nino-cunei/oldbabylonian) :  Akkadian / cuneiform Old Babylonian letters, 1900 - 1600 BCE,  Altbabylonische Briefe in Umschrift und \u00dcbersetzung , Cale Johnson, Dirk Roorda [ Nino-cunei/uruk ](https: github.com/Nino-cunei/uruk) :  proto-cuneiform Uruk, 4000 - 3100 BCE,  Archaic tablets from Uruk , Cale Johnson, Dirk Roorda  with lots of illustrations  [Protestant Theological University](https: github.com/pthu) [Greek Literature](https: nbviewer.jupyter.org/github/pthu/greek_literature/blob/master/tutorial/start.ipynb) :  Greek [Literature, -400 - +400](https: github.com/pthu/greek_literature), [Perseus Digital Library](https: github.com/PerseusDL/canonical-greekLit) and [Open Greek and Latin Project](https: github.com/OpenGreekAndLatin/First1KGreek) The result of a massive conversion effort by Ernst Boogert. [ pthu/athenaeus ](https: github.com/pthu/athenaeus) :  Greek Works of Athenaeus, 80 - 170,  [Deipnosophistae](https: en.wikipedia.org/wiki/Deipnosophistae) , Ernst Boogert  [Quran](https: github.com/q-ran) [ q-ran/quran ](https: github.com/q-ran/quran) :  Arabic Quran, 600 - 900,  Quranic Arabic Corpus , Cornelis van Lit, Dirk Roorda  [University of Utrecht: Cornelis van Lit](https: github.com/among) [ among/fusus ](https: github.com/among/fusus) :  Arabic Fusus Al Hikam, 1165- 2000,  editions (Lakhnawi and Afifi) of Ibn Arabi's Fusus plus commentaries in the centuries thereafter , Cornelis van Lit, Dirk Roorda  Intentions Old Royal :  Akkadian-Sumerian cuneiform Bilingual royal inscriptions, 2000 - 1600,  more info to come , Martijn Kokken, Dirk Roorda  Get corpora  Automatically TF downloads corpus data and apps from GitHub / GitLab on demand. See  tf.about.use . Data ends up in a logical place under your  ~/text-fabric-data/ . The TF data is fairly compact.  ! caution \"Size of data\" There might be sizable additional data for some corpora, images for example. In that case, take care to have a good internet connection when you use a TF app for the first time.  Manually TF data of corpora reside in a back-end repo. You can manually clone such a data repository and point TF to that data. First, take care that your clone ends up in  github/orgName or  gitlab/orgName (relative your home directory) where  orgName is the organization or person or group on GitHub / GitLab under which you have found the repo. Then, when you invoke the app, pass the specifier  :clone . This instructs TF to look in your local GitHub / GitLab clone, rather than online or in your local  ~/text-fabric-data , where downloaded data is stored.  python use('org/repo:clone', checkout=\"clone\")    sh tf org/repo:clone  checkout=clone   In this way, you can work with data that is under your control.  ! caution \"Size of data\" Cloning a data repository is more costly then letting TF download the data. A data repository may contain several versions and representations of the data, including their change histories. There might also be other material in the repo, such as source data, tutorials, programs. For example, the  ETCBC/bhsa repo is several gigabytes, but the TF data for a specific version is only 25MB.  Extra data Researchers are continually adding new insights in the form of new feature data. TF apps make it easy to use that data alongside the main data source. Read more about the data life cycle in  tf.about.datasharing ."
+"doc":" Corpora TF corpora are usually stored on GitHub / GitLab and TF knows how to download a corpus from GitHub / GitLab if you specify the  org/repo . Most corpora are configured by metadata in a directory  app in the repo. You can load a corpus into a Python data structure by  python from tf.app import use A = use(\"org/repo\")   And you can get it in the TF browser by saying this on a command prompt:  sh tf org/repo   Here is a list of corpora that can be loaded this way. Since everybody can put a TF corpus on GitHub / GitLab, the list may not be complete! [ annotation/banks ](https: github.com/annotation/banks) :  modern English Iain M. Banks, 1954 - 2013, 99 words from the SF novel  [Consider Phlebas](https: read.amazon.com/kp/kshare?asin=B002TXZRQI&id=NpPGzf_HT5aADabyiDDSIQ&reshareId=RZ91SGMZJPWK9S1Y4EZX&reshareChannel=system) , Dirk Roorda  to see the details [ annotation/mobydick ](https: github.com/annotation/mobydick) :  English Herman Melville, 1819 - 1891, Novel, 1851; converted from TEI in the Oxford Text Archive, Dirk Roorda  with NLP output from Spacy woven in [ annotation/mondriaan ](https: github.com/annotation/mondriaan) :  English Piet Mondriaan, 1872 - 1944, Test corpus of 14 letters; converted from TEI from the Huygens Institute, together with RKD and HuC; many people involved  with NLP output from Spacy woven in  [Cambridge Semitics Lab](https: github.com/CambridgeSemiticsLab) [ CambridgeSemiticsLab/nena_tf ](https: github.com/CambridgeSemiticsLab/nena_tf) :  Aramaic North Eastern Neo-Aramaic Corpus, 2000,  [Nena Cambridge](https: nena.ames.cam.ac.uk) , Cody Kingham  with a client-side, offline search interface in JavaScript  [CenterBLC Andrews University](https: github.com/CenterBLC) [ CenterBLC/LXX ](https: github.com/CenterBLC/LXX) :  Greek [Septuagint](https: en.wikipedia.org/wiki/Septuagint), 300 - 100 BCE,  LXX Rahlf's edition 1935 plus additional features by CenterBLC ; earliest extant Greek translation of Hebrew Bible books; Oliver Glanz, Adrian Negrea [ CenterBLC/NA ](https: github.com/CenterBLC/NA) :  Greek New Testament, 100 - 400,  GNT Nestle-Aland edition 1904 with new features by CenterBLC , converted from [ biblicalhumanities/Nestle1904 ](https: github.com/biblicalhumanities/Nestle1904) contributed by Ulrik Sandborg Petersen, Jonathan Robie; Oliver Glanz [ CenterBLC/SBLGNT ](https: github.com/CenterBLC/SBLGNT) :  Greek New Testament, 100 - 400, converted from  James Tauber's [ morphgnt /  sblgnt ](https: github.com/morphgnt/sblgnt) with additional features by CenterBLC ; Adrian Negrea, Clacir Virmes, Oliver Glanz, Krysten Thomas  [CLARIAH](https: github.com/CLARIAH) [ CLARIAH/descartes-tf ](https: github.com/CLARIAH/descartes-tf) :  French ,  Latin ,  Dutch Letters from and to Descartes, 1619 - 1650,  Ren\u00e9 Descartes - Correspondance ; Ch. Adam et G. Milhaud (eds. and illustrations, 1896-1911); Katsuzo Murakami, Meguru Sasaki, Takehumi Tokoro (ASCII digitization, 1998); Erik-Jan Bos (ed, 2011); Dirk Roorda (converter TEI, 2011 and TF 2023)  with math display and illustrations [ CLARIAH/wp6-ferdinandhuyck ](https: github.com/CLARIAH/wp6-ferdinandhuyck) :  Dutch a novel by Jacob van Lennep, 1840,  Jacob van Lennep - Ferdinand Huyck ; From [DBNL](https: www.dbnl.org/tekst/lenn006lotg01_01/), TEI-Lite; Dirk Roorda (converter TEI to TF), see also  tf.convert.tei  with NLP output from Spacy woven in [ CLARIAH/wp6-missieven ](https: github.com/CLARIAH/wp6-missieven) :  Dutch General Missives, 1600 - 1800,  General Missives, Dutch East-Indian Company , Jesse van der Does, Sophie Arnoult, Dirk Roorda [ CLARIAH/wp6-daghregisters ](https: github.com/CLARIAH/wp6-daghregisters) :  Dutch Dagh Registers Batavia, 1640 - 1641,  Daily events at Batavia, Indonesia, historical source for the operation of the Dutch East-Indian Company , Lodewijk Petram, Dirk Roorda.  work in progress, currently only volume 4  with many OCR errors and an attempt to detect them  [Cody Kingham](https: github.com/codykingham) [ codykingham/tischendorf_tf ](https: github.com/codykingham/tischendorf_tf) :  Greek New Testament, 50 - 450,  Tischendorf 8th Edition , Cody Kingham, Dirk Roorda  [Digital Theologians of the University of Copenhagen](https: github.com/DT-UCPH) [ DT-UCPH/sp ](https: github.com/DT-UCPH) :  Hebrew [Samaritan Pentateuch](https: en.wikipedia.org/wiki/Samaritan_Pentateuch) , 516 BCE - 70 AD,  MS Dublin Chester Beatty Library 751 + MS Garizim 1 , Martijn Naaijer, Christian Canu H\u00f8jgaard  [Eep Talstra Center for Bible and Computer](https: github.com/ETCBC) [ ETCBC/bhsa ](https: github.com/ETCBC/bhsa) :  Hebrew Bible (Old Testament), 1000 BCE - 900 AD,  [Biblia Hebraica Stuttgartensia (Amstelodamensis)](https: ETCBC.github.io/bhsa/) , ETCBC + Dirk Roorda  the canonical TF dataset, where it all started [ ETCBC/dhammapada ](https: github.com/ETCBC/dhammapada) :  P\u0101li and  Latin Ancient Buddhist verses, 300 BCE and 1855 AD,  Transcription with Latin translations based on Viggo Fausb\u00f8ll's book , Bee Scherer, Yvonne Mataar, Dirk Roorda [ ETCBC/dss ](https: github.com/ETCBC/dss) :  Hebrew Dead Sea Scrolls, 300 BCE - 100 AD,  Transcriptions with morphology based on Martin Abegg's data files , Martijn Naaijer, Jarod Jacobs, Dirk Roorda [ ETCBC/nestle1904 ](https: github.com/ETCBC/nestle1904) :  Greek New Testament, 100 - 400,  GNT Nestle-Aland edition 1904 from LOWFAT-XML syntax trees , converted from [ biblicalhumanities/greek-new-testament ](https: github.com/biblicalhumanities/greek-new-testament/tree/master/syntax-trees/sblgnt-lowfat) contributed by Jonathan Robie and Micheal Palmer; Oliver Glanz, Tony Jurg, Saulo de Oliveira Cantanh\u00eade, Dirk Roorda [ ETCBC/peshitta ](https: github.com/ETCBC/peshitta) :  Syriac Peshitta (Old Testament), 1000 BCE - 900 AD,  Vetus Testamentum Syriace , Hannes Vlaardingerbroek, Dirk Roorda [ ETCBC/syrnt ](https: github.com/ETCBC/syrnt) :  Syriac New Testament, 0 - 1000,  Novum Testamentum Syriace , Hannes Vlaardingerbroek, Dirk Roorda  [ KNAW/HuygensING ](https: github.com/HuygensING) and [gitlab.huc.knaw.nl](https: gitlab.huc.knaw.nl) [ hermans/works ](https: gitlab.huc.knaw.nl/hermans/works) :  Dutch Complete Works of W.F. Hermans. The conversion to TF is work in progress. So far these works have been done:  Paranoia  Sadistisch Universum  Nooit meer slapen Bram Oostveen, Peter Kegel, Dirk Roorda  Not publicly accessible, the book is under copyright.  with a critical apparatus [ mondriaan/letters ](https: github.com/annotation/mondriaan) :  Dutch Letters of Piet Mondriaan , 1892-1923. Straight conversion from TEI to TF, Peter Boot et al., Dirk Roorda  Work in progress, test set only (\"proeftuin\").  with NLP output from Spacy woven in [ suriano/letters ](https: gitlab.huc.knaw.nl/suriano/letters) :  Italian Correspondence of Christofforo Suriano , 1616-1623. Straight conversion from TEI to TF, Nina Lamal et al., Dirk Roorda  Work in progress.  with NLP output from Spacy woven in [ translatin/corpus ](https: gitlab.huc.knaw.nl/translatin/corpus) :  Latin The transnational impact of Latin drama from the early modern Netherlands, a qualitative and computational analysis. Conversion from PageXML to TF, Jirsi Reinders, Hayco de Jong, et al., Dirk Roorda  Work in progress .  [NINO Cuneiform](https: github.com/Nino-cunei) [ Nino-cunei/ninmed ](https: github.com/Nino-cunei/ninmed) :  Akkadian / cuneiform Medical Encyclopedia from Nineveh, ca. 800 BCE,  Medical documents with lemma annotations , Cale Johnson, Dirk Roorda [ Nino-cunei/oldassyrian ](https: github.com/Nino-cunei/oldassyrian) :  Akkadian / cuneiform Old Assyrian documents, 2000 - 1600 BCE,  Documents from Ashur Cale Johnson, Alba de Ridder, Martijn Kokken, Dirk Roorda [ Nino-cunei/oldbabylonian ](https: github.com/Nino-cunei/oldbabylonian) :  Akkadian / cuneiform Old Babylonian letters, 1900 - 1600 BCE,  Altbabylonische Briefe in Umschrift und \u00dcbersetzung , Cale Johnson, Dirk Roorda [ Nino-cunei/uruk ](https: github.com/Nino-cunei/uruk) :  proto-cuneiform Uruk, 4000 - 3100 BCE,  Archaic tablets from Uruk , Cale Johnson, Dirk Roorda  with lots of illustrations  [Protestant Theological University](https: github.com/pthu) [Greek Literature](https: nbviewer.jupyter.org/github/pthu/greek_literature/blob/master/tutorial/start.ipynb) :  Greek [Literature, -400 - +400](https: github.com/pthu/greek_literature), [Perseus Digital Library](https: github.com/PerseusDL/canonical-greekLit) and [Open Greek and Latin Project](https: github.com/OpenGreekAndLatin/First1KGreek) The result of a massive conversion effort by Ernst Boogert. [ pthu/athenaeus ](https: github.com/pthu/athenaeus) :  Greek Works of Athenaeus, 80 - 170,  [Deipnosophistae](https: en.wikipedia.org/wiki/Deipnosophistae) , Ernst Boogert  [Quran](https: github.com/q-ran) [ q-ran/quran ](https: github.com/q-ran/quran) :  Arabic Quran, 600 - 900,  Quranic Arabic Corpus , Cornelis van Lit, Dirk Roorda  [University of Utrecht: Cornelis van Lit](https: github.com/among) [ among/fusus ](https: github.com/among/fusus) :  Arabic Fusus Al Hikam, 1165- 2000,  editions (Lakhnawi and Afifi) of Ibn Arabi's Fusus plus commentaries in the centuries thereafter , Cornelis van Lit, Dirk Roorda  Intentions Old Royal :  Akkadian-Sumerian cuneiform Bilingual royal inscriptions, 2000 - 1600,  more info to come , Martijn Kokken, Dirk Roorda  Get corpora  Automatically TF downloads corpus data and apps from GitHub / GitLab on demand. See  tf.about.use . Data ends up in a logical place under your  ~/text-fabric-data/ . The TF data is fairly compact.  ! caution \"Size of data\" There might be sizable additional data for some corpora, images for example. In that case, take care to have a good internet connection when you use a TF app for the first time.  Manually TF data of corpora reside in a back-end repo. You can manually clone such a data repository and point TF to that data. First, take care that your clone ends up in  github/orgName or  gitlab/orgName (relative your home directory) where  orgName is the organization or person or group on GitHub / GitLab under which you have found the repo. Then, when you invoke the app, pass the specifier  :clone . This instructs TF to look in your local GitHub / GitLab clone, rather than online or in your local  ~/text-fabric-data , where downloaded data is stored.  python use('org/repo:clone', checkout=\"clone\")    sh tf org/repo:clone  checkout=clone   In this way, you can work with data that is under your control.  ! caution \"Size of data\" Cloning a data repository is more costly then letting TF download the data. A data repository may contain several versions and representations of the data, including their change histories. There might also be other material in the repo, such as source data, tutorials, programs. For example, the  ETCBC/bhsa repo is several gigabytes, but the TF data for a specific version is only 25MB.  Extra data Researchers are continually adding new insights in the form of new feature data. TF apps make it easy to use that data alongside the main data source. Read more about the data life cycle in  tf.about.datasharing ."
 },
 {
 "ref":"tf.capable",
@@ -6771,19 +6770,19 @@ INDEX=[
 {
 "ref":"tf.convert.walker.CV.slot",
 "url":132,
-"doc":"Make a slot node and return the handle to it in  n .   n = cv.slot()   No further information is needed. Remember that you can add features to the node by later   cv.feature(n, key=value,  .)   calls. Parameters      key: string, optional None If passed, it acts as a sort key on the slot. At the end of the walk, all slots will be sorted by their key and then by their original order. Care will be taken that slots retain their features and linkages.  ! note \"Keys are strings\" Note that the key must be a string. If you want to sort on numbers, make sure to pad all numbers with leading zeros. Returns    - node reference: tuple The node reference consists of a node type and a sequence number, but normally you do not have to dig these out. Just pass the tuple as a whole to actions that require a node argument.",
+"doc":"Makes a slot node and return the handle to it in  n .   n = cv.slot()   No further information is needed. Remember that you can add features to the node by later   cv.feature(n, key=value,  .)   calls. Parameters      key: string, optional None If passed, it acts as a sort key on the slot. At the end of the walk, all slots will be sorted by their key and then by their original order. Care will be taken that slots retain their features and linkages.  ! note \"Keys are strings\" Note that the key must be a string. If you want to sort on numbers, make sure to pad all numbers with leading zeros. Returns    - node reference: tuple The node reference consists of a node type and a sequence number, but normally you do not have to dig these out. Just pass the tuple as a whole to actions that require a node argument.",
 "func":1
 },
 {
 "ref":"tf.convert.walker.CV.node",
 "url":132,
-"doc":"Make a non-slot node and return the handle to it in  n .   n = cv.node(nodeType)   You have to pass its  node type , i.e. a string. Think of  sentence ,  paragraph ,  phrase ,  word ,  sign , whatever. There are two modes for this function:  Auto: ( slots=None ): Non slot nodes will be automatically added to the set of embedders.  Explicit: ( slots=iterable ): The slots in iterable will be assigned to this node and nothing else. The node will not be added to the set of embedders. Put otherwise: the node will be terminated after construction. However: you could resume it later to add other slots. Remember that you can add features to the node by later   cv.feature(n, key=value,  .)   calls. Parameters      nType: string A node type, not the slot type slots: iterable of int, optional None The slots to assign to this node. If left out, the node is left as an embedding node and subsequent slots will be added to it automatically. All slots in the iterable must have been generated before by means of the  cv.slot() action. Returns    - node reference or None If an error occurred,  None is returned. The node reference consists of a node type and a sequence number, but normally you do not have to dig these out. Just pass the tuple as a whole to actions that require a node argument.",
+"doc":"Makes a non-slot node and return the handle to it in  n .   n = cv.node(nodeType)   You have to pass its  node type , i.e. a string. Think of  sentence ,  paragraph ,  phrase ,  word ,  sign , whatever. There are two modes for this function:  Auto: ( slots=None ): Non slot nodes will be automatically added to the set of embedders.  Explicit: ( slots=iterable ): The slots in iterable will be assigned to this node and nothing else. The node will not be added to the set of embedders. Put otherwise: the node will be terminated after construction. However: you could resume it later to add other slots. Remember that you can add features to the node by later   cv.feature(n, key=value,  .)   calls. Parameters      nType: string A node type, not the slot type slots: iterable of int, optional None The slots to assign to this node. If left out, the node is left as an embedding node and subsequent slots will be added to it automatically. All slots in the iterable must have been generated before by means of the  cv.slot() action. Returns    - node reference or None If an error occurred,  None is returned. The node reference consists of a node type and a sequence number, but normally you do not have to dig these out. Just pass the tuple as a whole to actions that require a node argument.",
 "func":1
 },
 {
 "ref":"tf.convert.walker.CV.terminate",
 "url":132,
-"doc":" terminate a node.   cv.terminate(n)   The node  n will be removed from the set of current embedders. This  n must be the result of a previous  cv.slot() or  cv.node() action. Parameters      node: tuple A node reference, obtained by one of the actions  slot or  node . Returns    - None",
+"doc":" terminates a node.   cv.terminate(n)   The node  n will be removed from the set of current embedders. This  n must be the result of a previous  cv.slot() or  cv.node() action. Parameters      node: tuple A node reference, obtained by one of the actions  slot or  node . Returns    - None",
 "func":1
 },
 {
@@ -6795,13 +6794,13 @@ INDEX=[
 {
 "ref":"tf.convert.walker.CV.resume",
 "url":132,
-"doc":" resume a node.   cv.resume(n)   If you resume a non-slot node, you add it again to the set of embedders. No new node will be created. If you resume a slot node, it will be added to the set of current embedders. No new slot will be created. Parameters      node: tuple A node reference, obtained by one of the actions  slot or  node . Returns    - None",
+"doc":" resumes a node.   cv.resume(n)   If you resume a non-slot node, you add it again to the set of embedders. No new node will be created. If you resume a slot node, it will be added to the set of current embedders. No new slot will be created. Parameters      node: tuple A node reference, obtained by one of the actions  slot or  node . Returns    - None",
 "func":1
 },
 {
 "ref":"tf.convert.walker.CV.link",
 "url":132,
-"doc":"Link the given, existing slots to a node.   cv.link(n, [s1, s2])   Sometimes the automatic linking of slots to nodes is not sufficient. This happens when you feel the need to construct a node retro-actively, when the slots that need to be linked to it have already been created. This action is precisely meant for that. Parameters      node: tuple A node reference, obtained by one of the actions  slot or  node . slots: iterable of integer Returns    - boolean",
+"doc":"Links the given, existing slots to a node.   cv.link(n, [s1, s2])   Sometimes the automatic linking of slots to nodes is not sufficient. This happens when you feel the need to construct a node retro-actively, when the slots that need to be linked to it have already been created. This action is precisely meant for that. Parameters      node: tuple A node reference, obtained by one of the actions  slot or  node . slots: iterable of integer Returns    - boolean",
 "func":1
 },
 {
@@ -6813,13 +6812,13 @@ INDEX=[
 {
 "ref":"tf.convert.walker.CV.feature",
 "url":132,
-"doc":"Add  node features .   cv.feature(n, name=value,  . , name=value)   Parameters      node: tuple A node reference, obtained by one of the actions  slot or  node .  features: keyword arguments The names and values of features to assign to this node. Returns    - None  ! caution \"None values\" If a feature value is  None it will not be added!",
+"doc":"Adds  node features .   cv.feature(n, name=value,  . , name=value)   Parameters      node: tuple A node reference, obtained by one of the actions  slot or  node . features: keyword arguments The names and values of features to assign to this node. Returns    - None  ! caution \"None values\" If a feature value is  None it will not be added!",
 "func":1
 },
 {
 "ref":"tf.convert.walker.CV.edge",
 "url":132,
-"doc":"Add  edge features .   cv.edge(nf, nt, name=value,  . , name=value)   Parameters      nodeFrom, nodeTo: tuple Two node references, obtained by one of the actions  slot or  node .  features: keyword arguments The names and values of features to assign to this edge (i.e. pair of nodes). Returns    - None  ! note \"None values\" You may pass values that are  None , and a corresponding edge will be created. If for all edges the value is  None , an edge without values will be created. For every  nodeFrom , such a feature essentially specifies a set of nodes  { nodeTo } .",
+"doc":"Adds  edge features .   cv.edge(nf, nt, name=value,  . , name=value)   Parameters      nodeFrom, nodeTo: tuple Two node references, obtained by one of the actions  slot or  node . features: keyword arguments The names and values of features to assign to this edge (i.e. pair of nodes). Returns    - None  ! note \"None values\" You may pass values that are  None , and a corresponding edge will be created. If for all edges the value is  None , an edge without values will be created. For every  nodeFrom , such a feature essentially specifies a set of nodes  { nodeTo } .",
 "func":1
 },
 {
@@ -6831,13 +6830,13 @@ INDEX=[
 {
 "ref":"tf.convert.walker.CV.meta",
 "url":132,
-"doc":"Add, modify, delete metadata fields of features.   cv.meta(feature, name=value,  . , name=value)   Parameters      feat: string The name of a feature metadata: dict If a  value is  None , that  name will be deleted from the metadata fields of the feature. A bare  cv.meta(feature) will remove the all metadata from the feature. If you modify the field  valueType of a feature, that feature will be added or removed from the set of  intFeatures . It will be checked whether you specify either  int or  str . Returns    - None",
+"doc":"Adds, modifies, deletes metadata fields of features.   cv.meta(feature, name=value,  . , name=value)   Parameters      feat: string The name of a feature metadata: dict If a  value is  None , that  name will be deleted from the metadata fields of the feature. A bare  cv.meta(feature) will remove the all metadata from the feature. If you modify the field  valueType of a feature, that feature will be added or removed from the set of  intFeatures . It will be checked whether you specify either  int or  str . Returns    - None",
 "func":1
 },
 {
 "ref":"tf.convert.walker.CV.features",
 "url":132,
-"doc":"Get the list of all features.   featureNames = cv.features()   Returns    - list",
+"doc":"Gets the list of all features.   featureNames = cv.features()   Returns    - list",
 "func":1
 },
 {
@@ -6861,7 +6860,7 @@ INDEX=[
 {
 "ref":"tf.convert.walker.CV.get",
 "url":132,
-"doc":"Retrieve feature values.   cv.get(feature, n) and cv.get(feature, nf, nt)    feature is the name of the feature. For node features,  n is the node which carries the value. For edge features,  nf, nt is the pair of from-to nodes which carries the value. Parameters      feature: string The name of a feature node: tuple A node reference, obtained by one of the actions  slot or  node . The node in question when retrieving the value of a node feature. nodeFrom, nodeTo: tuple Two node references, obtained by one of the actions  slot or  node . The nodes in question when retrieving the value of an edge feature. Returns    - string or integer",
+"doc":"Retrieves feature values.   cv.get(feature, n) and cv.get(feature, nf, nt)    feature is the name of the feature. For node features,  n is the node which carries the value. For edge features,  nf, nt is the pair of from-to nodes which carries the value. Parameters      feature: string The name of a feature node: tuple A node reference, obtained by one of the actions  slot or  node . The node in question when retrieving the value of a node feature. nodeFrom, nodeTo: tuple Two node references, obtained by one of the actions  slot or  node . The nodes in question when retrieving the value of an edge feature. Returns    - string or integer",
 "func":1
 },
 {
@@ -7248,100 +7247,106 @@ INDEX=[
 {
 "ref":"tf.convert.watm",
 "url":138,
-"doc":""
+"doc":"Export to Web Annotation Text Model  The general idea This module can export a TF corpus to WATM (Web Annotation Text Model), which is the input format of the suite of systems developed by Team Text for serving text plus annotations over the web. The idea of WATM is, like the idea of Text-Fabric, to untangle the text from its markup. Everything outside the text itself is coded in annotations. Annotations look a lot like TF features, but they are a bit more general. Annotations can also annotate annotations, not only pieces of text. We need this extra generality, because unlike TF, WATM does not have a concept of node. The only parallel are the slot nodes of TF, which corresponds to the tokens of the text in WATM. Every node in TF is linked to a set of slot nodes. As such it can be mapped to an annotation to the corresponding tokens. Features of such nodes can be mapped to annotations to annotations. TF also has edges. These can be mapped to WATM annotations whose targets are pairs: one for the thing the edge is  from , and one for the thing the edge is  to . These things are typical annotations that correspond to TF nodes, since TF edges are links between TF nodes. If the TF dataset itself is the result of converting an XML file (e.g TEI or PageXML), then there is a further correspondence between the XML and the TF:  elements translate into nodes; element tags translate into node types;  attributes translate into features; values of attributes translate into values of features. In our terminology below we assume that the TF data comes from an XML file, but this is not essential. Whenever we talk about  elements and  tags , you may read  nodes and  node types if the TF dataset does not have an XML precursor. Likewise, for  attributes you may read  features .  The specifics We generate tokens and annotations out of a TF dataset. Here is what we deliver and in what form:  a file  text.json : with the text segments in an array;  a bunch of files  anno-1.json ,  anno-2.json,  .: all generated annotations; We pack at most 400,000 annotations in one file, that keeps their size below 50MB, so that they still can live in a git directory without large file support.  Format of the text file The  text.json is a JSON file with the following structure:   { \"_ordered_segments\": [ \"token1 \", \"token2 \",  . ] }    each item in  _ordered_segments corresponds to one token;  the item contains the text of the token plus the subsequent whitespace, if any;  if the corpus is converted from TEI, we skip all material inside the TEI-header.  Tokens Tokens correspond to the slot nodes in the TF dataset. Depending on the original format of the corpus we have the following specifics.  TEI corpora The base type is  t , the  atomic token. Atomic tokens are tokens as they come from some NLP processing, except when tokens contain element boundaries. In those cases tokens are split in fragments between the element boundaries. It is guaranteed that a text segment that corresponds to a  t does not contain element boundaries. The original, unsplit tokens are also present in the annotations, they have type  token . Tokens have the attributes  str and  after , both may be empty.  PageXML corpora The base type is  token , it is available without NLP processing. Tokens have the attributes  str and  after , both may be empty. They may also have the attributes  rstr and  rafter .   str is the  logical string value of a token,  after is empty or a space: what comes after the token before the next token.   rstr is the raw string value of a token,  when it deviates from the logical value , otherwise no value.  rafter analogously.  Example token | 1 | 2 | 3 | 4 | 5  - |  - |  - |  - |  - |  - rstr | empty |  efflagitan |  \u00ac |  do | empty str |  improb\u00e8 |  efflagitando | empty | empty |  tandem  Format of the annotation files The  anno-1.json ,  anno-2.json ,  . files are JSON file with the following structure:   { \"a000nnn\": [ \"kind\", \"namespace\", \"body\", \"bbb-eee\" ],{  . }   It is a big dictionary, keyed by annotation ids and each value is the data of an annotation, divided in the following fields:   kind : the kind of annotation:   element : targets the text location where an  element occurs, the body is the element name;   pi : targets the text location where a  processing instruction occurs, the body is the target of the  pi ;   attribute : targets an annotation (an  element or  pi ), the body has the shape  name = value , the name and value of the attribute in question;   node : targets an individual  token or  element or  pi , the body is the TF node (a number) of that  token /  element /  pi ;   edge : targets two node annotations, the body has the shape  name or  name = value , where  name is the name of the edge and  value is the label of the edge if the edge has a label;   format : targets an individual token, the body is a formatting property for that token, all tokens in note elements get a  format annotation with body  note ;   anno : targets an arbitrary annotation or text range, body has an arbitrary value; can be used for extra annotations, e.g. in the Mondriaan corpus to provide an URL to an artwork derived from an    element.   namespace : the namespace of the annotation; an indicator where the information comes from. Possible values:   pagexml : annotation comes from the PageXML, possibly indirectly, e.g.  h ,  w ,  x ,  y   tei : annotation comes [literally](https: annotation.github.io/text-fabric/tf/convert/helpers.html tf.convert.helpers.CM_LIT) from the TEI guidelines or the PageXML specification, or is [processed](https: annotation.github.io/text-fabric/tf/convert/helpers.html tf.convert.helpers.CM_LITP) straightforwardly from it;   tf : annotation is [composed](https: annotation.github.io/text-fabric/tf/convert/helpers.html tf.convert.helpers.CM_LITC) in a more intricate way from the original source or even [added](https: annotation.github.io/text-fabric/tf/convert/helpers.html tf.convert.helpers.CM_PROV) to it;   nlp : annotation is generated as a result of [NLP processing](https: annotation.github.io/text-fabric/tf/convert/helpers.html tf.convert.helpers.CM_NLP);   tt : annotation is derived from other material in the source for the benefit of the Team Text infrastructure. Defined in the  watm.yaml file next to this program. Currently used for annotations that derive from project specific requirements.   body : the body of an annotation (probably the  kind and  body fields together will make up the body of the resulting web annotation);   target : a string specifying the target of the annotation, of the following kinds:   single this is a target pointing to a single thing, either:   bbb-eee a range of text segments in the  _ordered_segments ;  an annotation id   double this is a target pointing to two things:   fff->ttt where  fff is a \"from\" target and  ttt is a \"to\" target; both targets can vary independently between a range and an annotation id.  Caveat The WATM representation of the corpus is a faithful and complete representation of the TF dataset and hence of the TEI/PageXML source from which the TF dataset has been converted. Well, don't take this too literally, probably there are aspects where the different representations differ. I am aware of the following:  The TEI to TF conversion has lost the exact embedding of elements in the following case: Suppose element A contains the same words as element B. Then the TF data does not know whether A is a child of B or the other way round. This is repairable by adding parenthood edges between nodes when constructing the TF data. We should then also convert these TF edges to WATM annotations, for which we need structured targets: If  n is the parent of  m , we must make an annotation with body  \"parent\" and target  [n, m] . Something similar holds for the sibling relationship: if two nodes are adjacent in a TF dataset, we do not know whether they are siblings elements in the original XML. It is also possible to add sibling edges to the TF dataset. See  tf.convert.tei under  parentEdges and  siblingEdges .  The TF to WATM conversion forgets the types of feature values: it does not make a distinction between the integer  1 and the string  \"1\" . This is repairable by creating annotations with structured bodies like  {\"att\": value} instead of strings like  att=value as we do now. In practice, the meaning of the features in TF are known, and hence the attributes in the WATM data, so this is not a blocking problem for now."
 },
 {
 "ref":"tf.convert.watm.rep",
 "url":138,
-"doc":"",
+"doc":"Represent a boolean status for a message to the console. Parameters      status: boolean Returns    - string",
 "func":1
 },
 {
 "ref":"tf.convert.watm.WATM",
 "url":138,
-"doc":""
+"doc":"The export machinery is exposed as a class, wrapped around a TF dataset. Wrap the WATM exporter around a TF dataset. Given an already loaded TF dataset, we make an inventory of all data we need to perform an export to WATM. Parameters      app: object A loaded TF dataset, as obtained by a call  use( .) . See  tf.app.use nsOrig: string A namespace corresponding to the format of the original, pre-Text-Fabric representation. For example  tei for a TEI corpus,  pagexml for a PageXML corpus. The namespace is not related to XML namespaces, it is merely a device to categorize the resulting annotations. skipMeta: boolean, optional False Only relevant for TEI corpora. If True, all material in the TEI Header will not be converted to tokens in the text. More precisely: all TF slots for which the feature  is_meta has a true-ish value will be skipped. If there is no feature  is_meta in the dataset, the setting of  skipMeta will have no effect: nothing will be excluded. extra: dictionary, optional {} The data for extra annotations, which will be generated on the fly under the namespace  anno . The keys are the names of features/attributes, the value for each key is a dictionary that maps nodes to values."
 },
 {
 "ref":"tf.convert.watm.WATM.makeText",
 "url":138,
-"doc":"",
+"doc":"Creates the text data. The text is a list of tokens and will be stored in member  text in this object. Additionally, the mapping from slot numbers in the TF data to indices in this list is stored in member  tlFromTf .",
 "func":1
 },
 {
 "ref":"tf.convert.watm.WATM.mkAnno",
 "url":138,
-"doc":"Make an annotation and return its id. Parameters      kind: string The kind of annotation. ns: string The namespace of the annotation. body: string The body of the annotation. target: string or tuple of strings The target of the annotation.",
+"doc":"Make a single annotation and return its id. Parameters      kind: string The kind of annotation. ns: string The namespace of the annotation. body: string The body of the annotation. target: string or tuple of strings The target of the annotation.",
 "func":1
 },
 {
 "ref":"tf.convert.watm.WATM.makeAnno",
 "url":138,
-"doc":"",
+"doc":"Make all annotations. The annotations are stored in a big list, in member  anno of this object. The mapping from slots to indices in the list of tokens is now extended with the mapping from nodes to corresponding node annotations. So member  tlFromTf is now a full mapping from all nodes in TF to tokens and/or annotations in WATM.",
 "func":1
 },
 {
 "ref":"tf.convert.watm.WATM.writeAll",
 "url":138,
-"doc":"",
+"doc":"Write text and annotation data to disk. The data will be written as JSON files. When the annotation data grows larger than a certain threshold, it will be divided over several files. The annotations are sorted by annotation id.",
 "func":1
 },
 {
 "ref":"tf.convert.watm.WATM.compare",
 "url":138,
-"doc":"",
+"doc":"Compare two numbers and report the outcome. Used for testing the WATM conversion. Parameters      nTF: integer The number as it is counted from the original TF dataset. nWA: integer The number as it is counted from the generated WATM dataset. Returns    - boolean Whether the two values are equal.",
 "func":1
 },
 {
 "ref":"tf.convert.watm.WATM.strEqual",
 "url":138,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.convert.watm.WATM.testSetup",
-"url":138,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.convert.watm.WATM.testText",
-"url":138,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.convert.watm.WATM.testElements",
-"url":138,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.convert.watm.WATM.testAttributes",
-"url":138,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.convert.watm.WATM.testEdges",
-"url":138,
-"doc":"",
+"doc":"Compare two strings and report the outcome. Used for testing the WATM conversion. Parameters      nTF: string The string as encountered in the original TF dataset. nWA: string The string as encountered in the generated WATM dataset. Returns    - boolean Whether the two values are equal.",
 "func":1
 },
 {
 "ref":"tf.convert.watm.WATM.testAll",
 "url":138,
-"doc":"",
+"doc":"Test all aspects of the WATM conversion. For all kinds of information, such as nodes, edges, features, tokens, annotations, we check whether the parts that should correspond between the TF dataset and the WATM annotations do so indeed. We present some statistics, and highlight the mismatches. Returns    - boolean Whether all things that must agree do indeed agree.",
+"func":1
+},
+{
+"ref":"tf.convert.watm.WATM.testSetup",
+"url":138,
+"doc":"Prepare the tests. We read the WATM dataset and store the tokens in member  testTokens and the annotations in the member  testAnnotations . We unpack targets if they contain structured information.",
+"func":1
+},
+{
+"ref":"tf.convert.watm.WATM.testText",
+"url":138,
+"doc":"Test the text. We test the number of tokens and the equality of the resulting text: whether the TF and WATM datasets agree on it. Returns    - boolean Whether all these tests succeed.",
+"func":1
+},
+{
+"ref":"tf.convert.watm.WATM.testElements",
+"url":138,
+"doc":"Test the elements. We test the annotations representing elements/processing instructions and check whether they correspond 1-1 to the non-slot nodes in the TF dataset. Returns    - boolean Whether all these tests succeed.",
+"func":1
+},
+{
+"ref":"tf.convert.watm.WATM.testAttributes",
+"url":138,
+"doc":"Test the attributes. We test whether attributes and features correspond to each other. Some attributes in the original TEI are converted in a special way into TF features: this holds for the  rend attribute. Basically, a value  rend=\"italic\" is translated into feature  is_italic=1 . In turn, these features have been translated into annotations of kind  format . We test them separately. Returns    - boolean Whether all these tests succeed.",
+"func":1
+},
+{
+"ref":"tf.convert.watm.WATM.testExtra",
+"url":138,
+"doc":"Test the extra data for on-the-fly annotations. Annotations that have been generated out of the data stored in the  extra parameter with which the object has been initialized, all got the kind  anno . Now we check these annotations against the data that went into it. Returns    - boolean Whether all these tests succeed.",
+"func":1
+},
+{
+"ref":"tf.convert.watm.WATM.testEdges",
+"url":138,
+"doc":"Test the edges. Edges in TF are links between nodes, and they translate into annotations of kind  edge which target a pair of annotations: the  from annotation, and the  to annotation. Here we check whether the TF edges are faithfully and completely parallelled by annotations. Returns    - boolean Whether all these tests succeed.",
 "func":1
 },
 {
 "ref":"tf.convert.watm.WATMS",
 "url":138,
-"doc":""
+"doc":"Export corpora that are divided over multiple TF datasets. We set up and run WATM objects for each TF dataset, and generate results for them separately. We assume that all corpora have been generated by the same method and originate from the same original format. They must reside in the same repository, in adjacent directories under the  tf top-level directory of the repo. Collect the parameters for the WATM machinery. We will initialize many  WATM objects with mostly the same parameters. These are collected when we initialize this object. Parameters      org: string The organization of all TF datasets. repo: string The repo of all TF datasets. backend: string The backend of all TF datasets. nsOrig: string The original namespace of all TF datasets. See  tf.convert.watm.WATM . skipMeta: boolean, optional False See  tf.convert.watm.WATM . extra: dictionary, optional {} See  tf.convert.watm.WATM ."
 },
 {
 "ref":"tf.convert.watm.WATMS.produce",
 "url":138,
-"doc":"",
+"doc":"Convert all relevant TF datasets. Parameters      doc: string, optional None Subdirectory where one of the TF datasets resides. If passed, only this dataset will be converted. Otherwise all datasets will be converted.",
 "func":1
 },
 {
@@ -7403,222 +7408,177 @@ INDEX=[
 "func":1
 },
 {
-"ref":"tf.convert.watm_translatin",
-"url":140,
-"doc":""
-},
-{
-"ref":"tf.convert.watm_translatin.WATM",
-"url":140,
-"doc":""
-},
-{
-"ref":"tf.convert.watm_translatin.WATM.makeText",
-"url":140,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.convert.watm_translatin.WATM.mkAnno",
-"url":140,
-"doc":"Make an annotation and return its id. Parameters      kind: string The kind of annotation. ns: string The namespace of the annotation. body: string The body of the annotation. target: string or tuple of strings The target of the annotation.",
-"func":1
-},
-{
-"ref":"tf.convert.watm_translatin.WATM.makeAnno",
-"url":140,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.convert.watm_translatin.WATM.writeAll",
-"url":140,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.convert.watm_translatin.WATMS",
-"url":140,
-"doc":""
-},
-{
-"ref":"tf.convert.watm_translatin.WATMS.produce",
-"url":140,
-"doc":"",
-"func":1
-},
-{
 "ref":"tf.convert.helpers",
-"url":141,
+"url":140,
 "doc":""
 },
 {
 "ref":"tf.convert.helpers.SECTION_MODELS",
-"url":141,
+"url":140,
 "doc":"Models for sections. A section is a part of the corpus that is defined by a set of files, or by elements within a single TEI source file. A model"
 },
 {
 "ref":"tf.convert.helpers.SECTION_MODEL_DEFAULT",
-"url":141,
+"url":140,
 "doc":"Default model for sections."
 },
 {
 "ref":"tf.convert.helpers.CM_LIT",
-"url":141,
+"url":140,
 "doc":"The value is taken literally from a TEI attribute. Code  tei , since there is a 1-1 correspondence with the TEI source."
 },
 {
 "ref":"tf.convert.helpers.CM_LITP",
-"url":141,
+"url":140,
 "doc":"The value results from straightforward processing of material in the TEI. Code  tei , since there is a direct correspondence with the TEI source.  Straightforward means: by taking into account the semantics of XML. Examples:  Generated white-space based on whether elements are pure or mixed;  Edges between parent and child elements, or sibling elements."
 },
 {
 "ref":"tf.convert.helpers.CM_LITC",
-"url":141,
+"url":140,
 "doc":"The value is results from more intricate processing of material in the TEI.  More intricate means : we derive data that goes beyond pure XML syntax. Examples:  The values of the  rend attributes are translated into  rend_ value features;  Adding features  is_meta (being inside the TEI-header) and  is_note (being inside a note);  The feature that gives the content of a (character) slot;  Decomposing strings into words material and after-word material. Code  tf , since this is for the benefit of the resulting TF dataset."
 },
 {
 "ref":"tf.convert.helpers.CM_PROV",
-"url":141,
+"url":140,
 "doc":"The value is added by the conversion to TF w.r.t. the material in the TEI. Examples:  Slots in empty elements, in order to anchor the element to the text sequence;  Section levels, based on the folder and file that the TEI source is in;  A section level within the TEI, defined from several elements and the way they are nested; Code  tf , since this is for the benefit of the resulting TF dataset."
 },
 {
 "ref":"tf.convert.helpers.CM_NLP",
-"url":141,
+"url":140,
 "doc":"The value is added by an NLP pipeline w.r.t. the material in the TEI. Code  nlp , since this comes from third party software. Examples:  The feature  nsent which gives the sentence number in the corpus. Sentences are not encoded in the TEI, but detected by an NLP program such as Spacy."
 },
 {
 "ref":"tf.convert.helpers.CONVERSION_METHODS",
-"url":141,
+"url":140,
 "doc":"Information about the conversion. When we produce TF features, we specify a bit of information in the feature metadata as how we arrived at the specific value. That information ends up in two keys:   conversionMethod : with values any of:   CM_LIT   CM_LITP   CM_LITC   CM_PROV   CM_NLP   conversionCode : the value is derived from  conversionMethod by looking it up in this table. These values can be used to qualify the name of the attribute for further processing. For example, if you have a feature  n that originates literally from the TEI, you could pass it on as  tei:n . But if you have a feature  chapter that is provided by the conversion, you could pass it on as  tf:chapter . This passing on is a matter of other software, that takes the generated TF as input and processes it further, e.g. as annotations.  ! note \"More methods and codes\" The TEI conversion is customizable by providing your own methods to several hooks in the program. These hooks may generate extra features, which you can give metadata in the  tei.yaml file next to the  tei.py file where you define the custom functions. It is advised to state appropriate values for the  conversionMethod and  conversionCode fields of these features. Examples:  A feature  country is derived from specific elements in the TEI Header, and defined for nodes of type  letter . This happens in order to support the software of Team Text that shows the text on a webpage. In such a case you could define   conversionMethod=\"derived\"   conversionCode=\"tt\""
 },
 {
 "ref":"tf.convert.helpers.tokenize",
-"url":141,
+"url":140,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.helpers.repTokens",
-"url":141,
+"url":140,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.helpers.checkModel",
-"url":141,
+"url":140,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.helpers.matchModel",
-"url":141,
+"url":140,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.helpers.setUp",
-"url":141,
+"url":140,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.helpers.tweakTrans",
-"url":141,
+"url":140,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.helpers.lookupSource",
-"url":141,
+"url":140,
 "doc":"Looks up information from the current XML stack. The current XML stack contains the ancestry of the current node, including the current node itself. It is a list of components, corresponding to the path from the root node to the current node. Each component is a tuple, consisting of the tag name and the attributes of an XML node. Against this stack a sequence of instructions, given in  specs , is executed. These instructions collect information from the stack, under certain conditions, and put that information into a feature, as value for a certain node. Here is an example of a single instruction: Parameters      cv: object The converter object, needed to issue actions. cur: dict Various pieces of data collected during walking and relevant for some next steps in the walk. specs: tuple A sequence of instructions what to look for. Each instruction has the following parts:   pathSpec   nodeType   featureName The effect is: The  pathSpec is compared to the current XML stack. If it matches the current node, the text content of the current node or one of its attributes will be collected and put in a feature with name  featureName , for the current TF node of type  nodeType . The  pathSpec is a list of components. The first component should match the top of the XML stack, the second component the element that is below the top, etc. Each component is a tuple of  a tag name;  a dictionary of attribute values; The first component may have a tag name that has  @ plus an attribute name appended to it. That means that the information will be extracted from that attribute, not from the content of the element.",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml",
-"url":142,
+"url":141,
 "doc":""
 },
 {
 "ref":"tf.convert.pagexml.setUp",
-"url":142,
+"url":141,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.diverge",
-"url":142,
+"url":141,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.tokenLogic",
-"url":142,
+"url":141,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.emptySlot",
-"url":142,
+"url":141,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.linebreakSlot",
-"url":142,
+"url":141,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.walkObject",
-"url":142,
+"url":141,
 "doc":"Internal function to deal with a single element. Will be called recursively. Parameters      cv: object The converter object, needed to issue actions. cur: dict Various pieces of data collected during walking and relevant for some next steps in the walk. The subdictionary  cur[\"node\"] is used to store the currently generated nodes by node type. bj xode: object An PageXML object.",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.PageXML",
-"url":142,
+"url":141,
 "doc":"Converts PageXML to TF. Below we describe how to control the conversion machinery. Based on current directory from where the script is called, it defines all the ingredients to carry out a  tf.convert.walker conversion of the PageXML input. This function is assumed to work in the context of a repository, i.e. a directory on your computer relative to which the input directory exists, and various output directories:  tf ,  app ,  docs . The  repoDir must be at   ~/backend/org/repo/relative   where   ~ is your home directory;   backend is an online back-end name, like  github ,  gitlab ,  git.huc.knaw.nl ;   org is an organization, person, or group in the back-end;   repo is a repository in the  org .   relative is a directory path within the repo (0 or more components) This is only about the directory structure on your local computer; it is not required that you have online incarnations of your repository in that back-end. Even your local repository does not have to be a git repository. The only thing that matters is that the full path to your repo can be parsed as a sequence of  home/backend/org/repo/relative . Relative to this directory the program expects and creates input / output directories.  source/version directory The source directory is specified by  sourceDir , and within it are version directories.  Document directories These are the top-level directories within the version directories. They correspond to individual documents. Documents typically contain a set of pages.  Input directories per document   image : contain the scan images   meta : contain metadata files   page : contain the PageXML files The files in  image and  page have names that consist of a 4-digit number with leading zeros, and any two files with the same name in  image and  page represent the same document.  Output directories   tf The directory under which the TF output file (with extension  .tf ) are placed. If it does not exist, it will be created. The TF files will be generated in a folder named by a version number, passed as  tfVersion .   app and  docs Location of additional TF app configuration and documentation files. If they do not exist, they will be created with some sensible default settings and generated documentation. These settings can be overridden in the  app/config_custom.yaml file. Also a default  display.css file and a logo are added.   docs Location of additional documentation. This can be generated or hand-written material, or a mixture of the two. Parameters      sourceDir: string The location of the source directory repoDir: string The location of the target repo where the TF data is generated. source: string, optional  If empty, use the latest version under the  source directory with sources. Otherwise it should be a valid integer, and it is the index in the sorted list of versions there.   0 or  latest : latest version;   -1 ,  -2 ,  . : previous version, version before previous,  .;   1 ,  2 ,  .: first version, second version,    everything else that is not a number is an explicit version If the value cannot be parsed as an integer, it is used as the exact version name. tf: string, optional  If empty, the TF version used will be the latest one under the  tf directory. If it can be parsed as the integers 1, 2, or 3 it will bump the latest relevant TF version:   0 or  latest : overwrite the latest version   1 will bump the major version   2 will bump the intermediate version   3 will bump the minor version  everything else is an explicit version Otherwise, the value is taken as the exact version name. verbose: integer, optional -1 Produce no (-1), some (0) or many (1) progress and reporting messages"
 },
 {
 "ref":"tf.convert.pagexml.PageXML.getDirector",
-"url":142,
+"url":141,
 "doc":"Factory for the director function. The  tf.convert.walker relies on a corpus dependent  director function that walks through the source data and spits out actions that produces the TF dataset. Also some special additions need to be programmed, such as an extra section level, word boundaries, etc. We collect all needed data, store it, and define a local director function that has access to this data. Returns    - function The local director function that has been constructed.",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.PageXML.getConverter",
-"url":142,
+"url":141,
 "doc":"Initializes a converter. Returns    - object The  tf.convert.walker.CV converter object, initialized.",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.PageXML.convertTask",
-"url":142,
+"url":141,
 "doc":"Implementation of the \"convert\" task. It sets up the  tf.convert.walker machinery and runs it. Returns    - boolean Whether the conversion was successful.",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.PageXML.loadTask",
-"url":142,
+"url":141,
 "doc":"Implementation of the \"load\" task. It loads the TF data that resides in the directory where the \"convert\" task deliver its results. During loading there are additional checks. If they succeed, we have evidence that we have a valid TF dataset. Also, during the first load intensive pre-computation of TF data takes place, the results of which will be cached in the invisible  .tf directory there. That makes the TF data ready to be loaded fast, next time it is needed. Returns    - boolean Whether the loading was successful.",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.PageXML.appTask",
-"url":142,
+"url":141,
 "doc":"Implementation of the \"app\" task. It creates / updates a corpus-specific app plus specific documentation files. There should be a valid TF dataset in place, because some settings in the app derive from it. It will also read custom additions that are present in the target app directory. These files are:   about_custom.md : A markdown file with specific colophon information about the dataset. In the generated file, this information will be put at the start.   transcription_custom.md : A markdown file with specific encoding information about the dataset. In the generated file, this information will be put at the start.   config_custom.yaml : A YAML file with configuration data that will be  merged into the generated config.yaml.   app_custom.py : A python file with named snippets of code to be inserted at corresponding places in the generated  app.py   display_custom.css : Additional CSS definitions that will be appended to the generated  display.css . If the TF app for this resource needs custom code, this is the way to retain that code between automatic generation of files. Returns    - boolean Whether the operation was successful.",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.PageXML.browseTask",
-"url":142,
+"url":141,
 "doc":"Implementation of the \"browse\" task. It gives a shell command to start the TF browser on the newly created corpus. There should be a valid TF dataset and app configuration in place Returns    - boolean Whether the operation was successful.",
 "func":1
 },
 {
 "ref":"tf.convert.pagexml.PageXML.task",
-"url":142,
+"url":141,
 "doc":"Carry out any task, possibly modified by any flag. This is a higher level function that can execute a selection of tasks. The tasks will be executed in a fixed order:  convert ,  load ,  app ,  browse . But you can select which one(s) must be executed. If multiple tasks must be executed and one fails, the subsequent tasks will not be executed. Parameters      convert: boolean, optional False Whether to carry out the  convert task. load: boolean, optional False Whether to carry out the  load task. app: boolean, optional False Whether to carry out the  app task. browse: boolean, optional False Whether to carry out the  browse task\" verbose: integer, optional -1 Produce no (-1), some (0) or many (1) progress and reporting messages Returns    - boolean Whether all tasks have executed successfully.",
 "func":1
 },
@@ -7636,346 +7596,346 @@ INDEX=[
 },
 {
 "ref":"tf.convert.pagexml.main",
-"url":142,
+"url":141,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.writing",
-"url":143,
+"url":142,
 "doc":" Writing systems support Transliteration tables for various writing systems. One can pass a language code to TF. When TF displays text (e.g. in  tf.advanced.display ) the language code may trigger the writing direction and the choice of font. Here are the ones that have an effect:  iso |  language  - |  -  akk |  akkadian  hbo |  hebrew  syc |  syriac  uga |  ugaritic  ara |  arabic  grc |  greek  cld |  neo aramaic Default: : string    "
 },
 {
 "ref":"tf.writing.transcription",
-"url":144,
+"url":143,
 "doc":" Transcription TF has support for several writing systems, by means of transcription tables and fonts that will be invoked when displaying the main text. It also calls functions to use these tables for converting Hebrew and Syriac text material to transliterated representations and back. There is also a phonetic transcription for Hebrew, designed in [phono.ipynb](https: nbviewer.jupyter.org/github/etcbc/phono/blob/master/programs/phono.ipynb)  Character tables and fonts   hbo Hebrew  tf.writing.hebrew : full list of characters covered by the ETCBC and phonetic transcriptions Font  Ezra SIL .   syc Syriac  tf.writing.syriac : full list of characters covered by the ETCBC transcriptions Font  Estrangelo Edessa .   ara Arabic  tf.writing.arabic : full list of characters covered by the transcription used for the Quran Font  AmiriQuran .   grc Greek Font  Gentium .   akk Akkadian Font  Santakku .   uga Ugaritic Font  Santakku .   cld Neo Aramaic Font  CharisSIL-R ."
 },
 {
 "ref":"tf.writing.transcription.Transcription",
-"url":144,
+"url":143,
 "doc":"Conversion between UNICODE and various transcriptions. Usage notes: Invoke the transcription functionality as follows:   from tf.writing.transcription import Transcription   Some of the attributes and methods below are  class attributes, others are instance attributes. A class attribute  aaa can be retrieved by saying  python Transcription.aaa   To retrieve an instance attribute, you need an instance first, like  python tr = Transcription() tr.aaa  "
 },
 {
 "ref":"tf.writing.transcription.Transcription.decomp",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.hebrew_mapping",
-"url":144,
+"url":143,
 "doc":"Maps all ETCBC transliteration character combinations for Hebrew to UNICODE. Example: sof-pasuq:  python Transcription.hebrew_mapping['00']   Output:   \u05c3  "
 },
 {
 "ref":"tf.writing.transcription.Transcription.hebrew_cons",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.trans_final_pat",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.trans_hebrew_pat",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.swap_accent_pat",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.remove_accent_pat",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.remove_point_pat",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.remove_psn_pat",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.remove_psq_pat",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.shin_pat",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.ph_simple_pat",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.noorigspace",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.ugaritic_mappingi",
-"url":144,
+"url":143,
 "doc":"Maps Ugaritic unicode characters to their conventional transliteration characters. Unidentified characters:   x (damaged ?)   / (alternative ?) only twice, in  atyp\u02e4tba/r and  xxxxl/d\u2026   , (comma) only once in a very long word starting at 551  .  km,ad  .     (brackets marking uncertainty ?)   \u2026 (unreadable ?)   00a0 (non-breaking space)"
 },
 {
 "ref":"tf.writing.transcription.Transcription.ugaritic_mapping",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.syriac_mapping_simple",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.syriac_mapping_pil",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.syriac_mapping",
-"url":144,
+"url":143,
 "doc":"Maps all ETCBC transliteration character combinations for Syriac to UNICODE. Example: semkath-final:  python Transcription.syriac_mapping['s']   Output:   \u0724  "
 },
 {
 "ref":"tf.writing.transcription.Transcription.trans_syriac_pat",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.arabic_mapping",
-"url":144,
+"url":143,
 "doc":"Maps an Arabic transliteration character to UNICODE. This is the mapping used in the Quran representation on tanzil.net. Example: beh  python Transcription.syriac_mapping['b']   Output:   \u0628   Maps an Arabic letter in UNICODE to its transliteration Example: beh transliteration  python Transcription.syriac_mapping['\u0628']   Output:   b  "
 },
 {
 "ref":"tf.writing.transcription.Transcription.arabic_mappingi",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.arabicTrans",
-"url":144,
+"url":143,
 "doc":"More Arabic transcriptions:  column 1:  custom [Quran-tanzil](http: tanzil.net/ 1:1), slightly extended  column 2:  ascii resp.  latin plus diacritics also known as betacode. We use a list compiled by [Peter Verkinderen](https: pverkind.github.io/betacodeTranscriber/js/betacode.js)  column 4:  standard (Library of Congress) (to-be filled). We use the [arabic romanization list of 2012](https: www.loc.gov/catdir/cpso/romanization/arabic.pdf) We refrain of from applying rules that cannot be computed without lexical/grammatical/dialectical knowledge of the arabic language."
 },
 {
 "ref":"tf.writing.transcription.Transcription.arabicTransQuran",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.arabicTransAscii",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.arabicTransLatin",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.arabicTransStandard",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.ara",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.qur",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.asc",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.lat",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.std",
-"url":144,
+"url":143,
 "doc":""
 },
 {
 "ref":"tf.writing.transcription.Transcription.quranFromArabic",
-"url":144,
+"url":143,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.asciiFromArabic",
-"url":144,
+"url":143,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.latinFromArabic",
-"url":144,
+"url":143,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.standardFromArabic",
-"url":144,
+"url":143,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.sycSplitPunc",
-"url":144,
+"url":143,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.suffix_and_finales",
-"url":144,
+"url":143,
 "doc":"Given an ETCBC transliteration, split it into the word material and the interword material that follows it (space, punctuation). Replace the last consonant of the word material by its final form, if applicable. Output a tuple with the modified word material and the interword material. Example:  python Transcription.suffix_and_finales('71T_H@>@95REY00')  Output:  ('71T_H@>@95REy', '00 ')  Note that the  Y has been replaced by  y .",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.suppress_space",
-"url":144,
+"url":143,
 "doc":"Given an ETCBC transliteration of a word, match the end of the word for punctuation and spacing characters ( sof pasuq ,  paseq ,  nun hafukha ,  setumah ,  petuhah , space, no-space) Example:  python Transcription.suppress_space('B.:&') Transcription.suppress_space('B.@R@74>') Transcription.suppress_space('71T_H@>@95REY00')   Output:    None   ",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.to_etcbc_v",
-"url":144,
+"url":143,
 "doc":"Given an ETCBC transliteration of a fully pointed word, strip all the non-vowel pointing (i.e. the accents). Example:  python Transcription.to_etcbc_v('HAC.@MA73JIm')   Output:   HAC.@MAJIm  ",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.to_etcbc_c",
-"url":144,
+"url":143,
 "doc":"Given an ETCBC transliteration of a fully pointed word, strip everything except the consonants. Punctuation will also be stripped. Example:  python Transcription.to_etcbc_c('HAC.@MA73JIm')   Output:   H MJM   Note that the pointed shin ( C ) is replaced by an unpointed one ( ).",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.to_hebrew",
-"url":144,
+"url":143,
 "doc":"Given a transliteration of a fully pointed word, produce the word in UNICODE Hebrew. Care will be taken that vowel pointing will be added to consonants before accent pointing. Example:  python Transcription.to_hebrew('HAC.@MA73JIm')   Output:   \u05d4\u05b7\ufb2a\u05bc\u05b8\u05de\u05b7\u0596\u05d9\u05b4\u05dd  ",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.to_hebrew_v",
-"url":144,
+"url":143,
 "doc":"Given a transliteration of a fully pointed word, produce the word in UNICODE Hebrew, but without the accents. Example:  python Transcription.to_hebrew_v('HAC.@MA73JIm')   Output:   \u05d4\u05b7\ufb2a\u05bc\u05b8\u05de\u05b7\u05d9\u05b4\u05dd  ",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.to_hebrew_c",
-"url":144,
+"url":143,
 "doc":"Given a transliteration of a fully pointed word, produce the word in UNICODE Hebrew, but without the pointing. Example:  python Transcription.to_hebrew_c('HAC.@MA73JIm')   Output:   \u05d4\u05e9\u05de\u05d9\u05de   Note that final consonant forms are not being used.",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.to_hebrew_x",
-"url":144,
+"url":143,
 "doc":"Given a transliteration of a fully pointed word, produce the word in UNICODE Hebrew, but without the pointing. Vowel pointing and accent pointing will be applied in the order given by the input word. Example:  python Transcription.to_hebrew_x('HAC.@MA73JIm')   Output:   \u05d4\u05b7\ufb2a\u05bc\u05b8\u05de\u05b7\u0596\u05d9\u05b4\u05dd  ",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.ph_simplify",
-"url":144,
+"url":143,
 "doc":"Given a phonological transliteration of a fully pointed word, produce a more coarse phonological transliteration. Example:  python Transcription.ph_simplify('\u0294\u1d49l\u014dh\u02c8\u00eem') Transcription.ph_simplify('m\u0101q\u02c8\u00f4m') Transcription.ph_simplify('kol')   Output:   \u0294l\u014dh\u00eem m\u00e5q\u00f4m k\u00e5l   Note that the simplified version transliterates the  qamets gadol and  qatan to the same character.",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.from_hebrew",
-"url":144,
+"url":143,
 "doc":"Given a fully pointed word in UNICODE Hebrew, produce the word in ETCBC transliteration. Example:  python tr.from_hebrew('\u05d4\u05b8\u05d0\u05b8\u05bd\u05e8\u05b6\u05e5\u05c3')   Output:   H@>@95REy00  ",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.to_syriac",
-"url":144,
+"url":143,
 "doc":"Given a word in ETCBC transliteration, produce the word in UNICODE Syriac. Example:  python tr.to_syriac('MKSJN')   Output:   \u0721\u071f\u0723\u071d\u0722  ",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.from_syriac",
-"url":144,
+"url":143,
 "doc":"Given a word in UNICODE Syriac, produce the word in ETCBC transliteration. Example:  python tr.from_syriac('\u0721\u071f\u0723\u071d\u0722')   Output:   MKSJN  ",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.can_to_syriac",
-"url":144,
+"url":143,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.can_from_syriac",
-"url":144,
+"url":143,
 "doc":"",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.to_ugaritic",
-"url":144,
+"url":143,
 "doc":"Given a word in transliteration, produce the word in UNICODE Ugaritic. k\u1e6fbx \ud800\udf8b\ud800\udf98\ud800\udf81x Example:  python Transcription.to_ugaritic('k\u1e6fbx')   Output:   \ud800\udf8b\ud800\udf98\ud800\udf81x  ",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.from_ugaritic",
-"url":144,
+"url":143,
 "doc":"Given a word in UNICODE Ugaritic, produce the word in transliteration. Example:  python Transcription.from_ugaritic('\ud800\udf8b\ud800\udf98\ud800\udf81x')   Output:   k\u1e6fbx  ",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.to_arabic",
-"url":144,
+"url":143,
 "doc":"Given a word in transliteration, produce the word in UNICODE Arabic. Example:  python Transcription.to_arabic('bisomi')   Output:   \u0628\u0650\u0633\u0652\u0645\u0650  ",
 "func":1
 },
 {
 "ref":"tf.writing.transcription.Transcription.from_arabic",
-"url":144,
+"url":143,
 "doc":"Given a word in UNICODE Arabic, produce the word in transliteration. Example:  python Transcription.from_arabic('\u0628\u0650\u0633\u0652\u0645\u0650')   Output:   bisomi  ",
 "func":1
 },
 {
 "ref":"tf.writing.greek",
-"url":145,
+"url":144,
 "doc":" Greek characters [Greek script in UNICODE](https: en.wikipedia.org/wiki/Greek_alphabet Greek_in_Unicode)"
 },
 {
 "ref":"tf.writing.arabic",
-"url":146,
+"url":145,
 "doc":" Arabic characters  @font-face { font-family: AmiriQuran; src: url('https: github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/AmiriQuran.woff2') format('woff2'), url('https: github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/AmiriQuran.woff') format('woff'), url('https: github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/AmiriQuran.ttf') format('truetype'); }   body { font-family: sans-serif; } table.chars { border-collapse: collapse; } table.chars thead tr { color:  ffffff; background-color:  444444; } table.chars tbody td { border: 2px solid  bbbbbb; padding: 0.1em 0.5em; } h1.chars { margin-top: 1em; } .t { font-family: monospace; font-size: large; color:  0000ff; } .g { font-family: \"AmiriQuran\", sans-serif; font-size: x-large; } .p { font-family: monospace; font-size: large; color:  666600; } .r { font-family: sans-serif; font-size: small; color:  555555; } .n { font-family: sans-serif; color:  990000; font-size: small; } .u { font-family: monospace; color:  990000; }   Letters     quran / tanzil  ASCII  latin  standard  glyph  remarks  name  UNICODE      '  '  \u02be  '  \u0621    ARABIC LETTER HAMZA  0621    A  & x005f;a  \u0101  \u0101  \u0627    ARABIC LETTER ALEF  0627    b  b  b  b  \u0628    ARABIC LETTER BEH  0628    p  =t  \u0167  t  \u0629    ARABIC LETTER TEH MARBUTA  0629    t  t  t  t  \u062a    ARABIC LETTER TEH  062a    v  & x005f;t  \u1e6f  th  \u062b    ARABIC LETTER THEH  062b    j  j  \u01e7  j  \u062c    ARABIC LETTER JEEM  062c    H  & x002a;h  \u1e25  \u1e25  \u062d    ARABIC LETTER HAH  062d    x  & x005f;h  \u1e2b  kh  \u062e    ARABIC LETTER KHAH  062e    d  d  d  d  \u062f    ARABIC LETTER DAL  062f    & x002a;  & x005f;d  \u1e0f  dh  \u0630    ARABIC LETTER THAL  0630    r  r  r  r  \u0631    ARABIC LETTER REH  0631    z  z  z  z  \u0632    ARABIC LETTER ZAIN  0632    s  s  s  s  \u0633    ARABIC LETTER SEEN  0633    $  ^s  \u0161  sh  \u0634    ARABIC LETTER SHEEN  0634    S  & x002a;s  \u1e63  \u1e63  \u0635    ARABIC LETTER SAD  0635    D  & x002a;d  \u1e0d  \u1e0d  \u0636    ARABIC LETTER DAD  0636    T  & x002a;t  \u1e6d  \u1e6d  \u0637    ARABIC LETTER TAH  0637    Z  & x002a;z  \u1e93  \u1e93  \u0638    ARABIC LETTER ZAH  0638    E     \u02bf     \u0639    ARABIC LETTER AIN  0639    g  & x002a;g  \u0121  gh  \u063a    ARABIC LETTER GHAIN  063a    f  f  f  f  \u0641    ARABIC LETTER FEH  0641    q  & x002a;k  \u1e33  q  \u0642    ARABIC LETTER QAF  0642    k  k  k  k  \u0643    ARABIC LETTER KAF  0643    l  l  l  l  \u0644    ARABIC LETTER LAM  0644    m  m  m  m  \u0645    ARABIC LETTER MEEM  0645    n  n  n  n  \u0646    ARABIC LETTER NOON  0646    h  h  h  h  \u0647    ARABIC LETTER HEH  0647    w  w  w  w  \u0648    ARABIC LETTER WAW  0648    Y  /a  \u00e1  \u0101  \u0649    ARABIC LETTER ALEF MAKSURA  0649    y  y  y  y  \u064a    ARABIC LETTER YEH  064a    {  a  a  a  \u0671    ARABIC LETTER ALEF WASLA  0671    G  g  g  g  \u06af    ARABIC LETTER GAF  06af    J   y  Y  y  \u06af    ARABIC LETTER FARSI YEH  06cc     Numerals     quran / tanzil  ASCII  latin  standard  glyph  remarks  name  UNICODE      0  0  0  0  & x0660;    ARABIC INDIC DIGIT ZERO  0660    1  1  1  1  & x0661;    ARABIC INDIC DIGIT ONE  0661    2  2  2  2  & x0662;    ARABIC INDIC DIGIT TWO  0662    3  3  3  3  & x0663;    ARABIC INDIC DIGIT THREE  0663    4  4  4  4  & x0664;    ARABIC INDIC DIGIT FOUR  0664    5  5  5  5  & x0665;    ARABIC INDIC DIGIT FIVE  0665    6  6  6  6  & x0666;    ARABIC INDIC DIGIT SIX  0666    7  7  7  7  & x0667;    ARABIC INDIC DIGIT SEVEN  0667    8  8  8  8  & x0668;    ARABIC INDIC DIGIT EIGHT  0668    9  9  9  9  & x0669;    ARABIC INDIC DIGIT NINE  0669     Stops     quran / tanzil  ASCII  latin  standard  glyph  remarks  name  UNICODE      -  .  .  .  \u06ea    ARABIC EMPTY CENTRE LOW STOP  06ea    +  .  .  .  \u06eb    ARABIC EMPTY CENTRE HIGH STOP  06eb    %  .  .  .  \u06ec    ARABIC ROUNDED HIGH STOP WITH FILLED CENTRE  06ec     Letters (modified)     quran / tanzil  ASCII  latin  standard  glyph  remarks  name  UNICODE      & x0060;  ~a  \u00e3    \u0670    ARABIC LETTER SUPERSCRIPT ALEF  0670    \u00bb  & x005f;a  \u0101  \u0101  \u0670\u0622    ARABIC LETTER ALEF WITH MADDA ABOVE  0622    :   s  S  s  \u06dc    ARABIC SMALL HIGH SEEN  06dc    [   m  M  M  \u06e2    ARABIC SMALL HIGH MEEM ISOLATED FORM  06e2    ;   s  S  S  \u06e3    ARABIC SMALL LOW SEEN  06e3    ,   w  W  W  \u06e5    ARABIC SMALL WAW  06e5    .   y  Y  Y  \u06e6    ARABIC SMALL YEH  06e6    M   j  J  j  \u06da    ARABIC SMALL HIGH JEEM  06da    !   n  N  N  \u06e8    ARABIC SMALL HIGH NOON  06e8    ]   m  M  M  \u06ed    ARABIC SMALL LOW MEEM  06ed     Letters (combined)     quran / tanzil  ASCII  latin  standard  glyph  remarks  name  UNICODE      >  & x005f;a  \u0101  \u0101  \u0623    ARABIC LETTER ALEF WITH HAMZA ABOVE  0623    &  '  \u02be  '  \u0624    ARABIC LETTER WAW WITH HAMZA ABOVE  0624     /td>  & x005f;a  \u0101  \u0101  \u0625    ARABIC LETTER ALEF WITH HAMZA BELOW  0625    }  '  \u02be  y  \u0626    ARABIC LETTER YEH WITH HAMZA ABOVE  0626    SlY  & x002a;sl/a  \u1e63l\u00e1  \u1e63la  \u06d6    ARABIC SMALL HIGH LIGATURE SAD WITH LAM WITH ALEF MAKSURA  06d6     Lengthening     quran / tanzil  ASCII  latin  standard  glyph  remarks  name  UNICODE      & x005f;        \u0640    ARABIC TATWEEL  0640     Vowel diacritics     quran / tanzil  ASCII  latin  standard  glyph  remarks  name  UNICODE      F  a& x002a;n  a\u207f  an  \u064b    ARABIC FATHATAN  064b    N  u& x002a;n  u\u207f  un  \u064c    ARABIC DAMMATAN  064c    K  i& x002a;n  i\u207f  in  \u064d    ARABIC KASRATAN  064d    a  a  a  a  \u064e    ARABIC FATHA  064e    u  u  u  u  \u064f    ARABIC DAMMA  064f    i  i  i  i  \u0650    ARABIC KASRA  0650     Non-vocalic diacritics     quran / tanzil  ASCII  latin  standard  glyph  remarks  name  UNICODE      ~  u  u  \u016bw  \u0651    ARABIC SHADDA  0651    o  a  a  a  \u0652    ARABIC SUKUN  0652    ^  & x005f;a  \u0101  \u0101  \u0653    ARABIC MADDAH ABOVE  0653       '  \u02be  \u0101  \u0654    ARABIC HAMZA ABOVE  0654    =  '  \u02be  \u0101  \u0655    ARABIC HAMZA BELOW  0655    @  0  0  0  \u06df    ARABIC SMALL HIGH ROUNDED ZERO  06df    \"  0  0  0  \u06e0    ARABIC SMALL HIGH UPRIGHT RECTANGULAR ZERO  06e0     Separators     quran / tanzil  ASCII  latin  standard  glyph  remarks  name  UNICODE                  SPACE  0020     See also  [Arabic script in UNICODE](https: en.wikipedia.org/wiki/Arabic_script_in_Unicode)  [Arabic diacritics](https: en.wikipedia.org/wiki/Arabic_diacritics harakat)  [Beta code](https: pverkind.github.io/betacodeTranscriber/js/betacode.js)  [Library of Congress](https: www.loc.gov/catdir/cpso/romanization/arabic.pdf)"
 },
 {
 "ref":"tf.writing.hebrew",
-"url":147,
+"url":146,
 "doc":" Hebrew characters  @font-face { font-family: \"Ezra SIL\"; src: url('https: github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/SILEOT.ttf?raw=true'); src: url('https: github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/SILEOT.woff?raw=true') format('woff'); }   body { font-family: sans-serif; } table.chars { border-collapse: collapse; } table.chars thead tr { color:  ffffff; background-color:  444444; } table.chars tbody td { border: 2px solid  bbbbbb; padding: 0.1em 0.5em; } h1.chars { margin-top: 1em; } .t { font-family: monospace; font-size: large; color:  0000ff; } .g { font-family: \"Ezra SIL\", sans-serif; font-size: x-large; } .p { font-family: monospace; font-size: large; color:  666600; } .r { font-family: sans-serif; font-size: small; color:  555555; } .n { font-family: sans-serif; color:  990000; font-size: small; } .u { font-family: monospace; color:  990000; }   ! note \"Disclaimer\" This just a look-up table, not a full exposition of the organization of the Masoretic system.  ! abstract \"Transcriptions\" The ETCBC transcription is used by the ETCBC. It has entries for all accents, but not for text-critical annotations such as uncertainty, and correction. The Abegg transcription is used in the Dead Sea scrolls. It has no entries for accents, but it has a repertoire of text-critical marks. We have back translated the latter to  ETCBC -compatible variants and entered them in the  ETCBC column, although they are not strictly  ETCBC marks.  ! abstract \"Phonetics\" The phonetic representation is meant as a tentative 1-1 correspondence with pronunciation, not with the script. See [phono.ipynb](https: nbviewer.jupyter.org/github/ETCBC/phono/blob/master/programs/phono.ipynb), where the phonetic transcription is computed and thoroughly documented.  Consonants  ! abstract \"Details\"  For most consonants: an inner dot is a  dagesh forte .  For the  \u05d1\u05d2\u05d3\u05db\u05e4\u05ea consonants: an inner dot is either a  dagesh forte or a  dagesh lene .  When the  \u05d4 contains a dot, it is called a  mappiq .     transcription ( ETCBC )  transcription (Abegg)  glyph  phonetic  remarks  name  UNICODE      &gt;  a  \u05d0  \u0294  when not  mater lectionis    letter alef  05D0    B  b  \u05d1  bb b v  forte lene normal   letter bet  05D1    G  g  \u05d2  gg g \u1e21  forte lene normal   letter gimel  05D2    D  d  \u05d3  dd d \u1e0f  forte lene normal   letter dalet  05D3    H  h  \u05d4  h  also with  mappiq ; when not  mater lectionis    letter he  05D4    W  w  \u05d5  ww w \u00fb  forte when not part of a long vowel with dagesh as vowel   letter vav  05D5    Z  z  \u05d6  zz z  forte normal   letter zayin  05D6    X  j  \u05d7  \u1e25     letter het  05D7    V  f  \u05d8  \u1e6d     letter tet  05D8    J  y  \u05d9  yy y \u02b8  forte when not part of long vowel in front of final  \u05d5    letter yod  05D9    K  k  \u05db  kk k \u1e35  forte lene normal   letter kaf  05DB    k  K  \u05da  k \u1e35  forte normal   letter final kaf  05DA    L  l  \u05dc  ll l  forte normal   letter lamed  05DC    M  m  \u05de  mm m  forte normal   letter mem  05DE    m  M  \u05dd  m     letter final mem  05DD    N  n  \u05e0  nn n  forte normal   letter nun  05E0    n  N  \u05df  n     letter final nun  05DF    S  s  \u05e1  ss s  forte normal   letter samekh  05E1    &lt;  o  \u05e2  \u0295     letter ayin  05E2    P  p  \u05e4  pp p f  forte lene normal   letter pe  05E4    p  P  \u05e3  p f  forte normal   letter final pe  05E3    Y  x  \u05e6  \u1e63\u1e63 \u1e63  forte normal   letter tsadi  05E6    y  X  \u05e5  \u1e63     letter final tsadi  05E5    Q  q  \u05e7  qq q  forte normal   letter qof  05E7    R  r  \u05e8  rr r  forte normal   letter resh  05E8       C  \u05e9  \u015d     letter shin without dot  05E9    C  v  \u05e9\u05c1  \u0161\u0161 \u0161  forte normal   letter shin with shin dot  FB2A    F  c  \u05e9\u05c2  \u015b\u015b \u015b  forte normal   letter shin with sin dot  FB2B    T  t  \u05ea  tt t \u1e6f  forte lene normal   letter tav  05EA     Vowels  ! caution \"Qere Ketiv\" The phonetics follows the  qere , not the  ketiv , when they are different. In that case a  is added.  ! caution \"Tetragrammaton\" The tetragrammaton  \u05d9\u05d4\u05d5\u05d4 is (vowel)-pointed in different ways; the phonetics follows the pointing, but the tetragrammaton is put between  [ ] .     transcription ( ETCBC )  transcription (Abegg)  glyph  phonetic  remarks  name  UNICODE      A  A \u00c5  \u05b7  a \u2090  normal  furtive    point patah  05B7    :A  S  \u05b2  \u1d43     point hataf patah  05B2    @  D \u2202 \u00ce  \u05b8  \u0101 o  gadol qatan   point qamats  05B8    :@  F \u0192 \u00cf  \u05b3  \u1d52     point hataf qamats  05B3    E  R \u00ae \u2030  \u05b6  e e\u02b8  normal with following  \u05d9    point segol  05B6    :E  T  \u05b1  \u1d49 \u1d49\u02b8  normal with following  \u05d9    point hataf segol  05B1    ;  E \u00e9 \u00b4  \u05b5  \u00ea \u0113  with following  \u05d9  alone   point tsere  05B5    I  I \u02c6 \u00ee \u00ca  \u05b4  \u00ee i  with following  \u05d9  alone   point hiriq  05B4    O  O \u00f8  \u05b9  \u00f4 \u014d  with following  \u05d5  alone   point holam  05B9    U  U \u00fc \u00a8  \u05bb  u     point qubuts  05BB    :  V \u221a J \u25ca  \u05b0  \u1d4a  left out if silent   point sheva  05B0     Other points and marks     transcription ( ETCBC )  transcription (Abegg)  glyph  phonetic  remarks  name  UNICODE      .  ; \u2026 \u00da \u00a5 \u03a9  \u05bc       point dagesh or mapiq  05BC    .c    \u05c1       point shin dot  05C1    .f    \u05c2       point sin dot  05C2    ,    \u05bf       point rafe  05BF    35    \u05bd  \u02c8     point meteg  05BD    45    \u05bd  \u02c8     point meteg  05BD    75    \u05bd  \u02c8     point meteg  05BD    95    \u05bd  \u02c8     point meteg  05BD    52    \u05c4  \u02c8     mark upper dot  05C4    53    \u05c5  \u02c8     mark lower dot  05C5    & 42;    \u05af       mark masora circle  05AF     Punctuation  ! abstract \"Details\" Some specialities in the Masoretic system are not reflected in the phonetics:   setumah  \u05e1 ;   petuhah  \u05e3 ;   nun-hafuka  \u0307\u05c6 .     transcription ( ETCBC )  transcription (Abegg)  glyph  phonetic  remarks  name  UNICODE      00  .  \u05c3  .     punctuation sof pasuq  05C3    n\u0303    \u05c6       punctuation nun hafukha  05C6    &amp;  -  \u05be  -     punctuation maqaf  05BE    & 95;  &nbsp; (non breaking space)  &nbsp;      space  0020    0000  \u00b1       Dead Sea scrolls. We use as Hebrew character a double sof pasuq.  paleo-divider  05C3 05C3    '  /  \u05f3    Dead Sea scrolls. We use as Hebrew character a geresh.  morpheme-break  05F3     Hybrid  ! abstract \"Details\" There is a character that is mostly punctuation, but that can also influence the nature of some accents occurring in the word before. Such a character is a hybrid between punctuation and accent. See also the documentation of the BHSA about [cantillation](https: ETCBC.github.io/bhsa/cantillation/).     transcription  glyph  phonetic  remarks  name  UNICODE      05    \u05c0       punctuation paseq  05C0     Accents  ! abstract \"Details\" Some accents play a role in deciding whether a  schwa is silent or mobile and whether a  qamets is  gadol or  qatan . In the phonetics those accents appear as  \u02c8 or  \u02cc . Implied accents are also added.     transcription  glyph  phonetic  remarks  name  UNICODE      94  \u05a7  \u02c8     accent darga  05A7    13  \u05ad  \u02c8     accent dehi  05AD    92  \u0591  \u02c8     accent etnahta  0591    61  \u059c  \u02c8     accent geresh  059C    11  \u059d  \u02c8     accent geresh muqdam  059D    62  \u059e  \u02c8     accent gershayim  059E    64  \u05ac  \u02c8     accent iluy  05AC    70  \u05a4  \u02c8     accent mahapakh  05A4    71  \u05a5  \u02cc     accent merkha  05A5    72  \u05a6  \u02c8     accent merkha kefula  05A6    74  \u05a3  \u02c8     accent munah  05A3    60  \u05ab  \u02c8     accent ole  05AB    03  \u0599       accent pashta  0599    83  \u05a1  \u02c8     accent pazer  05A1    33  \u05a8  \u02c8     accent qadma  05A8    63  \u05a8  \u02cc     accent qadma  05A8    84  \u059f  \u02c8     accent qarney para  059F    81  \u0597  \u02c8     accent revia  0597    01  \u0592       accent segol  0592    65  \u0593  \u02c8     accent shalshelet  0593    04  \u05a9       accent telisha qetana  05A9    24  \u05a9       accent telisha qetana  05A9    14  \u05a0       accent telisha gedola  05A0    44  \u05a0       accent telisha gedola  05A0    91  \u059b  \u02c8     accent tevir  059B    73  \u0596  \u02cc     accent tipeha  0596    93  \u05aa  \u02c8     accent yerah ben yomo  05AA    10  \u059a  \u02c8     accent yetiv  059A    80  \u0594  \u02c8     accent zaqef qatan  0594    85  \u0595  \u02c8     accent zaqef gadol  0595    82  \u0598  \u02c8     accent zarqa  0598    02  \u05ae  \u02c8     accent zinor  05AE     Numerals  ! abstract \"Details\" These signs occur in the Dead Sea scrolls. We represent them with conventional Hebrew characters for numbers and use the  geresh accent or another accent to mark the letter as a numeral. The ETCBC codes are obtained by translating back from the UNICODE.     transcription (ETCBC)  transcription (Abegg)  glyph  remarks  name      &gt;'  A  \u05d0\u059c     number 1    &gt;52  \u00e5  \u05d0\u05c4  alternative for 1, often at the end of a number, we use the upper dot to distinguish it from the other 1   number 1    &gt;53  B  \u05d0\u05c5  alternative for 1, often at the end of a number, we use the lower dot to distinguish it from the other 1   number 1    &gt;35  \u222b  \u05d0\u05bd  alternative for 1, often at the end of a number, we use the meteg to distinguish it from the other 1   number 1    J'  C  \u05d9\u059c     number 10    k'  D  \u05da\u059c     number 20    Q'  F  \u05e7\u059c     number 100    &amp;  +  \u05be  we use the maqaf to represent addition between numbers  add     Text-critical  ! abstract \"Details\" These signs occur in the Dead Sea scrolls. They are used to indicate uncertainty and editing acts by ancient scribes or modern editors. They do not have an associated glyph in UNICODE. The ETCBC does not have codes for them, but we propose an ETCBC-compatible encoding for them. The ETCBC codes are surrounded by space, except for the brackets, where a space at the side of the ( or ) is not necessary. Codes that are marked as  flag apply to the preceding character. Codes that are marked as  brackets apply to the material within them.     transcription (Abegg)  transcription ( ETCBC )  remarks  name      0  \u03b5  token  missing    ?  ?   token  uncertain (degree 1)    & 92;     token  uncertain (degree 2)    \ufffd   ?   token  uncertain (degree 3)    \u00d8  ?  flag, applies to preceding character  uncertain (degree 1)    \u00ab     flag, applies to preceding character  uncertain (degree 2)    \u00bb   ?  flag, applies to preceding character  uncertain (degree 3)    & 124;     flag, applies to preceding character  uncertain (degree 4)    \u00ab \u00bb  (  )  brackets  uncertain (degree 2)    \u2264 \u2265  (- -)  brackets  vacat (empty space)    ( )  ( )  brackets  alternative    [ ]  [ ]  brackets  reconstruction (modern)    { }  { }  brackets  removed (modern)    {& 123;    {& 123;    brackets  removed (ancient)    &lt; &gt;  (&lt; &gt;)  brackets  correction (modern)    &lt;&lt; &gt;&gt;  (&lt;&lt; &gt;&gt;)  brackets  correction (ancient)    ^ ^  (^ ^)  brackets  correction (supralinear, ancient)    "
 },
 {
 "ref":"tf.writing.syriac",
-"url":148,
+"url":147,
 "doc":" Syriac Characters  @font-face { font-family: \"Estrangelo Edessa\"; src: url('https: github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/SyrCOMEdessa.otf?raw=true'); src: url('https: github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/SyrCOMEdessa.woff?raw=true') format('woff'); }   body { font-family: sans-serif; } table.chars { border-collapse: collapse; } table.chars thead tr { color:  ffffff; background-color:  444444; } table.chars tbody td { border: 2px solid  bbbbbb; padding: 0.1em 0.5em; } h1.chars { margin-top: 1em; } .t { font-family: monospace; font-size: large; color:  0000ff; } .g { font-family: \"Estrangelo Edessa\", sans-serif; font-size: x-large; } .p { font-family: monospace; font-size: large; color:  666600; } .r { font-family: sans-serif; font-size: small; color:  555555; } .n { font-family: sans-serif; color:  990000; font-size: small; } .u { font-family: monospace; color:  990000; }   Letters     transcription  glyph  phonetic  remarks  name  UNICODE      &gt;  \u0710      alaph  0710    B  \u0712      beth  0712    G  \u0713      gamal  0713    D  \u0715      dalat  0715    H  \u0717      he  0717    W  \u0718      waw  0718    Z  \u0719      zain  0719    X  \u071a      heth  071A    V  \u071b      teth  071B    J  \u071d      yod  071D    K  \u071f      kaf  071F    L  \u0720      lamad  0720    M  \u0721      mim  0721    N  \u0722      nun  0722    S  \u0723      semkath  0723    &lt;  \u0725      e  0725    P  \u0726      pe  0726    Y  \u0728      tsade  0728    Q  \u0729      qof  0729    R  \u072a      resh  072A    C  \u072b      shin  072B    T  \u072c      taw  072C     Word-bound diacritics     transcription  glyph  phonetic  remarks  name  UNICODE      \"   \u0308      seyame  0308        \u0323      diacritical dot below  0323    ^   \u0307      diacritical dot above  0307     Non-vocalic letter-bound diacritics     transcription  glyph  phonetic  remarks  name  UNICODE      ^!   \u0743      unclear (syriac two vertical dots above)  0743     vocalic letter-bound diacritics     transcription  glyph  phonetic  remarks  name  UNICODE      :        shewa       A   \u0733      qamets  0733    A1   \u0734      zeqapa  0734    A2   \u0735      zeqofo  0735    O   \u073f      holem, rewaha  073F    @   \u0730      patah  0730    @1   \u0731      petaha  0731    @2   \u0732      petoho  0732    E   \u0736      segol  0736    E1   \u0737      revasa arrika  0737    E2   \u0738      revoso  0738    I   \u073a      hireq  073A    I1   \u073b      hevoso  073B    U   \u073d      qubbuts  073D    U1   \u073e      esoso  073E     Punctuation     transcription  glyph  phonetic  remarks  name  UNICODE       & 92;  \u0709      tahtaya, metkashpana (WS), meshalyana (WS)  0709    =.  .      pasuqa  002E    =   \u0707      elaya  0707    =:  :      shewaya (WS), zauga (ES)  003A    =^  \u0706      unclear (SYRIAC COLON SKEWED LEFT)  0706    =/  \u0707      elaya  0707    =& 92;  \u0706      unclear (SYRIAC COLON SKEWED LEFT)  0706    ^:  \u0703      taksa (WS), zauga elaya (ES)  0703    ^& 92;  \u0708      unclear (SYRIAC SUPRALINEAR COLON SKEWED LEFT)  0708     Pericope markers     transcription  glyph  phonetic  remarks  name  UNICODE      & 42;  \u0700      rosette  0700    .  \u00b7      common dot in caesuras  00B7    & 95;  \u2014      dash in caesuras  2014    o  \u2022      large dot in caesuras  2022    .md"
 },
 {
 "ref":"tf.writing.neoaramaic",
-"url":149,
+"url":148,
 "doc":" Neo Aramaic transcriptions  body { font-family: sans-serif; } pre.chars { border-collapse: collapse; color:  000080; font-family: monospace; font-size: medium; line-height: 1.0; }  The following table is provided by the collectors of the [NENA](https: github.com/CambridgeSemiticsLab/nena_corpus) corpus at [Cambridge Semitics Lab](https: github.com/CambridgeSemiticsLab). There is also a [PDF]( /images/neoaramaic.pdf) of the table below.  Vowel inventory and conversions  Special vowel signs  \u250f      \u2501\u2533 \u252f \u252f \u252f \u2501\u252f \u2501\u252f \u252f \u2501\u252f \u2501\u252f\u2501\u252f \u252f\u2501\u252f\u2501\u252f \u252f \u252f\u2501\u252f\u2501\u252f \u252f\u2501\u252f \u252f \u252f\u2501\u252f\u2501\u2513\u0010 \u2503 \u2503\u00e1 \u2502\u00e0 \u2502\u0101 \u2502\u0101\u0300 \u2502\u0101\u0301 \u2502\u0103 \u2502\u1eaf \u2502\u1eb1 \u2502e\u2502\u0113 \u2502\u025b\u2502i\u2502\u012b \u2502\u012d \u2502\u0259\u2502o\u2502\u014d \u2502u\u2502\u016b \u2502\u016d \u2502\u0131\u2502\u0251\u2503 \u2520      \u2500\u2542 \u253c \u253c \u253c \u2500\u253c \u2500\u253c \u253c \u2500\u253c \u2500\u253c\u2500\u253c \u253c\u2500\u253c\u2500\u253c \u253c \u253c\u2500\u253c\u2500\u253c \u253c\u2500\u253c \u253c \u253c\u2500\u253c\u2500\u2528 \u2503precise match\u2503a'\u2502a \u2502a-\u2502a- \u2502a-'\u2502a>\u2502a>'\u2502a> \u2502e\u2502e-\u25023\u2502i\u2502i-\u2502i>\u25029\u2502o\u2502o-\u2502u\u2502u-\u2502u  Symbol inventory for conversions  Special signs alphabetical  \u250f      \u2501\u2533   \u252f\u2501\u252f\u2501\u252f \u252f \u252f \u2501\u252f \u2501\u252f \u252f\u2501\u252f\u2501\u252f \u252f \u252f\u2501\u252f \u252f \u252f \u252f \u2501\u252f \u252f \u252f \u252f \u252f \u252f\u2501\u252f\u2501\u252f \u252f \u2513\u0010 \u2503 \u2503\u02be \u2502\u02bf\u2502c\u2502c\u032d \u2502\u010d \u2502\u010d\u032d \u2502\u010d\u0323 \u2502\u1e0d \u2502\u00f0\u2502\u00f0\u0323\u2502\u0121 \u2502\u1e25 \u2502\u025f\u2502k\u032d \u2502\u1e37 \u2502\u1e43 \u2502p\u032d,p\u030c\u2502p\u0323 \u2502\u1e5b \u2502\u1e63 \u2502\u0161 \u2502\u1e71 \u2502\u1e6d\u2502\u03b8\u2502\u017e \u2502\u1e93 \u2503 \u2520      \u2500\u2542   \u253c\u2500\u253c\u2500\u253c \u253c \u253c \u2500\u253c \u2500\u253c \u253c\u2500\u253c\u2500\u253c \u253c \u253c\u2500\u253c \u253c \u253c \u253c \u2500\u253c \u253c \u253c \u253c \u253c \u253c\u2500\u253c\u2500\u253c \u253c \u2528 \u2503precise match\u2503) \u2502(\u2502c\u2502c c\u2502>c c.\u2502d.\u25026\u25026\u2502g.\u2502h.\u25024\u2502k s\u2502t z\u2502z.\u2503 \u2503lite \u2503) \u2502(\u2502c\u2502c \u25025 \u2502 \u2502% \u2502D \u25026\u2502^\u2502G \u2502H \u25024\u2502& \u2502L \u2502M \u2502p \u2502P \u2502R \u2502S \u2502$ \u2502+ \u2502T\u25028\u25027 \u2502Z \u2503 \u2503fuzzy_all \u2503ignore\u2502(\u2502 \u2502 \u25025 \u25025 \u25025 \u2502d \u2502d\u2502d\u2502g \u2502h \u2502 \u2502 \u2502l \u2502m \u2502p \u2502p \u2502r \u2502s \u2502s \u2502t \u2502t\u2502 \u2502z \u2502z \u2503 \u2503fuzzy_Urmi \u2503 \u2502 \u2502k\u2502k \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502g\u2502q \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2503 \u2503fuzzy_Barwar \u2503 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502d\u2502 \u2502 \u2502 \u2502 \u2502k \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502 \u2502t\u2502 \u2502 \u2503 \u2517      \u2501\u253b   \u2537\u2501\u2537\u2501\u2537 \u2537 \u2537 \u2501\u2537 \u2501\u2537 \u2537\u2501\u2537\u2501\u2537 \u2537 \u2537\u2501\u2537 \u2537 \u2537 \u2537 \u2501\u2537 \u2537 \u2537 \u2537 \u2537 \u2537\u2501\u2537\u2501\u2537 \u2537 \u251b\u0010   Capitals  \u250f      \u2501\u2533\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u2513\u0010 \u2503 \u2503\u1e0d\u2502\u0121\u2502\u1e25\u2502\u1e37\u2502\u1e43\u2502p\u0323\u2502\u1e5b\u2502\u1e63\u2502\u1e6d\u2502\u1e93\u2502\u0101\u2502\u0113\u2502\u012b\u2502\u014d\u2502\u016b\u2503 \u2520      \u2500\u2542\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u2528 \u2503lite \u2503D\u2502G\u2502H\u2502L\u2502M\u2502P\u2502R\u2502S\u2502T\u2502Z\u2502A\u2502E\u2502I\u2502O\u2502U\u2503 \u2517      \u2501\u253b\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u251b\u0010   Special symbols  \u250f      \u2501\u2533\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u2513\u0010 \u2503 \u2503\u010d\u032d\u2502\u010d\u0323\u2502\u00f0\u0323\u2502k\u032d\u2502\u1e71\u2502\u0161\u2502\u0103\u2503 \u2520      \u2500\u2542\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u2528 \u2503lite \u2503 \u2502%\u2502^\u2502&\u2502+\u2502$\u2502@\u2503 \u2517      \u2501\u253b\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u251b\u0010   Numbers  \u250f      \u2501\u2533\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u252f\u2501\u2513\u0010 \u2503 \u2503\u016d\u2502\u025b\u2502\u025f\u2502\u010d\u2502\u00f0\u2502\u017e\u2502\u03b8\u2502\u0259\u2503 \u2520      \u2500\u2542\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u253c\u2500\u2528 \u2503lite \u25032\u25023\u25024\u25025\u25026\u25027\u25028\u25029\u2503 \u2517      \u2501\u253b\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u2537\u2501\u251b\u0010   Consonant phoneme inventory: Lite and fuzzy conversions  Legend  lt =  lite  fz =  fuzzy  fzUr =  fuzzy Urmi  \u0454 = empty  \u250f          \u2533    \u2501\u2533    \u2533    \u2533   \u2501\u2533   \u2501\u2533   \u2533   \u2501\u2533   \u2501\u2513\u0010 \u2503 \u2503labial \u2503dental- \u2503palatal-\u2503palatal\u2503(post-)\u2503uvular\u2503pharyn-\u2503laryn- \u2503 \u2503 \u2503 \u2503alveolar\u2503alveolar\u2503 \u2503velar \u2503 \u2503geal \u2503geal \u2503 \u2523          \u254b \u2501\u252f \u252f \u254b\u2501\u252f \u252f \u2501\u254b\u2501\u252f \u252f \u2501\u254b\u2501\u252f \u252f \u254b\u2501\u252f \u252f \u254b \u252f \u2501\u254b\u2501\u252f \u252f \u254b\u2501\u252f \u252f \u252b \u2503Stops/affricates \u2503 \u2502lt\u2502fz\u2503 \u2502lt\u2502fz \u2503 \u2502lt\u2502fz \u2503 \u2502lt\u2502fz\u2503 \u2502lt\u2502fz\u2503 \u2502 \u2503 \u2502lt\u2502fz\u2503 \u2502lt\u2502fz\u2503 \u2503 \u2503 \u2502 \u2502 \u2503 \u2502 \u2502 \u2503 \u2502 \u2502 \u2503 \u2502 \u2502Ur\u2503 \u2502 \u2502Ur\u2503 \u2502 \u2503 \u2502 \u2502 \u2503 \u2502 \u2502 \u2503 \u2520          \u2542 \u2500\u253c \u253c \u2542\u2500\u253c \u253c \u2500\u2542\u2500\u253c \u253c \u2500\u2542\u2500\u253c \u253c \u2542\u2500\u253c \u253c \u2542 \u253c \u2500\u2542\u2500\u2534 \u2534 \u2542\u2500\u253c \u253c \u2528 \u2503Unvoiced aspirated \u2503p \u2502p \u2502 \u2503t\u2502t \u2502t \u2503\u010d\u25025 \u25025 \u2503c\u2502c \u2502k \u2503k\u2502k \u2502k \u2503 q\u2502q \u2503 \u2503\u02be\u2502) \u2502\u0454 \u2503 \u2503Unvoiced unaspirated\u2503p\u032d,p\u030c\u2502p \u2502p \u2503\u1e71\u2502+ \u2502t \u2503\u010d\u032d\u2502 \u25025 \u2503c\u032d\u2502c \u2502k \u2503k\u032d\u2502& \u2502q \u2503 \u2502 \u2503 \u2503 \u2502 \u2502 \u2503 \u2503Voiced \u2503b \u2502b \u2502 \u2503d\u2502d \u2502d \u2503j\u2502j \u2502j \u2503\u025f\u25024 \u2502g \u2503g\u2502g \u2502g \u2503 \u2502 \u2503 \u2503 \u2502 \u2502 \u2503 \u2503Emphatic \u2503p\u0323 \u2502P \u2502p \u2503\u1e6d\u2502T \u2502t \u2503\u010d\u2502% \u25025 \u2503 \u2502 \u2502 \u2503 \u2502 \u2502 \u2503 \u2502 \u2503 \u2503 \u2502 \u2502 \u2503 \u2503 \u2503 \u2502 \u2502 \u2503\u1e0d\u2502D \u2502d \u2503 \u2502 \u2502 \u2503 \u2502 \u2502 \u2503 \u2502 \u2502 \u2503 \u2502 \u2503 \u2503 \u2502 \u2502 \u2503 \u2523          \u254b \u2501\u2537 \u2537 \u254b\u2501\u2537 \u2537 \u2501\u254b\u2501\u2537 \u2537 \u2501\u253b\u2501\u2537 \u2537 \u254b\u2501\u2537 \u2537 \u254b \u2537 \u2501\u254b   \u2501\u254b\u2501\u2537 \u2537 \u252b \u2503Fricatives \u2503 \u2503 \u2503 \u2503 \u2503 \u2503 \u2503 \u2503 \u2520          \u2542 \u2500\u252c \u252c \u2542\u2500\u252c \u252c \u2500\u2528 \u2520\u2500\u252c \u252c \u2528 \u2520\u2500\u252c \u252c \u2542\u2500\u252c \u252c \u2528 \u2503Unvoiced \u2503f \u2502f \u2502f \u2503\u03b8\u25028 \u2502t \u2503 \u2503x\u2502x \u2502x \u2503 \u2503\u1e25\u2502H \u2502h \u2503h\u2502h \u2502h \u2503 \u2503Voiced \u2503v \u2502v \u2502w \u2503\u00f0\u25026 \u2502d \u2503 \u2503\u0121\u2502G \u2502g \u2503 \u2503 \u2502 \u2502 \u2503 \u2502 \u2502 \u2503 \u2503Emphatic \u2503 \u2502 \u2502 \u2503\u00f0\u0323\u2502^ \u2502d \u2503 \u2503 \u2502 \u2502 \u2503 \u2503\u02bf\u2502( \u2502( \u2503 \u2502 \u2502 \u2503 \u2523          \u254b \u2501\u2537 \u2537 \u254b\u2501\u2537 \u2537 \u2501\u254b    \u2513 \u2517\u2501\u2537 \u2537 \u251b \u2517\u2501\u2537 \u2537 \u253b\u2501\u2537 \u2537 \u252b \u2503Sibilants \u2503 \u2503 \u2503 \u2503 \u2503 \u2520          \u2528 \u2520\u2500\u252c \u252c \u2500\u2542\u2500\u252c \u252c \u2500\u2528 \u2503 \u2503Unvoiced \u2503 \u2503s\u2502s \u2502s \u2503\u0161\u2502$ \u2502s \u2503 \u2503 \u2503Voiced \u2503 \u2503z\u2502z \u2502z \u2503\u017e\u25027 \u2502z \u2503 \u2503 \u2503Emphatic \u2503 \u2503\u1e63\u2502S \u2502s \u2503 \u2502 \u2502 \u2503 \u2503 \u2503 \u2503 \u2503\u1e93\u2502Z \u2502z \u2503 \u2502 \u2502 \u2503 \u2503 \u2523          \u254b    \u2501\u254b\u2501\u2537 \u2537 \u2501\u254b\u2501\u2537 \u2537 \u2501\u251b \u2503 \u2503Nasals \u2503 \u2503 \u2503 \u2503 \u2520          \u2542 \u2500\u252c \u252c \u2542\u2500\u252c \u252c \u2500\u2528 \u2503 \u2503Plain \u2503m \u2502m \u2502m \u2503n\u2502n \u2502n \u2503 \u2503 \u2503Emphatic \u2503\u1e43 \u2502M \u2502m \u2503 \u2502 \u2502 \u2503 \u2503 \u2523          \u254b \u2501\u2537 \u2537 \u254b\u2501\u2537 \u2537 \u2501\u252b \u2503 \u2503Laterals \u2503 \u2503 \u2503 \u2503 \u2520          \u2528 \u2520\u2500\u252c \u252c \u2500\u2528 \u2503 \u2503Plain \u2503 \u2503l\u2502l \u2502l \u2503 \u2503 \u2503Emphatic \u2503 \u2503\u1e37\u2502L \u2502l \u2503 \u2503 \u2523          \u254b    \u2501\u254b\u2501\u2537 \u2537 \u2501\u252b \u250f   \u2501\u2513 \u2503 \u2503Other approximants \u2503 \u2503 \u2503 \u2503 \u2503 \u2503 \u2520          \u2542 \u2500\u252c \u252c \u2542\u2500\u252c \u252c \u2500\u2528 \u2520\u2500\u252c \u252c \u2528 \u2503 \u2503Plain \u2503w \u2502w \u2502w \u2503r\u2502r \u2502r \u2503 \u2503y\u2502y \u2502y \u2503 \u2503 \u2503Emphatic \u2503 \u2502 \u2502 \u2503\u1e5b\u2502R \u2502r \u2503 \u2503 \u2502 \u2502 \u2503 \u2503 \u2517          \u253b \u2501\u2537 \u2537 \u253b\u2501\u2537 \u2537 \u2501\u253b    \u253b\u2501\u2537 \u2537 \u253b               \u251b\u0010  "
 },
 {
 "ref":"tf.writing.ugaritic",
-"url":150,
+"url":149,
 "doc":" Ugaritic Characters  @font-face { font-family: \"Santakku\"; src: local('Santakku'), url('/browser/static/fonts/Santakku.woff') format('woff'), url('https: github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/Santakku.woff?raw=true') format('woff'); }   body { font-family: sans-serif; } table.chars { border-collapse: collapse; } table.chars thead tr { color:  ffffff; background-color:  444444; } table.chars tbody td { border: 2px solid  bbbbbb; padding: 0.1em 0.5em; } h1.chars { margin-top: 1em; } .t { font-family: monospace; font-size: large; color:  0000ff; } .g { font-family: \"Santakku\", sans-serif; font-size: x-large; } .p { font-family: monospace; font-size: large; color:  666600; } .r { font-family: sans-serif; font-size: small; color:  555555; } .n { font-family: sans-serif; color:  990000; font-size: small; } .u { font-family: monospace; color:  990000; }   Letters and word separator \u0383 \u038c     transcription  glyph  phonetic  remarks  name  UNICODE      a  \ud800\udf80  \u0294a    alpa  10380    b  \ud800\udf81  b    beta  10381    g  \ud800\udf82  g    gamla  10382    \u1e2b  \ud800\udf83  x    kha  10383    d  \ud800\udf84  d    delta  10384    h  \ud800\udf85  h    ho  10385    w  \ud800\udf86  w    wo  10386    z  \ud800\udf87  z    zeta  10387    \u1e25  \ud800\udf88  \u0127    hota  10388    \u1e6d  \ud800\udf89  t\u02e4    tet  10389    y  \ud800\udf8a  j    yod  1038A    k  \ud800\udf8b  k    kaf  1038B    \u0161  \ud800\udf8c  \u0283    shin  1038C    l  \ud800\udf8d  l    lamda  1038D    m  \ud800\udf8e  m    mem  1038E    \u1e0f  \ud800\udf8f  \u00f0    dhal  1038F    n  \ud800\udf90  n    nun  10390    \u1e93  \ud800\udf91  \u03b8\u02e4    zu  10391    s  \ud800\udf92  s    samka  10392    \u02e4  \ud800\udf93  \u0295    ain  10393    p  \ud800\udf94  p    pu  10394    \u1e63  \ud800\udf95  s\u02e4    sade  10395    q  \ud800\udf96  q    qopa  10396    r  \ud800\udf97  r    rasha  10397    \u1e6f  \ud800\udf98  \u03b8    thanna  10398    \u0121  \ud800\udf99  \u0263    ghain  10399    t  \ud800\udf9a  t    to  1039A    i  \ud800\udf9b  \u0294i    i  1039B    u  \ud800\udf9c  \u0294u    u  1039C    s2  \ud800\udf9d  su    ssu  1039D    .  \ud800\udf9f      divider  1039F    "
 }
 ]

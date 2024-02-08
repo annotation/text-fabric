@@ -152,7 +152,7 @@ that steer the graph building:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/walker.py#L1-L1787" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6953e925100cd8fef4b3f7394228e87ddf5c54ab/tf/convert/walker.py#L1-L1787" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Walker
@@ -811,7 +811,7 @@ class CV:
         self.forcedStop = True
 
     def slot(self, key=None):
-        &#34;&#34;&#34;Make a slot node and return the handle to it in `n`.
+        &#34;&#34;&#34;Makes a slot node and return the handle to it in `n`.
 
         ```
         n = cv.slot()
@@ -873,7 +873,7 @@ class CV:
         return (nType, seq)
 
     def node(self, nType, slots=None):
-        &#34;&#34;&#34;Make a non-slot node and return the handle to it in `n`.
+        &#34;&#34;&#34;Makes a non-slot node and return the handle to it in `n`.
 
         ```
         n = cv.node(nodeType)
@@ -957,7 +957,7 @@ class CV:
         return node
 
     def terminate(self, node):
-        &#34;&#34;&#34;**terminate** a node.
+        &#34;&#34;&#34;**terminates** a node.
 
         ```
         cv.terminate(n)
@@ -1015,7 +1015,7 @@ class CV:
             self.discardables.add(node)
 
     def resume(self, node):
-        &#34;&#34;&#34;**resume** a node.
+        &#34;&#34;&#34;**resumes** a node.
 
         ```
         cv.resume(n)
@@ -1051,7 +1051,7 @@ class CV:
             curEmbedders.add(node)
 
     def link(self, node, slots):
-        &#34;&#34;&#34;Link the given, existing slots to a node.
+        &#34;&#34;&#34;Links the given, existing slots to a node.
 
         ```
         cv.link(n, [s1, s2])
@@ -1116,7 +1116,7 @@ class CV:
         return tuple(sorted(oslots.get(node, [])))
 
     def feature(self, node, **features):
-        &#34;&#34;&#34;Add **node features**.
+        &#34;&#34;&#34;Adds **node features**.
 
         ```
         cv.feature(n, name=value, ... , name=value)
@@ -1126,7 +1126,7 @@ class CV:
         ----------
         node: tuple
             A node reference, obtained by one of the actions `slot` or `node`.
-        **features: keyword arguments
+        features: keyword arguments
             The names and values of features to assign to this node.
 
         Returns
@@ -1148,7 +1148,7 @@ class CV:
             nodeFeatures[k][node] = v
 
     def edge(self, nodeFrom, nodeTo, **features):
-        &#34;&#34;&#34;Add **edge features**.
+        &#34;&#34;&#34;Adds **edge features**.
 
         ```
         cv.edge(nf, nt, name=value, ... , name=value)
@@ -1158,7 +1158,7 @@ class CV:
         ----------
         nodeFrom, nodeTo: tuple
             Two node references, obtained by one of the actions `slot` or `node`.
-        **features: keyword arguments
+        features: keyword arguments
             The names and values of features to assign to this edge
             (i.e. pair of nodes).
 
@@ -1221,7 +1221,7 @@ class CV:
         return False
 
     def meta(self, feat, **metadata):
-        &#34;&#34;&#34;Add, modify, delete metadata fields of features.
+        &#34;&#34;&#34;Adds, modifies, deletes metadata fields of features.
 
         ```
         cv.meta(feature, name=value, ... , name=value)
@@ -1276,7 +1276,7 @@ class CV:
         self.good = self._checkFeatMeta(feat, featMeta) and good and self.good
 
     def features(self):
-        &#34;&#34;&#34;Get the list of all features.
+        &#34;&#34;&#34;Gets the list of all features.
 
         ```
         featureNames = cv.features()
@@ -1363,7 +1363,7 @@ class CV:
         return {node[0] for node in self.curEmbedders}
 
     def get(self, feature, *args):
-        &#34;&#34;&#34;Retrieve feature values.
+        &#34;&#34;&#34;Retrieves feature values.
 
         ```
         cv.get(feature, n) and cv.get(feature, nf, nt)
@@ -1963,7 +1963,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/walker.py#L171-L1787" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6953e925100cd8fef4b3f7394228e87ddf5c54ab/tf/convert/walker.py#L171-L1787" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CV:
     S = &#34;slot&#34;
@@ -2452,7 +2452,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         self.forcedStop = True
 
     def slot(self, key=None):
-        &#34;&#34;&#34;Make a slot node and return the handle to it in `n`.
+        &#34;&#34;&#34;Makes a slot node and return the handle to it in `n`.
 
         ```
         n = cv.slot()
@@ -2514,7 +2514,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         return (nType, seq)
 
     def node(self, nType, slots=None):
-        &#34;&#34;&#34;Make a non-slot node and return the handle to it in `n`.
+        &#34;&#34;&#34;Makes a non-slot node and return the handle to it in `n`.
 
         ```
         n = cv.node(nodeType)
@@ -2598,7 +2598,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         return node
 
     def terminate(self, node):
-        &#34;&#34;&#34;**terminate** a node.
+        &#34;&#34;&#34;**terminates** a node.
 
         ```
         cv.terminate(n)
@@ -2656,7 +2656,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
             self.discardables.add(node)
 
     def resume(self, node):
-        &#34;&#34;&#34;**resume** a node.
+        &#34;&#34;&#34;**resumes** a node.
 
         ```
         cv.resume(n)
@@ -2692,7 +2692,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
             curEmbedders.add(node)
 
     def link(self, node, slots):
-        &#34;&#34;&#34;Link the given, existing slots to a node.
+        &#34;&#34;&#34;Links the given, existing slots to a node.
 
         ```
         cv.link(n, [s1, s2])
@@ -2757,7 +2757,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         return tuple(sorted(oslots.get(node, [])))
 
     def feature(self, node, **features):
-        &#34;&#34;&#34;Add **node features**.
+        &#34;&#34;&#34;Adds **node features**.
 
         ```
         cv.feature(n, name=value, ... , name=value)
@@ -2767,7 +2767,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         ----------
         node: tuple
             A node reference, obtained by one of the actions `slot` or `node`.
-        **features: keyword arguments
+        features: keyword arguments
             The names and values of features to assign to this node.
 
         Returns
@@ -2789,7 +2789,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
             nodeFeatures[k][node] = v
 
     def edge(self, nodeFrom, nodeTo, **features):
-        &#34;&#34;&#34;Add **edge features**.
+        &#34;&#34;&#34;Adds **edge features**.
 
         ```
         cv.edge(nf, nt, name=value, ... , name=value)
@@ -2799,7 +2799,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         ----------
         nodeFrom, nodeTo: tuple
             Two node references, obtained by one of the actions `slot` or `node`.
-        **features: keyword arguments
+        features: keyword arguments
             The names and values of features to assign to this edge
             (i.e. pair of nodes).
 
@@ -2862,7 +2862,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         return False
 
     def meta(self, feat, **metadata):
-        &#34;&#34;&#34;Add, modify, delete metadata fields of features.
+        &#34;&#34;&#34;Adds, modifies, deletes metadata fields of features.
 
         ```
         cv.meta(feature, name=value, ... , name=value)
@@ -2917,7 +2917,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         self.good = self._checkFeatMeta(feat, featMeta) and good and self.good
 
     def features(self):
-        &#34;&#34;&#34;Get the list of all features.
+        &#34;&#34;&#34;Gets the list of all features.
 
         ```
         featureNames = cv.features()
@@ -3004,7 +3004,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         return {node[0] for node in self.curEmbedders}
 
     def get(self, feature, *args):
-        &#34;&#34;&#34;Retrieve feature values.
+        &#34;&#34;&#34;Retrieves feature values.
 
         ```
         cv.get(feature, n) and cv.get(feature, nf, nt)
@@ -3642,7 +3642,7 @@ whether a node is active.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/walker.py#L1138-L1164" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6953e925100cd8fef4b3f7394228e87ddf5c54ab/tf/convert/walker.py#L1138-L1164" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def active(self, node):
     &#34;&#34;&#34;Returns whether a node is currently active.
@@ -3696,7 +3696,7 @@ and only active nodes in these types are returned.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/walker.py#L1166-L1189" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6953e925100cd8fef4b3f7394228e87ddf5c54ab/tf/convert/walker.py#L1166-L1189" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def activeNodes(self, nTypes=None):
     &#34;&#34;&#34;The currently active nodes, i.e. the embedders.
@@ -3744,7 +3744,7 @@ and only active nodes in these types are returned.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/walker.py#L1191-L1207" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6953e925100cd8fef4b3f7394228e87ddf5c54ab/tf/convert/walker.py#L1191-L1207" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def activeTypes(self):
     &#34;&#34;&#34;The node types of the currently active nodes, i.e. the embedders.
@@ -3788,7 +3788,7 @@ slots cannot be deleted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/walker.py#L828-L859" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6953e925100cd8fef4b3f7394228e87ddf5c54ab/tf/convert/walker.py#L828-L859" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def delete(self, node):
     &#34;&#34;&#34;**deletes** a node.
@@ -3828,14 +3828,14 @@ slots cannot be deleted.</p>
 <span>def <span class="ident">edge</span></span>(<span>self, nodeFrom, nodeTo, **features)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Add <strong>edge features</strong>.</p>
+<div class="desc"><p>Adds <strong>edge features</strong>.</p>
 <pre><code>cv.edge(nf, nt, name=value, ... , name=value)
 </code></pre>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>nodeFrom</code></strong>, <strong><code>nodeTo</code></strong> :&ensp;<code>tuple</code></dt>
 <dd>Two node references, obtained by one of the actions <code>slot</code> or <code>node</code>.</dd>
-<dt><strong><code>**features</code></strong> :&ensp;<code>keyword arguments</code></dt>
+<dt><strong><code>features</code></strong> :&ensp;<code>keyword arguments</code></dt>
 <dd>The names and values of features to assign to this edge
 (i.e. pair of nodes).</dd>
 </dl>
@@ -3856,10 +3856,10 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/walker.py#L994-L1028" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6953e925100cd8fef4b3f7394228e87ddf5c54ab/tf/convert/walker.py#L994-L1028" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def edge(self, nodeFrom, nodeTo, **features):
-    &#34;&#34;&#34;Add **edge features**.
+    &#34;&#34;&#34;Adds **edge features**.
 
     ```
     cv.edge(nf, nt, name=value, ... , name=value)
@@ -3869,7 +3869,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
     ----------
     nodeFrom, nodeTo: tuple
         Two node references, obtained by one of the actions `slot` or `node`.
-    **features: keyword arguments
+    features: keyword arguments
         The names and values of features to assign to this edge
         (i.e. pair of nodes).
 
@@ -3899,14 +3899,14 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <span>def <span class="ident">feature</span></span>(<span>self, node, **features)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Add <strong>node features</strong>.</p>
+<div class="desc"><p>Adds <strong>node features</strong>.</p>
 <pre><code>cv.feature(n, name=value, ... , name=value)
 </code></pre>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>node</code></strong> :&ensp;<code>tuple</code></dt>
 <dd>A node reference, obtained by one of the actions <code>slot</code> or <code>node</code>.</dd>
-<dt><strong><code>**features</code></strong> :&ensp;<code>keyword arguments</code></dt>
+<dt><strong><code>features</code></strong> :&ensp;<code>keyword arguments</code></dt>
 <dd>The names and values of features to assign to this node.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -3921,10 +3921,10 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/walker.py#L962-L992" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6953e925100cd8fef4b3f7394228e87ddf5c54ab/tf/convert/walker.py#L962-L992" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def feature(self, node, **features):
-    &#34;&#34;&#34;Add **node features**.
+    &#34;&#34;&#34;Adds **node features**.
 
     ```
     cv.feature(n, name=value, ... , name=value)
@@ -3934,7 +3934,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
     ----------
     node: tuple
         A node reference, obtained by one of the actions `slot` or `node`.
-    **features: keyword arguments
+    features: keyword arguments
         The names and values of features to assign to this node.
 
     Returns
@@ -3960,7 +3960,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <span>def <span class="ident">features</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Get the list of all features.</p>
+<div class="desc"><p>Gets the list of all features.</p>
 <pre><code>featureNames = cv.features()
 </code></pre>
 <h2 id="returns">Returns</h2>
@@ -3971,10 +3971,10 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/walker.py#L1122-L1136" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6953e925100cd8fef4b3f7394228e87ddf5c54ab/tf/convert/walker.py#L1122-L1136" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def features(self):
-    &#34;&#34;&#34;Get the list of all features.
+    &#34;&#34;&#34;Gets the list of all features.
 
     ```
     featureNames = cv.features()
@@ -3994,7 +3994,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <span>def <span class="ident">get</span></span>(<span>self, feature, *args)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Retrieve feature values.</p>
+<div class="desc"><p>Retrieves feature values.</p>
 <pre><code>cv.get(feature, n) and cv.get(feature, nf, nt)
 </code></pre>
 <p><code>feature</code> is the name of the feature.</p>
@@ -4019,10 +4019,10 @@ The nodes in question when retrieving the value of an edge feature.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/walker.py#L1209-L1250" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6953e925100cd8fef4b3f7394228e87ddf5c54ab/tf/convert/walker.py#L1209-L1250" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, feature, *args):
-    &#34;&#34;&#34;Retrieve feature values.
+    &#34;&#34;&#34;Retrieves feature values.
 
     ```
     cv.get(feature, n) and cv.get(feature, nf, nt)
@@ -4069,7 +4069,7 @@ The nodes in question when retrieving the value of an edge feature.</dd>
 <span>def <span class="ident">link</span></span>(<span>self, node, slots)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Link the given, existing slots to a node.</p>
+<div class="desc"><p>Links the given, existing slots to a node.</p>
 <pre><code>cv.link(n, [s1, s2])
 </code></pre>
 <p>Sometimes the automatic linking of slots to nodes is not sufficient.</p>
@@ -4091,10 +4091,10 @@ when the slots that need to be linked to it have already been created.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/walker.py#L897-L929" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6953e925100cd8fef4b3f7394228e87ddf5c54ab/tf/convert/walker.py#L897-L929" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def link(self, node, slots):
-    &#34;&#34;&#34;Link the given, existing slots to a node.
+    &#34;&#34;&#34;Links the given, existing slots to a node.
 
     ```
     cv.link(n, [s1, s2])
@@ -4155,7 +4155,7 @@ to do so, you have to detect that a node is still unlinked.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/walker.py#L931-L960" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6953e925100cd8fef4b3f7394228e87ddf5c54ab/tf/convert/walker.py#L931-L960" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linked(self, node):
     &#34;&#34;&#34;Returns the slots `ss` to which a node is currently linked.
@@ -4193,7 +4193,7 @@ to do so, you have to detect that a node is still unlinked.</p>
 <span>def <span class="ident">meta</span></span>(<span>self, feat, **metadata)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Add, modify, delete metadata fields of features.</p>
+<div class="desc"><p>Adds, modifies, deletes metadata fields of features.</p>
 <pre><code>cv.meta(feature, name=value, ... , name=value)
 </code></pre>
 <h2 id="parameters">Parameters</h2>
@@ -4216,10 +4216,10 @@ It will be checked whether you specify either <code>int</code> or <code>str</cod
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/walker.py#L1067-L1120" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6953e925100cd8fef4b3f7394228e87ddf5c54ab/tf/convert/walker.py#L1067-L1120" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def meta(self, feat, **metadata):
-    &#34;&#34;&#34;Add, modify, delete metadata fields of features.
+    &#34;&#34;&#34;Adds, modifies, deletes metadata fields of features.
 
     ```
     cv.meta(feature, name=value, ... , name=value)
@@ -4278,7 +4278,7 @@ It will be checked whether you specify either <code>int</code> or <code>str</cod
 <span>def <span class="ident">node</span></span>(<span>self, nType, slots=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Make a non-slot node and return the handle to it in <code>n</code>.</p>
+<div class="desc"><p>Makes a non-slot node and return the handle to it in <code>n</code>.</p>
 <pre><code>n = cv.node(nodeType)
 </code></pre>
 <p>You have to pass its <em>node type</em>, i.e. a string.
@@ -4319,10 +4319,10 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/walker.py#L719-L801" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6953e925100cd8fef4b3f7394228e87ddf5c54ab/tf/convert/walker.py#L719-L801" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def node(self, nType, slots=None):
-    &#34;&#34;&#34;Make a non-slot node and return the handle to it in `n`.
+    &#34;&#34;&#34;Makes a non-slot node and return the handle to it in `n`.
 
     ```
     n = cv.node(nodeType)
@@ -4437,7 +4437,7 @@ conditionally, using this function.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/walker.py#L1030-L1065" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6953e925100cd8fef4b3f7394228e87ddf5c54ab/tf/convert/walker.py#L1030-L1065" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def occurs(self, feat):
     &#34;&#34;&#34;Whether the feature `featureName` occurs in the resulting data so far.
@@ -4481,7 +4481,7 @@ conditionally, using this function.</p>
 <span>def <span class="ident">resume</span></span>(<span>self, node)</span>
 </code></dt>
 <dd>
-<div class="desc"><p><strong>resume</strong> a node.</p>
+<div class="desc"><p><strong>resumes</strong> a node.</p>
 <pre><code>cv.resume(n)
 </code></pre>
 <p>If you resume a non-slot node, you add it again to the set of embedders.
@@ -4501,10 +4501,10 @@ No new slot will be created.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/walker.py#L861-L895" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6953e925100cd8fef4b3f7394228e87ddf5c54ab/tf/convert/walker.py#L861-L895" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resume(self, node):
-    &#34;&#34;&#34;**resume** a node.
+    &#34;&#34;&#34;**resumes** a node.
 
     ```
     cv.resume(n)
@@ -4544,7 +4544,7 @@ No new slot will be created.</p>
 <span>def <span class="ident">slot</span></span>(<span>self, key=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Make a slot node and return the handle to it in <code>n</code>.</p>
+<div class="desc"><p>Makes a slot node and return the handle to it in <code>n</code>.</p>
 <pre><code>n = cv.slot()
 </code></pre>
 <p>No further information is needed.
@@ -4577,10 +4577,10 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/walker.py#L657-L717" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6953e925100cd8fef4b3f7394228e87ddf5c54ab/tf/convert/walker.py#L657-L717" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def slot(self, key=None):
-    &#34;&#34;&#34;Make a slot node and return the handle to it in `n`.
+    &#34;&#34;&#34;Makes a slot node and return the handle to it in `n`.
 
     ```
     n = cv.slot()
@@ -4667,7 +4667,7 @@ termination nevertheless.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/walker.py#L627-L655" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6953e925100cd8fef4b3f7394228e87ddf5c54ab/tf/convert/walker.py#L627-L655" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def stop(self, msg):
     &#34;&#34;&#34;Stops the director. No further input will be read.
@@ -4704,7 +4704,7 @@ termination nevertheless.</p>
 <span>def <span class="ident">terminate</span></span>(<span>self, node)</span>
 </code></dt>
 <dd>
-<div class="desc"><p><strong>terminate</strong> a node.</p>
+<div class="desc"><p><strong>terminates</strong> a node.</p>
 <pre><code>cv.terminate(n)
 </code></pre>
 <p>The node <code>n</code> will be removed from the set of current embedders.
@@ -4722,10 +4722,10 @@ This <code>n</code> must be the result of a previous <code>cv.slot()</code> or <
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/walker.py#L803-L826" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6953e925100cd8fef4b3f7394228e87ddf5c54ab/tf/convert/walker.py#L803-L826" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def terminate(self, node):
-    &#34;&#34;&#34;**terminate** a node.
+    &#34;&#34;&#34;**terminates** a node.
 
     ```
     cv.terminate(n)
@@ -4837,7 +4837,7 @@ to TF.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/convert/walker.py#L258-L421" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6953e925100cd8fef4b3f7394228e87ddf5c54ab/tf/convert/walker.py#L258-L421" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def walk(
     self,

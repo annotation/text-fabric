@@ -37,13 +37,28 @@ and in its top-level directory run the command:</strong></p>
 <pre><code class="language-sh">pip install -e .
 </code></pre>
 <h2 id="12">12</h2>
-<h3 id="122">12.2</h3>
-<h4 id="12211">12.2.11</h4>
-<p>2024-02-?? Upcoming</p>
+<h3 id="123">12.3</h3>
+<h4 id="1230">12.3.0</h4>
+<p>2024-02-08</p>
 <ul>
-<li>Small fixes in <code><a title="tf.convert.addnlp" href="../convert/addnlp.html">tf.convert.addnlp</a></code>: when the NLP data is integrated in the
-TF dataset, the NLP-generated features will get some metadata</li>
+<li>
+<p>A new data export conversion, from TF to WATM. See <code><a title="tf.convert.watm" href="../convert/watm.html">tf.convert.watm</a></code>.
+WATM is a not yet hardened data format that powers the publishing line
+for text and annotations built by Team Text at
+<a href="https://di.huc.knaw.nl/text-analysis-en.html">KNAW/HuC Digital Infrastructure</a>.
+Currently this export is used for the corpora</p>
+<ul>
+<li><a href="https://github.com/annotation/mondriaan">Mondriaan Proeftuin</a></li>
+<li><a href="https://gitlab.huc.knaw.nl/suriano/letters">Suriano Letters</a></li>
+<li><a href="https://gitlab.huc.knaw.nl/translatin/corpus">TransLatin Corpus</a></li>
 </ul>
+</li>
+<li>
+<p>Small fixes in <code><a title="tf.convert.addnlp" href="../convert/addnlp.html">tf.convert.addnlp</a></code>: when the NLP data is integrated in the
+TF dataset, the NLP-generated features will get some metadata</p>
+</li>
+</ul>
+<h3 id="122">12.2</h3>
 <h4 id="1228910">12.2.8,9,10</h4>
 <p>2024-01-24/25</p>
 <p>TF can auto-download extra data with a TF dataset, e.g. a directory with named entities
@@ -287,7 +302,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae0f2b6b7bb018584d0e16b9da1c4d4bc31ad4aa/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6953e925100cd8fef4b3f7394228e87ddf5c54ab/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -360,8 +375,11 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
+<li><a href="#123">12.3</a><ul>
+<li><a href="#1230">12.3.0</a></li>
+</ul>
+</li>
 <li><a href="#122">12.2</a><ul>
-<li><a href="#12211">12.2.11</a></li>
 <li><a href="#1228910">12.2.8,9,10</a></li>
 <li><a href="#1227">12.2.7</a></li>
 <li><a href="#1226">12.2.6</a></li>
