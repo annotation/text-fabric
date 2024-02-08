@@ -1080,6 +1080,43 @@ T = TEI(...)
 
 ---
 
+## WATM export
+
+``` python
+from tf.app import use
+from tf.convert.watm import WATM
+```
+
+``` python
+A = use(...)
+WA = WATM(A, ns, ...)
+WA.makeText()
+WA.makeAnno()
+WA.writeAll()
+WA.testAll()
+```
+:   convert TF dataset to text tokens and annotations in JSON format,
+    for consumption by TextRepo/AnnoRepo of
+    [KNAW/HuC Digital Infrastructure](https://di.huc.knaw.nl/text-analysis-en.html).
+    See
+    [Mondriaan Proeftuin](https://github.com/annotation/mondriaan)
+    [Suriano Letters](https://gitlab.huc.knaw.nl/suriano/letters)
+    [TransLatin Corpus](https://gitlab.huc.knaw.nl/translatin/corpus)
+:   `tf.convert.watm`
+
+``` python
+from tf.convert.watm import WATMS
+```
+
+``` python
+W = WATM(org, repo, backend, ns, ...)
+W.produce()
+```
+:   convert series of TF datasets to WATM
+:   `tf.convert.watm.WATMS`
+
+---
+
 ## NLP import
 
 **in order to use this, install Spacy, see `tf.tools.myspacy`**
