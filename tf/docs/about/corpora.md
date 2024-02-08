@@ -200,13 +200,13 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 
     *with a critical apparatus*
 
-[`mondriaan/letters`](https://git.diginfra.nl/mondriaan/letters)
+[`mondriaan/letters`](https://github.com/annotation/mondriaan)
 :   *Dutch*
     Letters of Piet Mondriaan , 1892-1923.
     Straight conversion from TEI to TF,
     Peter Boot et al., Dirk Roorda
 
-    ** Work in progress, not yet public*.*
+    ** Work in progress, test set only ("proeftuin").**
 
     *with NLP output from Spacy woven in*
 
@@ -216,7 +216,7 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
     Straight conversion from TEI to TF,
     Nina Lamal et al., Dirk Roorda
 
-    ** Work in progress*.*
+    ** Work in progress.**
 
     *with NLP output from Spacy woven in*
 

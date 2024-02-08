@@ -398,8 +398,8 @@ class NLPipeline(CheckImport):
         self.lastSlots = lastSlots
 
         if verbose >= 0:
-            console(f"{len(firstSlots):>6} start postions")
-            console(f"{len(lastSlots):>6} end postions")
+            console(f"{len(firstSlots):>6} start positions")
+            console(f"{len(lastSlots):>6} end positions")
 
     def getElementInfo(self, verbose=None):
         """Analyse the schema.

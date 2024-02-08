@@ -9,7 +9,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = '12.2.10'
+VERSION = '12.3.0'
 """Program version.
 
 This value is under control of the update process, as run by
@@ -157,6 +157,8 @@ URL_GL_UPLOAD = "https://uploads.gitlab.com"
 
 URL_NB = "https://nbviewer.jupyter.org"
 """Base URL of NB-viewer."""
+
+URL_TF_DOCS = "https://annotation.github.io/text-fabric/tf"
 
 
 PROTOCOL = "http://"

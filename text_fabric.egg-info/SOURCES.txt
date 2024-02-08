@@ -564,6 +564,7 @@ tf/convert/tei.py
 tf/convert/tf.py
 tf/convert/variants.py
 tf/convert/walker.py
+tf/convert/watm.py
 tf/convert/xml.py
 tf/convert/xmlCustom.py
 tf/convert/app/.DS_Store

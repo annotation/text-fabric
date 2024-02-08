@@ -655,7 +655,7 @@ class CV:
         self.forcedStop = True
 
     def slot(self, key=None):
-        """Make a slot node and return the handle to it in `n`.
+        """Makes a slot node and return the handle to it in `n`.
 
         ```
         n = cv.slot()
@@ -717,7 +717,7 @@ class CV:
         return (nType, seq)
 
     def node(self, nType, slots=None):
-        """Make a non-slot node and return the handle to it in `n`.
+        """Makes a non-slot node and return the handle to it in `n`.
 
         ```
         n = cv.node(nodeType)
@@ -801,7 +801,7 @@ class CV:
         return node
 
     def terminate(self, node):
-        """**terminate** a node.
+        """**terminates** a node.
 
         ```
         cv.terminate(n)
@@ -859,7 +859,7 @@ class CV:
             self.discardables.add(node)
 
     def resume(self, node):
-        """**resume** a node.
+        """**resumes** a node.
 
         ```
         cv.resume(n)
@@ -895,7 +895,7 @@ class CV:
             curEmbedders.add(node)
 
     def link(self, node, slots):
-        """Link the given, existing slots to a node.
+        """Links the given, existing slots to a node.
 
         ```
         cv.link(n, [s1, s2])
@@ -960,7 +960,7 @@ class CV:
         return tuple(sorted(oslots.get(node, [])))
 
     def feature(self, node, **features):
-        """Add **node features**.
+        """Adds **node features**.
 
         ```
         cv.feature(n, name=value, ... , name=value)
@@ -970,7 +970,7 @@ class CV:
         ----------
         node: tuple
             A node reference, obtained by one of the actions `slot` or `node`.
-        **features: keyword arguments
+        features: keyword arguments
             The names and values of features to assign to this node.
 
         Returns
@@ -992,7 +992,7 @@ class CV:
             nodeFeatures[k][node] = v
 
     def edge(self, nodeFrom, nodeTo, **features):
-        """Add **edge features**.
+        """Adds **edge features**.
 
         ```
         cv.edge(nf, nt, name=value, ... , name=value)
@@ -1002,7 +1002,7 @@ class CV:
         ----------
         nodeFrom, nodeTo: tuple
             Two node references, obtained by one of the actions `slot` or `node`.
-        **features: keyword arguments
+        features: keyword arguments
             The names and values of features to assign to this edge
             (i.e. pair of nodes).
 
@@ -1065,7 +1065,7 @@ class CV:
         return False
 
     def meta(self, feat, **metadata):
-        """Add, modify, delete metadata fields of features.
+        """Adds, modifies, deletes metadata fields of features.
 
         ```
         cv.meta(feature, name=value, ... , name=value)
@@ -1120,7 +1120,7 @@ class CV:
         self.good = self._checkFeatMeta(feat, featMeta) and good and self.good
 
     def features(self):
-        """Get the list of all features.
+        """Gets the list of all features.
 
         ```
         featureNames = cv.features()
@@ -1207,7 +1207,7 @@ class CV:
         return {node[0] for node in self.curEmbedders}
 
     def get(self, feature, *args):
-        """Retrieve feature values.
+        """Retrieves feature values.
 
         ```
         cv.get(feature, n) and cv.get(feature, nf, nt)

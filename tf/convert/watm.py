@@ -1,3 +1,229 @@
+"""Export to Web Annotation Text Model
+
+# The general idea
+
+This module can export a TF corpus to WATM (Web Annotation Text Model),
+which is the input format of the suite of systems developed by Team Text for
+serving text plus annotations over the web.
+
+The idea of WATM is, like the idea of Text-Fabric, to untangle the text from its
+markup. Everything outside the text itself is coded in annotations.
+
+Annotations look a lot like TF features, but they are a bit more general.
+Annotations can also annotate annotations, not only pieces of text.
+
+We need this extra generality, because unlike TF, WATM does not have a concept
+of node. The only parallel are the slot nodes of TF, which corresponds to the
+tokens of the text in WATM.
+
+Every node in TF is linked to a set of slot nodes.
+As such it can be mapped to an annotation to the corresponding tokens.
+Features of such nodes can be mapped to annotations to annotations.
+
+TF also has edges. These can be mapped to WATM annotations whose targets are
+pairs: one for the thing the edge is *from*, and one for the thing the edge is *to*.
+These things are typical annotations that correspond to TF nodes, since TF edges
+are links between TF nodes.
+
+If the TF dataset itself is the result of converting an XML file (e.g TEI or
+PageXML), then there is a further correspondence between the XML and the TF:
+
+*   elements translate into nodes; element tags translate into node types;
+*   attributes translate into features; values of attributes translate into
+    values of features.
+
+In our terminology below we assume that the TF data comes from an XML file,
+but this is not essential. Whenever we talk about *elements* and *tags*,
+you may read *nodes* and *node types* if the TF dataset does not have an XML
+precursor. Likewise, for *attributes* you may read *features*.
+
+# The specifics
+
+We generate tokens and annotations out of a TF dataset. Here is what we deliver
+and in
+what form:
+
+*   a file `text.json`: with the text segments in an array;
+*   a bunch of files `anno-1.json`, `anno-2.json, ...: all generated annotations;
+    We pack at most 400,000 annotations in one file, that keeps their size
+    below 50MB,
+    so that they still can live in a git directory without large file support.
+
+## Format of the text file
+
+The `text.json` is a JSON file with the following structure:
+
+```
+{
+  "_ordered_segments": [
+    "token1 ",
+    "token2 ",
+    ...
+  ]
+}
+```
+*   each item in `_ordered_segments` corresponds to one token;
+*   the item contains the text of the token plus the subsequent whitespace, if any;
+*   if the corpus is converted from TEI, we skip all material inside the
+    TEI-header.
+
+## Tokens
+
+Tokens correspond to the slot nodes in the TF dataset.
+Depending on the original format of the corpus we have the following specifics.
+
+### TEI corpora
+
+The base type is `t`, the *atomic* token.
+Atomic tokens are tokens as they come from some NLP processing, except when tokens
+contain element boundaries. In those cases tokens are split in fragments
+between the element boundaries.
+
+It is guaranteed that a text segment that corresponds to a `t` does not contain
+element boundaries.
+
+The original, unsplit tokens are also present in the annotations, they have
+type `token`.
+
+Tokens have the attributes `str` and `after`, both may be empty.
+
+### PageXML corpora
+
+The base type is `token`, it is available without NLP processing.
+
+Tokens have the attributes `str` and `after`, both may be empty.
+They may also have the attributes `rstr` and `rafter`.
+
+*   `str` is the *logical* string value of a token, `after` is empty or a space:
+    what comes after the token before the next token.
+*   `rstr` is the raw string value of a token, **when it deviates from the
+    logical value**, otherwise no value. `rafter` analogously.
+
+**Example**
+
+token | 1 | 2 | 3 | 4 | 5
+--- | --- | --- | --- | --- | ---
+rstr | empty | `efflagitan` | `¬` | `do` | empty
+str | `improbè` | `efflagitando` | empty | empty | `tandem`
+## Format of the annotation files
+
+The `anno-1.json`, `anno-2.json`, ... files are JSON file with the following
+structure:
+
+```
+{
+ "a000nnn": [
+  "kind",
+  "namespace",
+  "body",
+  "bbb-eee"
+ ],{
+ ...
+}
+```
+
+It is a big dictionary, keyed by annotation ids and each value is the data of
+an annotation, divided in the following fields:
+
+*   `kind`: the kind of annotation:
+    *   `element`: targets the text location where an *element* occurs, the body
+        is the element name;
+    *   `pi`: targets the text location where a *processing instruction* occurs,
+        the body is the  target of the *pi*;
+    *   `attribute`: targets an annotation (an *element* or *pi*), the body has
+        the shape *name*`=`*value*,
+        the name and value of the attribute in question;
+    *   `node`: targets an individual *token* or *element* or *pi*,
+        the body is the TF node (a number) of that *token* / *element* / *pi*;
+    *   `edge`: targets two node annotations, the body has the shape
+        `*name* or `*name*`=`*value*,
+        where *name* is the name of the edge and *value* is the label of the edge
+        if the edge has a label;
+    *   `format`: targets an individual token, the body is a formatting property
+        for that token,
+        all tokens in note elements get a `format` annotation with body `note`;
+    *   `anno`: targets an arbitrary annotation or text range,
+        body has an arbitrary value;
+        can be used for extra annotations,
+        e.g. in the Mondriaan corpus to provide an URL to an artwork derived
+        from an `<rs>` element.
+
+*   `namespace`: the namespace of the annotation; an indicator where the
+    information comes from. Possible values:
+    *   `pagexml`: annotation comes from the PageXML, possibly indirectly, e.g.
+        `h`, `w`, `x`, `y`
+    *   `tei`: annotation comes
+        [literally](https://annotation.github.io/text-fabric/tf/convert/helpers.html#tf.convert.helpers.CM_LIT)
+        from the TEI guidelines or the PageXML specification, or is
+        [processed](https://annotation.github.io/text-fabric/tf/convert/helpers.html#tf.convert.helpers.CM_LITP)
+        straightforwardly from it;
+    *   `tf`: annotation is
+        [composed](https://annotation.github.io/text-fabric/tf/convert/helpers.html#tf.convert.helpers.CM_LITC)
+        in a more intricate way from the original source or even
+        [added](https://annotation.github.io/text-fabric/tf/convert/helpers.html#tf.convert.helpers.CM_PROV)
+        to it;
+    *   `nlp`: annotation is generated as a result of
+        [NLP processing](https://annotation.github.io/text-fabric/tf/convert/helpers.html#tf.convert.helpers.CM_NLP);
+    *   `tt`: annotation is derived from other material in the source for the benefit
+        of the Team Text infrastructure. Defined in the `watm.yaml` file next
+        to this program.
+        Currently used for annotations that derive from project specific
+        requirements.
+
+*   `body`: the body of an annotation (probably the *kind* and *body* fields
+    together will make up the body of the resulting web annotation);
+
+*   `target`: a string specifying the target of the annotation, of the
+    following kinds:
+
+    *   **single** this is a target pointing to a single thing, either:
+        *   `bbb-eee` a range of text segments in the `_ordered_segments`;
+        *   an annotation id
+
+    *   **double** this is a target pointing to two things:
+        *   `fff->ttt` where `fff` is a "from" target and `ttt` is a "to" target;
+            both targets can vary independently between a range and an annotation id.
+
+# Caveat
+
+The WATM representation of the corpus is a faithful and complete representation
+of the TF dataset and hence of the TEI/PageXML source from which the TF dataset has been
+converted.
+
+Well, don't take this too literally, probably there are aspects where the
+different representations differ.
+
+I am aware of the following:
+
+*   The TEI to TF conversion has lost the exact embedding of elements in the
+    following case:
+
+    Suppose element A contains the same words as element B. Then the TF data
+    does not know whether A is a child of B or the other way round.
+
+    This is repairable by adding parenthood edges between nodes when
+    constructing the TF data. We should then also convert these TF edges to
+    WATM annotations, for which we need structured targets:
+
+    If `n` is the parent of `m`, we must make an annotation with body
+    `"parent"` and target `[n, m]`.
+
+    Something similar holds for the sibling relationship: if two nodes are adjacent
+    in a TF dataset, we do not know whether they are siblings elements in the
+    original XML. It is also possible to add sibling edges to the TF dataset.
+
+    See `tf.convert.tei` under **parentEdges** and **siblingEdges**.
+
+*   The TF to WATM conversion forgets the types of feature values: it does not
+    make a distinction between the integer `1` and the string `"1"`.
+
+    This is repairable by creating annotations with structured bodies like
+    `{"att": value}` instead of strings like `att=value` as we do now.
+
+    In practice, the meaning of the features in TF are known, and hence the attributes
+    in the WATM data, so this is not a blocking problem for now.
+"""
+
 import collections
 import json
 import re
@@ -5,7 +231,7 @@ import re
 from tf.core.helpers import console
 from tf.core.files import initTree, dirContents, expanduser as ex
 from tf.core.timestamp import DEEP
-from tf.parameters import OTYPE, OSLOTS
+from tf.parameters import OTYPE, OSLOTS, URL_TF_DOCS
 from tf.app import use
 
 
@@ -54,11 +280,49 @@ REL_RE = re.compile(r"""/tf\b""")
 
 
 def rep(status):
+    """Represent a boolean status for a message to the console.
+
+    Parameters
+    ----------
+    status: boolean
+
+    Returns
+    -------
+    string
+    """
     return "OK" if status else "XX"
 
 
 class WATM:
+    """The export machinery is exposed as a class, wrapped around a TF dataset."""
+
     def __init__(self, app, nsOrig, skipMeta=False, extra={}):
+        """Wrap the WATM exporter around a TF dataset.
+
+        Given an already loaded TF dataset, we make an inventory of all data
+        we need to perform an export to WATM.
+
+        Parameters
+        ----------
+        app: object
+            A loaded TF dataset, as obtained by a call `use(...)`.
+            See `tf.app.use`
+        nsOrig: string
+            A namespace corresponding to the format of the original, pre-Text-Fabric
+            representation. For example `tei` for a TEI corpus, `pagexml` for a
+            PageXML corpus. The namespace is not related to XML namespaces, it is
+            merely a device to categorize the resulting annotations.
+        skipMeta: boolean, optional False
+            Only relevant for TEI corpora. If True, all material in the TEI Header
+            will not be converted to tokens in the text.
+            More precisely: all TF slots for which the feature `is_meta` has a true-ish
+            value will be skipped. If there is no feature `is_meta` in the dataset,
+            the setting of `skipMeta` will have no effect: nothing will be excluded.
+        extra: dictionary, optional {}
+            The data for extra annotations, which will be generated on the fly under the
+            namespace `anno`. The keys are the names of features/attributes, the
+            value for each key is a dictionary that maps nodes to values.
+        """
         self.app = app
         self.nsOrig = nsOrig
         self.extra = extra
@@ -97,6 +361,8 @@ class WATM:
         is_metav = F.is_meta.v if "is_meta" in FAllSet else None
         self.is_metav = is_metav
 
+        app.dm(f"[WATM exporter docs]({URL_TF_DOCS}/convert/watm.html)")
+
         if skipMeta and not is_metav:
             console(
                 "skipMeta=True has no effect because feature is_meta is not defined.",
@@ -107,6 +373,13 @@ class WATM:
         self.skipMeta = skipMeta
 
     def makeText(self):
+        """Creates the text data.
+
+        The text is a list of tokens and will be stored in member `text` in this object.
+        Additionally, the mapping from slot numbers in the TF data
+        to indices in this list is stored in member `tlFromTf`.
+        """
+
         F = self.F
         slotType = self.slotType
         skipMeta = self.skipMeta
@@ -154,7 +427,7 @@ class WATM:
             tlFromTf[s] = t
 
     def mkAnno(self, kind, ns, body, target):
-        """Make an annotation and return its id.
+        """Make a single annotation and return its id.
 
         Parameters
         ----------
@@ -173,6 +446,16 @@ class WATM:
         return aId
 
     def makeAnno(self):
+        """Make all annotations.
+
+        The annotations are stored in a big list, in member `anno` of this object.
+
+        The mapping from slots to indices in the list of tokens is now extended
+        with the mapping from nodes to corresponding node annotations.
+
+        So member `tlFromTf` is now a full mapping from all nodes in TF to
+        tokens and/or annotations in WATM.
+        """
         Es = self.Es
         F = self.F
         Fs = self.Fs
@@ -184,6 +467,7 @@ class WATM:
         otypes = self.otypes
         nsOrig = self.nsOrig
         skipMeta = self.skipMeta
+        extra = self.extra
 
         tlFromTf = self.tlFromTf
 
@@ -330,22 +614,30 @@ class WATM:
                         target = f"{fromT}->{toT}"
                         aId = self.mkAnno(KIND_EDGE, ns, feat, target)
 
-        extra = {}
-        extra.update(self.extra)
-
-        for n, value in extra.items():
-            t = tlFromTf[n]
-            target = f"{t}-{t + 1}" if fotypev(n) == slotType else t
-            aId = self.mkAnno(KIND_ANNO, NS_TT, str(value), target)
+        for feat, featData in extra.items():
+            for n, value in featData.items():
+                t = tlFromTf[n]
+                target = f"{t}-{t + 1}" if fotypev(n) == slotType else t
+                aId = self.mkAnno(KIND_ANNO, NS_TT, f"{feat}={value}", target)
 
         if len(wrongTargets):
-            print(f"WARNING: wrong targets, {len(wrongTargets)}x")
+            console(f"WARNING: wrong targets, {len(wrongTargets)}x", error=True)
             for otype, start, end in wrongTargets:
                 sega = text[start]
                 segb = text[end - 1]
-                print(f"{otype:>20} {start:>6} `{sega}` > {end - 1} `{segb}`")
+                console(
+                    f"{otype:>20} {start:>6} `{sega}` > {end - 1} `{segb}`", error=True
+                )
 
     def writeAll(self):
+        """Write text and annotation data to disk.
+
+        The data will be written as JSON files.
+        When the annotation data grows larger than a certain threshold, it will be
+        divided over several files.
+
+        The annotations are sorted by annotation id.
+        """
         app = self.app
         text = self.text
         annos = self.annos
@@ -422,11 +714,43 @@ class WATM:
 
     @staticmethod
     def compare(nTF, nWA):
+        """Compare two numbers and report the outcome.
+
+        Used for testing the WATM conversion.
+
+        Parameters
+        ----------
+        nTF: integer
+            The number as it is counted from the original TF dataset.
+        nWA: integer
+            The number as it is counted from the generated WATM dataset.
+
+        Returns
+        -------
+        boolean
+            Whether the two values are equal.
+        """
         console(f"\tTF: {nTF:>6}\n\tWA: {nWA:>6}", error=nTF != nWA)
         return nTF == nWA
 
     @staticmethod
     def strEqual(wa=None, tf=None):
+        """Compare two strings and report the outcome.
+
+        Used for testing the WATM conversion.
+
+        Parameters
+        ----------
+        nTF: string
+            The string as encountered in the original TF dataset.
+        nWA: string
+            The string as encountered in the generated WATM dataset.
+
+        Returns
+        -------
+        boolean
+            Whether the two values are equal.
+        """
         different = False
         for i, cTF in enumerate(tf):
             if i >= len(wa):
@@ -460,7 +784,51 @@ class WATM:
         console(f"\tTF: {sampleTF:>6}\n\tWA: {sampleWA:>6}")
         return not different
 
+    def testAll(self):
+        """Test all aspects of the WATM conversion.
+
+        For all kinds of information, such as nodes, edges, features, tokens,
+        annotations, we check whether the parts that should correspond between
+        the TF dataset and the WATM annotations do so indeed.
+
+        We present some statistics, and highlight the mismatches.
+
+        Returns
+        -------
+        boolean
+            Whether all things that must agree do indeed agree.
+        """
+        self.testSetup()
+
+        good = True
+
+        if not self.testText():
+            good = False
+
+        if not self.testElements():
+            good = False
+
+        if not self.testAttributes():
+            good = False
+
+        if not self.testExtra():
+            good = False
+
+        if not self.testEdges():
+            good = False
+
+        console("Overall outcome ...")
+        console(f"{rep(good)} - whether all tests passed", error=not good)
+
+        return good
+
     def testSetup(self):
+        """Prepare the tests.
+
+        We read the WATM dataset and store the tokens in member `testTokens`
+        and the annotations in the member `testAnnotations`.
+        We unpack targets if they contain structured information.
+        """
         textFile = self.textFile
         annoFiles = self.annoFiles
 
@@ -470,7 +838,6 @@ class WATM:
 
         self.testTokens = tokens
 
-        annotationById = {}
         annotations = []
 
         for annoFile in annoFiles:
@@ -491,13 +858,22 @@ class WATM:
 
                     target = newParts[0] if len(newParts) == 1 else tuple(newParts)
 
-                    annotationById[aId] = (kind, body, target)
                     annotations.append((aId, kind, body, target))
 
         annotations = sorted(annotations)
         self.testAnnotations = annotations
 
     def testText(self):
+        """Test the text.
+
+        We test the number of tokens and the equality of the resulting text:
+        whether the TF and WATM datasets agree on it.
+
+        Returns
+        -------
+        boolean
+            Whether all these tests succeed.
+        """
         F = self.F
         skipMeta = self.skipMeta
         is_metav = self.is_metav
@@ -511,17 +887,28 @@ class WATM:
         )
         nTokensWA = len(tokens)
         nGood = self.compare(nTokensTF, nTokensWA)
-        console(f"{rep(nGood)} - Same number of tokens", error=not nGood)
+        console(f"{rep(nGood)} - whether the amounts of tokens agree", error=not nGood)
 
         textWA = "".join(tokens)
         textTF = "".join(text)
 
         tGood = self.strEqual(wa=textWA, tf=textTF)
-        console(f"{rep(tGood)} - Same text", error=not tGood)
+        console(f"{rep(tGood)} - whether the text is the same", error=not tGood)
 
         return nGood and tGood
 
     def testElements(self):
+        """Test the elements.
+
+        We test the annotations representing elements/processing instructions
+        and check whether they correspond 1-1 to the non-slot nodes in the TF
+        dataset.
+
+        Returns
+        -------
+        boolean
+            Whether all these tests succeed.
+        """
         F = self.F
         fotypev = self.fotypev
         eoslots = self.eoslots
@@ -559,11 +946,15 @@ class WATM:
         )
 
         eGood = self.compare(nElementsTF, nElementsWA)
-        console(f"{rep(eGood)} - Same number of elements as nodes", error=not eGood)
+        console(
+            f"{rep(eGood)} - whether the amounts of elements and nodes agree",
+            error=not eGood,
+        )
 
         pGood = self.compare(nPisTF, nPisWA)
         console(
-            f"{rep(pGood)} - Same number of processing instructions", error=not pGood
+            f"{rep(pGood)} - whether the amounts of processing instructions agree",
+            error=not pGood,
         )
 
         # element annotations
@@ -619,11 +1010,29 @@ class WATM:
         console(f"\tUnmapped: {unmapped:>5} x")
 
         aGood = wrong == 0 and unmapped == 0
-        console(f"{rep(aGood)} - All element annotations OK", error=not aGood)
+        console(
+            f"{rep(aGood)} - whether all element annotations are ok", error=not aGood
+        )
 
         return aGood and eGood and pGood
 
     def testAttributes(self):
+        """Test the attributes.
+
+        We test whether attributes and features correspond to each other.
+
+        Some attributes in the original TEI are converted in a special way into
+        TF features: this holds for the `rend` attribute.
+        Basically, a value `rend="italic"` is translated into feature
+        `is_italic=1`.
+        In turn, these features have been translated into annotations of kind
+        `format`. We test them separately.
+
+        Returns
+        -------
+        boolean
+            Whether all these tests succeed.
+        """
         Fs = self.Fs
         Fall = self.Fall
         eoslots = self.eoslots
@@ -664,7 +1073,7 @@ class WATM:
         console(f"\tWrong:    {len(wrong):>5} x")
         consistent = len(wrong) == 0
         console(
-            f"{rep(consistent)} - annotations consistent with features",
+            f"{rep(consistent)} - whether annotations are consistent with features",
             error=not consistent,
         )
 
@@ -699,7 +1108,7 @@ class WATM:
         console(f"\tTF attributes: {len(attTF)}")
         complete = attTF == attWA
         console(
-            f"{rep(complete)} - annotations complete w.r.t. features",
+            f"{rep(complete)} - whether annotations are complete w.r.t. features",
             error=not complete,
         )
 
@@ -741,7 +1150,8 @@ class WATM:
         console(f"\tWrong:    {len(wrong):>5} x")
         fconsistent = len(wrong) == 0
         console(
-            f"{rep(fconsistent)} - format annotations consistent with features",
+            f"{rep(fconsistent)} - "
+            f"whether format annotationsare consistent with features",
             error=not fconsistent,
         )
 
@@ -771,13 +1181,107 @@ class WATM:
         console(f"\tTF format attributes: {len(fmtTF)}")
         fcomplete = fmtTF == fmtWA
         console(
-            f"{rep(complete)} - format annotations complete w.r.t. features",
+            f"{rep(complete)} - "
+            f"whether format annotations are complete w.r.t. features",
             error=not fcomplete,
         )
 
         return consistent and complete and fconsistent and fcomplete
 
+    def testExtra(self):
+        """Test the extra data for on-the-fly annotations.
+
+        Annotations that have been generated out of the data stored in the
+        `extra` parameter with which the object has been initialized, all got
+        the kind `anno`.
+
+        Now we check these annotations against the data that went into it.
+
+        Returns
+        -------
+        boolean
+            Whether all these tests succeed.
+        """
+        annotations = self.testAnnotations
+        tfFromAid = self.tfFromAid
+        extra = self.extra
+
+        console("Testing the extra annotations ...")
+
+        attWA = []
+
+        for aId, kind, body, target in annotations:
+            if kind != "anno":
+                continue
+            node = tfFromAid[target]
+            (att, value) = body.split("=", 1)
+            attWA.append((node, att, value))
+
+        attWA = sorted(attWA)
+
+        attEX = []
+
+        for feat, featData in extra.items():
+            for n, value in featData.items():
+                attEX.append((n, feat, value))
+
+        attEX = sorted(attEX)
+
+        console(f"\t{len(attEX)} extra feature values")
+        console(f"\t{len(attWA)} extra annotations")
+
+        good = attWA == attEX
+
+        def showData(tuples, isin, isout):
+            data = {}
+
+            for n, f, v in tuples:
+                data.setdefault(f, {})[n] = v
+
+            for f in sorted(data):
+                fData = data[f]
+                console(
+                    f"\t{isin}: {f} misses {len(fData)} annotations in {isout}",
+                    error=True,
+                )
+                for n in sorted(fData.keys())[0:3]:
+                    console(f"\t\t\t{n:>7} = {fData[n]}", error=True)
+
+        if not good:
+            attWASet = set(attWA)
+            attEXSet = set(attEX)
+
+            onlyWA = attWASet - attEXSet
+            onlyEX = attEXSet - attWASet
+
+            if len(onlyWA):
+                showData(onlyWA, "WA", "EX")
+            else:
+                console("\tWA: All extra annotations derive from the extra data")
+            if len(onlyEX):
+                showData(onlyEX, "EX", "WA")
+            else:
+                console("\tEX: All extra data ended up as annotations")
+
+        console(f"{rep(good)} - whether the extra annotations agree", error=not good)
+
+        return good
+
     def testEdges(self):
+        """Test the edges.
+
+        Edges in TF are links between nodes, and they translate into annotations of
+        kind `edge` which target a pair of annotations: the `from` annotation,
+        and the `to` annotation.
+
+        Here we check whether the TF edges are faithfully and completely parallelled
+        by annotations.
+
+        Returns
+        -------
+        boolean
+            Whether all these tests succeed.
+        """
         Es = self.Es
         Eall = self.Eall
         annotations = self.testAnnotations
@@ -812,7 +1316,7 @@ class WATM:
         console(f"\tFound: {len(tfFromAidNodes)} nodes")
 
         for edge, edgeData in sorted(tfFromAidEdges.items()):
-            print(f"\tFound edge {edge} with {len(edgeData)} starting nodes")
+            console(f"\tFound edge {edge} with {len(edgeData)} starting nodes")
 
         allGood = True
 
@@ -820,16 +1324,16 @@ class WATM:
             if edge == "oslots":
                 continue
 
-            print(f"Checking edge {edge}")
+            console(f"\tChecking edge {edge}")
 
             good = True
 
             if edge not in set(Eall()):
-                print("\tmissing in TF data")
+                console("\t\tmissing in TF data", error=True)
                 good = False
 
             if edge not in tfFromAidEdges:
-                print("\tmissing in annotation data")
+                console("\t\tmissing in annotation data", error=True)
                 good = False
 
             if not good:
@@ -845,9 +1349,12 @@ class WATM:
             nFromAid = len(fromNodesAid)
 
             if fromNodesTF == fromNodesAid:
-                console(f"\tsame {nFromTF} fromNodes")
+                console(f"\t\tsame {nFromTF} fromNodes")
             else:
-                console(f"\tfrom nodes differ: {nFromTF} in TF, {nFromAid} in Aid")
+                console(
+                    f"\t\tfrom nodes differ: {nFromTF} in TF, {nFromAid} in Aid",
+                    error=True,
+                )
                 good = False
 
             diffs = []
@@ -869,11 +1376,11 @@ class WATM:
             if len(diffs):
                 good = False
                 console(
-                    f"\tdifferences in toNodes for {len(diffs)} fromNodes", error=True
+                    f"\t\tdifferences in toNodes for {len(diffs)} fromNodes", error=True
                 )
 
                 for f, toNodeInfoTF, toNodeInfoAid in sorted(diffs)[0:10]:
-                    console(f"\t\tfromNode {f}", error=True)
+                    console(f"\t\t\tfromNode {f}", error=True)
 
                     toNodesTF = set(toNodeInfoTF)
                     toNodesAid = set(toNodeInfoAid)
@@ -914,42 +1421,51 @@ class WATM:
                                     error=True,
                                 )
 
-            console(f"\t{nToChecked} toNodes checked")
-            console("\tOK" if good else "\tWRONG", error=not good)
+            console(f"\t{rep(good)} - {nToChecked} toNodes checked", error=not good)
 
             if not good:
                 allGood = False
 
-        console(f"{rep(allGood)} - {'All' if allGood else 'Not all'} edges agree")
+        console(f"{rep(allGood)} - whether all edges agree")
 
         return allGood
 
-    def testAll(self):
-        self.testSetup()
-
-        good = True
-
-        if not self.testText():
-            good = False
-
-        if not self.testElements():
-            good = False
-
-        if not self.testAttributes():
-            good = False
-
-        if not self.testEdges():
-            good = False
-
-        console("Overall outcome ...")
-        allRep = "All" if good else "Not all"
-        console(f"{rep(good)} - {allRep} tests passed", error=not good)
-
-        return good
-
 
 class WATMS:
+    """Export corpora that are divided over multiple TF datasets.
+
+    We set up and run WATM objects for each TF dataset, and generate results
+    for them separately.
+
+    We assume that all corpora have been generated by the same method and originate
+    from the same original format.
+
+    They must reside in the same repository, in adjacent directories under the `tf`
+    top-level directory of the repo.
+    """
+
     def __init__(self, org, repo, backend, nsOrig, skipMeta=False, extra={}):
+        """Collect the parameters for the WATM machinery.
+
+        We will initialize many `WATM` objects with mostly the same parameters.
+        These are collected when we initialize this object.
+
+        Parameters
+        ----------
+        org: string
+            The organization of all TF datasets.
+        repo: string
+            The repo of all TF datasets.
+        backend: string
+            The backend of all TF datasets.
+        nsOrig: string
+            The original namespace of all TF datasets.
+            See `tf.convert.watm.WATM`.
+        skipMeta: boolean, optional False
+            See `tf.convert.watm.WATM`.
+        extra: dictionary, optional {}
+            See `tf.convert.watm.WATM`.
+        """
         self.org = org
         self.repo = repo
         self.backend = backend
@@ -964,6 +1480,15 @@ class WATMS:
         self.docs = docs
 
     def produce(self, doc=None):
+        """Convert all relevant TF datasets.
+
+        Parameters
+        ----------
+        doc: string, optional None
+            Subdirectory where one of the TF datasets resides.
+            If passed, only this dataset will be converted.
+            Otherwise all datasets will be converted.
+        """
         org = self.org
         repo = self.repo
         backend = self.backend

@@ -3905,9 +3905,9 @@ class TEI(CheckImport):
             code = sourceText.replace("F.matérial", materialCode)
             code = code.replace('"rèndValues"', rendValues)
 
-            hookStartRe = re.compile(r"^# DEF (import|init|extra)\s*$", re.S)
-            hookEndRe = re.compile(r"^# END DEF\s*$", re.S)
-            hookInsertRe = re.compile(r"^\t# INSERT (import|init|extra)\s*$", re.S)
+            hookStartRe = re.compile(r"^# DEF (import|init|extra)\s*$", re.M)
+            hookEndRe = re.compile(r"^# END DEF\s*$", re.M)
+            hookInsertRe = re.compile(r"^\s*# INSERT (import|init|extra)\s*$", re.M)
 
             custom = {}
             section = None

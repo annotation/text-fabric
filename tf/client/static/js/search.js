@@ -593,7 +593,7 @@ export class SearchProvider {
   getHlText(textRange, matches, text, valueMap, tip) {
     /* get highlighted text for a node
      * The results of matching a pattern against a text are highlighted within that text
-     * returns a sequence of spans, where a span is an array of postions plus a boolean
+     * returns a sequence of spans, where a span is an array of positions plus a boolean
      * that indicated whether the span is highlighted or not.
      * Used by display() and tabular() below
      */

@@ -18,14 +18,26 @@ pip install -e .
 
 ## 12
 
-### 12.2
+### 12.3
 
-#### 12.2.11
+#### 12.3.0
 
-2024-02-?? Upcoming
+2024-02-08
+
+*   A new data export conversion, from TF to WATM. See `tf.convert.watm`.
+    WATM is a not yet hardened data format that powers the publishing line
+    for text and annotations built by Team Text at 
+    [KNAW/HuC Digital Infrastructure](https://di.huc.knaw.nl/text-analysis-en.html).
+    Currently this export is used for the corpora
+
+    *   [Mondriaan Proeftuin](https://github.com/annotation/mondriaan)
+    *   [Suriano Letters](https://gitlab.huc.knaw.nl/suriano/letters)
+    *   [TransLatin Corpus](https://gitlab.huc.knaw.nl/translatin/corpus)
 
 *   Small fixes in `tf.convert.addnlp`: when the NLP data is integrated in the
     TF dataset, the NLP-generated features will get some metadata
+
+### 12.2
 
 #### 12.2.8,9,10
 
