@@ -1372,6 +1372,45 @@ see <a href="https://nbviewer.org/github/ETCBC/nestle1904/blob/master/programs/t
 </dd>
 </dl>
 <hr>
+<h2 id="watm-export">WATM export</h2>
+<pre><code class="language-python">from tf.app import use
+from tf.convert.watm import WATM
+</code></pre>
+<dl>
+<dt><pre><code class="language-python">A = use(...)
+WA = WATM(A, ns, ...)
+WA.makeText()
+WA.makeAnno()
+WA.writeAll()
+WA.testAll()
+</code></pre></dt>
+<dd>
+<p>convert TF dataset to text tokens and annotations in JSON format,
+for consumption by TextRepo/AnnoRepo of
+<a href="https://di.huc.knaw.nl/text-analysis-en.html">KNAW/HuC Digital Infrastructure</a>.
+See
+<a href="https://github.com/annotation/mondriaan">Mondriaan Proeftuin</a>
+<a href="https://gitlab.huc.knaw.nl/suriano/letters">Suriano Letters</a>
+<a href="https://gitlab.huc.knaw.nl/translatin/corpus">TransLatin Corpus</a></p>
+</dd>
+<dd>
+<p><code><a title="tf.convert.watm" href="convert/watm.html">tf.convert.watm</a></code></p>
+</dd>
+</dl>
+<pre><code class="language-python">from tf.convert.watm import WATMS
+</code></pre>
+<dl>
+<dt><pre><code class="language-python">W = WATM(org, repo, backend, ns, ...)
+W.produce()
+</code></pre></dt>
+<dd>
+<p>convert series of TF datasets to WATM</p>
+</dd>
+<dd>
+<p><code><a title="tf.convert.watm.WATMS" href="convert/watm.html#tf.convert.watm.WATMS">WATMS</a></code></p>
+</dd>
+</dl>
+<hr>
 <h2 id="nlp-import">NLP import</h2>
 <p><strong>in order to use this, install Spacy, see <code><a title="tf.tools.myspacy" href="tools/myspacy.html">tf.tools.myspacy</a></code></strong></p>
 <pre><code class="language-python">
@@ -1617,7 +1656,7 @@ after running Spacy to get them.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6953e925100cd8fef4b3f7394228e87ddf5c54ab/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/90fb3bd81b3dd7487e33b6820807c696bb6d37a0/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: docs/main/cheatsheet.md
@@ -1732,6 +1771,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#export-to-zip">Export to ZIP</a></li>
 <li><a href="#interchange-with-external-annotation-tools">Interchange with external annotation tools</a></li>
 <li><a href="#xml-tei-import">XML / TEI import</a></li>
+<li><a href="#watm-export">WATM export</a></li>
 <li><a href="#nlp-import">NLP import</a></li>
 <li><a href="#pandas-export">pandas export</a></li>
 <li><a href="#mql-interchange">MQL interchange</a></li>
