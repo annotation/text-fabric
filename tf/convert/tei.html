@@ -389,7 +389,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/tei.py#L1-L4266" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/tei.py#L1-L4297" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -1320,10 +1320,14 @@ class TEI(CheckImport):
         self.good = True
 
         (backend, org, repo, relative) = getLocation()
+
         if any(s is None for s in (backend, org, repo, relative)):
             console(
-                &#34;Not working in a repo: &#34;
-                f&#34;backend={backend} org={org} repo={repo} relative={relative}&#34;
+                (
+                    &#34;Not working in a repo: &#34;
+                    f&#34;backend={backend} org={org} repo={repo} relative={relative}&#34;
+                ),
+                error=True,
             )
             self.good = False
             return
@@ -1374,8 +1378,11 @@ class TEI(CheckImport):
                     typeFunc = type(func)
                     if typeFunc is not functionType:
                         console(
-                            f&#34;custom member {method} should be a function, &#34;
-                            f&#34;but it is a {typeFunc.__name__}&#34;
+                            (
+                                f&#34;custom member {method} should be a function, &#34;
+                                f&#34;but it is a {typeFunc.__name__}&#34;
+                            ),
+                            error=True,
                         )
                         continue
 
@@ -1384,7 +1391,7 @@ class TEI(CheckImport):
                     hooked.append(method)
 
             except Exception as e:
-                console(str(e))
+                console(str(e), error=True)
                 for method in customKeys:
                     if not hasattr(self, method):
                         methodC = f&#34;{method}Custom&#34;
@@ -2166,8 +2173,11 @@ class TEI(CheckImport):
 
             if nErrors:
                 console(
-                    f&#34;{nErrors} validation error(s) in {nFiles} file(s) &#34;
-                    f&#34;written to {errorFile}&#34;
+                    (
+                        f&#34;{nErrors} validation error(s) in {nFiles} file(s) &#34;
+                        f&#34;written to {errorFile}&#34;
+                    ),
+                    error=True,
                 )
             else:
                 if verbose &gt;= 0:
@@ -2201,16 +2211,17 @@ class TEI(CheckImport):
                             f&#34;{tag:&lt;16} : {amount:&gt;5}x {ns}\n&#34;
                         )
 
-            if procins:
-                plural = &#34;&#34; if nProcins == 1 else &#34;s&#34;
-                console(f&#34;{nProcins} processing instruction{plural} encountered.&#34;)
+            if verbose &gt;= 0:
+                if procins:
+                    plural = &#34;&#34; if nProcins == 1 else &#34;s&#34;
+                    console(f&#34;{nProcins} processing instruction{plural} encountered.&#34;)
 
-            console(
-                f&#34;{nTags} tags of which {nErrors} with multiple namespaces &#34;
-                f&#34;written to {errorFile}&#34;
-                if verbose &gt;= 0 or nErrors
-                else &#34;Namespaces OK&#34;
-            )
+                console(
+                    f&#34;{nTags} tags of which {nErrors} with multiple namespaces &#34;
+                    f&#34;written to {errorFile}&#34;
+                    if verbose &gt;= 0 or nErrors
+                    else &#34;Namespaces OK&#34;
+                )
 
         def writeReport():
             reportFile = f&#34;{reportPath}/elements.txt&#34;
@@ -2560,7 +2571,8 @@ class TEI(CheckImport):
         if sectionModel == &#34;I&#34;:
             i = 0
             for xmlFolder, xmlFiles in self.getXML():
-                console(f&#34;Start folder {xmlFolder}:&#34;)
+                msg = &#34;Start &#34; if verbose &gt;= 0 else &#34;\t&#34;
+                console(f&#34;{msg}folder {xmlFolder}:&#34;)
                 j = 0
                 cr = &#34;&#34;
                 nl = True
@@ -2579,15 +2591,17 @@ class TEI(CheckImport):
 
                     label = f&#34;{mdRep:&lt;12} {tplRep:&lt;12} {adRep:&lt;12}&#34;
 
-                    console(f&#34;{cr}{i:&gt;4} {label} {xmlFile:&lt;50}&#34;, newline=nl)
+                    if verbose &gt;= 0:
+                        console(f&#34;{cr}{i:&gt;4} {label} {xmlFile:&lt;50}&#34;, newline=nl)
                     xmlFilesByModel[model].append(xmlPath)
-                console(&#34;&#34;)
-                console(f&#34;End   folder {xmlFolder}&#34;)
+                if verbose &gt;= 0:
+                    console(&#34;&#34;)
+                    console(f&#34;End   folder {xmlFolder}&#34;)
 
         elif sectionModel == &#34;II&#34;:
             xmlFile = self.getXML()
             if xmlFile is None:
-                console(&#34;No XML files found!&#34;)
+                console(&#34;No XML files found!&#34;, error=True)
                 return False
 
             xmlPath = f&#34;{teiPath}/{xmlFile}&#34;
@@ -2603,10 +2617,12 @@ class TEI(CheckImport):
             thisGood = True
 
             if validate:
-                console(&#34;\tValidating ...&#34;)
+                if verbose &gt;= 0:
+                    console(&#34;\tValidating ...&#34;)
                 schemaFile = modelInfo.get(model, None)
                 if schemaFile is None:
-                    console(f&#34;\t\tNo schema file for {model}&#34;)
+                    if verbose &gt;= 0:
+                        console(f&#34;\t\tNo schema file for {model}&#34;)
                     if good is not None and good is not False:
                         good = None
                     continue
@@ -2627,7 +2643,8 @@ class TEI(CheckImport):
         if not good:
             self.good = False
 
-        console(&#34;&#34;)
+        if verbose &gt;= 0:
+            console(&#34;&#34;)
         writeErrors()
         writeReport()
         writeElemTypes()
@@ -3537,7 +3554,10 @@ class TEI(CheckImport):
                     value = {chapterSection: heading}
                     cv.feature(cur[NODE][chapterSection], **value)
                     chapterNum = cur[&#34;chapterNum&#34;]
-                    console(f&#34;\rchapter {chapterNum:&gt;4} {heading:&lt;50}&#34;, newline=False)
+                    if verbose &gt;= 0:
+                        console(
+                            f&#34;\rchapter {chapterNum:&gt;4} {heading:&lt;50}&#34;, newline=False
+                        )
             else:
                 chunkSection = self.chunkSection
 
@@ -3601,12 +3621,15 @@ class TEI(CheckImport):
                 if isPure(cur):
                     if textMaterial and textMaterial != &#34; &#34;:
                         console(
-                            &#34;WARNING: Text material at the start of &#34;
-                            f&#34;pure-content element &lt;{tag}&gt;&#34;
+                            (
+                                &#34;WARNING: Text material at the start of &#34;
+                                f&#34;pure-content element &lt;{tag}&gt;&#34;
+                            ),
+                            error=True
                         )
                         stack = &#34;-&#34;.join(n[0] for n in cur[XNEST])
-                        console(f&#34;\tElement stack: {stack}&#34;)
-                        console(f&#34;\tMaterial: `{textMaterial}`&#34;)
+                        console(f&#34;\tElement stack: {stack}&#34;, error=True)
+                        console(f&#34;\tMaterial: `{textMaterial}`&#34;, error=True)
                 else:
                     for ch in textMaterial:
                         addSlot(cv, cur, ch)
@@ -3772,12 +3795,15 @@ class TEI(CheckImport):
                     if tailMaterial and tailMaterial != &#34; &#34;:
                         elem = cur[XNEST][-1][0]
                         console(
-                            &#34;WARNING: Text material after &#34;
-                            f&#34;&lt;{tag}&gt; in pure-content element &lt;{elem}&gt;&#34;
+                            (
+                                &#34;WARNING: Text material after &#34;
+                                f&#34;&lt;{tag}&gt; in pure-content element &lt;{elem}&gt;&#34;
+                            ),
+                            error=True
                         )
                         stack = &#34;-&#34;.join(cur[XNEST][0])
-                        console(f&#34;\tElement stack: {stack}-{tag}&#34;)
-                        console(f&#34;\tMaterial: `{tailMaterial}`&#34;)
+                        console(f&#34;\tElement stack: {stack}-{tag}&#34;, error=True)
+                        console(f&#34;\tMaterial: `{tailMaterial}`&#34;, error=True)
                 else:
                     for ch in tailMaterial:
                         addSlot(cv, cur, ch)
@@ -3833,7 +3859,8 @@ class TEI(CheckImport):
 
                 i = 0
                 for xmlFolder, xmlFiles in self.getXML():
-                    console(f&#34;Start folder {xmlFolder}:&#34;)
+                    msg = &#34;Start &#34; if verbose &gt;= 0 else &#34;\t&#34;
+                    console(f&#34;{msg}folder {xmlFolder}:&#34;)
 
                     cur[NODE][folderSection] = cv.node(folderSection)
                     value = {folderSection: xmlFolder}
@@ -3860,10 +3887,11 @@ class TEI(CheckImport):
                         tplRep = tpl or &#34;&#34;
                         adRep = adapt or &#34;&#34;
                         label = f&#34;{modelRep:&lt;12} {adRep:&lt;12} {tplRep:&lt;12}&#34;
-                        console(
-                            f&#34;{cr}{i:&gt;4} {label} {xmlFile:&lt;50}&#34;,
-                            newline=nl,
-                        )
+                        if verbose &gt;= 0:
+                            console(
+                                f&#34;{cr}{i:&gt;4} {label} {xmlFile:&lt;50}&#34;,
+                                newline=nl,
+                            )
 
                         cur[NODE][fileSection] = cv.node(fileSection)
                         ids[xmlFile][&#34;&#34;] = cur[NODE][fileSection]
@@ -3906,14 +3934,16 @@ class TEI(CheckImport):
                             cv.terminate(cur[NODE][tpl])
                         cv.terminate(cur[NODE][fileSection])
 
-                    console(&#34;&#34;)
-                    console(f&#34;End   folder {xmlFolder}&#34;)
+                    if verbose &gt;= 0:
+                        console(&#34;&#34;)
+                        console(f&#34;End   folder {xmlFolder}&#34;)
+
                     cv.terminate(cur[NODE][folderSection])
 
             elif sectionModel == &#34;II&#34;:
                 xmlFile = self.getXML()
                 if xmlFile is None:
-                    console(&#34;No XML files found!&#34;)
+                    console(&#34;No XML files found!&#34;, error=True)
                     return False
 
                 xmlPath = f&#34;{teiPath}/{xmlFile}&#34;
@@ -3957,7 +3987,8 @@ class TEI(CheckImport):
 
                 addSlot(cv, cur, None)
 
-            console(&#34;&#34;)
+            if verbose &gt;= 0:
+                console(&#34;&#34;)
 
             if verbose &gt;= 0:
                 console(&#34;Resolving links into edges ...&#34;)
@@ -4140,8 +4171,8 @@ class TEI(CheckImport):
         silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
 
         if not dirExists(tfPath):
-            console(f&#34;Directory {ux(tfPath)} does not exist.&#34;)
-            console(&#34;No TF found, nothing to load&#34;)
+            console(f&#34;Directory {ux(tfPath)} does not exist.&#34;, error=True)
+            console(&#34;No TF found, nothing to load&#34;, error=True)
             self.good = False
             return
 
@@ -4674,7 +4705,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/tei.py#L748-L765" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/tei.py#L748-L765" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRefs(tag, atts, xmlFile):
     refAtt = REFERENCING.get(tag, None)
@@ -4704,7 +4735,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/tei.py#L4252-L4262" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/tei.py#L4283-L4293" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(
@@ -4727,7 +4758,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/tei.py#L731-L745" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/tei.py#L731-L745" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCssInfo():
     &#34;&#34;&#34;Make the CSS info for the style sheet.&#34;&#34;&#34;
@@ -4875,7 +4906,7 @@ relevant TF version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/tei.py#L768-L4249" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/tei.py#L768-L4280" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI(CheckImport):
     def __init__(
@@ -5039,10 +5070,14 @@ relevant TF version:</p>
         self.good = True
 
         (backend, org, repo, relative) = getLocation()
+
         if any(s is None for s in (backend, org, repo, relative)):
             console(
-                &#34;Not working in a repo: &#34;
-                f&#34;backend={backend} org={org} repo={repo} relative={relative}&#34;
+                (
+                    &#34;Not working in a repo: &#34;
+                    f&#34;backend={backend} org={org} repo={repo} relative={relative}&#34;
+                ),
+                error=True,
             )
             self.good = False
             return
@@ -5093,8 +5128,11 @@ relevant TF version:</p>
                     typeFunc = type(func)
                     if typeFunc is not functionType:
                         console(
-                            f&#34;custom member {method} should be a function, &#34;
-                            f&#34;but it is a {typeFunc.__name__}&#34;
+                            (
+                                f&#34;custom member {method} should be a function, &#34;
+                                f&#34;but it is a {typeFunc.__name__}&#34;
+                            ),
+                            error=True,
                         )
                         continue
 
@@ -5103,7 +5141,7 @@ relevant TF version:</p>
                     hooked.append(method)
 
             except Exception as e:
-                console(str(e))
+                console(str(e), error=True)
                 for method in customKeys:
                     if not hasattr(self, method):
                         methodC = f&#34;{method}Custom&#34;
@@ -5885,8 +5923,11 @@ relevant TF version:</p>
 
             if nErrors:
                 console(
-                    f&#34;{nErrors} validation error(s) in {nFiles} file(s) &#34;
-                    f&#34;written to {errorFile}&#34;
+                    (
+                        f&#34;{nErrors} validation error(s) in {nFiles} file(s) &#34;
+                        f&#34;written to {errorFile}&#34;
+                    ),
+                    error=True,
                 )
             else:
                 if verbose &gt;= 0:
@@ -5920,16 +5961,17 @@ relevant TF version:</p>
                             f&#34;{tag:&lt;16} : {amount:&gt;5}x {ns}\n&#34;
                         )
 
-            if procins:
-                plural = &#34;&#34; if nProcins == 1 else &#34;s&#34;
-                console(f&#34;{nProcins} processing instruction{plural} encountered.&#34;)
+            if verbose &gt;= 0:
+                if procins:
+                    plural = &#34;&#34; if nProcins == 1 else &#34;s&#34;
+                    console(f&#34;{nProcins} processing instruction{plural} encountered.&#34;)
 
-            console(
-                f&#34;{nTags} tags of which {nErrors} with multiple namespaces &#34;
-                f&#34;written to {errorFile}&#34;
-                if verbose &gt;= 0 or nErrors
-                else &#34;Namespaces OK&#34;
-            )
+                console(
+                    f&#34;{nTags} tags of which {nErrors} with multiple namespaces &#34;
+                    f&#34;written to {errorFile}&#34;
+                    if verbose &gt;= 0 or nErrors
+                    else &#34;Namespaces OK&#34;
+                )
 
         def writeReport():
             reportFile = f&#34;{reportPath}/elements.txt&#34;
@@ -6279,7 +6321,8 @@ relevant TF version:</p>
         if sectionModel == &#34;I&#34;:
             i = 0
             for xmlFolder, xmlFiles in self.getXML():
-                console(f&#34;Start folder {xmlFolder}:&#34;)
+                msg = &#34;Start &#34; if verbose &gt;= 0 else &#34;\t&#34;
+                console(f&#34;{msg}folder {xmlFolder}:&#34;)
                 j = 0
                 cr = &#34;&#34;
                 nl = True
@@ -6298,15 +6341,17 @@ relevant TF version:</p>
 
                     label = f&#34;{mdRep:&lt;12} {tplRep:&lt;12} {adRep:&lt;12}&#34;
 
-                    console(f&#34;{cr}{i:&gt;4} {label} {xmlFile:&lt;50}&#34;, newline=nl)
+                    if verbose &gt;= 0:
+                        console(f&#34;{cr}{i:&gt;4} {label} {xmlFile:&lt;50}&#34;, newline=nl)
                     xmlFilesByModel[model].append(xmlPath)
-                console(&#34;&#34;)
-                console(f&#34;End   folder {xmlFolder}&#34;)
+                if verbose &gt;= 0:
+                    console(&#34;&#34;)
+                    console(f&#34;End   folder {xmlFolder}&#34;)
 
         elif sectionModel == &#34;II&#34;:
             xmlFile = self.getXML()
             if xmlFile is None:
-                console(&#34;No XML files found!&#34;)
+                console(&#34;No XML files found!&#34;, error=True)
                 return False
 
             xmlPath = f&#34;{teiPath}/{xmlFile}&#34;
@@ -6322,10 +6367,12 @@ relevant TF version:</p>
             thisGood = True
 
             if validate:
-                console(&#34;\tValidating ...&#34;)
+                if verbose &gt;= 0:
+                    console(&#34;\tValidating ...&#34;)
                 schemaFile = modelInfo.get(model, None)
                 if schemaFile is None:
-                    console(f&#34;\t\tNo schema file for {model}&#34;)
+                    if verbose &gt;= 0:
+                        console(f&#34;\t\tNo schema file for {model}&#34;)
                     if good is not None and good is not False:
                         good = None
                     continue
@@ -6346,7 +6393,8 @@ relevant TF version:</p>
         if not good:
             self.good = False
 
-        console(&#34;&#34;)
+        if verbose &gt;= 0:
+            console(&#34;&#34;)
         writeErrors()
         writeReport()
         writeElemTypes()
@@ -7256,7 +7304,10 @@ relevant TF version:</p>
                     value = {chapterSection: heading}
                     cv.feature(cur[NODE][chapterSection], **value)
                     chapterNum = cur[&#34;chapterNum&#34;]
-                    console(f&#34;\rchapter {chapterNum:&gt;4} {heading:&lt;50}&#34;, newline=False)
+                    if verbose &gt;= 0:
+                        console(
+                            f&#34;\rchapter {chapterNum:&gt;4} {heading:&lt;50}&#34;, newline=False
+                        )
             else:
                 chunkSection = self.chunkSection
 
@@ -7320,12 +7371,15 @@ relevant TF version:</p>
                 if isPure(cur):
                     if textMaterial and textMaterial != &#34; &#34;:
                         console(
-                            &#34;WARNING: Text material at the start of &#34;
-                            f&#34;pure-content element &lt;{tag}&gt;&#34;
+                            (
+                                &#34;WARNING: Text material at the start of &#34;
+                                f&#34;pure-content element &lt;{tag}&gt;&#34;
+                            ),
+                            error=True
                         )
                         stack = &#34;-&#34;.join(n[0] for n in cur[XNEST])
-                        console(f&#34;\tElement stack: {stack}&#34;)
-                        console(f&#34;\tMaterial: `{textMaterial}`&#34;)
+                        console(f&#34;\tElement stack: {stack}&#34;, error=True)
+                        console(f&#34;\tMaterial: `{textMaterial}`&#34;, error=True)
                 else:
                     for ch in textMaterial:
                         addSlot(cv, cur, ch)
@@ -7491,12 +7545,15 @@ relevant TF version:</p>
                     if tailMaterial and tailMaterial != &#34; &#34;:
                         elem = cur[XNEST][-1][0]
                         console(
-                            &#34;WARNING: Text material after &#34;
-                            f&#34;&lt;{tag}&gt; in pure-content element &lt;{elem}&gt;&#34;
+                            (
+                                &#34;WARNING: Text material after &#34;
+                                f&#34;&lt;{tag}&gt; in pure-content element &lt;{elem}&gt;&#34;
+                            ),
+                            error=True
                         )
                         stack = &#34;-&#34;.join(cur[XNEST][0])
-                        console(f&#34;\tElement stack: {stack}-{tag}&#34;)
-                        console(f&#34;\tMaterial: `{tailMaterial}`&#34;)
+                        console(f&#34;\tElement stack: {stack}-{tag}&#34;, error=True)
+                        console(f&#34;\tMaterial: `{tailMaterial}`&#34;, error=True)
                 else:
                     for ch in tailMaterial:
                         addSlot(cv, cur, ch)
@@ -7552,7 +7609,8 @@ relevant TF version:</p>
 
                 i = 0
                 for xmlFolder, xmlFiles in self.getXML():
-                    console(f&#34;Start folder {xmlFolder}:&#34;)
+                    msg = &#34;Start &#34; if verbose &gt;= 0 else &#34;\t&#34;
+                    console(f&#34;{msg}folder {xmlFolder}:&#34;)
 
                     cur[NODE][folderSection] = cv.node(folderSection)
                     value = {folderSection: xmlFolder}
@@ -7579,10 +7637,11 @@ relevant TF version:</p>
                         tplRep = tpl or &#34;&#34;
                         adRep = adapt or &#34;&#34;
                         label = f&#34;{modelRep:&lt;12} {adRep:&lt;12} {tplRep:&lt;12}&#34;
-                        console(
-                            f&#34;{cr}{i:&gt;4} {label} {xmlFile:&lt;50}&#34;,
-                            newline=nl,
-                        )
+                        if verbose &gt;= 0:
+                            console(
+                                f&#34;{cr}{i:&gt;4} {label} {xmlFile:&lt;50}&#34;,
+                                newline=nl,
+                            )
 
                         cur[NODE][fileSection] = cv.node(fileSection)
                         ids[xmlFile][&#34;&#34;] = cur[NODE][fileSection]
@@ -7625,14 +7684,16 @@ relevant TF version:</p>
                             cv.terminate(cur[NODE][tpl])
                         cv.terminate(cur[NODE][fileSection])
 
-                    console(&#34;&#34;)
-                    console(f&#34;End   folder {xmlFolder}&#34;)
+                    if verbose &gt;= 0:
+                        console(&#34;&#34;)
+                        console(f&#34;End   folder {xmlFolder}&#34;)
+
                     cv.terminate(cur[NODE][folderSection])
 
             elif sectionModel == &#34;II&#34;:
                 xmlFile = self.getXML()
                 if xmlFile is None:
-                    console(&#34;No XML files found!&#34;)
+                    console(&#34;No XML files found!&#34;, error=True)
                     return False
 
                 xmlPath = f&#34;{teiPath}/{xmlFile}&#34;
@@ -7676,7 +7737,8 @@ relevant TF version:</p>
 
                 addSlot(cv, cur, None)
 
-            console(&#34;&#34;)
+            if verbose &gt;= 0:
+                console(&#34;&#34;)
 
             if verbose &gt;= 0:
                 console(&#34;Resolving links into edges ...&#34;)
@@ -7859,8 +7921,8 @@ relevant TF version:</p>
         silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
 
         if not dirExists(tfPath):
-            console(f&#34;Directory {ux(tfPath)} does not exist.&#34;)
-            console(&#34;No TF found, nothing to load&#34;)
+            console(f&#34;Directory {ux(tfPath)} does not exist.&#34;, error=True)
+            console(&#34;No TF found, nothing to load&#34;, error=True)
             self.good = False
             return
 
@@ -8403,7 +8465,7 @@ that code between automatic generation of files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/tei.py#L3769-L4133" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/tei.py#L3800-L4164" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self, tokenBased=False):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -8788,7 +8850,7 @@ There should be a valid TF dataset and app configuration in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/tei.py#L4137-L4173" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/tei.py#L4168-L4204" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def browseTask(self):
     &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
@@ -8856,7 +8918,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/tei.py#L1574-L2243" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/tei.py#L1581-L2260" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -9060,8 +9122,11 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 
         if nErrors:
             console(
-                f&#34;{nErrors} validation error(s) in {nFiles} file(s) &#34;
-                f&#34;written to {errorFile}&#34;
+                (
+                    f&#34;{nErrors} validation error(s) in {nFiles} file(s) &#34;
+                    f&#34;written to {errorFile}&#34;
+                ),
+                error=True,
             )
         else:
             if verbose &gt;= 0:
@@ -9095,16 +9160,17 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
                         f&#34;{tag:&lt;16} : {amount:&gt;5}x {ns}\n&#34;
                     )
 
-        if procins:
-            plural = &#34;&#34; if nProcins == 1 else &#34;s&#34;
-            console(f&#34;{nProcins} processing instruction{plural} encountered.&#34;)
+        if verbose &gt;= 0:
+            if procins:
+                plural = &#34;&#34; if nProcins == 1 else &#34;s&#34;
+                console(f&#34;{nProcins} processing instruction{plural} encountered.&#34;)
 
-        console(
-            f&#34;{nTags} tags of which {nErrors} with multiple namespaces &#34;
-            f&#34;written to {errorFile}&#34;
-            if verbose &gt;= 0 or nErrors
-            else &#34;Namespaces OK&#34;
-        )
+            console(
+                f&#34;{nTags} tags of which {nErrors} with multiple namespaces &#34;
+                f&#34;written to {errorFile}&#34;
+                if verbose &gt;= 0 or nErrors
+                else &#34;Namespaces OK&#34;
+            )
 
     def writeReport():
         reportFile = f&#34;{reportPath}/elements.txt&#34;
@@ -9454,7 +9520,8 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
     if sectionModel == &#34;I&#34;:
         i = 0
         for xmlFolder, xmlFiles in self.getXML():
-            console(f&#34;Start folder {xmlFolder}:&#34;)
+            msg = &#34;Start &#34; if verbose &gt;= 0 else &#34;\t&#34;
+            console(f&#34;{msg}folder {xmlFolder}:&#34;)
             j = 0
             cr = &#34;&#34;
             nl = True
@@ -9473,15 +9540,17 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 
                 label = f&#34;{mdRep:&lt;12} {tplRep:&lt;12} {adRep:&lt;12}&#34;
 
-                console(f&#34;{cr}{i:&gt;4} {label} {xmlFile:&lt;50}&#34;, newline=nl)
+                if verbose &gt;= 0:
+                    console(f&#34;{cr}{i:&gt;4} {label} {xmlFile:&lt;50}&#34;, newline=nl)
                 xmlFilesByModel[model].append(xmlPath)
-            console(&#34;&#34;)
-            console(f&#34;End   folder {xmlFolder}&#34;)
+            if verbose &gt;= 0:
+                console(&#34;&#34;)
+                console(f&#34;End   folder {xmlFolder}&#34;)
 
     elif sectionModel == &#34;II&#34;:
         xmlFile = self.getXML()
         if xmlFile is None:
-            console(&#34;No XML files found!&#34;)
+            console(&#34;No XML files found!&#34;, error=True)
             return False
 
         xmlPath = f&#34;{teiPath}/{xmlFile}&#34;
@@ -9497,10 +9566,12 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
         thisGood = True
 
         if validate:
-            console(&#34;\tValidating ...&#34;)
+            if verbose &gt;= 0:
+                console(&#34;\tValidating ...&#34;)
             schemaFile = modelInfo.get(model, None)
             if schemaFile is None:
-                console(f&#34;\t\tNo schema file for {model}&#34;)
+                if verbose &gt;= 0:
+                    console(f&#34;\t\tNo schema file for {model}&#34;)
                 if good is not None and good is not False:
                     good = None
                 continue
@@ -9521,7 +9592,8 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
     if not good:
         self.good = False
 
-    console(&#34;&#34;)
+    if verbose &gt;= 0:
+        console(&#34;&#34;)
     writeErrors()
     writeReport()
     writeElemTypes()
@@ -9544,7 +9616,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/tei.py#L3660-L3718" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/tei.py#L3691-L3749" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -9620,7 +9692,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/tei.py#L2247-L2260" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/tei.py#L2264-L2277" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -9661,7 +9733,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/tei.py#L2264-L3658" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/tei.py#L2281-L3689" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -10546,7 +10618,10 @@ that has access to this data.</p>
                 value = {chapterSection: heading}
                 cv.feature(cur[NODE][chapterSection], **value)
                 chapterNum = cur[&#34;chapterNum&#34;]
-                console(f&#34;\rchapter {chapterNum:&gt;4} {heading:&lt;50}&#34;, newline=False)
+                if verbose &gt;= 0:
+                    console(
+                        f&#34;\rchapter {chapterNum:&gt;4} {heading:&lt;50}&#34;, newline=False
+                    )
         else:
             chunkSection = self.chunkSection
 
@@ -10610,12 +10685,15 @@ that has access to this data.</p>
             if isPure(cur):
                 if textMaterial and textMaterial != &#34; &#34;:
                     console(
-                        &#34;WARNING: Text material at the start of &#34;
-                        f&#34;pure-content element &lt;{tag}&gt;&#34;
+                        (
+                            &#34;WARNING: Text material at the start of &#34;
+                            f&#34;pure-content element &lt;{tag}&gt;&#34;
+                        ),
+                        error=True
                     )
                     stack = &#34;-&#34;.join(n[0] for n in cur[XNEST])
-                    console(f&#34;\tElement stack: {stack}&#34;)
-                    console(f&#34;\tMaterial: `{textMaterial}`&#34;)
+                    console(f&#34;\tElement stack: {stack}&#34;, error=True)
+                    console(f&#34;\tMaterial: `{textMaterial}`&#34;, error=True)
             else:
                 for ch in textMaterial:
                     addSlot(cv, cur, ch)
@@ -10781,12 +10859,15 @@ that has access to this data.</p>
                 if tailMaterial and tailMaterial != &#34; &#34;:
                     elem = cur[XNEST][-1][0]
                     console(
-                        &#34;WARNING: Text material after &#34;
-                        f&#34;&lt;{tag}&gt; in pure-content element &lt;{elem}&gt;&#34;
+                        (
+                            &#34;WARNING: Text material after &#34;
+                            f&#34;&lt;{tag}&gt; in pure-content element &lt;{elem}&gt;&#34;
+                        ),
+                        error=True
                     )
                     stack = &#34;-&#34;.join(cur[XNEST][0])
-                    console(f&#34;\tElement stack: {stack}-{tag}&#34;)
-                    console(f&#34;\tMaterial: `{tailMaterial}`&#34;)
+                    console(f&#34;\tElement stack: {stack}-{tag}&#34;, error=True)
+                    console(f&#34;\tMaterial: `{tailMaterial}`&#34;, error=True)
             else:
                 for ch in tailMaterial:
                     addSlot(cv, cur, ch)
@@ -10842,7 +10923,8 @@ that has access to this data.</p>
 
             i = 0
             for xmlFolder, xmlFiles in self.getXML():
-                console(f&#34;Start folder {xmlFolder}:&#34;)
+                msg = &#34;Start &#34; if verbose &gt;= 0 else &#34;\t&#34;
+                console(f&#34;{msg}folder {xmlFolder}:&#34;)
 
                 cur[NODE][folderSection] = cv.node(folderSection)
                 value = {folderSection: xmlFolder}
@@ -10869,10 +10951,11 @@ that has access to this data.</p>
                     tplRep = tpl or &#34;&#34;
                     adRep = adapt or &#34;&#34;
                     label = f&#34;{modelRep:&lt;12} {adRep:&lt;12} {tplRep:&lt;12}&#34;
-                    console(
-                        f&#34;{cr}{i:&gt;4} {label} {xmlFile:&lt;50}&#34;,
-                        newline=nl,
-                    )
+                    if verbose &gt;= 0:
+                        console(
+                            f&#34;{cr}{i:&gt;4} {label} {xmlFile:&lt;50}&#34;,
+                            newline=nl,
+                        )
 
                     cur[NODE][fileSection] = cv.node(fileSection)
                     ids[xmlFile][&#34;&#34;] = cur[NODE][fileSection]
@@ -10915,14 +10998,16 @@ that has access to this data.</p>
                         cv.terminate(cur[NODE][tpl])
                     cv.terminate(cur[NODE][fileSection])
 
-                console(&#34;&#34;)
-                console(f&#34;End   folder {xmlFolder}&#34;)
+                if verbose &gt;= 0:
+                    console(&#34;&#34;)
+                    console(f&#34;End   folder {xmlFolder}&#34;)
+
                 cv.terminate(cur[NODE][folderSection])
 
         elif sectionModel == &#34;II&#34;:
             xmlFile = self.getXML()
             if xmlFile is None:
-                console(&#34;No XML files found!&#34;)
+                console(&#34;No XML files found!&#34;, error=True)
                 return False
 
             xmlPath = f&#34;{teiPath}/{xmlFile}&#34;
@@ -10966,7 +11051,8 @@ that has access to this data.</p>
 
             addSlot(cv, cur, None)
 
-        console(&#34;&#34;)
+        if verbose &gt;= 0:
+            console(&#34;&#34;)
 
         if verbose &gt;= 0:
             console(&#34;Resolving links into edges ...&#34;)
@@ -11074,7 +11160,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/tei.py#L1475-L1497" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/tei.py#L1482-L1504" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getParser(self):
     &#34;&#34;&#34;Configure the LXML parser.
@@ -11109,7 +11195,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/tei.py#L1433-L1473" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/tei.py#L1440-L1480" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getSwitches(self, xmlPath):
     verbose = self.verbose
@@ -11175,7 +11261,7 @@ that contains the file names in that folder, sorted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/tei.py#L1499-L1572" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/tei.py#L1506-L1579" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the TEI source files.
@@ -11273,7 +11359,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/tei.py#L3720-L3765" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/tei.py#L3751-L3796" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -11305,8 +11391,8 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
     silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
 
     if not dirExists(tfPath):
-        console(f&#34;Directory {ux(tfPath)} does not exist.&#34;)
-        console(&#34;No TF found, nothing to load&#34;)
+        console(f&#34;Directory {ux(tfPath)} does not exist.&#34;, error=True)
+        console(&#34;No TF found, nothing to load&#34;, error=True)
         self.good = False
         return
 
@@ -11331,7 +11417,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/tei.py#L1390-L1431" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/tei.py#L1397-L1438" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readSchemas(self):
     schemaDir = self.schemaDir
@@ -11415,7 +11501,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/tei.py#L4175-L4249" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/tei.py#L4206-L4280" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,

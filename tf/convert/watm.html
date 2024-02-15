@@ -218,9 +218,10 @@ following kinds:</p>
 <p><code>fn:bbb-eee</code> a range of text segments in the <code>_ordered_segments</code>
 in the file <code>text-fn.json</code>;</p>
 <p><strong>N.B.</strong>: we will not have targets that span accross more than one
-<code>text-i.json</code> file;
-*
-an annotation id</p>
+<code>text-i.json</code> file;</p>
+</li>
+<li>
+<p>an annotation id</p>
 </li>
 </ul>
 </li>
@@ -230,7 +231,7 @@ an annotation id</p>
 <li>
 <p><code>fff-&gt;ttt</code> where <code>fff</code> is a "from" target and <code>ttt</code> is a "to" target;
 both targets can vary independently between a range and an annotation id.</p>
-<p><strong>N,B.</strong> It is allowed that <code>fff</code> and <code>ttt</code> target segments in distinct
+<p><strong>N.B.</strong> It is allowed that <code>fff</code> and <code>ttt</code> target segments in distinct
 <code>text-i.json</code> files.</p>
 </li>
 </ul>
@@ -273,7 +274,7 @@ in the WATM data, so this is not a blocking problem for now.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/watm.py#L1-L1597" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L1-L1695" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Export to Web Annotation Text Model
 
@@ -461,13 +462,14 @@ an annotation, divided in the following fields:
 
             **N.B.**: we will not have targets that span accross more than one
             `text-i.json` file;
+
         *   an annotation id
 
     *   **double** this is a target pointing to two things:
         *   `fff-&gt;ttt` where `fff` is a &#34;from&#34; target and `ttt` is a &#34;to&#34; target;
             both targets can vary independently between a range and an annotation id.
 
-            **N,B.** It is allowed that `fff` and `ttt` target segments in distinct
+            **N.B.** It is allowed that `fff` and `ttt` target segments in distinct
             `text-i.json` files.
 
 # Caveat
@@ -584,7 +586,7 @@ def rep(status):
 class WATM:
     &#34;&#34;&#34;The export machinery is exposed as a class, wrapped around a TF dataset.&#34;&#34;&#34;
 
-    def __init__(self, app, nsOrig, skipMeta=False, extra={}):
+    def __init__(self, app, nsOrig, skipMeta=False, extra={}, silent=False):
         &#34;&#34;&#34;Wrap the WATM exporter around a TF dataset.
 
         Given an already loaded TF dataset, we make an inventory of all data
@@ -610,10 +612,13 @@ class WATM:
             The data for extra annotations, which will be generated on the fly under the
             namespace `anno`. The keys are the names of features/attributes, the
             value for each key is a dictionary that maps nodes to values.
+        silent: boolean, optional False
+            Whether to suppress output to the console
         &#34;&#34;&#34;
         self.app = app
         self.nsOrig = nsOrig
         self.extra = extra
+        self.silent = silent
         api = app.api
         F = api.F
         E = api.E
@@ -629,7 +634,8 @@ class WATM:
             self.error = True
         else:
             tierType = T.sectionTypes[0]
-            console(f&#34;Tier 0 is section level &#39;{tierType}&#39;&#34;)
+            if not silent:
+                console(f&#34;Tier 0 is section level &#39;{tierType}&#39;&#34;)
             self.tierType = tierType
             self.error = False
 
@@ -664,7 +670,8 @@ class WATM:
         is_metav = F.is_meta.v if &#34;is_meta&#34; in FAllSet else None
         self.is_metav = is_metav
 
-        app.dm(f&#34;[WATM exporter docs]({URL_TF_DOCS}/convert/watm.html)&#34;)
+        if not silent:
+            app.dm(f&#34;[WATM exporter documentation]({URL_TF_DOCS}/convert/watm.html)&#34;)
 
         if skipMeta and not is_metav:
             console(
@@ -683,9 +690,11 @@ class WATM:
         to indices in this list is stored in member `tlFromTf`.
         &#34;&#34;&#34;
         error = self.error
+        silent = self.silent
 
         if error:
-            console(&#34;Cannot run because of an earlier error&#34;, error=True)
+            if not silent:
+                console(&#34;Cannot run because of an earlier error&#34;)
 
         F = self.F
         L = self.L
@@ -770,9 +779,11 @@ class WATM:
         tokens and/or annotations in WATM.
         &#34;&#34;&#34;
         error = self.error
+        silent = self.silent
 
         if error:
-            console(&#34;Cannot run because of an earlier error&#34;, error=True)
+            if not silent:
+                console(&#34;Cannot run because of an earlier error&#34;)
 
         Es = self.Es
         F = self.F
@@ -924,12 +935,13 @@ class WATM:
                 self.mkAnno(KIND_ANNO, NS_TT, f&#34;{feat}={value}&#34;, mkTarget(n))
 
         if len(invertedTargets):
-            console(f&#34;WARNING: inverted targets, {len(invertedTargets)}x&#34;)
-            for otype, ti0, start, end in invertedTargets:
-                text = texts[ti0]
-                sega = text[start]
-                segb = text[end - 1]
-                console(f&#34;{otype:&gt;20} {start:&gt;6} `{sega}` &gt; {end - 1} `{segb}`&#34;)
+            if not silent:
+                console(f&#34;WARNING: inverted targets, {len(invertedTargets)}x&#34;)
+                for otype, ti0, start, end in invertedTargets:
+                    text = texts[ti0]
+                    sega = text[start]
+                    segb = text[end - 1]
+                    console(f&#34;{otype:&gt;20} {start:&gt;6} `{sega}` &gt; {end - 1} `{segb}`&#34;)
 
         if len(farTargets):
             console(
@@ -940,8 +952,11 @@ class WATM:
                 sega = texts[ti0][start]
                 segb = texts[ti1][end - 1]
                 console(
-                    f&#34;{otype:&gt;20} {ti0:&gt;2}:{start:&gt;6} `{sega}` - &#34;
-                    f&#34;{ti1:&gt;2}:{end - 1} `{segb}`&#34;
+                    (
+                        f&#34;{otype:&gt;20} {ti0:&gt;2}:{start:&gt;6} `{sega}` - &#34;
+                        f&#34;{ti1:&gt;2}:{end - 1} `{segb}`&#34;
+                    ),
+                    error=True,
                 )
 
     def writeAll(self):
@@ -957,9 +972,11 @@ class WATM:
         # text files
 
         error = self.error
+        silent = self.silent
 
         if error:
-            console(&#34;Cannot run because of an earlier error&#34;, error=True)
+            if not silent:
+                console(&#34;Cannot run because of an earlier error&#34;)
 
         app = self.app
         texts = self.texts
@@ -989,11 +1006,13 @@ class WATM:
                     dict(_ordered_segments=text), fh, ensure_ascii=False, indent=1
                 )
 
-            console(f&#34;Text file {i:&gt;4}: {nText:&gt;8} segments to {textFile}&#34;)
+            if not silent:
+                console(f&#34;Text file {i:&gt;4}: {nText:&gt;8} segments to {textFile}&#34;)
 
         nTextFiles = len(textFiles)
         sep = &#34;&#34; if nTextFiles == 1 else &#34;s&#34;
-        console(f&#34;Text files all: {total:&gt;8} segments to {nTextFiles} file{sep}&#34;)
+        if not silent:
+            console(f&#34;Text files all: {total:&gt;8} segments to {nTextFiles} file{sep}&#34;)
 
         # annotation files
 
@@ -1028,7 +1047,8 @@ class WATM:
             with open(annoFile, &#34;w&#34;) as fh:
                 json.dump(thisAnnoStore, fh, ensure_ascii=False, indent=1)
 
-            console(f&#34;Anno file {i:&gt;4}: {j:&gt;8} annotations written to {annoFile}&#34;)
+            if not silent:
+                console(f&#34;Anno file {i:&gt;4}: {j:&gt;8} annotations written to {annoFile}&#34;)
 
         for aId in aIdSorted:
             if j &gt;= LIMIT:
@@ -1046,16 +1066,17 @@ class WATM:
             total += j
 
         if len(annos) != total:
-            console(f&#34;Sum of batches : {total:&gt;8}&#34;)
-            console(f&#34;All annotations: {len(annoStore):&gt;8}&#34;)
+            console(f&#34;Sum of batches : {total:&gt;8}&#34;, error=True)
+            console(f&#34;All annotations: {len(annoStore):&gt;8}&#34;, error=True)
             console(&#34;Mismatch in number of annotations&#34;, error=True)
 
         nAnnoFiles = len(annoFiles)
         sep = &#34;&#34; if nAnnoFiles == 1 else &#34;s&#34;
-        console(f&#34;Anno files all: {total:&gt;8} annotations to {nAnnoFiles} file{sep}&#34;)
+        if not silent:
+            console(f&#34;Anno files all: {total:&gt;8} annotations to {nAnnoFiles} file{sep}&#34;)
 
     @staticmethod
-    def compare(nTF, nWA):
+    def numEqual(nTF, nWA, silent):
         &#34;&#34;&#34;Compare two numbers and report the outcome.
 
         Used for testing the WATM conversion.
@@ -1072,11 +1093,15 @@ class WATM:
         boolean
             Whether the two values are equal.
         &#34;&#34;&#34;
-        console(f&#34;\tTF: {nTF:&gt;6}\n\tWA: {nWA:&gt;6}&#34;, error=nTF != nWA)
+        error = nTF != nWA
+
+        if error or not silent:
+            console(f&#34;\tTF: {nTF:&gt;6}\n\tWA: {nWA:&gt;6}&#34;, error=error)
+
         return nTF == nWA
 
     @staticmethod
-    def strEqual(wa=None, tf=None):
+    def strEqual(tf, wa, silent):
         &#34;&#34;&#34;Compare two strings and report the outcome.
 
         Used for testing the WATM conversion.
@@ -1124,7 +1149,8 @@ class WATM:
 
         sampleWA = f&#34;{wa[0:20]} ... {wa[-20:]}&#34;.replace(&#34;\n&#34;, &#34; &#34;)
         sampleTF = f&#34;{tf[0:20]} ... {tf[-20:]}&#34;.replace(&#34;\n&#34;, &#34; &#34;)
-        console(f&#34;\tTF: {sampleTF:&gt;6}\n\tWA: {sampleWA:&gt;6}&#34;)
+        if not silent:
+            console(f&#34;\tTF: {sampleTF:&gt;6}\n\tWA: {sampleWA:&gt;6}&#34;)
         return not different
 
     def testAll(self):
@@ -1142,9 +1168,11 @@ class WATM:
             Whether all things that must agree do indeed agree.
         &#34;&#34;&#34;
         error = self.error
+        silent = self.silent
 
         if error:
-            console(&#34;Cannot run because of an earlier error&#34;, error=True)
+            if not silent:
+                console(&#34;Cannot run because of an earlier error&#34;)
 
         self.testSetup()
 
@@ -1165,8 +1193,11 @@ class WATM:
         if not self.testEdges():
             good = False
 
-        console(&#34;Overall outcome ...&#34;)
-        console(f&#34;{rep(good)} - whether all tests passed&#34;, error=not good)
+        if not silent:
+            console(&#34;Overall outcome ...&#34;)
+
+        if not good or not silent:
+            console(f&#34;{rep(good)} - whether all tests passed&#34;, error=not good)
 
         return good
 
@@ -1235,21 +1266,28 @@ class WATM:
         is_metav = self.is_metav
         tokenFiles = self.testTokens
         texts = self.texts
+        silent = self.silent
 
-        console(&#34;Testing the text ...&#34;)
+        if not silent:
+            console(&#34;Testing the text ...&#34;)
 
         nTokensTF = sum(
             0 if skipMeta and is_metav(s) else 1 for s in range(1, F.otype.maxSlot + 1)
         )
         nTokensWA = sum(len(tokens) for tokens in tokenFiles)
-        nGood = self.compare(nTokensTF, nTokensWA)
-        console(f&#34;{rep(nGood)} - whether the amounts of tokens agree&#34;, error=not nGood)
+        nGood = self.numEqual(nTokensTF, nTokensWA, silent)
+
+        if not nGood or not silent:
+            console(
+                f&#34;{rep(nGood)} - whether the amounts of tokens agree&#34;, error=not nGood
+            )
 
         textWA = &#34;&#34;.join(&#34;&#34;.join(tokens) for tokens in tokenFiles)
         textTF = &#34;&#34;.join(&#34;&#34;.join(text) for text in texts)
 
-        tGood = self.strEqual(wa=textWA, tf=textTF)
-        console(f&#34;{rep(tGood)} - whether the text is the same&#34;, error=not tGood)
+        tGood = self.strEqual(textTF, textWA, silent)
+        if not tGood or not silent:
+            console(f&#34;{rep(tGood)} - whether the text is the same&#34;, error=not tGood)
 
         return nGood and tGood
 
@@ -1271,8 +1309,10 @@ class WATM:
         skipMeta = self.skipMeta
         is_metav = self.is_metav
         annotations = self.testAnnotations
+        silent = self.silent
 
-        console(&#34;Testing the elements ...&#34;)
+        if not silent:
+            console(&#34;Testing the elements ...&#34;)
 
         nElementsTF = 0
         nPisTF = 0
@@ -1297,21 +1337,27 @@ class WATM:
         nElementsWA = sum(1 if a[1] == &#34;element&#34; else 0 for a in annotations)
         nPisWA = sum(1 if a[1] == &#34;pi&#34; else 0 for a in annotations)
 
-        eGood = self.compare(nElementsTF, nElementsWA)
-        console(
-            f&#34;{rep(eGood)} - whether the amounts of elements and nodes agree&#34;,
-            error=not eGood,
-        )
+        eGood = self.numEqual(nElementsTF, nElementsWA, silent)
 
-        console(&#34;Testing the processing instructions ...&#34;)
+        if not eGood or not silent:
+            console(
+                f&#34;{rep(eGood)} - whether the amounts of elements and nodes agree&#34;,
+                error=not eGood,
+            )
 
-        pGood = self.compare(nPisTF, nPisWA)
-        console(
-            f&#34;{rep(pGood)} - whether the amounts of processing instructions agree&#34;,
-            error=not pGood,
-        )
+        if not silent:
+            console(&#34;Testing the processing instructions ...&#34;)
 
-        console(&#34;Testing the element annotations ...&#34;)
+        pGood = self.numEqual(nPisTF, nPisWA, silent)
+
+        if not pGood or not silent:
+            console(
+                f&#34;{rep(pGood)} - whether the amounts of processing instructions agree&#34;,
+                error=not pGood,
+            )
+
+        if not silent:
+            console(&#34;Testing the element annotations ...&#34;)
 
         tfFromAid = {}
 
@@ -1328,7 +1374,8 @@ class WATM:
 
         self.tfFromAid = tfFromAid
 
-        console(f&#34;\t{len(tfFromAid)} element annotations&#34;)
+        if not silent:
+            console(f&#34;\t{len(tfFromAid)} element annotations&#34;)
 
         for aId, kind, body, target in annotations:
             isElem = kind == &#34;element&#34;
@@ -1356,17 +1403,21 @@ class WATM:
             else:
                 wrong += 1
 
-        console(f&#34;\tElement : {element:&gt;5} x&#34;)
-        console(f&#34;\tPi      : {pi:&gt;5} x&#34;)
-        console(f&#34;\tOther   : {other:&gt;5} x&#34;)
-        console(f&#34;\tGood    : {good:&gt;5} x&#34;)
-        console(f&#34;\tWrong   : {wrong:&gt;5} x&#34;)
-        console(f&#34;\tUnmapped: {unmapped:&gt;5} x&#34;)
+        if not silent:
+            console(f&#34;\tElement : {element:&gt;5} x&#34;)
+            console(f&#34;\tPi      : {pi:&gt;5} x&#34;)
+            console(f&#34;\tOther   : {other:&gt;5} x&#34;)
+            console(f&#34;\tGood    : {good:&gt;5} x&#34;)
+            console(f&#34;\tWrong   : {wrong:&gt;5} x&#34;)
+            console(f&#34;\tUnmapped: {unmapped:&gt;5} x&#34;)
 
         aGood = wrong == 0 and unmapped == 0
-        console(
-            f&#34;{rep(aGood)} - whether all element annotations are ok&#34;, error=not aGood
-        )
+
+        if not aGood or not silent:
+            console(
+                f&#34;{rep(aGood)} - whether all element annotations are ok&#34;,
+                error=not aGood,
+            )
 
         return aGood and eGood and pGood
 
@@ -1395,10 +1446,12 @@ class WATM:
         annotations = self.testAnnotations
         tfFromAid = self.tfFromAid
         nsOrig = self.nsOrig
+        silent = self.silent
 
         isTei = nsOrig == NS_TEI
 
-        console(&#34;Testing the attributes ...&#34;)
+        if not silent:
+            console(&#34;Testing the attributes ...&#34;)
 
         attWA = []
 
@@ -1411,7 +1464,8 @@ class WATM:
 
         attWA = sorted(attWA)
 
-        console(f&#34;\t{len(attWA)} attribute values&#34;)
+        if not silent:
+            console(f&#34;\t{len(attWA)} attribute values&#34;)
 
         good = 0
         wrong = []
@@ -1423,14 +1477,17 @@ class WATM:
             else:
                 wrong.append((node, att, valWA, valTF))
 
-        console(f&#34;\tGood:     {good:&gt;5} x&#34;)
-        console(f&#34;\tWrong:    {len(wrong):&gt;5} x&#34;)
         consistent = len(wrong) == 0
 
-        console(
-            f&#34;{rep(consistent)} - whether annotations are consistent with features&#34;,
-            error=not consistent,
-        )
+        if not silent:
+            console(f&#34;\tGood:     {good:&gt;5} x&#34;)
+        if not consistent or not silent:
+            console(f&#34;\tWrong:    {len(wrong):&gt;5} x&#34;, error=not consistent)
+
+            console(
+                f&#34;{rep(consistent)} - whether annotations are consistent with features&#34;,
+                error=not consistent,
+            )
 
         attTF = []
 
@@ -1459,15 +1516,20 @@ class WATM:
 
         attTF = sorted(attTF)
 
-        console(f&#34;\tWA attributes: {len(attWA)}&#34;)
-        console(f&#34;\tTF attributes: {len(attTF)}&#34;)
-        complete = attTF == attWA
-        console(
-            f&#34;{rep(complete)} - whether annotations are complete w.r.t. features&#34;,
-            error=not complete,
-        )
+        if not silent:
+            console(f&#34;\tWA attributes: {len(attWA)}&#34;)
+            console(f&#34;\tTF attributes: {len(attTF)}&#34;)
 
-        console(&#34;Testing the format attributes ...&#34;)
+        complete = attTF == attWA
+
+        if not complete or not silent:
+            console(
+                f&#34;{rep(complete)} - whether annotations are complete w.r.t. features&#34;,
+                error=not complete,
+            )
+
+        if not silent:
+            console(&#34;Testing the format attributes ...&#34;)
 
         fmtWA = []
 
@@ -1485,10 +1547,11 @@ class WATM:
         for node, body in fmtWA:
             fmtWaFreq[body] += 1
 
-        console(f&#34;\t{len(fmtWA)} format values&#34;)
-        console(&#34;\tformatting attributes: &#34;)
-        for fa, n in sorted(fmtWaFreq.items(), key=lambda x: (-x[1], x[0])):
-            console(f&#34;\t\t{n:&gt;6} x {fa}&#34;)
+        if not silent:
+            console(f&#34;\t{len(fmtWA)} format values&#34;)
+            console(&#34;\tformatting attributes: &#34;)
+            for fa, n in sorted(fmtWaFreq.items(), key=lambda x: (-x[1], x[0])):
+                console(f&#34;\t\t{n:&gt;6} x {fa}&#34;)
 
         good = 0
         wrong = []
@@ -1501,14 +1564,18 @@ class WATM:
             else:
                 wrong.append((node, feat, valWA, valTF))
 
-        console(f&#34;\tGood:     {good:&gt;5} x&#34;)
-        console(f&#34;\tWrong:    {len(wrong):&gt;5} x&#34;)
         fconsistent = len(wrong) == 0
-        console(
-            f&#34;{rep(fconsistent)} - &#34;
-            f&#34;whether format annotationsare consistent with features&#34;,
-            error=not fconsistent,
-        )
+
+        if not silent:
+            console(f&#34;\tGood:     {good:&gt;5} x&#34;)
+
+        if not fconsistent or not silent:
+            console(f&#34;\tWrong:    {len(wrong):&gt;5} x&#34;)
+            console(
+                f&#34;{rep(fconsistent)} - &#34;
+                f&#34;whether format annotationsare consistent with features&#34;,
+                error=not fconsistent,
+            )
 
         fmtTF = []
 
@@ -1532,14 +1599,18 @@ class WATM:
 
         fmtTF = sorted(fmtTF)
 
-        console(f&#34;\tWA format attributes: {len(fmtWA)}&#34;)
-        console(f&#34;\tTF format attributes: {len(fmtTF)}&#34;)
+        if not silent:
+            console(f&#34;\tWA format attributes: {len(fmtWA)}&#34;)
+            console(f&#34;\tTF format attributes: {len(fmtTF)}&#34;)
+
         fcomplete = fmtTF == fmtWA
-        console(
-            f&#34;{rep(complete)} - &#34;
-            f&#34;whether format annotations are complete w.r.t. features&#34;,
-            error=not fcomplete,
-        )
+
+        if not fcomplete or not silent:
+            console(
+                f&#34;{rep(complete)} - &#34;
+                f&#34;whether format annotations are complete w.r.t. features&#34;,
+                error=not fcomplete,
+            )
 
         return consistent and complete and fconsistent and fcomplete
 
@@ -1560,8 +1631,10 @@ class WATM:
         annotations = self.testAnnotations
         tfFromAid = self.tfFromAid
         extra = self.extra
+        silent = self.silent
 
-        console(&#34;Testing the extra annotations ...&#34;)
+        if not silent:
+            console(&#34;Testing the extra annotations ...&#34;)
 
         attWA = []
 
@@ -1582,8 +1655,9 @@ class WATM:
 
         attEX = sorted(attEX)
 
-        console(f&#34;\t{len(attEX)} extra feature values&#34;)
-        console(f&#34;\t{len(attWA)} extra annotations&#34;)
+        if not silent:
+            console(f&#34;\t{len(attEX)} extra feature values&#34;)
+            console(f&#34;\t{len(attWA)} extra annotations&#34;)
 
         good = attWA == attEX
 
@@ -1612,13 +1686,18 @@ class WATM:
             if len(onlyWA):
                 showData(onlyWA, &#34;WA&#34;, &#34;EX&#34;)
             else:
-                console(&#34;\tWA: All extra annotations derive from the extra data&#34;)
+                if not silent:
+                    console(&#34;\tWA: All extra annotations derive from the extra data&#34;)
             if len(onlyEX):
                 showData(onlyEX, &#34;EX&#34;, &#34;WA&#34;)
             else:
-                console(&#34;\tEX: All extra data ended up as annotations&#34;)
+                if not silent:
+                    console(&#34;\tEX: All extra data ended up as annotations&#34;)
 
-        console(f&#34;{rep(good)} - whether the extra annotations agree&#34;, error=not good)
+        if not good or not silent:
+            console(
+                f&#34;{rep(good)} - whether the extra annotations agree&#34;, error=not good
+            )
 
         return good
 
@@ -1640,8 +1719,10 @@ class WATM:
         Es = self.Es
         Eall = self.Eall
         annotations = self.testAnnotations
+        silent = self.silent
 
-        console(&#34;Testing the edges ...&#34;)
+        if not silent:
+            console(&#34;Testing the edges ...&#34;)
 
         tfFromWANodes = {}
         tfFromWAEdges = {}
@@ -1670,10 +1751,11 @@ class WATM:
             name, val = (body, None) if len(parts) == 1 else parts
             tfFromWAEdges.setdefault(name, {}).setdefault(fromNode, {})[toNode] = val
 
-        console(f&#34;\tFound: {len(tfFromWANodes)} nodes&#34;)
+        if not silent:
+            console(f&#34;\tFound: {len(tfFromWANodes)} nodes&#34;)
 
-        for edge, edgeData in sorted(tfFromWAEdges.items()):
-            console(f&#34;\tFound edge {edge} with {len(edgeData)} starting nodes&#34;)
+            for edge, edgeData in sorted(tfFromWAEdges.items()):
+                console(f&#34;\tFound edge {edge} with {len(edgeData)} starting nodes&#34;)
 
         allGood = True
 
@@ -1681,16 +1763,19 @@ class WATM:
             if edge == &#34;oslots&#34;:
                 continue
 
-            console(f&#34;\tChecking edge {edge}&#34;)
+            if not silent:
+                console(f&#34;\tChecking edge {edge}&#34;)
 
             good = True
 
+            x = f&#34;edge {edge}: &#34; if silent else &#34;\t\t&#34;
+
             if edge not in set(Eall()):
-                console(&#34;\t\tmissing in TF data&#34;, error=True)
+                console(f&#34;{x}missing in TF data&#34;, error=True)
                 good = False
 
             if edge not in tfFromWAEdges:
-                console(&#34;\t\tmissing in annotation data&#34;, error=True)
+                console(f&#34;{x}missing in annotation data&#34;, error=True)
                 good = False
 
             if not good:
@@ -1706,10 +1791,11 @@ class WATM:
             nFromWA = len(fromNodesWA)
 
             if fromNodesTF == fromNodesWA:
-                console(f&#34;\t\tsame {nFromTF} fromNodes&#34;)
+                if not silent:
+                    console(f&#34;\t\tsame {nFromTF} fromNodes&#34;)
             else:
                 console(
-                    f&#34;\t\tfrom nodes differ: {nFromTF} in TF, {nFromWA} in WA&#34;,
+                    f&#34;{x}from nodes differ: {nFromTF} in TF, {nFromWA} in WA&#34;,
                     error=True,
                 )
                 good = False
@@ -1733,11 +1819,11 @@ class WATM:
             if len(diffs):
                 good = False
                 console(
-                    f&#34;\t\tdifferences in toNodes for {len(diffs)} fromNodes&#34;, error=True
+                    f&#34;{x}differences in toNodes for {len(diffs)} fromNodes&#34;, error=True
                 )
 
                 for f, toNodeInfoTF, toNodeInfoWA in sorted(diffs)[0:10]:
-                    console(f&#34;\t\t\tfromNode {f}&#34;, error=True)
+                    console(f&#34;{x}\tfromNode {f}&#34;, error=True)
 
                     toNodesTF = set(toNodeInfoTF)
                     toNodesWA = set(toNodeInfoWA)
@@ -1746,44 +1832,48 @@ class WATM:
                     nToWA = len(toNodesWA)
 
                     if toNodesTF == toNodesWA:
-                        console(f&#34;\t\t\tsame {nToTF} toNodes&#34;)
+                        if not silent:
+                            console(f&#34;\t\t\tsame {nToTF} toNodes&#34;)
                     else:
                         console(
-                            f&#34;\t\t\ttoNodes differ: {nToTF} in TF, {nToWA} in WA&#34;,
+                            f&#34;{x}\ttoNodes differ: {nToTF} in TF, {nToWA} in WA&#34;,
                             error=True,
                         )
                     for t in toNodesTF | toNodesWA:
                         doCompare = True
                         if t not in toNodesTF:
-                            console(f&#34;\t\t\t\ttoNode {t} not in TF&#34;, error=True)
+                            console(f&#34;{x}\t\ttoNode {t} not in TF&#34;, error=True)
                             doCompare = False
                         else:
                             valTF = toNodeInfoTF[t]
 
                         if t not in toNodesWA:
-                            console(f&#34;\t\t\t\ttoNode {t} not in WA&#34;, error=True)
+                            console(f&#34;{x}\t\ttoNode {t} not in WA&#34;, error=True)
                             doCompare = False
                         else:
                             valWA = toNodeInfoWA[t]
 
                         if doCompare:
                             if valTF == valWA:
-                                console(
-                                    f&#34;\t\t\t\ttoNode{t} values agree: {repr(valTF)}&#34;
-                                )
+                                if not silent:
+                                    console(
+                                        f&#34;\t\t\t\ttoNode{t} values agree: {repr(valTF)}&#34;
+                                    )
                             else:
                                 console(
-                                    f&#34;\t\t\t\ttoNode{t} values differ: &#34;
+                                    f&#34;{x}\t\ttoNode{t} values differ: &#34;
                                     f&#34;TF: {repr(valTF)} WA: {repr(valWA)}&#34;,
                                     error=True,
                                 )
 
-            console(f&#34;\t{rep(good)} - {nToChecked} toNodes checked&#34;, error=not good)
+            if not good or not silent:
+                console(f&#34;\t{rep(good)} - {nToChecked} toNodes checked&#34;, error=not good)
 
             if not good:
                 allGood = False
 
-        console(f&#34;{rep(allGood)} - whether all edges agree&#34;)
+        if not silent:
+            console(f&#34;{rep(allGood)} - whether all edges agree&#34;)
 
         return allGood
 
@@ -1801,7 +1891,9 @@ class WATMS:
     top-level directory of the repo.
     &#34;&#34;&#34;
 
-    def __init__(self, org, repo, backend, nsOrig, skipMeta=False, extra={}):
+    def __init__(
+        self, org, repo, backend, nsOrig, skipMeta=False, extra={}, silent=False
+    ):
         &#34;&#34;&#34;Collect the parameters for the WATM machinery.
 
         We will initialize many `WATM` objects with mostly the same parameters.
@@ -1822,6 +1914,8 @@ class WATMS:
             See `tf.convert.watm.WATM`.
         extra: dictionary, optional {}
             See `tf.convert.watm.WATM`.
+        silent: boolean, optional False
+            Whether to operate in silence.
         &#34;&#34;&#34;
         self.org = org
         self.repo = repo
@@ -1829,11 +1923,13 @@ class WATMS:
         self.nsOrig = nsOrig
         self.skipMeta = skipMeta
         self.extra = extra
+        self.silent = silent
 
         repoDir = ex(f&#34;~/{backend}/{org}/{repo}&#34;)
         tfDir = f&#34;{repoDir}/tf&#34;
         docs = dirContents(tfDir)[1]
-        console(f&#34;Found {len(docs)} docs in {tfDir}&#34;)
+        if not silent:
+            console(f&#34;Found {len(docs)} docs in {tfDir}&#34;)
         self.docs = docs
 
     def produce(self, doc=None):
@@ -1853,6 +1949,7 @@ class WATMS:
         skipMeta = self.skipMeta
         extra = self.extra
         docs = self.docs
+        silent = self.silent
 
         chosenDoc = doc
 
@@ -1860,7 +1957,8 @@ class WATMS:
             if chosenDoc is not None and chosenDoc != doc:
                 continue
 
-            console(f&#34;{doc:&gt;5} ... &#34;, newline=False)
+            if not silent:
+                console(f&#34;{doc:&gt;5} ... &#34;, newline=False)
             A = use(
                 f&#34;{org}/{repo}:clone&#34;,
                 relative=f&#34;tf/{doc}&#34;,
@@ -1868,10 +1966,11 @@ class WATMS:
                 backend=backend,
                 silent=DEEP,
             )
-            WA = WATM(A, nsOrig, skipMeta=skipMeta, extra=extra)
+            WA = WATM(A, nsOrig, skipMeta=skipMeta, extra=extra, silent=silent)
             WA.makeText()
             WA.makeAnno()
-            WA.writeAll()</code></pre>
+            WA.writeAll()
+            WA.testAll()</code></pre>
 </details>
 </section>
 <section>
@@ -1899,7 +1998,7 @@ class WATMS:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/watm.py#L293-L304" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L294-L305" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rep(status):
     &#34;&#34;&#34;Represent a boolean status for a message to the console.
@@ -1922,7 +2021,7 @@ class WATMS:
 <dl>
 <dt id="tf.convert.watm.WATM"><code class="flex name class">
 <span>class <span class="ident">WATM</span></span>
-<span>(</span><span>app, nsOrig, skipMeta=False, extra={})</span>
+<span>(</span><span>app, nsOrig, skipMeta=False, extra={}, silent=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The export machinery is exposed as a class, wrapped around a TF dataset.</p>
@@ -1949,16 +2048,18 @@ the setting of <code>skipMeta</code> will have no effect: nothing will be exclud
 <dd>The data for extra annotations, which will be generated on the fly under the
 namespace <code>anno</code>. The keys are the names of features/attributes, the
 value for each key is a dictionary that maps nodes to values.</dd>
+<dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to suppress output to the console</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/watm.py#L307-L1511" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L308-L1600" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WATM:
     &#34;&#34;&#34;The export machinery is exposed as a class, wrapped around a TF dataset.&#34;&#34;&#34;
 
-    def __init__(self, app, nsOrig, skipMeta=False, extra={}):
+    def __init__(self, app, nsOrig, skipMeta=False, extra={}, silent=False):
         &#34;&#34;&#34;Wrap the WATM exporter around a TF dataset.
 
         Given an already loaded TF dataset, we make an inventory of all data
@@ -1984,10 +2085,13 @@ value for each key is a dictionary that maps nodes to values.</dd>
             The data for extra annotations, which will be generated on the fly under the
             namespace `anno`. The keys are the names of features/attributes, the
             value for each key is a dictionary that maps nodes to values.
+        silent: boolean, optional False
+            Whether to suppress output to the console
         &#34;&#34;&#34;
         self.app = app
         self.nsOrig = nsOrig
         self.extra = extra
+        self.silent = silent
         api = app.api
         F = api.F
         E = api.E
@@ -2003,7 +2107,8 @@ value for each key is a dictionary that maps nodes to values.</dd>
             self.error = True
         else:
             tierType = T.sectionTypes[0]
-            console(f&#34;Tier 0 is section level &#39;{tierType}&#39;&#34;)
+            if not silent:
+                console(f&#34;Tier 0 is section level &#39;{tierType}&#39;&#34;)
             self.tierType = tierType
             self.error = False
 
@@ -2038,7 +2143,8 @@ value for each key is a dictionary that maps nodes to values.</dd>
         is_metav = F.is_meta.v if &#34;is_meta&#34; in FAllSet else None
         self.is_metav = is_metav
 
-        app.dm(f&#34;[WATM exporter docs]({URL_TF_DOCS}/convert/watm.html)&#34;)
+        if not silent:
+            app.dm(f&#34;[WATM exporter documentation]({URL_TF_DOCS}/convert/watm.html)&#34;)
 
         if skipMeta and not is_metav:
             console(
@@ -2057,9 +2163,11 @@ value for each key is a dictionary that maps nodes to values.</dd>
         to indices in this list is stored in member `tlFromTf`.
         &#34;&#34;&#34;
         error = self.error
+        silent = self.silent
 
         if error:
-            console(&#34;Cannot run because of an earlier error&#34;, error=True)
+            if not silent:
+                console(&#34;Cannot run because of an earlier error&#34;)
 
         F = self.F
         L = self.L
@@ -2144,9 +2252,11 @@ value for each key is a dictionary that maps nodes to values.</dd>
         tokens and/or annotations in WATM.
         &#34;&#34;&#34;
         error = self.error
+        silent = self.silent
 
         if error:
-            console(&#34;Cannot run because of an earlier error&#34;, error=True)
+            if not silent:
+                console(&#34;Cannot run because of an earlier error&#34;)
 
         Es = self.Es
         F = self.F
@@ -2298,12 +2408,13 @@ value for each key is a dictionary that maps nodes to values.</dd>
                 self.mkAnno(KIND_ANNO, NS_TT, f&#34;{feat}={value}&#34;, mkTarget(n))
 
         if len(invertedTargets):
-            console(f&#34;WARNING: inverted targets, {len(invertedTargets)}x&#34;)
-            for otype, ti0, start, end in invertedTargets:
-                text = texts[ti0]
-                sega = text[start]
-                segb = text[end - 1]
-                console(f&#34;{otype:&gt;20} {start:&gt;6} `{sega}` &gt; {end - 1} `{segb}`&#34;)
+            if not silent:
+                console(f&#34;WARNING: inverted targets, {len(invertedTargets)}x&#34;)
+                for otype, ti0, start, end in invertedTargets:
+                    text = texts[ti0]
+                    sega = text[start]
+                    segb = text[end - 1]
+                    console(f&#34;{otype:&gt;20} {start:&gt;6} `{sega}` &gt; {end - 1} `{segb}`&#34;)
 
         if len(farTargets):
             console(
@@ -2314,8 +2425,11 @@ value for each key is a dictionary that maps nodes to values.</dd>
                 sega = texts[ti0][start]
                 segb = texts[ti1][end - 1]
                 console(
-                    f&#34;{otype:&gt;20} {ti0:&gt;2}:{start:&gt;6} `{sega}` - &#34;
-                    f&#34;{ti1:&gt;2}:{end - 1} `{segb}`&#34;
+                    (
+                        f&#34;{otype:&gt;20} {ti0:&gt;2}:{start:&gt;6} `{sega}` - &#34;
+                        f&#34;{ti1:&gt;2}:{end - 1} `{segb}`&#34;
+                    ),
+                    error=True,
                 )
 
     def writeAll(self):
@@ -2331,9 +2445,11 @@ value for each key is a dictionary that maps nodes to values.</dd>
         # text files
 
         error = self.error
+        silent = self.silent
 
         if error:
-            console(&#34;Cannot run because of an earlier error&#34;, error=True)
+            if not silent:
+                console(&#34;Cannot run because of an earlier error&#34;)
 
         app = self.app
         texts = self.texts
@@ -2363,11 +2479,13 @@ value for each key is a dictionary that maps nodes to values.</dd>
                     dict(_ordered_segments=text), fh, ensure_ascii=False, indent=1
                 )
 
-            console(f&#34;Text file {i:&gt;4}: {nText:&gt;8} segments to {textFile}&#34;)
+            if not silent:
+                console(f&#34;Text file {i:&gt;4}: {nText:&gt;8} segments to {textFile}&#34;)
 
         nTextFiles = len(textFiles)
         sep = &#34;&#34; if nTextFiles == 1 else &#34;s&#34;
-        console(f&#34;Text files all: {total:&gt;8} segments to {nTextFiles} file{sep}&#34;)
+        if not silent:
+            console(f&#34;Text files all: {total:&gt;8} segments to {nTextFiles} file{sep}&#34;)
 
         # annotation files
 
@@ -2402,7 +2520,8 @@ value for each key is a dictionary that maps nodes to values.</dd>
             with open(annoFile, &#34;w&#34;) as fh:
                 json.dump(thisAnnoStore, fh, ensure_ascii=False, indent=1)
 
-            console(f&#34;Anno file {i:&gt;4}: {j:&gt;8} annotations written to {annoFile}&#34;)
+            if not silent:
+                console(f&#34;Anno file {i:&gt;4}: {j:&gt;8} annotations written to {annoFile}&#34;)
 
         for aId in aIdSorted:
             if j &gt;= LIMIT:
@@ -2420,16 +2539,17 @@ value for each key is a dictionary that maps nodes to values.</dd>
             total += j
 
         if len(annos) != total:
-            console(f&#34;Sum of batches : {total:&gt;8}&#34;)
-            console(f&#34;All annotations: {len(annoStore):&gt;8}&#34;)
+            console(f&#34;Sum of batches : {total:&gt;8}&#34;, error=True)
+            console(f&#34;All annotations: {len(annoStore):&gt;8}&#34;, error=True)
             console(&#34;Mismatch in number of annotations&#34;, error=True)
 
         nAnnoFiles = len(annoFiles)
         sep = &#34;&#34; if nAnnoFiles == 1 else &#34;s&#34;
-        console(f&#34;Anno files all: {total:&gt;8} annotations to {nAnnoFiles} file{sep}&#34;)
+        if not silent:
+            console(f&#34;Anno files all: {total:&gt;8} annotations to {nAnnoFiles} file{sep}&#34;)
 
     @staticmethod
-    def compare(nTF, nWA):
+    def numEqual(nTF, nWA, silent):
         &#34;&#34;&#34;Compare two numbers and report the outcome.
 
         Used for testing the WATM conversion.
@@ -2446,11 +2566,15 @@ value for each key is a dictionary that maps nodes to values.</dd>
         boolean
             Whether the two values are equal.
         &#34;&#34;&#34;
-        console(f&#34;\tTF: {nTF:&gt;6}\n\tWA: {nWA:&gt;6}&#34;, error=nTF != nWA)
+        error = nTF != nWA
+
+        if error or not silent:
+            console(f&#34;\tTF: {nTF:&gt;6}\n\tWA: {nWA:&gt;6}&#34;, error=error)
+
         return nTF == nWA
 
     @staticmethod
-    def strEqual(wa=None, tf=None):
+    def strEqual(tf, wa, silent):
         &#34;&#34;&#34;Compare two strings and report the outcome.
 
         Used for testing the WATM conversion.
@@ -2498,7 +2622,8 @@ value for each key is a dictionary that maps nodes to values.</dd>
 
         sampleWA = f&#34;{wa[0:20]} ... {wa[-20:]}&#34;.replace(&#34;\n&#34;, &#34; &#34;)
         sampleTF = f&#34;{tf[0:20]} ... {tf[-20:]}&#34;.replace(&#34;\n&#34;, &#34; &#34;)
-        console(f&#34;\tTF: {sampleTF:&gt;6}\n\tWA: {sampleWA:&gt;6}&#34;)
+        if not silent:
+            console(f&#34;\tTF: {sampleTF:&gt;6}\n\tWA: {sampleWA:&gt;6}&#34;)
         return not different
 
     def testAll(self):
@@ -2516,9 +2641,11 @@ value for each key is a dictionary that maps nodes to values.</dd>
             Whether all things that must agree do indeed agree.
         &#34;&#34;&#34;
         error = self.error
+        silent = self.silent
 
         if error:
-            console(&#34;Cannot run because of an earlier error&#34;, error=True)
+            if not silent:
+                console(&#34;Cannot run because of an earlier error&#34;)
 
         self.testSetup()
 
@@ -2539,8 +2666,11 @@ value for each key is a dictionary that maps nodes to values.</dd>
         if not self.testEdges():
             good = False
 
-        console(&#34;Overall outcome ...&#34;)
-        console(f&#34;{rep(good)} - whether all tests passed&#34;, error=not good)
+        if not silent:
+            console(&#34;Overall outcome ...&#34;)
+
+        if not good or not silent:
+            console(f&#34;{rep(good)} - whether all tests passed&#34;, error=not good)
 
         return good
 
@@ -2609,21 +2739,28 @@ value for each key is a dictionary that maps nodes to values.</dd>
         is_metav = self.is_metav
         tokenFiles = self.testTokens
         texts = self.texts
+        silent = self.silent
 
-        console(&#34;Testing the text ...&#34;)
+        if not silent:
+            console(&#34;Testing the text ...&#34;)
 
         nTokensTF = sum(
             0 if skipMeta and is_metav(s) else 1 for s in range(1, F.otype.maxSlot + 1)
         )
         nTokensWA = sum(len(tokens) for tokens in tokenFiles)
-        nGood = self.compare(nTokensTF, nTokensWA)
-        console(f&#34;{rep(nGood)} - whether the amounts of tokens agree&#34;, error=not nGood)
+        nGood = self.numEqual(nTokensTF, nTokensWA, silent)
+
+        if not nGood or not silent:
+            console(
+                f&#34;{rep(nGood)} - whether the amounts of tokens agree&#34;, error=not nGood
+            )
 
         textWA = &#34;&#34;.join(&#34;&#34;.join(tokens) for tokens in tokenFiles)
         textTF = &#34;&#34;.join(&#34;&#34;.join(text) for text in texts)
 
-        tGood = self.strEqual(wa=textWA, tf=textTF)
-        console(f&#34;{rep(tGood)} - whether the text is the same&#34;, error=not tGood)
+        tGood = self.strEqual(textTF, textWA, silent)
+        if not tGood or not silent:
+            console(f&#34;{rep(tGood)} - whether the text is the same&#34;, error=not tGood)
 
         return nGood and tGood
 
@@ -2645,8 +2782,10 @@ value for each key is a dictionary that maps nodes to values.</dd>
         skipMeta = self.skipMeta
         is_metav = self.is_metav
         annotations = self.testAnnotations
+        silent = self.silent
 
-        console(&#34;Testing the elements ...&#34;)
+        if not silent:
+            console(&#34;Testing the elements ...&#34;)
 
         nElementsTF = 0
         nPisTF = 0
@@ -2671,21 +2810,27 @@ value for each key is a dictionary that maps nodes to values.</dd>
         nElementsWA = sum(1 if a[1] == &#34;element&#34; else 0 for a in annotations)
         nPisWA = sum(1 if a[1] == &#34;pi&#34; else 0 for a in annotations)
 
-        eGood = self.compare(nElementsTF, nElementsWA)
-        console(
-            f&#34;{rep(eGood)} - whether the amounts of elements and nodes agree&#34;,
-            error=not eGood,
-        )
+        eGood = self.numEqual(nElementsTF, nElementsWA, silent)
 
-        console(&#34;Testing the processing instructions ...&#34;)
+        if not eGood or not silent:
+            console(
+                f&#34;{rep(eGood)} - whether the amounts of elements and nodes agree&#34;,
+                error=not eGood,
+            )
 
-        pGood = self.compare(nPisTF, nPisWA)
-        console(
-            f&#34;{rep(pGood)} - whether the amounts of processing instructions agree&#34;,
-            error=not pGood,
-        )
+        if not silent:
+            console(&#34;Testing the processing instructions ...&#34;)
 
-        console(&#34;Testing the element annotations ...&#34;)
+        pGood = self.numEqual(nPisTF, nPisWA, silent)
+
+        if not pGood or not silent:
+            console(
+                f&#34;{rep(pGood)} - whether the amounts of processing instructions agree&#34;,
+                error=not pGood,
+            )
+
+        if not silent:
+            console(&#34;Testing the element annotations ...&#34;)
 
         tfFromAid = {}
 
@@ -2702,7 +2847,8 @@ value for each key is a dictionary that maps nodes to values.</dd>
 
         self.tfFromAid = tfFromAid
 
-        console(f&#34;\t{len(tfFromAid)} element annotations&#34;)
+        if not silent:
+            console(f&#34;\t{len(tfFromAid)} element annotations&#34;)
 
         for aId, kind, body, target in annotations:
             isElem = kind == &#34;element&#34;
@@ -2730,17 +2876,21 @@ value for each key is a dictionary that maps nodes to values.</dd>
             else:
                 wrong += 1
 
-        console(f&#34;\tElement : {element:&gt;5} x&#34;)
-        console(f&#34;\tPi      : {pi:&gt;5} x&#34;)
-        console(f&#34;\tOther   : {other:&gt;5} x&#34;)
-        console(f&#34;\tGood    : {good:&gt;5} x&#34;)
-        console(f&#34;\tWrong   : {wrong:&gt;5} x&#34;)
-        console(f&#34;\tUnmapped: {unmapped:&gt;5} x&#34;)
+        if not silent:
+            console(f&#34;\tElement : {element:&gt;5} x&#34;)
+            console(f&#34;\tPi      : {pi:&gt;5} x&#34;)
+            console(f&#34;\tOther   : {other:&gt;5} x&#34;)
+            console(f&#34;\tGood    : {good:&gt;5} x&#34;)
+            console(f&#34;\tWrong   : {wrong:&gt;5} x&#34;)
+            console(f&#34;\tUnmapped: {unmapped:&gt;5} x&#34;)
 
         aGood = wrong == 0 and unmapped == 0
-        console(
-            f&#34;{rep(aGood)} - whether all element annotations are ok&#34;, error=not aGood
-        )
+
+        if not aGood or not silent:
+            console(
+                f&#34;{rep(aGood)} - whether all element annotations are ok&#34;,
+                error=not aGood,
+            )
 
         return aGood and eGood and pGood
 
@@ -2769,10 +2919,12 @@ value for each key is a dictionary that maps nodes to values.</dd>
         annotations = self.testAnnotations
         tfFromAid = self.tfFromAid
         nsOrig = self.nsOrig
+        silent = self.silent
 
         isTei = nsOrig == NS_TEI
 
-        console(&#34;Testing the attributes ...&#34;)
+        if not silent:
+            console(&#34;Testing the attributes ...&#34;)
 
         attWA = []
 
@@ -2785,7 +2937,8 @@ value for each key is a dictionary that maps nodes to values.</dd>
 
         attWA = sorted(attWA)
 
-        console(f&#34;\t{len(attWA)} attribute values&#34;)
+        if not silent:
+            console(f&#34;\t{len(attWA)} attribute values&#34;)
 
         good = 0
         wrong = []
@@ -2797,14 +2950,17 @@ value for each key is a dictionary that maps nodes to values.</dd>
             else:
                 wrong.append((node, att, valWA, valTF))
 
-        console(f&#34;\tGood:     {good:&gt;5} x&#34;)
-        console(f&#34;\tWrong:    {len(wrong):&gt;5} x&#34;)
         consistent = len(wrong) == 0
 
-        console(
-            f&#34;{rep(consistent)} - whether annotations are consistent with features&#34;,
-            error=not consistent,
-        )
+        if not silent:
+            console(f&#34;\tGood:     {good:&gt;5} x&#34;)
+        if not consistent or not silent:
+            console(f&#34;\tWrong:    {len(wrong):&gt;5} x&#34;, error=not consistent)
+
+            console(
+                f&#34;{rep(consistent)} - whether annotations are consistent with features&#34;,
+                error=not consistent,
+            )
 
         attTF = []
 
@@ -2833,15 +2989,20 @@ value for each key is a dictionary that maps nodes to values.</dd>
 
         attTF = sorted(attTF)
 
-        console(f&#34;\tWA attributes: {len(attWA)}&#34;)
-        console(f&#34;\tTF attributes: {len(attTF)}&#34;)
-        complete = attTF == attWA
-        console(
-            f&#34;{rep(complete)} - whether annotations are complete w.r.t. features&#34;,
-            error=not complete,
-        )
+        if not silent:
+            console(f&#34;\tWA attributes: {len(attWA)}&#34;)
+            console(f&#34;\tTF attributes: {len(attTF)}&#34;)
 
-        console(&#34;Testing the format attributes ...&#34;)
+        complete = attTF == attWA
+
+        if not complete or not silent:
+            console(
+                f&#34;{rep(complete)} - whether annotations are complete w.r.t. features&#34;,
+                error=not complete,
+            )
+
+        if not silent:
+            console(&#34;Testing the format attributes ...&#34;)
 
         fmtWA = []
 
@@ -2859,10 +3020,11 @@ value for each key is a dictionary that maps nodes to values.</dd>
         for node, body in fmtWA:
             fmtWaFreq[body] += 1
 
-        console(f&#34;\t{len(fmtWA)} format values&#34;)
-        console(&#34;\tformatting attributes: &#34;)
-        for fa, n in sorted(fmtWaFreq.items(), key=lambda x: (-x[1], x[0])):
-            console(f&#34;\t\t{n:&gt;6} x {fa}&#34;)
+        if not silent:
+            console(f&#34;\t{len(fmtWA)} format values&#34;)
+            console(&#34;\tformatting attributes: &#34;)
+            for fa, n in sorted(fmtWaFreq.items(), key=lambda x: (-x[1], x[0])):
+                console(f&#34;\t\t{n:&gt;6} x {fa}&#34;)
 
         good = 0
         wrong = []
@@ -2875,14 +3037,18 @@ value for each key is a dictionary that maps nodes to values.</dd>
             else:
                 wrong.append((node, feat, valWA, valTF))
 
-        console(f&#34;\tGood:     {good:&gt;5} x&#34;)
-        console(f&#34;\tWrong:    {len(wrong):&gt;5} x&#34;)
         fconsistent = len(wrong) == 0
-        console(
-            f&#34;{rep(fconsistent)} - &#34;
-            f&#34;whether format annotationsare consistent with features&#34;,
-            error=not fconsistent,
-        )
+
+        if not silent:
+            console(f&#34;\tGood:     {good:&gt;5} x&#34;)
+
+        if not fconsistent or not silent:
+            console(f&#34;\tWrong:    {len(wrong):&gt;5} x&#34;)
+            console(
+                f&#34;{rep(fconsistent)} - &#34;
+                f&#34;whether format annotationsare consistent with features&#34;,
+                error=not fconsistent,
+            )
 
         fmtTF = []
 
@@ -2906,14 +3072,18 @@ value for each key is a dictionary that maps nodes to values.</dd>
 
         fmtTF = sorted(fmtTF)
 
-        console(f&#34;\tWA format attributes: {len(fmtWA)}&#34;)
-        console(f&#34;\tTF format attributes: {len(fmtTF)}&#34;)
+        if not silent:
+            console(f&#34;\tWA format attributes: {len(fmtWA)}&#34;)
+            console(f&#34;\tTF format attributes: {len(fmtTF)}&#34;)
+
         fcomplete = fmtTF == fmtWA
-        console(
-            f&#34;{rep(complete)} - &#34;
-            f&#34;whether format annotations are complete w.r.t. features&#34;,
-            error=not fcomplete,
-        )
+
+        if not fcomplete or not silent:
+            console(
+                f&#34;{rep(complete)} - &#34;
+                f&#34;whether format annotations are complete w.r.t. features&#34;,
+                error=not fcomplete,
+            )
 
         return consistent and complete and fconsistent and fcomplete
 
@@ -2934,8 +3104,10 @@ value for each key is a dictionary that maps nodes to values.</dd>
         annotations = self.testAnnotations
         tfFromAid = self.tfFromAid
         extra = self.extra
+        silent = self.silent
 
-        console(&#34;Testing the extra annotations ...&#34;)
+        if not silent:
+            console(&#34;Testing the extra annotations ...&#34;)
 
         attWA = []
 
@@ -2956,8 +3128,9 @@ value for each key is a dictionary that maps nodes to values.</dd>
 
         attEX = sorted(attEX)
 
-        console(f&#34;\t{len(attEX)} extra feature values&#34;)
-        console(f&#34;\t{len(attWA)} extra annotations&#34;)
+        if not silent:
+            console(f&#34;\t{len(attEX)} extra feature values&#34;)
+            console(f&#34;\t{len(attWA)} extra annotations&#34;)
 
         good = attWA == attEX
 
@@ -2986,13 +3159,18 @@ value for each key is a dictionary that maps nodes to values.</dd>
             if len(onlyWA):
                 showData(onlyWA, &#34;WA&#34;, &#34;EX&#34;)
             else:
-                console(&#34;\tWA: All extra annotations derive from the extra data&#34;)
+                if not silent:
+                    console(&#34;\tWA: All extra annotations derive from the extra data&#34;)
             if len(onlyEX):
                 showData(onlyEX, &#34;EX&#34;, &#34;WA&#34;)
             else:
-                console(&#34;\tEX: All extra data ended up as annotations&#34;)
+                if not silent:
+                    console(&#34;\tEX: All extra data ended up as annotations&#34;)
 
-        console(f&#34;{rep(good)} - whether the extra annotations agree&#34;, error=not good)
+        if not good or not silent:
+            console(
+                f&#34;{rep(good)} - whether the extra annotations agree&#34;, error=not good
+            )
 
         return good
 
@@ -3014,8 +3192,10 @@ value for each key is a dictionary that maps nodes to values.</dd>
         Es = self.Es
         Eall = self.Eall
         annotations = self.testAnnotations
+        silent = self.silent
 
-        console(&#34;Testing the edges ...&#34;)
+        if not silent:
+            console(&#34;Testing the edges ...&#34;)
 
         tfFromWANodes = {}
         tfFromWAEdges = {}
@@ -3044,10 +3224,11 @@ value for each key is a dictionary that maps nodes to values.</dd>
             name, val = (body, None) if len(parts) == 1 else parts
             tfFromWAEdges.setdefault(name, {}).setdefault(fromNode, {})[toNode] = val
 
-        console(f&#34;\tFound: {len(tfFromWANodes)} nodes&#34;)
+        if not silent:
+            console(f&#34;\tFound: {len(tfFromWANodes)} nodes&#34;)
 
-        for edge, edgeData in sorted(tfFromWAEdges.items()):
-            console(f&#34;\tFound edge {edge} with {len(edgeData)} starting nodes&#34;)
+            for edge, edgeData in sorted(tfFromWAEdges.items()):
+                console(f&#34;\tFound edge {edge} with {len(edgeData)} starting nodes&#34;)
 
         allGood = True
 
@@ -3055,16 +3236,19 @@ value for each key is a dictionary that maps nodes to values.</dd>
             if edge == &#34;oslots&#34;:
                 continue
 
-            console(f&#34;\tChecking edge {edge}&#34;)
+            if not silent:
+                console(f&#34;\tChecking edge {edge}&#34;)
 
             good = True
 
+            x = f&#34;edge {edge}: &#34; if silent else &#34;\t\t&#34;
+
             if edge not in set(Eall()):
-                console(&#34;\t\tmissing in TF data&#34;, error=True)
+                console(f&#34;{x}missing in TF data&#34;, error=True)
                 good = False
 
             if edge not in tfFromWAEdges:
-                console(&#34;\t\tmissing in annotation data&#34;, error=True)
+                console(f&#34;{x}missing in annotation data&#34;, error=True)
                 good = False
 
             if not good:
@@ -3080,10 +3264,11 @@ value for each key is a dictionary that maps nodes to values.</dd>
             nFromWA = len(fromNodesWA)
 
             if fromNodesTF == fromNodesWA:
-                console(f&#34;\t\tsame {nFromTF} fromNodes&#34;)
+                if not silent:
+                    console(f&#34;\t\tsame {nFromTF} fromNodes&#34;)
             else:
                 console(
-                    f&#34;\t\tfrom nodes differ: {nFromTF} in TF, {nFromWA} in WA&#34;,
+                    f&#34;{x}from nodes differ: {nFromTF} in TF, {nFromWA} in WA&#34;,
                     error=True,
                 )
                 good = False
@@ -3107,11 +3292,11 @@ value for each key is a dictionary that maps nodes to values.</dd>
             if len(diffs):
                 good = False
                 console(
-                    f&#34;\t\tdifferences in toNodes for {len(diffs)} fromNodes&#34;, error=True
+                    f&#34;{x}differences in toNodes for {len(diffs)} fromNodes&#34;, error=True
                 )
 
                 for f, toNodeInfoTF, toNodeInfoWA in sorted(diffs)[0:10]:
-                    console(f&#34;\t\t\tfromNode {f}&#34;, error=True)
+                    console(f&#34;{x}\tfromNode {f}&#34;, error=True)
 
                     toNodesTF = set(toNodeInfoTF)
                     toNodesWA = set(toNodeInfoWA)
@@ -3120,51 +3305,55 @@ value for each key is a dictionary that maps nodes to values.</dd>
                     nToWA = len(toNodesWA)
 
                     if toNodesTF == toNodesWA:
-                        console(f&#34;\t\t\tsame {nToTF} toNodes&#34;)
+                        if not silent:
+                            console(f&#34;\t\t\tsame {nToTF} toNodes&#34;)
                     else:
                         console(
-                            f&#34;\t\t\ttoNodes differ: {nToTF} in TF, {nToWA} in WA&#34;,
+                            f&#34;{x}\ttoNodes differ: {nToTF} in TF, {nToWA} in WA&#34;,
                             error=True,
                         )
                     for t in toNodesTF | toNodesWA:
                         doCompare = True
                         if t not in toNodesTF:
-                            console(f&#34;\t\t\t\ttoNode {t} not in TF&#34;, error=True)
+                            console(f&#34;{x}\t\ttoNode {t} not in TF&#34;, error=True)
                             doCompare = False
                         else:
                             valTF = toNodeInfoTF[t]
 
                         if t not in toNodesWA:
-                            console(f&#34;\t\t\t\ttoNode {t} not in WA&#34;, error=True)
+                            console(f&#34;{x}\t\ttoNode {t} not in WA&#34;, error=True)
                             doCompare = False
                         else:
                             valWA = toNodeInfoWA[t]
 
                         if doCompare:
                             if valTF == valWA:
-                                console(
-                                    f&#34;\t\t\t\ttoNode{t} values agree: {repr(valTF)}&#34;
-                                )
+                                if not silent:
+                                    console(
+                                        f&#34;\t\t\t\ttoNode{t} values agree: {repr(valTF)}&#34;
+                                    )
                             else:
                                 console(
-                                    f&#34;\t\t\t\ttoNode{t} values differ: &#34;
+                                    f&#34;{x}\t\ttoNode{t} values differ: &#34;
                                     f&#34;TF: {repr(valTF)} WA: {repr(valWA)}&#34;,
                                     error=True,
                                 )
 
-            console(f&#34;\t{rep(good)} - {nToChecked} toNodes checked&#34;, error=not good)
+            if not good or not silent:
+                console(f&#34;\t{rep(good)} - {nToChecked} toNodes checked&#34;, error=not good)
 
             if not good:
                 allGood = False
 
-        console(f&#34;{rep(allGood)} - whether all edges agree&#34;)
+        if not silent:
+            console(f&#34;{rep(allGood)} - whether all edges agree&#34;)
 
         return allGood</code></pre>
 </details>
 <h3>Static methods</h3>
 <dl>
-<dt id="tf.convert.watm.WATM.compare"><code class="name flex">
-<span>def <span class="ident">compare</span></span>(<span>nTF, nWA)</span>
+<dt id="tf.convert.watm.WATM.numEqual"><code class="name flex">
+<span>def <span class="ident">numEqual</span></span>(<span>nTF, nWA, silent)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Compare two numbers and report the outcome.</p>
@@ -3184,10 +3373,10 @@ value for each key is a dictionary that maps nodes to values.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/watm.py#L780-L799" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L800-L823" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
-def compare(nTF, nWA):
+def numEqual(nTF, nWA, silent):
     &#34;&#34;&#34;Compare two numbers and report the outcome.
 
     Used for testing the WATM conversion.
@@ -3204,12 +3393,16 @@ def compare(nTF, nWA):
     boolean
         Whether the two values are equal.
     &#34;&#34;&#34;
-    console(f&#34;\tTF: {nTF:&gt;6}\n\tWA: {nWA:&gt;6}&#34;, error=nTF != nWA)
+    error = nTF != nWA
+
+    if error or not silent:
+        console(f&#34;\tTF: {nTF:&gt;6}\n\tWA: {nWA:&gt;6}&#34;, error=error)
+
     return nTF == nWA</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.watm.WATM.strEqual"><code class="name flex">
-<span>def <span class="ident">strEqual</span></span>(<span>wa=None, tf=None)</span>
+<span>def <span class="ident">strEqual</span></span>(<span>tf, wa, silent)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Compare two strings and report the outcome.</p>
@@ -3229,10 +3422,10 @@ def compare(nTF, nWA):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/watm.py#L801-L851" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L825-L876" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
-def strEqual(wa=None, tf=None):
+def strEqual(tf, wa, silent):
     &#34;&#34;&#34;Compare two strings and report the outcome.
 
     Used for testing the WATM conversion.
@@ -3280,7 +3473,8 @@ def strEqual(wa=None, tf=None):
 
     sampleWA = f&#34;{wa[0:20]} ... {wa[-20:]}&#34;.replace(&#34;\n&#34;, &#34; &#34;)
     sampleTF = f&#34;{tf[0:20]} ... {tf[-20:]}&#34;.replace(&#34;\n&#34;, &#34; &#34;)
-    console(f&#34;\tTF: {sampleTF:&gt;6}\n\tWA: {sampleWA:&gt;6}&#34;)
+    if not silent:
+        console(f&#34;\tTF: {sampleTF:&gt;6}\n\tWA: {sampleWA:&gt;6}&#34;)
     return not different</code></pre>
 </details>
 </dd>
@@ -3300,7 +3494,7 @@ tokens and/or annotations in WATM.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/watm.py#L484-L668" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L492-L682" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeAnno(self):
     &#34;&#34;&#34;Make all annotations.
@@ -3314,9 +3508,11 @@ tokens and/or annotations in WATM.</p></div>
     tokens and/or annotations in WATM.
     &#34;&#34;&#34;
     error = self.error
+    silent = self.silent
 
     if error:
-        console(&#34;Cannot run because of an earlier error&#34;, error=True)
+        if not silent:
+            console(&#34;Cannot run because of an earlier error&#34;)
 
     Es = self.Es
     F = self.F
@@ -3468,12 +3664,13 @@ tokens and/or annotations in WATM.</p></div>
             self.mkAnno(KIND_ANNO, NS_TT, f&#34;{feat}={value}&#34;, mkTarget(n))
 
     if len(invertedTargets):
-        console(f&#34;WARNING: inverted targets, {len(invertedTargets)}x&#34;)
-        for otype, ti0, start, end in invertedTargets:
-            text = texts[ti0]
-            sega = text[start]
-            segb = text[end - 1]
-            console(f&#34;{otype:&gt;20} {start:&gt;6} `{sega}` &gt; {end - 1} `{segb}`&#34;)
+        if not silent:
+            console(f&#34;WARNING: inverted targets, {len(invertedTargets)}x&#34;)
+            for otype, ti0, start, end in invertedTargets:
+                text = texts[ti0]
+                sega = text[start]
+                segb = text[end - 1]
+                console(f&#34;{otype:&gt;20} {start:&gt;6} `{sega}` &gt; {end - 1} `{segb}`&#34;)
 
     if len(farTargets):
         console(
@@ -3484,8 +3681,11 @@ tokens and/or annotations in WATM.</p></div>
             sega = texts[ti0][start]
             segb = texts[ti1][end - 1]
             console(
-                f&#34;{otype:&gt;20} {ti0:&gt;2}:{start:&gt;6} `{sega}` - &#34;
-                f&#34;{ti1:&gt;2}:{end - 1} `{segb}`&#34;
+                (
+                    f&#34;{otype:&gt;20} {ti0:&gt;2}:{start:&gt;6} `{sega}` - &#34;
+                    f&#34;{ti1:&gt;2}:{end - 1} `{segb}`&#34;
+                ),
+                error=True,
             )</code></pre>
 </details>
 </dd>
@@ -3500,7 +3700,7 @@ to indices in this list is stored in member <code>tlFromTf</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/watm.py#L401-L463" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L407-L471" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeText(self):
     &#34;&#34;&#34;Creates the text data.
@@ -3510,9 +3710,11 @@ to indices in this list is stored in member <code>tlFromTf</code>.</p></div>
     to indices in this list is stored in member `tlFromTf`.
     &#34;&#34;&#34;
     error = self.error
+    silent = self.silent
 
     if error:
-        console(&#34;Cannot run because of an earlier error&#34;, error=True)
+        if not silent:
+            console(&#34;Cannot run because of an earlier error&#34;)
 
     F = self.F
     L = self.L
@@ -3587,7 +3789,7 @@ or <code>tuple</code> of <code>strings</code></dt>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/watm.py#L465-L482" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L473-L490" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mkAnno(self, kind, ns, body, target):
     &#34;&#34;&#34;Make a single annotation and return its id.
@@ -3626,7 +3828,7 @@ the TF dataset and the WATM annotations do so indeed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/watm.py#L853-L894" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L878-L924" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testAll(self):
     &#34;&#34;&#34;Test all aspects of the WATM conversion.
@@ -3643,9 +3845,11 @@ the TF dataset and the WATM annotations do so indeed.</p>
         Whether all things that must agree do indeed agree.
     &#34;&#34;&#34;
     error = self.error
+    silent = self.silent
 
     if error:
-        console(&#34;Cannot run because of an earlier error&#34;, error=True)
+        if not silent:
+            console(&#34;Cannot run because of an earlier error&#34;)
 
     self.testSetup()
 
@@ -3666,8 +3870,11 @@ the TF dataset and the WATM annotations do so indeed.</p>
     if not self.testEdges():
         good = False
 
-    console(&#34;Overall outcome ...&#34;)
-    console(f&#34;{rep(good)} - whether all tests passed&#34;, error=not good)
+    if not silent:
+        console(&#34;Overall outcome ...&#34;)
+
+    if not good or not silent:
+        console(f&#34;{rep(good)} - whether all tests passed&#34;, error=not good)
 
     return good</code></pre>
 </details>
@@ -3692,7 +3899,7 @@ In turn, these features have been translated into annotations of kind
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/watm.py#L1096-L1267" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L1146-L1337" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testAttributes(self):
     &#34;&#34;&#34;Test the attributes.
@@ -3719,10 +3926,12 @@ In turn, these features have been translated into annotations of kind
     annotations = self.testAnnotations
     tfFromAid = self.tfFromAid
     nsOrig = self.nsOrig
+    silent = self.silent
 
     isTei = nsOrig == NS_TEI
 
-    console(&#34;Testing the attributes ...&#34;)
+    if not silent:
+        console(&#34;Testing the attributes ...&#34;)
 
     attWA = []
 
@@ -3735,7 +3944,8 @@ In turn, these features have been translated into annotations of kind
 
     attWA = sorted(attWA)
 
-    console(f&#34;\t{len(attWA)} attribute values&#34;)
+    if not silent:
+        console(f&#34;\t{len(attWA)} attribute values&#34;)
 
     good = 0
     wrong = []
@@ -3747,14 +3957,17 @@ In turn, these features have been translated into annotations of kind
         else:
             wrong.append((node, att, valWA, valTF))
 
-    console(f&#34;\tGood:     {good:&gt;5} x&#34;)
-    console(f&#34;\tWrong:    {len(wrong):&gt;5} x&#34;)
     consistent = len(wrong) == 0
 
-    console(
-        f&#34;{rep(consistent)} - whether annotations are consistent with features&#34;,
-        error=not consistent,
-    )
+    if not silent:
+        console(f&#34;\tGood:     {good:&gt;5} x&#34;)
+    if not consistent or not silent:
+        console(f&#34;\tWrong:    {len(wrong):&gt;5} x&#34;, error=not consistent)
+
+        console(
+            f&#34;{rep(consistent)} - whether annotations are consistent with features&#34;,
+            error=not consistent,
+        )
 
     attTF = []
 
@@ -3783,15 +3996,20 @@ In turn, these features have been translated into annotations of kind
 
     attTF = sorted(attTF)
 
-    console(f&#34;\tWA attributes: {len(attWA)}&#34;)
-    console(f&#34;\tTF attributes: {len(attTF)}&#34;)
-    complete = attTF == attWA
-    console(
-        f&#34;{rep(complete)} - whether annotations are complete w.r.t. features&#34;,
-        error=not complete,
-    )
+    if not silent:
+        console(f&#34;\tWA attributes: {len(attWA)}&#34;)
+        console(f&#34;\tTF attributes: {len(attTF)}&#34;)
 
-    console(&#34;Testing the format attributes ...&#34;)
+    complete = attTF == attWA
+
+    if not complete or not silent:
+        console(
+            f&#34;{rep(complete)} - whether annotations are complete w.r.t. features&#34;,
+            error=not complete,
+        )
+
+    if not silent:
+        console(&#34;Testing the format attributes ...&#34;)
 
     fmtWA = []
 
@@ -3809,10 +4027,11 @@ In turn, these features have been translated into annotations of kind
     for node, body in fmtWA:
         fmtWaFreq[body] += 1
 
-    console(f&#34;\t{len(fmtWA)} format values&#34;)
-    console(&#34;\tformatting attributes: &#34;)
-    for fa, n in sorted(fmtWaFreq.items(), key=lambda x: (-x[1], x[0])):
-        console(f&#34;\t\t{n:&gt;6} x {fa}&#34;)
+    if not silent:
+        console(f&#34;\t{len(fmtWA)} format values&#34;)
+        console(&#34;\tformatting attributes: &#34;)
+        for fa, n in sorted(fmtWaFreq.items(), key=lambda x: (-x[1], x[0])):
+            console(f&#34;\t\t{n:&gt;6} x {fa}&#34;)
 
     good = 0
     wrong = []
@@ -3825,14 +4044,18 @@ In turn, these features have been translated into annotations of kind
         else:
             wrong.append((node, feat, valWA, valTF))
 
-    console(f&#34;\tGood:     {good:&gt;5} x&#34;)
-    console(f&#34;\tWrong:    {len(wrong):&gt;5} x&#34;)
     fconsistent = len(wrong) == 0
-    console(
-        f&#34;{rep(fconsistent)} - &#34;
-        f&#34;whether format annotationsare consistent with features&#34;,
-        error=not fconsistent,
-    )
+
+    if not silent:
+        console(f&#34;\tGood:     {good:&gt;5} x&#34;)
+
+    if not fconsistent or not silent:
+        console(f&#34;\tWrong:    {len(wrong):&gt;5} x&#34;)
+        console(
+            f&#34;{rep(fconsistent)} - &#34;
+            f&#34;whether format annotationsare consistent with features&#34;,
+            error=not fconsistent,
+        )
 
     fmtTF = []
 
@@ -3856,14 +4079,18 @@ In turn, these features have been translated into annotations of kind
 
     fmtTF = sorted(fmtTF)
 
-    console(f&#34;\tWA format attributes: {len(fmtWA)}&#34;)
-    console(f&#34;\tTF format attributes: {len(fmtTF)}&#34;)
+    if not silent:
+        console(f&#34;\tWA format attributes: {len(fmtWA)}&#34;)
+        console(f&#34;\tTF format attributes: {len(fmtTF)}&#34;)
+
     fcomplete = fmtTF == fmtWA
-    console(
-        f&#34;{rep(complete)} - &#34;
-        f&#34;whether format annotations are complete w.r.t. features&#34;,
-        error=not fcomplete,
-    )
+
+    if not fcomplete or not silent:
+        console(
+            f&#34;{rep(complete)} - &#34;
+            f&#34;whether format annotations are complete w.r.t. features&#34;,
+            error=not fcomplete,
+        )
 
     return consistent and complete and fconsistent and fcomplete</code></pre>
 </details>
@@ -3886,7 +4113,7 @@ by annotations.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/watm.py#L1348-L1511" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L1426-L1600" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testEdges(self):
     &#34;&#34;&#34;Test the edges.
@@ -3906,8 +4133,10 @@ by annotations.</p>
     Es = self.Es
     Eall = self.Eall
     annotations = self.testAnnotations
+    silent = self.silent
 
-    console(&#34;Testing the edges ...&#34;)
+    if not silent:
+        console(&#34;Testing the edges ...&#34;)
 
     tfFromWANodes = {}
     tfFromWAEdges = {}
@@ -3936,10 +4165,11 @@ by annotations.</p>
         name, val = (body, None) if len(parts) == 1 else parts
         tfFromWAEdges.setdefault(name, {}).setdefault(fromNode, {})[toNode] = val
 
-    console(f&#34;\tFound: {len(tfFromWANodes)} nodes&#34;)
+    if not silent:
+        console(f&#34;\tFound: {len(tfFromWANodes)} nodes&#34;)
 
-    for edge, edgeData in sorted(tfFromWAEdges.items()):
-        console(f&#34;\tFound edge {edge} with {len(edgeData)} starting nodes&#34;)
+        for edge, edgeData in sorted(tfFromWAEdges.items()):
+            console(f&#34;\tFound edge {edge} with {len(edgeData)} starting nodes&#34;)
 
     allGood = True
 
@@ -3947,16 +4177,19 @@ by annotations.</p>
         if edge == &#34;oslots&#34;:
             continue
 
-        console(f&#34;\tChecking edge {edge}&#34;)
+        if not silent:
+            console(f&#34;\tChecking edge {edge}&#34;)
 
         good = True
 
+        x = f&#34;edge {edge}: &#34; if silent else &#34;\t\t&#34;
+
         if edge not in set(Eall()):
-            console(&#34;\t\tmissing in TF data&#34;, error=True)
+            console(f&#34;{x}missing in TF data&#34;, error=True)
             good = False
 
         if edge not in tfFromWAEdges:
-            console(&#34;\t\tmissing in annotation data&#34;, error=True)
+            console(f&#34;{x}missing in annotation data&#34;, error=True)
             good = False
 
         if not good:
@@ -3972,10 +4205,11 @@ by annotations.</p>
         nFromWA = len(fromNodesWA)
 
         if fromNodesTF == fromNodesWA:
-            console(f&#34;\t\tsame {nFromTF} fromNodes&#34;)
+            if not silent:
+                console(f&#34;\t\tsame {nFromTF} fromNodes&#34;)
         else:
             console(
-                f&#34;\t\tfrom nodes differ: {nFromTF} in TF, {nFromWA} in WA&#34;,
+                f&#34;{x}from nodes differ: {nFromTF} in TF, {nFromWA} in WA&#34;,
                 error=True,
             )
             good = False
@@ -3999,11 +4233,11 @@ by annotations.</p>
         if len(diffs):
             good = False
             console(
-                f&#34;\t\tdifferences in toNodes for {len(diffs)} fromNodes&#34;, error=True
+                f&#34;{x}differences in toNodes for {len(diffs)} fromNodes&#34;, error=True
             )
 
             for f, toNodeInfoTF, toNodeInfoWA in sorted(diffs)[0:10]:
-                console(f&#34;\t\t\tfromNode {f}&#34;, error=True)
+                console(f&#34;{x}\tfromNode {f}&#34;, error=True)
 
                 toNodesTF = set(toNodeInfoTF)
                 toNodesWA = set(toNodeInfoWA)
@@ -4012,44 +4246,48 @@ by annotations.</p>
                 nToWA = len(toNodesWA)
 
                 if toNodesTF == toNodesWA:
-                    console(f&#34;\t\t\tsame {nToTF} toNodes&#34;)
+                    if not silent:
+                        console(f&#34;\t\t\tsame {nToTF} toNodes&#34;)
                 else:
                     console(
-                        f&#34;\t\t\ttoNodes differ: {nToTF} in TF, {nToWA} in WA&#34;,
+                        f&#34;{x}\ttoNodes differ: {nToTF} in TF, {nToWA} in WA&#34;,
                         error=True,
                     )
                 for t in toNodesTF | toNodesWA:
                     doCompare = True
                     if t not in toNodesTF:
-                        console(f&#34;\t\t\t\ttoNode {t} not in TF&#34;, error=True)
+                        console(f&#34;{x}\t\ttoNode {t} not in TF&#34;, error=True)
                         doCompare = False
                     else:
                         valTF = toNodeInfoTF[t]
 
                     if t not in toNodesWA:
-                        console(f&#34;\t\t\t\ttoNode {t} not in WA&#34;, error=True)
+                        console(f&#34;{x}\t\ttoNode {t} not in WA&#34;, error=True)
                         doCompare = False
                     else:
                         valWA = toNodeInfoWA[t]
 
                     if doCompare:
                         if valTF == valWA:
-                            console(
-                                f&#34;\t\t\t\ttoNode{t} values agree: {repr(valTF)}&#34;
-                            )
+                            if not silent:
+                                console(
+                                    f&#34;\t\t\t\ttoNode{t} values agree: {repr(valTF)}&#34;
+                                )
                         else:
                             console(
-                                f&#34;\t\t\t\ttoNode{t} values differ: &#34;
+                                f&#34;{x}\t\ttoNode{t} values differ: &#34;
                                 f&#34;TF: {repr(valTF)} WA: {repr(valWA)}&#34;,
                                 error=True,
                             )
 
-        console(f&#34;\t{rep(good)} - {nToChecked} toNodes checked&#34;, error=not good)
+        if not good or not silent:
+            console(f&#34;\t{rep(good)} - {nToChecked} toNodes checked&#34;, error=not good)
 
         if not good:
             allGood = False
 
-    console(f&#34;{rep(allGood)} - whether all edges agree&#34;)
+    if not silent:
+        console(f&#34;{rep(allGood)} - whether all edges agree&#34;)
 
     return allGood</code></pre>
 </details>
@@ -4070,7 +4308,7 @@ dataset.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/watm.py#L979-L1094" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L1016-L1144" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testElements(self):
     &#34;&#34;&#34;Test the elements.
@@ -4090,8 +4328,10 @@ dataset.</p>
     skipMeta = self.skipMeta
     is_metav = self.is_metav
     annotations = self.testAnnotations
+    silent = self.silent
 
-    console(&#34;Testing the elements ...&#34;)
+    if not silent:
+        console(&#34;Testing the elements ...&#34;)
 
     nElementsTF = 0
     nPisTF = 0
@@ -4116,21 +4356,27 @@ dataset.</p>
     nElementsWA = sum(1 if a[1] == &#34;element&#34; else 0 for a in annotations)
     nPisWA = sum(1 if a[1] == &#34;pi&#34; else 0 for a in annotations)
 
-    eGood = self.compare(nElementsTF, nElementsWA)
-    console(
-        f&#34;{rep(eGood)} - whether the amounts of elements and nodes agree&#34;,
-        error=not eGood,
-    )
+    eGood = self.numEqual(nElementsTF, nElementsWA, silent)
 
-    console(&#34;Testing the processing instructions ...&#34;)
+    if not eGood or not silent:
+        console(
+            f&#34;{rep(eGood)} - whether the amounts of elements and nodes agree&#34;,
+            error=not eGood,
+        )
 
-    pGood = self.compare(nPisTF, nPisWA)
-    console(
-        f&#34;{rep(pGood)} - whether the amounts of processing instructions agree&#34;,
-        error=not pGood,
-    )
+    if not silent:
+        console(&#34;Testing the processing instructions ...&#34;)
 
-    console(&#34;Testing the element annotations ...&#34;)
+    pGood = self.numEqual(nPisTF, nPisWA, silent)
+
+    if not pGood or not silent:
+        console(
+            f&#34;{rep(pGood)} - whether the amounts of processing instructions agree&#34;,
+            error=not pGood,
+        )
+
+    if not silent:
+        console(&#34;Testing the element annotations ...&#34;)
 
     tfFromAid = {}
 
@@ -4147,7 +4393,8 @@ dataset.</p>
 
     self.tfFromAid = tfFromAid
 
-    console(f&#34;\t{len(tfFromAid)} element annotations&#34;)
+    if not silent:
+        console(f&#34;\t{len(tfFromAid)} element annotations&#34;)
 
     for aId, kind, body, target in annotations:
         isElem = kind == &#34;element&#34;
@@ -4175,17 +4422,21 @@ dataset.</p>
         else:
             wrong += 1
 
-    console(f&#34;\tElement : {element:&gt;5} x&#34;)
-    console(f&#34;\tPi      : {pi:&gt;5} x&#34;)
-    console(f&#34;\tOther   : {other:&gt;5} x&#34;)
-    console(f&#34;\tGood    : {good:&gt;5} x&#34;)
-    console(f&#34;\tWrong   : {wrong:&gt;5} x&#34;)
-    console(f&#34;\tUnmapped: {unmapped:&gt;5} x&#34;)
+    if not silent:
+        console(f&#34;\tElement : {element:&gt;5} x&#34;)
+        console(f&#34;\tPi      : {pi:&gt;5} x&#34;)
+        console(f&#34;\tOther   : {other:&gt;5} x&#34;)
+        console(f&#34;\tGood    : {good:&gt;5} x&#34;)
+        console(f&#34;\tWrong   : {wrong:&gt;5} x&#34;)
+        console(f&#34;\tUnmapped: {unmapped:&gt;5} x&#34;)
 
     aGood = wrong == 0 and unmapped == 0
-    console(
-        f&#34;{rep(aGood)} - whether all element annotations are ok&#34;, error=not aGood
-    )
+
+    if not aGood or not silent:
+        console(
+            f&#34;{rep(aGood)} - whether all element annotations are ok&#34;,
+            error=not aGood,
+        )
 
     return aGood and eGood and pGood</code></pre>
 </details>
@@ -4207,7 +4458,7 @@ the kind <code>anno</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/watm.py#L1269-L1346" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L1339-L1424" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testExtra(self):
     &#34;&#34;&#34;Test the extra data for on-the-fly annotations.
@@ -4226,8 +4477,10 @@ the kind <code>anno</code>.</p>
     annotations = self.testAnnotations
     tfFromAid = self.tfFromAid
     extra = self.extra
+    silent = self.silent
 
-    console(&#34;Testing the extra annotations ...&#34;)
+    if not silent:
+        console(&#34;Testing the extra annotations ...&#34;)
 
     attWA = []
 
@@ -4248,8 +4501,9 @@ the kind <code>anno</code>.</p>
 
     attEX = sorted(attEX)
 
-    console(f&#34;\t{len(attEX)} extra feature values&#34;)
-    console(f&#34;\t{len(attWA)} extra annotations&#34;)
+    if not silent:
+        console(f&#34;\t{len(attEX)} extra feature values&#34;)
+        console(f&#34;\t{len(attWA)} extra annotations&#34;)
 
     good = attWA == attEX
 
@@ -4278,13 +4532,18 @@ the kind <code>anno</code>.</p>
         if len(onlyWA):
             showData(onlyWA, &#34;WA&#34;, &#34;EX&#34;)
         else:
-            console(&#34;\tWA: All extra annotations derive from the extra data&#34;)
+            if not silent:
+                console(&#34;\tWA: All extra annotations derive from the extra data&#34;)
         if len(onlyEX):
             showData(onlyEX, &#34;EX&#34;, &#34;WA&#34;)
         else:
-            console(&#34;\tEX: All extra data ended up as annotations&#34;)
+            if not silent:
+                console(&#34;\tEX: All extra data ended up as annotations&#34;)
 
-    console(f&#34;{rep(good)} - whether the extra annotations agree&#34;, error=not good)
+    if not good or not silent:
+        console(
+            f&#34;{rep(good)} - whether the extra annotations agree&#34;, error=not good
+        )
 
     return good</code></pre>
 </details>
@@ -4300,7 +4559,7 @@ We unpack targets if they contain structured information.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/watm.py#L896-L943" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L926-L973" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testSetup(self):
     &#34;&#34;&#34;Prepare the tests.
@@ -4367,7 +4626,7 @@ whether the TF and WATM datasets agree on it.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/watm.py#L945-L977" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L975-L1014" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testText(self):
     &#34;&#34;&#34;Test the text.
@@ -4385,21 +4644,28 @@ whether the TF and WATM datasets agree on it.</p>
     is_metav = self.is_metav
     tokenFiles = self.testTokens
     texts = self.texts
+    silent = self.silent
 
-    console(&#34;Testing the text ...&#34;)
+    if not silent:
+        console(&#34;Testing the text ...&#34;)
 
     nTokensTF = sum(
         0 if skipMeta and is_metav(s) else 1 for s in range(1, F.otype.maxSlot + 1)
     )
     nTokensWA = sum(len(tokens) for tokens in tokenFiles)
-    nGood = self.compare(nTokensTF, nTokensWA)
-    console(f&#34;{rep(nGood)} - whether the amounts of tokens agree&#34;, error=not nGood)
+    nGood = self.numEqual(nTokensTF, nTokensWA, silent)
+
+    if not nGood or not silent:
+        console(
+            f&#34;{rep(nGood)} - whether the amounts of tokens agree&#34;, error=not nGood
+        )
 
     textWA = &#34;&#34;.join(&#34;&#34;.join(tokens) for tokens in tokenFiles)
     textTF = &#34;&#34;.join(&#34;&#34;.join(text) for text in texts)
 
-    tGood = self.strEqual(wa=textWA, tf=textTF)
-    console(f&#34;{rep(tGood)} - whether the text is the same&#34;, error=not tGood)
+    tGood = self.strEqual(textTF, textWA, silent)
+    if not tGood or not silent:
+        console(f&#34;{rep(tGood)} - whether the text is the same&#34;, error=not tGood)
 
     return nGood and tGood</code></pre>
 </details>
@@ -4416,7 +4682,7 @@ divided over several files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/watm.py#L670-L778" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L684-L798" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeAll(self):
     &#34;&#34;&#34;Write text and annotation data to disk.
@@ -4431,9 +4697,11 @@ divided over several files.</p>
     # text files
 
     error = self.error
+    silent = self.silent
 
     if error:
-        console(&#34;Cannot run because of an earlier error&#34;, error=True)
+        if not silent:
+            console(&#34;Cannot run because of an earlier error&#34;)
 
     app = self.app
     texts = self.texts
@@ -4463,11 +4731,13 @@ divided over several files.</p>
                 dict(_ordered_segments=text), fh, ensure_ascii=False, indent=1
             )
 
-        console(f&#34;Text file {i:&gt;4}: {nText:&gt;8} segments to {textFile}&#34;)
+        if not silent:
+            console(f&#34;Text file {i:&gt;4}: {nText:&gt;8} segments to {textFile}&#34;)
 
     nTextFiles = len(textFiles)
     sep = &#34;&#34; if nTextFiles == 1 else &#34;s&#34;
-    console(f&#34;Text files all: {total:&gt;8} segments to {nTextFiles} file{sep}&#34;)
+    if not silent:
+        console(f&#34;Text files all: {total:&gt;8} segments to {nTextFiles} file{sep}&#34;)
 
     # annotation files
 
@@ -4502,7 +4772,8 @@ divided over several files.</p>
         with open(annoFile, &#34;w&#34;) as fh:
             json.dump(thisAnnoStore, fh, ensure_ascii=False, indent=1)
 
-        console(f&#34;Anno file {i:&gt;4}: {j:&gt;8} annotations written to {annoFile}&#34;)
+        if not silent:
+            console(f&#34;Anno file {i:&gt;4}: {j:&gt;8} annotations written to {annoFile}&#34;)
 
     for aId in aIdSorted:
         if j &gt;= LIMIT:
@@ -4520,20 +4791,21 @@ divided over several files.</p>
         total += j
 
     if len(annos) != total:
-        console(f&#34;Sum of batches : {total:&gt;8}&#34;)
-        console(f&#34;All annotations: {len(annoStore):&gt;8}&#34;)
+        console(f&#34;Sum of batches : {total:&gt;8}&#34;, error=True)
+        console(f&#34;All annotations: {len(annoStore):&gt;8}&#34;, error=True)
         console(&#34;Mismatch in number of annotations&#34;, error=True)
 
     nAnnoFiles = len(annoFiles)
     sep = &#34;&#34; if nAnnoFiles == 1 else &#34;s&#34;
-    console(f&#34;Anno files all: {total:&gt;8} annotations to {nAnnoFiles} file{sep}&#34;)</code></pre>
+    if not silent:
+        console(f&#34;Anno files all: {total:&gt;8} annotations to {nAnnoFiles} file{sep}&#34;)</code></pre>
 </details>
 </dd>
 </dl>
 </dd>
 <dt id="tf.convert.watm.WATMS"><code class="flex name class">
 <span>class <span class="ident">WATMS</span></span>
-<span>(</span><span>org, repo, backend, nsOrig, skipMeta=False, extra={})</span>
+<span>(</span><span>org, repo, backend, nsOrig, skipMeta=False, extra={}, silent=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Export corpora that are divided over multiple TF datasets.</p>
@@ -4561,11 +4833,13 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
 <dd>See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a></code>.</dd>
 <dt><strong><code>extra</code></strong> :&ensp;<code>dictionary</code>, optional <code>{}</code></dt>
 <dd>See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a></code>.</dd>
+<dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to operate in silence.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/watm.py#L1514-L1597" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L1603-L1695" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WATMS:
     &#34;&#34;&#34;Export corpora that are divided over multiple TF datasets.
@@ -4580,7 +4854,9 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
     top-level directory of the repo.
     &#34;&#34;&#34;
 
-    def __init__(self, org, repo, backend, nsOrig, skipMeta=False, extra={}):
+    def __init__(
+        self, org, repo, backend, nsOrig, skipMeta=False, extra={}, silent=False
+    ):
         &#34;&#34;&#34;Collect the parameters for the WATM machinery.
 
         We will initialize many `WATM` objects with mostly the same parameters.
@@ -4601,6 +4877,8 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
             See `tf.convert.watm.WATM`.
         extra: dictionary, optional {}
             See `tf.convert.watm.WATM`.
+        silent: boolean, optional False
+            Whether to operate in silence.
         &#34;&#34;&#34;
         self.org = org
         self.repo = repo
@@ -4608,11 +4886,13 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
         self.nsOrig = nsOrig
         self.skipMeta = skipMeta
         self.extra = extra
+        self.silent = silent
 
         repoDir = ex(f&#34;~/{backend}/{org}/{repo}&#34;)
         tfDir = f&#34;{repoDir}/tf&#34;
         docs = dirContents(tfDir)[1]
-        console(f&#34;Found {len(docs)} docs in {tfDir}&#34;)
+        if not silent:
+            console(f&#34;Found {len(docs)} docs in {tfDir}&#34;)
         self.docs = docs
 
     def produce(self, doc=None):
@@ -4632,6 +4912,7 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
         skipMeta = self.skipMeta
         extra = self.extra
         docs = self.docs
+        silent = self.silent
 
         chosenDoc = doc
 
@@ -4639,7 +4920,8 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
             if chosenDoc is not None and chosenDoc != doc:
                 continue
 
-            console(f&#34;{doc:&gt;5} ... &#34;, newline=False)
+            if not silent:
+                console(f&#34;{doc:&gt;5} ... &#34;, newline=False)
             A = use(
                 f&#34;{org}/{repo}:clone&#34;,
                 relative=f&#34;tf/{doc}&#34;,
@@ -4647,10 +4929,11 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
                 backend=backend,
                 silent=DEEP,
             )
-            WA = WATM(A, nsOrig, skipMeta=skipMeta, extra=extra)
+            WA = WATM(A, nsOrig, skipMeta=skipMeta, extra=extra, silent=silent)
             WA.makeText()
             WA.makeAnno()
-            WA.writeAll()</code></pre>
+            WA.writeAll()
+            WA.testAll()</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -4669,7 +4952,7 @@ Otherwise all datasets will be converted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e86b712bf2cffe660d0ef010161536bb90b5840e/tf/convert/watm.py#L1562-L1597" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L1657-L1695" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def produce(self, doc=None):
     &#34;&#34;&#34;Convert all relevant TF datasets.
@@ -4688,6 +4971,7 @@ Otherwise all datasets will be converted.</dd>
     skipMeta = self.skipMeta
     extra = self.extra
     docs = self.docs
+    silent = self.silent
 
     chosenDoc = doc
 
@@ -4695,7 +4979,8 @@ Otherwise all datasets will be converted.</dd>
         if chosenDoc is not None and chosenDoc != doc:
             continue
 
-        console(f&#34;{doc:&gt;5} ... &#34;, newline=False)
+        if not silent:
+            console(f&#34;{doc:&gt;5} ... &#34;, newline=False)
         A = use(
             f&#34;{org}/{repo}:clone&#34;,
             relative=f&#34;tf/{doc}&#34;,
@@ -4703,10 +4988,11 @@ Otherwise all datasets will be converted.</dd>
             backend=backend,
             silent=DEEP,
         )
-        WA = WATM(A, nsOrig, skipMeta=skipMeta, extra=extra)
+        WA = WATM(A, nsOrig, skipMeta=skipMeta, extra=extra, silent=silent)
         WA.makeText()
         WA.makeAnno()
-        WA.writeAll()</code></pre>
+        WA.writeAll()
+        WA.testAll()</code></pre>
 </details>
 </dd>
 </dl>
@@ -4801,10 +5087,10 @@ setTimeout(() => input.focus(), 100);
 <li>
 <h4><code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a></code></h4>
 <ul class="two-column">
-<li><code><a title="tf.convert.watm.WATM.compare" href="#tf.convert.watm.WATM.compare">compare</a></code></li>
 <li><code><a title="tf.convert.watm.WATM.makeAnno" href="#tf.convert.watm.WATM.makeAnno">makeAnno</a></code></li>
 <li><code><a title="tf.convert.watm.WATM.makeText" href="#tf.convert.watm.WATM.makeText">makeText</a></code></li>
 <li><code><a title="tf.convert.watm.WATM.mkAnno" href="#tf.convert.watm.WATM.mkAnno">mkAnno</a></code></li>
+<li><code><a title="tf.convert.watm.WATM.numEqual" href="#tf.convert.watm.WATM.numEqual">numEqual</a></code></li>
 <li><code><a title="tf.convert.watm.WATM.strEqual" href="#tf.convert.watm.WATM.strEqual">strEqual</a></code></li>
 <li><code><a title="tf.convert.watm.WATM.testAll" href="#tf.convert.watm.WATM.testAll">testAll</a></code></li>
 <li><code><a title="tf.convert.watm.WATM.testAttributes" href="#tf.convert.watm.WATM.testAttributes">testAttributes</a></code></li>
