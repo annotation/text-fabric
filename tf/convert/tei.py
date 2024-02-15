@@ -927,10 +927,14 @@ class TEI(CheckImport):
         self.good = True
 
         (backend, org, repo, relative) = getLocation()
+
         if any(s is None for s in (backend, org, repo, relative)):
             console(
-                "Not working in a repo: "
-                f"backend={backend} org={org} repo={repo} relative={relative}"
+                (
+                    "Not working in a repo: "
+                    f"backend={backend} org={org} repo={repo} relative={relative}"
+                ),
+                error=True,
             )
             self.good = False
             return
@@ -981,8 +985,11 @@ class TEI(CheckImport):
                     typeFunc = type(func)
                     if typeFunc is not functionType:
                         console(
-                            f"custom member {method} should be a function, "
-                            f"but it is a {typeFunc.__name__}"
+                            (
+                                f"custom member {method} should be a function, "
+                                f"but it is a {typeFunc.__name__}"
+                            ),
+                            error=True,
                         )
                         continue
 
@@ -991,7 +998,7 @@ class TEI(CheckImport):
                     hooked.append(method)
 
             except Exception as e:
-                console(str(e))
+                console(str(e), error=True)
                 for method in customKeys:
                     if not hasattr(self, method):
                         methodC = f"{method}Custom"
@@ -1773,8 +1780,11 @@ class TEI(CheckImport):
 
             if nErrors:
                 console(
-                    f"{nErrors} validation error(s) in {nFiles} file(s) "
-                    f"written to {errorFile}"
+                    (
+                        f"{nErrors} validation error(s) in {nFiles} file(s) "
+                        f"written to {errorFile}"
+                    ),
+                    error=True,
                 )
             else:
                 if verbose >= 0:
@@ -1808,16 +1818,17 @@ class TEI(CheckImport):
                             f"{tag:<16} : {amount:>5}x {ns}\n"
                         )
 
-            if procins:
-                plural = "" if nProcins == 1 else "s"
-                console(f"{nProcins} processing instruction{plural} encountered.")
+            if verbose >= 0:
+                if procins:
+                    plural = "" if nProcins == 1 else "s"
+                    console(f"{nProcins} processing instruction{plural} encountered.")
 
-            console(
-                f"{nTags} tags of which {nErrors} with multiple namespaces "
-                f"written to {errorFile}"
-                if verbose >= 0 or nErrors
-                else "Namespaces OK"
-            )
+                console(
+                    f"{nTags} tags of which {nErrors} with multiple namespaces "
+                    f"written to {errorFile}"
+                    if verbose >= 0 or nErrors
+                    else "Namespaces OK"
+                )
 
         def writeReport():
             reportFile = f"{reportPath}/elements.txt"
@@ -2167,7 +2178,8 @@ class TEI(CheckImport):
         if sectionModel == "I":
             i = 0
             for xmlFolder, xmlFiles in self.getXML():
-                console(f"Start folder {xmlFolder}:")
+                msg = "Start " if verbose >= 0 else "\t"
+                console(f"{msg}folder {xmlFolder}:")
                 j = 0
                 cr = ""
                 nl = True
@@ -2186,15 +2198,17 @@ class TEI(CheckImport):
 
                     label = f"{mdRep:<12} {tplRep:<12} {adRep:<12}"
 
-                    console(f"{cr}{i:>4} {label} {xmlFile:<50}", newline=nl)
+                    if verbose >= 0:
+                        console(f"{cr}{i:>4} {label} {xmlFile:<50}", newline=nl)
                     xmlFilesByModel[model].append(xmlPath)
-                console("")
-                console(f"End   folder {xmlFolder}")
+                if verbose >= 0:
+                    console("")
+                    console(f"End   folder {xmlFolder}")
 
         elif sectionModel == "II":
             xmlFile = self.getXML()
             if xmlFile is None:
-                console("No XML files found!")
+                console("No XML files found!", error=True)
                 return False
 
             xmlPath = f"{teiPath}/{xmlFile}"
@@ -2210,10 +2224,12 @@ class TEI(CheckImport):
             thisGood = True
 
             if validate:
-                console("\tValidating ...")
+                if verbose >= 0:
+                    console("\tValidating ...")
                 schemaFile = modelInfo.get(model, None)
                 if schemaFile is None:
-                    console(f"\t\tNo schema file for {model}")
+                    if verbose >= 0:
+                        console(f"\t\tNo schema file for {model}")
                     if good is not None and good is not False:
                         good = None
                     continue
@@ -2234,7 +2250,8 @@ class TEI(CheckImport):
         if not good:
             self.good = False
 
-        console("")
+        if verbose >= 0:
+            console("")
         writeErrors()
         writeReport()
         writeElemTypes()
@@ -3144,7 +3161,10 @@ class TEI(CheckImport):
                     value = {chapterSection: heading}
                     cv.feature(cur[NODE][chapterSection], **value)
                     chapterNum = cur["chapterNum"]
-                    console(f"\rchapter {chapterNum:>4} {heading:<50}", newline=False)
+                    if verbose >= 0:
+                        console(
+                            f"\rchapter {chapterNum:>4} {heading:<50}", newline=False
+                        )
             else:
                 chunkSection = self.chunkSection
 
@@ -3208,12 +3228,15 @@ class TEI(CheckImport):
                 if isPure(cur):
                     if textMaterial and textMaterial != " ":
                         console(
-                            "WARNING: Text material at the start of "
-                            f"pure-content element <{tag}>"
+                            (
+                                "WARNING: Text material at the start of "
+                                f"pure-content element <{tag}>"
+                            ),
+                            error=True
                         )
                         stack = "-".join(n[0] for n in cur[XNEST])
-                        console(f"\tElement stack: {stack}")
-                        console(f"\tMaterial: `{textMaterial}`")
+                        console(f"\tElement stack: {stack}", error=True)
+                        console(f"\tMaterial: `{textMaterial}`", error=True)
                 else:
                     for ch in textMaterial:
                         addSlot(cv, cur, ch)
@@ -3379,12 +3402,15 @@ class TEI(CheckImport):
                     if tailMaterial and tailMaterial != " ":
                         elem = cur[XNEST][-1][0]
                         console(
-                            "WARNING: Text material after "
-                            f"<{tag}> in pure-content element <{elem}>"
+                            (
+                                "WARNING: Text material after "
+                                f"<{tag}> in pure-content element <{elem}>"
+                            ),
+                            error=True
                         )
                         stack = "-".join(cur[XNEST][0])
-                        console(f"\tElement stack: {stack}-{tag}")
-                        console(f"\tMaterial: `{tailMaterial}`")
+                        console(f"\tElement stack: {stack}-{tag}", error=True)
+                        console(f"\tMaterial: `{tailMaterial}`", error=True)
                 else:
                     for ch in tailMaterial:
                         addSlot(cv, cur, ch)
@@ -3440,7 +3466,8 @@ class TEI(CheckImport):
 
                 i = 0
                 for xmlFolder, xmlFiles in self.getXML():
-                    console(f"Start folder {xmlFolder}:")
+                    msg = "Start " if verbose >= 0 else "\t"
+                    console(f"{msg}folder {xmlFolder}:")
 
                     cur[NODE][folderSection] = cv.node(folderSection)
                     value = {folderSection: xmlFolder}
@@ -3467,10 +3494,11 @@ class TEI(CheckImport):
                         tplRep = tpl or ""
                         adRep = adapt or ""
                         label = f"{modelRep:<12} {adRep:<12} {tplRep:<12}"
-                        console(
-                            f"{cr}{i:>4} {label} {xmlFile:<50}",
-                            newline=nl,
-                        )
+                        if verbose >= 0:
+                            console(
+                                f"{cr}{i:>4} {label} {xmlFile:<50}",
+                                newline=nl,
+                            )
 
                         cur[NODE][fileSection] = cv.node(fileSection)
                         ids[xmlFile][""] = cur[NODE][fileSection]
@@ -3513,14 +3541,16 @@ class TEI(CheckImport):
                             cv.terminate(cur[NODE][tpl])
                         cv.terminate(cur[NODE][fileSection])
 
-                    console("")
-                    console(f"End   folder {xmlFolder}")
+                    if verbose >= 0:
+                        console("")
+                        console(f"End   folder {xmlFolder}")
+
                     cv.terminate(cur[NODE][folderSection])
 
             elif sectionModel == "II":
                 xmlFile = self.getXML()
                 if xmlFile is None:
-                    console("No XML files found!")
+                    console("No XML files found!", error=True)
                     return False
 
                 xmlPath = f"{teiPath}/{xmlFile}"
@@ -3564,7 +3594,8 @@ class TEI(CheckImport):
 
                 addSlot(cv, cur, None)
 
-            console("")
+            if verbose >= 0:
+                console("")
 
             if verbose >= 0:
                 console("Resolving links into edges ...")
@@ -3747,8 +3778,8 @@ class TEI(CheckImport):
         silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
 
         if not dirExists(tfPath):
-            console(f"Directory {ux(tfPath)} does not exist.")
-            console("No TF found, nothing to load")
+            console(f"Directory {ux(tfPath)} does not exist.", error=True)
+            console("No TF found, nothing to load", error=True)
             self.good = False
             return
 

@@ -356,8 +356,11 @@ class PageXML(CheckImport):
 
         if any(s is None for s in (backend, org, repo, relative)):
             console(
-                "Not working in a repo: "
-                f"backend={backend} org={org} repo={repo} relative={relative}"
+                (
+                    "Not working in a repo: "
+                    f"backend={backend} org={org} repo={repo} relative={relative}"
+                ),
+                error=True
             )
             self.good = False
             return
@@ -682,7 +685,7 @@ class PageXML(CheckImport):
             if len(pageFiles) == 0:
                 continue
 
-            console(f"\t\t{doc:>5} ... {len(pageFiles):>4} pages")
+            console(f"\t\t{doc:>5} ... {len(pageFiles):>8} pages")
 
             metaFile = f"{sourceDir}/{doc}/{sourceVersion}/meta/metadata.yaml"
             docMeta = readYaml(asFile=metaFile)
@@ -745,16 +748,17 @@ class PageXML(CheckImport):
             if chosenDoc is not None and chosenDoc != doc:
                 continue
             tfPath = f"{tfDir}/{doc}/{tfVersion}"
-            console(f"\t\t{doc:>5} ... ", newline=False)
+            msg = f"\t\t{doc:>5} ... "
             TF = Fabric(locations=[tfPath], silent=silent)
             allFeatures = TF.explore(silent=True, show=True)
             loadableFeatures = allFeatures["nodes"] + allFeatures["edges"]
             api = TF.load(loadableFeatures, silent=silent)
             if api:
-                console(f"OK {api.F.otype.maxSlot:>8} slots")
+                if not silent:
+                    console(f"{msg}{api.F.otype.maxSlot:>8} slots")
                 self.good = True
             else:
-                console("XX")
+                console(f"{msg}XX", error=True)
                 self.good = False
 
     def appTask(self):
