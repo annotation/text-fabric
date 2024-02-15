@@ -1545,7 +1545,7 @@ class Checkout:
             zf = r.content
             zf = io.BytesIO(zf)
         except Exception as e:
-            msg = f"\t{str(e)}\n\tcould not download {APP_EXPRESS_ZIP}"
+            msg = f"\t{str(e)}\n\tcould not download {APP_EXPRESS_ZIP} "
             self.possibleError(msg, True, again=True)
             return False
 
@@ -1561,7 +1561,7 @@ class Checkout:
             chDir(cwd)
             dirRemove("__MACOSX")
         except Exception as e:
-            msg = f"\tcould not save corpus data to {destZip}"
+            msg = f"\tcould not save corpus data to {destZip} "
             console(str(e), error=True)
             self.possibleError(msg, showErrors=True, again=True)
             chDir(cwd)
@@ -1755,6 +1755,7 @@ class Checkout:
                         f"No directory {dataDir} in {msg}",
                         showErrors,
                         again=False,
+                        newline=True,
                     )
                     msg = "\tFailed"
                     self.possibleError(msg, showErrors=showErrors, newline=True)
@@ -1762,7 +1763,7 @@ class Checkout:
         except Exception as e:
             msg = f"\tcould not save {label} to {destZip}"
             console(str(e), error=True)
-            self.possibleError(msg, showErrors=showErrors, again=True)
+            self.possibleError(msg, showErrors=showErrors, again=True, newline=True)
             chDir(cwd)
             return False
         chDir(cwd)

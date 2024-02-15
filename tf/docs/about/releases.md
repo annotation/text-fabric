@@ -20,6 +20,12 @@ pip install -e .
 
 ### 12.3
 
+#### 12.3.1
+
+2024-02-15
+
+Minor improvements to the WATM converter, and an update of its docs.
+
 #### 12.3.0
 
 2024-02-08

@@ -105,7 +105,7 @@ from ..tools.xmlschema import Analysis
 from ..tools.myspacy import nlpOutput
 from ..dataset import modify
 from ..core.helpers import console
-from ..core.files import initTree, dirMake, dirExists
+from ..core.files import initTree, dirMake
 from ..core.timestamp import DEEP, TERSE
 from ..core.command import readArgs
 from ..lib import writeList, readList
@@ -367,16 +367,18 @@ class NLPipeline(CheckImport):
 
         self.app = app
         version = app.version
+
         if verbose >= 0:
             console(f"Input data has version {version}")
 
         repoDir = app.repoLocation
-        txtDir = f"{repoDir}/_temp/txt"
+        txtDir = f"{repoDir}/_temp/txt/{version}"
+        dirMake(txtDir)
         self.txtDir = txtDir
         self.tokenFile = f"{txtDir}/tokens.tsv"
         self.sentenceFile = f"{txtDir}/sentences.tsv"
         self.entityFile = f"{txtDir}/entities.tsv"
-        self.textPath = f"{repoDir}/_temp/txt/plain.txt"
+        self.textPath = f"{txtDir}/plain.txt"
 
         if verbose >= 0:
             console("Compute element boundaries")
@@ -1514,6 +1516,7 @@ class NLPipeline(CheckImport):
         positions = kwargs.get("positions", None)
         tokens = kwargs.get("tokens", None)
         sentences = kwargs.get("sentences", None)
+
         if ner:
             entities = kwargs.get("entities", None)
 
@@ -1536,8 +1539,7 @@ class NLPipeline(CheckImport):
             entities = nlpData[2] if ner else None
 
             if write:
-                if not dirExists(txtDir):
-                    dirMake(txtDir)
+                dirMake(txtDir)
                 writeList(
                     tokens,
                     tokenFile,
