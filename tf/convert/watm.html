@@ -24,10 +24,128 @@
 </header>
 <section id="section-intro">
 <p>Export to Web Annotation Text Model</p>
-<h1 id="the-general-idea">The general idea</h1>
+<h1 id="the-situation">The situation</h1>
 <p>This module can export a TF corpus to WATM (Web Annotation Text Model),
 which is the input format of the suite of systems developed by Team Text for
 serving text plus annotations over the web.</p>
+<p>If we can convert TF corpora to WATM, then we have an avenue to the
+<a href="https://di.huc.knaw.nl/text-analysis-en.html">KNAW/HuC/DI/Team-Text</a>
+web publishing machinery.</p>
+<p>Given the fact that TF can already convert TEI and PageXML corpora, this
+completes a pipeline from source to publication.</p>
+<p>We have done this for the following corpora:</p>
+<ul>
+<li><a href="https://github.com/annotation/mondriaan"><code>mondriaan/letters</code></a></li>
+<li><a href="https://gitlab.huc.knaw.nl/translatin/corpus"><code>translatin/corpus</code></a></li>
+<li><a href="https://gitlab.huc.knaw.nl/suriano/letters"><code>suriano/letters</code></a></li>
+</ul>
+<p>All these corpora need distinct preprocessing steps before they are "canalized" into
+TF, see the illustration below.</p>
+<p><img alt="confluence" src="../images/text-confluence.jpg"></p>
+<p>At the same time,
+<a href="https://github.com/proycon">Maarten van Gompel</a>
+is also making pipelines to the Team-Text publishing street. He uses his
+<a href="https://github.com/annotation/stam">STAM</a>
+software to build a
+<a href="https://github.com/knaw-huc/brieven-van-hooft-pipeline/blob/main/README.md">pipeline</a>
+from a corpus of letters by P.C. Hooft in Folia format to text segments and
+web annotations.</p>
+<h1 id="excursion-stam">Excursion: STAM</h1>
+<p><img alt="stam" src="../images/stam.png"></p>
+<p>We now have two sytems,
+<a href="https://github.com/annotation/stam">STAM</a>
+and Text-Fabric that can untangle text and markup.
+They are implemented very differently, and have a different flavour, but at the
+same time they share the preference of separating the textual data from all the data
+around the text.</p>
+<ul>
+<li>
+<p><em>intent</em></p>
+<ul>
+<li><strong>STAM</strong>: make it easier for tools and infrastructure to handle texts with
+annotations.</li>
+<li><strong>TF</strong>: support researchers in analysing textual corpora.</li>
+</ul>
+</li>
+<li>
+<p><em>implementation</em></p>
+<ul>
+<li><strong>STAM</strong>: Rust + <a href="https://github.com/annotation/stam-python">Python bindings</a>.</li>
+<li><strong>TF</strong>: Pure Python.</li>
+</ul>
+</li>
+<li>
+<p><em>organization</em></p>
+<ul>
+<li><strong>STAM</strong>: very neatly in a core with extensions.</li>
+<li><strong>TF</strong>: core data functionality in <code><a title="tf.core" href="../core/index.html">tf.core</a></code> modules, search functionality in
+<code><a title="tf.search" href="../search/index.html">tf.search</a></code> modules, lots of other functions are included in the code with
+varying degrees of integration and orderliness!</li>
+</ul>
+</li>
+<li>
+<p><em>standards</em></p>
+<ul>
+<li><strong>STAM</strong>: actively seeks to employ existing standards.</li>
+<li><strong>TF</strong>: relies on a few simple conventions w.r.t. data organization.</li>
+</ul>
+</li>
+<li>
+<p><em>model</em></p>
+<ul>
+<li><strong>STAM</strong>: very generic w.r.t. annotations, annotations can target
+annotations and /or text segments.</li>
+<li><strong>TF</strong>:
+<a href="https://annotation.github.io/text-fabric/tf/about/datamodel.html">graph model</a>
+where nodes stand for textual positions and subsets of them, nodes and
+edges can have features, which are the raw material of annotations, but
+annotations are not a TF concept.</li>
+</ul>
+</li>
+<li>
+<p><em>query language</em></p>
+<ul>
+<li><strong>STAM</strong>:
+<a href="https://github.com/annotation/stam/tree/master/extensions/stam-query">STAMQL</a>,
+evolving as an SQL-like language, with user-friendly primitives for
+annotations.</li>
+<li><strong>TF</strong>:
+<a href="https://annotation.github.io/text-fabric/tf/about/searchusage.html">TF-Query</a>,
+a noise-free language for graph templates with reasonable performance.</li>
+</ul>
+</li>
+<li>
+<p><em>display</em></p>
+<ul>
+<li><strong>STAM</strong>: In development, see <code>stam view</code> in
+<a href="https://github.com/annotation/stam-tools">STAM tools</a>.</li>
+<li><strong>TF</strong>: Powerful functions to display corpus fragments with highlighting in
+<code><a title="tf.advanced" href="../advanced/index.html">tf.advanced</a></code>. The challenge is to build generic display functions that detect
+the peculiarities of the corpora.</li>
+</ul>
+</li>
+<li>
+<p><em>API</em></p>
+<ul>
+<li><strong>STAM</strong>: in Rust and Python.</li>
+<li><strong>TF</strong>: Python.</li>
+</ul>
+</li>
+<li>
+<p><em>GUI</em></p>
+<ul>
+<li><strong>STAM</strong>: not yet.</li>
+<li><strong>TF</strong>: locally served web interface for browsing and searching the corpus.</li>
+</ul>
+</li>
+</ul>
+<p>Both libraries can be used to manage corpus data in intricate ways for research
+and publishing purposes.
+How STAM and Text-Fabric will evolve in the dynamic landscape of corpora, analytical
+methods and AI, is something we cannot predict.
+For now, their different flavour and intent will define their appeal to the different
+categories of users.</p>
+<h1 id="the-general-idea">The general idea</h1>
 <p>The idea of WATM is, like the idea of Text-Fabric, to untangle the text from its
 markup. Everything outside the text itself is coded in annotations.</p>
 <p>Annotations look a lot like TF features, but they are a bit more general.
@@ -274,15 +392,123 @@ in the WATM data, so this is not a blocking problem for now.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L1-L1695" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e445baad1442c458acd1bfe73898a9f521f2433b/tf/convert/watm.py#L1-L1803" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Export to Web Annotation Text Model
 
-# The general idea
+# The situation
 
 This module can export a TF corpus to WATM (Web Annotation Text Model),
 which is the input format of the suite of systems developed by Team Text for
 serving text plus annotations over the web.
+
+If we can convert TF corpora to WATM, then we have an avenue to the
+[KNAW/HuC/DI/Team-Text](https://di.huc.knaw.nl/text-analysis-en.html)
+web publishing machinery.
+
+Given the fact that TF can already convert TEI and PageXML corpora, this
+completes a pipeline from source to publication.
+
+We have done this for the following corpora:
+
+*   [`mondriaan/letters`](https://github.com/annotation/mondriaan)
+*   [`translatin/corpus`](https://gitlab.huc.knaw.nl/translatin/corpus)
+*   [`suriano/letters`](https://gitlab.huc.knaw.nl/suriano/letters)
+
+All these corpora need distinct preprocessing steps before they are &#34;canalized&#34; into
+TF, see the illustration below.
+
+![confluence](../images/text-confluence.jpg)
+
+At the same time,
+[Maarten van Gompel](https://github.com/proycon)
+is also making pipelines to the Team-Text publishing street. He uses his
+[STAM](https://github.com/annotation/stam)
+software to build a
+[pipeline](https://github.com/knaw-huc/brieven-van-hooft-pipeline/blob/main/README.md)
+from a corpus of letters by P.C. Hooft in Folia format to text segments and
+web annotations.
+
+# Excursion: STAM
+
+![stam](../images/stam.png)
+
+We now have two sytems,
+[STAM](https://github.com/annotation/stam)
+and Text-Fabric that can untangle text and markup.
+They are implemented very differently, and have a different flavour, but at the
+same time they share the preference of separating the textual data from all the data
+around the text.
+
+*   *intent*
+
+    *   **STAM**: make it easier for tools and infrastructure to handle texts with
+    annotations.
+    *   **TF**: support researchers in analysing textual corpora.
+
+*   *implementation*
+
+    *   **STAM**: Rust + [Python bindings](https://github.com/annotation/stam-python).
+    *   **TF**: Pure Python.
+
+*   *organization*
+
+    *   **STAM**: very neatly in a core with extensions.
+    *   **TF**: core data functionality in `tf.core` modules, search functionality in
+        `tf.search` modules, lots of other functions are included in the code with
+        varying degrees of integration and orderliness!
+
+*   *standards*
+
+    *   **STAM**: actively seeks to employ existing standards.
+    *   **TF**: relies on a few simple conventions w.r.t. data organization.
+
+*   *model*
+
+    *   **STAM**: very generic w.r.t. annotations, annotations can target
+        annotations and /or text segments.
+    *   **TF**:
+        [graph model](https://annotation.github.io/text-fabric/tf/about/datamodel.html)
+        where nodes stand for textual positions and subsets of them, nodes and
+        edges can have features, which are the raw material of annotations, but
+        annotations are not a TF concept.
+
+*   *query language*
+
+    *   **STAM**:
+        [STAMQL](https://github.com/annotation/stam/tree/master/extensions/stam-query),
+        evolving as an SQL-like language, with user-friendly primitives for
+        annotations.
+    *   **TF**:
+        [TF-Query](https://annotation.github.io/text-fabric/tf/about/searchusage.html),
+        a noise-free language for graph templates with reasonable performance.
+
+*   *display*
+
+    *   **STAM**: In development, see `stam view` in
+        [STAM tools](https://github.com/annotation/stam-tools).
+    *   **TF**: Powerful functions to display corpus fragments with highlighting in
+        `tf.advanced`. The challenge is to build generic display functions that detect
+        the peculiarities of the corpora.
+
+*   *API*
+
+    *   **STAM**: in Rust and Python.
+    *   **TF**: Python.
+
+*   *GUI*
+
+    *   **STAM**: not yet.
+    *   **TF**: locally served web interface for browsing and searching the corpus.
+
+Both libraries can be used to manage corpus data in intricate ways for research
+and publishing purposes.
+How STAM and Text-Fabric will evolve in the dynamic landscape of corpora, analytical
+methods and AI, is something we cannot predict.
+For now, their different flavour and intent will define their appeal to the different
+categories of users.
+
+# The general idea
 
 The idea of WATM is, like the idea of Text-Fabric, to untangle the text from its
 markup. Everything outside the text itself is coded in annotations.
@@ -1998,7 +2224,7 @@ class WATMS:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L294-L305" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e445baad1442c458acd1bfe73898a9f521f2433b/tf/convert/watm.py#L402-L413" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rep(status):
     &#34;&#34;&#34;Represent a boolean status for a message to the console.
@@ -2054,7 +2280,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L308-L1600" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e445baad1442c458acd1bfe73898a9f521f2433b/tf/convert/watm.py#L416-L1708" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WATM:
     &#34;&#34;&#34;The export machinery is exposed as a class, wrapped around a TF dataset.&#34;&#34;&#34;
@@ -3373,7 +3599,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L800-L823" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e445baad1442c458acd1bfe73898a9f521f2433b/tf/convert/watm.py#L908-L931" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def numEqual(nTF, nWA, silent):
@@ -3422,7 +3648,7 @@ def numEqual(nTF, nWA, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L825-L876" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e445baad1442c458acd1bfe73898a9f521f2433b/tf/convert/watm.py#L933-L984" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def strEqual(tf, wa, silent):
@@ -3494,7 +3720,7 @@ tokens and/or annotations in WATM.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L492-L682" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e445baad1442c458acd1bfe73898a9f521f2433b/tf/convert/watm.py#L600-L790" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeAnno(self):
     &#34;&#34;&#34;Make all annotations.
@@ -3700,7 +3926,7 @@ to indices in this list is stored in member <code>tlFromTf</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L407-L471" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e445baad1442c458acd1bfe73898a9f521f2433b/tf/convert/watm.py#L515-L579" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeText(self):
     &#34;&#34;&#34;Creates the text data.
@@ -3789,7 +4015,7 @@ or <code>tuple</code> of <code>strings</code></dt>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L473-L490" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e445baad1442c458acd1bfe73898a9f521f2433b/tf/convert/watm.py#L581-L598" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mkAnno(self, kind, ns, body, target):
     &#34;&#34;&#34;Make a single annotation and return its id.
@@ -3828,7 +4054,7 @@ the TF dataset and the WATM annotations do so indeed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L878-L924" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e445baad1442c458acd1bfe73898a9f521f2433b/tf/convert/watm.py#L986-L1032" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testAll(self):
     &#34;&#34;&#34;Test all aspects of the WATM conversion.
@@ -3899,7 +4125,7 @@ In turn, these features have been translated into annotations of kind
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L1146-L1337" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e445baad1442c458acd1bfe73898a9f521f2433b/tf/convert/watm.py#L1254-L1445" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testAttributes(self):
     &#34;&#34;&#34;Test the attributes.
@@ -4113,7 +4339,7 @@ by annotations.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L1426-L1600" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e445baad1442c458acd1bfe73898a9f521f2433b/tf/convert/watm.py#L1534-L1708" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testEdges(self):
     &#34;&#34;&#34;Test the edges.
@@ -4308,7 +4534,7 @@ dataset.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L1016-L1144" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e445baad1442c458acd1bfe73898a9f521f2433b/tf/convert/watm.py#L1124-L1252" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testElements(self):
     &#34;&#34;&#34;Test the elements.
@@ -4458,7 +4684,7 @@ the kind <code>anno</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L1339-L1424" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e445baad1442c458acd1bfe73898a9f521f2433b/tf/convert/watm.py#L1447-L1532" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testExtra(self):
     &#34;&#34;&#34;Test the extra data for on-the-fly annotations.
@@ -4559,7 +4785,7 @@ We unpack targets if they contain structured information.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L926-L973" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e445baad1442c458acd1bfe73898a9f521f2433b/tf/convert/watm.py#L1034-L1081" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testSetup(self):
     &#34;&#34;&#34;Prepare the tests.
@@ -4626,7 +4852,7 @@ whether the TF and WATM datasets agree on it.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L975-L1014" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e445baad1442c458acd1bfe73898a9f521f2433b/tf/convert/watm.py#L1083-L1122" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testText(self):
     &#34;&#34;&#34;Test the text.
@@ -4682,7 +4908,7 @@ divided over several files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L684-L798" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e445baad1442c458acd1bfe73898a9f521f2433b/tf/convert/watm.py#L792-L906" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeAll(self):
     &#34;&#34;&#34;Write text and annotation data to disk.
@@ -4839,7 +5065,7 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L1603-L1695" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e445baad1442c458acd1bfe73898a9f521f2433b/tf/convert/watm.py#L1711-L1803" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WATMS:
     &#34;&#34;&#34;Export corpora that are divided over multiple TF datasets.
@@ -4952,7 +5178,7 @@ Otherwise all datasets will be converted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4bb9e1a4f4dea7ee76bb6c1255ca5b9935cb755b/tf/convert/watm.py#L1657-L1695" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e445baad1442c458acd1bfe73898a9f521f2433b/tf/convert/watm.py#L1765-L1803" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def produce(self, doc=None):
     &#34;&#34;&#34;Convert all relevant TF datasets.
@@ -5055,6 +5281,8 @@ setTimeout(() => input.focus(), 100);
 <h1>Index</h1>
 <div class="toc">
 <ul>
+<li><a href="#the-situation">The situation</a></li>
+<li><a href="#excursion-stam">Excursion: STAM</a></li>
 <li><a href="#the-general-idea">The general idea</a></li>
 <li><a href="#the-specifics">The specifics</a><ul>
 <li><a href="#format-of-the-text-files">Format of the text files</a><ul>
