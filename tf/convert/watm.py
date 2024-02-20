@@ -64,8 +64,14 @@ around the text.
 
 *   *standards*
 
-    *   **STAM**: actively seeks to employ existing standards.
-    *   **TF**: relies on a few simple conventions w.r.t. data organization.
+    *   **STAM**: actively seeks to interoperate with existing standards, but
+        internally it uses its own way of organizing the data.
+    *   **TF**: also relies on a few simple conventions w.r.t. data
+        organization and efficient serialization. These conventions are
+        documented. It has several import and export functions, e.g. from TEI,
+        PageXML, MQL, and to MQL, TSV. But it prefers to input and output data
+        in minimalistic streams, without the often redundant strings that are
+        attached to standard formats.
 
 *   *model*
 
