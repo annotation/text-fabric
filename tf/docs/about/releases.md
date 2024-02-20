@@ -20,6 +20,18 @@ pip install -e .
 
 ### 12.3
 
+#### 12.3.3
+
+2024-02-20
+
+Fix in `tf.advanced.repo.publishRelease`: it did not work if you are on a branch
+named `main` because `master` was hard-coded in the source code.
+Now it takes the branch name from the app context.
+Do not forget to specify `branch: main` under the `provenanceSpecs` in your
+`/app/config.yaml`.
+
+Many thanks to Tony Jorg for reporting this error.
+
 #### 12.3.1,2
 
 2024-02-15

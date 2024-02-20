@@ -882,7 +882,9 @@ def publishRelease(app, increase, message=None, description=None):
         If None, the `message` parameter will be used.
     """
     repoLocation = app.repoLocation
-    console(f"Working in repo {ux(repoLocation)}")
+    branch = app.context.branch
+
+    console(f"Working in repo {ux(repoLocation)} in branch {branch}")
 
     label = "major" if increase == 1 else "intermediate" if increase == 2 else "minor"
     if message is None:
@@ -903,18 +905,24 @@ def publishRelease(app, increase, message=None, description=None):
 
     console("Compute a new tag ...")
 
-    latestTag = (
-        check_output(["git", "describe", "--tags"], cwd=repoLocation)
-        .decode("ascii")
-        .strip()
-        .split("-", 1)[0]
-    )
+    latestTag = None
+
+    try:
+        latestTag = (
+            check_output(["git", "describe", "--tags"], cwd=repoLocation)
+            .decode("ascii")
+            .strip()
+            .split("-", 1)[0]
+        )
+    except Exception:
+        latestTag = ""
+
     newTag = bumpRelease(latestTag, increase)
     run(["git", "tag", "-a", newTag, "-m", message], cwd=repoLocation)
 
     console(f"Push the repo to GitHub, including tag {newTag}")
 
-    run(["git", "push", "origin", "master", "--tags"], cwd=repoLocation)
+    run(["git", "push", "origin", branch, "--tags"], cwd=repoLocation)
 
     console("Turn the tag into a release on GitHub with additional data")
 
