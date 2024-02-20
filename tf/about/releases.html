@@ -38,6 +38,14 @@ and in its top-level directory run the command:</strong></p>
 </code></pre>
 <h2 id="12">12</h2>
 <h3 id="123">12.3</h3>
+<h4 id="1233">12.3.3</h4>
+<p>2024-02-20</p>
+<p>Fix in <code><a title="tf.advanced.repo.publishRelease" href="../advanced/repo.html#tf.advanced.repo.publishRelease">publishRelease()</a></code>: it did not work if you are on a branch
+named <code>main</code> because <code>master</code> was hard-coded in the source code.
+Now it takes the branch name from the app context.
+Do not forget to specify <code>branch: main</code> under the <code>provenanceSpecs</code> in your
+<code>/app/config.yaml</code>.</p>
+<p>Many thanks to Tony Jorg for reporting this error.</p>
 <h4 id="12312">12.3.1,2</h4>
 <p>2024-02-15</p>
 <p>Minor improvements to the WATM converter, and an update of its docs.</p>
@@ -305,7 +313,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/907f19d3e96ac1b3319bededbfce2fc092364301/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/369e52fe19b197bfd6b085594fe9184ecf0cc02e/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -379,6 +387,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
 <li><a href="#123">12.3</a><ul>
+<li><a href="#1233">12.3.3</a></li>
 <li><a href="#12312">12.3.1,2</a></li>
 <li><a href="#1230">12.3.0</a></li>
 </ul>
