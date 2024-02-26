@@ -305,7 +305,7 @@ an annotation, divided in the following fields:
             in the file `text-fn.json`; the token at position `eee` is not included.
             It is guaranteed that `bbb <= `eee`.
 
-        *   `fn:bbb-fm:eee`: a range pf text segments starting at position `bbb` of the
+        *   `fn:bbb-fm:eee`: a range of text segments starting at position `bbb` of the
             file `text-fn.json` and ending just before position `eee` in the file
             `text-fm.json`, including all tokens in all intermediate
             `text-fi.json` files for `fn < fi < fm`.
