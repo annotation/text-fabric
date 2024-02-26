@@ -43,7 +43,7 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 [`annotation/mondriaan`](https://github.com/annotation/mondriaan)
 :   *English*
     Piet Mondriaan, 1872 - 1944,
-    Test corpus of 14 letters;
+    Test corpus of 14 letters (proeftuin);
     converted from TEI from the Huygens Institute, together with RKD and HuC;
     many people involved
 
@@ -206,7 +206,7 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
     Straight conversion from TEI to TF,
     Peter Boot et al., Dirk Roorda
 
-    ** Work in progress, test set only ("proeftuin").**
+    **Work in progress, test set only ("proeftuin").**
 
     *with NLP output from Spacy woven in*
 
@@ -216,7 +216,7 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
     Straight conversion from TEI to TF,
     Nina Lamal et al., Dirk Roorda
 
-    ** Work in progress.**
+    **Work in progress.**
 
     *with NLP output from Spacy woven in*
 
@@ -227,7 +227,7 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
     Conversion from PageXML to TF,
     Jirsi Reinders, Hayco de Jong, et al., Dirk Roorda
 
-    ** Work in progress*.*
+    **Work in progress*.*
 
 ## [NINO Cuneiform](https://github.com/Nino-cunei)
 

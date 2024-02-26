@@ -20,6 +20,18 @@ pip install -e .
 
 ### 12.3
 
+#### 12.3.4
+
+2024-02-26
+
+The output of `tf.convert.watm` has been changed.
+It now generates token files per section, where you can configure the TF
+section level for that.
+
+The syntax for targets has been changed: more things are possible.
+
+Tests have been adapted and strengthened.
+
 #### 12.3.3
 
 2024-02-20
