@@ -183,11 +183,16 @@ and in
 what form:</p>
 <ul>
 <li>a bunch of files <code>text-0.json</code>, <code>text-1.json</code>: with the text segments in an array;
-Each file corresponds with a top-level section in the TF dataset;</li>
-<li>a bunch of files <code>anno-1.json</code>, `anno-2.json, &hellip;: all generated annotations;
+Each file corresponds with a section in the TF dataset; the level of the sections
+that correspond with these files is given in the <code>watm.yaml</code> config file,
+under the key <code>textRepoLevel</code>. It can have the values <code>1</code> (top level), <code>2</code>, and <code>3</code>
+(lower levels).</li>
+<li>a bunch of files <code>anno-1.json</code>, <code>anno-2.json, ...: all generated annotations;
 We pack at most 400,000 annotations in one file, that keeps their size
 below 50MB,
-so that they still can live in a git directory without large file support.</li>
+so that they still can live in a git directory without large file support.
+The numbering in the</code>anno-<code>*i*&lt;code&gt;.json&lt;/code&gt; files it independent of the numbering in
+the</code>text-`<em>i</em><code>.json</code> files!</li>
 </ul>
 <h2 id="format-of-the-text-files">Format of the text files</h2>
 <p>A <code>text-i.json</code> is a JSON file with the following structure:</p>
@@ -339,10 +344,18 @@ following kinds:</p>
 <p><strong>single</strong> this is a target pointing to a single thing, either:</p>
 <ul>
 <li>
-<p><code>fn:bbb-eee</code> a range of text segments in the <code>_ordered_segments</code>
-in the file <code>text-fn.json</code>;</p>
-<p><strong>N.B.</strong>: we will not have targets that span accross more than one
-<code>text-i.json</code> file;</p>
+<p><code>fn:bbb</code>: a single token</p>
+</li>
+<li>
+<p><code>fn:bbb-eee</code>: a range of text segments in the <code>_ordered_segments</code>
+in the file <code>text-fn.json</code>; the token at position <code>eee</code> is not included.
+It is guaranteed that <code>bbb &lt;=</code>eee`.</p>
+</li>
+<li>
+<p><code>fn:bbb-fm:eee</code>: a range pf text segments starting at position <code>bbb</code> of the
+file <code>text-fn.json</code> and ending just before position <code>eee</code> in the file
+<code>text-fm.json</code>, including all tokens in all intermediate
+<code>text-fi.json</code> files for <code>fn &lt; fi &lt; fm</code>.</p>
 </li>
 <li>
 <p>an annotation id</p>
@@ -356,12 +369,26 @@ in the file <code>text-fn.json</code>;</p>
 <p><code>fff-&gt;ttt</code> where <code>fff</code> is a "from" target and <code>ttt</code> is a "to" target;
 both targets can vary independently between a range and an annotation id.</p>
 <p><strong>N.B.</strong> It is allowed that <code>fff</code> and <code>ttt</code> target segments in distinct
-<code>text-i.json</code> files.</p>
+<code>text-i.json</code> files. In this case, it is not implied that the intermediate
+tokens are part of the target, because this target conveys the information
+that the body of the annotation is a property of the pair <code>(fff, ttt)</code>.</p>
+<p>If <code>fff</code> and <code>ttt</code> target segments, than they must both contain a file
+specifier, even if both target a segment in the same token file.</p>
 </li>
 </ul>
 </li>
 </ul>
 </li>
+</ul>
+<h1 id="configuration">Configuration</h1>
+<p>In the file <code>config.yaml</code> (in the directory where the program runs) certain
+parameters can be set:</p>
+<ul>
+<li><code>textRepoLevel</code>: the TF section level for which individual textRepo json files will
+be made. Default: <code>1</code>: the top level. Other possible values: <code>2</code> and <code>3</code> (lower
+levels). Only the special TF section levels can be specified, not arbitrary
+node types. Because we must guarantee that all tokens in the corpus fall under
+one of the nodes belonging to this section level.</li>
 </ul>
 <h1 id="caveat">Caveat</h1>
 <p>The WATM representation of the corpus is a faithful and complete representation
@@ -371,6 +398,20 @@ converted.</p>
 different representations differ.</p>
 <p>I am aware of the following:</p>
 <ul>
+<li>
+<p>If the TF has nodes whose slots are not an interval, the WATM will smooth that
+over: the target of those nodes will be the complete interval from its first
+slot to its last slot, including the gaps.
+The program will show warnings when this happens.
+Cases where this can happen are instances of text-critical elements in the TEI,
+where variant readings are given. When we construct sentences by means of NLP,
+we will exclude the non-chosen readings from the sentence, but these occupy
+slots between the start and the end of the sentence.
+Other cases occur where tokens, coming from the NLP, have been split because of
+intervening elements, which may leave an empty token. In such cases, the fragments
+of the original token are what ends up as tokens in the output, and they have
+the node type <code>t</code>, and not <code>token</code>.</p>
+</li>
 <li>
 <p>The TEI to TF conversion has lost the exact embedding of elements in the
 following case:</p>
@@ -398,7 +439,7 @@ in the WATM data, so this is not a blocking problem for now.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/369e52fe19b197bfd6b085594fe9184ecf0cc02e/tf/convert/watm.py#L1-L1809" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/16ff9948d6d9b54c8e91fb5b23dcfe8b559115fd/tf/convert/watm.py#L1-L1983" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Export to Web Annotation Text Model
 
@@ -560,11 +601,16 @@ and in
 what form:
 
 *   a bunch of files `text-0.json`, `text-1.json`: with the text segments in an array;
-    Each file corresponds with a top-level section in the TF dataset;
+    Each file corresponds with a section in the TF dataset; the level of the sections
+    that correspond with these files is given in the `watm.yaml` config file,
+    under the key `textRepoLevel`. It can have the values `1` (top level), `2`, and `3`
+    (lower levels).
 *   a bunch of files `anno-1.json`, `anno-2.json, ...: all generated annotations;
     We pack at most 400,000 annotations in one file, that keeps their size
     below 50MB,
     so that they still can live in a git directory without large file support.
+    The numbering in the `anno-`*i*`.json` files it independent of the numbering in
+    the `text-`*i*`.json` files!
 
 ## Format of the text files
 
@@ -695,20 +741,43 @@ an annotation, divided in the following fields:
     following kinds:
 
     *   **single** this is a target pointing to a single thing, either:
-        *   `fn:bbb-eee` a range of text segments in the `_ordered_segments`
-            in the file `text-fn.json`;
 
-            **N.B.**: we will not have targets that span accross more than one
-            `text-i.json` file;
+        *   `fn:bbb`: a single token
+
+        *   `fn:bbb-eee`: a range of text segments in the `_ordered_segments`
+            in the file `text-fn.json`; the token at position `eee` is not included.
+            It is guaranteed that `bbb &lt;= `eee`.
+
+        *   `fn:bbb-fm:eee`: a range pf text segments starting at position `bbb` of the
+            file `text-fn.json` and ending just before position `eee` in the file
+            `text-fm.json`, including all tokens in all intermediate
+            `text-fi.json` files for `fn &lt; fi &lt; fm`.
 
         *   an annotation id
 
     *   **double** this is a target pointing to two things:
+
         *   `fff-&gt;ttt` where `fff` is a &#34;from&#34; target and `ttt` is a &#34;to&#34; target;
             both targets can vary independently between a range and an annotation id.
 
             **N.B.** It is allowed that `fff` and `ttt` target segments in distinct
-            `text-i.json` files.
+            `text-i.json` files. In this case, it is not implied that the intermediate
+            tokens are part of the target, because this target conveys the information
+            that the body of the annotation is a property of the pair `(fff, ttt)`.
+
+            If `fff` and `ttt` target segments, than they must both contain a file
+            specifier, even if both target a segment in the same token file.
+
+# Configuration
+
+In the file `config.yaml` (in the directory where the program runs) certain
+parameters can be set:
+
+*   `textRepoLevel`: the TF section level for which individual textRepo json files will
+    be made. Default: `1`: the top level. Other possible values: `2` and `3` (lower
+    levels). Only the special TF section levels can be specified, not arbitrary
+    node types. Because we must guarantee that all tokens in the corpus fall under
+    one of the nodes belonging to this section level.
 
 # Caveat
 
@@ -720,6 +789,19 @@ Well, don&#39;t take this too literally, probably there are aspects where the
 different representations differ.
 
 I am aware of the following:
+
+*   If the TF has nodes whose slots are not an interval, the WATM will smooth that
+    over: the target of those nodes will be the complete interval from its first
+    slot to its last slot, including the gaps.
+    The program will show warnings when this happens.
+    Cases where this can happen are instances of text-critical elements in the TEI,
+    where variant readings are given. When we construct sentences by means of NLP,
+    we will exclude the non-chosen readings from the sentence, but these occupy
+    slots between the start and the end of the sentence.
+    Other cases occur where tokens, coming from the NLP, have been split because of
+    intervening elements, which may leave an empty token. In such cases, the fragments
+    of the original token are what ends up as tokens in the output, and they have
+    the node type `t`, and not `token`.
 
 *   The TEI to TF conversion has lost the exact embedding of elements in the
     following case:
@@ -755,11 +837,13 @@ import json
 import re
 
 from tf.core.helpers import console
-from tf.core.files import initTree, dirContents, expanduser as ex
+from tf.core.files import initTree, dirContents, expanduser as ex, readYaml
 from tf.core.timestamp import DEEP
 from tf.parameters import OTYPE, OSLOTS, URL_TF_DOCS
 from tf.app import use
 
+
+CONFIG_FILE = &#34;watm.yaml&#34;
 
 TT_NAME = &#34;watm&#34;
 
@@ -863,6 +947,19 @@ class WATM:
         T = api.T
         sectionTypes = T.sectionTypes
 
+        cfg = readYaml(asFile=CONFIG_FILE)
+        self.cfg = cfg
+        self.error = False
+
+        textRepoLevel = cfg.textRepoLevel or 1
+
+        if type(textRepoLevel) is not int or not 1 &lt;= textRepoLevel &lt;= 3:
+            console(
+                f&#34;{CONFIG_FILE}: textRepoLevel must be an integer between 1 and 3&#34;,
+                error=True,
+            )
+            self.error = True
+
         if len(sectionTypes) == 0:
             console(
                 &#34;No section types in corpus. &#34;
@@ -870,12 +967,15 @@ class WATM:
                 error=True,
             )
             self.error = True
-        else:
-            tierType = T.sectionTypes[0]
-            if not silent:
-                console(f&#34;Tier 0 is section level &#39;{tierType}&#39;&#34;)
-            self.tierType = tierType
-            self.error = False
+
+        if self.error:
+            return
+
+        textRepoType = T.sectionTypes[textRepoLevel - 1]
+
+        if not silent:
+            console(f&#34;textRepoLevel is section level &#39;{textRepoType}&#39;&#34;)
+        self.textRepoType = textRepoType
 
         self.L = api.L
         self.Es = api.Es
@@ -925,7 +1025,7 @@ class WATM:
 
         The text is a list of tokens and will be stored in member `text` in this object.
         Additionally, the mapping from slot numbers in the TF data
-        to indices in this list is stored in member `tlFromTf`.
+        to indices in this list is stored in member `waFromTF`.
         &#34;&#34;&#34;
         error = self.error
         silent = self.silent
@@ -933,11 +1033,12 @@ class WATM:
         if error:
             if not silent:
                 console(&#34;Cannot run because of an earlier error&#34;)
+            return
 
         F = self.F
         L = self.L
         slotType = self.slotType
-        tierType = self.tierType
+        textRepoType = self.textRepoType
         skipMeta = self.skipMeta
 
         emptyv = self.emptyv
@@ -948,16 +1049,16 @@ class WATM:
         is_metav = self.is_metav
 
         texts = []
-        tlFromTf = {}
+        waFromTF = {}
 
         self.texts = texts
-        self.tlFromTf = tlFromTf
+        self.waFromTF = waFromTF
 
-        for ti, sec0 in enumerate(F.otype.s(tierType)):
+        for ti, sNode in enumerate(F.otype.s(textRepoType)):
             text = []
             texts.append(text)
 
-            for s in L.d(sec0, otype=slotType):
+            for s in L.d(sNode, otype=slotType):
                 if skipMeta and is_metav(s):
                     continue
 
@@ -984,7 +1085,7 @@ class WATM:
 
                 text.append(value)
                 t = len(text) - 1
-                tlFromTf[s] = (ti, t)
+                waFromTF[s] = (ti, t)
 
     def mkAnno(self, kind, ns, body, target):
         &#34;&#34;&#34;Make a single annotation and return its id.
@@ -1013,7 +1114,7 @@ class WATM:
         The mapping from slots to indices in the list of tokens is now extended
         with the mapping from nodes to corresponding node annotations.
 
-        So member `tlFromTf` is now a full mapping from all nodes in TF to
+        So member `waFromTF` is now a full mapping from all nodes in TF to
         tokens and/or annotations in WATM.
         &#34;&#34;&#34;
         error = self.error
@@ -1022,6 +1123,7 @@ class WATM:
         if error:
             if not silent:
                 console(&#34;Cannot run because of an earlier error&#34;)
+            return
 
         Es = self.Es
         F = self.F
@@ -1036,7 +1138,7 @@ class WATM:
         skipMeta = self.skipMeta
         extra = self.extra
 
-        tlFromTf = self.tlFromTf
+        waFromTF = self.waFromTF
 
         is_metav = self.is_metav
 
@@ -1048,10 +1150,11 @@ class WATM:
 
         invertedTargets = []
         farTargets = []
+        discontinuousNodes = collections.defaultdict(list)
 
-        def mkTarget(n):
-            ts = tlFromTf[n]
-            return f&#34;{ts[0]}:{ts[1]}-{ts[1] + 1}&#34; if fotypev(n) == slotType else ts
+        def mkSingleTarget(n):
+            ts = waFromTF[n]
+            return f&#34;{ts[0]}:{ts[1]}&#34; if fotypev(n) == slotType else ts
 
         for otype in otypes:
             isSlot = otype == slotType
@@ -1061,24 +1164,33 @@ class WATM:
                     if skipMeta and is_metav(n):
                         continue
 
-                    self.mkAnno(KIND_NODE, NS_TF, n, mkTarget(n))
+                    self.mkAnno(KIND_NODE, NS_TF, n, mkSingleTarget(n))
                 else:
                     ws = eoslots(n)
+                    sb, se = (ws[0], ws[-1])
+                    if len(ws) != se - sb + 1:
+                        discontinuousNodes[otype].append(n)
+
                     if skipMeta and (is_metav(ws[0]) or is_metav(ws[-1])):
                         continue
 
-                    ti0, start = tlFromTf[ws[0]]
-                    ti1, end = tlFromTf[ws[-1]]
+                    ti0, start = waFromTF[ws[0]]
+                    ti1, end = waFromTF[ws[-1]]
 
                     if ti0 != ti1:
                         farTargets.append((otype, ti0, start, ti1, end))
-                        continue
 
-                    if end &lt; start:
+                    if ti0 == ti1 and end &lt; start:
                         invertedTargets.append((otype, ti0, start, end))
                         start, end = (end, start)
 
-                    target = f&#34;{ti0}:{start}-{end + 1}&#34;
+                    startPoint = f&#34;{ti0}:{start}&#34;
+                    endPoint = (
+                        (&#34;&#34; if start == end else f&#34;-{end + 1}&#34;)
+                        if ti0 == ti1
+                        else f&#34;-{ti1}:{end + 1}&#34;
+                    )
+                    target = f&#34;{startPoint}{endPoint}&#34;
                     aId = (
                         self.mkAnno(KIND_PI, nsOrig, otype[1:], target)
                         if otype.startswith(&#34;?&#34;)
@@ -1086,7 +1198,7 @@ class WATM:
                             KIND_ELEM, NS_FROM_OTYPE.get(otype, nsOrig), otype, target
                         )
                     )
-                    tlFromTf[n] = aId
+                    waFromTF[n] = aId
                     self.mkAnno(KIND_NODE, NS_TF, n, aId)
 
         for feat in nodeFeatures:
@@ -1115,14 +1227,17 @@ class WATM:
                     if not val or (skipMeta and is_metav(n)):
                         continue
 
-                    self.mkAnno(KIND_FMT, ns, body, mkTarget(n))
+                    self.mkAnno(KIND_FMT, ns, body, mkSingleTarget(n))
             else:
                 for n, val in Fs(feat).items():
+                    if n not in waFromTF:
+                        continue
+
                     if val is None or skipMeta and is_metav(n):
                         continue
 
                     body = f&#34;{feat}={val}&#34;
-                    self.mkAnno(KIND_ATTR, ns, body, mkTarget(n))
+                    self.mkAnno(KIND_ATTR, ns, body, mkSingleTarget(n))
 
         for feat in edgeFeatures:
             ns = Es(feat).meta.get(&#34;conversionCode&#34;, NS_FROM_FEAT.get(feat, nsOrig))
@@ -1136,41 +1251,41 @@ class WATM:
                 ns = NS_NONE
 
             for fromNode, toNodes in Es(feat).items():
+                if fromNode not in waFromTF:
+                    continue
+
                 if skipMeta and is_metav(fromNode):
                     continue
 
-                if fromNode not in tlFromTf:
-                    continue
-
-                targetFrom = mkTarget(fromNode)
+                targetFrom = mkSingleTarget(fromNode)
 
                 if type(toNodes) is dict:
                     for toNode, val in toNodes.items():
+                        if toNode not in waFromTF:
+                            continue
+
                         if skipMeta and is_metav(toNode):
                             continue
 
-                        if toNode not in tlFromTf:
-                            continue
-
                         body = f&#34;{feat}={val}&#34;
-                        targetTo = mkTarget(toNode)
+                        targetTo = mkSingleTarget(toNode)
                         target = f&#34;{targetFrom}-&gt;{targetTo}&#34;
                         self.mkAnno(KIND_EDGE, ns, body, target)
                 else:
                     for toNode in toNodes:
+                        if toNode not in waFromTF:
+                            continue
+
                         if skipMeta and is_metav(toNode):
                             continue
 
-                        if toNode not in tlFromTf:
-                            continue
-
-                        targetTo = mkTarget(toNode)
+                        targetTo = mkSingleTarget(toNode)
                         target = f&#34;{targetFrom}-&gt;{targetTo}&#34;
                         self.mkAnno(KIND_EDGE, ns, feat, target)
 
         for feat, featData in extra.items():
             for n, value in featData.items():
-                self.mkAnno(KIND_ANNO, NS_TT, f&#34;{feat}={value}&#34;, mkTarget(n))
+                self.mkAnno(KIND_ANNO, NS_TT, f&#34;{feat}={value}&#34;, mkSingleTarget(n))
 
         if len(invertedTargets):
             if not silent:
@@ -1181,21 +1296,29 @@ class WATM:
                     segb = text[end - 1]
                     console(f&#34;{otype:&gt;20} {start:&gt;6} `{sega}` &gt; {end - 1} `{segb}`&#34;)
 
-        if len(farTargets):
-            console(
-                f&#34;ERROR: targets across tier0 items, {len(farTargets)}x&#34;,
-                error=True,
-            )
-            for otype, ti0, start, ti1, end in farTargets:
-                sega = texts[ti0][start]
-                segb = texts[ti1][end - 1]
-                console(
-                    (
-                        f&#34;{otype:&gt;20} {ti0:&gt;2}:{start:&gt;6} `{sega}` - &#34;
-                        f&#34;{ti1:&gt;2}:{end - 1} `{segb}`&#34;
-                    ),
-                    error=True,
-                )
+        if len(discontinuousNodes):
+            nDis = sum(len(x) for x in discontinuousNodes.values())
+            console(f&#34;WARNING: {nDis} discontinuous nodes encountered&#34;)
+
+            for otype, nodes in discontinuousNodes.items():
+                nn = len(nodes)
+                console(f&#34;\t{nn} x of type {otype}&#34;)
+
+                if not silent:
+                    examples = &#34;, &#34;.join(str(n) for n in nodes[0:10])
+                    console(f&#34;\t\t{examples}&#34;)
+
+        nFarTargets = len(farTargets)
+
+        if nFarTargets:
+            console(f&#34;WARNING: targets across tier0 items, {nFarTargets}x&#34;)
+            if not silent:
+                for otype, ti0, start, ti1, end in farTargets[0:10]:
+                    console(
+                        f&#34;{otype:&gt;20} [{ti0:&gt;4}:{start:&gt;6}] - [{ti1:&gt;4}:{end - 1:&gt;6}]&#34;
+                    )
+                if nFarTargets &gt; 10:
+                    console(f&#34;... and {nFarTargets - 10} more.&#34;)
 
     def writeAll(self):
         &#34;&#34;&#34;Write text and annotation data to disk.
@@ -1215,6 +1338,7 @@ class WATM:
         if error:
             if not silent:
                 console(&#34;Cannot run because of an earlier error&#34;)
+            return
 
         app = self.app
         texts = self.texts
@@ -1391,7 +1515,7 @@ class WATM:
             console(f&#34;\tTF: {sampleTF:&gt;6}\n\tWA: {sampleWA:&gt;6}&#34;)
         return not different
 
-    def testAll(self):
+    def testAll(self, condensed=False):
         &#34;&#34;&#34;Test all aspects of the WATM conversion.
 
         For all kinds of information, such as nodes, edges, features, tokens,
@@ -1399,6 +1523,13 @@ class WATM:
         the TF dataset and the WATM annotations do so indeed.
 
         We present some statistics, and highlight the mismatches.
+
+        Parameters
+        ----------
+        condensed: boolean, optional False
+            If silent has been passed to the object, there is still some
+            output for each corpus, namely whether all tests have passed.
+            If `condensed` is True, we suppress this output.
 
         Returns
         -------
@@ -1411,6 +1542,7 @@ class WATM:
         if error:
             if not silent:
                 console(&#34;Cannot run because of an earlier error&#34;)
+            return
 
         self.testSetup()
 
@@ -1434,10 +1566,11 @@ class WATM:
         if not silent:
             console(&#34;Overall outcome ...&#34;)
 
-        if not good or not silent:
+        if not silent or not condensed:
             console(f&#34;{rep(good)} - whether all tests passed&#34;, error=not good)
 
-        return good
+        if not good:
+            self.error = True
 
     def testSetup(self):
         &#34;&#34;&#34;Prepare the tests.
@@ -1448,16 +1581,29 @@ class WATM:
         &#34;&#34;&#34;
         textFiles = self.textFiles
         annoFiles = self.annoFiles
+        skipMeta = self.skipMeta
+        is_metav = self.is_metav
 
+        waSlotTF = {}
         tokenFiles = []
 
-        for textFile in textFiles:
+        slot = 1
+
+        for tfl, textFile in enumerate(textFiles):
             with open(textFile) as fh:
                 text = json.load(fh)
                 tokens = text[&#34;_ordered_segments&#34;]
                 tokenFiles.append(tokens)
 
+                for offset in range(len(tokens)):
+                    while skipMeta and is_metav(slot):
+                        slot += 1
+
+                    waSlotTF[slot] = (tfl, offset)
+                    slot += 1
+
         self.testTokens = tokenFiles
+        self.waSlotTF = waSlotTF
 
         annotations = []
 
@@ -1474,10 +1620,24 @@ class WATM:
                     newParts = []
 
                     for part in parts:
-                        if &#34;-&#34; in part:
-                            file, part = part.split(&#34;:&#34;, 1)
-                            start, end = part.split(&#34;-&#34;, 1)
-                            part = (int(file), int(start), int(end))
+                        if &#34;:&#34; in part:
+                            boundaries = part.split(&#34;-&#34;, 1)
+                            fb, b = boundaries[0].split(&#34;:&#34;, 1)
+                            fb = int(fb)
+                            b = int(b)
+
+                            if len(boundaries) == 1:
+                                part = (int(fb), int(b), int(fb), int(b) + 1)
+                            else:
+                                eParts = boundaries[1].split(&#34;:&#34;, 1)
+
+                                if len(eParts) == 1:
+                                    fe, e = fb, int(eParts[0])
+                                else:
+                                    fe, e = eParts
+                                    fe = int(fe)
+                                    e = int(e)
+                                part = (fb, b, fe, e)
 
                         newParts.append(part)
 
@@ -1500,17 +1660,16 @@ class WATM:
             Whether all these tests succeed.
         &#34;&#34;&#34;
         F = self.F
-        skipMeta = self.skipMeta
-        is_metav = self.is_metav
         tokenFiles = self.testTokens
         texts = self.texts
+        waSlotTF = self.waSlotTF
         silent = self.silent
 
         if not silent:
             console(&#34;Testing the text ...&#34;)
 
         nTokensTF = sum(
-            0 if skipMeta and is_metav(s) else 1 for s in range(1, F.otype.maxSlot + 1)
+            1 if s in waSlotTF else 0 for s in range(1, F.otype.maxSlot + 1)
         )
         nTokensWA = sum(len(tokens) for tokens in tokenFiles)
         nGood = self.numEqual(nTokensTF, nTokensWA, silent)
@@ -1524,6 +1683,7 @@ class WATM:
         textTF = &#34;&#34;.join(&#34;&#34;.join(text) for text in texts)
 
         tGood = self.strEqual(textTF, textWA, silent)
+
         if not tGood or not silent:
             console(f&#34;{rep(tGood)} - whether the text is the same&#34;, error=not tGood)
 
@@ -1544,8 +1704,7 @@ class WATM:
         F = self.F
         fotypev = self.fotypev
         eoslots = self.eoslots
-        skipMeta = self.skipMeta
-        is_metav = self.is_metav
+        waSlotTF = self.waSlotTF
         annotations = self.testAnnotations
         silent = self.silent
 
@@ -1559,18 +1718,31 @@ class WATM:
             nType = fotypev(n)
             isPi = nType.startswith(&#34;?&#34;)
 
-            if isPi:
-                nPisTF += 1
-
             slots = eoslots(n)
             b = slots[0]
             e = slots[-1]
 
-            if skipMeta and (is_metav(b) or is_metav(e)):
+            if not (b in waSlotTF and e in waSlotTF):
                 continue
+
+            if isPi:
+                nPisTF += 1
             else:
-                if not isPi:
-                    nElementsTF += 1
+                nElementsTF += 1
+
+        nElementsWA = 0
+        nPisWA = 0
+
+        nodeFromAid = {}
+        self.nodeFromAid = nodeFromAid
+
+        for aId, kind, body, target in annotations:
+            if kind == &#34;element&#34;:
+                nElementsWA += 1
+            elif kind == &#34;pi&#34;:
+                nPisWA += 1
+            elif kind == &#34;node&#34;:
+                nodeFromAid[target] = body
 
         nElementsWA = sum(1 if a[1] == &#34;element&#34; else 0 for a in annotations)
         nPisWA = sum(1 if a[1] == &#34;pi&#34; else 0 for a in annotations)
@@ -1595,31 +1767,27 @@ class WATM:
             )
 
         if not silent:
-            console(&#34;Testing the element annotations ...&#34;)
-
-        tfFromAid = {}
+            console(&#34;Testing the element/pi annotations ...&#34;)
 
         element = 0
         pi = 0
         other = 0
-        good = 0
-        wrong = 0
+        goodName = 0
+        wrongName = 0
         unmapped = 0
 
-        for aId, kind, body, target in annotations:
-            if kind == &#34;node&#34;:
-                tfFromAid[target] = body
-
-        self.tfFromAid = tfFromAid
-
         if not silent:
-            console(f&#34;\t{len(tfFromAid)} element annotations&#34;)
+            console(f&#34;\t{len(nodeFromAid)} element/pi annotations&#34;)
+
+        wrongTargets = []
+        allTargets = 0
+        goodTargets = 0
 
         for aId, kind, body, target in annotations:
             isElem = kind == &#34;element&#34;
             isPi = kind == &#34;pi&#34;
 
-            if not isElem and not isPi:
+            if not (isElem or isPi):
                 other += 1
                 continue
 
@@ -1629,7 +1797,8 @@ class WATM:
                 pi += 1
 
             tag = body
-            node = tfFromAid.get(aId, None)
+            node = nodeFromAid.get(aId, None)
+
             if node is None:
                 unmapped += 1
                 continue
@@ -1637,27 +1806,66 @@ class WATM:
             otype = fotypev(node)
 
             if isPi and tag == otype[1:] or not isPi and tag == otype:
-                good += 1
+                goodName += 1
             else:
-                wrong += 1
+                wrongName += 1
+
+            if type(target) is not tuple or len(target) != 4:
+                wrongTargets.append((aId, kind, body, target))
+            else:
+                node = nodeFromAid[aId]
+                slots = eoslots(node)
+                sb = slots[0]
+                se = slots[-1]
+                bTr = waSlotTF.get(sb, None)
+                eTr = waSlotTF.get(se, None)
+
+                if eTr is not None:
+                    eTr = (eTr[0], eTr[1] + 1)
+
+                bWA = (target[0], target[1])
+                eWA = (target[2], target[3])
+
+                bRep = f&#34;{bWA}&#34; if bTr == bWA else f&#34;{bWA} XX {bTr}&#34;
+                eRep = f&#34;{eWA}&#34; if eTr == eWA else f&#34;{eWA} XX {eTr}&#34;
+
+                if bTr is None or eTr is None or bTr != bWA or eTr != eWA:
+                    wrongTargets.append((aId, kind, body, f&#34;{bRep} - {eRep}&#34;))
+                else:
+                    goodTargets += 1
+
+            allTargets += 1
 
         if not silent:
-            console(f&#34;\tElement : {element:&gt;5} x&#34;)
-            console(f&#34;\tPi      : {pi:&gt;5} x&#34;)
-            console(f&#34;\tOther   : {other:&gt;5} x&#34;)
-            console(f&#34;\tGood    : {good:&gt;5} x&#34;)
-            console(f&#34;\tWrong   : {wrong:&gt;5} x&#34;)
-            console(f&#34;\tUnmapped: {unmapped:&gt;5} x&#34;)
+            console(f&#34;\tElement      : {element:&gt;6} x&#34;)
+            console(f&#34;\tPi           : {pi:&gt;6} x&#34;)
+            console(f&#34;\tOther        : {other:&gt;6} x&#34;)
+            console(f&#34;\tGood name    : {goodName:&gt;6} x&#34;)
+            console(f&#34;\tWrong name   : {wrongName:&gt;6} x&#34;)
+            console(f&#34;\tGood target  : {goodTargets:&gt;6} x&#34;)
+            console(f&#34;\tWrong target : {len(wrongTargets):&gt;6} x&#34;)
+            console(f&#34;\tUnmapped     : {unmapped:&gt;6} x&#34;)
 
-        aGood = wrong == 0 and unmapped == 0
+        aGood = wrongName == 0 and unmapped == 0
 
         if not aGood or not silent:
             console(
-                f&#34;{rep(aGood)} - whether all element annotations are ok&#34;,
+                f&#34;{rep(aGood)} - whether all element/pi annotations have good bodies&#34;,
                 error=not aGood,
             )
 
-        return aGood and eGood and pGood
+        tGood = len(wrongTargets) == 0
+
+        if not tGood or not silent:
+            console(
+                f&#34;{rep(tGood)} - whether all element/pi annotations have good targets&#34;,
+                error=not tGood,
+            )
+            if not tGood:
+                tExamples = &#34;\n\t\t&#34;.join(str(a) for a in wrongTargets[0:10])
+                console(f&#34;\t\t{tExamples}&#34;)
+
+        return aGood and tGood and eGood and pGood
 
     def testAttributes(self):
         &#34;&#34;&#34;Test the attributes.
@@ -1679,10 +1887,10 @@ class WATM:
         Fs = self.Fs
         Fall = self.Fall
         eoslots = self.eoslots
+        waSlotTF = self.waSlotTF
         skipMeta = self.skipMeta
-        is_metav = self.is_metav
         annotations = self.testAnnotations
-        tfFromAid = self.tfFromAid
+        nodeFromAid = self.nodeFromAid
         nsOrig = self.nsOrig
         silent = self.silent
 
@@ -1696,7 +1904,7 @@ class WATM:
         for aId, kind, body, target in annotations:
             if kind != &#34;attribute&#34;:
                 continue
-            node = tfFromAid[target]
+            node = nodeFromAid[target]
             att, value = body.split(&#34;=&#34;, 1)
             attWA.append((node, att, value))
 
@@ -1747,7 +1955,7 @@ class WATM:
                 b = slots[0]
                 e = slots[-1]
 
-                if skipMeta and (is_metav(b) or is_metav(e)):
+                if not (b in waSlotTF and e in waSlotTF):
                     continue
 
                 attTF.append((node, feat, str(valTF)))
@@ -1776,19 +1984,19 @@ class WATM:
                 continue
             if body == &#34;note&#34;:
                 continue
-            node = tfFromAid[target]
+            node = nodeFromAid[target]
             fmtWA.append((node, body))
 
         fmtWA = sorted(fmtWA)
-        fmtWaFreq = collections.Counter()
+        fmtFreqWA = collections.Counter()
 
         for node, body in fmtWA:
-            fmtWaFreq[body] += 1
+            fmtFreqWA[body] += 1
 
         if not silent:
             console(f&#34;\t{len(fmtWA)} format values&#34;)
             console(&#34;\tformatting attributes: &#34;)
-            for fa, n in sorted(fmtWaFreq.items(), key=lambda x: (-x[1], x[0])):
+            for fa, n in sorted(fmtFreqWA.items(), key=lambda x: (-x[1], x[0])):
                 console(f&#34;\t\t{n:&gt;6} x {fa}&#34;)
 
         good = 0
@@ -1811,7 +2019,7 @@ class WATM:
             console(f&#34;\tWrong:    {len(wrong):&gt;5} x&#34;)
             console(
                 f&#34;{rep(fconsistent)} - &#34;
-                f&#34;whether format annotationsare consistent with features&#34;,
+                f&#34;whether format annotations are consistent with features&#34;,
                 error=not fconsistent,
             )
 
@@ -1830,7 +2038,7 @@ class WATM:
                 b = slots[0]
                 e = slots[-1]
 
-                if skipMeta and (is_metav(b) or is_metav(e)):
+                if not (b in waSlotTF and e in waSlotTF):
                     continue
 
                 fmtTF.append((node, value))
@@ -1867,7 +2075,7 @@ class WATM:
             Whether all these tests succeed.
         &#34;&#34;&#34;
         annotations = self.testAnnotations
-        tfFromAid = self.tfFromAid
+        nodeFromAid = self.nodeFromAid
         extra = self.extra
         silent = self.silent
 
@@ -1879,7 +2087,7 @@ class WATM:
         for aId, kind, body, target in annotations:
             if kind != &#34;anno&#34;:
                 continue
-            node = tfFromAid[target]
+            node = nodeFromAid[target]
             att, value = body.split(&#34;=&#34;, 1)
             attWA.append((node, att, value))
 
@@ -1969,13 +2177,13 @@ class WATM:
             if kind != &#34;node&#34;:
                 continue
             if type(target) is tuple:
-                file, start, end = target
-                if start + 1 != end:
+                fileS, start, fileE, end = target
+                if not (fileS == fileE and start + 1 == end):
                     # we expect that node annotations either targets a single token
                     # or an element/pi annotation
                     print(target)
                     break
-                target = (file, end)
+                target = (fileS, start)
             tfFromWANodes[target] = body
 
         for aId, kind, body, target in annotations:
@@ -2191,6 +2399,8 @@ class WATMS:
 
         chosenDoc = doc
 
+        good = True
+
         for doc in sorted(docs, key=lambda x: (x[0], int(x[1:]))):
             if chosenDoc is not None and chosenDoc != doc:
                 continue
@@ -2208,7 +2418,12 @@ class WATMS:
             WA.makeText()
             WA.makeAnno()
             WA.writeAll()
-            WA.testAll()</code></pre>
+            WA.testAll(condensed=True)
+
+            if WA.error:
+                good = False
+
+        console(f&#34;WATM generation: {rep(good)}&#34;, error=not good)</code></pre>
 </details>
 </section>
 <section>
@@ -2236,7 +2451,7 @@ class WATMS:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/369e52fe19b197bfd6b085594fe9184ecf0cc02e/tf/convert/watm.py#L408-L419" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/16ff9948d6d9b54c8e91fb5b23dcfe8b559115fd/tf/convert/watm.py#L451-L462" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rep(status):
     &#34;&#34;&#34;Represent a boolean status for a message to the console.
@@ -2292,7 +2507,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/369e52fe19b197bfd6b085594fe9184ecf0cc02e/tf/convert/watm.py#L422-L1714" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/16ff9948d6d9b54c8e91fb5b23dcfe8b559115fd/tf/convert/watm.py#L465-L1881" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WATM:
     &#34;&#34;&#34;The export machinery is exposed as a class, wrapped around a TF dataset.&#34;&#34;&#34;
@@ -2336,6 +2551,19 @@ value for each key is a dictionary that maps nodes to values.</dd>
         T = api.T
         sectionTypes = T.sectionTypes
 
+        cfg = readYaml(asFile=CONFIG_FILE)
+        self.cfg = cfg
+        self.error = False
+
+        textRepoLevel = cfg.textRepoLevel or 1
+
+        if type(textRepoLevel) is not int or not 1 &lt;= textRepoLevel &lt;= 3:
+            console(
+                f&#34;{CONFIG_FILE}: textRepoLevel must be an integer between 1 and 3&#34;,
+                error=True,
+            )
+            self.error = True
+
         if len(sectionTypes) == 0:
             console(
                 &#34;No section types in corpus. &#34;
@@ -2343,12 +2571,15 @@ value for each key is a dictionary that maps nodes to values.</dd>
                 error=True,
             )
             self.error = True
-        else:
-            tierType = T.sectionTypes[0]
-            if not silent:
-                console(f&#34;Tier 0 is section level &#39;{tierType}&#39;&#34;)
-            self.tierType = tierType
-            self.error = False
+
+        if self.error:
+            return
+
+        textRepoType = T.sectionTypes[textRepoLevel - 1]
+
+        if not silent:
+            console(f&#34;textRepoLevel is section level &#39;{textRepoType}&#39;&#34;)
+        self.textRepoType = textRepoType
 
         self.L = api.L
         self.Es = api.Es
@@ -2398,7 +2629,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
 
         The text is a list of tokens and will be stored in member `text` in this object.
         Additionally, the mapping from slot numbers in the TF data
-        to indices in this list is stored in member `tlFromTf`.
+        to indices in this list is stored in member `waFromTF`.
         &#34;&#34;&#34;
         error = self.error
         silent = self.silent
@@ -2406,11 +2637,12 @@ value for each key is a dictionary that maps nodes to values.</dd>
         if error:
             if not silent:
                 console(&#34;Cannot run because of an earlier error&#34;)
+            return
 
         F = self.F
         L = self.L
         slotType = self.slotType
-        tierType = self.tierType
+        textRepoType = self.textRepoType
         skipMeta = self.skipMeta
 
         emptyv = self.emptyv
@@ -2421,16 +2653,16 @@ value for each key is a dictionary that maps nodes to values.</dd>
         is_metav = self.is_metav
 
         texts = []
-        tlFromTf = {}
+        waFromTF = {}
 
         self.texts = texts
-        self.tlFromTf = tlFromTf
+        self.waFromTF = waFromTF
 
-        for ti, sec0 in enumerate(F.otype.s(tierType)):
+        for ti, sNode in enumerate(F.otype.s(textRepoType)):
             text = []
             texts.append(text)
 
-            for s in L.d(sec0, otype=slotType):
+            for s in L.d(sNode, otype=slotType):
                 if skipMeta and is_metav(s):
                     continue
 
@@ -2457,7 +2689,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
 
                 text.append(value)
                 t = len(text) - 1
-                tlFromTf[s] = (ti, t)
+                waFromTF[s] = (ti, t)
 
     def mkAnno(self, kind, ns, body, target):
         &#34;&#34;&#34;Make a single annotation and return its id.
@@ -2486,7 +2718,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
         The mapping from slots to indices in the list of tokens is now extended
         with the mapping from nodes to corresponding node annotations.
 
-        So member `tlFromTf` is now a full mapping from all nodes in TF to
+        So member `waFromTF` is now a full mapping from all nodes in TF to
         tokens and/or annotations in WATM.
         &#34;&#34;&#34;
         error = self.error
@@ -2495,6 +2727,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
         if error:
             if not silent:
                 console(&#34;Cannot run because of an earlier error&#34;)
+            return
 
         Es = self.Es
         F = self.F
@@ -2509,7 +2742,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
         skipMeta = self.skipMeta
         extra = self.extra
 
-        tlFromTf = self.tlFromTf
+        waFromTF = self.waFromTF
 
         is_metav = self.is_metav
 
@@ -2521,10 +2754,11 @@ value for each key is a dictionary that maps nodes to values.</dd>
 
         invertedTargets = []
         farTargets = []
+        discontinuousNodes = collections.defaultdict(list)
 
-        def mkTarget(n):
-            ts = tlFromTf[n]
-            return f&#34;{ts[0]}:{ts[1]}-{ts[1] + 1}&#34; if fotypev(n) == slotType else ts
+        def mkSingleTarget(n):
+            ts = waFromTF[n]
+            return f&#34;{ts[0]}:{ts[1]}&#34; if fotypev(n) == slotType else ts
 
         for otype in otypes:
             isSlot = otype == slotType
@@ -2534,24 +2768,33 @@ value for each key is a dictionary that maps nodes to values.</dd>
                     if skipMeta and is_metav(n):
                         continue
 
-                    self.mkAnno(KIND_NODE, NS_TF, n, mkTarget(n))
+                    self.mkAnno(KIND_NODE, NS_TF, n, mkSingleTarget(n))
                 else:
                     ws = eoslots(n)
+                    sb, se = (ws[0], ws[-1])
+                    if len(ws) != se - sb + 1:
+                        discontinuousNodes[otype].append(n)
+
                     if skipMeta and (is_metav(ws[0]) or is_metav(ws[-1])):
                         continue
 
-                    ti0, start = tlFromTf[ws[0]]
-                    ti1, end = tlFromTf[ws[-1]]
+                    ti0, start = waFromTF[ws[0]]
+                    ti1, end = waFromTF[ws[-1]]
 
                     if ti0 != ti1:
                         farTargets.append((otype, ti0, start, ti1, end))
-                        continue
 
-                    if end &lt; start:
+                    if ti0 == ti1 and end &lt; start:
                         invertedTargets.append((otype, ti0, start, end))
                         start, end = (end, start)
 
-                    target = f&#34;{ti0}:{start}-{end + 1}&#34;
+                    startPoint = f&#34;{ti0}:{start}&#34;
+                    endPoint = (
+                        (&#34;&#34; if start == end else f&#34;-{end + 1}&#34;)
+                        if ti0 == ti1
+                        else f&#34;-{ti1}:{end + 1}&#34;
+                    )
+                    target = f&#34;{startPoint}{endPoint}&#34;
                     aId = (
                         self.mkAnno(KIND_PI, nsOrig, otype[1:], target)
                         if otype.startswith(&#34;?&#34;)
@@ -2559,7 +2802,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
                             KIND_ELEM, NS_FROM_OTYPE.get(otype, nsOrig), otype, target
                         )
                     )
-                    tlFromTf[n] = aId
+                    waFromTF[n] = aId
                     self.mkAnno(KIND_NODE, NS_TF, n, aId)
 
         for feat in nodeFeatures:
@@ -2588,14 +2831,17 @@ value for each key is a dictionary that maps nodes to values.</dd>
                     if not val or (skipMeta and is_metav(n)):
                         continue
 
-                    self.mkAnno(KIND_FMT, ns, body, mkTarget(n))
+                    self.mkAnno(KIND_FMT, ns, body, mkSingleTarget(n))
             else:
                 for n, val in Fs(feat).items():
+                    if n not in waFromTF:
+                        continue
+
                     if val is None or skipMeta and is_metav(n):
                         continue
 
                     body = f&#34;{feat}={val}&#34;
-                    self.mkAnno(KIND_ATTR, ns, body, mkTarget(n))
+                    self.mkAnno(KIND_ATTR, ns, body, mkSingleTarget(n))
 
         for feat in edgeFeatures:
             ns = Es(feat).meta.get(&#34;conversionCode&#34;, NS_FROM_FEAT.get(feat, nsOrig))
@@ -2609,41 +2855,41 @@ value for each key is a dictionary that maps nodes to values.</dd>
                 ns = NS_NONE
 
             for fromNode, toNodes in Es(feat).items():
+                if fromNode not in waFromTF:
+                    continue
+
                 if skipMeta and is_metav(fromNode):
                     continue
 
-                if fromNode not in tlFromTf:
-                    continue
-
-                targetFrom = mkTarget(fromNode)
+                targetFrom = mkSingleTarget(fromNode)
 
                 if type(toNodes) is dict:
                     for toNode, val in toNodes.items():
+                        if toNode not in waFromTF:
+                            continue
+
                         if skipMeta and is_metav(toNode):
                             continue
 
-                        if toNode not in tlFromTf:
-                            continue
-
                         body = f&#34;{feat}={val}&#34;
-                        targetTo = mkTarget(toNode)
+                        targetTo = mkSingleTarget(toNode)
                         target = f&#34;{targetFrom}-&gt;{targetTo}&#34;
                         self.mkAnno(KIND_EDGE, ns, body, target)
                 else:
                     for toNode in toNodes:
+                        if toNode not in waFromTF:
+                            continue
+
                         if skipMeta and is_metav(toNode):
                             continue
 
-                        if toNode not in tlFromTf:
-                            continue
-
-                        targetTo = mkTarget(toNode)
+                        targetTo = mkSingleTarget(toNode)
                         target = f&#34;{targetFrom}-&gt;{targetTo}&#34;
                         self.mkAnno(KIND_EDGE, ns, feat, target)
 
         for feat, featData in extra.items():
             for n, value in featData.items():
-                self.mkAnno(KIND_ANNO, NS_TT, f&#34;{feat}={value}&#34;, mkTarget(n))
+                self.mkAnno(KIND_ANNO, NS_TT, f&#34;{feat}={value}&#34;, mkSingleTarget(n))
 
         if len(invertedTargets):
             if not silent:
@@ -2654,21 +2900,29 @@ value for each key is a dictionary that maps nodes to values.</dd>
                     segb = text[end - 1]
                     console(f&#34;{otype:&gt;20} {start:&gt;6} `{sega}` &gt; {end - 1} `{segb}`&#34;)
 
-        if len(farTargets):
-            console(
-                f&#34;ERROR: targets across tier0 items, {len(farTargets)}x&#34;,
-                error=True,
-            )
-            for otype, ti0, start, ti1, end in farTargets:
-                sega = texts[ti0][start]
-                segb = texts[ti1][end - 1]
-                console(
-                    (
-                        f&#34;{otype:&gt;20} {ti0:&gt;2}:{start:&gt;6} `{sega}` - &#34;
-                        f&#34;{ti1:&gt;2}:{end - 1} `{segb}`&#34;
-                    ),
-                    error=True,
-                )
+        if len(discontinuousNodes):
+            nDis = sum(len(x) for x in discontinuousNodes.values())
+            console(f&#34;WARNING: {nDis} discontinuous nodes encountered&#34;)
+
+            for otype, nodes in discontinuousNodes.items():
+                nn = len(nodes)
+                console(f&#34;\t{nn} x of type {otype}&#34;)
+
+                if not silent:
+                    examples = &#34;, &#34;.join(str(n) for n in nodes[0:10])
+                    console(f&#34;\t\t{examples}&#34;)
+
+        nFarTargets = len(farTargets)
+
+        if nFarTargets:
+            console(f&#34;WARNING: targets across tier0 items, {nFarTargets}x&#34;)
+            if not silent:
+                for otype, ti0, start, ti1, end in farTargets[0:10]:
+                    console(
+                        f&#34;{otype:&gt;20} [{ti0:&gt;4}:{start:&gt;6}] - [{ti1:&gt;4}:{end - 1:&gt;6}]&#34;
+                    )
+                if nFarTargets &gt; 10:
+                    console(f&#34;... and {nFarTargets - 10} more.&#34;)
 
     def writeAll(self):
         &#34;&#34;&#34;Write text and annotation data to disk.
@@ -2688,6 +2942,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
         if error:
             if not silent:
                 console(&#34;Cannot run because of an earlier error&#34;)
+            return
 
         app = self.app
         texts = self.texts
@@ -2864,7 +3119,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
             console(f&#34;\tTF: {sampleTF:&gt;6}\n\tWA: {sampleWA:&gt;6}&#34;)
         return not different
 
-    def testAll(self):
+    def testAll(self, condensed=False):
         &#34;&#34;&#34;Test all aspects of the WATM conversion.
 
         For all kinds of information, such as nodes, edges, features, tokens,
@@ -2872,6 +3127,13 @@ value for each key is a dictionary that maps nodes to values.</dd>
         the TF dataset and the WATM annotations do so indeed.
 
         We present some statistics, and highlight the mismatches.
+
+        Parameters
+        ----------
+        condensed: boolean, optional False
+            If silent has been passed to the object, there is still some
+            output for each corpus, namely whether all tests have passed.
+            If `condensed` is True, we suppress this output.
 
         Returns
         -------
@@ -2884,6 +3146,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
         if error:
             if not silent:
                 console(&#34;Cannot run because of an earlier error&#34;)
+            return
 
         self.testSetup()
 
@@ -2907,10 +3170,11 @@ value for each key is a dictionary that maps nodes to values.</dd>
         if not silent:
             console(&#34;Overall outcome ...&#34;)
 
-        if not good or not silent:
+        if not silent or not condensed:
             console(f&#34;{rep(good)} - whether all tests passed&#34;, error=not good)
 
-        return good
+        if not good:
+            self.error = True
 
     def testSetup(self):
         &#34;&#34;&#34;Prepare the tests.
@@ -2921,16 +3185,29 @@ value for each key is a dictionary that maps nodes to values.</dd>
         &#34;&#34;&#34;
         textFiles = self.textFiles
         annoFiles = self.annoFiles
+        skipMeta = self.skipMeta
+        is_metav = self.is_metav
 
+        waSlotTF = {}
         tokenFiles = []
 
-        for textFile in textFiles:
+        slot = 1
+
+        for tfl, textFile in enumerate(textFiles):
             with open(textFile) as fh:
                 text = json.load(fh)
                 tokens = text[&#34;_ordered_segments&#34;]
                 tokenFiles.append(tokens)
 
+                for offset in range(len(tokens)):
+                    while skipMeta and is_metav(slot):
+                        slot += 1
+
+                    waSlotTF[slot] = (tfl, offset)
+                    slot += 1
+
         self.testTokens = tokenFiles
+        self.waSlotTF = waSlotTF
 
         annotations = []
 
@@ -2947,10 +3224,24 @@ value for each key is a dictionary that maps nodes to values.</dd>
                     newParts = []
 
                     for part in parts:
-                        if &#34;-&#34; in part:
-                            file, part = part.split(&#34;:&#34;, 1)
-                            start, end = part.split(&#34;-&#34;, 1)
-                            part = (int(file), int(start), int(end))
+                        if &#34;:&#34; in part:
+                            boundaries = part.split(&#34;-&#34;, 1)
+                            fb, b = boundaries[0].split(&#34;:&#34;, 1)
+                            fb = int(fb)
+                            b = int(b)
+
+                            if len(boundaries) == 1:
+                                part = (int(fb), int(b), int(fb), int(b) + 1)
+                            else:
+                                eParts = boundaries[1].split(&#34;:&#34;, 1)
+
+                                if len(eParts) == 1:
+                                    fe, e = fb, int(eParts[0])
+                                else:
+                                    fe, e = eParts
+                                    fe = int(fe)
+                                    e = int(e)
+                                part = (fb, b, fe, e)
 
                         newParts.append(part)
 
@@ -2973,17 +3264,16 @@ value for each key is a dictionary that maps nodes to values.</dd>
             Whether all these tests succeed.
         &#34;&#34;&#34;
         F = self.F
-        skipMeta = self.skipMeta
-        is_metav = self.is_metav
         tokenFiles = self.testTokens
         texts = self.texts
+        waSlotTF = self.waSlotTF
         silent = self.silent
 
         if not silent:
             console(&#34;Testing the text ...&#34;)
 
         nTokensTF = sum(
-            0 if skipMeta and is_metav(s) else 1 for s in range(1, F.otype.maxSlot + 1)
+            1 if s in waSlotTF else 0 for s in range(1, F.otype.maxSlot + 1)
         )
         nTokensWA = sum(len(tokens) for tokens in tokenFiles)
         nGood = self.numEqual(nTokensTF, nTokensWA, silent)
@@ -2997,6 +3287,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
         textTF = &#34;&#34;.join(&#34;&#34;.join(text) for text in texts)
 
         tGood = self.strEqual(textTF, textWA, silent)
+
         if not tGood or not silent:
             console(f&#34;{rep(tGood)} - whether the text is the same&#34;, error=not tGood)
 
@@ -3017,8 +3308,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
         F = self.F
         fotypev = self.fotypev
         eoslots = self.eoslots
-        skipMeta = self.skipMeta
-        is_metav = self.is_metav
+        waSlotTF = self.waSlotTF
         annotations = self.testAnnotations
         silent = self.silent
 
@@ -3032,18 +3322,31 @@ value for each key is a dictionary that maps nodes to values.</dd>
             nType = fotypev(n)
             isPi = nType.startswith(&#34;?&#34;)
 
-            if isPi:
-                nPisTF += 1
-
             slots = eoslots(n)
             b = slots[0]
             e = slots[-1]
 
-            if skipMeta and (is_metav(b) or is_metav(e)):
+            if not (b in waSlotTF and e in waSlotTF):
                 continue
+
+            if isPi:
+                nPisTF += 1
             else:
-                if not isPi:
-                    nElementsTF += 1
+                nElementsTF += 1
+
+        nElementsWA = 0
+        nPisWA = 0
+
+        nodeFromAid = {}
+        self.nodeFromAid = nodeFromAid
+
+        for aId, kind, body, target in annotations:
+            if kind == &#34;element&#34;:
+                nElementsWA += 1
+            elif kind == &#34;pi&#34;:
+                nPisWA += 1
+            elif kind == &#34;node&#34;:
+                nodeFromAid[target] = body
 
         nElementsWA = sum(1 if a[1] == &#34;element&#34; else 0 for a in annotations)
         nPisWA = sum(1 if a[1] == &#34;pi&#34; else 0 for a in annotations)
@@ -3068,31 +3371,27 @@ value for each key is a dictionary that maps nodes to values.</dd>
             )
 
         if not silent:
-            console(&#34;Testing the element annotations ...&#34;)
-
-        tfFromAid = {}
+            console(&#34;Testing the element/pi annotations ...&#34;)
 
         element = 0
         pi = 0
         other = 0
-        good = 0
-        wrong = 0
+        goodName = 0
+        wrongName = 0
         unmapped = 0
 
-        for aId, kind, body, target in annotations:
-            if kind == &#34;node&#34;:
-                tfFromAid[target] = body
-
-        self.tfFromAid = tfFromAid
-
         if not silent:
-            console(f&#34;\t{len(tfFromAid)} element annotations&#34;)
+            console(f&#34;\t{len(nodeFromAid)} element/pi annotations&#34;)
+
+        wrongTargets = []
+        allTargets = 0
+        goodTargets = 0
 
         for aId, kind, body, target in annotations:
             isElem = kind == &#34;element&#34;
             isPi = kind == &#34;pi&#34;
 
-            if not isElem and not isPi:
+            if not (isElem or isPi):
                 other += 1
                 continue
 
@@ -3102,7 +3401,8 @@ value for each key is a dictionary that maps nodes to values.</dd>
                 pi += 1
 
             tag = body
-            node = tfFromAid.get(aId, None)
+            node = nodeFromAid.get(aId, None)
+
             if node is None:
                 unmapped += 1
                 continue
@@ -3110,27 +3410,66 @@ value for each key is a dictionary that maps nodes to values.</dd>
             otype = fotypev(node)
 
             if isPi and tag == otype[1:] or not isPi and tag == otype:
-                good += 1
+                goodName += 1
             else:
-                wrong += 1
+                wrongName += 1
+
+            if type(target) is not tuple or len(target) != 4:
+                wrongTargets.append((aId, kind, body, target))
+            else:
+                node = nodeFromAid[aId]
+                slots = eoslots(node)
+                sb = slots[0]
+                se = slots[-1]
+                bTr = waSlotTF.get(sb, None)
+                eTr = waSlotTF.get(se, None)
+
+                if eTr is not None:
+                    eTr = (eTr[0], eTr[1] + 1)
+
+                bWA = (target[0], target[1])
+                eWA = (target[2], target[3])
+
+                bRep = f&#34;{bWA}&#34; if bTr == bWA else f&#34;{bWA} XX {bTr}&#34;
+                eRep = f&#34;{eWA}&#34; if eTr == eWA else f&#34;{eWA} XX {eTr}&#34;
+
+                if bTr is None or eTr is None or bTr != bWA or eTr != eWA:
+                    wrongTargets.append((aId, kind, body, f&#34;{bRep} - {eRep}&#34;))
+                else:
+                    goodTargets += 1
+
+            allTargets += 1
 
         if not silent:
-            console(f&#34;\tElement : {element:&gt;5} x&#34;)
-            console(f&#34;\tPi      : {pi:&gt;5} x&#34;)
-            console(f&#34;\tOther   : {other:&gt;5} x&#34;)
-            console(f&#34;\tGood    : {good:&gt;5} x&#34;)
-            console(f&#34;\tWrong   : {wrong:&gt;5} x&#34;)
-            console(f&#34;\tUnmapped: {unmapped:&gt;5} x&#34;)
+            console(f&#34;\tElement      : {element:&gt;6} x&#34;)
+            console(f&#34;\tPi           : {pi:&gt;6} x&#34;)
+            console(f&#34;\tOther        : {other:&gt;6} x&#34;)
+            console(f&#34;\tGood name    : {goodName:&gt;6} x&#34;)
+            console(f&#34;\tWrong name   : {wrongName:&gt;6} x&#34;)
+            console(f&#34;\tGood target  : {goodTargets:&gt;6} x&#34;)
+            console(f&#34;\tWrong target : {len(wrongTargets):&gt;6} x&#34;)
+            console(f&#34;\tUnmapped     : {unmapped:&gt;6} x&#34;)
 
-        aGood = wrong == 0 and unmapped == 0
+        aGood = wrongName == 0 and unmapped == 0
 
         if not aGood or not silent:
             console(
-                f&#34;{rep(aGood)} - whether all element annotations are ok&#34;,
+                f&#34;{rep(aGood)} - whether all element/pi annotations have good bodies&#34;,
                 error=not aGood,
             )
 
-        return aGood and eGood and pGood
+        tGood = len(wrongTargets) == 0
+
+        if not tGood or not silent:
+            console(
+                f&#34;{rep(tGood)} - whether all element/pi annotations have good targets&#34;,
+                error=not tGood,
+            )
+            if not tGood:
+                tExamples = &#34;\n\t\t&#34;.join(str(a) for a in wrongTargets[0:10])
+                console(f&#34;\t\t{tExamples}&#34;)
+
+        return aGood and tGood and eGood and pGood
 
     def testAttributes(self):
         &#34;&#34;&#34;Test the attributes.
@@ -3152,10 +3491,10 @@ value for each key is a dictionary that maps nodes to values.</dd>
         Fs = self.Fs
         Fall = self.Fall
         eoslots = self.eoslots
+        waSlotTF = self.waSlotTF
         skipMeta = self.skipMeta
-        is_metav = self.is_metav
         annotations = self.testAnnotations
-        tfFromAid = self.tfFromAid
+        nodeFromAid = self.nodeFromAid
         nsOrig = self.nsOrig
         silent = self.silent
 
@@ -3169,7 +3508,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
         for aId, kind, body, target in annotations:
             if kind != &#34;attribute&#34;:
                 continue
-            node = tfFromAid[target]
+            node = nodeFromAid[target]
             att, value = body.split(&#34;=&#34;, 1)
             attWA.append((node, att, value))
 
@@ -3220,7 +3559,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
                 b = slots[0]
                 e = slots[-1]
 
-                if skipMeta and (is_metav(b) or is_metav(e)):
+                if not (b in waSlotTF and e in waSlotTF):
                     continue
 
                 attTF.append((node, feat, str(valTF)))
@@ -3249,19 +3588,19 @@ value for each key is a dictionary that maps nodes to values.</dd>
                 continue
             if body == &#34;note&#34;:
                 continue
-            node = tfFromAid[target]
+            node = nodeFromAid[target]
             fmtWA.append((node, body))
 
         fmtWA = sorted(fmtWA)
-        fmtWaFreq = collections.Counter()
+        fmtFreqWA = collections.Counter()
 
         for node, body in fmtWA:
-            fmtWaFreq[body] += 1
+            fmtFreqWA[body] += 1
 
         if not silent:
             console(f&#34;\t{len(fmtWA)} format values&#34;)
             console(&#34;\tformatting attributes: &#34;)
-            for fa, n in sorted(fmtWaFreq.items(), key=lambda x: (-x[1], x[0])):
+            for fa, n in sorted(fmtFreqWA.items(), key=lambda x: (-x[1], x[0])):
                 console(f&#34;\t\t{n:&gt;6} x {fa}&#34;)
 
         good = 0
@@ -3284,7 +3623,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
             console(f&#34;\tWrong:    {len(wrong):&gt;5} x&#34;)
             console(
                 f&#34;{rep(fconsistent)} - &#34;
-                f&#34;whether format annotationsare consistent with features&#34;,
+                f&#34;whether format annotations are consistent with features&#34;,
                 error=not fconsistent,
             )
 
@@ -3303,7 +3642,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
                 b = slots[0]
                 e = slots[-1]
 
-                if skipMeta and (is_metav(b) or is_metav(e)):
+                if not (b in waSlotTF and e in waSlotTF):
                     continue
 
                 fmtTF.append((node, value))
@@ -3340,7 +3679,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
             Whether all these tests succeed.
         &#34;&#34;&#34;
         annotations = self.testAnnotations
-        tfFromAid = self.tfFromAid
+        nodeFromAid = self.nodeFromAid
         extra = self.extra
         silent = self.silent
 
@@ -3352,7 +3691,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
         for aId, kind, body, target in annotations:
             if kind != &#34;anno&#34;:
                 continue
-            node = tfFromAid[target]
+            node = nodeFromAid[target]
             att, value = body.split(&#34;=&#34;, 1)
             attWA.append((node, att, value))
 
@@ -3442,13 +3781,13 @@ value for each key is a dictionary that maps nodes to values.</dd>
             if kind != &#34;node&#34;:
                 continue
             if type(target) is tuple:
-                file, start, end = target
-                if start + 1 != end:
+                fileS, start, fileE, end = target
+                if not (fileS == fileE and start + 1 == end):
                     # we expect that node annotations either targets a single token
                     # or an element/pi annotation
                     print(target)
                     break
-                target = (file, end)
+                target = (fileS, start)
             tfFromWANodes[target] = body
 
         for aId, kind, body, target in annotations:
@@ -3611,7 +3950,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/369e52fe19b197bfd6b085594fe9184ecf0cc02e/tf/convert/watm.py#L914-L937" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/16ff9948d6d9b54c8e91fb5b23dcfe8b559115fd/tf/convert/watm.py#L997-L1020" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def numEqual(nTF, nWA, silent):
@@ -3660,7 +3999,7 @@ def numEqual(nTF, nWA, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/369e52fe19b197bfd6b085594fe9184ecf0cc02e/tf/convert/watm.py#L939-L990" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/16ff9948d6d9b54c8e91fb5b23dcfe8b559115fd/tf/convert/watm.py#L1022-L1073" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def strEqual(tf, wa, silent):
@@ -3727,12 +4066,12 @@ def strEqual(tf, wa, silent):
 <p>The annotations are stored in a big list, in member <code>anno</code> of this object.</p>
 <p>The mapping from slots to indices in the list of tokens is now extended
 with the mapping from nodes to corresponding node annotations.</p>
-<p>So member <code>tlFromTf</code> is now a full mapping from all nodes in TF to
+<p>So member <code>waFromTF</code> is now a full mapping from all nodes in TF to
 tokens and/or annotations in WATM.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/369e52fe19b197bfd6b085594fe9184ecf0cc02e/tf/convert/watm.py#L606-L796" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/16ff9948d6d9b54c8e91fb5b23dcfe8b559115fd/tf/convert/watm.py#L666-L878" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeAnno(self):
     &#34;&#34;&#34;Make all annotations.
@@ -3742,7 +4081,7 @@ tokens and/or annotations in WATM.</p></div>
     The mapping from slots to indices in the list of tokens is now extended
     with the mapping from nodes to corresponding node annotations.
 
-    So member `tlFromTf` is now a full mapping from all nodes in TF to
+    So member `waFromTF` is now a full mapping from all nodes in TF to
     tokens and/or annotations in WATM.
     &#34;&#34;&#34;
     error = self.error
@@ -3751,6 +4090,7 @@ tokens and/or annotations in WATM.</p></div>
     if error:
         if not silent:
             console(&#34;Cannot run because of an earlier error&#34;)
+        return
 
     Es = self.Es
     F = self.F
@@ -3765,7 +4105,7 @@ tokens and/or annotations in WATM.</p></div>
     skipMeta = self.skipMeta
     extra = self.extra
 
-    tlFromTf = self.tlFromTf
+    waFromTF = self.waFromTF
 
     is_metav = self.is_metav
 
@@ -3777,10 +4117,11 @@ tokens and/or annotations in WATM.</p></div>
 
     invertedTargets = []
     farTargets = []
+    discontinuousNodes = collections.defaultdict(list)
 
-    def mkTarget(n):
-        ts = tlFromTf[n]
-        return f&#34;{ts[0]}:{ts[1]}-{ts[1] + 1}&#34; if fotypev(n) == slotType else ts
+    def mkSingleTarget(n):
+        ts = waFromTF[n]
+        return f&#34;{ts[0]}:{ts[1]}&#34; if fotypev(n) == slotType else ts
 
     for otype in otypes:
         isSlot = otype == slotType
@@ -3790,24 +4131,33 @@ tokens and/or annotations in WATM.</p></div>
                 if skipMeta and is_metav(n):
                     continue
 
-                self.mkAnno(KIND_NODE, NS_TF, n, mkTarget(n))
+                self.mkAnno(KIND_NODE, NS_TF, n, mkSingleTarget(n))
             else:
                 ws = eoslots(n)
+                sb, se = (ws[0], ws[-1])
+                if len(ws) != se - sb + 1:
+                    discontinuousNodes[otype].append(n)
+
                 if skipMeta and (is_metav(ws[0]) or is_metav(ws[-1])):
                     continue
 
-                ti0, start = tlFromTf[ws[0]]
-                ti1, end = tlFromTf[ws[-1]]
+                ti0, start = waFromTF[ws[0]]
+                ti1, end = waFromTF[ws[-1]]
 
                 if ti0 != ti1:
                     farTargets.append((otype, ti0, start, ti1, end))
-                    continue
 
-                if end &lt; start:
+                if ti0 == ti1 and end &lt; start:
                     invertedTargets.append((otype, ti0, start, end))
                     start, end = (end, start)
 
-                target = f&#34;{ti0}:{start}-{end + 1}&#34;
+                startPoint = f&#34;{ti0}:{start}&#34;
+                endPoint = (
+                    (&#34;&#34; if start == end else f&#34;-{end + 1}&#34;)
+                    if ti0 == ti1
+                    else f&#34;-{ti1}:{end + 1}&#34;
+                )
+                target = f&#34;{startPoint}{endPoint}&#34;
                 aId = (
                     self.mkAnno(KIND_PI, nsOrig, otype[1:], target)
                     if otype.startswith(&#34;?&#34;)
@@ -3815,7 +4165,7 @@ tokens and/or annotations in WATM.</p></div>
                         KIND_ELEM, NS_FROM_OTYPE.get(otype, nsOrig), otype, target
                     )
                 )
-                tlFromTf[n] = aId
+                waFromTF[n] = aId
                 self.mkAnno(KIND_NODE, NS_TF, n, aId)
 
     for feat in nodeFeatures:
@@ -3844,14 +4194,17 @@ tokens and/or annotations in WATM.</p></div>
                 if not val or (skipMeta and is_metav(n)):
                     continue
 
-                self.mkAnno(KIND_FMT, ns, body, mkTarget(n))
+                self.mkAnno(KIND_FMT, ns, body, mkSingleTarget(n))
         else:
             for n, val in Fs(feat).items():
+                if n not in waFromTF:
+                    continue
+
                 if val is None or skipMeta and is_metav(n):
                     continue
 
                 body = f&#34;{feat}={val}&#34;
-                self.mkAnno(KIND_ATTR, ns, body, mkTarget(n))
+                self.mkAnno(KIND_ATTR, ns, body, mkSingleTarget(n))
 
     for feat in edgeFeatures:
         ns = Es(feat).meta.get(&#34;conversionCode&#34;, NS_FROM_FEAT.get(feat, nsOrig))
@@ -3865,41 +4218,41 @@ tokens and/or annotations in WATM.</p></div>
             ns = NS_NONE
 
         for fromNode, toNodes in Es(feat).items():
+            if fromNode not in waFromTF:
+                continue
+
             if skipMeta and is_metav(fromNode):
                 continue
 
-            if fromNode not in tlFromTf:
-                continue
-
-            targetFrom = mkTarget(fromNode)
+            targetFrom = mkSingleTarget(fromNode)
 
             if type(toNodes) is dict:
                 for toNode, val in toNodes.items():
+                    if toNode not in waFromTF:
+                        continue
+
                     if skipMeta and is_metav(toNode):
                         continue
 
-                    if toNode not in tlFromTf:
-                        continue
-
                     body = f&#34;{feat}={val}&#34;
-                    targetTo = mkTarget(toNode)
+                    targetTo = mkSingleTarget(toNode)
                     target = f&#34;{targetFrom}-&gt;{targetTo}&#34;
                     self.mkAnno(KIND_EDGE, ns, body, target)
             else:
                 for toNode in toNodes:
+                    if toNode not in waFromTF:
+                        continue
+
                     if skipMeta and is_metav(toNode):
                         continue
 
-                    if toNode not in tlFromTf:
-                        continue
-
-                    targetTo = mkTarget(toNode)
+                    targetTo = mkSingleTarget(toNode)
                     target = f&#34;{targetFrom}-&gt;{targetTo}&#34;
                     self.mkAnno(KIND_EDGE, ns, feat, target)
 
     for feat, featData in extra.items():
         for n, value in featData.items():
-            self.mkAnno(KIND_ANNO, NS_TT, f&#34;{feat}={value}&#34;, mkTarget(n))
+            self.mkAnno(KIND_ANNO, NS_TT, f&#34;{feat}={value}&#34;, mkSingleTarget(n))
 
     if len(invertedTargets):
         if not silent:
@@ -3910,21 +4263,29 @@ tokens and/or annotations in WATM.</p></div>
                 segb = text[end - 1]
                 console(f&#34;{otype:&gt;20} {start:&gt;6} `{sega}` &gt; {end - 1} `{segb}`&#34;)
 
-    if len(farTargets):
-        console(
-            f&#34;ERROR: targets across tier0 items, {len(farTargets)}x&#34;,
-            error=True,
-        )
-        for otype, ti0, start, ti1, end in farTargets:
-            sega = texts[ti0][start]
-            segb = texts[ti1][end - 1]
-            console(
-                (
-                    f&#34;{otype:&gt;20} {ti0:&gt;2}:{start:&gt;6} `{sega}` - &#34;
-                    f&#34;{ti1:&gt;2}:{end - 1} `{segb}`&#34;
-                ),
-                error=True,
-            )</code></pre>
+    if len(discontinuousNodes):
+        nDis = sum(len(x) for x in discontinuousNodes.values())
+        console(f&#34;WARNING: {nDis} discontinuous nodes encountered&#34;)
+
+        for otype, nodes in discontinuousNodes.items():
+            nn = len(nodes)
+            console(f&#34;\t{nn} x of type {otype}&#34;)
+
+            if not silent:
+                examples = &#34;, &#34;.join(str(n) for n in nodes[0:10])
+                console(f&#34;\t\t{examples}&#34;)
+
+    nFarTargets = len(farTargets)
+
+    if nFarTargets:
+        console(f&#34;WARNING: targets across tier0 items, {nFarTargets}x&#34;)
+        if not silent:
+            for otype, ti0, start, ti1, end in farTargets[0:10]:
+                console(
+                    f&#34;{otype:&gt;20} [{ti0:&gt;4}:{start:&gt;6}] - [{ti1:&gt;4}:{end - 1:&gt;6}]&#34;
+                )
+            if nFarTargets &gt; 10:
+                console(f&#34;... and {nFarTargets - 10} more.&#34;)</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.watm.WATM.makeText"><code class="name flex">
@@ -3934,18 +4295,18 @@ tokens and/or annotations in WATM.</p></div>
 <div class="desc"><p>Creates the text data.</p>
 <p>The text is a list of tokens and will be stored in member <code>text</code> in this object.
 Additionally, the mapping from slot numbers in the TF data
-to indices in this list is stored in member <code>tlFromTf</code>.</p></div>
+to indices in this list is stored in member <code>waFromTF</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/369e52fe19b197bfd6b085594fe9184ecf0cc02e/tf/convert/watm.py#L521-L585" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/16ff9948d6d9b54c8e91fb5b23dcfe8b559115fd/tf/convert/watm.py#L580-L645" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeText(self):
     &#34;&#34;&#34;Creates the text data.
 
     The text is a list of tokens and will be stored in member `text` in this object.
     Additionally, the mapping from slot numbers in the TF data
-    to indices in this list is stored in member `tlFromTf`.
+    to indices in this list is stored in member `waFromTF`.
     &#34;&#34;&#34;
     error = self.error
     silent = self.silent
@@ -3953,11 +4314,12 @@ to indices in this list is stored in member <code>tlFromTf</code>.</p></div>
     if error:
         if not silent:
             console(&#34;Cannot run because of an earlier error&#34;)
+        return
 
     F = self.F
     L = self.L
     slotType = self.slotType
-    tierType = self.tierType
+    textRepoType = self.textRepoType
     skipMeta = self.skipMeta
 
     emptyv = self.emptyv
@@ -3968,16 +4330,16 @@ to indices in this list is stored in member <code>tlFromTf</code>.</p></div>
     is_metav = self.is_metav
 
     texts = []
-    tlFromTf = {}
+    waFromTF = {}
 
     self.texts = texts
-    self.tlFromTf = tlFromTf
+    self.waFromTF = waFromTF
 
-    for ti, sec0 in enumerate(F.otype.s(tierType)):
+    for ti, sNode in enumerate(F.otype.s(textRepoType)):
         text = []
         texts.append(text)
 
-        for s in L.d(sec0, otype=slotType):
+        for s in L.d(sNode, otype=slotType):
             if skipMeta and is_metav(s):
                 continue
 
@@ -4004,7 +4366,7 @@ to indices in this list is stored in member <code>tlFromTf</code>.</p></div>
 
             text.append(value)
             t = len(text) - 1
-            tlFromTf[s] = (ti, t)</code></pre>
+            waFromTF[s] = (ti, t)</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.watm.WATM.mkAnno"><code class="name flex">
@@ -4027,7 +4389,7 @@ or <code>tuple</code> of <code>strings</code></dt>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/369e52fe19b197bfd6b085594fe9184ecf0cc02e/tf/convert/watm.py#L587-L604" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/16ff9948d6d9b54c8e91fb5b23dcfe8b559115fd/tf/convert/watm.py#L647-L664" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mkAnno(self, kind, ns, body, target):
     &#34;&#34;&#34;Make a single annotation and return its id.
@@ -4050,7 +4412,7 @@ or <code>tuple</code> of <code>strings</code></dt>
 </details>
 </dd>
 <dt id="tf.convert.watm.WATM.testAll"><code class="name flex">
-<span>def <span class="ident">testAll</span></span>(<span>self)</span>
+<span>def <span class="ident">testAll</span></span>(<span>self, condensed=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Test all aspects of the WATM conversion.</p>
@@ -4058,6 +4420,13 @@ or <code>tuple</code> of <code>strings</code></dt>
 annotations, we check whether the parts that should correspond between
 the TF dataset and the WATM annotations do so indeed.</p>
 <p>We present some statistics, and highlight the mismatches.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>condensed</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If silent has been passed to the object, there is still some
+output for each corpus, namely whether all tests have passed.
+If <code>condensed</code> is True, we suppress this output.</dd>
+</dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>boolean</code></dt>
@@ -4066,9 +4435,9 @@ the TF dataset and the WATM annotations do so indeed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/369e52fe19b197bfd6b085594fe9184ecf0cc02e/tf/convert/watm.py#L992-L1038" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/16ff9948d6d9b54c8e91fb5b23dcfe8b559115fd/tf/convert/watm.py#L1075-L1130" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def testAll(self):
+<pre><code class="python">def testAll(self, condensed=False):
     &#34;&#34;&#34;Test all aspects of the WATM conversion.
 
     For all kinds of information, such as nodes, edges, features, tokens,
@@ -4076,6 +4445,13 @@ the TF dataset and the WATM annotations do so indeed.</p>
     the TF dataset and the WATM annotations do so indeed.
 
     We present some statistics, and highlight the mismatches.
+
+    Parameters
+    ----------
+    condensed: boolean, optional False
+        If silent has been passed to the object, there is still some
+        output for each corpus, namely whether all tests have passed.
+        If `condensed` is True, we suppress this output.
 
     Returns
     -------
@@ -4088,6 +4464,7 @@ the TF dataset and the WATM annotations do so indeed.</p>
     if error:
         if not silent:
             console(&#34;Cannot run because of an earlier error&#34;)
+        return
 
     self.testSetup()
 
@@ -4111,10 +4488,11 @@ the TF dataset and the WATM annotations do so indeed.</p>
     if not silent:
         console(&#34;Overall outcome ...&#34;)
 
-    if not good or not silent:
+    if not silent or not condensed:
         console(f&#34;{rep(good)} - whether all tests passed&#34;, error=not good)
 
-    return good</code></pre>
+    if not good:
+        self.error = True</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.watm.WATM.testAttributes"><code class="name flex">
@@ -4137,7 +4515,7 @@ In turn, these features have been translated into annotations of kind
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/369e52fe19b197bfd6b085594fe9184ecf0cc02e/tf/convert/watm.py#L1260-L1451" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/16ff9948d6d9b54c8e91fb5b23dcfe8b559115fd/tf/convert/watm.py#L1427-L1618" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testAttributes(self):
     &#34;&#34;&#34;Test the attributes.
@@ -4159,10 +4537,10 @@ In turn, these features have been translated into annotations of kind
     Fs = self.Fs
     Fall = self.Fall
     eoslots = self.eoslots
+    waSlotTF = self.waSlotTF
     skipMeta = self.skipMeta
-    is_metav = self.is_metav
     annotations = self.testAnnotations
-    tfFromAid = self.tfFromAid
+    nodeFromAid = self.nodeFromAid
     nsOrig = self.nsOrig
     silent = self.silent
 
@@ -4176,7 +4554,7 @@ In turn, these features have been translated into annotations of kind
     for aId, kind, body, target in annotations:
         if kind != &#34;attribute&#34;:
             continue
-        node = tfFromAid[target]
+        node = nodeFromAid[target]
         att, value = body.split(&#34;=&#34;, 1)
         attWA.append((node, att, value))
 
@@ -4227,7 +4605,7 @@ In turn, these features have been translated into annotations of kind
             b = slots[0]
             e = slots[-1]
 
-            if skipMeta and (is_metav(b) or is_metav(e)):
+            if not (b in waSlotTF and e in waSlotTF):
                 continue
 
             attTF.append((node, feat, str(valTF)))
@@ -4256,19 +4634,19 @@ In turn, these features have been translated into annotations of kind
             continue
         if body == &#34;note&#34;:
             continue
-        node = tfFromAid[target]
+        node = nodeFromAid[target]
         fmtWA.append((node, body))
 
     fmtWA = sorted(fmtWA)
-    fmtWaFreq = collections.Counter()
+    fmtFreqWA = collections.Counter()
 
     for node, body in fmtWA:
-        fmtWaFreq[body] += 1
+        fmtFreqWA[body] += 1
 
     if not silent:
         console(f&#34;\t{len(fmtWA)} format values&#34;)
         console(&#34;\tformatting attributes: &#34;)
-        for fa, n in sorted(fmtWaFreq.items(), key=lambda x: (-x[1], x[0])):
+        for fa, n in sorted(fmtFreqWA.items(), key=lambda x: (-x[1], x[0])):
             console(f&#34;\t\t{n:&gt;6} x {fa}&#34;)
 
     good = 0
@@ -4291,7 +4669,7 @@ In turn, these features have been translated into annotations of kind
         console(f&#34;\tWrong:    {len(wrong):&gt;5} x&#34;)
         console(
             f&#34;{rep(fconsistent)} - &#34;
-            f&#34;whether format annotationsare consistent with features&#34;,
+            f&#34;whether format annotations are consistent with features&#34;,
             error=not fconsistent,
         )
 
@@ -4310,7 +4688,7 @@ In turn, these features have been translated into annotations of kind
             b = slots[0]
             e = slots[-1]
 
-            if skipMeta and (is_metav(b) or is_metav(e)):
+            if not (b in waSlotTF and e in waSlotTF):
                 continue
 
             fmtTF.append((node, value))
@@ -4351,7 +4729,7 @@ by annotations.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/369e52fe19b197bfd6b085594fe9184ecf0cc02e/tf/convert/watm.py#L1540-L1714" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/16ff9948d6d9b54c8e91fb5b23dcfe8b559115fd/tf/convert/watm.py#L1707-L1881" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testEdges(self):
     &#34;&#34;&#34;Test the edges.
@@ -4383,13 +4761,13 @@ by annotations.</p>
         if kind != &#34;node&#34;:
             continue
         if type(target) is tuple:
-            file, start, end = target
-            if start + 1 != end:
+            fileS, start, fileE, end = target
+            if not (fileS == fileE and start + 1 == end):
                 # we expect that node annotations either targets a single token
                 # or an element/pi annotation
                 print(target)
                 break
-            target = (file, end)
+            target = (fileS, start)
         tfFromWANodes[target] = body
 
     for aId, kind, body, target in annotations:
@@ -4546,7 +4924,7 @@ dataset.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/369e52fe19b197bfd6b085594fe9184ecf0cc02e/tf/convert/watm.py#L1130-L1258" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/16ff9948d6d9b54c8e91fb5b23dcfe8b559115fd/tf/convert/watm.py#L1249-L1425" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testElements(self):
     &#34;&#34;&#34;Test the elements.
@@ -4563,8 +4941,7 @@ dataset.</p>
     F = self.F
     fotypev = self.fotypev
     eoslots = self.eoslots
-    skipMeta = self.skipMeta
-    is_metav = self.is_metav
+    waSlotTF = self.waSlotTF
     annotations = self.testAnnotations
     silent = self.silent
 
@@ -4578,18 +4955,31 @@ dataset.</p>
         nType = fotypev(n)
         isPi = nType.startswith(&#34;?&#34;)
 
-        if isPi:
-            nPisTF += 1
-
         slots = eoslots(n)
         b = slots[0]
         e = slots[-1]
 
-        if skipMeta and (is_metav(b) or is_metav(e)):
+        if not (b in waSlotTF and e in waSlotTF):
             continue
+
+        if isPi:
+            nPisTF += 1
         else:
-            if not isPi:
-                nElementsTF += 1
+            nElementsTF += 1
+
+    nElementsWA = 0
+    nPisWA = 0
+
+    nodeFromAid = {}
+    self.nodeFromAid = nodeFromAid
+
+    for aId, kind, body, target in annotations:
+        if kind == &#34;element&#34;:
+            nElementsWA += 1
+        elif kind == &#34;pi&#34;:
+            nPisWA += 1
+        elif kind == &#34;node&#34;:
+            nodeFromAid[target] = body
 
     nElementsWA = sum(1 if a[1] == &#34;element&#34; else 0 for a in annotations)
     nPisWA = sum(1 if a[1] == &#34;pi&#34; else 0 for a in annotations)
@@ -4614,31 +5004,27 @@ dataset.</p>
         )
 
     if not silent:
-        console(&#34;Testing the element annotations ...&#34;)
-
-    tfFromAid = {}
+        console(&#34;Testing the element/pi annotations ...&#34;)
 
     element = 0
     pi = 0
     other = 0
-    good = 0
-    wrong = 0
+    goodName = 0
+    wrongName = 0
     unmapped = 0
 
-    for aId, kind, body, target in annotations:
-        if kind == &#34;node&#34;:
-            tfFromAid[target] = body
-
-    self.tfFromAid = tfFromAid
-
     if not silent:
-        console(f&#34;\t{len(tfFromAid)} element annotations&#34;)
+        console(f&#34;\t{len(nodeFromAid)} element/pi annotations&#34;)
+
+    wrongTargets = []
+    allTargets = 0
+    goodTargets = 0
 
     for aId, kind, body, target in annotations:
         isElem = kind == &#34;element&#34;
         isPi = kind == &#34;pi&#34;
 
-        if not isElem and not isPi:
+        if not (isElem or isPi):
             other += 1
             continue
 
@@ -4648,7 +5034,8 @@ dataset.</p>
             pi += 1
 
         tag = body
-        node = tfFromAid.get(aId, None)
+        node = nodeFromAid.get(aId, None)
+
         if node is None:
             unmapped += 1
             continue
@@ -4656,27 +5043,66 @@ dataset.</p>
         otype = fotypev(node)
 
         if isPi and tag == otype[1:] or not isPi and tag == otype:
-            good += 1
+            goodName += 1
         else:
-            wrong += 1
+            wrongName += 1
+
+        if type(target) is not tuple or len(target) != 4:
+            wrongTargets.append((aId, kind, body, target))
+        else:
+            node = nodeFromAid[aId]
+            slots = eoslots(node)
+            sb = slots[0]
+            se = slots[-1]
+            bTr = waSlotTF.get(sb, None)
+            eTr = waSlotTF.get(se, None)
+
+            if eTr is not None:
+                eTr = (eTr[0], eTr[1] + 1)
+
+            bWA = (target[0], target[1])
+            eWA = (target[2], target[3])
+
+            bRep = f&#34;{bWA}&#34; if bTr == bWA else f&#34;{bWA} XX {bTr}&#34;
+            eRep = f&#34;{eWA}&#34; if eTr == eWA else f&#34;{eWA} XX {eTr}&#34;
+
+            if bTr is None or eTr is None or bTr != bWA or eTr != eWA:
+                wrongTargets.append((aId, kind, body, f&#34;{bRep} - {eRep}&#34;))
+            else:
+                goodTargets += 1
+
+        allTargets += 1
 
     if not silent:
-        console(f&#34;\tElement : {element:&gt;5} x&#34;)
-        console(f&#34;\tPi      : {pi:&gt;5} x&#34;)
-        console(f&#34;\tOther   : {other:&gt;5} x&#34;)
-        console(f&#34;\tGood    : {good:&gt;5} x&#34;)
-        console(f&#34;\tWrong   : {wrong:&gt;5} x&#34;)
-        console(f&#34;\tUnmapped: {unmapped:&gt;5} x&#34;)
+        console(f&#34;\tElement      : {element:&gt;6} x&#34;)
+        console(f&#34;\tPi           : {pi:&gt;6} x&#34;)
+        console(f&#34;\tOther        : {other:&gt;6} x&#34;)
+        console(f&#34;\tGood name    : {goodName:&gt;6} x&#34;)
+        console(f&#34;\tWrong name   : {wrongName:&gt;6} x&#34;)
+        console(f&#34;\tGood target  : {goodTargets:&gt;6} x&#34;)
+        console(f&#34;\tWrong target : {len(wrongTargets):&gt;6} x&#34;)
+        console(f&#34;\tUnmapped     : {unmapped:&gt;6} x&#34;)
 
-    aGood = wrong == 0 and unmapped == 0
+    aGood = wrongName == 0 and unmapped == 0
 
     if not aGood or not silent:
         console(
-            f&#34;{rep(aGood)} - whether all element annotations are ok&#34;,
+            f&#34;{rep(aGood)} - whether all element/pi annotations have good bodies&#34;,
             error=not aGood,
         )
 
-    return aGood and eGood and pGood</code></pre>
+    tGood = len(wrongTargets) == 0
+
+    if not tGood or not silent:
+        console(
+            f&#34;{rep(tGood)} - whether all element/pi annotations have good targets&#34;,
+            error=not tGood,
+        )
+        if not tGood:
+            tExamples = &#34;\n\t\t&#34;.join(str(a) for a in wrongTargets[0:10])
+            console(f&#34;\t\t{tExamples}&#34;)
+
+    return aGood and tGood and eGood and pGood</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.watm.WATM.testExtra"><code class="name flex">
@@ -4696,7 +5122,7 @@ the kind <code>anno</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/369e52fe19b197bfd6b085594fe9184ecf0cc02e/tf/convert/watm.py#L1453-L1538" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/16ff9948d6d9b54c8e91fb5b23dcfe8b559115fd/tf/convert/watm.py#L1620-L1705" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testExtra(self):
     &#34;&#34;&#34;Test the extra data for on-the-fly annotations.
@@ -4713,7 +5139,7 @@ the kind <code>anno</code>.</p>
         Whether all these tests succeed.
     &#34;&#34;&#34;
     annotations = self.testAnnotations
-    tfFromAid = self.tfFromAid
+    nodeFromAid = self.nodeFromAid
     extra = self.extra
     silent = self.silent
 
@@ -4725,7 +5151,7 @@ the kind <code>anno</code>.</p>
     for aId, kind, body, target in annotations:
         if kind != &#34;anno&#34;:
             continue
-        node = tfFromAid[target]
+        node = nodeFromAid[target]
         att, value = body.split(&#34;=&#34;, 1)
         attWA.append((node, att, value))
 
@@ -4797,7 +5223,7 @@ We unpack targets if they contain structured information.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/369e52fe19b197bfd6b085594fe9184ecf0cc02e/tf/convert/watm.py#L1040-L1087" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/16ff9948d6d9b54c8e91fb5b23dcfe8b559115fd/tf/convert/watm.py#L1132-L1206" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testSetup(self):
     &#34;&#34;&#34;Prepare the tests.
@@ -4808,16 +5234,29 @@ We unpack targets if they contain structured information.</p></div>
     &#34;&#34;&#34;
     textFiles = self.textFiles
     annoFiles = self.annoFiles
+    skipMeta = self.skipMeta
+    is_metav = self.is_metav
 
+    waSlotTF = {}
     tokenFiles = []
 
-    for textFile in textFiles:
+    slot = 1
+
+    for tfl, textFile in enumerate(textFiles):
         with open(textFile) as fh:
             text = json.load(fh)
             tokens = text[&#34;_ordered_segments&#34;]
             tokenFiles.append(tokens)
 
+            for offset in range(len(tokens)):
+                while skipMeta and is_metav(slot):
+                    slot += 1
+
+                waSlotTF[slot] = (tfl, offset)
+                slot += 1
+
     self.testTokens = tokenFiles
+    self.waSlotTF = waSlotTF
 
     annotations = []
 
@@ -4834,10 +5273,24 @@ We unpack targets if they contain structured information.</p></div>
                 newParts = []
 
                 for part in parts:
-                    if &#34;-&#34; in part:
-                        file, part = part.split(&#34;:&#34;, 1)
-                        start, end = part.split(&#34;-&#34;, 1)
-                        part = (int(file), int(start), int(end))
+                    if &#34;:&#34; in part:
+                        boundaries = part.split(&#34;-&#34;, 1)
+                        fb, b = boundaries[0].split(&#34;:&#34;, 1)
+                        fb = int(fb)
+                        b = int(b)
+
+                        if len(boundaries) == 1:
+                            part = (int(fb), int(b), int(fb), int(b) + 1)
+                        else:
+                            eParts = boundaries[1].split(&#34;:&#34;, 1)
+
+                            if len(eParts) == 1:
+                                fe, e = fb, int(eParts[0])
+                            else:
+                                fe, e = eParts
+                                fe = int(fe)
+                                e = int(e)
+                            part = (fb, b, fe, e)
 
                     newParts.append(part)
 
@@ -4864,7 +5317,7 @@ whether the TF and WATM datasets agree on it.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/369e52fe19b197bfd6b085594fe9184ecf0cc02e/tf/convert/watm.py#L1089-L1128" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/16ff9948d6d9b54c8e91fb5b23dcfe8b559115fd/tf/convert/watm.py#L1208-L1247" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testText(self):
     &#34;&#34;&#34;Test the text.
@@ -4878,17 +5331,16 @@ whether the TF and WATM datasets agree on it.</p>
         Whether all these tests succeed.
     &#34;&#34;&#34;
     F = self.F
-    skipMeta = self.skipMeta
-    is_metav = self.is_metav
     tokenFiles = self.testTokens
     texts = self.texts
+    waSlotTF = self.waSlotTF
     silent = self.silent
 
     if not silent:
         console(&#34;Testing the text ...&#34;)
 
     nTokensTF = sum(
-        0 if skipMeta and is_metav(s) else 1 for s in range(1, F.otype.maxSlot + 1)
+        1 if s in waSlotTF else 0 for s in range(1, F.otype.maxSlot + 1)
     )
     nTokensWA = sum(len(tokens) for tokens in tokenFiles)
     nGood = self.numEqual(nTokensTF, nTokensWA, silent)
@@ -4902,6 +5354,7 @@ whether the TF and WATM datasets agree on it.</p>
     textTF = &#34;&#34;.join(&#34;&#34;.join(text) for text in texts)
 
     tGood = self.strEqual(textTF, textWA, silent)
+
     if not tGood or not silent:
         console(f&#34;{rep(tGood)} - whether the text is the same&#34;, error=not tGood)
 
@@ -4920,7 +5373,7 @@ divided over several files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/369e52fe19b197bfd6b085594fe9184ecf0cc02e/tf/convert/watm.py#L798-L912" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/16ff9948d6d9b54c8e91fb5b23dcfe8b559115fd/tf/convert/watm.py#L880-L995" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeAll(self):
     &#34;&#34;&#34;Write text and annotation data to disk.
@@ -4940,6 +5393,7 @@ divided over several files.</p>
     if error:
         if not silent:
             console(&#34;Cannot run because of an earlier error&#34;)
+        return
 
     app = self.app
     texts = self.texts
@@ -5077,7 +5531,7 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/369e52fe19b197bfd6b085594fe9184ecf0cc02e/tf/convert/watm.py#L1717-L1809" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/16ff9948d6d9b54c8e91fb5b23dcfe8b559115fd/tf/convert/watm.py#L1884-L1983" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WATMS:
     &#34;&#34;&#34;Export corpora that are divided over multiple TF datasets.
@@ -5154,6 +5608,8 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
 
         chosenDoc = doc
 
+        good = True
+
         for doc in sorted(docs, key=lambda x: (x[0], int(x[1:]))):
             if chosenDoc is not None and chosenDoc != doc:
                 continue
@@ -5171,7 +5627,12 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
             WA.makeText()
             WA.makeAnno()
             WA.writeAll()
-            WA.testAll()</code></pre>
+            WA.testAll(condensed=True)
+
+            if WA.error:
+                good = False
+
+        console(f&#34;WATM generation: {rep(good)}&#34;, error=not good)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -5190,7 +5651,7 @@ Otherwise all datasets will be converted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/369e52fe19b197bfd6b085594fe9184ecf0cc02e/tf/convert/watm.py#L1771-L1809" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/16ff9948d6d9b54c8e91fb5b23dcfe8b559115fd/tf/convert/watm.py#L1938-L1983" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def produce(self, doc=None):
     &#34;&#34;&#34;Convert all relevant TF datasets.
@@ -5213,6 +5674,8 @@ Otherwise all datasets will be converted.</dd>
 
     chosenDoc = doc
 
+    good = True
+
     for doc in sorted(docs, key=lambda x: (x[0], int(x[1:]))):
         if chosenDoc is not None and chosenDoc != doc:
             continue
@@ -5230,7 +5693,12 @@ Otherwise all datasets will be converted.</dd>
         WA.makeText()
         WA.makeAnno()
         WA.writeAll()
-        WA.testAll()</code></pre>
+        WA.testAll(condensed=True)
+
+        if WA.error:
+            good = False
+
+    console(f&#34;WATM generation: {rep(good)}&#34;, error=not good)</code></pre>
 </details>
 </dd>
 </dl>
@@ -5308,6 +5776,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#format-of-the-annotation-files">Format of the annotation files</a></li>
 </ul>
 </li>
+<li><a href="#configuration">Configuration</a></li>
 <li><a href="#caveat">Caveat</a></li>
 </ul>
 </div>
