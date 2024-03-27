@@ -322,7 +322,7 @@ def modify(
             These features may be new,
             or they may already be present in the original data.
 
-            If these features have values to nodes that are not within the boundaries
+            If these features have values for nodes that are not within the boundaries
             of the new node type,
             those values will not be assigned but silently discarded.
 
@@ -368,6 +368,15 @@ def modify(
                         n2={m7: v7, m8: v8},
                     ),
                 ),
+
+        !!! info "`edgeFeatures` to nodes of other types"
+            However, you may want to define edge features that relate the new nodes
+            to nodes of other types. There is a limited way to do that.
+
+            *   the other type must be the last type that was added before the current
+                type;
+            *   the nodes in the specification of the previously added type must be
+                disjoint from the nodes of the currently added type.
 
     replaceSlotType: string, optional None
         If passed, it should be a tuple whose first member is a valid, non-slot
@@ -562,7 +571,7 @@ def modify(
 
         ePrefix = "Merge features: "
 
-        for (outFeat, inFeats) in mergeFeatures.items():
+        for outFeat, inFeats in mergeFeatures.items():
             eItem = f"{outFeat}: "
 
             inFeats = fitemize(inFeats)
@@ -634,11 +643,11 @@ def modify(
         if bothFeatures:
             err(f"{_rep(bothFeatures)}: Both node and edge features")
 
-        for (kind, otherKind, origSet, origSetOther) in (
+        for kind, otherKind, origSet, origSetOther in (
             (NODE, EDGE, origNodeFeatures, origEdgeFeatures),
             (EDGE, NODE, origEdgeFeatures, origNodeFeatures),
         ):
-            for (feat, data) in addFeatures.get(f"{kind}Features", {}).items():
+            for feat, data in addFeatures.get(f"{kind}Features", {}).items():
                 eItem = f"{feat}: "
 
                 if feat in WARP:
@@ -657,7 +666,7 @@ def modify(
 
         mData = {}
 
-        for (outType, inTypes) in mergeTypes.items():
+        for outType, inTypes in mergeTypes.items():
             eItem = f"{outType}: "
 
             if outType == slotType:
@@ -679,11 +688,11 @@ def modify(
                 deletedTp.add(inType)
 
                 mFeatures = inTypes[inType] if withFeatures else {}
-                for (feat, val) in mFeatures.items():
+                for feat, val in mFeatures.items():
                     mData.setdefault(feat, set()).add(val)
                     addedFt.add(feat)
 
-        for (feat, vals) in mData.items():
+        for feat, vals in mData.items():
             eItem = f"{feat}: "
             checkValType(feat, vals=vals)
 
@@ -704,7 +713,7 @@ def modify(
 
         ePrefix = "Add types: "
 
-        for (nodeType, typeInfo) in sorted(addTypes.items()):
+        for nodeType, typeInfo in sorted(addTypes.items()):
             eItem = f"{nodeType}: "
 
             illegalKeys = set(typeInfo) - ADD_T_KEYS
@@ -747,7 +756,7 @@ def modify(
                     err(f"{badlinked} nodes linked to non-slot nodes")
 
             for kind in (NODE, EDGE):
-                for (feat, data) in typeInfo.get(f"{kind}Features", {}).items():
+                for feat, data in typeInfo.get(f"{kind}Features", {}).items():
                     eItem = f"{feat}: "
                     checkValType(feat, vals=data.values())
 
@@ -817,7 +826,7 @@ def modify(
             rep2 = f" (was {assignedTp})" if assignedTp else ""
             inf(f"{rep1}{rep2}")
 
-    def shiftx(vs, offset=None, nF=None, nT=None):
+    def shiftx(vs, offset=None, nF=None, nT=None, nodeMap={}):
         if offset is None:
             return (
                 {shift[m]: v for (m, v) in vs.items()}
@@ -825,11 +834,21 @@ def modify(
                 else {shift[m] for m in vs}
             )
         else:
-            return (
-                {m + offset: v for (m, v) in vs.items() if nF <= m <= nT}
-                if type(vs) is dict
-                else {m + offset for m in vs if nF <= m <= nT}
-            )
+            if type(vs) is dict:
+                result = {}
+                for (m, v) in vs.items():
+                    if nF <= m <= nT:
+                        result[m + offset] = v
+                    elif m in nodeMap:
+                        result[nodeMap[m]] = v
+            else:
+                result = set()
+                for m in vs:
+                    if nF <= m <= nT:
+                        result.add(m + offset)
+                    elif m in nodeMap:
+                        result.add(nodeMap[m])
+            return result
 
     def shiftFeature(kind, feat, data):
         return (
@@ -850,7 +869,7 @@ def modify(
 
         inF = set()
 
-        for (outFeat, inFeats) in mergeFeatures.items():
+        for outFeat, inFeats in mergeFeatures.items():
             data = {}
             inFeats = fitemize(inFeats)
             if all(f in origNodeFeatures for f in inFeats):
@@ -861,7 +880,7 @@ def modify(
                 featDst = edgeFeatures
 
             for inFeat in inFeats:
-                for (n, val) in featSrc(inFeat).data.items():
+                for n, val in featSrc(inFeat).data.items():
                     data[n] = val
             featDst.setdefault(outFeat, {}).update(data)
 
@@ -907,11 +926,11 @@ def modify(
             info("add features ...")
         indent(level=1, reset=True)
         added = collections.defaultdict(set)
-        for (kind, dest) in (
+        for kind, dest in (
             (NODE, nodeFeatures),
             (EDGE, edgeFeatures),
         ):
-            for (feat, data) in addFeatures.get(f"{kind}Features", {}).items():
+            for feat, data in addFeatures.get(f"{kind}Features", {}).items():
                 dest.setdefault(feat, {}).update(data)
                 added[kind].add(feat)
         if addFeatures:
@@ -919,7 +938,7 @@ def modify(
                 f'done (added {len(added["node"])} node + {len(added["edge"])} edge features)'
             )
             indent(level=2)
-            for (kind, feats) in sorted(added.items()):
+            for kind, feats in sorted(added.items()):
                 info(f"{kind} features: {_rep(feats)}")
 
         return True
@@ -934,7 +953,7 @@ def modify(
 
         inT = set()
 
-        for (outType, inTypes) in mergeTypes.items():
+        for outType, inTypes in mergeTypes.items():
             info(f"Merging {outType}")
             withFeatures = type(inTypes) is dict
 
@@ -942,7 +961,7 @@ def modify(
                 addFeatures = inTypes[inType] if withFeatures else {}
                 addFeatures[OTYPE] = outType
                 (nF, nT) = origNodeTypes[inType]
-                for (feat, val) in addFeatures.items():
+                for feat, val in addFeatures.items():
                     for n in range(nF, nT + 1):
                         nodeFeatures.setdefault(feat, {})[n] = val
                 inT.add(inType)
@@ -969,7 +988,8 @@ def modify(
         indent(level=1, reset=True)
 
         curShift = 0
-        for (nType, (nF, nT)) in sorted(origNodeTypes.items(), key=lambda x: x[1][0]):
+
+        for nType, (nF, nT) in sorted(origNodeTypes.items(), key=lambda x: x[1][0]):
             eItem = f"{nType:<20}: "
             if nType in deleteTypes:
                 curShift -= nT - nF + 1
@@ -984,11 +1004,11 @@ def modify(
                     f"{nF + curShift:>7}-{nT + curShift:>7}"
                 )
 
-        for (kind, upd) in (
+        for kind, upd in (
             (NODE, nodeFeatures),
             (EDGE, edgeFeatures),
         ):
-            for (feat, uData) in upd.items():
+            for feat, uData in upd.items():
                 upd[feat] = shiftFeature(kind, feat, uData)
 
         maxNode = origMaxNode + curShift
@@ -1010,40 +1030,56 @@ def modify(
             info("add types ...")
         indent(level=1, reset=True)
 
-        for (nodeType, typeInfo) in sorted(addTypes.items()):
+        nodeMap = {}
+
+        for nodeType, typeInfo in sorted(addTypes.items()):
             nF = typeInfo[NF]
             nT = typeInfo[NT]
             offset = maxNode - nF + 1
             nodeSlots = typeInfo[NS]
 
             data = {}
+            newNodeMap = {}
+
             for n in range(nF, nT + 1):
                 data[offset + n] = nodeType
+                newNodeMap[n] = offset + n
+
             nodeFeatures.setdefault(OTYPE, {}).update(data)
 
             data = {}
+
             for n in range(nF, nT + 1):
                 data[offset + n] = set(nodeSlots[n])
+
             edgeFeatures.setdefault(OSLOTS, {}).update(data)
 
-            for (feat, addData) in typeInfo.get(NFS, {}).items():
+            for feat, addData in typeInfo.get(NFS, {}).items():
                 data = {}
+
                 for n in range(nF, nT + 1):
                     value = addData.get(n, None)
                     if value is not None:
                         data[offset + n] = value
+
                 nodeFeatures.setdefault(feat, {}).update(data)
 
-            for (feat, addData) in typeInfo.get(EFS, {}).items():
+            for feat, addData in typeInfo.get(EFS, {}).items():
                 data = {}
+
                 for n in range(nF, nT + 1):
                     value = addData.get(n, None)
                     if value:
-                        newValue = shiftx(value, offset=offset, nF=nF, nT=nT)
+                        newValue = shiftx(
+                            value, offset=offset, nF=nF, nT=nT, nodeMap=nodeMap
+                        )
                         if newValue:
                             data[offset + n] = newValue
+
                 edgeFeatures.setdefault(feat, {}).update(data)
+
             maxNode += nT - nF + 1
+            nodeMap = newNodeMap
 
         if addTypes:
             info(f"done ({len(addTypes)} types)")
@@ -1065,7 +1101,7 @@ def modify(
 
         mFeat = 0
 
-        for (kind, featSet, featSrc, featUpd, featOut) in (
+        for kind, featSet, featSrc, featUpd, featOut in (
             (NODE, origNodeFeatures, Fs, nodeFeatures, nodeFeaturesOut),
             (EDGE, origEdgeFeatures, Es, edgeFeatures, edgeFeaturesOut),
         ):
@@ -1096,7 +1132,7 @@ def modify(
                         if outMeta.get("edgeValues", False) != hasValues:
                             outMeta["edgeValues"] = hasValues
                 if feat in featureMeta:
-                    for (k, v) in featureMeta[feat].items():
+                    for k, v in featureMeta[feat].items():
                         if v is None:
                             if k in outMeta:
                                 del outMeta[k]
@@ -1160,7 +1196,7 @@ def modify(
                 for oldSlot in currentOslots[newSlot]:
                     currentSlotMap[oldSlot] = newSlot
 
-            for (oldSlot, nType) in currentOtype.items():
+            for oldSlot, nType in currentOtype.items():
                 if nType == slotType:
                     if oldSlot not in currentSlotMap:
                         removeNodes.add(oldSlot)
@@ -1174,13 +1210,13 @@ def modify(
             # Likewise, all edge features that involve old slots
             # have to be extended to the new slots.
 
-            for (feat, featData) in nodeFeaturesOut.items():
+            for feat, featData in nodeFeaturesOut.items():
                 if feat == OTYPE:
                     continue
                 if feat in ignoreSlotFeatures:
                     continue
                 updates = {}
-                for (oldSlot, value) in featData.items():
+                for oldSlot, value in featData.items():
                     if oldSlot in removeNodes:
                         continue
                     nType = currentOtype[oldSlot]
@@ -1193,14 +1229,14 @@ def modify(
                         if alreadyUpdated is None:
                             updates[newSlot] = value
                 if updates:
-                    for (node, val) in updates.items():
+                    for node, val in updates.items():
                         featData[node] = val
 
-            for (feat, featData) in edgeFeaturesOut.items():
+            for feat, featData in edgeFeaturesOut.items():
                 if feat == OSLOTS:
                     continue
                 updates = {}
-                for (fromNode, toNodes) in featData.items():
+                for fromNode, toNodes in featData.items():
                     if fromNode in removeNodes:
                         continue
                     nTypeFrom = currentOtype[fromNode]
@@ -1209,7 +1245,7 @@ def modify(
                     else:
                         newFromNode = fromNode
                     if type(toNodes) is dict:
-                        for (toNode, value) in toNodes.items():
+                        for toNode, value in toNodes.items():
                             if toNode in removeNodes:
                                 continue
                             nTypeTo = currentOtype[toNode]
@@ -1256,9 +1292,9 @@ def modify(
                                         newToNode
                                     )
                 if updates:
-                    for (fromNode, toNodes) in updates.items():
+                    for fromNode, toNodes in updates.items():
                         if type(toNodes) is dict:
-                            for (toNode, val) in toNodes.items():
+                            for toNode, val in toNodes.items():
                                 featData.setdefault(fromNode, {})[toNode] = val
                         else:
                             for toNode in toNodes:
@@ -1272,7 +1308,7 @@ def modify(
 
             nextOslots = {}
 
-            for (node, slots) in currentOslots.items():
+            for node, slots in currentOslots.items():
                 newSlots = {currentSlotMap[s] for s in slots if s in currentSlotMap}
                 if len(newSlots):
                     nextOslots[node] = newSlots
@@ -1296,7 +1332,7 @@ def modify(
 
             # now the rest
 
-            for (node, nType) in currentOtype.items():
+            for node, nType in currentOtype.items():
                 if nType == slotType or nType == replaceSlotType or node in removeNodes:
                     continue
                 newNode += 1
@@ -1310,13 +1346,13 @@ def modify(
             removeNodeFeatures = set()
             removeEdgeFeatures = set()
 
-            for (feat, featData) in nodeFeaturesOut.items():
+            for feat, featData in nodeFeaturesOut.items():
                 if feat == OTYPE:
                     nodeFeaturesOut[OTYPE] = newOtype
                     continue
 
                 newFeatData = {}
-                for (node, value) in featData.items():
+                for node, value in featData.items():
                     if node in removeNodes:
                         continue
                     if node not in newFromCurrent:
@@ -1327,19 +1363,19 @@ def modify(
                 else:
                     removeNodeFeatures.add(feat)
 
-            for (feat, featData) in edgeFeaturesOut.items():
+            for feat, featData in edgeFeaturesOut.items():
                 if feat == OSLOTS:
                     edgeFeaturesOut[OSLOTS] = newOslots
                     continue
 
                 newFeatData = {}
-                for (fromNode, toNodes) in featData.items():
+                for fromNode, toNodes in featData.items():
                     if fromNode in removeNodes:
                         continue
                     newFromNode = newFromCurrent[fromNode]
                     if type(toNodes) is dict:
                         newToNodes = {}
-                        for (toNode, value) in toNodes.items():
+                        for toNode, value in toNodes.items():
                             if toNode in removeNodes:
                                 continue
                             newTNode = newFromCurrent[toNode]
@@ -1375,7 +1411,7 @@ def modify(
         otextMeta.update(meta(OTEXT))
         mK = 0
         if OTEXT in featureMeta:
-            for (k, v) in featureMeta[OTEXT].items():
+            for k, v in featureMeta[OTEXT].items():
                 if v is None:
                     if k in otextMeta:
                         del otextMeta[k]

@@ -421,7 +421,7 @@ from ..core.files import (
     EXPRESS_SYNC_LEGACY,
     APP_EXPRESS_ZIP,
     prefixSlash,
-    baseNm,
+    fileNm,
     dirNm,
     initTree,
     fileExists,
@@ -951,7 +951,7 @@ def publishRelease(app, increase, message=None, description=None):
     console("Create the zip file with the complete data")
 
     binPath = app.zipAll()
-    binFile = baseNm(binPath)
+    binFile = fileNm(binPath)
 
     console("Upload the zip file and attach it to the release on GitHub")
 
@@ -1035,7 +1035,7 @@ class Checkout:
     def isExpress(self):
         return (
             self.local is None
-            and not self.version
+            and not self.versionOverride
             and not self.commitChk
             and not self.releaseChk
         )
@@ -1055,6 +1055,7 @@ class Checkout:
         _browse,
         inNb,
         version=None,
+        versionOverride=False,
         label="data",
     ):
         self.backend = backend
@@ -1076,6 +1077,7 @@ class Checkout:
         relative = prefixSlash(relative)
         self.relative = relative
         self.version = version
+        self.versionOverride = versionOverride
         versionRep = f"/{version}" if version else ""
         self.versionRep = versionRep
         self.dataDir = f"{relative}{versionRep}"
@@ -1754,7 +1756,7 @@ class Checkout:
                         and not zInfo.filename.startswith(dataDir)
                     ):
                         continue
-                    zInfo.filename = baseNm(zInfo.filename)
+                    zInfo.filename = fileNm(zInfo.filename)
                     z.extract(zInfo)
                     nItems += 1
                 if nItems == 0:
@@ -2047,6 +2049,7 @@ def checkoutRepo(
     repo="banks",
     folder=f"/{RELATIVE}",
     version="",
+    versionOverride=False,
     checkout="",
     source=None,
     dest=None,
@@ -2081,8 +2084,11 @@ def checkoutRepo(
         contains the version directories.
         In most cases it is `tf` or it ends in `/tf`.
 
-    version: string, optional, the empty string
+    version: string, optional ""
         The version of the TF feature data
+
+    versionOverride: boolean, optional False
+        Whether a non-standard version has been requested
 
     checkout: string, optional the mepty string
         From which version/release/local copy we should extract the data.
@@ -2185,6 +2191,7 @@ def checkoutRepo(
             _browse,
             inNb,
             version=version,
+            versionOverride=versionOverride,
             label=label,
         )
         rData.makeSureLocal(attempt=attempt)

@@ -112,7 +112,7 @@ import re
 
 from ..capable import CheckImport
 from ..core.helpers import console, run
-from ..core.files import fileOpen, fileExists, baseNm, dirNm, abspath
+from ..core.files import fileOpen, fileExists, fileNm, dirNm, abspath
 
 
 class Elements(CheckImport):
@@ -186,7 +186,7 @@ class Elements(CheckImport):
         self.overrideDir = None if override is None else dirNm(override)
 
         self.outputFile = (
-            baseNm(override if override is not None else baseSchema).removesuffix(
+            fileNm(override if override is not None else baseSchema).removesuffix(
                 ".xsd"
             )
             + ".tsv"

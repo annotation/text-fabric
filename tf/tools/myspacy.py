@@ -283,6 +283,7 @@ class Spacy(CheckImport):
             return []
 
         doc = self.doc
+
         if doc is None:
             console("No results available from the NLP pipeline")
             return []
@@ -294,8 +295,8 @@ class Spacy(CheckImport):
         result = []
 
         whiteRe = re.compile(r"^[.?!\s]*$", re.S)
-        spuriousNlBefore = re.compile(r"\n+(\W)")
-        spuriousNlAfter = re.compile(r"(\W)\n+")
+        spuriousNlBefore = re.compile(r"\n+(\W)", re.S)
+        spuriousNlAfter = re.compile(r"(\W)\n+", re.S)
 
         for s in doc.sents:
             text = s.text.strip("\n")

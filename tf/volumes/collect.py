@@ -35,7 +35,7 @@ from ..parameters import OTYPE, OSLOTS, OVOLUME, OWORK, OINTERF, OINTERT, OMAP
 from ..core.fabric import FabricCore
 from ..core.timestamp import Timestamp, SILENT_D, DEEP
 from ..core.helpers import getAllRealFeatures
-from ..core.files import unexpanduser as ux, dirEmpty, dirRemove, baseNm, dirNm
+from ..core.files import unexpanduser as ux, dirEmpty, dirRemove, fileNm, dirNm
 
 DEBUG = False
 
@@ -310,7 +310,7 @@ def collect(
 
     """
 
-    collection = baseNm(workLocation)
+    collection = fileNm(workLocation)
     loc = ux(dirNm(workLocation))
 
     if not dirEmpty(workLocation):
@@ -370,7 +370,7 @@ def collect(
         volNames = set()
         for loc in volumes:
             if type(loc) is str:
-                name = baseNm(loc)
+                name = fileNm(loc)
             else:
                 (name, loc) = loc
             if name in volNames:

@@ -518,7 +518,7 @@ from ..core.files import (
     unexpanduser as ux,
     getLocation,
     initTree,
-    baseNm,
+    fileNm,
     dirNm,
     dirExists,
     dirContents,
@@ -2169,7 +2169,7 @@ class TEI(CheckImport):
         def doXMLFile(xmlPath):
             tree = etree.parse(xmlPath, parser)
             root = tree.getroot()
-            xmlFile = baseNm(xmlPath)
+            xmlFile = fileNm(xmlPath)
             ids[xmlFile][""] = 1
             analyse(root, analysis, xmlFile)
 

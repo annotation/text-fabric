@@ -153,7 +153,7 @@ PARAMS = dict(
         "The feature that will hold the sequence number of the token.",
         "",
     ),
-    sentenceBarriers=("Elements that trigger a senetence boundary.", "div,p"),
+    sentenceBarriers=("Elements that trigger a sentence boundary.", "div,p"),
     sentenceSkipFlow=("The flows that are not fed to sentence detection.", "orig,del"),
     sentenceType=("The node type for the sentences", "sentence"),
     sentenceFeatures=("", ""),
@@ -190,6 +190,9 @@ FLAGS = dict(
     verbose=("Produce less or more progress and reporting messages", -1, 3),
 )
 """Possible flags."""
+
+
+SENT_END = "Foo bar"
 
 
 class NLPipeline(CheckImport):
@@ -565,9 +568,12 @@ class NLPipeline(CheckImport):
                 else:
                     if nType == "teiHeader":
                         finishSentence(flowContent)
-                        flowContent.append(" \n xxx. \nAa bb. \nEnd meta. \n\n")
+                        flowContent.append(f" \n xxx. \n{SENT_END}. \nEnd meta. \n\n")
                     elif nType in sectionTypes or nType in sentenceBarriers:
-                        flowContent.append(f" \n xxx. \nAa bb. \nEnd {nType}. \n\n")
+                        finishSentence(flowContent)
+                        flowContent.append(
+                            f" \n xxx. \n{SENT_END}. \nEnd {nType}. \n\n"
+                        )
                     else:
                         if any(nTp == "teiHeader" for nTp in nTypeStack) and not any(
                             nTp in mixedTypes for nTp in nTypeStack[0:-1]
@@ -584,12 +590,12 @@ class NLPipeline(CheckImport):
                 flowContent = flows[flow]
 
                 if isOutFlow:
-                    flowContent.append(f" \nAa bb. \nitem {flow}. \n")
+                    flowContent.append(f" \n{SENT_END}. \nItem {flow}. \n")
                 else:
                     if nType == "teiHeader":
-                        flowContent.append(" \nAa bb. \nBegin meta. \n\n")
+                        flowContent.append(f" \n{SENT_END}. \nBegin meta. \n\n")
                     elif nType in sectionTypes:
-                        flowContent.append(f" \nAa bb. \nBegin {nType}. \n\n")
+                        flowContent.append(f" \n{SENT_END}. \nBegin {nType}. \n\n")
                     else:
                         if any(nTp == "teiHeader" for nTp in nTypeStack) and not any(
                             nTp in mixedTypes for nTp in nTypeStack[0:-1]
@@ -607,7 +613,7 @@ class NLPipeline(CheckImport):
             if len(items) == 0:
                 continue
 
-            rec.add(f" \nAa bb. \nBegin flow {flow if flow else 'main'}. \n\n")
+            rec.add(f" \n{SENT_END}. \nBegin flow {flow if flow else 'main'}. \n\n")
 
             for item in items:
                 if type(item) is int:
@@ -618,7 +624,9 @@ class NLPipeline(CheckImport):
                 else:
                     rec.add(item)
 
-            rec.add(f" \n xxx. \nAa bb. \nEnd flow {flow if flow else 'main'}. \n\n")
+            rec.add(
+                f" \n xxx. \n{SENT_END}. \nEnd flow {flow if flow else 'main'}. \n\n"
+            )
 
             info(
                 (
@@ -912,8 +920,8 @@ class NLPipeline(CheckImport):
 
         # now the data from the NLP pipeline
 
-        flowBeginRe = re.compile(r" \nAa bb\. \nBegin flow (\w+)\. ")
-        flowEndRe = re.compile(r" \n xxx. \nAa bb\. \nEnd flow (\w+)\. ")
+        flowBeginRe = re.compile(rf" \n{SENT_END}\. \nBegin flow (\w+)\. ")
+        flowEndRe = re.compile(rf" \n xxx. \n{SENT_END}\. \nEnd flow (\w+)\. ")
 
         skipping = False
         flow = None

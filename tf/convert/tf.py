@@ -11,7 +11,7 @@ from ..core.files import (
     normpath,
     dirExists,
     dirMake,
-    baseNm,
+    fileNm,
     dirNm,
     isDir,
     isFile,
@@ -109,7 +109,7 @@ def explode(inPath, outPath):
             return "Not a file: `{inPath}"
         if outExists:
             if isOutDir:
-                outFile = f"{outLoc}/{baseNm(inLoc)}"
+                outFile = f"{outLoc}/{fileNm(inLoc)}"
             else:
                 outFile = outLoc
         else:

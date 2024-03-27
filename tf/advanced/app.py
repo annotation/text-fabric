@@ -68,6 +68,7 @@ class App:
         _browse,
         hoist=False,
         version=None,
+        versionOverride=False,
         checkout="",
         mod=[],
         locations=None,
@@ -93,6 +94,7 @@ class App:
         checkout: string, optional ""
         mod: string or iterable, optional []
         version: string, optional None
+        versionOverride: boolean, optional False
         locations, modules: string, optional None
         collection, volume: string, optional None
         api: object, optional, `None`
@@ -124,6 +126,7 @@ class App:
             appName=appName,
             api=api,
             version=version,
+            versionOverride=versionOverride,
             volume=volume,
             collection=collection,
             silent=silent,
@@ -435,6 +438,8 @@ def findApp(
         Do not give warning, and do not try to load the app in the non-legacy way.
     """
 
+    versionGiven = version
+
     (commit, release, local) = (None, None, None)
     extraMod = None
 
@@ -627,6 +632,7 @@ def findApp(
             _browse,
             *args,
             version=version,
+            versionOverride=not not versionGiven,
             silent=silent,
             **kwargs,
         )

@@ -20,6 +20,21 @@ pip install -e .
 
 ### 12.3
 
+#### 12.3.5
+
+2024-03-26
+
+*   extra functionality:
+    When adding types with `tf.dataset.modify` you can link nodes of a newly added type
+    to nodes that were added as the preiviously added type.
+    This is a bit of a limited and ad hoc extension of the functionality of this function.
+    I needed a quick fix to add nodes for entities and entity occurrences at the same time
+    and link them with edges. This is for the corpus
+    [`CLARIAH/wp6-missieven`](https://github.com/CLARIAH/wp6-missieven).
+
+*   fix: the express download of a dataset (complete.zip) was nit triggered in all
+    cases where it should.
+
 #### 12.3.4
 
 2024-02-26

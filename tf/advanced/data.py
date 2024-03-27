@@ -92,7 +92,14 @@ class AppData:
             relative = f"{appPathRep}{appName}"
             self.checkout = "local"
 
-        if not self.getModule(org, repo, prefixSlash(relative), checkout, isBase=True):
+        if not self.getModule(
+            org,
+            repo,
+            prefixSlash(relative),
+            checkout,
+            isBase=True,
+            versionOverride=app.versionOverride,
+        ):
             self.good = False
 
     def getStandard(self):
@@ -142,6 +149,7 @@ class AppData:
                 theCheckout,
                 backend=theBackend,
                 specs=m,
+                versionOverride=app.versionOverride,
             ):
                 self.good = False
 
@@ -185,6 +193,7 @@ class AppData:
             checkout,
             backend=backend,
             isExtra=True,
+            versionOverride=app.versionOverride,
         ):
             self.good = False
 
@@ -196,6 +205,7 @@ class AppData:
         later when we are loading the standard modules.
         """
 
+        app = self.app
         backend = self.backend
         refs = self.moduleRefs
         for ref in refs:
@@ -213,7 +223,11 @@ class AppData:
                 None if parts[-1] is None or parts[-1] == backend else parts[-1]
             )
 
-            if not self.getModule(*parts[0:-1], backend=theBackend):
+            if not self.getModule(
+                *parts[0:-1],
+                backend=theBackend,
+                versionOverride=app.versionOverride,
+            ):
                 self.good = False
 
     def getModules(self):
@@ -283,6 +297,7 @@ class AppData:
         isBase=False,
         isExtra=False,
         specs=None,
+        versionOverride=False,
     ):
         """Prepare to load a single module.
 
@@ -311,6 +326,8 @@ class AppData:
             Whether this module is the main data of the corpus.
         specs: dict, optional False
             Additional informational attributes of the module, e.g. a DOI
+        versionOverride: boolean, optional False
+            Whether we ask for the data of a non-standard version
         """
 
         backend = self.backend if backend is None else backendRep(backend, "norm")
@@ -345,6 +362,7 @@ class AppData:
                 repo=repo,
                 folder=relative,
                 version=None if isExtra else version,
+                versionOverride=versionOverride,
                 checkout=checkout,
                 withPaths=True if isExtra else False,
                 keep=True if isExtra else False,
