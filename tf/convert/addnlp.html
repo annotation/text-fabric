@@ -114,7 +114,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/convert/addnlp.py#L1-L1604" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/addnlp.py#L1-L1612" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Add data from an NLP pipeline.
 
@@ -271,7 +271,7 @@ PARAMS = dict(
         &#34;The feature that will hold the sequence number of the token.&#34;,
         &#34;&#34;,
     ),
-    sentenceBarriers=(&#34;Elements that trigger a senetence boundary.&#34;, &#34;div,p&#34;),
+    sentenceBarriers=(&#34;Elements that trigger a sentence boundary.&#34;, &#34;div,p&#34;),
     sentenceSkipFlow=(&#34;The flows that are not fed to sentence detection.&#34;, &#34;orig,del&#34;),
     sentenceType=(&#34;The node type for the sentences&#34;, &#34;sentence&#34;),
     sentenceFeatures=(&#34;&#34;, &#34;&#34;),
@@ -308,6 +308,9 @@ FLAGS = dict(
     verbose=(&#34;Produce less or more progress and reporting messages&#34;, -1, 3),
 )
 &#34;&#34;&#34;Possible flags.&#34;&#34;&#34;
+
+
+SENT_END = &#34;Foo bar&#34;
 
 
 class NLPipeline(CheckImport):
@@ -683,9 +686,12 @@ class NLPipeline(CheckImport):
                 else:
                     if nType == &#34;teiHeader&#34;:
                         finishSentence(flowContent)
-                        flowContent.append(&#34; \n xxx. \nAa bb. \nEnd meta. \n\n&#34;)
+                        flowContent.append(f&#34; \n xxx. \n{SENT_END}. \nEnd meta. \n\n&#34;)
                     elif nType in sectionTypes or nType in sentenceBarriers:
-                        flowContent.append(f&#34; \n xxx. \nAa bb. \nEnd {nType}. \n\n&#34;)
+                        finishSentence(flowContent)
+                        flowContent.append(
+                            f&#34; \n xxx. \n{SENT_END}. \nEnd {nType}. \n\n&#34;
+                        )
                     else:
                         if any(nTp == &#34;teiHeader&#34; for nTp in nTypeStack) and not any(
                             nTp in mixedTypes for nTp in nTypeStack[0:-1]
@@ -702,12 +708,12 @@ class NLPipeline(CheckImport):
                 flowContent = flows[flow]
 
                 if isOutFlow:
-                    flowContent.append(f&#34; \nAa bb. \nitem {flow}. \n&#34;)
+                    flowContent.append(f&#34; \n{SENT_END}. \nItem {flow}. \n&#34;)
                 else:
                     if nType == &#34;teiHeader&#34;:
-                        flowContent.append(&#34; \nAa bb. \nBegin meta. \n\n&#34;)
+                        flowContent.append(f&#34; \n{SENT_END}. \nBegin meta. \n\n&#34;)
                     elif nType in sectionTypes:
-                        flowContent.append(f&#34; \nAa bb. \nBegin {nType}. \n\n&#34;)
+                        flowContent.append(f&#34; \n{SENT_END}. \nBegin {nType}. \n\n&#34;)
                     else:
                         if any(nTp == &#34;teiHeader&#34; for nTp in nTypeStack) and not any(
                             nTp in mixedTypes for nTp in nTypeStack[0:-1]
@@ -725,7 +731,7 @@ class NLPipeline(CheckImport):
             if len(items) == 0:
                 continue
 
-            rec.add(f&#34; \nAa bb. \nBegin flow {flow if flow else &#39;main&#39;}. \n\n&#34;)
+            rec.add(f&#34; \n{SENT_END}. \nBegin flow {flow if flow else &#39;main&#39;}. \n\n&#34;)
 
             for item in items:
                 if type(item) is int:
@@ -736,7 +742,9 @@ class NLPipeline(CheckImport):
                 else:
                     rec.add(item)
 
-            rec.add(f&#34; \n xxx. \nAa bb. \nEnd flow {flow if flow else &#39;main&#39;}. \n\n&#34;)
+            rec.add(
+                f&#34; \n xxx. \n{SENT_END}. \nEnd flow {flow if flow else &#39;main&#39;}. \n\n&#34;
+            )
 
             info(
                 (
@@ -1030,8 +1038,8 @@ class NLPipeline(CheckImport):
 
         # now the data from the NLP pipeline
 
-        flowBeginRe = re.compile(r&#34; \nAa bb\. \nBegin flow (\w+)\. &#34;)
-        flowEndRe = re.compile(r&#34; \n xxx. \nAa bb\. \nEnd flow (\w+)\. &#34;)
+        flowBeginRe = re.compile(rf&#34; \n{SENT_END}\. \nBegin flow (\w+)\. &#34;)
+        flowEndRe = re.compile(rf&#34; \n xxx. \n{SENT_END}\. \nEnd flow (\w+)\. &#34;)
 
         skipping = False
         flow = None
@@ -1752,7 +1760,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/convert/addnlp.py#L1592-L1600" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/addnlp.py#L1600-L1608" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(&#34;tf-addnlp&#34;, HELP, TASKS, PARAMS, FLAGS)
@@ -1851,7 +1859,7 @@ sequence number of the entity in the data stream, starting at 1.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/convert/addnlp.py#L195-L1589" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/addnlp.py#L198-L1597" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NLPipeline(CheckImport):
     def __init__(
@@ -2226,9 +2234,12 @@ sequence number of the entity in the data stream, starting at 1.</dd>
                 else:
                     if nType == &#34;teiHeader&#34;:
                         finishSentence(flowContent)
-                        flowContent.append(&#34; \n xxx. \nAa bb. \nEnd meta. \n\n&#34;)
+                        flowContent.append(f&#34; \n xxx. \n{SENT_END}. \nEnd meta. \n\n&#34;)
                     elif nType in sectionTypes or nType in sentenceBarriers:
-                        flowContent.append(f&#34; \n xxx. \nAa bb. \nEnd {nType}. \n\n&#34;)
+                        finishSentence(flowContent)
+                        flowContent.append(
+                            f&#34; \n xxx. \n{SENT_END}. \nEnd {nType}. \n\n&#34;
+                        )
                     else:
                         if any(nTp == &#34;teiHeader&#34; for nTp in nTypeStack) and not any(
                             nTp in mixedTypes for nTp in nTypeStack[0:-1]
@@ -2245,12 +2256,12 @@ sequence number of the entity in the data stream, starting at 1.</dd>
                 flowContent = flows[flow]
 
                 if isOutFlow:
-                    flowContent.append(f&#34; \nAa bb. \nitem {flow}. \n&#34;)
+                    flowContent.append(f&#34; \n{SENT_END}. \nItem {flow}. \n&#34;)
                 else:
                     if nType == &#34;teiHeader&#34;:
-                        flowContent.append(&#34; \nAa bb. \nBegin meta. \n\n&#34;)
+                        flowContent.append(f&#34; \n{SENT_END}. \nBegin meta. \n\n&#34;)
                     elif nType in sectionTypes:
-                        flowContent.append(f&#34; \nAa bb. \nBegin {nType}. \n\n&#34;)
+                        flowContent.append(f&#34; \n{SENT_END}. \nBegin {nType}. \n\n&#34;)
                     else:
                         if any(nTp == &#34;teiHeader&#34; for nTp in nTypeStack) and not any(
                             nTp in mixedTypes for nTp in nTypeStack[0:-1]
@@ -2268,7 +2279,7 @@ sequence number of the entity in the data stream, starting at 1.</dd>
             if len(items) == 0:
                 continue
 
-            rec.add(f&#34; \nAa bb. \nBegin flow {flow if flow else &#39;main&#39;}. \n\n&#34;)
+            rec.add(f&#34; \n{SENT_END}. \nBegin flow {flow if flow else &#39;main&#39;}. \n\n&#34;)
 
             for item in items:
                 if type(item) is int:
@@ -2279,7 +2290,9 @@ sequence number of the entity in the data stream, starting at 1.</dd>
                 else:
                     rec.add(item)
 
-            rec.add(f&#34; \n xxx. \nAa bb. \nEnd flow {flow if flow else &#39;main&#39;}. \n\n&#34;)
+            rec.add(
+                f&#34; \n xxx. \n{SENT_END}. \nEnd flow {flow if flow else &#39;main&#39;}. \n\n&#34;
+            )
 
             info(
                 (
@@ -2573,8 +2586,8 @@ sequence number of the entity in the data stream, starting at 1.</dd>
 
         # now the data from the NLP pipeline
 
-        flowBeginRe = re.compile(r&#34; \nAa bb\. \nBegin flow (\w+)\. &#34;)
-        flowEndRe = re.compile(r&#34; \n xxx. \nAa bb\. \nEnd flow (\w+)\. &#34;)
+        flowBeginRe = re.compile(rf&#34; \n{SENT_END}\. \nBegin flow (\w+)\. &#34;)
+        flowEndRe = re.compile(rf&#34; \n xxx. \n{SENT_END}\. \nEnd flow (\w+)\. &#34;)
 
         skipping = False
         flow = None
@@ -3283,7 +3296,7 @@ generated text (counting from zero).</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/convert/addnlp.py#L445-L644" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/addnlp.py#L448-L652" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def generatePlain(self):
     &#34;&#34;&#34;Generates a plain text out of a data source.
@@ -3408,9 +3421,12 @@ generated text (counting from zero).</li>
             else:
                 if nType == &#34;teiHeader&#34;:
                     finishSentence(flowContent)
-                    flowContent.append(&#34; \n xxx. \nAa bb. \nEnd meta. \n\n&#34;)
+                    flowContent.append(f&#34; \n xxx. \n{SENT_END}. \nEnd meta. \n\n&#34;)
                 elif nType in sectionTypes or nType in sentenceBarriers:
-                    flowContent.append(f&#34; \n xxx. \nAa bb. \nEnd {nType}. \n\n&#34;)
+                    finishSentence(flowContent)
+                    flowContent.append(
+                        f&#34; \n xxx. \n{SENT_END}. \nEnd {nType}. \n\n&#34;
+                    )
                 else:
                     if any(nTp == &#34;teiHeader&#34; for nTp in nTypeStack) and not any(
                         nTp in mixedTypes for nTp in nTypeStack[0:-1]
@@ -3427,12 +3443,12 @@ generated text (counting from zero).</li>
             flowContent = flows[flow]
 
             if isOutFlow:
-                flowContent.append(f&#34; \nAa bb. \nitem {flow}. \n&#34;)
+                flowContent.append(f&#34; \n{SENT_END}. \nItem {flow}. \n&#34;)
             else:
                 if nType == &#34;teiHeader&#34;:
-                    flowContent.append(&#34; \nAa bb. \nBegin meta. \n\n&#34;)
+                    flowContent.append(f&#34; \n{SENT_END}. \nBegin meta. \n\n&#34;)
                 elif nType in sectionTypes:
-                    flowContent.append(f&#34; \nAa bb. \nBegin {nType}. \n\n&#34;)
+                    flowContent.append(f&#34; \n{SENT_END}. \nBegin {nType}. \n\n&#34;)
                 else:
                     if any(nTp == &#34;teiHeader&#34; for nTp in nTypeStack) and not any(
                         nTp in mixedTypes for nTp in nTypeStack[0:-1]
@@ -3450,7 +3466,7 @@ generated text (counting from zero).</li>
         if len(items) == 0:
             continue
 
-        rec.add(f&#34; \nAa bb. \nBegin flow {flow if flow else &#39;main&#39;}. \n\n&#34;)
+        rec.add(f&#34; \n{SENT_END}. \nBegin flow {flow if flow else &#39;main&#39;}. \n\n&#34;)
 
         for item in items:
             if type(item) is int:
@@ -3461,7 +3477,9 @@ generated text (counting from zero).</li>
             else:
                 rec.add(item)
 
-        rec.add(f&#34; \n xxx. \nAa bb. \nEnd flow {flow if flow else &#39;main&#39;}. \n\n&#34;)
+        rec.add(
+            f&#34; \n xxx. \n{SENT_END}. \nEnd flow {flow if flow else &#39;main&#39;}. \n\n&#34;
+        )
 
         info(
             (
@@ -3511,7 +3529,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/convert/addnlp.py#L406-L443" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/addnlp.py#L409-L446" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getElementInfo(self, verbose=None):
     &#34;&#34;&#34;Analyse the schema.
@@ -3635,7 +3653,7 @@ one for the atomic tokens and one for the full tokens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/convert/addnlp.py#L652-L1105" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/addnlp.py#L660-L1113" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ingest(
     self,
@@ -3900,8 +3918,8 @@ one for the atomic tokens and one for the full tokens.</p>
 
     # now the data from the NLP pipeline
 
-    flowBeginRe = re.compile(r&#34; \nAa bb\. \nBegin flow (\w+)\. &#34;)
-    flowEndRe = re.compile(r&#34; \n xxx. \nAa bb\. \nEnd flow (\w+)\. &#34;)
+    flowBeginRe = re.compile(rf&#34; \n{SENT_END}\. \nBegin flow (\w+)\. &#34;)
+    flowEndRe = re.compile(rf&#34; \n xxx. \n{SENT_END}\. \nEnd flow (\w+)\. &#34;)
 
     skipping = False
     flow = None
@@ -4158,7 +4176,7 @@ sentence boundaries.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/convert/addnlp.py#L1107-L1429" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/addnlp.py#L1115-L1437" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ingestNlpOutput(self, positions, tkStream, sentenceStream, entityStream):
     &#34;&#34;&#34;Ingests NLP output such as tokens in a dataset. Tokens become the new slots.
@@ -4493,7 +4511,7 @@ sentence boundaries.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/convert/addnlp.py#L646-L650" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/addnlp.py#L654-L658" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def lingo(self, *args, **kwargs):
     if not self.importOK():
@@ -4523,7 +4541,7 @@ If not passed, take the verbose member of this object.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/convert/addnlp.py#L333-L404" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/addnlp.py#L336-L407" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadApp(self, app=None, verbose=None):
     &#34;&#34;&#34;Loads a given TF app or loads the TF app based on the working directory.
@@ -4632,7 +4650,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/convert/addnlp.py#L1431-L1589" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/addnlp.py#L1439-L1597" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,

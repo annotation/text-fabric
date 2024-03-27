@@ -32,7 +32,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/convert/tf.py#L1-L325" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/tf.py#L1-L325" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Raw, unoptimised data from TF files
@@ -47,7 +47,7 @@ from ..core.files import (
     normpath,
     dirExists,
     dirMake,
-    baseNm,
+    fileNm,
     dirNm,
     isDir,
     isFile,
@@ -145,7 +145,7 @@ def explode(inPath, outPath):
             return &#34;Not a file: `{inPath}&#34;
         if outExists:
             if isOutDir:
-                outFile = f&#34;{outLoc}/{baseNm(inLoc)}&#34;
+                outFile = f&#34;{outLoc}/{fileNm(inLoc)}&#34;
             else:
                 outFile = outLoc
         else:
@@ -419,7 +419,7 @@ If pointing to an existing directory, exploded file(s) will be put there.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/convert/tf.py#L26-L139" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/tf.py#L26-L139" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def explode(inPath, outPath):
     &#34;&#34;&#34;Explodes `.tf` files into non-optimised `.tf` files without metadata.
@@ -507,7 +507,7 @@ If pointing to an existing directory, exploded file(s) will be put there.</dd>
             return &#34;Not a file: `{inPath}&#34;
         if outExists:
             if isOutDir:
-                outFile = f&#34;{outLoc}/{baseNm(inLoc)}&#34;
+                outFile = f&#34;{outLoc}/{fileNm(inLoc)}&#34;
             else:
                 outFile = outLoc
         else:

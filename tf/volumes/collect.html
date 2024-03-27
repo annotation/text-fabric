@@ -54,7 +54,7 @@ collect(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/volumes/collect.py#L1-L893" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/volumes/collect.py#L1-L893" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Collect
@@ -93,7 +93,7 @@ from ..parameters import OTYPE, OSLOTS, OVOLUME, OWORK, OINTERF, OINTERT, OMAP
 from ..core.fabric import FabricCore
 from ..core.timestamp import Timestamp, SILENT_D, DEEP
 from ..core.helpers import getAllRealFeatures
-from ..core.files import unexpanduser as ux, dirEmpty, dirRemove, baseNm, dirNm
+from ..core.files import unexpanduser as ux, dirEmpty, dirRemove, fileNm, dirNm
 
 DEBUG = False
 
@@ -368,7 +368,7 @@ def collect(
 
     &#34;&#34;&#34;
 
-    collection = baseNm(workLocation)
+    collection = fileNm(workLocation)
     loc = ux(dirNm(workLocation))
 
     if not dirEmpty(workLocation):
@@ -428,7 +428,7 @@ def collect(
         volNames = set()
         for loc in volumes:
             if type(loc) is str:
-                name = baseNm(loc)
+                name = fileNm(loc)
             else:
                 (name, loc) = loc
             if name in volNames:
@@ -1187,7 +1187,7 @@ These will be excluded from collection.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/volumes/collect.py#L60-L893" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/volumes/collect.py#L60-L893" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def collect(
     volumes,
@@ -1442,7 +1442,7 @@ These will be excluded from collection.</p>
 
     &#34;&#34;&#34;
 
-    collection = baseNm(workLocation)
+    collection = fileNm(workLocation)
     loc = ux(dirNm(workLocation))
 
     if not dirEmpty(workLocation):
@@ -1502,7 +1502,7 @@ These will be excluded from collection.</p>
         volNames = set()
         for loc in volumes:
             if type(loc) is str:
-                name = baseNm(loc)
+                name = fileNm(loc)
             else:
                 (name, loc) = loc
             if name in volNames:

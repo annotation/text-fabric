@@ -43,6 +43,23 @@ and in its top-level directory run the command:</strong></p>
 </code></pre>
 <h2 id="12">12</h2>
 <h3 id="123">12.3</h3>
+<h4 id="1235">12.3.5</h4>
+<p>2024-03-26</p>
+<ul>
+<li>
+<p>extra functionality:
+When adding types with <code><a title="tf.dataset.modify" href="../dataset/modify.html">tf.dataset.modify</a></code> you can link nodes of a newly added type
+to nodes that were added as the preiviously added type.
+This is a bit of a limited and ad hoc extension of the functionality of this function.
+I needed a quick fix to add nodes for entities and entity occurrences at the same time
+and link them with edges. This is for the corpus
+<a href="https://github.com/CLARIAH/wp6-missieven"><code>CLARIAH/wp6-missieven</code></a>.</p>
+</li>
+<li>
+<p>fix: the express download of a dataset (complete.zip) was nit triggered in all
+cases where it should.</p>
+</li>
+</ul>
 <h4 id="1234">12.3.4</h4>
 <p>2024-02-26</p>
 <p>The output of <code><a title="tf.convert.watm" href="../convert/watm.html">tf.convert.watm</a></code> has been changed.
@@ -325,7 +342,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -399,6 +416,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
 <li><a href="#123">12.3</a><ul>
+<li><a href="#1235">12.3.5</a></li>
 <li><a href="#1234">12.3.4</a></li>
 <li><a href="#1233">12.3.3</a></li>
 <li><a href="#12312">12.3.1,2</a></li>

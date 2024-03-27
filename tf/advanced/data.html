@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/advanced/data.py#L1-L422" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/advanced/data.py#L1-L440" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from ..core.helpers import itemize
 from ..core.files import backendRep, expandDir, prefixSlash, normpath
@@ -127,7 +127,14 @@ class AppData:
             relative = f&#34;{appPathRep}{appName}&#34;
             self.checkout = &#34;local&#34;
 
-        if not self.getModule(org, repo, prefixSlash(relative), checkout, isBase=True):
+        if not self.getModule(
+            org,
+            repo,
+            prefixSlash(relative),
+            checkout,
+            isBase=True,
+            versionOverride=app.versionOverride,
+        ):
             self.good = False
 
     def getStandard(self):
@@ -177,6 +184,7 @@ class AppData:
                 theCheckout,
                 backend=theBackend,
                 specs=m,
+                versionOverride=app.versionOverride,
             ):
                 self.good = False
 
@@ -220,6 +228,7 @@ class AppData:
             checkout,
             backend=backend,
             isExtra=True,
+            versionOverride=app.versionOverride,
         ):
             self.good = False
 
@@ -231,6 +240,7 @@ class AppData:
         later when we are loading the standard modules.
         &#34;&#34;&#34;
 
+        app = self.app
         backend = self.backend
         refs = self.moduleRefs
         for ref in refs:
@@ -248,7 +258,11 @@ class AppData:
                 None if parts[-1] is None or parts[-1] == backend else parts[-1]
             )
 
-            if not self.getModule(*parts[0:-1], backend=theBackend):
+            if not self.getModule(
+                *parts[0:-1],
+                backend=theBackend,
+                versionOverride=app.versionOverride,
+            ):
                 self.good = False
 
     def getModules(self):
@@ -318,6 +332,7 @@ class AppData:
         isBase=False,
         isExtra=False,
         specs=None,
+        versionOverride=False,
     ):
         &#34;&#34;&#34;Prepare to load a single module.
 
@@ -346,6 +361,8 @@ class AppData:
             Whether this module is the main data of the corpus.
         specs: dict, optional False
             Additional informational attributes of the module, e.g. a DOI
+        versionOverride: boolean, optional False
+            Whether we ask for the data of a non-standard version
         &#34;&#34;&#34;
 
         backend = self.backend if backend is None else backendRep(backend, &#34;norm&#34;)
@@ -380,6 +397,7 @@ class AppData:
                 repo=repo,
                 folder=relative,
                 version=None if isExtra else version,
+                versionOverride=versionOverride,
                 checkout=checkout,
                 withPaths=True if isExtra else False,
                 keep=True if isExtra else False,
@@ -478,7 +496,7 @@ They are the same as are needed to construct an <code><a title="tf.advanced.data
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/advanced/data.py#L406-L422" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/advanced/data.py#L424-L440" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModulesData(*args):
     &#34;&#34;&#34;Retrieve all data for a corpus.
@@ -538,7 +556,7 @@ level just below the search locations.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/advanced/data.py#L11-L403" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/advanced/data.py#L11-L421" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AppData:
     def __init__(
@@ -624,7 +642,14 @@ level just below the search locations.</dd>
             relative = f&#34;{appPathRep}{appName}&#34;
             self.checkout = &#34;local&#34;
 
-        if not self.getModule(org, repo, prefixSlash(relative), checkout, isBase=True):
+        if not self.getModule(
+            org,
+            repo,
+            prefixSlash(relative),
+            checkout,
+            isBase=True,
+            versionOverride=app.versionOverride,
+        ):
             self.good = False
 
     def getStandard(self):
@@ -674,6 +699,7 @@ level just below the search locations.</dd>
                 theCheckout,
                 backend=theBackend,
                 specs=m,
+                versionOverride=app.versionOverride,
             ):
                 self.good = False
 
@@ -717,6 +743,7 @@ level just below the search locations.</dd>
             checkout,
             backend=backend,
             isExtra=True,
+            versionOverride=app.versionOverride,
         ):
             self.good = False
 
@@ -728,6 +755,7 @@ level just below the search locations.</dd>
         later when we are loading the standard modules.
         &#34;&#34;&#34;
 
+        app = self.app
         backend = self.backend
         refs = self.moduleRefs
         for ref in refs:
@@ -745,7 +773,11 @@ level just below the search locations.</dd>
                 None if parts[-1] is None or parts[-1] == backend else parts[-1]
             )
 
-            if not self.getModule(*parts[0:-1], backend=theBackend):
+            if not self.getModule(
+                *parts[0:-1],
+                backend=theBackend,
+                versionOverride=app.versionOverride,
+            ):
                 self.good = False
 
     def getModules(self):
@@ -815,6 +847,7 @@ level just below the search locations.</dd>
         isBase=False,
         isExtra=False,
         specs=None,
+        versionOverride=False,
     ):
         &#34;&#34;&#34;Prepare to load a single module.
 
@@ -843,6 +876,8 @@ level just below the search locations.</dd>
             Whether this module is the main data of the corpus.
         specs: dict, optional False
             Additional informational attributes of the module, e.g. a DOI
+        versionOverride: boolean, optional False
+            Whether we ask for the data of a non-standard version
         &#34;&#34;&#34;
 
         backend = self.backend if backend is None else backendRep(backend, &#34;norm&#34;)
@@ -877,6 +912,7 @@ level just below the search locations.</dd>
                 repo=repo,
                 folder=relative,
                 version=None if isExtra else version,
+                versionOverride=versionOverride,
                 checkout=checkout,
                 withPaths=True if isExtra else False,
                 keep=True if isExtra else False,
@@ -953,7 +989,7 @@ It probably is not even TF data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/advanced/data.py#L148-L189" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/advanced/data.py#L156-L198" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getExtra(self):
     &#34;&#34;&#34;Get the extra data specified by the settings of the corpus.
@@ -995,6 +1031,7 @@ It probably is not even TF data.</p>
         checkout,
         backend=backend,
         isExtra=True,
+        versionOverride=app.versionOverride,
     ):
         self.good = False</code></pre>
 </details>
@@ -1014,7 +1051,7 @@ It probably is not even TF data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/advanced/data.py#L67-L96" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/advanced/data.py#L67-L103" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getMain(self):
     &#34;&#34;&#34;Get the main data of the corpus.
@@ -1044,12 +1081,19 @@ It probably is not even TF data.</p>
         relative = f&#34;{appPathRep}{appName}&#34;
         self.checkout = &#34;local&#34;
 
-    if not self.getModule(org, repo, prefixSlash(relative), checkout, isBase=True):
+    if not self.getModule(
+        org,
+        repo,
+        prefixSlash(relative),
+        checkout,
+        isBase=True,
+        versionOverride=app.versionOverride,
+    ):
         self.good = False</code></pre>
 </details>
 </dd>
 <dt id="tf.advanced.data.AppData.getModule"><code class="name flex">
-<span>def <span class="ident">getModule</span></span>(<span>self, org, repo, relative, checkout, backend=None, isBase=False, isExtra=False, specs=None)</span>
+<span>def <span class="ident">getModule</span></span>(<span>self, org, repo, relative, checkout, backend=None, isBase=False, isExtra=False, specs=None, versionOverride=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Prepare to load a single module.</p>
@@ -1076,11 +1120,13 @@ The data must be obtained, but not loaded.</dd>
 <dd>Whether this module is the main data of the corpus.</dd>
 <dt><strong><code>specs</code></strong> :&ensp;<code>dict</code>, optional <code>False</code></dt>
 <dd>Additional informational attributes of the module, e.g. a DOI</dd>
+<dt><strong><code>versionOverride</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether we ask for the data of a non-standard version</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/advanced/data.py#L276-L403" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/advanced/data.py#L290-L421" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModule(
     self,
@@ -1092,6 +1138,7 @@ The data must be obtained, but not loaded.</dd>
     isBase=False,
     isExtra=False,
     specs=None,
+    versionOverride=False,
 ):
     &#34;&#34;&#34;Prepare to load a single module.
 
@@ -1120,6 +1167,8 @@ The data must be obtained, but not loaded.</dd>
         Whether this module is the main data of the corpus.
     specs: dict, optional False
         Additional informational attributes of the module, e.g. a DOI
+    versionOverride: boolean, optional False
+        Whether we ask for the data of a non-standard version
     &#34;&#34;&#34;
 
     backend = self.backend if backend is None else backendRep(backend, &#34;norm&#34;)
@@ -1154,6 +1203,7 @@ The data must be obtained, but not loaded.</dd>
             repo=repo,
             folder=relative,
             version=None if isExtra else version,
+            versionOverride=versionOverride,
             checkout=checkout,
             withPaths=True if isExtra else False,
             keep=True if isExtra else False,
@@ -1221,7 +1271,7 @@ The data must be obtained, but not loaded.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/advanced/data.py#L219-L274" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/advanced/data.py#L233-L288" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModules(self):
     &#34;&#34;&#34;Get data from additional local directories.
@@ -1292,7 +1342,7 @@ later when we are loading the standard modules.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/advanced/data.py#L191-L217" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/advanced/data.py#L200-L231" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRefs(self):
     &#34;&#34;&#34;Get data from additional modules.
@@ -1302,6 +1352,7 @@ later when we are loading the standard modules.</p></div>
     later when we are loading the standard modules.
     &#34;&#34;&#34;
 
+    app = self.app
     backend = self.backend
     refs = self.moduleRefs
     for ref in refs:
@@ -1319,7 +1370,11 @@ later when we are loading the standard modules.</p></div>
             None if parts[-1] is None or parts[-1] == backend else parts[-1]
         )
 
-        if not self.getModule(*parts[0:-1], backend=theBackend):
+        if not self.getModule(
+            *parts[0:-1],
+            backend=theBackend,
+            versionOverride=app.versionOverride,
+        ):
             self.good = False</code></pre>
 </details>
 </dd>
@@ -1342,7 +1397,7 @@ checkout specifiers to the standard modules.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/advanced/data.py#L98-L146" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/advanced/data.py#L105-L154" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getStandard(self):
     &#34;&#34;&#34;Get the data of the standard modules specified by the settings of the corpus.
@@ -1391,6 +1446,7 @@ checkout specifiers to the standard modules.</p>
             theCheckout,
             backend=theBackend,
             specs=m,
+            versionOverride=app.versionOverride,
         ):
             self.good = False</code></pre>
 </details>

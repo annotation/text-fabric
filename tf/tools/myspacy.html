@@ -41,7 +41,7 @@ language modules.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/tools/myspacy.py#L1-L392" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/tools/myspacy.py#L1-L393" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Get words and tokens from a plain text with the help of Spacy.
 
@@ -328,6 +328,7 @@ class Spacy(CheckImport):
             return []
 
         doc = self.doc
+
         if doc is None:
             console(&#34;No results available from the NLP pipeline&#34;)
             return []
@@ -339,8 +340,8 @@ class Spacy(CheckImport):
         result = []
 
         whiteRe = re.compile(r&#34;^[.?!\s]*$&#34;, re.S)
-        spuriousNlBefore = re.compile(r&#34;\n+(\W)&#34;)
-        spuriousNlAfter = re.compile(r&#34;(\W)\n+&#34;)
+        spuriousNlBefore = re.compile(r&#34;\n+(\W)&#34;, re.S)
+        spuriousNlAfter = re.compile(r&#34;(\W)\n+&#34;, re.S)
 
         for s in doc.sents:
             text = s.text.strip(&#34;\n&#34;)
@@ -483,7 +484,7 @@ def nlpOutput(text, lang=&#34;en&#34;, ner=False, parser=False):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/tools/myspacy.py#L357-L392" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/tools/myspacy.py#L358-L393" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def nlpOutput(text, lang=&#34;en&#34;, ner=False, parser=False):
     &#34;&#34;&#34;Runs the Spacy NLP pipeline and delivers the results.
@@ -553,7 +554,7 @@ called <code>xx</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/tools/myspacy.py#L56-L354" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/tools/myspacy.py#L56-L355" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Spacy(CheckImport):
     def __init__(self, lang=None, parser=False):
@@ -785,6 +786,7 @@ called <code>xx</code>.</p>
             return []
 
         doc = self.doc
+
         if doc is None:
             console(&#34;No results available from the NLP pipeline&#34;)
             return []
@@ -796,8 +798,8 @@ called <code>xx</code>.</p>
         result = []
 
         whiteRe = re.compile(r&#34;^[.?!\s]*$&#34;, re.S)
-        spuriousNlBefore = re.compile(r&#34;\n+(\W)&#34;)
-        spuriousNlAfter = re.compile(r&#34;(\W)\n+&#34;)
+        spuriousNlBefore = re.compile(r&#34;\n+(\W)&#34;, re.S)
+        spuriousNlAfter = re.compile(r&#34;(\W)\n+&#34;, re.S)
 
         for s in doc.sents:
             text = s.text.strip(&#34;\n&#34;)
@@ -883,7 +885,7 @@ Character positions start at 0.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/tools/myspacy.py#L316-L354" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/tools/myspacy.py#L317-L355" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getEntities(self):
     &#34;&#34;&#34;Get the resulting named entities.
@@ -947,7 +949,7 @@ Character positions start at 0.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/tools/myspacy.py#L266-L314" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/tools/myspacy.py#L266-L315" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getSentences(self):
     &#34;&#34;&#34;Get the resulting sentences.
@@ -969,6 +971,7 @@ Character positions start at 0.</li>
         return []
 
     doc = self.doc
+
     if doc is None:
         console(&#34;No results available from the NLP pipeline&#34;)
         return []
@@ -980,8 +983,8 @@ Character positions start at 0.</li>
     result = []
 
     whiteRe = re.compile(r&#34;^[.?!\s]*$&#34;, re.S)
-    spuriousNlBefore = re.compile(r&#34;\n+(\W)&#34;)
-    spuriousNlAfter = re.compile(r&#34;(\W)\n+&#34;)
+    spuriousNlBefore = re.compile(r&#34;\n+(\W)&#34;, re.S)
+    spuriousNlAfter = re.compile(r&#34;(\W)\n+&#34;, re.S)
 
     for s in doc.sents:
         text = s.text.strip(&#34;\n&#34;)
@@ -1029,7 +1032,7 @@ where the tokens themselves are, and spaces do not belong to the tokens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/tools/myspacy.py#L218-L264" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/tools/myspacy.py#L218-L264" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getTokens(self):
     &#34;&#34;&#34;Get the resulting tokens.
@@ -1096,7 +1099,7 @@ words on a decent laptop.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/tools/myspacy.py#L192-L216" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/tools/myspacy.py#L192-L216" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def read(self, text):
     &#34;&#34;&#34;Process a plain text.

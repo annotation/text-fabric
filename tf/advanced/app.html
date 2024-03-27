@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/advanced/app.py#L1-L729" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/advanced/app.py#L1-L735" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import types
 import traceback
@@ -103,6 +103,7 @@ class App:
         _browse,
         hoist=False,
         version=None,
+        versionOverride=False,
         checkout=&#34;&#34;,
         mod=[],
         locations=None,
@@ -128,6 +129,7 @@ class App:
         checkout: string, optional &#34;&#34;
         mod: string or iterable, optional []
         version: string, optional None
+        versionOverride: boolean, optional False
         locations, modules: string, optional None
         collection, volume: string, optional None
         api: object, optional, `None`
@@ -159,6 +161,7 @@ class App:
             appName=appName,
             api=api,
             version=version,
+            versionOverride=versionOverride,
             volume=volume,
             collection=collection,
             silent=silent,
@@ -470,6 +473,8 @@ def findApp(
         Do not give warning, and do not try to load the app in the non-legacy way.
     &#34;&#34;&#34;
 
+    versionGiven = version
+
     (commit, release, local) = (None, None, None)
     extraMod = None
 
@@ -662,6 +667,7 @@ def findApp(
             _browse,
             *args,
             version=version,
+            versionOverride=not not versionGiven,
             silent=silent,
             **kwargs,
         )
@@ -822,7 +828,7 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/advanced/app.py#L377-L643" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/advanced/app.py#L380-L649" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findApp(
     appName,
@@ -884,6 +890,8 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
         If true, accept that a legacy-app is called.
         Do not give warning, and do not try to load the app in the non-legacy way.
     &#34;&#34;&#34;
+
+    versionGiven = version
 
     (commit, release, local) = (None, None, None)
     extraMod = None
@@ -1077,6 +1085,7 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
             _browse,
             *args,
             version=version,
+            versionOverride=not not versionGiven,
             silent=silent,
             **kwargs,
         )
@@ -1114,7 +1123,7 @@ The default is as silent as possible.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/advanced/app.py#L697-L729" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/advanced/app.py#L703-L735" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadApp(silent=DEEP):
     &#34;&#34;&#34;Loads a given TF app or loads the TF app based on the working directory.
@@ -1182,7 +1191,7 @@ a customization of it.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/advanced/app.py#L646-L694" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/advanced/app.py#L652-L700" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def useApp(appName, backend):
     &#34;&#34;&#34;Make use of a corpus.
@@ -1242,7 +1251,7 @@ a customization of it.</dd>
 <dl>
 <dt id="tf.advanced.app.App"><code class="flex name class">
 <span>class <span class="ident">App</span></span>
-<span>(</span><span>cfg, appName, appPath, commit, release, local, backend, _browse, hoist=False, version=None, checkout='', mod=[], locations=None, modules=None, volume=None, collection=None, api=None, setFile='', silent='auto', loadData=True, **configOverrides)</span>
+<span>(</span><span>cfg, appName, appPath, commit, release, local, backend, _browse, hoist=False, version=None, versionOverride=False, checkout='', mod=[], locations=None, modules=None, volume=None, collection=None, api=None, setFile='', silent='auto', loadData=True, **configOverrides)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set up the advanced TF API.</p>
@@ -1260,6 +1269,8 @@ a customization of it.</dd>
 <dt><strong><code>mod</code></strong> :&ensp;<code>string</code> or <code>iterable</code>, optional <code>[]</code></dt>
 <dd>&nbsp;</dd>
 <dt><strong><code>version</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>versionOverride</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>&nbsp;</dd>
 <dt><strong><code>locations</code></strong>, <strong><code>modules</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
 <dd>&nbsp;</dd>
@@ -1282,7 +1293,7 @@ loading features. Used to experiment with performance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/advanced/app.py#L58-L374" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/advanced/app.py#L58-L377" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class App:
     def __init__(
@@ -1297,6 +1308,7 @@ loading features. Used to experiment with performance.</dd>
         _browse,
         hoist=False,
         version=None,
+        versionOverride=False,
         checkout=&#34;&#34;,
         mod=[],
         locations=None,
@@ -1322,6 +1334,7 @@ loading features. Used to experiment with performance.</dd>
         checkout: string, optional &#34;&#34;
         mod: string or iterable, optional []
         version: string, optional None
+        versionOverride: boolean, optional False
         locations, modules: string, optional None
         collection, volume: string, optional None
         api: object, optional, `None`
@@ -1353,6 +1366,7 @@ loading features. Used to experiment with performance.</dd>
             appName=appName,
             api=api,
             version=version,
+            versionOverride=versionOverride,
             volume=volume,
             collection=collection,
             silent=silent,
@@ -1639,7 +1653,7 @@ from <code>self</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/advanced/app.py#L239-L278" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/advanced/app.py#L242-L281" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def hoist(self, hoist, silent=None):
     &#34;&#34;&#34;Hoist the API handles of this TF app to the global scope.
@@ -1707,7 +1721,7 @@ without directory information and without extension.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/advanced/app.py#L280-L304" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/advanced/app.py#L283-L307" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, silent=SILENT_D):
     &#34;&#34;&#34;Loads extra features in addition to the main dataset.
@@ -1745,7 +1759,7 @@ It is called by <code>reuse</code>. Hence it needs to be present.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/advanced/app.py#L306-L311" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/advanced/app.py#L309-L314" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reinit(self):
     &#34;&#34;&#34;TF Apps may override this method.
@@ -1780,7 +1794,7 @@ call <code>reuse</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/24d24a7b6d7d0f17ba123473c3ad256dd0f50755/tf/advanced/app.py#L313-L374" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/advanced/app.py#L316-L377" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reuse(self, hoist=False):
     &#34;&#34;&#34;Re-initialize the app.
