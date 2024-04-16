@@ -43,6 +43,13 @@ and in its top-level directory run the command:</strong></p>
 </code></pre>
 <h2 id="12">12</h2>
 <h3 id="123">12.3</h3>
+<h4 id="1236">12.3.6</h4>
+<p>2024-04-16</p>
+<ul>
+<li>Minimal fixes in <code><a title="tf.convert.tei" href="../convert/tei.html">tf.convert.tei</a></code>: it can handle a biography.</li>
+<li>Fixed <code>prettyTuple()</code> when passed <code>_asString=True</code>: it did not pass this on
+to <code>pretty()</code> which caused a Python error.</li>
+</ul>
 <h4 id="1235">12.3.5</h4>
 <p>2024-03-26</p>
 <ul>
@@ -342,7 +349,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -416,6 +423,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
 <li><a href="#123">12.3</a><ul>
+<li><a href="#1236">12.3.6</a></li>
 <li><a href="#1235">12.3.5</a></li>
 <li><a href="#1234">12.3.4</a></li>
 <li><a href="#1233">12.3.3</a></li>

@@ -55,8 +55,7 @@ that cannot be changed.</p>
 In this directory we'll look for two optional files:</p>
 <ul>
 <li>
-<p>a file <code>tei.yaml</code> in which you specify a bunch of values
-Last, but not least, you can assemble all the input parameters needed to
+<p>a file <code>tei.yaml</code> in which you specify a bunch of values.
 get the conversion off the ground.</p>
 </li>
 <li>
@@ -79,7 +78,7 @@ TEI element;</li>
 <code>before</code> and <code>after</code> functions should take the following arguments</p>
 <ul>
 <li><code>cv</code>: the walker converter object;</li>
-<li><code>cur</code>: the dictionary with information that has gathered during the
+<li><code>cur</code>: the dictionary with information that has been gathered during the
 conversion so far and that can be used to dump new information
 into; it is nonlocal, i.e. all invocations of the hooks get the same
 dictionary object passed to them;</li>
@@ -175,7 +174,7 @@ where the <code>description</code> will be filled with the text<pre><code>The id
 <p>list, optional <code>[]</code></p>
 <p>Which TEI-based schemas are to be used.
 For each model there should be an XSD or RNG file with that name in the <code>schema</code>
-directory. The <code>tei_all</code> schema is know to TF, no need to specify that one.</p>
+directory. The <code>tei_all</code> schema is known to TF, no need to specify that one.</p>
 <p>We'll try a RelaxNG schema (<code>.rng</code>) first. If that exists, we use it for validation
 with JING, and we also convert it with TRANG to an XSD schema, which we use for
 analysing the schema: we want to know which elements are mixed and pure.</p>
@@ -227,6 +226,9 @@ receive NLP additions later on. That version will then lose the <code>pre</code>
 <p>boolean, optional <code>False</code></p>
 <p>Whether to take words as the basic entities (slots).
 If not, the characters are taken as basic entities.</p>
+<p>If you use an NLP pipeline to detect tokens, use the value <code>False</code>.
+The preliminary dataset is then based on characters, but the final dataset that we build
+from there is based on tokens, which are mostly words and non-word characters.</p>
 <h3 id="parentedges"><code>parentEdges</code></h3>
 <p>boolean, optional <code>True</code></p>
 <p>Whether to create edges between nodes that correspond to XML elements and their parents.</p>
@@ -285,12 +287,18 @@ attributes, like <code>type="original"</code>. Then only parents that carry thos
 will be chopped up into pages.
 You can specify multiple values for each attribute. Elements that carry one of these
 values are candidates for having their content divided into pages.</p>
-<p>We assume that the material to be divided starts with a <code>&lt;pb&gt;</code> and we translate
-it to a page element that we close either at the next <code>&lt;pb&gt;</code> or at the end of the <code>div</code>.</p>
+<p>We assume that the material to be divided starts with a <code>&lt;pb&gt;</code> (as the TEI-guidelines
+prescribe) and we translate it to a page element that we close either at the
+next <code>&lt;pb&gt;</code> or at the end of the <code>div</code>.</p>
 <p>But if you specify <code>pbAtTop=False</code>, we assume that the <code>&lt;pb&gt;</code> marks the end of
 the corresponding page element. We start the first page at the start of the enclosing
-element. If there is material at between the last <code>&lt;pb&gt;</code> til the end of the enclosing
+element. If there is material at between the last <code>&lt;pb&gt;</code> till the end of the enclosing
 element, we generate an extra page node without features.</p>
+<h3 id="procins"><code>procins</code></h3>
+<p>boolean, optional <code>False</code></p>
+<p>If True, processing instructions will be treated.
+Processing instruction <code>&lt;?foo bar="xxx"?&gt;</code> will be converted as if it were an empty
+element named <code>foo</code> with attribute <code>bar</code> with value <code>xxx</code>.</p>
 <h3 id="sectionmodel"><code>sectionModel</code></h3>
 <p>dict, optional <code>{}</code></p>
 <p>If not passed, or an empty dict, section model I is assumed.
@@ -336,11 +344,6 @@ siblings of other element types.
 The section heading for the second level is taken from elements in the neighbourhood,
 whose name is given in the parameter <code>element</code>, but only if they carry some attributes,
 which can be specified in the <code>attributes</code> parameter.</p>
-<h3 id="procins"><code>procins</code></h3>
-<p>boolean, optional <code>False</code></p>
-<p>If True, processing instructions will be treated.
-Processing instruction <code>&lt;?foo bar="xxx"?&gt;</code> will be converted as if it were an empty
-element named <code>foo</code> with attribute <code>bar</code> with value <code>xxx</code>.</p>
 <h1 id="usage">Usage</h1>
 <h2 id="command-line">Command-line</h2>
 <pre><code class="language-sh">tf-fromtei tasks flags
@@ -394,7 +397,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/tei.py#L1-L4297" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/tei.py#L1-L4315" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -434,8 +437,7 @@ that cannot be changed.
 We assume that you have a `programs` directory at the top-level of your repo.
 In this directory we&#39;ll look for two optional files:
 
-*   a file `tei.yaml` in which you specify a bunch of values
-    Last, but not least, you can assemble all the input parameters needed to
+*   a file `tei.yaml` in which you specify a bunch of values.
     get the conversion off the ground.
 
 *   a file `tei.py` in which you define custom functions that are executed at certain
@@ -456,7 +458,7 @@ In this directory we&#39;ll look for two optional files:
         The  `before` and `after` functions should take the following arguments
 
         *   `cv`: the walker converter object;
-        *   `cur`: the dictionary with information that has gathered during the
+        *   `cur`: the dictionary with information that has been gathered during the
             conversion so far and that can be used to dump new information
             into; it is nonlocal, i.e. all invocations of the hooks get the same
             dictionary object passed to them;
@@ -564,7 +566,7 @@ list, optional `[]`
 
 Which TEI-based schemas are to be used.
 For each model there should be an XSD or RNG file with that name in the `schema`
-directory. The `tei_all` schema is know to TF, no need to specify that one.
+directory. The `tei_all` schema is known to TF, no need to specify that one.
 
 We&#39;ll try a RelaxNG schema (`.rng`) first. If that exists, we use it for validation
 with JING, and we also convert it with TRANG to an XSD schema, which we use for
@@ -640,6 +642,10 @@ boolean, optional `False`
 
 Whether to take words as the basic entities (slots).
 If not, the characters are taken as basic entities.
+
+If you use an NLP pipeline to detect tokens, use the value `False`.
+The preliminary dataset is then based on characters, but the final dataset that we build
+from there is based on tokens, which are mostly words and non-word characters.
 
 ### `parentEdges`
 
@@ -719,14 +725,23 @@ will be chopped up into pages.
 You can specify multiple values for each attribute. Elements that carry one of these
 values are candidates for having their content divided into pages.
 
-We assume that the material to be divided starts with a `&lt;pb&gt;` and we translate
-it to a page element that we close either at the next `&lt;pb&gt;` or at the end of the `div`.
+We assume that the material to be divided starts with a `&lt;pb&gt;` (as the TEI-guidelines
+prescribe) and we translate it to a page element that we close either at the
+next `&lt;pb&gt;` or at the end of the `div`.
 
 But if you specify `pbAtTop=False`, we assume that the `&lt;pb&gt;` marks the end of
 the corresponding page element. We start the first page at the start of the enclosing
-element. If there is material at between the last `&lt;pb&gt;` til the end of the enclosing
+element. If there is material at between the last `&lt;pb&gt;` till the end of the enclosing
 element, we generate an extra page node without features.
 
+
+### `procins`
+
+boolean, optional `False`
+
+If True, processing instructions will be treated.
+Processing instruction `&lt;?foo bar=&#34;xxx&#34;?&gt;` will be converted as if it were an empty
+element named `foo` with attribute `bar` with value `xxx`.
 
 ### `sectionModel`
 
@@ -793,14 +808,6 @@ siblings of other element types.
 The section heading for the second level is taken from elements in the neighbourhood,
 whose name is given in the parameter `element`, but only if they carry some attributes,
 which can be specified in the `attributes` parameter.
-
-### `procins`
-
-boolean, optional `False`
-
-If True, processing instructions will be treated.
-Processing instruction `&lt;?foo bar=&#34;xxx&#34;?&gt;` will be converted as if it were an empty
-element named `foo` with attribute `bar` with value `xxx`.
 
 
 # Usage
@@ -3098,7 +3105,21 @@ class TEI(CheckImport):
             elif sectionModel == &#34;I&#34;:
                 template = cur[&#34;template&#34;]
 
-                if template == &#34;bibliolist&#34;:
+                if template == &#34;biolist&#34;:
+                    if thisTag == TEI_HEADER:
+                        outcome = True
+                    elif any(n[0] == TEI_HEADER for n in nest[0:-1]):
+                        outcome = False
+                    elif nNest not in {5, 6}:
+                        outcome = False
+                    else:
+                        parentTag = nest[-2][0]
+                        if nNest == 5:
+                            outcome = thisTag != &#34;listPerson&#34;
+                        else:
+                            outcome = parentTag == &#34;listPerson&#34;
+
+                elif template == &#34;bibliolist&#34;:
                     if thisTag == TEI_HEADER:
                         outcome = True
                     elif any(n[0] == TEI_HEADER for n in nest[0:-1]):
@@ -4710,7 +4731,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/tei.py#L748-L765" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/tei.py#L752-L769" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRefs(tag, atts, xmlFile):
     refAtt = REFERENCING.get(tag, None)
@@ -4740,7 +4761,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/tei.py#L4283-L4293" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/tei.py#L4301-L4311" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(
@@ -4763,7 +4784,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/tei.py#L731-L745" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/tei.py#L735-L749" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCssInfo():
     &#34;&#34;&#34;Make the CSS info for the style sheet.&#34;&#34;&#34;
@@ -4911,7 +4932,7 @@ relevant TF version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/tei.py#L768-L4280" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/tei.py#L772-L4298" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI(CheckImport):
     def __init__(
@@ -6848,7 +6869,21 @@ relevant TF version:</p>
             elif sectionModel == &#34;I&#34;:
                 template = cur[&#34;template&#34;]
 
-                if template == &#34;bibliolist&#34;:
+                if template == &#34;biolist&#34;:
+                    if thisTag == TEI_HEADER:
+                        outcome = True
+                    elif any(n[0] == TEI_HEADER for n in nest[0:-1]):
+                        outcome = False
+                    elif nNest not in {5, 6}:
+                        outcome = False
+                    else:
+                        parentTag = nest[-2][0]
+                        if nNest == 5:
+                            outcome = thisTag != &#34;listPerson&#34;
+                        else:
+                            outcome = parentTag == &#34;listPerson&#34;
+
+                elif template == &#34;bibliolist&#34;:
                     if thisTag == TEI_HEADER:
                         outcome = True
                     elif any(n[0] == TEI_HEADER for n in nest[0:-1]):
@@ -8470,7 +8505,7 @@ that code between automatic generation of files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/tei.py#L3800-L4164" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/tei.py#L3818-L4182" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self, tokenBased=False):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -8855,7 +8890,7 @@ There should be a valid TF dataset and app configuration in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/tei.py#L4168-L4204" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/tei.py#L4186-L4222" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def browseTask(self):
     &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
@@ -8923,7 +8958,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/tei.py#L1581-L2260" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/tei.py#L1585-L2264" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -9621,7 +9656,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/tei.py#L3691-L3749" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/tei.py#L3709-L3767" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -9697,7 +9732,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/tei.py#L2264-L2277" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/tei.py#L2268-L2281" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -9738,7 +9773,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/tei.py#L2281-L3689" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/tei.py#L2285-L3707" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -10162,7 +10197,21 @@ that has access to this data.</p>
         elif sectionModel == &#34;I&#34;:
             template = cur[&#34;template&#34;]
 
-            if template == &#34;bibliolist&#34;:
+            if template == &#34;biolist&#34;:
+                if thisTag == TEI_HEADER:
+                    outcome = True
+                elif any(n[0] == TEI_HEADER for n in nest[0:-1]):
+                    outcome = False
+                elif nNest not in {5, 6}:
+                    outcome = False
+                else:
+                    parentTag = nest[-2][0]
+                    if nNest == 5:
+                        outcome = thisTag != &#34;listPerson&#34;
+                    else:
+                        outcome = parentTag == &#34;listPerson&#34;
+
+            elif template == &#34;bibliolist&#34;:
                 if thisTag == TEI_HEADER:
                     outcome = True
                 elif any(n[0] == TEI_HEADER for n in nest[0:-1]):
@@ -11165,7 +11214,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/tei.py#L1482-L1504" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/tei.py#L1486-L1508" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getParser(self):
     &#34;&#34;&#34;Configure the LXML parser.
@@ -11200,7 +11249,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/tei.py#L1440-L1480" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/tei.py#L1444-L1484" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getSwitches(self, xmlPath):
     verbose = self.verbose
@@ -11266,7 +11315,7 @@ that contains the file names in that folder, sorted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/tei.py#L1506-L1579" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/tei.py#L1510-L1583" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the TEI source files.
@@ -11364,7 +11413,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/tei.py#L3751-L3796" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/tei.py#L3769-L3814" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -11422,7 +11471,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/tei.py#L1397-L1438" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/tei.py#L1401-L1442" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readSchemas(self):
     schemaDir = self.schemaDir
@@ -11506,7 +11555,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d242901055fb9fd65dd9af8d50a1290309372cce/tf/convert/tei.py#L4206-L4280" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/tei.py#L4224-L4298" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,
@@ -11667,8 +11716,8 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#parentedges">parentEdges</a></li>
 <li><a href="#siblingedges">siblingEdges</a></li>
 <li><a href="#pagemodel">pageModel</a></li>
-<li><a href="#sectionmodel">sectionModel</a></li>
 <li><a href="#procins">procins</a></li>
+<li><a href="#sectionmodel">sectionModel</a></li>
 </ul>
 </li>
 </ul>
