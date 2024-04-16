@@ -36,8 +36,7 @@ that cannot be changed.
 We assume that you have a `programs` directory at the top-level of your repo.
 In this directory we'll look for two optional files:
 
-*   a file `tei.yaml` in which you specify a bunch of values
-    Last, but not least, you can assemble all the input parameters needed to
+*   a file `tei.yaml` in which you specify a bunch of values.
     get the conversion off the ground.
 
 *   a file `tei.py` in which you define custom functions that are executed at certain
@@ -58,7 +57,7 @@ In this directory we'll look for two optional files:
         The  `before` and `after` functions should take the following arguments
 
         *   `cv`: the walker converter object;
-        *   `cur`: the dictionary with information that has gathered during the
+        *   `cur`: the dictionary with information that has been gathered during the
             conversion so far and that can be used to dump new information
             into; it is nonlocal, i.e. all invocations of the hooks get the same
             dictionary object passed to them;
@@ -166,7 +165,7 @@ list, optional `[]`
 
 Which TEI-based schemas are to be used.
 For each model there should be an XSD or RNG file with that name in the `schema`
-directory. The `tei_all` schema is know to TF, no need to specify that one.
+directory. The `tei_all` schema is known to TF, no need to specify that one.
 
 We'll try a RelaxNG schema (`.rng`) first. If that exists, we use it for validation
 with JING, and we also convert it with TRANG to an XSD schema, which we use for
@@ -242,6 +241,10 @@ boolean, optional `False`
 
 Whether to take words as the basic entities (slots).
 If not, the characters are taken as basic entities.
+
+If you use an NLP pipeline to detect tokens, use the value `False`.
+The preliminary dataset is then based on characters, but the final dataset that we build
+from there is based on tokens, which are mostly words and non-word characters.
 
 ### `parentEdges`
 
@@ -321,14 +324,23 @@ will be chopped up into pages.
 You can specify multiple values for each attribute. Elements that carry one of these
 values are candidates for having their content divided into pages.
 
-We assume that the material to be divided starts with a `<pb>` and we translate
-it to a page element that we close either at the next `<pb>` or at the end of the `div`.
+We assume that the material to be divided starts with a `<pb>` (as the TEI-guidelines
+prescribe) and we translate it to a page element that we close either at the
+next `<pb>` or at the end of the `div`.
 
 But if you specify `pbAtTop=False`, we assume that the `<pb>` marks the end of
 the corresponding page element. We start the first page at the start of the enclosing
-element. If there is material at between the last `<pb>` til the end of the enclosing
+element. If there is material at between the last `<pb>` till the end of the enclosing
 element, we generate an extra page node without features.
 
+
+### `procins`
+
+boolean, optional `False`
+
+If True, processing instructions will be treated.
+Processing instruction `<?foo bar="xxx"?>` will be converted as if it were an empty
+element named `foo` with attribute `bar` with value `xxx`.
 
 ### `sectionModel`
 
@@ -395,14 +407,6 @@ siblings of other element types.
 The section heading for the second level is taken from elements in the neighbourhood,
 whose name is given in the parameter `element`, but only if they carry some attributes,
 which can be specified in the `attributes` parameter.
-
-### `procins`
-
-boolean, optional `False`
-
-If True, processing instructions will be treated.
-Processing instruction `<?foo bar="xxx"?>` will be converted as if it were an empty
-element named `foo` with attribute `bar` with value `xxx`.
 
 
 # Usage
@@ -2700,7 +2704,21 @@ class TEI(CheckImport):
             elif sectionModel == "I":
                 template = cur["template"]
 
-                if template == "bibliolist":
+                if template == "biolist":
+                    if thisTag == TEI_HEADER:
+                        outcome = True
+                    elif any(n[0] == TEI_HEADER for n in nest[0:-1]):
+                        outcome = False
+                    elif nNest not in {5, 6}:
+                        outcome = False
+                    else:
+                        parentTag = nest[-2][0]
+                        if nNest == 5:
+                            outcome = thisTag != "listPerson"
+                        else:
+                            outcome = parentTag == "listPerson"
+
+                elif template == "bibliolist":
                     if thisTag == TEI_HEADER:
                         outcome = True
                     elif any(n[0] == TEI_HEADER for n in nest[0:-1]):

@@ -948,6 +948,7 @@ def prettyTuple(app, tup, seq=None, _asString=False, item=RESULT, **options):
         h = app.pretty(
             t,
             highlights=highlights,
+            _asString=asString,
             **display.consume(options, "highlights"),
         )
         if asString:

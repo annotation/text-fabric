@@ -20,6 +20,14 @@ pip install -e .
 
 ### 12.3
 
+#### 12.3.6
+
+2024-04-16
+
+* Minimal fixes in `tf.convert.tei`: it can handle a biography.
+* Fixed `prettyTuple()` when passed `_asString=True`: it did not pass this on
+  to `pretty()` which caused a Python error.
+
 #### 12.3.5
 
 2024-03-26
