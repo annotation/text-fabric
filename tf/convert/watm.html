@@ -166,7 +166,7 @@ of node. The only parallel are the slot nodes of TF, which corresponds to the
 tokens of the text in WATM.</p>
 <p>Every node in TF is linked to a set of slot nodes.
 As such it can be mapped to an annotation to the corresponding tokens.
-Features of such nodes can be mapped to annotations to annotations.</p>
+Features of such nodes can be mapped to annotations on annotations.</p>
 <p>TF also has edges. These can be mapped to WATM annotations whose targets are
 pairs: one for the thing the edge is <em>from</em>, and one for the thing the edge is <em>to</em>.
 These things are typical annotations that correspond to TF nodes, since TF edges
@@ -184,19 +184,19 @@ you may read <em>nodes</em> and <em>node types</em> if the TF dataset does not h
 precursor. Likewise, for <em>attributes</em> you may read <em>features</em>.</p>
 <h1 id="the-specifics">The specifics</h1>
 <p>We generate tokens and annotations out of a TF dataset. Here is what we deliver
-and in
-what form:</p>
+and in what form. The files are either <code>.tsv</code> or <code>.json</code>, dependent on the
+configuration setting <code>asTsv</code> in the <code>watm.yaml</code> file in the project.</p>
 <ul>
-<li>a bunch of files <code>text-0.json</code>, <code>text-1.json</code>: with the text segments in an array;
+<li>a bunch of files <code>text-0.</code><em>ext</em>, <code>text-1.</code><em>ext</em>:
+containing a list of tokenlike segments;
 Each file corresponds with a section in the TF dataset; the level of the sections
 that correspond with these files is given in the <code>watm.yaml</code> config file,
 under the key <code>textRepoLevel</code>. It can have the values <code>1</code> (top level), <code>2</code>, and <code>3</code>
 (lower levels).</li>
-<li>a bunch of files <code>anno-1.json</code>, <code>anno-2.json, ...: all generated annotations;
-We pack at most 400,000 annotations in one file, that keeps their size
-below 50MB,
+<li>a bunch of files <code>anno-1.</code><em>ext</em>, <code>anno-2.</code><em>ext</em>, &hellip;: all generated annotations;
+We pack at most 400,000 annotations in one file, that keeps their size below 50MB,
 so that they still can live in a git directory without large file support.
-The numbering in the</code>anno-<code>*i*&lt;code&gt;.json&lt;/code&gt; files it independent of the numbering in
+The numbering in the <code>anno-</code><em>i</em><code>.*ext* files it independent of the numbering in
 the</code>text-`<em>i</em><code>.json</code> files!</li>
 <li>a pair of files <code>anno2node.tsv</code> and <code>pos2node.tsv</code> that map annotations resp. text
 positions to their corresponding TF nodes.</li>
@@ -211,8 +211,17 @@ positions to their corresponding TF nodes.</li>
   ]
 }
 </code></pre>
+<p>These tokens may contain newlines and tabs.</p>
+<p>A <code>text-i.tsv</code> is a TSV file with the following structure:</p>
+<pre><code>token
+token1
+token2
+...
+</code></pre>
+<p>The first line is a header line with fixed content: <code>token</code>.</p>
+<p>Newlines and tabs must be escaped in TSV files. We do that by <code>\n</code> and <code>\t</code>.</p>
 <ul>
-<li>each item in <code>_ordered_segments</code> corresponds to one token;</li>
+<li>each <code>token1</code>, <code>token2</code>, &hellip; corresponds to one token;</li>
 <li>the item contains the text of the token plus the subsequent whitespace, if any;</li>
 <li>if the corpus is converted from TEI, we skip all material inside the
 TEI-header.</li>
@@ -272,19 +281,36 @@ logical value</strong>, otherwise no value. <code>rafter</code> analogously.</li
 </tbody>
 </table>
 <h2 id="format-of-the-annotation-files">Format of the annotation files</h2>
-<p>The <code>anno-1.json</code>, <code>anno-2.json</code>, &hellip; files are JSON file with the following
-structure:</p>
+<p>The <code>anno-1.json</code> file is a JSON file with the following structure:</p>
 <pre><code>{
- &quot;a000nnn&quot;: [
-  &quot;kind&quot;,
-  &quot;namespace&quot;,
-  &quot;body&quot;,
-  &quot;target&quot;
- ],{
+ &quot;a000001&quot;: [
+  &quot;element&quot;,
+  &quot;tei&quot;,
+  &quot;p&quot;,
+  &quot;0:10-60&quot;
+ ],
+ &quot;a000002&quot;: [
+  &quot;element&quot;,
+  &quot;tei&quot;,
+  &quot;p&quot;,
+  &quot;0:60-70&quot;
+ ],
  ...
 }
 </code></pre>
-<p>It is a big dictionary, keyed by annotation ids and each value is the data of
+<p>A <code>anno-i.tsv</code> is a TSV file with the following structure:</p>
+<pre><code>annoid  kind    namespace   body    target
+a000001 element tei p   0:10-60
+a000002 element tei p   0:60-70
+...
+</code></pre>
+<p>The first line is a header line with fixed content: de field names separeted by tabs.</p>
+<p>Newlines and tabs must be escaped in TSV files. We do that by <code>\n</code> and <code>\t</code>.
+It only has to be done for the <code>body</code> field.</p>
+<p>When reading these lines, it is best to collect the information in a dict,
+keyed by the <em>annoid</em>, whose values are lists of the remaining fields, just as in
+the JSON.</p>
+<p>You get a big dictionary, keyed by annotation ids and each value is the data of
 an annotation, divided in the following fields:</p>
 <ul>
 <li>
@@ -464,7 +490,7 @@ reaching the WATM.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L1-L2109" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c749d8d1245fb64d8bb4fe461367ce1209a59b36/tf/convert/watm.py#L1-L2148" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Export to Web Annotation Text Model
 
@@ -600,7 +626,7 @@ tokens of the text in WATM.
 
 Every node in TF is linked to a set of slot nodes.
 As such it can be mapped to an annotation to the corresponding tokens.
-Features of such nodes can be mapped to annotations to annotations.
+Features of such nodes can be mapped to annotations on annotations.
 
 TF also has edges. These can be mapped to WATM annotations whose targets are
 pairs: one for the thing the edge is *from*, and one for the thing the edge is *to*.
@@ -622,19 +648,19 @@ precursor. Likewise, for *attributes* you may read *features*.
 # The specifics
 
 We generate tokens and annotations out of a TF dataset. Here is what we deliver
-and in
-what form:
+and in what form. The files are either `.tsv` or `.json`, dependent on the
+configuration setting `asTsv` in the `watm.yaml` file in the project.
 
-*   a bunch of files `text-0.json`, `text-1.json`: with the text segments in an array;
+*   a bunch of files `text-0.`*ext*, `text-1.`*ext*:
+    containing a list of tokenlike segments;
     Each file corresponds with a section in the TF dataset; the level of the sections
     that correspond with these files is given in the `watm.yaml` config file,
     under the key `textRepoLevel`. It can have the values `1` (top level), `2`, and `3`
     (lower levels).
-*   a bunch of files `anno-1.json`, `anno-2.json, ...: all generated annotations;
-    We pack at most 400,000 annotations in one file, that keeps their size
-    below 50MB,
+*   a bunch of files `anno-1.`*ext*, `anno-2.`*ext*, ...: all generated annotations;
+    We pack at most 400,000 annotations in one file, that keeps their size below 50MB,
     so that they still can live in a git directory without large file support.
-    The numbering in the `anno-`*i*`.json` files it independent of the numbering in
+    The numbering in the `anno-`*i*`.*ext* files it independent of the numbering in
     the `text-`*i*`.json` files!
 *   a pair of files `anno2node.tsv` and `pos2node.tsv` that map annotations resp. text
     positions to their corresponding TF nodes.
@@ -652,7 +678,23 @@ A `text-i.json` is a JSON file with the following structure:
   ]
 }
 ```
-*   each item in `_ordered_segments` corresponds to one token;
+
+These tokens may contain newlines and tabs.
+
+A `text-i.tsv` is a TSV file with the following structure:
+
+```
+token
+token1
+token2
+...
+```
+
+The first line is a header line with fixed content: `token`.
+
+Newlines and tabs must be escaped in TSV files. We do that by `\\n` and `\\t`.
+
+*   each `token1`, `token2`, ... corresponds to one token;
 *   the item contains the text of the token plus the subsequent whitespace, if any;
 *   if the corpus is converted from TEI, we skip all material inside the
     TEI-header.
@@ -698,22 +740,45 @@ str | `improbè` | `efflagitando` | empty | empty | `tandem`
 
 ## Format of the annotation files
 
-The `anno-1.json`, `anno-2.json`, ... files are JSON file with the following
-structure:
+The `anno-1.json` file is a JSON file with the following structure:
 
 ```
 {
- &#34;a000nnn&#34;: [
-  &#34;kind&#34;,
-  &#34;namespace&#34;,
-  &#34;body&#34;,
-  &#34;target&#34;
- ],{
+ &#34;a000001&#34;: [
+  &#34;element&#34;,
+  &#34;tei&#34;,
+  &#34;p&#34;,
+  &#34;0:10-60&#34;
+ ],
+ &#34;a000002&#34;: [
+  &#34;element&#34;,
+  &#34;tei&#34;,
+  &#34;p&#34;,
+  &#34;0:60-70&#34;
+ ],
  ...
 }
 ```
 
-It is a big dictionary, keyed by annotation ids and each value is the data of
+A `anno-i.tsv` is a TSV file with the following structure:
+
+```
+annoid  kind    namespace   body    target
+a000001 element tei p   0:10-60
+a000002 element tei p   0:60-70
+...
+```
+
+The first line is a header line with fixed content: de field names separeted by tabs.
+
+Newlines and tabs must be escaped in TSV files. We do that by `\\n` and `\\t`.
+It only has to be done for the `body` field.
+
+When reading these lines, it is best to collect the information in a dict,
+keyed by the *annoid*, whose values are lists of the remaining fields, just as in
+the JSON.
+
+You get a big dictionary, keyed by annotation ids and each value is the data of
 an annotation, divided in the following fields:
 
 *   `kind`: the kind of annotation:
@@ -2602,7 +2667,7 @@ class WATMS:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L470-L481" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c749d8d1245fb64d8bb4fe461367ce1209a59b36/tf/convert/watm.py#L509-L520" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rep(status):
     &#34;&#34;&#34;Represent a boolean status for a message to the console.
@@ -2658,7 +2723,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L484-L2007" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c749d8d1245fb64d8bb4fe461367ce1209a59b36/tf/convert/watm.py#L523-L2046" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WATM:
     &#34;&#34;&#34;The export machinery is exposed as a class, wrapped around a TF dataset.&#34;&#34;&#34;
@@ -4208,7 +4273,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L1037-L1060" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c749d8d1245fb64d8bb4fe461367ce1209a59b36/tf/convert/watm.py#L1076-L1099" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def numEqual(nTF, nWA, silent):
@@ -4257,7 +4322,7 @@ def numEqual(nTF, nWA, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L1062-L1113" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c749d8d1245fb64d8bb4fe461367ce1209a59b36/tf/convert/watm.py#L1101-L1152" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def strEqual(tf, wa, silent):
@@ -4329,7 +4394,7 @@ tokens and/or annotations in WATM.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L690-L885" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c749d8d1245fb64d8bb4fe461367ce1209a59b36/tf/convert/watm.py#L729-L924" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeAnno(self):
     &#34;&#34;&#34;Make all annotations.
@@ -4540,7 +4605,7 @@ to indices in this list is stored in member <code>waFromTF</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L604-L669" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c749d8d1245fb64d8bb4fe461367ce1209a59b36/tf/convert/watm.py#L643-L708" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeText(self):
     &#34;&#34;&#34;Creates the text data.
@@ -4630,7 +4695,7 @@ or <code>tuple</code> of <code>strings</code></dt>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L671-L688" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c749d8d1245fb64d8bb4fe461367ce1209a59b36/tf/convert/watm.py#L710-L727" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mkAnno(self, kind, ns, body, target):
     &#34;&#34;&#34;Make a single annotation and return its id.
@@ -4676,7 +4741,7 @@ If <code>condensed</code> is True, we suppress this output.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L1115-L1174" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c749d8d1245fb64d8bb4fe461367ce1209a59b36/tf/convert/watm.py#L1154-L1213" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testAll(self, condensed=False):
     &#34;&#34;&#34;Test all aspects of the WATM conversion.
@@ -4760,7 +4825,7 @@ In turn, these features have been translated into annotations of kind
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L1539-L1741" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c749d8d1245fb64d8bb4fe461367ce1209a59b36/tf/convert/watm.py#L1578-L1780" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testAttributes(self):
     &#34;&#34;&#34;Test the attributes.
@@ -4985,7 +5050,7 @@ by annotations.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L1830-L2007" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c749d8d1245fb64d8bb4fe461367ce1209a59b36/tf/convert/watm.py#L1869-L2046" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testEdges(self):
     &#34;&#34;&#34;Test the edges.
@@ -5183,7 +5248,7 @@ dataset.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L1367-L1537" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c749d8d1245fb64d8bb4fe461367ce1209a59b36/tf/convert/watm.py#L1406-L1576" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testElements(self):
     &#34;&#34;&#34;Test the elements.
@@ -5375,7 +5440,7 @@ the kind <code>anno</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L1743-L1828" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c749d8d1245fb64d8bb4fe461367ce1209a59b36/tf/convert/watm.py#L1782-L1867" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testExtra(self):
     &#34;&#34;&#34;Test the extra data for on-the-fly annotations.
@@ -5477,7 +5542,7 @@ We unpack targets if they contain structured information.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L1176-L1326" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c749d8d1245fb64d8bb4fe461367ce1209a59b36/tf/convert/watm.py#L1215-L1365" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testSetup(self):
     &#34;&#34;&#34;Prepare the tests.
@@ -5647,7 +5712,7 @@ whether the TF and WATM datasets agree on it.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L1328-L1365" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c749d8d1245fb64d8bb4fe461367ce1209a59b36/tf/convert/watm.py#L1367-L1404" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testText(self):
     &#34;&#34;&#34;Test the text.
@@ -5702,7 +5767,7 @@ divided over several files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L887-L1035" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c749d8d1245fb64d8bb4fe461367ce1209a59b36/tf/convert/watm.py#L926-L1074" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeAll(self):
     &#34;&#34;&#34;Write text and annotation data to disk.
@@ -5893,7 +5958,7 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L2010-L2109" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c749d8d1245fb64d8bb4fe461367ce1209a59b36/tf/convert/watm.py#L2049-L2148" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WATMS:
     &#34;&#34;&#34;Export corpora that are divided over multiple TF datasets.
@@ -6013,7 +6078,7 @@ Otherwise all datasets will be converted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L2064-L2109" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c749d8d1245fb64d8bb4fe461367ce1209a59b36/tf/convert/watm.py#L2103-L2148" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def produce(self, doc=None):
     &#34;&#34;&#34;Convert all relevant TF datasets.
