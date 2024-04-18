@@ -168,6 +168,8 @@ what form:
     so that they still can live in a git directory without large file support.
     The numbering in the `anno-`*i*`.json` files it independent of the numbering in
     the `text-`*i*`.json` files!
+*   a pair of files `anno2node.tsv` and `pos2node.tsv` that map annotations resp. text
+    positions to their corresponding TF nodes.
 
 ## Format of the text files
 
@@ -254,8 +256,6 @@ an annotation, divided in the following fields:
     *   `attribute`: targets an annotation (an *element* or *pi*), the body has
         the shape *name*`=`*value*,
         the name and value of the attribute in question;
-    *   `node`: targets an individual *token* or *element* or *pi*,
-        the body is the TF node (a number) of that *token* / *element* / *pi*;
     *   `edge`: targets two node annotations, the body has the shape
         `*name* or `*name*`=`*value*,
         where *name* is the name of the edge and *value* is the label of the edge
@@ -336,6 +336,21 @@ parameters can be set:
     node types. Because we must guarantee that all tokens in the corpus fall under
     one of the nodes belonging to this section level.
 
+*   `excludeElements`: the names of elements for which no annotations will be generated.
+    All node and edge features that target those elements will be filtered, so that
+    there are no annotations that target non-existing annotations.
+
+*   `asTsv`: the text and anno files are written as tsv instead of json.
+
+    The text files consist of one token per line.
+    The newline token is written as `\n`.
+
+    The anno files are written as one anno per line. The tab separated fields
+    are *anno id*, *kind*, *namespace*, *body*, *target*.
+    Any tab or newline in the body must be written as `\t` resp. `\n`.
+
+    The tsv files will have exactly one header line.
+
 # Caveat
 
 The WATM representation of the corpus is a faithful and complete representation
@@ -387,6 +402,9 @@ I am aware of the following:
 
     In practice, the meaning of the features in TF are known, and hence the attributes
     in the WATM data, so this is not a blocking problem for now.
+
+*   The `excludeElements` setting will prevent some TF information from
+    reaching the WATM.
 """
 
 import collections
@@ -401,6 +419,8 @@ from tf.app import use
 
 
 CONFIG_FILE = "watm.yaml"
+NODEMAP_FILE = "anno2node.tsv"
+SLOTMAP_FILE = "pos2node.tsv"
 
 TT_NAME = "watm"
 
@@ -435,7 +455,6 @@ NS_FROM_FEAT = dict(
     rstr=NS_TF,
 )
 
-KIND_NODE = "node"
 KIND_EDGE = "edge"
 KIND_ELEM = "element"
 KIND_PI = "pi"
@@ -534,12 +553,17 @@ class WATM:
             console(f"textRepoLevel is section level '{textRepoType}'")
         self.textRepoType = textRepoType
 
+        self.excludeElements = set(cfg.excludeElements or [])
+        self.asTsv = cfg.asTsv
+
         self.L = api.L
         self.Es = api.Es
         self.F = F
         self.E = E
         self.Fs = api.Fs
         self.slotType = self.F.otype.slotType
+        self.maxSlotPlus = self.F.otype.maxSlot + 1
+        self.maxNodePlus = self.F.otype.maxNode + 1
         self.otypes = self.F.otype.all
         self.info = app.info
         self.repoLocation = app.repoLocation
@@ -694,6 +718,7 @@ class WATM:
         nsOrig = self.nsOrig
         skipMeta = self.skipMeta
         extra = self.extra
+        excludeElements = self.excludeElements
 
         waFromTF = self.waFromTF
 
@@ -714,49 +739,43 @@ class WATM:
             return f"{ts[0]}:{ts[1]}" if fotypev(n) == slotType else ts
 
         for otype in otypes:
-            isSlot = otype == slotType
+            if otype == slotType or otype in excludeElements:
+                continue
 
             for n in F.otype.s(otype):
-                if isSlot:
-                    if skipMeta and is_metav(n):
-                        continue
+                ws = eoslots(n)
+                sb, se = (ws[0], ws[-1])
+                if len(ws) != se - sb + 1:
+                    discontinuousNodes[otype].append(n)
 
-                    self.mkAnno(KIND_NODE, NS_TF, n, mkSingleTarget(n))
-                else:
-                    ws = eoslots(n)
-                    sb, se = (ws[0], ws[-1])
-                    if len(ws) != se - sb + 1:
-                        discontinuousNodes[otype].append(n)
+                if skipMeta and (is_metav(ws[0]) or is_metav(ws[-1])):
+                    continue
 
-                    if skipMeta and (is_metav(ws[0]) or is_metav(ws[-1])):
-                        continue
+                ti0, start = waFromTF[ws[0]]
+                ti1, end = waFromTF[ws[-1]]
 
-                    ti0, start = waFromTF[ws[0]]
-                    ti1, end = waFromTF[ws[-1]]
+                if ti0 != ti1:
+                    farTargets.append((otype, ti0, start, ti1, end))
 
-                    if ti0 != ti1:
-                        farTargets.append((otype, ti0, start, ti1, end))
+                if ti0 == ti1 and end < start:
+                    invertedTargets.append((otype, ti0, start, end))
+                    start, end = (end, start)
 
-                    if ti0 == ti1 and end < start:
-                        invertedTargets.append((otype, ti0, start, end))
-                        start, end = (end, start)
-
-                    startPoint = f"{ti0}:{start}"
-                    endPoint = (
-                        ("" if start == end else f"-{end + 1}")
-                        if ti0 == ti1
-                        else f"-{ti1}:{end + 1}"
+                startPoint = f"{ti0}:{start}"
+                endPoint = (
+                    ("" if start == end else f"-{end + 1}")
+                    if ti0 == ti1
+                    else f"-{ti1}:{end + 1}"
+                )
+                target = f"{startPoint}{endPoint}"
+                aId = (
+                    self.mkAnno(KIND_PI, nsOrig, otype[1:], target)
+                    if otype.startswith("?")
+                    else self.mkAnno(
+                        KIND_ELEM, NS_FROM_OTYPE.get(otype, nsOrig), otype, target
                     )
-                    target = f"{startPoint}{endPoint}"
-                    aId = (
-                        self.mkAnno(KIND_PI, nsOrig, otype[1:], target)
-                        if otype.startswith("?")
-                        else self.mkAnno(
-                            KIND_ELEM, NS_FROM_OTYPE.get(otype, nsOrig), otype, target
-                        )
-                    )
-                    waFromTF[n] = aId
-                    self.mkAnno(KIND_NODE, NS_TF, n, aId)
+                )
+                waFromTF[n] = aId
 
         for feat in nodeFeatures:
             ns = Fs(feat).meta.get("conversionCode", NS_FROM_FEAT.get(feat, nsOrig))
@@ -781,16 +800,13 @@ class WATM:
                 body = parts[1] if isRend else "note"
 
                 for n, val in Fs(feat).items():
-                    if not val or (skipMeta and is_metav(n)):
+                    if n not in waFromTF or not val or skipMeta and is_metav(n):
                         continue
 
                     self.mkAnno(KIND_FMT, ns, body, mkSingleTarget(n))
             else:
                 for n, val in Fs(feat).items():
-                    if n not in waFromTF:
-                        continue
-
-                    if val is None or skipMeta and is_metav(n):
+                    if n not in waFromTF or val is None or skipMeta and is_metav(n):
                         continue
 
                     body = f"{feat}={val}"
@@ -808,20 +824,14 @@ class WATM:
                 ns = NS_NONE
 
             for fromNode, toNodes in Es(feat).items():
-                if fromNode not in waFromTF:
-                    continue
-
-                if skipMeta and is_metav(fromNode):
+                if fromNode not in waFromTF or skipMeta and is_metav(fromNode):
                     continue
 
                 targetFrom = mkSingleTarget(fromNode)
 
                 if type(toNodes) is dict:
                     for toNode, val in toNodes.items():
-                        if toNode not in waFromTF:
-                            continue
-
-                        if skipMeta and is_metav(toNode):
+                        if toNode not in waFromTF or skipMeta and is_metav(toNode):
                             continue
 
                         body = f"{feat}={val}"
@@ -830,10 +840,7 @@ class WATM:
                         self.mkAnno(KIND_EDGE, ns, body, target)
                 else:
                     for toNode in toNodes:
-                        if toNode not in waFromTF:
-                            continue
-
-                        if skipMeta and is_metav(toNode):
+                        if toNode not in waFromTF or skipMeta and is_metav(toNode):
                             continue
 
                         targetTo = mkSingleTarget(toNode)
@@ -880,12 +887,16 @@ class WATM:
     def writeAll(self):
         """Write text and annotation data to disk.
 
-        The data will be written as JSON files.
+        The data will be written as JSON files, or, is `asTsv` is in force, as TSV
+        files.
         When the annotation data grows larger than a certain threshold, it will be
         divided over several files.
 
         The annotations are sorted by annotation id.
         """
+
+        maxNodePlus = self.maxNodePlus
+        maxSlotPlus = self.maxSlotPlus
 
         # text files
 
@@ -900,38 +911,45 @@ class WATM:
         app = self.app
         texts = self.texts
         annos = self.annos
+        waFromTF = self.waFromTF
+        asTsv = self.asTsv
 
         baseDir = self.repoLocation
         relative = app.context.relative
         version = app.version
         wRelative = REL_RE.sub(f"/{TT_NAME}/{version}/", relative, count=1)
         resultDir = f"{baseDir}{wRelative}"
-
-        textFiles = []
-        self.textFiles = textFiles
+        self.resultDir = resultDir
 
         initTree(resultDir, fresh=True)
 
         total = 0
 
+        ext = "tsv" if asTsv else "json"
+
         for i, text in enumerate(texts):
-            textFile = f"{resultDir}/text-{i}.json"
-            textFiles.append(textFile)
+            textFile = f"{resultDir}/text-{i}.{ext}"
             nText = len(text)
             total += nText
 
             with open(textFile, "w") as fh:
-                json.dump(
-                    dict(_ordered_segments=text), fh, ensure_ascii=False, indent=1
-                )
+                if asTsv:
+                    fh.write("token\n")
+                    for t in text:
+                        fh.write(t.replace("\t", "\\t").replace("\n", "\\n") + "\n")
+                else:
+                    json.dump(
+                        dict(_ordered_segments=text), fh, ensure_ascii=False, indent=1
+                    )
 
             if not silent:
                 console(f"Text file {i:>4}: {nText:>8} segments to {textFile}")
 
-        nTextFiles = len(textFiles)
-        sep = "" if nTextFiles == 1 else "s"
+        nTexts = len(texts)
+        sep = "" if nTexts == 1 else "s"
+
         if not silent:
-            console(f"Text files all: {total:>8} segments to {nTextFiles} file{sep}")
+            console(f"Text files all: {total:>8} segments to {nTexts} file{sep}")
 
         # annotation files
 
@@ -942,36 +960,35 @@ class WATM:
 
         aIdSorted = sorted(annoStore.keys())
 
-        annoFile = f"{resultDir}/anno.tsv"
-
-        if False:
-            with open(annoFile, "w") as fh:
-                for aId in aIdSorted:
-                    kind, ns, body, target = annoStore[aId]
-                    fh.write(f"{aId}\t{kind}\t{ns}\t{body}\t{target}\n")
-
         thisAnnoStore = {}
         thisA = 1
-        annoFiles = []
-        self.annoFiles = annoFiles
+        nAnnoFiles = 0
 
         LIMIT = 400000
         j = 0
         total = 0
 
         def writeThis():
-            annoFile = f"{resultDir}/anno-{thisA:>01}.json"
-            annoFiles.append(annoFile)
+            annoFile = f"{resultDir}/anno-{thisA:>01}.{ext}"
 
             with open(annoFile, "w") as fh:
-                json.dump(thisAnnoStore, fh, ensure_ascii=False, indent=1)
+                if asTsv:
+                    fh.write("annoid\tkind\tnamespace\tbody\ttarget\n")
+                    for aId, (kind, namespace, body, target) in thisAnnoStore.items():
+                        body = body.replace("\t", "\\t").replace("\n", "\\n")
+                        fh.write(f"{aId}\t{kind}\t{namespace}\t{body}\t{target}\n")
+                else:
+                    json.dump(thisAnnoStore, fh, ensure_ascii=False, indent=1)
 
             if not silent:
-                console(f"Anno file {i:>4}: {j:>8} annotations written to {annoFile}")
+                console(
+                    f"Anno file {thisA:>4}: {j:>8} annotations written to {annoFile}"
+                )
 
         for aId in aIdSorted:
             if j >= LIMIT:
                 writeThis()
+                nAnnoFiles += 1
                 thisA += 1
                 thisAnnoStore = {}
                 total += j
@@ -982,17 +999,40 @@ class WATM:
 
         if len(thisAnnoStore):
             writeThis()
+            nAnnoFiles += 1
             total += j
 
-        if len(annos) != total:
+        if len(annoStore) != total:
             console(f"Sum of batches : {total:>8}", error=True)
             console(f"All annotations: {len(annoStore):>8}", error=True)
             console("Mismatch in number of annotations", error=True)
 
-        nAnnoFiles = len(annoFiles)
         sep = "" if nAnnoFiles == 1 else "s"
+
         if not silent:
             console(f"Anno files all: {total:>8} annotations to {nAnnoFiles} file{sep}")
+
+        # node mapping files
+
+        slotmapFile = f"{resultDir}/{SLOTMAP_FILE}"
+        nodemapFile = f"{resultDir}/{NODEMAP_FILE}"
+
+        with open(slotmapFile, "w") as fh:
+            fh.write("position\tnode\n")
+            for n in range(1, maxSlotPlus):
+                (file, pos) = waFromTF[n]
+                fh.write(f"{file}:{pos}\t{n}\n")
+
+        with open(nodemapFile, "w") as fh:
+            fh.write("annotation\tnode\n")
+            for n in range(maxSlotPlus, maxNodePlus):
+                aId = waFromTF.get(n, None)
+                if aId is not None:
+                    fh.write(f"{aId}\t{n}\n")
+
+        if not silent:
+            console(f"Slot mapping written to {slotmapFile}")
+            console(f"Node mapping written to {nodemapFile}")
 
     @staticmethod
     def numEqual(nTF, nWA, silent):
@@ -1103,6 +1143,10 @@ class WATM:
 
         self.testSetup()
 
+        if self.error:
+            console("WATM data is incomplete. Testing aborted")
+            return
+
         good = True
 
         if not self.testText():
@@ -1133,11 +1177,49 @@ class WATM:
         """Prepare the tests.
 
         We read the WATM dataset and store the tokens in member `testTokens`
-        and the annotations in the member `testAnnotations`.
+        and the annotations in the member `testAnnotations`, and the node mapping
+        in the member `nodeFromAid`.
         We unpack targets if they contain structured information.
         """
-        textFiles = self.textFiles
-        annoFiles = self.annoFiles
+
+        # collect the files
+
+        asTsv = self.asTsv
+        resultDir = self.resultDir
+        resultFiles = dirContents(resultDir)[0]
+
+        ext = "tsv" if asTsv else "json"
+
+        def fileSort(name):
+            middle = name.split(".", 1)[0].split("-", 1)[1]
+            return f"{middle:0>10}" if middle.isdecimal else middle
+
+        textFiles = sorted(
+            (f for f in resultFiles if f.startswith("text-") and f.endswith(f".{ext}")),
+            key=fileSort,
+        )
+        annoFiles = sorted(
+            (f for f in resultFiles if f.startswith("anno-") and f.endswith(f".{ext}")),
+            key=fileSort,
+        )
+        mapFiles = [
+            f
+            for f in resultFiles
+            if (f.startswith("anno") or f.startswith("pos")) and f.endswith("2node.tsv")
+        ]
+
+        if NODEMAP_FILE not in mapFiles:
+            console(f"ERROR: Missing map file {NODEMAP_FILE}")
+            self.error = True
+        if SLOTMAP_FILE not in mapFiles:
+            console(f"ERROR: Missing map file {SLOTMAP_FILE}")
+            self.error = True
+
+        if self.error:
+            return
+
+        # read the text files
+
         skipMeta = self.skipMeta
         is_metav = self.is_metav
 
@@ -1147,9 +1229,14 @@ class WATM:
         slot = 1
 
         for tfl, textFile in enumerate(textFiles):
-            with open(textFile) as fh:
-                text = json.load(fh)
-                tokens = text["_ordered_segments"]
+            with open(f"{resultDir}/{textFile}") as fh:
+                if asTsv:
+                    next(fh)
+                    tokens = [t.rstrip("\n").replace("\\t", "\t").replace("\\n", "\n") for t in fh]
+                else:
+                    text = json.load(fh)
+                    tokens = text["_ordered_segments"]
+
                 tokenFiles.append(tokens)
 
                 for offset in range(len(tokens)):
@@ -1162,11 +1249,21 @@ class WATM:
         self.testTokens = tokenFiles
         self.waSlotTF = waSlotTF
 
+        # read the anno files
+
         annotations = []
 
         for annoFile in annoFiles:
-            with open(annoFile) as fh:
-                annos = json.load(fh)
+            with open(f"{resultDir}/{annoFile}") as fh:
+                if asTsv:
+                    next(fh)
+                    annos = {}
+                    for line in fh:
+                        (aId, kind, ns, body, target) = line.rstrip("\n").split("\t")
+                        body = body.replace("\\t", "\t").replace("\\n", "\n")
+                        annos[aId] = (kind, ns, body, target)
+                else:
+                    annos = json.load(fh)
 
                 for aId, (kind, ns, body, target) in annos.items():
                     if "->" in target:
@@ -1184,7 +1281,10 @@ class WATM:
                             b = int(b)
 
                             if len(boundaries) == 1:
-                                part = (int(fb), int(b), int(fb), int(b) + 1)
+                                if kind == KIND_ELEM or kind == KIND_PI:
+                                    part = (int(fb), int(b), int(fb), int(b) + 1)
+                                else:
+                                    part = (int(fb), int(b))
                             else:
                                 eParts = boundaries[1].split(":", 1)
 
@@ -1205,6 +1305,26 @@ class WATM:
         annotations = sorted(annotations)
         self.testAnnotations = annotations
 
+        # read the map files
+
+        nodeFromAid = {}
+
+        with open(f"{resultDir}/{SLOTMAP_FILE}") as fh:
+            next(fh)
+            for line in fh:
+                (pos, slot) = line.rstrip("\n").split("\t")
+                key = tuple(int(p) for p in pos.split(":"))
+                nodeFromAid[key] = int(slot)
+
+        with open(f"{resultDir}/{NODEMAP_FILE}") as fh:
+            next(fh)
+            for line in fh:
+                (aId, node) = line.rstrip("\n").split("\t")
+                nodeFromAid[aId] = int(node)
+
+        self.nodeFromAid = nodeFromAid
+        self.testNodes = set(nodeFromAid.values())
+
     def testText(self):
         """Test the text.
 
@@ -1216,7 +1336,7 @@ class WATM:
         boolean
             Whether all these tests succeed.
         """
-        F = self.F
+        maxSlotPlus = self.maxSlotPlus
         tokenFiles = self.testTokens
         texts = self.texts
         waSlotTF = self.waSlotTF
@@ -1225,9 +1345,7 @@ class WATM:
         if not silent:
             console("Testing the text ...")
 
-        nTokensTF = sum(
-            1 if s in waSlotTF else 0 for s in range(1, F.otype.maxSlot + 1)
-        )
+        nTokensTF = sum(1 if s in waSlotTF else 0 for s in range(1, maxSlotPlus))
         nTokensWA = sum(len(tokens) for tokens in tokenFiles)
         nGood = self.numEqual(nTokensTF, nTokensWA, silent)
 
@@ -1258,12 +1376,14 @@ class WATM:
         boolean
             Whether all these tests succeed.
         """
-        F = self.F
+        maxSlotPlus = self.maxSlotPlus
+        maxNodePlus = self.maxNodePlus
         fotypev = self.fotypev
         eoslots = self.eoslots
         waSlotTF = self.waSlotTF
         annotations = self.testAnnotations
         silent = self.silent
+        excludeElements = self.excludeElements
 
         if not silent:
             console("Testing the elements ...")
@@ -1271,7 +1391,7 @@ class WATM:
         nElementsTF = 0
         nPisTF = 0
 
-        for n in range(F.otype.maxSlot + 1, F.otype.maxNode + 1):
+        for n in range(maxSlotPlus, maxNodePlus):
             nType = fotypev(n)
             isPi = nType.startswith("?")
 
@@ -1285,24 +1405,16 @@ class WATM:
             if isPi:
                 nPisTF += 1
             else:
-                nElementsTF += 1
+                if nType not in excludeElements:
+                    nElementsTF += 1
 
         nElementsWA = 0
         nPisWA = 0
 
-        nodeFromAid = {}
-        self.nodeFromAid = nodeFromAid
+        nodeFromAid = self.nodeFromAid
 
-        for aId, kind, body, target in annotations:
-            if kind == "element":
-                nElementsWA += 1
-            elif kind == "pi":
-                nPisWA += 1
-            elif kind == "node":
-                nodeFromAid[target] = body
-
-        nElementsWA = sum(1 if a[1] == "element" else 0 for a in annotations)
-        nPisWA = sum(1 if a[1] == "pi" else 0 for a in annotations)
+        nElementsWA = sum(1 if a[1] == KIND_ELEM else 0 for a in annotations)
+        nPisWA = sum(1 if a[1] == KIND_PI else 0 for a in annotations)
 
         eGood = self.numEqual(nElementsTF, nElementsWA, silent)
 
@@ -1341,8 +1453,8 @@ class WATM:
         goodTargets = 0
 
         for aId, kind, body, target in annotations:
-            isElem = kind == "element"
-            isPi = kind == "pi"
+            isElem = kind == KIND_ELEM
+            isPi = kind == KIND_PI
 
             if not (isElem or isPi):
                 other += 1
@@ -1448,6 +1560,7 @@ class WATM:
         skipMeta = self.skipMeta
         annotations = self.testAnnotations
         nodeFromAid = self.nodeFromAid
+        testNodes = self.testNodes
         nsOrig = self.nsOrig
         silent = self.silent
 
@@ -1459,8 +1572,10 @@ class WATM:
         attWA = []
 
         for aId, kind, body, target in annotations:
-            if kind != "attribute":
+            if kind != KIND_ATTR:
                 continue
+            if type(target) is tuple and len(target) == 4:
+                target = (target[0], target[1])
             node = nodeFromAid[target]
             att, value = body.split("=", 1)
             attWA.append((node, att, value))
@@ -1474,7 +1589,9 @@ class WATM:
         wrong = []
 
         for node, att, valWA in attWA:
-            valTF = str(Fs(att).v(node))
+            val = Fs(att).v(node)
+            valTF = None if val is None else str(val)
+
             if valWA == valTF:
                 good += 1
             else:
@@ -1508,6 +1625,9 @@ class WATM:
                 continue
 
             for node, valTF in Fs(feat).items():
+                if node not in testNodes:
+                    continue
+
                 slots = eoslots(node)
                 b = slots[0]
                 e = slots[-1]
@@ -1515,7 +1635,7 @@ class WATM:
                 if not (b in waSlotTF and e in waSlotTF):
                     continue
 
-                attTF.append((node, feat, str(valTF)))
+                attTF.append((node, feat, None if valTF is None else str(valTF)))
 
         attTF = sorted(attTF)
 
@@ -1537,10 +1657,12 @@ class WATM:
         fmtWA = []
 
         for aId, kind, body, target in annotations:
-            if kind != "format":
+            if kind != KIND_FMT:
                 continue
             if body == "note":
                 continue
+            if type(target) is tuple and len(target) == 4:
+                target = (target[0], target[1])
             node = nodeFromAid[target]
             fmtWA.append((node, body))
 
@@ -1561,7 +1683,8 @@ class WATM:
 
         for node, valWA in fmtWA:
             feat = f"rend_{valWA}"
-            valTF = valWA if str(Fs(feat).v(node)) else None
+            valTF = valWA if Fs(feat).v(node) else None
+
             if valWA == valTF:
                 good += 1
             else:
@@ -1642,7 +1765,7 @@ class WATM:
         attWA = []
 
         for aId, kind, body, target in annotations:
-            if kind != "anno":
+            if kind != KIND_ANNO:
                 continue
             node = nodeFromAid[target]
             att, value = body.split("=", 1)
@@ -1723,39 +1846,27 @@ class WATM:
         Eall = self.Eall
         annotations = self.testAnnotations
         silent = self.silent
+        nodeFromAid = self.nodeFromAid
+        testNodes = self.testNodes
 
         if not silent:
             console("Testing the edges ...")
 
-        tfFromWANodes = {}
         tfFromWAEdges = {}
 
         for aId, kind, body, target in annotations:
-            if kind != "node":
-                continue
-            if type(target) is tuple:
-                fileS, start, fileE, end = target
-                if not (fileS == fileE and start + 1 == end):
-                    # we expect that node annotations either targets a single token
-                    # or an element/pi annotation
-                    print(target)
-                    break
-                target = (fileS, start)
-            tfFromWANodes[target] = body
-
-        for aId, kind, body, target in annotations:
-            if kind != "edge":
+            if kind != KIND_EDGE:
                 continue
 
             fro, to = target
-            fromNode = tfFromWANodes[fro]
-            toNode = tfFromWANodes[to]
+            fromNode = nodeFromAid[fro]
+            toNode = nodeFromAid[to]
             parts = body.split("=", 1)
             name, val = (body, None) if len(parts) == 1 else parts
             tfFromWAEdges.setdefault(name, {}).setdefault(fromNode, {})[toNode] = val
 
         if not silent:
-            console(f"\tFound: {len(tfFromWANodes)} nodes")
+            console(f"\tFound: {len(nodeFromAid)} nodes")
 
             for edge, edgeData in sorted(tfFromWAEdges.items()):
                 console(f"\tFound edge {edge} with {len(edgeData)} starting nodes")
@@ -1784,7 +1895,23 @@ class WATM:
             if not good:
                 continue
 
-            dataTF = dict(Es(edge).items())
+            dataTF = {}
+
+            for f, ts in Es(edge).items():
+                if f not in testNodes:
+                    continue
+
+                if type(ts) is dict:
+                    for t, v in ts.items():
+                        if t not in testNodes:
+                            continue
+                        dataTF.setdefault(f, {})[t] = v
+                else:
+                    for t in ts:
+                        if t not in testNodes:
+                            continue
+                        dataTF.setdefault(f, {})[t] = None
+
             dataWA = tfFromWAEdges[edge]
 
             fromNodesTF = set(dataTF)
@@ -1809,10 +1936,9 @@ class WATM:
 
             for f, toNodeInfoTF in dataTF.items():
                 toNodeInfoWA = dataWA[f]
-                if type(toNodeInfoTF) is dict:
-                    toNodeInfoTF = {k: str(v) for (k, v) in toNodeInfoTF.items()}
-                else:
-                    toNodeInfoTF = {x: None for x in toNodeInfoTF}
+                toNodeInfoTF = {
+                    k: None if v is None else str(v) for (k, v) in toNodeInfoTF.items()
+                }
 
                 if toNodeInfoTF != toNodeInfoWA:
                     diffs.append((f, toNodeInfoTF, toNodeInfoWA))
