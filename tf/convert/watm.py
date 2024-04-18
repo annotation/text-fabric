@@ -132,7 +132,7 @@ tokens of the text in WATM.
 
 Every node in TF is linked to a set of slot nodes.
 As such it can be mapped to an annotation to the corresponding tokens.
-Features of such nodes can be mapped to annotations to annotations.
+Features of such nodes can be mapped to annotations on annotations.
 
 TF also has edges. These can be mapped to WATM annotations whose targets are
 pairs: one for the thing the edge is *from*, and one for the thing the edge is *to*.
@@ -154,19 +154,19 @@ precursor. Likewise, for *attributes* you may read *features*.
 # The specifics
 
 We generate tokens and annotations out of a TF dataset. Here is what we deliver
-and in
-what form:
+and in what form. The files are either `.tsv` or `.json`, dependent on the
+configuration setting `asTsv` in the `watm.yaml` file in the project.
 
-*   a bunch of files `text-0.json`, `text-1.json`: with the text segments in an array;
+*   a bunch of files `text-0.`*ext*, `text-1.`*ext*:
+    containing a list of tokenlike segments;
     Each file corresponds with a section in the TF dataset; the level of the sections
     that correspond with these files is given in the `watm.yaml` config file,
     under the key `textRepoLevel`. It can have the values `1` (top level), `2`, and `3`
     (lower levels).
-*   a bunch of files `anno-1.json`, `anno-2.json, ...: all generated annotations;
-    We pack at most 400,000 annotations in one file, that keeps their size
-    below 50MB,
+*   a bunch of files `anno-1.`*ext*, `anno-2.`*ext*, ...: all generated annotations;
+    We pack at most 400,000 annotations in one file, that keeps their size below 50MB,
     so that they still can live in a git directory without large file support.
-    The numbering in the `anno-`*i*`.json` files it independent of the numbering in
+    The numbering in the `anno-`*i*`.*ext* files it independent of the numbering in
     the `text-`*i*`.json` files!
 *   a pair of files `anno2node.tsv` and `pos2node.tsv` that map annotations resp. text
     positions to their corresponding TF nodes.
@@ -184,7 +184,23 @@ A `text-i.json` is a JSON file with the following structure:
   ]
 }
 ```
-*   each item in `_ordered_segments` corresponds to one token;
+
+These tokens may contain newlines and tabs.
+
+A `text-i.tsv` is a TSV file with the following structure:
+
+```
+token
+token1
+token2
+...
+```
+
+The first line is a header line with fixed content: `token`.
+
+Newlines and tabs must be escaped in TSV files. We do that by `\\n` and `\\t`.
+
+*   each `token1`, `token2`, ... corresponds to one token;
 *   the item contains the text of the token plus the subsequent whitespace, if any;
 *   if the corpus is converted from TEI, we skip all material inside the
     TEI-header.
@@ -230,22 +246,45 @@ str | `improbè` | `efflagitando` | empty | empty | `tandem`
 
 ## Format of the annotation files
 
-The `anno-1.json`, `anno-2.json`, ... files are JSON file with the following
-structure:
+The `anno-1.json` file is a JSON file with the following structure:
 
 ```
 {
- "a000nnn": [
-  "kind",
-  "namespace",
-  "body",
-  "target"
- ],{
+ "a000001": [
+  "element",
+  "tei",
+  "p",
+  "0:10-60"
+ ],
+ "a000002": [
+  "element",
+  "tei",
+  "p",
+  "0:60-70"
+ ],
  ...
 }
 ```
 
-It is a big dictionary, keyed by annotation ids and each value is the data of
+A `anno-i.tsv` is a TSV file with the following structure:
+
+```
+annoid  kind    namespace   body    target
+a000001 element tei p   0:10-60
+a000002 element tei p   0:60-70
+...
+```
+
+The first line is a header line with fixed content: de field names separeted by tabs.
+
+Newlines and tabs must be escaped in TSV files. We do that by `\\n` and `\\t`.
+It only has to be done for the `body` field.
+
+When reading these lines, it is best to collect the information in a dict,
+keyed by the *annoid*, whose values are lists of the remaining fields, just as in
+the JSON.
+
+You get a big dictionary, keyed by annotation ids and each value is the data of
 an annotation, divided in the following fields:
 
 *   `kind`: the kind of annotation:
