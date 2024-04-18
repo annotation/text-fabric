@@ -198,6 +198,8 @@ below 50MB,
 so that they still can live in a git directory without large file support.
 The numbering in the</code>anno-<code>*i*&lt;code&gt;.json&lt;/code&gt; files it independent of the numbering in
 the</code>text-`<em>i</em><code>.json</code> files!</li>
+<li>a pair of files <code>anno2node.tsv</code> and <code>pos2node.tsv</code> that map annotations resp. text
+positions to their corresponding TF nodes.</li>
 </ul>
 <h2 id="format-of-the-text-files">Format of the text files</h2>
 <p>A <code>text-i.json</code> is a JSON file with the following structure:</p>
@@ -296,8 +298,6 @@ target of the <em>pi</em>;</li>
 <li><code>attribute</code>: targets an annotation (an <em>element</em> or <em>pi</em>), the body has
 the shape <em>name</em><code>=</code><em>value</em>,
 the name and value of the attribute in question;</li>
-<li><code>node</code>: targets an individual <em>token</em> or <em>element</em> or <em>pi</em>,
-the body is the TF node (a number) of that <em>token</em> / <em>element</em> / <em>pi</em>;</li>
 <li><code>edge</code>: targets two node annotations, the body has the shape
 <code>*name* or</code><em>name</em><code>=</code><em>value</em>,
 where <em>name</em> is the name of the edge and <em>value</em> is the label of the edge
@@ -389,11 +389,27 @@ specifier, even if both target a segment in the same token file.</p>
 <p>In the file <code>config.yaml</code> (in the directory where the program runs) certain
 parameters can be set:</p>
 <ul>
-<li><code>textRepoLevel</code>: the TF section level for which individual textRepo json files will
+<li>
+<p><code>textRepoLevel</code>: the TF section level for which individual textRepo json files will
 be made. Default: <code>1</code>: the top level. Other possible values: <code>2</code> and <code>3</code> (lower
 levels). Only the special TF section levels can be specified, not arbitrary
 node types. Because we must guarantee that all tokens in the corpus fall under
-one of the nodes belonging to this section level.</li>
+one of the nodes belonging to this section level.</p>
+</li>
+<li>
+<p><code>excludeElements</code>: the names of elements for which no annotations will be generated.
+All node and edge features that target those elements will be filtered, so that
+there are no annotations that target non-existing annotations.</p>
+</li>
+<li>
+<p><code>asTsv</code>: the text and anno files are written as tsv instead of json.</p>
+<p>The text files consist of one token per line.
+The newline token is written as <code></code>.</p>
+<p>The anno files are written as one anno per line. The tab separated fields
+are <em>anno id</em>, <em>kind</em>, <em>namespace</em>, <em>body</em>, <em>target</em>.
+Any tab or newline in the body must be written as <code> </code> resp. <code></code>.</p>
+<p>The tsv files will have exactly one header line.</p>
+</li>
 </ul>
 <h1 id="caveat">Caveat</h1>
 <p>The WATM representation of the corpus is a faithful and complete representation
@@ -440,11 +456,15 @@ make a distinction between the integer <code>1</code> and the string <code>"1"</
 <p>In practice, the meaning of the features in TF are known, and hence the attributes
 in the WATM data, so this is not a blocking problem for now.</p>
 </li>
+<li>
+<p>The <code>excludeElements</code> setting will prevent some TF information from
+reaching the WATM.</p>
+</li>
 </ul>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/watm.py#L1-L1983" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L1-L2109" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Export to Web Annotation Text Model
 
@@ -616,6 +636,8 @@ what form:
     so that they still can live in a git directory without large file support.
     The numbering in the `anno-`*i*`.json` files it independent of the numbering in
     the `text-`*i*`.json` files!
+*   a pair of files `anno2node.tsv` and `pos2node.tsv` that map annotations resp. text
+    positions to their corresponding TF nodes.
 
 ## Format of the text files
 
@@ -702,8 +724,6 @@ an annotation, divided in the following fields:
     *   `attribute`: targets an annotation (an *element* or *pi*), the body has
         the shape *name*`=`*value*,
         the name and value of the attribute in question;
-    *   `node`: targets an individual *token* or *element* or *pi*,
-        the body is the TF node (a number) of that *token* / *element* / *pi*;
     *   `edge`: targets two node annotations, the body has the shape
         `*name* or `*name*`=`*value*,
         where *name* is the name of the edge and *value* is the label of the edge
@@ -784,6 +804,21 @@ parameters can be set:
     node types. Because we must guarantee that all tokens in the corpus fall under
     one of the nodes belonging to this section level.
 
+*   `excludeElements`: the names of elements for which no annotations will be generated.
+    All node and edge features that target those elements will be filtered, so that
+    there are no annotations that target non-existing annotations.
+
+*   `asTsv`: the text and anno files are written as tsv instead of json.
+
+    The text files consist of one token per line.
+    The newline token is written as `\n`.
+
+    The anno files are written as one anno per line. The tab separated fields
+    are *anno id*, *kind*, *namespace*, *body*, *target*.
+    Any tab or newline in the body must be written as `\t` resp. `\n`.
+
+    The tsv files will have exactly one header line.
+
 # Caveat
 
 The WATM representation of the corpus is a faithful and complete representation
@@ -835,6 +870,9 @@ I am aware of the following:
 
     In practice, the meaning of the features in TF are known, and hence the attributes
     in the WATM data, so this is not a blocking problem for now.
+
+*   The `excludeElements` setting will prevent some TF information from
+    reaching the WATM.
 &#34;&#34;&#34;
 
 import collections
@@ -849,6 +887,8 @@ from tf.app import use
 
 
 CONFIG_FILE = &#34;watm.yaml&#34;
+NODEMAP_FILE = &#34;anno2node.tsv&#34;
+SLOTMAP_FILE = &#34;pos2node.tsv&#34;
 
 TT_NAME = &#34;watm&#34;
 
@@ -883,7 +923,6 @@ NS_FROM_FEAT = dict(
     rstr=NS_TF,
 )
 
-KIND_NODE = &#34;node&#34;
 KIND_EDGE = &#34;edge&#34;
 KIND_ELEM = &#34;element&#34;
 KIND_PI = &#34;pi&#34;
@@ -982,12 +1021,17 @@ class WATM:
             console(f&#34;textRepoLevel is section level &#39;{textRepoType}&#39;&#34;)
         self.textRepoType = textRepoType
 
+        self.excludeElements = set(cfg.excludeElements or [])
+        self.asTsv = cfg.asTsv
+
         self.L = api.L
         self.Es = api.Es
         self.F = F
         self.E = E
         self.Fs = api.Fs
         self.slotType = self.F.otype.slotType
+        self.maxSlotPlus = self.F.otype.maxSlot + 1
+        self.maxNodePlus = self.F.otype.maxNode + 1
         self.otypes = self.F.otype.all
         self.info = app.info
         self.repoLocation = app.repoLocation
@@ -1142,6 +1186,7 @@ class WATM:
         nsOrig = self.nsOrig
         skipMeta = self.skipMeta
         extra = self.extra
+        excludeElements = self.excludeElements
 
         waFromTF = self.waFromTF
 
@@ -1162,49 +1207,43 @@ class WATM:
             return f&#34;{ts[0]}:{ts[1]}&#34; if fotypev(n) == slotType else ts
 
         for otype in otypes:
-            isSlot = otype == slotType
+            if otype == slotType or otype in excludeElements:
+                continue
 
             for n in F.otype.s(otype):
-                if isSlot:
-                    if skipMeta and is_metav(n):
-                        continue
+                ws = eoslots(n)
+                sb, se = (ws[0], ws[-1])
+                if len(ws) != se - sb + 1:
+                    discontinuousNodes[otype].append(n)
 
-                    self.mkAnno(KIND_NODE, NS_TF, n, mkSingleTarget(n))
-                else:
-                    ws = eoslots(n)
-                    sb, se = (ws[0], ws[-1])
-                    if len(ws) != se - sb + 1:
-                        discontinuousNodes[otype].append(n)
+                if skipMeta and (is_metav(ws[0]) or is_metav(ws[-1])):
+                    continue
 
-                    if skipMeta and (is_metav(ws[0]) or is_metav(ws[-1])):
-                        continue
+                ti0, start = waFromTF[ws[0]]
+                ti1, end = waFromTF[ws[-1]]
 
-                    ti0, start = waFromTF[ws[0]]
-                    ti1, end = waFromTF[ws[-1]]
+                if ti0 != ti1:
+                    farTargets.append((otype, ti0, start, ti1, end))
 
-                    if ti0 != ti1:
-                        farTargets.append((otype, ti0, start, ti1, end))
+                if ti0 == ti1 and end &lt; start:
+                    invertedTargets.append((otype, ti0, start, end))
+                    start, end = (end, start)
 
-                    if ti0 == ti1 and end &lt; start:
-                        invertedTargets.append((otype, ti0, start, end))
-                        start, end = (end, start)
-
-                    startPoint = f&#34;{ti0}:{start}&#34;
-                    endPoint = (
-                        (&#34;&#34; if start == end else f&#34;-{end + 1}&#34;)
-                        if ti0 == ti1
-                        else f&#34;-{ti1}:{end + 1}&#34;
+                startPoint = f&#34;{ti0}:{start}&#34;
+                endPoint = (
+                    (&#34;&#34; if start == end else f&#34;-{end + 1}&#34;)
+                    if ti0 == ti1
+                    else f&#34;-{ti1}:{end + 1}&#34;
+                )
+                target = f&#34;{startPoint}{endPoint}&#34;
+                aId = (
+                    self.mkAnno(KIND_PI, nsOrig, otype[1:], target)
+                    if otype.startswith(&#34;?&#34;)
+                    else self.mkAnno(
+                        KIND_ELEM, NS_FROM_OTYPE.get(otype, nsOrig), otype, target
                     )
-                    target = f&#34;{startPoint}{endPoint}&#34;
-                    aId = (
-                        self.mkAnno(KIND_PI, nsOrig, otype[1:], target)
-                        if otype.startswith(&#34;?&#34;)
-                        else self.mkAnno(
-                            KIND_ELEM, NS_FROM_OTYPE.get(otype, nsOrig), otype, target
-                        )
-                    )
-                    waFromTF[n] = aId
-                    self.mkAnno(KIND_NODE, NS_TF, n, aId)
+                )
+                waFromTF[n] = aId
 
         for feat in nodeFeatures:
             ns = Fs(feat).meta.get(&#34;conversionCode&#34;, NS_FROM_FEAT.get(feat, nsOrig))
@@ -1229,16 +1268,13 @@ class WATM:
                 body = parts[1] if isRend else &#34;note&#34;
 
                 for n, val in Fs(feat).items():
-                    if not val or (skipMeta and is_metav(n)):
+                    if n not in waFromTF or not val or skipMeta and is_metav(n):
                         continue
 
                     self.mkAnno(KIND_FMT, ns, body, mkSingleTarget(n))
             else:
                 for n, val in Fs(feat).items():
-                    if n not in waFromTF:
-                        continue
-
-                    if val is None or skipMeta and is_metav(n):
+                    if n not in waFromTF or val is None or skipMeta and is_metav(n):
                         continue
 
                     body = f&#34;{feat}={val}&#34;
@@ -1256,20 +1292,14 @@ class WATM:
                 ns = NS_NONE
 
             for fromNode, toNodes in Es(feat).items():
-                if fromNode not in waFromTF:
-                    continue
-
-                if skipMeta and is_metav(fromNode):
+                if fromNode not in waFromTF or skipMeta and is_metav(fromNode):
                     continue
 
                 targetFrom = mkSingleTarget(fromNode)
 
                 if type(toNodes) is dict:
                     for toNode, val in toNodes.items():
-                        if toNode not in waFromTF:
-                            continue
-
-                        if skipMeta and is_metav(toNode):
+                        if toNode not in waFromTF or skipMeta and is_metav(toNode):
                             continue
 
                         body = f&#34;{feat}={val}&#34;
@@ -1278,10 +1308,7 @@ class WATM:
                         self.mkAnno(KIND_EDGE, ns, body, target)
                 else:
                     for toNode in toNodes:
-                        if toNode not in waFromTF:
-                            continue
-
-                        if skipMeta and is_metav(toNode):
+                        if toNode not in waFromTF or skipMeta and is_metav(toNode):
                             continue
 
                         targetTo = mkSingleTarget(toNode)
@@ -1328,12 +1355,16 @@ class WATM:
     def writeAll(self):
         &#34;&#34;&#34;Write text and annotation data to disk.
 
-        The data will be written as JSON files.
+        The data will be written as JSON files, or, is `asTsv` is in force, as TSV
+        files.
         When the annotation data grows larger than a certain threshold, it will be
         divided over several files.
 
         The annotations are sorted by annotation id.
         &#34;&#34;&#34;
+
+        maxNodePlus = self.maxNodePlus
+        maxSlotPlus = self.maxSlotPlus
 
         # text files
 
@@ -1348,38 +1379,45 @@ class WATM:
         app = self.app
         texts = self.texts
         annos = self.annos
+        waFromTF = self.waFromTF
+        asTsv = self.asTsv
 
         baseDir = self.repoLocation
         relative = app.context.relative
         version = app.version
         wRelative = REL_RE.sub(f&#34;/{TT_NAME}/{version}/&#34;, relative, count=1)
         resultDir = f&#34;{baseDir}{wRelative}&#34;
-
-        textFiles = []
-        self.textFiles = textFiles
+        self.resultDir = resultDir
 
         initTree(resultDir, fresh=True)
 
         total = 0
 
+        ext = &#34;tsv&#34; if asTsv else &#34;json&#34;
+
         for i, text in enumerate(texts):
-            textFile = f&#34;{resultDir}/text-{i}.json&#34;
-            textFiles.append(textFile)
+            textFile = f&#34;{resultDir}/text-{i}.{ext}&#34;
             nText = len(text)
             total += nText
 
             with open(textFile, &#34;w&#34;) as fh:
-                json.dump(
-                    dict(_ordered_segments=text), fh, ensure_ascii=False, indent=1
-                )
+                if asTsv:
+                    fh.write(&#34;token\n&#34;)
+                    for t in text:
+                        fh.write(t.replace(&#34;\t&#34;, &#34;\\t&#34;).replace(&#34;\n&#34;, &#34;\\n&#34;) + &#34;\n&#34;)
+                else:
+                    json.dump(
+                        dict(_ordered_segments=text), fh, ensure_ascii=False, indent=1
+                    )
 
             if not silent:
                 console(f&#34;Text file {i:&gt;4}: {nText:&gt;8} segments to {textFile}&#34;)
 
-        nTextFiles = len(textFiles)
-        sep = &#34;&#34; if nTextFiles == 1 else &#34;s&#34;
+        nTexts = len(texts)
+        sep = &#34;&#34; if nTexts == 1 else &#34;s&#34;
+
         if not silent:
-            console(f&#34;Text files all: {total:&gt;8} segments to {nTextFiles} file{sep}&#34;)
+            console(f&#34;Text files all: {total:&gt;8} segments to {nTexts} file{sep}&#34;)
 
         # annotation files
 
@@ -1390,36 +1428,35 @@ class WATM:
 
         aIdSorted = sorted(annoStore.keys())
 
-        annoFile = f&#34;{resultDir}/anno.tsv&#34;
-
-        if False:
-            with open(annoFile, &#34;w&#34;) as fh:
-                for aId in aIdSorted:
-                    kind, ns, body, target = annoStore[aId]
-                    fh.write(f&#34;{aId}\t{kind}\t{ns}\t{body}\t{target}\n&#34;)
-
         thisAnnoStore = {}
         thisA = 1
-        annoFiles = []
-        self.annoFiles = annoFiles
+        nAnnoFiles = 0
 
         LIMIT = 400000
         j = 0
         total = 0
 
         def writeThis():
-            annoFile = f&#34;{resultDir}/anno-{thisA:&gt;01}.json&#34;
-            annoFiles.append(annoFile)
+            annoFile = f&#34;{resultDir}/anno-{thisA:&gt;01}.{ext}&#34;
 
             with open(annoFile, &#34;w&#34;) as fh:
-                json.dump(thisAnnoStore, fh, ensure_ascii=False, indent=1)
+                if asTsv:
+                    fh.write(&#34;annoid\tkind\tnamespace\tbody\ttarget\n&#34;)
+                    for aId, (kind, namespace, body, target) in thisAnnoStore.items():
+                        body = body.replace(&#34;\t&#34;, &#34;\\t&#34;).replace(&#34;\n&#34;, &#34;\\n&#34;)
+                        fh.write(f&#34;{aId}\t{kind}\t{namespace}\t{body}\t{target}\n&#34;)
+                else:
+                    json.dump(thisAnnoStore, fh, ensure_ascii=False, indent=1)
 
             if not silent:
-                console(f&#34;Anno file {i:&gt;4}: {j:&gt;8} annotations written to {annoFile}&#34;)
+                console(
+                    f&#34;Anno file {thisA:&gt;4}: {j:&gt;8} annotations written to {annoFile}&#34;
+                )
 
         for aId in aIdSorted:
             if j &gt;= LIMIT:
                 writeThis()
+                nAnnoFiles += 1
                 thisA += 1
                 thisAnnoStore = {}
                 total += j
@@ -1430,17 +1467,40 @@ class WATM:
 
         if len(thisAnnoStore):
             writeThis()
+            nAnnoFiles += 1
             total += j
 
-        if len(annos) != total:
+        if len(annoStore) != total:
             console(f&#34;Sum of batches : {total:&gt;8}&#34;, error=True)
             console(f&#34;All annotations: {len(annoStore):&gt;8}&#34;, error=True)
             console(&#34;Mismatch in number of annotations&#34;, error=True)
 
-        nAnnoFiles = len(annoFiles)
         sep = &#34;&#34; if nAnnoFiles == 1 else &#34;s&#34;
+
         if not silent:
             console(f&#34;Anno files all: {total:&gt;8} annotations to {nAnnoFiles} file{sep}&#34;)
+
+        # node mapping files
+
+        slotmapFile = f&#34;{resultDir}/{SLOTMAP_FILE}&#34;
+        nodemapFile = f&#34;{resultDir}/{NODEMAP_FILE}&#34;
+
+        with open(slotmapFile, &#34;w&#34;) as fh:
+            fh.write(&#34;position\tnode\n&#34;)
+            for n in range(1, maxSlotPlus):
+                (file, pos) = waFromTF[n]
+                fh.write(f&#34;{file}:{pos}\t{n}\n&#34;)
+
+        with open(nodemapFile, &#34;w&#34;) as fh:
+            fh.write(&#34;annotation\tnode\n&#34;)
+            for n in range(maxSlotPlus, maxNodePlus):
+                aId = waFromTF.get(n, None)
+                if aId is not None:
+                    fh.write(f&#34;{aId}\t{n}\n&#34;)
+
+        if not silent:
+            console(f&#34;Slot mapping written to {slotmapFile}&#34;)
+            console(f&#34;Node mapping written to {nodemapFile}&#34;)
 
     @staticmethod
     def numEqual(nTF, nWA, silent):
@@ -1551,6 +1611,10 @@ class WATM:
 
         self.testSetup()
 
+        if self.error:
+            console(&#34;WATM data is incomplete. Testing aborted&#34;)
+            return
+
         good = True
 
         if not self.testText():
@@ -1581,11 +1645,49 @@ class WATM:
         &#34;&#34;&#34;Prepare the tests.
 
         We read the WATM dataset and store the tokens in member `testTokens`
-        and the annotations in the member `testAnnotations`.
+        and the annotations in the member `testAnnotations`, and the node mapping
+        in the member `nodeFromAid`.
         We unpack targets if they contain structured information.
         &#34;&#34;&#34;
-        textFiles = self.textFiles
-        annoFiles = self.annoFiles
+
+        # collect the files
+
+        asTsv = self.asTsv
+        resultDir = self.resultDir
+        resultFiles = dirContents(resultDir)[0]
+
+        ext = &#34;tsv&#34; if asTsv else &#34;json&#34;
+
+        def fileSort(name):
+            middle = name.split(&#34;.&#34;, 1)[0].split(&#34;-&#34;, 1)[1]
+            return f&#34;{middle:0&gt;10}&#34; if middle.isdecimal else middle
+
+        textFiles = sorted(
+            (f for f in resultFiles if f.startswith(&#34;text-&#34;) and f.endswith(f&#34;.{ext}&#34;)),
+            key=fileSort,
+        )
+        annoFiles = sorted(
+            (f for f in resultFiles if f.startswith(&#34;anno-&#34;) and f.endswith(f&#34;.{ext}&#34;)),
+            key=fileSort,
+        )
+        mapFiles = [
+            f
+            for f in resultFiles
+            if (f.startswith(&#34;anno&#34;) or f.startswith(&#34;pos&#34;)) and f.endswith(&#34;2node.tsv&#34;)
+        ]
+
+        if NODEMAP_FILE not in mapFiles:
+            console(f&#34;ERROR: Missing map file {NODEMAP_FILE}&#34;)
+            self.error = True
+        if SLOTMAP_FILE not in mapFiles:
+            console(f&#34;ERROR: Missing map file {SLOTMAP_FILE}&#34;)
+            self.error = True
+
+        if self.error:
+            return
+
+        # read the text files
+
         skipMeta = self.skipMeta
         is_metav = self.is_metav
 
@@ -1595,9 +1697,14 @@ class WATM:
         slot = 1
 
         for tfl, textFile in enumerate(textFiles):
-            with open(textFile) as fh:
-                text = json.load(fh)
-                tokens = text[&#34;_ordered_segments&#34;]
+            with open(f&#34;{resultDir}/{textFile}&#34;) as fh:
+                if asTsv:
+                    next(fh)
+                    tokens = [t.rstrip(&#34;\n&#34;).replace(&#34;\\t&#34;, &#34;\t&#34;).replace(&#34;\\n&#34;, &#34;\n&#34;) for t in fh]
+                else:
+                    text = json.load(fh)
+                    tokens = text[&#34;_ordered_segments&#34;]
+
                 tokenFiles.append(tokens)
 
                 for offset in range(len(tokens)):
@@ -1610,11 +1717,21 @@ class WATM:
         self.testTokens = tokenFiles
         self.waSlotTF = waSlotTF
 
+        # read the anno files
+
         annotations = []
 
         for annoFile in annoFiles:
-            with open(annoFile) as fh:
-                annos = json.load(fh)
+            with open(f&#34;{resultDir}/{annoFile}&#34;) as fh:
+                if asTsv:
+                    next(fh)
+                    annos = {}
+                    for line in fh:
+                        (aId, kind, ns, body, target) = line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)
+                        body = body.replace(&#34;\\t&#34;, &#34;\t&#34;).replace(&#34;\\n&#34;, &#34;\n&#34;)
+                        annos[aId] = (kind, ns, body, target)
+                else:
+                    annos = json.load(fh)
 
                 for aId, (kind, ns, body, target) in annos.items():
                     if &#34;-&gt;&#34; in target:
@@ -1632,7 +1749,10 @@ class WATM:
                             b = int(b)
 
                             if len(boundaries) == 1:
-                                part = (int(fb), int(b), int(fb), int(b) + 1)
+                                if kind == KIND_ELEM or kind == KIND_PI:
+                                    part = (int(fb), int(b), int(fb), int(b) + 1)
+                                else:
+                                    part = (int(fb), int(b))
                             else:
                                 eParts = boundaries[1].split(&#34;:&#34;, 1)
 
@@ -1653,6 +1773,26 @@ class WATM:
         annotations = sorted(annotations)
         self.testAnnotations = annotations
 
+        # read the map files
+
+        nodeFromAid = {}
+
+        with open(f&#34;{resultDir}/{SLOTMAP_FILE}&#34;) as fh:
+            next(fh)
+            for line in fh:
+                (pos, slot) = line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)
+                key = tuple(int(p) for p in pos.split(&#34;:&#34;))
+                nodeFromAid[key] = int(slot)
+
+        with open(f&#34;{resultDir}/{NODEMAP_FILE}&#34;) as fh:
+            next(fh)
+            for line in fh:
+                (aId, node) = line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)
+                nodeFromAid[aId] = int(node)
+
+        self.nodeFromAid = nodeFromAid
+        self.testNodes = set(nodeFromAid.values())
+
     def testText(self):
         &#34;&#34;&#34;Test the text.
 
@@ -1664,7 +1804,7 @@ class WATM:
         boolean
             Whether all these tests succeed.
         &#34;&#34;&#34;
-        F = self.F
+        maxSlotPlus = self.maxSlotPlus
         tokenFiles = self.testTokens
         texts = self.texts
         waSlotTF = self.waSlotTF
@@ -1673,9 +1813,7 @@ class WATM:
         if not silent:
             console(&#34;Testing the text ...&#34;)
 
-        nTokensTF = sum(
-            1 if s in waSlotTF else 0 for s in range(1, F.otype.maxSlot + 1)
-        )
+        nTokensTF = sum(1 if s in waSlotTF else 0 for s in range(1, maxSlotPlus))
         nTokensWA = sum(len(tokens) for tokens in tokenFiles)
         nGood = self.numEqual(nTokensTF, nTokensWA, silent)
 
@@ -1706,12 +1844,14 @@ class WATM:
         boolean
             Whether all these tests succeed.
         &#34;&#34;&#34;
-        F = self.F
+        maxSlotPlus = self.maxSlotPlus
+        maxNodePlus = self.maxNodePlus
         fotypev = self.fotypev
         eoslots = self.eoslots
         waSlotTF = self.waSlotTF
         annotations = self.testAnnotations
         silent = self.silent
+        excludeElements = self.excludeElements
 
         if not silent:
             console(&#34;Testing the elements ...&#34;)
@@ -1719,7 +1859,7 @@ class WATM:
         nElementsTF = 0
         nPisTF = 0
 
-        for n in range(F.otype.maxSlot + 1, F.otype.maxNode + 1):
+        for n in range(maxSlotPlus, maxNodePlus):
             nType = fotypev(n)
             isPi = nType.startswith(&#34;?&#34;)
 
@@ -1733,24 +1873,16 @@ class WATM:
             if isPi:
                 nPisTF += 1
             else:
-                nElementsTF += 1
+                if nType not in excludeElements:
+                    nElementsTF += 1
 
         nElementsWA = 0
         nPisWA = 0
 
-        nodeFromAid = {}
-        self.nodeFromAid = nodeFromAid
+        nodeFromAid = self.nodeFromAid
 
-        for aId, kind, body, target in annotations:
-            if kind == &#34;element&#34;:
-                nElementsWA += 1
-            elif kind == &#34;pi&#34;:
-                nPisWA += 1
-            elif kind == &#34;node&#34;:
-                nodeFromAid[target] = body
-
-        nElementsWA = sum(1 if a[1] == &#34;element&#34; else 0 for a in annotations)
-        nPisWA = sum(1 if a[1] == &#34;pi&#34; else 0 for a in annotations)
+        nElementsWA = sum(1 if a[1] == KIND_ELEM else 0 for a in annotations)
+        nPisWA = sum(1 if a[1] == KIND_PI else 0 for a in annotations)
 
         eGood = self.numEqual(nElementsTF, nElementsWA, silent)
 
@@ -1789,8 +1921,8 @@ class WATM:
         goodTargets = 0
 
         for aId, kind, body, target in annotations:
-            isElem = kind == &#34;element&#34;
-            isPi = kind == &#34;pi&#34;
+            isElem = kind == KIND_ELEM
+            isPi = kind == KIND_PI
 
             if not (isElem or isPi):
                 other += 1
@@ -1896,6 +2028,7 @@ class WATM:
         skipMeta = self.skipMeta
         annotations = self.testAnnotations
         nodeFromAid = self.nodeFromAid
+        testNodes = self.testNodes
         nsOrig = self.nsOrig
         silent = self.silent
 
@@ -1907,8 +2040,10 @@ class WATM:
         attWA = []
 
         for aId, kind, body, target in annotations:
-            if kind != &#34;attribute&#34;:
+            if kind != KIND_ATTR:
                 continue
+            if type(target) is tuple and len(target) == 4:
+                target = (target[0], target[1])
             node = nodeFromAid[target]
             att, value = body.split(&#34;=&#34;, 1)
             attWA.append((node, att, value))
@@ -1922,7 +2057,9 @@ class WATM:
         wrong = []
 
         for node, att, valWA in attWA:
-            valTF = str(Fs(att).v(node))
+            val = Fs(att).v(node)
+            valTF = None if val is None else str(val)
+
             if valWA == valTF:
                 good += 1
             else:
@@ -1956,6 +2093,9 @@ class WATM:
                 continue
 
             for node, valTF in Fs(feat).items():
+                if node not in testNodes:
+                    continue
+
                 slots = eoslots(node)
                 b = slots[0]
                 e = slots[-1]
@@ -1963,7 +2103,7 @@ class WATM:
                 if not (b in waSlotTF and e in waSlotTF):
                     continue
 
-                attTF.append((node, feat, str(valTF)))
+                attTF.append((node, feat, None if valTF is None else str(valTF)))
 
         attTF = sorted(attTF)
 
@@ -1985,10 +2125,12 @@ class WATM:
         fmtWA = []
 
         for aId, kind, body, target in annotations:
-            if kind != &#34;format&#34;:
+            if kind != KIND_FMT:
                 continue
             if body == &#34;note&#34;:
                 continue
+            if type(target) is tuple and len(target) == 4:
+                target = (target[0], target[1])
             node = nodeFromAid[target]
             fmtWA.append((node, body))
 
@@ -2009,7 +2151,8 @@ class WATM:
 
         for node, valWA in fmtWA:
             feat = f&#34;rend_{valWA}&#34;
-            valTF = valWA if str(Fs(feat).v(node)) else None
+            valTF = valWA if Fs(feat).v(node) else None
+
             if valWA == valTF:
                 good += 1
             else:
@@ -2090,7 +2233,7 @@ class WATM:
         attWA = []
 
         for aId, kind, body, target in annotations:
-            if kind != &#34;anno&#34;:
+            if kind != KIND_ANNO:
                 continue
             node = nodeFromAid[target]
             att, value = body.split(&#34;=&#34;, 1)
@@ -2171,39 +2314,27 @@ class WATM:
         Eall = self.Eall
         annotations = self.testAnnotations
         silent = self.silent
+        nodeFromAid = self.nodeFromAid
+        testNodes = self.testNodes
 
         if not silent:
             console(&#34;Testing the edges ...&#34;)
 
-        tfFromWANodes = {}
         tfFromWAEdges = {}
 
         for aId, kind, body, target in annotations:
-            if kind != &#34;node&#34;:
-                continue
-            if type(target) is tuple:
-                fileS, start, fileE, end = target
-                if not (fileS == fileE and start + 1 == end):
-                    # we expect that node annotations either targets a single token
-                    # or an element/pi annotation
-                    print(target)
-                    break
-                target = (fileS, start)
-            tfFromWANodes[target] = body
-
-        for aId, kind, body, target in annotations:
-            if kind != &#34;edge&#34;:
+            if kind != KIND_EDGE:
                 continue
 
             fro, to = target
-            fromNode = tfFromWANodes[fro]
-            toNode = tfFromWANodes[to]
+            fromNode = nodeFromAid[fro]
+            toNode = nodeFromAid[to]
             parts = body.split(&#34;=&#34;, 1)
             name, val = (body, None) if len(parts) == 1 else parts
             tfFromWAEdges.setdefault(name, {}).setdefault(fromNode, {})[toNode] = val
 
         if not silent:
-            console(f&#34;\tFound: {len(tfFromWANodes)} nodes&#34;)
+            console(f&#34;\tFound: {len(nodeFromAid)} nodes&#34;)
 
             for edge, edgeData in sorted(tfFromWAEdges.items()):
                 console(f&#34;\tFound edge {edge} with {len(edgeData)} starting nodes&#34;)
@@ -2232,7 +2363,23 @@ class WATM:
             if not good:
                 continue
 
-            dataTF = dict(Es(edge).items())
+            dataTF = {}
+
+            for f, ts in Es(edge).items():
+                if f not in testNodes:
+                    continue
+
+                if type(ts) is dict:
+                    for t, v in ts.items():
+                        if t not in testNodes:
+                            continue
+                        dataTF.setdefault(f, {})[t] = v
+                else:
+                    for t in ts:
+                        if t not in testNodes:
+                            continue
+                        dataTF.setdefault(f, {})[t] = None
+
             dataWA = tfFromWAEdges[edge]
 
             fromNodesTF = set(dataTF)
@@ -2257,10 +2404,9 @@ class WATM:
 
             for f, toNodeInfoTF in dataTF.items():
                 toNodeInfoWA = dataWA[f]
-                if type(toNodeInfoTF) is dict:
-                    toNodeInfoTF = {k: str(v) for (k, v) in toNodeInfoTF.items()}
-                else:
-                    toNodeInfoTF = {x: None for x in toNodeInfoTF}
+                toNodeInfoTF = {
+                    k: None if v is None else str(v) for (k, v) in toNodeInfoTF.items()
+                }
 
                 if toNodeInfoTF != toNodeInfoWA:
                     diffs.append((f, toNodeInfoTF, toNodeInfoWA))
@@ -2456,7 +2602,7 @@ class WATMS:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/watm.py#L451-L462" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L470-L481" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rep(status):
     &#34;&#34;&#34;Represent a boolean status for a message to the console.
@@ -2512,7 +2658,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/watm.py#L465-L1881" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L484-L2007" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WATM:
     &#34;&#34;&#34;The export machinery is exposed as a class, wrapped around a TF dataset.&#34;&#34;&#34;
@@ -2586,12 +2732,17 @@ value for each key is a dictionary that maps nodes to values.</dd>
             console(f&#34;textRepoLevel is section level &#39;{textRepoType}&#39;&#34;)
         self.textRepoType = textRepoType
 
+        self.excludeElements = set(cfg.excludeElements or [])
+        self.asTsv = cfg.asTsv
+
         self.L = api.L
         self.Es = api.Es
         self.F = F
         self.E = E
         self.Fs = api.Fs
         self.slotType = self.F.otype.slotType
+        self.maxSlotPlus = self.F.otype.maxSlot + 1
+        self.maxNodePlus = self.F.otype.maxNode + 1
         self.otypes = self.F.otype.all
         self.info = app.info
         self.repoLocation = app.repoLocation
@@ -2746,6 +2897,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
         nsOrig = self.nsOrig
         skipMeta = self.skipMeta
         extra = self.extra
+        excludeElements = self.excludeElements
 
         waFromTF = self.waFromTF
 
@@ -2766,49 +2918,43 @@ value for each key is a dictionary that maps nodes to values.</dd>
             return f&#34;{ts[0]}:{ts[1]}&#34; if fotypev(n) == slotType else ts
 
         for otype in otypes:
-            isSlot = otype == slotType
+            if otype == slotType or otype in excludeElements:
+                continue
 
             for n in F.otype.s(otype):
-                if isSlot:
-                    if skipMeta and is_metav(n):
-                        continue
+                ws = eoslots(n)
+                sb, se = (ws[0], ws[-1])
+                if len(ws) != se - sb + 1:
+                    discontinuousNodes[otype].append(n)
 
-                    self.mkAnno(KIND_NODE, NS_TF, n, mkSingleTarget(n))
-                else:
-                    ws = eoslots(n)
-                    sb, se = (ws[0], ws[-1])
-                    if len(ws) != se - sb + 1:
-                        discontinuousNodes[otype].append(n)
+                if skipMeta and (is_metav(ws[0]) or is_metav(ws[-1])):
+                    continue
 
-                    if skipMeta and (is_metav(ws[0]) or is_metav(ws[-1])):
-                        continue
+                ti0, start = waFromTF[ws[0]]
+                ti1, end = waFromTF[ws[-1]]
 
-                    ti0, start = waFromTF[ws[0]]
-                    ti1, end = waFromTF[ws[-1]]
+                if ti0 != ti1:
+                    farTargets.append((otype, ti0, start, ti1, end))
 
-                    if ti0 != ti1:
-                        farTargets.append((otype, ti0, start, ti1, end))
+                if ti0 == ti1 and end &lt; start:
+                    invertedTargets.append((otype, ti0, start, end))
+                    start, end = (end, start)
 
-                    if ti0 == ti1 and end &lt; start:
-                        invertedTargets.append((otype, ti0, start, end))
-                        start, end = (end, start)
-
-                    startPoint = f&#34;{ti0}:{start}&#34;
-                    endPoint = (
-                        (&#34;&#34; if start == end else f&#34;-{end + 1}&#34;)
-                        if ti0 == ti1
-                        else f&#34;-{ti1}:{end + 1}&#34;
+                startPoint = f&#34;{ti0}:{start}&#34;
+                endPoint = (
+                    (&#34;&#34; if start == end else f&#34;-{end + 1}&#34;)
+                    if ti0 == ti1
+                    else f&#34;-{ti1}:{end + 1}&#34;
+                )
+                target = f&#34;{startPoint}{endPoint}&#34;
+                aId = (
+                    self.mkAnno(KIND_PI, nsOrig, otype[1:], target)
+                    if otype.startswith(&#34;?&#34;)
+                    else self.mkAnno(
+                        KIND_ELEM, NS_FROM_OTYPE.get(otype, nsOrig), otype, target
                     )
-                    target = f&#34;{startPoint}{endPoint}&#34;
-                    aId = (
-                        self.mkAnno(KIND_PI, nsOrig, otype[1:], target)
-                        if otype.startswith(&#34;?&#34;)
-                        else self.mkAnno(
-                            KIND_ELEM, NS_FROM_OTYPE.get(otype, nsOrig), otype, target
-                        )
-                    )
-                    waFromTF[n] = aId
-                    self.mkAnno(KIND_NODE, NS_TF, n, aId)
+                )
+                waFromTF[n] = aId
 
         for feat in nodeFeatures:
             ns = Fs(feat).meta.get(&#34;conversionCode&#34;, NS_FROM_FEAT.get(feat, nsOrig))
@@ -2833,16 +2979,13 @@ value for each key is a dictionary that maps nodes to values.</dd>
                 body = parts[1] if isRend else &#34;note&#34;
 
                 for n, val in Fs(feat).items():
-                    if not val or (skipMeta and is_metav(n)):
+                    if n not in waFromTF or not val or skipMeta and is_metav(n):
                         continue
 
                     self.mkAnno(KIND_FMT, ns, body, mkSingleTarget(n))
             else:
                 for n, val in Fs(feat).items():
-                    if n not in waFromTF:
-                        continue
-
-                    if val is None or skipMeta and is_metav(n):
+                    if n not in waFromTF or val is None or skipMeta and is_metav(n):
                         continue
 
                     body = f&#34;{feat}={val}&#34;
@@ -2860,20 +3003,14 @@ value for each key is a dictionary that maps nodes to values.</dd>
                 ns = NS_NONE
 
             for fromNode, toNodes in Es(feat).items():
-                if fromNode not in waFromTF:
-                    continue
-
-                if skipMeta and is_metav(fromNode):
+                if fromNode not in waFromTF or skipMeta and is_metav(fromNode):
                     continue
 
                 targetFrom = mkSingleTarget(fromNode)
 
                 if type(toNodes) is dict:
                     for toNode, val in toNodes.items():
-                        if toNode not in waFromTF:
-                            continue
-
-                        if skipMeta and is_metav(toNode):
+                        if toNode not in waFromTF or skipMeta and is_metav(toNode):
                             continue
 
                         body = f&#34;{feat}={val}&#34;
@@ -2882,10 +3019,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
                         self.mkAnno(KIND_EDGE, ns, body, target)
                 else:
                     for toNode in toNodes:
-                        if toNode not in waFromTF:
-                            continue
-
-                        if skipMeta and is_metav(toNode):
+                        if toNode not in waFromTF or skipMeta and is_metav(toNode):
                             continue
 
                         targetTo = mkSingleTarget(toNode)
@@ -2932,12 +3066,16 @@ value for each key is a dictionary that maps nodes to values.</dd>
     def writeAll(self):
         &#34;&#34;&#34;Write text and annotation data to disk.
 
-        The data will be written as JSON files.
+        The data will be written as JSON files, or, is `asTsv` is in force, as TSV
+        files.
         When the annotation data grows larger than a certain threshold, it will be
         divided over several files.
 
         The annotations are sorted by annotation id.
         &#34;&#34;&#34;
+
+        maxNodePlus = self.maxNodePlus
+        maxSlotPlus = self.maxSlotPlus
 
         # text files
 
@@ -2952,38 +3090,45 @@ value for each key is a dictionary that maps nodes to values.</dd>
         app = self.app
         texts = self.texts
         annos = self.annos
+        waFromTF = self.waFromTF
+        asTsv = self.asTsv
 
         baseDir = self.repoLocation
         relative = app.context.relative
         version = app.version
         wRelative = REL_RE.sub(f&#34;/{TT_NAME}/{version}/&#34;, relative, count=1)
         resultDir = f&#34;{baseDir}{wRelative}&#34;
-
-        textFiles = []
-        self.textFiles = textFiles
+        self.resultDir = resultDir
 
         initTree(resultDir, fresh=True)
 
         total = 0
 
+        ext = &#34;tsv&#34; if asTsv else &#34;json&#34;
+
         for i, text in enumerate(texts):
-            textFile = f&#34;{resultDir}/text-{i}.json&#34;
-            textFiles.append(textFile)
+            textFile = f&#34;{resultDir}/text-{i}.{ext}&#34;
             nText = len(text)
             total += nText
 
             with open(textFile, &#34;w&#34;) as fh:
-                json.dump(
-                    dict(_ordered_segments=text), fh, ensure_ascii=False, indent=1
-                )
+                if asTsv:
+                    fh.write(&#34;token\n&#34;)
+                    for t in text:
+                        fh.write(t.replace(&#34;\t&#34;, &#34;\\t&#34;).replace(&#34;\n&#34;, &#34;\\n&#34;) + &#34;\n&#34;)
+                else:
+                    json.dump(
+                        dict(_ordered_segments=text), fh, ensure_ascii=False, indent=1
+                    )
 
             if not silent:
                 console(f&#34;Text file {i:&gt;4}: {nText:&gt;8} segments to {textFile}&#34;)
 
-        nTextFiles = len(textFiles)
-        sep = &#34;&#34; if nTextFiles == 1 else &#34;s&#34;
+        nTexts = len(texts)
+        sep = &#34;&#34; if nTexts == 1 else &#34;s&#34;
+
         if not silent:
-            console(f&#34;Text files all: {total:&gt;8} segments to {nTextFiles} file{sep}&#34;)
+            console(f&#34;Text files all: {total:&gt;8} segments to {nTexts} file{sep}&#34;)
 
         # annotation files
 
@@ -2994,36 +3139,35 @@ value for each key is a dictionary that maps nodes to values.</dd>
 
         aIdSorted = sorted(annoStore.keys())
 
-        annoFile = f&#34;{resultDir}/anno.tsv&#34;
-
-        if False:
-            with open(annoFile, &#34;w&#34;) as fh:
-                for aId in aIdSorted:
-                    kind, ns, body, target = annoStore[aId]
-                    fh.write(f&#34;{aId}\t{kind}\t{ns}\t{body}\t{target}\n&#34;)
-
         thisAnnoStore = {}
         thisA = 1
-        annoFiles = []
-        self.annoFiles = annoFiles
+        nAnnoFiles = 0
 
         LIMIT = 400000
         j = 0
         total = 0
 
         def writeThis():
-            annoFile = f&#34;{resultDir}/anno-{thisA:&gt;01}.json&#34;
-            annoFiles.append(annoFile)
+            annoFile = f&#34;{resultDir}/anno-{thisA:&gt;01}.{ext}&#34;
 
             with open(annoFile, &#34;w&#34;) as fh:
-                json.dump(thisAnnoStore, fh, ensure_ascii=False, indent=1)
+                if asTsv:
+                    fh.write(&#34;annoid\tkind\tnamespace\tbody\ttarget\n&#34;)
+                    for aId, (kind, namespace, body, target) in thisAnnoStore.items():
+                        body = body.replace(&#34;\t&#34;, &#34;\\t&#34;).replace(&#34;\n&#34;, &#34;\\n&#34;)
+                        fh.write(f&#34;{aId}\t{kind}\t{namespace}\t{body}\t{target}\n&#34;)
+                else:
+                    json.dump(thisAnnoStore, fh, ensure_ascii=False, indent=1)
 
             if not silent:
-                console(f&#34;Anno file {i:&gt;4}: {j:&gt;8} annotations written to {annoFile}&#34;)
+                console(
+                    f&#34;Anno file {thisA:&gt;4}: {j:&gt;8} annotations written to {annoFile}&#34;
+                )
 
         for aId in aIdSorted:
             if j &gt;= LIMIT:
                 writeThis()
+                nAnnoFiles += 1
                 thisA += 1
                 thisAnnoStore = {}
                 total += j
@@ -3034,17 +3178,40 @@ value for each key is a dictionary that maps nodes to values.</dd>
 
         if len(thisAnnoStore):
             writeThis()
+            nAnnoFiles += 1
             total += j
 
-        if len(annos) != total:
+        if len(annoStore) != total:
             console(f&#34;Sum of batches : {total:&gt;8}&#34;, error=True)
             console(f&#34;All annotations: {len(annoStore):&gt;8}&#34;, error=True)
             console(&#34;Mismatch in number of annotations&#34;, error=True)
 
-        nAnnoFiles = len(annoFiles)
         sep = &#34;&#34; if nAnnoFiles == 1 else &#34;s&#34;
+
         if not silent:
             console(f&#34;Anno files all: {total:&gt;8} annotations to {nAnnoFiles} file{sep}&#34;)
+
+        # node mapping files
+
+        slotmapFile = f&#34;{resultDir}/{SLOTMAP_FILE}&#34;
+        nodemapFile = f&#34;{resultDir}/{NODEMAP_FILE}&#34;
+
+        with open(slotmapFile, &#34;w&#34;) as fh:
+            fh.write(&#34;position\tnode\n&#34;)
+            for n in range(1, maxSlotPlus):
+                (file, pos) = waFromTF[n]
+                fh.write(f&#34;{file}:{pos}\t{n}\n&#34;)
+
+        with open(nodemapFile, &#34;w&#34;) as fh:
+            fh.write(&#34;annotation\tnode\n&#34;)
+            for n in range(maxSlotPlus, maxNodePlus):
+                aId = waFromTF.get(n, None)
+                if aId is not None:
+                    fh.write(f&#34;{aId}\t{n}\n&#34;)
+
+        if not silent:
+            console(f&#34;Slot mapping written to {slotmapFile}&#34;)
+            console(f&#34;Node mapping written to {nodemapFile}&#34;)
 
     @staticmethod
     def numEqual(nTF, nWA, silent):
@@ -3155,6 +3322,10 @@ value for each key is a dictionary that maps nodes to values.</dd>
 
         self.testSetup()
 
+        if self.error:
+            console(&#34;WATM data is incomplete. Testing aborted&#34;)
+            return
+
         good = True
 
         if not self.testText():
@@ -3185,11 +3356,49 @@ value for each key is a dictionary that maps nodes to values.</dd>
         &#34;&#34;&#34;Prepare the tests.
 
         We read the WATM dataset and store the tokens in member `testTokens`
-        and the annotations in the member `testAnnotations`.
+        and the annotations in the member `testAnnotations`, and the node mapping
+        in the member `nodeFromAid`.
         We unpack targets if they contain structured information.
         &#34;&#34;&#34;
-        textFiles = self.textFiles
-        annoFiles = self.annoFiles
+
+        # collect the files
+
+        asTsv = self.asTsv
+        resultDir = self.resultDir
+        resultFiles = dirContents(resultDir)[0]
+
+        ext = &#34;tsv&#34; if asTsv else &#34;json&#34;
+
+        def fileSort(name):
+            middle = name.split(&#34;.&#34;, 1)[0].split(&#34;-&#34;, 1)[1]
+            return f&#34;{middle:0&gt;10}&#34; if middle.isdecimal else middle
+
+        textFiles = sorted(
+            (f for f in resultFiles if f.startswith(&#34;text-&#34;) and f.endswith(f&#34;.{ext}&#34;)),
+            key=fileSort,
+        )
+        annoFiles = sorted(
+            (f for f in resultFiles if f.startswith(&#34;anno-&#34;) and f.endswith(f&#34;.{ext}&#34;)),
+            key=fileSort,
+        )
+        mapFiles = [
+            f
+            for f in resultFiles
+            if (f.startswith(&#34;anno&#34;) or f.startswith(&#34;pos&#34;)) and f.endswith(&#34;2node.tsv&#34;)
+        ]
+
+        if NODEMAP_FILE not in mapFiles:
+            console(f&#34;ERROR: Missing map file {NODEMAP_FILE}&#34;)
+            self.error = True
+        if SLOTMAP_FILE not in mapFiles:
+            console(f&#34;ERROR: Missing map file {SLOTMAP_FILE}&#34;)
+            self.error = True
+
+        if self.error:
+            return
+
+        # read the text files
+
         skipMeta = self.skipMeta
         is_metav = self.is_metav
 
@@ -3199,9 +3408,14 @@ value for each key is a dictionary that maps nodes to values.</dd>
         slot = 1
 
         for tfl, textFile in enumerate(textFiles):
-            with open(textFile) as fh:
-                text = json.load(fh)
-                tokens = text[&#34;_ordered_segments&#34;]
+            with open(f&#34;{resultDir}/{textFile}&#34;) as fh:
+                if asTsv:
+                    next(fh)
+                    tokens = [t.rstrip(&#34;\n&#34;).replace(&#34;\\t&#34;, &#34;\t&#34;).replace(&#34;\\n&#34;, &#34;\n&#34;) for t in fh]
+                else:
+                    text = json.load(fh)
+                    tokens = text[&#34;_ordered_segments&#34;]
+
                 tokenFiles.append(tokens)
 
                 for offset in range(len(tokens)):
@@ -3214,11 +3428,21 @@ value for each key is a dictionary that maps nodes to values.</dd>
         self.testTokens = tokenFiles
         self.waSlotTF = waSlotTF
 
+        # read the anno files
+
         annotations = []
 
         for annoFile in annoFiles:
-            with open(annoFile) as fh:
-                annos = json.load(fh)
+            with open(f&#34;{resultDir}/{annoFile}&#34;) as fh:
+                if asTsv:
+                    next(fh)
+                    annos = {}
+                    for line in fh:
+                        (aId, kind, ns, body, target) = line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)
+                        body = body.replace(&#34;\\t&#34;, &#34;\t&#34;).replace(&#34;\\n&#34;, &#34;\n&#34;)
+                        annos[aId] = (kind, ns, body, target)
+                else:
+                    annos = json.load(fh)
 
                 for aId, (kind, ns, body, target) in annos.items():
                     if &#34;-&gt;&#34; in target:
@@ -3236,7 +3460,10 @@ value for each key is a dictionary that maps nodes to values.</dd>
                             b = int(b)
 
                             if len(boundaries) == 1:
-                                part = (int(fb), int(b), int(fb), int(b) + 1)
+                                if kind == KIND_ELEM or kind == KIND_PI:
+                                    part = (int(fb), int(b), int(fb), int(b) + 1)
+                                else:
+                                    part = (int(fb), int(b))
                             else:
                                 eParts = boundaries[1].split(&#34;:&#34;, 1)
 
@@ -3257,6 +3484,26 @@ value for each key is a dictionary that maps nodes to values.</dd>
         annotations = sorted(annotations)
         self.testAnnotations = annotations
 
+        # read the map files
+
+        nodeFromAid = {}
+
+        with open(f&#34;{resultDir}/{SLOTMAP_FILE}&#34;) as fh:
+            next(fh)
+            for line in fh:
+                (pos, slot) = line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)
+                key = tuple(int(p) for p in pos.split(&#34;:&#34;))
+                nodeFromAid[key] = int(slot)
+
+        with open(f&#34;{resultDir}/{NODEMAP_FILE}&#34;) as fh:
+            next(fh)
+            for line in fh:
+                (aId, node) = line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)
+                nodeFromAid[aId] = int(node)
+
+        self.nodeFromAid = nodeFromAid
+        self.testNodes = set(nodeFromAid.values())
+
     def testText(self):
         &#34;&#34;&#34;Test the text.
 
@@ -3268,7 +3515,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
         boolean
             Whether all these tests succeed.
         &#34;&#34;&#34;
-        F = self.F
+        maxSlotPlus = self.maxSlotPlus
         tokenFiles = self.testTokens
         texts = self.texts
         waSlotTF = self.waSlotTF
@@ -3277,9 +3524,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
         if not silent:
             console(&#34;Testing the text ...&#34;)
 
-        nTokensTF = sum(
-            1 if s in waSlotTF else 0 for s in range(1, F.otype.maxSlot + 1)
-        )
+        nTokensTF = sum(1 if s in waSlotTF else 0 for s in range(1, maxSlotPlus))
         nTokensWA = sum(len(tokens) for tokens in tokenFiles)
         nGood = self.numEqual(nTokensTF, nTokensWA, silent)
 
@@ -3310,12 +3555,14 @@ value for each key is a dictionary that maps nodes to values.</dd>
         boolean
             Whether all these tests succeed.
         &#34;&#34;&#34;
-        F = self.F
+        maxSlotPlus = self.maxSlotPlus
+        maxNodePlus = self.maxNodePlus
         fotypev = self.fotypev
         eoslots = self.eoslots
         waSlotTF = self.waSlotTF
         annotations = self.testAnnotations
         silent = self.silent
+        excludeElements = self.excludeElements
 
         if not silent:
             console(&#34;Testing the elements ...&#34;)
@@ -3323,7 +3570,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
         nElementsTF = 0
         nPisTF = 0
 
-        for n in range(F.otype.maxSlot + 1, F.otype.maxNode + 1):
+        for n in range(maxSlotPlus, maxNodePlus):
             nType = fotypev(n)
             isPi = nType.startswith(&#34;?&#34;)
 
@@ -3337,24 +3584,16 @@ value for each key is a dictionary that maps nodes to values.</dd>
             if isPi:
                 nPisTF += 1
             else:
-                nElementsTF += 1
+                if nType not in excludeElements:
+                    nElementsTF += 1
 
         nElementsWA = 0
         nPisWA = 0
 
-        nodeFromAid = {}
-        self.nodeFromAid = nodeFromAid
+        nodeFromAid = self.nodeFromAid
 
-        for aId, kind, body, target in annotations:
-            if kind == &#34;element&#34;:
-                nElementsWA += 1
-            elif kind == &#34;pi&#34;:
-                nPisWA += 1
-            elif kind == &#34;node&#34;:
-                nodeFromAid[target] = body
-
-        nElementsWA = sum(1 if a[1] == &#34;element&#34; else 0 for a in annotations)
-        nPisWA = sum(1 if a[1] == &#34;pi&#34; else 0 for a in annotations)
+        nElementsWA = sum(1 if a[1] == KIND_ELEM else 0 for a in annotations)
+        nPisWA = sum(1 if a[1] == KIND_PI else 0 for a in annotations)
 
         eGood = self.numEqual(nElementsTF, nElementsWA, silent)
 
@@ -3393,8 +3632,8 @@ value for each key is a dictionary that maps nodes to values.</dd>
         goodTargets = 0
 
         for aId, kind, body, target in annotations:
-            isElem = kind == &#34;element&#34;
-            isPi = kind == &#34;pi&#34;
+            isElem = kind == KIND_ELEM
+            isPi = kind == KIND_PI
 
             if not (isElem or isPi):
                 other += 1
@@ -3500,6 +3739,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
         skipMeta = self.skipMeta
         annotations = self.testAnnotations
         nodeFromAid = self.nodeFromAid
+        testNodes = self.testNodes
         nsOrig = self.nsOrig
         silent = self.silent
 
@@ -3511,8 +3751,10 @@ value for each key is a dictionary that maps nodes to values.</dd>
         attWA = []
 
         for aId, kind, body, target in annotations:
-            if kind != &#34;attribute&#34;:
+            if kind != KIND_ATTR:
                 continue
+            if type(target) is tuple and len(target) == 4:
+                target = (target[0], target[1])
             node = nodeFromAid[target]
             att, value = body.split(&#34;=&#34;, 1)
             attWA.append((node, att, value))
@@ -3526,7 +3768,9 @@ value for each key is a dictionary that maps nodes to values.</dd>
         wrong = []
 
         for node, att, valWA in attWA:
-            valTF = str(Fs(att).v(node))
+            val = Fs(att).v(node)
+            valTF = None if val is None else str(val)
+
             if valWA == valTF:
                 good += 1
             else:
@@ -3560,6 +3804,9 @@ value for each key is a dictionary that maps nodes to values.</dd>
                 continue
 
             for node, valTF in Fs(feat).items():
+                if node not in testNodes:
+                    continue
+
                 slots = eoslots(node)
                 b = slots[0]
                 e = slots[-1]
@@ -3567,7 +3814,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
                 if not (b in waSlotTF and e in waSlotTF):
                     continue
 
-                attTF.append((node, feat, str(valTF)))
+                attTF.append((node, feat, None if valTF is None else str(valTF)))
 
         attTF = sorted(attTF)
 
@@ -3589,10 +3836,12 @@ value for each key is a dictionary that maps nodes to values.</dd>
         fmtWA = []
 
         for aId, kind, body, target in annotations:
-            if kind != &#34;format&#34;:
+            if kind != KIND_FMT:
                 continue
             if body == &#34;note&#34;:
                 continue
+            if type(target) is tuple and len(target) == 4:
+                target = (target[0], target[1])
             node = nodeFromAid[target]
             fmtWA.append((node, body))
 
@@ -3613,7 +3862,8 @@ value for each key is a dictionary that maps nodes to values.</dd>
 
         for node, valWA in fmtWA:
             feat = f&#34;rend_{valWA}&#34;
-            valTF = valWA if str(Fs(feat).v(node)) else None
+            valTF = valWA if Fs(feat).v(node) else None
+
             if valWA == valTF:
                 good += 1
             else:
@@ -3694,7 +3944,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
         attWA = []
 
         for aId, kind, body, target in annotations:
-            if kind != &#34;anno&#34;:
+            if kind != KIND_ANNO:
                 continue
             node = nodeFromAid[target]
             att, value = body.split(&#34;=&#34;, 1)
@@ -3775,39 +4025,27 @@ value for each key is a dictionary that maps nodes to values.</dd>
         Eall = self.Eall
         annotations = self.testAnnotations
         silent = self.silent
+        nodeFromAid = self.nodeFromAid
+        testNodes = self.testNodes
 
         if not silent:
             console(&#34;Testing the edges ...&#34;)
 
-        tfFromWANodes = {}
         tfFromWAEdges = {}
 
         for aId, kind, body, target in annotations:
-            if kind != &#34;node&#34;:
-                continue
-            if type(target) is tuple:
-                fileS, start, fileE, end = target
-                if not (fileS == fileE and start + 1 == end):
-                    # we expect that node annotations either targets a single token
-                    # or an element/pi annotation
-                    print(target)
-                    break
-                target = (fileS, start)
-            tfFromWANodes[target] = body
-
-        for aId, kind, body, target in annotations:
-            if kind != &#34;edge&#34;:
+            if kind != KIND_EDGE:
                 continue
 
             fro, to = target
-            fromNode = tfFromWANodes[fro]
-            toNode = tfFromWANodes[to]
+            fromNode = nodeFromAid[fro]
+            toNode = nodeFromAid[to]
             parts = body.split(&#34;=&#34;, 1)
             name, val = (body, None) if len(parts) == 1 else parts
             tfFromWAEdges.setdefault(name, {}).setdefault(fromNode, {})[toNode] = val
 
         if not silent:
-            console(f&#34;\tFound: {len(tfFromWANodes)} nodes&#34;)
+            console(f&#34;\tFound: {len(nodeFromAid)} nodes&#34;)
 
             for edge, edgeData in sorted(tfFromWAEdges.items()):
                 console(f&#34;\tFound edge {edge} with {len(edgeData)} starting nodes&#34;)
@@ -3836,7 +4074,23 @@ value for each key is a dictionary that maps nodes to values.</dd>
             if not good:
                 continue
 
-            dataTF = dict(Es(edge).items())
+            dataTF = {}
+
+            for f, ts in Es(edge).items():
+                if f not in testNodes:
+                    continue
+
+                if type(ts) is dict:
+                    for t, v in ts.items():
+                        if t not in testNodes:
+                            continue
+                        dataTF.setdefault(f, {})[t] = v
+                else:
+                    for t in ts:
+                        if t not in testNodes:
+                            continue
+                        dataTF.setdefault(f, {})[t] = None
+
             dataWA = tfFromWAEdges[edge]
 
             fromNodesTF = set(dataTF)
@@ -3861,10 +4115,9 @@ value for each key is a dictionary that maps nodes to values.</dd>
 
             for f, toNodeInfoTF in dataTF.items():
                 toNodeInfoWA = dataWA[f]
-                if type(toNodeInfoTF) is dict:
-                    toNodeInfoTF = {k: str(v) for (k, v) in toNodeInfoTF.items()}
-                else:
-                    toNodeInfoTF = {x: None for x in toNodeInfoTF}
+                toNodeInfoTF = {
+                    k: None if v is None else str(v) for (k, v) in toNodeInfoTF.items()
+                }
 
                 if toNodeInfoTF != toNodeInfoWA:
                     diffs.append((f, toNodeInfoTF, toNodeInfoWA))
@@ -3955,7 +4208,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/watm.py#L997-L1020" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L1037-L1060" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def numEqual(nTF, nWA, silent):
@@ -4004,7 +4257,7 @@ def numEqual(nTF, nWA, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/watm.py#L1022-L1073" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L1062-L1113" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def strEqual(tf, wa, silent):
@@ -4076,7 +4329,7 @@ tokens and/or annotations in WATM.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/watm.py#L666-L878" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L690-L885" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeAnno(self):
     &#34;&#34;&#34;Make all annotations.
@@ -4109,6 +4362,7 @@ tokens and/or annotations in WATM.</p></div>
     nsOrig = self.nsOrig
     skipMeta = self.skipMeta
     extra = self.extra
+    excludeElements = self.excludeElements
 
     waFromTF = self.waFromTF
 
@@ -4129,49 +4383,43 @@ tokens and/or annotations in WATM.</p></div>
         return f&#34;{ts[0]}:{ts[1]}&#34; if fotypev(n) == slotType else ts
 
     for otype in otypes:
-        isSlot = otype == slotType
+        if otype == slotType or otype in excludeElements:
+            continue
 
         for n in F.otype.s(otype):
-            if isSlot:
-                if skipMeta and is_metav(n):
-                    continue
+            ws = eoslots(n)
+            sb, se = (ws[0], ws[-1])
+            if len(ws) != se - sb + 1:
+                discontinuousNodes[otype].append(n)
 
-                self.mkAnno(KIND_NODE, NS_TF, n, mkSingleTarget(n))
-            else:
-                ws = eoslots(n)
-                sb, se = (ws[0], ws[-1])
-                if len(ws) != se - sb + 1:
-                    discontinuousNodes[otype].append(n)
+            if skipMeta and (is_metav(ws[0]) or is_metav(ws[-1])):
+                continue
 
-                if skipMeta and (is_metav(ws[0]) or is_metav(ws[-1])):
-                    continue
+            ti0, start = waFromTF[ws[0]]
+            ti1, end = waFromTF[ws[-1]]
 
-                ti0, start = waFromTF[ws[0]]
-                ti1, end = waFromTF[ws[-1]]
+            if ti0 != ti1:
+                farTargets.append((otype, ti0, start, ti1, end))
 
-                if ti0 != ti1:
-                    farTargets.append((otype, ti0, start, ti1, end))
+            if ti0 == ti1 and end &lt; start:
+                invertedTargets.append((otype, ti0, start, end))
+                start, end = (end, start)
 
-                if ti0 == ti1 and end &lt; start:
-                    invertedTargets.append((otype, ti0, start, end))
-                    start, end = (end, start)
-
-                startPoint = f&#34;{ti0}:{start}&#34;
-                endPoint = (
-                    (&#34;&#34; if start == end else f&#34;-{end + 1}&#34;)
-                    if ti0 == ti1
-                    else f&#34;-{ti1}:{end + 1}&#34;
+            startPoint = f&#34;{ti0}:{start}&#34;
+            endPoint = (
+                (&#34;&#34; if start == end else f&#34;-{end + 1}&#34;)
+                if ti0 == ti1
+                else f&#34;-{ti1}:{end + 1}&#34;
+            )
+            target = f&#34;{startPoint}{endPoint}&#34;
+            aId = (
+                self.mkAnno(KIND_PI, nsOrig, otype[1:], target)
+                if otype.startswith(&#34;?&#34;)
+                else self.mkAnno(
+                    KIND_ELEM, NS_FROM_OTYPE.get(otype, nsOrig), otype, target
                 )
-                target = f&#34;{startPoint}{endPoint}&#34;
-                aId = (
-                    self.mkAnno(KIND_PI, nsOrig, otype[1:], target)
-                    if otype.startswith(&#34;?&#34;)
-                    else self.mkAnno(
-                        KIND_ELEM, NS_FROM_OTYPE.get(otype, nsOrig), otype, target
-                    )
-                )
-                waFromTF[n] = aId
-                self.mkAnno(KIND_NODE, NS_TF, n, aId)
+            )
+            waFromTF[n] = aId
 
     for feat in nodeFeatures:
         ns = Fs(feat).meta.get(&#34;conversionCode&#34;, NS_FROM_FEAT.get(feat, nsOrig))
@@ -4196,16 +4444,13 @@ tokens and/or annotations in WATM.</p></div>
             body = parts[1] if isRend else &#34;note&#34;
 
             for n, val in Fs(feat).items():
-                if not val or (skipMeta and is_metav(n)):
+                if n not in waFromTF or not val or skipMeta and is_metav(n):
                     continue
 
                 self.mkAnno(KIND_FMT, ns, body, mkSingleTarget(n))
         else:
             for n, val in Fs(feat).items():
-                if n not in waFromTF:
-                    continue
-
-                if val is None or skipMeta and is_metav(n):
+                if n not in waFromTF or val is None or skipMeta and is_metav(n):
                     continue
 
                 body = f&#34;{feat}={val}&#34;
@@ -4223,20 +4468,14 @@ tokens and/or annotations in WATM.</p></div>
             ns = NS_NONE
 
         for fromNode, toNodes in Es(feat).items():
-            if fromNode not in waFromTF:
-                continue
-
-            if skipMeta and is_metav(fromNode):
+            if fromNode not in waFromTF or skipMeta and is_metav(fromNode):
                 continue
 
             targetFrom = mkSingleTarget(fromNode)
 
             if type(toNodes) is dict:
                 for toNode, val in toNodes.items():
-                    if toNode not in waFromTF:
-                        continue
-
-                    if skipMeta and is_metav(toNode):
+                    if toNode not in waFromTF or skipMeta and is_metav(toNode):
                         continue
 
                     body = f&#34;{feat}={val}&#34;
@@ -4245,10 +4484,7 @@ tokens and/or annotations in WATM.</p></div>
                     self.mkAnno(KIND_EDGE, ns, body, target)
             else:
                 for toNode in toNodes:
-                    if toNode not in waFromTF:
-                        continue
-
-                    if skipMeta and is_metav(toNode):
+                    if toNode not in waFromTF or skipMeta and is_metav(toNode):
                         continue
 
                     targetTo = mkSingleTarget(toNode)
@@ -4304,7 +4540,7 @@ to indices in this list is stored in member <code>waFromTF</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/watm.py#L580-L645" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L604-L669" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeText(self):
     &#34;&#34;&#34;Creates the text data.
@@ -4394,7 +4630,7 @@ or <code>tuple</code> of <code>strings</code></dt>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/watm.py#L647-L664" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L671-L688" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mkAnno(self, kind, ns, body, target):
     &#34;&#34;&#34;Make a single annotation and return its id.
@@ -4440,7 +4676,7 @@ If <code>condensed</code> is True, we suppress this output.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/watm.py#L1075-L1130" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L1115-L1174" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testAll(self, condensed=False):
     &#34;&#34;&#34;Test all aspects of the WATM conversion.
@@ -4472,6 +4708,10 @@ If <code>condensed</code> is True, we suppress this output.</dd>
         return
 
     self.testSetup()
+
+    if self.error:
+        console(&#34;WATM data is incomplete. Testing aborted&#34;)
+        return
 
     good = True
 
@@ -4520,7 +4760,7 @@ In turn, these features have been translated into annotations of kind
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/watm.py#L1427-L1618" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L1539-L1741" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testAttributes(self):
     &#34;&#34;&#34;Test the attributes.
@@ -4546,6 +4786,7 @@ In turn, these features have been translated into annotations of kind
     skipMeta = self.skipMeta
     annotations = self.testAnnotations
     nodeFromAid = self.nodeFromAid
+    testNodes = self.testNodes
     nsOrig = self.nsOrig
     silent = self.silent
 
@@ -4557,8 +4798,10 @@ In turn, these features have been translated into annotations of kind
     attWA = []
 
     for aId, kind, body, target in annotations:
-        if kind != &#34;attribute&#34;:
+        if kind != KIND_ATTR:
             continue
+        if type(target) is tuple and len(target) == 4:
+            target = (target[0], target[1])
         node = nodeFromAid[target]
         att, value = body.split(&#34;=&#34;, 1)
         attWA.append((node, att, value))
@@ -4572,7 +4815,9 @@ In turn, these features have been translated into annotations of kind
     wrong = []
 
     for node, att, valWA in attWA:
-        valTF = str(Fs(att).v(node))
+        val = Fs(att).v(node)
+        valTF = None if val is None else str(val)
+
         if valWA == valTF:
             good += 1
         else:
@@ -4606,6 +4851,9 @@ In turn, these features have been translated into annotations of kind
             continue
 
         for node, valTF in Fs(feat).items():
+            if node not in testNodes:
+                continue
+
             slots = eoslots(node)
             b = slots[0]
             e = slots[-1]
@@ -4613,7 +4861,7 @@ In turn, these features have been translated into annotations of kind
             if not (b in waSlotTF and e in waSlotTF):
                 continue
 
-            attTF.append((node, feat, str(valTF)))
+            attTF.append((node, feat, None if valTF is None else str(valTF)))
 
     attTF = sorted(attTF)
 
@@ -4635,10 +4883,12 @@ In turn, these features have been translated into annotations of kind
     fmtWA = []
 
     for aId, kind, body, target in annotations:
-        if kind != &#34;format&#34;:
+        if kind != KIND_FMT:
             continue
         if body == &#34;note&#34;:
             continue
+        if type(target) is tuple and len(target) == 4:
+            target = (target[0], target[1])
         node = nodeFromAid[target]
         fmtWA.append((node, body))
 
@@ -4659,7 +4909,8 @@ In turn, these features have been translated into annotations of kind
 
     for node, valWA in fmtWA:
         feat = f&#34;rend_{valWA}&#34;
-        valTF = valWA if str(Fs(feat).v(node)) else None
+        valTF = valWA if Fs(feat).v(node) else None
+
         if valWA == valTF:
             good += 1
         else:
@@ -4734,7 +4985,7 @@ by annotations.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/watm.py#L1707-L1881" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L1830-L2007" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testEdges(self):
     &#34;&#34;&#34;Test the edges.
@@ -4755,39 +5006,27 @@ by annotations.</p>
     Eall = self.Eall
     annotations = self.testAnnotations
     silent = self.silent
+    nodeFromAid = self.nodeFromAid
+    testNodes = self.testNodes
 
     if not silent:
         console(&#34;Testing the edges ...&#34;)
 
-    tfFromWANodes = {}
     tfFromWAEdges = {}
 
     for aId, kind, body, target in annotations:
-        if kind != &#34;node&#34;:
-            continue
-        if type(target) is tuple:
-            fileS, start, fileE, end = target
-            if not (fileS == fileE and start + 1 == end):
-                # we expect that node annotations either targets a single token
-                # or an element/pi annotation
-                print(target)
-                break
-            target = (fileS, start)
-        tfFromWANodes[target] = body
-
-    for aId, kind, body, target in annotations:
-        if kind != &#34;edge&#34;:
+        if kind != KIND_EDGE:
             continue
 
         fro, to = target
-        fromNode = tfFromWANodes[fro]
-        toNode = tfFromWANodes[to]
+        fromNode = nodeFromAid[fro]
+        toNode = nodeFromAid[to]
         parts = body.split(&#34;=&#34;, 1)
         name, val = (body, None) if len(parts) == 1 else parts
         tfFromWAEdges.setdefault(name, {}).setdefault(fromNode, {})[toNode] = val
 
     if not silent:
-        console(f&#34;\tFound: {len(tfFromWANodes)} nodes&#34;)
+        console(f&#34;\tFound: {len(nodeFromAid)} nodes&#34;)
 
         for edge, edgeData in sorted(tfFromWAEdges.items()):
             console(f&#34;\tFound edge {edge} with {len(edgeData)} starting nodes&#34;)
@@ -4816,7 +5055,23 @@ by annotations.</p>
         if not good:
             continue
 
-        dataTF = dict(Es(edge).items())
+        dataTF = {}
+
+        for f, ts in Es(edge).items():
+            if f not in testNodes:
+                continue
+
+            if type(ts) is dict:
+                for t, v in ts.items():
+                    if t not in testNodes:
+                        continue
+                    dataTF.setdefault(f, {})[t] = v
+            else:
+                for t in ts:
+                    if t not in testNodes:
+                        continue
+                    dataTF.setdefault(f, {})[t] = None
+
         dataWA = tfFromWAEdges[edge]
 
         fromNodesTF = set(dataTF)
@@ -4841,10 +5096,9 @@ by annotations.</p>
 
         for f, toNodeInfoTF in dataTF.items():
             toNodeInfoWA = dataWA[f]
-            if type(toNodeInfoTF) is dict:
-                toNodeInfoTF = {k: str(v) for (k, v) in toNodeInfoTF.items()}
-            else:
-                toNodeInfoTF = {x: None for x in toNodeInfoTF}
+            toNodeInfoTF = {
+                k: None if v is None else str(v) for (k, v) in toNodeInfoTF.items()
+            }
 
             if toNodeInfoTF != toNodeInfoWA:
                 diffs.append((f, toNodeInfoTF, toNodeInfoWA))
@@ -4929,7 +5183,7 @@ dataset.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/watm.py#L1249-L1425" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L1367-L1537" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testElements(self):
     &#34;&#34;&#34;Test the elements.
@@ -4943,12 +5197,14 @@ dataset.</p>
     boolean
         Whether all these tests succeed.
     &#34;&#34;&#34;
-    F = self.F
+    maxSlotPlus = self.maxSlotPlus
+    maxNodePlus = self.maxNodePlus
     fotypev = self.fotypev
     eoslots = self.eoslots
     waSlotTF = self.waSlotTF
     annotations = self.testAnnotations
     silent = self.silent
+    excludeElements = self.excludeElements
 
     if not silent:
         console(&#34;Testing the elements ...&#34;)
@@ -4956,7 +5212,7 @@ dataset.</p>
     nElementsTF = 0
     nPisTF = 0
 
-    for n in range(F.otype.maxSlot + 1, F.otype.maxNode + 1):
+    for n in range(maxSlotPlus, maxNodePlus):
         nType = fotypev(n)
         isPi = nType.startswith(&#34;?&#34;)
 
@@ -4970,24 +5226,16 @@ dataset.</p>
         if isPi:
             nPisTF += 1
         else:
-            nElementsTF += 1
+            if nType not in excludeElements:
+                nElementsTF += 1
 
     nElementsWA = 0
     nPisWA = 0
 
-    nodeFromAid = {}
-    self.nodeFromAid = nodeFromAid
+    nodeFromAid = self.nodeFromAid
 
-    for aId, kind, body, target in annotations:
-        if kind == &#34;element&#34;:
-            nElementsWA += 1
-        elif kind == &#34;pi&#34;:
-            nPisWA += 1
-        elif kind == &#34;node&#34;:
-            nodeFromAid[target] = body
-
-    nElementsWA = sum(1 if a[1] == &#34;element&#34; else 0 for a in annotations)
-    nPisWA = sum(1 if a[1] == &#34;pi&#34; else 0 for a in annotations)
+    nElementsWA = sum(1 if a[1] == KIND_ELEM else 0 for a in annotations)
+    nPisWA = sum(1 if a[1] == KIND_PI else 0 for a in annotations)
 
     eGood = self.numEqual(nElementsTF, nElementsWA, silent)
 
@@ -5026,8 +5274,8 @@ dataset.</p>
     goodTargets = 0
 
     for aId, kind, body, target in annotations:
-        isElem = kind == &#34;element&#34;
-        isPi = kind == &#34;pi&#34;
+        isElem = kind == KIND_ELEM
+        isPi = kind == KIND_PI
 
         if not (isElem or isPi):
             other += 1
@@ -5127,7 +5375,7 @@ the kind <code>anno</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/watm.py#L1620-L1705" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L1743-L1828" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testExtra(self):
     &#34;&#34;&#34;Test the extra data for on-the-fly annotations.
@@ -5154,7 +5402,7 @@ the kind <code>anno</code>.</p>
     attWA = []
 
     for aId, kind, body, target in annotations:
-        if kind != &#34;anno&#34;:
+        if kind != KIND_ANNO:
             continue
         node = nodeFromAid[target]
         att, value = body.split(&#34;=&#34;, 1)
@@ -5223,22 +5471,61 @@ the kind <code>anno</code>.</p>
 <dd>
 <div class="desc"><p>Prepare the tests.</p>
 <p>We read the WATM dataset and store the tokens in member <code>testTokens</code>
-and the annotations in the member <code>testAnnotations</code>.
+and the annotations in the member <code>testAnnotations</code>, and the node mapping
+in the member <code>nodeFromAid</code>.
 We unpack targets if they contain structured information.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/watm.py#L1132-L1206" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L1176-L1326" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testSetup(self):
     &#34;&#34;&#34;Prepare the tests.
 
     We read the WATM dataset and store the tokens in member `testTokens`
-    and the annotations in the member `testAnnotations`.
+    and the annotations in the member `testAnnotations`, and the node mapping
+    in the member `nodeFromAid`.
     We unpack targets if they contain structured information.
     &#34;&#34;&#34;
-    textFiles = self.textFiles
-    annoFiles = self.annoFiles
+
+    # collect the files
+
+    asTsv = self.asTsv
+    resultDir = self.resultDir
+    resultFiles = dirContents(resultDir)[0]
+
+    ext = &#34;tsv&#34; if asTsv else &#34;json&#34;
+
+    def fileSort(name):
+        middle = name.split(&#34;.&#34;, 1)[0].split(&#34;-&#34;, 1)[1]
+        return f&#34;{middle:0&gt;10}&#34; if middle.isdecimal else middle
+
+    textFiles = sorted(
+        (f for f in resultFiles if f.startswith(&#34;text-&#34;) and f.endswith(f&#34;.{ext}&#34;)),
+        key=fileSort,
+    )
+    annoFiles = sorted(
+        (f for f in resultFiles if f.startswith(&#34;anno-&#34;) and f.endswith(f&#34;.{ext}&#34;)),
+        key=fileSort,
+    )
+    mapFiles = [
+        f
+        for f in resultFiles
+        if (f.startswith(&#34;anno&#34;) or f.startswith(&#34;pos&#34;)) and f.endswith(&#34;2node.tsv&#34;)
+    ]
+
+    if NODEMAP_FILE not in mapFiles:
+        console(f&#34;ERROR: Missing map file {NODEMAP_FILE}&#34;)
+        self.error = True
+    if SLOTMAP_FILE not in mapFiles:
+        console(f&#34;ERROR: Missing map file {SLOTMAP_FILE}&#34;)
+        self.error = True
+
+    if self.error:
+        return
+
+    # read the text files
+
     skipMeta = self.skipMeta
     is_metav = self.is_metav
 
@@ -5248,9 +5535,14 @@ We unpack targets if they contain structured information.</p></div>
     slot = 1
 
     for tfl, textFile in enumerate(textFiles):
-        with open(textFile) as fh:
-            text = json.load(fh)
-            tokens = text[&#34;_ordered_segments&#34;]
+        with open(f&#34;{resultDir}/{textFile}&#34;) as fh:
+            if asTsv:
+                next(fh)
+                tokens = [t.rstrip(&#34;\n&#34;).replace(&#34;\\t&#34;, &#34;\t&#34;).replace(&#34;\\n&#34;, &#34;\n&#34;) for t in fh]
+            else:
+                text = json.load(fh)
+                tokens = text[&#34;_ordered_segments&#34;]
+
             tokenFiles.append(tokens)
 
             for offset in range(len(tokens)):
@@ -5263,11 +5555,21 @@ We unpack targets if they contain structured information.</p></div>
     self.testTokens = tokenFiles
     self.waSlotTF = waSlotTF
 
+    # read the anno files
+
     annotations = []
 
     for annoFile in annoFiles:
-        with open(annoFile) as fh:
-            annos = json.load(fh)
+        with open(f&#34;{resultDir}/{annoFile}&#34;) as fh:
+            if asTsv:
+                next(fh)
+                annos = {}
+                for line in fh:
+                    (aId, kind, ns, body, target) = line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)
+                    body = body.replace(&#34;\\t&#34;, &#34;\t&#34;).replace(&#34;\\n&#34;, &#34;\n&#34;)
+                    annos[aId] = (kind, ns, body, target)
+            else:
+                annos = json.load(fh)
 
             for aId, (kind, ns, body, target) in annos.items():
                 if &#34;-&gt;&#34; in target:
@@ -5285,7 +5587,10 @@ We unpack targets if they contain structured information.</p></div>
                         b = int(b)
 
                         if len(boundaries) == 1:
-                            part = (int(fb), int(b), int(fb), int(b) + 1)
+                            if kind == KIND_ELEM or kind == KIND_PI:
+                                part = (int(fb), int(b), int(fb), int(b) + 1)
+                            else:
+                                part = (int(fb), int(b))
                         else:
                             eParts = boundaries[1].split(&#34;:&#34;, 1)
 
@@ -5304,7 +5609,27 @@ We unpack targets if they contain structured information.</p></div>
                 annotations.append((aId, kind, body, target))
 
     annotations = sorted(annotations)
-    self.testAnnotations = annotations</code></pre>
+    self.testAnnotations = annotations
+
+    # read the map files
+
+    nodeFromAid = {}
+
+    with open(f&#34;{resultDir}/{SLOTMAP_FILE}&#34;) as fh:
+        next(fh)
+        for line in fh:
+            (pos, slot) = line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)
+            key = tuple(int(p) for p in pos.split(&#34;:&#34;))
+            nodeFromAid[key] = int(slot)
+
+    with open(f&#34;{resultDir}/{NODEMAP_FILE}&#34;) as fh:
+        next(fh)
+        for line in fh:
+            (aId, node) = line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)
+            nodeFromAid[aId] = int(node)
+
+    self.nodeFromAid = nodeFromAid
+    self.testNodes = set(nodeFromAid.values())</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.watm.WATM.testText"><code class="name flex">
@@ -5322,7 +5647,7 @@ whether the TF and WATM datasets agree on it.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/watm.py#L1208-L1247" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L1328-L1365" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testText(self):
     &#34;&#34;&#34;Test the text.
@@ -5335,7 +5660,7 @@ whether the TF and WATM datasets agree on it.</p>
     boolean
         Whether all these tests succeed.
     &#34;&#34;&#34;
-    F = self.F
+    maxSlotPlus = self.maxSlotPlus
     tokenFiles = self.testTokens
     texts = self.texts
     waSlotTF = self.waSlotTF
@@ -5344,9 +5669,7 @@ whether the TF and WATM datasets agree on it.</p>
     if not silent:
         console(&#34;Testing the text ...&#34;)
 
-    nTokensTF = sum(
-        1 if s in waSlotTF else 0 for s in range(1, F.otype.maxSlot + 1)
-    )
+    nTokensTF = sum(1 if s in waSlotTF else 0 for s in range(1, maxSlotPlus))
     nTokensWA = sum(len(tokens) for tokens in tokenFiles)
     nGood = self.numEqual(nTokensTF, nTokensWA, silent)
 
@@ -5371,24 +5694,29 @@ whether the TF and WATM datasets agree on it.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Write text and annotation data to disk.</p>
-<p>The data will be written as JSON files.
+<p>The data will be written as JSON files, or, is <code>asTsv</code> is in force, as TSV
+files.
 When the annotation data grows larger than a certain threshold, it will be
 divided over several files.</p>
 <p>The annotations are sorted by annotation id.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/watm.py#L880-L995" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L887-L1035" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeAll(self):
     &#34;&#34;&#34;Write text and annotation data to disk.
 
-    The data will be written as JSON files.
+    The data will be written as JSON files, or, is `asTsv` is in force, as TSV
+    files.
     When the annotation data grows larger than a certain threshold, it will be
     divided over several files.
 
     The annotations are sorted by annotation id.
     &#34;&#34;&#34;
+
+    maxNodePlus = self.maxNodePlus
+    maxSlotPlus = self.maxSlotPlus
 
     # text files
 
@@ -5403,38 +5731,45 @@ divided over several files.</p>
     app = self.app
     texts = self.texts
     annos = self.annos
+    waFromTF = self.waFromTF
+    asTsv = self.asTsv
 
     baseDir = self.repoLocation
     relative = app.context.relative
     version = app.version
     wRelative = REL_RE.sub(f&#34;/{TT_NAME}/{version}/&#34;, relative, count=1)
     resultDir = f&#34;{baseDir}{wRelative}&#34;
-
-    textFiles = []
-    self.textFiles = textFiles
+    self.resultDir = resultDir
 
     initTree(resultDir, fresh=True)
 
     total = 0
 
+    ext = &#34;tsv&#34; if asTsv else &#34;json&#34;
+
     for i, text in enumerate(texts):
-        textFile = f&#34;{resultDir}/text-{i}.json&#34;
-        textFiles.append(textFile)
+        textFile = f&#34;{resultDir}/text-{i}.{ext}&#34;
         nText = len(text)
         total += nText
 
         with open(textFile, &#34;w&#34;) as fh:
-            json.dump(
-                dict(_ordered_segments=text), fh, ensure_ascii=False, indent=1
-            )
+            if asTsv:
+                fh.write(&#34;token\n&#34;)
+                for t in text:
+                    fh.write(t.replace(&#34;\t&#34;, &#34;\\t&#34;).replace(&#34;\n&#34;, &#34;\\n&#34;) + &#34;\n&#34;)
+            else:
+                json.dump(
+                    dict(_ordered_segments=text), fh, ensure_ascii=False, indent=1
+                )
 
         if not silent:
             console(f&#34;Text file {i:&gt;4}: {nText:&gt;8} segments to {textFile}&#34;)
 
-    nTextFiles = len(textFiles)
-    sep = &#34;&#34; if nTextFiles == 1 else &#34;s&#34;
+    nTexts = len(texts)
+    sep = &#34;&#34; if nTexts == 1 else &#34;s&#34;
+
     if not silent:
-        console(f&#34;Text files all: {total:&gt;8} segments to {nTextFiles} file{sep}&#34;)
+        console(f&#34;Text files all: {total:&gt;8} segments to {nTexts} file{sep}&#34;)
 
     # annotation files
 
@@ -5445,36 +5780,35 @@ divided over several files.</p>
 
     aIdSorted = sorted(annoStore.keys())
 
-    annoFile = f&#34;{resultDir}/anno.tsv&#34;
-
-    if False:
-        with open(annoFile, &#34;w&#34;) as fh:
-            for aId in aIdSorted:
-                kind, ns, body, target = annoStore[aId]
-                fh.write(f&#34;{aId}\t{kind}\t{ns}\t{body}\t{target}\n&#34;)
-
     thisAnnoStore = {}
     thisA = 1
-    annoFiles = []
-    self.annoFiles = annoFiles
+    nAnnoFiles = 0
 
     LIMIT = 400000
     j = 0
     total = 0
 
     def writeThis():
-        annoFile = f&#34;{resultDir}/anno-{thisA:&gt;01}.json&#34;
-        annoFiles.append(annoFile)
+        annoFile = f&#34;{resultDir}/anno-{thisA:&gt;01}.{ext}&#34;
 
         with open(annoFile, &#34;w&#34;) as fh:
-            json.dump(thisAnnoStore, fh, ensure_ascii=False, indent=1)
+            if asTsv:
+                fh.write(&#34;annoid\tkind\tnamespace\tbody\ttarget\n&#34;)
+                for aId, (kind, namespace, body, target) in thisAnnoStore.items():
+                    body = body.replace(&#34;\t&#34;, &#34;\\t&#34;).replace(&#34;\n&#34;, &#34;\\n&#34;)
+                    fh.write(f&#34;{aId}\t{kind}\t{namespace}\t{body}\t{target}\n&#34;)
+            else:
+                json.dump(thisAnnoStore, fh, ensure_ascii=False, indent=1)
 
         if not silent:
-            console(f&#34;Anno file {i:&gt;4}: {j:&gt;8} annotations written to {annoFile}&#34;)
+            console(
+                f&#34;Anno file {thisA:&gt;4}: {j:&gt;8} annotations written to {annoFile}&#34;
+            )
 
     for aId in aIdSorted:
         if j &gt;= LIMIT:
             writeThis()
+            nAnnoFiles += 1
             thisA += 1
             thisAnnoStore = {}
             total += j
@@ -5485,17 +5819,40 @@ divided over several files.</p>
 
     if len(thisAnnoStore):
         writeThis()
+        nAnnoFiles += 1
         total += j
 
-    if len(annos) != total:
+    if len(annoStore) != total:
         console(f&#34;Sum of batches : {total:&gt;8}&#34;, error=True)
         console(f&#34;All annotations: {len(annoStore):&gt;8}&#34;, error=True)
         console(&#34;Mismatch in number of annotations&#34;, error=True)
 
-    nAnnoFiles = len(annoFiles)
     sep = &#34;&#34; if nAnnoFiles == 1 else &#34;s&#34;
+
     if not silent:
-        console(f&#34;Anno files all: {total:&gt;8} annotations to {nAnnoFiles} file{sep}&#34;)</code></pre>
+        console(f&#34;Anno files all: {total:&gt;8} annotations to {nAnnoFiles} file{sep}&#34;)
+
+    # node mapping files
+
+    slotmapFile = f&#34;{resultDir}/{SLOTMAP_FILE}&#34;
+    nodemapFile = f&#34;{resultDir}/{NODEMAP_FILE}&#34;
+
+    with open(slotmapFile, &#34;w&#34;) as fh:
+        fh.write(&#34;position\tnode\n&#34;)
+        for n in range(1, maxSlotPlus):
+            (file, pos) = waFromTF[n]
+            fh.write(f&#34;{file}:{pos}\t{n}\n&#34;)
+
+    with open(nodemapFile, &#34;w&#34;) as fh:
+        fh.write(&#34;annotation\tnode\n&#34;)
+        for n in range(maxSlotPlus, maxNodePlus):
+            aId = waFromTF.get(n, None)
+            if aId is not None:
+                fh.write(f&#34;{aId}\t{n}\n&#34;)
+
+    if not silent:
+        console(f&#34;Slot mapping written to {slotmapFile}&#34;)
+        console(f&#34;Node mapping written to {nodemapFile}&#34;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -5536,7 +5893,7 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/watm.py#L1884-L1983" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L2010-L2109" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WATMS:
     &#34;&#34;&#34;Export corpora that are divided over multiple TF datasets.
@@ -5656,7 +6013,7 @@ Otherwise all datasets will be converted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b62bd52fbb45cac88242dbe60a2ae7273ebcc20/tf/convert/watm.py#L1938-L1983" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/87c64d3b18b241ffdd7a2fa4cfd4579f03822381/tf/convert/watm.py#L2064-L2109" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def produce(self, doc=None):
     &#34;&#34;&#34;Convert all relevant TF datasets.
