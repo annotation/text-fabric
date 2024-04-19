@@ -43,6 +43,17 @@ and in its top-level directory run the command:</strong></p>
 </code></pre>
 <h2 id="12">12</h2>
 <h3 id="123">12.3</h3>
+<h4 id="1237">12.3.7</h4>
+<p>2024-04-19</p>
+<p>Improvements in <code><a title="tf.convert.watm" href="../convert/watm.html">tf.convert.watm</a></code>: the resulting data is much more compact, because:</p>
+<ul>
+<li>you can choose to export it as TSV instead of JSON;</li>
+<li>no annotations of type <code>node</code> are produced anymore, they only served to map
+annotations and text segments to TF nodes; now that mapping is exported as a simple
+TSV file;</li>
+<li>you can opt to exclude an arbitrary set of tags from being exported as WATM
+annotations.</li>
+</ul>
 <h4 id="1236">12.3.6</h4>
 <p>2024-04-16</p>
 <ul>
@@ -349,7 +360,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c749d8d1245fb64d8bb4fe461367ce1209a59b36/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/df917a27893b7551738715ef87201b1eb4a4f4b7/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -423,6 +434,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
 <li><a href="#123">12.3</a><ul>
+<li><a href="#1237">12.3.7</a></li>
 <li><a href="#1236">12.3.6</a></li>
 <li><a href="#1235">12.3.5</a></li>
 <li><a href="#1234">12.3.4</a></li>
