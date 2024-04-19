@@ -21,7 +21,7 @@ templates and adaptations for different files.
 
 The possible values for models, templates, and adaptations should be declared in
 the configuration file.
-For each model there should be corresponding schema in the schema directory,
+For each model there should be a corresponding schema in the schema directory,
 either an RNG or an XSD file.
 
 The converter goes the extra mile: it generates a TF app and documentation
@@ -36,7 +36,7 @@ that cannot be changed.
 We assume that you have a `programs` directory at the top-level of your repo.
 In this directory we'll look for two optional files:
 
-*   a file `tei.yaml` in which you specify a bunch of values.
+*   a file `tei.yaml` in which you specify a bunch of values to
     get the conversion off the ground.
 
 *   a file `tei.py` in which you define custom functions that are executed at certain
@@ -45,6 +45,8 @@ In this directory we'll look for two optional files:
     *   `transform(text)` which takes a text string argument and delivers a
         text string as result. The converter will call this on every TEI input
         file it reads *before* feeding it to the XML parser.
+        This can be used to solve some quirks in the input, e.g. replacing two
+        consecutive commas (`,,`) by a single unicode character (`„` = 201E);
     *   `beforeTag`: just before the walker starts processing the start tag of
         a TEI element;
     *   `beforeChildren`: just after processing the start tag, but before processing

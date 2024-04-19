@@ -20,6 +20,19 @@ pip install -e .
 
 ### 12.3
 
+#### 12.3.7
+
+2024-04-19
+
+Improvements in `tf.convert.watm`: the resulting data is much more compact, because:
+
+*   you can choose to export it as TSV instead of JSON;
+*   no annotations of type `node` are produced anymore, they only served to map
+    annotations and text segments to TF nodes; now that mapping is exported as a simple
+    TSV file;
+*   you can opt to exclude an arbitrary set of tags from being exported as WATM
+    annotations.
+
 #### 12.3.6
 
 2024-04-16
