@@ -96,7 +96,12 @@ def linksApi(app, silent=SILENT_D):
         components.append(appRelative)
     components.append(version)
     dataLink = (
-        outLink(dataName, docUrl, f"provenance of {corpus}", asHtml=inNb or _browse)
+        outLink(
+            dataName,
+            docUrl,
+            f"provenance of {corpus}",
+            asHtml=inNb is not None or _browse,
+        )
         if isCompatible and repo is not None and docUrl
         else "/".join(components)
         if appName.startswith("app:")
@@ -108,7 +113,7 @@ def linksApi(app, silent=SILENT_D):
                 "Character table",
                 charUrl.format(tfDoc=URL_TFDOC),
                 charText,
-                asHtml=inNb or _browse,
+                asHtml=inNb is not None or _browse,
             )
             if isCompatible
             else UNSUPPORTED
@@ -122,7 +127,7 @@ def linksApi(app, silent=SILENT_D):
                 "Feature docs",
                 featureBase.replace("<feature>", featurePage).format(version=version),
                 f"{org} - {repo} feature documentation",
-                asHtml=inNb or _browse,
+                asHtml=inNb is not None or _browse,
             )
             if isCompatible and repo is not None and featureBase
             else UNSUPPORTED
@@ -136,7 +141,7 @@ def linksApi(app, silent=SILENT_D):
             f"{org}/{repo}/app {apiVersionRep}",
             extraUrl,
             f"{appName} app",
-            asHtml=inNb or _browse,
+            asHtml=inNb is not None or _browse,
         )
         if isCompatible and repo is not None
         else "no app configured"
@@ -145,14 +150,14 @@ def linksApi(app, silent=SILENT_D):
         f"TF API {app.TF.version}",
         APIREF,
         "text-fabric api",
-        asHtml=inNb or _browse,
+        asHtml=inNb is not None or _browse,
     )
     tfsLink = (
         outLink(
             "Search Reference",
             SEARCHREF,
             "Search Templates Introduction and Reference",
-            asHtml=inNb or _browse,
+            asHtml=inNb is not None or _browse,
         )
         if isCompatible
         else UNSUPPORTED
@@ -162,7 +167,7 @@ def linksApi(app, silent=SILENT_D):
             "Tutorial",
             flexLink(app, "tut"),
             "Tutorial in Jupyter Notebook",
-            asHtml=inNb or _browse,
+            asHtml=inNb is not None or _browse,
         )
         if isCompatible and repo is not None
         else UNSUPPORTED
@@ -226,7 +231,7 @@ def header(app, allMeta=False):
     featureInfo = _featuresPerModule(app, allMeta=allMeta or _browse)
     settingInfo = showContext(app, withComputed=_browse, asHtml=True)
 
-    if inNb or _browse:
+    if inNb is not None or _browse:
         tfLine = ", ".join(x for x in (tfLink, appLink, tfsLink) if x)
         dataLine = ", ".join(x for x in (dataLink, charLink, featureLink) if x)
         setLine = (
@@ -244,8 +249,8 @@ def header(app, allMeta=False):
             <b>Settings:</b><br>{settingInfo}
             """
         )
-        if inNb:
-            dh(commonHeader)
+        if inNb is not None:
+            dh(commonHeader, inNb=inNb)
         else:
             return (
                 colophon,
@@ -357,7 +362,7 @@ def webLink(
             if webUrl:
                 href = webUrl
                 headingTuple = T.sectionFromNode(n, lang=webLang, fillup=True)
-                for (i, heading) in enumerate(headingTuple):
+                for i, heading in enumerate(headingTuple):
                     defaultOffset = 0 if type(heading) is int else ""
                     offset = (
                         defaultOffset
@@ -397,7 +402,7 @@ def webLink(
             href,
             clsName=clsName,
             passage=passageText,
-            asHtml=inNb or _browse,
+            asHtml=inNb is not None or _browse,
             **atts,
         )
     result = href if urlOnly else fullResult
@@ -548,7 +553,7 @@ def outLink(
 def _nodeTypeInfo(app):
     inNb = app.inNb
     _browse = app._browse
-    doHtml = inNb or _browse
+    doHtml = inNb is not None or _browse
     api = app.api
     levels = api.C.levels.data
     otype = api.F.otype
@@ -577,7 +582,7 @@ def _nodeTypeInfo(app):
             if doHtml
             else f"{'Name':<20} {'#nodes':>7} {'#slots/node':>11} {'%coverage':>9}\n"
         )
-    for (nType, av, start, end) in levels:
+    for nType, av, start, end in levels:
         nNodes = end - start + 1
         coverage = int(round(av * nNodes * 100 / maxSlot))
         coverage = (
@@ -628,7 +633,7 @@ def _featuresPerModule(app, allMeta=False):
     TF = app.TF
     inNb = app.inNb
     _browse = app._browse
-    doHtml = inNb or _browse
+    doHtml = inNb is not None or _browse
     backend = app.backend
 
     aContext = app.context
@@ -823,7 +828,7 @@ def _featuresPerModule(app, allMeta=False):
             else:
                 output += f"{description}\n"
             if allMeta:
-                for (k, v) in sorted(meta.items()):
+                for k, v in sorted(meta.items()):
                     if k not in {"valueType", "description"}:
                         if doHtml:
                             k = htmlEsc(k)
@@ -886,13 +891,13 @@ def _getSettings(app, inNb):
 
     result = []
 
-    for (kind, data) in (
+    for kind, data in (
         ("<b>specified</b>", app.cfgSpecs),
         ("<b>computed</b>", app.specs),
     ):
-        if kind == "computed" and inNb:
+        if kind == "computed" and inNb is not None:
             continue
-        result.append(showDict(f"<b>{kind}</b>", data, True, False))
+        result.append(showDict(f"<b>{kind}</b>", data, True, None))
 
     return "\n".join(result)
 

@@ -78,6 +78,7 @@ INCIDENTAL_DEPS = dict(
     spacy=("spacy", "spacy"),
     spacyd=("spacy.cli.download", "spacy"),
     pagexml=("pagexml.parser", "pagexml-tools"),
+    marimo=("marimo", "marimo"),
 )
 """The incidendtal dependencies of TF.
 

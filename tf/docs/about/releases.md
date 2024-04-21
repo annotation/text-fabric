@@ -18,6 +18,19 @@ pip install -e .
 
 ## 12
 
+### 12.4
+
+#### 12.4.0
+
+2024-04-21
+
+Support for [Marimo notebooks](https://docs.marimo.io/index.html).
+
+TF detects when its run in a notebook, and also in what kind of notebook:
+`ipython` (~ Jupyter) or `marimo`. When it needs to display material in the output
+of a cell, it will choose the methods that are suitable for the kind of notebook it
+is working in.
+
 ### 12.3
 
 #### 12.3.7

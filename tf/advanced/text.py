@@ -143,7 +143,7 @@ def specialCharacters(app, fmt=None, _browse=False):
 
     if _browse:
         return output
-    if inNb:
-        dh(output)
+    if inNb is not None:
+        dh(output, inNb=inNb)
     else:
         console(output)

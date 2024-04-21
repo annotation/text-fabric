@@ -135,8 +135,14 @@ class App:
         ).items():
             setattr(self, key, value)
 
-        setattr(self, "dm", dm)
-        setattr(self, "dh", dh)
+        def mydm(md, unexpand=False):
+            dm(md, inNb=self.inNb, unexpand=unexpand)
+
+        def mydh(html, unexpand=False):
+            dh(html, inNb=self.inNb, unexpand=unexpand)
+
+        setattr(self, "dm", mydm)
+        setattr(self, "dh", mydh)
 
         setAppSpecs(self, cfg)
         aContext = self.context

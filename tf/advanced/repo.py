@@ -1271,8 +1271,8 @@ class Checkout:
         inNb = self.inNb
         silent = self.silent
         if silent in {VERBOSE, AUTO, TERSE}:
-            if inNb:
-                dh(msg)
+            if inNb is not None:
+                dh(msg, inNb=inNb)
             else:
                 console(msgPlain)
 

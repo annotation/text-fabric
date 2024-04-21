@@ -1949,8 +1949,8 @@ def showContext(app, *keys, withComputed=True, asHtml=False):
     if asHtml:
         return result
 
-    if inNb:
-        dh(result)
+    if inNb is not None:
+        dh(result, inNb=inNb)
     else:
         console(result)
 

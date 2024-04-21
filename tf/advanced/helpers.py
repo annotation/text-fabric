@@ -14,6 +14,7 @@ from ..core.files import (
     dirExists,
 )
 from ..core.text import DEFAULT_FORMAT
+from ..capable import CheckImport
 
 
 NORMAL = "normal"
@@ -26,6 +27,12 @@ EM = "*empty*"
 SEQ_TYPES1 = {tuple, list}
 SEQ_TYPES2 = {tuple, list, set, frozenset}
 
+CI = CheckImport("marimo")
+if CI.importOK(hint=False):
+    marimo = CI.importGet()
+else:
+    marimo = None
+
 
 def runsInNotebook():
     """Determines whether the program runs in an interactive shell.
@@ -33,17 +40,19 @@ def runsInNotebook():
     From
     [stackoverflow](https://stackoverflow.com/questions/15411967/how-can-i-check-if-code-is-executed-in-the-ipython-notebook/24937408)
     """
+    if marimo is not None and marimo.running_in_notebook():
+        return "marimo"
     try:
         runcontext = get_ipython()
         shell = runcontext.__class__.__name__
         if shell == "ZMQInteractiveShell":
-            return True  # Jupyter notebook or qtconsole
+            return "ipython"  # Jupyter notebook or qtconsole
         elif shell == "TerminalInteractiveShell":
-            return False  # Terminal running IPython
+            return None  # Terminal running IPython
         else:
-            return False  # Other type (?)
+            return None  # Other type (?)
     except NameError:
-        return False  # Probably standard Python interpreter
+        return None  # Probably standard Python interpreter
 
 
 def _getLtr(app, options):
@@ -59,7 +68,7 @@ def _getLtr(app, options):
     )
 
 
-def dm(md, inNb=True, unexpand=False):
+def dm(md, inNb="ipython", unexpand=False):
     """Display markdown.
 
     Parameters
@@ -81,13 +90,18 @@ def dm(md, inNb=True, unexpand=False):
     if unexpand:
         md = ux(md)
 
-    if inNb:
+    if inNb == "ipython":
         display(Markdown(md))
+    elif inNb == "marimo":
+        if marimo is None:
+            console(md)
+        else:
+            marimo.output.append(marimo.md(md))
     else:
         console(md)
 
 
-def dh(html, inNb=True, unexpand=False):
+def dh(html, inNb="ipython", unexpand=False):
     """Display HTML.
 
     Parameters
@@ -109,8 +123,13 @@ def dh(html, inNb=True, unexpand=False):
     if unexpand:
         html = ux(html)
 
-    if inNb:
+    if inNb == "ipython":
         display(HTML(html))
+    elif inNb == "marimo":
+        if marimo is None:
+            console(html)
+        else:
+            marimo.output.append(marimo.Html(html))
     else:
         console(html)
 
