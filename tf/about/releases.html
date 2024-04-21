@@ -42,6 +42,14 @@ and in its top-level directory run the command:</strong></p>
 <pre><code class="language-sh">pip install -e .
 </code></pre>
 <h2 id="12">12</h2>
+<h3 id="124">12.4</h3>
+<h4 id="1240">12.4.0</h4>
+<p>2024-04-21</p>
+<p>Support for <a href="https://docs.marimo.io/index.html">Marimo notebooks</a>.</p>
+<p>TF detects when its run in a notebook, and also in what kind of notebook:
+<code>ipython</code> (~ Jupyter) or <code>marimo</code>. When it needs to display material in the output
+of a cell, it will choose the methods that are suitable for the kind of notebook it
+is working in.</p>
 <h3 id="123">12.3</h3>
 <h4 id="1237">12.3.7</h4>
 <p>2024-04-19</p>
@@ -360,7 +368,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/df917a27893b7551738715ef87201b1eb4a4f4b7/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -433,6 +441,10 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
+<li><a href="#124">12.4</a><ul>
+<li><a href="#1240">12.4.0</a></li>
+</ul>
+</li>
 <li><a href="#123">12.3</a><ul>
 <li><a href="#1237">12.3.7</a></li>
 <li><a href="#1236">12.3.6</a></li>
