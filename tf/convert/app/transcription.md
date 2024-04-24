@@ -378,8 +378,8 @@ They form a new node type, `sentence`, with just a sequence number as feature (`
 
 ## «Slot»s
 
-Whether characters of words  or tokens are taken as the basic unit (*slot*) is decided
-by the parameter `wordAsSlot`, passed to the conversion, and whether tokens have been
+Whether characters or words or tokens are taken as the basic unit (*slot*) is decided
+by the parameter `granularity`, passed to the conversion, and whether tokens have been
 provided later on.
 (for this corpus the slot type is **«slot»**).
 

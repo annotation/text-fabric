@@ -5,9 +5,23 @@ app = marimo.App(width="full")
 
 
 @app.cell
+def __(A, F, x):
+    A.pretty(F.otype.s("sentence")[x.value])
+    return
+
+
+@app.cell
+def __(mo):
+    x = mo.ui.slider(1,9)
+    x
+    return x,
+
+
+@app.cell
 def __():
     from tf.app import use
-    return use,
+    import marimo as mo
+    return mo, use
 
 
 @app.cell
@@ -20,29 +34,6 @@ def __(use):
 def __(A):
     F = A.api.F
     return F,
-
-
-@app.cell
-def __(A, F):
-    A.pretty(F.otype.s("sentence")[0], withNodes=True, highlights={3: "", 651573: "goldenrod"})
-    return
-
-
-@app.cell
-def __():
-    i = 1
-    return i,
-
-
-@app.cell
-def __(i):
-    print(i)
-    return
-
-
-@app.cell
-def __():
-    return
 
 
 if __name__ == "__main__":

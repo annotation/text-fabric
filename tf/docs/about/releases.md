@@ -20,6 +20,12 @@ pip install -e .
 
 ### 12.4
 
+#### 12.4.1
+
+2024-04-24
+
+Improvements in the TEI and WATM conversions.
+
 #### 12.4.0
 
 2024-04-21

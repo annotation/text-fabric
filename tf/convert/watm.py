@@ -1736,6 +1736,10 @@ class WATM:
 
         if not fconsistent or not silent:
             console(f"\tWrong:    {len(wrong):>5} x")
+            for (node, feat, valWA, valTF) in wrong[0:5]:
+                console(f"\t\t{node:>6} {feat}:\n", error=True)
+                console(f"\t\t\tTF = «{valTF}»", error=True)
+                console(f"\t\t\tWA = «{valWA}»", error=True)
             console(
                 f"{rep(fconsistent)} - "
                 f"whether format annotations are consistent with features",

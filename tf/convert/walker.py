@@ -702,10 +702,12 @@ class CV:
 
         curSeq[nType] += 1
         seq = curSeq[nType]
+
         if key is not None:
             slotKeys[seq] = key
 
         inSection = False
+
         for eNode in curEmbedders:
             if eNode[0] in levelFromSection:
                 inSection = True
@@ -1663,6 +1665,7 @@ class CV:
         # node and edge features for the slots
 
         sortedSeqs = range(1, maxSlot + 1)
+
         if len(slotKeys) > 0:
             info(f'Sorting {maxSlot} slots (node type "{slotType}")')
             sortedSeqs = sorted(sortedSeqs, key=lambda x: (slotKeys.get(x, ""), x))

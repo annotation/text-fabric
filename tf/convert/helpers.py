@@ -11,8 +11,8 @@ NODE = "node"
 FOLDER = "folder"
 FILE = "file"
 PAGE = "page"
-REGION = "region"
 LINE = "line"
+REGION = "region"
 DOC = "doc"
 CHAPTER = "chapter"
 CHUNK = "chunk"
@@ -24,7 +24,19 @@ SLOT = "slot"
 WORD = "word"
 CHAR = "char"
 TOKEN = "token"
+T = "t"
 
+
+LINE_MODELS = dict(
+    I=dict(),
+    II=dict(
+        element=(str, "p"),
+        nodeType=(str, LINE),
+    ),
+)
+
+
+LINE_MODEL_DEFAULT = "I"
 
 PAGE_MODELS = dict(
     I=dict(),
@@ -32,7 +44,7 @@ PAGE_MODELS = dict(
         element=(str, "div"),
         attributes=(dict, {}),
         pbAtTop=(bool, True),
-        nodeType=(str, "page"),
+        nodeType=(str, PAGE),
     ),
 )
 
@@ -180,13 +192,50 @@ Examples:
 
 
 TOKEN_RE = re.compile(r"""\w+|\W""")
+NUMBER_RE = re.compile(
+    r"""
+    ^
+    [0-9]+
+    (?:
+        [.,]
+        [0-9]+
+    )*
+    $
+""",
+    re.X,
+)
+
+W_BEFORE = re.compile(r"""^\s+""")
+W_AFTER = re.compile(r"""\s+$""")
+
+
+def getWhites(text):
+    match = W_BEFORE.match(text)
+    if match:
+        before = match.group(0)
+        rest = text[len(before) :]
+    else:
+        before = ""
+        rest = text
+    match = W_AFTER.search(rest)
+    if match:
+        after = match.group(0)
+        material = rest[0 : -len(after)]
+    else:
+        after = ""
+        material = rest
+    return (" " if before else "", material, " " if after else "")
 
 
 def tokenize(line):
     tokens = []
 
     for word in line.split():
-        ts = [[t, ""] for t in TOKEN_RE.findall(word)]
+        ts = (
+            [[word, ""]]
+            if NUMBER_RE.match(word)
+            else [[t, ""] for t in TOKEN_RE.findall(word)]
+        )
         if len(ts):
             ts[-1][-1] = " "
         tokens.extend(ts)
@@ -203,13 +252,22 @@ def repTokens(tokens):
     return "".join(text)
 
 
-def checkModel(kind, thisModel):
-    modelDefault = PAGE_MODEL_DEFAULT if kind == "page" else SECTION_MODEL_DEFAULT
-    modelSpecs = PAGE_MODELS if kind == "page" else SECTION_MODELS
+def checkModel(kind, thisModel, verbose):
+    modelDefault = (
+        LINE_MODEL_DEFAULT
+        if kind == LINE
+        else PAGE_MODEL_DEFAULT
+        if kind == PAGE
+        else SECTION_MODEL_DEFAULT
+    )
+    modelSpecs = (
+        LINE_MODELS if kind == LINE else PAGE_MODELS if kind == PAGE else SECTION_MODELS
+    )
 
     if thisModel is None:
         model = modelDefault
-        console(f"WARNING: No {kind} model specified. Assuming model {model}.")
+        if verbose == 1:
+            console(f"WARNING: No {kind} model specified. Assuming model {model}.")
         properties = {k: v[1] for (k, v) in modelSpecs[model].items()}
         return dict(model=model, properties=properties)
 
@@ -217,7 +275,7 @@ def checkModel(kind, thisModel):
         if thisModel in modelSpecs:
             thisModel = dict(model=thisModel)
         else:
-            console(f"WARNING: unknown {kind} model: {thisModel}")
+            console(f"ERROR: unknown {kind} model: {thisModel}")
             return False
 
     elif type(thisModel) is not dict:
@@ -225,13 +283,19 @@ def checkModel(kind, thisModel):
         return False
 
     model = thisModel.get("model", None)
+
     if model is None:
         model = modelDefault
-        console(f"WARNING: No {kind} model specified. Assuming model {model}.")
+        if verbose == 1:
+            console(f"WARNING: No {kind} model specified. Assuming model {model}.")
         thisModel["model"] = model
+
     if model not in modelSpecs:
         console(f"WARNING: unknown {kind} model: {thisModel}")
         return False
+
+    if verbose >= 0:
+        console(f"{kind} model is {model}")
 
     properties = {k: v for (k, v) in thisModel.items() if k != "model"}
     modelProperties = modelSpecs[model]
@@ -255,10 +319,11 @@ def checkModel(kind, thisModel):
 
     for k, v in modelProperties.items():
         if k not in properties:
-            console(
-                f"WARNING: {kind} model property {k} not specified, "
-                f"taking default {v[1]}"
-            )
+            if verbose == 1:
+                console(
+                    f"WARNING: {kind} model property {k} not specified, "
+                    f"taking default {v[1]}"
+                )
             properties[k] = v[1]
 
     if not good:
@@ -332,6 +397,8 @@ def tweakTrans(
     template,
     procins,
     wordAsSlot,
+    tokenAsSlot,
+    charAsSlot,
     parentEdges,
     siblingEdges,
     tokenBased,
@@ -345,11 +412,16 @@ def tweakTrans(
         slotc = "Word"
         slotf = "words"
         xslot = "`word`"
-    else:
+    elif charAsSlot:
         slotc = "Char"
         slot = CHAR
         slotf = "characters"
         xslot = "`char` and `word`"
+    elif tokenAsSlot or True:
+        slotc = "Token"
+        slot = T
+        slotf = "tokens"
+        xslot = "`t` and `word`"
 
     if parentEdges:
         hasParent = "Yes"
@@ -487,7 +559,7 @@ def tweakTrans(
     return text
 
 
-def lookupSource(cv, cur, specs):
+def lookupSource(cv, cur, tokenAsSlot, specs):
     """Looks up information from the current XML stack.
 
     The current XML stack contains the ancestry of the current node, including
@@ -580,7 +652,14 @@ def lookupSource(cv, cur, specs):
         sourceNode = cur[TNEST][-1]
         slots = cv.linked(sourceNode)
         sourceText = (
-            "".join(cv.get("ch", ("char", slot)) for slot in slots)
+            (
+                "".join(
+                    cv.get("str", (T, slot)) + cv.get("after", (T, slot))
+                    for slot in slots
+                )
+                if tokenAsSlot
+                else "".join(cv.get("ch", (CHAR, slot)) for slot in slots)
+            )
             if extractAttr is None
             else cv.get(extractAttr, sourceNode)
         )
