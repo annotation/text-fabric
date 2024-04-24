@@ -224,10 +224,25 @@ If no adaptation is found in this way, the empty adaptation is assumed.</p>
 <p>Whether to work with the <code>pre</code> TF versions.
 Use this if you convert TEI to a preliminary TF dataset, which will
 receive NLP additions later on. That version will then lose the <code>pre</code>.</p>
-<h3 id="wordasslot"><code>wordAsSlot</code></h3>
-<p>boolean, optional <code>False</code></p>
-<p>Whether to take words as the basic entities (slots).
-If not, the characters are taken as basic entities.</p>
+<h3 id="granularity"><code>granularity</code></h3>
+<p>string, optional <code>token</code></p>
+<p>What to take the basic entities (slots). Possible values:</p>
+<ul>
+<li><code>word</code>: words are slots, even if they cross element boundaries. This leads to some
+imprecisions: words containing an element boundary will belong to just one
+of both elements around the boundary.</li>
+<li><code>char</code>: all individual characters are separate slots. Very precise, but the dataset
+gets expensive with so many slots.</li>
+<li><code>token</code>: every sequence of alphanumeric characters becomes a token, in sofar there
+is no intervening markup. Non alphanumeric characters become separate tokens.
+There are some additional rules: <code>.</code> or <code>,</code> tightly surrounded by digits also
+count as tokens.</li>
+</ul>
+<p>The datasets with granularity <code>word</code> and <code>token</code> have features <code>str</code> for the string
+content of the slots, and <code>after</code> for the material after the slots.
+In the case of <code>word</code>, the feature <code>after</code> can contain whitespace and punctuation
+characters, in the case of <code>token</code>, it only contains whitespace.</p>
+<p>If not, the characters are taken as basic entities.</p>
 <p>If you use an NLP pipeline to detect tokens, use the value <code>False</code>.
 The preliminary dataset is then based on characters, but the final dataset that we build
 from there is based on tokens, which are mostly words and non-word characters.</p>
@@ -252,6 +267,49 @@ Testament) where each book element has all of its sentences as direct children.
 In that dataset, the siblings would occupy 40% of the size, and we have taken care
 not to produce sibling edges for sentences.</p>
 </div>
+<h3 id="procins"><code>procins</code></h3>
+<p>boolean, optional <code>False</code></p>
+<p>If True, processing instructions will be treated.
+Processing instruction <code>&lt;?foo bar="xxx"?&gt;</code> will be converted as if it were an empty
+element named <code>foo</code> with attribute <code>bar</code> with value <code>xxx</code>.</p>
+<h3 id="linemodel"><code>lineModel</code></h3>
+<p>dict, optional <code>False</code></p>
+<p>If not passed, or an empty dict, line model I is assumed.
+A line model must be specified with the parameters relevant for the
+model:</p>
+<pre><code class="language-python">dict(
+    model=&quot;I&quot;,
+)
+</code></pre>
+<p>(model I does not require any parameters)</p>
+<p>or</p>
+<pre><code class="language-python">dict(
+    model=&quot;II&quot;,
+    element=&quot;p&quot;,
+    nodeType=&quot;ln&quot;,
+)
+</code></pre>
+<p>For model II, the default parameters are:</p>
+<pre><code class="language-python">element=&quot;p&quot;,
+nodeType=&quot;ln&quot;,
+</code></pre>
+<p>Model I is the default, and nothing special happens to the <code>&lt;lb&gt;</code> elements.</p>
+<p>In model II the <code>&lt;lb&gt;</code> elements translate to nodes of type <code>line</code>, which span
+content, whereas the original <code>lb</code> elements just mark positions.
+Instead of <code>ln</code>, you can also specify another node type by the parameter <code>element</code>.</p>
+<p>We assume that the material that the <code>&lt;lb&gt;</code> elements divide up is the material
+that corresponds to their <code>&lt;p&gt;</code> parent element. Instead of <code>&lt;p&gt;</code>,
+you can also specify another element in the parameter <code>element</code>.</p>
+<p>We assume that lines start and end at the start and end of the <code>&lt;p&gt;</code> elements and
+the <code>&lt;lb&gt;</code> elements. For the material etween these boundaries, we build <code>ln</code> nodes.
+If an <code>&lt;lb&gt;</code> element follows a <code>&lt;p&gt;</code> start tag without intervening slots, a line
+node will be created but not linked to slots, and it will be deleted later in
+the conversion.
+Likewise, if an <code>&lt;lb&gt;</code> element is followed by a <code>&lt;p&gt;</code> end tag without
+intervening slots, a line node is created that is not linked to slots.</p>
+<p>The attributes of the <code>&lt;lb&gt;</code> elements become features of the line element that starts
+with that <code>&lt;lb&gt;</code> element. If there is no explicit <code>&lt;lb&gt;</code> element at the start of
+a paragraph, the first line of that paragraph gets no features.</p>
 <h3 id="pagemodel"><code>pageModel</code></h3>
 <p>dict, optional <code>False</code></p>
 <p>If not passed, or an empty dict, page model I is assumed.
@@ -296,11 +354,6 @@ next <code>&lt;pb&gt;</code> or at the end of the <code>div</code>.</p>
 the corresponding page element. We start the first page at the start of the enclosing
 element. If there is material at between the last <code>&lt;pb&gt;</code> till the end of the enclosing
 element, we generate an extra page node without features.</p>
-<h3 id="procins"><code>procins</code></h3>
-<p>boolean, optional <code>False</code></p>
-<p>If True, processing instructions will be treated.
-Processing instruction <code>&lt;?foo bar="xxx"?&gt;</code> will be converted as if it were an empty
-element named <code>foo</code> with attribute <code>bar</code> with value <code>xxx</code>.</p>
 <h3 id="sectionmodel"><code>sectionModel</code></h3>
 <p>dict, optional <code>{}</code></p>
 <p>If not passed, or an empty dict, section model I is assumed.
@@ -399,7 +452,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/tei.py#L1-L4317" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L1-L4616" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -640,11 +693,27 @@ Whether to work with the `pre` TF versions.
 Use this if you convert TEI to a preliminary TF dataset, which will
 receive NLP additions later on. That version will then lose the `pre`.
 
-### `wordAsSlot`
+### `granularity`
 
-boolean, optional `False`
+string, optional `token`
 
-Whether to take words as the basic entities (slots).
+What to take the basic entities (slots). Possible values:
+
+*   `word`: words are slots, even if they cross element boundaries. This leads to some
+    imprecisions: words containing an element boundary will belong to just one
+    of both elements around the boundary.
+*   `char`: all individual characters are separate slots. Very precise, but the dataset
+    gets expensive with so many slots.
+*   `token`: every sequence of alphanumeric characters becomes a token, in sofar there
+    is no intervening markup. Non alphanumeric characters become separate tokens.
+    There are some additional rules: `.` or `,` tightly surrounded by digits also
+    count as tokens.
+
+The datasets with granularity `word` and `token` have features `str` for the string
+content of the slots, and `after` for the material after the slots.
+In the case of `word`, the feature `after` can contain whitespace and punctuation
+characters, in the case of `token`, it only contains whitespace.
+
 If not, the characters are taken as basic entities.
 
 If you use an NLP pipeline to detect tokens, use the value `False`.
@@ -676,6 +745,71 @@ get distance 1.
     Testament) where each book element has all of its sentences as direct children.
     In that dataset, the siblings would occupy 40% of the size, and we have taken care
     not to produce sibling edges for sentences.
+
+### `procins`
+
+boolean, optional `False`
+
+If True, processing instructions will be treated.
+Processing instruction `&lt;?foo bar=&#34;xxx&#34;?&gt;` will be converted as if it were an empty
+element named `foo` with attribute `bar` with value `xxx`.
+
+
+### `lineModel`
+
+dict, optional `False`
+
+If not passed, or an empty dict, line model I is assumed.
+A line model must be specified with the parameters relevant for the
+model:
+
+``` python
+dict(
+    model=&#34;I&#34;,
+)
+```
+
+(model I does not require any parameters)
+
+or
+
+``` python
+dict(
+    model=&#34;II&#34;,
+    element=&#34;p&#34;,
+    nodeType=&#34;ln&#34;,
+)
+```
+
+For model II, the default parameters are:
+
+``` python
+element=&#34;p&#34;,
+nodeType=&#34;ln&#34;,
+```
+
+Model I is the default, and nothing special happens to the `&lt;lb&gt;` elements.
+
+In model II the `&lt;lb&gt;` elements translate to nodes of type `line`, which span
+content, whereas the original `lb` elements just mark positions.
+Instead of `ln`, you can also specify another node type by the parameter `element`.
+
+We assume that the material that the `&lt;lb&gt;` elements divide up is the material
+that corresponds to their `&lt;p&gt;` parent element. Instead of `&lt;p&gt;`,
+you can also specify another element in the parameter `element`.
+
+We assume that lines start and end at the start and end of the `&lt;p&gt;` elements and
+the `&lt;lb&gt;` elements. For the material etween these boundaries, we build `ln` nodes.
+If an `&lt;lb&gt;` element follows a `&lt;p&gt;` start tag without intervening slots, a line
+node will be created but not linked to slots, and it will be deleted later in
+the conversion.
+Likewise, if an `&lt;lb&gt;` element is followed by a `&lt;p&gt;` end tag without
+intervening slots, a line node is created that is not linked to slots.
+
+The attributes of the `&lt;lb&gt;` elements become features of the line element that starts
+with that `&lt;lb&gt;` element. If there is no explicit `&lt;lb&gt;` element at the start of
+a paragraph, the first line of that paragraph gets no features.
+
 
 ### `pageModel`
 
@@ -738,14 +872,6 @@ the corresponding page element. We start the first page at the start of the encl
 element. If there is material at between the last `&lt;pb&gt;` till the end of the enclosing
 element, we generate an extra page node without features.
 
-
-### `procins`
-
-boolean, optional `False`
-
-If True, processing instructions will be treated.
-Processing instruction `&lt;?foo bar=&#34;xxx&#34;?&gt;` will be converted as if it were an empty
-element named `foo` with attribute `bar` with value `xxx`.
 
 ### `sectionModel`
 
@@ -899,14 +1025,20 @@ from .helpers import (
     checkModel,
     matchModel,
     lookupSource,
+    tokenize,
+    getWhites,
     NODE,
     FILE,
+    PAGE,
+    LINE,
     PRE,
     ZWSP,
     XNEST,
     TNEST,
     TSIB,
     WORD,
+    TOKEN,
+    T,
     CHAR,
     CONVERSION_METHODS,
     CM_LIT,
@@ -1427,13 +1559,32 @@ class TEI(CheckImport):
         adaptations = settings.get(&#34;adaptations&#34;, [])
         adaptationTrigger = settings.get(&#34;adaptationTrigger&#34;, None)
         prelim = settings.get(&#34;prelim&#34;, True)
-        wordAsSlot = settings.get(&#34;wordAsSlot&#34;, True)
+        granularity = settings.get(&#34;granularity&#34;, TOKEN)
+        wordAsSlot = granularity == WORD
+        tokenAsSlot = granularity == TOKEN
+        charAsSlot = granularity == CHAR
         parentEdges = settings.get(&#34;parentEdges&#34;, True)
         siblingEdges = settings.get(&#34;siblingEdges&#34;, True)
         procins = settings.get(&#34;procins&#34;, False)
 
+        lineModel = settings.get(&#34;lineModel&#34;, {})
+        lineModel = checkModel(LINE, lineModel, verbose)
+
+        if not lineModel:
+            self.good = False
+            return
+
+        makeLineElems = lineModel[&#34;model&#34;] == &#34;II&#34;
+        lineProperties = lineModel.get(&#34;properties&#34;, None)
+        lineModel = lineModel[&#34;model&#34;]
+
+        self.makeLineElems = makeLineElems
+        self.lineModel = lineModel
+        self.lineProperties = lineProperties
+
         pageModel = settings.get(&#34;pageModel&#34;, {})
-        pageModel = checkModel(&#34;page&#34;, pageModel)
+        pageModel = checkModel(PAGE, pageModel, verbose)
+
         if not pageModel:
             self.good = False
             return
@@ -1447,7 +1598,7 @@ class TEI(CheckImport):
         self.pageProperties = pageProperties
 
         sectionModel = settings.get(&#34;sectionModel&#34;, {})
-        sectionModel = checkModel(&#34;section&#34;, sectionModel)
+        sectionModel = checkModel(&#34;section&#34;, sectionModel, verbose)
         if not sectionModel:
             self.good = False
             return
@@ -1505,6 +1656,8 @@ class TEI(CheckImport):
 
         self.prelim = prelim
         self.wordAsSlot = wordAsSlot
+        self.tokenAsSlot = tokenAsSlot
+        self.charAsSlot = charAsSlot
         self.parentEdges = parentEdges
         self.siblingEdges = siblingEdges
         self.procins = procins
@@ -1654,13 +1807,13 @@ class TEI(CheckImport):
         if siblingEdges:
             intFeatures.add(&#34;sibling&#34;)
 
-        slotType = WORD if wordAsSlot else CHAR
+        slotType = WORD if wordAsSlot else T if tokenAsSlot else CHAR
         self.slotType = slotType
 
         sectionFeatures = &#34;,&#34;.join(levelNames)
         sectionTypes = &#34;,&#34;.join(levelNames)
 
-        textFeatures = &#34;{str}{after}&#34; if wordAsSlot else &#34;{ch}&#34;
+        textFeatures = &#34;{ch}&#34; if charAsSlot else &#34;{str}{after}&#34;
         otext = {
             &#34;fmt:text-orig-full&#34;: textFeatures,
             &#34;sectionFeatures&#34;: sectionFeatures,
@@ -1695,7 +1848,7 @@ class TEI(CheckImport):
                 conversionCode=CONVERSION_METHODS[CM_LITC],
             ),
         )
-        if not wordAsSlot:
+        if charAsSlot:
             featureMeta[&#34;extraspace&#34;] = dict(
                 description=(
                     &#34;whether a space has been added after a character, &#34;
@@ -1961,7 +2114,7 @@ class TEI(CheckImport):
             xmlFiles = []
             hasBackMatter = False
 
-            for folderName in sorted(xmlFilesRaw):
+            for folderName in sorted(xmlFilesRaw, key=versionSort):
                 if folderName == backMatter:
                     hasBackMatter = True
                 else:
@@ -2068,6 +2221,8 @@ class TEI(CheckImport):
 
         nProcins = 0
 
+        lbParents = collections.Counter()
+
         def analyse(root, analysis, xmlFile):
             FORMAT_ATTS = set(
                 &#34;&#34;&#34;
@@ -2119,11 +2274,16 @@ class TEI(CheckImport):
 
                 tagByNs[tag][ns] += 1
 
+                if tag == &#34;lb&#34;:
+                    parentTag = etree.QName(xnode.getparent().tag).localname
+                    lbParents[parentTag] += 1
+
                 if len(atts) == 0:
                     kind = &#34;rest&#34;
                     analysis[kind][tag][&#34;&#34;][&#34;&#34;] += 1
                 else:
                     idv = atts.get(&#34;id&#34;, None)
+
                     if idv is not None:
                         ids[xmlFile][idv] += 1
 
@@ -2359,6 +2519,16 @@ class TEI(CheckImport):
                 console(
                     f&#34;{len(elemsCombined)} tag(s) type info written to {reportFile}&#34;
                 )
+
+        def writeLbParents():
+            reportFile = f&#34;{reportPath}/lb-parents.txt&#34;
+
+            with open(reportFile, &#34;w&#34;) as fh:
+                for parent, n in sorted(lbParents.items()):
+                    fh.write(f&#34;{n:&gt;5} x {parent}\n&#34;)
+
+            if verbose &gt;= 0:
+                console(f&#34;lb-parent info written to {reportFile}&#34;)
 
         def writeIdRefs():
             reportIdFile = f&#34;{reportPath}/ids.txt&#34;
@@ -2635,14 +2805,18 @@ class TEI(CheckImport):
             if validate:
                 if verbose &gt;= 0:
                     console(&#34;\tValidating ...&#34;)
+
                 schemaFile = modelInfo.get(model, None)
+
                 if schemaFile is None:
                     if verbose &gt;= 0:
                         console(f&#34;\t\tNo schema file for {model}&#34;)
                     if good is not None and good is not False:
                         good = None
                     continue
+
                 (thisGood, info, theseErrors) = A.validate(schemaFile, xmlPaths)
+
                 for line in info:
                     if verbose &gt;= 0:
                         console(f&#34;\t\t{line}&#34;)
@@ -2667,6 +2841,7 @@ class TEI(CheckImport):
         writeDoc()
         writeNamespaces()
         writeIdRefs()
+        writeLbParents()
 
     # SET UP CONVERSION
 
@@ -2753,6 +2928,7 @@ class TEI(CheckImport):
         verbose = self.verbose
         teiPath = self.teiPath
         wordAsSlot = self.wordAsSlot
+        tokenAsSlot = self.tokenAsSlot
         parentEdges = self.parentEdges
         siblingEdges = self.siblingEdges
         featureMeta = self.featureMeta
@@ -2789,7 +2965,7 @@ class TEI(CheckImport):
         # WALKERS
 
         WHITE_TRIM_RE = re.compile(r&#34;\s+&#34;, re.S)
-        NON_NAME_RE = re.compile(r&#34;[^a-zA-Z0-9_]+&#34;, re.S)
+        NON_NAME_RE = re.compile(r&#34;[^a-zA-Z0-9_ ]+&#34;, re.S)
 
         NOTE_LIKE = set(
             &#34;&#34;&#34;
@@ -3293,9 +3469,10 @@ class TEI(CheckImport):
                 Various pieces of data collected during walking
                 and relevant for some next steps in the walk.
             ch: string
-                A single character, the next slot in the result data.
+                A single character, the next character in the result data.
             &#34;&#34;&#34;
             curWord = cur[NODE][WORD]
+
             if not curWord:
                 prevWord = cur[&#34;prevWord&#34;]
                 if prevWord is not None:
@@ -3351,30 +3528,6 @@ class TEI(CheckImport):
             else:
                 cur[&#34;afterSpace&#34;] = False
 
-        def addEmpty(cv, cur):
-            &#34;&#34;&#34;Add an empty slot.
-
-            We also terminate the current word.
-            If words are slots, the empty slot is a word on its own.
-
-            Returns
-            -------
-            node
-                The empty slot
-            &#34;&#34;&#34;
-            finishWord(cv, cur, None, None)
-            startWord(cv, cur, ZWSP)
-            emptyNode = cur[NODE][WORD]
-            cv.feature(emptyNode, empty=1)
-
-            if not wordAsSlot:
-                emptyNode = cv.slot()
-                cv.feature(emptyNode, ch=ZWSP, empty=1)
-
-            finishWord(cv, cur, None, None)
-
-            return emptyNode
-
         def addSlotFeatures(cv, cur, s):
             &#34;&#34;&#34;Add generic features to a slot.
 
@@ -3400,6 +3553,25 @@ class TEI(CheckImport):
             for r, stack in cur.get(&#34;rend&#34;, {}).items():
                 if len(stack) &gt; 0:
                     cv.feature(s, **{f&#34;rend_{r}&#34;: 1})
+
+        def addTokens(cv, cur, text):
+            (beforew, material, afterw) = getWhites(text)
+
+            if beforew:
+                makeSpace(cv, cur)
+
+            s = None
+
+            for tx, after in tokenize(material):
+                s = cv.slot()
+                cv.feature(s, str=tx, after=after)
+                addSlotFeatures(cv, cur, s)
+
+            if afterw:
+                if s is None:
+                    makeSpace(cv, cur)
+                else:
+                    cv.feature(s, after=&#34; &#34;)
 
         def addSlot(cv, cur, ch):
             &#34;&#34;&#34;Add a slot.
@@ -3434,6 +3606,34 @@ class TEI(CheckImport):
             if s is not None:
                 addSlotFeatures(cv, cur, s)
 
+        def addEmpty(cv, cur):
+            &#34;&#34;&#34;Add an empty slot.
+
+            We also terminate the current word.
+            If words are slots, the empty slot is a word on its own.
+
+            Returns
+            -------
+            node
+                The empty slot
+            &#34;&#34;&#34;
+            if tokenAsSlot:
+                emptyNode = cv.slot()
+                cv.feature(emptyNode, str=ZWSP, after=&#34;&#34;, empty=1)
+            else:
+                finishWord(cv, cur, None, None)
+                startWord(cv, cur, ZWSP)
+                emptyNode = cur[NODE][WORD]
+                cv.feature(emptyNode, empty=1)
+
+                if not wordAsSlot:
+                    emptyNode = cv.slot()
+                    cv.feature(emptyNode, ch=ZWSP, empty=1)
+
+                finishWord(cv, cur, None, None)
+
+            return emptyNode
+
         def addSpace(cv, cur, spaceChar):
             &#34;&#34;&#34;Adds a space or a new line.
 
@@ -3453,8 +3653,46 @@ class TEI(CheckImport):
             &#34;&#34;&#34;
             if chunkLevel in cv.activeTypes():
                 s = cv.slot()
-                cv.feature(s, ch=spaceChar, extraspace=1)
+                if tokenAsSlot:
+                    cv.feature(s, str=&#34;&#34;, after=spaceChar, extraspace=1)
+                else:
+                    cv.feature(s, ch=spaceChar, extraspace=1)
                 addSlotFeatures(cv, cur, s)
+
+        def makeSpace(cv, cur):
+            s = cv.slot()
+            cv.feature(s, str=&#34;&#34;, after=&#34; &#34;, extraspace=1)
+            addSlotFeatures(cv, cur, s)
+
+        def endLine(cv, cur):
+            &#34;&#34;&#34;Ends a line node.
+
+            Parameters
+            ----------
+            cv: object
+                The converter object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            &#34;&#34;&#34;
+            lineProperties = self.lineProperties
+            lineType = lineProperties[&#34;nodeType&#34;]
+
+            slots = cv.linked(cur[NODE][lineType])
+            empty = len(slots) == 0
+
+            if empty:
+                lastSlot = addEmpty(cv, cur)
+                if cur[&#34;inNote&#34;]:
+                    cv.feature(lastSlot, is_note=1)
+            else:
+                lastSlot = (T, slots[-1])
+
+            if not wordAsSlot:
+                after = cv.get(&#34;after&#34;, lastSlot)
+                if after is not None and &#34;\n&#34; not in after:
+                    cv.feature(lastSlot, after=f&#34;{after.rstrip()}\n&#34;)
+            cv.terminate(cur[NODE][lineType])
 
         def endPage(cv, cur):
             &#34;&#34;&#34;Ends a page node.
@@ -3472,6 +3710,7 @@ class TEI(CheckImport):
 
             slots = cv.linked(cur[NODE][pageType])
             empty = len(slots) == 0
+
             if empty:
                 lastSlot = addEmpty(cv, cur)
                 if cur[&#34;inNote&#34;]:
@@ -3514,17 +3753,31 @@ class TEI(CheckImport):
             atts: string
                 The attributes of the LXML node, with namespaces stripped.
             &#34;&#34;&#34;
+            makeLineElems = self.makeLineElems
+
+            if makeLineElems:
+                lineProperties = self.lineProperties
+                lineElem = lineProperties[&#34;element&#34;]
+                lineType = lineProperties[&#34;nodeType&#34;]
+                isLineContainer = tag == lineElem
+                inLine = cur[&#34;inLine&#34;]
+
+                if isLineContainer:
+                    cur[&#34;inLine&#34;] = True
+
+                    # the line starts with the container
+                    cur[NODE][lineType] = cv.node(lineType)
+
             makePageElems = self.makePageElems
 
             if makePageElems:
                 pageProperties = self.pageProperties
                 pageType = pageProperties[&#34;nodeType&#34;]
-                isPageContainer = makePageElems and matchModel(
-                    pageProperties, tag, atts
-                )
+                isPageContainer = matchModel(pageProperties, tag, atts)
                 inPage = cur[&#34;inPage&#34;]
 
                 pbAtTop = pageProperties[&#34;pbAtTop&#34;]
+
                 if isPageContainer:
                     cur[&#34;inPage&#34;] = True
 
@@ -3607,9 +3860,19 @@ class TEI(CheckImport):
                     cv.feature(cur[NODE][chapterSection], **value)
             if tag in NOTE_LIKE:
                 cur[&#34;inNote&#34;] = True
-                finishWord(cv, cur, None, None)
+                if not tokenAsSlot:
+                    finishWord(cv, cur, None, None)
 
             curNode = None
+
+            if makeLineElems:
+                if inLine and tag == &#34;lb&#34;:
+                    if cur[NODE][lineType] is not None:
+                        if cur[&#34;lineAtts&#34;] is not None and len(cur[&#34;lineAtts&#34;]):
+                            cv.feature(cur[NODE][lineType], **cur[&#34;lineAtts&#34;])
+                        endLine(cv, cur)
+                    cur[NODE][lineType] = cv.node(lineType)
+                    cur[&#34;lineAtts&#34;] = atts
 
             if makePageElems:
                 if inPage and tag == &#34;pb&#34;:
@@ -3621,13 +3884,17 @@ class TEI(CheckImport):
                             cv.feature(cur[NODE][pageType], **atts)
                     else:
                         if cur[NODE][pageType] is not None:
-                            if len(cur[&#34;pageAtts&#34;]):
+                            if cur[&#34;pageAtts&#34;] is not None and len(cur[&#34;pageAtts&#34;]):
                                 cv.feature(cur[NODE][pageType], **cur[&#34;pageAtts&#34;])
                             endPage(cv, cur)
                         cur[NODE][pageType] = cv.node(pageType)
                         cur[&#34;pageAtts&#34;] = atts
 
-            if tag not in PASS_THROUGH:
+            isBoundaryElem = (
+                makeLineElems and tag == &#34;lb&#34; or makePageElems and tag == &#34;pb&#34;
+            )
+
+            if tag not in PASS_THROUGH and not isBoundaryElem:
                 cur[&#34;afterSpace&#34;] = False
                 cur[NODE][tag] = cv.node(tag)
                 curNode = cur[NODE][tag]
@@ -3640,7 +3907,10 @@ class TEI(CheckImport):
                         rValue = atts[&#34;rend&#34;]
                         r = makeNameLike(rValue)
                         if r:
-                            cur.setdefault(&#34;rend&#34;, {}).setdefault(r, []).append(True)
+                            for q in r.split():
+                                cur.setdefault(&#34;rend&#34;, {}).setdefault(q, []).append(
+                                    True
+                                )
 
             beforeChildrenCustom = getattr(self, &#34;beforeChildrenCustom&#34;, None)
             if beforeChildrenCustom is not None:
@@ -3655,14 +3925,17 @@ class TEI(CheckImport):
                                 &#34;WARNING: Text material at the start of &#34;
                                 f&#34;pure-content element &lt;{tag}&gt;&#34;
                             ),
-                            error=True
+                            error=True,
                         )
                         stack = &#34;-&#34;.join(n[0] for n in cur[XNEST])
                         console(f&#34;\tElement stack: {stack}&#34;, error=True)
                         console(f&#34;\tMaterial: `{textMaterial}`&#34;, error=True)
                 else:
-                    for ch in textMaterial:
-                        addSlot(cv, cur, ch)
+                    if tokenAsSlot:
+                        addTokens(cv, cur, textMaterial)
+                    else:
+                        for ch in textMaterial:
+                            addSlot(cv, cur, ch)
 
             return curNode
 
@@ -3687,6 +3960,14 @@ class TEI(CheckImport):
                 The attributes of the LXML node, with namespaces stripped.
             &#34;&#34;&#34;
             chunkSection = self.chunkSection
+            makeLineElems = self.makeLineElems
+
+            if makeLineElems:
+                lineProperties = self.lineProperties
+                lineType = lineProperties[&#34;nodeType&#34;]
+                lineElem = lineProperties[&#34;element&#34;]
+                lineProperties = self.lineProperties
+
             makePageElems = self.makePageElems
 
             if makePageElems:
@@ -3702,7 +3983,7 @@ class TEI(CheckImport):
             extraInstructions = self.extraInstructions
 
             if len(extraInstructions):
-                lookupSource(cv, cur, extraInstructions)
+                lookupSource(cv, cur, tokenAsSlot, extraInstructions)
 
             isChap = isChapter(cur)
             isChnk = isChunk(cur)
@@ -3711,15 +3992,45 @@ class TEI(CheckImport):
             if afterChildrenCustom is not None:
                 afterChildrenCustom(cv, cur, xnode, tag, atts)
 
+            if makeLineElems:
+                isLineContainer = tag == lineElem
+                inLine = cur[&#34;inLine&#34;]
+
             if makePageElems:
                 isPageContainer = matchModel(pageProperties, tag, atts)
                 inPage = cur[&#34;inPage&#34;]
 
             hasFinishedWord = False
 
+            if makeLineElems and inLine and tag == &#34;lb&#34;:
+                pass
+
             if makePageElems and inPage and tag == &#34;pb&#34;:
                 pass
-            if tag not in PASS_THROUGH:
+
+            isBoundaryElem = (
+                makeLineElems and tag == &#34;lb&#34; or makePageElems and tag == &#34;pb&#34;
+            )
+
+            if makeLineElems and isLineContainer:
+                # the page ends with the container
+                if cur[NODE][lineType] is not None:
+                    endLine(cv, cur)
+                cur[&#34;inLine&#34;] = False
+
+            if makePageElems and isPageContainer:
+                pbAtTop = pageProperties[&#34;pbAtTop&#34;]
+                if pbAtTop:
+                    # the page ends with the container
+                    if cur[NODE][pageType] is not None:
+                        endPage(cv, cur)
+                else:
+                    # material after the last pb is not in a page
+                    if cur[NODE][pageType] is not None:
+                        cv.delete(cur[NODE][pageType])
+                cur[&#34;inPage&#34;] = False
+
+            if tag not in PASS_THROUGH and not isBoundaryElem:
                 curNode = cur[TNEST][-1]
                 slots = cv.linked(curNode)
                 empty = len(slots) == 0
@@ -3730,12 +4041,14 @@ class TEI(CheckImport):
                     newLineTag
                     or isEndInPure(cur)
                     and not hasContinuousAncestor(cur)
-                    and not empty
                     and not cur[&#34;afterSpace&#34;]
-                ):
+                ) and not empty:
                     spaceChar = &#34;\n&#34; if newLineTag or not hasMixedAncestor(cur) else &#34; &#34;
-                    finishWord(cv, cur, None, spaceChar)
-                    hasFinishedWord = True
+                    if tokenAsSlot:
+                        cv.feature((T, slots[-1]), after=spaceChar)
+                    else:
+                        finishWord(cv, cur, None, spaceChar)
+                        hasFinishedWord = True
 
                 slots = cv.linked(curNode)
                 empty = len(slots) == 0
@@ -3766,25 +4079,21 @@ class TEI(CheckImport):
                 cv.terminate(curNode)
 
             if isChnk:
-                if not hasFinishedWord:
-                    finishWord(cv, cur, None, &#34;\n&#34;)
-                cv.terminate(cur[NODE][chunkSection])
-            if sectionModel == &#34;II&#34;:
-                if isChap:
+                if tokenAsSlot:
+                    addSpace(cv, cur, &#34;\n&#34;)
+                else:
                     if not hasFinishedWord:
                         finishWord(cv, cur, None, &#34;\n&#34;)
+                cv.terminate(cur[NODE][chunkSection])
+
+            if sectionModel == &#34;II&#34;:
+                if isChap:
+                    if tokenAsSlot:
+                        addSpace(cv, cur, &#34;\n&#34;)
+                    else:
+                        if not hasFinishedWord:
+                            finishWord(cv, cur, None, &#34;\n&#34;)
                     cv.terminate(cur[NODE][chapterSection])
-            if makePageElems and isPageContainer:
-                pbAtTop = pageProperties[&#34;pbAtTop&#34;]
-                if pbAtTop:
-                    # the page ends with the container
-                    if cur[NODE][pageType] is not None:
-                        endPage(cv, cur)
-                else:
-                    # material after the last pb is not in a page
-                    if cur[NODE][pageType] is not None:
-                        cv.delete(cur[NODE][pageType])
-                cur[&#34;inPage&#34;] = False
 
         def afterTag(cv, cur, xnode, tag, atts):
             &#34;&#34;&#34;Node actions after dealing with the children and after the end tag.
@@ -3817,10 +4126,18 @@ class TEI(CheckImport):
                     rValue = atts[&#34;rend&#34;]
                     r = makeNameLike(rValue)
                     if r:
-                        cur[&#34;rend&#34;][r].pop()
+                        for q in r.split():
+                            cur[&#34;rend&#34;][q].pop()
 
             if xnode.tail:
-                tailMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, xnode.tail)
+                if tag == &#34;lb&#34; and self.makeLineElems:
+                    tail = xnode.tail.lstrip()
+                    if not wordAsSlot:
+                        pass
+                else:
+                    tail = xnode.tail
+
+                tailMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, tail)
                 if isPure(cur):
                     if tailMaterial and tailMaterial != &#34; &#34;:
                         elem = cur[XNEST][-1][0]
@@ -3829,14 +4146,17 @@ class TEI(CheckImport):
                                 &#34;WARNING: Text material after &#34;
                                 f&#34;&lt;{tag}&gt; in pure-content element &lt;{elem}&gt;&#34;
                             ),
-                            error=True
+                            error=True,
                         )
                         stack = &#34;-&#34;.join(cur[XNEST][0])
                         console(f&#34;\tElement stack: {stack}-{tag}&#34;, error=True)
                         console(f&#34;\tMaterial: `{tailMaterial}`&#34;, error=True)
                 else:
-                    for ch in tailMaterial:
-                        addSlot(cv, cur, ch)
+                    if tokenAsSlot:
+                        addTokens(cv, cur, tailMaterial)
+                    else:
+                        for ch in tailMaterial:
+                            addSlot(cv, cur, ch)
 
             afterTagCustom = getattr(self, &#34;afterTagCustom&#34;, None)
             if afterTagCustom is not None:
@@ -3858,6 +4178,12 @@ class TEI(CheckImport):
             cv: object
                 The converter object, needed to issue actions.
             &#34;&#34;&#34;
+            makeLineElems = self.makeLineElems
+
+            if makeLineElems:
+                lineProperties = self.lineProperties
+                lineType = lineProperties[&#34;nodeType&#34;]
+
             makePageElems = self.makePageElems
 
             if makePageElems:
@@ -3938,12 +4264,18 @@ class TEI(CheckImport):
                             tree = etree.parse(text, parser)
                             root = tree.getroot()
 
+                            if makeLineElems:
+                                cur[NODE][lineType] = None
+                                cur[&#34;inLine&#34;] = False
+                                cur[&#34;lineAtts&#34;] = None
+
                             if makePageElems:
                                 cur[NODE][pageType] = None
                                 cur[&#34;inPage&#34;] = False
                                 cur[&#34;pageAtts&#34;] = None
 
-                            cur[NODE][WORD] = None
+                            if not tokenAsSlot:
+                                cur[NODE][WORD] = None
                             cur[&#34;inHeader&#34;] = False
                             cur[&#34;inNote&#34;] = False
                             cur[XNEST] = []
@@ -3959,7 +4291,8 @@ class TEI(CheckImport):
                             cur[&#34;chunkElems&#34;] = set()
                             walkNode(cv, cur, root)
 
-                        addSlot(cv, cur, None)
+                        if not tokenAsSlot:
+                            addSlot(cv, cur, None)
                         if tpl:
                             cv.terminate(cur[NODE][tpl])
                         cv.terminate(cur[NODE][fileSection])
@@ -3989,12 +4322,18 @@ class TEI(CheckImport):
                     tree = etree.parse(text, parser)
                     root = tree.getroot()
 
+                    if makeLineElems:
+                        cur[NODE][lineType] = None
+                        cur[&#34;inLine&#34;] = False
+                        cur[&#34;lineAtts&#34;] = None
+
                     if makePageElems:
                         cur[NODE][pageType] = None
                         cur[&#34;inPage&#34;] = False
                         cur[&#34;pageAtts&#34;] = None
 
-                    cur[NODE][WORD] = None
+                    if not tokenAsSlot:
+                        cur[NODE][WORD] = None
                     cur[&#34;inHeader&#34;] = False
                     cur[&#34;inNote&#34;] = False
                     cur[XNEST] = []
@@ -4015,7 +4354,8 @@ class TEI(CheckImport):
                     for child in root.iterchildren(tag=etree.Element):
                         walkNode(cv, cur, child)
 
-                addSlot(cv, cur, None)
+                if not tokenAsSlot:
+                    addSlot(cv, cur, None)
 
             if verbose &gt;= 0:
                 console(&#34;&#34;)
@@ -4133,9 +4473,13 @@ class TEI(CheckImport):
         generic = self.generic
         otext = self.otext
         featureMeta = self.featureMeta
+        intFeatures = self.intFeatures
+
+        makeLineElems = self.makeLineElems
+        lineModel = self.lineModel
+
         makePageElems = self.makePageElems
         pageModel = self.pageModel
-        intFeatures = self.intFeatures
 
         if makePageElems:
             pageProperties = self.pageProperties
@@ -4146,6 +4490,10 @@ class TEI(CheckImport):
 
         if verbose == 1:
             console(f&#34;TEI to TF converting: {ux(teiPath)} =&gt; {ux(tfPath)}&#34;)
+            if makeLineElems:
+                lbRep = &#34; with lb elements between the lines&#34;
+                console(f&#34;Line model {lineModel}{lbRep}&#34;)
+
             if makePageElems:
                 pbRep = (
                     f&#34; with pb elements at the {&#39;top&#39; if pbAtTop else &#39;bottom&#39;}&#34;
@@ -4266,6 +4614,8 @@ class TEI(CheckImport):
         myDir = self.myDir
         procins = self.procins
         wordAsSlot = self.wordAsSlot
+        tokenAsSlot = self.tokenAsSlot
+        charAsSlot = self.charAsSlot
         parentEdges = self.parentEdges
         siblingEdges = self.siblingEdges
         sectionModel = self.sectionModel
@@ -4350,9 +4700,9 @@ class TEI(CheckImport):
             &#34;&#34;&#34;
 
             materialCode = (
-                &#34;&#34;&#34;f&#39;{F.str.v(n) or &#34;&#34;}{F.after.v(n) or &#34;&#34;}&#39;&#34;&#34;&#34;
-                if wordAsSlot or tokenBased
-                else &#39;&#39;&#39;F.ch.v(n) or &#34;&#34;&#39;&#39;&#39;
+                &#39;&#39;&#39;F.ch.v(n) or &#34;&#34;&#39;&#39;&#39;
+                if charAsSlot or tokenBased
+                else &#34;&#34;&#34;f&#39;{F.str.v(n) or &#34;&#34;}{F.after.v(n) or &#34;&#34;}&#39;&#34;&#34;&#34;
             )
             rendValues = repr(KNOWN_RENDS)
 
@@ -4434,6 +4784,8 @@ class TEI(CheckImport):
                     sourceText,
                     procins,
                     wordAsSlot,
+                    tokenAsSlot,
+                    charAsSlot,
                     parentEdges,
                     siblingEdges,
                     tokenBased,
@@ -4735,7 +5087,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/tei.py#L754-L771" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L833-L850" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRefs(tag, atts, xmlFile):
     refAtt = REFERENCING.get(tag, None)
@@ -4765,7 +5117,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/tei.py#L4303-L4313" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L4602-L4612" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(
@@ -4788,7 +5140,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/tei.py#L737-L751" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L816-L830" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCssInfo():
     &#34;&#34;&#34;Make the CSS info for the style sheet.&#34;&#34;&#34;
@@ -4936,7 +5288,7 @@ relevant TF version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/tei.py#L774-L4300" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L853-L4599" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI(CheckImport):
     def __init__(
@@ -5191,13 +5543,32 @@ relevant TF version:</p>
         adaptations = settings.get(&#34;adaptations&#34;, [])
         adaptationTrigger = settings.get(&#34;adaptationTrigger&#34;, None)
         prelim = settings.get(&#34;prelim&#34;, True)
-        wordAsSlot = settings.get(&#34;wordAsSlot&#34;, True)
+        granularity = settings.get(&#34;granularity&#34;, TOKEN)
+        wordAsSlot = granularity == WORD
+        tokenAsSlot = granularity == TOKEN
+        charAsSlot = granularity == CHAR
         parentEdges = settings.get(&#34;parentEdges&#34;, True)
         siblingEdges = settings.get(&#34;siblingEdges&#34;, True)
         procins = settings.get(&#34;procins&#34;, False)
 
+        lineModel = settings.get(&#34;lineModel&#34;, {})
+        lineModel = checkModel(LINE, lineModel, verbose)
+
+        if not lineModel:
+            self.good = False
+            return
+
+        makeLineElems = lineModel[&#34;model&#34;] == &#34;II&#34;
+        lineProperties = lineModel.get(&#34;properties&#34;, None)
+        lineModel = lineModel[&#34;model&#34;]
+
+        self.makeLineElems = makeLineElems
+        self.lineModel = lineModel
+        self.lineProperties = lineProperties
+
         pageModel = settings.get(&#34;pageModel&#34;, {})
-        pageModel = checkModel(&#34;page&#34;, pageModel)
+        pageModel = checkModel(PAGE, pageModel, verbose)
+
         if not pageModel:
             self.good = False
             return
@@ -5211,7 +5582,7 @@ relevant TF version:</p>
         self.pageProperties = pageProperties
 
         sectionModel = settings.get(&#34;sectionModel&#34;, {})
-        sectionModel = checkModel(&#34;section&#34;, sectionModel)
+        sectionModel = checkModel(&#34;section&#34;, sectionModel, verbose)
         if not sectionModel:
             self.good = False
             return
@@ -5269,6 +5640,8 @@ relevant TF version:</p>
 
         self.prelim = prelim
         self.wordAsSlot = wordAsSlot
+        self.tokenAsSlot = tokenAsSlot
+        self.charAsSlot = charAsSlot
         self.parentEdges = parentEdges
         self.siblingEdges = siblingEdges
         self.procins = procins
@@ -5418,13 +5791,13 @@ relevant TF version:</p>
         if siblingEdges:
             intFeatures.add(&#34;sibling&#34;)
 
-        slotType = WORD if wordAsSlot else CHAR
+        slotType = WORD if wordAsSlot else T if tokenAsSlot else CHAR
         self.slotType = slotType
 
         sectionFeatures = &#34;,&#34;.join(levelNames)
         sectionTypes = &#34;,&#34;.join(levelNames)
 
-        textFeatures = &#34;{str}{after}&#34; if wordAsSlot else &#34;{ch}&#34;
+        textFeatures = &#34;{ch}&#34; if charAsSlot else &#34;{str}{after}&#34;
         otext = {
             &#34;fmt:text-orig-full&#34;: textFeatures,
             &#34;sectionFeatures&#34;: sectionFeatures,
@@ -5459,7 +5832,7 @@ relevant TF version:</p>
                 conversionCode=CONVERSION_METHODS[CM_LITC],
             ),
         )
-        if not wordAsSlot:
+        if charAsSlot:
             featureMeta[&#34;extraspace&#34;] = dict(
                 description=(
                     &#34;whether a space has been added after a character, &#34;
@@ -5725,7 +6098,7 @@ relevant TF version:</p>
             xmlFiles = []
             hasBackMatter = False
 
-            for folderName in sorted(xmlFilesRaw):
+            for folderName in sorted(xmlFilesRaw, key=versionSort):
                 if folderName == backMatter:
                     hasBackMatter = True
                 else:
@@ -5832,6 +6205,8 @@ relevant TF version:</p>
 
         nProcins = 0
 
+        lbParents = collections.Counter()
+
         def analyse(root, analysis, xmlFile):
             FORMAT_ATTS = set(
                 &#34;&#34;&#34;
@@ -5883,11 +6258,16 @@ relevant TF version:</p>
 
                 tagByNs[tag][ns] += 1
 
+                if tag == &#34;lb&#34;:
+                    parentTag = etree.QName(xnode.getparent().tag).localname
+                    lbParents[parentTag] += 1
+
                 if len(atts) == 0:
                     kind = &#34;rest&#34;
                     analysis[kind][tag][&#34;&#34;][&#34;&#34;] += 1
                 else:
                     idv = atts.get(&#34;id&#34;, None)
+
                     if idv is not None:
                         ids[xmlFile][idv] += 1
 
@@ -6123,6 +6503,16 @@ relevant TF version:</p>
                 console(
                     f&#34;{len(elemsCombined)} tag(s) type info written to {reportFile}&#34;
                 )
+
+        def writeLbParents():
+            reportFile = f&#34;{reportPath}/lb-parents.txt&#34;
+
+            with open(reportFile, &#34;w&#34;) as fh:
+                for parent, n in sorted(lbParents.items()):
+                    fh.write(f&#34;{n:&gt;5} x {parent}\n&#34;)
+
+            if verbose &gt;= 0:
+                console(f&#34;lb-parent info written to {reportFile}&#34;)
 
         def writeIdRefs():
             reportIdFile = f&#34;{reportPath}/ids.txt&#34;
@@ -6399,14 +6789,18 @@ relevant TF version:</p>
             if validate:
                 if verbose &gt;= 0:
                     console(&#34;\tValidating ...&#34;)
+
                 schemaFile = modelInfo.get(model, None)
+
                 if schemaFile is None:
                     if verbose &gt;= 0:
                         console(f&#34;\t\tNo schema file for {model}&#34;)
                     if good is not None and good is not False:
                         good = None
                     continue
+
                 (thisGood, info, theseErrors) = A.validate(schemaFile, xmlPaths)
+
                 for line in info:
                     if verbose &gt;= 0:
                         console(f&#34;\t\t{line}&#34;)
@@ -6431,6 +6825,7 @@ relevant TF version:</p>
         writeDoc()
         writeNamespaces()
         writeIdRefs()
+        writeLbParents()
 
     # SET UP CONVERSION
 
@@ -6517,6 +6912,7 @@ relevant TF version:</p>
         verbose = self.verbose
         teiPath = self.teiPath
         wordAsSlot = self.wordAsSlot
+        tokenAsSlot = self.tokenAsSlot
         parentEdges = self.parentEdges
         siblingEdges = self.siblingEdges
         featureMeta = self.featureMeta
@@ -6553,7 +6949,7 @@ relevant TF version:</p>
         # WALKERS
 
         WHITE_TRIM_RE = re.compile(r&#34;\s+&#34;, re.S)
-        NON_NAME_RE = re.compile(r&#34;[^a-zA-Z0-9_]+&#34;, re.S)
+        NON_NAME_RE = re.compile(r&#34;[^a-zA-Z0-9_ ]+&#34;, re.S)
 
         NOTE_LIKE = set(
             &#34;&#34;&#34;
@@ -7057,9 +7453,10 @@ relevant TF version:</p>
                 Various pieces of data collected during walking
                 and relevant for some next steps in the walk.
             ch: string
-                A single character, the next slot in the result data.
+                A single character, the next character in the result data.
             &#34;&#34;&#34;
             curWord = cur[NODE][WORD]
+
             if not curWord:
                 prevWord = cur[&#34;prevWord&#34;]
                 if prevWord is not None:
@@ -7115,30 +7512,6 @@ relevant TF version:</p>
             else:
                 cur[&#34;afterSpace&#34;] = False
 
-        def addEmpty(cv, cur):
-            &#34;&#34;&#34;Add an empty slot.
-
-            We also terminate the current word.
-            If words are slots, the empty slot is a word on its own.
-
-            Returns
-            -------
-            node
-                The empty slot
-            &#34;&#34;&#34;
-            finishWord(cv, cur, None, None)
-            startWord(cv, cur, ZWSP)
-            emptyNode = cur[NODE][WORD]
-            cv.feature(emptyNode, empty=1)
-
-            if not wordAsSlot:
-                emptyNode = cv.slot()
-                cv.feature(emptyNode, ch=ZWSP, empty=1)
-
-            finishWord(cv, cur, None, None)
-
-            return emptyNode
-
         def addSlotFeatures(cv, cur, s):
             &#34;&#34;&#34;Add generic features to a slot.
 
@@ -7164,6 +7537,25 @@ relevant TF version:</p>
             for r, stack in cur.get(&#34;rend&#34;, {}).items():
                 if len(stack) &gt; 0:
                     cv.feature(s, **{f&#34;rend_{r}&#34;: 1})
+
+        def addTokens(cv, cur, text):
+            (beforew, material, afterw) = getWhites(text)
+
+            if beforew:
+                makeSpace(cv, cur)
+
+            s = None
+
+            for tx, after in tokenize(material):
+                s = cv.slot()
+                cv.feature(s, str=tx, after=after)
+                addSlotFeatures(cv, cur, s)
+
+            if afterw:
+                if s is None:
+                    makeSpace(cv, cur)
+                else:
+                    cv.feature(s, after=&#34; &#34;)
 
         def addSlot(cv, cur, ch):
             &#34;&#34;&#34;Add a slot.
@@ -7198,6 +7590,34 @@ relevant TF version:</p>
             if s is not None:
                 addSlotFeatures(cv, cur, s)
 
+        def addEmpty(cv, cur):
+            &#34;&#34;&#34;Add an empty slot.
+
+            We also terminate the current word.
+            If words are slots, the empty slot is a word on its own.
+
+            Returns
+            -------
+            node
+                The empty slot
+            &#34;&#34;&#34;
+            if tokenAsSlot:
+                emptyNode = cv.slot()
+                cv.feature(emptyNode, str=ZWSP, after=&#34;&#34;, empty=1)
+            else:
+                finishWord(cv, cur, None, None)
+                startWord(cv, cur, ZWSP)
+                emptyNode = cur[NODE][WORD]
+                cv.feature(emptyNode, empty=1)
+
+                if not wordAsSlot:
+                    emptyNode = cv.slot()
+                    cv.feature(emptyNode, ch=ZWSP, empty=1)
+
+                finishWord(cv, cur, None, None)
+
+            return emptyNode
+
         def addSpace(cv, cur, spaceChar):
             &#34;&#34;&#34;Adds a space or a new line.
 
@@ -7217,8 +7637,46 @@ relevant TF version:</p>
             &#34;&#34;&#34;
             if chunkLevel in cv.activeTypes():
                 s = cv.slot()
-                cv.feature(s, ch=spaceChar, extraspace=1)
+                if tokenAsSlot:
+                    cv.feature(s, str=&#34;&#34;, after=spaceChar, extraspace=1)
+                else:
+                    cv.feature(s, ch=spaceChar, extraspace=1)
                 addSlotFeatures(cv, cur, s)
+
+        def makeSpace(cv, cur):
+            s = cv.slot()
+            cv.feature(s, str=&#34;&#34;, after=&#34; &#34;, extraspace=1)
+            addSlotFeatures(cv, cur, s)
+
+        def endLine(cv, cur):
+            &#34;&#34;&#34;Ends a line node.
+
+            Parameters
+            ----------
+            cv: object
+                The converter object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            &#34;&#34;&#34;
+            lineProperties = self.lineProperties
+            lineType = lineProperties[&#34;nodeType&#34;]
+
+            slots = cv.linked(cur[NODE][lineType])
+            empty = len(slots) == 0
+
+            if empty:
+                lastSlot = addEmpty(cv, cur)
+                if cur[&#34;inNote&#34;]:
+                    cv.feature(lastSlot, is_note=1)
+            else:
+                lastSlot = (T, slots[-1])
+
+            if not wordAsSlot:
+                after = cv.get(&#34;after&#34;, lastSlot)
+                if after is not None and &#34;\n&#34; not in after:
+                    cv.feature(lastSlot, after=f&#34;{after.rstrip()}\n&#34;)
+            cv.terminate(cur[NODE][lineType])
 
         def endPage(cv, cur):
             &#34;&#34;&#34;Ends a page node.
@@ -7236,6 +7694,7 @@ relevant TF version:</p>
 
             slots = cv.linked(cur[NODE][pageType])
             empty = len(slots) == 0
+
             if empty:
                 lastSlot = addEmpty(cv, cur)
                 if cur[&#34;inNote&#34;]:
@@ -7278,17 +7737,31 @@ relevant TF version:</p>
             atts: string
                 The attributes of the LXML node, with namespaces stripped.
             &#34;&#34;&#34;
+            makeLineElems = self.makeLineElems
+
+            if makeLineElems:
+                lineProperties = self.lineProperties
+                lineElem = lineProperties[&#34;element&#34;]
+                lineType = lineProperties[&#34;nodeType&#34;]
+                isLineContainer = tag == lineElem
+                inLine = cur[&#34;inLine&#34;]
+
+                if isLineContainer:
+                    cur[&#34;inLine&#34;] = True
+
+                    # the line starts with the container
+                    cur[NODE][lineType] = cv.node(lineType)
+
             makePageElems = self.makePageElems
 
             if makePageElems:
                 pageProperties = self.pageProperties
                 pageType = pageProperties[&#34;nodeType&#34;]
-                isPageContainer = makePageElems and matchModel(
-                    pageProperties, tag, atts
-                )
+                isPageContainer = matchModel(pageProperties, tag, atts)
                 inPage = cur[&#34;inPage&#34;]
 
                 pbAtTop = pageProperties[&#34;pbAtTop&#34;]
+
                 if isPageContainer:
                     cur[&#34;inPage&#34;] = True
 
@@ -7371,9 +7844,19 @@ relevant TF version:</p>
                     cv.feature(cur[NODE][chapterSection], **value)
             if tag in NOTE_LIKE:
                 cur[&#34;inNote&#34;] = True
-                finishWord(cv, cur, None, None)
+                if not tokenAsSlot:
+                    finishWord(cv, cur, None, None)
 
             curNode = None
+
+            if makeLineElems:
+                if inLine and tag == &#34;lb&#34;:
+                    if cur[NODE][lineType] is not None:
+                        if cur[&#34;lineAtts&#34;] is not None and len(cur[&#34;lineAtts&#34;]):
+                            cv.feature(cur[NODE][lineType], **cur[&#34;lineAtts&#34;])
+                        endLine(cv, cur)
+                    cur[NODE][lineType] = cv.node(lineType)
+                    cur[&#34;lineAtts&#34;] = atts
 
             if makePageElems:
                 if inPage and tag == &#34;pb&#34;:
@@ -7385,13 +7868,17 @@ relevant TF version:</p>
                             cv.feature(cur[NODE][pageType], **atts)
                     else:
                         if cur[NODE][pageType] is not None:
-                            if len(cur[&#34;pageAtts&#34;]):
+                            if cur[&#34;pageAtts&#34;] is not None and len(cur[&#34;pageAtts&#34;]):
                                 cv.feature(cur[NODE][pageType], **cur[&#34;pageAtts&#34;])
                             endPage(cv, cur)
                         cur[NODE][pageType] = cv.node(pageType)
                         cur[&#34;pageAtts&#34;] = atts
 
-            if tag not in PASS_THROUGH:
+            isBoundaryElem = (
+                makeLineElems and tag == &#34;lb&#34; or makePageElems and tag == &#34;pb&#34;
+            )
+
+            if tag not in PASS_THROUGH and not isBoundaryElem:
                 cur[&#34;afterSpace&#34;] = False
                 cur[NODE][tag] = cv.node(tag)
                 curNode = cur[NODE][tag]
@@ -7404,7 +7891,10 @@ relevant TF version:</p>
                         rValue = atts[&#34;rend&#34;]
                         r = makeNameLike(rValue)
                         if r:
-                            cur.setdefault(&#34;rend&#34;, {}).setdefault(r, []).append(True)
+                            for q in r.split():
+                                cur.setdefault(&#34;rend&#34;, {}).setdefault(q, []).append(
+                                    True
+                                )
 
             beforeChildrenCustom = getattr(self, &#34;beforeChildrenCustom&#34;, None)
             if beforeChildrenCustom is not None:
@@ -7419,14 +7909,17 @@ relevant TF version:</p>
                                 &#34;WARNING: Text material at the start of &#34;
                                 f&#34;pure-content element &lt;{tag}&gt;&#34;
                             ),
-                            error=True
+                            error=True,
                         )
                         stack = &#34;-&#34;.join(n[0] for n in cur[XNEST])
                         console(f&#34;\tElement stack: {stack}&#34;, error=True)
                         console(f&#34;\tMaterial: `{textMaterial}`&#34;, error=True)
                 else:
-                    for ch in textMaterial:
-                        addSlot(cv, cur, ch)
+                    if tokenAsSlot:
+                        addTokens(cv, cur, textMaterial)
+                    else:
+                        for ch in textMaterial:
+                            addSlot(cv, cur, ch)
 
             return curNode
 
@@ -7451,6 +7944,14 @@ relevant TF version:</p>
                 The attributes of the LXML node, with namespaces stripped.
             &#34;&#34;&#34;
             chunkSection = self.chunkSection
+            makeLineElems = self.makeLineElems
+
+            if makeLineElems:
+                lineProperties = self.lineProperties
+                lineType = lineProperties[&#34;nodeType&#34;]
+                lineElem = lineProperties[&#34;element&#34;]
+                lineProperties = self.lineProperties
+
             makePageElems = self.makePageElems
 
             if makePageElems:
@@ -7466,7 +7967,7 @@ relevant TF version:</p>
             extraInstructions = self.extraInstructions
 
             if len(extraInstructions):
-                lookupSource(cv, cur, extraInstructions)
+                lookupSource(cv, cur, tokenAsSlot, extraInstructions)
 
             isChap = isChapter(cur)
             isChnk = isChunk(cur)
@@ -7475,15 +7976,45 @@ relevant TF version:</p>
             if afterChildrenCustom is not None:
                 afterChildrenCustom(cv, cur, xnode, tag, atts)
 
+            if makeLineElems:
+                isLineContainer = tag == lineElem
+                inLine = cur[&#34;inLine&#34;]
+
             if makePageElems:
                 isPageContainer = matchModel(pageProperties, tag, atts)
                 inPage = cur[&#34;inPage&#34;]
 
             hasFinishedWord = False
 
+            if makeLineElems and inLine and tag == &#34;lb&#34;:
+                pass
+
             if makePageElems and inPage and tag == &#34;pb&#34;:
                 pass
-            if tag not in PASS_THROUGH:
+
+            isBoundaryElem = (
+                makeLineElems and tag == &#34;lb&#34; or makePageElems and tag == &#34;pb&#34;
+            )
+
+            if makeLineElems and isLineContainer:
+                # the page ends with the container
+                if cur[NODE][lineType] is not None:
+                    endLine(cv, cur)
+                cur[&#34;inLine&#34;] = False
+
+            if makePageElems and isPageContainer:
+                pbAtTop = pageProperties[&#34;pbAtTop&#34;]
+                if pbAtTop:
+                    # the page ends with the container
+                    if cur[NODE][pageType] is not None:
+                        endPage(cv, cur)
+                else:
+                    # material after the last pb is not in a page
+                    if cur[NODE][pageType] is not None:
+                        cv.delete(cur[NODE][pageType])
+                cur[&#34;inPage&#34;] = False
+
+            if tag not in PASS_THROUGH and not isBoundaryElem:
                 curNode = cur[TNEST][-1]
                 slots = cv.linked(curNode)
                 empty = len(slots) == 0
@@ -7494,12 +8025,14 @@ relevant TF version:</p>
                     newLineTag
                     or isEndInPure(cur)
                     and not hasContinuousAncestor(cur)
-                    and not empty
                     and not cur[&#34;afterSpace&#34;]
-                ):
+                ) and not empty:
                     spaceChar = &#34;\n&#34; if newLineTag or not hasMixedAncestor(cur) else &#34; &#34;
-                    finishWord(cv, cur, None, spaceChar)
-                    hasFinishedWord = True
+                    if tokenAsSlot:
+                        cv.feature((T, slots[-1]), after=spaceChar)
+                    else:
+                        finishWord(cv, cur, None, spaceChar)
+                        hasFinishedWord = True
 
                 slots = cv.linked(curNode)
                 empty = len(slots) == 0
@@ -7530,25 +8063,21 @@ relevant TF version:</p>
                 cv.terminate(curNode)
 
             if isChnk:
-                if not hasFinishedWord:
-                    finishWord(cv, cur, None, &#34;\n&#34;)
-                cv.terminate(cur[NODE][chunkSection])
-            if sectionModel == &#34;II&#34;:
-                if isChap:
+                if tokenAsSlot:
+                    addSpace(cv, cur, &#34;\n&#34;)
+                else:
                     if not hasFinishedWord:
                         finishWord(cv, cur, None, &#34;\n&#34;)
+                cv.terminate(cur[NODE][chunkSection])
+
+            if sectionModel == &#34;II&#34;:
+                if isChap:
+                    if tokenAsSlot:
+                        addSpace(cv, cur, &#34;\n&#34;)
+                    else:
+                        if not hasFinishedWord:
+                            finishWord(cv, cur, None, &#34;\n&#34;)
                     cv.terminate(cur[NODE][chapterSection])
-            if makePageElems and isPageContainer:
-                pbAtTop = pageProperties[&#34;pbAtTop&#34;]
-                if pbAtTop:
-                    # the page ends with the container
-                    if cur[NODE][pageType] is not None:
-                        endPage(cv, cur)
-                else:
-                    # material after the last pb is not in a page
-                    if cur[NODE][pageType] is not None:
-                        cv.delete(cur[NODE][pageType])
-                cur[&#34;inPage&#34;] = False
 
         def afterTag(cv, cur, xnode, tag, atts):
             &#34;&#34;&#34;Node actions after dealing with the children and after the end tag.
@@ -7581,10 +8110,18 @@ relevant TF version:</p>
                     rValue = atts[&#34;rend&#34;]
                     r = makeNameLike(rValue)
                     if r:
-                        cur[&#34;rend&#34;][r].pop()
+                        for q in r.split():
+                            cur[&#34;rend&#34;][q].pop()
 
             if xnode.tail:
-                tailMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, xnode.tail)
+                if tag == &#34;lb&#34; and self.makeLineElems:
+                    tail = xnode.tail.lstrip()
+                    if not wordAsSlot:
+                        pass
+                else:
+                    tail = xnode.tail
+
+                tailMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, tail)
                 if isPure(cur):
                     if tailMaterial and tailMaterial != &#34; &#34;:
                         elem = cur[XNEST][-1][0]
@@ -7593,14 +8130,17 @@ relevant TF version:</p>
                                 &#34;WARNING: Text material after &#34;
                                 f&#34;&lt;{tag}&gt; in pure-content element &lt;{elem}&gt;&#34;
                             ),
-                            error=True
+                            error=True,
                         )
                         stack = &#34;-&#34;.join(cur[XNEST][0])
                         console(f&#34;\tElement stack: {stack}-{tag}&#34;, error=True)
                         console(f&#34;\tMaterial: `{tailMaterial}`&#34;, error=True)
                 else:
-                    for ch in tailMaterial:
-                        addSlot(cv, cur, ch)
+                    if tokenAsSlot:
+                        addTokens(cv, cur, tailMaterial)
+                    else:
+                        for ch in tailMaterial:
+                            addSlot(cv, cur, ch)
 
             afterTagCustom = getattr(self, &#34;afterTagCustom&#34;, None)
             if afterTagCustom is not None:
@@ -7622,6 +8162,12 @@ relevant TF version:</p>
             cv: object
                 The converter object, needed to issue actions.
             &#34;&#34;&#34;
+            makeLineElems = self.makeLineElems
+
+            if makeLineElems:
+                lineProperties = self.lineProperties
+                lineType = lineProperties[&#34;nodeType&#34;]
+
             makePageElems = self.makePageElems
 
             if makePageElems:
@@ -7702,12 +8248,18 @@ relevant TF version:</p>
                             tree = etree.parse(text, parser)
                             root = tree.getroot()
 
+                            if makeLineElems:
+                                cur[NODE][lineType] = None
+                                cur[&#34;inLine&#34;] = False
+                                cur[&#34;lineAtts&#34;] = None
+
                             if makePageElems:
                                 cur[NODE][pageType] = None
                                 cur[&#34;inPage&#34;] = False
                                 cur[&#34;pageAtts&#34;] = None
 
-                            cur[NODE][WORD] = None
+                            if not tokenAsSlot:
+                                cur[NODE][WORD] = None
                             cur[&#34;inHeader&#34;] = False
                             cur[&#34;inNote&#34;] = False
                             cur[XNEST] = []
@@ -7723,7 +8275,8 @@ relevant TF version:</p>
                             cur[&#34;chunkElems&#34;] = set()
                             walkNode(cv, cur, root)
 
-                        addSlot(cv, cur, None)
+                        if not tokenAsSlot:
+                            addSlot(cv, cur, None)
                         if tpl:
                             cv.terminate(cur[NODE][tpl])
                         cv.terminate(cur[NODE][fileSection])
@@ -7753,12 +8306,18 @@ relevant TF version:</p>
                     tree = etree.parse(text, parser)
                     root = tree.getroot()
 
+                    if makeLineElems:
+                        cur[NODE][lineType] = None
+                        cur[&#34;inLine&#34;] = False
+                        cur[&#34;lineAtts&#34;] = None
+
                     if makePageElems:
                         cur[NODE][pageType] = None
                         cur[&#34;inPage&#34;] = False
                         cur[&#34;pageAtts&#34;] = None
 
-                    cur[NODE][WORD] = None
+                    if not tokenAsSlot:
+                        cur[NODE][WORD] = None
                     cur[&#34;inHeader&#34;] = False
                     cur[&#34;inNote&#34;] = False
                     cur[XNEST] = []
@@ -7779,7 +8338,8 @@ relevant TF version:</p>
                     for child in root.iterchildren(tag=etree.Element):
                         walkNode(cv, cur, child)
 
-                addSlot(cv, cur, None)
+                if not tokenAsSlot:
+                    addSlot(cv, cur, None)
 
             if verbose &gt;= 0:
                 console(&#34;&#34;)
@@ -7897,9 +8457,13 @@ relevant TF version:</p>
         generic = self.generic
         otext = self.otext
         featureMeta = self.featureMeta
+        intFeatures = self.intFeatures
+
+        makeLineElems = self.makeLineElems
+        lineModel = self.lineModel
+
         makePageElems = self.makePageElems
         pageModel = self.pageModel
-        intFeatures = self.intFeatures
 
         if makePageElems:
             pageProperties = self.pageProperties
@@ -7910,6 +8474,10 @@ relevant TF version:</p>
 
         if verbose == 1:
             console(f&#34;TEI to TF converting: {ux(teiPath)} =&gt; {ux(tfPath)}&#34;)
+            if makeLineElems:
+                lbRep = &#34; with lb elements between the lines&#34;
+                console(f&#34;Line model {lineModel}{lbRep}&#34;)
+
             if makePageElems:
                 pbRep = (
                     f&#34; with pb elements at the {&#39;top&#39; if pbAtTop else &#39;bottom&#39;}&#34;
@@ -8030,6 +8598,8 @@ relevant TF version:</p>
         myDir = self.myDir
         procins = self.procins
         wordAsSlot = self.wordAsSlot
+        tokenAsSlot = self.tokenAsSlot
+        charAsSlot = self.charAsSlot
         parentEdges = self.parentEdges
         siblingEdges = self.siblingEdges
         sectionModel = self.sectionModel
@@ -8114,9 +8684,9 @@ relevant TF version:</p>
             &#34;&#34;&#34;
 
             materialCode = (
-                &#34;&#34;&#34;f&#39;{F.str.v(n) or &#34;&#34;}{F.after.v(n) or &#34;&#34;}&#39;&#34;&#34;&#34;
-                if wordAsSlot or tokenBased
-                else &#39;&#39;&#39;F.ch.v(n) or &#34;&#34;&#39;&#39;&#39;
+                &#39;&#39;&#39;F.ch.v(n) or &#34;&#34;&#39;&#39;&#39;
+                if charAsSlot or tokenBased
+                else &#34;&#34;&#34;f&#39;{F.str.v(n) or &#34;&#34;}{F.after.v(n) or &#34;&#34;}&#39;&#34;&#34;&#34;
             )
             rendValues = repr(KNOWN_RENDS)
 
@@ -8198,6 +8768,8 @@ relevant TF version:</p>
                     sourceText,
                     procins,
                     wordAsSlot,
+                    tokenAsSlot,
+                    charAsSlot,
                     parentEdges,
                     siblingEdges,
                     tokenBased,
@@ -8509,7 +9081,7 @@ that code between automatic generation of files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/tei.py#L3820-L4184" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L4115-L4483" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self, tokenBased=False):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -8557,6 +9129,8 @@ that code between automatic generation of files.</p>
     myDir = self.myDir
     procins = self.procins
     wordAsSlot = self.wordAsSlot
+    tokenAsSlot = self.tokenAsSlot
+    charAsSlot = self.charAsSlot
     parentEdges = self.parentEdges
     siblingEdges = self.siblingEdges
     sectionModel = self.sectionModel
@@ -8641,9 +9215,9 @@ that code between automatic generation of files.</p>
         &#34;&#34;&#34;
 
         materialCode = (
-            &#34;&#34;&#34;f&#39;{F.str.v(n) or &#34;&#34;}{F.after.v(n) or &#34;&#34;}&#39;&#34;&#34;&#34;
-            if wordAsSlot or tokenBased
-            else &#39;&#39;&#39;F.ch.v(n) or &#34;&#34;&#39;&#39;&#39;
+            &#39;&#39;&#39;F.ch.v(n) or &#34;&#34;&#39;&#39;&#39;
+            if charAsSlot or tokenBased
+            else &#34;&#34;&#34;f&#39;{F.str.v(n) or &#34;&#34;}{F.after.v(n) or &#34;&#34;}&#39;&#34;&#34;&#34;
         )
         rendValues = repr(KNOWN_RENDS)
 
@@ -8725,6 +9299,8 @@ that code between automatic generation of files.</p>
                 sourceText,
                 procins,
                 wordAsSlot,
+                tokenAsSlot,
+                charAsSlot,
                 parentEdges,
                 siblingEdges,
                 tokenBased,
@@ -8894,7 +9470,7 @@ There should be a valid TF dataset and app configuration in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/tei.py#L4188-L4224" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L4487-L4523" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def browseTask(self):
     &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
@@ -8962,7 +9538,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/tei.py#L1587-L2266" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L1687-L2388" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -9045,6 +9621,8 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 
     nProcins = 0
 
+    lbParents = collections.Counter()
+
     def analyse(root, analysis, xmlFile):
         FORMAT_ATTS = set(
             &#34;&#34;&#34;
@@ -9096,11 +9674,16 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 
             tagByNs[tag][ns] += 1
 
+            if tag == &#34;lb&#34;:
+                parentTag = etree.QName(xnode.getparent().tag).localname
+                lbParents[parentTag] += 1
+
             if len(atts) == 0:
                 kind = &#34;rest&#34;
                 analysis[kind][tag][&#34;&#34;][&#34;&#34;] += 1
             else:
                 idv = atts.get(&#34;id&#34;, None)
+
                 if idv is not None:
                     ids[xmlFile][idv] += 1
 
@@ -9336,6 +9919,16 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
             console(
                 f&#34;{len(elemsCombined)} tag(s) type info written to {reportFile}&#34;
             )
+
+    def writeLbParents():
+        reportFile = f&#34;{reportPath}/lb-parents.txt&#34;
+
+        with open(reportFile, &#34;w&#34;) as fh:
+            for parent, n in sorted(lbParents.items()):
+                fh.write(f&#34;{n:&gt;5} x {parent}\n&#34;)
+
+        if verbose &gt;= 0:
+            console(f&#34;lb-parent info written to {reportFile}&#34;)
 
     def writeIdRefs():
         reportIdFile = f&#34;{reportPath}/ids.txt&#34;
@@ -9612,14 +10205,18 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
         if validate:
             if verbose &gt;= 0:
                 console(&#34;\tValidating ...&#34;)
+
             schemaFile = modelInfo.get(model, None)
+
             if schemaFile is None:
                 if verbose &gt;= 0:
                     console(f&#34;\t\tNo schema file for {model}&#34;)
                 if good is not None and good is not False:
                     good = None
                 continue
+
             (thisGood, info, theseErrors) = A.validate(schemaFile, xmlPaths)
+
             for line in info:
                 if verbose &gt;= 0:
                     console(f&#34;\t\t{line}&#34;)
@@ -9643,7 +10240,8 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
     writeElemTypes()
     writeDoc()
     writeNamespaces()
-    writeIdRefs()</code></pre>
+    writeIdRefs()
+    writeLbParents()</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.tei.TEI.convertTask"><code class="name flex">
@@ -9660,7 +10258,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/tei.py#L3711-L3769" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L3998-L4064" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -9684,9 +10282,13 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
     generic = self.generic
     otext = self.otext
     featureMeta = self.featureMeta
+    intFeatures = self.intFeatures
+
+    makeLineElems = self.makeLineElems
+    lineModel = self.lineModel
+
     makePageElems = self.makePageElems
     pageModel = self.pageModel
-    intFeatures = self.intFeatures
 
     if makePageElems:
         pageProperties = self.pageProperties
@@ -9697,6 +10299,10 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 
     if verbose == 1:
         console(f&#34;TEI to TF converting: {ux(teiPath)} =&gt; {ux(tfPath)}&#34;)
+        if makeLineElems:
+            lbRep = &#34; with lb elements between the lines&#34;
+            console(f&#34;Line model {lineModel}{lbRep}&#34;)
+
         if makePageElems:
             pbRep = (
                 f&#34; with pb elements at the {&#39;top&#39; if pbAtTop else &#39;bottom&#39;}&#34;
@@ -9736,7 +10342,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/tei.py#L2270-L2283" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L2392-L2405" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -9777,7 +10383,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/tei.py#L2287-L3709" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L2409-L3996" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -9845,6 +10451,7 @@ that has access to this data.</p>
     verbose = self.verbose
     teiPath = self.teiPath
     wordAsSlot = self.wordAsSlot
+    tokenAsSlot = self.tokenAsSlot
     parentEdges = self.parentEdges
     siblingEdges = self.siblingEdges
     featureMeta = self.featureMeta
@@ -9881,7 +10488,7 @@ that has access to this data.</p>
     # WALKERS
 
     WHITE_TRIM_RE = re.compile(r&#34;\s+&#34;, re.S)
-    NON_NAME_RE = re.compile(r&#34;[^a-zA-Z0-9_]+&#34;, re.S)
+    NON_NAME_RE = re.compile(r&#34;[^a-zA-Z0-9_ ]+&#34;, re.S)
 
     NOTE_LIKE = set(
         &#34;&#34;&#34;
@@ -10385,9 +10992,10 @@ that has access to this data.</p>
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
         ch: string
-            A single character, the next slot in the result data.
+            A single character, the next character in the result data.
         &#34;&#34;&#34;
         curWord = cur[NODE][WORD]
+
         if not curWord:
             prevWord = cur[&#34;prevWord&#34;]
             if prevWord is not None:
@@ -10443,30 +11051,6 @@ that has access to this data.</p>
         else:
             cur[&#34;afterSpace&#34;] = False
 
-    def addEmpty(cv, cur):
-        &#34;&#34;&#34;Add an empty slot.
-
-        We also terminate the current word.
-        If words are slots, the empty slot is a word on its own.
-
-        Returns
-        -------
-        node
-            The empty slot
-        &#34;&#34;&#34;
-        finishWord(cv, cur, None, None)
-        startWord(cv, cur, ZWSP)
-        emptyNode = cur[NODE][WORD]
-        cv.feature(emptyNode, empty=1)
-
-        if not wordAsSlot:
-            emptyNode = cv.slot()
-            cv.feature(emptyNode, ch=ZWSP, empty=1)
-
-        finishWord(cv, cur, None, None)
-
-        return emptyNode
-
     def addSlotFeatures(cv, cur, s):
         &#34;&#34;&#34;Add generic features to a slot.
 
@@ -10492,6 +11076,25 @@ that has access to this data.</p>
         for r, stack in cur.get(&#34;rend&#34;, {}).items():
             if len(stack) &gt; 0:
                 cv.feature(s, **{f&#34;rend_{r}&#34;: 1})
+
+    def addTokens(cv, cur, text):
+        (beforew, material, afterw) = getWhites(text)
+
+        if beforew:
+            makeSpace(cv, cur)
+
+        s = None
+
+        for tx, after in tokenize(material):
+            s = cv.slot()
+            cv.feature(s, str=tx, after=after)
+            addSlotFeatures(cv, cur, s)
+
+        if afterw:
+            if s is None:
+                makeSpace(cv, cur)
+            else:
+                cv.feature(s, after=&#34; &#34;)
 
     def addSlot(cv, cur, ch):
         &#34;&#34;&#34;Add a slot.
@@ -10526,6 +11129,34 @@ that has access to this data.</p>
         if s is not None:
             addSlotFeatures(cv, cur, s)
 
+    def addEmpty(cv, cur):
+        &#34;&#34;&#34;Add an empty slot.
+
+        We also terminate the current word.
+        If words are slots, the empty slot is a word on its own.
+
+        Returns
+        -------
+        node
+            The empty slot
+        &#34;&#34;&#34;
+        if tokenAsSlot:
+            emptyNode = cv.slot()
+            cv.feature(emptyNode, str=ZWSP, after=&#34;&#34;, empty=1)
+        else:
+            finishWord(cv, cur, None, None)
+            startWord(cv, cur, ZWSP)
+            emptyNode = cur[NODE][WORD]
+            cv.feature(emptyNode, empty=1)
+
+            if not wordAsSlot:
+                emptyNode = cv.slot()
+                cv.feature(emptyNode, ch=ZWSP, empty=1)
+
+            finishWord(cv, cur, None, None)
+
+        return emptyNode
+
     def addSpace(cv, cur, spaceChar):
         &#34;&#34;&#34;Adds a space or a new line.
 
@@ -10545,8 +11176,46 @@ that has access to this data.</p>
         &#34;&#34;&#34;
         if chunkLevel in cv.activeTypes():
             s = cv.slot()
-            cv.feature(s, ch=spaceChar, extraspace=1)
+            if tokenAsSlot:
+                cv.feature(s, str=&#34;&#34;, after=spaceChar, extraspace=1)
+            else:
+                cv.feature(s, ch=spaceChar, extraspace=1)
             addSlotFeatures(cv, cur, s)
+
+    def makeSpace(cv, cur):
+        s = cv.slot()
+        cv.feature(s, str=&#34;&#34;, after=&#34; &#34;, extraspace=1)
+        addSlotFeatures(cv, cur, s)
+
+    def endLine(cv, cur):
+        &#34;&#34;&#34;Ends a line node.
+
+        Parameters
+        ----------
+        cv: object
+            The converter object, needed to issue actions.
+        cur: dict
+            Various pieces of data collected during walking
+            and relevant for some next steps in the walk.
+        &#34;&#34;&#34;
+        lineProperties = self.lineProperties
+        lineType = lineProperties[&#34;nodeType&#34;]
+
+        slots = cv.linked(cur[NODE][lineType])
+        empty = len(slots) == 0
+
+        if empty:
+            lastSlot = addEmpty(cv, cur)
+            if cur[&#34;inNote&#34;]:
+                cv.feature(lastSlot, is_note=1)
+        else:
+            lastSlot = (T, slots[-1])
+
+        if not wordAsSlot:
+            after = cv.get(&#34;after&#34;, lastSlot)
+            if after is not None and &#34;\n&#34; not in after:
+                cv.feature(lastSlot, after=f&#34;{after.rstrip()}\n&#34;)
+        cv.terminate(cur[NODE][lineType])
 
     def endPage(cv, cur):
         &#34;&#34;&#34;Ends a page node.
@@ -10564,6 +11233,7 @@ that has access to this data.</p>
 
         slots = cv.linked(cur[NODE][pageType])
         empty = len(slots) == 0
+
         if empty:
             lastSlot = addEmpty(cv, cur)
             if cur[&#34;inNote&#34;]:
@@ -10606,17 +11276,31 @@ that has access to this data.</p>
         atts: string
             The attributes of the LXML node, with namespaces stripped.
         &#34;&#34;&#34;
+        makeLineElems = self.makeLineElems
+
+        if makeLineElems:
+            lineProperties = self.lineProperties
+            lineElem = lineProperties[&#34;element&#34;]
+            lineType = lineProperties[&#34;nodeType&#34;]
+            isLineContainer = tag == lineElem
+            inLine = cur[&#34;inLine&#34;]
+
+            if isLineContainer:
+                cur[&#34;inLine&#34;] = True
+
+                # the line starts with the container
+                cur[NODE][lineType] = cv.node(lineType)
+
         makePageElems = self.makePageElems
 
         if makePageElems:
             pageProperties = self.pageProperties
             pageType = pageProperties[&#34;nodeType&#34;]
-            isPageContainer = makePageElems and matchModel(
-                pageProperties, tag, atts
-            )
+            isPageContainer = matchModel(pageProperties, tag, atts)
             inPage = cur[&#34;inPage&#34;]
 
             pbAtTop = pageProperties[&#34;pbAtTop&#34;]
+
             if isPageContainer:
                 cur[&#34;inPage&#34;] = True
 
@@ -10699,9 +11383,19 @@ that has access to this data.</p>
                 cv.feature(cur[NODE][chapterSection], **value)
         if tag in NOTE_LIKE:
             cur[&#34;inNote&#34;] = True
-            finishWord(cv, cur, None, None)
+            if not tokenAsSlot:
+                finishWord(cv, cur, None, None)
 
         curNode = None
+
+        if makeLineElems:
+            if inLine and tag == &#34;lb&#34;:
+                if cur[NODE][lineType] is not None:
+                    if cur[&#34;lineAtts&#34;] is not None and len(cur[&#34;lineAtts&#34;]):
+                        cv.feature(cur[NODE][lineType], **cur[&#34;lineAtts&#34;])
+                    endLine(cv, cur)
+                cur[NODE][lineType] = cv.node(lineType)
+                cur[&#34;lineAtts&#34;] = atts
 
         if makePageElems:
             if inPage and tag == &#34;pb&#34;:
@@ -10713,13 +11407,17 @@ that has access to this data.</p>
                         cv.feature(cur[NODE][pageType], **atts)
                 else:
                     if cur[NODE][pageType] is not None:
-                        if len(cur[&#34;pageAtts&#34;]):
+                        if cur[&#34;pageAtts&#34;] is not None and len(cur[&#34;pageAtts&#34;]):
                             cv.feature(cur[NODE][pageType], **cur[&#34;pageAtts&#34;])
                         endPage(cv, cur)
                     cur[NODE][pageType] = cv.node(pageType)
                     cur[&#34;pageAtts&#34;] = atts
 
-        if tag not in PASS_THROUGH:
+        isBoundaryElem = (
+            makeLineElems and tag == &#34;lb&#34; or makePageElems and tag == &#34;pb&#34;
+        )
+
+        if tag not in PASS_THROUGH and not isBoundaryElem:
             cur[&#34;afterSpace&#34;] = False
             cur[NODE][tag] = cv.node(tag)
             curNode = cur[NODE][tag]
@@ -10732,7 +11430,10 @@ that has access to this data.</p>
                     rValue = atts[&#34;rend&#34;]
                     r = makeNameLike(rValue)
                     if r:
-                        cur.setdefault(&#34;rend&#34;, {}).setdefault(r, []).append(True)
+                        for q in r.split():
+                            cur.setdefault(&#34;rend&#34;, {}).setdefault(q, []).append(
+                                True
+                            )
 
         beforeChildrenCustom = getattr(self, &#34;beforeChildrenCustom&#34;, None)
         if beforeChildrenCustom is not None:
@@ -10747,14 +11448,17 @@ that has access to this data.</p>
                             &#34;WARNING: Text material at the start of &#34;
                             f&#34;pure-content element &lt;{tag}&gt;&#34;
                         ),
-                        error=True
+                        error=True,
                     )
                     stack = &#34;-&#34;.join(n[0] for n in cur[XNEST])
                     console(f&#34;\tElement stack: {stack}&#34;, error=True)
                     console(f&#34;\tMaterial: `{textMaterial}`&#34;, error=True)
             else:
-                for ch in textMaterial:
-                    addSlot(cv, cur, ch)
+                if tokenAsSlot:
+                    addTokens(cv, cur, textMaterial)
+                else:
+                    for ch in textMaterial:
+                        addSlot(cv, cur, ch)
 
         return curNode
 
@@ -10779,6 +11483,14 @@ that has access to this data.</p>
             The attributes of the LXML node, with namespaces stripped.
         &#34;&#34;&#34;
         chunkSection = self.chunkSection
+        makeLineElems = self.makeLineElems
+
+        if makeLineElems:
+            lineProperties = self.lineProperties
+            lineType = lineProperties[&#34;nodeType&#34;]
+            lineElem = lineProperties[&#34;element&#34;]
+            lineProperties = self.lineProperties
+
         makePageElems = self.makePageElems
 
         if makePageElems:
@@ -10794,7 +11506,7 @@ that has access to this data.</p>
         extraInstructions = self.extraInstructions
 
         if len(extraInstructions):
-            lookupSource(cv, cur, extraInstructions)
+            lookupSource(cv, cur, tokenAsSlot, extraInstructions)
 
         isChap = isChapter(cur)
         isChnk = isChunk(cur)
@@ -10803,15 +11515,45 @@ that has access to this data.</p>
         if afterChildrenCustom is not None:
             afterChildrenCustom(cv, cur, xnode, tag, atts)
 
+        if makeLineElems:
+            isLineContainer = tag == lineElem
+            inLine = cur[&#34;inLine&#34;]
+
         if makePageElems:
             isPageContainer = matchModel(pageProperties, tag, atts)
             inPage = cur[&#34;inPage&#34;]
 
         hasFinishedWord = False
 
+        if makeLineElems and inLine and tag == &#34;lb&#34;:
+            pass
+
         if makePageElems and inPage and tag == &#34;pb&#34;:
             pass
-        if tag not in PASS_THROUGH:
+
+        isBoundaryElem = (
+            makeLineElems and tag == &#34;lb&#34; or makePageElems and tag == &#34;pb&#34;
+        )
+
+        if makeLineElems and isLineContainer:
+            # the page ends with the container
+            if cur[NODE][lineType] is not None:
+                endLine(cv, cur)
+            cur[&#34;inLine&#34;] = False
+
+        if makePageElems and isPageContainer:
+            pbAtTop = pageProperties[&#34;pbAtTop&#34;]
+            if pbAtTop:
+                # the page ends with the container
+                if cur[NODE][pageType] is not None:
+                    endPage(cv, cur)
+            else:
+                # material after the last pb is not in a page
+                if cur[NODE][pageType] is not None:
+                    cv.delete(cur[NODE][pageType])
+            cur[&#34;inPage&#34;] = False
+
+        if tag not in PASS_THROUGH and not isBoundaryElem:
             curNode = cur[TNEST][-1]
             slots = cv.linked(curNode)
             empty = len(slots) == 0
@@ -10822,12 +11564,14 @@ that has access to this data.</p>
                 newLineTag
                 or isEndInPure(cur)
                 and not hasContinuousAncestor(cur)
-                and not empty
                 and not cur[&#34;afterSpace&#34;]
-            ):
+            ) and not empty:
                 spaceChar = &#34;\n&#34; if newLineTag or not hasMixedAncestor(cur) else &#34; &#34;
-                finishWord(cv, cur, None, spaceChar)
-                hasFinishedWord = True
+                if tokenAsSlot:
+                    cv.feature((T, slots[-1]), after=spaceChar)
+                else:
+                    finishWord(cv, cur, None, spaceChar)
+                    hasFinishedWord = True
 
             slots = cv.linked(curNode)
             empty = len(slots) == 0
@@ -10858,25 +11602,21 @@ that has access to this data.</p>
             cv.terminate(curNode)
 
         if isChnk:
-            if not hasFinishedWord:
-                finishWord(cv, cur, None, &#34;\n&#34;)
-            cv.terminate(cur[NODE][chunkSection])
-        if sectionModel == &#34;II&#34;:
-            if isChap:
+            if tokenAsSlot:
+                addSpace(cv, cur, &#34;\n&#34;)
+            else:
                 if not hasFinishedWord:
                     finishWord(cv, cur, None, &#34;\n&#34;)
+            cv.terminate(cur[NODE][chunkSection])
+
+        if sectionModel == &#34;II&#34;:
+            if isChap:
+                if tokenAsSlot:
+                    addSpace(cv, cur, &#34;\n&#34;)
+                else:
+                    if not hasFinishedWord:
+                        finishWord(cv, cur, None, &#34;\n&#34;)
                 cv.terminate(cur[NODE][chapterSection])
-        if makePageElems and isPageContainer:
-            pbAtTop = pageProperties[&#34;pbAtTop&#34;]
-            if pbAtTop:
-                # the page ends with the container
-                if cur[NODE][pageType] is not None:
-                    endPage(cv, cur)
-            else:
-                # material after the last pb is not in a page
-                if cur[NODE][pageType] is not None:
-                    cv.delete(cur[NODE][pageType])
-            cur[&#34;inPage&#34;] = False
 
     def afterTag(cv, cur, xnode, tag, atts):
         &#34;&#34;&#34;Node actions after dealing with the children and after the end tag.
@@ -10909,10 +11649,18 @@ that has access to this data.</p>
                 rValue = atts[&#34;rend&#34;]
                 r = makeNameLike(rValue)
                 if r:
-                    cur[&#34;rend&#34;][r].pop()
+                    for q in r.split():
+                        cur[&#34;rend&#34;][q].pop()
 
         if xnode.tail:
-            tailMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, xnode.tail)
+            if tag == &#34;lb&#34; and self.makeLineElems:
+                tail = xnode.tail.lstrip()
+                if not wordAsSlot:
+                    pass
+            else:
+                tail = xnode.tail
+
+            tailMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, tail)
             if isPure(cur):
                 if tailMaterial and tailMaterial != &#34; &#34;:
                     elem = cur[XNEST][-1][0]
@@ -10921,14 +11669,17 @@ that has access to this data.</p>
                             &#34;WARNING: Text material after &#34;
                             f&#34;&lt;{tag}&gt; in pure-content element &lt;{elem}&gt;&#34;
                         ),
-                        error=True
+                        error=True,
                     )
                     stack = &#34;-&#34;.join(cur[XNEST][0])
                     console(f&#34;\tElement stack: {stack}-{tag}&#34;, error=True)
                     console(f&#34;\tMaterial: `{tailMaterial}`&#34;, error=True)
             else:
-                for ch in tailMaterial:
-                    addSlot(cv, cur, ch)
+                if tokenAsSlot:
+                    addTokens(cv, cur, tailMaterial)
+                else:
+                    for ch in tailMaterial:
+                        addSlot(cv, cur, ch)
 
         afterTagCustom = getattr(self, &#34;afterTagCustom&#34;, None)
         if afterTagCustom is not None:
@@ -10950,6 +11701,12 @@ that has access to this data.</p>
         cv: object
             The converter object, needed to issue actions.
         &#34;&#34;&#34;
+        makeLineElems = self.makeLineElems
+
+        if makeLineElems:
+            lineProperties = self.lineProperties
+            lineType = lineProperties[&#34;nodeType&#34;]
+
         makePageElems = self.makePageElems
 
         if makePageElems:
@@ -11030,12 +11787,18 @@ that has access to this data.</p>
                         tree = etree.parse(text, parser)
                         root = tree.getroot()
 
+                        if makeLineElems:
+                            cur[NODE][lineType] = None
+                            cur[&#34;inLine&#34;] = False
+                            cur[&#34;lineAtts&#34;] = None
+
                         if makePageElems:
                             cur[NODE][pageType] = None
                             cur[&#34;inPage&#34;] = False
                             cur[&#34;pageAtts&#34;] = None
 
-                        cur[NODE][WORD] = None
+                        if not tokenAsSlot:
+                            cur[NODE][WORD] = None
                         cur[&#34;inHeader&#34;] = False
                         cur[&#34;inNote&#34;] = False
                         cur[XNEST] = []
@@ -11051,7 +11814,8 @@ that has access to this data.</p>
                         cur[&#34;chunkElems&#34;] = set()
                         walkNode(cv, cur, root)
 
-                    addSlot(cv, cur, None)
+                    if not tokenAsSlot:
+                        addSlot(cv, cur, None)
                     if tpl:
                         cv.terminate(cur[NODE][tpl])
                     cv.terminate(cur[NODE][fileSection])
@@ -11081,12 +11845,18 @@ that has access to this data.</p>
                 tree = etree.parse(text, parser)
                 root = tree.getroot()
 
+                if makeLineElems:
+                    cur[NODE][lineType] = None
+                    cur[&#34;inLine&#34;] = False
+                    cur[&#34;lineAtts&#34;] = None
+
                 if makePageElems:
                     cur[NODE][pageType] = None
                     cur[&#34;inPage&#34;] = False
                     cur[&#34;pageAtts&#34;] = None
 
-                cur[NODE][WORD] = None
+                if not tokenAsSlot:
+                    cur[NODE][WORD] = None
                 cur[&#34;inHeader&#34;] = False
                 cur[&#34;inNote&#34;] = False
                 cur[XNEST] = []
@@ -11107,7 +11877,8 @@ that has access to this data.</p>
                 for child in root.iterchildren(tag=etree.Element):
                     walkNode(cv, cur, child)
 
-            addSlot(cv, cur, None)
+            if not tokenAsSlot:
+                addSlot(cv, cur, None)
 
         if verbose &gt;= 0:
             console(&#34;&#34;)
@@ -11218,7 +11989,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/tei.py#L1488-L1510" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L1588-L1610" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getParser(self):
     &#34;&#34;&#34;Configure the LXML parser.
@@ -11253,7 +12024,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/tei.py#L1446-L1486" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L1546-L1586" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getSwitches(self, xmlPath):
     verbose = self.verbose
@@ -11319,7 +12090,7 @@ that contains the file names in that folder, sorted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/tei.py#L1512-L1585" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L1612-L1685" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the TEI source files.
@@ -11370,7 +12141,7 @@ that contains the file names in that folder, sorted.</p>
         xmlFiles = []
         hasBackMatter = False
 
-        for folderName in sorted(xmlFilesRaw):
+        for folderName in sorted(xmlFilesRaw, key=versionSort):
             if folderName == backMatter:
                 hasBackMatter = True
             else:
@@ -11417,7 +12188,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/tei.py#L3771-L3816" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L4066-L4111" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -11475,7 +12246,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/tei.py#L1403-L1444" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L1503-L1544" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readSchemas(self):
     schemaDir = self.schemaDir
@@ -11559,7 +12330,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/tei.py#L4226-L4300" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L4525-L4599" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,
@@ -11716,11 +12487,12 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#templates">templates</a></li>
 <li><a href="#adaptations">adaptations</a></li>
 <li><a href="#prelim">prelim</a></li>
-<li><a href="#wordasslot">wordAsSlot</a></li>
+<li><a href="#granularity">granularity</a></li>
 <li><a href="#parentedges">parentEdges</a></li>
 <li><a href="#siblingedges">siblingEdges</a></li>
-<li><a href="#pagemodel">pageModel</a></li>
 <li><a href="#procins">procins</a></li>
+<li><a href="#linemodel">lineModel</a></li>
+<li><a href="#pagemodel">pageModel</a></li>
 <li><a href="#sectionmodel">sectionModel</a></li>
 </ul>
 </li>

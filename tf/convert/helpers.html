@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/helpers.py#L1-L589" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/helpers.py#L1-L668" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 from textwrap import dedent
@@ -46,8 +46,8 @@ NODE = &#34;node&#34;
 FOLDER = &#34;folder&#34;
 FILE = &#34;file&#34;
 PAGE = &#34;page&#34;
-REGION = &#34;region&#34;
 LINE = &#34;line&#34;
+REGION = &#34;region&#34;
 DOC = &#34;doc&#34;
 CHAPTER = &#34;chapter&#34;
 CHUNK = &#34;chunk&#34;
@@ -59,7 +59,19 @@ SLOT = &#34;slot&#34;
 WORD = &#34;word&#34;
 CHAR = &#34;char&#34;
 TOKEN = &#34;token&#34;
+T = &#34;t&#34;
 
+
+LINE_MODELS = dict(
+    I=dict(),
+    II=dict(
+        element=(str, &#34;p&#34;),
+        nodeType=(str, LINE),
+    ),
+)
+
+
+LINE_MODEL_DEFAULT = &#34;I&#34;
 
 PAGE_MODELS = dict(
     I=dict(),
@@ -67,7 +79,7 @@ PAGE_MODELS = dict(
         element=(str, &#34;div&#34;),
         attributes=(dict, {}),
         pbAtTop=(bool, True),
-        nodeType=(str, &#34;page&#34;),
+        nodeType=(str, PAGE),
     ),
 )
 
@@ -215,13 +227,50 @@ Examples:
 
 
 TOKEN_RE = re.compile(r&#34;&#34;&#34;\w+|\W&#34;&#34;&#34;)
+NUMBER_RE = re.compile(
+    r&#34;&#34;&#34;
+    ^
+    [0-9]+
+    (?:
+        [.,]
+        [0-9]+
+    )*
+    $
+&#34;&#34;&#34;,
+    re.X,
+)
+
+W_BEFORE = re.compile(r&#34;&#34;&#34;^\s+&#34;&#34;&#34;)
+W_AFTER = re.compile(r&#34;&#34;&#34;\s+$&#34;&#34;&#34;)
+
+
+def getWhites(text):
+    match = W_BEFORE.match(text)
+    if match:
+        before = match.group(0)
+        rest = text[len(before) :]
+    else:
+        before = &#34;&#34;
+        rest = text
+    match = W_AFTER.search(rest)
+    if match:
+        after = match.group(0)
+        material = rest[0 : -len(after)]
+    else:
+        after = &#34;&#34;
+        material = rest
+    return (&#34; &#34; if before else &#34;&#34;, material, &#34; &#34; if after else &#34;&#34;)
 
 
 def tokenize(line):
     tokens = []
 
     for word in line.split():
-        ts = [[t, &#34;&#34;] for t in TOKEN_RE.findall(word)]
+        ts = (
+            [[word, &#34;&#34;]]
+            if NUMBER_RE.match(word)
+            else [[t, &#34;&#34;] for t in TOKEN_RE.findall(word)]
+        )
         if len(ts):
             ts[-1][-1] = &#34; &#34;
         tokens.extend(ts)
@@ -238,13 +287,22 @@ def repTokens(tokens):
     return &#34;&#34;.join(text)
 
 
-def checkModel(kind, thisModel):
-    modelDefault = PAGE_MODEL_DEFAULT if kind == &#34;page&#34; else SECTION_MODEL_DEFAULT
-    modelSpecs = PAGE_MODELS if kind == &#34;page&#34; else SECTION_MODELS
+def checkModel(kind, thisModel, verbose):
+    modelDefault = (
+        LINE_MODEL_DEFAULT
+        if kind == LINE
+        else PAGE_MODEL_DEFAULT
+        if kind == PAGE
+        else SECTION_MODEL_DEFAULT
+    )
+    modelSpecs = (
+        LINE_MODELS if kind == LINE else PAGE_MODELS if kind == PAGE else SECTION_MODELS
+    )
 
     if thisModel is None:
         model = modelDefault
-        console(f&#34;WARNING: No {kind} model specified. Assuming model {model}.&#34;)
+        if verbose == 1:
+            console(f&#34;WARNING: No {kind} model specified. Assuming model {model}.&#34;)
         properties = {k: v[1] for (k, v) in modelSpecs[model].items()}
         return dict(model=model, properties=properties)
 
@@ -252,7 +310,7 @@ def checkModel(kind, thisModel):
         if thisModel in modelSpecs:
             thisModel = dict(model=thisModel)
         else:
-            console(f&#34;WARNING: unknown {kind} model: {thisModel}&#34;)
+            console(f&#34;ERROR: unknown {kind} model: {thisModel}&#34;)
             return False
 
     elif type(thisModel) is not dict:
@@ -260,13 +318,19 @@ def checkModel(kind, thisModel):
         return False
 
     model = thisModel.get(&#34;model&#34;, None)
+
     if model is None:
         model = modelDefault
-        console(f&#34;WARNING: No {kind} model specified. Assuming model {model}.&#34;)
+        if verbose == 1:
+            console(f&#34;WARNING: No {kind} model specified. Assuming model {model}.&#34;)
         thisModel[&#34;model&#34;] = model
+
     if model not in modelSpecs:
         console(f&#34;WARNING: unknown {kind} model: {thisModel}&#34;)
         return False
+
+    if verbose &gt;= 0:
+        console(f&#34;{kind} model is {model}&#34;)
 
     properties = {k: v for (k, v) in thisModel.items() if k != &#34;model&#34;}
     modelProperties = modelSpecs[model]
@@ -290,10 +354,11 @@ def checkModel(kind, thisModel):
 
     for k, v in modelProperties.items():
         if k not in properties:
-            console(
-                f&#34;WARNING: {kind} model property {k} not specified, &#34;
-                f&#34;taking default {v[1]}&#34;
-            )
+            if verbose == 1:
+                console(
+                    f&#34;WARNING: {kind} model property {k} not specified, &#34;
+                    f&#34;taking default {v[1]}&#34;
+                )
             properties[k] = v[1]
 
     if not good:
@@ -367,6 +432,8 @@ def tweakTrans(
     template,
     procins,
     wordAsSlot,
+    tokenAsSlot,
+    charAsSlot,
     parentEdges,
     siblingEdges,
     tokenBased,
@@ -380,11 +447,16 @@ def tweakTrans(
         slotc = &#34;Word&#34;
         slotf = &#34;words&#34;
         xslot = &#34;`word`&#34;
-    else:
+    elif charAsSlot:
         slotc = &#34;Char&#34;
         slot = CHAR
         slotf = &#34;characters&#34;
         xslot = &#34;`char` and `word`&#34;
+    elif tokenAsSlot or True:
+        slotc = &#34;Token&#34;
+        slot = T
+        slotf = &#34;tokens&#34;
+        xslot = &#34;`t` and `word`&#34;
 
     if parentEdges:
         hasParent = &#34;Yes&#34;
@@ -522,7 +594,7 @@ def tweakTrans(
     return text
 
 
-def lookupSource(cv, cur, specs):
+def lookupSource(cv, cur, tokenAsSlot, specs):
     &#34;&#34;&#34;Looks up information from the current XML stack.
 
     The current XML stack contains the ancestry of the current node, including
@@ -615,7 +687,14 @@ def lookupSource(cv, cur, specs):
         sourceNode = cur[TNEST][-1]
         slots = cv.linked(sourceNode)
         sourceText = (
-            &#34;&#34;.join(cv.get(&#34;ch&#34;, (&#34;char&#34;, slot)) for slot in slots)
+            (
+                &#34;&#34;.join(
+                    cv.get(&#34;str&#34;, (T, slot)) + cv.get(&#34;after&#34;, (T, slot))
+                    for slot in slots
+                )
+                if tokenAsSlot
+                else &#34;&#34;.join(cv.get(&#34;ch&#34;, (CHAR, slot)) for slot in slots)
+            )
             if extractAttr is None
             else cv.get(extractAttr, sourceNode)
         )
@@ -748,22 +827,31 @@ or by elements within a single TEI source file.</p>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.convert.helpers.checkModel"><code class="name flex">
-<span>def <span class="ident">checkModel</span></span>(<span>kind, thisModel)</span>
+<span>def <span class="ident">checkModel</span></span>(<span>kind, thisModel, verbose)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/helpers.py#L206-L267" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/helpers.py#L255-L332" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def checkModel(kind, thisModel):
-    modelDefault = PAGE_MODEL_DEFAULT if kind == &#34;page&#34; else SECTION_MODEL_DEFAULT
-    modelSpecs = PAGE_MODELS if kind == &#34;page&#34; else SECTION_MODELS
+<pre><code class="python">def checkModel(kind, thisModel, verbose):
+    modelDefault = (
+        LINE_MODEL_DEFAULT
+        if kind == LINE
+        else PAGE_MODEL_DEFAULT
+        if kind == PAGE
+        else SECTION_MODEL_DEFAULT
+    )
+    modelSpecs = (
+        LINE_MODELS if kind == LINE else PAGE_MODELS if kind == PAGE else SECTION_MODELS
+    )
 
     if thisModel is None:
         model = modelDefault
-        console(f&#34;WARNING: No {kind} model specified. Assuming model {model}.&#34;)
+        if verbose == 1:
+            console(f&#34;WARNING: No {kind} model specified. Assuming model {model}.&#34;)
         properties = {k: v[1] for (k, v) in modelSpecs[model].items()}
         return dict(model=model, properties=properties)
 
@@ -771,7 +859,7 @@ or by elements within a single TEI source file.</p>
         if thisModel in modelSpecs:
             thisModel = dict(model=thisModel)
         else:
-            console(f&#34;WARNING: unknown {kind} model: {thisModel}&#34;)
+            console(f&#34;ERROR: unknown {kind} model: {thisModel}&#34;)
             return False
 
     elif type(thisModel) is not dict:
@@ -779,13 +867,19 @@ or by elements within a single TEI source file.</p>
         return False
 
     model = thisModel.get(&#34;model&#34;, None)
+
     if model is None:
         model = modelDefault
-        console(f&#34;WARNING: No {kind} model specified. Assuming model {model}.&#34;)
+        if verbose == 1:
+            console(f&#34;WARNING: No {kind} model specified. Assuming model {model}.&#34;)
         thisModel[&#34;model&#34;] = model
+
     if model not in modelSpecs:
         console(f&#34;WARNING: unknown {kind} model: {thisModel}&#34;)
         return False
+
+    if verbose &gt;= 0:
+        console(f&#34;{kind} model is {model}&#34;)
 
     properties = {k: v for (k, v) in thisModel.items() if k != &#34;model&#34;}
     modelProperties = modelSpecs[model]
@@ -809,10 +903,11 @@ or by elements within a single TEI source file.</p>
 
     for k, v in modelProperties.items():
         if k not in properties:
-            console(
-                f&#34;WARNING: {kind} model property {k} not specified, &#34;
-                f&#34;taking default {v[1]}&#34;
-            )
+            if verbose == 1:
+                console(
+                    f&#34;WARNING: {kind} model property {k} not specified, &#34;
+                    f&#34;taking default {v[1]}&#34;
+                )
             properties[k] = v[1]
 
     if not good:
@@ -821,8 +916,36 @@ or by elements within a single TEI source file.</p>
     return dict(model=model, properties=properties)</code></pre>
 </details>
 </dd>
+<dt id="tf.convert.helpers.getWhites"><code class="name flex">
+<span>def <span class="ident">getWhites</span></span>(<span>text)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/helpers.py#L212-L227" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getWhites(text):
+    match = W_BEFORE.match(text)
+    if match:
+        before = match.group(0)
+        rest = text[len(before) :]
+    else:
+        before = &#34;&#34;
+        rest = text
+    match = W_AFTER.search(rest)
+    if match:
+        after = match.group(0)
+        material = rest[0 : -len(after)]
+    else:
+        after = &#34;&#34;
+        material = rest
+    return (&#34; &#34; if before else &#34;&#34;, material, &#34; &#34; if after else &#34;&#34;)</code></pre>
+</details>
+</dd>
 <dt id="tf.convert.helpers.lookupSource"><code class="name flex">
-<span>def <span class="ident">lookupSource</span></span>(<span>cv, cur, specs)</span>
+<span>def <span class="ident">lookupSource</span></span>(<span>cv, cur, tokenAsSlot, specs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Looks up information from the current XML stack.</p>
@@ -873,9 +996,9 @@ that attribute, not from the content of the element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/helpers.py#L490-L589" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/helpers.py#L562-L668" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def lookupSource(cv, cur, specs):
+<pre><code class="python">def lookupSource(cv, cur, tokenAsSlot, specs):
     &#34;&#34;&#34;Looks up information from the current XML stack.
 
     The current XML stack contains the ancestry of the current node, including
@@ -968,7 +1091,14 @@ that attribute, not from the content of the element.</p>
         sourceNode = cur[TNEST][-1]
         slots = cv.linked(sourceNode)
         sourceText = (
-            &#34;&#34;.join(cv.get(&#34;ch&#34;, (&#34;char&#34;, slot)) for slot in slots)
+            (
+                &#34;&#34;.join(
+                    cv.get(&#34;str&#34;, (T, slot)) + cv.get(&#34;after&#34;, (T, slot))
+                    for slot in slots
+                )
+                if tokenAsSlot
+                else &#34;&#34;.join(cv.get(&#34;ch&#34;, (CHAR, slot)) for slot in slots)
+            )
             if extractAttr is None
             else cv.get(extractAttr, sourceNode)
         )
@@ -985,7 +1115,7 @@ that attribute, not from the content of the element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/helpers.py#L270-L285" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/helpers.py#L335-L350" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def matchModel(properties, tag, atts):
     if tag == properties[&#34;element&#34;]:
@@ -1013,7 +1143,7 @@ that attribute, not from the content of the element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/helpers.py#L199-L203" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/helpers.py#L248-L252" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def repTokens(tokens):
     text = []
@@ -1030,7 +1160,7 @@ that attribute, not from the content of the element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/helpers.py#L288-L328" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/helpers.py#L353-L393" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setUp(kind):
     helpText = f&#34;&#34;&#34;
@@ -1083,13 +1213,17 @@ that attribute, not from the content of the element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/helpers.py#L185-L196" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/helpers.py#L230-L245" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tokenize(line):
     tokens = []
 
     for word in line.split():
-        ts = [[t, &#34;&#34;] for t in TOKEN_RE.findall(word)]
+        ts = (
+            [[word, &#34;&#34;]]
+            if NUMBER_RE.match(word)
+            else [[t, &#34;&#34;] for t in TOKEN_RE.findall(word)]
+        )
         if len(ts):
             ts[-1][-1] = &#34; &#34;
         tokens.extend(ts)
@@ -1100,19 +1234,21 @@ that attribute, not from the content of the element.</p>
 </details>
 </dd>
 <dt id="tf.convert.helpers.tweakTrans"><code class="name flex">
-<span>def <span class="ident">tweakTrans</span></span>(<span>template, procins, wordAsSlot, parentEdges, siblingEdges, tokenBased, sectionModel, sectionProperties, rendDesc, extra)</span>
+<span>def <span class="ident">tweakTrans</span></span>(<span>template, procins, wordAsSlot, tokenAsSlot, charAsSlot, parentEdges, siblingEdges, tokenBased, sectionModel, sectionProperties, rendDesc, extra)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/helpers.py#L331-L487" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/helpers.py#L396-L559" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tweakTrans(
     template,
     procins,
     wordAsSlot,
+    tokenAsSlot,
+    charAsSlot,
     parentEdges,
     siblingEdges,
     tokenBased,
@@ -1126,11 +1262,16 @@ that attribute, not from the content of the element.</p>
         slotc = &#34;Word&#34;
         slotf = &#34;words&#34;
         xslot = &#34;`word`&#34;
-    else:
+    elif charAsSlot:
         slotc = &#34;Char&#34;
         slot = CHAR
         slotf = &#34;characters&#34;
         xslot = &#34;`char` and `word`&#34;
+    elif tokenAsSlot or True:
+        slotc = &#34;Token&#34;
+        slot = T
+        slotf = &#34;tokens&#34;
+        xslot = &#34;`t` and `word`&#34;
 
     if parentEdges:
         hasParent = &#34;Yes&#34;
@@ -1350,6 +1491,7 @@ setTimeout(() => input.focus(), 100);
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="two-column">
 <li><code><a title="tf.convert.helpers.checkModel" href="#tf.convert.helpers.checkModel">checkModel</a></code></li>
+<li><code><a title="tf.convert.helpers.getWhites" href="#tf.convert.helpers.getWhites">getWhites</a></code></li>
 <li><code><a title="tf.convert.helpers.lookupSource" href="#tf.convert.helpers.lookupSource">lookupSource</a></code></li>
 <li><code><a title="tf.convert.helpers.matchModel" href="#tf.convert.helpers.matchModel">matchModel</a></code></li>
 <li><code><a title="tf.convert.helpers.repTokens" href="#tf.convert.helpers.repTokens">repTokens</a></code></li>

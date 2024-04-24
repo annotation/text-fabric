@@ -490,7 +490,7 @@ reaching the WATM.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/watm.py#L1-L2148" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/watm.py#L1-L2152" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Export to Web Annotation Text Model
 
@@ -2230,6 +2230,10 @@ class WATM:
 
         if not fconsistent or not silent:
             console(f&#34;\tWrong:    {len(wrong):&gt;5} x&#34;)
+            for (node, feat, valWA, valTF) in wrong[0:5]:
+                console(f&#34;\t\t{node:&gt;6} {feat}:\n&#34;, error=True)
+                console(f&#34;\t\t\tTF = «{valTF}»&#34;, error=True)
+                console(f&#34;\t\t\tWA = «{valWA}»&#34;, error=True)
             console(
                 f&#34;{rep(fconsistent)} - &#34;
                 f&#34;whether format annotations are consistent with features&#34;,
@@ -2667,7 +2671,7 @@ class WATMS:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/watm.py#L509-L520" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/watm.py#L509-L520" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rep(status):
     &#34;&#34;&#34;Represent a boolean status for a message to the console.
@@ -2723,7 +2727,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/watm.py#L523-L2046" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/watm.py#L523-L2050" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WATM:
     &#34;&#34;&#34;The export machinery is exposed as a class, wrapped around a TF dataset.&#34;&#34;&#34;
@@ -3941,6 +3945,10 @@ value for each key is a dictionary that maps nodes to values.</dd>
 
         if not fconsistent or not silent:
             console(f&#34;\tWrong:    {len(wrong):&gt;5} x&#34;)
+            for (node, feat, valWA, valTF) in wrong[0:5]:
+                console(f&#34;\t\t{node:&gt;6} {feat}:\n&#34;, error=True)
+                console(f&#34;\t\t\tTF = «{valTF}»&#34;, error=True)
+                console(f&#34;\t\t\tWA = «{valWA}»&#34;, error=True)
             console(
                 f&#34;{rep(fconsistent)} - &#34;
                 f&#34;whether format annotations are consistent with features&#34;,
@@ -4273,7 +4281,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/watm.py#L1076-L1099" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/watm.py#L1076-L1099" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def numEqual(nTF, nWA, silent):
@@ -4322,7 +4330,7 @@ def numEqual(nTF, nWA, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/watm.py#L1101-L1152" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/watm.py#L1101-L1152" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def strEqual(tf, wa, silent):
@@ -4394,7 +4402,7 @@ tokens and/or annotations in WATM.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/watm.py#L729-L924" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/watm.py#L729-L924" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeAnno(self):
     &#34;&#34;&#34;Make all annotations.
@@ -4605,7 +4613,7 @@ to indices in this list is stored in member <code>waFromTF</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/watm.py#L643-L708" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/watm.py#L643-L708" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeText(self):
     &#34;&#34;&#34;Creates the text data.
@@ -4695,7 +4703,7 @@ or <code>tuple</code> of <code>strings</code></dt>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/watm.py#L710-L727" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/watm.py#L710-L727" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mkAnno(self, kind, ns, body, target):
     &#34;&#34;&#34;Make a single annotation and return its id.
@@ -4741,7 +4749,7 @@ If <code>condensed</code> is True, we suppress this output.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/watm.py#L1154-L1213" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/watm.py#L1154-L1213" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testAll(self, condensed=False):
     &#34;&#34;&#34;Test all aspects of the WATM conversion.
@@ -4825,7 +4833,7 @@ In turn, these features have been translated into annotations of kind
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/watm.py#L1578-L1780" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/watm.py#L1578-L1784" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testAttributes(self):
     &#34;&#34;&#34;Test the attributes.
@@ -4988,6 +4996,10 @@ In turn, these features have been translated into annotations of kind
 
     if not fconsistent or not silent:
         console(f&#34;\tWrong:    {len(wrong):&gt;5} x&#34;)
+        for (node, feat, valWA, valTF) in wrong[0:5]:
+            console(f&#34;\t\t{node:&gt;6} {feat}:\n&#34;, error=True)
+            console(f&#34;\t\t\tTF = «{valTF}»&#34;, error=True)
+            console(f&#34;\t\t\tWA = «{valWA}»&#34;, error=True)
         console(
             f&#34;{rep(fconsistent)} - &#34;
             f&#34;whether format annotations are consistent with features&#34;,
@@ -5050,7 +5062,7 @@ by annotations.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/watm.py#L1869-L2046" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/watm.py#L1873-L2050" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testEdges(self):
     &#34;&#34;&#34;Test the edges.
@@ -5248,7 +5260,7 @@ dataset.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/watm.py#L1406-L1576" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/watm.py#L1406-L1576" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testElements(self):
     &#34;&#34;&#34;Test the elements.
@@ -5440,7 +5452,7 @@ the kind <code>anno</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/watm.py#L1782-L1867" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/watm.py#L1786-L1871" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testExtra(self):
     &#34;&#34;&#34;Test the extra data for on-the-fly annotations.
@@ -5542,7 +5554,7 @@ We unpack targets if they contain structured information.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/watm.py#L1215-L1365" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/watm.py#L1215-L1365" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testSetup(self):
     &#34;&#34;&#34;Prepare the tests.
@@ -5712,7 +5724,7 @@ whether the TF and WATM datasets agree on it.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/watm.py#L1367-L1404" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/watm.py#L1367-L1404" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testText(self):
     &#34;&#34;&#34;Test the text.
@@ -5767,7 +5779,7 @@ divided over several files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/watm.py#L926-L1074" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/watm.py#L926-L1074" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeAll(self):
     &#34;&#34;&#34;Write text and annotation data to disk.
@@ -5958,7 +5970,7 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/watm.py#L2049-L2148" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/watm.py#L2053-L2152" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WATMS:
     &#34;&#34;&#34;Export corpora that are divided over multiple TF datasets.
@@ -6078,7 +6090,7 @@ Otherwise all datasets will be converted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d0219bb2c1dbd10ad5c493846effea8cd99f52f0/tf/convert/watm.py#L2103-L2148" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/watm.py#L2107-L2152" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def produce(self, doc=None):
     &#34;&#34;&#34;Convert all relevant TF datasets.
