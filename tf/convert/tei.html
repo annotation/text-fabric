@@ -294,7 +294,7 @@ model:</p>
 nodeType=&quot;ln&quot;,
 </code></pre>
 <p>Model I is the default, and nothing special happens to the <code>&lt;lb&gt;</code> elements.</p>
-<p>In model II the <code>&lt;lb&gt;</code> elements translate to nodes of type <code>line</code>, which span
+<p>In model II the <code>&lt;lb&gt;</code> elements translate to nodes of type <code>ln</code>, which span
 content, whereas the original <code>lb</code> elements just mark positions.
 Instead of <code>ln</code>, you can also specify another node type by the parameter <code>element</code>.</p>
 <p>We assume that the material that the <code>&lt;lb&gt;</code> elements divide up is the material
@@ -302,14 +302,14 @@ that corresponds to their <code>&lt;p&gt;</code> parent element. Instead of <cod
 you can also specify another element in the parameter <code>element</code>.</p>
 <p>We assume that lines start and end at the start and end of the <code>&lt;p&gt;</code> elements and
 the <code>&lt;lb&gt;</code> elements. For the material etween these boundaries, we build <code>ln</code> nodes.
-If an <code>&lt;lb&gt;</code> element follows a <code>&lt;p&gt;</code> start tag without intervening slots, a line
+If an <code>&lt;lb&gt;</code> element follows a <code>&lt;p&gt;</code> start tag without intervening slots, a <code>ln</code>
 node will be created but not linked to slots, and it will be deleted later in
 the conversion.
 Likewise, if an <code>&lt;lb&gt;</code> element is followed by a <code>&lt;p&gt;</code> end tag without
-intervening slots, a line node is created that is not linked to slots.</p>
-<p>The attributes of the <code>&lt;lb&gt;</code> elements become features of the line element that starts
+intervening slots, a <code>ln</code> node is created that is not linked to slots.</p>
+<p>The attributes of the <code>&lt;lb&gt;</code> elements become features of the <code>ln</code> node that starts
 with that <code>&lt;lb&gt;</code> element. If there is no explicit <code>&lt;lb&gt;</code> element at the start of
-a paragraph, the first line of that paragraph gets no features.</p>
+a paragraph, the first <code>ln</code> node of that paragraph gets no features.</p>
 <h3 id="pagemodel"><code>pageModel</code></h3>
 <p>dict, optional <code>False</code></p>
 <p>If not passed, or an empty dict, page model I is assumed.
@@ -452,7 +452,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L1-L4616" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L1-L4620" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -790,7 +790,7 @@ nodeType=&#34;ln&#34;,
 
 Model I is the default, and nothing special happens to the `&lt;lb&gt;` elements.
 
-In model II the `&lt;lb&gt;` elements translate to nodes of type `line`, which span
+In model II the `&lt;lb&gt;` elements translate to nodes of type `ln`, which span
 content, whereas the original `lb` elements just mark positions.
 Instead of `ln`, you can also specify another node type by the parameter `element`.
 
@@ -800,15 +800,15 @@ you can also specify another element in the parameter `element`.
 
 We assume that lines start and end at the start and end of the `&lt;p&gt;` elements and
 the `&lt;lb&gt;` elements. For the material etween these boundaries, we build `ln` nodes.
-If an `&lt;lb&gt;` element follows a `&lt;p&gt;` start tag without intervening slots, a line
+If an `&lt;lb&gt;` element follows a `&lt;p&gt;` start tag without intervening slots, a `ln`
 node will be created but not linked to slots, and it will be deleted later in
 the conversion.
 Likewise, if an `&lt;lb&gt;` element is followed by a `&lt;p&gt;` end tag without
-intervening slots, a line node is created that is not linked to slots.
+intervening slots, a `ln` node is created that is not linked to slots.
 
-The attributes of the `&lt;lb&gt;` elements become features of the line element that starts
+The attributes of the `&lt;lb&gt;` elements become features of the `ln` node that starts
 with that `&lt;lb&gt;` element. If there is no explicit `&lt;lb&gt;` element at the start of
-a paragraph, the first line of that paragraph gets no features.
+a paragraph, the first `ln` node of that paragraph gets no features.
 
 
 ### `pageModel`
@@ -1258,6 +1258,7 @@ CSS_REND_ALIAS = dict(
 )
 
 
+PROGRESS_LIMIT = 5
 KNOWN_RENDS = set()
 REND_DESC = {}
 
@@ -2766,7 +2767,7 @@ class TEI(CheckImport):
                 for xmlFile in xmlFiles:
                     i += 1
                     j += 1
-                    if j &gt; 20:
+                    if j &gt; PROGRESS_LIMIT:
                         cr = &#34;\r&#34;
                         nl = False
                     xmlPath = f&#34;{teiPath}/{xmlFolder}/{xmlFile}&#34;
@@ -4229,7 +4230,7 @@ class TEI(CheckImport):
                     for xmlFile in xmlFiles:
                         i += 1
                         j += 1
-                        if j &gt; 20:
+                        if j &gt; PROGRESS_LIMIT:
                             cr = &#34;\r&#34;
                             nl = False
 
@@ -4477,30 +4478,33 @@ class TEI(CheckImport):
 
         makeLineElems = self.makeLineElems
         lineModel = self.lineModel
+        if makeLineElems:
+            lineProperties = self.lineProperties
+            lineType = lineProperties[&#34;nodeType&#34;]
 
         makePageElems = self.makePageElems
         pageModel = self.pageModel
 
         if makePageElems:
             pageProperties = self.pageProperties
+            pageType = pageProperties[&#34;nodeType&#34;]
             pbAtTop = pageProperties[&#34;pbAtTop&#34;] if makePageElems else None
 
         tfPath = self.tfPath
         teiPath = self.teiPath
 
-        if verbose == 1:
-            console(f&#34;TEI to TF converting: {ux(teiPath)} =&gt; {ux(tfPath)}&#34;)
+        if verbose &gt;= 0:
+            if verbose == 1:
+                console(f&#34;TEI to TF converting: {ux(teiPath)} =&gt; {ux(tfPath)}&#34;)
             if makeLineElems:
-                lbRep = &#34; with lb elements between the lines&#34;
+                lbRep = f&#34; with {lineType} nodes for lines between lb elements&#34;
                 console(f&#34;Line model {lineModel}{lbRep}&#34;)
 
             if makePageElems:
-                pbRep = (
-                    f&#34; with pb elements at the {&#39;top&#39; if pbAtTop else &#39;bottom&#39;}&#34;
-                    &#34;of the page&#34;
-                )
+                wrt = &#34;started&#34; if pbAtTop else &#34;ended&#34;
+                pbRep = f&#34; with {pageType} nodes for pages {wrt} by pb elements&#34;
                 console(f&#34;Page model {pageModel}{pbRep}&#34;)
-        if verbose &gt;= 0:
+
             console(
                 f&#34;Processing instructions are {&#39;treated&#39; if procins else &#39;ignored&#39;}&#34;
             )
@@ -5087,7 +5091,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L833-L850" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L834-L851" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRefs(tag, atts, xmlFile):
     refAtt = REFERENCING.get(tag, None)
@@ -5117,7 +5121,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L4602-L4612" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L4606-L4616" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(
@@ -5140,7 +5144,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L816-L830" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L817-L831" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCssInfo():
     &#34;&#34;&#34;Make the CSS info for the style sheet.&#34;&#34;&#34;
@@ -5288,7 +5292,7 @@ relevant TF version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L853-L4599" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L854-L4603" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI(CheckImport):
     def __init__(
@@ -6750,7 +6754,7 @@ relevant TF version:</p>
                 for xmlFile in xmlFiles:
                     i += 1
                     j += 1
-                    if j &gt; 20:
+                    if j &gt; PROGRESS_LIMIT:
                         cr = &#34;\r&#34;
                         nl = False
                     xmlPath = f&#34;{teiPath}/{xmlFolder}/{xmlFile}&#34;
@@ -8213,7 +8217,7 @@ relevant TF version:</p>
                     for xmlFile in xmlFiles:
                         i += 1
                         j += 1
-                        if j &gt; 20:
+                        if j &gt; PROGRESS_LIMIT:
                             cr = &#34;\r&#34;
                             nl = False
 
@@ -8461,30 +8465,33 @@ relevant TF version:</p>
 
         makeLineElems = self.makeLineElems
         lineModel = self.lineModel
+        if makeLineElems:
+            lineProperties = self.lineProperties
+            lineType = lineProperties[&#34;nodeType&#34;]
 
         makePageElems = self.makePageElems
         pageModel = self.pageModel
 
         if makePageElems:
             pageProperties = self.pageProperties
+            pageType = pageProperties[&#34;nodeType&#34;]
             pbAtTop = pageProperties[&#34;pbAtTop&#34;] if makePageElems else None
 
         tfPath = self.tfPath
         teiPath = self.teiPath
 
-        if verbose == 1:
-            console(f&#34;TEI to TF converting: {ux(teiPath)} =&gt; {ux(tfPath)}&#34;)
+        if verbose &gt;= 0:
+            if verbose == 1:
+                console(f&#34;TEI to TF converting: {ux(teiPath)} =&gt; {ux(tfPath)}&#34;)
             if makeLineElems:
-                lbRep = &#34; with lb elements between the lines&#34;
+                lbRep = f&#34; with {lineType} nodes for lines between lb elements&#34;
                 console(f&#34;Line model {lineModel}{lbRep}&#34;)
 
             if makePageElems:
-                pbRep = (
-                    f&#34; with pb elements at the {&#39;top&#39; if pbAtTop else &#39;bottom&#39;}&#34;
-                    &#34;of the page&#34;
-                )
+                wrt = &#34;started&#34; if pbAtTop else &#34;ended&#34;
+                pbRep = f&#34; with {pageType} nodes for pages {wrt} by pb elements&#34;
                 console(f&#34;Page model {pageModel}{pbRep}&#34;)
-        if verbose &gt;= 0:
+
             console(
                 f&#34;Processing instructions are {&#39;treated&#39; if procins else &#39;ignored&#39;}&#34;
             )
@@ -9081,7 +9088,7 @@ that code between automatic generation of files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L4115-L4483" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L4119-L4487" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self, tokenBased=False):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -9470,7 +9477,7 @@ There should be a valid TF dataset and app configuration in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L4487-L4523" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L4491-L4527" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def browseTask(self):
     &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
@@ -9538,7 +9545,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L1687-L2388" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L1688-L2389" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -10166,7 +10173,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
             for xmlFile in xmlFiles:
                 i += 1
                 j += 1
-                if j &gt; 20:
+                if j &gt; PROGRESS_LIMIT:
                     cr = &#34;\r&#34;
                     nl = False
                 xmlPath = f&#34;{teiPath}/{xmlFolder}/{xmlFile}&#34;
@@ -10258,7 +10265,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L3998-L4064" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L3999-L4068" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -10286,30 +10293,33 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 
     makeLineElems = self.makeLineElems
     lineModel = self.lineModel
+    if makeLineElems:
+        lineProperties = self.lineProperties
+        lineType = lineProperties[&#34;nodeType&#34;]
 
     makePageElems = self.makePageElems
     pageModel = self.pageModel
 
     if makePageElems:
         pageProperties = self.pageProperties
+        pageType = pageProperties[&#34;nodeType&#34;]
         pbAtTop = pageProperties[&#34;pbAtTop&#34;] if makePageElems else None
 
     tfPath = self.tfPath
     teiPath = self.teiPath
 
-    if verbose == 1:
-        console(f&#34;TEI to TF converting: {ux(teiPath)} =&gt; {ux(tfPath)}&#34;)
+    if verbose &gt;= 0:
+        if verbose == 1:
+            console(f&#34;TEI to TF converting: {ux(teiPath)} =&gt; {ux(tfPath)}&#34;)
         if makeLineElems:
-            lbRep = &#34; with lb elements between the lines&#34;
+            lbRep = f&#34; with {lineType} nodes for lines between lb elements&#34;
             console(f&#34;Line model {lineModel}{lbRep}&#34;)
 
         if makePageElems:
-            pbRep = (
-                f&#34; with pb elements at the {&#39;top&#39; if pbAtTop else &#39;bottom&#39;}&#34;
-                &#34;of the page&#34;
-            )
+            wrt = &#34;started&#34; if pbAtTop else &#34;ended&#34;
+            pbRep = f&#34; with {pageType} nodes for pages {wrt} by pb elements&#34;
             console(f&#34;Page model {pageModel}{pbRep}&#34;)
-    if verbose &gt;= 0:
+
         console(
             f&#34;Processing instructions are {&#39;treated&#39; if procins else &#39;ignored&#39;}&#34;
         )
@@ -10342,7 +10352,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L2392-L2405" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L2393-L2406" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -10383,7 +10393,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L2409-L3996" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L2410-L3997" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -11752,7 +11762,7 @@ that has access to this data.</p>
                 for xmlFile in xmlFiles:
                     i += 1
                     j += 1
-                    if j &gt; 20:
+                    if j &gt; PROGRESS_LIMIT:
                         cr = &#34;\r&#34;
                         nl = False
 
@@ -11989,7 +11999,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L1588-L1610" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L1589-L1611" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getParser(self):
     &#34;&#34;&#34;Configure the LXML parser.
@@ -12024,7 +12034,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L1546-L1586" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L1547-L1587" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getSwitches(self, xmlPath):
     verbose = self.verbose
@@ -12090,7 +12100,7 @@ that contains the file names in that folder, sorted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L1612-L1685" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L1613-L1686" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the TEI source files.
@@ -12188,7 +12198,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L4066-L4111" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L4070-L4115" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -12246,7 +12256,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L1503-L1544" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L1504-L1545" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readSchemas(self):
     schemaDir = self.schemaDir
@@ -12330,7 +12340,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/tei.py#L4525-L4599" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L4529-L4603" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,

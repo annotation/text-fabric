@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/helpers.py#L1-L668" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/helpers.py#L1-L669" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 from textwrap import dedent
@@ -47,6 +47,7 @@ FOLDER = &#34;folder&#34;
 FILE = &#34;file&#34;
 PAGE = &#34;page&#34;
 LINE = &#34;line&#34;
+LN = &#34;ln&#34;
 REGION = &#34;region&#34;
 DOC = &#34;doc&#34;
 CHAPTER = &#34;chapter&#34;
@@ -66,7 +67,7 @@ LINE_MODELS = dict(
     I=dict(),
     II=dict(
         element=(str, &#34;p&#34;),
-        nodeType=(str, LINE),
+        nodeType=(str, LN),
     ),
 )
 
@@ -834,7 +835,7 @@ or by elements within a single TEI source file.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/helpers.py#L255-L332" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/helpers.py#L256-L333" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkModel(kind, thisModel, verbose):
     modelDefault = (
@@ -924,7 +925,7 @@ or by elements within a single TEI source file.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/helpers.py#L212-L227" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/helpers.py#L213-L228" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getWhites(text):
     match = W_BEFORE.match(text)
@@ -996,7 +997,7 @@ that attribute, not from the content of the element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/helpers.py#L562-L668" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/helpers.py#L563-L669" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def lookupSource(cv, cur, tokenAsSlot, specs):
     &#34;&#34;&#34;Looks up information from the current XML stack.
@@ -1115,7 +1116,7 @@ that attribute, not from the content of the element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/helpers.py#L335-L350" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/helpers.py#L336-L351" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def matchModel(properties, tag, atts):
     if tag == properties[&#34;element&#34;]:
@@ -1143,7 +1144,7 @@ that attribute, not from the content of the element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/helpers.py#L248-L252" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/helpers.py#L249-L253" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def repTokens(tokens):
     text = []
@@ -1160,7 +1161,7 @@ that attribute, not from the content of the element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/helpers.py#L353-L393" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/helpers.py#L354-L394" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setUp(kind):
     helpText = f&#34;&#34;&#34;
@@ -1213,7 +1214,7 @@ that attribute, not from the content of the element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/helpers.py#L230-L245" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/helpers.py#L231-L246" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tokenize(line):
     tokens = []
@@ -1241,7 +1242,7 @@ that attribute, not from the content of the element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/087f6d02379cf54b68b4392d3114a4cb60b92bb9/tf/convert/helpers.py#L396-L559" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/helpers.py#L397-L560" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tweakTrans(
     template,
