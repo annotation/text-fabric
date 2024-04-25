@@ -457,6 +457,8 @@ from tf.parameters import OTYPE, OSLOTS, URL_TF_DOCS
 from tf.app import use
 
 
+PROGRESS_LIMIT = 5
+
 CONFIG_FILE = "watm.yaml"
 NODEMAP_FILE = "anno2node.tsv"
 SLOTMAP_FILE = "pos2node.tsv"
@@ -472,6 +474,7 @@ NS_NONE = "tf"
 
 NS_FROM_OTYPE = dict(
     doc=NS_TF,
+    ln=NS_TF,
     page=NS_TF,
     file=NS_TF,
     folder=NS_TF,
@@ -966,7 +969,16 @@ class WATM:
 
         ext = "tsv" if asTsv else "json"
 
+        j = 0
+        cr = ""
+        nl = True
+
         for i, text in enumerate(texts):
+            j += 1
+            if j > PROGRESS_LIMIT:
+                cr = "\r"
+                nl = False
+
             textFile = f"{resultDir}/text-{i}.{ext}"
             nText = len(text)
             total += nText
@@ -982,12 +994,16 @@ class WATM:
                     )
 
             if not silent:
-                console(f"Text file {i:>4}: {nText:>8} segments to {textFile}")
+                console(
+                    f"{cr}Text file {i:>4}: {nText:>8} segments to {textFile}",
+                    newline=nl,
+                )
 
         nTexts = len(texts)
         sep = "" if nTexts == 1 else "s"
 
         if not silent:
+            console("")
             console(f"Text files all: {total:>8} segments to {nTexts} file{sep}")
 
         # annotation files
@@ -1271,7 +1287,10 @@ class WATM:
             with open(f"{resultDir}/{textFile}") as fh:
                 if asTsv:
                     next(fh)
-                    tokens = [t.rstrip("\n").replace("\\t", "\t").replace("\\n", "\n") for t in fh]
+                    tokens = [
+                        t.rstrip("\n").replace("\\t", "\t").replace("\\n", "\n")
+                        for t in fh
+                    ]
                 else:
                     text = json.load(fh)
                     tokens = text["_ordered_segments"]
@@ -1736,7 +1755,7 @@ class WATM:
 
         if not fconsistent or not silent:
             console(f"\tWrong:    {len(wrong):>5} x")
-            for (node, feat, valWA, valTF) in wrong[0:5]:
+            for node, feat, valWA, valTF in wrong[0:5]:
                 console(f"\t\t{node:>6} {feat}:\n", error=True)
                 console(f"\t\t\tTF = «{valTF}»", error=True)
                 console(f"\t\t\tWA = «{valWA}»", error=True)

@@ -334,7 +334,7 @@ nodeType="ln",
 
 Model I is the default, and nothing special happens to the `<lb>` elements.
 
-In model II the `<lb>` elements translate to nodes of type `line`, which span
+In model II the `<lb>` elements translate to nodes of type `ln`, which span
 content, whereas the original `lb` elements just mark positions.
 Instead of `ln`, you can also specify another node type by the parameter `element`.
 
@@ -344,15 +344,15 @@ you can also specify another element in the parameter `element`.
 
 We assume that lines start and end at the start and end of the `<p>` elements and
 the `<lb>` elements. For the material etween these boundaries, we build `ln` nodes.
-If an `<lb>` element follows a `<p>` start tag without intervening slots, a line
+If an `<lb>` element follows a `<p>` start tag without intervening slots, a `ln`
 node will be created but not linked to slots, and it will be deleted later in
 the conversion.
 Likewise, if an `<lb>` element is followed by a `<p>` end tag without
-intervening slots, a line node is created that is not linked to slots.
+intervening slots, a `ln` node is created that is not linked to slots.
 
-The attributes of the `<lb>` elements become features of the line element that starts
+The attributes of the `<lb>` elements become features of the `ln` node that starts
 with that `<lb>` element. If there is no explicit `<lb>` element at the start of
-a paragraph, the first line of that paragraph gets no features.
+a paragraph, the first `ln` node of that paragraph gets no features.
 
 
 ### `pageModel`
@@ -802,6 +802,7 @@ CSS_REND_ALIAS = dict(
 )
 
 
+PROGRESS_LIMIT = 5
 KNOWN_RENDS = set()
 REND_DESC = {}
 
@@ -2310,7 +2311,7 @@ class TEI(CheckImport):
                 for xmlFile in xmlFiles:
                     i += 1
                     j += 1
-                    if j > 20:
+                    if j > PROGRESS_LIMIT:
                         cr = "\r"
                         nl = False
                     xmlPath = f"{teiPath}/{xmlFolder}/{xmlFile}"
@@ -3773,7 +3774,7 @@ class TEI(CheckImport):
                     for xmlFile in xmlFiles:
                         i += 1
                         j += 1
-                        if j > 20:
+                        if j > PROGRESS_LIMIT:
                             cr = "\r"
                             nl = False
 
@@ -4021,30 +4022,33 @@ class TEI(CheckImport):
 
         makeLineElems = self.makeLineElems
         lineModel = self.lineModel
+        if makeLineElems:
+            lineProperties = self.lineProperties
+            lineType = lineProperties["nodeType"]
 
         makePageElems = self.makePageElems
         pageModel = self.pageModel
 
         if makePageElems:
             pageProperties = self.pageProperties
+            pageType = pageProperties["nodeType"]
             pbAtTop = pageProperties["pbAtTop"] if makePageElems else None
 
         tfPath = self.tfPath
         teiPath = self.teiPath
 
-        if verbose == 1:
-            console(f"TEI to TF converting: {ux(teiPath)} => {ux(tfPath)}")
+        if verbose >= 0:
+            if verbose == 1:
+                console(f"TEI to TF converting: {ux(teiPath)} => {ux(tfPath)}")
             if makeLineElems:
-                lbRep = " with lb elements between the lines"
+                lbRep = f" with {lineType} nodes for lines between lb elements"
                 console(f"Line model {lineModel}{lbRep}")
 
             if makePageElems:
-                pbRep = (
-                    f" with pb elements at the {'top' if pbAtTop else 'bottom'}"
-                    "of the page"
-                )
+                wrt = "started" if pbAtTop else "ended"
+                pbRep = f" with {pageType} nodes for pages {wrt} by pb elements"
                 console(f"Page model {pageModel}{pbRep}")
-        if verbose >= 0:
+
             console(
                 f"Processing instructions are {'treated' if procins else 'ignored'}"
             )

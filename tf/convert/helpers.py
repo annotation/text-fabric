@@ -12,6 +12,7 @@ FOLDER = "folder"
 FILE = "file"
 PAGE = "page"
 LINE = "line"
+LN = "ln"
 REGION = "region"
 DOC = "doc"
 CHAPTER = "chapter"
@@ -31,7 +32,7 @@ LINE_MODELS = dict(
     I=dict(),
     II=dict(
         element=(str, "p"),
-        nodeType=(str, LINE),
+        nodeType=(str, LN),
     ),
 )
 
