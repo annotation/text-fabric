@@ -38,7 +38,7 @@ for a web server.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/browser/kernel.py#L1-L488" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/browser/kernel.py#L1-L493" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TF kernel
@@ -446,6 +446,7 @@ def makeTfKernel(app, appName):
             condenseType = dContext.condenseType
 
             sectionResults = []
+
             if sections:
                 sectionLines = sections.split(&#34;\n&#34;)
                 for sectionLine in sectionLines:
@@ -453,9 +454,11 @@ def makeTfKernel(app, appName):
                     node = app.nodeFromSectionStr(sectionLine)
                     if type(node) is int:
                         sectionResults.append((node,))
+
             sectionResults = tuple(sectionResults)
 
             tupleResults = ()
+
             if tuples:
                 tupleLines = tuples.split(&#34;\n&#34;)
                 try:
@@ -470,6 +473,7 @@ def makeTfKernel(app, appName):
             queryResults = ()
             queryMessages = (&#34;&#34;, &#34;&#34;)
             features = ()
+
             if query:
                 (
                     queryResults,
@@ -492,18 +496,19 @@ def makeTfKernel(app, appName):
 
                 queryStatus = queryStatus[0] and queryStatus[1]
                 queryStatusC = queryStatusC[0] and queryStatusC[1]
+
                 if not queryStatus:
                     queryResults = ()
                 if not queryStatusC:
                     queryResultsC = ()
 
-            csvs = (
+            csvData = (
                 (&#34;sections&#34;, sectionResults),
                 (&#34;nodes&#34;, tupleResults),
                 (&#34;results&#34;, queryResults),
             )
             if condensed and condenseType:
-                csvs += ((f&#34;resultsBy{condenseType}&#34;, queryResultsC),)
+                csvData += ((f&#34;resultsBy{condenseType}&#34;, queryResultsC),)
 
             tupleResultsX = getRowsX(
                 app,
@@ -515,14 +520,14 @@ def makeTfKernel(app, appName):
             queryResultsX = getRowsX(
                 app,
                 queryResults,
-                features,
+                nodeFeatures,
                 condenseType,
                 fmt=fmt,
             )
             return (
                 queryStatus,
                 &#34; &#34;.join(queryMessages[0]),
-                csvs,
+                csvData,
                 tupleResultsX,
                 queryResultsX,
             )
@@ -545,7 +550,7 @@ def makeTfKernel(app, appName):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/browser/kernel.py#L27-L488" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/browser/kernel.py#L27-L493" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfKernel(app, appName):
     if not app.api:
@@ -927,6 +932,7 @@ def makeTfKernel(app, appName):
             condenseType = dContext.condenseType
 
             sectionResults = []
+
             if sections:
                 sectionLines = sections.split(&#34;\n&#34;)
                 for sectionLine in sectionLines:
@@ -934,9 +940,11 @@ def makeTfKernel(app, appName):
                     node = app.nodeFromSectionStr(sectionLine)
                     if type(node) is int:
                         sectionResults.append((node,))
+
             sectionResults = tuple(sectionResults)
 
             tupleResults = ()
+
             if tuples:
                 tupleLines = tuples.split(&#34;\n&#34;)
                 try:
@@ -951,6 +959,7 @@ def makeTfKernel(app, appName):
             queryResults = ()
             queryMessages = (&#34;&#34;, &#34;&#34;)
             features = ()
+
             if query:
                 (
                     queryResults,
@@ -973,18 +982,19 @@ def makeTfKernel(app, appName):
 
                 queryStatus = queryStatus[0] and queryStatus[1]
                 queryStatusC = queryStatusC[0] and queryStatusC[1]
+
                 if not queryStatus:
                     queryResults = ()
                 if not queryStatusC:
                     queryResultsC = ()
 
-            csvs = (
+            csvData = (
                 (&#34;sections&#34;, sectionResults),
                 (&#34;nodes&#34;, tupleResults),
                 (&#34;results&#34;, queryResults),
             )
             if condensed and condenseType:
-                csvs += ((f&#34;resultsBy{condenseType}&#34;, queryResultsC),)
+                csvData += ((f&#34;resultsBy{condenseType}&#34;, queryResultsC),)
 
             tupleResultsX = getRowsX(
                 app,
@@ -996,14 +1006,14 @@ def makeTfKernel(app, appName):
             queryResultsX = getRowsX(
                 app,
                 queryResults,
-                features,
+                nodeFeatures,
                 condenseType,
                 fmt=fmt,
             )
             return (
                 queryStatus,
                 &#34; &#34;.join(queryMessages[0]),
-                csvs,
+                csvData,
                 tupleResultsX,
                 queryResultsX,
             )

@@ -452,7 +452,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L1-L4620" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/tei.py#L1-L4646" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -3556,6 +3556,20 @@ class TEI(CheckImport):
                     cv.feature(s, **{f&#34;rend_{r}&#34;: 1})
 
         def addTokens(cv, cur, text):
+            &#34;&#34;&#34;Adds text as a series of tokens.
+
+            Parameters
+            ----------
+            cv: object
+                The converter object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            text: string
+                The text to be added.
+
+            Only meant for the case where slots are tokens.
+            &#34;&#34;&#34;
             (beforew, material, afterw) = getWhites(text)
 
             if beforew:
@@ -3648,7 +3662,7 @@ class TEI(CheckImport):
             spaceChar: string
                 The character to add (supposed to be either a space or a newline).
 
-            Only meant for the case where slots are characters.
+            Only meant for the case where slots are characters or tokens.
 
             Suppressed when not in a lowest-level section.
             &#34;&#34;&#34;
@@ -3661,6 +3675,18 @@ class TEI(CheckImport):
                 addSlotFeatures(cv, cur, s)
 
         def makeSpace(cv, cur):
+            &#34;&#34;&#34;Adds a space.
+
+            Parameters
+            ----------
+            cv: object
+                The converter object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+
+            Only meant for the case where slots are tokens.
+            &#34;&#34;&#34;
             s = cv.slot()
             cv.feature(s, str=&#34;&#34;, after=&#34; &#34;, extraspace=1)
             addSlotFeatures(cv, cur, s)
@@ -5091,7 +5117,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L834-L851" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/tei.py#L834-L851" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRefs(tag, atts, xmlFile):
     refAtt = REFERENCING.get(tag, None)
@@ -5121,7 +5147,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L4606-L4616" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/tei.py#L4632-L4642" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(
@@ -5144,7 +5170,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L817-L831" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/tei.py#L817-L831" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCssInfo():
     &#34;&#34;&#34;Make the CSS info for the style sheet.&#34;&#34;&#34;
@@ -5292,7 +5318,7 @@ relevant TF version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L854-L4603" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/tei.py#L854-L4629" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI(CheckImport):
     def __init__(
@@ -7543,6 +7569,20 @@ relevant TF version:</p>
                     cv.feature(s, **{f&#34;rend_{r}&#34;: 1})
 
         def addTokens(cv, cur, text):
+            &#34;&#34;&#34;Adds text as a series of tokens.
+
+            Parameters
+            ----------
+            cv: object
+                The converter object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            text: string
+                The text to be added.
+
+            Only meant for the case where slots are tokens.
+            &#34;&#34;&#34;
             (beforew, material, afterw) = getWhites(text)
 
             if beforew:
@@ -7635,7 +7675,7 @@ relevant TF version:</p>
             spaceChar: string
                 The character to add (supposed to be either a space or a newline).
 
-            Only meant for the case where slots are characters.
+            Only meant for the case where slots are characters or tokens.
 
             Suppressed when not in a lowest-level section.
             &#34;&#34;&#34;
@@ -7648,6 +7688,18 @@ relevant TF version:</p>
                 addSlotFeatures(cv, cur, s)
 
         def makeSpace(cv, cur):
+            &#34;&#34;&#34;Adds a space.
+
+            Parameters
+            ----------
+            cv: object
+                The converter object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+
+            Only meant for the case where slots are tokens.
+            &#34;&#34;&#34;
             s = cv.slot()
             cv.feature(s, str=&#34;&#34;, after=&#34; &#34;, extraspace=1)
             addSlotFeatures(cv, cur, s)
@@ -9088,7 +9140,7 @@ that code between automatic generation of files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L4119-L4487" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/tei.py#L4145-L4513" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self, tokenBased=False):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -9477,7 +9529,7 @@ There should be a valid TF dataset and app configuration in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L4491-L4527" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/tei.py#L4517-L4553" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def browseTask(self):
     &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
@@ -9545,7 +9597,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L1688-L2389" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/tei.py#L1688-L2389" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -10265,7 +10317,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L3999-L4068" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/tei.py#L4025-L4094" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -10352,7 +10404,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L2393-L2406" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/tei.py#L2393-L2406" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -10393,7 +10445,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L2410-L3997" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/tei.py#L2410-L4023" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -11088,6 +11140,20 @@ that has access to this data.</p>
                 cv.feature(s, **{f&#34;rend_{r}&#34;: 1})
 
     def addTokens(cv, cur, text):
+        &#34;&#34;&#34;Adds text as a series of tokens.
+
+        Parameters
+        ----------
+        cv: object
+            The converter object, needed to issue actions.
+        cur: dict
+            Various pieces of data collected during walking
+            and relevant for some next steps in the walk.
+        text: string
+            The text to be added.
+
+        Only meant for the case where slots are tokens.
+        &#34;&#34;&#34;
         (beforew, material, afterw) = getWhites(text)
 
         if beforew:
@@ -11180,7 +11246,7 @@ that has access to this data.</p>
         spaceChar: string
             The character to add (supposed to be either a space or a newline).
 
-        Only meant for the case where slots are characters.
+        Only meant for the case where slots are characters or tokens.
 
         Suppressed when not in a lowest-level section.
         &#34;&#34;&#34;
@@ -11193,6 +11259,18 @@ that has access to this data.</p>
             addSlotFeatures(cv, cur, s)
 
     def makeSpace(cv, cur):
+        &#34;&#34;&#34;Adds a space.
+
+        Parameters
+        ----------
+        cv: object
+            The converter object, needed to issue actions.
+        cur: dict
+            Various pieces of data collected during walking
+            and relevant for some next steps in the walk.
+
+        Only meant for the case where slots are tokens.
+        &#34;&#34;&#34;
         s = cv.slot()
         cv.feature(s, str=&#34;&#34;, after=&#34; &#34;, extraspace=1)
         addSlotFeatures(cv, cur, s)
@@ -11999,7 +12077,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L1589-L1611" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/tei.py#L1589-L1611" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getParser(self):
     &#34;&#34;&#34;Configure the LXML parser.
@@ -12034,7 +12112,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L1547-L1587" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/tei.py#L1547-L1587" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getSwitches(self, xmlPath):
     verbose = self.verbose
@@ -12100,7 +12178,7 @@ that contains the file names in that folder, sorted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L1613-L1686" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/tei.py#L1613-L1686" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the TEI source files.
@@ -12198,7 +12276,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L4070-L4115" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/tei.py#L4096-L4141" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -12256,7 +12334,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L1504-L1545" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/tei.py#L1504-L1545" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readSchemas(self):
     schemaDir = self.schemaDir
@@ -12340,7 +12418,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5026c72ff2446d2135eb00e6f752c2ae5e11de9f/tf/convert/tei.py#L4529-L4603" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/tei.py#L4555-L4629" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,
