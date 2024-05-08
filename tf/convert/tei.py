@@ -3100,6 +3100,20 @@ class TEI(CheckImport):
                     cv.feature(s, **{f"rend_{r}": 1})
 
         def addTokens(cv, cur, text):
+            """Adds text as a series of tokens.
+
+            Parameters
+            ----------
+            cv: object
+                The converter object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            text: string
+                The text to be added.
+
+            Only meant for the case where slots are tokens.
+            """
             (beforew, material, afterw) = getWhites(text)
 
             if beforew:
@@ -3192,7 +3206,7 @@ class TEI(CheckImport):
             spaceChar: string
                 The character to add (supposed to be either a space or a newline).
 
-            Only meant for the case where slots are characters.
+            Only meant for the case where slots are characters or tokens.
 
             Suppressed when not in a lowest-level section.
             """
@@ -3205,6 +3219,18 @@ class TEI(CheckImport):
                 addSlotFeatures(cv, cur, s)
 
         def makeSpace(cv, cur):
+            """Adds a space.
+
+            Parameters
+            ----------
+            cv: object
+                The converter object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+
+            Only meant for the case where slots are tokens.
+            """
             s = cv.slot()
             cv.feature(s, str="", after=" ", extraspace=1)
             addSlotFeatures(cv, cur, s)

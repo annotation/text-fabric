@@ -301,6 +301,7 @@ def serveDownload(web, jobOnly):
     tupleResultsX = None
     queryResultsX = None
     messages = ""
+
     if task in wildQueries:
         messages = (
             f"Aborted because query is known to take longer than {TIMEOUT} second"

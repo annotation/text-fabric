@@ -404,6 +404,7 @@ def makeTfKernel(app, appName):
             condenseType = dContext.condenseType
 
             sectionResults = []
+
             if sections:
                 sectionLines = sections.split("\n")
                 for sectionLine in sectionLines:
@@ -411,9 +412,11 @@ def makeTfKernel(app, appName):
                     node = app.nodeFromSectionStr(sectionLine)
                     if type(node) is int:
                         sectionResults.append((node,))
+
             sectionResults = tuple(sectionResults)
 
             tupleResults = ()
+
             if tuples:
                 tupleLines = tuples.split("\n")
                 try:
@@ -428,6 +431,7 @@ def makeTfKernel(app, appName):
             queryResults = ()
             queryMessages = ("", "")
             features = ()
+
             if query:
                 (
                     queryResults,
@@ -450,18 +454,19 @@ def makeTfKernel(app, appName):
 
                 queryStatus = queryStatus[0] and queryStatus[1]
                 queryStatusC = queryStatusC[0] and queryStatusC[1]
+
                 if not queryStatus:
                     queryResults = ()
                 if not queryStatusC:
                     queryResultsC = ()
 
-            csvs = (
+            csvData = (
                 ("sections", sectionResults),
                 ("nodes", tupleResults),
                 ("results", queryResults),
             )
             if condensed and condenseType:
-                csvs += ((f"resultsBy{condenseType}", queryResultsC),)
+                csvData += ((f"resultsBy{condenseType}", queryResultsC),)
 
             tupleResultsX = getRowsX(
                 app,
@@ -473,14 +478,14 @@ def makeTfKernel(app, appName):
             queryResultsX = getRowsX(
                 app,
                 queryResults,
-                features,
+                nodeFeatures,
                 condenseType,
                 fmt=fmt,
             )
             return (
                 queryStatus,
                 " ".join(queryMessages[0]),
-                csvs,
+                csvData,
                 tupleResultsX,
                 queryResultsX,
             )

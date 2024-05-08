@@ -20,6 +20,20 @@ pip install -e .
 
 ### 12.4
 
+#### 12.4.3
+
+2024-05-08
+
+Fix in TF browser, spotted by Jorik Groen.
+When exporting query results, the values features used in the query were not written
+to the table at all.
+The expected behaviour was that features used in the query lead to extra columns
+in the exported table.
+It has been fixed. The cause was an earlier fix in the display of features in query
+results.
+This new fix only affects the export function from the browser, not the
+`advanced.display.export` function, which did not have this bug.
+
 #### 12.4.2
 
 2024-04-24
