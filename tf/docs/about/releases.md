@@ -20,19 +20,27 @@ pip install -e .
 
 ### 12.4
 
-#### 12.4.3
+#### 12.4.3,4
 
 2024-05-08
 
-Fix in TF browser, spotted by Jorik Groen.
-When exporting query results, the values features used in the query were not written
-to the table at all.
-The expected behaviour was that features used in the query lead to extra columns
-in the exported table.
-It has been fixed. The cause was an earlier fix in the display of features in query
-results.
-This new fix only affects the export function from the browser, not the
-`advanced.display.export` function, which did not have this bug.
+*   Fix in TF browser, spotted by Jorik Groen.
+    When exporting query results, the values features used in the query were not written
+    to the table at all.
+    The expected behaviour was that features used in the query lead to extra columns
+    in the exported table.
+    It has been fixed. The cause was an earlier fix in the display of features in query
+    results.
+    This new fix only affects the export function from the browser, not the
+    `tf.advanced.display.export` function, which did not have this bug.
+
+*   The pipeline from TEI or PageXML via TF to WATM is a complex thing to steer.
+    There is now a new class `tf.convert.makewatm` that takes care of this: it provides
+    a command line interface to perform the necessary convert steps.
+
+    Moreover, you can use it as a base class and extend it with additional 
+    convert steps and options, with minimal code.
+
 
 #### 12.4.2
 

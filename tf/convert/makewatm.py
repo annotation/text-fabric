@@ -79,10 +79,6 @@ class MakeWATM:
             Any arg that contains a . is considered to be the tf version number.
             If no version is passed, we resort to the hard coded default.
 
-        FLAGS
-
-        TASKS
-
         all
             run all (enabled) tasks
 
@@ -95,10 +91,9 @@ class MakeWATM:
             watms="Produce text/anno repo data for a sequence of corpora",
         )
         self.BASE_FLAGS = dict(
-            help="Print this help text",
             silent="To run a bit more silent",
             relaxed="Accept XML validation errors",
-            useNLP="Will run an NLP pipeline to mark tokens, sentences and entities",
+            usenlp="Will run an NLP pipeline to mark tokens, sentences and entities",
         )
         self.BASE_TASKS = ("tei2tf", "page2tf", "watm", "watms")
         self.TF_VERSION = "0.0.0test"
@@ -106,7 +101,6 @@ class MakeWATM:
         self.fileLoc = fileLoc
 
         self.good = True
-        self.silent = False
 
         repoBase = dirNm(dirNm(abspath(fileLoc)))
         (self.backend, self.org, self.repo, self.relative) = getLocation(
@@ -115,11 +109,150 @@ class MakeWATM:
         self.repoBase = repoBase
         self.setOptions()
 
+    def setOptions(
+        self,
+        taskSpecs=(
+            ("tei2tf", None),
+            ("watm", None),
+        ),
+        flagSpecs=(
+            ("silent", None),
+            ("relaxed", None),
+            ("usenlp", None),
+        ),
+        intro=None,
+    ):
+        self.TASKS = []
+        self.DOCS = {}
+        self.FLAGS = {}
+
+        good = True
+
+        for name, doc in taskSpecs:
+            if name not in self.BASE_TASKS:
+                if doc is None:
+                    console(f"task {name}: no help text given", error=True)
+                    good = False
+
+                method = f"doTask_{name}"
+
+                if not hasattr(self, method):
+                    console(
+                        f"task {name}: no method {method} defined in subclass",
+                        error=True,
+                    )
+                    good = False
+
+            if not good:
+                continue
+
+            self.TASKS.append(name)
+            self.DOCS[name] = doc
+
+        for name, doc in flagSpecs:
+            if name not in self.BASE_FLAGS:
+                if doc is None:
+                    console(f"flag --{name}: no help text given", error=True)
+                    good = False
+
+            if not good:
+                continue
+
+            self.FLAGS[name] = doc
+
+        self.good = good
+
+        self.HELP = (
+            (f"{intro}\n\n" if intro else "")
+            + self.BASE_HELP
+            + "\nFLAGS\n\n"
+            + "".join(f"{name}\n\t{doc}" for (name, doc) in self.FLAGS.items())
+            + "\nTASKS\n\n"
+            + "".join(f"{name}\n\t{doc}" for (name, doc) in self.DOCS.items())
+            + "\n\nall\n\trun all (enabled) tasks\n\n"
+        )
+
+    def main(self, cmdLine=None, cargs=sys.argv[1:]):
+        FLAGS = self.FLAGS
+        TASKS = self.TASKS
+
+        if cmdLine is not None:
+            cargs = cmdLine.split()
+
+        if "--help" in cargs:
+            console(self.HELP)
+            return 0
+
+        unrecognized = set()
+        tasks = set()
+        self.version = None
+
+        for flag in FLAGS:
+            setattr(self, f"flag_{flag}", False)
+
+        for carg in cargs:
+            if carg.startswith("--"):
+                flag = carg[2:]
+
+                if flag not in FLAGS:
+                    unrecognized.add(carg)
+                else:
+                    setattr(self, f"flag_{flag}", True)
+            elif carg == "all":
+                for task in TASKS:
+                    tasks.add(task)
+            elif carg in TASKS:
+                tasks.add(carg)
+            elif "." in carg:
+                version = carg
+            else:
+                unrecognized.add(carg)
+
+        if not self.flag_silent:
+            console(f"Enabled tasks: {' '.join(self.TASKS)}")
+        if version is None:
+            console(
+                f"No version for the TF data given. Using default: {self.TF_VERSION}"
+            )
+            version = self.TF_VERSION
+        else:
+            console(f"Using TF version: {version}")
+
+        self.version = version
+
+        if len(unrecognized):
+            console(self.HELP)
+            console(f"Unrecognized arguments: {', '.join(sorted(unrecognized))}")
+            return -1
+
+        if len(tasks) == 0:
+            console("Nothing to do")
+            return 0
+
+        self.prepareRun(tasks)
+
+        return self.run(tasks)
+
+    def prepareRun(self, tasks):
+        return
+
+    def run(self, tasks):
+        TASKS = self.TASKS
+
+        for task in TASKS:
+            if task not in tasks:
+                continue
+
+            method = getattr(self, f"doTask_{task}")
+            method()
+
+        return 0 if self.good else 1
+
     def doTask_tei2tf(self):
         good = self.good
-        silent = self.silent
-        relaxed = self.relaxed
-        useNLP = self.useNLP
+        silent = self.flag_silent
+        relaxed = self.flag_relaxed
+        usenlp = self.flag_usenlp
 
         if not good:
             if not silent:
@@ -130,7 +263,7 @@ class MakeWATM:
         verbose = -1 if silent else 0
         loadVerbose = DEEP if silent else TERSE
 
-        Tei = TEI(verbose=verbose, tei=0, tf=f"{tfVersion}pre" if useNLP else tfVersion)
+        Tei = TEI(verbose=verbose, tei=0, tf=f"{tfVersion}pre" if usenlp else tfVersion)
 
         console("Checking TEI ...")
 
@@ -160,7 +293,7 @@ class MakeWATM:
             self.good = False
             return
 
-        if useNLP:
+        if usenlp:
             console("Add tokens and sentences ...")
 
             org = self.org
@@ -196,7 +329,7 @@ class MakeWATM:
 
     def doTask_page2tf(self):
         good = self.good
-        silent = self.silent
+        silent = self.flag_silent
 
         if not good:
             if not silent:
@@ -242,7 +375,7 @@ class MakeWATM:
 
     def doTask_watm(self):
         good = self.good
-        silent = self.silent
+        silent = self.flag_silent
 
         if not good:
             if not silent:
@@ -272,7 +405,7 @@ class MakeWATM:
 
     def doTask_watms(self):
         good = self.good
-        silent = self.silent
+        silent = self.flag_silent
 
         if not good:
             if not silent:
@@ -287,133 +420,3 @@ class MakeWATM:
 
         W = WATMS(org, repo, backend, "pagexml", silent=silent)
         W.produce()
-
-    def run(self, tasks):
-        TASKS = self.TASKS
-
-        for task in TASKS:
-            if task not in tasks:
-                continue
-
-            method = getattr(self, f"doTask_{task}")
-            method()
-
-        return 0 if self.good else 1
-
-    def setOptions(
-        self,
-        taskSpecs=(
-            ("tei2tf", None),
-            ("watm", None),
-        ),
-        flagSpecs=(
-            ("help", None),
-            ("silent", None),
-            ("relaxed", None),
-            ("usenlp", None),
-        ),
-    ):
-        self.TASKS = []
-        self.DOCS = {}
-        self.FLAGS = {}
-
-        good = True
-
-        for name, doc in taskSpecs:
-            if name not in self.BASE_TASKS:
-                if doc is None:
-                    console(f"task {name}: no help text given", error=True)
-                    good = False
-
-                method = f"doTask_{name}"
-
-                if not hasattr(self, method):
-                    console(
-                        f"task {name}: no method {method} defined in subclass",
-                        error=True,
-                    )
-                    good = False
-
-            if not good:
-                continue
-
-            self.TASKS.append(name)
-            self.DOCS[name] = doc
-
-        for name, doc in taskSpecs:
-            if name not in self.BASE_FLAGS:
-                if doc is None:
-                    console(f"flag --{name}: no help text given", error=True)
-                    good = False
-
-            if not good:
-                continue
-
-            self.FLAGS[name] = doc
-
-        self.good = good
-
-        self.HELP = (
-            self.BASE_HELP
-            + "\nFLAGS\n\n"
-            + "".join(f"{name}\n\t{doc}" for (name, doc) in self.FLAGS.items())
-            + "\nTASKS\n\n"
-            + "".join(f"{name}\n\t{doc}" for (name, doc) in self.DOCS.items())
-        )
-
-    def main(self, cmdLine=None, cargs=sys.argv[1:]):
-        TASKS = self.TASKS
-
-        if cmdLine is not None:
-            cargs = cmdLine.split()
-
-        if "--help" in cargs:
-            console(self.HELP)
-            return 0
-
-        unrecognized = set()
-        tasks = set()
-        self.silent = False
-        self.version = None
-        self.relaxed = False
-        self.useNLP = False
-
-        for carg in cargs:
-            if carg == "--silent":
-                self.silent = True
-            elif carg == "--relaxed":
-                self.relaxed = True
-            elif carg == "--usenlp":
-                self.useNLP = True
-            elif carg == "all":
-                for task in TASKS:
-                    tasks.add(task)
-            elif carg in TASKS:
-                tasks.add(carg)
-            elif "." in carg:
-                version = carg
-            else:
-                unrecognized.add(carg)
-
-        if not self.silent:
-            console(f"Enabled tasks: {' '.join(self.TASKS)}")
-        if version is None:
-            console(
-                f"No version for the TF data given. Using default: {self.TF_VERSION}"
-            )
-            version = self.TF_VERSION
-        else:
-            console(f"Using TF version: {version}")
-
-        self.version = version
-
-        if len(unrecognized):
-            console(self.HELP)
-            console(f"Unrecognized arguments: {', '.join(sorted(unrecognized))}")
-            return -1
-
-        if len(tasks) == 0:
-            console("Nothing to do")
-            return 0
-
-        return self.run(tasks)
