@@ -43,8 +43,10 @@ and in its top-level directory run the command:</strong></p>
 </code></pre>
 <h2 id="12">12</h2>
 <h3 id="124">12.4</h3>
-<h4 id="1243">12.4.3</h4>
+<h4 id="12434">12.4.3,4</h4>
 <p>2024-05-08</p>
+<ul>
+<li>
 <p>Fix in TF browser, spotted by Jorik Groen.
 When exporting query results, the values features used in the query were not written
 to the table at all.
@@ -53,7 +55,16 @@ in the exported table.
 It has been fixed. The cause was an earlier fix in the display of features in query
 results.
 This new fix only affects the export function from the browser, not the
-<code>advanced.display.export</code> function, which did not have this bug.</p>
+<code><a title="tf.advanced.display.export" href="../advanced/display.html#tf.advanced.display.export">export()</a></code> function, which did not have this bug.</p>
+</li>
+<li>
+<p>The pipeline from TEI or PageXML via TF to WATM is a complex thing to steer.
+There is now a new class <code><a title="tf.convert.makewatm" href="../convert/makewatm.html">tf.convert.makewatm</a></code> that takes care of this: it provides
+a command line interface to perform the necessary convert steps.</p>
+<p>Moreover, you can use it as a base class and extend it with additional
+convert steps and options, with minimal code.</p>
+</li>
+</ul>
 <h4 id="1242">12.4.2</h4>
 <p>2024-04-24</p>
 <p>Tiny fixes in the TEI and WATM conversions.</p>
@@ -385,7 +396,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81c7208eecee1adac51470e747edd3781135e950/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -459,7 +470,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
 <li><a href="#124">12.4</a><ul>
-<li><a href="#1243">12.4.3</a></li>
+<li><a href="#12434">12.4.3,4</a></li>
 <li><a href="#1242">12.4.2</a></li>
 <li><a href="#1241">12.4.1</a></li>
 <li><a href="#1240">12.4.0</a></li>

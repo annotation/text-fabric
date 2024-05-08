@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/makewatm.py#L1-L419" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81c7208eecee1adac51470e747edd3781135e950/tf/convert/makewatm.py#L1-L422" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 from textwrap import dedent
@@ -114,10 +114,6 @@ class MakeWATM:
             Any arg that contains a . is considered to be the tf version number.
             If no version is passed, we resort to the hard coded default.
 
-        FLAGS
-
-        TASKS
-
         all
             run all (enabled) tasks
 
@@ -130,10 +126,9 @@ class MakeWATM:
             watms=&#34;Produce text/anno repo data for a sequence of corpora&#34;,
         )
         self.BASE_FLAGS = dict(
-            help=&#34;Print this help text&#34;,
             silent=&#34;To run a bit more silent&#34;,
             relaxed=&#34;Accept XML validation errors&#34;,
-            useNLP=&#34;Will run an NLP pipeline to mark tokens, sentences and entities&#34;,
+            usenlp=&#34;Will run an NLP pipeline to mark tokens, sentences and entities&#34;,
         )
         self.BASE_TASKS = (&#34;tei2tf&#34;, &#34;page2tf&#34;, &#34;watm&#34;, &#34;watms&#34;)
         self.TF_VERSION = &#34;0.0.0test&#34;
@@ -141,7 +136,6 @@ class MakeWATM:
         self.fileLoc = fileLoc
 
         self.good = True
-        self.silent = False
 
         repoBase = dirNm(dirNm(abspath(fileLoc)))
         (self.backend, self.org, self.repo, self.relative) = getLocation(
@@ -150,11 +144,150 @@ class MakeWATM:
         self.repoBase = repoBase
         self.setOptions()
 
+    def setOptions(
+        self,
+        taskSpecs=(
+            (&#34;tei2tf&#34;, None),
+            (&#34;watm&#34;, None),
+        ),
+        flagSpecs=(
+            (&#34;silent&#34;, None),
+            (&#34;relaxed&#34;, None),
+            (&#34;usenlp&#34;, None),
+        ),
+        intro=None,
+    ):
+        self.TASKS = []
+        self.DOCS = {}
+        self.FLAGS = {}
+
+        good = True
+
+        for name, doc in taskSpecs:
+            if name not in self.BASE_TASKS:
+                if doc is None:
+                    console(f&#34;task {name}: no help text given&#34;, error=True)
+                    good = False
+
+                method = f&#34;doTask_{name}&#34;
+
+                if not hasattr(self, method):
+                    console(
+                        f&#34;task {name}: no method {method} defined in subclass&#34;,
+                        error=True,
+                    )
+                    good = False
+
+            if not good:
+                continue
+
+            self.TASKS.append(name)
+            self.DOCS[name] = doc
+
+        for name, doc in flagSpecs:
+            if name not in self.BASE_FLAGS:
+                if doc is None:
+                    console(f&#34;flag --{name}: no help text given&#34;, error=True)
+                    good = False
+
+            if not good:
+                continue
+
+            self.FLAGS[name] = doc
+
+        self.good = good
+
+        self.HELP = (
+            (f&#34;{intro}\n\n&#34; if intro else &#34;&#34;)
+            + self.BASE_HELP
+            + &#34;\nFLAGS\n\n&#34;
+            + &#34;&#34;.join(f&#34;{name}\n\t{doc}&#34; for (name, doc) in self.FLAGS.items())
+            + &#34;\nTASKS\n\n&#34;
+            + &#34;&#34;.join(f&#34;{name}\n\t{doc}&#34; for (name, doc) in self.DOCS.items())
+            + &#34;\n\nall\n\trun all (enabled) tasks\n\n&#34;
+        )
+
+    def main(self, cmdLine=None, cargs=sys.argv[1:]):
+        FLAGS = self.FLAGS
+        TASKS = self.TASKS
+
+        if cmdLine is not None:
+            cargs = cmdLine.split()
+
+        if &#34;--help&#34; in cargs:
+            console(self.HELP)
+            return 0
+
+        unrecognized = set()
+        tasks = set()
+        self.version = None
+
+        for flag in FLAGS:
+            setattr(self, f&#34;flag_{flag}&#34;, False)
+
+        for carg in cargs:
+            if carg.startswith(&#34;--&#34;):
+                flag = carg[2:]
+
+                if flag not in FLAGS:
+                    unrecognized.add(carg)
+                else:
+                    setattr(self, f&#34;flag_{flag}&#34;, True)
+            elif carg == &#34;all&#34;:
+                for task in TASKS:
+                    tasks.add(task)
+            elif carg in TASKS:
+                tasks.add(carg)
+            elif &#34;.&#34; in carg:
+                version = carg
+            else:
+                unrecognized.add(carg)
+
+        if not self.flag_silent:
+            console(f&#34;Enabled tasks: {&#39; &#39;.join(self.TASKS)}&#34;)
+        if version is None:
+            console(
+                f&#34;No version for the TF data given. Using default: {self.TF_VERSION}&#34;
+            )
+            version = self.TF_VERSION
+        else:
+            console(f&#34;Using TF version: {version}&#34;)
+
+        self.version = version
+
+        if len(unrecognized):
+            console(self.HELP)
+            console(f&#34;Unrecognized arguments: {&#39;, &#39;.join(sorted(unrecognized))}&#34;)
+            return -1
+
+        if len(tasks) == 0:
+            console(&#34;Nothing to do&#34;)
+            return 0
+
+        self.prepareRun(tasks)
+
+        return self.run(tasks)
+
+    def prepareRun(self, tasks):
+        return
+
+    def run(self, tasks):
+        TASKS = self.TASKS
+
+        for task in TASKS:
+            if task not in tasks:
+                continue
+
+            method = getattr(self, f&#34;doTask_{task}&#34;)
+            method()
+
+        return 0 if self.good else 1
+
     def doTask_tei2tf(self):
         good = self.good
-        silent = self.silent
-        relaxed = self.relaxed
-        useNLP = self.useNLP
+        silent = self.flag_silent
+        relaxed = self.flag_relaxed
+        usenlp = self.flag_usenlp
 
         if not good:
             if not silent:
@@ -165,7 +298,7 @@ class MakeWATM:
         verbose = -1 if silent else 0
         loadVerbose = DEEP if silent else TERSE
 
-        Tei = TEI(verbose=verbose, tei=0, tf=f&#34;{tfVersion}pre&#34; if useNLP else tfVersion)
+        Tei = TEI(verbose=verbose, tei=0, tf=f&#34;{tfVersion}pre&#34; if usenlp else tfVersion)
 
         console(&#34;Checking TEI ...&#34;)
 
@@ -195,7 +328,7 @@ class MakeWATM:
             self.good = False
             return
 
-        if useNLP:
+        if usenlp:
             console(&#34;Add tokens and sentences ...&#34;)
 
             org = self.org
@@ -231,7 +364,7 @@ class MakeWATM:
 
     def doTask_page2tf(self):
         good = self.good
-        silent = self.silent
+        silent = self.flag_silent
 
         if not good:
             if not silent:
@@ -277,7 +410,7 @@ class MakeWATM:
 
     def doTask_watm(self):
         good = self.good
-        silent = self.silent
+        silent = self.flag_silent
 
         if not good:
             if not silent:
@@ -307,7 +440,7 @@ class MakeWATM:
 
     def doTask_watms(self):
         good = self.good
-        silent = self.silent
+        silent = self.flag_silent
 
         if not good:
             if not silent:
@@ -321,137 +454,7 @@ class MakeWATM:
         console(&#34;Producing WATMs&#34;)
 
         W = WATMS(org, repo, backend, &#34;pagexml&#34;, silent=silent)
-        W.produce()
-
-    def run(self, tasks):
-        TASKS = self.TASKS
-
-        for task in TASKS:
-            if task not in tasks:
-                continue
-
-            method = getattr(self, f&#34;doTask_{task}&#34;)
-            method()
-
-        return 0 if self.good else 1
-
-    def setOptions(
-        self,
-        taskSpecs=(
-            (&#34;tei2tf&#34;, None),
-            (&#34;watm&#34;, None),
-        ),
-        flagSpecs=(
-            (&#34;help&#34;, None),
-            (&#34;silent&#34;, None),
-            (&#34;relaxed&#34;, None),
-            (&#34;usenlp&#34;, None),
-        ),
-    ):
-        self.TASKS = []
-        self.DOCS = {}
-        self.FLAGS = {}
-
-        good = True
-
-        for name, doc in taskSpecs:
-            if name not in self.BASE_TASKS:
-                if doc is None:
-                    console(f&#34;task {name}: no help text given&#34;, error=True)
-                    good = False
-
-                method = f&#34;doTask_{name}&#34;
-
-                if not hasattr(self, method):
-                    console(
-                        f&#34;task {name}: no method {method} defined in subclass&#34;,
-                        error=True,
-                    )
-                    good = False
-
-            if not good:
-                continue
-
-            self.TASKS.append(name)
-            self.DOCS[name] = doc
-
-        for name, doc in taskSpecs:
-            if name not in self.BASE_FLAGS:
-                if doc is None:
-                    console(f&#34;flag --{name}: no help text given&#34;, error=True)
-                    good = False
-
-            if not good:
-                continue
-
-            self.FLAGS[name] = doc
-
-        self.good = good
-
-        self.HELP = (
-            self.BASE_HELP
-            + &#34;\nFLAGS\n\n&#34;
-            + &#34;&#34;.join(f&#34;{name}\n\t{doc}&#34; for (name, doc) in self.FLAGS.items())
-            + &#34;\nTASKS\n\n&#34;
-            + &#34;&#34;.join(f&#34;{name}\n\t{doc}&#34; for (name, doc) in self.DOCS.items())
-        )
-
-    def main(self, cmdLine=None, cargs=sys.argv[1:]):
-        TASKS = self.TASKS
-
-        if cmdLine is not None:
-            cargs = cmdLine.split()
-
-        if &#34;--help&#34; in cargs:
-            console(self.HELP)
-            return 0
-
-        unrecognized = set()
-        tasks = set()
-        self.silent = False
-        self.version = None
-        self.relaxed = False
-        self.useNLP = False
-
-        for carg in cargs:
-            if carg == &#34;--silent&#34;:
-                self.silent = True
-            elif carg == &#34;--relaxed&#34;:
-                self.relaxed = True
-            elif carg == &#34;--usenlp&#34;:
-                self.useNLP = True
-            elif carg == &#34;all&#34;:
-                for task in TASKS:
-                    tasks.add(task)
-            elif carg in TASKS:
-                tasks.add(carg)
-            elif &#34;.&#34; in carg:
-                version = carg
-            else:
-                unrecognized.add(carg)
-
-        if not self.silent:
-            console(f&#34;Enabled tasks: {&#39; &#39;.join(self.TASKS)}&#34;)
-        if version is None:
-            console(
-                f&#34;No version for the TF data given. Using default: {self.TF_VERSION}&#34;
-            )
-            version = self.TF_VERSION
-        else:
-            console(f&#34;Using TF version: {version}&#34;)
-
-        self.version = version
-
-        if len(unrecognized):
-            console(self.HELP)
-            console(f&#34;Unrecognized arguments: {&#39;, &#39;.join(sorted(unrecognized))}&#34;)
-            return -1
-
-        if len(tasks) == 0:
-            console(&#34;Nothing to do&#34;)
-            return 0
-
-        return self.run(tasks)</code></pre>
+        W.produce()</code></pre>
 </details>
 </section>
 <section>
@@ -506,7 +509,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/makewatm.py#L18-L419" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81c7208eecee1adac51470e747edd3781135e950/tf/convert/makewatm.py#L18-L422" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class MakeWATM:
     &#34;&#34;&#34;Base class for running conversions to WATM.
@@ -572,10 +575,6 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
             Any arg that contains a . is considered to be the tf version number.
             If no version is passed, we resort to the hard coded default.
 
-        FLAGS
-
-        TASKS
-
         all
             run all (enabled) tasks
 
@@ -588,10 +587,9 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
             watms=&#34;Produce text/anno repo data for a sequence of corpora&#34;,
         )
         self.BASE_FLAGS = dict(
-            help=&#34;Print this help text&#34;,
             silent=&#34;To run a bit more silent&#34;,
             relaxed=&#34;Accept XML validation errors&#34;,
-            useNLP=&#34;Will run an NLP pipeline to mark tokens, sentences and entities&#34;,
+            usenlp=&#34;Will run an NLP pipeline to mark tokens, sentences and entities&#34;,
         )
         self.BASE_TASKS = (&#34;tei2tf&#34;, &#34;page2tf&#34;, &#34;watm&#34;, &#34;watms&#34;)
         self.TF_VERSION = &#34;0.0.0test&#34;
@@ -599,7 +597,6 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
         self.fileLoc = fileLoc
 
         self.good = True
-        self.silent = False
 
         repoBase = dirNm(dirNm(abspath(fileLoc)))
         (self.backend, self.org, self.repo, self.relative) = getLocation(
@@ -608,11 +605,150 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
         self.repoBase = repoBase
         self.setOptions()
 
+    def setOptions(
+        self,
+        taskSpecs=(
+            (&#34;tei2tf&#34;, None),
+            (&#34;watm&#34;, None),
+        ),
+        flagSpecs=(
+            (&#34;silent&#34;, None),
+            (&#34;relaxed&#34;, None),
+            (&#34;usenlp&#34;, None),
+        ),
+        intro=None,
+    ):
+        self.TASKS = []
+        self.DOCS = {}
+        self.FLAGS = {}
+
+        good = True
+
+        for name, doc in taskSpecs:
+            if name not in self.BASE_TASKS:
+                if doc is None:
+                    console(f&#34;task {name}: no help text given&#34;, error=True)
+                    good = False
+
+                method = f&#34;doTask_{name}&#34;
+
+                if not hasattr(self, method):
+                    console(
+                        f&#34;task {name}: no method {method} defined in subclass&#34;,
+                        error=True,
+                    )
+                    good = False
+
+            if not good:
+                continue
+
+            self.TASKS.append(name)
+            self.DOCS[name] = doc
+
+        for name, doc in flagSpecs:
+            if name not in self.BASE_FLAGS:
+                if doc is None:
+                    console(f&#34;flag --{name}: no help text given&#34;, error=True)
+                    good = False
+
+            if not good:
+                continue
+
+            self.FLAGS[name] = doc
+
+        self.good = good
+
+        self.HELP = (
+            (f&#34;{intro}\n\n&#34; if intro else &#34;&#34;)
+            + self.BASE_HELP
+            + &#34;\nFLAGS\n\n&#34;
+            + &#34;&#34;.join(f&#34;{name}\n\t{doc}&#34; for (name, doc) in self.FLAGS.items())
+            + &#34;\nTASKS\n\n&#34;
+            + &#34;&#34;.join(f&#34;{name}\n\t{doc}&#34; for (name, doc) in self.DOCS.items())
+            + &#34;\n\nall\n\trun all (enabled) tasks\n\n&#34;
+        )
+
+    def main(self, cmdLine=None, cargs=sys.argv[1:]):
+        FLAGS = self.FLAGS
+        TASKS = self.TASKS
+
+        if cmdLine is not None:
+            cargs = cmdLine.split()
+
+        if &#34;--help&#34; in cargs:
+            console(self.HELP)
+            return 0
+
+        unrecognized = set()
+        tasks = set()
+        self.version = None
+
+        for flag in FLAGS:
+            setattr(self, f&#34;flag_{flag}&#34;, False)
+
+        for carg in cargs:
+            if carg.startswith(&#34;--&#34;):
+                flag = carg[2:]
+
+                if flag not in FLAGS:
+                    unrecognized.add(carg)
+                else:
+                    setattr(self, f&#34;flag_{flag}&#34;, True)
+            elif carg == &#34;all&#34;:
+                for task in TASKS:
+                    tasks.add(task)
+            elif carg in TASKS:
+                tasks.add(carg)
+            elif &#34;.&#34; in carg:
+                version = carg
+            else:
+                unrecognized.add(carg)
+
+        if not self.flag_silent:
+            console(f&#34;Enabled tasks: {&#39; &#39;.join(self.TASKS)}&#34;)
+        if version is None:
+            console(
+                f&#34;No version for the TF data given. Using default: {self.TF_VERSION}&#34;
+            )
+            version = self.TF_VERSION
+        else:
+            console(f&#34;Using TF version: {version}&#34;)
+
+        self.version = version
+
+        if len(unrecognized):
+            console(self.HELP)
+            console(f&#34;Unrecognized arguments: {&#39;, &#39;.join(sorted(unrecognized))}&#34;)
+            return -1
+
+        if len(tasks) == 0:
+            console(&#34;Nothing to do&#34;)
+            return 0
+
+        self.prepareRun(tasks)
+
+        return self.run(tasks)
+
+    def prepareRun(self, tasks):
+        return
+
+    def run(self, tasks):
+        TASKS = self.TASKS
+
+        for task in TASKS:
+            if task not in tasks:
+                continue
+
+            method = getattr(self, f&#34;doTask_{task}&#34;)
+            method()
+
+        return 0 if self.good else 1
+
     def doTask_tei2tf(self):
         good = self.good
-        silent = self.silent
-        relaxed = self.relaxed
-        useNLP = self.useNLP
+        silent = self.flag_silent
+        relaxed = self.flag_relaxed
+        usenlp = self.flag_usenlp
 
         if not good:
             if not silent:
@@ -623,7 +759,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
         verbose = -1 if silent else 0
         loadVerbose = DEEP if silent else TERSE
 
-        Tei = TEI(verbose=verbose, tei=0, tf=f&#34;{tfVersion}pre&#34; if useNLP else tfVersion)
+        Tei = TEI(verbose=verbose, tei=0, tf=f&#34;{tfVersion}pre&#34; if usenlp else tfVersion)
 
         console(&#34;Checking TEI ...&#34;)
 
@@ -653,7 +789,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
             self.good = False
             return
 
-        if useNLP:
+        if usenlp:
             console(&#34;Add tokens and sentences ...&#34;)
 
             org = self.org
@@ -689,7 +825,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 
     def doTask_page2tf(self):
         good = self.good
-        silent = self.silent
+        silent = self.flag_silent
 
         if not good:
             if not silent:
@@ -735,7 +871,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 
     def doTask_watm(self):
         good = self.good
-        silent = self.silent
+        silent = self.flag_silent
 
         if not good:
             if not silent:
@@ -765,7 +901,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 
     def doTask_watms(self):
         good = self.good
-        silent = self.silent
+        silent = self.flag_silent
 
         if not good:
             if not silent:
@@ -779,137 +915,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
         console(&#34;Producing WATMs&#34;)
 
         W = WATMS(org, repo, backend, &#34;pagexml&#34;, silent=silent)
-        W.produce()
-
-    def run(self, tasks):
-        TASKS = self.TASKS
-
-        for task in TASKS:
-            if task not in tasks:
-                continue
-
-            method = getattr(self, f&#34;doTask_{task}&#34;)
-            method()
-
-        return 0 if self.good else 1
-
-    def setOptions(
-        self,
-        taskSpecs=(
-            (&#34;tei2tf&#34;, None),
-            (&#34;watm&#34;, None),
-        ),
-        flagSpecs=(
-            (&#34;help&#34;, None),
-            (&#34;silent&#34;, None),
-            (&#34;relaxed&#34;, None),
-            (&#34;usenlp&#34;, None),
-        ),
-    ):
-        self.TASKS = []
-        self.DOCS = {}
-        self.FLAGS = {}
-
-        good = True
-
-        for name, doc in taskSpecs:
-            if name not in self.BASE_TASKS:
-                if doc is None:
-                    console(f&#34;task {name}: no help text given&#34;, error=True)
-                    good = False
-
-                method = f&#34;doTask_{name}&#34;
-
-                if not hasattr(self, method):
-                    console(
-                        f&#34;task {name}: no method {method} defined in subclass&#34;,
-                        error=True,
-                    )
-                    good = False
-
-            if not good:
-                continue
-
-            self.TASKS.append(name)
-            self.DOCS[name] = doc
-
-        for name, doc in taskSpecs:
-            if name not in self.BASE_FLAGS:
-                if doc is None:
-                    console(f&#34;flag --{name}: no help text given&#34;, error=True)
-                    good = False
-
-            if not good:
-                continue
-
-            self.FLAGS[name] = doc
-
-        self.good = good
-
-        self.HELP = (
-            self.BASE_HELP
-            + &#34;\nFLAGS\n\n&#34;
-            + &#34;&#34;.join(f&#34;{name}\n\t{doc}&#34; for (name, doc) in self.FLAGS.items())
-            + &#34;\nTASKS\n\n&#34;
-            + &#34;&#34;.join(f&#34;{name}\n\t{doc}&#34; for (name, doc) in self.DOCS.items())
-        )
-
-    def main(self, cmdLine=None, cargs=sys.argv[1:]):
-        TASKS = self.TASKS
-
-        if cmdLine is not None:
-            cargs = cmdLine.split()
-
-        if &#34;--help&#34; in cargs:
-            console(self.HELP)
-            return 0
-
-        unrecognized = set()
-        tasks = set()
-        self.silent = False
-        self.version = None
-        self.relaxed = False
-        self.useNLP = False
-
-        for carg in cargs:
-            if carg == &#34;--silent&#34;:
-                self.silent = True
-            elif carg == &#34;--relaxed&#34;:
-                self.relaxed = True
-            elif carg == &#34;--usenlp&#34;:
-                self.useNLP = True
-            elif carg == &#34;all&#34;:
-                for task in TASKS:
-                    tasks.add(task)
-            elif carg in TASKS:
-                tasks.add(carg)
-            elif &#34;.&#34; in carg:
-                version = carg
-            else:
-                unrecognized.add(carg)
-
-        if not self.silent:
-            console(f&#34;Enabled tasks: {&#39; &#39;.join(self.TASKS)}&#34;)
-        if version is None:
-            console(
-                f&#34;No version for the TF data given. Using default: {self.TF_VERSION}&#34;
-            )
-            version = self.TF_VERSION
-        else:
-            console(f&#34;Using TF version: {version}&#34;)
-
-        self.version = version
-
-        if len(unrecognized):
-            console(self.HELP)
-            console(f&#34;Unrecognized arguments: {&#39;, &#39;.join(sorted(unrecognized))}&#34;)
-            return -1
-
-        if len(tasks) == 0:
-            console(&#34;Nothing to do&#34;)
-            return 0
-
-        return self.run(tasks)</code></pre>
+        W.produce()</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -921,11 +927,11 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/makewatm.py#L197-L241" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81c7208eecee1adac51470e747edd3781135e950/tf/convert/makewatm.py#L330-L374" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def doTask_page2tf(self):
     good = self.good
-    silent = self.silent
+    silent = self.flag_silent
 
     if not good:
         if not silent:
@@ -978,13 +984,13 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/makewatm.py#L118-L195" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81c7208eecee1adac51470e747edd3781135e950/tf/convert/makewatm.py#L251-L328" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def doTask_tei2tf(self):
     good = self.good
-    silent = self.silent
-    relaxed = self.relaxed
-    useNLP = self.useNLP
+    silent = self.flag_silent
+    relaxed = self.flag_relaxed
+    usenlp = self.flag_usenlp
 
     if not good:
         if not silent:
@@ -995,7 +1001,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
     verbose = -1 if silent else 0
     loadVerbose = DEEP if silent else TERSE
 
-    Tei = TEI(verbose=verbose, tei=0, tf=f&#34;{tfVersion}pre&#34; if useNLP else tfVersion)
+    Tei = TEI(verbose=verbose, tei=0, tf=f&#34;{tfVersion}pre&#34; if usenlp else tfVersion)
 
     console(&#34;Checking TEI ...&#34;)
 
@@ -1025,7 +1031,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
         self.good = False
         return
 
-    if useNLP:
+    if usenlp:
         console(&#34;Add tokens and sentences ...&#34;)
 
         org = self.org
@@ -1068,11 +1074,11 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/makewatm.py#L243-L271" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81c7208eecee1adac51470e747edd3781135e950/tf/convert/makewatm.py#L376-L404" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def doTask_watm(self):
     good = self.good
-    silent = self.silent
+    silent = self.flag_silent
 
     if not good:
         if not silent:
@@ -1109,11 +1115,11 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/makewatm.py#L273-L289" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81c7208eecee1adac51470e747edd3781135e950/tf/convert/makewatm.py#L406-L422" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def doTask_watms(self):
     good = self.good
-    silent = self.silent
+    silent = self.flag_silent
 
     if not good:
         if not silent:
@@ -1138,9 +1144,10 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/makewatm.py#L364-L419" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81c7208eecee1adac51470e747edd3781135e950/tf/convert/makewatm.py#L175-L234" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(self, cmdLine=None, cargs=sys.argv[1:]):
+    FLAGS = self.FLAGS
     TASKS = self.TASKS
 
     if cmdLine is not None:
@@ -1152,18 +1159,19 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 
     unrecognized = set()
     tasks = set()
-    self.silent = False
     self.version = None
-    self.relaxed = False
-    self.useNLP = False
+
+    for flag in FLAGS:
+        setattr(self, f&#34;flag_{flag}&#34;, False)
 
     for carg in cargs:
-        if carg == &#34;--silent&#34;:
-            self.silent = True
-        elif carg == &#34;--relaxed&#34;:
-            self.relaxed = True
-        elif carg == &#34;--usenlp&#34;:
-            self.useNLP = True
+        if carg.startswith(&#34;--&#34;):
+            flag = carg[2:]
+
+            if flag not in FLAGS:
+                unrecognized.add(carg)
+            else:
+                setattr(self, f&#34;flag_{flag}&#34;, True)
         elif carg == &#34;all&#34;:
             for task in TASKS:
                 tasks.add(task)
@@ -1174,7 +1182,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
         else:
             unrecognized.add(carg)
 
-    if not self.silent:
+    if not self.flag_silent:
         console(f&#34;Enabled tasks: {&#39; &#39;.join(self.TASKS)}&#34;)
     if version is None:
         console(
@@ -1195,7 +1203,23 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
         console(&#34;Nothing to do&#34;)
         return 0
 
+    self.prepareRun(tasks)
+
     return self.run(tasks)</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.makewatm.MakeWATM.prepareRun"><code class="name flex">
+<span>def <span class="ident">prepareRun</span></span>(<span>self, tasks)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/81c7208eecee1adac51470e747edd3781135e950/tf/convert/makewatm.py#L236-L237" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def prepareRun(self, tasks):
+    return</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.makewatm.MakeWATM.run"><code class="name flex">
@@ -1206,7 +1230,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/makewatm.py#L291-L301" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81c7208eecee1adac51470e747edd3781135e950/tf/convert/makewatm.py#L239-L249" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def run(self, tasks):
     TASKS = self.TASKS
@@ -1222,14 +1246,14 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 </details>
 </dd>
 <dt id="tf.convert.makewatm.MakeWATM.setOptions"><code class="name flex">
-<span>def <span class="ident">setOptions</span></span>(<span>self, taskSpecs=(('tei2tf', None), ('watm', None)), flagSpecs=(('help', None), ('silent', None), ('relaxed', None), ('usenlp', None)))</span>
+<span>def <span class="ident">setOptions</span></span>(<span>self, taskSpecs=(('tei2tf', None), ('watm', None)), flagSpecs=(('silent', None), ('relaxed', None), ('usenlp', None)), intro=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/73c4e5de155279806d103375a9326fe3f4b8ae66/tf/convert/makewatm.py#L303-L362" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81c7208eecee1adac51470e747edd3781135e950/tf/convert/makewatm.py#L112-L173" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setOptions(
     self,
@@ -1238,11 +1262,11 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
         (&#34;watm&#34;, None),
     ),
     flagSpecs=(
-        (&#34;help&#34;, None),
         (&#34;silent&#34;, None),
         (&#34;relaxed&#34;, None),
         (&#34;usenlp&#34;, None),
     ),
+    intro=None,
 ):
     self.TASKS = []
     self.DOCS = {}
@@ -1271,7 +1295,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
         self.TASKS.append(name)
         self.DOCS[name] = doc
 
-    for name, doc in taskSpecs:
+    for name, doc in flagSpecs:
         if name not in self.BASE_FLAGS:
             if doc is None:
                 console(f&#34;flag --{name}: no help text given&#34;, error=True)
@@ -1285,11 +1309,13 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
     self.good = good
 
     self.HELP = (
-        self.BASE_HELP
+        (f&#34;{intro}\n\n&#34; if intro else &#34;&#34;)
+        + self.BASE_HELP
         + &#34;\nFLAGS\n\n&#34;
         + &#34;&#34;.join(f&#34;{name}\n\t{doc}&#34; for (name, doc) in self.FLAGS.items())
         + &#34;\nTASKS\n\n&#34;
         + &#34;&#34;.join(f&#34;{name}\n\t{doc}&#34; for (name, doc) in self.DOCS.items())
+        + &#34;\n\nall\n\trun all (enabled) tasks\n\n&#34;
     )</code></pre>
 </details>
 </dd>
@@ -1370,6 +1396,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.convert.makewatm.MakeWATM.doTask_watm" href="#tf.convert.makewatm.MakeWATM.doTask_watm">doTask_watm</a></code></li>
 <li><code><a title="tf.convert.makewatm.MakeWATM.doTask_watms" href="#tf.convert.makewatm.MakeWATM.doTask_watms">doTask_watms</a></code></li>
 <li><code><a title="tf.convert.makewatm.MakeWATM.main" href="#tf.convert.makewatm.MakeWATM.main">main</a></code></li>
+<li><code><a title="tf.convert.makewatm.MakeWATM.prepareRun" href="#tf.convert.makewatm.MakeWATM.prepareRun">prepareRun</a></code></li>
 <li><code><a title="tf.convert.makewatm.MakeWATM.run" href="#tf.convert.makewatm.MakeWATM.run">run</a></code></li>
 <li><code><a title="tf.convert.makewatm.MakeWATM.setOptions" href="#tf.convert.makewatm.MakeWATM.setOptions">setOptions</a></code></li>
 </ul>
