@@ -20,21 +20,29 @@ pip install -e .
 
 ### 12.4
 
-#### 12.4.5
+#### 12.4.5,6
 
 2024-05-13
 
-Fix in the autodownload by TF.
-When TF downloads the `complete.zip` of a corpus and extracts it, it does not remove
-previously exisiting files in the directories in which the data files land.
-That pre-existing material can interfere in surprising ways with the resulting dataset,
-as Christian Højgaard experienced (thanks Christian for reporting it and taking
-the time to help me pinpoint the culprit).
+*   Fix in the autodownload by TF.
+    When TF downloads the `complete.zip` of a corpus and extracts it, it does
+    not remove previously exisiting files in the directories in which the data
+    files land.  That pre-existing material can interfere in surprising ways
+    with the resulting dataset, as Christian Højgaard experienced (thanks
+    Christian for reporting it and taking the time to help me pinpoint the culprit).
 
-The fix is that TF first inspects the `complete.zip` and determines what the
-folders are in which the file `__checkout__.txt` exists. These are the folders
-that do not tolerate pre-existing material. The will be deleted before extracting the
-zip file.
+    The fix is that TF first inspects the `complete.zip` and determines what the
+    folders are in which the file `__checkout__.txt` exists. These are the folders
+    that do not tolerate pre-existing material. The will be deleted before
+    extracting the zip file.
+
+*   Fix in displaying nodes by means of `pretty()`. Sometimes an error is raised
+    when composing the features and values that should be displayed for a node
+    (spotted by Cody Kingham, thanks). It happens in cases where you want to
+    show a feature of a related node on a node, but the related node does not exist.
+    In that case TF tries to access an undefined variable. That has been fixed.
+    Now these cases will not raise errors, but you might still be surprised by the
+    fact that in some cases the related node does not exist.
 
 #### 12.4.3,4
 

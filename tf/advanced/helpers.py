@@ -27,7 +27,7 @@ EM = "*empty*"
 SEQ_TYPES1 = {tuple, list}
 SEQ_TYPES2 = {tuple, list, set, frozenset}
 
-CI = CheckImport("marimo")
+CI = CheckImport("marimo", optional=True)
 if CI.importOK(hint=False):
     marimo = CI.importGet()
 else:

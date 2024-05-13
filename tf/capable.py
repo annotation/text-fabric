@@ -90,7 +90,7 @@ the second part is what should be installed.
 
 
 class CheckImport:
-    def __init__(self, *modules):
+    def __init__(self, *modules, optional=False):
         """Import modules if possible.
 
         You can use this class as a base class for each class you define where
@@ -142,7 +142,13 @@ class CheckImport:
         ----------
         modules: iterable
             Each item is a key in `tf.capable.INCIDENTAL_DEPS`
+
+        optional: boolean, optional False
+            If True, the loading of these modules is optional and will not generate
+            warnings.
         """
+        self.optional = optional
+
         semantics = []
         mods = []
         pipmods = []
@@ -222,9 +228,10 @@ class CheckImport:
         boolean
             Whether all imports were successful.
         """
+        optional = self.optional
         properlySetup = self.properlySetup
 
-        if not properlySetup:
+        if not optional and not properlySetup:
             console(self.message)
             if hint:
                 console(self.imessage)

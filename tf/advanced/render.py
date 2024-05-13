@@ -649,8 +649,9 @@ def _getFeatures(info, n, nType):
                 else:
                     refNode = n
 
+                value = None
+
                 if refNode is not None:
-                    value = None
 
                     if name in allEFeats:
                         esObj = eLookupMethod(name, warn=False)
