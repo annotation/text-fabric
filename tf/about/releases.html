@@ -43,6 +43,18 @@ and in its top-level directory run the command:</strong></p>
 </code></pre>
 <h2 id="12">12</h2>
 <h3 id="124">12.4</h3>
+<h4 id="1245">12.4.5</h4>
+<p>2024-05-13</p>
+<p>Fix in the autodownload by TF.
+When TF downloads the <code>complete.zip</code> of a corpus and extracts it, it does not remove
+previously exisiting files in the directories in which the data files land.
+That pre-existing material can interfere in surprising ways with the resulting dataset,
+as Christian Højgaard experienced (thanks Christian for reporting it and taking
+the time to help me pinpoint the culprit).</p>
+<p>The fix is that TF first inspects the <code>complete.zip</code> and determines what the
+folders are in which the file <code>__checkout__.txt</code> exists. These are the folders
+that do not tolerate pre-existing material. The will be deleted before extracting the
+zip file.</p>
 <h4 id="12434">12.4.3,4</h4>
 <p>2024-05-08</p>
 <ul>
@@ -396,7 +408,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/81c7208eecee1adac51470e747edd3781135e950/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/703d3977ff845baafe67bbbaa3a678e8deb2b911/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -470,6 +482,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
 <li><a href="#124">12.4</a><ul>
+<li><a href="#1245">12.4.5</a></li>
 <li><a href="#12434">12.4.3,4</a></li>
 <li><a href="#1242">12.4.2</a></li>
 <li><a href="#1241">12.4.1</a></li>
