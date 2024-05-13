@@ -45,7 +45,7 @@ directly from an attribute in the tree.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/703d3977ff845baafe67bbbaa3a678e8deb2b911/tf/advanced/render.py#L1-L732" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f49792c80ca8ce13c3c947466afba251bbcaf7ea/tf/advanced/render.py#L1-L733" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Render
@@ -698,8 +698,9 @@ def _getFeatures(info, n, nType):
                 else:
                     refNode = n
 
+                value = None
+
                 if refNode is not None:
-                    value = None
 
                     if name in allEFeats:
                         esObj = eLookupMethod(name, warn=False)
@@ -798,7 +799,7 @@ chunks / fragments, the graphics only occurs on the first fragment.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/703d3977ff845baafe67bbbaa3a678e8deb2b911/tf/advanced/render.py#L32-L96" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f49792c80ca8ce13c3c947466afba251bbcaf7ea/tf/advanced/render.py#L32-L96" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render(app, isPretty, n, _inTuple, _asString, explain, **options):
     &#34;&#34;&#34;Renders a node, in plain or pretty mode.

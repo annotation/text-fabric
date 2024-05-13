@@ -86,7 +86,7 @@ under section <code>[options.extras_require]</code> .</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/703d3977ff845baafe67bbbaa3a678e8deb2b911/tf/capable.py#L1-L352" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f49792c80ca8ce13c3c947466afba251bbcaf7ea/tf/capable.py#L1-L359" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Dependency management.
 
@@ -180,7 +180,7 @@ the second part is what should be installed.
 
 
 class CheckImport:
-    def __init__(self, *modules):
+    def __init__(self, *modules, optional=False):
         &#34;&#34;&#34;Import modules if possible.
 
         You can use this class as a base class for each class you define where
@@ -232,7 +232,13 @@ class CheckImport:
         ----------
         modules: iterable
             Each item is a key in `tf.capable.INCIDENTAL_DEPS`
+
+        optional: boolean, optional False
+            If True, the loading of these modules is optional and will not generate
+            warnings.
         &#34;&#34;&#34;
+        self.optional = optional
+
         semantics = []
         mods = []
         pipmods = []
@@ -312,9 +318,10 @@ class CheckImport:
         boolean
             Whether all imports were successful.
         &#34;&#34;&#34;
+        optional = self.optional
         properlySetup = self.properlySetup
 
-        if not properlySetup:
+        if not optional and not properlySetup:
             console(self.message)
             if hint:
                 console(self.imessage)
@@ -493,7 +500,7 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/703d3977ff845baafe67bbbaa3a678e8deb2b911/tf/capable.py#L251-L352" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f49792c80ca8ce13c3c947466afba251bbcaf7ea/tf/capable.py#L258-L359" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Capable:
     &#34;&#34;&#34;Import modules for back-end communication if possible.
@@ -608,7 +615,7 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/703d3977ff845baafe67bbbaa3a678e8deb2b911/tf/capable.py#L334-L352" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f49792c80ca8ce13c3c947466afba251bbcaf7ea/tf/capable.py#L341-L359" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def can(self, extra):
     if extra in {&#34;github&#34;, &#34;gitlab&#34;}:
@@ -639,7 +646,7 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/703d3977ff845baafe67bbbaa3a678e8deb2b911/tf/capable.py#L310-L322" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f49792c80ca8ce13c3c947466afba251bbcaf7ea/tf/capable.py#L317-L329" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, module):
     modules = self.modules
@@ -664,7 +671,7 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/703d3977ff845baafe67bbbaa3a678e8deb2b911/tf/capable.py#L324-L332" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f49792c80ca8ce13c3c947466afba251bbcaf7ea/tf/capable.py#L331-L339" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadFrom(self, module, *members):
     loaded = self.load(module)
@@ -685,7 +692,7 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/703d3977ff845baafe67bbbaa3a678e8deb2b911/tf/capable.py#L287-L308" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f49792c80ca8ce13c3c947466afba251bbcaf7ea/tf/capable.py#L294-L315" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tryImport(self, *extras):
     backendProviders = self.backendProviders
@@ -715,7 +722,7 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 </dd>
 <dt id="tf.capable.CheckImport"><code class="flex name class">
 <span>class <span class="ident">CheckImport</span></span>
-<span>(</span><span>*modules)</span>
+<span>(</span><span>*modules, optional=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Import modules if possible.</p>
@@ -757,14 +764,17 @@ Right at the beginning of each relevant method, say</p>
 <dl>
 <dt><strong><code>modules</code></strong> :&ensp;<code>iterable</code></dt>
 <dd>Each item is a key in <code><a title="tf.capable.INCIDENTAL_DEPS" href="#tf.capable.INCIDENTAL_DEPS">INCIDENTAL_DEPS</a></code></dd>
+<dt><strong><code>optional</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, the loading of these modules is optional and will not generate
+warnings.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/703d3977ff845baafe67bbbaa3a678e8deb2b911/tf/capable.py#L92-L248" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f49792c80ca8ce13c3c947466afba251bbcaf7ea/tf/capable.py#L92-L255" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CheckImport:
-    def __init__(self, *modules):
+    def __init__(self, *modules, optional=False):
         &#34;&#34;&#34;Import modules if possible.
 
         You can use this class as a base class for each class you define where
@@ -816,7 +826,13 @@ Right at the beginning of each relevant method, say</p>
         ----------
         modules: iterable
             Each item is a key in `tf.capable.INCIDENTAL_DEPS`
+
+        optional: boolean, optional False
+            If True, the loading of these modules is optional and will not generate
+            warnings.
         &#34;&#34;&#34;
+        self.optional = optional
+
         semantics = []
         mods = []
         pipmods = []
@@ -896,9 +912,10 @@ Right at the beginning of each relevant method, say</p>
         boolean
             Whether all imports were successful.
         &#34;&#34;&#34;
+        optional = self.optional
         properlySetup = self.properlySetup
 
-        if not properlySetup:
+        if not optional and not properlySetup:
             console(self.message)
             if hint:
                 console(self.imessage)
@@ -952,7 +969,7 @@ not packed in a 1-element list.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/703d3977ff845baafe67bbbaa3a678e8deb2b911/tf/capable.py#L234-L248" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f49792c80ca8ce13c3c947466afba251bbcaf7ea/tf/capable.py#L241-L255" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importGet(self):
     &#34;&#34;&#34;Delivers the imported modules.
@@ -991,7 +1008,7 @@ module.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/703d3977ff845baafe67bbbaa3a678e8deb2b911/tf/capable.py#L209-L232" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f49792c80ca8ce13c3c947466afba251bbcaf7ea/tf/capable.py#L215-L239" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importOK(self, hint=False):
     &#34;&#34;&#34;Reports the result of the import attempts.
@@ -1009,9 +1026,10 @@ module.</dd>
     boolean
         Whether all imports were successful.
     &#34;&#34;&#34;
+    optional = self.optional
     properlySetup = self.properlySetup
 
-    if not properlySetup:
+    if not optional and not properlySetup:
         console(self.message)
         if hint:
             console(self.imessage)
