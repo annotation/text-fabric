@@ -20,6 +20,22 @@ pip install -e .
 
 ### 12.4
 
+#### 12.4.5
+
+2024-05-13
+
+Fix in the autodownload by TF.
+When TF downloads the `complete.zip` of a corpus and extracts it, it does not remove
+previously exisiting files in the directories in which the data files land.
+That pre-existing material can interfere in surprising ways with the resulting dataset,
+as Christian Højgaard experienced (thanks Christian for reporting it and taking
+the time to help me pinpoint the culprit).
+
+The fix is that TF first inspects the `complete.zip` and determines what the
+folders are in which the file `__checkout__.txt` exists. These are the folders
+that do not tolerate pre-existing material. The will be deleted before extracting the
+zip file.
+
 #### 12.4.3,4
 
 2024-05-08

@@ -505,6 +505,38 @@ def bumpRelease(latestR, increase):
     return newTag
 
 
+def extractPrecise(z):
+    """Extracts a zip file precisely, by deleting some pre-existing material.
+
+    The contents of the zip file will be extracted to the *current* directory.
+    Each folder in the zip file that contains a file `__checkout__.txt` will
+    be deleted from the destination if it already exists.
+    Other folders will not be deleted.
+
+    Parameters
+    ----------
+    z: object
+        The Zip object from which to extract
+    """
+    # first make a list of all directories that contain __checkout__.txt
+
+    contents = {}
+
+    for zInfo in z.infolist():
+        fileName = zInfo.filename
+        comps = fileName.rstrip("/").split("/")
+        contents.setdefault("/".join(comps[0:-1]), set()).add(comps[-1])
+
+    clearableDirs = {x for (x, files) in contents.items() if EXPRESS_SYNC in files}
+
+    for x in clearableDirs:
+        dirRemove(x)
+
+    z.extractall()
+
+    return clearableDirs
+
+
 class Repo:
     """Auxiliary class for `releaseData`"""
 
@@ -1567,7 +1599,7 @@ class Checkout:
             if not dirExists(destZip):
                 dirMake(destZip)
             chDir(destZip)
-            z.extractall()
+            extractPrecise(z)
             chDir(cwd)
             dirRemove("__MACOSX")
         except Exception as e:
