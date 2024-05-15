@@ -650,12 +650,12 @@ const tokenControls = () => {
     if (eSectionHeading.length) {
       const nd = eSectionHeading.attr("node")
       const bucket = eSectionHeading.closest("div")
-      let viewerControls = bucket.next()
+      let viewerControls = bucket.prev()
 
       if (viewerControls.length == 0 || viewerControls.hasClass("b")) {
         eSectionHeading.attr("title", "hide context")
         eSectionHeading.addClass("center")
-        bucket.after(`
+        bucket.before(`
         <div class="viewercontrol">
           <button
             type="button"
@@ -665,11 +665,11 @@ const tokenControls = () => {
           >🔵</button>
         </div>
         `)
-        viewerControls = bucket.next()
-        viewerControls.after(`<div class="viewer"></div>`)
-        const viewer = viewerControls.next()
-        viewer.before("<hr>")
+        viewerControls = bucket.prev()
+        viewerControls.before(`<div class="viewer"></div>`)
+        const viewer = viewerControls.prev()
         viewer.after("<hr>")
+        viewer.before("<hr>")
         const go = document.querySelector("form")
         const formData = new FormData(go)
         const url = `/${toolkey}/context/${nd}`
@@ -698,9 +698,9 @@ const tokenControls = () => {
           },
         })
       } else {
-        viewerControls.next().next().next().remove()
-        viewerControls.next().next().remove()
-        viewerControls.next().remove()
+        viewerControls.prev().prev().prev().remove()
+        viewerControls.prev().prev().remove()
+        viewerControls.prev().remove()
         viewerControls.remove()
         bucket.removeClass("center")
         eSectionHeading.removeClass("center")

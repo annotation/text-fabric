@@ -208,6 +208,7 @@ class Serve(Request, Fragments):
 
         These actions are:
 
+        *   read the list of sets again
         *   switch to an other set than the current set
             and create it if it does not yet exist;
         *   duplicate the current set;
@@ -218,6 +219,7 @@ class Serve(Request, Fragments):
         `v`.
         """
         annotate = self.annotate
+        annotate.readSets()
 
         v = self.v
         chosenAnnoSet = v.annoset

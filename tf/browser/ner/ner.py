@@ -459,13 +459,15 @@ class NER(Annotate):
 
         total = 0
 
-        for eid, info in instructions.items():
+        for eid, info in sorted(instructions.items()):
             name = info.name
             kind = info.kind
             occSpecs = info.occSpecs
 
             for occSpec in occSpecs:
-                matches = inventory.get(toTokens(occSpec, spaceEscaped=spaceEscaped), None)
+                matches = inventory.get(
+                    toTokens(occSpec, spaceEscaped=spaceEscaped), None
+                )
                 if matches is None:
                     continue
                 n = len(matches)

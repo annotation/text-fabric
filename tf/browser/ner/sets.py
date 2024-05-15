@@ -57,9 +57,19 @@ class Sets(Data):
         self.annoSetRep = entitySet
         """The name representation of the current annotation set."""
 
+        self.setNames = set()
+        """The set of names of annotation sets that are present on the file system."""
+
+        self.readSets()
+
+    def readSets(self):
+        """Read the list current annotation sets (again).
+
+        Use this when you change annotation sets outside the NER browser, e.g.
+        by working with annotations in a Jupyter Notebook.
+        """
         annoDir = self.annoDir
         self.setNames = set(dirContents(annoDir)[1])
-        """The set of names of annotation sets that are present on the file system."""
 
     def getSetData(self):
         """Deliver the data of the current set.

@@ -20,6 +20,25 @@ pip install -e .
 
 ### 12.4
 
+#### 12.4.7
+
+2024-05-?? (Upcoming)
+
+Fixes in NER Browser:
+
+*   If you click a chunk heading
+    you get a box with the whole section, scrollable, just above
+    the section. Previously, you got this at the end of the  chunk,
+    which could be confusing if the chunk is long and the context box
+    disappears below the bottom of the page.
+
+*   When looking for complex names and translating such
+    names into tokens, leave out tokens that are just spaces.
+
+*   The NER browser will repeatedly read the list of annotation sets. This is needed
+    when sets have been added or deleted from outside the NER browser.
+    You do not have to restart the NER browser in that case.
+
 #### 12.4.5,6
 
 2024-05-13

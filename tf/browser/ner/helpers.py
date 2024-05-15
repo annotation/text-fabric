@@ -55,7 +55,8 @@ def toTokens(text, spaceEscaped=False):
         If True, it is assumed that if a `_` occurs in a token string, a space is meant.
     """
     result = TOKEN_RE.findall(normalize(text))
-    return tuple((t.replace("_", " ") for t in result) if spaceEscaped else result)
+    result = tuple((t.replace("_", " ") for t in result) if spaceEscaped else result)
+    return tuple(t for t in result if t != " ")
 
 
 def toAscii(text):
