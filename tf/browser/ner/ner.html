@@ -196,7 +196,7 @@ slots.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f49792c80ca8ce13c3c947466afba251bbcaf7ea/tf/browser/ner/ner.py#L1-L521" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/331baa8460d48d644338cf8e085d696cb9cbdbb0/tf/browser/ner/ner.py#L1-L523" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;API for rule-based entity marking.
 
@@ -659,13 +659,15 @@ class NER(Annotate):
 
         total = 0
 
-        for eid, info in instructions.items():
+        for eid, info in sorted(instructions.items()):
             name = info.name
             kind = info.kind
             occSpecs = info.occSpecs
 
             for occSpec in occSpecs:
-                matches = inventory.get(toTokens(occSpec, spaceEscaped=spaceEscaped), None)
+                matches = inventory.get(
+                    toTokens(occSpec, spaceEscaped=spaceEscaped), None
+                )
                 if matches is None:
                     continue
                 n = len(matches)
@@ -749,7 +751,7 @@ by the Annotate class on which it is based.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f49792c80ca8ce13c3c947466afba251bbcaf7ea/tf/browser/ner/ner.py#L232-L521" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/331baa8460d48d644338cf8e085d696cb9cbdbb0/tf/browser/ner/ner.py#L232-L523" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Annotate):
     def __init__(self, app):
@@ -981,13 +983,15 @@ by the Annotate class on which it is based.</p>
 
         total = 0
 
-        for eid, info in instructions.items():
+        for eid, info in sorted(instructions.items()):
             name = info.name
             kind = info.kind
             occSpecs = info.occSpecs
 
             for occSpec in occSpecs:
-                matches = inventory.get(toTokens(occSpec, spaceEscaped=spaceEscaped), None)
+                matches = inventory.get(
+                    toTokens(occSpec, spaceEscaped=spaceEscaped), None
+                )
                 if matches is None:
                     continue
                 n = len(matches)
@@ -1077,7 +1081,7 @@ slot sequences where those token sequences occur in the corpus.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f49792c80ca8ce13c3c947466afba251bbcaf7ea/tf/browser/ner/ner.py#L420-L444" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/331baa8460d48d644338cf8e085d696cb9cbdbb0/tf/browser/ner/ner.py#L420-L444" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeInventory(self):
     &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
@@ -1118,7 +1122,7 @@ If there is no inventory yet, it will be created.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f49792c80ca8ce13c3c947466afba251bbcaf7ea/tf/browser/ner/ner.py#L477-L521" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/331baa8460d48d644338cf8e085d696cb9cbdbb0/tf/browser/ner/ner.py#L479-L523" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def markEntities(self):
     &#34;&#34;&#34;Marks up the members of the inventory as entities.
@@ -1195,7 +1199,7 @@ the Excel sheet exists.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f49792c80ca8ce13c3c947466afba251bbcaf7ea/tf/browser/ner/ner.py#L259-L418" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/331baa8460d48d644338cf8e085d696cb9cbdbb0/tf/browser/ner/ner.py#L259-L418" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readInstructions(self, sheetName, force=False):
     &#34;&#34;&#34;Reads an Excel or YAML file with entity recognition instructions.
@@ -1369,7 +1373,7 @@ of which they are surface forms.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f49792c80ca8ce13c3c947466afba251bbcaf7ea/tf/browser/ner/ner.py#L446-L475" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/331baa8460d48d644338cf8e085d696cb9cbdbb0/tf/browser/ner/ner.py#L446-L477" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showInventory(self):
     &#34;&#34;&#34;Shows the inventory.
@@ -1387,13 +1391,15 @@ of which they are surface forms.</p></div>
 
     total = 0
 
-    for eid, info in instructions.items():
+    for eid, info in sorted(instructions.items()):
         name = info.name
         kind = info.kind
         occSpecs = info.occSpecs
 
         for occSpec in occSpecs:
-            matches = inventory.get(toTokens(occSpec, spaceEscaped=spaceEscaped), None)
+            matches = inventory.get(
+                toTokens(occSpec, spaceEscaped=spaceEscaped), None
+            )
             if matches is None:
                 continue
             n = len(matches)
@@ -1440,6 +1446,7 @@ of which they are surface forms.</p></div>
 <li><code><a title="tf.browser.ner.annotate.Annotate.mergeEntities" href="data.html#tf.browser.ner.data.Data.mergeEntities">mergeEntities</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.process" href="data.html#tf.browser.ner.data.Data.process">process</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.properlySetup" href="corpus.html#tf.browser.ner.corpus.Corpus.properlySetup">properlySetup</a></code></li>
+<li><code><a title="tf.browser.ner.annotate.Annotate.readSets" href="sets.html#tf.browser.ner.sets.Sets.readSets">readSets</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.resetSet" href="sets.html#tf.browser.ner.sets.Sets.resetSet">resetSet</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.saveEntitiesAs" href="data.html#tf.browser.ner.data.Data.saveEntitiesAs">saveEntitiesAs</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.sectionHead" href="corpus.html#tf.browser.ner.corpus.Corpus.sectionHead">sectionHead</a></code></li>

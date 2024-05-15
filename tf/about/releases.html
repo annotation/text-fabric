@@ -43,6 +43,28 @@ and in its top-level directory run the command:</strong></p>
 </code></pre>
 <h2 id="12">12</h2>
 <h3 id="124">12.4</h3>
+<h4 id="1247">12.4.7</h4>
+<p>2024-05-?? (Upcoming)</p>
+<p>Fixes in NER Browser:</p>
+<ul>
+<li>
+<p>If you click a chunk heading
+you get a box with the whole section, scrollable, just above
+the section. Previously, you got this at the end of the
+chunk,
+which could be confusing if the chunk is long and the context box
+disappears below the bottom of the page.</p>
+</li>
+<li>
+<p>When looking for complex names and translating such
+names into tokens, leave out tokens that are just spaces.</p>
+</li>
+<li>
+<p>The NER browser will repeatedly read the list of annotation sets. This is needed
+when sets have been added or deleted from outside the NER browser.
+You do not have to restart the NER browser in that case.</p>
+</li>
+</ul>
 <h4 id="12456">12.4.5,6</h4>
 <p>2024-05-13</p>
 <ul>
@@ -422,7 +444,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f49792c80ca8ce13c3c947466afba251bbcaf7ea/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/331baa8460d48d644338cf8e085d696cb9cbdbb0/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -496,6 +518,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
 <li><a href="#124">12.4</a><ul>
+<li><a href="#1247">12.4.7</a></li>
 <li><a href="#12456">12.4.5,6</a></li>
 <li><a href="#12434">12.4.3,4</a></li>
 <li><a href="#1242">12.4.2</a></li>
