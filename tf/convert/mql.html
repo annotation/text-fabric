@@ -85,23 +85,17 @@ mapped onto sets of nodes to which the edges go. And that notion is supported by
 MQL:
 edge features are translated into MQL features of type <code>LIST OF id_d</code>,
 i.e. lists of object identifiers.</p>
-<p>!!! caution TF Edge features become multivalued when translated to MQL.
-This has an important consequence: a feature in MQL with type <code>id_d</code> translates
+<div class="admonition caution">
+<p class="admonition-title">TF Edge features become multivalued when translated to MQL</p>
+<p>This has an important consequence: a feature in MQL with type <code>id_d</code> translates
 to an edge in TF. If we translate this edge back to MQL, we get a feature of type
 <code>LIST OF id_d</code>.</p>
-<pre><code>Queries in the original MQL with conditions like
-
-```
-[object_type edge_feature = some_id]
-```
-
-will not work for the edge feature that has made the roundtrip through TF.
-Instead, when working in the round-tripped MQL, you have to say
-
-```
-[object_type edge_feature HAS some_id]
-```
-</code></pre>
+<p>Queries in the original MQL with conditions like</p>
+<p><code>[object_type edge_feature = some_id]</code></p>
+<p>will not work for the edge feature that has made the roundtrip through TF.
+Instead, when working in the round-tripped MQL, you have to say</p>
+<p><code>[object_type edge_feature HAS some_id]</code></p>
+</div>
 <h2 id="naming-of-features-in-mql">Naming of features in MQL</h2>
 <div class="admonition caution">
 <p class="admonition-title">Legal names in MQL</p>
@@ -146,7 +140,7 @@ rm dataset ; mql -b 3 &lt; dataset.mql
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/32ad9d3bfdd2984eac0927fc14db845c659b478f/tf/convert/mql.py#L1-L1040" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/mql.py#L1-L1040" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # MQL
@@ -224,7 +218,7 @@ MQL:
 edge features are translated into MQL features of type `LIST OF id_d`,
 i.e. lists of object identifiers.
 
-!!! caution TF Edge features become multivalued when translated to MQL.
+!!! caution &#34;TF Edge features become multivalued when translated to MQL&#34;
     This has an important consequence: a feature in MQL with type `id_d` translates
     to an edge in TF. If we translate this edge back to MQL, we get a feature of type
     `LIST OF id_d`.
@@ -1229,7 +1223,7 @@ and <code>.</code> to the current directory, both only at the start of <code>exp
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/32ad9d3bfdd2984eac0927fc14db845c659b478f/tf/convert/mql.py#L173-L220" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/mql.py#L173-L220" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exportMQL(app, mqlDb, exportDir=None):
     &#34;&#34;&#34;Exports the complete TF dataset into single MQL database.
@@ -1346,7 +1340,7 @@ MQL data into TF.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/32ad9d3bfdd2984eac0927fc14db845c659b478f/tf/convert/mql.py#L223-L295" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/mql.py#L223-L295" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importMQL(mqlFile, saveDir, silent=None, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Converts an MQL database dump to a TF dataset.
@@ -1432,7 +1426,7 @@ such as backslash <code>xb6</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/32ad9d3bfdd2984eac0927fc14db845c659b478f/tf/convert/mql.py#L693-L698" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/mql.py#L693-L698" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeuni(match):
     &#34;&#34;&#34;Make proper UNICODE of a text that contains byte escape codes
@@ -1450,7 +1444,7 @@ such as backslash <code>xb6</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/32ad9d3bfdd2984eac0927fc14db845c659b478f/tf/convert/mql.py#L727-L928" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/mql.py#L727-L928" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def parseMql(mqlFile, tmObj):
     info = tmObj.info
@@ -1664,7 +1658,7 @@ such as backslash <code>xb6</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/32ad9d3bfdd2984eac0927fc14db845c659b478f/tf/convert/mql.py#L931-L1040" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/mql.py#L931-L1040" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tfFromData(tmObj, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
     info = tmObj.info
@@ -1793,7 +1787,7 @@ such as backslash <code>xb6</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/32ad9d3bfdd2984eac0927fc14db845c659b478f/tf/convert/mql.py#L705-L724" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/mql.py#L705-L724" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tfFromMql(mqlFile, tmObj, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Generate TF from MQL
@@ -1825,7 +1819,7 @@ such as backslash <code>xb6</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/32ad9d3bfdd2984eac0927fc14db845c659b478f/tf/convert/mql.py#L701-L702" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/mql.py#L701-L702" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def uni(line):
     return uniscan.sub(makeuni, line)</code></pre>
@@ -1845,7 +1839,7 @@ such as backslash <code>xb6</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/32ad9d3bfdd2984eac0927fc14db845c659b478f/tf/convert/mql.py#L298-L685" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/mql.py#L298-L685" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class MQL:
     def __init__(self, app, mqlDb, exportDir, silent=SILENT_D):
@@ -2246,7 +2240,7 @@ GO
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/32ad9d3bfdd2984eac0927fc14db845c659b478f/tf/convert/mql.py#L317-L351" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/mql.py#L317-L351" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def write(self):
     silent = self.silent
