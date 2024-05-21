@@ -74,7 +74,7 @@ MQL:
 edge features are translated into MQL features of type `LIST OF id_d`,
 i.e. lists of object identifiers.
 
-!!! caution TF Edge features become multivalued when translated to MQL.
+!!! caution "TF Edge features become multivalued when translated to MQL"
     This has an important consequence: a feature in MQL with type `id_d` translates
     to an edge in TF. If we translate this edge back to MQL, we get a feature of type
     `LIST OF id_d`.
