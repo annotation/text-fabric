@@ -272,6 +272,16 @@ class NER(Annotate):
         which is the result of looking up all entities in the corpus on the basis
         of the instructions.
 
+        The format of the spreadsheet should be:
+
+        *   exactly two header rows;
+        *   after that, empty rows are allowed and discarded;
+        *   only the first three columns are used:
+
+            *   name: full name, not in any prescribed format
+            *   kind: the kind of entity, e.g. `PER`, `LOC`, `ORG`, `MISC`
+            *   occurrence forms: forms of the name that actually occur in the text
+
         Parameters
         ----------
         sheetName: string
@@ -341,7 +351,7 @@ class NER(Annotate):
                 synonyms = sorted(
                     set()
                     if not synonymStr
-                    else {normalize(x) for x in synonymStr.split(";")}
+                    else {y for x in synonymStr.split(";") if (y := normalize(x)) != ""}
                 )
                 if not name:
                     name = synonyms[0] if synonyms else ""

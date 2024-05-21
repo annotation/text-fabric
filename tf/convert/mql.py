@@ -64,14 +64,35 @@ The reason is that MQL considers equal values in different types as
 distinct values. If we had separate types, we could never compare
 values for different features.
 
-There is no place for edge values in
-MQL. There is only one concept of feature in MQL: object features,
-which are node features.
+## Edge features in MQL
+
+There is no place for edge values in MQL. There is only one concept of feature
+in MQL: object features, which are node features.
 But TF edges without values can be seen as node features: nodes are
 mapped onto sets of nodes to which the edges go. And that notion is supported by
 MQL:
 edge features are translated into MQL features of type `LIST OF id_d`,
 i.e. lists of object identifiers.
+
+!!! caution TF Edge features become multivalued when translated to MQL.
+    This has an important consequence: a feature in MQL with type `id_d` translates
+    to an edge in TF. If we translate this edge back to MQL, we get a feature of type
+    `LIST OF id_d`.
+
+    Queries in the original MQL with conditions like
+
+    ```
+    [object_type edge_feature = some_id]
+    ```
+
+    will not work for the edge feature that has made the roundtrip through TF.
+    Instead, when working in the round-tripped MQL, you have to say
+
+    ```
+    [object_type edge_feature HAS some_id]
+    ```
+
+## Naming of features in MQL
 
 !!! caution "Legal names in MQL"
     MQL names for databases, object types and features must be valid C identifiers
