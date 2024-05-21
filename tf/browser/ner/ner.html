@@ -196,7 +196,7 @@ slots.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/331baa8460d48d644338cf8e085d696cb9cbdbb0/tf/browser/ner/ner.py#L1-L523" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/32ad9d3bfdd2984eac0927fc14db845c659b478f/tf/browser/ner/ner.py#L1-L533" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;API for rule-based entity marking.
 
@@ -472,6 +472,16 @@ class NER(Annotate):
         which is the result of looking up all entities in the corpus on the basis
         of the instructions.
 
+        The format of the spreadsheet should be:
+
+        *   exactly two header rows;
+        *   after that, empty rows are allowed and discarded;
+        *   only the first three columns are used:
+
+            *   name: full name, not in any prescribed format
+            *   kind: the kind of entity, e.g. `PER`, `LOC`, `ORG`, `MISC`
+            *   occurrence forms: forms of the name that actually occur in the text
+
         Parameters
         ----------
         sheetName: string
@@ -541,7 +551,7 @@ class NER(Annotate):
                 synonyms = sorted(
                     set()
                     if not synonymStr
-                    else {normalize(x) for x in synonymStr.split(&#34;;&#34;)}
+                    else {y for x in synonymStr.split(&#34;;&#34;) if (y := normalize(x)) != &#34;&#34;}
                 )
                 if not name:
                     name = synonyms[0] if synonyms else &#34;&#34;
@@ -751,7 +761,7 @@ by the Annotate class on which it is based.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/331baa8460d48d644338cf8e085d696cb9cbdbb0/tf/browser/ner/ner.py#L232-L523" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/32ad9d3bfdd2984eac0927fc14db845c659b478f/tf/browser/ner/ner.py#L232-L533" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Annotate):
     def __init__(self, app):
@@ -795,6 +805,16 @@ by the Annotate class on which it is based.</p>
         Reading instructions will invalidate the `inventory` member of this object,
         which is the result of looking up all entities in the corpus on the basis
         of the instructions.
+
+        The format of the spreadsheet should be:
+
+        *   exactly two header rows;
+        *   after that, empty rows are allowed and discarded;
+        *   only the first three columns are used:
+
+            *   name: full name, not in any prescribed format
+            *   kind: the kind of entity, e.g. `PER`, `LOC`, `ORG`, `MISC`
+            *   occurrence forms: forms of the name that actually occur in the text
 
         Parameters
         ----------
@@ -865,7 +885,7 @@ by the Annotate class on which it is based.</p>
                 synonyms = sorted(
                     set()
                     if not synonymStr
-                    else {normalize(x) for x in synonymStr.split(&#34;;&#34;)}
+                    else {y for x in synonymStr.split(&#34;;&#34;) if (y := normalize(x)) != &#34;&#34;}
                 )
                 if not name:
                     name = synonyms[0] if synonyms else &#34;&#34;
@@ -1081,7 +1101,7 @@ slot sequences where those token sequences occur in the corpus.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/331baa8460d48d644338cf8e085d696cb9cbdbb0/tf/browser/ner/ner.py#L420-L444" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/32ad9d3bfdd2984eac0927fc14db845c659b478f/tf/browser/ner/ner.py#L430-L454" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeInventory(self):
     &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
@@ -1122,7 +1142,7 @@ If there is no inventory yet, it will be created.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/331baa8460d48d644338cf8e085d696cb9cbdbb0/tf/browser/ner/ner.py#L479-L523" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/32ad9d3bfdd2984eac0927fc14db845c659b478f/tf/browser/ner/ner.py#L489-L533" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def markEntities(self):
     &#34;&#34;&#34;Marks up the members of the inventory as entities.
@@ -1185,6 +1205,19 @@ converted to YAML.</p>
 <p>Reading instructions will invalidate the <code>inventory</code> member of this object,
 which is the result of looking up all entities in the corpus on the basis
 of the instructions.</p>
+<p>The format of the spreadsheet should be:</p>
+<ul>
+<li>exactly two header rows;</li>
+<li>after that, empty rows are allowed and discarded;</li>
+<li>
+<p>only the first three columns are used:</p>
+<ul>
+<li>name: full name, not in any prescribed format</li>
+<li>kind: the kind of entity, e.g. <code>PER</code>, <code>LOC</code>, <code>ORG</code>, <code>MISC</code></li>
+<li>occurrence forms: forms of the name that actually occur in the text</li>
+</ul>
+</li>
+</ul>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>sheetName</code></strong> :&ensp;<code>string</code></dt>
@@ -1199,7 +1232,7 @@ the Excel sheet exists.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/331baa8460d48d644338cf8e085d696cb9cbdbb0/tf/browser/ner/ner.py#L259-L418" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/32ad9d3bfdd2984eac0927fc14db845c659b478f/tf/browser/ner/ner.py#L259-L428" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readInstructions(self, sheetName, force=False):
     &#34;&#34;&#34;Reads an Excel or YAML file with entity recognition instructions.
@@ -1216,6 +1249,16 @@ the Excel sheet exists.</dd>
     Reading instructions will invalidate the `inventory` member of this object,
     which is the result of looking up all entities in the corpus on the basis
     of the instructions.
+
+    The format of the spreadsheet should be:
+
+    *   exactly two header rows;
+    *   after that, empty rows are allowed and discarded;
+    *   only the first three columns are used:
+
+        *   name: full name, not in any prescribed format
+        *   kind: the kind of entity, e.g. `PER`, `LOC`, `ORG`, `MISC`
+        *   occurrence forms: forms of the name that actually occur in the text
 
     Parameters
     ----------
@@ -1286,7 +1329,7 @@ the Excel sheet exists.</dd>
             synonyms = sorted(
                 set()
                 if not synonymStr
-                else {normalize(x) for x in synonymStr.split(&#34;;&#34;)}
+                else {y for x in synonymStr.split(&#34;;&#34;) if (y := normalize(x)) != &#34;&#34;}
             )
             if not name:
                 name = synonyms[0] if synonyms else &#34;&#34;
@@ -1373,7 +1416,7 @@ of which they are surface forms.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/331baa8460d48d644338cf8e085d696cb9cbdbb0/tf/browser/ner/ner.py#L446-L477" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/32ad9d3bfdd2984eac0927fc14db845c659b478f/tf/browser/ner/ner.py#L456-L487" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showInventory(self):
     &#34;&#34;&#34;Shows the inventory.
