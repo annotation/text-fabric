@@ -424,6 +424,7 @@ class NER(Annotate):
         else:
             console(f"{nm} occurrence specifiers are ambiguous")
 
+        self.namesByOcc = namesByOcc
         self.instructions = readYaml(asFile=yamlFile)
         self.inventory = None
 
@@ -451,7 +452,11 @@ class NER(Annotate):
             for occSpec in info.occSpecs:
                 qSets.add(toTokens(occSpec, spaceEscaped=spaceEscaped))
 
+        app = self.app
+        app.indent(reset=True)
+        app.info(f"Looking up occurrences of {len(qSets)} candidates ...")
         self.inventory = self.findOccs(qSets)
+        app.info("Done")
 
     def showInventory(self):
         """Shows the inventory.
@@ -531,3 +536,14 @@ class NER(Annotate):
                 newEntities.append((fVals, matches))
 
         self.addEntities(newEntities, silent=False)
+
+    def bakeEntities(self, versionExtension="e"):
+        """Bakes the entities of the current set as nodes into a new TF data source.
+
+        Parameters
+        ----------
+        versionExtension: string, optional "e"
+            The new dataset gets a version like the original dataset, but extended
+            with this string.
+        """
+        self.consolidateEntities(versionExtension=versionExtension)

@@ -26,34 +26,40 @@ def occMatch(getTokens, b, qTokenSet, results):
         A single occurrence is represented as a tuple of slots.
     """
     bTokensAll = getTokens(b)
-    bTokens = [x for x in bTokensAll if (x[1] or '').strip()]
-    bStrings = {s for (t, s) in bTokens}
-    nBTokens = len(bTokens)
+    bTokens = [x for x in bTokensAll if (x[1] or "").strip()]
+    # bStrings = {s for (t, s) in bTokens}
+    bStrings = []
+    bStringFirst = {}
+    bStringLast = {}
+
+    for t, s in bTokens:
+        if len(bStrings) > 1 and bStrings[-1] == "-":
+            bStrings.pop()
+            bStrings[-1] += s
+            bStringLast[len(bStrings) - 1] = t
+        else:
+            bStrings.append(s)
+            bStringFirst[len(bStrings) - 1] = t
+            bStringLast[len(bStrings) - 1] = t
+
+    bStrings = tuple(bStrings)
+    bStringSet = set(bStrings)
 
     for qTokens in qTokenSet:
-        if any(s not in bStrings for s in qTokens):
+        if any(s not in bStringSet for s in qTokens):
             continue
 
         nTokens = len(qTokens)
 
-        for i, (t, w) in enumerate(bTokens):
-            if w != qTokens[0]:
+        for i, s in enumerate(bStrings):
+            if qTokens != bStrings[i:i + nTokens]:
                 continue
-            if i + nTokens - 1 >= nBTokens:
-                break
 
-            match = True
+            firstT = bStringFirst[i]
+            lastT = bStringLast[i + nTokens - 1]
+            slots = tuple(range(firstT, lastT + 1))
 
-            for j, w in enumerate(qTokens[1:]):
-                if bTokens[i + j + 1][1] != w:
-                    match = False
-                    break
-
-            if match:
-                lastT = bTokens[i + nTokens - 1][0]
-                slots = tuple(range(t, lastT + 1))
-
-                results.setdefault(qTokens, []).append(slots)
+            results.setdefault(qTokens, []).append(slots)
 
 
 def entityMatch(

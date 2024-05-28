@@ -18,11 +18,11 @@ pip install -e .
 
 ## 12
 
-### 12.4
+### 12.5
 
-#### 12.4.7
+#### 12.5.0
 
-2024-05-?? (Upcoming)
+2024-05-28 (Upcoming)
 
 Fixes in NER Browser:
 
@@ -38,6 +38,23 @@ Fixes in NER Browser:
 *   The NER browser will repeatedly read the list of annotation sets. This is needed
     when sets have been added or deleted from outside the NER browser.
     You do not have to restart the NER browser in that case.
+
+*   Hyphenated occurrences were not found. That has been fixed, without decreasing the
+    speed of the algorithm too much.
+
+*   Once a set of entities has been marked, it can now also be baked into the TF
+    dataset.
+
+Fix in display algorithm
+
+*   In plain display, when a line break occurs, we needed a trick to make it happen,
+    because such a display is a flex box. A simple `<br>` has no effect.
+    We found the trick and it worked. However, if the break occurs in something that
+    is also highlighted, the trick did not work anymore, because the highlight
+    introduces an extra `<span>` level. We fixed it by disrupting the extra span level
+    for the tricked br and resuming it after the br.
+
+### 12.4
 
 #### 12.4.5,6
 

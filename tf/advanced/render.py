@@ -154,6 +154,7 @@ def _render(
         (contribB, contribE) = _plainPre(info, n, boundaryCls, outer, switched)
         contrib = _plainTree(
             contribB,
+            contribE,
             tree,
             outer,
             first,
@@ -237,6 +238,7 @@ SPAN_RE = re.compile(r"^(<span\b[^>]*>)(.*)(</span>)$", re.S)
 
 def _plainTree(
     contribB,
+    contribE,
     tree,
     outer,
     first,
@@ -302,6 +304,7 @@ def _plainTree(
             # so we create a "breaking" span by setting the width to 100% and
             # the height to 0
             # See https://tobiasahlin.com/blog/flexbox-break-to-new-row/
+            # We might have to dig one level of spans deeper if contribB is not empty
             if "<br>" in material:
                 match = SPAN_RE.match(material)
                 if match:
@@ -309,7 +312,13 @@ def _plainTree(
                 else:
                     (start, content, end) = ("", material, "")
                 parts = content.split("<br>")
-                material = '<span class="break"><br></span>'.join(
+                joinerBase = '<span class="break"><br></span>'
+                joiner = (
+                    joinerBase
+                    if contribB == ""
+                    else f"{contribE}{joinerBase}{contribB}"
+                )
+                material = joiner.join(
                     f"{cb}{start}{part}{end}{ce}" for part in parts
                 )
                 contrib = material
@@ -652,7 +661,6 @@ def _getFeatures(info, n, nType):
                 value = None
 
                 if refNode is not None:
-
                     if name in allEFeats:
                         esObj = eLookupMethod(name, warn=False)
                         valueF = esObj.f(refNode)

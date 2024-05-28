@@ -338,7 +338,8 @@ an annotation, divided in the following fields:
 
     *   **single** this is a target pointing to a single thing, either:
 
-        *   `fn:bbb`: a single token
+        *   `fn:bbb`: a single token, at the index position `bbb` in the
+            `_ordered_segments` in the file `text-fn.json`. De first position is `0`.
 
         *   `fn:bbb-eee`: a range of text segments in the `_ordered_segments`
             in the file `text-fn.json`; the token at position `eee` is not included.
@@ -363,6 +364,92 @@ an annotation, divided in the following fields:
 
             If `fff` and `ttt` target segments, than they must both contain a file
             specifier, even if both target a segment in the same token file.
+
+## Entities
+
+Entities are coded in the TF and exported in the regular way to WATM.
+Here are the details.
+
+In TF there are nodes of type `ent` which correspond to entity occurrences.
+These nodes have two features: `eid` and `kind`. Together they uniquely identify
+the concept of an entity and all its occurrences, represented in TF by nodes of type
+`entity`.
+There are edges names `eoccs` from `entity` nodes to all `ent` nodes that are
+their occurrences.
+These entity nodes also have the features `eid` and `kind`, with the same
+values as you see on their `ent` nodes.
+
+How does this translate to the WATM output?
+
+Let's start with the `ent` nodes (and maybe for publishing we do not even need
+the `entity` nodes and the `eoccs` edges).
+
+Let's inspect an example (taken from the Suriano corpus):
+
+    a00301550	element	tf	ent	472:1316-1320
+
+This is the *id* of an entity occurrence annotation:
+
+*   *kind* = `element`
+*   *namespace* = `tf`
+*   *body* = `ent`
+*   *target* = the list of tokens in file 472 from positions 1316 to 1320.
+
+    Looking in text file 472 we find the text of the entity on lines 1317, 1318,
+    1319 and 1320 (we shift one downwards because the file contains a header line; when
+    the file is used to read in the ordered segments, we take the segments at positions
+    1316, 1317, 1318, 1319) and they contain the text:
+
+        ambasciator d ’ Inghilterra
+
+Associated with the annotation id `a00301550` we see the following annotations:
+
+*   `a00329572	attribute	tf	eid=dudley.carleton	a00301550`
+
+    This gives the entity id of this occurrence: `dudley.carleton`.
+
+*   `a00635517	attribute	tf	kind=PER	a00301550`
+
+    This gives the entity kind of this occurrence: `PER`.
+
+Now we move to the `entity` node of which this is an occurrence. We find the
+annotation:
+
+    a00850177	edge	tf	eoccs	a00015782->a00301550
+
+This means there is an edge from `a00015782` to this occurrence. Let's lookup
+what `a00015782` is. First of all:
+
+    a00015782	element	tf	entity	9:158-677:783
+
+It is an `entity` node and its first occurrence starts at `9:158` and its last
+occurrence ends at `677:783`. This is not directly useful, since there is an enormous
+amount of text in between that is not covered by this entity.
+The important information is that this is an entity element.
+Associated with this element we see the following annotations:
+
+*   `a00333926	attribute	tf	eid=dudley.carleton	a00015782`
+*   `a00639871	attribute	tf	kind=PER	a00015782`
+
+So the entity as a whole has the same properties as each of its occurrences.
+But how do we find the occurrences? When we look further for `a00015782` we find
+a bunch of annotations (336 in total) like this:
+
+    a00849965	edge	tf	eoccs	a00015782->a00297761
+    a00849966	edge	tf	eoccs	a00015782->a00297763
+    a00849967	edge	tf	eoccs	a00015782->a00297764
+    ...
+    a00850177	edge	tf	eoccs	a00015782->a00301550
+    ...
+    a00850298	edge	tf	eoccs	a00015782->a00303415
+    a00850299	edge	tf	eoccs	a00015782->a00303420
+    a00850300	edge	tf	eoccs	a00015782->a00303449
+
+These are all edges named `eoccs` from this `entity` element to all its `ent` elements,
+and we see `a00301550` among them.
+We have already seen how we can get the exact occurrence from an `ent` annotation,
+so repeating that procedure for all these `ent` annotations gives all the
+occurrences of entity `Dudley Carleton`.
 
 # Configuration
 
@@ -485,6 +572,8 @@ NS_FROM_OTYPE = dict(
     char=NS_TF,
     token=NS_NLP,
     sentence=NS_NLP,
+    ent=NS_TF,
+    entity=NS_TF,
 )
 NS_FROM_FEAT = dict(
     otype=NS_TF,
@@ -495,6 +584,9 @@ NS_FROM_FEAT = dict(
     rafter=NS_TF,
     str=NS_TF,
     rstr=NS_TF,
+    eid=NS_TF,
+    kind=NS_TF,
+    eoccs=NS_TF,
 )
 
 KIND_EDGE = "edge"
