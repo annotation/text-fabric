@@ -45,7 +45,7 @@ directly from an attribute in the tree.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/advanced/render.py#L1-L733" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/advanced/render.py#L1-L741" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Render
@@ -203,6 +203,7 @@ def _render(
         (contribB, contribE) = _plainPre(info, n, boundaryCls, outer, switched)
         contrib = _plainTree(
             contribB,
+            contribE,
             tree,
             outer,
             first,
@@ -286,6 +287,7 @@ SPAN_RE = re.compile(r&#34;^(&lt;span\b[^&gt;]*&gt;)(.*)(&lt;/span&gt;)$&#34;, r
 
 def _plainTree(
     contribB,
+    contribE,
     tree,
     outer,
     first,
@@ -351,6 +353,7 @@ def _plainTree(
             # so we create a &#34;breaking&#34; span by setting the width to 100% and
             # the height to 0
             # See https://tobiasahlin.com/blog/flexbox-break-to-new-row/
+            # We might have to dig one level of spans deeper if contribB is not empty
             if &#34;&lt;br&gt;&#34; in material:
                 match = SPAN_RE.match(material)
                 if match:
@@ -358,7 +361,13 @@ def _plainTree(
                 else:
                     (start, content, end) = (&#34;&#34;, material, &#34;&#34;)
                 parts = content.split(&#34;&lt;br&gt;&#34;)
-                material = &#39;&lt;span class=&#34;break&#34;&gt;&lt;br&gt;&lt;/span&gt;&#39;.join(
+                joinerBase = &#39;&lt;span class=&#34;break&#34;&gt;&lt;br&gt;&lt;/span&gt;&#39;
+                joiner = (
+                    joinerBase
+                    if contribB == &#34;&#34;
+                    else f&#34;{contribE}{joinerBase}{contribB}&#34;
+                )
+                material = joiner.join(
                     f&#34;{cb}{start}{part}{end}{ce}&#34; for part in parts
                 )
                 contrib = material
@@ -701,7 +710,6 @@ def _getFeatures(info, n, nType):
                 value = None
 
                 if refNode is not None:
-
                     if name in allEFeats:
                         esObj = eLookupMethod(name, warn=False)
                         valueF = esObj.f(refNode)
@@ -799,7 +807,7 @@ chunks / fragments, the graphics only occurs on the first fragment.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/advanced/render.py#L32-L96" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/advanced/render.py#L32-L96" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render(app, isPretty, n, _inTuple, _asString, explain, **options):
     &#34;&#34;&#34;Renders a node, in plain or pretty mode.

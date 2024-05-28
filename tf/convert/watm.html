@@ -375,7 +375,8 @@ following kinds:</p>
 <p><strong>single</strong> this is a target pointing to a single thing, either:</p>
 <ul>
 <li>
-<p><code>fn:bbb</code>: a single token</p>
+<p><code>fn:bbb</code>: a single token, at the index position <code>bbb</code> in the
+<code>_ordered_segments</code> in the file <code>text-fn.json</code>. De first position is <code>0</code>.</p>
 </li>
 <li>
 <p><code>fn:bbb-eee</code>: a range of text segments in the <code>_ordered_segments</code>
@@ -411,6 +412,100 @@ specifier, even if both target a segment in the same token file.</p>
 </ul>
 </li>
 </ul>
+<h2 id="entities">Entities</h2>
+<p>Entities are coded in the TF and exported in the regular way to WATM.
+Here are the details.</p>
+<p>In TF there are nodes of type <code>ent</code> which correspond to entity occurrences.
+These nodes have two features: <code>eid</code> and <code>kind</code>. Together they uniquely identify
+the concept of an entity and all its occurrences, represented in TF by nodes of type
+<code>entity</code>.
+There are edges names <code>eoccs</code> from <code>entity</code> nodes to all <code>ent</code> nodes that are
+their occurrences.
+These entity nodes also have the features <code>eid</code> and <code>kind</code>, with the same
+values as you see on their <code>ent</code> nodes.</p>
+<p>How does this translate to the WATM output?</p>
+<p>Let's start with the <code>ent</code> nodes (and maybe for publishing we do not even need
+the <code>entity</code> nodes and the <code>eoccs</code> edges).</p>
+<p>Let's inspect an example (taken from the Suriano corpus):</p>
+<pre><code>a00301550   element tf      ent     472:1316-1320
+</code></pre>
+<p>This is the <em>id</em> of an entity occurrence annotation:</p>
+<ul>
+<li><em>kind</em> = <code>element</code></li>
+<li><em>namespace</em> = <code><a title="tf" href="../index.html">tf</a></code></li>
+<li><em>body</em> = <code>ent</code></li>
+<li>
+<p><em>target</em> = the list of tokens in file 472 from positions 1316 to 1320.</p>
+<p>Looking in text file 472 we find the text of the entity on lines 1317, 1318,
+1319 and 1320 (we shift one downwards because the file contains a header line; when
+the file is used to read in the ordered segments, we take the segments at positions
+1316, 1317, 1318, 1319) and they contain the text:</p>
+<pre><code>ambasciator d ’ Inghilterra
+</code></pre>
+</li>
+</ul>
+<p>Associated with the annotation id <code>a00301550</code> we see the following annotations:</p>
+<ul>
+<li>
+<p><code>a00329572
+attribute
+tf
+eid=dudley.carleton
+a00301550</code></p>
+<p>This gives the entity id of this occurrence: <code>dudley.carleton</code>.</p>
+</li>
+<li>
+<p><code>a00635517
+attribute
+tf
+kind=PER
+a00301550</code></p>
+<p>This gives the entity kind of this occurrence: <code>PER</code>.</p>
+</li>
+</ul>
+<p>Now we move to the <code>entity</code> node of which this is an occurrence. We find the
+annotation:</p>
+<pre><code>a00850177   edge    tf      eoccs   a00015782-&gt;a00301550
+</code></pre>
+<p>This means there is an edge from <code>a00015782</code> to this occurrence. Let's lookup
+what <code>a00015782</code> is. First of all:</p>
+<pre><code>a00015782   element tf      entity  9:158-677:783
+</code></pre>
+<p>It is an <code>entity</code> node and its first occurrence starts at <code>9:158</code> and its last
+occurrence ends at <code>677:783</code>. This is not directly useful, since there is an enormous
+amount of text in between that is not covered by this entity.
+The important information is that this is an entity element.
+Associated with this element we see the following annotations:</p>
+<ul>
+<li><code>a00333926
+attribute
+tf
+eid=dudley.carleton
+a00015782</code></li>
+<li><code>a00639871
+attribute
+tf
+kind=PER
+a00015782</code></li>
+</ul>
+<p>So the entity as a whole has the same properties as each of its occurrences.
+But how do we find the occurrences? When we look further for <code>a00015782</code> we find
+a bunch of annotations (336 in total) like this:</p>
+<pre><code>a00849965   edge    tf      eoccs   a00015782-&gt;a00297761
+a00849966   edge    tf      eoccs   a00015782-&gt;a00297763
+a00849967   edge    tf      eoccs   a00015782-&gt;a00297764
+...
+a00850177   edge    tf      eoccs   a00015782-&gt;a00301550
+...
+a00850298   edge    tf      eoccs   a00015782-&gt;a00303415
+a00850299   edge    tf      eoccs   a00015782-&gt;a00303420
+a00850300   edge    tf      eoccs   a00015782-&gt;a00303449
+</code></pre>
+<p>These are all edges named <code>eoccs</code> from this <code>entity</code> element to all its <code>ent</code> elements,
+and we see <code>a00301550</code> among them.
+We have already seen how we can get the exact occurrence from an <code>ent</code> annotation,
+so repeating that procedure for all these <code>ent</code> annotations gives all the
+occurrences of entity <code>Dudley Carleton</code>.</p>
 <h1 id="configuration">Configuration</h1>
 <p>In the file <code>config.yaml</code> (in the directory where the program runs) certain
 parameters can be set:</p>
@@ -490,7 +585,7 @@ reaching the WATM.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/watm.py#L1-L2171" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L1-L2263" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Export to Web Annotation Text Model
 
@@ -832,7 +927,8 @@ an annotation, divided in the following fields:
 
     *   **single** this is a target pointing to a single thing, either:
 
-        *   `fn:bbb`: a single token
+        *   `fn:bbb`: a single token, at the index position `bbb` in the
+            `_ordered_segments` in the file `text-fn.json`. De first position is `0`.
 
         *   `fn:bbb-eee`: a range of text segments in the `_ordered_segments`
             in the file `text-fn.json`; the token at position `eee` is not included.
@@ -857,6 +953,92 @@ an annotation, divided in the following fields:
 
             If `fff` and `ttt` target segments, than they must both contain a file
             specifier, even if both target a segment in the same token file.
+
+## Entities
+
+Entities are coded in the TF and exported in the regular way to WATM.
+Here are the details.
+
+In TF there are nodes of type `ent` which correspond to entity occurrences.
+These nodes have two features: `eid` and `kind`. Together they uniquely identify
+the concept of an entity and all its occurrences, represented in TF by nodes of type
+`entity`.
+There are edges names `eoccs` from `entity` nodes to all `ent` nodes that are
+their occurrences.
+These entity nodes also have the features `eid` and `kind`, with the same
+values as you see on their `ent` nodes.
+
+How does this translate to the WATM output?
+
+Let&#39;s start with the `ent` nodes (and maybe for publishing we do not even need
+the `entity` nodes and the `eoccs` edges).
+
+Let&#39;s inspect an example (taken from the Suriano corpus):
+
+    a00301550   element tf      ent     472:1316-1320
+
+This is the *id* of an entity occurrence annotation:
+
+*   *kind* = `element`
+*   *namespace* = `tf`
+*   *body* = `ent`
+*   *target* = the list of tokens in file 472 from positions 1316 to 1320.
+
+    Looking in text file 472 we find the text of the entity on lines 1317, 1318,
+    1319 and 1320 (we shift one downwards because the file contains a header line; when
+    the file is used to read in the ordered segments, we take the segments at positions
+    1316, 1317, 1318, 1319) and they contain the text:
+
+        ambasciator d ’ Inghilterra
+
+Associated with the annotation id `a00301550` we see the following annotations:
+
+*   `a00329572  attribute       tf      eid=dudley.carleton     a00301550`
+
+    This gives the entity id of this occurrence: `dudley.carleton`.
+
+*   `a00635517  attribute       tf      kind=PER        a00301550`
+
+    This gives the entity kind of this occurrence: `PER`.
+
+Now we move to the `entity` node of which this is an occurrence. We find the
+annotation:
+
+    a00850177   edge    tf      eoccs   a00015782-&gt;a00301550
+
+This means there is an edge from `a00015782` to this occurrence. Let&#39;s lookup
+what `a00015782` is. First of all:
+
+    a00015782   element tf      entity  9:158-677:783
+
+It is an `entity` node and its first occurrence starts at `9:158` and its last
+occurrence ends at `677:783`. This is not directly useful, since there is an enormous
+amount of text in between that is not covered by this entity.
+The important information is that this is an entity element.
+Associated with this element we see the following annotations:
+
+*   `a00333926  attribute       tf      eid=dudley.carleton     a00015782`
+*   `a00639871  attribute       tf      kind=PER        a00015782`
+
+So the entity as a whole has the same properties as each of its occurrences.
+But how do we find the occurrences? When we look further for `a00015782` we find
+a bunch of annotations (336 in total) like this:
+
+    a00849965   edge    tf      eoccs   a00015782-&gt;a00297761
+    a00849966   edge    tf      eoccs   a00015782-&gt;a00297763
+    a00849967   edge    tf      eoccs   a00015782-&gt;a00297764
+    ...
+    a00850177   edge    tf      eoccs   a00015782-&gt;a00301550
+    ...
+    a00850298   edge    tf      eoccs   a00015782-&gt;a00303415
+    a00850299   edge    tf      eoccs   a00015782-&gt;a00303420
+    a00850300   edge    tf      eoccs   a00015782-&gt;a00303449
+
+These are all edges named `eoccs` from this `entity` element to all its `ent` elements,
+and we see `a00301550` among them.
+We have already seen how we can get the exact occurrence from an `ent` annotation,
+so repeating that procedure for all these `ent` annotations gives all the
+occurrences of entity `Dudley Carleton`.
 
 # Configuration
 
@@ -979,6 +1161,8 @@ NS_FROM_OTYPE = dict(
     char=NS_TF,
     token=NS_NLP,
     sentence=NS_NLP,
+    ent=NS_TF,
+    entity=NS_TF,
 )
 NS_FROM_FEAT = dict(
     otype=NS_TF,
@@ -989,6 +1173,9 @@ NS_FROM_FEAT = dict(
     rafter=NS_TF,
     str=NS_TF,
     rstr=NS_TF,
+    eid=NS_TF,
+    kind=NS_TF,
+    eoccs=NS_TF,
 )
 
 KIND_EDGE = &#34;edge&#34;
@@ -2690,7 +2877,7 @@ class WATMS:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/watm.py#L512-L523" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L604-L615" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rep(status):
     &#34;&#34;&#34;Represent a boolean status for a message to the console.
@@ -2746,7 +2933,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/watm.py#L526-L2069" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L618-L2161" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WATM:
     &#34;&#34;&#34;The export machinery is exposed as a class, wrapped around a TF dataset.&#34;&#34;&#34;
@@ -4316,7 +4503,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/watm.py#L1092-L1115" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L1184-L1207" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def numEqual(nTF, nWA, silent):
@@ -4365,7 +4552,7 @@ def numEqual(nTF, nWA, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/watm.py#L1117-L1168" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L1209-L1260" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def strEqual(tf, wa, silent):
@@ -4437,7 +4624,7 @@ tokens and/or annotations in WATM.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/watm.py#L732-L927" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L824-L1019" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeAnno(self):
     &#34;&#34;&#34;Make all annotations.
@@ -4648,7 +4835,7 @@ to indices in this list is stored in member <code>waFromTF</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/watm.py#L646-L711" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L738-L803" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeText(self):
     &#34;&#34;&#34;Creates the text data.
@@ -4738,7 +4925,7 @@ or <code>tuple</code> of <code>strings</code></dt>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/watm.py#L713-L730" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L805-L822" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mkAnno(self, kind, ns, body, target):
     &#34;&#34;&#34;Make a single annotation and return its id.
@@ -4784,7 +4971,7 @@ If <code>condensed</code> is True, we suppress this output.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/watm.py#L1170-L1229" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L1262-L1321" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testAll(self, condensed=False):
     &#34;&#34;&#34;Test all aspects of the WATM conversion.
@@ -4868,7 +5055,7 @@ In turn, these features have been translated into annotations of kind
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/watm.py#L1597-L1803" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L1689-L1895" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testAttributes(self):
     &#34;&#34;&#34;Test the attributes.
@@ -5097,7 +5284,7 @@ by annotations.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/watm.py#L1892-L2069" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L1984-L2161" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testEdges(self):
     &#34;&#34;&#34;Test the edges.
@@ -5295,7 +5482,7 @@ dataset.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/watm.py#L1425-L1595" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L1517-L1687" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testElements(self):
     &#34;&#34;&#34;Test the elements.
@@ -5487,7 +5674,7 @@ the kind <code>anno</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/watm.py#L1805-L1890" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L1897-L1982" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testExtra(self):
     &#34;&#34;&#34;Test the extra data for on-the-fly annotations.
@@ -5589,7 +5776,7 @@ We unpack targets if they contain structured information.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/watm.py#L1231-L1384" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L1323-L1476" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testSetup(self):
     &#34;&#34;&#34;Prepare the tests.
@@ -5762,7 +5949,7 @@ whether the TF and WATM datasets agree on it.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/watm.py#L1386-L1423" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L1478-L1515" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testText(self):
     &#34;&#34;&#34;Test the text.
@@ -5817,7 +6004,7 @@ divided over several files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/watm.py#L929-L1090" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L1021-L1182" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeAll(self):
     &#34;&#34;&#34;Write text and annotation data to disk.
@@ -6021,7 +6208,7 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/watm.py#L2072-L2171" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L2164-L2263" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WATMS:
     &#34;&#34;&#34;Export corpora that are divided over multiple TF datasets.
@@ -6141,7 +6328,7 @@ Otherwise all datasets will be converted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/convert/watm.py#L2126-L2171" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L2218-L2263" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def produce(self, doc=None):
     &#34;&#34;&#34;Convert all relevant TF datasets.
@@ -6264,6 +6451,7 @@ setTimeout(() => input.focus(), 100);
 </ul>
 </li>
 <li><a href="#format-of-the-annotation-files">Format of the annotation files</a></li>
+<li><a href="#entities">Entities</a></li>
 </ul>
 </li>
 <li><a href="#configuration">Configuration</a></li>

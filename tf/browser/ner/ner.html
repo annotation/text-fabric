@@ -196,7 +196,7 @@ slots.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/browser/ner/ner.py#L1-L533" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/browser/ner/ner.py#L1-L549" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;API for rule-based entity marking.
 
@@ -624,6 +624,7 @@ class NER(Annotate):
         else:
             console(f&#34;{nm} occurrence specifiers are ambiguous&#34;)
 
+        self.namesByOcc = namesByOcc
         self.instructions = readYaml(asFile=yamlFile)
         self.inventory = None
 
@@ -651,7 +652,11 @@ class NER(Annotate):
             for occSpec in info.occSpecs:
                 qSets.add(toTokens(occSpec, spaceEscaped=spaceEscaped))
 
+        app = self.app
+        app.indent(reset=True)
+        app.info(f&#34;Looking up occurrences of {len(qSets)} candidates ...&#34;)
         self.inventory = self.findOccs(qSets)
+        app.info(&#34;Done&#34;)
 
     def showInventory(self):
         &#34;&#34;&#34;Shows the inventory.
@@ -730,7 +735,18 @@ class NER(Annotate):
             for fVals in fValsByQTokens[qTokens]:
                 newEntities.append((fVals, matches))
 
-        self.addEntities(newEntities, silent=False)</code></pre>
+        self.addEntities(newEntities, silent=False)
+
+    def bakeEntities(self, versionExtension=&#34;e&#34;):
+        &#34;&#34;&#34;Bakes the entities of the current set as nodes into a new TF data source.
+
+        Parameters
+        ----------
+        versionExtension: string, optional &#34;e&#34;
+            The new dataset gets a version like the original dataset, but extended
+            with this string.
+        &#34;&#34;&#34;
+        self.consolidateEntities(versionExtension=versionExtension)</code></pre>
 </details>
 </section>
 <section>
@@ -761,7 +777,7 @@ by the Annotate class on which it is based.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/browser/ner/ner.py#L232-L533" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/browser/ner/ner.py#L232-L549" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Annotate):
     def __init__(self, app):
@@ -958,6 +974,7 @@ by the Annotate class on which it is based.</p>
         else:
             console(f&#34;{nm} occurrence specifiers are ambiguous&#34;)
 
+        self.namesByOcc = namesByOcc
         self.instructions = readYaml(asFile=yamlFile)
         self.inventory = None
 
@@ -985,7 +1002,11 @@ by the Annotate class on which it is based.</p>
             for occSpec in info.occSpecs:
                 qSets.add(toTokens(occSpec, spaceEscaped=spaceEscaped))
 
+        app = self.app
+        app.indent(reset=True)
+        app.info(f&#34;Looking up occurrences of {len(qSets)} candidates ...&#34;)
         self.inventory = self.findOccs(qSets)
+        app.info(&#34;Done&#34;)
 
     def showInventory(self):
         &#34;&#34;&#34;Shows the inventory.
@@ -1064,7 +1085,18 @@ by the Annotate class on which it is based.</p>
             for fVals in fValsByQTokens[qTokens]:
                 newEntities.append((fVals, matches))
 
-        self.addEntities(newEntities, silent=False)</code></pre>
+        self.addEntities(newEntities, silent=False)
+
+    def bakeEntities(self, versionExtension=&#34;e&#34;):
+        &#34;&#34;&#34;Bakes the entities of the current set as nodes into a new TF data source.
+
+        Parameters
+        ----------
+        versionExtension: string, optional &#34;e&#34;
+            The new dataset gets a version like the original dataset, but extended
+            with this string.
+        &#34;&#34;&#34;
+        self.consolidateEntities(versionExtension=versionExtension)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1088,6 +1120,34 @@ by the Annotate class on which it is based.</p>
 </dl>
 <h3>Methods</h3>
 <dl>
+<dt id="tf.browser.ner.ner.NER.bakeEntities"><code class="name flex">
+<span>def <span class="ident">bakeEntities</span></span>(<span>self, versionExtension='e')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Bakes the entities of the current set as nodes into a new TF data source.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>versionExtension</code></strong> :&ensp;<code>string</code>, optional <code>"e"</code></dt>
+<dd>The new dataset gets a version like the original dataset, but extended
+with this string.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/browser/ner/ner.py#L540-L549" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def bakeEntities(self, versionExtension=&#34;e&#34;):
+    &#34;&#34;&#34;Bakes the entities of the current set as nodes into a new TF data source.
+
+    Parameters
+    ----------
+    versionExtension: string, optional &#34;e&#34;
+        The new dataset gets a version like the original dataset, but extended
+        with this string.
+    &#34;&#34;&#34;
+    self.consolidateEntities(versionExtension=versionExtension)</code></pre>
+</details>
+</dd>
 <dt id="tf.browser.ner.ner.NER.makeInventory"><code class="name flex">
 <span>def <span class="ident">makeInventory</span></span>(<span>self)</span>
 </code></dt>
@@ -1101,7 +1161,7 @@ slot sequences where those token sequences occur in the corpus.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/browser/ner/ner.py#L430-L454" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/browser/ner/ner.py#L431-L459" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeInventory(self):
     &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
@@ -1127,7 +1187,11 @@ slot sequences where those token sequences occur in the corpus.</p></div>
         for occSpec in info.occSpecs:
             qSets.add(toTokens(occSpec, spaceEscaped=spaceEscaped))
 
-    self.inventory = self.findOccs(qSets)</code></pre>
+    app = self.app
+    app.indent(reset=True)
+    app.info(f&#34;Looking up occurrences of {len(qSets)} candidates ...&#34;)
+    self.inventory = self.findOccs(qSets)
+    app.info(&#34;Done&#34;)</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.ner.NER.markEntities"><code class="name flex">
@@ -1142,7 +1206,7 @@ If there is no inventory yet, it will be created.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/browser/ner/ner.py#L489-L533" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/browser/ner/ner.py#L494-L538" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def markEntities(self):
     &#34;&#34;&#34;Marks up the members of the inventory as entities.
@@ -1232,7 +1296,7 @@ the Excel sheet exists.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/browser/ner/ner.py#L259-L428" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/browser/ner/ner.py#L259-L429" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readInstructions(self, sheetName, force=False):
     &#34;&#34;&#34;Reads an Excel or YAML file with entity recognition instructions.
@@ -1402,6 +1466,7 @@ the Excel sheet exists.</dd>
     else:
         console(f&#34;{nm} occurrence specifiers are ambiguous&#34;)
 
+    self.namesByOcc = namesByOcc
     self.instructions = readYaml(asFile=yamlFile)
     self.inventory = None</code></pre>
 </details>
@@ -1416,7 +1481,7 @@ of which they are surface forms.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/browser/ner/ner.py#L456-L487" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/browser/ner/ner.py#L461-L492" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showInventory(self):
     &#34;&#34;&#34;Shows the inventory.
@@ -1465,6 +1530,7 @@ of which they are surface forms.</p></div>
 <li><code><a title="tf.browser.ner.annotate.Annotate.checkBuckets" href="corpus.html#tf.browser.ner.corpus.Corpus.checkBuckets">checkBuckets</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.checkFeature" href="corpus.html#tf.browser.ner.corpus.Corpus.checkFeature">checkFeature</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.console" href="settings.html#tf.browser.ner.settings.Settings.console">console</a></code></li>
+<li><code><a title="tf.browser.ner.annotate.Annotate.consolidateEntities" href="data.html#tf.browser.ner.data.Data.consolidateEntities">consolidateEntities</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.delEntity" href="data.html#tf.browser.ner.data.Data.delEntity">delEntity</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.delEntityRich" href="data.html#tf.browser.ner.data.Data.delEntityRich">delEntityRich</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.featureDefault" href="corpus.html#tf.browser.ner.corpus.Corpus.featureDefault">featureDefault</a></code></li>
@@ -1586,6 +1652,7 @@ setTimeout(() => input.focus(), 100);
 <li>
 <h4><code><a title="tf.browser.ner.ner.NER" href="#tf.browser.ner.ner.NER">NER</a></code></h4>
 <ul class="two-column">
+<li><code><a title="tf.browser.ner.ner.NER.bakeEntities" href="#tf.browser.ner.ner.NER.bakeEntities">bakeEntities</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.instructions" href="#tf.browser.ner.ner.NER.instructions">instructions</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.inventory" href="#tf.browser.ner.ner.NER.inventory">inventory</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.makeInventory" href="#tf.browser.ner.ner.NER.makeInventory">makeInventory</a></code></li>

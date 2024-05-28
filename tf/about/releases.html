@@ -42,9 +42,9 @@ and in its top-level directory run the command:</strong></p>
 <pre><code class="language-sh">pip install -e .
 </code></pre>
 <h2 id="12">12</h2>
-<h3 id="124">12.4</h3>
-<h4 id="1247">12.4.7</h4>
-<p>2024-05-?? (Upcoming)</p>
+<h3 id="125">12.5</h3>
+<h4 id="1250">12.5.0</h4>
+<p>2024-05-28 (Upcoming)</p>
 <p>Fixes in NER Browser:</p>
 <ul>
 <li>
@@ -64,7 +64,25 @@ names into tokens, leave out tokens that are just spaces.</p>
 when sets have been added or deleted from outside the NER browser.
 You do not have to restart the NER browser in that case.</p>
 </li>
+<li>
+<p>Hyphenated occurrences were not found. That has been fixed, without decreasing the
+speed of the algorithm too much.</p>
+</li>
+<li>
+<p>Once a set of entities has been marked, it can now also be baked into the TF
+dataset.</p>
+</li>
 </ul>
+<p>Fix in display algorithm</p>
+<ul>
+<li>In plain display, when a line break occurs, we needed a trick to make it happen,
+because such a display is a flex box. A simple <code>&lt;br&gt;</code> has no effect.
+We found the trick and it worked. However, if the break occurs in something that
+is also highlighted, the trick did not work anymore, because the highlight
+introduces an extra <code>&lt;span&gt;</code> level. We fixed it by disrupting the extra span level
+for the tricked br and resuming it after the br.</li>
+</ul>
+<h3 id="124">12.4</h3>
 <h4 id="12456">12.4.5,6</h4>
 <p>2024-05-13</p>
 <ul>
@@ -444,7 +462,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/38118c29ff924694f04b6378b4010c1205d5f5c5/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -517,8 +535,11 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
+<li><a href="#125">12.5</a><ul>
+<li><a href="#1250">12.5.0</a></li>
+</ul>
+</li>
 <li><a href="#124">12.4</a><ul>
-<li><a href="#1247">12.4.7</a></li>
 <li><a href="#12456">12.4.5,6</a></li>
 <li><a href="#12434">12.4.3,4</a></li>
 <li><a href="#1242">12.4.2</a></li>
