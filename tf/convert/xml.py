@@ -176,6 +176,7 @@ from ..core.files import (
     scanDir,
     readYaml,
     writeYaml,
+    APP_CONFIG
 )
 
 (HELP, TASKS, TASKS_EXCLUDED, PARAMS, FLAGS) = setUp("XML")
@@ -939,7 +940,7 @@ class XML(CheckImport):
         itemSpecs = (
             ("logo", "app/static", "logo.png", True),
             ("display", "app/static", "display.css", False),
-            ("config", "app", "config.yaml", False),
+            ("config", "app", APP_CONFIG, False),
             ("app", "app", "app.py", False),
         )
         genTasks = {

@@ -20,9 +20,22 @@ pip install -e .
 
 ### 12.5
 
+#### 12.5.1
+
+2024-05-?? (Upcoming)
+
+WATM production tweaks:
+
+By default, WATM files are written to versioned directories inside the `_temp`
+directory. Existing data may be overwritten.
+However, if you pass a flag indicating that it is for production, the result is
+written to a new versioned directory inside `watm`. The new versioned directories
+created in this way have a suffix `-001`, `-002`, etc.
+This helps to keep published WATM fixed.
+
 #### 12.5.0
 
-2024-05-28 (Upcoming)
+2024-05-28
 
 Fixes in NER Browser:
 

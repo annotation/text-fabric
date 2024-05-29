@@ -612,6 +612,7 @@ from ..core.files import (
     scanDir,
     readYaml,
     writeYaml,
+    APP_CONFIG,
 )
 
 from ..tools.xmlschema import Analysis
@@ -4206,7 +4207,7 @@ class TEI(CheckImport):
             ("trans", ("app", "docs"), "transcription.md", False),
             ("logo", "app/static", "logo.png", True),
             ("display", "app/static", "display.css", False),
-            ("config", "app", "config.yaml", False),
+            ("config", "app", APP_CONFIG, False),
             ("app", "app", "app.py", False),
         )
         genTasks = {

@@ -6,7 +6,7 @@ To see how this fits among all the modules of this package, see
 
 
 from ...core.helpers import console as cs
-from ...core.files import readYaml, fileExists
+from ...core.files import readYaml, fileExists, APP_CONFIG
 
 TOOLKEY = "ner"
 """The name of this annotation tool.
@@ -204,7 +204,7 @@ class Settings:
         """
         specDir = self.specDir
 
-        nerSpec = f"{specDir}/config.yaml"
+        nerSpec = f"{specDir}/{APP_CONFIG}"
         kwargs = (
             dict(asFile=nerSpec) if fileExists(nerSpec) else dict(text=DEFAULT_SETTINGS)
         )

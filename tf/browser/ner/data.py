@@ -30,6 +30,7 @@ from ...core.files import (
     dirRemove,
     fileExists,
     initTree,
+    APP_CONFIG,
 )
 from ...dataset import modify
 from .corpus import Corpus
@@ -1068,7 +1069,7 @@ class Data(Corpus):
 
         # tweak the app
 
-        config = f"{appPath}/config.yaml"
+        config = f"{appPath}/{APP_CONFIG}"
 
         with open(config) as fh:
             text = fh.read()

@@ -17,6 +17,7 @@ from ..core.files import (
     writeYaml,
     expanduser as ex,
     unexpanduser as ux,
+    APP_CONFIG
 )
 from ..core.generic import AttrDict
 from ..core.helpers import console, versionSort, mergeDict
@@ -812,7 +813,7 @@ class PageXML(CheckImport):
         # if parentDir is a tuple, the first part is the parentDir of the source
         # end the second part is the parentDir of the destination
 
-        itemSpecs = (("config", "app", "config.yaml", "config2.yaml", False),)
+        itemSpecs = (("config", "app", APP_CONFIG, "config2.yaml", False),)
         genTasks = {
             s[0]: dict(parentDir=s[1], file=s[2], fileOrig=s[3], justCopy=s[4])
             for s in itemSpecs

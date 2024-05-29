@@ -94,6 +94,7 @@ class MakeWATM:
             silent="To run a bit more silent",
             relaxed="Accept XML validation errors",
             usenlp="Will run an NLP pipeline to mark tokens, sentences and entities",
+            prod="Delivers WATM in production location",
         )
         self.BASE_TASKS = ("tei2tf", "page2tf", "watm", "watms")
         self.TF_VERSION = "0.0.0test"
@@ -119,6 +120,7 @@ class MakeWATM:
             ("silent", None),
             ("relaxed", None),
             ("usenlp", None),
+            ("prod", None),
         ),
         intro=None,
     ):
@@ -185,7 +187,7 @@ class MakeWATM:
 
         unrecognized = set()
         tasks = set()
-        self.version = None
+        version = None
 
         for flag in FLAGS:
             setattr(self, f"flag_{flag}", False)
@@ -376,6 +378,7 @@ class MakeWATM:
     def doTask_watm(self):
         good = self.good
         silent = self.flag_silent
+        prod = self.flag_prod
 
         if not good:
             if not silent:
@@ -397,15 +400,18 @@ class MakeWATM:
             f"{org}/{repo}:clone", backend=backend, checkout="clone", silent=loadVerbose
         )
 
+        console(f"Making WATM for version {A.version}")
+
         WA = WATM(A, "tei", skipMeta=False, silent=silent)
         WA.makeText()
         WA.makeAnno()
-        WA.writeAll()
+        WA.writeAll(prod=prod)
         WA.testAll()
 
     def doTask_watms(self):
         good = self.good
         silent = self.flag_silent
+        prod = self.flag_prod
 
         if not good:
             if not silent:
@@ -419,4 +425,4 @@ class MakeWATM:
         console("Producing WATMs")
 
         W = WATMS(org, repo, backend, "pagexml", silent=silent)
-        W.produce()
+        W.produce(prod=prod)
