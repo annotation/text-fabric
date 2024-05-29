@@ -523,6 +523,10 @@ All node and edge features that target those elements will be filtered, so that
 there are no annotations that target non-existing annotations.</p>
 </li>
 <li>
+<p><code>excludeFeatures</code>: the names of features (nodes or edge) for which no annotations
+will be generated.</p>
+</li>
+<li>
 <p><code>asTsv</code>: the text and anno files are written as tsv instead of json.</p>
 <p>The text files consist of one token per line.
 The newline token is written as <code></code>.</p>
@@ -578,14 +582,14 @@ make a distinction between the integer <code>1</code> and the string <code>"1"</
 in the WATM data, so this is not a blocking problem for now.</p>
 </li>
 <li>
-<p>The <code>excludeElements</code> setting will prevent some TF information from
-reaching the WATM.</p>
+<p>The <code>excludeElements</code> and <code>excludeFeatures</code> settings will prevent some TF
+information from reaching the WATM.</p>
 </li>
 </ul>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L1-L2263" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/watm.py#L1-L2463" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Export to Web Annotation Text Model
 
@@ -1055,6 +1059,9 @@ parameters can be set:
     All node and edge features that target those elements will be filtered, so that
     there are no annotations that target non-existing annotations.
 
+*   `excludeFeatures`: the names of features (nodes or edge) for which no annotations
+    will be generated.
+
 *   `asTsv`: the text and anno files are written as tsv instead of json.
 
     The text files consist of one token per line.
@@ -1118,8 +1125,8 @@ I am aware of the following:
     In practice, the meaning of the features in TF are known, and hence the attributes
     in the WATM data, so this is not a blocking problem for now.
 
-*   The `excludeElements` setting will prevent some TF information from
-    reaching the WATM.
+*   The `excludeElements` and `excludeFeatures` settings will prevent some TF
+    information from reaching the WATM.
 &#34;&#34;&#34;
 
 import collections
@@ -1127,11 +1134,23 @@ import json
 import re
 
 from tf.core.helpers import console
-from tf.core.files import initTree, dirContents, expanduser as ex, readYaml
+from tf.core.files import (
+    initTree,
+    dirContents,
+    dirExists,
+    fileExists,
+    readYaml,
+    backendRep,
+    APP_CONFIG,
+)
 from tf.core.timestamp import DEEP
 from tf.parameters import OTYPE, OSLOTS, URL_TF_DOCS
 from tf.app import use
 
+AFTER = &#34;after&#34;
+STR = &#34;str&#34;
+
+TF_SPECIFIC_FEATURES = {OTYPE, OSLOTS, AFTER, STR}
 
 PROGRESS_LIMIT = 5
 
@@ -1185,7 +1204,7 @@ KIND_ATTR = &#34;attribute&#34;
 KIND_FMT = &#34;format&#34;
 KIND_ANNO = &#34;anno&#34;
 
-REL_RE = re.compile(r&#34;&#34;&#34;/tf\b&#34;&#34;&#34;)
+REL_RE = re.compile(r&#34;&#34;&#34;^(.*?)/tf\b(.*)$&#34;&#34;&#34;)
 
 TR_SEP_LEVEL = 1
 
@@ -1202,6 +1221,103 @@ def rep(status):
     string
     &#34;&#34;&#34;
     return &#34;OK&#34; if status else &#34;XX&#34;
+
+
+def getResultDir(baseDir, headPart, version, prod):
+    &#34;&#34;&#34;Determines the directory for the resulting WATM.
+
+    The directory to which the resulting WATM is written, depends on a number of
+    factors:
+
+    *   production or development
+    *   the repo location
+    *   the relative location of the tf directory in the repo
+
+    In development, the WATM is written to a `watm` directory inside the
+    `_temp` directory of the repo.
+    The version of the WATM is the version of the TF from which it is generated.
+
+    In production, the WATM is written to the `watm` directory outside the
+    `_temp` directory of the repo.
+    The version of the WATM is the version of the TF from which it is generated plus
+    a suffix, containing a sequence number.
+
+    Whenever a prodcution generation is executed, a new sequence number is chosen,
+    so that no previous version gets overwritten.
+
+    If there is a file `latest` in the directory of the WATM versions, its number is
+    taken as the previous version suffix. But if there are versions with a higher
+    suffix in that directory, we take the highest one of them as previous version
+    suffix.
+
+    Whatever we got, we increment it and write it to the file `latest`.
+    That is the new version suffix.
+
+    Parameters
+    ----------
+    baseDir: string
+        The path to the repo location
+    headPart: string
+        The path from the repo location to the `tf` directory.
+    version: string
+        The version of the TF on which the WATM is based
+    prod: boolean:
+        Whether we are in a production or development run
+
+    Returns
+    -------
+    The path to the versioned dir where the WATM ends up.
+    &#34;&#34;&#34;
+    if prod:
+        resultDirBase = f&#34;{baseDir}{headPart}/{TT_NAME}&#34;
+        latestFile = f&#34;{resultDirBase}/latest&#34;
+        prefix = f&#34;{version}-&#34;
+        prodNumReps = {
+            pv.removeprefix(prefix)
+            for pv in dirContents(resultDirBase)[1]
+            if pv.startswith(prefix)
+        }
+
+        maxProdNum = max(
+            (
+                int(prodNum)
+                for prodNumRep in prodNumReps
+                if (prodNum := prodNumRep.lstrip(&#34;0&#34;)).isdecimal()
+            ),
+            default=0,
+        )
+
+        if not fileExists(latestFile):
+            latestNum = 0
+        else:
+            with open(latestFile) as fh:
+                contents = fh.read().strip()
+                latestNum = int(contents) if contents.isdecimal() else 0
+
+        newNum = max((latestNum, maxProdNum))
+
+        while True:
+            newNum += 1
+            newNumRep = f&#34;{newNum:&gt;03}&#34;
+            if newNumRep in prodNumReps:
+                continue
+            break
+
+        with open(latestFile, &#34;w&#34;) as fh:
+            fh.write(f&#34;{newNum}\n&#34;)
+
+        resultVersionDir = f&#34;{resultDirBase}/{version}-{newNumRep}&#34;
+        console(f&#34;Writing production data to {resultVersionDir}&#34;)
+    else:
+        resultDirBase = f&#34;{baseDir}/_temp{headPart}/{TT_NAME}&#34;
+        resultVersionDir = f&#34;{resultDirBase}/{version}&#34;
+
+        if dirExists(resultVersionDir):
+            console(f&#34;Overwriting development data in {resultVersionDir}&#34;)
+        else:
+            console(f&#34;Writing development data to new {resultVersionDir}&#34;)
+
+    return resultVersionDir
 
 
 class WATM:
@@ -1277,6 +1393,7 @@ class WATM:
         self.textRepoType = textRepoType
 
         self.excludeElements = set(cfg.excludeElements or [])
+        self.excludeFeatures = set(cfg.excludeFeatures or [])
         self.asTsv = cfg.asTsv
 
         self.L = api.L
@@ -1296,18 +1413,17 @@ class WATM:
         self.Fall = Fall
         self.Eall = Eall
 
-        excludedFeatures = {OTYPE, OSLOTS, &#34;after&#34;, &#34;str&#34;}
-        self.nodeFeatures = [f for f in Fall() if f not in excludedFeatures]
-        self.edgeFeatures = [f for f in Eall() if f not in excludedFeatures]
+        self.nodeFeatures = [f for f in Fall() if f not in TF_SPECIFIC_FEATURES]
+        self.edgeFeatures = [f for f in Eall() if f not in TF_SPECIFIC_FEATURES]
 
         FAllSet = set(Fall())
 
         self.fotypev = F.otype.v
         self.eoslots = E.oslots.s
         self.emptyv = F.empty.v if &#34;empty&#34; in FAllSet else None
-        self.strv = F.str.v if &#34;str&#34; in FAllSet else None
+        self.strv = F.str.v if STR in FAllSet else None
         self.rstrv = F.rstr.v if &#34;rstr&#34; in FAllSet else None
-        self.afterv = F.after.v if &#34;after&#34; in FAllSet else None
+        self.afterv = F.after.v if AFTER in FAllSet else None
         self.rafterv = F.rafter.v if &#34;rafter&#34; in FAllSet else None
         is_metav = F.is_meta.v if &#34;is_meta&#34; in FAllSet else None
         self.is_metav = is_metav
@@ -1442,6 +1558,7 @@ class WATM:
         skipMeta = self.skipMeta
         extra = self.extra
         excludeElements = self.excludeElements
+        excludeFeatures = self.excludeFeatures
 
         waFromTF = self.waFromTF
 
@@ -1501,6 +1618,9 @@ class WATM:
                 waFromTF[n] = aId
 
         for feat in nodeFeatures:
+            if feat in excludeFeatures:
+                continue
+
             ns = Fs(feat).meta.get(&#34;conversionCode&#34;, NS_FROM_FEAT.get(feat, nsOrig))
 
             if ns is None:
@@ -1536,6 +1656,9 @@ class WATM:
                     self.mkAnno(KIND_ATTR, ns, body, mkSingleTarget(n))
 
         for feat in edgeFeatures:
+            if feat in excludeFeatures:
+                continue
+
             ns = Es(feat).meta.get(&#34;conversionCode&#34;, NS_FROM_FEAT.get(feat, nsOrig))
 
             if ns is None:
@@ -1607,7 +1730,7 @@ class WATM:
                 if nFarTargets &gt; 10:
                     console(f&#34;... and {nFarTargets - 10} more.&#34;)
 
-    def writeAll(self):
+    def writeAll(self, prod=False, resultVersion=None):
         &#34;&#34;&#34;Write text and annotation data to disk.
 
         The data will be written as JSON files, or, is `asTsv` is in force, as TSV
@@ -1616,6 +1739,31 @@ class WATM:
         divided over several files.
 
         The annotations are sorted by annotation id.
+
+        Parameters
+        ----------
+        prod: boolean, optional False
+            If True, we make a production version, if False we make a
+            development version.
+            Production versions end up in the `watm` directory, development versions
+            in the `_temp/watm` directory.
+
+            Production versions have an extra sequence number behind the TF version
+            on which they are based, e.g. `2.1.0e-001`, `2.1.0e-002`.
+            They will never be overwritten, subsequent runs will increase the
+            sequence number.
+            The sequence number is stored in a file `latest` in the `watm` directory.
+
+            Development versions are always equal to the TF versions and can be
+            overwritten.
+
+            This mechanism helps you to ensure that you do not change existing
+            versions in the `watm` directory.
+
+        resultVersion: string, optional None
+            If not None, the resultVersion isin  this directory.
+            This is needed if WATM is generated for a series of related datasets that
+            have the same result base.
         &#34;&#34;&#34;
 
         maxNodePlus = self.maxNodePlus
@@ -1640,8 +1788,19 @@ class WATM:
         baseDir = self.repoLocation
         relative = app.context.relative
         version = app.version
-        wRelative = REL_RE.sub(f&#34;/{TT_NAME}/{version}/&#34;, relative, count=1)
-        resultDir = f&#34;{baseDir}{wRelative}&#34;
+
+        match = REL_RE.match(relative)
+        (headPart, tailPart) = match.group(1, 2)
+        tailPart1 = f&#34;/{tailPart}&#34; if tailPart else &#34;&#34;
+
+        resultVersionDir = (
+            getResultDir(baseDir, headPart, version, prod)
+            if resultVersion is None
+            else resultVersion
+        )
+
+        resultDir = f&#34;{resultVersionDir}{tailPart1}&#34;
+
         self.resultDir = resultDir
 
         initTree(resultDir, fresh=True)
@@ -2302,6 +2461,7 @@ class WATM:
         testNodes = self.testNodes
         nsOrig = self.nsOrig
         silent = self.silent
+        excludeFeatures = self.excludeFeatures
 
         isTei = nsOrig == NS_TEI
 
@@ -2351,7 +2511,7 @@ class WATM:
         attTF = []
 
         for feat in Fall():
-            if feat in {&#34;otype&#34;, &#34;str&#34;, &#34;after&#34;}:
+            if feat in TF_SPECIFIC_FEATURES or feat in excludeFeatures:
                 continue
 
             if skipMeta and feat == &#34;is_meta&#34;:
@@ -2449,6 +2609,9 @@ class WATM:
         fmtTF = []
 
         for feat in Fall():
+            if feat in excludeFeatures:
+                continue
+
             if not feat.startswith(&#34;rend_&#34;):
                 continue
 
@@ -2591,6 +2754,7 @@ class WATM:
         silent = self.silent
         nodeFromAid = self.nodeFromAid
         testNodes = self.testNodes
+        excludeFeatures = self.excludeFeatures
 
         if not silent:
             console(&#34;Testing the edges ...&#34;)
@@ -2617,7 +2781,7 @@ class WATM:
         allGood = True
 
         for edge in set(Eall()) | set(tfFromWAEdges):
-            if edge == &#34;oslots&#34;:
+            if edge == OSLOTS or edge in excludeFeatures:
                 continue
 
             if not silent:
@@ -2636,6 +2800,8 @@ class WATM:
                 good = False
 
             if not good:
+                good = False
+                allGood = False
                 continue
 
             dataTF = {}
@@ -2797,14 +2963,38 @@ class WATMS:
         self.extra = extra
         self.silent = silent
 
-        repoDir = ex(f&#34;~/{backend}/{org}/{repo}&#34;)
+        self.error = False
+
+        repoDir = f&#34;{backendRep(backend, &#39;clone&#39;)}/{org}/{repo}&#34;
+        self.repoDir = repoDir
+
+        appDir = f&#34;{repoDir}/app&#34;
+        appConfig = f&#34;{appDir}/{APP_CONFIG}&#34;
+        appSettings = readYaml(asFile=appConfig)
+
+        tfVersion = (
+            None
+            if appSettings is None or appSettings.provenanceSpec is None
+            else appSettings.provenanceSpec.version
+        )
+
+        if tfVersion is None:
+            console(f&#34;Could not find the TF version in {appConfig}&#34;, error=True)
+            self.error = True
+            return
+
+        console(f&#34;Making WATMS for version {tfVersion}&#34;)
+        self.tfVersion = tfVersion
+
         tfDir = f&#34;{repoDir}/tf&#34;
         docs = dirContents(tfDir)[1]
+
         if not silent:
             console(f&#34;Found {len(docs)} docs in {tfDir}&#34;)
+
         self.docs = docs
 
-    def produce(self, doc=None):
+    def produce(self, doc=None, prod=False):
         &#34;&#34;&#34;Convert all relevant TF datasets.
 
         Parameters
@@ -2813,7 +3003,17 @@ class WATMS:
             Subdirectory where one of the TF datasets resides.
             If passed, only this dataset will be converted.
             Otherwise all datasets will be converted.
+        prod: boolean, optional False
+            See `WATM.writeAll`
         &#34;&#34;&#34;
+        error = self.error
+        silent = self.silent
+
+        if error:
+            if not silent:
+                console(&#34;Cannot run because of an earlier error&#34;)
+            return
+
         org = self.org
         repo = self.repo
         backend = self.backend
@@ -2822,8 +3022,12 @@ class WATMS:
         extra = self.extra
         docs = self.docs
         silent = self.silent
+        repoDir = self.repoDir
+        tfVersion = self.tfVersion
 
         chosenDoc = doc
+
+        resultVersion = getResultDir(repoDir, &#34;&#34;, tfVersion, prod)
 
         good = True
 
@@ -2835,7 +3039,7 @@ class WATMS:
                 console(f&#34;{doc:&gt;5} ... &#34;, newline=False)
             A = use(
                 f&#34;{org}/{repo}:clone&#34;,
-                relative=f&#34;tf/{doc}&#34;,
+                relative=f&#34;/tf/{doc}&#34;,
                 checkout=&#34;clone&#34;,
                 backend=backend,
                 silent=DEEP,
@@ -2843,7 +3047,7 @@ class WATMS:
             WA = WATM(A, nsOrig, skipMeta=skipMeta, extra=extra, silent=silent)
             WA.makeText()
             WA.makeAnno()
-            WA.writeAll()
+            WA.writeAll(prod=prod, resultVersion=resultVersion)
             WA.testAll(condensed=True)
 
             if WA.error:
@@ -2859,6 +3063,148 @@ class WATMS:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="tf.convert.watm.getResultDir"><code class="name flex">
+<span>def <span class="ident">getResultDir</span></span>(<span>baseDir, headPart, version, prod)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Determines the directory for the resulting WATM.</p>
+<p>The directory to which the resulting WATM is written, depends on a number of
+factors:</p>
+<ul>
+<li>production or development</li>
+<li>the repo location</li>
+<li>the relative location of the tf directory in the repo</li>
+</ul>
+<p>In development, the WATM is written to a <code>watm</code> directory inside the
+<code>_temp</code> directory of the repo.
+The version of the WATM is the version of the TF from which it is generated.</p>
+<p>In production, the WATM is written to the <code>watm</code> directory outside the
+<code>_temp</code> directory of the repo.
+The version of the WATM is the version of the TF from which it is generated plus
+a suffix, containing a sequence number.</p>
+<p>Whenever a prodcution generation is executed, a new sequence number is chosen,
+so that no previous version gets overwritten.</p>
+<p>If there is a file <code>latest</code> in the directory of the WATM versions, its number is
+taken as the previous version suffix. But if there are versions with a higher
+suffix in that directory, we take the highest one of them as previous version
+suffix.</p>
+<p>Whatever we got, we increment it and write it to the file <code>latest</code>.
+That is the new version suffix.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>baseDir</code></strong> :&ensp;<code>string</code></dt>
+<dd>The path to the repo location</dd>
+<dt><strong><code>headPart</code></strong> :&ensp;<code>string</code></dt>
+<dd>The path from the repo location to the <code><a title="tf" href="../index.html">tf</a></code> directory.</dd>
+<dt><strong><code>version</code></strong> :&ensp;<code>string</code></dt>
+<dd>The version of the TF on which the WATM is based</dd>
+<dt><strong><code>prod</code></strong> :&ensp;<code>boolean:</code></dt>
+<dd>Whether we are in a production or development run</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The path to the versioned dir where the WATM ends up.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/watm.py#L633-L727" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getResultDir(baseDir, headPart, version, prod):
+    &#34;&#34;&#34;Determines the directory for the resulting WATM.
+
+    The directory to which the resulting WATM is written, depends on a number of
+    factors:
+
+    *   production or development
+    *   the repo location
+    *   the relative location of the tf directory in the repo
+
+    In development, the WATM is written to a `watm` directory inside the
+    `_temp` directory of the repo.
+    The version of the WATM is the version of the TF from which it is generated.
+
+    In production, the WATM is written to the `watm` directory outside the
+    `_temp` directory of the repo.
+    The version of the WATM is the version of the TF from which it is generated plus
+    a suffix, containing a sequence number.
+
+    Whenever a prodcution generation is executed, a new sequence number is chosen,
+    so that no previous version gets overwritten.
+
+    If there is a file `latest` in the directory of the WATM versions, its number is
+    taken as the previous version suffix. But if there are versions with a higher
+    suffix in that directory, we take the highest one of them as previous version
+    suffix.
+
+    Whatever we got, we increment it and write it to the file `latest`.
+    That is the new version suffix.
+
+    Parameters
+    ----------
+    baseDir: string
+        The path to the repo location
+    headPart: string
+        The path from the repo location to the `tf` directory.
+    version: string
+        The version of the TF on which the WATM is based
+    prod: boolean:
+        Whether we are in a production or development run
+
+    Returns
+    -------
+    The path to the versioned dir where the WATM ends up.
+    &#34;&#34;&#34;
+    if prod:
+        resultDirBase = f&#34;{baseDir}{headPart}/{TT_NAME}&#34;
+        latestFile = f&#34;{resultDirBase}/latest&#34;
+        prefix = f&#34;{version}-&#34;
+        prodNumReps = {
+            pv.removeprefix(prefix)
+            for pv in dirContents(resultDirBase)[1]
+            if pv.startswith(prefix)
+        }
+
+        maxProdNum = max(
+            (
+                int(prodNum)
+                for prodNumRep in prodNumReps
+                if (prodNum := prodNumRep.lstrip(&#34;0&#34;)).isdecimal()
+            ),
+            default=0,
+        )
+
+        if not fileExists(latestFile):
+            latestNum = 0
+        else:
+            with open(latestFile) as fh:
+                contents = fh.read().strip()
+                latestNum = int(contents) if contents.isdecimal() else 0
+
+        newNum = max((latestNum, maxProdNum))
+
+        while True:
+            newNum += 1
+            newNumRep = f&#34;{newNum:&gt;03}&#34;
+            if newNumRep in prodNumReps:
+                continue
+            break
+
+        with open(latestFile, &#34;w&#34;) as fh:
+            fh.write(f&#34;{newNum}\n&#34;)
+
+        resultVersionDir = f&#34;{resultDirBase}/{version}-{newNumRep}&#34;
+        console(f&#34;Writing production data to {resultVersionDir}&#34;)
+    else:
+        resultDirBase = f&#34;{baseDir}/_temp{headPart}/{TT_NAME}&#34;
+        resultVersionDir = f&#34;{resultDirBase}/{version}&#34;
+
+        if dirExists(resultVersionDir):
+            console(f&#34;Overwriting development data in {resultVersionDir}&#34;)
+        else:
+            console(f&#34;Writing development data to new {resultVersionDir}&#34;)
+
+    return resultVersionDir</code></pre>
+</details>
+</dd>
 <dt id="tf.convert.watm.rep"><code class="name flex">
 <span>def <span class="ident">rep</span></span>(<span>status)</span>
 </code></dt>
@@ -2877,7 +3223,7 @@ class WATMS:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L604-L615" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/watm.py#L619-L630" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rep(status):
     &#34;&#34;&#34;Represent a boolean status for a message to the console.
@@ -2933,7 +3279,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L618-L2161" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/watm.py#L730-L2323" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WATM:
     &#34;&#34;&#34;The export machinery is exposed as a class, wrapped around a TF dataset.&#34;&#34;&#34;
@@ -3008,6 +3354,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
         self.textRepoType = textRepoType
 
         self.excludeElements = set(cfg.excludeElements or [])
+        self.excludeFeatures = set(cfg.excludeFeatures or [])
         self.asTsv = cfg.asTsv
 
         self.L = api.L
@@ -3027,18 +3374,17 @@ value for each key is a dictionary that maps nodes to values.</dd>
         self.Fall = Fall
         self.Eall = Eall
 
-        excludedFeatures = {OTYPE, OSLOTS, &#34;after&#34;, &#34;str&#34;}
-        self.nodeFeatures = [f for f in Fall() if f not in excludedFeatures]
-        self.edgeFeatures = [f for f in Eall() if f not in excludedFeatures]
+        self.nodeFeatures = [f for f in Fall() if f not in TF_SPECIFIC_FEATURES]
+        self.edgeFeatures = [f for f in Eall() if f not in TF_SPECIFIC_FEATURES]
 
         FAllSet = set(Fall())
 
         self.fotypev = F.otype.v
         self.eoslots = E.oslots.s
         self.emptyv = F.empty.v if &#34;empty&#34; in FAllSet else None
-        self.strv = F.str.v if &#34;str&#34; in FAllSet else None
+        self.strv = F.str.v if STR in FAllSet else None
         self.rstrv = F.rstr.v if &#34;rstr&#34; in FAllSet else None
-        self.afterv = F.after.v if &#34;after&#34; in FAllSet else None
+        self.afterv = F.after.v if AFTER in FAllSet else None
         self.rafterv = F.rafter.v if &#34;rafter&#34; in FAllSet else None
         is_metav = F.is_meta.v if &#34;is_meta&#34; in FAllSet else None
         self.is_metav = is_metav
@@ -3173,6 +3519,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
         skipMeta = self.skipMeta
         extra = self.extra
         excludeElements = self.excludeElements
+        excludeFeatures = self.excludeFeatures
 
         waFromTF = self.waFromTF
 
@@ -3232,6 +3579,9 @@ value for each key is a dictionary that maps nodes to values.</dd>
                 waFromTF[n] = aId
 
         for feat in nodeFeatures:
+            if feat in excludeFeatures:
+                continue
+
             ns = Fs(feat).meta.get(&#34;conversionCode&#34;, NS_FROM_FEAT.get(feat, nsOrig))
 
             if ns is None:
@@ -3267,6 +3617,9 @@ value for each key is a dictionary that maps nodes to values.</dd>
                     self.mkAnno(KIND_ATTR, ns, body, mkSingleTarget(n))
 
         for feat in edgeFeatures:
+            if feat in excludeFeatures:
+                continue
+
             ns = Es(feat).meta.get(&#34;conversionCode&#34;, NS_FROM_FEAT.get(feat, nsOrig))
 
             if ns is None:
@@ -3338,7 +3691,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
                 if nFarTargets &gt; 10:
                     console(f&#34;... and {nFarTargets - 10} more.&#34;)
 
-    def writeAll(self):
+    def writeAll(self, prod=False, resultVersion=None):
         &#34;&#34;&#34;Write text and annotation data to disk.
 
         The data will be written as JSON files, or, is `asTsv` is in force, as TSV
@@ -3347,6 +3700,31 @@ value for each key is a dictionary that maps nodes to values.</dd>
         divided over several files.
 
         The annotations are sorted by annotation id.
+
+        Parameters
+        ----------
+        prod: boolean, optional False
+            If True, we make a production version, if False we make a
+            development version.
+            Production versions end up in the `watm` directory, development versions
+            in the `_temp/watm` directory.
+
+            Production versions have an extra sequence number behind the TF version
+            on which they are based, e.g. `2.1.0e-001`, `2.1.0e-002`.
+            They will never be overwritten, subsequent runs will increase the
+            sequence number.
+            The sequence number is stored in a file `latest` in the `watm` directory.
+
+            Development versions are always equal to the TF versions and can be
+            overwritten.
+
+            This mechanism helps you to ensure that you do not change existing
+            versions in the `watm` directory.
+
+        resultVersion: string, optional None
+            If not None, the resultVersion isin  this directory.
+            This is needed if WATM is generated for a series of related datasets that
+            have the same result base.
         &#34;&#34;&#34;
 
         maxNodePlus = self.maxNodePlus
@@ -3371,8 +3749,19 @@ value for each key is a dictionary that maps nodes to values.</dd>
         baseDir = self.repoLocation
         relative = app.context.relative
         version = app.version
-        wRelative = REL_RE.sub(f&#34;/{TT_NAME}/{version}/&#34;, relative, count=1)
-        resultDir = f&#34;{baseDir}{wRelative}&#34;
+
+        match = REL_RE.match(relative)
+        (headPart, tailPart) = match.group(1, 2)
+        tailPart1 = f&#34;/{tailPart}&#34; if tailPart else &#34;&#34;
+
+        resultVersionDir = (
+            getResultDir(baseDir, headPart, version, prod)
+            if resultVersion is None
+            else resultVersion
+        )
+
+        resultDir = f&#34;{resultVersionDir}{tailPart1}&#34;
+
         self.resultDir = resultDir
 
         initTree(resultDir, fresh=True)
@@ -4033,6 +4422,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
         testNodes = self.testNodes
         nsOrig = self.nsOrig
         silent = self.silent
+        excludeFeatures = self.excludeFeatures
 
         isTei = nsOrig == NS_TEI
 
@@ -4082,7 +4472,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
         attTF = []
 
         for feat in Fall():
-            if feat in {&#34;otype&#34;, &#34;str&#34;, &#34;after&#34;}:
+            if feat in TF_SPECIFIC_FEATURES or feat in excludeFeatures:
                 continue
 
             if skipMeta and feat == &#34;is_meta&#34;:
@@ -4180,6 +4570,9 @@ value for each key is a dictionary that maps nodes to values.</dd>
         fmtTF = []
 
         for feat in Fall():
+            if feat in excludeFeatures:
+                continue
+
             if not feat.startswith(&#34;rend_&#34;):
                 continue
 
@@ -4322,6 +4715,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
         silent = self.silent
         nodeFromAid = self.nodeFromAid
         testNodes = self.testNodes
+        excludeFeatures = self.excludeFeatures
 
         if not silent:
             console(&#34;Testing the edges ...&#34;)
@@ -4348,7 +4742,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
         allGood = True
 
         for edge in set(Eall()) | set(tfFromWAEdges):
-            if edge == &#34;oslots&#34;:
+            if edge == OSLOTS or edge in excludeFeatures:
                 continue
 
             if not silent:
@@ -4367,6 +4761,8 @@ value for each key is a dictionary that maps nodes to values.</dd>
                 good = False
 
             if not good:
+                good = False
+                allGood = False
                 continue
 
             dataTF = {}
@@ -4503,7 +4899,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L1184-L1207" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/watm.py#L1339-L1362" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def numEqual(nTF, nWA, silent):
@@ -4552,7 +4948,7 @@ def numEqual(nTF, nWA, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L1209-L1260" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/watm.py#L1364-L1415" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def strEqual(tf, wa, silent):
@@ -4624,7 +5020,7 @@ tokens and/or annotations in WATM.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L824-L1019" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/watm.py#L936-L1138" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeAnno(self):
     &#34;&#34;&#34;Make all annotations.
@@ -4658,6 +5054,7 @@ tokens and/or annotations in WATM.</p></div>
     skipMeta = self.skipMeta
     extra = self.extra
     excludeElements = self.excludeElements
+    excludeFeatures = self.excludeFeatures
 
     waFromTF = self.waFromTF
 
@@ -4717,6 +5114,9 @@ tokens and/or annotations in WATM.</p></div>
             waFromTF[n] = aId
 
     for feat in nodeFeatures:
+        if feat in excludeFeatures:
+            continue
+
         ns = Fs(feat).meta.get(&#34;conversionCode&#34;, NS_FROM_FEAT.get(feat, nsOrig))
 
         if ns is None:
@@ -4752,6 +5152,9 @@ tokens and/or annotations in WATM.</p></div>
                 self.mkAnno(KIND_ATTR, ns, body, mkSingleTarget(n))
 
     for feat in edgeFeatures:
+        if feat in excludeFeatures:
+            continue
+
         ns = Es(feat).meta.get(&#34;conversionCode&#34;, NS_FROM_FEAT.get(feat, nsOrig))
 
         if ns is None:
@@ -4835,7 +5238,7 @@ to indices in this list is stored in member <code>waFromTF</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L738-L803" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/watm.py#L850-L915" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeText(self):
     &#34;&#34;&#34;Creates the text data.
@@ -4925,7 +5328,7 @@ or <code>tuple</code> of <code>strings</code></dt>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L805-L822" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/watm.py#L917-L934" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mkAnno(self, kind, ns, body, target):
     &#34;&#34;&#34;Make a single annotation and return its id.
@@ -4971,7 +5374,7 @@ If <code>condensed</code> is True, we suppress this output.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L1262-L1321" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/watm.py#L1417-L1476" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testAll(self, condensed=False):
     &#34;&#34;&#34;Test all aspects of the WATM conversion.
@@ -5055,7 +5458,7 @@ In turn, these features have been translated into annotations of kind
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L1689-L1895" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/watm.py#L1844-L2054" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testAttributes(self):
     &#34;&#34;&#34;Test the attributes.
@@ -5084,6 +5487,7 @@ In turn, these features have been translated into annotations of kind
     testNodes = self.testNodes
     nsOrig = self.nsOrig
     silent = self.silent
+    excludeFeatures = self.excludeFeatures
 
     isTei = nsOrig == NS_TEI
 
@@ -5133,7 +5537,7 @@ In turn, these features have been translated into annotations of kind
     attTF = []
 
     for feat in Fall():
-        if feat in {&#34;otype&#34;, &#34;str&#34;, &#34;after&#34;}:
+        if feat in TF_SPECIFIC_FEATURES or feat in excludeFeatures:
             continue
 
         if skipMeta and feat == &#34;is_meta&#34;:
@@ -5231,6 +5635,9 @@ In turn, these features have been translated into annotations of kind
     fmtTF = []
 
     for feat in Fall():
+        if feat in excludeFeatures:
+            continue
+
         if not feat.startswith(&#34;rend_&#34;):
             continue
 
@@ -5284,7 +5691,7 @@ by annotations.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L1984-L2161" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/watm.py#L2143-L2323" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testEdges(self):
     &#34;&#34;&#34;Test the edges.
@@ -5307,6 +5714,7 @@ by annotations.</p>
     silent = self.silent
     nodeFromAid = self.nodeFromAid
     testNodes = self.testNodes
+    excludeFeatures = self.excludeFeatures
 
     if not silent:
         console(&#34;Testing the edges ...&#34;)
@@ -5333,7 +5741,7 @@ by annotations.</p>
     allGood = True
 
     for edge in set(Eall()) | set(tfFromWAEdges):
-        if edge == &#34;oslots&#34;:
+        if edge == OSLOTS or edge in excludeFeatures:
             continue
 
         if not silent:
@@ -5352,6 +5760,8 @@ by annotations.</p>
             good = False
 
         if not good:
+            good = False
+            allGood = False
             continue
 
         dataTF = {}
@@ -5482,7 +5892,7 @@ dataset.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L1517-L1687" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/watm.py#L1672-L1842" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testElements(self):
     &#34;&#34;&#34;Test the elements.
@@ -5674,7 +6084,7 @@ the kind <code>anno</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L1897-L1982" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/watm.py#L2056-L2141" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testExtra(self):
     &#34;&#34;&#34;Test the extra data for on-the-fly annotations.
@@ -5776,7 +6186,7 @@ We unpack targets if they contain structured information.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L1323-L1476" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/watm.py#L1478-L1631" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testSetup(self):
     &#34;&#34;&#34;Prepare the tests.
@@ -5949,7 +6359,7 @@ whether the TF and WATM datasets agree on it.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L1478-L1515" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/watm.py#L1633-L1670" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def testText(self):
     &#34;&#34;&#34;Test the text.
@@ -5992,7 +6402,7 @@ whether the TF and WATM datasets agree on it.</p>
 </details>
 </dd>
 <dt id="tf.convert.watm.WATM.writeAll"><code class="name flex">
-<span>def <span class="ident">writeAll</span></span>(<span>self)</span>
+<span>def <span class="ident">writeAll</span></span>(<span>self, prod=False, resultVersion=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Write text and annotation data to disk.</p>
@@ -6000,13 +6410,37 @@ whether the TF and WATM datasets agree on it.</p>
 files.
 When the annotation data grows larger than a certain threshold, it will be
 divided over several files.</p>
-<p>The annotations are sorted by annotation id.</p></div>
+<p>The annotations are sorted by annotation id.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>prod</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>
+<p>If True, we make a production version, if False we make a
+development version.
+Production versions end up in the <code>watm</code> directory, development versions
+in the <code>_temp/watm</code> directory.</p>
+<p>Production versions have an extra sequence number behind the TF version
+on which they are based, e.g. <code>2.1.0e-001</code>, <code>2.1.0e-002</code>.
+They will never be overwritten, subsequent runs will increase the
+sequence number.
+The sequence number is stored in a file <code>latest</code> in the <code>watm</code> directory.</p>
+<p>Development versions are always equal to the TF versions and can be
+overwritten.</p>
+<p>This mechanism helps you to ensure that you do not change existing
+versions in the <code>watm</code> directory.</p>
+</dd>
+<dt><strong><code>resultVersion</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>If not None, the resultVersion isin
+this directory.
+This is needed if WATM is generated for a series of related datasets that
+have the same result base.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L1021-L1182" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/watm.py#L1140-L1337" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def writeAll(self):
+<pre><code class="python">def writeAll(self, prod=False, resultVersion=None):
     &#34;&#34;&#34;Write text and annotation data to disk.
 
     The data will be written as JSON files, or, is `asTsv` is in force, as TSV
@@ -6015,6 +6449,31 @@ divided over several files.</p>
     divided over several files.
 
     The annotations are sorted by annotation id.
+
+    Parameters
+    ----------
+    prod: boolean, optional False
+        If True, we make a production version, if False we make a
+        development version.
+        Production versions end up in the `watm` directory, development versions
+        in the `_temp/watm` directory.
+
+        Production versions have an extra sequence number behind the TF version
+        on which they are based, e.g. `2.1.0e-001`, `2.1.0e-002`.
+        They will never be overwritten, subsequent runs will increase the
+        sequence number.
+        The sequence number is stored in a file `latest` in the `watm` directory.
+
+        Development versions are always equal to the TF versions and can be
+        overwritten.
+
+        This mechanism helps you to ensure that you do not change existing
+        versions in the `watm` directory.
+
+    resultVersion: string, optional None
+        If not None, the resultVersion isin  this directory.
+        This is needed if WATM is generated for a series of related datasets that
+        have the same result base.
     &#34;&#34;&#34;
 
     maxNodePlus = self.maxNodePlus
@@ -6039,8 +6498,19 @@ divided over several files.</p>
     baseDir = self.repoLocation
     relative = app.context.relative
     version = app.version
-    wRelative = REL_RE.sub(f&#34;/{TT_NAME}/{version}/&#34;, relative, count=1)
-    resultDir = f&#34;{baseDir}{wRelative}&#34;
+
+    match = REL_RE.match(relative)
+    (headPart, tailPart) = match.group(1, 2)
+    tailPart1 = f&#34;/{tailPart}&#34; if tailPart else &#34;&#34;
+
+    resultVersionDir = (
+        getResultDir(baseDir, headPart, version, prod)
+        if resultVersion is None
+        else resultVersion
+    )
+
+    resultDir = f&#34;{resultVersionDir}{tailPart1}&#34;
+
     self.resultDir = resultDir
 
     initTree(resultDir, fresh=True)
@@ -6208,7 +6678,7 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L2164-L2263" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/watm.py#L2326-L2463" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WATMS:
     &#34;&#34;&#34;Export corpora that are divided over multiple TF datasets.
@@ -6257,14 +6727,38 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
         self.extra = extra
         self.silent = silent
 
-        repoDir = ex(f&#34;~/{backend}/{org}/{repo}&#34;)
+        self.error = False
+
+        repoDir = f&#34;{backendRep(backend, &#39;clone&#39;)}/{org}/{repo}&#34;
+        self.repoDir = repoDir
+
+        appDir = f&#34;{repoDir}/app&#34;
+        appConfig = f&#34;{appDir}/{APP_CONFIG}&#34;
+        appSettings = readYaml(asFile=appConfig)
+
+        tfVersion = (
+            None
+            if appSettings is None or appSettings.provenanceSpec is None
+            else appSettings.provenanceSpec.version
+        )
+
+        if tfVersion is None:
+            console(f&#34;Could not find the TF version in {appConfig}&#34;, error=True)
+            self.error = True
+            return
+
+        console(f&#34;Making WATMS for version {tfVersion}&#34;)
+        self.tfVersion = tfVersion
+
         tfDir = f&#34;{repoDir}/tf&#34;
         docs = dirContents(tfDir)[1]
+
         if not silent:
             console(f&#34;Found {len(docs)} docs in {tfDir}&#34;)
+
         self.docs = docs
 
-    def produce(self, doc=None):
+    def produce(self, doc=None, prod=False):
         &#34;&#34;&#34;Convert all relevant TF datasets.
 
         Parameters
@@ -6273,7 +6767,17 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
             Subdirectory where one of the TF datasets resides.
             If passed, only this dataset will be converted.
             Otherwise all datasets will be converted.
+        prod: boolean, optional False
+            See `WATM.writeAll`
         &#34;&#34;&#34;
+        error = self.error
+        silent = self.silent
+
+        if error:
+            if not silent:
+                console(&#34;Cannot run because of an earlier error&#34;)
+            return
+
         org = self.org
         repo = self.repo
         backend = self.backend
@@ -6282,8 +6786,12 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
         extra = self.extra
         docs = self.docs
         silent = self.silent
+        repoDir = self.repoDir
+        tfVersion = self.tfVersion
 
         chosenDoc = doc
+
+        resultVersion = getResultDir(repoDir, &#34;&#34;, tfVersion, prod)
 
         good = True
 
@@ -6295,7 +6803,7 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
                 console(f&#34;{doc:&gt;5} ... &#34;, newline=False)
             A = use(
                 f&#34;{org}/{repo}:clone&#34;,
-                relative=f&#34;tf/{doc}&#34;,
+                relative=f&#34;/tf/{doc}&#34;,
                 checkout=&#34;clone&#34;,
                 backend=backend,
                 silent=DEEP,
@@ -6303,7 +6811,7 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
             WA = WATM(A, nsOrig, skipMeta=skipMeta, extra=extra, silent=silent)
             WA.makeText()
             WA.makeAnno()
-            WA.writeAll()
+            WA.writeAll(prod=prod, resultVersion=resultVersion)
             WA.testAll(condensed=True)
 
             if WA.error:
@@ -6314,7 +6822,7 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
 <h3>Methods</h3>
 <dl>
 <dt id="tf.convert.watm.WATMS.produce"><code class="name flex">
-<span>def <span class="ident">produce</span></span>(<span>self, doc=None)</span>
+<span>def <span class="ident">produce</span></span>(<span>self, doc=None, prod=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Convert all relevant TF datasets.</p>
@@ -6324,13 +6832,15 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
 <dd>Subdirectory where one of the TF datasets resides.
 If passed, only this dataset will be converted.
 Otherwise all datasets will be converted.</dd>
+<dt><strong><code>prod</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>See <code><a title="tf.convert.watm.WATM.writeAll" href="#tf.convert.watm.WATM.writeAll">WATM.writeAll()</a></code></dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/watm.py#L2218-L2263" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/watm.py#L2404-L2463" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def produce(self, doc=None):
+<pre><code class="python">def produce(self, doc=None, prod=False):
     &#34;&#34;&#34;Convert all relevant TF datasets.
 
     Parameters
@@ -6339,7 +6849,17 @@ Otherwise all datasets will be converted.</dd>
         Subdirectory where one of the TF datasets resides.
         If passed, only this dataset will be converted.
         Otherwise all datasets will be converted.
+    prod: boolean, optional False
+        See `WATM.writeAll`
     &#34;&#34;&#34;
+    error = self.error
+    silent = self.silent
+
+    if error:
+        if not silent:
+            console(&#34;Cannot run because of an earlier error&#34;)
+        return
+
     org = self.org
     repo = self.repo
     backend = self.backend
@@ -6348,8 +6868,12 @@ Otherwise all datasets will be converted.</dd>
     extra = self.extra
     docs = self.docs
     silent = self.silent
+    repoDir = self.repoDir
+    tfVersion = self.tfVersion
 
     chosenDoc = doc
+
+    resultVersion = getResultDir(repoDir, &#34;&#34;, tfVersion, prod)
 
     good = True
 
@@ -6361,7 +6885,7 @@ Otherwise all datasets will be converted.</dd>
             console(f&#34;{doc:&gt;5} ... &#34;, newline=False)
         A = use(
             f&#34;{org}/{repo}:clone&#34;,
-            relative=f&#34;tf/{doc}&#34;,
+            relative=f&#34;/tf/{doc}&#34;,
             checkout=&#34;clone&#34;,
             backend=backend,
             silent=DEEP,
@@ -6369,7 +6893,7 @@ Otherwise all datasets will be converted.</dd>
         WA = WATM(A, nsOrig, skipMeta=skipMeta, extra=extra, silent=silent)
         WA.makeText()
         WA.makeAnno()
-        WA.writeAll()
+        WA.writeAll(prod=prod, resultVersion=resultVersion)
         WA.testAll(condensed=True)
 
         if WA.error:
@@ -6466,6 +6990,7 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="tf.convert.watm.getResultDir" href="#tf.convert.watm.getResultDir">getResultDir</a></code></li>
 <li><code><a title="tf.convert.watm.rep" href="#tf.convert.watm.rep">rep</a></code></li>
 </ul>
 </li>

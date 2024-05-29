@@ -43,8 +43,17 @@ and in its top-level directory run the command:</strong></p>
 </code></pre>
 <h2 id="12">12</h2>
 <h3 id="125">12.5</h3>
+<h4 id="1251">12.5.1</h4>
+<p>2024-05-?? (Upcoming)</p>
+<p>WATM production tweaks:</p>
+<p>By default, WATM files are written to versioned directories inside the <code>_temp</code>
+directory. Existing data may be overwritten.
+However, if you pass a flag indicating that it is for production, the result is
+written to a new versioned directory inside <code>watm</code>. The new versioned directories
+created in this way have a suffix <code>-001</code>, <code>-002</code>, etc.
+This helps to keep published WATM fixed.</p>
 <h4 id="1250">12.5.0</h4>
-<p>2024-05-28 (Upcoming)</p>
+<p>2024-05-28</p>
 <p>Fixes in NER Browser:</p>
 <ul>
 <li>
@@ -462,7 +471,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -536,6 +545,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
 <li><a href="#125">12.5</a><ul>
+<li><a href="#1251">12.5.1</a></li>
 <li><a href="#1250">12.5.0</a></li>
 </ul>
 </li>

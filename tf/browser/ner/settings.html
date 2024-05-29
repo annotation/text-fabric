@@ -34,7 +34,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/browser/ner/settings.py#L1-L232" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/browser/ner/settings.py#L1-L232" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Corpus dependent setup of the annotation tool.
 
@@ -44,7 +44,7 @@ To see how this fits among all the modules of this package, see
 
 
 from ...core.helpers import console as cs
-from ...core.files import readYaml, fileExists
+from ...core.files import readYaml, fileExists, APP_CONFIG
 
 TOOLKEY = &#34;ner&#34;
 &#34;&#34;&#34;The name of this annotation tool.
@@ -242,7 +242,7 @@ class Settings:
         &#34;&#34;&#34;
         specDir = self.specDir
 
-        nerSpec = f&#34;{specDir}/config.yaml&#34;
+        nerSpec = f&#34;{specDir}/{APP_CONFIG}&#34;
         kwargs = (
             dict(asFile=nerSpec) if fileExists(nerSpec) else dict(text=DEFAULT_SETTINGS)
         )
@@ -393,7 +393,7 @@ Those configuration values are read from a YAML file, located in a directory
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/browser/ner/settings.py#L192-L232" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/browser/ner/settings.py#L192-L232" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Settings:
     def __init__(self):
@@ -410,7 +410,7 @@ Those configuration values are read from a YAML file, located in a directory
         &#34;&#34;&#34;
         specDir = self.specDir
 
-        nerSpec = f&#34;{specDir}/config.yaml&#34;
+        nerSpec = f&#34;{specDir}/{APP_CONFIG}&#34;
         kwargs = (
             dict(asFile=nerSpec) if fileExists(nerSpec) else dict(text=DEFAULT_SETTINGS)
         )
@@ -455,7 +455,7 @@ without the need to add an <code>import</code> statement to the code.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/browser/ner/settings.py#L223-L232" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/browser/ner/settings.py#L223-L232" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(self, msg, **kwargs):
     &#34;&#34;&#34;Print something to the output.

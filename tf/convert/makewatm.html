@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/makewatm.py#L1-L422" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/makewatm.py#L1-L428" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 from textwrap import dedent
@@ -129,6 +129,7 @@ class MakeWATM:
             silent=&#34;To run a bit more silent&#34;,
             relaxed=&#34;Accept XML validation errors&#34;,
             usenlp=&#34;Will run an NLP pipeline to mark tokens, sentences and entities&#34;,
+            prod=&#34;Delivers WATM in production location&#34;,
         )
         self.BASE_TASKS = (&#34;tei2tf&#34;, &#34;page2tf&#34;, &#34;watm&#34;, &#34;watms&#34;)
         self.TF_VERSION = &#34;0.0.0test&#34;
@@ -154,6 +155,7 @@ class MakeWATM:
             (&#34;silent&#34;, None),
             (&#34;relaxed&#34;, None),
             (&#34;usenlp&#34;, None),
+            (&#34;prod&#34;, None),
         ),
         intro=None,
     ):
@@ -220,7 +222,7 @@ class MakeWATM:
 
         unrecognized = set()
         tasks = set()
-        self.version = None
+        version = None
 
         for flag in FLAGS:
             setattr(self, f&#34;flag_{flag}&#34;, False)
@@ -411,6 +413,7 @@ class MakeWATM:
     def doTask_watm(self):
         good = self.good
         silent = self.flag_silent
+        prod = self.flag_prod
 
         if not good:
             if not silent:
@@ -432,15 +435,18 @@ class MakeWATM:
             f&#34;{org}/{repo}:clone&#34;, backend=backend, checkout=&#34;clone&#34;, silent=loadVerbose
         )
 
+        console(f&#34;Making WATM for version {A.version}&#34;)
+
         WA = WATM(A, &#34;tei&#34;, skipMeta=False, silent=silent)
         WA.makeText()
         WA.makeAnno()
-        WA.writeAll()
+        WA.writeAll(prod=prod)
         WA.testAll()
 
     def doTask_watms(self):
         good = self.good
         silent = self.flag_silent
+        prod = self.flag_prod
 
         if not good:
             if not silent:
@@ -454,7 +460,7 @@ class MakeWATM:
         console(&#34;Producing WATMs&#34;)
 
         W = WATMS(org, repo, backend, &#34;pagexml&#34;, silent=silent)
-        W.produce()</code></pre>
+        W.produce(prod=prod)</code></pre>
 </details>
 </section>
 <section>
@@ -509,7 +515,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/makewatm.py#L18-L422" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/makewatm.py#L18-L428" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class MakeWATM:
     &#34;&#34;&#34;Base class for running conversions to WATM.
@@ -590,6 +596,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
             silent=&#34;To run a bit more silent&#34;,
             relaxed=&#34;Accept XML validation errors&#34;,
             usenlp=&#34;Will run an NLP pipeline to mark tokens, sentences and entities&#34;,
+            prod=&#34;Delivers WATM in production location&#34;,
         )
         self.BASE_TASKS = (&#34;tei2tf&#34;, &#34;page2tf&#34;, &#34;watm&#34;, &#34;watms&#34;)
         self.TF_VERSION = &#34;0.0.0test&#34;
@@ -615,6 +622,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
             (&#34;silent&#34;, None),
             (&#34;relaxed&#34;, None),
             (&#34;usenlp&#34;, None),
+            (&#34;prod&#34;, None),
         ),
         intro=None,
     ):
@@ -681,7 +689,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 
         unrecognized = set()
         tasks = set()
-        self.version = None
+        version = None
 
         for flag in FLAGS:
             setattr(self, f&#34;flag_{flag}&#34;, False)
@@ -872,6 +880,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
     def doTask_watm(self):
         good = self.good
         silent = self.flag_silent
+        prod = self.flag_prod
 
         if not good:
             if not silent:
@@ -893,15 +902,18 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
             f&#34;{org}/{repo}:clone&#34;, backend=backend, checkout=&#34;clone&#34;, silent=loadVerbose
         )
 
+        console(f&#34;Making WATM for version {A.version}&#34;)
+
         WA = WATM(A, &#34;tei&#34;, skipMeta=False, silent=silent)
         WA.makeText()
         WA.makeAnno()
-        WA.writeAll()
+        WA.writeAll(prod=prod)
         WA.testAll()
 
     def doTask_watms(self):
         good = self.good
         silent = self.flag_silent
+        prod = self.flag_prod
 
         if not good:
             if not silent:
@@ -915,7 +927,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
         console(&#34;Producing WATMs&#34;)
 
         W = WATMS(org, repo, backend, &#34;pagexml&#34;, silent=silent)
-        W.produce()</code></pre>
+        W.produce(prod=prod)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -927,7 +939,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/makewatm.py#L330-L374" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/makewatm.py#L332-L376" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def doTask_page2tf(self):
     good = self.good
@@ -984,7 +996,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/makewatm.py#L251-L328" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/makewatm.py#L253-L330" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def doTask_tei2tf(self):
     good = self.good
@@ -1074,11 +1086,12 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/makewatm.py#L376-L404" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/makewatm.py#L378-L409" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def doTask_watm(self):
     good = self.good
     silent = self.flag_silent
+    prod = self.flag_prod
 
     if not good:
         if not silent:
@@ -1100,10 +1113,12 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
         f&#34;{org}/{repo}:clone&#34;, backend=backend, checkout=&#34;clone&#34;, silent=loadVerbose
     )
 
+    console(f&#34;Making WATM for version {A.version}&#34;)
+
     WA = WATM(A, &#34;tei&#34;, skipMeta=False, silent=silent)
     WA.makeText()
     WA.makeAnno()
-    WA.writeAll()
+    WA.writeAll(prod=prod)
     WA.testAll()</code></pre>
 </details>
 </dd>
@@ -1115,11 +1130,12 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/makewatm.py#L406-L422" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/makewatm.py#L411-L428" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def doTask_watms(self):
     good = self.good
     silent = self.flag_silent
+    prod = self.flag_prod
 
     if not good:
         if not silent:
@@ -1133,7 +1149,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
     console(&#34;Producing WATMs&#34;)
 
     W = WATMS(org, repo, backend, &#34;pagexml&#34;, silent=silent)
-    W.produce()</code></pre>
+    W.produce(prod=prod)</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.makewatm.MakeWATM.main"><code class="name flex">
@@ -1144,7 +1160,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/makewatm.py#L175-L234" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/makewatm.py#L177-L236" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(self, cmdLine=None, cargs=sys.argv[1:]):
     FLAGS = self.FLAGS
@@ -1159,7 +1175,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 
     unrecognized = set()
     tasks = set()
-    self.version = None
+    version = None
 
     for flag in FLAGS:
         setattr(self, f&#34;flag_{flag}&#34;, False)
@@ -1216,7 +1232,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/makewatm.py#L236-L237" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/makewatm.py#L238-L239" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def prepareRun(self, tasks):
     return</code></pre>
@@ -1230,7 +1246,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/makewatm.py#L239-L249" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/makewatm.py#L241-L251" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def run(self, tasks):
     TASKS = self.TASKS
@@ -1246,14 +1262,14 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 </details>
 </dd>
 <dt id="tf.convert.makewatm.MakeWATM.setOptions"><code class="name flex">
-<span>def <span class="ident">setOptions</span></span>(<span>self, taskSpecs=(('tei2tf', None), ('watm', None)), flagSpecs=(('silent', None), ('relaxed', None), ('usenlp', None)), intro=None)</span>
+<span>def <span class="ident">setOptions</span></span>(<span>self, taskSpecs=(('tei2tf', None), ('watm', None)), flagSpecs=(('silent', None), ('relaxed', None), ('usenlp', None), ('prod', None)), intro=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76c3d5f514058db481dd77f98889f26ec5801a95/tf/convert/makewatm.py#L112-L173" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/convert/makewatm.py#L113-L175" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setOptions(
     self,
@@ -1265,6 +1281,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
         (&#34;silent&#34;, None),
         (&#34;relaxed&#34;, None),
         (&#34;usenlp&#34;, None),
+        (&#34;prod&#34;, None),
     ),
     intro=None,
 ):
