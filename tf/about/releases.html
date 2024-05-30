@@ -45,6 +45,8 @@ and in its top-level directory run the command:</strong></p>
 <h3 id="125">12.5</h3>
 <h4 id="1251">12.5.1</h4>
 <p>2024-05-?? (Upcoming)</p>
+<ul>
+<li>
 <p>WATM production tweaks:</p>
 <p>By default, WATM files are written to versioned directories inside the <code>_temp</code>
 directory. Existing data may be overwritten.
@@ -52,6 +54,15 @@ However, if you pass a flag indicating that it is for production, the result is
 written to a new versioned directory inside <code>watm</code>. The new versioned directories
 created in this way have a suffix <code>-001</code>, <code>-002</code>, etc.
 This helps to keep published WATM fixed.</p>
+</li>
+<li>
+<p>NER more refined entity lookup</p>
+<p>When looking up entities on the basis of spreadsheet instructions, you can now give
+spreadsheets for the whole corpus, and for sections and subsections and ranges
+of them. The more specificly targeted spreadsheets override the more
+generally targeted ones.</p>
+</li>
+</ul>
 <h4 id="1250">12.5.0</h4>
 <p>2024-05-28</p>
 <p>Fixes in NER Browser:</p>
@@ -471,7 +482,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/45319d66c4a6e30233fc91a7f636c02eb770f1b4/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1cf5e9c0fadcf56c0022132ef658bc0189d73054/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
