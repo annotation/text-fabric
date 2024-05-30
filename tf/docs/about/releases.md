@@ -24,14 +24,21 @@ pip install -e .
 
 2024-05-?? (Upcoming)
 
-WATM production tweaks:
+*   WATM production tweaks:
 
-By default, WATM files are written to versioned directories inside the `_temp`
-directory. Existing data may be overwritten.
-However, if you pass a flag indicating that it is for production, the result is
-written to a new versioned directory inside `watm`. The new versioned directories
-created in this way have a suffix `-001`, `-002`, etc.
-This helps to keep published WATM fixed.
+    By default, WATM files are written to versioned directories inside the `_temp`
+    directory. Existing data may be overwritten.
+    However, if you pass a flag indicating that it is for production, the result is
+    written to a new versioned directory inside `watm`. The new versioned directories
+    created in this way have a suffix `-001`, `-002`, etc.
+    This helps to keep published WATM fixed.
+
+*   NER more refined entity lookup
+
+    When looking up entities on the basis of spreadsheet instructions, you can now give
+    spreadsheets for the whole corpus, and for sections and subsections and ranges
+    of them. The more specificly targeted spreadsheets override the more
+    generally targeted ones.
 
 #### 12.5.0
 

@@ -223,10 +223,11 @@ Lines consist of tab separated fields:
 """
 
 from ...capable import CheckImport
+from ...core.files import mTime, fileExists, readYaml, writeYaml
 from ...core.helpers import console
+from .helpers import normalize, toSmallId, toTokens
 from .annotate import Annotate
-from .helpers import toTokens
-from .triggers import Triggers
+from .triggers import getTriggers
 
 
 class NER(Annotate):
@@ -269,20 +270,186 @@ class NER(Annotate):
             It may be accompanied by a directory with the same name (without extension)
             containing more specialized trigger specs: per section level.
         """
+        settings = self.settings
+        transform = settings.transform
+        keywordFeatures = settings.keywordFeatures
+        defaultValues = settings.defaultValues
+
+        self.triggerInfo = getTriggers(
+            sheetName, transform, keywordFeatures, defaultValues
+        )
+
+    def readInstructions_old(self, sheetName, force=False):
+        """Reads an Excel or YAML file with entity recognition instructions.
+
+        If an Excel spreadsheet is present and no corresponding YAML file is present,
+        or if the corresponding YAML file is out of data, the spreadsheet will be
+        converted to YAML.
+
+        The info in the resulting YAML file is stored as attribute
+        `instructions` in this object.
+
+        A report of the instructions will be shown in the output.
+
+        Reading instructions will invalidate the `inventory` member of this object,
+        which is the result of looking up all entities in the corpus on the basis
+        of the instructions.
+
+        The format of the spreadsheet should be:
+
+        *   exactly two header rows;
+        *   after that, empty rows are allowed and discarded;
+        *   only the first three columns are used:
+
+            *   name: full name, not in any prescribed format
+            *   kind: the kind of entity, e.g. `PER`, `LOC`, `ORG`, `MISC`
+            *   occurrence forms: forms of the name that actually occur in the text
+
+        Parameters
+        ----------
+        sheetName: string
+            The file name without extension of the spreadsheet.
+            The spreadsheet is expected in the `ner/sheets` directory.
+            The YAML file ends up in the same directory, with the same name and
+            extension `.yaml`
+        force: boolean, optional False
+            If True, the conversion from Excel to YAML will take place anyhow, provided
+            the Excel sheet exists.
+        """
         CI = CheckImport("openpyxl")
         if CI.importOK(hint=True):
             openpyxl = CI.importGet()
-            self.load_workbook = openpyxl.load_workbook
+            load_workbook = openpyxl.load_workbook
         else:
-            return None
+            return
 
         if not self.properlySetup:
-            return None
+            return
 
-        TRIG = Triggers(self)
-        TRIG.read(sheetName)
-        self.TRIG = TRIG
-        self.triggerInfo = TRIG.triggerInfo
+        sheetDir = self.sheetDir
+
+        xlsFile = f"{sheetDir}/{sheetName}.xlsx"
+        yamlFile = f"{sheetDir}/{sheetName}.yaml"
+
+        doConvert = False
+
+        if not fileExists(yamlFile):
+            if not fileExists(xlsFile):
+                console(f"no instructions found: {yamlFile} and {xlsFile} don't exist")
+                return
+
+            doConvert = True
+        else:
+            if fileExists(xlsFile) and force or (mTime(yamlFile) < mTime(xlsFile)):
+                doConvert = True
+
+        if doConvert:
+            settings = self.settings
+            transform = settings.transform
+            keywordFeatures = settings.keywordFeatures
+            kindFeature = keywordFeatures[0]
+            defaultValues = settings.defaultValues
+
+            wb = load_workbook(xlsFile, data_only=True)
+            ws = wb.active
+
+            (headRow, subHeadRow, *rows) = list(ws.rows)
+            rows = [row for row in rows if any(c.value for c in row)]
+
+            defaultKind = defaultValues.get(kindFeature, "")
+
+            info = {}
+            namesByOrigEid = {}
+            eidByName = {}
+
+            for r, row in enumerate(ws.rows):
+                if r in {0, 1}:
+                    continue
+                if not any(c.value for c in row):
+                    continue
+
+                (name, kind, synonymStr) = (
+                    normalize(row[i].value or "") for i in range(3)
+                )
+                synonyms = sorted(
+                    set()
+                    if not synonymStr
+                    else {y for x in synonymStr.split(";") if (y := normalize(x)) != ""}
+                )
+                if not name:
+                    name = synonyms[0] if synonyms else ""
+                    if name == "":
+                        console(f"Row {r + 1:>3}: no entity name and no synonyms")
+                        continue
+                    else:
+                        console(f"Row {r + 1:>3}: no entity name, supplied {name}")
+
+                if not kind:
+                    kind = defaultKind
+
+                i = 0
+                while name in eidByName:
+                    i += 1
+                    name = f"{name} ({i})"
+
+                eid = toSmallId(name, transform=transform)
+                namesByOrigEid.setdefault(eid, []).append(name)
+
+                i = 0
+                while eid in info:
+                    i += 1
+                    eid = f"{eid}.{i}"
+
+                eidByName[name] = eid
+
+                occSpecs = sorted(synonyms, key=lambda x: -len(x))
+                info[eid] = {"name": name, kindFeature: kind, "occSpecs": occSpecs}
+
+            for origEid, names in sorted(namesByOrigEid.items()):
+                if len(names) == 1:
+                    continue
+                console(f"Multiple names for candidate identifier {origEid}:")
+                for name in names:
+                    newEid = eidByName[name]
+                    console(f"""\tIdentifier {newEid} assigned to name "{name}" """)
+            writeYaml(info, asFile=yamlFile)
+
+        else:
+            info = readYaml(asFile=yamlFile)
+
+        namesByOcc = {}
+
+        for eInfo in info.values():
+            name = eInfo["name"]
+            occSpecs = eInfo["occSpecs"]
+            for occSpec in occSpecs:
+                namesByOcc.setdefault(occSpec, []).append(name)
+
+        nEid = len(info)
+        nOcc = sum(len(x["occSpecs"]) for x in info.values())
+        noOccs = sum(1 for x in info.values() if len(x["occSpecs"]) == 0)
+        console(f"{nEid} entities with {nOcc} occurrence specs")
+        console(f"{noOccs} entities do not have occurrence specifiers")
+
+        nm = 0
+
+        for occSpec, names in sorted(namesByOcc.items()):
+            if len(names) == 1:
+                continue
+
+            console(f""""{occSpec}" used for:""")
+            for name in names:
+                console(f"\t{name}")
+            nm += 1
+
+        if nm == 0:
+            console("All occurrence specifiers are unambiguous")
+        else:
+            console(f"{nm} occurrence specifiers are ambiguous")
+
+        self.namesByOcc = namesByOcc
+        self.instructions = readYaml(asFile=yamlFile)
+        self.inventory = None
 
     def makeInventory(self):
         """Explores the corpus for the surface forms mentioned in the instructions.
