@@ -249,8 +249,9 @@ class NER(Annotate):
         if not self.properlySetup:
             return
 
-        self.instructions = None
-        """Will contain the information in a spreadsheet for marking up entities."""
+        self.Trig = None
+        """Will contain the object that has compiled the triggers for named entities.
+        """
 
         self.inventory = None
         """Will contain the locations of all surface forms in the current instructions.
@@ -279,10 +280,9 @@ class NER(Annotate):
         if not self.properlySetup:
             return None
 
-        TRIG = Triggers(self)
-        TRIG.read(sheetName)
-        self.TRIG = TRIG
-        self.triggerInfo = TRIG.triggerInfo
+        Trig = Triggers(self)
+        Trig.read(sheetName)
+        self.Trig = Trig
 
     def makeInventory(self):
         """Explores the corpus for the surface forms mentioned in the instructions.
@@ -298,14 +298,15 @@ class NER(Annotate):
         if not self.properlySetup:
             return
 
-        instructions = self.instructions
         settings = self.settings
         spaceEscaped = settings.spaceEscaped
+        Trig = self.Trig
+        instructions = Trig.instructions
 
         qSets = set()
 
         for info in instructions.values():
-            for occSpec in info.occSpecs:
+            for occSpec in info["occSpecs"]:
                 qSets.add(toTokens(occSpec, spaceEscaped=spaceEscaped))
 
         app = self.app
@@ -314,7 +315,7 @@ class NER(Annotate):
         self.inventory = self.findOccs(qSets)
         app.info("Done")
 
-    def showInventory(self):
+    def showInventory(self, expanded=False):
         """Shows the inventory.
 
         The surface forms in the inventory are put into the context of the entities
@@ -329,11 +330,12 @@ class NER(Annotate):
         spaceEscaped = settings.spaceEscaped
 
         total = 0
+        ins = 0
 
         for eid, info in sorted(instructions.items()):
-            name = info.name
-            kind = info.kind
-            occSpecs = info.occSpecs
+            name = info["name"]
+            kind = info["kind"]
+            occSpecs = info["occSpecs"]
 
             for occSpec in occSpecs:
                 matches = inventory.get(
@@ -343,7 +345,9 @@ class NER(Annotate):
                     continue
                 n = len(matches)
                 total += n
-                console(f"{eid:<24} {kind:<5} {occSpec:<20} {n:>5} x {name}")
+                if expanded or ins < 10:
+                    console(f"{eid:<24} {kind:<5} {occSpec:<20} {n:>5} x {name}")
+                    ins += 1
 
         console(f"Total {total}")
 

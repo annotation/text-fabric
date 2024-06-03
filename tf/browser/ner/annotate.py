@@ -158,10 +158,10 @@ class Annotate(Sets, Show):
 
         buckets = setData.buckets or ()
 
-        results = {}
+        results = occMatch(getTokens, buckets, qTokenSet)
 
-        for b in buckets:
-            occMatch(getTokens, b, qTokenSet, results)
+        # for b in buckets:
+        #    occMatch(getTokens, b, qTokenSet, results)
 
         return results
 

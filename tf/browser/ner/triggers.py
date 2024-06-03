@@ -1,4 +1,6 @@
 import re
+from copy import deepcopy
+
 from .helpers import normalize, toSmallId
 from ...core.helpers import console
 from ...core.files import dirContents
@@ -19,6 +21,9 @@ class Triggers:
         self.kindFeature = kindFeature
         defaultValues = settings.defaultValues
         self.defaultKind = defaultValues.get(kindFeature, "")
+
+        self.instructions = None
+        """Will contain the information in a spreadsheet for marking up entities."""
 
     def readXls(self, sheetRela):
         loadXls = self.loadXls
@@ -151,9 +156,169 @@ class Triggers:
 
     def compile(self):
         rawInfo = self.rawInfo
+        sheetName = self.sheetName
 
-        triggerInfo = rawInfo
-        self.triggerInfo = triggerInfo
+        sheetMain = rawInfo["main"]
+        sheetTweaked = rawInfo["sdr"]
+
+        compiled = {"": dict(sheet=sheetMain)}
+        instructions = {}
+        self.instructions = instructions
+
+        def compileDir(parentSheet, sdr, dest):
+            ranged = sdr.get("rng", {})
+            single = sdr.get("sng", {})
+            subdirs = sdr.get("sdr", {})
+
+            for (start, end), info in sorted(ranged.items()):
+                for i in range(start, end + 1):
+                    dest.setdefault("tweaks", {}).setdefault(
+                        i, dict(sheet=deepcopy(parentSheet))
+                    )
+                    parentCopy = dest["tweaks"][i]["sheet"]
+
+                    for kind, data in info.items():
+                        parentCopy.setdefault(kind, {})
+                        parentCopy[kind] |= data
+
+            for i, info in single.items():
+                dest.setdefault("tweaks", {}).setdefault(
+                    i, dict(sheet=deepcopy(parentSheet))
+                )
+                parentCopy = dest["tweaks"][i]["sheet"]
+
+                for kind, data in info.items():
+                    parentCopy.setdefault(kind, {})
+                    parentCopy[kind] |= data
+
+            for i, info in subdirs.items():
+                dest.setdefault("tweaks", {}).setdefault(
+                    i, dict(sheet=deepcopy(parentSheet))
+                )
+                parentCopy = dest["tweaks"][i]["sheet"]
+                compileDir(parentCopy, info, dest["tweaks"][i])
+
+        compileDir(sheetMain, sheetTweaked, compiled)
+
+        diags = set()
+
+        def checkSheet(path, sheet):
+            sheetRep = sheetName if path == () else ".".join(str(x) for x in path)
+            console(f"Checking {sheetRep}")
+
+            namesByOcc = {}
+
+            name = sheet["name"]
+            kind = sheet["kind"]
+            occs = sheet["occs"]
+            allKeys = set(name) | set(kind) | set(occs)
+
+            instr = {}
+            instructions[path] = instr
+
+            for eid in sorted(allKeys):
+                nm = name.get(eid, "")
+                kd = kind.get(eid, "")
+                oc = occs.get(eid, set())
+
+                instr[eid] = dict(name=nm, kind=kd, occSpecs=oc)
+
+                for occSpec in oc:
+                    namesByOcc.setdefault(occSpec, []).append(nm)
+
+            nEid = len(instr)
+            nOcc = sum(len(x) for x in occs.values())
+            noOccs = sum(1 for x in occs.values() if len(x) == 0)
+            console(f"  {nEid} entities with {nOcc} occurrence specs")
+            console(f"  {noOccs} entities do not have occurrence specifiers")
+
+            nm = 0
+
+            for occSpec, names in sorted(namesByOcc.items()):
+                if len(names) == 1:
+                    continue
+
+                diag = (occSpec, tuple(names))
+                if diag not in diags:
+                    diags.add(diag)
+                    console(f""""{occSpec}" used for:""")
+                    for name in names:
+                        console(f"\t{name}")
+                nm += 1
+
+            if nm == 0:
+                console("  All occurrence specifiers are unambiguous")
+            else:
+                console(f"  {nm} occurrence specifiers are ambiguous")
+
+        def checkTweaks(path, tweaks):
+            for i in sorted(tweaks):
+                newPath = path + (i,)
+                subTweaks = tweaks[i]
+                checkSheet(newPath, subTweaks["sheet"])
+
+                if "tweaks" in subTweaks:
+                    checkTweaks(newPath, subTweaks["tweaks"])
+
+        checkSheet((), compiled[""]["sheet"])
+        checkTweaks((), compiled.get("tweaks", {}))
+
+    def showInfo(self):
+        compiledInfo = self.compiledInfo
+
+        def showSheet(parentInfo, info, tab):
+            parentName = parentInfo["name"]
+            parentKind = parentInfo["kind"]
+            parentOccs = parentInfo["occs"]
+            name = info["name"]
+            kind = info["kind"]
+            occs = info["occs"]
+            allParentKeys = set(parentName) | set(parentKind) | set(parentOccs)
+            allKeys = set(name) | set(kind) | set(occs)
+
+            console(f"{tab}  sheet with {len(allKeys)} keys")
+
+            for eid in allParentKeys | allKeys:
+                parentNm = parentName.get(eid, None)
+                nm = name.get(eid, None)
+                parentKd = parentKind.get(eid, None)
+                kd = kind.get(eid, None)
+                parentOc = parentOccs.get(eid, None)
+                oc = occs.get(eid, None)
+
+                diffNm = parentNm != nm
+                diffKd = parentKd != kd
+                diffOc = parentOc != oc
+
+                if diffNm or diffKd or diffOc:
+                    nmRep = f"{parentNm or 'ø'} => {nm or 'ø'}" if diffNm else f"{nm}"
+                    kdRep = f"{parentKd or 'ø'} => {kd or 'ø'}" if diffKd else f"{kd}"
+                    ocRep = f"{parentOc or 'ø'} => {oc or 'ø'}" if diffOc else f"{oc}"
+
+                    console(f"{tab}  {eid:>30} {nmRep}, {kdRep}, {ocRep}")
+
+        def showDir(parentSheet, info, level):
+            console("\n")
+
+            tab = "  " * level
+            console(f"{tab}")
+
+            for i in sorted(info):
+                console(f"{tab}{i}")
+
+                data = info[i]
+
+                thisSheet = data["sheet"]
+                showSheet(parentSheet, thisSheet, tab)
+
+                if "tweaks" in data:
+                    showDir(thisSheet, data["tweaks"], level + 1)
+
+            console("\n")
+
+        mainSheet = compiledInfo[""]["sheet"]
+        showSheet(mainSheet, mainSheet, "")
+        showDir(mainSheet, compiledInfo["tweaks"], 0)
 
     def showRawInfo(self, main=False):
         rawInfo = self.rawInfo
@@ -163,6 +328,7 @@ class Triggers:
             kind = info["kind"]
             occs = info["occs"]
             allKeys = set(name) | set(kind) | set(occs)
+
             for eid in sorted(allKeys):
                 nm = name.get(eid, "")
                 kd = kind.get(eid, "")
@@ -183,7 +349,7 @@ class Triggers:
                 showSheet(sng[k], tab)
 
             rng = info.get("rng", {})
-            for (b, e) in sorted(rng):
+            for b, e in sorted(rng):
                 console(f"{tab}{b}-{e}.xslx")
                 showSheet(rng[(b, e)], tab)
 
@@ -197,40 +363,3 @@ class Triggers:
             showSheet(rawInfo["main"], "")
 
         showDir("", rawInfo["sdr"], 0)
-
-    def _remaining_logic(self, info):
-        namesByOcc = {}
-
-        kindFeature = self.kindFeature
-        print(kindFeature)
-
-        for eInfo in info.values():
-            name = eInfo["name"]
-            occSpecs = eInfo["occSpecs"]
-            for occSpec in occSpecs:
-                namesByOcc.setdefault(occSpec, []).append(name)
-
-        nEid = len(info)
-        nOcc = sum(len(x["occSpecs"]) for x in info.values())
-        noOccs = sum(1 for x in info.values() if len(x["occSpecs"]) == 0)
-        console(f"{nEid} entities with {nOcc} occurrence specs")
-        console(f"{noOccs} entities do not have occurrence specifiers")
-
-        nm = 0
-
-        for occSpec, names in sorted(namesByOcc.items()):
-            if len(names) == 1:
-                continue
-
-            console(f""""{occSpec}" used for:""")
-            for name in names:
-                console(f"\t{name}")
-            nm += 1
-
-        if nm == 0:
-            console("All occurrence specifiers are unambiguous")
-        else:
-            console(f"{nm} occurrence specifiers are ambiguous")
-
-        self.namesByOcc = namesByOcc
-        self.instructions = info

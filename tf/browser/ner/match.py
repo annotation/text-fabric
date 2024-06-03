@@ -4,10 +4,106 @@ To see how this fits among all the modules of this package, see
 `tf.browser.ner.annotate` .
 """
 
+import collections
+
 from .settings import NONE
 
 
-def occMatch(getTokens, b, qTokenSet, results):
+def occMatch(getTokens, buckets, qTokenSet):
+    """Finds the occurrences of multiple sequences of tokens in a single bucket.
+
+    Parameters
+    ----------
+    getTokens: function
+        See `tf.browser.ner.corpus.Corpus.getTokens`
+    buckets: tuple of integer
+        The bucket nodes in question
+    qTokenSet: set, optional set()
+        A set of sequences of tokens. Each sequence in the set will be used as a
+        search pattern, and it occurrences in the bucket are collected.
+    result: dict
+        A dictionary to collect the results in.
+        Keyed by each member of parameter `qTokenSet` the values are
+        the occurrences of that member in the corpus.
+        A single occurrence is represented as a tuple of slots.
+    """
+
+    # compile the token sequences that we search for into data to optimize search
+    # we produce dicts, keyed by a postion number and valued by a dict whose
+    # keys are tokens and whose values are the token sequences that have that token
+    # at that position
+
+    candMatchMap = collections.defaultdict(lambda: collections.defaultdict(set))
+
+    for qTokens in qTokenSet:
+        for (i, qToken) in enumerate(qTokens):
+            candMatchMap[i][qToken].add(qTokens)
+
+    results = {}
+
+    for b in buckets:
+        # compile the bucket into logical tokens
+        bTokensAll = getTokens(b)
+        bTokens = [x for x in bTokensAll if (x[1] or "").strip()]
+        bStrings = []
+        bStringFirst = {}
+        bStringLast = {}
+
+        for t, s in bTokens:
+            if len(bStrings) > 1 and bStrings[-1] == "-":
+                bStrings.pop()
+                bStrings[-1] += s
+                bStringLast[len(bStrings) - 1] = t
+            else:
+                bStrings.append(s)
+                bStringFirst[len(bStrings) - 1] = t
+                bStringLast[len(bStrings) - 1] = t
+
+        bStrings = tuple(bStrings)
+        nBStrings = len(bStrings)
+
+        # perform the search
+        i = 0
+
+        while i < nBStrings:
+            j = 0
+            candidateMatches = None
+            matches = {}
+
+            while i + j < nBStrings:
+                k = i + j
+                sj = bStrings[k]
+                newCandidates = candMatchMap.get(j, {}).get(sj, set())
+
+                if candidateMatches is None:
+                    candidateMatches = newCandidates
+                else:
+                    candidateMatches = candidateMatches & newCandidates
+
+                matches[j] = [qt for qt in candidateMatches if len(qt) == j + 1]
+                j += 1
+
+                if len(candidateMatches) == 0:
+                    break
+
+            for m in range(j - 1, -1, -1):
+                resultMatches = matches[m]
+
+                if len(resultMatches):
+                    resultMatch = resultMatches[0]
+                    firstT = bStringFirst[i]
+                    lastT = bStringLast[i + m]
+                    slots = tuple(range(firstT, lastT + 1))
+                    results.setdefault(resultMatch, []).append(slots)
+                    break
+
+            shift = m + 1
+            i += shift
+
+    return results
+
+
+def occMatchOld(getTokens, b, qTokenSet, results):
     """Finds the occurrences of multiple sequences of tokens in a single bucket.
 
     Parameters
