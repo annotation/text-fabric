@@ -196,7 +196,7 @@ slots.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1cf5e9c0fadcf56c0022132ef658bc0189d73054/tf/browser/ner/ner.py#L1-L405" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/ner.py#L1-L409" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;API for rule-based entity marking.
 
@@ -449,8 +449,9 @@ class NER(Annotate):
         if not self.properlySetup:
             return
 
-        self.instructions = None
-        &#34;&#34;&#34;Will contain the information in a spreadsheet for marking up entities.&#34;&#34;&#34;
+        self.Trig = None
+        &#34;&#34;&#34;Will contain the object that has compiled the triggers for named entities.
+        &#34;&#34;&#34;
 
         self.inventory = None
         &#34;&#34;&#34;Will contain the locations of all surface forms in the current instructions.
@@ -479,10 +480,9 @@ class NER(Annotate):
         if not self.properlySetup:
             return None
 
-        TRIG = Triggers(self)
-        TRIG.read(sheetName)
-        self.TRIG = TRIG
-        self.triggerInfo = TRIG.triggerInfo
+        Trig = Triggers(self)
+        Trig.read(sheetName)
+        self.Trig = Trig
 
     def makeInventory(self):
         &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
@@ -498,14 +498,15 @@ class NER(Annotate):
         if not self.properlySetup:
             return
 
-        instructions = self.instructions
         settings = self.settings
         spaceEscaped = settings.spaceEscaped
+        Trig = self.Trig
+        instructions = Trig.instructions
 
         qSets = set()
 
         for info in instructions.values():
-            for occSpec in info.occSpecs:
+            for occSpec in info[&#34;occSpecs&#34;]:
                 qSets.add(toTokens(occSpec, spaceEscaped=spaceEscaped))
 
         app = self.app
@@ -514,7 +515,7 @@ class NER(Annotate):
         self.inventory = self.findOccs(qSets)
         app.info(&#34;Done&#34;)
 
-    def showInventory(self):
+    def showInventory(self, expanded=False):
         &#34;&#34;&#34;Shows the inventory.
 
         The surface forms in the inventory are put into the context of the entities
@@ -529,11 +530,12 @@ class NER(Annotate):
         spaceEscaped = settings.spaceEscaped
 
         total = 0
+        ins = 0
 
         for eid, info in sorted(instructions.items()):
-            name = info.name
-            kind = info.kind
-            occSpecs = info.occSpecs
+            name = info[&#34;name&#34;]
+            kind = info[&#34;kind&#34;]
+            occSpecs = info[&#34;occSpecs&#34;]
 
             for occSpec in occSpecs:
                 matches = inventory.get(
@@ -543,7 +545,9 @@ class NER(Annotate):
                     continue
                 n = len(matches)
                 total += n
-                console(f&#34;{eid:&lt;24} {kind:&lt;5} {occSpec:&lt;20} {n:&gt;5} x {name}&#34;)
+                if expanded or ins &lt; 10:
+                    console(f&#34;{eid:&lt;24} {kind:&lt;5} {occSpec:&lt;20} {n:&gt;5} x {name}&#34;)
+                    ins += 1
 
         console(f&#34;Total {total}&#34;)
 
@@ -633,7 +637,7 @@ by the Annotate class on which it is based.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1cf5e9c0fadcf56c0022132ef658bc0189d73054/tf/browser/ner/ner.py#L232-L405" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/ner.py#L232-L409" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Annotate):
     def __init__(self, app):
@@ -655,8 +659,9 @@ by the Annotate class on which it is based.</p>
         if not self.properlySetup:
             return
 
-        self.instructions = None
-        &#34;&#34;&#34;Will contain the information in a spreadsheet for marking up entities.&#34;&#34;&#34;
+        self.Trig = None
+        &#34;&#34;&#34;Will contain the object that has compiled the triggers for named entities.
+        &#34;&#34;&#34;
 
         self.inventory = None
         &#34;&#34;&#34;Will contain the locations of all surface forms in the current instructions.
@@ -685,10 +690,9 @@ by the Annotate class on which it is based.</p>
         if not self.properlySetup:
             return None
 
-        TRIG = Triggers(self)
-        TRIG.read(sheetName)
-        self.TRIG = TRIG
-        self.triggerInfo = TRIG.triggerInfo
+        Trig = Triggers(self)
+        Trig.read(sheetName)
+        self.Trig = Trig
 
     def makeInventory(self):
         &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
@@ -704,14 +708,15 @@ by the Annotate class on which it is based.</p>
         if not self.properlySetup:
             return
 
-        instructions = self.instructions
         settings = self.settings
         spaceEscaped = settings.spaceEscaped
+        Trig = self.Trig
+        instructions = Trig.instructions
 
         qSets = set()
 
         for info in instructions.values():
-            for occSpec in info.occSpecs:
+            for occSpec in info[&#34;occSpecs&#34;]:
                 qSets.add(toTokens(occSpec, spaceEscaped=spaceEscaped))
 
         app = self.app
@@ -720,7 +725,7 @@ by the Annotate class on which it is based.</p>
         self.inventory = self.findOccs(qSets)
         app.info(&#34;Done&#34;)
 
-    def showInventory(self):
+    def showInventory(self, expanded=False):
         &#34;&#34;&#34;Shows the inventory.
 
         The surface forms in the inventory are put into the context of the entities
@@ -735,11 +740,12 @@ by the Annotate class on which it is based.</p>
         spaceEscaped = settings.spaceEscaped
 
         total = 0
+        ins = 0
 
         for eid, info in sorted(instructions.items()):
-            name = info.name
-            kind = info.kind
-            occSpecs = info.occSpecs
+            name = info[&#34;name&#34;]
+            kind = info[&#34;kind&#34;]
+            occSpecs = info[&#34;occSpecs&#34;]
 
             for occSpec in occSpecs:
                 matches = inventory.get(
@@ -749,7 +755,9 @@ by the Annotate class on which it is based.</p>
                     continue
                 n = len(matches)
                 total += n
-                console(f&#34;{eid:&lt;24} {kind:&lt;5} {occSpec:&lt;20} {n:&gt;5} x {name}&#34;)
+                if expanded or ins &lt; 10:
+                    console(f&#34;{eid:&lt;24} {kind:&lt;5} {occSpec:&lt;20} {n:&gt;5} x {name}&#34;)
+                    ins += 1
 
         console(f&#34;Total {total}&#34;)
 
@@ -821,9 +829,9 @@ by the Annotate class on which it is based.</p>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="tf.browser.ner.ner.NER.instructions"><code class="name">var <span class="ident">instructions</span></code></dt>
+<dt id="tf.browser.ner.ner.NER.Trig"><code class="name">var <span class="ident">Trig</span></code></dt>
 <dd>
-<div class="desc"><p>Will contain the information in a spreadsheet for marking up entities.</p></div>
+<div class="desc"><p>Will contain the object that has compiled the triggers for named entities.</p></div>
 </dd>
 <dt id="tf.browser.ner.ner.NER.inventory"><code class="name">var <span class="ident">inventory</span></code></dt>
 <dd>
@@ -846,7 +854,7 @@ with this string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1cf5e9c0fadcf56c0022132ef658bc0189d73054/tf/browser/ner/ner.py#L396-L405" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/ner.py#L400-L409" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def bakeEntities(self, versionExtension=&#34;e&#34;):
     &#34;&#34;&#34;Bakes the entities of the current set as nodes into a new TF data source.
@@ -873,7 +881,7 @@ slot sequences where those token sequences occur in the corpus.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1cf5e9c0fadcf56c0022132ef658bc0189d73054/tf/browser/ner/ner.py#L287-L315" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/ner.py#L287-L316" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeInventory(self):
     &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
@@ -889,14 +897,15 @@ slot sequences where those token sequences occur in the corpus.</p></div>
     if not self.properlySetup:
         return
 
-    instructions = self.instructions
     settings = self.settings
     spaceEscaped = settings.spaceEscaped
+    Trig = self.Trig
+    instructions = Trig.instructions
 
     qSets = set()
 
     for info in instructions.values():
-        for occSpec in info.occSpecs:
+        for occSpec in info[&#34;occSpecs&#34;]:
             qSets.add(toTokens(occSpec, spaceEscaped=spaceEscaped))
 
     app = self.app
@@ -918,7 +927,7 @@ If there is no inventory yet, it will be created.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1cf5e9c0fadcf56c0022132ef658bc0189d73054/tf/browser/ner/ner.py#L350-L394" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/ner.py#L354-L398" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def markEntities(self):
     &#34;&#34;&#34;Marks up the members of the inventory as entities.
@@ -984,7 +993,7 @@ containing more specialized trigger specs: per section level.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1cf5e9c0fadcf56c0022132ef658bc0189d73054/tf/browser/ner/ner.py#L259-L285" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/ner.py#L260-L285" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readInstructions(self, sheetName):
     &#34;&#34;&#34;Reads the trigger specifications.
@@ -1009,14 +1018,13 @@ containing more specialized trigger specs: per section level.</dd>
     if not self.properlySetup:
         return None
 
-    TRIG = Triggers(self)
-    TRIG.read(sheetName)
-    self.TRIG = TRIG
-    self.triggerInfo = TRIG.triggerInfo</code></pre>
+    Trig = Triggers(self)
+    Trig.read(sheetName)
+    self.Trig = Trig</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.ner.NER.showInventory"><code class="name flex">
-<span>def <span class="ident">showInventory</span></span>(<span>self)</span>
+<span>def <span class="ident">showInventory</span></span>(<span>self, expanded=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Shows the inventory.</p>
@@ -1025,9 +1033,9 @@ of which they are surface forms.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1cf5e9c0fadcf56c0022132ef658bc0189d73054/tf/browser/ner/ner.py#L317-L348" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/ner.py#L318-L352" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def showInventory(self):
+<pre><code class="python">def showInventory(self, expanded=False):
     &#34;&#34;&#34;Shows the inventory.
 
     The surface forms in the inventory are put into the context of the entities
@@ -1042,11 +1050,12 @@ of which they are surface forms.</p></div>
     spaceEscaped = settings.spaceEscaped
 
     total = 0
+    ins = 0
 
     for eid, info in sorted(instructions.items()):
-        name = info.name
-        kind = info.kind
-        occSpecs = info.occSpecs
+        name = info[&#34;name&#34;]
+        kind = info[&#34;kind&#34;]
+        occSpecs = info[&#34;occSpecs&#34;]
 
         for occSpec in occSpecs:
             matches = inventory.get(
@@ -1056,7 +1065,9 @@ of which they are surface forms.</p></div>
                 continue
             n = len(matches)
             total += n
-            console(f&#34;{eid:&lt;24} {kind:&lt;5} {occSpec:&lt;20} {n:&gt;5} x {name}&#34;)
+            if expanded or ins &lt; 10:
+                console(f&#34;{eid:&lt;24} {kind:&lt;5} {occSpec:&lt;20} {n:&gt;5} x {name}&#34;)
+                ins += 1
 
     console(f&#34;Total {total}&#34;)</code></pre>
 </details>
@@ -1196,8 +1207,8 @@ setTimeout(() => input.focus(), 100);
 <li>
 <h4><code><a title="tf.browser.ner.ner.NER" href="#tf.browser.ner.ner.NER">NER</a></code></h4>
 <ul class="two-column">
+<li><code><a title="tf.browser.ner.ner.NER.Trig" href="#tf.browser.ner.ner.NER.Trig">Trig</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.bakeEntities" href="#tf.browser.ner.ner.NER.bakeEntities">bakeEntities</a></code></li>
-<li><code><a title="tf.browser.ner.ner.NER.instructions" href="#tf.browser.ner.ner.NER.instructions">instructions</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.inventory" href="#tf.browser.ner.ner.NER.inventory">inventory</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.makeInventory" href="#tf.browser.ner.ner.NER.makeInventory">makeInventory</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.markEntities" href="#tf.browser.ner.ner.NER.markEntities">markEntities</a></code></li>

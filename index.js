@@ -4140,10 +4140,21 @@ INDEX=[
 "func":1
 },
 {
+"ref":"tf.browser.ner.triggers.Triggers.showInfo",
+"url":98,
+"doc":"",
+"func":1
+},
+{
 "ref":"tf.browser.ner.triggers.Triggers.showRawInfo",
 "url":98,
 "doc":"",
 "func":1
+},
+{
+"ref":"tf.browser.ner.triggers.Triggers.instructions",
+"url":98,
+"doc":"Will contain the information in a spreadsheet for marking up entities."
 },
 {
 "ref":"tf.browser.ner.request",
@@ -4846,9 +4857,9 @@ INDEX=[
 "func":1
 },
 {
-"ref":"tf.browser.ner.ner.NER.instructions",
+"ref":"tf.browser.ner.ner.NER.Trig",
 "url":108,
-"doc":"Will contain the information in a spreadsheet for marking up entities."
+"doc":"Will contain the object that has compiled the triggers for named entities."
 },
 {
 "ref":"tf.browser.ner.ner.NER.inventory",
@@ -5924,6 +5935,12 @@ INDEX=[
 },
 {
 "ref":"tf.browser.ner.match.occMatch",
+"url":110,
+"doc":"Finds the occurrences of multiple sequences of tokens in a single bucket. Parameters      getTokens: function See  tf.browser.ner.corpus.Corpus.getTokens buckets: tuple of integer The bucket nodes in question qTokenSet: set, optional set() A set of sequences of tokens. Each sequence in the set will be used as a search pattern, and it occurrences in the bucket are collected. result: dict A dictionary to collect the results in. Keyed by each member of parameter  qTokenSet the values are the occurrences of that member in the corpus. A single occurrence is represented as a tuple of slots.",
+"func":1
+},
+{
+"ref":"tf.browser.ner.match.occMatchOld",
 "url":110,
 "doc":"Finds the occurrences of multiple sequences of tokens in a single bucket. Parameters      getTokens: function See  tf.browser.ner.corpus.Corpus.getTokens b: integer The node of the bucket in question qTokenSet: set, optional set() A set of sequences of tokens. Each sequence in the set will be used as a search pattern, and it occurrences in the bucket are collected. result: dict A dictionary to collect the results in. Keyed by each member of parameter  qTokenSet the values are the occurrences of that member in the corpus. A single occurrence is represented as a tuple of slots.",
 "func":1

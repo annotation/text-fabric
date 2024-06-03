@@ -31,9 +31,11 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1cf5e9c0fadcf56c0022132ef658bc0189d73054/tf/browser/ner/triggers.py#L1-L236" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/triggers.py#L1-L365" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
+from copy import deepcopy
+
 from .helpers import normalize, toSmallId
 from ...core.helpers import console
 from ...core.files import dirContents
@@ -55,6 +57,9 @@ class Triggers:
         defaultValues = settings.defaultValues
         self.defaultKind = defaultValues.get(kindFeature, &#34;&#34;)
 
+        self.instructions = None
+        &#34;&#34;&#34;Will contain the information in a spreadsheet for marking up entities.&#34;&#34;&#34;
+
     def readXls(self, sheetRela):
         loadXls = self.loadXls
         defaultKind = self.defaultKind
@@ -186,9 +191,169 @@ class Triggers:
 
     def compile(self):
         rawInfo = self.rawInfo
+        sheetName = self.sheetName
 
-        triggerInfo = rawInfo
-        self.triggerInfo = triggerInfo
+        sheetMain = rawInfo[&#34;main&#34;]
+        sheetTweaked = rawInfo[&#34;sdr&#34;]
+
+        compiled = {&#34;&#34;: dict(sheet=sheetMain)}
+        instructions = {}
+        self.instructions = instructions
+
+        def compileDir(parentSheet, sdr, dest):
+            ranged = sdr.get(&#34;rng&#34;, {})
+            single = sdr.get(&#34;sng&#34;, {})
+            subdirs = sdr.get(&#34;sdr&#34;, {})
+
+            for (start, end), info in sorted(ranged.items()):
+                for i in range(start, end + 1):
+                    dest.setdefault(&#34;tweaks&#34;, {}).setdefault(
+                        i, dict(sheet=deepcopy(parentSheet))
+                    )
+                    parentCopy = dest[&#34;tweaks&#34;][i][&#34;sheet&#34;]
+
+                    for kind, data in info.items():
+                        parentCopy.setdefault(kind, {})
+                        parentCopy[kind] |= data
+
+            for i, info in single.items():
+                dest.setdefault(&#34;tweaks&#34;, {}).setdefault(
+                    i, dict(sheet=deepcopy(parentSheet))
+                )
+                parentCopy = dest[&#34;tweaks&#34;][i][&#34;sheet&#34;]
+
+                for kind, data in info.items():
+                    parentCopy.setdefault(kind, {})
+                    parentCopy[kind] |= data
+
+            for i, info in subdirs.items():
+                dest.setdefault(&#34;tweaks&#34;, {}).setdefault(
+                    i, dict(sheet=deepcopy(parentSheet))
+                )
+                parentCopy = dest[&#34;tweaks&#34;][i][&#34;sheet&#34;]
+                compileDir(parentCopy, info, dest[&#34;tweaks&#34;][i])
+
+        compileDir(sheetMain, sheetTweaked, compiled)
+
+        diags = set()
+
+        def checkSheet(path, sheet):
+            sheetRep = sheetName if path == () else &#34;.&#34;.join(str(x) for x in path)
+            console(f&#34;Checking {sheetRep}&#34;)
+
+            namesByOcc = {}
+
+            name = sheet[&#34;name&#34;]
+            kind = sheet[&#34;kind&#34;]
+            occs = sheet[&#34;occs&#34;]
+            allKeys = set(name) | set(kind) | set(occs)
+
+            instr = {}
+            instructions[path] = instr
+
+            for eid in sorted(allKeys):
+                nm = name.get(eid, &#34;&#34;)
+                kd = kind.get(eid, &#34;&#34;)
+                oc = occs.get(eid, set())
+
+                instr[eid] = dict(name=nm, kind=kd, occSpecs=oc)
+
+                for occSpec in oc:
+                    namesByOcc.setdefault(occSpec, []).append(nm)
+
+            nEid = len(instr)
+            nOcc = sum(len(x) for x in occs.values())
+            noOccs = sum(1 for x in occs.values() if len(x) == 0)
+            console(f&#34;  {nEid} entities with {nOcc} occurrence specs&#34;)
+            console(f&#34;  {noOccs} entities do not have occurrence specifiers&#34;)
+
+            nm = 0
+
+            for occSpec, names in sorted(namesByOcc.items()):
+                if len(names) == 1:
+                    continue
+
+                diag = (occSpec, tuple(names))
+                if diag not in diags:
+                    diags.add(diag)
+                    console(f&#34;&#34;&#34;&#34;{occSpec}&#34; used for:&#34;&#34;&#34;)
+                    for name in names:
+                        console(f&#34;\t{name}&#34;)
+                nm += 1
+
+            if nm == 0:
+                console(&#34;  All occurrence specifiers are unambiguous&#34;)
+            else:
+                console(f&#34;  {nm} occurrence specifiers are ambiguous&#34;)
+
+        def checkTweaks(path, tweaks):
+            for i in sorted(tweaks):
+                newPath = path + (i,)
+                subTweaks = tweaks[i]
+                checkSheet(newPath, subTweaks[&#34;sheet&#34;])
+
+                if &#34;tweaks&#34; in subTweaks:
+                    checkTweaks(newPath, subTweaks[&#34;tweaks&#34;])
+
+        checkSheet((), compiled[&#34;&#34;][&#34;sheet&#34;])
+        checkTweaks((), compiled.get(&#34;tweaks&#34;, {}))
+
+    def showInfo(self):
+        compiledInfo = self.compiledInfo
+
+        def showSheet(parentInfo, info, tab):
+            parentName = parentInfo[&#34;name&#34;]
+            parentKind = parentInfo[&#34;kind&#34;]
+            parentOccs = parentInfo[&#34;occs&#34;]
+            name = info[&#34;name&#34;]
+            kind = info[&#34;kind&#34;]
+            occs = info[&#34;occs&#34;]
+            allParentKeys = set(parentName) | set(parentKind) | set(parentOccs)
+            allKeys = set(name) | set(kind) | set(occs)
+
+            console(f&#34;{tab}  sheet with {len(allKeys)} keys&#34;)
+
+            for eid in allParentKeys | allKeys:
+                parentNm = parentName.get(eid, None)
+                nm = name.get(eid, None)
+                parentKd = parentKind.get(eid, None)
+                kd = kind.get(eid, None)
+                parentOc = parentOccs.get(eid, None)
+                oc = occs.get(eid, None)
+
+                diffNm = parentNm != nm
+                diffKd = parentKd != kd
+                diffOc = parentOc != oc
+
+                if diffNm or diffKd or diffOc:
+                    nmRep = f&#34;{parentNm or &#39;ø&#39;} =&gt; {nm or &#39;ø&#39;}&#34; if diffNm else f&#34;{nm}&#34;
+                    kdRep = f&#34;{parentKd or &#39;ø&#39;} =&gt; {kd or &#39;ø&#39;}&#34; if diffKd else f&#34;{kd}&#34;
+                    ocRep = f&#34;{parentOc or &#39;ø&#39;} =&gt; {oc or &#39;ø&#39;}&#34; if diffOc else f&#34;{oc}&#34;
+
+                    console(f&#34;{tab}  {eid:&gt;30} {nmRep}, {kdRep}, {ocRep}&#34;)
+
+        def showDir(parentSheet, info, level):
+            console(&#34;\n&#34;)
+
+            tab = &#34;  &#34; * level
+            console(f&#34;{tab}&#34;)
+
+            for i in sorted(info):
+                console(f&#34;{tab}{i}&#34;)
+
+                data = info[i]
+
+                thisSheet = data[&#34;sheet&#34;]
+                showSheet(parentSheet, thisSheet, tab)
+
+                if &#34;tweaks&#34; in data:
+                    showDir(thisSheet, data[&#34;tweaks&#34;], level + 1)
+
+            console(&#34;\n&#34;)
+
+        mainSheet = compiledInfo[&#34;&#34;][&#34;sheet&#34;]
+        showSheet(mainSheet, mainSheet, &#34;&#34;)
+        showDir(mainSheet, compiledInfo[&#34;tweaks&#34;], 0)
 
     def showRawInfo(self, main=False):
         rawInfo = self.rawInfo
@@ -198,6 +363,7 @@ class Triggers:
             kind = info[&#34;kind&#34;]
             occs = info[&#34;occs&#34;]
             allKeys = set(name) | set(kind) | set(occs)
+
             for eid in sorted(allKeys):
                 nm = name.get(eid, &#34;&#34;)
                 kd = kind.get(eid, &#34;&#34;)
@@ -218,7 +384,7 @@ class Triggers:
                 showSheet(sng[k], tab)
 
             rng = info.get(&#34;rng&#34;, {})
-            for (b, e) in sorted(rng):
+            for b, e in sorted(rng):
                 console(f&#34;{tab}{b}-{e}.xslx&#34;)
                 showSheet(rng[(b, e)], tab)
 
@@ -231,44 +397,7 @@ class Triggers:
         if main:
             showSheet(rawInfo[&#34;main&#34;], &#34;&#34;)
 
-        showDir(&#34;&#34;, rawInfo[&#34;sdr&#34;], 0)
-
-    def _remaining_logic(self, info):
-        namesByOcc = {}
-
-        kindFeature = self.kindFeature
-        print(kindFeature)
-
-        for eInfo in info.values():
-            name = eInfo[&#34;name&#34;]
-            occSpecs = eInfo[&#34;occSpecs&#34;]
-            for occSpec in occSpecs:
-                namesByOcc.setdefault(occSpec, []).append(name)
-
-        nEid = len(info)
-        nOcc = sum(len(x[&#34;occSpecs&#34;]) for x in info.values())
-        noOccs = sum(1 for x in info.values() if len(x[&#34;occSpecs&#34;]) == 0)
-        console(f&#34;{nEid} entities with {nOcc} occurrence specs&#34;)
-        console(f&#34;{noOccs} entities do not have occurrence specifiers&#34;)
-
-        nm = 0
-
-        for occSpec, names in sorted(namesByOcc.items()):
-            if len(names) == 1:
-                continue
-
-            console(f&#34;&#34;&#34;&#34;{occSpec}&#34; used for:&#34;&#34;&#34;)
-            for name in names:
-                console(f&#34;\t{name}&#34;)
-            nm += 1
-
-        if nm == 0:
-            console(&#34;All occurrence specifiers are unambiguous&#34;)
-        else:
-            console(f&#34;{nm} occurrence specifiers are ambiguous&#34;)
-
-        self.namesByOcc = namesByOcc
-        self.instructions = info</code></pre>
+        showDir(&#34;&#34;, rawInfo[&#34;sdr&#34;], 0)</code></pre>
 </details>
 </section>
 <section>
@@ -289,7 +418,7 @@ class Triggers:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1cf5e9c0fadcf56c0022132ef658bc0189d73054/tf/browser/ner/triggers.py#L11-L236" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/triggers.py#L13-L365" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Triggers:
     def __init__(self, Ner):
@@ -302,6 +431,9 @@ class Triggers:
         self.kindFeature = kindFeature
         defaultValues = settings.defaultValues
         self.defaultKind = defaultValues.get(kindFeature, &#34;&#34;)
+
+        self.instructions = None
+        &#34;&#34;&#34;Will contain the information in a spreadsheet for marking up entities.&#34;&#34;&#34;
 
     def readXls(self, sheetRela):
         loadXls = self.loadXls
@@ -434,9 +566,169 @@ class Triggers:
 
     def compile(self):
         rawInfo = self.rawInfo
+        sheetName = self.sheetName
 
-        triggerInfo = rawInfo
-        self.triggerInfo = triggerInfo
+        sheetMain = rawInfo[&#34;main&#34;]
+        sheetTweaked = rawInfo[&#34;sdr&#34;]
+
+        compiled = {&#34;&#34;: dict(sheet=sheetMain)}
+        instructions = {}
+        self.instructions = instructions
+
+        def compileDir(parentSheet, sdr, dest):
+            ranged = sdr.get(&#34;rng&#34;, {})
+            single = sdr.get(&#34;sng&#34;, {})
+            subdirs = sdr.get(&#34;sdr&#34;, {})
+
+            for (start, end), info in sorted(ranged.items()):
+                for i in range(start, end + 1):
+                    dest.setdefault(&#34;tweaks&#34;, {}).setdefault(
+                        i, dict(sheet=deepcopy(parentSheet))
+                    )
+                    parentCopy = dest[&#34;tweaks&#34;][i][&#34;sheet&#34;]
+
+                    for kind, data in info.items():
+                        parentCopy.setdefault(kind, {})
+                        parentCopy[kind] |= data
+
+            for i, info in single.items():
+                dest.setdefault(&#34;tweaks&#34;, {}).setdefault(
+                    i, dict(sheet=deepcopy(parentSheet))
+                )
+                parentCopy = dest[&#34;tweaks&#34;][i][&#34;sheet&#34;]
+
+                for kind, data in info.items():
+                    parentCopy.setdefault(kind, {})
+                    parentCopy[kind] |= data
+
+            for i, info in subdirs.items():
+                dest.setdefault(&#34;tweaks&#34;, {}).setdefault(
+                    i, dict(sheet=deepcopy(parentSheet))
+                )
+                parentCopy = dest[&#34;tweaks&#34;][i][&#34;sheet&#34;]
+                compileDir(parentCopy, info, dest[&#34;tweaks&#34;][i])
+
+        compileDir(sheetMain, sheetTweaked, compiled)
+
+        diags = set()
+
+        def checkSheet(path, sheet):
+            sheetRep = sheetName if path == () else &#34;.&#34;.join(str(x) for x in path)
+            console(f&#34;Checking {sheetRep}&#34;)
+
+            namesByOcc = {}
+
+            name = sheet[&#34;name&#34;]
+            kind = sheet[&#34;kind&#34;]
+            occs = sheet[&#34;occs&#34;]
+            allKeys = set(name) | set(kind) | set(occs)
+
+            instr = {}
+            instructions[path] = instr
+
+            for eid in sorted(allKeys):
+                nm = name.get(eid, &#34;&#34;)
+                kd = kind.get(eid, &#34;&#34;)
+                oc = occs.get(eid, set())
+
+                instr[eid] = dict(name=nm, kind=kd, occSpecs=oc)
+
+                for occSpec in oc:
+                    namesByOcc.setdefault(occSpec, []).append(nm)
+
+            nEid = len(instr)
+            nOcc = sum(len(x) for x in occs.values())
+            noOccs = sum(1 for x in occs.values() if len(x) == 0)
+            console(f&#34;  {nEid} entities with {nOcc} occurrence specs&#34;)
+            console(f&#34;  {noOccs} entities do not have occurrence specifiers&#34;)
+
+            nm = 0
+
+            for occSpec, names in sorted(namesByOcc.items()):
+                if len(names) == 1:
+                    continue
+
+                diag = (occSpec, tuple(names))
+                if diag not in diags:
+                    diags.add(diag)
+                    console(f&#34;&#34;&#34;&#34;{occSpec}&#34; used for:&#34;&#34;&#34;)
+                    for name in names:
+                        console(f&#34;\t{name}&#34;)
+                nm += 1
+
+            if nm == 0:
+                console(&#34;  All occurrence specifiers are unambiguous&#34;)
+            else:
+                console(f&#34;  {nm} occurrence specifiers are ambiguous&#34;)
+
+        def checkTweaks(path, tweaks):
+            for i in sorted(tweaks):
+                newPath = path + (i,)
+                subTweaks = tweaks[i]
+                checkSheet(newPath, subTweaks[&#34;sheet&#34;])
+
+                if &#34;tweaks&#34; in subTweaks:
+                    checkTweaks(newPath, subTweaks[&#34;tweaks&#34;])
+
+        checkSheet((), compiled[&#34;&#34;][&#34;sheet&#34;])
+        checkTweaks((), compiled.get(&#34;tweaks&#34;, {}))
+
+    def showInfo(self):
+        compiledInfo = self.compiledInfo
+
+        def showSheet(parentInfo, info, tab):
+            parentName = parentInfo[&#34;name&#34;]
+            parentKind = parentInfo[&#34;kind&#34;]
+            parentOccs = parentInfo[&#34;occs&#34;]
+            name = info[&#34;name&#34;]
+            kind = info[&#34;kind&#34;]
+            occs = info[&#34;occs&#34;]
+            allParentKeys = set(parentName) | set(parentKind) | set(parentOccs)
+            allKeys = set(name) | set(kind) | set(occs)
+
+            console(f&#34;{tab}  sheet with {len(allKeys)} keys&#34;)
+
+            for eid in allParentKeys | allKeys:
+                parentNm = parentName.get(eid, None)
+                nm = name.get(eid, None)
+                parentKd = parentKind.get(eid, None)
+                kd = kind.get(eid, None)
+                parentOc = parentOccs.get(eid, None)
+                oc = occs.get(eid, None)
+
+                diffNm = parentNm != nm
+                diffKd = parentKd != kd
+                diffOc = parentOc != oc
+
+                if diffNm or diffKd or diffOc:
+                    nmRep = f&#34;{parentNm or &#39;ø&#39;} =&gt; {nm or &#39;ø&#39;}&#34; if diffNm else f&#34;{nm}&#34;
+                    kdRep = f&#34;{parentKd or &#39;ø&#39;} =&gt; {kd or &#39;ø&#39;}&#34; if diffKd else f&#34;{kd}&#34;
+                    ocRep = f&#34;{parentOc or &#39;ø&#39;} =&gt; {oc or &#39;ø&#39;}&#34; if diffOc else f&#34;{oc}&#34;
+
+                    console(f&#34;{tab}  {eid:&gt;30} {nmRep}, {kdRep}, {ocRep}&#34;)
+
+        def showDir(parentSheet, info, level):
+            console(&#34;\n&#34;)
+
+            tab = &#34;  &#34; * level
+            console(f&#34;{tab}&#34;)
+
+            for i in sorted(info):
+                console(f&#34;{tab}{i}&#34;)
+
+                data = info[i]
+
+                thisSheet = data[&#34;sheet&#34;]
+                showSheet(parentSheet, thisSheet, tab)
+
+                if &#34;tweaks&#34; in data:
+                    showDir(thisSheet, data[&#34;tweaks&#34;], level + 1)
+
+            console(&#34;\n&#34;)
+
+        mainSheet = compiledInfo[&#34;&#34;][&#34;sheet&#34;]
+        showSheet(mainSheet, mainSheet, &#34;&#34;)
+        showDir(mainSheet, compiledInfo[&#34;tweaks&#34;], 0)
 
     def showRawInfo(self, main=False):
         rawInfo = self.rawInfo
@@ -446,6 +738,7 @@ class Triggers:
             kind = info[&#34;kind&#34;]
             occs = info[&#34;occs&#34;]
             allKeys = set(name) | set(kind) | set(occs)
+
             for eid in sorted(allKeys):
                 nm = name.get(eid, &#34;&#34;)
                 kd = kind.get(eid, &#34;&#34;)
@@ -466,7 +759,7 @@ class Triggers:
                 showSheet(sng[k], tab)
 
             rng = info.get(&#34;rng&#34;, {})
-            for (b, e) in sorted(rng):
+            for b, e in sorted(rng):
                 console(f&#34;{tab}{b}-{e}.xslx&#34;)
                 showSheet(rng[(b, e)], tab)
 
@@ -479,45 +772,15 @@ class Triggers:
         if main:
             showSheet(rawInfo[&#34;main&#34;], &#34;&#34;)
 
-        showDir(&#34;&#34;, rawInfo[&#34;sdr&#34;], 0)
-
-    def _remaining_logic(self, info):
-        namesByOcc = {}
-
-        kindFeature = self.kindFeature
-        print(kindFeature)
-
-        for eInfo in info.values():
-            name = eInfo[&#34;name&#34;]
-            occSpecs = eInfo[&#34;occSpecs&#34;]
-            for occSpec in occSpecs:
-                namesByOcc.setdefault(occSpec, []).append(name)
-
-        nEid = len(info)
-        nOcc = sum(len(x[&#34;occSpecs&#34;]) for x in info.values())
-        noOccs = sum(1 for x in info.values() if len(x[&#34;occSpecs&#34;]) == 0)
-        console(f&#34;{nEid} entities with {nOcc} occurrence specs&#34;)
-        console(f&#34;{noOccs} entities do not have occurrence specifiers&#34;)
-
-        nm = 0
-
-        for occSpec, names in sorted(namesByOcc.items()):
-            if len(names) == 1:
-                continue
-
-            console(f&#34;&#34;&#34;&#34;{occSpec}&#34; used for:&#34;&#34;&#34;)
-            for name in names:
-                console(f&#34;\t{name}&#34;)
-            nm += 1
-
-        if nm == 0:
-            console(&#34;All occurrence specifiers are unambiguous&#34;)
-        else:
-            console(f&#34;{nm} occurrence specifiers are ambiguous&#34;)
-
-        self.namesByOcc = namesByOcc
-        self.instructions = info</code></pre>
+        showDir(&#34;&#34;, rawInfo[&#34;sdr&#34;], 0)</code></pre>
 </details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="tf.browser.ner.triggers.Triggers.instructions"><code class="name">var <span class="ident">instructions</span></code></dt>
+<dd>
+<div class="desc"><p>Will contain the information in a spreadsheet for marking up entities.</p></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="tf.browser.ner.triggers.Triggers.compile"><code class="name flex">
@@ -528,13 +791,116 @@ class Triggers:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1cf5e9c0fadcf56c0022132ef658bc0189d73054/tf/browser/ner/triggers.py#L152-L156" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/triggers.py#L157-L264" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def compile(self):
     rawInfo = self.rawInfo
+    sheetName = self.sheetName
 
-    triggerInfo = rawInfo
-    self.triggerInfo = triggerInfo</code></pre>
+    sheetMain = rawInfo[&#34;main&#34;]
+    sheetTweaked = rawInfo[&#34;sdr&#34;]
+
+    compiled = {&#34;&#34;: dict(sheet=sheetMain)}
+    instructions = {}
+    self.instructions = instructions
+
+    def compileDir(parentSheet, sdr, dest):
+        ranged = sdr.get(&#34;rng&#34;, {})
+        single = sdr.get(&#34;sng&#34;, {})
+        subdirs = sdr.get(&#34;sdr&#34;, {})
+
+        for (start, end), info in sorted(ranged.items()):
+            for i in range(start, end + 1):
+                dest.setdefault(&#34;tweaks&#34;, {}).setdefault(
+                    i, dict(sheet=deepcopy(parentSheet))
+                )
+                parentCopy = dest[&#34;tweaks&#34;][i][&#34;sheet&#34;]
+
+                for kind, data in info.items():
+                    parentCopy.setdefault(kind, {})
+                    parentCopy[kind] |= data
+
+        for i, info in single.items():
+            dest.setdefault(&#34;tweaks&#34;, {}).setdefault(
+                i, dict(sheet=deepcopy(parentSheet))
+            )
+            parentCopy = dest[&#34;tweaks&#34;][i][&#34;sheet&#34;]
+
+            for kind, data in info.items():
+                parentCopy.setdefault(kind, {})
+                parentCopy[kind] |= data
+
+        for i, info in subdirs.items():
+            dest.setdefault(&#34;tweaks&#34;, {}).setdefault(
+                i, dict(sheet=deepcopy(parentSheet))
+            )
+            parentCopy = dest[&#34;tweaks&#34;][i][&#34;sheet&#34;]
+            compileDir(parentCopy, info, dest[&#34;tweaks&#34;][i])
+
+    compileDir(sheetMain, sheetTweaked, compiled)
+
+    diags = set()
+
+    def checkSheet(path, sheet):
+        sheetRep = sheetName if path == () else &#34;.&#34;.join(str(x) for x in path)
+        console(f&#34;Checking {sheetRep}&#34;)
+
+        namesByOcc = {}
+
+        name = sheet[&#34;name&#34;]
+        kind = sheet[&#34;kind&#34;]
+        occs = sheet[&#34;occs&#34;]
+        allKeys = set(name) | set(kind) | set(occs)
+
+        instr = {}
+        instructions[path] = instr
+
+        for eid in sorted(allKeys):
+            nm = name.get(eid, &#34;&#34;)
+            kd = kind.get(eid, &#34;&#34;)
+            oc = occs.get(eid, set())
+
+            instr[eid] = dict(name=nm, kind=kd, occSpecs=oc)
+
+            for occSpec in oc:
+                namesByOcc.setdefault(occSpec, []).append(nm)
+
+        nEid = len(instr)
+        nOcc = sum(len(x) for x in occs.values())
+        noOccs = sum(1 for x in occs.values() if len(x) == 0)
+        console(f&#34;  {nEid} entities with {nOcc} occurrence specs&#34;)
+        console(f&#34;  {noOccs} entities do not have occurrence specifiers&#34;)
+
+        nm = 0
+
+        for occSpec, names in sorted(namesByOcc.items()):
+            if len(names) == 1:
+                continue
+
+            diag = (occSpec, tuple(names))
+            if diag not in diags:
+                diags.add(diag)
+                console(f&#34;&#34;&#34;&#34;{occSpec}&#34; used for:&#34;&#34;&#34;)
+                for name in names:
+                    console(f&#34;\t{name}&#34;)
+            nm += 1
+
+        if nm == 0:
+            console(&#34;  All occurrence specifiers are unambiguous&#34;)
+        else:
+            console(f&#34;  {nm} occurrence specifiers are ambiguous&#34;)
+
+    def checkTweaks(path, tweaks):
+        for i in sorted(tweaks):
+            newPath = path + (i,)
+            subTweaks = tweaks[i]
+            checkSheet(newPath, subTweaks[&#34;sheet&#34;])
+
+            if &#34;tweaks&#34; in subTweaks:
+                checkTweaks(newPath, subTweaks[&#34;tweaks&#34;])
+
+    checkSheet((), compiled[&#34;&#34;][&#34;sheet&#34;])
+    checkTweaks((), compiled.get(&#34;tweaks&#34;, {}))</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.triggers.Triggers.read"><code class="name flex">
@@ -545,7 +911,7 @@ class Triggers:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1cf5e9c0fadcf56c0022132ef658bc0189d73054/tf/browser/ner/triggers.py#L143-L150" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/triggers.py#L148-L155" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def read(self, sheetName):
     self.sheetName = sheetName
@@ -565,7 +931,7 @@ class Triggers:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1cf5e9c0fadcf56c0022132ef658bc0189d73054/tf/browser/ner/triggers.py#L102-L141" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/triggers.py#L107-L146" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readDir(self, sheetRela, level):
     sheetDir = self.sheetDir
@@ -617,7 +983,7 @@ class Triggers:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1cf5e9c0fadcf56c0022132ef658bc0189d73054/tf/browser/ner/triggers.py#L23-L100" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/triggers.py#L28-L105" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readXls(self, sheetRela):
     loadXls = self.loadXls
@@ -699,6 +1065,74 @@ class Triggers:
     return info</code></pre>
 </details>
 </dd>
+<dt id="tf.browser.ner.triggers.Triggers.showInfo"><code class="name flex">
+<span>def <span class="ident">showInfo</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/triggers.py#L266-L321" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def showInfo(self):
+    compiledInfo = self.compiledInfo
+
+    def showSheet(parentInfo, info, tab):
+        parentName = parentInfo[&#34;name&#34;]
+        parentKind = parentInfo[&#34;kind&#34;]
+        parentOccs = parentInfo[&#34;occs&#34;]
+        name = info[&#34;name&#34;]
+        kind = info[&#34;kind&#34;]
+        occs = info[&#34;occs&#34;]
+        allParentKeys = set(parentName) | set(parentKind) | set(parentOccs)
+        allKeys = set(name) | set(kind) | set(occs)
+
+        console(f&#34;{tab}  sheet with {len(allKeys)} keys&#34;)
+
+        for eid in allParentKeys | allKeys:
+            parentNm = parentName.get(eid, None)
+            nm = name.get(eid, None)
+            parentKd = parentKind.get(eid, None)
+            kd = kind.get(eid, None)
+            parentOc = parentOccs.get(eid, None)
+            oc = occs.get(eid, None)
+
+            diffNm = parentNm != nm
+            diffKd = parentKd != kd
+            diffOc = parentOc != oc
+
+            if diffNm or diffKd or diffOc:
+                nmRep = f&#34;{parentNm or &#39;ø&#39;} =&gt; {nm or &#39;ø&#39;}&#34; if diffNm else f&#34;{nm}&#34;
+                kdRep = f&#34;{parentKd or &#39;ø&#39;} =&gt; {kd or &#39;ø&#39;}&#34; if diffKd else f&#34;{kd}&#34;
+                ocRep = f&#34;{parentOc or &#39;ø&#39;} =&gt; {oc or &#39;ø&#39;}&#34; if diffOc else f&#34;{oc}&#34;
+
+                console(f&#34;{tab}  {eid:&gt;30} {nmRep}, {kdRep}, {ocRep}&#34;)
+
+    def showDir(parentSheet, info, level):
+        console(&#34;\n&#34;)
+
+        tab = &#34;  &#34; * level
+        console(f&#34;{tab}&#34;)
+
+        for i in sorted(info):
+            console(f&#34;{tab}{i}&#34;)
+
+            data = info[i]
+
+            thisSheet = data[&#34;sheet&#34;]
+            showSheet(parentSheet, thisSheet, tab)
+
+            if &#34;tweaks&#34; in data:
+                showDir(thisSheet, data[&#34;tweaks&#34;], level + 1)
+
+        console(&#34;\n&#34;)
+
+    mainSheet = compiledInfo[&#34;&#34;][&#34;sheet&#34;]
+    showSheet(mainSheet, mainSheet, &#34;&#34;)
+    showDir(mainSheet, compiledInfo[&#34;tweaks&#34;], 0)</code></pre>
+</details>
+</dd>
 <dt id="tf.browser.ner.triggers.Triggers.showRawInfo"><code class="name flex">
 <span>def <span class="ident">showRawInfo</span></span>(<span>self, main=False)</span>
 </code></dt>
@@ -707,7 +1141,7 @@ class Triggers:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1cf5e9c0fadcf56c0022132ef658bc0189d73054/tf/browser/ner/triggers.py#L158-L199" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/triggers.py#L323-L365" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showRawInfo(self, main=False):
     rawInfo = self.rawInfo
@@ -717,6 +1151,7 @@ class Triggers:
         kind = info[&#34;kind&#34;]
         occs = info[&#34;occs&#34;]
         allKeys = set(name) | set(kind) | set(occs)
+
         for eid in sorted(allKeys):
             nm = name.get(eid, &#34;&#34;)
             kd = kind.get(eid, &#34;&#34;)
@@ -737,7 +1172,7 @@ class Triggers:
             showSheet(sng[k], tab)
 
         rng = info.get(&#34;rng&#34;, {})
-        for (b, e) in sorted(rng):
+        for b, e in sorted(rng):
             console(f&#34;{tab}{b}-{e}.xslx&#34;)
             showSheet(rng[(b, e)], tab)
 
@@ -824,11 +1259,13 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li>
 <h4><code><a title="tf.browser.ner.triggers.Triggers" href="#tf.browser.ner.triggers.Triggers">Triggers</a></code></h4>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="tf.browser.ner.triggers.Triggers.compile" href="#tf.browser.ner.triggers.Triggers.compile">compile</a></code></li>
+<li><code><a title="tf.browser.ner.triggers.Triggers.instructions" href="#tf.browser.ner.triggers.Triggers.instructions">instructions</a></code></li>
 <li><code><a title="tf.browser.ner.triggers.Triggers.read" href="#tf.browser.ner.triggers.Triggers.read">read</a></code></li>
 <li><code><a title="tf.browser.ner.triggers.Triggers.readDir" href="#tf.browser.ner.triggers.Triggers.readDir">readDir</a></code></li>
 <li><code><a title="tf.browser.ner.triggers.Triggers.readXls" href="#tf.browser.ner.triggers.Triggers.readXls">readXls</a></code></li>
+<li><code><a title="tf.browser.ner.triggers.Triggers.showInfo" href="#tf.browser.ner.triggers.Triggers.showInfo">showInfo</a></code></li>
 <li><code><a title="tf.browser.ner.triggers.Triggers.showRawInfo" href="#tf.browser.ner.triggers.Triggers.showRawInfo">showRawInfo</a></code></li>
 </ul>
 </li>

@@ -34,7 +34,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1cf5e9c0fadcf56c0022132ef658bc0189d73054/tf/browser/ner/match.py#L1-L251" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/match.py#L1-L347" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Match functions.
 
@@ -42,10 +42,106 @@ To see how this fits among all the modules of this package, see
 `tf.browser.ner.annotate` .
 &#34;&#34;&#34;
 
+import collections
+
 from .settings import NONE
 
 
-def occMatch(getTokens, b, qTokenSet, results):
+def occMatch(getTokens, buckets, qTokenSet):
+    &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens in a single bucket.
+
+    Parameters
+    ----------
+    getTokens: function
+        See `tf.browser.ner.corpus.Corpus.getTokens`
+    buckets: tuple of integer
+        The bucket nodes in question
+    qTokenSet: set, optional set()
+        A set of sequences of tokens. Each sequence in the set will be used as a
+        search pattern, and it occurrences in the bucket are collected.
+    result: dict
+        A dictionary to collect the results in.
+        Keyed by each member of parameter `qTokenSet` the values are
+        the occurrences of that member in the corpus.
+        A single occurrence is represented as a tuple of slots.
+    &#34;&#34;&#34;
+
+    # compile the token sequences that we search for into data to optimize search
+    # we produce dicts, keyed by a postion number and valued by a dict whose
+    # keys are tokens and whose values are the token sequences that have that token
+    # at that position
+
+    candMatchMap = collections.defaultdict(lambda: collections.defaultdict(set))
+
+    for qTokens in qTokenSet:
+        for (i, qToken) in enumerate(qTokens):
+            candMatchMap[i][qToken].add(qTokens)
+
+    results = {}
+
+    for b in buckets:
+        # compile the bucket into logical tokens
+        bTokensAll = getTokens(b)
+        bTokens = [x for x in bTokensAll if (x[1] or &#34;&#34;).strip()]
+        bStrings = []
+        bStringFirst = {}
+        bStringLast = {}
+
+        for t, s in bTokens:
+            if len(bStrings) &gt; 1 and bStrings[-1] == &#34;-&#34;:
+                bStrings.pop()
+                bStrings[-1] += s
+                bStringLast[len(bStrings) - 1] = t
+            else:
+                bStrings.append(s)
+                bStringFirst[len(bStrings) - 1] = t
+                bStringLast[len(bStrings) - 1] = t
+
+        bStrings = tuple(bStrings)
+        nBStrings = len(bStrings)
+
+        # perform the search
+        i = 0
+
+        while i &lt; nBStrings:
+            j = 0
+            candidateMatches = None
+            matches = {}
+
+            while i + j &lt; nBStrings:
+                k = i + j
+                sj = bStrings[k]
+                newCandidates = candMatchMap.get(j, {}).get(sj, set())
+
+                if candidateMatches is None:
+                    candidateMatches = newCandidates
+                else:
+                    candidateMatches = candidateMatches &amp; newCandidates
+
+                matches[j] = [qt for qt in candidateMatches if len(qt) == j + 1]
+                j += 1
+
+                if len(candidateMatches) == 0:
+                    break
+
+            for m in range(j - 1, -1, -1):
+                resultMatches = matches[m]
+
+                if len(resultMatches):
+                    resultMatch = resultMatches[0]
+                    firstT = bStringFirst[i]
+                    lastT = bStringLast[i + m]
+                    slots = tuple(range(firstT, lastT + 1))
+                    results.setdefault(resultMatch, []).append(slots)
+                    break
+
+            shift = m + 1
+            i += shift
+
+    return results
+
+
+def occMatchOld(getTokens, b, qTokenSet, results):
     &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens in a single bucket.
 
     Parameters
@@ -337,7 +433,7 @@ of its slot number (position) and string value;</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1cf5e9c0fadcf56c0022132ef658bc0189d73054/tf/browser/ner/match.py#L65-L251" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/match.py#L161-L347" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def entityMatch(
     entityIndex,
@@ -529,7 +625,126 @@ of its slot number (position) and string value;</li>
 </details>
 </dd>
 <dt id="tf.browser.ner.match.occMatch"><code class="name flex">
-<span>def <span class="ident">occMatch</span></span>(<span>getTokens, b, qTokenSet, results)</span>
+<span>def <span class="ident">occMatch</span></span>(<span>getTokens, buckets, qTokenSet)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Finds the occurrences of multiple sequences of tokens in a single bucket.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>getTokens</code></strong> :&ensp;<code>function</code></dt>
+<dd>See <code><a title="tf.browser.ner.corpus.Corpus.getTokens" href="corpus.html#tf.browser.ner.corpus.Corpus.getTokens">Corpus.getTokens</a></code></dd>
+<dt><strong><code>buckets</code></strong> :&ensp;<code>tuple</code> of <code>integer</code></dt>
+<dd>The bucket nodes in question</dd>
+<dt><strong><code>qTokenSet</code></strong> :&ensp;<code>set</code>, optional <code>set()</code></dt>
+<dd>A set of sequences of tokens. Each sequence in the set will be used as a
+search pattern, and it occurrences in the bucket are collected.</dd>
+<dt><strong><code>result</code></strong> :&ensp;<code>dict</code></dt>
+<dd>A dictionary to collect the results in.
+Keyed by each member of parameter <code>qTokenSet</code> the values are
+the occurrences of that member in the corpus.
+A single occurrence is represented as a tuple of slots.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/match.py#L12-L103" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def occMatch(getTokens, buckets, qTokenSet):
+    &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens in a single bucket.
+
+    Parameters
+    ----------
+    getTokens: function
+        See `tf.browser.ner.corpus.Corpus.getTokens`
+    buckets: tuple of integer
+        The bucket nodes in question
+    qTokenSet: set, optional set()
+        A set of sequences of tokens. Each sequence in the set will be used as a
+        search pattern, and it occurrences in the bucket are collected.
+    result: dict
+        A dictionary to collect the results in.
+        Keyed by each member of parameter `qTokenSet` the values are
+        the occurrences of that member in the corpus.
+        A single occurrence is represented as a tuple of slots.
+    &#34;&#34;&#34;
+
+    # compile the token sequences that we search for into data to optimize search
+    # we produce dicts, keyed by a postion number and valued by a dict whose
+    # keys are tokens and whose values are the token sequences that have that token
+    # at that position
+
+    candMatchMap = collections.defaultdict(lambda: collections.defaultdict(set))
+
+    for qTokens in qTokenSet:
+        for (i, qToken) in enumerate(qTokens):
+            candMatchMap[i][qToken].add(qTokens)
+
+    results = {}
+
+    for b in buckets:
+        # compile the bucket into logical tokens
+        bTokensAll = getTokens(b)
+        bTokens = [x for x in bTokensAll if (x[1] or &#34;&#34;).strip()]
+        bStrings = []
+        bStringFirst = {}
+        bStringLast = {}
+
+        for t, s in bTokens:
+            if len(bStrings) &gt; 1 and bStrings[-1] == &#34;-&#34;:
+                bStrings.pop()
+                bStrings[-1] += s
+                bStringLast[len(bStrings) - 1] = t
+            else:
+                bStrings.append(s)
+                bStringFirst[len(bStrings) - 1] = t
+                bStringLast[len(bStrings) - 1] = t
+
+        bStrings = tuple(bStrings)
+        nBStrings = len(bStrings)
+
+        # perform the search
+        i = 0
+
+        while i &lt; nBStrings:
+            j = 0
+            candidateMatches = None
+            matches = {}
+
+            while i + j &lt; nBStrings:
+                k = i + j
+                sj = bStrings[k]
+                newCandidates = candMatchMap.get(j, {}).get(sj, set())
+
+                if candidateMatches is None:
+                    candidateMatches = newCandidates
+                else:
+                    candidateMatches = candidateMatches &amp; newCandidates
+
+                matches[j] = [qt for qt in candidateMatches if len(qt) == j + 1]
+                j += 1
+
+                if len(candidateMatches) == 0:
+                    break
+
+            for m in range(j - 1, -1, -1):
+                resultMatches = matches[m]
+
+                if len(resultMatches):
+                    resultMatch = resultMatches[0]
+                    firstT = bStringFirst[i]
+                    lastT = bStringLast[i + m]
+                    slots = tuple(range(firstT, lastT + 1))
+                    results.setdefault(resultMatch, []).append(slots)
+                    break
+
+            shift = m + 1
+            i += shift
+
+    return results</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.match.occMatchOld"><code class="name flex">
+<span>def <span class="ident">occMatchOld</span></span>(<span>getTokens, b, qTokenSet, results)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Finds the occurrences of multiple sequences of tokens in a single bucket.</p>
@@ -551,9 +766,9 @@ A single occurrence is represented as a tuple of slots.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1cf5e9c0fadcf56c0022132ef658bc0189d73054/tf/browser/ner/match.py#L10-L62" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/match.py#L106-L158" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def occMatch(getTokens, b, qTokenSet, results):
+<pre><code class="python">def occMatchOld(getTokens, b, qTokenSet, results):
     &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens in a single bucket.
 
     Parameters
@@ -679,6 +894,7 @@ setTimeout(() => input.focus(), 100);
 <ul class="">
 <li><code><a title="tf.browser.ner.match.entityMatch" href="#tf.browser.ner.match.entityMatch">entityMatch</a></code></li>
 <li><code><a title="tf.browser.ner.match.occMatch" href="#tf.browser.ner.match.occMatch">occMatch</a></code></li>
+<li><code><a title="tf.browser.ner.match.occMatchOld" href="#tf.browser.ner.match.occMatchOld">occMatchOld</a></code></li>
 </ul>
 </li>
 </ul>
