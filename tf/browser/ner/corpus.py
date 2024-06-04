@@ -134,6 +134,9 @@ class Corpus(Settings):
         def getContext(node):
             return L.d(T.sectionTuple(node)[1], otype=bucketType)
 
+        def getHeadings(node):
+            return tuple(str(x).lstrip("0") for x in T.sectionFromNode(node))
+
         def get0(slots):
             text = getText(slots)
             text = NON_ALPHA_RE.sub("", text)
@@ -272,6 +275,24 @@ class Corpus(Settings):
         list of tuple
             Each tuple is a pair of the slot number of the token and its
             string value. If there is no string value, the empty string is taken.
+        """
+
+        self.getHeadings = getHeadings
+        """Gets the heading tuple of the section of a node.
+
+        Parameters
+        ----------
+        node: integer
+            The nodes whose heading we want.
+
+        Returns
+        -------
+        tuple
+            The tuple consists of headings strings per
+            level, the most significant sections first.
+            If the node itself is a section node, the last element is
+            the heading of the given node.
+            We convert numbers to strings and strip leading zeros.
         """
 
         self.getStrings = getStrings

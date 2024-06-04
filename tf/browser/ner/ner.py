@@ -298,24 +298,16 @@ class NER(Annotate):
         if not self.properlySetup:
             return
 
-        settings = self.settings
-        spaceEscaped = settings.spaceEscaped
         Trig = self.Trig
-        instructions = Trig.instructions
-
-        qSets = set()
-
-        for info in instructions.values():
-            for occSpec in info["occSpecs"]:
-                qSets.add(toTokens(occSpec, spaceEscaped=spaceEscaped))
+        self.instructions = Trig.instructions
 
         app = self.app
         app.indent(reset=True)
-        app.info(f"Looking up occurrences of {len(qSets)} candidates ...")
-        self.inventory = self.findOccs(qSets)
+        app.info("Looking up occurrences of many candidates ...")
+        self.findOccs()
         app.info("Done")
 
-    def showInventory(self, expanded=False):
+    def showInventory(self, expanded=False, localOnly=False):
         """Shows the inventory.
 
         The surface forms in the inventory are put into the context of the entities
@@ -324,32 +316,78 @@ class NER(Annotate):
         if not self.properlySetup:
             return
 
-        instructions = self.instructions
         inventory = self.inventory
-        settings = self.settings
-        spaceEscaped = settings.spaceEscaped
 
-        total = 0
-        ins = 0
+        nEnt = len(inventory)
+        totalHits = 0
 
-        for eid, info in sorted(instructions.items()):
-            name = info["name"]
-            kind = info["kind"]
-            occSpecs = info["occSpecs"]
+        headLine = "{totalHits} x of {nEnt} entities"
+        lines = []
 
-            for occSpec in occSpecs:
-                matches = inventory.get(
-                    toTokens(occSpec, spaceEscaped=spaceEscaped), None
+        n = 0
+
+        for (eid, kind), data in sorted(inventory.items()):
+            if localOnly and all(path == () for path in data):
+                continue
+
+            n += 1
+
+            entityHits = 0
+
+            entHeadLine = "{entityHits} x {kind} {eid}"
+            eLines = []
+
+            isOnePath = len(data) == 1
+
+            for path, info in sorted(data.items()):
+                name = info["name"]
+                pathRep = ".".join(path)
+                localHeadLine = (
+                    f"[{pathRep}]: {name}"
+                    if isOnePath
+                    else "{localHits} x [{pathRep}]: {name}"
                 )
-                if matches is None:
-                    continue
-                n = len(matches)
-                total += n
-                if expanded or ins < 10:
-                    console(f"{eid:<24} {kind:<5} {occSpec:<20} {n:>5} x {name}")
-                    ins += 1
+                llines = []
 
-        console(f"Total {total}")
+                hits = info["hits"]
+                localHits = 0
+
+                isOneQ = len(hits) == 1
+
+                for q, occs in sorted(hits.items()):
+                    qRep = "(" + " ".join(q) + ")"
+                    nOccs = len(occs)
+                    localHits += nOccs
+
+                    if isOneQ:
+                        localHeadLine += f": {nOccs} x {qRep}"
+                    else:
+                        llines.append(f"    {nOccs} x {qRep}")
+
+                entityHits += localHits
+
+                if isOnePath:
+                    entHeadLine += localHeadLine
+                else:
+                    eLines.append(
+                        localHeadLine.format(
+                            pathRep=pathRep, name=name, localHits=localHits
+                        )
+                    )
+                eLines.extend(llines)
+
+            totalHits += entityHits
+
+            if expanded or n <= 10:
+                lines.append(
+                    entHeadLine.format(kind=kind, eid=eid, entityHits=entityHits)
+                )
+                lines.extend(eLines)
+
+        console(headLine.format(nEnt=nEnt, totalHits=totalHits))
+
+        for line in lines:
+            console(line)
 
     def markEntities(self):
         """Marks up the members of the inventory as entities.
@@ -387,9 +425,8 @@ class NER(Annotate):
                 fValsByQTokens.setdefault(qTokens, set()).add((eid, kind))
                 qSets.add(qTokens)
 
-        if inventory is None:
-            inventory = self.findOccs(qSets)
-            self.inventory = inventory
+        if self.inventory is None:
+            self.findOccs()
 
         for qTokens, matches in inventory.items():
             for fVals in fValsByQTokens[qTokens]:

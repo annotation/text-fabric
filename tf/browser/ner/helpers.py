@@ -241,3 +241,13 @@ def makeCss(features, keywordFeatures):
     featureCss = H.join(css, sep="\n")
     allCss = H.style(featureCss, type="text/css")
     return allCss
+
+
+def getPath(heading, instructions):
+    for n in range(len(heading), 0, -1):
+        path = heading[0:n]
+
+        if path in instructions:
+            return path
+
+    return ()

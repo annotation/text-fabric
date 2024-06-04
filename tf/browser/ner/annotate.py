@@ -130,40 +130,37 @@ class Annotate(Sets, Show):
         if not browse:
             self.loadData()
 
-    def findOccs(self, qTokenSet=set()):
-        """Finds the occurrences of multiple sequences of tokens.
+    def findOccs(self):
+        """Finds the occurrences of multiple triggers.
 
         This is meant to efficiently list all occurrences of many token
         sequences in the corpus.
 
-        Parameters
-        ----------
-        qTokenSet: set, optional set()
-            A set of sequences of tokens. Each sequence in the set will be used as a
-            search pattern in the whole corpus, and it occurrences are collected.
+        The triggers are in member `instructions`, which must first
+        be constructed by reading a number of excel files.
 
-        Returns
-        -------
-        dict
-            Keyed by each member of parameter `qTokenSet` the values are
-            the occurrences of that member in the corpus.
-            A single occurrence is represented as a tuple of slots.
+        It adds the member `inventory` to the object, which is a dict
+        with subdicts:
+
+        `occurrences`: keyed by tuples (eid, kind), the values are
+        the occurrences of that entity in the corpus.
+        A single occurrence is represented as a tuple of slots.
+
+        `names`: keyed by tuples (eid, kind) and then path,
+        the value is the name of that entity in the context indicated by path.
 
         """
         if not self.properlySetup:
             return []
 
+        instructions = self.instructions
         setData = self.getSetData()
         getTokens = self.getTokens
+        getHeadings = self.getHeadings
 
         buckets = setData.buckets or ()
 
-        results = occMatch(getTokens, buckets, qTokenSet)
-
-        # for b in buckets:
-        #    occMatch(getTokens, b, qTokenSet, results)
-
-        return results
+        self.inventory = occMatch(getTokens, getHeadings, buckets, instructions)
 
     def filterContent(
         self,
