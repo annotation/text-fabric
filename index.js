@@ -4140,7 +4140,7 @@ INDEX=[
 "func":1
 },
 {
-"ref":"tf.browser.ner.triggers.Triggers.showInfo",
+"ref":"tf.browser.ner.triggers.Triggers.showInheritance",
 "url":98,
 "doc":"",
 "func":1
@@ -4501,7 +4501,7 @@ INDEX=[
 {
 "ref":"tf.browser.ner.annotate.Annotate.findOccs",
 "url":103,
-"doc":"Finds the occurrences of multiple sequences of tokens. This is meant to efficiently list all occurrences of many token sequences in the corpus. Parameters      qTokenSet: set, optional set() A set of sequences of tokens. Each sequence in the set will be used as a search pattern in the whole corpus, and it occurrences are collected. Returns    - dict Keyed by each member of parameter  qTokenSet the values are the occurrences of that member in the corpus. A single occurrence is represented as a tuple of slots.",
+"doc":"Finds the occurrences of multiple triggers. This is meant to efficiently list all occurrences of many token sequences in the corpus. The triggers are in member  instructions , which must first be constructed by reading a number of excel files. It adds the member  inventory to the object, which is a dict with subdicts:  occurrences : keyed by tuples (eid, kind), the values are the occurrences of that entity in the corpus. A single occurrence is represented as a tuple of slots.  names : keyed by tuples (eid, kind) and then path, the value is the name of that entity in the context indicated by path.",
 "func":1
 },
 {
@@ -4690,6 +4690,11 @@ INDEX=[
 "doc":"Gets the tokens contained in node. Parameters      node: integer The nodes whose slots we want. Returns    - list of tuple Each tuple is a pair of the slot number of the token and its string value. If there is no string value, the empty string is taken."
 },
 {
+"ref":"tf.browser.ner.annotate.Annotate.getHeadings",
+"url":106,
+"doc":"Gets the heading tuple of the section of a node. Parameters      node: integer The nodes whose heading we want. Returns    - tuple The tuple consists of headings strings per level, the most significant sections first. If the node itself is a section node, the last element is the heading of the given node. We convert numbers to strings and strip leading zeros."
+},
+{
 "ref":"tf.browser.ner.annotate.Annotate.getStrings",
 "url":106,
 "doc":"Gets the text of the tokens occupying a sequence of slots. Parameters      tokenStart: integer The position of the starting token. tokenEnd: integer The position of the ending token. Returns    - tuple The members consist of the string values of the tokens in question, as far as these values are not purely white-space. Also, the string values are stripped from leading and trailing white-space."
@@ -4869,7 +4874,7 @@ INDEX=[
 {
 "ref":"tf.browser.ner.ner.NER.findOccs",
 "url":103,
-"doc":"Finds the occurrences of multiple sequences of tokens. This is meant to efficiently list all occurrences of many token sequences in the corpus. Parameters      qTokenSet: set, optional set() A set of sequences of tokens. Each sequence in the set will be used as a search pattern in the whole corpus, and it occurrences are collected. Returns    - dict Keyed by each member of parameter  qTokenSet the values are the occurrences of that member in the corpus. A single occurrence is represented as a tuple of slots.",
+"doc":"Finds the occurrences of multiple triggers. This is meant to efficiently list all occurrences of many token sequences in the corpus. The triggers are in member  instructions , which must first be constructed by reading a number of excel files. It adds the member  inventory to the object, which is a dict with subdicts:  occurrences : keyed by tuples (eid, kind), the values are the occurrences of that entity in the corpus. A single occurrence is represented as a tuple of slots.  names : keyed by tuples (eid, kind) and then path, the value is the name of that entity in the context indicated by path.",
 "func":1
 },
 {
@@ -5056,6 +5061,11 @@ INDEX=[
 "ref":"tf.browser.ner.ner.NER.getTokens",
 "url":106,
 "doc":"Gets the tokens contained in node. Parameters      node: integer The nodes whose slots we want. Returns    - list of tuple Each tuple is a pair of the slot number of the token and its string value. If there is no string value, the empty string is taken."
+},
+{
+"ref":"tf.browser.ner.ner.NER.getHeadings",
+"url":106,
+"doc":"Gets the heading tuple of the section of a node. Parameters      node: integer The nodes whose heading we want. Returns    - tuple The tuple consists of headings strings per level, the most significant sections first. If the node itself is a section node, the last element is the heading of the given node. We convert numbers to strings and strip leading zeros."
 },
 {
 "ref":"tf.browser.ner.ner.NER.getStrings",
@@ -5509,6 +5519,11 @@ INDEX=[
 "doc":"Gets the tokens contained in node. Parameters      node: integer The nodes whose slots we want. Returns    - list of tuple Each tuple is a pair of the slot number of the token and its string value. If there is no string value, the empty string is taken."
 },
 {
+"ref":"tf.browser.ner.sets.Sets.getHeadings",
+"url":106,
+"doc":"Gets the heading tuple of the section of a node. Parameters      node: integer The nodes whose heading we want. Returns    - tuple The tuple consists of headings strings per level, the most significant sections first. If the node itself is a section node, the last element is the heading of the given node. We convert numbers to strings and strip leading zeros."
+},
+{
 "ref":"tf.browser.ner.sets.Sets.getStrings",
 "url":106,
 "doc":"Gets the text of the tokens occupying a sequence of slots. Parameters      tokenStart: integer The position of the starting token. tokenEnd: integer The position of the ending token. Returns    - tuple The members consist of the string values of the tokens in question, as far as these values are not purely white-space. Also, the string values are stripped from leading and trailing white-space."
@@ -5632,6 +5647,12 @@ INDEX=[
 "ref":"tf.browser.ner.helpers.makeCss",
 "url":109,
 "doc":"Generates CSS for the tool. The CSS for this tool has a part that depends on the choice of entity features. For now, the dependency is mild: keyword features such as  kind are formatted differently than features with an unbounded set of values, such as  eid . Parameters      features, keywordFeatures: iterable What the features are and what the keyword features are. These derive ultimately from the corpus-dependent  ner/config.yaml .",
+"func":1
+},
+{
+"ref":"tf.browser.ner.helpers.getPath",
+"url":109,
+"doc":"",
 "func":1
 },
 {
@@ -5767,6 +5788,11 @@ INDEX=[
 "doc":"Gets the tokens contained in node. Parameters      node: integer The nodes whose slots we want. Returns    - list of tuple Each tuple is a pair of the slot number of the token and its string value. If there is no string value, the empty string is taken."
 },
 {
+"ref":"tf.browser.ner.data.Data.getHeadings",
+"url":106,
+"doc":"Gets the heading tuple of the section of a node. Parameters      node: integer The nodes whose heading we want. Returns    - tuple The tuple consists of headings strings per level, the most significant sections first. If the node itself is a section node, the last element is the heading of the given node. We convert numbers to strings and strip leading zeros."
+},
+{
 "ref":"tf.browser.ner.data.Data.getStrings",
 "url":106,
 "doc":"Gets the text of the tokens occupying a sequence of slots. Parameters      tokenStart: integer The position of the starting token. tokenEnd: integer The position of the ending token. Returns    - tuple The members consist of the string values of the tokens in question, as far as these values are not purely white-space. Also, the string values are stripped from leading and trailing white-space."
@@ -5878,6 +5904,11 @@ INDEX=[
 "doc":"Gets the tokens contained in node. Parameters      node: integer The nodes whose slots we want. Returns    - list of tuple Each tuple is a pair of the slot number of the token and its string value. If there is no string value, the empty string is taken."
 },
 {
+"ref":"tf.browser.ner.corpus.Corpus.getHeadings",
+"url":106,
+"doc":"Gets the heading tuple of the section of a node. Parameters      node: integer The nodes whose heading we want. Returns    - tuple The tuple consists of headings strings per level, the most significant sections first. If the node itself is a section node, the last element is the heading of the given node. We convert numbers to strings and strip leading zeros."
+},
+{
 "ref":"tf.browser.ner.corpus.Corpus.getStrings",
 "url":106,
 "doc":"Gets the text of the tokens occupying a sequence of slots. Parameters      tokenStart: integer The position of the starting token. tokenEnd: integer The position of the ending token. Returns    - tuple The members consist of the string values of the tokens in question, as far as these values are not purely white-space. Also, the string values are stripped from leading and trailing white-space."
@@ -5936,13 +5967,13 @@ INDEX=[
 {
 "ref":"tf.browser.ner.match.occMatch",
 "url":110,
-"doc":"Finds the occurrences of multiple sequences of tokens in a single bucket. Parameters      getTokens: function See  tf.browser.ner.corpus.Corpus.getTokens buckets: tuple of integer The bucket nodes in question qTokenSet: set, optional set() A set of sequences of tokens. Each sequence in the set will be used as a search pattern, and it occurrences in the bucket are collected. result: dict A dictionary to collect the results in. Keyed by each member of parameter  qTokenSet the values are the occurrences of that member in the corpus. A single occurrence is represented as a tuple of slots.",
+"doc":"Finds the occurrences of multiple sequences of tokens in a single bucket. Parameters      getTokens: function See  tf.browser.ner.corpus.Corpus.getTokens getHeadings: function See  tf.browser.ner.corpus.Corpus.getHeadings buckets: tuple of integer The bucket nodes in question instructions: dict, optional None A nested dict, keyed by section headings, with trigger information per section. Generic trigger information is present under key    . The idea is that trigger info under nested keys override trigger info at parent keys. The value at a key is a dict with keys:  sheet : The information about the triggers;  qSeqs : The plain set of triggers; each trigger is a token sequence;  qMap : A compilation of all triggers into a mapping so that you can read off, given a position and a token, the set of all triggers that have that token at that position.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.match.occMatchOld",
 "url":110,
-"doc":"Finds the occurrences of multiple sequences of tokens in a single bucket. Parameters      getTokens: function See  tf.browser.ner.corpus.Corpus.getTokens b: integer The node of the bucket in question qTokenSet: set, optional set() A set of sequences of tokens. Each sequence in the set will be used as a search pattern, and it occurrences in the bucket are collected. result: dict A dictionary to collect the results in. Keyed by each member of parameter  qTokenSet the values are the occurrences of that member in the corpus. A single occurrence is represented as a tuple of slots.",
+"doc":"Finds the occurrences of multiple sequences of tokens in a single bucket. Parameters      getTokens: function See  tf.browser.ner.corpus.Corpus.getTokens b: integer The node of the bucket in question qSeqs: set, optional set() A set of sequences of tokens. Each sequence in the set will be used as a search pattern, and it occurrences in the bucket are collected. result: dict A dictionary to collect the results in. Keyed by each member of parameter  qSeqs the values are the occurrences of that member in the corpus. A single occurrence is represented as a tuple of slots.",
 "func":1
 },
 {

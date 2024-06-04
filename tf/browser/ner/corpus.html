@@ -39,7 +39,7 @@ control over how to customize the annotator for different corpora.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/corpus.py#L1-L364" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/corpus.py#L1-L385" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Access to the corpus.
 
@@ -177,6 +177,9 @@ class Corpus(Settings):
         def getContext(node):
             return L.d(T.sectionTuple(node)[1], otype=bucketType)
 
+        def getHeadings(node):
+            return tuple(str(x).lstrip(&#34;0&#34;) for x in T.sectionFromNode(node))
+
         def get0(slots):
             text = getText(slots)
             text = NON_ALPHA_RE.sub(&#34;&#34;, text)
@@ -315,6 +318,24 @@ class Corpus(Settings):
         list of tuple
             Each tuple is a pair of the slot number of the token and its
             string value. If there is no string value, the empty string is taken.
+        &#34;&#34;&#34;
+
+        self.getHeadings = getHeadings
+        &#34;&#34;&#34;Gets the heading tuple of the section of a node.
+
+        Parameters
+        ----------
+        node: integer
+            The nodes whose heading we want.
+
+        Returns
+        -------
+        tuple
+            The tuple consists of headings strings per
+            level, the most significant sections first.
+            If the node itself is a section node, the last element is
+            the heading of the given node.
+            We convert numbers to strings and strip leading zeros.
         &#34;&#34;&#34;
 
         self.getStrings = getStrings
@@ -431,7 +452,7 @@ flag.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/corpus.py#L27-L364" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/corpus.py#L27-L385" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Corpus(Settings):
     def __init__(self):
@@ -542,6 +563,9 @@ flag.</p></div>
 
         def getContext(node):
             return L.d(T.sectionTuple(node)[1], otype=bucketType)
+
+        def getHeadings(node):
+            return tuple(str(x).lstrip(&#34;0&#34;) for x in T.sectionFromNode(node))
 
         def get0(slots):
             text = getText(slots)
@@ -681,6 +705,24 @@ flag.</p></div>
         list of tuple
             Each tuple is a pair of the slot number of the token and its
             string value. If there is no string value, the empty string is taken.
+        &#34;&#34;&#34;
+
+        self.getHeadings = getHeadings
+        &#34;&#34;&#34;Gets the heading tuple of the section of a node.
+
+        Parameters
+        ----------
+        node: integer
+            The nodes whose heading we want.
+
+        Returns
+        -------
+        tuple
+            The tuple consists of headings strings per
+            level, the most significant sections first.
+            If the node itself is a section node, the last element is
+            the heading of the given node.
+            We convert numbers to strings and strip leading zeros.
         &#34;&#34;&#34;
 
         self.getStrings = getStrings
@@ -879,6 +921,24 @@ section.</p>
 <dl>
 <dt><code>string</code> or <code>integer</code> or <code>void</code></dt>
 <dd>The value of the feature for that node, if there is a value.</dd>
+</dl></div>
+</dd>
+<dt id="tf.browser.ner.corpus.Corpus.getHeadings"><code class="name">var <span class="ident">getHeadings</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the heading tuple of the section of a node.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node</code></strong> :&ensp;<code>integer</code></dt>
+<dd>The nodes whose heading we want.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>The tuple consists of headings strings per
+level, the most significant sections first.
+If the node itself is a section node, the last element is
+the heading of the given node.
+We convert numbers to strings and strip leading zeros.</dd>
 </dl></div>
 </dd>
 <dt id="tf.browser.ner.corpus.Corpus.getSlots"><code class="name">var <span class="ident">getSlots</span></code></dt>
@@ -1099,6 +1159,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.browser.ner.corpus.Corpus.getContext" href="#tf.browser.ner.corpus.Corpus.getContext">getContext</a></code></li>
 <li><code><a title="tf.browser.ner.corpus.Corpus.getEntityNodes" href="#tf.browser.ner.corpus.Corpus.getEntityNodes">getEntityNodes</a></code></li>
 <li><code><a title="tf.browser.ner.corpus.Corpus.getFVal" href="#tf.browser.ner.corpus.Corpus.getFVal">getFVal</a></code></li>
+<li><code><a title="tf.browser.ner.corpus.Corpus.getHeadings" href="#tf.browser.ner.corpus.Corpus.getHeadings">getHeadings</a></code></li>
 <li><code><a title="tf.browser.ner.corpus.Corpus.getSlots" href="#tf.browser.ner.corpus.Corpus.getSlots">getSlots</a></code></li>
 <li><code><a title="tf.browser.ner.corpus.Corpus.getStr" href="#tf.browser.ner.corpus.Corpus.getStr">getStr</a></code></li>
 <li><code><a title="tf.browser.ner.corpus.Corpus.getStrings" href="#tf.browser.ner.corpus.Corpus.getStrings">getStrings</a></code></li>

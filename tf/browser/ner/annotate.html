@@ -100,7 +100,7 @@ web &lt;-----&lt; Serve &lt;-----------------&lt; Annotate  &lt;-&lt; match
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/annotate.py#L1-L407" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/annotate.py#L1-L404" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Central Annotation object.
 
@@ -234,40 +234,37 @@ class Annotate(Sets, Show):
         if not browse:
             self.loadData()
 
-    def findOccs(self, qTokenSet=set()):
-        &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens.
+    def findOccs(self):
+        &#34;&#34;&#34;Finds the occurrences of multiple triggers.
 
         This is meant to efficiently list all occurrences of many token
         sequences in the corpus.
 
-        Parameters
-        ----------
-        qTokenSet: set, optional set()
-            A set of sequences of tokens. Each sequence in the set will be used as a
-            search pattern in the whole corpus, and it occurrences are collected.
+        The triggers are in member `instructions`, which must first
+        be constructed by reading a number of excel files.
 
-        Returns
-        -------
-        dict
-            Keyed by each member of parameter `qTokenSet` the values are
-            the occurrences of that member in the corpus.
-            A single occurrence is represented as a tuple of slots.
+        It adds the member `inventory` to the object, which is a dict
+        with subdicts:
+
+        `occurrences`: keyed by tuples (eid, kind), the values are
+        the occurrences of that entity in the corpus.
+        A single occurrence is represented as a tuple of slots.
+
+        `names`: keyed by tuples (eid, kind) and then path,
+        the value is the name of that entity in the context indicated by path.
 
         &#34;&#34;&#34;
         if not self.properlySetup:
             return []
 
+        instructions = self.instructions
         setData = self.getSetData()
         getTokens = self.getTokens
+        getHeadings = self.getHeadings
 
         buckets = setData.buckets or ()
 
-        results = occMatch(getTokens, buckets, qTokenSet)
-
-        # for b in buckets:
-        #    occMatch(getTokens, b, qTokenSet, results)
-
-        return results
+        self.inventory = occMatch(getTokens, getHeadings, buckets, instructions)
 
     def filterContent(
         self,
@@ -555,7 +552,7 @@ browser. This will influence how results are reported back.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/annotate.py#L89-L407" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/annotate.py#L89-L404" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Annotate(Sets, Show):
     def __init__(self, app, data=None, browse=False):
@@ -601,40 +598,37 @@ browser. This will influence how results are reported back.</dd>
         if not browse:
             self.loadData()
 
-    def findOccs(self, qTokenSet=set()):
-        &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens.
+    def findOccs(self):
+        &#34;&#34;&#34;Finds the occurrences of multiple triggers.
 
         This is meant to efficiently list all occurrences of many token
         sequences in the corpus.
 
-        Parameters
-        ----------
-        qTokenSet: set, optional set()
-            A set of sequences of tokens. Each sequence in the set will be used as a
-            search pattern in the whole corpus, and it occurrences are collected.
+        The triggers are in member `instructions`, which must first
+        be constructed by reading a number of excel files.
 
-        Returns
-        -------
-        dict
-            Keyed by each member of parameter `qTokenSet` the values are
-            the occurrences of that member in the corpus.
-            A single occurrence is represented as a tuple of slots.
+        It adds the member `inventory` to the object, which is a dict
+        with subdicts:
+
+        `occurrences`: keyed by tuples (eid, kind), the values are
+        the occurrences of that entity in the corpus.
+        A single occurrence is represented as a tuple of slots.
+
+        `names`: keyed by tuples (eid, kind) and then path,
+        the value is the name of that entity in the context indicated by path.
 
         &#34;&#34;&#34;
         if not self.properlySetup:
             return []
 
+        instructions = self.instructions
         setData = self.getSetData()
         getTokens = self.getTokens
+        getHeadings = self.getHeadings
 
         buckets = setData.buckets or ()
 
-        results = occMatch(getTokens, buckets, qTokenSet)
-
-        # for b in buckets:
-        #    occMatch(getTokens, b, qTokenSet, results)
-
-        return results
+        self.inventory = occMatch(getTokens, getHeadings, buckets, instructions)
 
     def filterContent(
         self,
@@ -985,7 +979,7 @@ of results.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/annotate.py#L168-L407" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/annotate.py#L165-L404" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def filterContent(
     self,
@@ -1230,64 +1224,57 @@ of results.</p>
 </details>
 </dd>
 <dt id="tf.browser.ner.annotate.Annotate.findOccs"><code class="name flex">
-<span>def <span class="ident">findOccs</span></span>(<span>self, qTokenSet=set())</span>
+<span>def <span class="ident">findOccs</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Finds the occurrences of multiple sequences of tokens.</p>
+<div class="desc"><p>Finds the occurrences of multiple triggers.</p>
 <p>This is meant to efficiently list all occurrences of many token
 sequences in the corpus.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>qTokenSet</code></strong> :&ensp;<code>set</code>, optional <code>set()</code></dt>
-<dd>A set of sequences of tokens. Each sequence in the set will be used as a
-search pattern in the whole corpus, and it occurrences are collected.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>dict</code></dt>
-<dd>Keyed by each member of parameter <code>qTokenSet</code> the values are
-the occurrences of that member in the corpus.
-A single occurrence is represented as a tuple of slots.</dd>
-</dl></div>
+<p>The triggers are in member <code>instructions</code>, which must first
+be constructed by reading a number of excel files.</p>
+<p>It adds the member <code>inventory</code> to the object, which is a dict
+with subdicts:</p>
+<p><code>occurrences</code>: keyed by tuples (eid, kind), the values are
+the occurrences of that entity in the corpus.
+A single occurrence is represented as a tuple of slots.</p>
+<p><code>names</code>: keyed by tuples (eid, kind) and then path,
+the value is the name of that entity in the context indicated by path.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/annotate.py#L133-L166" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/annotate.py#L133-L163" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def findOccs(self, qTokenSet=set()):
-    &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens.
+<pre><code class="python">def findOccs(self):
+    &#34;&#34;&#34;Finds the occurrences of multiple triggers.
 
     This is meant to efficiently list all occurrences of many token
     sequences in the corpus.
 
-    Parameters
-    ----------
-    qTokenSet: set, optional set()
-        A set of sequences of tokens. Each sequence in the set will be used as a
-        search pattern in the whole corpus, and it occurrences are collected.
+    The triggers are in member `instructions`, which must first
+    be constructed by reading a number of excel files.
 
-    Returns
-    -------
-    dict
-        Keyed by each member of parameter `qTokenSet` the values are
-        the occurrences of that member in the corpus.
-        A single occurrence is represented as a tuple of slots.
+    It adds the member `inventory` to the object, which is a dict
+    with subdicts:
+
+    `occurrences`: keyed by tuples (eid, kind), the values are
+    the occurrences of that entity in the corpus.
+    A single occurrence is represented as a tuple of slots.
+
+    `names`: keyed by tuples (eid, kind) and then path,
+    the value is the name of that entity in the context indicated by path.
 
     &#34;&#34;&#34;
     if not self.properlySetup:
         return []
 
+    instructions = self.instructions
     setData = self.getSetData()
     getTokens = self.getTokens
+    getHeadings = self.getHeadings
 
     buckets = setData.buckets or ()
 
-    results = occMatch(getTokens, buckets, qTokenSet)
-
-    # for b in buckets:
-    #    occMatch(getTokens, b, qTokenSet, results)
-
-    return results</code></pre>
+    self.inventory = occMatch(getTokens, getHeadings, buckets, instructions)</code></pre>
 </details>
 </dd>
 </dl>
@@ -1315,6 +1302,7 @@ A single occurrence is represented as a tuple of slots.</dd>
 <li><code><a title="tf.browser.ner.sets.Sets.getContext" href="corpus.html#tf.browser.ner.corpus.Corpus.getContext">getContext</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.getEntityNodes" href="corpus.html#tf.browser.ner.corpus.Corpus.getEntityNodes">getEntityNodes</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.getFVal" href="corpus.html#tf.browser.ner.corpus.Corpus.getFVal">getFVal</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getHeadings" href="corpus.html#tf.browser.ner.corpus.Corpus.getHeadings">getHeadings</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.getSetData" href="sets.html#tf.browser.ner.sets.Sets.getSetData">getSetData</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.getSlots" href="corpus.html#tf.browser.ner.corpus.Corpus.getSlots">getSlots</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.getStr" href="corpus.html#tf.browser.ner.corpus.Corpus.getStr">getStr</a></code></li>

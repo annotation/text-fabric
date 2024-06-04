@@ -34,7 +34,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/match.py#L1-L347" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/match.py#L1-L361" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Match functions.
 
@@ -42,28 +42,36 @@ To see how this fits among all the modules of this package, see
 `tf.browser.ner.annotate` .
 &#34;&#34;&#34;
 
-import collections
-
 from .settings import NONE
+from .helpers import getPath
 
 
-def occMatch(getTokens, buckets, qTokenSet):
+def occMatch(getTokens, getHeadings, buckets, instructions):
     &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens in a single bucket.
 
     Parameters
     ----------
     getTokens: function
         See `tf.browser.ner.corpus.Corpus.getTokens`
+    getHeadings: function
+        See `tf.browser.ner.corpus.Corpus.getHeadings`
     buckets: tuple of integer
         The bucket nodes in question
-    qTokenSet: set, optional set()
-        A set of sequences of tokens. Each sequence in the set will be used as a
-        search pattern, and it occurrences in the bucket are collected.
-    result: dict
-        A dictionary to collect the results in.
-        Keyed by each member of parameter `qTokenSet` the values are
-        the occurrences of that member in the corpus.
-        A single occurrence is represented as a tuple of slots.
+    instructions: dict, optional None
+        A nested dict, keyed by section headings, with trigger information per section.
+        Generic trigger information is present under key `&#34;&#34;`.
+        The idea is that trigger info under nested keys override trigger info
+        at parent keys.
+        The value at a key is a dict with keys:
+
+        `sheet`: The information about the triggers;
+
+        `qSeqs`: The plain set of triggers; each trigger is a token sequence;
+
+        `qMap`: A compilation of all triggers into a mapping so that you can
+
+        read off, given a position and a token, the set of all triggers that
+        have that token at that position.
     &#34;&#34;&#34;
 
     # compile the token sequences that we search for into data to optimize search
@@ -71,15 +79,16 @@ def occMatch(getTokens, buckets, qTokenSet):
     # keys are tokens and whose values are the token sequences that have that token
     # at that position
 
-    candMatchMap = collections.defaultdict(lambda: collections.defaultdict(set))
-
-    for qTokens in qTokenSet:
-        for (i, qToken) in enumerate(qTokens):
-            candMatchMap[i][qToken].add(qTokens)
-
     results = {}
 
     for b in buckets:
+        heading = getHeadings(b)
+        path = getPath(heading, instructions)
+        data = instructions[path]
+        qMap = data[&#34;qMap&#34;]
+        idMap = data[&#34;idMap&#34;]
+        nameMap = data[&#34;nameMap&#34;]
+
         # compile the bucket into logical tokens
         bTokensAll = getTokens(b)
         bTokens = [x for x in bTokensAll if (x[1] or &#34;&#34;).strip()]
@@ -111,7 +120,7 @@ def occMatch(getTokens, buckets, qTokenSet):
             while i + j &lt; nBStrings:
                 k = i + j
                 sj = bStrings[k]
-                newCandidates = candMatchMap.get(j, {}).get(sj, set())
+                newCandidates = qMap.get(j, {}).get(sj, set())
 
                 if candidateMatches is None:
                     candidateMatches = newCandidates
@@ -132,7 +141,12 @@ def occMatch(getTokens, buckets, qTokenSet):
                     firstT = bStringFirst[i]
                     lastT = bStringLast[i + m]
                     slots = tuple(range(firstT, lastT + 1))
-                    results.setdefault(resultMatch, []).append(slots)
+                    eidkind = idMap[resultMatch]
+                    name = nameMap[eidkind]
+                    dest = results.setdefault(eidkind, {}).setdefault(path, {})
+                    dest[&#34;name&#34;] = name
+                    destHits = dest.setdefault(&#34;hits&#34;, {}).setdefault(resultMatch, [])
+                    destHits.append(slots)
                     break
 
             shift = m + 1
@@ -141,7 +155,7 @@ def occMatch(getTokens, buckets, qTokenSet):
     return results
 
 
-def occMatchOld(getTokens, b, qTokenSet, results):
+def occMatchOld(getTokens, b, qSeqs, results):
     &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens in a single bucket.
 
     Parameters
@@ -150,12 +164,12 @@ def occMatchOld(getTokens, b, qTokenSet, results):
         See `tf.browser.ner.corpus.Corpus.getTokens`
     b: integer
         The node of the bucket in question
-    qTokenSet: set, optional set()
+    qSeqs: set, optional set()
         A set of sequences of tokens. Each sequence in the set will be used as a
         search pattern, and it occurrences in the bucket are collected.
     result: dict
         A dictionary to collect the results in.
-        Keyed by each member of parameter `qTokenSet` the values are
+        Keyed by each member of parameter `qSeqs` the values are
         the occurrences of that member in the corpus.
         A single occurrence is represented as a tuple of slots.
     &#34;&#34;&#34;
@@ -179,7 +193,7 @@ def occMatchOld(getTokens, b, qTokenSet, results):
     bStrings = tuple(bStrings)
     bStringSet = set(bStrings)
 
-    for qTokens in qTokenSet:
+    for qTokens in qSeqs:
         if any(s not in bStringSet for s in qTokens):
             continue
 
@@ -433,7 +447,7 @@ of its slot number (position) and string value;</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/match.py#L161-L347" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/match.py#L175-L361" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def entityMatch(
     entityIndex,
@@ -625,7 +639,7 @@ of its slot number (position) and string value;</li>
 </details>
 </dd>
 <dt id="tf.browser.ner.match.occMatch"><code class="name flex">
-<span>def <span class="ident">occMatch</span></span>(<span>getTokens, buckets, qTokenSet)</span>
+<span>def <span class="ident">occMatch</span></span>(<span>getTokens, getHeadings, buckets, instructions)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Finds the occurrences of multiple sequences of tokens in a single bucket.</p>
@@ -633,39 +647,55 @@ of its slot number (position) and string value;</li>
 <dl>
 <dt><strong><code>getTokens</code></strong> :&ensp;<code>function</code></dt>
 <dd>See <code><a title="tf.browser.ner.corpus.Corpus.getTokens" href="corpus.html#tf.browser.ner.corpus.Corpus.getTokens">Corpus.getTokens</a></code></dd>
+<dt><strong><code>getHeadings</code></strong> :&ensp;<code>function</code></dt>
+<dd>See <code><a title="tf.browser.ner.corpus.Corpus.getHeadings" href="corpus.html#tf.browser.ner.corpus.Corpus.getHeadings">Corpus.getHeadings</a></code></dd>
 <dt><strong><code>buckets</code></strong> :&ensp;<code>tuple</code> of <code>integer</code></dt>
 <dd>The bucket nodes in question</dd>
-<dt><strong><code>qTokenSet</code></strong> :&ensp;<code>set</code>, optional <code>set()</code></dt>
-<dd>A set of sequences of tokens. Each sequence in the set will be used as a
-search pattern, and it occurrences in the bucket are collected.</dd>
-<dt><strong><code>result</code></strong> :&ensp;<code>dict</code></dt>
-<dd>A dictionary to collect the results in.
-Keyed by each member of parameter <code>qTokenSet</code> the values are
-the occurrences of that member in the corpus.
-A single occurrence is represented as a tuple of slots.</dd>
+<dt><strong><code>instructions</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>
+<dd>
+<p>A nested dict, keyed by section headings, with trigger information per section.
+Generic trigger information is present under key <code>""</code>.
+The idea is that trigger info under nested keys override trigger info
+at parent keys.
+The value at a key is a dict with keys:</p>
+<p><code>sheet</code>: The information about the triggers;</p>
+<p><code>qSeqs</code>: The plain set of triggers; each trigger is a token sequence;</p>
+<p><code>qMap</code>: A compilation of all triggers into a mapping so that you can</p>
+<p>read off, given a position and a token, the set of all triggers that
+have that token at that position.</p>
+</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/match.py#L12-L103" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/match.py#L11-L117" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def occMatch(getTokens, buckets, qTokenSet):
+<pre><code class="python">def occMatch(getTokens, getHeadings, buckets, instructions):
     &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens in a single bucket.
 
     Parameters
     ----------
     getTokens: function
         See `tf.browser.ner.corpus.Corpus.getTokens`
+    getHeadings: function
+        See `tf.browser.ner.corpus.Corpus.getHeadings`
     buckets: tuple of integer
         The bucket nodes in question
-    qTokenSet: set, optional set()
-        A set of sequences of tokens. Each sequence in the set will be used as a
-        search pattern, and it occurrences in the bucket are collected.
-    result: dict
-        A dictionary to collect the results in.
-        Keyed by each member of parameter `qTokenSet` the values are
-        the occurrences of that member in the corpus.
-        A single occurrence is represented as a tuple of slots.
+    instructions: dict, optional None
+        A nested dict, keyed by section headings, with trigger information per section.
+        Generic trigger information is present under key `&#34;&#34;`.
+        The idea is that trigger info under nested keys override trigger info
+        at parent keys.
+        The value at a key is a dict with keys:
+
+        `sheet`: The information about the triggers;
+
+        `qSeqs`: The plain set of triggers; each trigger is a token sequence;
+
+        `qMap`: A compilation of all triggers into a mapping so that you can
+
+        read off, given a position and a token, the set of all triggers that
+        have that token at that position.
     &#34;&#34;&#34;
 
     # compile the token sequences that we search for into data to optimize search
@@ -673,15 +703,16 @@ A single occurrence is represented as a tuple of slots.</dd>
     # keys are tokens and whose values are the token sequences that have that token
     # at that position
 
-    candMatchMap = collections.defaultdict(lambda: collections.defaultdict(set))
-
-    for qTokens in qTokenSet:
-        for (i, qToken) in enumerate(qTokens):
-            candMatchMap[i][qToken].add(qTokens)
-
     results = {}
 
     for b in buckets:
+        heading = getHeadings(b)
+        path = getPath(heading, instructions)
+        data = instructions[path]
+        qMap = data[&#34;qMap&#34;]
+        idMap = data[&#34;idMap&#34;]
+        nameMap = data[&#34;nameMap&#34;]
+
         # compile the bucket into logical tokens
         bTokensAll = getTokens(b)
         bTokens = [x for x in bTokensAll if (x[1] or &#34;&#34;).strip()]
@@ -713,7 +744,7 @@ A single occurrence is represented as a tuple of slots.</dd>
             while i + j &lt; nBStrings:
                 k = i + j
                 sj = bStrings[k]
-                newCandidates = candMatchMap.get(j, {}).get(sj, set())
+                newCandidates = qMap.get(j, {}).get(sj, set())
 
                 if candidateMatches is None:
                     candidateMatches = newCandidates
@@ -734,7 +765,12 @@ A single occurrence is represented as a tuple of slots.</dd>
                     firstT = bStringFirst[i]
                     lastT = bStringLast[i + m]
                     slots = tuple(range(firstT, lastT + 1))
-                    results.setdefault(resultMatch, []).append(slots)
+                    eidkind = idMap[resultMatch]
+                    name = nameMap[eidkind]
+                    dest = results.setdefault(eidkind, {}).setdefault(path, {})
+                    dest[&#34;name&#34;] = name
+                    destHits = dest.setdefault(&#34;hits&#34;, {}).setdefault(resultMatch, [])
+                    destHits.append(slots)
                     break
 
             shift = m + 1
@@ -744,7 +780,7 @@ A single occurrence is represented as a tuple of slots.</dd>
 </details>
 </dd>
 <dt id="tf.browser.ner.match.occMatchOld"><code class="name flex">
-<span>def <span class="ident">occMatchOld</span></span>(<span>getTokens, b, qTokenSet, results)</span>
+<span>def <span class="ident">occMatchOld</span></span>(<span>getTokens, b, qSeqs, results)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Finds the occurrences of multiple sequences of tokens in a single bucket.</p>
@@ -754,21 +790,21 @@ A single occurrence is represented as a tuple of slots.</dd>
 <dd>See <code><a title="tf.browser.ner.corpus.Corpus.getTokens" href="corpus.html#tf.browser.ner.corpus.Corpus.getTokens">Corpus.getTokens</a></code></dd>
 <dt><strong><code>b</code></strong> :&ensp;<code>integer</code></dt>
 <dd>The node of the bucket in question</dd>
-<dt><strong><code>qTokenSet</code></strong> :&ensp;<code>set</code>, optional <code>set()</code></dt>
+<dt><strong><code>qSeqs</code></strong> :&ensp;<code>set</code>, optional <code>set()</code></dt>
 <dd>A set of sequences of tokens. Each sequence in the set will be used as a
 search pattern, and it occurrences in the bucket are collected.</dd>
 <dt><strong><code>result</code></strong> :&ensp;<code>dict</code></dt>
 <dd>A dictionary to collect the results in.
-Keyed by each member of parameter <code>qTokenSet</code> the values are
+Keyed by each member of parameter <code>qSeqs</code> the values are
 the occurrences of that member in the corpus.
 A single occurrence is represented as a tuple of slots.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/match.py#L106-L158" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/match.py#L120-L172" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def occMatchOld(getTokens, b, qTokenSet, results):
+<pre><code class="python">def occMatchOld(getTokens, b, qSeqs, results):
     &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens in a single bucket.
 
     Parameters
@@ -777,12 +813,12 @@ A single occurrence is represented as a tuple of slots.</dd>
         See `tf.browser.ner.corpus.Corpus.getTokens`
     b: integer
         The node of the bucket in question
-    qTokenSet: set, optional set()
+    qSeqs: set, optional set()
         A set of sequences of tokens. Each sequence in the set will be used as a
         search pattern, and it occurrences in the bucket are collected.
     result: dict
         A dictionary to collect the results in.
-        Keyed by each member of parameter `qTokenSet` the values are
+        Keyed by each member of parameter `qSeqs` the values are
         the occurrences of that member in the corpus.
         A single occurrence is represented as a tuple of slots.
     &#34;&#34;&#34;
@@ -806,7 +842,7 @@ A single occurrence is represented as a tuple of slots.</dd>
     bStrings = tuple(bStrings)
     bStringSet = set(bStrings)
 
-    for qTokens in qTokenSet:
+    for qTokens in qSeqs:
         if any(s not in bStringSet for s in qTokens):
             continue
 

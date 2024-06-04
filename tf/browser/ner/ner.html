@@ -196,7 +196,7 @@ slots.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/ner.py#L1-L409" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/ner.py#L1-L446" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;API for rule-based entity marking.
 
@@ -498,24 +498,16 @@ class NER(Annotate):
         if not self.properlySetup:
             return
 
-        settings = self.settings
-        spaceEscaped = settings.spaceEscaped
         Trig = self.Trig
-        instructions = Trig.instructions
-
-        qSets = set()
-
-        for info in instructions.values():
-            for occSpec in info[&#34;occSpecs&#34;]:
-                qSets.add(toTokens(occSpec, spaceEscaped=spaceEscaped))
+        self.instructions = Trig.instructions
 
         app = self.app
         app.indent(reset=True)
-        app.info(f&#34;Looking up occurrences of {len(qSets)} candidates ...&#34;)
-        self.inventory = self.findOccs(qSets)
+        app.info(&#34;Looking up occurrences of many candidates ...&#34;)
+        self.findOccs()
         app.info(&#34;Done&#34;)
 
-    def showInventory(self, expanded=False):
+    def showInventory(self, expanded=False, localOnly=False):
         &#34;&#34;&#34;Shows the inventory.
 
         The surface forms in the inventory are put into the context of the entities
@@ -524,32 +516,78 @@ class NER(Annotate):
         if not self.properlySetup:
             return
 
-        instructions = self.instructions
         inventory = self.inventory
-        settings = self.settings
-        spaceEscaped = settings.spaceEscaped
 
-        total = 0
-        ins = 0
+        nEnt = len(inventory)
+        totalHits = 0
 
-        for eid, info in sorted(instructions.items()):
-            name = info[&#34;name&#34;]
-            kind = info[&#34;kind&#34;]
-            occSpecs = info[&#34;occSpecs&#34;]
+        headLine = &#34;{totalHits} x of {nEnt} entities&#34;
+        lines = []
 
-            for occSpec in occSpecs:
-                matches = inventory.get(
-                    toTokens(occSpec, spaceEscaped=spaceEscaped), None
+        n = 0
+
+        for (eid, kind), data in sorted(inventory.items()):
+            if localOnly and all(path == () for path in data):
+                continue
+
+            n += 1
+
+            entityHits = 0
+
+            entHeadLine = &#34;{entityHits} x {kind} {eid}&#34;
+            eLines = []
+
+            isOnePath = len(data) == 1
+
+            for path, info in sorted(data.items()):
+                name = info[&#34;name&#34;]
+                pathRep = &#34;.&#34;.join(path)
+                localHeadLine = (
+                    f&#34;[{pathRep}]: {name}&#34;
+                    if isOnePath
+                    else &#34;{localHits} x [{pathRep}]: {name}&#34;
                 )
-                if matches is None:
-                    continue
-                n = len(matches)
-                total += n
-                if expanded or ins &lt; 10:
-                    console(f&#34;{eid:&lt;24} {kind:&lt;5} {occSpec:&lt;20} {n:&gt;5} x {name}&#34;)
-                    ins += 1
+                llines = []
 
-        console(f&#34;Total {total}&#34;)
+                hits = info[&#34;hits&#34;]
+                localHits = 0
+
+                isOneQ = len(hits) == 1
+
+                for q, occs in sorted(hits.items()):
+                    qRep = &#34;(&#34; + &#34; &#34;.join(q) + &#34;)&#34;
+                    nOccs = len(occs)
+                    localHits += nOccs
+
+                    if isOneQ:
+                        localHeadLine += f&#34;: {nOccs} x {qRep}&#34;
+                    else:
+                        llines.append(f&#34;    {nOccs} x {qRep}&#34;)
+
+                entityHits += localHits
+
+                if isOnePath:
+                    entHeadLine += localHeadLine
+                else:
+                    eLines.append(
+                        localHeadLine.format(
+                            pathRep=pathRep, name=name, localHits=localHits
+                        )
+                    )
+                eLines.extend(llines)
+
+            totalHits += entityHits
+
+            if expanded or n &lt;= 10:
+                lines.append(
+                    entHeadLine.format(kind=kind, eid=eid, entityHits=entityHits)
+                )
+                lines.extend(eLines)
+
+        console(headLine.format(nEnt=nEnt, totalHits=totalHits))
+
+        for line in lines:
+            console(line)
 
     def markEntities(self):
         &#34;&#34;&#34;Marks up the members of the inventory as entities.
@@ -587,9 +625,8 @@ class NER(Annotate):
                 fValsByQTokens.setdefault(qTokens, set()).add((eid, kind))
                 qSets.add(qTokens)
 
-        if inventory is None:
-            inventory = self.findOccs(qSets)
-            self.inventory = inventory
+        if self.inventory is None:
+            self.findOccs()
 
         for qTokens, matches in inventory.items():
             for fVals in fValsByQTokens[qTokens]:
@@ -637,7 +674,7 @@ by the Annotate class on which it is based.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/ner.py#L232-L409" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/ner.py#L232-L446" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Annotate):
     def __init__(self, app):
@@ -708,24 +745,16 @@ by the Annotate class on which it is based.</p>
         if not self.properlySetup:
             return
 
-        settings = self.settings
-        spaceEscaped = settings.spaceEscaped
         Trig = self.Trig
-        instructions = Trig.instructions
-
-        qSets = set()
-
-        for info in instructions.values():
-            for occSpec in info[&#34;occSpecs&#34;]:
-                qSets.add(toTokens(occSpec, spaceEscaped=spaceEscaped))
+        self.instructions = Trig.instructions
 
         app = self.app
         app.indent(reset=True)
-        app.info(f&#34;Looking up occurrences of {len(qSets)} candidates ...&#34;)
-        self.inventory = self.findOccs(qSets)
+        app.info(&#34;Looking up occurrences of many candidates ...&#34;)
+        self.findOccs()
         app.info(&#34;Done&#34;)
 
-    def showInventory(self, expanded=False):
+    def showInventory(self, expanded=False, localOnly=False):
         &#34;&#34;&#34;Shows the inventory.
 
         The surface forms in the inventory are put into the context of the entities
@@ -734,32 +763,78 @@ by the Annotate class on which it is based.</p>
         if not self.properlySetup:
             return
 
-        instructions = self.instructions
         inventory = self.inventory
-        settings = self.settings
-        spaceEscaped = settings.spaceEscaped
 
-        total = 0
-        ins = 0
+        nEnt = len(inventory)
+        totalHits = 0
 
-        for eid, info in sorted(instructions.items()):
-            name = info[&#34;name&#34;]
-            kind = info[&#34;kind&#34;]
-            occSpecs = info[&#34;occSpecs&#34;]
+        headLine = &#34;{totalHits} x of {nEnt} entities&#34;
+        lines = []
 
-            for occSpec in occSpecs:
-                matches = inventory.get(
-                    toTokens(occSpec, spaceEscaped=spaceEscaped), None
+        n = 0
+
+        for (eid, kind), data in sorted(inventory.items()):
+            if localOnly and all(path == () for path in data):
+                continue
+
+            n += 1
+
+            entityHits = 0
+
+            entHeadLine = &#34;{entityHits} x {kind} {eid}&#34;
+            eLines = []
+
+            isOnePath = len(data) == 1
+
+            for path, info in sorted(data.items()):
+                name = info[&#34;name&#34;]
+                pathRep = &#34;.&#34;.join(path)
+                localHeadLine = (
+                    f&#34;[{pathRep}]: {name}&#34;
+                    if isOnePath
+                    else &#34;{localHits} x [{pathRep}]: {name}&#34;
                 )
-                if matches is None:
-                    continue
-                n = len(matches)
-                total += n
-                if expanded or ins &lt; 10:
-                    console(f&#34;{eid:&lt;24} {kind:&lt;5} {occSpec:&lt;20} {n:&gt;5} x {name}&#34;)
-                    ins += 1
+                llines = []
 
-        console(f&#34;Total {total}&#34;)
+                hits = info[&#34;hits&#34;]
+                localHits = 0
+
+                isOneQ = len(hits) == 1
+
+                for q, occs in sorted(hits.items()):
+                    qRep = &#34;(&#34; + &#34; &#34;.join(q) + &#34;)&#34;
+                    nOccs = len(occs)
+                    localHits += nOccs
+
+                    if isOneQ:
+                        localHeadLine += f&#34;: {nOccs} x {qRep}&#34;
+                    else:
+                        llines.append(f&#34;    {nOccs} x {qRep}&#34;)
+
+                entityHits += localHits
+
+                if isOnePath:
+                    entHeadLine += localHeadLine
+                else:
+                    eLines.append(
+                        localHeadLine.format(
+                            pathRep=pathRep, name=name, localHits=localHits
+                        )
+                    )
+                eLines.extend(llines)
+
+            totalHits += entityHits
+
+            if expanded or n &lt;= 10:
+                lines.append(
+                    entHeadLine.format(kind=kind, eid=eid, entityHits=entityHits)
+                )
+                lines.extend(eLines)
+
+        console(headLine.format(nEnt=nEnt, totalHits=totalHits))
+
+        for line in lines:
+            console(line)
 
     def markEntities(self):
         &#34;&#34;&#34;Marks up the members of the inventory as entities.
@@ -797,9 +872,8 @@ by the Annotate class on which it is based.</p>
                 fValsByQTokens.setdefault(qTokens, set()).add((eid, kind))
                 qSets.add(qTokens)
 
-        if inventory is None:
-            inventory = self.findOccs(qSets)
-            self.inventory = inventory
+        if self.inventory is None:
+            self.findOccs()
 
         for qTokens, matches in inventory.items():
             for fVals in fValsByQTokens[qTokens]:
@@ -854,7 +928,7 @@ with this string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/ner.py#L400-L409" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/ner.py#L437-L446" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def bakeEntities(self, versionExtension=&#34;e&#34;):
     &#34;&#34;&#34;Bakes the entities of the current set as nodes into a new TF data source.
@@ -881,7 +955,7 @@ slot sequences where those token sequences occur in the corpus.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/ner.py#L287-L316" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/ner.py#L287-L308" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeInventory(self):
     &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
@@ -897,21 +971,13 @@ slot sequences where those token sequences occur in the corpus.</p></div>
     if not self.properlySetup:
         return
 
-    settings = self.settings
-    spaceEscaped = settings.spaceEscaped
     Trig = self.Trig
-    instructions = Trig.instructions
-
-    qSets = set()
-
-    for info in instructions.values():
-        for occSpec in info[&#34;occSpecs&#34;]:
-            qSets.add(toTokens(occSpec, spaceEscaped=spaceEscaped))
+    self.instructions = Trig.instructions
 
     app = self.app
     app.indent(reset=True)
-    app.info(f&#34;Looking up occurrences of {len(qSets)} candidates ...&#34;)
-    self.inventory = self.findOccs(qSets)
+    app.info(&#34;Looking up occurrences of many candidates ...&#34;)
+    self.findOccs()
     app.info(&#34;Done&#34;)</code></pre>
 </details>
 </dd>
@@ -927,7 +993,7 @@ If there is no inventory yet, it will be created.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/ner.py#L354-L398" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/ner.py#L392-L435" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def markEntities(self):
     &#34;&#34;&#34;Marks up the members of the inventory as entities.
@@ -965,9 +1031,8 @@ If there is no inventory yet, it will be created.</p></div>
             fValsByQTokens.setdefault(qTokens, set()).add((eid, kind))
             qSets.add(qTokens)
 
-    if inventory is None:
-        inventory = self.findOccs(qSets)
-        self.inventory = inventory
+    if self.inventory is None:
+        self.findOccs()
 
     for qTokens, matches in inventory.items():
         for fVals in fValsByQTokens[qTokens]:
@@ -993,7 +1058,7 @@ containing more specialized trigger specs: per section level.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/ner.py#L260-L285" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/ner.py#L260-L285" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readInstructions(self, sheetName):
     &#34;&#34;&#34;Reads the trigger specifications.
@@ -1024,7 +1089,7 @@ containing more specialized trigger specs: per section level.</dd>
 </details>
 </dd>
 <dt id="tf.browser.ner.ner.NER.showInventory"><code class="name flex">
-<span>def <span class="ident">showInventory</span></span>(<span>self, expanded=False)</span>
+<span>def <span class="ident">showInventory</span></span>(<span>self, expanded=False, localOnly=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Shows the inventory.</p>
@@ -1033,9 +1098,9 @@ of which they are surface forms.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7c105bad919ad68cf829b2302323a8b7557a1687/tf/browser/ner/ner.py#L318-L352" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/ner.py#L310-L390" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def showInventory(self, expanded=False):
+<pre><code class="python">def showInventory(self, expanded=False, localOnly=False):
     &#34;&#34;&#34;Shows the inventory.
 
     The surface forms in the inventory are put into the context of the entities
@@ -1044,32 +1109,78 @@ of which they are surface forms.</p></div>
     if not self.properlySetup:
         return
 
-    instructions = self.instructions
     inventory = self.inventory
-    settings = self.settings
-    spaceEscaped = settings.spaceEscaped
 
-    total = 0
-    ins = 0
+    nEnt = len(inventory)
+    totalHits = 0
 
-    for eid, info in sorted(instructions.items()):
-        name = info[&#34;name&#34;]
-        kind = info[&#34;kind&#34;]
-        occSpecs = info[&#34;occSpecs&#34;]
+    headLine = &#34;{totalHits} x of {nEnt} entities&#34;
+    lines = []
 
-        for occSpec in occSpecs:
-            matches = inventory.get(
-                toTokens(occSpec, spaceEscaped=spaceEscaped), None
+    n = 0
+
+    for (eid, kind), data in sorted(inventory.items()):
+        if localOnly and all(path == () for path in data):
+            continue
+
+        n += 1
+
+        entityHits = 0
+
+        entHeadLine = &#34;{entityHits} x {kind} {eid}&#34;
+        eLines = []
+
+        isOnePath = len(data) == 1
+
+        for path, info in sorted(data.items()):
+            name = info[&#34;name&#34;]
+            pathRep = &#34;.&#34;.join(path)
+            localHeadLine = (
+                f&#34;[{pathRep}]: {name}&#34;
+                if isOnePath
+                else &#34;{localHits} x [{pathRep}]: {name}&#34;
             )
-            if matches is None:
-                continue
-            n = len(matches)
-            total += n
-            if expanded or ins &lt; 10:
-                console(f&#34;{eid:&lt;24} {kind:&lt;5} {occSpec:&lt;20} {n:&gt;5} x {name}&#34;)
-                ins += 1
+            llines = []
 
-    console(f&#34;Total {total}&#34;)</code></pre>
+            hits = info[&#34;hits&#34;]
+            localHits = 0
+
+            isOneQ = len(hits) == 1
+
+            for q, occs in sorted(hits.items()):
+                qRep = &#34;(&#34; + &#34; &#34;.join(q) + &#34;)&#34;
+                nOccs = len(occs)
+                localHits += nOccs
+
+                if isOneQ:
+                    localHeadLine += f&#34;: {nOccs} x {qRep}&#34;
+                else:
+                    llines.append(f&#34;    {nOccs} x {qRep}&#34;)
+
+            entityHits += localHits
+
+            if isOnePath:
+                entHeadLine += localHeadLine
+            else:
+                eLines.append(
+                    localHeadLine.format(
+                        pathRep=pathRep, name=name, localHits=localHits
+                    )
+                )
+            eLines.extend(llines)
+
+        totalHits += entityHits
+
+        if expanded or n &lt;= 10:
+            lines.append(
+                entHeadLine.format(kind=kind, eid=eid, entityHits=entityHits)
+            )
+            lines.extend(eLines)
+
+    console(headLine.format(nEnt=nEnt, totalHits=totalHits))
+
+    for line in lines:
+        console(line)</code></pre>
 </details>
 </dd>
 </dl>
@@ -1099,6 +1210,7 @@ of which they are surface forms.</p></div>
 <li><code><a title="tf.browser.ner.annotate.Annotate.getContext" href="corpus.html#tf.browser.ner.corpus.Corpus.getContext">getContext</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.getEntityNodes" href="corpus.html#tf.browser.ner.corpus.Corpus.getEntityNodes">getEntityNodes</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.getFVal" href="corpus.html#tf.browser.ner.corpus.Corpus.getFVal">getFVal</a></code></li>
+<li><code><a title="tf.browser.ner.annotate.Annotate.getHeadings" href="corpus.html#tf.browser.ner.corpus.Corpus.getHeadings">getHeadings</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.getSetData" href="sets.html#tf.browser.ner.sets.Sets.getSetData">getSetData</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.getSlots" href="corpus.html#tf.browser.ner.corpus.Corpus.getSlots">getSlots</a></code></li>
 <li><code><a title="tf.browser.ner.annotate.Annotate.getStr" href="corpus.html#tf.browser.ner.corpus.Corpus.getStr">getStr</a></code></li>
