@@ -4140,16 +4140,33 @@ INDEX=[
 "func":1
 },
 {
-"ref":"tf.browser.ner.triggers.Triggers.showInheritance",
+"ref":"tf.browser.ner.triggers.Triggers.showRaw",
 "url":98,
 "doc":"",
 "func":1
 },
 {
-"ref":"tf.browser.ner.triggers.Triggers.showRawInfo",
+"ref":"tf.browser.ner.triggers.Triggers.showCombined",
 "url":98,
 "doc":"",
 "func":1
+},
+{
+"ref":"tf.browser.ner.triggers.Triggers.showCompiled",
+"url":98,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.ner.triggers.Triggers.showInstructions",
+"url":98,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.ner.triggers.Triggers.nameMap",
+"url":98,
+"doc":"Will contain a mapping from entities to names. The entities are keyed by their (eid, kind) tuple. The values are names plus the sheet where they are first defined."
 },
 {
 "ref":"tf.browser.ner.triggers.Triggers.instructions",
@@ -4846,7 +4863,7 @@ INDEX=[
 {
 "ref":"tf.browser.ner.ner.NER.showInventory",
 "url":108,
-"doc":"Shows the inventory. The surface forms in the inventory are put into the context of the entities of which they are surface forms.",
+"doc":"Shows the inventory.",
 "func":1
 },
 {
@@ -5580,9 +5597,14 @@ INDEX=[
 "doc":"Auxiliary functions. To see how this fits among all the modules of this package, see  tf.browser.ner.annotate . \u2039\u203a"
 },
 {
-"ref":"tf.browser.ner.helpers.CUT_OFF",
+"ref":"tf.browser.ner.helpers.PART_CUT_OFF",
 "url":109,
 "doc":"Maximum length of parts of entity identifiers."
+},
+{
+"ref":"tf.browser.ner.helpers.CUT_OFF",
+"url":109,
+"doc":"Maximum length of entity identifiers."
 },
 {
 "ref":"tf.browser.ner.helpers.TO_ASCII_DEF",
@@ -5599,6 +5621,18 @@ INDEX=[
 "ref":"tf.browser.ner.helpers.toTokens",
 "url":109,
 "doc":"Split a text into tokens. The text is split on white-space. Tokens are further split into maximal segments of word characters and individual non-word characters. Parameters      spaceEscaped: boolean, optional False If True, it is assumed that if a  _ occurs in a token string, a space is meant.",
+"func":1
+},
+{
+"ref":"tf.browser.ner.helpers.fromTokens",
+"url":109,
+"doc":"The inverse of  toTokens() . Doing first toTokens and then fromTokens is idempotent. So if you have to revert back from tokens to text, make sure that you have done a combo of toTokens and fromTokens first. You can use  tnorm() for that.",
+"func":1
+},
+{
+"ref":"tf.browser.ner.helpers.tnorm",
+"url":109,
+"doc":"",
 "func":1
 },
 {
@@ -5651,6 +5685,12 @@ INDEX=[
 },
 {
 "ref":"tf.browser.ner.helpers.getPath",
+"url":109,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.ner.helpers.reportName",
 "url":109,
 "doc":"",
 "func":1
@@ -5967,7 +6007,7 @@ INDEX=[
 {
 "ref":"tf.browser.ner.match.occMatch",
 "url":110,
-"doc":"Finds the occurrences of multiple sequences of tokens in a single bucket. Parameters      getTokens: function See  tf.browser.ner.corpus.Corpus.getTokens getHeadings: function See  tf.browser.ner.corpus.Corpus.getHeadings buckets: tuple of integer The bucket nodes in question instructions: dict, optional None A nested dict, keyed by section headings, with trigger information per section. Generic trigger information is present under key    . The idea is that trigger info under nested keys override trigger info at parent keys. The value at a key is a dict with keys:  sheet : The information about the triggers;  qSeqs : The plain set of triggers; each trigger is a token sequence;  qMap : A compilation of all triggers into a mapping so that you can read off, given a position and a token, the set of all triggers that have that token at that position.",
+"doc":"Finds the occurrences of multiple sequences of tokens in a single bucket. Parameters      getTokens: function See  tf.browser.ner.corpus.Corpus.getTokens getHeadings: function See  tf.browser.ner.corpus.Corpus.getHeadings buckets: tuple of integer The bucket nodes in question instructions: dict, optional None A nested dict, keyed by section headings, with trigger information per section. Generic trigger information is present under key    . The idea is that trigger info under nested keys override trigger info at parent keys. The value at a key is a dict with keys:  sheet : The information about the triggers;  tPos : A compilation of all triggers into a mapping so that you can read off, given a position and a token, the set of all triggers that have that token at that position.",
 "func":1
 },
 {

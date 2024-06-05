@@ -196,7 +196,7 @@ slots.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/ner.py#L1-L446" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ae5107a6ad24501dc938f88c3273f62388790589/tf/browser/ner/ner.py#L1-L461" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;API for rule-based entity marking.
 
@@ -505,89 +505,104 @@ class NER(Annotate):
         app.indent(reset=True)
         app.info(&#34;Looking up occurrences of many candidates ...&#34;)
         self.findOccs()
-        app.info(&#34;Done&#34;)
+        inventory = self.inventory
+        nEnt = len(inventory)
+        totalHits = sum(
+            sum(
+                sum(len(x) for x in pathData.values())
+                for pathData in triggerData.values()
+            )
+            for triggerData in inventory.values()
+        )
+        console(f&#34;{totalHits} for {nEnt} entities&#34;)
 
-    def showInventory(self, expanded=False, localOnly=False):
-        &#34;&#34;&#34;Shows the inventory.
-
-        The surface forms in the inventory are put into the context of the entities
-        of which they are surface forms.
-        &#34;&#34;&#34;
+    def showInventory(self, expanded=False, localOnly=False, missingOnly=False):
+        &#34;&#34;&#34;Shows the inventory.&#34;&#34;&#34;
         if not self.properlySetup:
             return
 
+        Trig = self.Trig
+        nameMap = Trig.nameMap
         inventory = self.inventory
+        instructions = self.instructions
 
-        nEnt = len(inventory)
-        totalHits = 0
+        if not missingOnly:
+            i = 0
 
-        headLine = &#34;{totalHits} x of {nEnt} entities&#34;
-        lines = []
+            for eidkind, triggerData in sorted(inventory.items()):
+                i += 1
+                if not expanded and i &gt; 20:
+                    break
 
-        n = 0
+                entityHits = sum(
+                    sum(len(x) for x in pathData.values())
+                    for pathData in triggerData.values()
+                )
+                if localOnly:
+                    localHits = sum(
+                        sum(len(x) for (path, x) in pathData.items() if path != ())
+                        for pathData in triggerData.values()
+                    )
+                    if localHits == 0:
+                        continue
 
-        for (eid, kind), data in sorted(inventory.items()):
-            if localOnly and all(path == () for path in data):
+                name = nameMap[eidkind][0]
+                console(f&#34;{entityHits} x &#39;{name}&#39;&#34;)
+
+                for trigger, pathData in sorted(triggerData.items()):
+                    triggerHits = sum(len(x) for x in pathData.values())
+                    console(f&#34;    {triggerHits} x {trigger}&#34;)
+
+                    for path, occs in sorted(pathData.items()):
+                        pathHits = len(occs)
+                        pathRep = &#34;.&#34;.join(path)
+                        console(f&#34;        {pathHits} x from [{pathRep}]&#34;)
+
+        instructions = self.instructions
+        allTriggers = set()
+        notFound = []
+
+        for (path, data) in instructions.items():
+            sheet = data[&#34;sheet&#34;]
+            tMap = data[&#34;tMap&#34;]
+
+            for (eidkind, triggers) in sheet.items():
+                for trigger in triggers:
+                    tPath = tMap[trigger]
+                    allTriggers.add((eidkind, trigger, tPath))
+
+        i = 0
+
+        for e in sorted(allTriggers):
+            i += 1
+            if not expanded and i &gt; 20:
+                break
+
+            (eidkind, trigger, tPath) = e
+            entInfo = inventory.get(eidkind, None)
+
+            if entInfo is None:
+                notFound.append((&#34;E&#34;, e))
                 continue
 
-            n += 1
+            triggerInfo = entInfo.get(trigger, None)
 
-            entityHits = 0
+            if triggerInfo is None:
+                notFound.append((&#34;T&#34;, e))
+                continue
 
-            entHeadLine = &#34;{entityHits} x {kind} {eid}&#34;
-            eLines = []
+            pathInfo = triggerInfo.get(tPath, None)
 
-            isOnePath = len(data) == 1
+            if pathInfo is None:
+                notFound.append((&#34;P&#34;, e))
 
-            for path, info in sorted(data.items()):
-                name = info[&#34;name&#34;]
-                pathRep = &#34;.&#34;.join(path)
-                localHeadLine = (
-                    f&#34;[{pathRep}]: {name}&#34;
-                    if isOnePath
-                    else &#34;{localHits} x [{pathRep}]: {name}&#34;
-                )
-                llines = []
+        if len(notFound) == 0:
+            console(&#34;Found matches for all triggers&#34;)
+        else:
+            console(f&#34;{len(notFound)} triggers have no match:&#34;)
 
-                hits = info[&#34;hits&#34;]
-                localHits = 0
-
-                isOneQ = len(hits) == 1
-
-                for q, occs in sorted(hits.items()):
-                    qRep = &#34;(&#34; + &#34; &#34;.join(q) + &#34;)&#34;
-                    nOccs = len(occs)
-                    localHits += nOccs
-
-                    if isOneQ:
-                        localHeadLine += f&#34;: {nOccs} x {qRep}&#34;
-                    else:
-                        llines.append(f&#34;    {nOccs} x {qRep}&#34;)
-
-                entityHits += localHits
-
-                if isOnePath:
-                    entHeadLine += localHeadLine
-                else:
-                    eLines.append(
-                        localHeadLine.format(
-                            pathRep=pathRep, name=name, localHits=localHits
-                        )
-                    )
-                eLines.extend(llines)
-
-            totalHits += entityHits
-
-            if expanded or n &lt;= 10:
-                lines.append(
-                    entHeadLine.format(kind=kind, eid=eid, entityHits=entityHits)
-                )
-                lines.extend(eLines)
-
-        console(headLine.format(nEnt=nEnt, totalHits=totalHits))
-
-        for line in lines:
-            console(line)
+            for (label, (eidkind, trigger, tPath)) in notFound:
+                console(f&#34;{label} &#39;{nameMap[eidkind][0]}&#39; as &#39;{trigger}&#39; in {tPath}&#34;)
 
     def markEntities(self):
         &#34;&#34;&#34;Marks up the members of the inventory as entities.
@@ -674,7 +689,7 @@ by the Annotate class on which it is based.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/ner.py#L232-L446" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ae5107a6ad24501dc938f88c3273f62388790589/tf/browser/ner/ner.py#L232-L461" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Annotate):
     def __init__(self, app):
@@ -752,89 +767,104 @@ by the Annotate class on which it is based.</p>
         app.indent(reset=True)
         app.info(&#34;Looking up occurrences of many candidates ...&#34;)
         self.findOccs()
-        app.info(&#34;Done&#34;)
+        inventory = self.inventory
+        nEnt = len(inventory)
+        totalHits = sum(
+            sum(
+                sum(len(x) for x in pathData.values())
+                for pathData in triggerData.values()
+            )
+            for triggerData in inventory.values()
+        )
+        console(f&#34;{totalHits} for {nEnt} entities&#34;)
 
-    def showInventory(self, expanded=False, localOnly=False):
-        &#34;&#34;&#34;Shows the inventory.
-
-        The surface forms in the inventory are put into the context of the entities
-        of which they are surface forms.
-        &#34;&#34;&#34;
+    def showInventory(self, expanded=False, localOnly=False, missingOnly=False):
+        &#34;&#34;&#34;Shows the inventory.&#34;&#34;&#34;
         if not self.properlySetup:
             return
 
+        Trig = self.Trig
+        nameMap = Trig.nameMap
         inventory = self.inventory
+        instructions = self.instructions
 
-        nEnt = len(inventory)
-        totalHits = 0
+        if not missingOnly:
+            i = 0
 
-        headLine = &#34;{totalHits} x of {nEnt} entities&#34;
-        lines = []
+            for eidkind, triggerData in sorted(inventory.items()):
+                i += 1
+                if not expanded and i &gt; 20:
+                    break
 
-        n = 0
+                entityHits = sum(
+                    sum(len(x) for x in pathData.values())
+                    for pathData in triggerData.values()
+                )
+                if localOnly:
+                    localHits = sum(
+                        sum(len(x) for (path, x) in pathData.items() if path != ())
+                        for pathData in triggerData.values()
+                    )
+                    if localHits == 0:
+                        continue
 
-        for (eid, kind), data in sorted(inventory.items()):
-            if localOnly and all(path == () for path in data):
+                name = nameMap[eidkind][0]
+                console(f&#34;{entityHits} x &#39;{name}&#39;&#34;)
+
+                for trigger, pathData in sorted(triggerData.items()):
+                    triggerHits = sum(len(x) for x in pathData.values())
+                    console(f&#34;    {triggerHits} x {trigger}&#34;)
+
+                    for path, occs in sorted(pathData.items()):
+                        pathHits = len(occs)
+                        pathRep = &#34;.&#34;.join(path)
+                        console(f&#34;        {pathHits} x from [{pathRep}]&#34;)
+
+        instructions = self.instructions
+        allTriggers = set()
+        notFound = []
+
+        for (path, data) in instructions.items():
+            sheet = data[&#34;sheet&#34;]
+            tMap = data[&#34;tMap&#34;]
+
+            for (eidkind, triggers) in sheet.items():
+                for trigger in triggers:
+                    tPath = tMap[trigger]
+                    allTriggers.add((eidkind, trigger, tPath))
+
+        i = 0
+
+        for e in sorted(allTriggers):
+            i += 1
+            if not expanded and i &gt; 20:
+                break
+
+            (eidkind, trigger, tPath) = e
+            entInfo = inventory.get(eidkind, None)
+
+            if entInfo is None:
+                notFound.append((&#34;E&#34;, e))
                 continue
 
-            n += 1
+            triggerInfo = entInfo.get(trigger, None)
 
-            entityHits = 0
+            if triggerInfo is None:
+                notFound.append((&#34;T&#34;, e))
+                continue
 
-            entHeadLine = &#34;{entityHits} x {kind} {eid}&#34;
-            eLines = []
+            pathInfo = triggerInfo.get(tPath, None)
 
-            isOnePath = len(data) == 1
+            if pathInfo is None:
+                notFound.append((&#34;P&#34;, e))
 
-            for path, info in sorted(data.items()):
-                name = info[&#34;name&#34;]
-                pathRep = &#34;.&#34;.join(path)
-                localHeadLine = (
-                    f&#34;[{pathRep}]: {name}&#34;
-                    if isOnePath
-                    else &#34;{localHits} x [{pathRep}]: {name}&#34;
-                )
-                llines = []
+        if len(notFound) == 0:
+            console(&#34;Found matches for all triggers&#34;)
+        else:
+            console(f&#34;{len(notFound)} triggers have no match:&#34;)
 
-                hits = info[&#34;hits&#34;]
-                localHits = 0
-
-                isOneQ = len(hits) == 1
-
-                for q, occs in sorted(hits.items()):
-                    qRep = &#34;(&#34; + &#34; &#34;.join(q) + &#34;)&#34;
-                    nOccs = len(occs)
-                    localHits += nOccs
-
-                    if isOneQ:
-                        localHeadLine += f&#34;: {nOccs} x {qRep}&#34;
-                    else:
-                        llines.append(f&#34;    {nOccs} x {qRep}&#34;)
-
-                entityHits += localHits
-
-                if isOnePath:
-                    entHeadLine += localHeadLine
-                else:
-                    eLines.append(
-                        localHeadLine.format(
-                            pathRep=pathRep, name=name, localHits=localHits
-                        )
-                    )
-                eLines.extend(llines)
-
-            totalHits += entityHits
-
-            if expanded or n &lt;= 10:
-                lines.append(
-                    entHeadLine.format(kind=kind, eid=eid, entityHits=entityHits)
-                )
-                lines.extend(eLines)
-
-        console(headLine.format(nEnt=nEnt, totalHits=totalHits))
-
-        for line in lines:
-            console(line)
+            for (label, (eidkind, trigger, tPath)) in notFound:
+                console(f&#34;{label} &#39;{nameMap[eidkind][0]}&#39; as &#39;{trigger}&#39; in {tPath}&#34;)
 
     def markEntities(self):
         &#34;&#34;&#34;Marks up the members of the inventory as entities.
@@ -928,7 +958,7 @@ with this string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/ner.py#L437-L446" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ae5107a6ad24501dc938f88c3273f62388790589/tf/browser/ner/ner.py#L452-L461" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def bakeEntities(self, versionExtension=&#34;e&#34;):
     &#34;&#34;&#34;Bakes the entities of the current set as nodes into a new TF data source.
@@ -955,7 +985,7 @@ slot sequences where those token sequences occur in the corpus.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/ner.py#L287-L308" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ae5107a6ad24501dc938f88c3273f62388790589/tf/browser/ner/ner.py#L287-L317" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeInventory(self):
     &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
@@ -978,7 +1008,16 @@ slot sequences where those token sequences occur in the corpus.</p></div>
     app.indent(reset=True)
     app.info(&#34;Looking up occurrences of many candidates ...&#34;)
     self.findOccs()
-    app.info(&#34;Done&#34;)</code></pre>
+    inventory = self.inventory
+    nEnt = len(inventory)
+    totalHits = sum(
+        sum(
+            sum(len(x) for x in pathData.values())
+            for pathData in triggerData.values()
+        )
+        for triggerData in inventory.values()
+    )
+    console(f&#34;{totalHits} for {nEnt} entities&#34;)</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.ner.NER.markEntities"><code class="name flex">
@@ -993,7 +1032,7 @@ If there is no inventory yet, it will be created.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/ner.py#L392-L435" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ae5107a6ad24501dc938f88c3273f62388790589/tf/browser/ner/ner.py#L407-L450" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def markEntities(self):
     &#34;&#34;&#34;Marks up the members of the inventory as entities.
@@ -1058,7 +1097,7 @@ containing more specialized trigger specs: per section level.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/ner.py#L260-L285" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ae5107a6ad24501dc938f88c3273f62388790589/tf/browser/ner/ner.py#L260-L285" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readInstructions(self, sheetName):
     &#34;&#34;&#34;Reads the trigger specifications.
@@ -1089,98 +1128,102 @@ containing more specialized trigger specs: per section level.</dd>
 </details>
 </dd>
 <dt id="tf.browser.ner.ner.NER.showInventory"><code class="name flex">
-<span>def <span class="ident">showInventory</span></span>(<span>self, expanded=False, localOnly=False)</span>
+<span>def <span class="ident">showInventory</span></span>(<span>self, expanded=False, localOnly=False, missingOnly=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Shows the inventory.</p>
-<p>The surface forms in the inventory are put into the context of the entities
-of which they are surface forms.</p></div>
+<div class="desc"><p>Shows the inventory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/ner.py#L310-L390" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ae5107a6ad24501dc938f88c3273f62388790589/tf/browser/ner/ner.py#L319-L405" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def showInventory(self, expanded=False, localOnly=False):
-    &#34;&#34;&#34;Shows the inventory.
-
-    The surface forms in the inventory are put into the context of the entities
-    of which they are surface forms.
-    &#34;&#34;&#34;
+<pre><code class="python">def showInventory(self, expanded=False, localOnly=False, missingOnly=False):
+    &#34;&#34;&#34;Shows the inventory.&#34;&#34;&#34;
     if not self.properlySetup:
         return
 
+    Trig = self.Trig
+    nameMap = Trig.nameMap
     inventory = self.inventory
+    instructions = self.instructions
 
-    nEnt = len(inventory)
-    totalHits = 0
+    if not missingOnly:
+        i = 0
 
-    headLine = &#34;{totalHits} x of {nEnt} entities&#34;
-    lines = []
+        for eidkind, triggerData in sorted(inventory.items()):
+            i += 1
+            if not expanded and i &gt; 20:
+                break
 
-    n = 0
+            entityHits = sum(
+                sum(len(x) for x in pathData.values())
+                for pathData in triggerData.values()
+            )
+            if localOnly:
+                localHits = sum(
+                    sum(len(x) for (path, x) in pathData.items() if path != ())
+                    for pathData in triggerData.values()
+                )
+                if localHits == 0:
+                    continue
 
-    for (eid, kind), data in sorted(inventory.items()):
-        if localOnly and all(path == () for path in data):
+            name = nameMap[eidkind][0]
+            console(f&#34;{entityHits} x &#39;{name}&#39;&#34;)
+
+            for trigger, pathData in sorted(triggerData.items()):
+                triggerHits = sum(len(x) for x in pathData.values())
+                console(f&#34;    {triggerHits} x {trigger}&#34;)
+
+                for path, occs in sorted(pathData.items()):
+                    pathHits = len(occs)
+                    pathRep = &#34;.&#34;.join(path)
+                    console(f&#34;        {pathHits} x from [{pathRep}]&#34;)
+
+    instructions = self.instructions
+    allTriggers = set()
+    notFound = []
+
+    for (path, data) in instructions.items():
+        sheet = data[&#34;sheet&#34;]
+        tMap = data[&#34;tMap&#34;]
+
+        for (eidkind, triggers) in sheet.items():
+            for trigger in triggers:
+                tPath = tMap[trigger]
+                allTriggers.add((eidkind, trigger, tPath))
+
+    i = 0
+
+    for e in sorted(allTriggers):
+        i += 1
+        if not expanded and i &gt; 20:
+            break
+
+        (eidkind, trigger, tPath) = e
+        entInfo = inventory.get(eidkind, None)
+
+        if entInfo is None:
+            notFound.append((&#34;E&#34;, e))
             continue
 
-        n += 1
+        triggerInfo = entInfo.get(trigger, None)
 
-        entityHits = 0
+        if triggerInfo is None:
+            notFound.append((&#34;T&#34;, e))
+            continue
 
-        entHeadLine = &#34;{entityHits} x {kind} {eid}&#34;
-        eLines = []
+        pathInfo = triggerInfo.get(tPath, None)
 
-        isOnePath = len(data) == 1
+        if pathInfo is None:
+            notFound.append((&#34;P&#34;, e))
 
-        for path, info in sorted(data.items()):
-            name = info[&#34;name&#34;]
-            pathRep = &#34;.&#34;.join(path)
-            localHeadLine = (
-                f&#34;[{pathRep}]: {name}&#34;
-                if isOnePath
-                else &#34;{localHits} x [{pathRep}]: {name}&#34;
-            )
-            llines = []
+    if len(notFound) == 0:
+        console(&#34;Found matches for all triggers&#34;)
+    else:
+        console(f&#34;{len(notFound)} triggers have no match:&#34;)
 
-            hits = info[&#34;hits&#34;]
-            localHits = 0
-
-            isOneQ = len(hits) == 1
-
-            for q, occs in sorted(hits.items()):
-                qRep = &#34;(&#34; + &#34; &#34;.join(q) + &#34;)&#34;
-                nOccs = len(occs)
-                localHits += nOccs
-
-                if isOneQ:
-                    localHeadLine += f&#34;: {nOccs} x {qRep}&#34;
-                else:
-                    llines.append(f&#34;    {nOccs} x {qRep}&#34;)
-
-            entityHits += localHits
-
-            if isOnePath:
-                entHeadLine += localHeadLine
-            else:
-                eLines.append(
-                    localHeadLine.format(
-                        pathRep=pathRep, name=name, localHits=localHits
-                    )
-                )
-            eLines.extend(llines)
-
-        totalHits += entityHits
-
-        if expanded or n &lt;= 10:
-            lines.append(
-                entHeadLine.format(kind=kind, eid=eid, entityHits=entityHits)
-            )
-            lines.extend(eLines)
-
-    console(headLine.format(nEnt=nEnt, totalHits=totalHits))
-
-    for line in lines:
-        console(line)</code></pre>
+        for (label, (eidkind, trigger, tPath)) in notFound:
+            console(f&#34;{label} &#39;{nameMap[eidkind][0]}&#39; as &#39;{trigger}&#39; in {tPath}&#34;)</code></pre>
 </details>
 </dd>
 </dl>

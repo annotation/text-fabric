@@ -34,7 +34,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/match.py#L1-L361" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ae5107a6ad24501dc938f88c3273f62388790589/tf/browser/ner/match.py#L1-L363" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Match functions.
 
@@ -43,10 +43,10 @@ To see how this fits among all the modules of this package, see
 &#34;&#34;&#34;
 
 from .settings import NONE
-from .helpers import getPath
+from .helpers import getPath, fromTokens
 
 
-def occMatch(getTokens, getHeadings, buckets, instructions):
+def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
     &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens in a single bucket.
 
     Parameters
@@ -66,9 +66,7 @@ def occMatch(getTokens, getHeadings, buckets, instructions):
 
         `sheet`: The information about the triggers;
 
-        `qSeqs`: The plain set of triggers; each trigger is a token sequence;
-
-        `qMap`: A compilation of all triggers into a mapping so that you can
+        `tPos`: A compilation of all triggers into a mapping so that you can
 
         read off, given a position and a token, the set of all triggers that
         have that token at that position.
@@ -80,14 +78,15 @@ def occMatch(getTokens, getHeadings, buckets, instructions):
     # at that position
 
     results = {}
+    shown = False
 
     for b in buckets:
         heading = getHeadings(b)
         path = getPath(heading, instructions)
         data = instructions[path]
-        qMap = data[&#34;qMap&#34;]
+        tPos = data[&#34;tPos&#34;]
+        tMap = data[&#34;tMap&#34;]
         idMap = data[&#34;idMap&#34;]
-        nameMap = data[&#34;nameMap&#34;]
 
         # compile the bucket into logical tokens
         bTokensAll = getTokens(b)
@@ -109,6 +108,9 @@ def occMatch(getTokens, getHeadings, buckets, instructions):
         bStrings = tuple(bStrings)
         nBStrings = len(bStrings)
 
+        if not shown and heading[0] == &#34;4&#34; and heading[1] == &#34;48&#34;:
+            shown = True
+
         # perform the search
         i = 0
 
@@ -120,7 +122,7 @@ def occMatch(getTokens, getHeadings, buckets, instructions):
             while i + j &lt; nBStrings:
                 k = i + j
                 sj = bStrings[k]
-                newCandidates = qMap.get(j, {}).get(sj, set())
+                newCandidates = tPos.get(j, {}).get(sj, set())
 
                 if candidateMatches is None:
                     candidateMatches = newCandidates
@@ -138,14 +140,14 @@ def occMatch(getTokens, getHeadings, buckets, instructions):
 
                 if len(resultMatches):
                     resultMatch = resultMatches[0]
+                    trigger = fromTokens(resultMatch, spaceEscaped=spaceEscaped)
+                    tPath = tMap[trigger]
                     firstT = bStringFirst[i]
                     lastT = bStringLast[i + m]
                     slots = tuple(range(firstT, lastT + 1))
-                    eidkind = idMap[resultMatch]
-                    name = nameMap[eidkind]
-                    dest = results.setdefault(eidkind, {}).setdefault(path, {})
-                    dest[&#34;name&#34;] = name
-                    destHits = dest.setdefault(&#34;hits&#34;, {}).setdefault(resultMatch, [])
+                    eidkind = idMap[trigger]
+                    dest = results.setdefault(eidkind, {}).setdefault(trigger, {})
+                    destHits = dest.setdefault(tPath, [])
                     destHits.append(slots)
                     break
 
@@ -200,7 +202,7 @@ def occMatchOld(getTokens, b, qSeqs, results):
         nTokens = len(qTokens)
 
         for i, s in enumerate(bStrings):
-            if qTokens != bStrings[i:i + nTokens]:
+            if qTokens != bStrings[i : i + nTokens]:
                 continue
 
             firstT = bStringFirst[i]
@@ -447,7 +449,7 @@ of its slot number (position) and string value;</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/match.py#L175-L361" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ae5107a6ad24501dc938f88c3273f62388790589/tf/browser/ner/match.py#L177-L363" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def entityMatch(
     entityIndex,
@@ -639,7 +641,7 @@ of its slot number (position) and string value;</li>
 </details>
 </dd>
 <dt id="tf.browser.ner.match.occMatch"><code class="name flex">
-<span>def <span class="ident">occMatch</span></span>(<span>getTokens, getHeadings, buckets, instructions)</span>
+<span>def <span class="ident">occMatch</span></span>(<span>getTokens, getHeadings, buckets, instructions, spaceEscaped)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Finds the occurrences of multiple sequences of tokens in a single bucket.</p>
@@ -659,8 +661,7 @@ The idea is that trigger info under nested keys override trigger info
 at parent keys.
 The value at a key is a dict with keys:</p>
 <p><code>sheet</code>: The information about the triggers;</p>
-<p><code>qSeqs</code>: The plain set of triggers; each trigger is a token sequence;</p>
-<p><code>qMap</code>: A compilation of all triggers into a mapping so that you can</p>
+<p><code>tPos</code>: A compilation of all triggers into a mapping so that you can</p>
 <p>read off, given a position and a token, the set of all triggers that
 have that token at that position.</p>
 </dd>
@@ -668,9 +669,9 @@ have that token at that position.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/match.py#L11-L117" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ae5107a6ad24501dc938f88c3273f62388790589/tf/browser/ner/match.py#L11-L119" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def occMatch(getTokens, getHeadings, buckets, instructions):
+<pre><code class="python">def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
     &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens in a single bucket.
 
     Parameters
@@ -690,9 +691,7 @@ have that token at that position.</p>
 
         `sheet`: The information about the triggers;
 
-        `qSeqs`: The plain set of triggers; each trigger is a token sequence;
-
-        `qMap`: A compilation of all triggers into a mapping so that you can
+        `tPos`: A compilation of all triggers into a mapping so that you can
 
         read off, given a position and a token, the set of all triggers that
         have that token at that position.
@@ -704,14 +703,15 @@ have that token at that position.</p>
     # at that position
 
     results = {}
+    shown = False
 
     for b in buckets:
         heading = getHeadings(b)
         path = getPath(heading, instructions)
         data = instructions[path]
-        qMap = data[&#34;qMap&#34;]
+        tPos = data[&#34;tPos&#34;]
+        tMap = data[&#34;tMap&#34;]
         idMap = data[&#34;idMap&#34;]
-        nameMap = data[&#34;nameMap&#34;]
 
         # compile the bucket into logical tokens
         bTokensAll = getTokens(b)
@@ -733,6 +733,9 @@ have that token at that position.</p>
         bStrings = tuple(bStrings)
         nBStrings = len(bStrings)
 
+        if not shown and heading[0] == &#34;4&#34; and heading[1] == &#34;48&#34;:
+            shown = True
+
         # perform the search
         i = 0
 
@@ -744,7 +747,7 @@ have that token at that position.</p>
             while i + j &lt; nBStrings:
                 k = i + j
                 sj = bStrings[k]
-                newCandidates = qMap.get(j, {}).get(sj, set())
+                newCandidates = tPos.get(j, {}).get(sj, set())
 
                 if candidateMatches is None:
                     candidateMatches = newCandidates
@@ -762,14 +765,14 @@ have that token at that position.</p>
 
                 if len(resultMatches):
                     resultMatch = resultMatches[0]
+                    trigger = fromTokens(resultMatch, spaceEscaped=spaceEscaped)
+                    tPath = tMap[trigger]
                     firstT = bStringFirst[i]
                     lastT = bStringLast[i + m]
                     slots = tuple(range(firstT, lastT + 1))
-                    eidkind = idMap[resultMatch]
-                    name = nameMap[eidkind]
-                    dest = results.setdefault(eidkind, {}).setdefault(path, {})
-                    dest[&#34;name&#34;] = name
-                    destHits = dest.setdefault(&#34;hits&#34;, {}).setdefault(resultMatch, [])
+                    eidkind = idMap[trigger]
+                    dest = results.setdefault(eidkind, {}).setdefault(trigger, {})
+                    destHits = dest.setdefault(tPath, [])
                     destHits.append(slots)
                     break
 
@@ -802,7 +805,7 @@ A single occurrence is represented as a tuple of slots.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/match.py#L120-L172" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ae5107a6ad24501dc938f88c3273f62388790589/tf/browser/ner/match.py#L122-L174" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def occMatchOld(getTokens, b, qSeqs, results):
     &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens in a single bucket.
@@ -849,7 +852,7 @@ A single occurrence is represented as a tuple of slots.</dd>
         nTokens = len(qTokens)
 
         for i, s in enumerate(bStrings):
-            if qTokens != bStrings[i:i + nTokens]:
+            if qTokens != bStrings[i : i + nTokens]:
                 continue
 
             firstT = bStringFirst[i]

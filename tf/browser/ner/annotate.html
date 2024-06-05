@@ -100,7 +100,7 @@ web &lt;-----&lt; Serve &lt;-----------------&lt; Annotate  &lt;-&lt; match
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/annotate.py#L1-L404" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ae5107a6ad24501dc938f88c3273f62388790589/tf/browser/ner/annotate.py#L1-L409" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Central Annotation object.
 
@@ -257,14 +257,19 @@ class Annotate(Sets, Show):
         if not self.properlySetup:
             return []
 
+        settings = self.settings
+        spaceEscaped = settings.spaceEscaped
         instructions = self.instructions
+
         setData = self.getSetData()
         getTokens = self.getTokens
         getHeadings = self.getHeadings
 
         buckets = setData.buckets or ()
 
-        self.inventory = occMatch(getTokens, getHeadings, buckets, instructions)
+        self.inventory = occMatch(
+            getTokens, getHeadings, buckets, instructions, spaceEscaped
+        )
 
     def filterContent(
         self,
@@ -552,7 +557,7 @@ browser. This will influence how results are reported back.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/annotate.py#L89-L404" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ae5107a6ad24501dc938f88c3273f62388790589/tf/browser/ner/annotate.py#L89-L409" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Annotate(Sets, Show):
     def __init__(self, app, data=None, browse=False):
@@ -621,14 +626,19 @@ browser. This will influence how results are reported back.</dd>
         if not self.properlySetup:
             return []
 
+        settings = self.settings
+        spaceEscaped = settings.spaceEscaped
         instructions = self.instructions
+
         setData = self.getSetData()
         getTokens = self.getTokens
         getHeadings = self.getHeadings
 
         buckets = setData.buckets or ()
 
-        self.inventory = occMatch(getTokens, getHeadings, buckets, instructions)
+        self.inventory = occMatch(
+            getTokens, getHeadings, buckets, instructions, spaceEscaped
+        )
 
     def filterContent(
         self,
@@ -979,7 +989,7 @@ of results.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/annotate.py#L165-L404" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ae5107a6ad24501dc938f88c3273f62388790589/tf/browser/ner/annotate.py#L170-L409" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def filterContent(
     self,
@@ -1242,7 +1252,7 @@ the value is the name of that entity in the context indicated by path.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b10a382e71d47f7058ff378d0201be598c3b6e1b/tf/browser/ner/annotate.py#L133-L163" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ae5107a6ad24501dc938f88c3273f62388790589/tf/browser/ner/annotate.py#L133-L168" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findOccs(self):
     &#34;&#34;&#34;Finds the occurrences of multiple triggers.
@@ -1267,14 +1277,19 @@ the value is the name of that entity in the context indicated by path.</p></div>
     if not self.properlySetup:
         return []
 
+    settings = self.settings
+    spaceEscaped = settings.spaceEscaped
     instructions = self.instructions
+
     setData = self.getSetData()
     getTokens = self.getTokens
     getHeadings = self.getHeadings
 
     buckets = setData.buckets or ()
 
-    self.inventory = occMatch(getTokens, getHeadings, buckets, instructions)</code></pre>
+    self.inventory = occMatch(
+        getTokens, getHeadings, buckets, instructions, spaceEscaped
+    )</code></pre>
 </details>
 </dd>
 </dl>
