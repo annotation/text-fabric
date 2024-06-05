@@ -5,10 +5,10 @@ To see how this fits among all the modules of this package, see
 """
 
 from .settings import NONE
-from .helpers import getPath
+from .helpers import getPath, fromTokens
 
 
-def occMatch(getTokens, getHeadings, buckets, instructions):
+def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
     """Finds the occurrences of multiple sequences of tokens in a single bucket.
 
     Parameters
@@ -28,9 +28,7 @@ def occMatch(getTokens, getHeadings, buckets, instructions):
 
         `sheet`: The information about the triggers;
 
-        `qSeqs`: The plain set of triggers; each trigger is a token sequence;
-
-        `qMap`: A compilation of all triggers into a mapping so that you can
+        `tPos`: A compilation of all triggers into a mapping so that you can
 
         read off, given a position and a token, the set of all triggers that
         have that token at that position.
@@ -42,14 +40,15 @@ def occMatch(getTokens, getHeadings, buckets, instructions):
     # at that position
 
     results = {}
+    shown = False
 
     for b in buckets:
         heading = getHeadings(b)
         path = getPath(heading, instructions)
         data = instructions[path]
-        qMap = data["qMap"]
+        tPos = data["tPos"]
+        tMap = data["tMap"]
         idMap = data["idMap"]
-        nameMap = data["nameMap"]
 
         # compile the bucket into logical tokens
         bTokensAll = getTokens(b)
@@ -71,6 +70,9 @@ def occMatch(getTokens, getHeadings, buckets, instructions):
         bStrings = tuple(bStrings)
         nBStrings = len(bStrings)
 
+        if not shown and heading[0] == "4" and heading[1] == "48":
+            shown = True
+
         # perform the search
         i = 0
 
@@ -82,7 +84,7 @@ def occMatch(getTokens, getHeadings, buckets, instructions):
             while i + j < nBStrings:
                 k = i + j
                 sj = bStrings[k]
-                newCandidates = qMap.get(j, {}).get(sj, set())
+                newCandidates = tPos.get(j, {}).get(sj, set())
 
                 if candidateMatches is None:
                     candidateMatches = newCandidates
@@ -100,14 +102,14 @@ def occMatch(getTokens, getHeadings, buckets, instructions):
 
                 if len(resultMatches):
                     resultMatch = resultMatches[0]
+                    trigger = fromTokens(resultMatch, spaceEscaped=spaceEscaped)
+                    tPath = tMap[trigger]
                     firstT = bStringFirst[i]
                     lastT = bStringLast[i + m]
                     slots = tuple(range(firstT, lastT + 1))
-                    eidkind = idMap[resultMatch]
-                    name = nameMap[eidkind]
-                    dest = results.setdefault(eidkind, {}).setdefault(path, {})
-                    dest["name"] = name
-                    destHits = dest.setdefault("hits", {}).setdefault(resultMatch, [])
+                    eidkind = idMap[trigger]
+                    dest = results.setdefault(eidkind, {}).setdefault(trigger, {})
+                    destHits = dest.setdefault(tPath, [])
                     destHits.append(slots)
                     break
 
@@ -162,7 +164,7 @@ def occMatchOld(getTokens, b, qSeqs, results):
         nTokens = len(qTokens)
 
         for i, s in enumerate(bStrings):
-            if qTokens != bStrings[i:i + nTokens]:
+            if qTokens != bStrings[i : i + nTokens]:
                 continue
 
             firstT = bStringFirst[i]

@@ -153,14 +153,19 @@ class Annotate(Sets, Show):
         if not self.properlySetup:
             return []
 
+        settings = self.settings
+        spaceEscaped = settings.spaceEscaped
         instructions = self.instructions
+
         setData = self.getSetData()
         getTokens = self.getTokens
         getHeadings = self.getHeadings
 
         buckets = setData.buckets or ()
 
-        self.inventory = occMatch(getTokens, getHeadings, buckets, instructions)
+        self.inventory = occMatch(
+            getTokens, getHeadings, buckets, instructions, spaceEscaped
+        )
 
     def filterContent(
         self,

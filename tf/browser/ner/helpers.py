@@ -8,6 +8,7 @@ To see how this fits among all the modules of this package, see
 import re
 import unicodedata
 
+from ...core.helpers import console
 from ..html import H
 
 from .settings import STYLES
@@ -16,8 +17,14 @@ from .settings import STYLES
 WHITE_RE = re.compile(r"""\s+""", re.S)
 NON_WORD = re.compile(r"""\W+""", re.S)
 
-CUT_OFF = 20
+PART_CUT_OFF = 8
 """Maximum length of parts of entity identifiers."""
+
+PREFIX_PART = 5
+SUFFIX_PART = PART_CUT_OFF - PREFIX_PART - 1
+
+CUT_OFF = 40
+"""Maximum length of entity identifiers."""
 
 TOKEN_RE = re.compile(r"""\w+|\W""")
 
@@ -59,6 +66,26 @@ def toTokens(text, spaceEscaped=False):
     return tuple(t for t in result if t != " ")
 
 
+def fromTokens(tokens, spaceEscaped=False):
+    """The inverse of `toTokens()`.
+
+    Doing first toTokens and then fromTokens is idempotent.
+    So if you have to revert back from tokens to text,
+    make sure that you have done a combo of toTokens and
+    fromTokens first.
+    You can use `tnorm()` for that.
+    """
+    return " ".join(
+        tuple(t.replace(" ", "_") for t in tokens) if spaceEscaped else tokens
+    )
+
+
+def tnorm(text, spaceEscaped=False):
+    return fromTokens(
+        toTokens(text, spaceEscaped=spaceEscaped), spaceEscaped=spaceEscaped
+    )
+
+
 def toAscii(text):
     """Transforms a text with diacritical marks into a plain ASCII text.
 
@@ -97,16 +124,16 @@ def toSmallId(text, transform={}):
     n = 0
 
     for part in parts:
-        if len(part) > CUT_OFF:
-            part = part[0:CUT_OFF]
+        if len(part) > PART_CUT_OFF:
+            part = part[0:PREFIX_PART] + "~" + part[-SUFFIX_PART:]
 
         nPart = len(part)
 
-        if n + nPart > CUT_OFF:
-            break
-
         result.append(part)
         n += nPart
+
+        if n > CUT_OFF:
+            break
 
     return ".".join(result)
 
@@ -251,3 +278,20 @@ def getPath(heading, instructions):
             return path
 
     return ()
+
+
+def reportName(eidkind, otherName, name):
+    if toId(otherName) == toId(name):
+        severity = "minor"
+        error = False
+    else:
+        severity = "major"
+        error = True
+
+    console(
+        f"{severity} name variant for {eidkind}:\n"
+        f"  first occurrence:            '{otherName}'"
+        f"  versus this sheet:           '{name}'\n",
+        error=error,
+    )
+    console(f"  will use the first name for {eidkind}")
