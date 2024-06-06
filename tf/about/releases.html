@@ -44,7 +44,7 @@ and in its top-level directory run the command:</strong></p>
 <h2 id="12">12</h2>
 <h3 id="125">12.5</h3>
 <h4 id="1251">12.5.1</h4>
-<p>2024-05-?? (Upcoming)</p>
+<p>2024-06-06</p>
 <ul>
 <li>
 <p>WATM production tweaks:</p>
@@ -61,6 +61,10 @@ This helps to keep published WATM fixed.</p>
 spreadsheets for the whole corpus, and for sections and subsections and ranges
 of them. The more specificly targeted spreadsheets override the more
 generally targeted ones.</p>
+<p>The lookup is also more efficient, and it prefers longer matches over shorter ones.</p>
+<p>After the lookup, a detailed tsv file is generated with details information about
+the hits: to which triggers in which spreadsheet they correspond, and how many
+are found in which paragraphs.</p>
 </li>
 </ul>
 <h4 id="1250">12.5.0</h4>
@@ -482,7 +486,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7d9f3f5a3ce7e037e0fa8fa92427aab66ddd523/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
