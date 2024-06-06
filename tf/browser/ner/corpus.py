@@ -45,10 +45,13 @@ class Corpus(Settings):
 
         self.appName = appName
         self.version = version
-        (specDir, annoDir) = annotateDir(app, TOOLKEY)
+
+        (specDir, annoDir, reportDir) = annotateDir(app, TOOLKEY)
+
         self.specDir = specDir
         self.annoDir = f"{annoDir}/{version}"
         self.sheetDir = f"{specDir}/specs"
+        self.reportBase = f"{reportDir}/{version}"
 
         super().__init__()
 

@@ -280,18 +280,6 @@ def getPath(heading, instructions):
     return ()
 
 
-def reportName(eidkind, otherName, name):
-    if toId(otherName) == toId(name):
-        severity = "minor"
-        error = False
-    else:
-        severity = "major"
-        error = True
-
-    console(
-        f"{severity} name variant for {eidkind}:\n"
-        f"  first occurrence:            '{otherName}'"
-        f"  versus this sheet:           '{name}'\n",
-        error=error,
-    )
-    console(f"  will use the first name for {eidkind}")
+def log(rh, msg, error=False):
+    console(msg, error=error)
+    rh.write(f"{msg}\n")

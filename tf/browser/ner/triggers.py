@@ -1,7 +1,7 @@
 import collections
 import re
 
-from .helpers import tnorm, normalize, toId, toSmallId, toTokens
+from .helpers import tnorm, normalize, toId, toSmallId, toTokens, log
 from ...core.helpers import console
 from ...core.files import dirContents
 
@@ -14,6 +14,7 @@ class Triggers:
     def __init__(self, Ner):
         self.loadXls = Ner.load_workbook
         self.sheetDir = Ner.sheetDir
+        self.reportDir = Ner.reportDir
         settings = Ner.settings
         self.spaceEscaped = settings.spaceEscaped
         self.transform = settings.transform
@@ -33,173 +34,217 @@ class Triggers:
         self.instructions = None
         """Will contain the information in a spreadsheet for marking up entities."""
 
-    def readXls(self, sheetRela):
+    def intake(self, sheetName):
+        """Read the spreadsheets and translate them in actionable data for search.
+
+        Parameters
+        ----------
+        sheetName: string
+            The base name of the sheet, without extension.
+            It is assume that a spreadsheet with that name and extension `.xlsx` exists
+            in the expected location.
+
+            Next to it a subdirectory of the same name may exist, which contains
+            additional spreadsheets and subdirectories that contain
+            increasingly specific tweaks on top of the base spreadsheet.
+        """
+        self.sheetName = sheetName
+        self.read()
+        self.combine()
+        self.compile()
+        self.prepare()
+
+    def read(self):
+        """Read all the spreadsheets, the main one and the tweaks.
+
+        Store the results in a hierarchy that mimicks the way they are organized in the
+        file system.
+        """
+        sheetName = self.sheetName
+        sheetDir = self.sheetDir
         loadXls = self.loadXls
         defaultKind = self.defaultKind
         transform = self.transform
-        sheetDir = self.sheetDir
         nameMap = self.nameMap
         spaceEscaped = self.spaceEscaped
 
-        sheetPath = f"{sheetDir}/{sheetRela}.xlsx"
+        reportDir = self.reportDir
+        reportFile = f"{reportDir}/read.txt"
+        rh = open(reportFile, "w")
+        log(rh, "Reading the spreadsheets")
 
-        wb = loadXls(sheetPath, data_only=True)
-        ws = wb.active
+        def readXls(sheetRela):
+            sep = "/" if sheetRela else ""
+            sheetRep = f"[{sheetRela}]"
 
-        (headRow, subHeadRow, *rows) = list(ws.rows)
-        rows = [row for row in rows if any(c.value for c in row)]
+            sheetPath = f"{sheetDir}/{sheetName}{sep}{sheetRela}.xlsx"
 
-        sheet = {}
+            wb = loadXls(sheetPath, data_only=True)
+            ws = wb.active
 
-        idFirstRow = {}
+            (headRow, subHeadRow, *rows) = list(ws.rows)
+            rows = [row for row in rows if any(c.value for c in row)]
 
-        for r, row in enumerate(ws.rows):
-            if r in {0, 1}:
-                continue
-            if not any(c.value for c in row):
-                continue
+            sheet = {}
 
-            (name, kind, triggerStr) = (normalize(row[i].value or "") for i in range(3))
-            triggers = (
-                set()
-                if not triggerStr
-                else {
-                    y
-                    for x in triggerStr.split(";")
-                    if (y := tnorm(x, spaceEscaped=spaceEscaped)) != ""
-                }
-            )
-            if not name:
-                name = list(triggers)[0] if triggers else ""
-                if name == "":
-                    if kind:
-                        console(
-                            f"{sheetRela} row {r + 1:>3}: {kind}: "
-                            "no entity name and no triggers"
-                        )
+            idFirstRow = {}
+
+            for r, row in enumerate(ws.rows):
+                if r in {0, 1}:
                     continue
-                else:
-                    console(
-                        f"{sheetRela} row {r + 1:>3}: {kind}: "
-                        f"no entity name, supplied synonym {name}"
+                if not any(c.value for c in row):
+                    continue
+
+                (name, kind, triggerStr) = (
+                    normalize(row[i].value or "") for i in range(3)
+                )
+                triggers = (
+                    set()
+                    if not triggerStr
+                    else {
+                        y
+                        for x in triggerStr.split(";")
+                        if (y := tnorm(x, spaceEscaped=spaceEscaped)) != ""
+                    }
+                )
+                if not name:
+                    name = list(triggers)[0] if triggers else ""
+                    if name == "":
+                        if kind:
+                            log(
+                                rh,
+                                f"{sheetRep} row {r + 1:>3}: {kind}: "
+                                "no entity name and no triggers",
+                            )
+                        continue
+                    else:
+                        log(
+                            rh,
+                            f"{sheetRep} row {r + 1:>3}: {kind}: "
+                            f"no entity name, supplied synonym {name}",
+                        )
+
+                if not kind:
+                    kind = defaultKind
+                    log(
+                        rh,
+                        f"{sheetRep} row {r + 1:>3}: "
+                        f"no kind name, supplied {defaultKind}",
                     )
 
-            if not kind:
-                kind = defaultKind
-                console(
-                    f"{sheetRela} row {r + 1:>3}: "
-                    f"no kind name, supplied {defaultKind}"
-                )
+                eid = toSmallId(name, transform=transform)
+                eidkind = (eid, kind)
+                firstRowEid = idFirstRow.get((eidkind), None)
 
-            eid = toSmallId(name, transform=transform)
-            eidkind = (eid, kind)
-            firstRowEid = idFirstRow.get((eidkind), None)
+                if firstRowEid is None:
+                    idFirstRow[eidkind] = (r, name)
+                    sheet[eidkind] = triggers
 
-            if firstRowEid is None:
-                idFirstRow[eidkind] = (r, name)
-                sheet[eidkind] = triggers
+                    prev = nameMap.get(eidkind, None)
 
-                prev = nameMap.get(eidkind, None)
+                    if prev is None:
+                        nameMap[eidkind] = (name, sheetRela)
+                    else:
+                        (prevName, prevSheet) = prev
 
-                if prev is None:
-                    nameMap[eidkind] = (name, sheetRela)
+                        if prevName != name:
+                            if toId(prevName) == toId(name):
+                                severity = "minor"
+                                error = False
+                            else:
+                                severity = "major"
+                                error = True
+
+                            log(
+                                rh,
+                                f"{sheetRep} {severity} name variant for {eidkind}:\n"
+                                f"  in {prevSheet:<30} : '{prevName}'\n"
+                                f"  in {sheetRep:<30} : '{name}'",
+                                error=error,
+                            )
+                            log(rh, f"  will use '{prevName}' for {eidkind}")
+
                 else:
-                    (prevName, prevSheet) = prev
+                    (firstRow, firstName) = firstRowEid
+                    if firstName == name:
+                        severity = "identical"
+                        error = False
+                    elif toId(firstName) == toId(name):
+                        severity = "minor variant in"
+                        error = False
+                    else:
+                        severity = "major variant in"
+                        error = True
 
-                    if prevName != name:
-                        if toId(prevName) == toId(name):
-                            severity = "minor"
-                            error = False
-                        else:
-                            severity = "major"
-                            error = True
+                    log(
+                        rh,
+                        f"{sheetRep} {severity} name for {eidkind}:\n"
+                        f"  in {firstRow + 1:<3} : '{firstName}'\n"
+                        f"  in {r + 1:<3} : '{name}'\n",
+                        error=error,
+                    )
+                    log(rh, f"  will merge triggers {triggers} with {sheet[eidkind]}")
+                    sheet[eidkind] |= triggers
 
-                        console(
-                            f"{severity} name variant for {eidkind}:\n"
-                            f"  in {prevSheet:<30} : '{prevName}'\n"
-                            f"  in {sheetRela:<30} : '{name}'",
-                            error=error,
-                        )
-                        console(f"  will use '{prevName}' for {eidkind}")
+            return sheet
 
-            else:
-                (firstRow, firstName) = firstRowEid
-                if firstName == name:
-                    severity = "identical"
-                    error = False
-                elif toId(firstName) == toId(name):
-                    severity = "minor variant in"
-                    error = False
-                else:
-                    severity = "major variant in"
-                    error = True
+        def readDir(sheetRela, level):
+            sheetRep = f"[{sheetRela}]"
+            sep = "/" if sheetRela else ""
 
-                console(
-                    f"{severity} name for {eidkind}:\n"
-                    f"  in {firstRow + 1:<3} : '{firstName}'\n"
-                    f"  in {r + 1:<3} : '{name}'\n",
-                    error=error,
-                )
-                console(f"  will merge triggers {triggers} with {sheet[eidkind]}")
-                sheet[eidkind] |= triggers
+            (files, dirs) = dirContents(f"{sheetDir}/{sheetName}{sep}{sheetRela}")
 
-        return sheet
+            sheetSingle = {}
+            sheetRange = {}
 
-    def readDir(self, sheetRela, level):
-        sheetDir = self.sheetDir
-        (files, dirs) = dirContents(f"{sheetDir}/{sheetRela}")
+            for file in files:
+                if file == DS_STORE:
+                    continue
 
-        sheetSingle = {}
-        sheetRange = {}
+                match = SHEET_RE.match(file)
+                if not match:
+                    log(rh, f"{sheetRep} contains unrecognized file {file}")
+                    continue
 
-        for file in files:
-            if file == DS_STORE:
-                continue
+                (start, end) = match.group(1, 2)
+                fileBase = f"{start}{end}"
 
-            match = SHEET_RE.match(file)
-            if not match:
-                console(f"{sheetRela} contains unrecognized file {file}")
-                continue
+                start = int(start)
+                end = int(end[1:]) if end else None
+                key = start if end is None else (start, end)
 
-            (start, end) = match.group(1, 2)
-            fileBase = f"{start}{end}"
+                sheetDest = sheetSingle if end is None else sheetRange
+                sheetDest[key] = readXls(f"{sheetRela}/{fileBase}")
 
-            start = int(start)
-            end = int(end[1:]) if end else None
-            key = start if end is None else (start, end)
+            sheetSubdirs = {}
 
-            sheetDest = sheetSingle if end is None else sheetRange
-            sheetDest[key] = self.readXls(f"{sheetRela}/{fileBase}")
+            for dr in dirs:
+                if level >= 3:
+                    log(rh, f"{sheetRep} is at max depth, yet contains subdir {dr}")
+                    continue
 
-        sheetSubdirs = {}
+                if not dr.isdecimal():
+                    log(rh, f"{sheetRep} contains non-numeric subdir {dr}")
+                    continue
 
-        for dr in dirs:
-            if level >= 3:
-                console(f"{sheetRela} is at max depth, yet contains subdir {dr}")
-                continue
+                sheetSubdirs[int(dr)] = readDir(f"{sheetRela}{sep}{dr}", level + 1)
 
-            if not dr.isdecimal():
-                console(f"{sheetRela} contains non-numeric subdir {dr}")
-                continue
+            return dict(sng=sheetSingle, rng=sheetRange, sdr=sheetSubdirs)
 
-            sheetSubdirs[int(dr)] = self.readDir(f"{sheetRela}/{dr}", level + 1)
-
-        return dict(sng=sheetSingle, rng=sheetRange, sdr=sheetSubdirs)
-
-    def read(self, sheetName):
-        self.sheetName = sheetName
-
-        sheetMain = self.readXls(sheetName)
-        sheetSubdirs = self.readDir(sheetName, 1)
-
+        sheetMain = readXls("")
+        sheetSubdirs = readDir("", 1)
         self.raw = dict(main=sheetMain, sdr=sheetSubdirs)
-        self.compile()
+        rh.close()
 
-    def compile(self):
-        spaceEscaped = self.spaceEscaped
+    def combine(self):
+        """Combines the spreadsheet info in single-section spreadsheets.
+
+        Among the tweaks, there may be *ranged* spreadsheets, i.e. having the name
+        *start*`-`*end*, which indicate that they contain tweaks for sections
+        *start* to *end*. These will be converted to individual spreadsheet
+        *start*, *start + 1*, ..., *end - 1*, *end*.
+        """
         raw = self.raw
-        sheetName = self.sheetName
-        nameMap = self.nameMap
 
         sheetMain = raw["main"]
         sheetTweaked = raw["sdr"]
@@ -208,6 +253,8 @@ class Triggers:
 
         combined = dict(sheet=sheetMain, tweaks={})
         self.combined = combined
+
+        console("Combining the spreadsheets")
 
         def combineDir(data, dest):
             ranged = data.get("rng", {})
@@ -231,15 +278,28 @@ class Triggers:
 
         combineDir(sheetTweaked, combined["tweaks"])
 
-        # compile the info in tweaked sheets into complete sheets
-        # by applying overrides to copies of parent sheets;
-        # also collect additional data for the later computations:
-        # tMap:
-        #   remembers for each trigger the path to the spreadsheet
-        #   that provides the definition used in this sheet
+    def compile(self):
+        """Compiles the info in tweaked sheets into complete sheets.
+
+        For every tweak spreadsheet, a copy of its parent sheet will be made,
+        and the info of the tweak sheet will be applied to that copy,
+        adding to or overriding the parent sheet.
+
+        A sheet is basically a mapping of triggers to names.
+
+        We also maintain a mapping from tweak sheets to triggers, so that we can
+        know later on which sheet assigned which trigger to which name.
+
+        The tweak may remove triggers from the sheet. We have to adapt the tMap
+        for that.
+        """
+
+        combined = self.combined
 
         compiled = {}
         self.compiled = compiled
+
+        console("Compiling the spreadsheets")
 
         def compileSheet(path, parentData, data, dest):
             parentSheet = parentData["sheet"]
@@ -253,14 +313,16 @@ class Triggers:
             for eidkind, triggers in parentSheet.items():
                 newSheet[eidkind] = triggers
 
-            for trigger, p in parentTMap.items():
-                newTMap[trigger] = p
-
             for eidkind, triggers in sheet.items():
                 newSheet[eidkind] = triggers
 
                 for trigger in triggers:
                     newTMap[trigger] = tuple(str(k) for k in path)
+
+            for eidkind, triggers in newSheet.items():
+                for trigger in triggers:
+                    if trigger not in newTMap:
+                        newTMap[trigger] = parentTMap[trigger]
 
         def compileDir(path, parentData, data, dest):
             if "sheet" in data:
@@ -277,31 +339,87 @@ class Triggers:
 
         compileDir((), combined, combined, compiled)
 
-        # Now we have complete sheets for every context, the inheritance is resolved.
-        # We perform additional checks.
-        # We then generate instructions that will drive the search process.
-        # The instructions are stored in a dict, keyed by the path for which
-        # the instructions are valid.
+    def prepare(self):
+        """Transform the sheets into instructions.
+
+        Now we have complete sheets for every context, the inheritance is resolved.
+        Every sheet specifies a mapping from triggers to names, and remembers
+        which (possibly other) sheet mapped a specific trigger to its name.
+
+        We perform additional checks on the consistency and completeness of the
+        resulting sheets.
+
+        Then we generate instructions out of the sheets: data that the search
+        algorithm needs to do its work.
+
+        For each path to tweaked sheet we collect a portion of data:
+
+        *   `tPos`: a compilation of all triggers in the sheet, so that
+            we can search for them simultaneously;
+        *   `tMap`: a mapping from triggers to the path of the sheet that defined this
+            trigger;
+        *   `idMap`: a mapping from triggers their corresponding entities.
+
+        So every portion of data is addressed by a `path` key. This key is a tuple
+        of section/subsection/subsubsection heading.
+
+        By means of this key we can select the proper search instructions for specific
+        parts of the corpus.
+
+        About reporting:
+
+        We report the entities without triggers.
+        When we report the tweaks, only those triggerless entities are reported that
+        were not already triggerless in the main sheet.
+
+        We report the ambiguus triggers.
+        When we report the tweaks, only those triggers that are redefined in that tweak
+        are reported.
+        """
+
+        spaceEscaped = self.spaceEscaped
+        nameMap = self.nameMap
+        compiled = self.compiled
 
         instructions = {}
         self.instructions = instructions
 
-        diags = set()
+        reportDir = self.reportDir
+        reportFile = f"{reportDir}/check.tsv"
+
+        console("Checking the spreadsheets")
+
+        checkData = ["sheet\tentities\tnotriggers\ttriggers\tambiguous\n"]
+        ambiData = []
+        notrigData = []
+
+        mainNotrigData = set()
 
         def prepareSheet(path, info):
+            isMain = len(path) == 0
             sheet = info["sheet"]
             tMap = info["tMap"]
-            sheetRep = sheetName if path == () else ".".join(path)
+            sheetR = ".".join(path)
+            sheetRep = f"[{sheetR}]"
 
             triggerSet = set()
             tPos = collections.defaultdict(lambda: collections.defaultdict(set))
             idMap = collections.defaultdict(list)
 
-            data = dict(sheet=sheet, tPos=tPos, tMap=tMap)
+            data = dict(tPos=tPos, tMap=tMap)
 
             instructions[path] = data
 
             for eidkind, triggers in sheet.items():
+                if len(triggers) == 0:
+                    name = nameMap[eidkind][0]
+
+                    if isMain:
+                        mainNotrigData.add(name)
+                    else:
+                        if name not in mainNotrigData:
+                            notrigData.append((name, sheetR))
+
                 for trigger in triggers:
                     triggerT = toTokens(trigger, spaceEscaped=spaceEscaped)
                     triggerSet.add(triggerT)
@@ -311,47 +429,48 @@ class Triggers:
                 for i, token in enumerate(triggerT):
                     tPos[i][token].add(triggerT)
 
+            data["idMap"] = {
+                trigger: eidkinds[0] for (trigger, eidkinds) in idMap.items()
+            }
+
             nEnt = len(sheet)
             nTriggers = sum(len(triggers) for triggers in sheet.values())
             noTriggers = sum(1 for triggers in sheet.values() if len(triggers) == 0)
-            noTrigMsg = (
-                ""
-                if noTriggers == 0
-                else f", {noTriggers} without triggers;"
-            )
+            noTrigMsg = "" if noTriggers == 0 else f", {noTriggers} without triggers;"
 
             ambi = 0
             msgs = []
 
             for trigger, eidkinds in sorted(idMap.items()):
-                if len(eidkinds) == 1:
+                if len(eidkinds) <= 1:
                     continue
 
-                diag = (trigger, tuple(eidkinds))
+                tPath = tMap[trigger]
 
-                if diag not in diags:
-                    diags.add(diag)
-                    msgs.append(f"""  trigger '{trigger}' used for:""")
+                if path != tPath:
+                    continue
 
-                    for eidkind in eidkinds:
-                        msgs.append(f"\t{nameMap[eidkind][0]}")
+                msgs.append(f"""  trigger '{trigger}' used for:""")
+
+                for eidkind in eidkinds:
+                    name = nameMap[eidkind][0]
+                    msgs.append(f"\t{name}")
+
+                    ambiData.append((trigger, sheetR, name))
 
                 ambi += 1
 
             ambiMsg = "" if ambi == 0 else f", {ambi} ambiguous"
 
-            sheetMsg = f"Check {sheetRep}"
-            entMsg = f"Entities: {nEnt} {noTrigMsg}"
-            triggerMsg = f"Triggers: {nTriggers} {ambiMsg}"
+            entMsg = f"entities: {nEnt} {noTrigMsg}"
+            triggerMsg = f"triggers: {nTriggers} {ambiMsg}"
 
-            console(f"{sheetMsg:<25}: {entMsg:<35} {triggerMsg}")
+            console(f"{sheetRep:<25}: {entMsg:<35} {triggerMsg}")
 
             if len(msgs):
                 console("\n".join(msgs))
 
-            data["idMap"] = {
-                trigger: eidkinds[0] for (trigger, eidkinds) in idMap.items()
-            }
+            checkData.append(f"{sheetR}\t{nEnt}\t{noTriggers}\t{nTriggers}\t{ambi}\n")
 
         def prepareDir(path, data):
             if "sheet" in data:
@@ -363,6 +482,28 @@ class Triggers:
                 prepareDir(path + (str(k),), tweaks[k])
 
         prepareDir((), compiled)
+
+        with open(reportFile, "w") as rh:
+            for c in checkData:
+                rh.write(c)
+
+        notrigFile = f"{reportDir}/notriggers.tsv"
+
+        with open(notrigFile, "w") as nh:
+            nh.write("name\tsheet\n")
+
+            for name in sorted(mainNotrigData):
+                nh.write(f"{name}\t\n")
+            for (name, sheet) in sorted(notrigData):
+                nh.write(f"{name}\t{sheet}\n")
+
+        ambiFile = f"{reportDir}/ambitriggers.tsv"
+
+        with open(ambiFile, "w") as ah:
+            ah.write("trigger\tname\tsheet\n")
+
+            for (trigger, sheet, name) in sorted(ambiData):
+                ah.write(f"{trigger}\t{sheet}\t{name}\n")
 
     def showRaw(self, main=False):
         nameMap = self.nameMap

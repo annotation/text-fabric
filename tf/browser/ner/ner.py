@@ -121,8 +121,8 @@ A first step is to find out how many occurrences we find in the corpus for these
 surface forms:
 
 ``` python
-NE.makeInventory()
-NE.showInventory()
+NE.lookup()
+NE.showHits()
 ```
 
 and the output looks like this
@@ -221,11 +221,13 @@ Lines consist of tab separated fields:
     slots.
 
 """
+from textwrap import dedent
+import collections
 
 from ...capable import CheckImport
 from ...core.helpers import console
+from ...core.files import initTree
 from .annotate import Annotate
-from .helpers import toTokens
 from .triggers import Triggers
 
 
@@ -280,11 +282,19 @@ class NER(Annotate):
         if not self.properlySetup:
             return None
 
+        reportBase = self.reportBase
+        reportDir = f"{reportBase}/{sheetName}"
+        self.reportDir = reportDir
+
+        initTree(reportDir, fresh=False)
+
         Trig = Triggers(self)
-        Trig.read(sheetName)
         self.Trig = Trig
 
-    def makeInventory(self):
+        Trig.intake(sheetName)
+        self.instructions = Trig.instructions
+
+    def lookup(self):
         """Explores the corpus for the surface forms mentioned in the instructions.
 
         The instructions are present in the `instructions` attribute of the object.
@@ -298,111 +308,103 @@ class NER(Annotate):
         if not self.properlySetup:
             return
 
-        Trig = self.Trig
-        self.instructions = Trig.instructions
-
         app = self.app
         app.indent(reset=True)
         app.info("Looking up occurrences of many candidates ...")
         self.findOccs()
-        inventory = self.inventory
-        nEnt = len(inventory)
-        totalHits = sum(
-            sum(
-                sum(len(x) for x in pathData.values())
-                for pathData in triggerData.values()
-            )
-            for triggerData in inventory.values()
-        )
-        console(f"{totalHits} for {nEnt} entities")
+        self.reportHits()
 
-    def showInventory(self, expanded=False, localOnly=False, missingOnly=False):
-        """Shows the inventory."""
+    def reportHits(self):
+        """Reports the inventory."""
         if not self.properlySetup:
             return
 
+        getHeadings = self.getHeadings
         Trig = self.Trig
         nameMap = Trig.nameMap
         inventory = self.inventory
         instructions = self.instructions
 
-        if not missingOnly:
-            i = 0
+        reportDir = self.reportDir
+        reportFile = f"{reportDir}/hits.tsv"
 
-            for eidkind, triggerData in sorted(inventory.items()):
-                i += 1
-                if not expanded and i > 20:
-                    break
-
-                entityHits = sum(
-                    sum(len(x) for x in pathData.values())
-                    for pathData in triggerData.values()
-                )
-                if localOnly:
-                    localHits = sum(
-                        sum(len(x) for (path, x) in pathData.items() if path != ())
-                        for pathData in triggerData.values()
-                    )
-                    if localHits == 0:
-                        continue
-
-                name = nameMap[eidkind][0]
-                console(f"{entityHits} x '{name}'")
-
-                for trigger, pathData in sorted(triggerData.items()):
-                    triggerHits = sum(len(x) for x in pathData.values())
-                    console(f"    {triggerHits} x {trigger}")
-
-                    for path, occs in sorted(pathData.items()):
-                        pathHits = len(occs)
-                        pathRep = ".".join(path)
-                        console(f"        {pathHits} x from [{pathRep}]")
-
-        instructions = self.instructions
         allTriggers = set()
-        notFound = []
 
-        for (path, data) in instructions.items():
-            sheet = data["sheet"]
+        for path, data in instructions.items():
+            idMap = data["idMap"]
             tMap = data["tMap"]
 
-            for (eidkind, triggers) in sheet.items():
-                for trigger in triggers:
-                    tPath = tMap[trigger]
-                    allTriggers.add((eidkind, trigger, tPath))
+            for trigger, tPath in tMap.items():
+                eidkind = idMap[trigger]
+                name = nameMap[eidkind][0]
+                allTriggers.add((name, eidkind, trigger, tPath))
 
-        i = 0
+        hitData = []
+        names = set()
+        triggersSuccess = 0
 
         for e in sorted(allTriggers):
-            i += 1
-            if not expanded and i > 20:
-                break
+            (name, eidkind, trigger, tPath) = e
 
-            (eidkind, trigger, tPath) = e
+            names.add(name)
+
+            sheet = ".".join(tPath)
+            entry = (name, trigger, sheet)
+            section = ""
+            hits = ""
+
             entInfo = inventory.get(eidkind, None)
 
             if entInfo is None:
-                notFound.append(("E", e))
+                hitData.append(("!E", *entry, "", 0))
                 continue
 
             triggerInfo = entInfo.get(trigger, None)
 
             if triggerInfo is None:
-                notFound.append(("T", e))
+                hitData.append(("!T", *entry, "", 0))
                 continue
 
-            pathInfo = triggerInfo.get(tPath, None)
+            occs = triggerInfo.get(tPath, None)
 
-            if pathInfo is None:
-                notFound.append(("P", e))
+            if occs is None:
+                hitData.append(("!P", *entry, "", 0))
+                continue
 
-        if len(notFound) == 0:
-            console("Found matches for all triggers")
-        else:
-            console(f"{len(notFound)} triggers have no match:")
+            triggersSuccess += 1
+            sectionInfo = collections.Counter()
 
-            for (label, (eidkind, trigger, tPath)) in notFound:
-                console(f"{label} '{nameMap[eidkind][0]}' as '{trigger}' in {tPath}")
+            for slots in occs:
+                section = ".".join(getHeadings(slots[0]))
+                sectionInfo[section] += 1
+
+            for section, hits in sorted(sectionInfo.items()):
+                hitData.append(("OK", *entry, section, hits))
+
+        with open(reportFile, "w") as rh:
+            rh.write("label\tname\ttrigger\tsheet\tsection\thits\n")
+
+            for h in sorted(hitData):
+                line = "\t".join(str(c) for c in h)
+                rh.write(f"{line}\n")
+
+        nEnt = len(names)
+        nTriggers = len(allTriggers)
+        nHits = sum(e[-1] for e in hitData)
+
+        console(
+            dedent(
+                f"""
+                Entities targeted:       {nEnt:>5}
+                Triggers searched for:   {nTriggers:>5}
+                Triggers with hits:      {triggersSuccess:>5}
+                Triggers without hits:   {nTriggers - triggersSuccess:>5}
+                Total hits:              {nHits:>5}
+
+                All hits in report file: {reportFile}
+                """
+            )
+        )
 
     def markEntities(self):
         """Marks up the members of the inventory as entities.
@@ -417,35 +419,13 @@ class NER(Annotate):
             return
 
         inventory = self.inventory
-        instructions = self.instructions
-        settings = self.settings
-        spaceEscaped = settings.spaceEscaped
-        keywordFeatures = settings.keywordFeatures
-        kindFeature = keywordFeatures[0]
 
         newEntities = []
 
-        qSets = set()
-        fValsByQTokens = {}
-
-        for eid, info in instructions.items():
-            kind = info[kindFeature]
-
-            occSpecs = info.occSpecs
-            if not len(occSpecs):
-                continue
-
-            for occSpec in info.occSpecs:
-                qTokens = toTokens(occSpec, spaceEscaped=spaceEscaped)
-                fValsByQTokens.setdefault(qTokens, set()).add((eid, kind))
-                qSets.add(qTokens)
-
-        if self.inventory is None:
-            self.findOccs()
-
-        for qTokens, matches in inventory.items():
-            for fVals in fValsByQTokens[qTokens]:
-                newEntities.append((fVals, matches))
+        for (eidkind, entData) in inventory.items():
+            for (trigger, triggerData) in entData.items():
+                for matches in triggerData.values():
+                    newEntities.append((eidkind, matches))
 
         self.addEntities(newEntities, silent=False)
 
