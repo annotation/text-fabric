@@ -2010,7 +2010,7 @@ INDEX=[
 {
 "ref":"tf.core.files.annotateDir",
 "url":33,
-"doc":"Return the input and output directories for a specific annotation tool.  The input directory is located next to the TF data of the corpus  The output directory is located in the  _temp directory next to the TF data of the corpus Parameters      app: object the TF app tool: string The name of the annotation tool Returns    - string The path of the working directory for that tool and that corpus",
+"doc":"Return the input and output and report directories for a specific annotation tool.  The input directory is located next to the TF data of the corpus  The output directory is located in the  _temp directory next to the TF data of the corpus  The report directory is located in the  report directory next to the TF data of the corpus Parameters      app: object the TF app tool: string The name of the annotation tool Returns    - string The path of the working directory for that tool and that corpus",
 "func":1
 },
 {
@@ -4116,27 +4116,33 @@ INDEX=[
 "doc":""
 },
 {
-"ref":"tf.browser.ner.triggers.Triggers.readXls",
+"ref":"tf.browser.ner.triggers.Triggers.intake",
 "url":98,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.browser.ner.triggers.Triggers.readDir",
-"url":98,
-"doc":"",
+"doc":"Read the spreadsheets and translate them in actionable data for search. Parameters      sheetName: string The base name of the sheet, without extension. It is assume that a spreadsheet with that name and extension  .xlsx exists in the expected location. Next to it a subdirectory of the same name may exist, which contains additional spreadsheets and subdirectories that contain increasingly specific tweaks on top of the base spreadsheet.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.triggers.Triggers.read",
 "url":98,
-"doc":"",
+"doc":"Read all the spreadsheets, the main one and the tweaks. Store the results in a hierarchy that mimicks the way they are organized in the file system.",
+"func":1
+},
+{
+"ref":"tf.browser.ner.triggers.Triggers.combine",
+"url":98,
+"doc":"Combines the spreadsheet info in single-section spreadsheets. Among the tweaks, there may be  ranged spreadsheets, i.e. having the name  start - end , which indicate that they contain tweaks for sections  start to  end . These will be converted to individual spreadsheet  start ,  start + 1 ,  .,  end - 1 ,  end .",
 "func":1
 },
 {
 "ref":"tf.browser.ner.triggers.Triggers.compile",
 "url":98,
-"doc":"",
+"doc":"Compiles the info in tweaked sheets into complete sheets. For every tweak spreadsheet, a copy of its parent sheet will be made, and the info of the tweak sheet will be applied to that copy, adding to or overriding the parent sheet. A sheet is basically a mapping of triggers to names. We also maintain a mapping from tweak sheets to triggers, so that we can know later on which sheet assigned which trigger to which name. The tweak may remove triggers from the sheet. We have to adapt the tMap for that.",
+"func":1
+},
+{
+"ref":"tf.browser.ner.triggers.Triggers.prepare",
+"url":98,
+"doc":"Transform the sheets into instructions. Now we have complete sheets for every context, the inheritance is resolved. Every sheet specifies a mapping from triggers to names, and remembers which (possibly other) sheet mapped a specific trigger to its name. We perform additional checks on the consistency and completeness of the resulting sheets. Then we generate instructions out of the sheets: data that the search algorithm needs to do its work. For each path to tweaked sheet we collect a portion of data:   tPos : a compilation of all triggers in the sheet, so that we can search for them simultaneously;   tMap : a mapping from triggers to the path of the sheet that defined this trigger;   idMap : a mapping from triggers their corresponding entities. So every portion of data is addressed by a  path key. This key is a tuple of section/subsection/subsubsection heading. By means of this key we can select the proper search instructions for specific parts of the corpus. About reporting: We report the entities without triggers. When we report the tweaks, only those triggerless entities are reported that were not already triggerless in the main sheet. We report the ambiguus triggers. When we report the tweaks, only those triggers that are redefined in that tweak are reported.",
 "func":1
 },
 {
@@ -4841,7 +4847,7 @@ INDEX=[
 {
 "ref":"tf.browser.ner.ner",
 "url":108,
-"doc":"API for rule-based entity marking. This module contains the top-level methods for applying annotation rules to a corpus. To see how this fits among all the modules of this package, see  tf.browser.ner.annotate .  Programmatic annotation done in a Jupyter Notebook If you have a spreadsheet with named entities, and for each entity a list of surface forms, then this module takes care to read that spreadsheet, translate it to YAML, and then use the YAML as instructions to add entity annotations to the corpus. See this [example notebook](https: nbviewer.jupyter.org/github/HuygensING/suriano/blob/main/programs/ner.ipynb). Here are more details.  Starting up Load the relevant Python modules:  python from tf.app import use   Load your corpus. There are two ways:  Work with a local GitHub clone of the corpus in  ~/HuygensING/suriano : A = use(\"HuygensING/suriano:clone\", checkout=\"clone\")  Or let TF auto-download the latest version and work with that: A = use(\"HuygensING/suriano\") Load the  Ner module:  python NE = A.makeNer()   The tool expects some input data to be present: configuration and spreadsheets with instructions. They can be found in the  ner directory. If you work with a local GitHub clone, that data resides in  ~/github/HuygensING/suriano and if you work with an auto-downloaded copy of the data, it is in  ~/text-fabric-data/github/HuygensING/suriano . The output data of the tool ends up in the  _temp directory, which ends up next to the  ner directory.  The entity spreadsheets Here is an example: ![browser]( / /images/Annotate/spreadsheet.png) In our example, the name of the spreadsheet containing this information is  people.xlsx and it can be found as  ner/sheets/people.xlsx The spreadsheet will be read as follows:  the first two rows will be skipped  after that, each row is taken to describe exactly one entity  the first column has the full and unique name for that entity  the second column contains the kind of the entity (you may choose your keywords freely for this)  the third column contains a number of surface forms for this entity, separated by  ;  when the surface forms are peeled out, leading and trailing white-space will be stripped  all other columns will be ignored for the moment; in later versions we may use the information in those columns to fill in extra data about the entities; but probably that information will not end up in TF features. During translation from XLSX to YAML the following happens:  An identifier is distilled from the name of the entity;  Missing kind fields are filled with the default kind. These steps need some configuration information from the  ner/config.yaml file. Translation is done by  python NE.readInstructions(\"people\")   The resulting YAML ends up next to the spreadsheet, and it looks like this:  yaml christoffel.sticke: kind: PER name: Christoffel Sticke occSpecs: [] diederik.sticke: kind: PER name: Diederik Sticke occSpecs: - Dierck - Dirk dirck.hartog: kind: PER name: Dirck Hartog occSpecs: - Dirich Hartocson - Hertocson jan.baptist.roelants: kind: PER name: Jan-Baptist Roelants occSpecs: - Roelans - Rolans    Inventory A first step is to find out how many occurrences we find in the corpus for these surface forms:  python NE.makeInventory() NE.showInventory()   and the output looks like this    . cornelis.adriaensz PER Pach 7 x Cornelis Adriaensz. Pack david.marlot PER Morlot 1 x David de Marlot erick.dimmer PER Dimer 11 x Erick Dimmer erycius.puteanus PER Potiano 2 x Erycius Puteanus francesco.giustiniani PER Giustiniano 11 x Francesco Giustiniani francois.doubleth PER Doublet 2 x Fran\u00e7ois Doubleth  . Total 150   Entities that are in the spreadsheet, but not in the corpus are skipped.  Marking up In order to create annotations for these entities, we have to switch to an annotation set. Let's start a new set and give it the name  power .  python NE.setSet(\"power\")   If it turns out that  power has already annotations, and you want to clear them, say  python NE.resetSet(\"power\")   Now we are ready for the big thing: creating the annotations:  python NE.markEntities()   It outputs this message:   Already present: 0 x Added: 150 x    Inspection We now revert to lower-level methods from the  tf.browser.ner.annotate class to inspect some of the results.  python results = NE.filterContent(bFind=\"pach\", bFindC=False, anyEnt=True, showStats=None)   Here we filtered the chunks (paragraphs) to those that contain the string  pach , in a case-insensitive way, and that contain at least one entity. There 6 of them, and we can show them:  python NE.showContent(results)   ![browser]( / /images/Annotate/pach.png) The resulting entities are in  _temp/power/entities.tsv and look like this:   erick.dimmer PER 160196 isabella.clara.eugenia PER 142613 gaspar.iii.coligny PER 7877 isabella.clara.eugenia PER 210499 john.vere PER 94659 antonio.lando PER 267755 isabella.clara.eugenia PER 107069 isabella.clara.eugenia PER 9162 michiel.pagani PER 94366 isabella.clara.eugenia PER 179208 isabella.clara.eugenia PER 258933 hans.meinhard PER 75039  .   Each line corresponds to a marked entity occurrence. Lines consist of tab separated fields:  entity identifier  entity kind  remaining fields: slots, i.e. the textual positions occupied by the occurrence. Some entity occurrences consist of multiple words / tokens, hence have multiple slots."
+"doc":"API for rule-based entity marking. This module contains the top-level methods for applying annotation rules to a corpus. To see how this fits among all the modules of this package, see  tf.browser.ner.annotate .  Programmatic annotation done in a Jupyter Notebook If you have a spreadsheet with named entities, and for each entity a list of surface forms, then this module takes care to read that spreadsheet, translate it to YAML, and then use the YAML as instructions to add entity annotations to the corpus. See this [example notebook](https: nbviewer.jupyter.org/github/HuygensING/suriano/blob/main/programs/ner.ipynb). Here are more details.  Starting up Load the relevant Python modules:  python from tf.app import use   Load your corpus. There are two ways:  Work with a local GitHub clone of the corpus in  ~/HuygensING/suriano : A = use(\"HuygensING/suriano:clone\", checkout=\"clone\")  Or let TF auto-download the latest version and work with that: A = use(\"HuygensING/suriano\") Load the  Ner module:  python NE = A.makeNer()   The tool expects some input data to be present: configuration and spreadsheets with instructions. They can be found in the  ner directory. If you work with a local GitHub clone, that data resides in  ~/github/HuygensING/suriano and if you work with an auto-downloaded copy of the data, it is in  ~/text-fabric-data/github/HuygensING/suriano . The output data of the tool ends up in the  _temp directory, which ends up next to the  ner directory.  The entity spreadsheets Here is an example: ![browser]( / /images/Annotate/spreadsheet.png) In our example, the name of the spreadsheet containing this information is  people.xlsx and it can be found as  ner/sheets/people.xlsx The spreadsheet will be read as follows:  the first two rows will be skipped  after that, each row is taken to describe exactly one entity  the first column has the full and unique name for that entity  the second column contains the kind of the entity (you may choose your keywords freely for this)  the third column contains a number of surface forms for this entity, separated by  ;  when the surface forms are peeled out, leading and trailing white-space will be stripped  all other columns will be ignored for the moment; in later versions we may use the information in those columns to fill in extra data about the entities; but probably that information will not end up in TF features. During translation from XLSX to YAML the following happens:  An identifier is distilled from the name of the entity;  Missing kind fields are filled with the default kind. These steps need some configuration information from the  ner/config.yaml file. Translation is done by  python NE.readInstructions(\"people\")   The resulting YAML ends up next to the spreadsheet, and it looks like this:  yaml christoffel.sticke: kind: PER name: Christoffel Sticke occSpecs: [] diederik.sticke: kind: PER name: Diederik Sticke occSpecs: - Dierck - Dirk dirck.hartog: kind: PER name: Dirck Hartog occSpecs: - Dirich Hartocson - Hertocson jan.baptist.roelants: kind: PER name: Jan-Baptist Roelants occSpecs: - Roelans - Rolans    Inventory A first step is to find out how many occurrences we find in the corpus for these surface forms:  python NE.lookup() NE.showHits()   and the output looks like this    . cornelis.adriaensz PER Pach 7 x Cornelis Adriaensz. Pack david.marlot PER Morlot 1 x David de Marlot erick.dimmer PER Dimer 11 x Erick Dimmer erycius.puteanus PER Potiano 2 x Erycius Puteanus francesco.giustiniani PER Giustiniano 11 x Francesco Giustiniani francois.doubleth PER Doublet 2 x Fran\u00e7ois Doubleth  . Total 150   Entities that are in the spreadsheet, but not in the corpus are skipped.  Marking up In order to create annotations for these entities, we have to switch to an annotation set. Let's start a new set and give it the name  power .  python NE.setSet(\"power\")   If it turns out that  power has already annotations, and you want to clear them, say  python NE.resetSet(\"power\")   Now we are ready for the big thing: creating the annotations:  python NE.markEntities()   It outputs this message:   Already present: 0 x Added: 150 x    Inspection We now revert to lower-level methods from the  tf.browser.ner.annotate class to inspect some of the results.  python results = NE.filterContent(bFind=\"pach\", bFindC=False, anyEnt=True, showStats=None)   Here we filtered the chunks (paragraphs) to those that contain the string  pach , in a case-insensitive way, and that contain at least one entity. There 6 of them, and we can show them:  python NE.showContent(results)   ![browser]( / /images/Annotate/pach.png) The resulting entities are in  _temp/power/entities.tsv and look like this:   erick.dimmer PER 160196 isabella.clara.eugenia PER 142613 gaspar.iii.coligny PER 7877 isabella.clara.eugenia PER 210499 john.vere PER 94659 antonio.lando PER 267755 isabella.clara.eugenia PER 107069 isabella.clara.eugenia PER 9162 michiel.pagani PER 94366 isabella.clara.eugenia PER 179208 isabella.clara.eugenia PER 258933 hans.meinhard PER 75039  .   Each line corresponds to a marked entity occurrence. Lines consist of tab separated fields:  entity identifier  entity kind  remaining fields: slots, i.e. the textual positions occupied by the occurrence. Some entity occurrences consist of multiple words / tokens, hence have multiple slots."
 },
 {
 "ref":"tf.browser.ner.ner.NER",
@@ -4855,15 +4861,15 @@ INDEX=[
 "func":1
 },
 {
-"ref":"tf.browser.ner.ner.NER.makeInventory",
+"ref":"tf.browser.ner.ner.NER.lookup",
 "url":108,
 "doc":"Explores the corpus for the surface forms mentioned in the instructions. The instructions are present in the  instructions attribute of the object. The resulting inventory is stored in the  inventory member of the object. It is a dictionary, keyed by sequences of tokens, whose values are the slot sequences where those token sequences occur in the corpus.",
 "func":1
 },
 {
-"ref":"tf.browser.ner.ner.NER.showInventory",
+"ref":"tf.browser.ner.ner.NER.reportHits",
 "url":108,
-"doc":"Shows the inventory.",
+"doc":"Reports the inventory.",
 "func":1
 },
 {
@@ -5690,7 +5696,7 @@ INDEX=[
 "func":1
 },
 {
-"ref":"tf.browser.ner.helpers.reportName",
+"ref":"tf.browser.ner.helpers.log",
 "url":109,
 "doc":"",
 "func":1

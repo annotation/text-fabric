@@ -124,8 +124,8 @@ jan.baptist.roelants:
 <h2 id="inventory">Inventory</h2>
 <p>A first step is to find out how many occurrences we find in the corpus for these
 surface forms:</p>
-<pre><code class="language-python">NE.makeInventory()
-NE.showInventory()
+<pre><code class="language-python">NE.lookup()
+NE.showHits()
 </code></pre>
 <p>and the output looks like this</p>
 <pre><code>...
@@ -196,7 +196,7 @@ slots.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae5107a6ad24501dc938f88c3273f62388790589/tf/browser/ner/ner.py#L1-L461" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7d9f3f5a3ce7e037e0fa8fa92427aab66ddd523/tf/browser/ner/ner.py#L1-L441" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;API for rule-based entity marking.
 
@@ -321,8 +321,8 @@ A first step is to find out how many occurrences we find in the corpus for these
 surface forms:
 
 ``` python
-NE.makeInventory()
-NE.showInventory()
+NE.lookup()
+NE.showHits()
 ```
 
 and the output looks like this
@@ -421,11 +421,13 @@ Lines consist of tab separated fields:
     slots.
 
 &#34;&#34;&#34;
+from textwrap import dedent
+import collections
 
 from ...capable import CheckImport
 from ...core.helpers import console
+from ...core.files import initTree
 from .annotate import Annotate
-from .helpers import toTokens
 from .triggers import Triggers
 
 
@@ -480,11 +482,19 @@ class NER(Annotate):
         if not self.properlySetup:
             return None
 
+        reportBase = self.reportBase
+        reportDir = f&#34;{reportBase}/{sheetName}&#34;
+        self.reportDir = reportDir
+
+        initTree(reportDir, fresh=False)
+
         Trig = Triggers(self)
-        Trig.read(sheetName)
         self.Trig = Trig
 
-    def makeInventory(self):
+        Trig.intake(sheetName)
+        self.instructions = Trig.instructions
+
+    def lookup(self):
         &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
 
         The instructions are present in the `instructions` attribute of the object.
@@ -498,111 +508,103 @@ class NER(Annotate):
         if not self.properlySetup:
             return
 
-        Trig = self.Trig
-        self.instructions = Trig.instructions
-
         app = self.app
         app.indent(reset=True)
         app.info(&#34;Looking up occurrences of many candidates ...&#34;)
         self.findOccs()
-        inventory = self.inventory
-        nEnt = len(inventory)
-        totalHits = sum(
-            sum(
-                sum(len(x) for x in pathData.values())
-                for pathData in triggerData.values()
-            )
-            for triggerData in inventory.values()
-        )
-        console(f&#34;{totalHits} for {nEnt} entities&#34;)
+        self.reportHits()
 
-    def showInventory(self, expanded=False, localOnly=False, missingOnly=False):
-        &#34;&#34;&#34;Shows the inventory.&#34;&#34;&#34;
+    def reportHits(self):
+        &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
         if not self.properlySetup:
             return
 
+        getHeadings = self.getHeadings
         Trig = self.Trig
         nameMap = Trig.nameMap
         inventory = self.inventory
         instructions = self.instructions
 
-        if not missingOnly:
-            i = 0
+        reportDir = self.reportDir
+        reportFile = f&#34;{reportDir}/hits.tsv&#34;
 
-            for eidkind, triggerData in sorted(inventory.items()):
-                i += 1
-                if not expanded and i &gt; 20:
-                    break
-
-                entityHits = sum(
-                    sum(len(x) for x in pathData.values())
-                    for pathData in triggerData.values()
-                )
-                if localOnly:
-                    localHits = sum(
-                        sum(len(x) for (path, x) in pathData.items() if path != ())
-                        for pathData in triggerData.values()
-                    )
-                    if localHits == 0:
-                        continue
-
-                name = nameMap[eidkind][0]
-                console(f&#34;{entityHits} x &#39;{name}&#39;&#34;)
-
-                for trigger, pathData in sorted(triggerData.items()):
-                    triggerHits = sum(len(x) for x in pathData.values())
-                    console(f&#34;    {triggerHits} x {trigger}&#34;)
-
-                    for path, occs in sorted(pathData.items()):
-                        pathHits = len(occs)
-                        pathRep = &#34;.&#34;.join(path)
-                        console(f&#34;        {pathHits} x from [{pathRep}]&#34;)
-
-        instructions = self.instructions
         allTriggers = set()
-        notFound = []
 
-        for (path, data) in instructions.items():
-            sheet = data[&#34;sheet&#34;]
+        for path, data in instructions.items():
+            idMap = data[&#34;idMap&#34;]
             tMap = data[&#34;tMap&#34;]
 
-            for (eidkind, triggers) in sheet.items():
-                for trigger in triggers:
-                    tPath = tMap[trigger]
-                    allTriggers.add((eidkind, trigger, tPath))
+            for trigger, tPath in tMap.items():
+                eidkind = idMap[trigger]
+                name = nameMap[eidkind][0]
+                allTriggers.add((name, eidkind, trigger, tPath))
 
-        i = 0
+        hitData = []
+        names = set()
+        triggersSuccess = 0
 
         for e in sorted(allTriggers):
-            i += 1
-            if not expanded and i &gt; 20:
-                break
+            (name, eidkind, trigger, tPath) = e
 
-            (eidkind, trigger, tPath) = e
+            names.add(name)
+
+            sheet = &#34;.&#34;.join(tPath)
+            entry = (name, trigger, sheet)
+            section = &#34;&#34;
+            hits = &#34;&#34;
+
             entInfo = inventory.get(eidkind, None)
 
             if entInfo is None:
-                notFound.append((&#34;E&#34;, e))
+                hitData.append((&#34;!E&#34;, *entry, &#34;&#34;, 0))
                 continue
 
             triggerInfo = entInfo.get(trigger, None)
 
             if triggerInfo is None:
-                notFound.append((&#34;T&#34;, e))
+                hitData.append((&#34;!T&#34;, *entry, &#34;&#34;, 0))
                 continue
 
-            pathInfo = triggerInfo.get(tPath, None)
+            occs = triggerInfo.get(tPath, None)
 
-            if pathInfo is None:
-                notFound.append((&#34;P&#34;, e))
+            if occs is None:
+                hitData.append((&#34;!P&#34;, *entry, &#34;&#34;, 0))
+                continue
 
-        if len(notFound) == 0:
-            console(&#34;Found matches for all triggers&#34;)
-        else:
-            console(f&#34;{len(notFound)} triggers have no match:&#34;)
+            triggersSuccess += 1
+            sectionInfo = collections.Counter()
 
-            for (label, (eidkind, trigger, tPath)) in notFound:
-                console(f&#34;{label} &#39;{nameMap[eidkind][0]}&#39; as &#39;{trigger}&#39; in {tPath}&#34;)
+            for slots in occs:
+                section = &#34;.&#34;.join(getHeadings(slots[0]))
+                sectionInfo[section] += 1
+
+            for section, hits in sorted(sectionInfo.items()):
+                hitData.append((&#34;OK&#34;, *entry, section, hits))
+
+        with open(reportFile, &#34;w&#34;) as rh:
+            rh.write(&#34;label\tname\ttrigger\tsheet\tsection\thits\n&#34;)
+
+            for h in sorted(hitData):
+                line = &#34;\t&#34;.join(str(c) for c in h)
+                rh.write(f&#34;{line}\n&#34;)
+
+        nEnt = len(names)
+        nTriggers = len(allTriggers)
+        nHits = sum(e[-1] for e in hitData)
+
+        console(
+            dedent(
+                f&#34;&#34;&#34;
+                Entities targeted:       {nEnt:&gt;5}
+                Triggers searched for:   {nTriggers:&gt;5}
+                Triggers with hits:      {triggersSuccess:&gt;5}
+                Triggers without hits:   {nTriggers - triggersSuccess:&gt;5}
+                Total hits:              {nHits:&gt;5}
+
+                All hits in report file: {reportFile}
+                &#34;&#34;&#34;
+            )
+        )
 
     def markEntities(self):
         &#34;&#34;&#34;Marks up the members of the inventory as entities.
@@ -617,35 +619,13 @@ class NER(Annotate):
             return
 
         inventory = self.inventory
-        instructions = self.instructions
-        settings = self.settings
-        spaceEscaped = settings.spaceEscaped
-        keywordFeatures = settings.keywordFeatures
-        kindFeature = keywordFeatures[0]
 
         newEntities = []
 
-        qSets = set()
-        fValsByQTokens = {}
-
-        for eid, info in instructions.items():
-            kind = info[kindFeature]
-
-            occSpecs = info.occSpecs
-            if not len(occSpecs):
-                continue
-
-            for occSpec in info.occSpecs:
-                qTokens = toTokens(occSpec, spaceEscaped=spaceEscaped)
-                fValsByQTokens.setdefault(qTokens, set()).add((eid, kind))
-                qSets.add(qTokens)
-
-        if self.inventory is None:
-            self.findOccs()
-
-        for qTokens, matches in inventory.items():
-            for fVals in fValsByQTokens[qTokens]:
-                newEntities.append((fVals, matches))
+        for (eidkind, entData) in inventory.items():
+            for (trigger, triggerData) in entData.items():
+                for matches in triggerData.values():
+                    newEntities.append((eidkind, matches))
 
         self.addEntities(newEntities, silent=False)
 
@@ -689,7 +669,7 @@ by the Annotate class on which it is based.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae5107a6ad24501dc938f88c3273f62388790589/tf/browser/ner/ner.py#L232-L461" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7d9f3f5a3ce7e037e0fa8fa92427aab66ddd523/tf/browser/ner/ner.py#L234-L441" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Annotate):
     def __init__(self, app):
@@ -742,11 +722,19 @@ by the Annotate class on which it is based.</p>
         if not self.properlySetup:
             return None
 
+        reportBase = self.reportBase
+        reportDir = f&#34;{reportBase}/{sheetName}&#34;
+        self.reportDir = reportDir
+
+        initTree(reportDir, fresh=False)
+
         Trig = Triggers(self)
-        Trig.read(sheetName)
         self.Trig = Trig
 
-    def makeInventory(self):
+        Trig.intake(sheetName)
+        self.instructions = Trig.instructions
+
+    def lookup(self):
         &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
 
         The instructions are present in the `instructions` attribute of the object.
@@ -760,111 +748,103 @@ by the Annotate class on which it is based.</p>
         if not self.properlySetup:
             return
 
-        Trig = self.Trig
-        self.instructions = Trig.instructions
-
         app = self.app
         app.indent(reset=True)
         app.info(&#34;Looking up occurrences of many candidates ...&#34;)
         self.findOccs()
-        inventory = self.inventory
-        nEnt = len(inventory)
-        totalHits = sum(
-            sum(
-                sum(len(x) for x in pathData.values())
-                for pathData in triggerData.values()
-            )
-            for triggerData in inventory.values()
-        )
-        console(f&#34;{totalHits} for {nEnt} entities&#34;)
+        self.reportHits()
 
-    def showInventory(self, expanded=False, localOnly=False, missingOnly=False):
-        &#34;&#34;&#34;Shows the inventory.&#34;&#34;&#34;
+    def reportHits(self):
+        &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
         if not self.properlySetup:
             return
 
+        getHeadings = self.getHeadings
         Trig = self.Trig
         nameMap = Trig.nameMap
         inventory = self.inventory
         instructions = self.instructions
 
-        if not missingOnly:
-            i = 0
+        reportDir = self.reportDir
+        reportFile = f&#34;{reportDir}/hits.tsv&#34;
 
-            for eidkind, triggerData in sorted(inventory.items()):
-                i += 1
-                if not expanded and i &gt; 20:
-                    break
-
-                entityHits = sum(
-                    sum(len(x) for x in pathData.values())
-                    for pathData in triggerData.values()
-                )
-                if localOnly:
-                    localHits = sum(
-                        sum(len(x) for (path, x) in pathData.items() if path != ())
-                        for pathData in triggerData.values()
-                    )
-                    if localHits == 0:
-                        continue
-
-                name = nameMap[eidkind][0]
-                console(f&#34;{entityHits} x &#39;{name}&#39;&#34;)
-
-                for trigger, pathData in sorted(triggerData.items()):
-                    triggerHits = sum(len(x) for x in pathData.values())
-                    console(f&#34;    {triggerHits} x {trigger}&#34;)
-
-                    for path, occs in sorted(pathData.items()):
-                        pathHits = len(occs)
-                        pathRep = &#34;.&#34;.join(path)
-                        console(f&#34;        {pathHits} x from [{pathRep}]&#34;)
-
-        instructions = self.instructions
         allTriggers = set()
-        notFound = []
 
-        for (path, data) in instructions.items():
-            sheet = data[&#34;sheet&#34;]
+        for path, data in instructions.items():
+            idMap = data[&#34;idMap&#34;]
             tMap = data[&#34;tMap&#34;]
 
-            for (eidkind, triggers) in sheet.items():
-                for trigger in triggers:
-                    tPath = tMap[trigger]
-                    allTriggers.add((eidkind, trigger, tPath))
+            for trigger, tPath in tMap.items():
+                eidkind = idMap[trigger]
+                name = nameMap[eidkind][0]
+                allTriggers.add((name, eidkind, trigger, tPath))
 
-        i = 0
+        hitData = []
+        names = set()
+        triggersSuccess = 0
 
         for e in sorted(allTriggers):
-            i += 1
-            if not expanded and i &gt; 20:
-                break
+            (name, eidkind, trigger, tPath) = e
 
-            (eidkind, trigger, tPath) = e
+            names.add(name)
+
+            sheet = &#34;.&#34;.join(tPath)
+            entry = (name, trigger, sheet)
+            section = &#34;&#34;
+            hits = &#34;&#34;
+
             entInfo = inventory.get(eidkind, None)
 
             if entInfo is None:
-                notFound.append((&#34;E&#34;, e))
+                hitData.append((&#34;!E&#34;, *entry, &#34;&#34;, 0))
                 continue
 
             triggerInfo = entInfo.get(trigger, None)
 
             if triggerInfo is None:
-                notFound.append((&#34;T&#34;, e))
+                hitData.append((&#34;!T&#34;, *entry, &#34;&#34;, 0))
                 continue
 
-            pathInfo = triggerInfo.get(tPath, None)
+            occs = triggerInfo.get(tPath, None)
 
-            if pathInfo is None:
-                notFound.append((&#34;P&#34;, e))
+            if occs is None:
+                hitData.append((&#34;!P&#34;, *entry, &#34;&#34;, 0))
+                continue
 
-        if len(notFound) == 0:
-            console(&#34;Found matches for all triggers&#34;)
-        else:
-            console(f&#34;{len(notFound)} triggers have no match:&#34;)
+            triggersSuccess += 1
+            sectionInfo = collections.Counter()
 
-            for (label, (eidkind, trigger, tPath)) in notFound:
-                console(f&#34;{label} &#39;{nameMap[eidkind][0]}&#39; as &#39;{trigger}&#39; in {tPath}&#34;)
+            for slots in occs:
+                section = &#34;.&#34;.join(getHeadings(slots[0]))
+                sectionInfo[section] += 1
+
+            for section, hits in sorted(sectionInfo.items()):
+                hitData.append((&#34;OK&#34;, *entry, section, hits))
+
+        with open(reportFile, &#34;w&#34;) as rh:
+            rh.write(&#34;label\tname\ttrigger\tsheet\tsection\thits\n&#34;)
+
+            for h in sorted(hitData):
+                line = &#34;\t&#34;.join(str(c) for c in h)
+                rh.write(f&#34;{line}\n&#34;)
+
+        nEnt = len(names)
+        nTriggers = len(allTriggers)
+        nHits = sum(e[-1] for e in hitData)
+
+        console(
+            dedent(
+                f&#34;&#34;&#34;
+                Entities targeted:       {nEnt:&gt;5}
+                Triggers searched for:   {nTriggers:&gt;5}
+                Triggers with hits:      {triggersSuccess:&gt;5}
+                Triggers without hits:   {nTriggers - triggersSuccess:&gt;5}
+                Total hits:              {nHits:&gt;5}
+
+                All hits in report file: {reportFile}
+                &#34;&#34;&#34;
+            )
+        )
 
     def markEntities(self):
         &#34;&#34;&#34;Marks up the members of the inventory as entities.
@@ -879,35 +859,13 @@ by the Annotate class on which it is based.</p>
             return
 
         inventory = self.inventory
-        instructions = self.instructions
-        settings = self.settings
-        spaceEscaped = settings.spaceEscaped
-        keywordFeatures = settings.keywordFeatures
-        kindFeature = keywordFeatures[0]
 
         newEntities = []
 
-        qSets = set()
-        fValsByQTokens = {}
-
-        for eid, info in instructions.items():
-            kind = info[kindFeature]
-
-            occSpecs = info.occSpecs
-            if not len(occSpecs):
-                continue
-
-            for occSpec in info.occSpecs:
-                qTokens = toTokens(occSpec, spaceEscaped=spaceEscaped)
-                fValsByQTokens.setdefault(qTokens, set()).add((eid, kind))
-                qSets.add(qTokens)
-
-        if self.inventory is None:
-            self.findOccs()
-
-        for qTokens, matches in inventory.items():
-            for fVals in fValsByQTokens[qTokens]:
-                newEntities.append((fVals, matches))
+        for (eidkind, entData) in inventory.items():
+            for (trigger, triggerData) in entData.items():
+                for matches in triggerData.values():
+                    newEntities.append((eidkind, matches))
 
         self.addEntities(newEntities, silent=False)
 
@@ -958,7 +916,7 @@ with this string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae5107a6ad24501dc938f88c3273f62388790589/tf/browser/ner/ner.py#L452-L461" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7d9f3f5a3ce7e037e0fa8fa92427aab66ddd523/tf/browser/ner/ner.py#L432-L441" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def bakeEntities(self, versionExtension=&#34;e&#34;):
     &#34;&#34;&#34;Bakes the entities of the current set as nodes into a new TF data source.
@@ -972,8 +930,8 @@ with this string.</dd>
     self.consolidateEntities(versionExtension=versionExtension)</code></pre>
 </details>
 </dd>
-<dt id="tf.browser.ner.ner.NER.makeInventory"><code class="name flex">
-<span>def <span class="ident">makeInventory</span></span>(<span>self)</span>
+<dt id="tf.browser.ner.ner.NER.lookup"><code class="name flex">
+<span>def <span class="ident">lookup</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Explores the corpus for the surface forms mentioned in the instructions.</p>
@@ -985,9 +943,9 @@ slot sequences where those token sequences occur in the corpus.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae5107a6ad24501dc938f88c3273f62388790589/tf/browser/ner/ner.py#L287-L317" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7d9f3f5a3ce7e037e0fa8fa92427aab66ddd523/tf/browser/ner/ner.py#L297-L315" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def makeInventory(self):
+<pre><code class="python">def lookup(self):
     &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
 
     The instructions are present in the `instructions` attribute of the object.
@@ -1001,23 +959,11 @@ slot sequences where those token sequences occur in the corpus.</p></div>
     if not self.properlySetup:
         return
 
-    Trig = self.Trig
-    self.instructions = Trig.instructions
-
     app = self.app
     app.indent(reset=True)
     app.info(&#34;Looking up occurrences of many candidates ...&#34;)
     self.findOccs()
-    inventory = self.inventory
-    nEnt = len(inventory)
-    totalHits = sum(
-        sum(
-            sum(len(x) for x in pathData.values())
-            for pathData in triggerData.values()
-        )
-        for triggerData in inventory.values()
-    )
-    console(f&#34;{totalHits} for {nEnt} entities&#34;)</code></pre>
+    self.reportHits()</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.ner.NER.markEntities"><code class="name flex">
@@ -1032,7 +978,7 @@ If there is no inventory yet, it will be created.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae5107a6ad24501dc938f88c3273f62388790589/tf/browser/ner/ner.py#L407-L450" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7d9f3f5a3ce7e037e0fa8fa92427aab66ddd523/tf/browser/ner/ner.py#L409-L430" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def markEntities(self):
     &#34;&#34;&#34;Marks up the members of the inventory as entities.
@@ -1047,35 +993,13 @@ If there is no inventory yet, it will be created.</p></div>
         return
 
     inventory = self.inventory
-    instructions = self.instructions
-    settings = self.settings
-    spaceEscaped = settings.spaceEscaped
-    keywordFeatures = settings.keywordFeatures
-    kindFeature = keywordFeatures[0]
 
     newEntities = []
 
-    qSets = set()
-    fValsByQTokens = {}
-
-    for eid, info in instructions.items():
-        kind = info[kindFeature]
-
-        occSpecs = info.occSpecs
-        if not len(occSpecs):
-            continue
-
-        for occSpec in info.occSpecs:
-            qTokens = toTokens(occSpec, spaceEscaped=spaceEscaped)
-            fValsByQTokens.setdefault(qTokens, set()).add((eid, kind))
-            qSets.add(qTokens)
-
-    if self.inventory is None:
-        self.findOccs()
-
-    for qTokens, matches in inventory.items():
-        for fVals in fValsByQTokens[qTokens]:
-            newEntities.append((fVals, matches))
+    for (eidkind, entData) in inventory.items():
+        for (trigger, triggerData) in entData.items():
+            for matches in triggerData.values():
+                newEntities.append((eidkind, matches))
 
     self.addEntities(newEntities, silent=False)</code></pre>
 </details>
@@ -1097,7 +1021,7 @@ containing more specialized trigger specs: per section level.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae5107a6ad24501dc938f88c3273f62388790589/tf/browser/ner/ner.py#L260-L285" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7d9f3f5a3ce7e037e0fa8fa92427aab66ddd523/tf/browser/ner/ner.py#L262-L295" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readInstructions(self, sheetName):
     &#34;&#34;&#34;Reads the trigger specifications.
@@ -1122,108 +1046,120 @@ containing more specialized trigger specs: per section level.</dd>
     if not self.properlySetup:
         return None
 
+    reportBase = self.reportBase
+    reportDir = f&#34;{reportBase}/{sheetName}&#34;
+    self.reportDir = reportDir
+
+    initTree(reportDir, fresh=False)
+
     Trig = Triggers(self)
-    Trig.read(sheetName)
-    self.Trig = Trig</code></pre>
+    self.Trig = Trig
+
+    Trig.intake(sheetName)
+    self.instructions = Trig.instructions</code></pre>
 </details>
 </dd>
-<dt id="tf.browser.ner.ner.NER.showInventory"><code class="name flex">
-<span>def <span class="ident">showInventory</span></span>(<span>self, expanded=False, localOnly=False, missingOnly=False)</span>
+<dt id="tf.browser.ner.ner.NER.reportHits"><code class="name flex">
+<span>def <span class="ident">reportHits</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Shows the inventory.</p></div>
+<div class="desc"><p>Reports the inventory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ae5107a6ad24501dc938f88c3273f62388790589/tf/browser/ner/ner.py#L319-L405" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7d9f3f5a3ce7e037e0fa8fa92427aab66ddd523/tf/browser/ner/ner.py#L317-L407" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def showInventory(self, expanded=False, localOnly=False, missingOnly=False):
-    &#34;&#34;&#34;Shows the inventory.&#34;&#34;&#34;
+<pre><code class="python">def reportHits(self):
+    &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
     if not self.properlySetup:
         return
 
+    getHeadings = self.getHeadings
     Trig = self.Trig
     nameMap = Trig.nameMap
     inventory = self.inventory
     instructions = self.instructions
 
-    if not missingOnly:
-        i = 0
+    reportDir = self.reportDir
+    reportFile = f&#34;{reportDir}/hits.tsv&#34;
 
-        for eidkind, triggerData in sorted(inventory.items()):
-            i += 1
-            if not expanded and i &gt; 20:
-                break
-
-            entityHits = sum(
-                sum(len(x) for x in pathData.values())
-                for pathData in triggerData.values()
-            )
-            if localOnly:
-                localHits = sum(
-                    sum(len(x) for (path, x) in pathData.items() if path != ())
-                    for pathData in triggerData.values()
-                )
-                if localHits == 0:
-                    continue
-
-            name = nameMap[eidkind][0]
-            console(f&#34;{entityHits} x &#39;{name}&#39;&#34;)
-
-            for trigger, pathData in sorted(triggerData.items()):
-                triggerHits = sum(len(x) for x in pathData.values())
-                console(f&#34;    {triggerHits} x {trigger}&#34;)
-
-                for path, occs in sorted(pathData.items()):
-                    pathHits = len(occs)
-                    pathRep = &#34;.&#34;.join(path)
-                    console(f&#34;        {pathHits} x from [{pathRep}]&#34;)
-
-    instructions = self.instructions
     allTriggers = set()
-    notFound = []
 
-    for (path, data) in instructions.items():
-        sheet = data[&#34;sheet&#34;]
+    for path, data in instructions.items():
+        idMap = data[&#34;idMap&#34;]
         tMap = data[&#34;tMap&#34;]
 
-        for (eidkind, triggers) in sheet.items():
-            for trigger in triggers:
-                tPath = tMap[trigger]
-                allTriggers.add((eidkind, trigger, tPath))
+        for trigger, tPath in tMap.items():
+            eidkind = idMap[trigger]
+            name = nameMap[eidkind][0]
+            allTriggers.add((name, eidkind, trigger, tPath))
 
-    i = 0
+    hitData = []
+    names = set()
+    triggersSuccess = 0
 
     for e in sorted(allTriggers):
-        i += 1
-        if not expanded and i &gt; 20:
-            break
+        (name, eidkind, trigger, tPath) = e
 
-        (eidkind, trigger, tPath) = e
+        names.add(name)
+
+        sheet = &#34;.&#34;.join(tPath)
+        entry = (name, trigger, sheet)
+        section = &#34;&#34;
+        hits = &#34;&#34;
+
         entInfo = inventory.get(eidkind, None)
 
         if entInfo is None:
-            notFound.append((&#34;E&#34;, e))
+            hitData.append((&#34;!E&#34;, *entry, &#34;&#34;, 0))
             continue
 
         triggerInfo = entInfo.get(trigger, None)
 
         if triggerInfo is None:
-            notFound.append((&#34;T&#34;, e))
+            hitData.append((&#34;!T&#34;, *entry, &#34;&#34;, 0))
             continue
 
-        pathInfo = triggerInfo.get(tPath, None)
+        occs = triggerInfo.get(tPath, None)
 
-        if pathInfo is None:
-            notFound.append((&#34;P&#34;, e))
+        if occs is None:
+            hitData.append((&#34;!P&#34;, *entry, &#34;&#34;, 0))
+            continue
 
-    if len(notFound) == 0:
-        console(&#34;Found matches for all triggers&#34;)
-    else:
-        console(f&#34;{len(notFound)} triggers have no match:&#34;)
+        triggersSuccess += 1
+        sectionInfo = collections.Counter()
 
-        for (label, (eidkind, trigger, tPath)) in notFound:
-            console(f&#34;{label} &#39;{nameMap[eidkind][0]}&#39; as &#39;{trigger}&#39; in {tPath}&#34;)</code></pre>
+        for slots in occs:
+            section = &#34;.&#34;.join(getHeadings(slots[0]))
+            sectionInfo[section] += 1
+
+        for section, hits in sorted(sectionInfo.items()):
+            hitData.append((&#34;OK&#34;, *entry, section, hits))
+
+    with open(reportFile, &#34;w&#34;) as rh:
+        rh.write(&#34;label\tname\ttrigger\tsheet\tsection\thits\n&#34;)
+
+        for h in sorted(hitData):
+            line = &#34;\t&#34;.join(str(c) for c in h)
+            rh.write(f&#34;{line}\n&#34;)
+
+    nEnt = len(names)
+    nTriggers = len(allTriggers)
+    nHits = sum(e[-1] for e in hitData)
+
+    console(
+        dedent(
+            f&#34;&#34;&#34;
+            Entities targeted:       {nEnt:&gt;5}
+            Triggers searched for:   {nTriggers:&gt;5}
+            Triggers with hits:      {triggersSuccess:&gt;5}
+            Triggers without hits:   {nTriggers - triggersSuccess:&gt;5}
+            Total hits:              {nHits:&gt;5}
+
+            All hits in report file: {reportFile}
+            &#34;&#34;&#34;
+        )
+    )</code></pre>
 </details>
 </dd>
 </dl>
@@ -1365,10 +1301,10 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.browser.ner.ner.NER.Trig" href="#tf.browser.ner.ner.NER.Trig">Trig</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.bakeEntities" href="#tf.browser.ner.ner.NER.bakeEntities">bakeEntities</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.inventory" href="#tf.browser.ner.ner.NER.inventory">inventory</a></code></li>
-<li><code><a title="tf.browser.ner.ner.NER.makeInventory" href="#tf.browser.ner.ner.NER.makeInventory">makeInventory</a></code></li>
+<li><code><a title="tf.browser.ner.ner.NER.lookup" href="#tf.browser.ner.ner.NER.lookup">lookup</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.markEntities" href="#tf.browser.ner.ner.NER.markEntities">markEntities</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.readInstructions" href="#tf.browser.ner.ner.NER.readInstructions">readInstructions</a></code></li>
-<li><code><a title="tf.browser.ner.ner.NER.showInventory" href="#tf.browser.ner.ner.NER.showInventory">showInventory</a></code></li>
+<li><code><a title="tf.browser.ner.ner.NER.reportHits" href="#tf.browser.ner.ner.NER.reportHits">reportHits</a></code></li>
 </ul>
 </li>
 </ul>
