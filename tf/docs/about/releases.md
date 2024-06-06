@@ -22,7 +22,7 @@ pip install -e .
 
 #### 12.5.1
 
-2024-05-?? (Upcoming)
+2024-06-06
 
 *   WATM production tweaks:
 
@@ -39,6 +39,12 @@ pip install -e .
     spreadsheets for the whole corpus, and for sections and subsections and ranges
     of them. The more specificly targeted spreadsheets override the more
     generally targeted ones.
+
+    The lookup is also more efficient, and it prefers longer matches over shorter ones.
+
+    After the lookup, a detailed tsv file is generated with details information about
+    the hits: to which triggers in which spreadsheet they correspond, and how many
+    are found in which paragraphs.
 
 #### 12.5.0
 

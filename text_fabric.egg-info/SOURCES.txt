@@ -343,6 +343,7 @@ tf/browser/ner/serve.py
 tf/browser/ner/sets.py
 tf/browser/ner/settings.py
 tf/browser/ner/show.py
+tf/browser/ner/triggers.py
 tf/browser/ner/web.py
 tf/browser/ner/static/.DS_Store
 tf/browser/ner/static/base.css
