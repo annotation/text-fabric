@@ -1,7 +1,7 @@
 """Rendering of corpus extracts with annotations.
 
 To see how this fits among all the modules of this package, see
-`tf.browser.ner.annotate` .
+`tf.browser.ner.ner` .
 """
 
 from itertools import chain
@@ -192,7 +192,7 @@ class Show:
         these entities are present in the input parameter `buckets`.
 
         It is recommended to apply this function to the outcome of
-        `tf.browser.ner.annotate.Annotate.filterContent`
+        `tf.browser.ner.ner.NER.filterContent`
 
         !!! caution "Truncated"
             Unless the user has selected an entity or forced a start and end
@@ -205,7 +205,7 @@ class Show:
             A selection of buckets (chunks / paragraphs) of the corpus.
             Each bucket is given as a tuple.
             The exact form is this data structure is equal to what the
-            function `tf.browser.ner.annotate.Annotate.filterContent`
+            function `tf.browser.ner.ner.NER.filterContent`
             returns.
 
         activeEntity: tuple, optional None
@@ -254,7 +254,7 @@ class Show:
 
         browse = self.browse
         setData = self.getSetData()
-        annoSet = self.annoSet
+        setName = self.setName
         afterv = self.getAfter()
         sectionHead = self.sectionHead
 
@@ -292,7 +292,7 @@ class Show:
             nBshown += 1
             charPos = 0
 
-            if annoSet:
+            if setName:
                 allMatches = set()
                 endMatches = set()
                 for match in matches:
@@ -360,7 +360,7 @@ class Show:
                 hlClasses += f" {style} " if style else ""
                 hlClass = dict(cls=hlClasses) if hlClasses else {}
 
-                endQueried = annoSet and t in endMatches
+                endQueried = setName and t in endMatches
                 excl = "x" if t in excludedTokens else "v"
                 nodeRep = H.span(str(t), cls="nd") if withNodes else ""
 

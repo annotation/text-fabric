@@ -1,7 +1,7 @@
 """Auxiliary functions for managing request data.
 
 To see how this fits among all the modules of this package, see
-`tf.browser.ner.annotate` .
+`tf.browser.ner.ner` .
 """
 
 
@@ -37,8 +37,8 @@ class Request(Form):
         We also define a few composed values, where we store the values of
         several related keys in the form as a dictionary value under a new key.
         """
-        annotate = self.annotate
-        settings = annotate.settings
+        ner = self.ner
+        settings = ner.settings
         features = settings.features
 
         keysStr = """
@@ -47,10 +47,10 @@ class Request(Form):
             sec0
             sec1
             sec2
-            annoset
-            duannoset
-            rannoset
-            dannoset
+            set
+            duset
+            rset
+            dset
             sortkey
             sortdir
             bfind
@@ -153,8 +153,8 @@ class Request(Form):
         and there is an occurrence selected, the user should have the option
         to sub-select occurrences that do not yet have an entity assigned.
         """
-        annotate = self.annotate
-        settings = annotate.settings
+        ner = self.ner
+        settings = ner.settings
         features = settings.features
         formattingState = self.formattingState
         activeVal = self.activeVal
@@ -208,14 +208,14 @@ class Request(Form):
         So, this function makes the transition from information that is in the
         `form` dictionary to values that are stored in the `v` dictionary.
         """
-        annotate = self.annotate
-        settings = annotate.settings
+        ner = self.ner
+        settings = ner.settings
         bucketType = settings.bucketType
         features = settings.features
 
-        appName = annotate.appName
+        appName = ner.appName
         appName = appName.replace("/", " / ")
-        slotType = annotate.slotType
+        slotType = ner.slotType
 
         form = self.getFormData()
         resetForm = form["resetForm"]
@@ -249,8 +249,8 @@ class Request(Form):
             Contains the intermediate results of computing the new page.
         """
         v = self.v
-        annotate = self.annotate
-        settings = annotate.settings
+        ner = self.ner
+        settings = ner.settings
         features = settings.features
 
         submitter = v.submitter

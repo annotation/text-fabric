@@ -1,7 +1,7 @@
 """Match functions.
 
 To see how this fits among all the modules of this package, see
-`tf.browser.ner.annotate` .
+`tf.browser.ner.ner` .
 """
 
 from .settings import NONE
@@ -206,7 +206,7 @@ def entityMatch(
     b: integer
         The node of the bucket in question
     bFindRe, anyEnt, eVals, qTokens, valSelect, freeState: object
-        As in `tf.browser.ner.annotate.Annotate.filterContent`
+        As in `tf.browser.ner.ner.NER.filterContent`
 
     Returns
     -------

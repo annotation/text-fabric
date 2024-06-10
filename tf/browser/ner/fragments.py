@@ -3,7 +3,7 @@
 This module generates HTML for various controls that appear in the TF browser.
 
 To see how this fits among all the modules of this package, see
-`tf.browser.ner.annotate` .
+`tf.browser.ner.ner` .
 """
 
 from .settings import EMPTY, NONE, SORTDIR_ASC
@@ -19,7 +19,7 @@ class Fragments:
 
         v.messages = H.p((H.span(text, cls=lev) + H.br() for (lev, text) in messageSrc))
 
-    def wrapAnnoSets(self):
+    def wrapSets(self):
         """HTML for the annotation set chooser.
 
         It is a list of buttons, each corresponding to an existing annotation set.
@@ -33,32 +33,32 @@ class Fragments:
 
         Finally, it is possible to create a new, empty annotation set.
         """
-        annotate = self.annotate
-        setNames = annotate.setNames
-        settings = annotate.settings
+        ner = self.ner
+        setNames = ner.setNames
+        settings = ner.settings
         entitySet = settings.entitySet
 
         v = self.v
-        chosenAnnoSet = v.annoset
+        chosenSet = v.set
 
         content1 = [
             H.input(
                 type="hidden",
-                name="annoset",
-                value=chosenAnnoSet,
-                id="annoseth",
+                name="set",
+                value=chosenSet,
+                id="seth",
             ),
             H.input(
                 type="hidden",
-                name="duannoset",
+                name="duset",
                 value="",
-                id="duannoseth",
+                id="duseth",
             ),
             H.input(
                 type="hidden",
-                name="rannoset",
+                name="rset",
                 value="",
-                id="rannoseth",
+                id="rseth",
             ),
             H.button(
                 "+",
@@ -79,11 +79,11 @@ class Fragments:
             H.select(
                 (
                     H.option(
-                        entitySet if annoSet == "" else annoSet,
-                        value=annoSet,
-                        selected=annoSet == chosenAnnoSet,
+                        entitySet if setName == "" else setName,
+                        value=setName,
+                        selected=setName == chosenSet,
                     )
-                    for annoSet in [""] + sorted(setNames)
+                    for setName in [""] + sorted(setNames)
                 ),
                 cls="selinp",
                 id="achange",
@@ -94,9 +94,9 @@ class Fragments:
             [
                 H.input(
                     type="hidden",
-                    name="dannoset",
+                    name="dset",
                     value="",
-                    id="dannoseth",
+                    id="dseth",
                 ),
                 H.button(
                     "→",
@@ -114,11 +114,11 @@ class Fragments:
                     cls="mono",
                 ),
             ]
-            if chosenAnnoSet
+            if chosenSet
             else []
         )
 
-        v.annosets = H.p(content1, content2)
+        v.sets = H.p(content1, content2)
 
     def wrapQuery(self):
         """HTML for all control widgets on the page."""
@@ -138,8 +138,8 @@ class Fragments:
         appear: with or without underlining, identifier, kind, frequency.
         """
         v = self.v
-        annotate = self.annotate
-        settings = annotate.settings
+        ner = self.ner
+        settings = ner.settings
         features = settings.features
 
         formattingDo = v.formattingdo
@@ -198,8 +198,8 @@ class Fragments:
         condition that the buckets do *not* contain entities).
         """
         v = self.v
-        annotate = self.annotate
-        setData = annotate.getSetData()
+        ner = self.ner
+        setData = ner.getSetData()
 
         bFind = v.bfind
         bFindC = v.bfindc
@@ -272,8 +272,8 @@ class Fragments:
         hidden input elements.
         """
         v = self.v
-        annotate = self.annotate
-        settings = annotate.settings
+        ner = self.ner
+        settings = ner.settings
         features = settings.features
 
         activeEntity = v.activeentity
@@ -291,7 +291,7 @@ class Fragments:
         elif hasOcc:
             v.activeentity = None
             txt = (
-                annotate.getText(range(tokenStart, tokenEnd + 1))
+                ner.getText(range(tokenStart, tokenEnd + 1))
                 if tokenStart and tokenEnd
                 else ""
             )
@@ -323,8 +323,8 @@ class Fragments:
         v = self.v
         sortKey = v.sortkey
         sortDir = v.sortdir
-        annotate = self.annotate
-        settings = annotate.settings
+        ner = self.ner
+        settings = ner.settings
         features = settings.features
 
         sortKeys = ((feat, f"sort_{i}") for (i, feat) in enumerate(features))
@@ -404,12 +404,12 @@ class Fragments:
         thereby selecting a subset of the original set of occurrences.
         """
         v = self.v
-        annotate = self.annotate
-        settings = annotate.settings
+        ner = self.ner
+        settings = ner.settings
         bucketType = settings.bucketType
         features = settings.features
 
-        setData = annotate.getSetData()
+        setData = ner.getSetData()
 
         txt = v.txt
         eTxt = v.etxt
@@ -493,8 +493,8 @@ class Fragments:
         be applied to all relevant buckets, or only to the filtered buckets.
         """
         v = self.v
-        annotate = self.annotate
-        annoSet = annotate.annoSet
+        ner = self.ner
+        setName = ner.setName
         scope = v.scope
         hasFilter = v.hasfilter
         txt = v.txt
@@ -505,7 +505,7 @@ class Fragments:
         scopeInit = H.input(type="hidden", id="scope", name="scope", value=scope)
         scopeFilter = ""
 
-        if annoSet and (hasOcc or hasEnt):
+        if setName and (hasOcc or hasEnt):
             # Scope of modification
 
             scopeFilter = (
@@ -530,16 +530,16 @@ class Fragments:
         v = self.v
         txt = v.txt
         eTxt = v.etxt
-        annotate = self.annotate
-        settings = annotate.settings
+        ner = self.ner
+        settings = ner.settings
         bucketType = settings.bucketType
-        annoSet = annotate.annoSet
+        setName = ner.setName
         hasOcc = txt != ""
         hasEnt = eTxt != ""
 
         scopeExceptions = ""
 
-        if annoSet and (hasOcc or hasEnt):
+        if setName and (hasOcc or hasEnt):
             scopeExceptions = H.span(
                 H.nb,
                 H.button(
@@ -571,15 +571,15 @@ class Fragments:
         values.
         """
         v = self.v
-        annotate = self.annotate
-        settings = annotate.settings
+        ner = self.ner
+        settings = ner.settings
         features = settings.features
         keywordFeatures = settings.keywordFeatures
 
-        featureDefault = annotate.featureDefault
+        featureDefault = ner.featureDefault
 
-        setData = annotate.getSetData()
-        annoSet = annotate.annoSet
+        setData = ner.getSetData()
+        setName = ner.setName
 
         txt = v.txt
         eTxt = v.etxt
@@ -608,7 +608,7 @@ class Fragments:
 
         somethingToDelete = True
 
-        if annoSet and (hasOcc or hasEnt):
+        if setName and (hasOcc or hasEnt):
             instances = self.wrapExceptions()
 
             for i, feat in enumerate(features):
@@ -871,8 +871,8 @@ class Fragments:
     def wrapReport(self, report, kind):
         """HTML for the report of add / del actions."""
         v = self.v
-        annotate = self.annotate
-        settings = annotate.settings
+        ner = self.ner
+        settings = ner.settings
         features = settings.features
 
         label = "Deletion" if kind == "del" else "Addition" if kind == "add" else ""

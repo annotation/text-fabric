@@ -1,7 +1,7 @@
 """Corpus dependent setup of the annotation tool.
 
 To see how this fits among all the modules of this package, see
-`tf.browser.ner.annotate` .
+`tf.browser.ner.ner` .
 """
 
 
@@ -225,7 +225,7 @@ class Settings:
 
         This works exactly as `tf.core.helpers.console`
 
-        It is handy to have this as a method on the Annotate object,
+        It is handy to have this as a method on the NER object,
         so that we can issue temporary console statements during development
         without the need to add an `import` statement to the code.
         """

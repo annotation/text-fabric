@@ -1,14 +1,14 @@
 """Flask sub web app in the TF browser.
 
 To see how this fits among all the modules of this package, see
-`tf.browser.ner.annotate` .
+`tf.browser.ner.ner` .
 """
 from flask import Blueprint, send_file
 
 from ...core.generic import AttrDict
 from ...core.files import abspath, fileExists, dirNm
 from .settings import TOOLKEY
-from .annotate import Annotate
+from .ner import NER
 from .serve import serveNer, serveNerContext
 
 
@@ -25,7 +25,7 @@ def factory(web):
     which is built into Flask itself.
 
     Before starting the actual serving of pages, we initialize a
-    `tf.browser.ner.annotate.Annotate` object, and store it under attribute `annotate`.
+    `tf.browser.ner.ner.NER` object, and store it under attribute `ner`.
 
     In order to do so, we pick up a handle to the loaded TF corpus,
     and a handle to the tool data, both present in the `web` object (see parameters
@@ -44,7 +44,7 @@ def factory(web):
         tool specific data.
         If not, we create an empty store. Inside that store we create an empty
         sub-store for this specific tool.
-        The initialization of the `Annotate` object makes sure this store is
+        The initialization of the `NER` object makes sure this store is
         populated by the tool data as it is read from disk.
 
         This way, the annotation data is preserved between requests.
@@ -67,9 +67,9 @@ def factory(web):
         toolData[TOOLKEY] = AttrDict()
 
     data = toolData[TOOLKEY]
-    web.annotate = Annotate(tfApp, data=data, browse=True)
+    web.ner = NER(tfApp, data=data, browse=True)
 
-    if not web.annotate.properlySetup:
+    if not web.ner.properlySetup:
         return app
 
     @app.route("/static/<path:filepath>")

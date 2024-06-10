@@ -1,20 +1,20 @@
 """Annotation data module.
 
-This module manages the data of annotations.
+This module manages the data of annotation sets.
 
 To see how this fits among all the modules of this package, see
-`tf.browser.ner.annotate` .
+`tf.browser.ner.ner` .
 
-Annotation data is either the set of pre-existing data in the corpus or the
+Annotation sets are either the sets of pre-existing entities in the corpus or the
 result of actions by the user of this tool, whether he uses the TF browser, or the API
 in his own programs.
 
-Annotation data must be stored on file, must be read from file,
+Annotation sets must be stored on file, must be read from file,
 and must be represented in memory in various ways in order to make the
 API functions of the tool efficient.
 
-We have set up the functions in such a way that data is only loaded and
-processed if it is needed and out of date.
+We have set up the functions in such a way that sets are only loaded and
+processed if they are needed and out of date.
 """
 
 import collections
@@ -37,8 +37,8 @@ from .corpus import Corpus
 
 
 class Data(Corpus):
-    def __init__(self, data=None):
-        """Manages annotation data.
+    def __init__(self, sets=None):
+        """Manages annotation sets and their corresponding data.
 
         This class is also responsible for adding entities to a set and deleting
         entities from them.
@@ -49,76 +49,64 @@ class Data(Corpus):
 
         Parameters
         ----------
-        data: object, optional None
-            Entity data to start with.
-            If None, a fresh data store will be created.
+        sets: object, optional None
+            Entity sets to start with.
+            If None, a fresh store of sets will be created.
 
             When the tool runs in browser context, each request will create a
-            `Data` object from scratch. If no data is provided to the initializer,
-            it will need to load the required data from file.
+            `Data` object from scratch. If no sets are passed to the initializer,
+            it will need to load the required sets from file.
             This is wasteful.
 
             We have set up the web server in such a way that it incorporates the
-            annotation data. The web server will pass it to the
-            `tf.browser.ner.annotate.Annotate` object initializer, which passes
+            annotation sets. The web server will pass them to the
+            `tf.browser.ner.ner.NER` object initializer, which passes
             it to the initializer here.
 
-            In that way, the `Data` object can start with the data already in memory.
+            In that way, the `Data` object can start with the sets already in memory.
         """
         super().__init__()
         if not self.properlySetup:
             return
 
-        if data is None:
-            data = AttrDict()
-            data.sets = AttrDict()
-
-        self.data = data
+        self.sets = sets
 
         annoDir = self.annoDir
         initTree(annoDir, fresh=False)
 
-    def loadData(self):
-        """Loads data of the current annotation set into memory.
+    def loadSetData(self):
+        """Loads the current annotation set into memory.
 
         It has two phases:
 
-        *   loading the source data (see `Data.fromSource()`)
-        *   processing the loaded source data (see `Data.process()`)
+        *   loading the source set (see `Data.fromSourceSet()`)
+        *   processing the loaded set (see `Data.processSet()`)
         """
         if not self.properlySetup:
             return
 
-        data = self.data
-        annoSet = self.annoSet
+        sets = self.sets
+        setName = self.setName
 
-        if "sets" not in data:
-            data.sets = AttrDict()
+        if setName not in sets:
+            sets[setName] = AttrDict()
 
-        sets = data.sets
+        changed = self.fromSourceSet()
+        self.processSet(changed)
 
-        if annoSet not in sets:
-            sets[annoSet] = AttrDict()
+    def fromSourceSet(self):
+        """Loads an annotation set from source.
 
-        # load bucket nodes
+        If the current annotation set is `""`, the annotation set is already present in
+        the TF data, and we compile it into a dict of entity data keyed
+        by entity node.
 
-        changed = self.fromSource()
-        self.process(changed)
+        Otherwise, we read the corresponding TSV file from disk and compile it
+        into a dict of entity data keyed by line number.
 
-    def fromSource(self):
-        """Loads annotation data from source.
+        After collection of the set it is stored under the following keys:
 
-        If the current annotation set is `""`, the annotation data is already in
-        the TF data,
-        and we compile that data into a dict of entity data keyed by entity node.
-
-        Otherwise, we read the corresponding TSV file from disk and compile that
-        data into a dict of entity data keyed by line number.
-
-        After collection of this data it is stored in the set data; in fact we store
-        data under the following keys:
-
-        *   `dateLoaded`: datetime when the data was last loaded from disk;
+        *   `dateLoaded`: datetime when the set was last loaded from disk;
         *   `entities`: the list of entities as loaded from the source;
             it is a dict of entities, keyed by nodes or line numbers;
             each entity specifies a tuple of feature values and a list of slots
@@ -128,9 +116,8 @@ class Data(Corpus):
             return None
 
         settings = self.settings
-        data = self.data
-        annoSet = self.annoSet
-        setData = data.sets[annoSet]
+        setName = self.setName
+        setData = self.sets[setName]
         annoDir = self.annoDir
 
         settings = self.settings
@@ -143,26 +130,25 @@ class Data(Corpus):
         getFVal = self.getFVal
         getSlots = self.getSlots
 
-        dataFile = f"{annoDir}/{annoSet}/entities.tsv"
+        setFile = f"{annoDir}/{setName}/entities.tsv"
 
         if "buckets" not in setData:
             setData.buckets = self.getBucketNodes()
 
         changed = False
 
-        if annoSet:
+        if setName:
             if (
                 "entities" not in setData
                 or "dateLoaded" not in setData
-                or (len(setData.entities) > 0 and not fileExists(dataFile))
-                or (fileExists(dataFile) and setData.dateLoaded < mTime(dataFile))
+                or (len(setData.entities) > 0 and not fileExists(setFile))
+                or (fileExists(setFile) and setData.dateLoaded < mTime(setFile))
             ):
-                # self.console(f"Loading data for {annoSet} ... ", newline=False)
                 changed = True
                 entities = {}
 
-                if fileExists(dataFile):
-                    with fileOpen(dataFile) as df:
+                if fileExists(setFile):
+                    with fileOpen(setFile) as df:
                         for e, line in enumerate(df):
                             fields = tuple(line.rstrip("\n").split("\t"))
                             entities[e] = (
@@ -172,10 +158,6 @@ class Data(Corpus):
 
                 setData.entities = entities
                 setData.dateLoaded = time.time()
-                # self.console("done.")
-            else:
-                # self.console(f"Data for {annoSetRep} already loaded")
-                pass
         else:
             if "entities" not in setData:
                 entities = {}
@@ -197,24 +179,23 @@ class Data(Corpus):
 
         return changed
 
-    def process(self, changed):
-        """Generated derived data structures out of the source data.
+    def processSet(self, changed):
+        """Generates derived data structures out of the source set.
 
-        After loading we process the data into derived data structures.
+        After loading we process the set into derived data structures.
 
-        We try to be lazy. We only load data from disk if the data is not
-        already in memory, or the data on disk has been updated since the last load.
+        We try to be lazy. We only load a set from disk if it is not
+        already in memory, or if the set on disk has been updated since the last load.
 
-        The resulting data is stored in current set under the various keys.
+        The resulting data is stored in the current set under the various keys.
 
         After processing, the time of processing is recorded, so that it can be
-        observed if the processed data is no longer up to date w.r.t. the data as
-        loaded from source.
+        observed if the processed set is no longer up to date w.r.t. the source.
 
         For each such set we produce several data structures, which we store
         under the following keys:
 
-        *   `dateProcessed`: datetime when the data was last processed
+        *   `dateProcessed`: datetime when the set was last processed
         *   `entityText`: dict, text of entity by entity node or line number in
             TSV file;
         *   `entityTextVal`: dict of dict, set of feature values of entity, keyed by
@@ -252,7 +233,7 @@ class Data(Corpus):
         Parameters
         ----------
         changed: boolean
-            Whether the data has changed since last processing.
+            Whether the set has changed since last processing.
         """
         if not self.properlySetup:
             return
@@ -262,10 +243,8 @@ class Data(Corpus):
         getText = self.getText
         summaryIndices = settings.summaryIndices
 
-        data = self.data
-        annoSet = self.annoSet
-        # annoSetRep = self.annoSetRep
-        setData = data.sets[annoSet]
+        setName = self.setName
+        setData = self.sets[setName]
 
         dateLoaded = setData.dateLoaded
         dateProcessed = setData.dateProcessed
@@ -286,8 +265,6 @@ class Data(Corpus):
             or dateLoaded is not None
             and dateProcessed < dateLoaded
         ):
-            # self.console(f"Processing data of {annoSetRep} ... ", newline=False)
-
             entityItems = setData.entities.items()
 
             entityText = {}
@@ -357,11 +334,6 @@ class Data(Corpus):
             setData.entitySlotIndex = entitySlotIndex
 
             setData.dateProcessed = time.time()
-            # self.console("done.")
-
-        else:
-            # self.console(f"Data of {annoSetRep} already processed.")
-            pass
 
     def delEntity(self, vals, allMatches=None, silent=True):
         """Delete entity occurrences from the current set.
@@ -400,13 +372,13 @@ class Data(Corpus):
         if not self.properlySetup:
             return
 
-        annoSet = self.annoSet
-        annoSetRep = self.annoSetRep
+        setName = self.setName
+        setNameRep = self.setNameRep
 
-        if not annoSet:
+        if not setName:
             if silent:
                 return (-1, -1)
-            self.console(f"Entity deletion not allowed on {annoSetRep}", error=True)
+            self.console(f"Entity deletion not allowed on {setNameRep}", error=True)
             return
 
         setData = self.getSetData()
@@ -437,7 +409,7 @@ class Data(Corpus):
         if len(delEntities):
             self.weedEntities(delEntities)
 
-        self.loadData()
+        self.loadSetData()
 
         if silent:
             return (missing, deleted)
@@ -468,7 +440,7 @@ class Data(Corpus):
             `deletions` or contained in it.
         buckets: iterable of list
             This is typically the result of
-            `tf.browser.ner.annotate.Annotate.filterContent()`.
+            `tf.browser.ner.ner.NER.filterContent()`.
             The only important thing is that member 2 of each bucket is the list
             of entity matches in that bucket.
             Only entities that occupy these places will be removed.
@@ -480,12 +452,12 @@ class Data(Corpus):
         if not self.properlySetup:
             return
 
-        annoSet = self.annoSet
-        annoSetRep = self.annoSetRep
+        setName = self.setName
+        setNameRep = self.setNameRep
         browse = self.browse
 
-        if not annoSet:
-            msg = f"Entity deletion not allowed on {annoSetRep}"
+        if not setName:
+            msg = f"Entity deletion not allowed on {setNameRep}"
             if browse:
                 return [[msg]]
             else:
@@ -558,7 +530,7 @@ class Data(Corpus):
         if browse:
             return report
 
-        self.loadData()
+        self.loadSetData()
         (stats, *rest) = report
         if type(stats) is list:
             self.console("\n".join(stats))
@@ -606,20 +578,20 @@ class Data(Corpus):
         if not self.properlySetup:
             return
 
-        annoSet = self.annoSet
-        annoSetRep = self.annoSetRep
+        setName = self.setName
+        setNameRep = self.setNameRep
 
-        if not annoSet:
+        if not setName:
             if silent:
                 return (-1, -1)
-            self.console(f"Entity addition not allowed on {annoSetRep}", error=True)
+            self.console(f"Entity addition not allowed on {setNameRep}", error=True)
             return
 
         setData = self.getSetData()
 
         oldEntities = setData.entities
 
-        addEntities = set()
+        addE = set()
 
         oldEntitiesBySlots = set()
 
@@ -636,14 +608,14 @@ class Data(Corpus):
                 continue
 
             info = (vals, slots)
-            if info not in addEntities:
-                addEntities.add(info)
+            if info not in addE:
+                addE.add(info)
                 added += 1
 
-        if len(addEntities):
-            self.mergeEntities(addEntities)
+        if len(addE):
+            self.mergeEntities(addE)
 
-        self.loadData()
+        self.loadSetData()
 
         if silent:
             return (present, added)
@@ -686,20 +658,20 @@ class Data(Corpus):
         if not self.properlySetup:
             return
 
-        annoSet = self.annoSet
-        annoSetRep = self.annoSetRep
+        setName = self.setName
+        setNameRep = self.setNameRep
 
-        if not annoSet:
+        if not setName:
             if silent:
                 return (-1, -1)
-            self.console(f"Entities addition not allowed on {annoSetRep}", error=True)
+            self.console(f"Entities addition not allowed on {setNameRep}", error=True)
             return
 
         setData = self.getSetData()
 
         oldEntities = set(setData.entities.values())
 
-        addEntities = set()
+        addE = set()
 
         present = 0
         added = 0
@@ -708,16 +680,16 @@ class Data(Corpus):
             for slots in allMatches:
                 if (fVals, slots) in oldEntities:
                     present += 1
-                elif (fVals, slots) in addEntities:
+                elif (fVals, slots) in addE:
                     continue
                 else:
                     added += 1
-                    addEntities.add((fVals, slots))
+                    addE.add((fVals, slots))
 
-        if len(addEntities):
-            self.mergeEntities(addEntities)
+        if len(addE):
+            self.mergeEntities(addE)
 
-        self.loadData()
+        self.loadSetData()
         if silent:
             return (present, added)
 
@@ -747,7 +719,7 @@ class Data(Corpus):
             `additions` or contained in it.
         buckets: iterable of list
             This is typically the result of
-            `tf.browser.ner.annotate.Annotate.filterContent()`.
+            `tf.browser.ner.ner.NER.filterContent()`.
             The only important thing is that member 2 of each bucket is the list
             of entity matches in that bucket.
             Entities will only be added at these places.
@@ -759,12 +731,12 @@ class Data(Corpus):
         if not self.properlySetup:
             return
 
-        annoSet = self.annoSet
-        annoSetRep = self.annoSetRep
+        setName = self.setName
+        setNameRep = self.setNameRep
         browse = self.browse
 
-        if not annoSet:
-            msg = f"Entity addition not allowed on {annoSetRep}"
+        if not setName:
+            msg = f"Entity addition not allowed on {setNameRep}"
             if browse:
                 return [[msg]]
             else:
@@ -831,7 +803,7 @@ class Data(Corpus):
         if browse:
             return report
 
-        self.loadData()
+        self.loadSetData()
         (stats, *rest) = report
         if type(stats) is list:
             self.console("\n".join(stats))
@@ -859,11 +831,11 @@ class Data(Corpus):
         if not self.properlySetup:
             return
 
-        annoSet = self.annoSet
-        annoSetRep = self.annoSetRep
+        setName = self.setName
+        setNameRep = self.setNameRep
 
-        if not annoSet:
-            self.console(f"Entity weeding not allowed on {annoSetRep}", error=True)
+        if not setName:
+            self.console(f"Entity weeding not allowed on {setNameRep}", error=True)
             return
 
         settings = self.settings
@@ -872,7 +844,7 @@ class Data(Corpus):
 
         annoDir = self.annoDir
 
-        dataFile = f"{annoDir}/{annoSet}/entities.tsv"
+        dataFile = f"{annoDir}/{setName}/entities.tsv"
 
         newEntities = []
 
@@ -904,23 +876,23 @@ class Data(Corpus):
         if not self.properlySetup:
             return
 
-        annoSet = self.annoSet
-        annoSetRep = self.annoSetRep
+        setName = self.setName
+        setNameRep = self.setNameRep
 
-        if not annoSet:
-            self.console(f"Entity merging not allowed on {annoSetRep}", error=True)
+        if not setName:
+            self.console(f"Entity merging not allowed on {setNameRep}", error=True)
             return
 
         annoDir = self.annoDir
 
-        dataFile = f"{annoDir}/{annoSet}/entities.tsv"
+        dataFile = f"{annoDir}/{setName}/entities.tsv"
 
         with fileOpen(dataFile, mode="a") as fh:
             for fVals, slots in newEntities:
                 fh.write("\t".join(str(x) for x in (*fVals, *slots)) + "\n")
 
     def saveEntitiesAs(self, dataFile):
-        """Export the data of an annotation set to a file.
+        """Export an annotation set to a file.
 
         This function is used when a set has to be duplicated:
         `tf.browser.ner.sets.Sets.setDup()`.
@@ -956,12 +928,12 @@ class Data(Corpus):
         if not self.properlySetup:
             return
 
-        annoSet = self.annoSet
-        annoSetRep = self.annoSetRep
+        setName = self.setName
+        setNameRep = self.setNameRep
 
-        if not annoSet:
+        if not setName:
             self.console(
-                f"Entity consolidation not meaningful on {annoSetRep}", error=True
+                f"Entity consolidation not meaningful on {setNameRep}", error=True
             )
             return False
 

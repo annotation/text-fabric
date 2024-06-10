@@ -1,4 +1,4 @@
-# Annotate tool in TF Browser
+# Named Entity tool in TF Browser
 
 We explain the manual annotation process with a leading example:
 [`HuygensING/suriano`](https://github.com/HuygensING/suriano).
@@ -43,7 +43,7 @@ already open browser tab.
 
 The start-up window looks like this:
 
-![browser](../images/Annotate/browser-start.png)
+![browser](../images/Ner/browser-start.png)
 
 *   **Left column**:
 
@@ -74,7 +74,7 @@ The start-up window looks like this:
 
     You can click on each entity. Let's click on `Francia`:
 
-    ![browser](../images/Annotate/browser-entity.png)
+    ![browser](../images/Ner/browser-entity.png)
 
     On the right you see all occurrences of this entity, highlighted.
 
@@ -105,7 +105,7 @@ Click that button. It changes to `decorated` plus a row of buttons next to it.
 
 Below, in the text, you see that something has changed:
 
-![browser](../images/Annotate/entities-decorated.png)
+![browser](../images/Ner/entities-decorated.png)
 
 *   every occurrence of an entity in the set is now underlined;
 *   the whole entity is wrapped between `|` with a little number indicating how
@@ -126,7 +126,7 @@ at the left of the relevant paragraph.
 You will get a scrollable view of the whole section (letter) in which that paragraph
 occurs. 
 
-![browser](../images/Annotate/context.png)
+![browser](../images/Ner/context.png)
 
 The paragraph you started from is in the center. You can scroll up and down the
 whole letter that the paragraph is contained in.
@@ -158,7 +158,7 @@ steps:
     The whole stretch `Gio. Ernesto di Nassau` becomes yellow highlighted.
     Above the text you see a new control section, titled **Mark**:
 
-    ![browser](../images/Annotate/mark.png)
+    ![browser](../images/Ner/mark.png)
 
     Click the ✅ button that you see there.
 
@@ -175,7 +175,7 @@ steps:
     You may select values here in order to restrict the modification actions in the
     next step to these cases. 
 
-    ![browser](../images/Annotate/select.png)
+    ![browser](../images/Ner/select.png)
 
     You also see the values `⌀`: they select occurrences that are *not* instances
     of any entity in the currently developed set.
@@ -189,7 +189,7 @@ steps:
     *add* entities for these occurrences or *delete* existing entities for these
     occurrences. Since our set of entities is still empty, we can only add.
 
-    ![browser](../images/Annotate/add.png)
+    ![browser](../images/Ner/add.png)
 
     You have to tell the annotator the values for the entity identifier and kind that
     you will assign. The tool has already prefilled sensible values for you, but you 
@@ -201,17 +201,17 @@ steps:
 
     The result looks like this:
 
-    ![browser](../images/Annotate/results-para1.png)
+    ![browser](../images/Ner/results-para1.png)
 
     (the first occurrence is unaffected)
 
-    ![browser](../images/Annotate/results-para2.png)
+    ![browser](../images/Ner/results-para2.png)
 
     (new entity markings show up!).
 
     Also the control sections look different now:
 
-    ![browser](../images/Annotate/result-controls.png)
+    ![browser](../images/Ner/result-controls.png)
 
     Note the lines with the black background: they report the result of the
     previous action.
@@ -253,7 +253,7 @@ or occurrences that do overlap with existing entities.
 There is a button `all`. If you click on it, it changes
 to `filtered`, and you see the totals as `15 of 15` instead of `15`.
 
-![browser](../images/Annotate/select-filtered.png)
+![browser](../images/Ner/select-filtered.png)
 
 What does this mean?
 
@@ -265,7 +265,7 @@ part of the entity pattern `Gio. Ernesto di Nassau`.
 
 If you replace `ernesto` by `paesi` in the filter, you'll see this:
 
-![browser](../images/Annotate/filtered-paesi.png)
+![browser](../images/Ner/filtered-paesi.png)
 
 Now you see that when you choose `filtered`, you act on 6 occurrences, instead
 of all 15.

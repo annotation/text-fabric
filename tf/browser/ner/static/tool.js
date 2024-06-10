@@ -31,12 +31,12 @@ const storeForm = () => {
   localStorage.setItem(formKey, formStr)
 }
 
-const annoSetControls = () => {
+const setControls = () => {
   const subMitter = $("#submitter")
-  const annoseth = $("#annoseth")
-  const duannoseth = $("#duannoseth")
-  const rannoseth = $("#rannoseth")
-  const dannoseth = $("#dannoseth")
+  const seth = $("#seth")
+  const duseth = $("#duseth")
+  const rseth = $("#rseth")
+  const dseth = $("#dseth")
 
   const aNew = $("#anew")
   const aDup = $("#adup")
@@ -47,12 +47,12 @@ const annoSetControls = () => {
   const form = $("form")
 
   aChange.change(e => {
-    const oldAnnoSet = annoseth.val()
-    const newAnnoSet = e.target.value
-    if (oldAnnoSet == newAnnoSet) {
+    const oldSetName = seth.val()
+    const newSetName = e.target.value
+    if (oldSetName == newSetName) {
       return
     }
-    annoseth.val(e.target.value)
+    seth.val(e.target.value)
     storeForm()
     subMitter.val("achange")
     form.trigger("submit")
@@ -64,36 +64,36 @@ const annoSetControls = () => {
       e.preventDefault()
       return
     }
-    annoseth.val(newName)
+    seth.val(newName)
     storeForm()
   })
 
   aDup.off("click").click(e => {
-    const annoSetName = annoseth.val()
-    const newName = suggestName(annoSetName, true)
+    const setName = seth.val()
+    const newName = suggestName(setName, true)
     if (newName == null) {
       e.preventDefault()
       return
     }
-    duannoseth.val(newName)
+    duseth.val(newName)
     storeForm()
   })
 
   aRename.off("click").click(e => {
-    const annoSetName = annoseth.val()
-    const newName = suggestName(annoSetName, true)
+    const setName = seth.val()
+    const newName = suggestName(setName, true)
     if (newName == null) {
       e.preventDefault()
       return
     }
-    rannoseth.val(newName)
+    rseth.val(newName)
     storeForm()
   })
 
   aDelete.off("click").click(() => {
-    const annoSetName = annoseth.val()
-    if (confirm(`Delete annotation set ${annoSetName}?`)) {
-      dannoseth.val(annoSetName)
+    const setName = seth.val()
+    if (confirm(`Delete annotation set ${setName}?`)) {
+      dseth.val(setName)
     }
     storeForm()
   })
@@ -1042,7 +1042,7 @@ const initForm = () => {
 
 $(window).on("load", () => {
   initForm()
-  annoSetControls()
+  setControls()
   entityControls()
   tokenControls()
   modifyControls()

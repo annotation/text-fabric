@@ -1,7 +1,7 @@
 """HTML generation done in the Pythonic way.
 
 To see how this fits among all the modules of this package, see
-`tf.browser.ner.annotate` .
+`tf.browser.ner.ner` .
 """
 from ..core.generic import isIterable
 from ..core.helpers import console

@@ -417,7 +417,7 @@ Deleted tf.tools.docsright again, but developed it further in
 2023-10-29
 
 *   Bug fix: the mechanism to make individual exceptions when adding named entities
-    in the `tf.browser.ner.annotate` tool was broken. Thanks to Daniel Swanson for
+    in the tf.browser.ner.annotate tool was broken. Thanks to Daniel Swanson for
     spotting it.
 *   Additional fixes and enhancements.
 

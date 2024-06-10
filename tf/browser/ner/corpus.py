@@ -3,7 +3,7 @@
 Contains a bunch of instant methods to access corpus material.
 
 To see how this fits among all the modules of this package, see
-`tf.browser.ner.annotate` .
+`tf.browser.ner.ner` .
 
 All access to the TF API should happen through methods in this class.
 

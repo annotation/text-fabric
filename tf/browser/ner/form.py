@@ -5,7 +5,7 @@ We need more streamlined values, in several data types and organizations.
 Also we need defaults for missing and / or empty values.
 
 To see how this fits among all the modules of this package, see
-`tf.browser.ner.annotate` .
+`tf.browser.ner.ner` .
 """
 import json
 from urllib.parse import unquote

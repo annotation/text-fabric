@@ -4,7 +4,7 @@ This module contains the controllers that Flask invokes when serving
 the annotation tool in the TF browser.
 
 To see how this fits among all the modules of this package, see
-`tf.browser.ner.annotate` .
+`tf.browser.ner.ner` .
 """
 
 from flask import render_template
@@ -22,25 +22,28 @@ class Serve(Request, Fragments):
         ----------
         web: object
             This represents the Flask website that is the TF browser.
-            It has initialized a `tf.browser.ner.annotate.Annotate` object,
-            and has stored it under attribute `annotate`.
+            It has initialized a `tf.browser.ner.ner.NER` object,
+            and has stored it under attribute `ner`.
             See `tf.browser.ner.web.factory` and `tf.browser.web.factory`.
 
         """
         self.web = web
 
-        annotate = web.annotate
-        self.annotate = annotate
+        ner = web.ner
+        self.ner = ner
 
         super().__init__()
 
         self.initVars()
 
         v = self.v
-        annoSet = v.annoset
+        setName = v.set
 
-        annotate.setSet(annoSet)
-        annotate.loadData()
+        ner.setSet(setName)
+        ner.loadSetData()
+
+        ner.setSheet(None)
+        ner.loadSheetData()
 
     def setupFull(self):
         """Prepares to serve a complete page.
@@ -49,13 +52,13 @@ class Serve(Request, Fragments):
         *   Encodes the active entity in hidden `input` elements;
         *   Collects and generates the specific CSS styles needed for this corpus.
         """
-        annotate = self.annotate
+        ner = self.ner
         v = self.v
 
         self.findSetup()
         self.wrapActive()
 
-        v.css = annotate.css
+        v.css = ner.css
 
     def setupLean(self):
         """Prepares to update a portion of the page.
@@ -89,7 +92,7 @@ class Serve(Request, Fragments):
         This includes the controls by which the user makes selections and triggers
         actions.
         """
-        annotate = self.annotate
+        ner = self.ner
         v = self.v
         sortKey = v.sortkey
         sortDir = v.sortdir
@@ -101,12 +104,12 @@ class Serve(Request, Fragments):
         buckets = self.buckets
 
         self.wrapQuery()
-        v.entitytable = annotate.showEntities(
+        v.entitytable = ner.showEntities(
             activeEntity=activeEntity, sortKey=sortKey, sortDir=sortDir
         )
-        v.entityoverview = annotate.showEntityOverview()
+        v.entityoverview = ner.showEntityOverview()
         v.entityheaders = self.wrapEntityHeaders()
-        v.buckets = annotate.showContent(
+        v.buckets = ner.showContent(
             buckets,
             activeEntity=activeEntity,
             excludedTokens=excludedTokens,
@@ -124,13 +127,13 @@ class Serve(Request, Fragments):
         -------
         The generated HTML for the portion of the page.
         """
-        annotate = self.annotate
+        ner = self.ner
         v = self.v
         activeEntity = v.activeentity
         excludedTokens = v.excludedtokens
         buckets = self.buckets
 
-        return annotate.showContent(
+        return ner.showContent(
             buckets,
             activeEntity=activeEntity,
             excludedTokens=excludedTokens,
@@ -145,7 +148,7 @@ class Serve(Request, Fragments):
         We further modify the selection by two additional parameters.
 
         The resulting list of buckets is obtained by
-        `tf.browser.ner.annotate.Annotate.filterContent`, and each member in the bucket
+        `tf.browser.ner.ner.NER.filterContent`, and each member in the bucket
         list is a tuple as indicated in the `filterContent` function.
         The list is stored in the `Serve` object.
         Additionally, statistics about these buckets and how many entity values
@@ -166,7 +169,7 @@ class Serve(Request, Fragments):
 
             We use this when we retrieve the context for a given bucket.
         """
-        annotate = self.annotate
+        ner = self.ner
         v = self.v
 
         bFindRe = None if noFind else v.bfindre
@@ -177,7 +180,7 @@ class Serve(Request, Fragments):
         valSelect = v.valselect
         freeState = v.freestate
 
-        setData = annotate.getSetData()
+        setData = ner.getSetData()
         entityIdent = setData.entityIdent
 
         if activeEntity not in entityIdent:
@@ -185,7 +188,7 @@ class Serve(Request, Fragments):
             v.activeentity = None
 
         qTokens = (
-            annotate.getStrings(tokenStart, tokenEnd) if tokenStart and tokenEnd else None
+            ner.getStrings(tokenStart, tokenEnd) if tokenStart and tokenEnd else None
         )
 
         (
@@ -193,7 +196,7 @@ class Serve(Request, Fragments):
             v.nfind,
             v.nvisible,
             v.nent,
-        ) = annotate.filterContent(
+        ) = ner.filterContent(
             node=node,
             bFindRe=bFindRe,
             anyEnt=anyEnt,
@@ -218,38 +221,38 @@ class Serve(Request, Fragments):
         The results of the actions are wrapped in messages and stored in the
         `v`.
         """
-        annotate = self.annotate
-        annotate.readSets()
+        ner = self.ner
+        ner.readSets()
 
         v = self.v
-        chosenAnnoSet = v.annoset
-        dupAnnoSet = v.duannoset
-        renamedAnnoSet = v.rannoset
-        deleteAnnoSet = v.dannoset
+        chosenSet = v.set
+        dupSet = v.duset
+        renamedSet = v.rset
+        deleteSet = v.dset
 
         messages = []
 
-        if deleteAnnoSet:
-            messages.extend(annotate.setDel(deleteAnnoSet))
-            v.dannoset = ""
-            v.annoset = ""
+        if deleteSet:
+            messages.extend(ner.setDel(deleteSet))
+            v.dset = ""
+            v.set = ""
 
-        if dupAnnoSet:
-            messages.extend(annotate.setDup(dupAnnoSet))
-            v.annoset = dupAnnoSet
-            v.duannoset = ""
+        if dupSet:
+            messages.extend(ner.setDup(dupSet))
+            v.set = dupSet
+            v.duset = ""
 
-        if renamedAnnoSet and chosenAnnoSet:
-            messages.extend(annotate.setMove(renamedAnnoSet))
-            v.annoset = renamedAnnoSet
-            v.rannoset = ""
+        if renamedSet and chosenSet:
+            messages.extend(ner.setMove(renamedSet))
+            v.set = renamedSet
+            v.rset = ""
 
         v.messagesrc = messages
 
-        chosenAnnoSet = v.annoset
-        annotate.setSet(chosenAnnoSet)
+        chosenSet = v.set
+        ner.setSet(chosenSet)
 
-        self.wrapAnnoSets()
+        self.wrapSets()
         self.wrapMessages()
 
     def updateHandling(self):
@@ -263,7 +266,7 @@ class Serve(Request, Fragments):
         The results of the actions are wrapped in a report and stored in the
         `v`.
         """
-        annotate = self.annotate
+        ner = self.ner
         v = self.v
 
         delData = v.deldata
@@ -288,13 +291,13 @@ class Serve(Request, Fragments):
                 self.getBuckets(noFind=True)
 
             if submitter == "delgo" and delData:
-                report = annotate.delEntityRich(
+                report = ner.delEntityRich(
                     delData.deletions, self.buckets, excludedTokens=excludedTokens
                 )
-                annotate.loadData()
+                ner.loadSetData()
                 self.wrapReport(report, "del")
                 if hasEnt:
-                    setData = annotate.getSetData()
+                    setData = ner.getSetData()
                     entityIdent = setData.entityIdent
 
                     stillExists = activeEntity in entityIdent
@@ -302,10 +305,10 @@ class Serve(Request, Fragments):
                         v.activeentity = None
 
             if submitter == "addgo" and addData:
-                report = annotate.addEntityRich(
+                report = ner.addEntityRich(
                     addData.additions, self.buckets, excludedTokens=excludedTokens
                 )
-                annotate.loadData()
+                ner.loadSetData()
                 self.wrapReport(report, "add")
 
             self.adaptValSelect()

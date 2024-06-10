@@ -24,7 +24,7 @@ You can prepare a spreadsheet with entities and surface forms and have the tool
 
 Here is what the browser interface looks like:
 
-![browser](../images/Annotate/browser.png)
+![browser](../images/Ner/browser.png)
 
 # Work-in-progress
 
@@ -249,7 +249,7 @@ Concerning `ner/config.yaml`: it has the following information:
 
 Concerning the Excel sheets in `ner/sheets`:
 
-*   they can be read by `tf.browser.ner.ner.NER.readInstructions`;
+*   they can be read by `tf.browser.ner.ner.NER.setSheet`;
 
 *   you might need to `pip install openpyxl` first;
 
