@@ -30,16 +30,16 @@ crossorigin>
 <section id="section-intro">
 <p>Rendering of corpus extracts with annotations.</p>
 <p>To see how this fits among all the modules of this package, see
-<code><a title="tf.browser.ner.annotate" href="annotate.html">tf.browser.ner.annotate</a></code> .</p>
+<code><a title="tf.browser.ner.ner" href="ner.html">tf.browser.ner.ner</a></code> .</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/show.py#L1-L394" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/show.py#L1-L394" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Rendering of corpus extracts with annotations.
 
 To see how this fits among all the modules of this package, see
-`tf.browser.ner.annotate` .
+`tf.browser.ner.ner` .
 &#34;&#34;&#34;
 
 from itertools import chain
@@ -230,7 +230,7 @@ class Show:
         these entities are present in the input parameter `buckets`.
 
         It is recommended to apply this function to the outcome of
-        `tf.browser.ner.annotate.Annotate.filterContent`
+        `tf.browser.ner.ner.NER.filterContent`
 
         !!! caution &#34;Truncated&#34;
             Unless the user has selected an entity or forced a start and end
@@ -243,7 +243,7 @@ class Show:
             A selection of buckets (chunks / paragraphs) of the corpus.
             Each bucket is given as a tuple.
             The exact form is this data structure is equal to what the
-            function `tf.browser.ner.annotate.Annotate.filterContent`
+            function `tf.browser.ner.ner.NER.filterContent`
             returns.
 
         activeEntity: tuple, optional None
@@ -292,7 +292,7 @@ class Show:
 
         browse = self.browse
         setData = self.getSetData()
-        annoSet = self.annoSet
+        setName = self.setName
         afterv = self.getAfter()
         sectionHead = self.sectionHead
 
@@ -330,7 +330,7 @@ class Show:
             nBshown += 1
             charPos = 0
 
-            if annoSet:
+            if setName:
                 allMatches = set()
                 endMatches = set()
                 for match in matches:
@@ -398,7 +398,7 @@ class Show:
                 hlClasses += f&#34; {style} &#34; if style else &#34;&#34;
                 hlClass = dict(cls=hlClasses) if hlClasses else {}
 
-                endQueried = annoSet and t in endMatches
+                endQueried = setName and t in endMatches
                 excl = &#34;x&#34; if t in excludedTokens else &#34;v&#34;
                 nodeRep = H.span(str(t), cls=&#34;nd&#34;) if withNodes else &#34;&#34;
 
@@ -449,7 +449,7 @@ class Show:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/show.py#L24-L394" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/show.py#L24-L394" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Show:
     def showEntityOverview(self):
@@ -622,7 +622,7 @@ class Show:
         these entities are present in the input parameter `buckets`.
 
         It is recommended to apply this function to the outcome of
-        `tf.browser.ner.annotate.Annotate.filterContent`
+        `tf.browser.ner.ner.NER.filterContent`
 
         !!! caution &#34;Truncated&#34;
             Unless the user has selected an entity or forced a start and end
@@ -635,7 +635,7 @@ class Show:
             A selection of buckets (chunks / paragraphs) of the corpus.
             Each bucket is given as a tuple.
             The exact form is this data structure is equal to what the
-            function `tf.browser.ner.annotate.Annotate.filterContent`
+            function `tf.browser.ner.ner.NER.filterContent`
             returns.
 
         activeEntity: tuple, optional None
@@ -684,7 +684,7 @@ class Show:
 
         browse = self.browse
         setData = self.getSetData()
-        annoSet = self.annoSet
+        setName = self.setName
         afterv = self.getAfter()
         sectionHead = self.sectionHead
 
@@ -722,7 +722,7 @@ class Show:
             nBshown += 1
             charPos = 0
 
-            if annoSet:
+            if setName:
                 allMatches = set()
                 endMatches = set()
                 for match in matches:
@@ -790,7 +790,7 @@ class Show:
                 hlClasses += f&#34; {style} &#34; if style else &#34;&#34;
                 hlClass = dict(cls=hlClasses) if hlClasses else {}
 
-                endQueried = annoSet and t in endMatches
+                endQueried = setName and t in endMatches
                 excl = &#34;x&#34; if t in excludedTokens else &#34;v&#34;
                 nodeRep = H.span(str(t), cls=&#34;nd&#34;) if withNodes else &#34;&#34;
 
@@ -825,7 +825,7 @@ class Show:
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
-<li><a title="tf.browser.ner.annotate.Annotate" href="annotate.html#tf.browser.ner.annotate.Annotate">Annotate</a></li>
+<li><a title="tf.browser.ner.ner.NER" href="ner.html#tf.browser.ner.ner.NER">NER</a></li>
 </ul>
 <h3>Methods</h3>
 <dl>
@@ -837,7 +837,7 @@ class Show:
 <p>The corpus text will be marked up with entities, the positions of
 these entities are present in the input parameter <code>buckets</code>.</p>
 <p>It is recommended to apply this function to the outcome of
-<code><a title="tf.browser.ner.annotate.Annotate.filterContent" href="annotate.html#tf.browser.ner.annotate.Annotate.filterContent">Annotate.filterContent()</a></code></p>
+<code><a title="tf.browser.ner.ner.NER.filterContent" href="ner.html#tf.browser.ner.ner.NER.filterContent">NER.filterContent()</a></code></p>
 <div class="admonition caution">
 <p class="admonition-title">Truncated</p>
 <p>Unless the user has selected an entity or forced a start and end
@@ -850,7 +850,7 @@ See the parameter <code>mayLimit</code> below.</p>
 <dd>A selection of buckets (chunks / paragraphs) of the corpus.
 Each bucket is given as a tuple.
 The exact form is this data structure is equal to what the
-function <code><a title="tf.browser.ner.annotate.Annotate.filterContent" href="annotate.html#tf.browser.ner.annotate.Annotate.filterContent">Annotate.filterContent()</a></code>
+function <code><a title="tf.browser.ner.ner.NER.filterContent" href="ner.html#tf.browser.ner.ner.NER.filterContent">NER.filterContent()</a></code>
 returns.</dd>
 <dt><strong><code>activeEntity</code></strong> :&ensp;<code>tuple</code>, optional <code>None</code></dt>
 <dd>The entity that must be highlighted.</dd>
@@ -888,7 +888,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/show.py#L179-L394" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/show.py#L179-L394" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showContent(
     self,
@@ -906,7 +906,7 @@ it is a cell in a Jupyter Notebook.</dd>
     these entities are present in the input parameter `buckets`.
 
     It is recommended to apply this function to the outcome of
-    `tf.browser.ner.annotate.Annotate.filterContent`
+    `tf.browser.ner.ner.NER.filterContent`
 
     !!! caution &#34;Truncated&#34;
         Unless the user has selected an entity or forced a start and end
@@ -919,7 +919,7 @@ it is a cell in a Jupyter Notebook.</dd>
         A selection of buckets (chunks / paragraphs) of the corpus.
         Each bucket is given as a tuple.
         The exact form is this data structure is equal to what the
-        function `tf.browser.ner.annotate.Annotate.filterContent`
+        function `tf.browser.ner.ner.NER.filterContent`
         returns.
 
     activeEntity: tuple, optional None
@@ -968,7 +968,7 @@ it is a cell in a Jupyter Notebook.</dd>
 
     browse = self.browse
     setData = self.getSetData()
-    annoSet = self.annoSet
+    setName = self.setName
     afterv = self.getAfter()
     sectionHead = self.sectionHead
 
@@ -1006,7 +1006,7 @@ it is a cell in a Jupyter Notebook.</dd>
         nBshown += 1
         charPos = 0
 
-        if annoSet:
+        if setName:
             allMatches = set()
             endMatches = set()
             for match in matches:
@@ -1074,7 +1074,7 @@ it is a cell in a Jupyter Notebook.</dd>
             hlClasses += f&#34; {style} &#34; if style else &#34;&#34;
             hlClass = dict(cls=hlClasses) if hlClasses else {}
 
-            endQueried = annoSet and t in endMatches
+            endQueried = setName and t in endMatches
             excl = &#34;x&#34; if t in excludedTokens else &#34;v&#34;
             nodeRep = H.span(str(t), cls=&#34;nd&#34;) if withNodes else &#34;&#34;
 
@@ -1159,7 +1159,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/show.py#L61-L177" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/show.py#L61-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showEntities(
     self, activeEntity=None, sortKey=None, sortDir=None, cutOffFreq=None
@@ -1297,7 +1297,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/show.py#L25-L59" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/show.py#L25-L59" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showEntityOverview(self):
     &#34;&#34;&#34;Generates HTML for an overview of the entities.

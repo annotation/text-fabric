@@ -32,11 +32,11 @@ crossorigin>
 <p>Annotation sets contain the annotations that the user generates by using
 the tool.</p>
 <p>To see how this fits among all the modules of this package, see
-<code><a title="tf.browser.ner.annotate" href="annotate.html">tf.browser.ner.annotate</a></code> .</p>
+<code><a title="tf.browser.ner.ner" href="ner.html">tf.browser.ner.ner</a></code> .</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/sets.py#L1-L312" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/sets.py#L1-L310" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Annotation set management.
 
@@ -44,7 +44,7 @@ Annotation sets contain the annotations that the user generates by using
 the tool.
 
 To see how this fits among all the modules of this package, see
-`tf.browser.ner.annotate` .
+`tf.browser.ner.ner` .
 &#34;&#34;&#34;
 
 from .data import Data
@@ -66,7 +66,7 @@ from .settings import ERROR
 
 
 class Sets(Data):
-    def __init__(self, data=None):
+    def __init__(self, sets=None):
         &#34;&#34;&#34;Methods to create, duplicate, rename and delete annotation sets.
 
         Annotation sets have names, given by the user.
@@ -80,27 +80,31 @@ class Sets(Data):
 
         Parameters
         ----------
-        data: object, optional None
-            Entity data to start with.
-            If None, a fresh data store will be created by a parent class (Data).
+        sets: object, optional None
+            Entity sets to start with.
+            If None, a fresh store of sets will be created by a parent class (Data).
         &#34;&#34;&#34;
-        super().__init__(data=data)
+        super().__init__(sets=sets)
         if not self.properlySetup:
             return
 
+        browse = self.browse
         settings = self.settings
         entitySet = settings.entitySet
 
-        self.annoSet = &#34;&#34;
+        self.setName = &#34;&#34;
         &#34;&#34;&#34;The current annotation set.&#34;&#34;&#34;
 
-        self.annoSetRep = entitySet
+        self.setNameRep = entitySet
         &#34;&#34;&#34;The name representation of the current annotation set.&#34;&#34;&#34;
 
         self.setNames = set()
         &#34;&#34;&#34;The set of names of annotation sets that are present on the file system.&#34;&#34;&#34;
 
         self.readSets()
+
+        if not browse:
+            self.loadSetData()
 
     def readSets(self):
         &#34;&#34;&#34;Read the list current annotation sets (again).
@@ -112,23 +116,22 @@ class Sets(Data):
         self.setNames = set(dirContents(annoDir)[1])
 
     def getSetData(self):
-        &#34;&#34;&#34;Deliver the data of the current set.
+        &#34;&#34;&#34;Deliver the current set.
         &#34;&#34;&#34;
-        data = self.data
-        setsData = data.sets
-        annoSet = self.annoSet
-        setData = setsData.setdefault(annoSet, AttrDict())
+        setsData = self.sets
+        setName = self.setName
+        setData = setsData.setdefault(setName, AttrDict())
         return setData
 
-    def setSet(self, newAnnoSet):
+    def setSet(self, newSetName):
         &#34;&#34;&#34;Switch to a named annotation set.
 
         If the new set does not exist, it will be created.
-        After the switch, the data of the new set will be loaded into memory.
+        After the switch, the new set will be loaded into memory.
 
         Parameters
         ----------
-        newAnnoSet: string
+        newSetName: string
             The name of the new annotation set to switch to.
         &#34;&#34;&#34;
         if not self.properlySetup:
@@ -139,32 +142,31 @@ class Sets(Data):
         browse = self.browse
 
         if not browse:
-            self.loadData()
+            self.loadSetData()
 
-        data = self.data
         setNames = self.setNames
-        setsData = data.sets
-        annoSet = self.annoSet
+        setsData = self.sets
+        setName = self.setName
         annoDir = self.annoDir
-        newSetDir = f&#34;{annoDir}/{newAnnoSet}&#34;
+        newSetDir = f&#34;{annoDir}/{newSetName}&#34;
 
-        if newAnnoSet and (newAnnoSet not in setNames or not dirExists(newSetDir)):
+        if newSetName and (newSetName not in setNames or not dirExists(newSetDir)):
             initTree(newSetDir)
-            setNames.add(newAnnoSet)
+            setNames.add(newSetName)
 
-        if newAnnoSet != annoSet:
-            annoSet = newAnnoSet
-            self.annoSet = annoSet
-            self.annoSetRep = annoSet if annoSet else entitySet
-            self.loadData()
+        if newSetName != setName:
+            setName = newSetName
+            self.setName = setName
+            self.setNameRep = setName if setName else entitySet
+            self.loadSetData()
 
         if not browse:
-            annoSetRep = self.annoSetRep
-            entities = setsData[annoSet].entities
+            setNameRep = self.setNameRep
+            entities = setsData[setName].entities
             nEntities = len(entities)
             plural = &#34;&#34; if nEntities == 1 else &#34;s&#34;
             self.console(
-                f&#34;Annotation set {annoSetRep} has {nEntities} annotation{plural}&#34;
+                f&#34;Annotation set {setNameRep} has {nEntities} annotation{plural}&#34;
             )
 
     def resetSet(self):
@@ -176,30 +178,29 @@ class Sets(Data):
             return
 
         settings = self.settings
-        annoSet = self.annoSet
+        setName = self.setName
         entitySet = settings.entitySet
 
-        if not annoSet:
+        if not setName:
             self.console(f&#34;Resetting the {entitySet} has no effect&#34;)
             return
 
         browse = self.browse
 
-        data = self.data
-        setsData = data.sets
+        setsData = self.sets
         annoDir = self.annoDir
-        setDir = f&#34;{annoDir}/{annoSet}&#34;
+        setDir = f&#34;{annoDir}/{setName}&#34;
 
         initTree(setDir, fresh=True, gentle=True)
-        self.loadData()
+        self.loadSetData()
 
         if not browse:
-            annoSetRep = self.annoSetRep
-            entities = setsData[annoSet].entities
+            setNameRep = self.setNameRep
+            entities = setsData[setName].entities
             nEntities = len(entities)
             plural = &#34;&#34; if nEntities == 1 else &#34;s&#34;
             self.console(
-                f&#34;Annotation set {annoSetRep} has {nEntities} annotation{plural}&#34;
+                f&#34;Annotation set {setNameRep} has {nEntities} annotation{plural}&#34;
             )
 
     def setDup(self, dupSet):
@@ -221,10 +222,9 @@ class Sets(Data):
         if not self.properlySetup:
             return []
 
-        data = self.data
         setNames = self.setNames
-        setsData = data.sets
-        annoSet = self.annoSet
+        setsData = self.sets
+        setName = self.setName
         annoDir = self.annoDir
         annoPath = f&#34;{annoDir}/{dupSet}&#34;
 
@@ -233,19 +233,19 @@ class Sets(Data):
         if dupSet in setNames:
             messages.append((ERROR, f&#34;&#34;&#34;Set {dupSet} already exists&#34;&#34;&#34;))
         else:
-            if annoSet:
+            if setName:
                 if not dirCopy(
-                    f&#34;{annoDir}/{annoSet}&#34;,
+                    f&#34;{annoDir}/{setName}&#34;,
                     annoPath,
                     noclobber=True,
                 ):
                     messages.append(
-                        (ERROR, f&#34;&#34;&#34;Could not copy {annoSet} to {dupSet}&#34;&#34;&#34;)
+                        (ERROR, f&#34;&#34;&#34;Could not copy {setName} to {dupSet}&#34;&#34;&#34;)
                     )
                 else:
                     setNames.add(dupSet)
-                    setsData[dupSet] = setsData[annoSet]
-                    self.annoSet = dupSet
+                    setsData[dupSet] = setsData[setName]
+                    self.setName = dupSet
             else:
                 dataFile = f&#34;{annoPath}/entities.tsv&#34;
 
@@ -255,8 +255,8 @@ class Sets(Data):
                     dirMake(annoPath)
                     self.saveEntitiesAs(dataFile)
                     setNames.add(dupSet)
-                    setsData[dupSet] = setsData[annoSet]
-                    self.annoSet = dupSet
+                    setsData[dupSet] = setsData[setName]
+                    self.setName = dupSet
 
         return messages
 
@@ -281,9 +281,8 @@ class Sets(Data):
             messages.append(&#34;&#34;&#34;Cannot remove set &#34;&#34; because it is read-only&#34;&#34;&#34;)
             return messages
 
-        data = self.data
         setNames = self.setNames
-        setsData = data.sets
+        setsData = self.sets
         annoDir = self.annoDir
         annoPath = f&#34;{annoDir}/{delSet}&#34;
 
@@ -294,8 +293,8 @@ class Sets(Data):
         else:
             setNames.discard(delSet)
             del setsData[delSet]
-            if self.annoSet == delSet:
-                self.annoSet = &#34;&#34;
+            if self.setName == delSet:
+                self.setName = &#34;&#34;
 
         return messages
 
@@ -320,34 +319,33 @@ class Sets(Data):
             messages.append(&#34;&#34;&#34;Cannot rename a set to &#34;&#34;.&#34;&#34;&#34;)
             return messages
 
-        annoSet = self.annoSet
+        setName = self.setName
 
-        if annoSet == &#34;&#34;:
+        if setName == &#34;&#34;:
             messages.append(&#34;&#34;&#34;Cannot rename set &#34;&#34;.&#34;&#34;&#34;)
             return messages
 
-        data = self.data
         setNames = self.setNames
-        setsData = data.sets
+        setsData = self.sets
         annoDir = self.annoDir
         annoPath = f&#34;{annoDir}/{moveSet}&#34;
 
         if dirExists(annoPath):
             messages.append((ERROR, f&#34;&#34;&#34;Set {moveSet} already exists&#34;&#34;&#34;))
         else:
-            if not dirMove(f&#34;{annoDir}/{annoSet}&#34;, annoPath):
+            if not dirMove(f&#34;{annoDir}/{setName}&#34;, annoPath):
                 messages.append(
                     (
                         ERROR,
-                        f&#34;&#34;&#34;Could not rename {annoSet} to {moveSet}&#34;&#34;&#34;,
+                        f&#34;&#34;&#34;Could not rename {setName} to {moveSet}&#34;&#34;&#34;,
                     )
                 )
             else:
                 setNames.add(moveSet)
-                setNames.discard(annoSet)
-                setsData[moveSet] = setsData[annoSet]
-                del setsData[annoSet]
-                self.annoSet = moveSet
+                setNames.discard(setName)
+                setsData[moveSet] = setsData[setName]
+                del setsData[setName]
+                self.setName = moveSet
 
         return messages</code></pre>
 </details>
@@ -363,7 +361,7 @@ class Sets(Data):
 <dl>
 <dt id="tf.browser.ner.sets.Sets"><code class="flex name class">
 <span>class <span class="ident">Sets</span></span>
-<span>(</span><span>data=None)</span>
+<span>(</span><span>sets=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Methods to create, duplicate, rename and delete annotation sets.</p>
@@ -375,17 +373,17 @@ are present in the TF data as nodes and features.</p>
 memory.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>data</code></strong> :&ensp;<code>object</code>, optional <code>None</code></dt>
-<dd>Entity data to start with.
-If None, a fresh data store will be created by a parent class (Data).</dd>
+<dt><strong><code>sets</code></strong> :&ensp;<code>object</code>, optional <code>None</code></dt>
+<dd>Entity sets to start with.
+If None, a fresh store of sets will be created by a parent class (Data).</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/sets.py#L28-L312" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/sets.py#L28-L310" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Sets(Data):
-    def __init__(self, data=None):
+    def __init__(self, sets=None):
         &#34;&#34;&#34;Methods to create, duplicate, rename and delete annotation sets.
 
         Annotation sets have names, given by the user.
@@ -399,27 +397,31 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
 
         Parameters
         ----------
-        data: object, optional None
-            Entity data to start with.
-            If None, a fresh data store will be created by a parent class (Data).
+        sets: object, optional None
+            Entity sets to start with.
+            If None, a fresh store of sets will be created by a parent class (Data).
         &#34;&#34;&#34;
-        super().__init__(data=data)
+        super().__init__(sets=sets)
         if not self.properlySetup:
             return
 
+        browse = self.browse
         settings = self.settings
         entitySet = settings.entitySet
 
-        self.annoSet = &#34;&#34;
+        self.setName = &#34;&#34;
         &#34;&#34;&#34;The current annotation set.&#34;&#34;&#34;
 
-        self.annoSetRep = entitySet
+        self.setNameRep = entitySet
         &#34;&#34;&#34;The name representation of the current annotation set.&#34;&#34;&#34;
 
         self.setNames = set()
         &#34;&#34;&#34;The set of names of annotation sets that are present on the file system.&#34;&#34;&#34;
 
         self.readSets()
+
+        if not browse:
+            self.loadSetData()
 
     def readSets(self):
         &#34;&#34;&#34;Read the list current annotation sets (again).
@@ -431,23 +433,22 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
         self.setNames = set(dirContents(annoDir)[1])
 
     def getSetData(self):
-        &#34;&#34;&#34;Deliver the data of the current set.
+        &#34;&#34;&#34;Deliver the current set.
         &#34;&#34;&#34;
-        data = self.data
-        setsData = data.sets
-        annoSet = self.annoSet
-        setData = setsData.setdefault(annoSet, AttrDict())
+        setsData = self.sets
+        setName = self.setName
+        setData = setsData.setdefault(setName, AttrDict())
         return setData
 
-    def setSet(self, newAnnoSet):
+    def setSet(self, newSetName):
         &#34;&#34;&#34;Switch to a named annotation set.
 
         If the new set does not exist, it will be created.
-        After the switch, the data of the new set will be loaded into memory.
+        After the switch, the new set will be loaded into memory.
 
         Parameters
         ----------
-        newAnnoSet: string
+        newSetName: string
             The name of the new annotation set to switch to.
         &#34;&#34;&#34;
         if not self.properlySetup:
@@ -458,32 +459,31 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
         browse = self.browse
 
         if not browse:
-            self.loadData()
+            self.loadSetData()
 
-        data = self.data
         setNames = self.setNames
-        setsData = data.sets
-        annoSet = self.annoSet
+        setsData = self.sets
+        setName = self.setName
         annoDir = self.annoDir
-        newSetDir = f&#34;{annoDir}/{newAnnoSet}&#34;
+        newSetDir = f&#34;{annoDir}/{newSetName}&#34;
 
-        if newAnnoSet and (newAnnoSet not in setNames or not dirExists(newSetDir)):
+        if newSetName and (newSetName not in setNames or not dirExists(newSetDir)):
             initTree(newSetDir)
-            setNames.add(newAnnoSet)
+            setNames.add(newSetName)
 
-        if newAnnoSet != annoSet:
-            annoSet = newAnnoSet
-            self.annoSet = annoSet
-            self.annoSetRep = annoSet if annoSet else entitySet
-            self.loadData()
+        if newSetName != setName:
+            setName = newSetName
+            self.setName = setName
+            self.setNameRep = setName if setName else entitySet
+            self.loadSetData()
 
         if not browse:
-            annoSetRep = self.annoSetRep
-            entities = setsData[annoSet].entities
+            setNameRep = self.setNameRep
+            entities = setsData[setName].entities
             nEntities = len(entities)
             plural = &#34;&#34; if nEntities == 1 else &#34;s&#34;
             self.console(
-                f&#34;Annotation set {annoSetRep} has {nEntities} annotation{plural}&#34;
+                f&#34;Annotation set {setNameRep} has {nEntities} annotation{plural}&#34;
             )
 
     def resetSet(self):
@@ -495,30 +495,29 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
             return
 
         settings = self.settings
-        annoSet = self.annoSet
+        setName = self.setName
         entitySet = settings.entitySet
 
-        if not annoSet:
+        if not setName:
             self.console(f&#34;Resetting the {entitySet} has no effect&#34;)
             return
 
         browse = self.browse
 
-        data = self.data
-        setsData = data.sets
+        setsData = self.sets
         annoDir = self.annoDir
-        setDir = f&#34;{annoDir}/{annoSet}&#34;
+        setDir = f&#34;{annoDir}/{setName}&#34;
 
         initTree(setDir, fresh=True, gentle=True)
-        self.loadData()
+        self.loadSetData()
 
         if not browse:
-            annoSetRep = self.annoSetRep
-            entities = setsData[annoSet].entities
+            setNameRep = self.setNameRep
+            entities = setsData[setName].entities
             nEntities = len(entities)
             plural = &#34;&#34; if nEntities == 1 else &#34;s&#34;
             self.console(
-                f&#34;Annotation set {annoSetRep} has {nEntities} annotation{plural}&#34;
+                f&#34;Annotation set {setNameRep} has {nEntities} annotation{plural}&#34;
             )
 
     def setDup(self, dupSet):
@@ -540,10 +539,9 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
         if not self.properlySetup:
             return []
 
-        data = self.data
         setNames = self.setNames
-        setsData = data.sets
-        annoSet = self.annoSet
+        setsData = self.sets
+        setName = self.setName
         annoDir = self.annoDir
         annoPath = f&#34;{annoDir}/{dupSet}&#34;
 
@@ -552,19 +550,19 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
         if dupSet in setNames:
             messages.append((ERROR, f&#34;&#34;&#34;Set {dupSet} already exists&#34;&#34;&#34;))
         else:
-            if annoSet:
+            if setName:
                 if not dirCopy(
-                    f&#34;{annoDir}/{annoSet}&#34;,
+                    f&#34;{annoDir}/{setName}&#34;,
                     annoPath,
                     noclobber=True,
                 ):
                     messages.append(
-                        (ERROR, f&#34;&#34;&#34;Could not copy {annoSet} to {dupSet}&#34;&#34;&#34;)
+                        (ERROR, f&#34;&#34;&#34;Could not copy {setName} to {dupSet}&#34;&#34;&#34;)
                     )
                 else:
                     setNames.add(dupSet)
-                    setsData[dupSet] = setsData[annoSet]
-                    self.annoSet = dupSet
+                    setsData[dupSet] = setsData[setName]
+                    self.setName = dupSet
             else:
                 dataFile = f&#34;{annoPath}/entities.tsv&#34;
 
@@ -574,8 +572,8 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
                     dirMake(annoPath)
                     self.saveEntitiesAs(dataFile)
                     setNames.add(dupSet)
-                    setsData[dupSet] = setsData[annoSet]
-                    self.annoSet = dupSet
+                    setsData[dupSet] = setsData[setName]
+                    self.setName = dupSet
 
         return messages
 
@@ -600,9 +598,8 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
             messages.append(&#34;&#34;&#34;Cannot remove set &#34;&#34; because it is read-only&#34;&#34;&#34;)
             return messages
 
-        data = self.data
         setNames = self.setNames
-        setsData = data.sets
+        setsData = self.sets
         annoDir = self.annoDir
         annoPath = f&#34;{annoDir}/{delSet}&#34;
 
@@ -613,8 +610,8 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
         else:
             setNames.discard(delSet)
             del setsData[delSet]
-            if self.annoSet == delSet:
-                self.annoSet = &#34;&#34;
+            if self.setName == delSet:
+                self.setName = &#34;&#34;
 
         return messages
 
@@ -639,34 +636,33 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
             messages.append(&#34;&#34;&#34;Cannot rename a set to &#34;&#34;.&#34;&#34;&#34;)
             return messages
 
-        annoSet = self.annoSet
+        setName = self.setName
 
-        if annoSet == &#34;&#34;:
+        if setName == &#34;&#34;:
             messages.append(&#34;&#34;&#34;Cannot rename set &#34;&#34;.&#34;&#34;&#34;)
             return messages
 
-        data = self.data
         setNames = self.setNames
-        setsData = data.sets
+        setsData = self.sets
         annoDir = self.annoDir
         annoPath = f&#34;{annoDir}/{moveSet}&#34;
 
         if dirExists(annoPath):
             messages.append((ERROR, f&#34;&#34;&#34;Set {moveSet} already exists&#34;&#34;&#34;))
         else:
-            if not dirMove(f&#34;{annoDir}/{annoSet}&#34;, annoPath):
+            if not dirMove(f&#34;{annoDir}/{setName}&#34;, annoPath):
                 messages.append(
                     (
                         ERROR,
-                        f&#34;&#34;&#34;Could not rename {annoSet} to {moveSet}&#34;&#34;&#34;,
+                        f&#34;&#34;&#34;Could not rename {setName} to {moveSet}&#34;&#34;&#34;,
                     )
                 )
             else:
                 setNames.add(moveSet)
-                setNames.discard(annoSet)
-                setsData[moveSet] = setsData[annoSet]
-                del setsData[annoSet]
-                self.annoSet = moveSet
+                setNames.discard(setName)
+                setsData[moveSet] = setsData[setName]
+                del setsData[setName]
+                self.setName = moveSet
 
         return messages</code></pre>
 </details>
@@ -678,15 +674,15 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
-<li><a title="tf.browser.ner.annotate.Annotate" href="annotate.html#tf.browser.ner.annotate.Annotate">Annotate</a></li>
+<li><a title="tf.browser.ner.ner.NER" href="ner.html#tf.browser.ner.ner.NER">NER</a></li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="tf.browser.ner.sets.Sets.annoSet"><code class="name">var <span class="ident">annoSet</span></code></dt>
+<dt id="tf.browser.ner.sets.Sets.setName"><code class="name">var <span class="ident">setName</span></code></dt>
 <dd>
 <div class="desc"><p>The current annotation set.</p></div>
 </dd>
-<dt id="tf.browser.ner.sets.Sets.annoSetRep"><code class="name">var <span class="ident">annoSetRep</span></code></dt>
+<dt id="tf.browser.ner.sets.Sets.setNameRep"><code class="name">var <span class="ident">setNameRep</span></code></dt>
 <dd>
 <div class="desc"><p>The name representation of the current annotation set.</p></div>
 </dd>
@@ -701,19 +697,18 @@ If None, a fresh data store will be created by a parent class (Data).</dd>
 <span>def <span class="ident">getSetData</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Deliver the data of the current set.</p></div>
+<div class="desc"><p>Deliver the current set.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/sets.py#L74-L81" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/sets.py#L78-L84" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getSetData(self):
-    &#34;&#34;&#34;Deliver the data of the current set.
+    &#34;&#34;&#34;Deliver the current set.
     &#34;&#34;&#34;
-    data = self.data
-    setsData = data.sets
-    annoSet = self.annoSet
-    setData = setsData.setdefault(annoSet, AttrDict())
+    setsData = self.sets
+    setName = self.setName
+    setData = setsData.setdefault(setName, AttrDict())
     return setData</code></pre>
 </details>
 </dd>
@@ -727,7 +722,7 @@ by working with annotations in a Jupyter Notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/sets.py#L65-L72" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/sets.py#L69-L76" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readSets(self):
     &#34;&#34;&#34;Read the list current annotation sets (again).
@@ -748,7 +743,7 @@ by working with annotations in a Jupyter Notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/sets.py#L130-L163" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/sets.py#L132-L164" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resetSet(self):
     &#34;&#34;&#34;Clear the current annotation set.
@@ -759,30 +754,29 @@ by working with annotations in a Jupyter Notebook.</p></div>
         return
 
     settings = self.settings
-    annoSet = self.annoSet
+    setName = self.setName
     entitySet = settings.entitySet
 
-    if not annoSet:
+    if not setName:
         self.console(f&#34;Resetting the {entitySet} has no effect&#34;)
         return
 
     browse = self.browse
 
-    data = self.data
-    setsData = data.sets
+    setsData = self.sets
     annoDir = self.annoDir
-    setDir = f&#34;{annoDir}/{annoSet}&#34;
+    setDir = f&#34;{annoDir}/{setName}&#34;
 
     initTree(setDir, fresh=True, gentle=True)
-    self.loadData()
+    self.loadSetData()
 
     if not browse:
-        annoSetRep = self.annoSetRep
-        entities = setsData[annoSet].entities
+        setNameRep = self.setNameRep
+        entities = setsData[setName].entities
         nEntities = len(entities)
         plural = &#34;&#34; if nEntities == 1 else &#34;s&#34;
         self.console(
-            f&#34;Annotation set {annoSetRep} has {nEntities} annotation{plural}&#34;
+            f&#34;Annotation set {setNameRep} has {nEntities} annotation{plural}&#34;
         )</code></pre>
 </details>
 </dd>
@@ -802,7 +796,7 @@ It is not allowed to remove the special set named <code>""</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/sets.py#L223-L260" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/sets.py#L223-L259" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setDel(self, delSet):
     &#34;&#34;&#34;Remove a named set.
@@ -825,9 +819,8 @@ It is not allowed to remove the special set named <code>""</code>.</dd>
         messages.append(&#34;&#34;&#34;Cannot remove set &#34;&#34; because it is read-only&#34;&#34;&#34;)
         return messages
 
-    data = self.data
     setNames = self.setNames
-    setsData = data.sets
+    setsData = self.sets
     annoDir = self.annoDir
     annoPath = f&#34;{annoDir}/{delSet}&#34;
 
@@ -838,8 +831,8 @@ It is not allowed to remove the special set named <code>""</code>.</dd>
     else:
         setNames.discard(delSet)
         del setsData[delSet]
-        if self.annoSet == delSet:
-            self.annoSet = &#34;&#34;
+        if self.setName == delSet:
+            self.setName = &#34;&#34;
 
     return messages</code></pre>
 </details>
@@ -865,7 +858,7 @@ tool-generated annotations.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/sets.py#L165-L221" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/sets.py#L166-L221" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setDup(self, dupSet):
     &#34;&#34;&#34;Duplicates the current set to a set with a new name.
@@ -886,10 +879,9 @@ tool-generated annotations.</p>
     if not self.properlySetup:
         return []
 
-    data = self.data
     setNames = self.setNames
-    setsData = data.sets
-    annoSet = self.annoSet
+    setsData = self.sets
+    setName = self.setName
     annoDir = self.annoDir
     annoPath = f&#34;{annoDir}/{dupSet}&#34;
 
@@ -898,19 +890,19 @@ tool-generated annotations.</p>
     if dupSet in setNames:
         messages.append((ERROR, f&#34;&#34;&#34;Set {dupSet} already exists&#34;&#34;&#34;))
     else:
-        if annoSet:
+        if setName:
             if not dirCopy(
-                f&#34;{annoDir}/{annoSet}&#34;,
+                f&#34;{annoDir}/{setName}&#34;,
                 annoPath,
                 noclobber=True,
             ):
                 messages.append(
-                    (ERROR, f&#34;&#34;&#34;Could not copy {annoSet} to {dupSet}&#34;&#34;&#34;)
+                    (ERROR, f&#34;&#34;&#34;Could not copy {setName} to {dupSet}&#34;&#34;&#34;)
                 )
             else:
                 setNames.add(dupSet)
-                setsData[dupSet] = setsData[annoSet]
-                self.annoSet = dupSet
+                setsData[dupSet] = setsData[setName]
+                self.setName = dupSet
         else:
             dataFile = f&#34;{annoPath}/entities.tsv&#34;
 
@@ -920,8 +912,8 @@ tool-generated annotations.</p>
                 dirMake(annoPath)
                 self.saveEntitiesAs(dataFile)
                 setNames.add(dupSet)
-                setsData[dupSet] = setsData[annoSet]
-                self.annoSet = dupSet
+                setsData[dupSet] = setsData[setName]
+                self.setName = dupSet
 
     return messages</code></pre>
 </details>
@@ -942,7 +934,7 @@ It is also forbidden to rename another set to the special set.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/sets.py#L262-L312" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/sets.py#L261-L310" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setMove(self, moveSet):
     &#34;&#34;&#34;Renames a named set.
@@ -965,64 +957,63 @@ It is also forbidden to rename another set to the special set.</p>
         messages.append(&#34;&#34;&#34;Cannot rename a set to &#34;&#34;.&#34;&#34;&#34;)
         return messages
 
-    annoSet = self.annoSet
+    setName = self.setName
 
-    if annoSet == &#34;&#34;:
+    if setName == &#34;&#34;:
         messages.append(&#34;&#34;&#34;Cannot rename set &#34;&#34;.&#34;&#34;&#34;)
         return messages
 
-    data = self.data
     setNames = self.setNames
-    setsData = data.sets
+    setsData = self.sets
     annoDir = self.annoDir
     annoPath = f&#34;{annoDir}/{moveSet}&#34;
 
     if dirExists(annoPath):
         messages.append((ERROR, f&#34;&#34;&#34;Set {moveSet} already exists&#34;&#34;&#34;))
     else:
-        if not dirMove(f&#34;{annoDir}/{annoSet}&#34;, annoPath):
+        if not dirMove(f&#34;{annoDir}/{setName}&#34;, annoPath):
             messages.append(
                 (
                     ERROR,
-                    f&#34;&#34;&#34;Could not rename {annoSet} to {moveSet}&#34;&#34;&#34;,
+                    f&#34;&#34;&#34;Could not rename {setName} to {moveSet}&#34;&#34;&#34;,
                 )
             )
         else:
             setNames.add(moveSet)
-            setNames.discard(annoSet)
-            setsData[moveSet] = setsData[annoSet]
-            del setsData[annoSet]
-            self.annoSet = moveSet
+            setNames.discard(setName)
+            setsData[moveSet] = setsData[setName]
+            del setsData[setName]
+            self.setName = moveSet
 
     return messages</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.sets.Sets.setSet"><code class="name flex">
-<span>def <span class="ident">setSet</span></span>(<span>self, newAnnoSet)</span>
+<span>def <span class="ident">setSet</span></span>(<span>self, newSetName)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Switch to a named annotation set.</p>
 <p>If the new set does not exist, it will be created.
-After the switch, the data of the new set will be loaded into memory.</p>
+After the switch, the new set will be loaded into memory.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>newAnnoSet</code></strong> :&ensp;<code>string</code></dt>
+<dt><strong><code>newSetName</code></strong> :&ensp;<code>string</code></dt>
 <dd>The name of the new annotation set to switch to.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/sets.py#L83-L128" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/sets.py#L86-L130" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def setSet(self, newAnnoSet):
+<pre><code class="python">def setSet(self, newSetName):
     &#34;&#34;&#34;Switch to a named annotation set.
 
     If the new set does not exist, it will be created.
-    After the switch, the data of the new set will be loaded into memory.
+    After the switch, the new set will be loaded into memory.
 
     Parameters
     ----------
-    newAnnoSet: string
+    newSetName: string
         The name of the new annotation set to switch to.
     &#34;&#34;&#34;
     if not self.properlySetup:
@@ -1033,32 +1024,31 @@ After the switch, the data of the new set will be loaded into memory.</p>
     browse = self.browse
 
     if not browse:
-        self.loadData()
+        self.loadSetData()
 
-    data = self.data
     setNames = self.setNames
-    setsData = data.sets
-    annoSet = self.annoSet
+    setsData = self.sets
+    setName = self.setName
     annoDir = self.annoDir
-    newSetDir = f&#34;{annoDir}/{newAnnoSet}&#34;
+    newSetDir = f&#34;{annoDir}/{newSetName}&#34;
 
-    if newAnnoSet and (newAnnoSet not in setNames or not dirExists(newSetDir)):
+    if newSetName and (newSetName not in setNames or not dirExists(newSetDir)):
         initTree(newSetDir)
-        setNames.add(newAnnoSet)
+        setNames.add(newSetName)
 
-    if newAnnoSet != annoSet:
-        annoSet = newAnnoSet
-        self.annoSet = annoSet
-        self.annoSetRep = annoSet if annoSet else entitySet
-        self.loadData()
+    if newSetName != setName:
+        setName = newSetName
+        self.setName = setName
+        self.setNameRep = setName if setName else entitySet
+        self.loadSetData()
 
     if not browse:
-        annoSetRep = self.annoSetRep
-        entities = setsData[annoSet].entities
+        setNameRep = self.setNameRep
+        entities = setsData[setName].entities
         nEntities = len(entities)
         plural = &#34;&#34; if nEntities == 1 else &#34;s&#34;
         self.console(
-            f&#34;Annotation set {annoSetRep} has {nEntities} annotation{plural}&#34;
+            f&#34;Annotation set {setNameRep} has {nEntities} annotation{plural}&#34;
         )</code></pre>
 </details>
 </dd>
@@ -1077,7 +1067,7 @@ After the switch, the data of the new set will be loaded into memory.</p>
 <li><code><a title="tf.browser.ner.data.Data.delEntity" href="data.html#tf.browser.ner.data.Data.delEntity">delEntity</a></code></li>
 <li><code><a title="tf.browser.ner.data.Data.delEntityRich" href="data.html#tf.browser.ner.data.Data.delEntityRich">delEntityRich</a></code></li>
 <li><code><a title="tf.browser.ner.data.Data.featureDefault" href="corpus.html#tf.browser.ner.corpus.Corpus.featureDefault">featureDefault</a></code></li>
-<li><code><a title="tf.browser.ner.data.Data.fromSource" href="data.html#tf.browser.ner.data.Data.fromSource">fromSource</a></code></li>
+<li><code><a title="tf.browser.ner.data.Data.fromSourceSet" href="data.html#tf.browser.ner.data.Data.fromSourceSet">fromSourceSet</a></code></li>
 <li><code><a title="tf.browser.ner.data.Data.get0" href="corpus.html#tf.browser.ner.corpus.Corpus.get0">get0</a></code></li>
 <li><code><a title="tf.browser.ner.data.Data.get1" href="corpus.html#tf.browser.ner.corpus.Corpus.get1">get1</a></code></li>
 <li><code><a title="tf.browser.ner.data.Data.getAfter" href="corpus.html#tf.browser.ner.corpus.Corpus.getAfter">getAfter</a></code></li>
@@ -1092,9 +1082,9 @@ After the switch, the data of the new set will be loaded into memory.</p>
 <li><code><a title="tf.browser.ner.data.Data.getText" href="corpus.html#tf.browser.ner.corpus.Corpus.getText">getText</a></code></li>
 <li><code><a title="tf.browser.ner.data.Data.getTextR" href="corpus.html#tf.browser.ner.corpus.Corpus.getTextR">getTextR</a></code></li>
 <li><code><a title="tf.browser.ner.data.Data.getTokens" href="corpus.html#tf.browser.ner.corpus.Corpus.getTokens">getTokens</a></code></li>
-<li><code><a title="tf.browser.ner.data.Data.loadData" href="data.html#tf.browser.ner.data.Data.loadData">loadData</a></code></li>
+<li><code><a title="tf.browser.ner.data.Data.loadSetData" href="data.html#tf.browser.ner.data.Data.loadSetData">loadSetData</a></code></li>
 <li><code><a title="tf.browser.ner.data.Data.mergeEntities" href="data.html#tf.browser.ner.data.Data.mergeEntities">mergeEntities</a></code></li>
-<li><code><a title="tf.browser.ner.data.Data.process" href="data.html#tf.browser.ner.data.Data.process">process</a></code></li>
+<li><code><a title="tf.browser.ner.data.Data.processSet" href="data.html#tf.browser.ner.data.Data.processSet">processSet</a></code></li>
 <li><code><a title="tf.browser.ner.data.Data.properlySetup" href="corpus.html#tf.browser.ner.corpus.Corpus.properlySetup">properlySetup</a></code></li>
 <li><code><a title="tf.browser.ner.data.Data.saveEntitiesAs" href="data.html#tf.browser.ner.data.Data.saveEntitiesAs">saveEntitiesAs</a></code></li>
 <li><code><a title="tf.browser.ner.data.Data.sectionHead" href="corpus.html#tf.browser.ner.corpus.Corpus.sectionHead">sectionHead</a></code></li>
@@ -1174,14 +1164,14 @@ setTimeout(() => input.focus(), 100);
 <li>
 <h4><code><a title="tf.browser.ner.sets.Sets" href="#tf.browser.ner.sets.Sets">Sets</a></code></h4>
 <ul class="two-column">
-<li><code><a title="tf.browser.ner.sets.Sets.annoSet" href="#tf.browser.ner.sets.Sets.annoSet">annoSet</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.annoSetRep" href="#tf.browser.ner.sets.Sets.annoSetRep">annoSetRep</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.getSetData" href="#tf.browser.ner.sets.Sets.getSetData">getSetData</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.readSets" href="#tf.browser.ner.sets.Sets.readSets">readSets</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.resetSet" href="#tf.browser.ner.sets.Sets.resetSet">resetSet</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.setDel" href="#tf.browser.ner.sets.Sets.setDel">setDel</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.setDup" href="#tf.browser.ner.sets.Sets.setDup">setDup</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.setMove" href="#tf.browser.ner.sets.Sets.setMove">setMove</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.setName" href="#tf.browser.ner.sets.Sets.setName">setName</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.setNameRep" href="#tf.browser.ner.sets.Sets.setNameRep">setNameRep</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.setNames" href="#tf.browser.ner.sets.Sets.setNames">setNames</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.setSet" href="#tf.browser.ner.sets.Sets.setSet">setSet</a></code></li>
 </ul>

@@ -32,11 +32,11 @@ crossorigin>
 <p>This module contains the controllers that Flask invokes when serving
 the annotation tool in the TF browser.</p>
 <p>To see how this fits among all the modules of this package, see
-<code><a title="tf.browser.ner.annotate" href="annotate.html">tf.browser.ner.annotate</a></code> .</p>
+<code><a title="tf.browser.ner.ner" href="ner.html">tf.browser.ner.ner</a></code> .</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/serve.py#L1-L345" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/serve.py#L1-L348" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Main controller for Flask
 
@@ -44,7 +44,7 @@ This module contains the controllers that Flask invokes when serving
 the annotation tool in the TF browser.
 
 To see how this fits among all the modules of this package, see
-`tf.browser.ner.annotate` .
+`tf.browser.ner.ner` .
 &#34;&#34;&#34;
 
 from flask import render_template
@@ -62,25 +62,28 @@ class Serve(Request, Fragments):
         ----------
         web: object
             This represents the Flask website that is the TF browser.
-            It has initialized a `tf.browser.ner.annotate.Annotate` object,
-            and has stored it under attribute `annotate`.
+            It has initialized a `tf.browser.ner.ner.NER` object,
+            and has stored it under attribute `ner`.
             See `tf.browser.ner.web.factory` and `tf.browser.web.factory`.
 
         &#34;&#34;&#34;
         self.web = web
 
-        annotate = web.annotate
-        self.annotate = annotate
+        ner = web.ner
+        self.ner = ner
 
         super().__init__()
 
         self.initVars()
 
         v = self.v
-        annoSet = v.annoset
+        setName = v.set
 
-        annotate.setSet(annoSet)
-        annotate.loadData()
+        ner.setSet(setName)
+        ner.loadSetData()
+
+        ner.setSheet(None)
+        ner.loadSheetData()
 
     def setupFull(self):
         &#34;&#34;&#34;Prepares to serve a complete page.
@@ -89,13 +92,13 @@ class Serve(Request, Fragments):
         *   Encodes the active entity in hidden `input` elements;
         *   Collects and generates the specific CSS styles needed for this corpus.
         &#34;&#34;&#34;
-        annotate = self.annotate
+        ner = self.ner
         v = self.v
 
         self.findSetup()
         self.wrapActive()
 
-        v.css = annotate.css
+        v.css = ner.css
 
     def setupLean(self):
         &#34;&#34;&#34;Prepares to update a portion of the page.
@@ -129,7 +132,7 @@ class Serve(Request, Fragments):
         This includes the controls by which the user makes selections and triggers
         actions.
         &#34;&#34;&#34;
-        annotate = self.annotate
+        ner = self.ner
         v = self.v
         sortKey = v.sortkey
         sortDir = v.sortdir
@@ -141,12 +144,12 @@ class Serve(Request, Fragments):
         buckets = self.buckets
 
         self.wrapQuery()
-        v.entitytable = annotate.showEntities(
+        v.entitytable = ner.showEntities(
             activeEntity=activeEntity, sortKey=sortKey, sortDir=sortDir
         )
-        v.entityoverview = annotate.showEntityOverview()
+        v.entityoverview = ner.showEntityOverview()
         v.entityheaders = self.wrapEntityHeaders()
-        v.buckets = annotate.showContent(
+        v.buckets = ner.showContent(
             buckets,
             activeEntity=activeEntity,
             excludedTokens=excludedTokens,
@@ -164,13 +167,13 @@ class Serve(Request, Fragments):
         -------
         The generated HTML for the portion of the page.
         &#34;&#34;&#34;
-        annotate = self.annotate
+        ner = self.ner
         v = self.v
         activeEntity = v.activeentity
         excludedTokens = v.excludedtokens
         buckets = self.buckets
 
-        return annotate.showContent(
+        return ner.showContent(
             buckets,
             activeEntity=activeEntity,
             excludedTokens=excludedTokens,
@@ -185,7 +188,7 @@ class Serve(Request, Fragments):
         We further modify the selection by two additional parameters.
 
         The resulting list of buckets is obtained by
-        `tf.browser.ner.annotate.Annotate.filterContent`, and each member in the bucket
+        `tf.browser.ner.ner.NER.filterContent`, and each member in the bucket
         list is a tuple as indicated in the `filterContent` function.
         The list is stored in the `Serve` object.
         Additionally, statistics about these buckets and how many entity values
@@ -206,7 +209,7 @@ class Serve(Request, Fragments):
 
             We use this when we retrieve the context for a given bucket.
         &#34;&#34;&#34;
-        annotate = self.annotate
+        ner = self.ner
         v = self.v
 
         bFindRe = None if noFind else v.bfindre
@@ -217,7 +220,7 @@ class Serve(Request, Fragments):
         valSelect = v.valselect
         freeState = v.freestate
 
-        setData = annotate.getSetData()
+        setData = ner.getSetData()
         entityIdent = setData.entityIdent
 
         if activeEntity not in entityIdent:
@@ -225,7 +228,7 @@ class Serve(Request, Fragments):
             v.activeentity = None
 
         qTokens = (
-            annotate.getStrings(tokenStart, tokenEnd) if tokenStart and tokenEnd else None
+            ner.getStrings(tokenStart, tokenEnd) if tokenStart and tokenEnd else None
         )
 
         (
@@ -233,7 +236,7 @@ class Serve(Request, Fragments):
             v.nfind,
             v.nvisible,
             v.nent,
-        ) = annotate.filterContent(
+        ) = ner.filterContent(
             node=node,
             bFindRe=bFindRe,
             anyEnt=anyEnt,
@@ -258,38 +261,38 @@ class Serve(Request, Fragments):
         The results of the actions are wrapped in messages and stored in the
         `v`.
         &#34;&#34;&#34;
-        annotate = self.annotate
-        annotate.readSets()
+        ner = self.ner
+        ner.readSets()
 
         v = self.v
-        chosenAnnoSet = v.annoset
-        dupAnnoSet = v.duannoset
-        renamedAnnoSet = v.rannoset
-        deleteAnnoSet = v.dannoset
+        chosenSet = v.set
+        dupSet = v.duset
+        renamedSet = v.rset
+        deleteSet = v.dset
 
         messages = []
 
-        if deleteAnnoSet:
-            messages.extend(annotate.setDel(deleteAnnoSet))
-            v.dannoset = &#34;&#34;
-            v.annoset = &#34;&#34;
+        if deleteSet:
+            messages.extend(ner.setDel(deleteSet))
+            v.dset = &#34;&#34;
+            v.set = &#34;&#34;
 
-        if dupAnnoSet:
-            messages.extend(annotate.setDup(dupAnnoSet))
-            v.annoset = dupAnnoSet
-            v.duannoset = &#34;&#34;
+        if dupSet:
+            messages.extend(ner.setDup(dupSet))
+            v.set = dupSet
+            v.duset = &#34;&#34;
 
-        if renamedAnnoSet and chosenAnnoSet:
-            messages.extend(annotate.setMove(renamedAnnoSet))
-            v.annoset = renamedAnnoSet
-            v.rannoset = &#34;&#34;
+        if renamedSet and chosenSet:
+            messages.extend(ner.setMove(renamedSet))
+            v.set = renamedSet
+            v.rset = &#34;&#34;
 
         v.messagesrc = messages
 
-        chosenAnnoSet = v.annoset
-        annotate.setSet(chosenAnnoSet)
+        chosenSet = v.set
+        ner.setSet(chosenSet)
 
-        self.wrapAnnoSets()
+        self.wrapSets()
         self.wrapMessages()
 
     def updateHandling(self):
@@ -303,7 +306,7 @@ class Serve(Request, Fragments):
         The results of the actions are wrapped in a report and stored in the
         `v`.
         &#34;&#34;&#34;
-        annotate = self.annotate
+        ner = self.ner
         v = self.v
 
         delData = v.deldata
@@ -328,13 +331,13 @@ class Serve(Request, Fragments):
                 self.getBuckets(noFind=True)
 
             if submitter == &#34;delgo&#34; and delData:
-                report = annotate.delEntityRich(
+                report = ner.delEntityRich(
                     delData.deletions, self.buckets, excludedTokens=excludedTokens
                 )
-                annotate.loadData()
+                ner.loadSetData()
                 self.wrapReport(report, &#34;del&#34;)
                 if hasEnt:
-                    setData = annotate.getSetData()
+                    setData = ner.getSetData()
                     entityIdent = setData.entityIdent
 
                     stillExists = activeEntity in entityIdent
@@ -342,10 +345,10 @@ class Serve(Request, Fragments):
                         v.activeentity = None
 
             if submitter == &#34;addgo&#34; and addData:
-                report = annotate.addEntityRich(
+                report = ner.addEntityRich(
                     addData.additions, self.buckets, excludedTokens=excludedTokens
                 )
-                annotate.loadData()
+                ner.loadSetData()
                 self.wrapReport(report, &#34;add&#34;)
 
             self.adaptValSelect()
@@ -405,7 +408,7 @@ def serveNerContext(web, node):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/serve.py#L316-L327" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/serve.py#L319-L330" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveNer(web):
     &#34;&#34;&#34;Main controller to render a full page.
@@ -437,7 +440,7 @@ def serveNerContext(web, node):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/serve.py#L330-L345" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/serve.py#L333-L348" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveNerContext(web, node):
     &#34;&#34;&#34;Controller to render a portion of a page.
@@ -472,14 +475,14 @@ def serveNerContext(web, node):
 <dl>
 <dt><strong><code>web</code></strong> :&ensp;<code>object</code></dt>
 <dd>This represents the Flask website that is the TF browser.
-It has initialized a <code><a title="tf.browser.ner.annotate.Annotate" href="annotate.html#tf.browser.ner.annotate.Annotate">Annotate</a></code> object,
-and has stored it under attribute <code>annotate</code>.
+It has initialized a <code><a title="tf.browser.ner.ner.NER" href="ner.html#tf.browser.ner.ner.NER">NER</a></code> object,
+and has stored it under attribute <code>ner</code>.
 See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.web.factory">factory()</a></code> and <code><a title="tf.browser.web.factory" href="../web.html#tf.browser.web.factory">factory()</a></code>.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/serve.py#L17-L313" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/serve.py#L17-L316" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Serve(Request, Fragments):
     def __init__(self, web):
@@ -489,25 +492,28 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
         ----------
         web: object
             This represents the Flask website that is the TF browser.
-            It has initialized a `tf.browser.ner.annotate.Annotate` object,
-            and has stored it under attribute `annotate`.
+            It has initialized a `tf.browser.ner.ner.NER` object,
+            and has stored it under attribute `ner`.
             See `tf.browser.ner.web.factory` and `tf.browser.web.factory`.
 
         &#34;&#34;&#34;
         self.web = web
 
-        annotate = web.annotate
-        self.annotate = annotate
+        ner = web.ner
+        self.ner = ner
 
         super().__init__()
 
         self.initVars()
 
         v = self.v
-        annoSet = v.annoset
+        setName = v.set
 
-        annotate.setSet(annoSet)
-        annotate.loadData()
+        ner.setSet(setName)
+        ner.loadSetData()
+
+        ner.setSheet(None)
+        ner.loadSheetData()
 
     def setupFull(self):
         &#34;&#34;&#34;Prepares to serve a complete page.
@@ -516,13 +522,13 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
         *   Encodes the active entity in hidden `input` elements;
         *   Collects and generates the specific CSS styles needed for this corpus.
         &#34;&#34;&#34;
-        annotate = self.annotate
+        ner = self.ner
         v = self.v
 
         self.findSetup()
         self.wrapActive()
 
-        v.css = annotate.css
+        v.css = ner.css
 
     def setupLean(self):
         &#34;&#34;&#34;Prepares to update a portion of the page.
@@ -556,7 +562,7 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
         This includes the controls by which the user makes selections and triggers
         actions.
         &#34;&#34;&#34;
-        annotate = self.annotate
+        ner = self.ner
         v = self.v
         sortKey = v.sortkey
         sortDir = v.sortdir
@@ -568,12 +574,12 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
         buckets = self.buckets
 
         self.wrapQuery()
-        v.entitytable = annotate.showEntities(
+        v.entitytable = ner.showEntities(
             activeEntity=activeEntity, sortKey=sortKey, sortDir=sortDir
         )
-        v.entityoverview = annotate.showEntityOverview()
+        v.entityoverview = ner.showEntityOverview()
         v.entityheaders = self.wrapEntityHeaders()
-        v.buckets = annotate.showContent(
+        v.buckets = ner.showContent(
             buckets,
             activeEntity=activeEntity,
             excludedTokens=excludedTokens,
@@ -591,13 +597,13 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
         -------
         The generated HTML for the portion of the page.
         &#34;&#34;&#34;
-        annotate = self.annotate
+        ner = self.ner
         v = self.v
         activeEntity = v.activeentity
         excludedTokens = v.excludedtokens
         buckets = self.buckets
 
-        return annotate.showContent(
+        return ner.showContent(
             buckets,
             activeEntity=activeEntity,
             excludedTokens=excludedTokens,
@@ -612,7 +618,7 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
         We further modify the selection by two additional parameters.
 
         The resulting list of buckets is obtained by
-        `tf.browser.ner.annotate.Annotate.filterContent`, and each member in the bucket
+        `tf.browser.ner.ner.NER.filterContent`, and each member in the bucket
         list is a tuple as indicated in the `filterContent` function.
         The list is stored in the `Serve` object.
         Additionally, statistics about these buckets and how many entity values
@@ -633,7 +639,7 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
 
             We use this when we retrieve the context for a given bucket.
         &#34;&#34;&#34;
-        annotate = self.annotate
+        ner = self.ner
         v = self.v
 
         bFindRe = None if noFind else v.bfindre
@@ -644,7 +650,7 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
         valSelect = v.valselect
         freeState = v.freestate
 
-        setData = annotate.getSetData()
+        setData = ner.getSetData()
         entityIdent = setData.entityIdent
 
         if activeEntity not in entityIdent:
@@ -652,7 +658,7 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
             v.activeentity = None
 
         qTokens = (
-            annotate.getStrings(tokenStart, tokenEnd) if tokenStart and tokenEnd else None
+            ner.getStrings(tokenStart, tokenEnd) if tokenStart and tokenEnd else None
         )
 
         (
@@ -660,7 +666,7 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
             v.nfind,
             v.nvisible,
             v.nent,
-        ) = annotate.filterContent(
+        ) = ner.filterContent(
             node=node,
             bFindRe=bFindRe,
             anyEnt=anyEnt,
@@ -685,38 +691,38 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
         The results of the actions are wrapped in messages and stored in the
         `v`.
         &#34;&#34;&#34;
-        annotate = self.annotate
-        annotate.readSets()
+        ner = self.ner
+        ner.readSets()
 
         v = self.v
-        chosenAnnoSet = v.annoset
-        dupAnnoSet = v.duannoset
-        renamedAnnoSet = v.rannoset
-        deleteAnnoSet = v.dannoset
+        chosenSet = v.set
+        dupSet = v.duset
+        renamedSet = v.rset
+        deleteSet = v.dset
 
         messages = []
 
-        if deleteAnnoSet:
-            messages.extend(annotate.setDel(deleteAnnoSet))
-            v.dannoset = &#34;&#34;
-            v.annoset = &#34;&#34;
+        if deleteSet:
+            messages.extend(ner.setDel(deleteSet))
+            v.dset = &#34;&#34;
+            v.set = &#34;&#34;
 
-        if dupAnnoSet:
-            messages.extend(annotate.setDup(dupAnnoSet))
-            v.annoset = dupAnnoSet
-            v.duannoset = &#34;&#34;
+        if dupSet:
+            messages.extend(ner.setDup(dupSet))
+            v.set = dupSet
+            v.duset = &#34;&#34;
 
-        if renamedAnnoSet and chosenAnnoSet:
-            messages.extend(annotate.setMove(renamedAnnoSet))
-            v.annoset = renamedAnnoSet
-            v.rannoset = &#34;&#34;
+        if renamedSet and chosenSet:
+            messages.extend(ner.setMove(renamedSet))
+            v.set = renamedSet
+            v.rset = &#34;&#34;
 
         v.messagesrc = messages
 
-        chosenAnnoSet = v.annoset
-        annotate.setSet(chosenAnnoSet)
+        chosenSet = v.set
+        ner.setSet(chosenSet)
 
-        self.wrapAnnoSets()
+        self.wrapSets()
         self.wrapMessages()
 
     def updateHandling(self):
@@ -730,7 +736,7 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
         The results of the actions are wrapped in a report and stored in the
         `v`.
         &#34;&#34;&#34;
-        annotate = self.annotate
+        ner = self.ner
         v = self.v
 
         delData = v.deldata
@@ -755,13 +761,13 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
                 self.getBuckets(noFind=True)
 
             if submitter == &#34;delgo&#34; and delData:
-                report = annotate.delEntityRich(
+                report = ner.delEntityRich(
                     delData.deletions, self.buckets, excludedTokens=excludedTokens
                 )
-                annotate.loadData()
+                ner.loadSetData()
                 self.wrapReport(report, &#34;del&#34;)
                 if hasEnt:
-                    setData = annotate.getSetData()
+                    setData = ner.getSetData()
                     entityIdent = setData.entityIdent
 
                     stillExists = activeEntity in entityIdent
@@ -769,10 +775,10 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
                         v.activeentity = None
 
             if submitter == &#34;addgo&#34; and addData:
-                report = annotate.addEntityRich(
+                report = ner.addEntityRich(
                     addData.additions, self.buckets, excludedTokens=excludedTokens
                 )
-                annotate.loadData()
+                ner.loadSetData()
                 self.wrapReport(report, &#34;add&#34;)
 
             self.adaptValSelect()
@@ -800,7 +806,7 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/serve.py#L67-L77" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/serve.py#L70-L80" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def actionsFull(self):
     &#34;&#34;&#34;Carries out requested actions before building the full page.
@@ -826,7 +832,7 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/serve.py#L79-L84" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/serve.py#L82-L87" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def actionsLean(self, node):
     &#34;&#34;&#34;Carries out requested actions before building a portion of the page.
@@ -844,7 +850,7 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
 <p>The selection is defined in the <code>v</code>.</p>
 <p>We further modify the selection by two additional parameters.</p>
 <p>The resulting list of buckets is obtained by
-<code><a title="tf.browser.ner.annotate.Annotate.filterContent" href="annotate.html#tf.browser.ner.annotate.Annotate.filterContent">Annotate.filterContent()</a></code>, and each member in the bucket
+<code><a title="tf.browser.ner.ner.NER.filterContent" href="ner.html#tf.browser.ner.ner.NER.filterContent">NER.filterContent()</a></code>, and each member in the bucket
 list is a tuple as indicated in the <code>filterContent</code> function.
 The list is stored in the <code><a title="tf.browser.ner.serve.Serve" href="#tf.browser.ner.serve.Serve">Serve</a></code> object.
 Additionally, statistics about these buckets and how many entity values
@@ -868,7 +874,7 @@ under that TF node.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/serve.py#L140-L204" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/serve.py#L143-L207" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getBuckets(self, noFind=False, node=None):
     &#34;&#34;&#34;Fetch a selection of buckets from the corpus.
@@ -878,7 +884,7 @@ under that TF node.</p>
     We further modify the selection by two additional parameters.
 
     The resulting list of buckets is obtained by
-    `tf.browser.ner.annotate.Annotate.filterContent`, and each member in the bucket
+    `tf.browser.ner.ner.NER.filterContent`, and each member in the bucket
     list is a tuple as indicated in the `filterContent` function.
     The list is stored in the `Serve` object.
     Additionally, statistics about these buckets and how many entity values
@@ -899,7 +905,7 @@ under that TF node.</p>
 
         We use this when we retrieve the context for a given bucket.
     &#34;&#34;&#34;
-    annotate = self.annotate
+    ner = self.ner
     v = self.v
 
     bFindRe = None if noFind else v.bfindre
@@ -910,7 +916,7 @@ under that TF node.</p>
     valSelect = v.valselect
     freeState = v.freestate
 
-    setData = annotate.getSetData()
+    setData = ner.getSetData()
     entityIdent = setData.entityIdent
 
     if activeEntity not in entityIdent:
@@ -918,7 +924,7 @@ under that TF node.</p>
         v.activeentity = None
 
     qTokens = (
-        annotate.getStrings(tokenStart, tokenEnd) if tokenStart and tokenEnd else None
+        ner.getStrings(tokenStart, tokenEnd) if tokenStart and tokenEnd else None
     )
 
     (
@@ -926,7 +932,7 @@ under that TF node.</p>
         v.nfind,
         v.nvisible,
         v.nent,
-    ) = annotate.filterContent(
+    ) = ner.filterContent(
         node=node,
         bFindRe=bFindRe,
         anyEnt=anyEnt,
@@ -956,7 +962,7 @@ and create it if it does not yet exist;</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/serve.py#L206-L253" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/serve.py#L209-L256" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setHandling(self):
     &#34;&#34;&#34;Carries out the set-related actions before composing the page.
@@ -973,38 +979,38 @@ and create it if it does not yet exist;</li>
     The results of the actions are wrapped in messages and stored in the
     `v`.
     &#34;&#34;&#34;
-    annotate = self.annotate
-    annotate.readSets()
+    ner = self.ner
+    ner.readSets()
 
     v = self.v
-    chosenAnnoSet = v.annoset
-    dupAnnoSet = v.duannoset
-    renamedAnnoSet = v.rannoset
-    deleteAnnoSet = v.dannoset
+    chosenSet = v.set
+    dupSet = v.duset
+    renamedSet = v.rset
+    deleteSet = v.dset
 
     messages = []
 
-    if deleteAnnoSet:
-        messages.extend(annotate.setDel(deleteAnnoSet))
-        v.dannoset = &#34;&#34;
-        v.annoset = &#34;&#34;
+    if deleteSet:
+        messages.extend(ner.setDel(deleteSet))
+        v.dset = &#34;&#34;
+        v.set = &#34;&#34;
 
-    if dupAnnoSet:
-        messages.extend(annotate.setDup(dupAnnoSet))
-        v.annoset = dupAnnoSet
-        v.duannoset = &#34;&#34;
+    if dupSet:
+        messages.extend(ner.setDup(dupSet))
+        v.set = dupSet
+        v.duset = &#34;&#34;
 
-    if renamedAnnoSet and chosenAnnoSet:
-        messages.extend(annotate.setMove(renamedAnnoSet))
-        v.annoset = renamedAnnoSet
-        v.rannoset = &#34;&#34;
+    if renamedSet and chosenSet:
+        messages.extend(ner.setMove(renamedSet))
+        v.set = renamedSet
+        v.rset = &#34;&#34;
 
     v.messagesrc = messages
 
-    chosenAnnoSet = v.annoset
-    annotate.setSet(chosenAnnoSet)
+    chosenSet = v.set
+    ner.setSet(chosenSet)
 
-    self.wrapAnnoSets()
+    self.wrapSets()
     self.wrapMessages()</code></pre>
 </details>
 </dd>
@@ -1021,7 +1027,7 @@ and create it if it does not yet exist;</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/serve.py#L45-L58" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/serve.py#L48-L61" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setupFull(self):
     &#34;&#34;&#34;Prepares to serve a complete page.
@@ -1030,13 +1036,13 @@ and create it if it does not yet exist;</li>
     *   Encodes the active entity in hidden `input` elements;
     *   Collects and generates the specific CSS styles needed for this corpus.
     &#34;&#34;&#34;
-    annotate = self.annotate
+    ner = self.ner
     v = self.v
 
     self.findSetup()
     self.wrapActive()
 
-    v.css = annotate.css</code></pre>
+    v.css = ner.css</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.serve.Serve.setupLean"><code class="name flex">
@@ -1050,7 +1056,7 @@ and create it if it does not yet exist;</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/serve.py#L60-L65" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/serve.py#L63-L68" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setupLean(self):
     &#34;&#34;&#34;Prepares to update a portion of the page.
@@ -1075,7 +1081,7 @@ and create it if it does not yet exist;</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/serve.py#L255-L313" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/serve.py#L258-L316" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def updateHandling(self):
     &#34;&#34;&#34;Carries out modification actions in the current annotation set.
@@ -1088,7 +1094,7 @@ and create it if it does not yet exist;</li>
     The results of the actions are wrapped in a report and stored in the
     `v`.
     &#34;&#34;&#34;
-    annotate = self.annotate
+    ner = self.ner
     v = self.v
 
     delData = v.deldata
@@ -1113,13 +1119,13 @@ and create it if it does not yet exist;</li>
             self.getBuckets(noFind=True)
 
         if submitter == &#34;delgo&#34; and delData:
-            report = annotate.delEntityRich(
+            report = ner.delEntityRich(
                 delData.deletions, self.buckets, excludedTokens=excludedTokens
             )
-            annotate.loadData()
+            ner.loadSetData()
             self.wrapReport(report, &#34;del&#34;)
             if hasEnt:
-                setData = annotate.getSetData()
+                setData = ner.getSetData()
                 entityIdent = setData.entityIdent
 
                 stillExists = activeEntity in entityIdent
@@ -1127,10 +1133,10 @@ and create it if it does not yet exist;</li>
                     v.activeentity = None
 
         if submitter == &#34;addgo&#34; and addData:
-            report = annotate.addEntityRich(
+            report = ner.addEntityRich(
                 addData.additions, self.buckets, excludedTokens=excludedTokens
             )
-            annotate.loadData()
+            ner.loadSetData()
             self.wrapReport(report, &#34;add&#34;)
 
         self.adaptValSelect()
@@ -1148,7 +1154,7 @@ actions.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/serve.py#L86-L116" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/serve.py#L89-L119" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapFull(self):
     &#34;&#34;&#34;Builds the full page.
@@ -1156,7 +1162,7 @@ actions.</p></div>
     This includes the controls by which the user makes selections and triggers
     actions.
     &#34;&#34;&#34;
-    annotate = self.annotate
+    ner = self.ner
     v = self.v
     sortKey = v.sortkey
     sortDir = v.sortdir
@@ -1168,12 +1174,12 @@ actions.</p></div>
     buckets = self.buckets
 
     self.wrapQuery()
-    v.entitytable = annotate.showEntities(
+    v.entitytable = ner.showEntities(
         activeEntity=activeEntity, sortKey=sortKey, sortDir=sortDir
     )
-    v.entityoverview = annotate.showEntityOverview()
+    v.entityoverview = ner.showEntityOverview()
     v.entityheaders = self.wrapEntityHeaders()
-    v.buckets = annotate.showContent(
+    v.buckets = ner.showContent(
         buckets,
         activeEntity=activeEntity,
         excludedTokens=excludedTokens,
@@ -1194,7 +1200,7 @@ actions.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/serve.py#L118-L138" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/serve.py#L121-L141" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapLean(self):
     &#34;&#34;&#34;Builds a portion of the page.
@@ -1205,13 +1211,13 @@ actions.</p></div>
     -------
     The generated HTML for the portion of the page.
     &#34;&#34;&#34;
-    annotate = self.annotate
+    ner = self.ner
     v = self.v
     activeEntity = v.activeentity
     excludedTokens = v.excludedtokens
     buckets = self.buckets
 
-    return annotate.showContent(
+    return ner.showContent(
         buckets,
         activeEntity=activeEntity,
         excludedTokens=excludedTokens,
@@ -1241,7 +1247,6 @@ actions.</p></div>
 <li><code><b><a title="tf.browser.ner.fragments.Fragments" href="fragments.html#tf.browser.ner.fragments.Fragments">Fragments</a></b></code>:
 <ul class="hlist">
 <li><code><a title="tf.browser.ner.fragments.Fragments.wrapActive" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapActive">wrapActive</a></code></li>
-<li><code><a title="tf.browser.ner.fragments.Fragments.wrapAnnoSets" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapAnnoSets">wrapAnnoSets</a></code></li>
 <li><code><a title="tf.browser.ner.fragments.Fragments.wrapAppearance" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapAppearance">wrapAppearance</a></code></li>
 <li><code><a title="tf.browser.ner.fragments.Fragments.wrapEntity" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapEntity">wrapEntity</a></code></li>
 <li><code><a title="tf.browser.ner.fragments.Fragments.wrapEntityFeats" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapEntityFeats">wrapEntityFeats</a></code></li>
@@ -1257,6 +1262,7 @@ actions.</p></div>
 <li><code><a title="tf.browser.ner.fragments.Fragments.wrapQuery" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapQuery">wrapQuery</a></code></li>
 <li><code><a title="tf.browser.ner.fragments.Fragments.wrapReport" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapReport">wrapReport</a></code></li>
 <li><code><a title="tf.browser.ner.fragments.Fragments.wrapScope" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapScope">wrapScope</a></code></li>
+<li><code><a title="tf.browser.ner.fragments.Fragments.wrapSets" href="fragments.html#tf.browser.ner.fragments.Fragments.wrapSets">wrapSets</a></code></li>
 </ul>
 </li>
 </ul>

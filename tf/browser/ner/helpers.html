@@ -30,17 +30,17 @@ crossorigin>
 <section id="section-intro">
 <p>Auxiliary functions.</p>
 <p>To see how this fits among all the modules of this package, see
-<code><a title="tf.browser.ner.annotate" href="annotate.html">tf.browser.ner.annotate</a></code> .
+<code><a title="tf.browser.ner.ner" href="ner.html">tf.browser.ner.ner</a></code> .
 ‹›</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/helpers.py#L1-L285" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/helpers.py#L1-L285" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Auxiliary functions.
 
 To see how this fits among all the modules of this package, see
-`tf.browser.ner.annotate` .
+`tf.browser.ner.ner` .
 ‹›
 &#34;&#34;&#34;
 
@@ -368,7 +368,7 @@ the error message if the re-compilation was not successful.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/helpers.py#L183-L211" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/helpers.py#L183-L211" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findCompile(bFind, bFindC):
     &#34;&#34;&#34;Compiles a regular expression out of a search pattern.
@@ -414,7 +414,7 @@ You can use <code><a title="tf.browser.ner.helpers.tnorm" href="#tf.browser.ner.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/helpers.py#L69-L80" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/helpers.py#L69-L80" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fromTokens(tokens, spaceEscaped=False):
     &#34;&#34;&#34;The inverse of `toTokens()`.
@@ -438,7 +438,7 @@ You can use <code><a title="tf.browser.ner.helpers.tnorm" href="#tf.browser.ner.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/helpers.py#L273-L280" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/helpers.py#L273-L280" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getPath(heading, instructions):
     for n in range(len(heading), 0, -1):
@@ -458,7 +458,7 @@ You can use <code><a title="tf.browser.ner.helpers.tnorm" href="#tf.browser.ner.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/helpers.py#L283-L285" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/helpers.py#L283-L285" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def log(rh, msg, error=False):
     console(msg, error=error)
@@ -482,7 +482,7 @@ These derive ultimately from the corpus-dependent <code>ner/config.yaml</code>.<
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/helpers.py#L214-L270" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/helpers.py#L214-L270" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCss(features, keywordFeatures):
     &#34;&#34;&#34;Generates CSS for the tool.
@@ -551,7 +551,7 @@ These derive ultimately from the corpus-dependent <code>ner/config.yaml</code>.<
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/helpers.py#L47-L49" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/helpers.py#L47-L49" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def normalize(text):
     &#34;&#34;&#34;Normalize white-space in a text.&#34;&#34;&#34;
@@ -574,7 +574,7 @@ Can be used to mark the entity as active.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/helpers.py#L141-L155" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/helpers.py#L141-L155" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def repIdent(features, vals, active=&#34;&#34;):
     &#34;&#34;&#34;Represents an identifier in HTML.
@@ -609,7 +609,7 @@ Can be used to mark the entity as active.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/helpers.py#L158-L175" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/helpers.py#L158-L175" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def repSummary(keywordFeatures, vals, active=&#34;&#34;):
     &#34;&#34;&#34;Represents an keyword value in HTML.
@@ -639,7 +639,7 @@ Can be used to mark the entity as active.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/helpers.py#L83-L86" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/helpers.py#L83-L86" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tnorm(text, spaceEscaped=False):
     return fromTokens(
@@ -659,7 +659,7 @@ We use a table (<code><a title="tf.browser.ner.helpers.TO_ASCII_DEF" href="#tf.b
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/helpers.py#L89-L101" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/helpers.py#L89-L101" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def toAscii(text):
     &#34;&#34;&#34;Transforms a text with diacritical marks into a plain ASCII text.
@@ -685,7 +685,7 @@ We use a table (<code><a title="tf.browser.ner.helpers.TO_ASCII_DEF" href="#tf.b
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/helpers.py#L104-L109" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/helpers.py#L104-L109" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def toId(text):
     &#34;&#34;&#34;Transforms text to an identifier string.
@@ -708,7 +708,7 @@ which ultimately is provided in the corpus-dependent
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/helpers.py#L112-L138" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/helpers.py#L112-L138" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def toSmallId(text, transform={}):
     &#34;&#34;&#34;Transforms text to a smaller identifier string.
@@ -755,7 +755,7 @@ and individual non-word characters.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/helpers.py#L52-L66" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/helpers.py#L52-L66" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def toTokens(text, spaceEscaped=False):
     &#34;&#34;&#34;Split a text into tokens.
@@ -782,7 +782,7 @@ and individual non-word characters.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/helpers.py#L178-L180" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/helpers.py#L178-L180" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def valRep(features, fVals):
     &#34;&#34;&#34;HTML representation of an entity as a sequence of `feat=val` strings.&#34;&#34;&#34;

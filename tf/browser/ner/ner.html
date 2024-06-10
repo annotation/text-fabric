@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>tf.browser.ner.ner API documentation</title>
-<meta name="description" content="API for rule-based entity marking …" />
+<meta name="description" content="API for Named Entity marking …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css"
 integrity="sha512-kcbluZFacWN57NgWZ4aH6eUMBEaTyErFhIFD3y5qYZbKuuyImH0K/AKsBbfXlivh2z5C+3IDTIhI11YmKomzmA=="
@@ -28,10 +28,74 @@ crossorigin>
 <h1 class="title">Module <code>tf.browser.ner.ner</code></h1>
 </header>
 <section id="section-intro">
-<p>API for rule-based entity marking.</p>
-<p>This module contains the top-level methods for applying annotation rules to a corpus.</p>
-<p>To see how this fits among all the modules of this package, see
-<code><a title="tf.browser.ner.annotate" href="annotate.html">tf.browser.ner.annotate</a></code> .</p>
+<p>API for Named Entity marking.</p>
+<p>As a preparation, read <code><a title="tf.about.annotate" href="../../about/annotate.html">tf.about.annotate</a></code> first, since it explains the concepts, and
+guides you to set up the configuration for your corpus.</p>
+<p>The main task of this module is to find occurrences of annotations
+on the basis of criteria.</p>
+<p>But this is just the tip of the iceberg, since this module inherits
+from a number of other modules that inherit form yet other modules:</p>
+<ul>
+<li><code><a title="tf.browser.ner.show" href="show.html">tf.browser.ner.show</a></code>: generate HTML for annotated buckets of the corpus;</li>
+<li><code><a title="tf.browser.ner.sets" href="sets.html">tf.browser.ner.sets</a></code>: manage annotation sets;</li>
+<li><code><a title="tf.browser.ner.data" href="data.html">tf.browser.ner.data</a></code>: manage annotation data: loading, adding/deleting
+annotations;</li>
+<li><code><a title="tf.browser.ner.settings" href="settings.html">tf.browser.ner.settings</a></code>: manage the specifics of a TF corpus and have
+access to its data.</li>
+</ul>
+<p>It also uses</p>
+<ul>
+<li><code><a title="tf.browser.ner.match" href="match.html">tf.browser.ner.match</a></code>: to filter individual buckets on the basis of
+criteria.</li>
+</ul>
+<p>Hence, <code>Annotation</code> is the central class of this tool, whose methods are relevant
+for:</p>
+<ul>
+<li><code><a title="tf.browser.ner.ner" href="#tf.browser.ner.ner">tf.browser.ner.ner</a></code>: the API for users to manipulate annotations in their
+own programs, especially in a Jupyter notebook.</li>
+<li><code><a title="tf.browser.ner.web" href="web.html">tf.browser.ner.web</a></code>: Flask app that routes URLs to controller functions.</li>
+</ul>
+<p><code>web</code> makes use of the following modules that are not needed by <code>ner</code>:</p>
+<ul>
+<li><code><a title="tf.browser.ner.serve" href="serve.html">tf.browser.ner.serve</a></code>: define the controllers of the web app</li>
+</ul>
+<p>Again, this is a top of an iceberg, since it inherits from:</p>
+<ul>
+<li><code><a title="tf.browser.ner.request" href="request.html">tf.browser.ner.request</a></code>: manage the data of a request;</li>
+<li><code><a title="tf.browser.ner.fragments" href="fragments.html">tf.browser.ner.fragments</a></code>: generate HTML for widgets on the page;</li>
+</ul>
+<p><code>request</code> also uses <code>form</code> to retrieve form values into typed and structured values.</p>
+<p>Both <code>web</code> and <code>ner</code> make use of the following modules in as far as they are not
+already mentioned under <code>annotate</code> and its parent classes:</p>
+<ul>
+<li><code><a title="tf.browser.ner.helpers" href="helpers.html">tf.browser.ner.helpers</a></code>: a variety of context-free data jugglers;</li>
+<li><code><a title="tf.browser.html" href="../html.html">tf.browser.html</a></code>: a generic library to generate HTML using Pythonic
+syntax.
+This module contains the top-level methods for applying annotation rules to a corpus.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Class hierarchy</p>
+<p>The classes <code>Settings</code>, <code>Corpus</code>, <code>Data</code>, <code>Sets</code>, <code>Show</code>, <code><a title="tf.browser.ner.ner.NER" href="#tf.browser.ner.ner.NER">NER</a></code>
+form one hierarchy.
+So an object of class <code><a title="tf.browser.ner.ner.NER" href="#tf.browser.ner.ner.NER">NER</a></code> has access to all methods of these classes.</p>
+<p>The classes <code>Serve</code>, <code>Request</code>, <code>Fragments</code>, <code>From</code> form a separate hierarchy.
+It will create an <code><a title="tf.browser.ner.ner.NER" href="#tf.browser.ner.ner.NER">NER</a></code> instance which will be stored in a <code>Serve</code> instance.</p>
+</div>
+<p>Here is an overview how the modules hang together.</p>
+<p>A <code>|</code> denotes inheritance, parent classes above child classes.</p>
+<p>A <code>&lt;-&lt;</code> arrow denotes dependency by importing code.</p>
+<pre><code>Browser                           |   Api-hierarchy
+----------------------------------------------------------------
+web &lt;-----&lt; Serve &lt;-----------------&lt; NER              &lt;-&lt; match
+            |   |                 |     |
+       Request Fragments &lt;-&lt; html |   Sets Sheets Show &lt;-&lt; html
+          |                       |     |
+        Form                      |   Data
+                                  |     |
+                                  |   Corpus
+                                  |     |
+                                  |   Settings
+</code></pre>
 <h1 id="programmatic-annotation-done-in-a-jupyter-notebook">Programmatic annotation done in a Jupyter Notebook</h1>
 <p>If you have a spreadsheet with named entities, and for each entity a list of surface forms,
 then this module takes care to read that spreadsheet, translate it to YAML,
@@ -69,7 +133,7 @@ and if you work with an auto-downloaded copy of the data, it is in
 to the <code>ner</code> directory.</p>
 <h2 id="the-entity-spreadsheets">The entity spreadsheets</h2>
 <p>Here is an example:</p>
-<p><img alt="browser" src="../../images/Annotate/spreadsheet.png"></p>
+<p><img alt="browser" src="../../images/Ner/spreadsheet.png"></p>
 <p>In our example, the name of the spreadsheet containing this information is
 <code>people.xlsx</code> and it can be found as <code>ner/sheets/people.xlsx</code></p>
 <p>The spreadsheet will be read as follows:</p>
@@ -94,7 +158,7 @@ but probably that information will not end up in TF features.</li>
 </ul>
 <p>These steps need some configuration information from the <code>ner/config.yaml</code> file.</p>
 <p>Translation is done by</p>
-<pre><code class="language-python">NE.readInstructions(&quot;people&quot;)
+<pre><code class="language-python">NE.setSheet(&quot;people&quot;)
 </code></pre>
 <p>The resulting YAML ends up next to the
 spreadsheet, and it looks like this:</p>
@@ -158,7 +222,7 @@ annotation set. Let's start a new set and give it the name <code>power</code>.</
 Added:             150 x
 </code></pre>
 <h2 id="inspection">Inspection</h2>
-<p>We now revert to lower-level methods from the <code><a title="tf.browser.ner.annotate" href="annotate.html">tf.browser.ner.annotate</a></code> class to
+<p>We now revert to lower-level methods from the <code><a title="tf.browser.ner.ner" href="#tf.browser.ner.ner">tf.browser.ner.ner</a></code> class to
 inspect some of the results.</p>
 <pre><code class="language-python">results = NE.filterContent(bFind=&quot;pach&quot;, bFindC=False, anyEnt=True, showStats=None)
 </code></pre>
@@ -167,7 +231,7 @@ in a case-insensitive way, and that contain at least one entity.</p>
 <p>There 6 of them, and we can show them:</p>
 <pre><code class="language-python">NE.showContent(results)
 </code></pre>
-<p><img alt="browser" src="../../images/Annotate/pach.png"></p>
+<p><img alt="browser" src="../../images/Ner/pach.png"></p>
 <p>The resulting entities are in <code>_temp/power/entities.tsv</code> and look like this:</p>
 <pre><code>erick.dimmer    PER     160196
 isabella.clara.eugenia  PER     142613
@@ -196,14 +260,84 @@ slots.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/ner.py#L1-L441" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/ner.py#L1-L802" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">&#34;&#34;&#34;API for rule-based entity marking.
+<pre><code class="python">&#34;&#34;&#34;API for Named Entity marking.
 
+As a preparation, read `tf.about.annotate` first, since it explains the concepts, and
+guides you to set up the configuration for your corpus.
+
+The main task of this module is to find occurrences of annotations
+on the basis of criteria.
+
+But this is just the tip of the iceberg, since this module inherits
+from a number of other modules that inherit form yet other modules:
+
+*   `tf.browser.ner.show`: generate HTML for annotated buckets of the corpus;
+*   `tf.browser.ner.sets`: manage annotation sets;
+*   `tf.browser.ner.data`: manage annotation data: loading, adding/deleting
+    annotations;
+*   `tf.browser.ner.settings`: manage the specifics of a TF corpus and have
+    access to its data.
+
+It also uses
+
+*   `tf.browser.ner.match`: to filter individual buckets on the basis of
+    criteria.
+
+Hence, `Annotation` is the central class of this tool, whose methods are relevant
+for:
+
+*   `tf.browser.ner.ner`: the API for users to manipulate annotations in their
+    own programs, especially in a Jupyter notebook.
+*   `tf.browser.ner.web`: Flask app that routes URLs to controller functions.
+
+`web` makes use of the following modules that are not needed by `ner`:
+
+*   `tf.browser.ner.serve`: define the controllers of the web app
+
+Again, this is a top of an iceberg, since it inherits from:
+
+*   `tf.browser.ner.request`: manage the data of a request;
+*   `tf.browser.ner.fragments`: generate HTML for widgets on the page;
+
+`request` also uses `form` to retrieve form values into typed and structured values.
+
+Both `web` and `ner` make use of the following modules in as far as they are not
+already mentioned under `annotate` and its parent classes:
+
+*   `tf.browser.ner.helpers`: a variety of context-free data jugglers;
+*   `tf.browser.html`: a generic library to generate HTML using Pythonic
+    syntax.
 This module contains the top-level methods for applying annotation rules to a corpus.
 
-To see how this fits among all the modules of this package, see
-`tf.browser.ner.annotate` .
+!!! note &#34;Class hierarchy&#34;
+    The classes `Settings`, `Corpus`, `Data`, `Sets`, `Show`, `NER`
+    form one hierarchy.
+    So an object of class `NER` has access to all methods of these classes.
+
+    The classes `Serve`, `Request`, `Fragments`, `From` form a separate hierarchy.
+    It will create an `NER` instance which will be stored in a `Serve` instance.
+
+Here is an overview how the modules hang together.
+
+A `|` denotes inheritance, parent classes above child classes.
+
+A `&lt;-&lt;` arrow denotes dependency by importing code.
+
+```
+Browser                           |   Api-hierarchy
+----------------------------------------------------------------
+web &lt;-----&lt; Serve &lt;-----------------&lt; NER              &lt;-&lt; match
+            |   |                 |     |
+       Request Fragments &lt;-&lt; html |   Sets Sheets Show &lt;-&lt; html
+          |                       |     |
+        Form                      |   Data
+                                  |     |
+                                  |   Corpus
+                                  |     |
+                                  |   Settings
+```
 
 # Programmatic annotation done in a Jupyter Notebook
 
@@ -254,7 +388,7 @@ to the `ner` directory.
 
 Here is an example:
 
-![browser](../../images/Annotate/spreadsheet.png)
+![browser](../../images/Ner/spreadsheet.png)
 
 In our example, the name of the spreadsheet containing this information is
 `people.xlsx` and it can be found as `ner/sheets/people.xlsx`
@@ -284,7 +418,7 @@ These steps need some configuration information from the `ner/config.yaml` file.
 Translation is done by
 
 ``` python
-NE.readInstructions(&#34;people&#34;)
+NE.setSheet(&#34;people&#34;)
 ```
 
 The resulting YAML ends up next to the
@@ -374,7 +508,7 @@ Added:             150 x
 
 ## Inspection
 
-We now revert to lower-level methods from the `tf.browser.ner.annotate` class to
+We now revert to lower-level methods from the `tf.browser.ner.ner` class to
 inspect some of the results.
 
 ``` python
@@ -390,7 +524,7 @@ There 6 of them, and we can show them:
 NE.showContent(results)
 ```
 
-![browser](../../images/Annotate/pach.png)
+![browser](../../images/Ner/pach.png)
 
 The resulting entities are in `_temp/power/entities.tsv` and look like this:
 
@@ -424,75 +558,356 @@ Lines consist of tab separated fields:
 from textwrap import dedent
 import collections
 
-from ...capable import CheckImport
 from ...core.helpers import console
-from ...core.files import initTree
-from .annotate import Annotate
-from .triggers import Triggers
+from ...core.generic import AttrDict
+from .sheets import Sheets
+from .helpers import findCompile
+from .sets import Sets
+from .show import Show
+from .match import entityMatch, occMatch
 
 
-class NER(Annotate):
-    def __init__(self, app):
-        &#34;&#34;&#34;Bulk entity annotation.
+class NER(Sheets, Sets, Show):
+    def __init__(self, app, data=None, browse=False):
+        &#34;&#34;&#34;Entity annotation.
+
+        Basic methods to handle the various aspects of entity annotation.
+        These methods can be used by code that runs in the TF browser
+        and by code that runs in a Jupyter notebook.
+
+        This class handles entity sets, it does not contain code to generate HTML.
+        But it has a parent class, `Show`, that can generate HTML.
+
+        This class works with a fixed annotation set.
+        But it has a parent class, `Sets` that has method to manipulate such sets
+        and switch between them.
+
+        We consider the corpus as a list of buckets (typically level-3 sectional
+        units; in TEI-derived corpora called `chunk`, being generalizations of
+        `p` (paragraph) elements). What type exactly the buckets are is configured
+        in the `ner/config.yaml` file.
 
         Contains methods to translate spreadsheets to YAML files with markup
         instructions; to locate all relevant occurrences; and to mark them up
         properly.
 
         It is a high-level class, building on the lower-level tools provided
-        by the Annotate class on which it is based.
+        by the Sheets, Sets and Show classes on which it is based.
 
         Parameters
         ----------
         app: object
             The object that corresponds to a loaded TF app for a corpus.
+        data: object, optional None
+            Entity data to start with. If this class is initialized by the browser,
+            the browser hands over the in-memory data that the tool needs.
+            That way, it can maintain access to the same data between requests.
+            If None, no data is handed over, and a fresh data store will be
+            created by an ancestor class (Data)
+        browse: boolean, optional False
+            If True, the object is informed that it is run by the TF
+            browser. This will influence how results are reported back.
         &#34;&#34;&#34;
-        super().__init__(app)
+        if data is None:
+            data = AttrDict()
+
+        if data.sets is None:
+            data.sets = AttrDict()
+
+        if data.sheets is None:
+            data.sheets = AttrDict()
+
+        self.browse = browse
+        self.app = app
+
+        Sets.__init__(self, sets=data.sets)
         if not self.properlySetup:
             return
 
-        self.Trig = None
-        &#34;&#34;&#34;Will contain the object that has compiled the triggers for named entities.
+        Sheets.__init__(self, sheets=data.sheets)
+        if not self.properlySetup:
+            return
+
+    def findOccs(self):
+        &#34;&#34;&#34;Finds the occurrences of multiple triggers.
+
+        This is meant to efficiently list all occurrences of many token
+        sequences in the corpus.
+
+        The triggers are in member `instructions`, which must first
+        be constructed by reading a number of excel files.
+
+        It adds the member `inventory` to the object, which is a dict
+        with subdicts:
+
+        `occurrences`: keyed by tuples (eid, kind), the values are
+        the occurrences of that entity in the corpus.
+        A single occurrence is represented as a tuple of slots.
+
+        `names`: keyed by tuples (eid, kind) and then path,
+        the value is the name of that entity in the context indicated by path.
+
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return []
 
-        self.inventory = None
-        &#34;&#34;&#34;Will contain the locations of all surface forms in the current instructions.
-        &#34;&#34;&#34;
+        settings = self.settings
+        spaceEscaped = settings.spaceEscaped
 
-    def readInstructions(self, sheetName):
-        &#34;&#34;&#34;Reads the trigger specifications.
+        setData = self.getSetData()
+        getTokens = self.getTokens
+        getHeadings = self.getHeadings
 
-        See `tf.browser.ner.triggers`.
+        buckets = setData.buckets or ()
+
+        sheetName = self.sheetName
+        sheetData = self.sheets[sheetName]
+
+        instructions = sheetData.instructions
+        sheetData.inventory = occMatch(
+            getTokens, getHeadings, buckets, instructions, spaceEscaped
+        )
+
+    def filterContent(
+        self,
+        buckets=None,
+        node=None,
+        bFind=None,
+        bFindC=None,
+        bFindRe=None,
+        anyEnt=None,
+        eVals=None,
+        qTokens=None,
+        valSelect=None,
+        freeState=None,
+        showStats=None,
+    ):
+        &#34;&#34;&#34;Filter the buckets according to a variety of criteria.
+
+        Either the buckets of the whole corpus are filtered, or a given subset
+        of buckets, or a subset of buckets, namely those contained in a
+        particular node, see parameters `node`, and `buckets`.
+
+        **Bucket filtering**
+
+        The parameters `bFind`, `bFindC`, `bFindRe`  specify a regular expression
+        search on the texts of the buckets.
+
+        The positions of the found occurrences is included in the result.
+
+        The parameter `anyEnt` is a filter on the presence or absence of entities in
+        buckets in general.
+
+        **Entity filtering**
+
+        The parameter `eVals` holds the values of a specific entity to look for.
+
+        **Occurrence filtering**
+
+        The parameter `qTokens` is a sequence of tokens to look for.
+        The occurrences that are found, can be filtered further by `valSelect`
+        and `freeState`.
+
+        In entity filtering and occurrence filtering, the matching occurrences
+        are included in the result.
 
         Parameters
         ----------
-        sheetName: string
-            The file name without extension of the spreadsheet.
-            The spreadsheet is expected in the `ner/sheets` directory.
-            It may be accompanied by a directory with the same name (without extension)
-            containing more specialized trigger specs: per section level.
+        buckets: set of integer, optional None
+            The set of buckets to filter, instead of the whole corpus.
+            Works also if the parameter `node` is specified, which also restricts
+            the buckets to filter. If both are specified, their effect will be
+            combined.
+        node: integer, optional None
+            Gets the context of the node, typically the intermediate-level section
+            in which the node occurs. Then restricts the filtering to the buckets
+            contained in the context, instead of the whole corpus.
+        bFind: string, optional None
+            A search pattern that filters the buckets, before applying the search
+            for a token sequence.
+        bFindC: string, optional None
+            Whether the search is case sensitive or not.
+        bFindRe: object, optional None
+            A compiled regular expression.
+            This function searches on `bFindRe`, but if it is None, it compiles
+            `bFind` as regular expression and searches on that. If `bFind` itself
+            is not None, of course.
+        anyEnt: boolean, optional None
+            If True, it wants all buckets that contain at least one already
+            marked entity; if False, it wants all buckets that do not contain any
+            already marked entity.
+        eVals: tuple, optional None
+            A sequence of values corresponding with the entity features `eid`
+            and `kind`. If given, the function wants buckets that contain at least
+            an entity with those properties.
+        qTokens: tuple, optional None
+            A sequence of tokens whose occurrences in the corpus will be looked up.
+        valSelect: dict, optional None
+            If present, the keys are the entity features (`eid` and `kind`),
+            and the values are iterables of values that are allowed.
+
+            The feature values to filter on.
+            The results of searching for `eVals` or `qTokens` are filtered further.
+            If a result is also an instance of an already marked entity,
+            the properties of that entity will be compared feature by feature with
+            the allowed values that `valSelect` specifies for that feature.
+        freeState: boolean, optional None
+            If True, found occurrences may not intersect with already marked up
+            features.
+            If False, found occurrences must intersect with already marked up features.
+        showStats: boolean, optional None
+            Whether to show statistics of the find.
+            If None, it only shows gross totals, if False, it shows nothing,
+            if True, it shows totals by feature.
+
+        Returns
+        -------
+        list of tuples
+            For each bucket that passes the filter, a tuple with the following
+            members is added to the list:
+
+            *   the TF node of the bucket;
+            *   tokens: the tokens of the bucket, each token is a tuple consisting
+                of the TF slot of the token and its string value;
+            *   matches: the match positions of the found occurrences or entity;
+            *   positions: the token positions of where the text of the bucket
+                starts matching the `bFindRe`;
+
+            If `browse` is True, also some stats are passed next to the list
+            of results.
         &#34;&#34;&#34;
-        CI = CheckImport(&#34;openpyxl&#34;)
-        if CI.importOK(hint=True):
-            openpyxl = CI.importGet()
-            self.load_workbook = openpyxl.load_workbook
-        else:
-            return None
-
         if not self.properlySetup:
-            return None
+            return []
 
-        reportBase = self.reportBase
-        reportDir = f&#34;{reportBase}/{sheetName}&#34;
-        self.reportDir = reportDir
+        settings = self.settings
+        bucketType = settings.bucketType
+        features = settings.features
 
-        initTree(reportDir, fresh=False)
+        getTextR = self.getTextR
+        getTokens = self.getTokens
 
-        Trig = Triggers(self)
-        self.Trig = Trig
+        browse = self.browse
+        setData = self.getSetData()
+        entityIndex = setData.entityIndex
+        entityVal = setData.entityVal
+        entitySlotVal = setData.entitySlotVal
+        entitySlotAll = setData.entitySlotAll
+        entitySlotIndex = setData.entitySlotIndex
 
-        Trig.intake(sheetName)
-        self.instructions = Trig.instructions
+        bucketUniverse = (
+            setData.buckets
+            if buckets is None
+            else tuple(sorted(self.checkBuckets(buckets)))
+        )
+        buckets = (
+            bucketUniverse
+            if node is None
+            else tuple(sorted(set(bucketUniverse) &amp; set(self.getContext(node))))
+        )
+
+        nFind = 0
+        nEnt = {feat: collections.Counter() for feat in (&#34;&#34;,) + features}
+        nVisible = {feat: collections.Counter() for feat in (&#34;&#34;,) + features}
+
+        if bFindRe is None:
+            if bFind is not None:
+                (bFind, bFindRe, errorMsg) = findCompile(bFind, bFindC)
+                if errorMsg:
+                    self.console(errorMsg, error=True)
+
+        hasEnt = eVals is not None
+        hasQTokens = qTokens is not None and len(qTokens)
+        hasOcc = not hasEnt and hasQTokens
+
+        if eVals is not None and eVals in entityVal:
+            eSlots = entityVal[eVals]
+            eStarts = {s[0]: s[-1] for s in eSlots}
+        else:
+            eStarts = {}
+
+        useQTokens = qTokens if hasOcc else None
+
+        requireFree = (
+            True if freeState == &#34;free&#34; else False if freeState == &#34;bound&#34; else None
+        )
+
+        results = []
+
+        for b in buckets:
+            fValStats = {feat: collections.Counter() for feat in features}
+            (fits, result) = entityMatch(
+                entityIndex,
+                eStarts,
+                entitySlotVal,
+                entitySlotAll,
+                entitySlotIndex,
+                getTextR,
+                getTokens,
+                b,
+                bFindRe,
+                anyEnt,
+                eVals,
+                useQTokens,
+                valSelect,
+                requireFree,
+                fValStats,
+            )
+
+            blocked = fits is not None and not fits
+
+            if not blocked:
+                nFind += 1
+
+            for feat in features:
+                theseStats = fValStats[feat]
+                if len(theseStats):
+                    theseNEnt = nEnt[feat]
+                    theseNVisible = nVisible[feat]
+
+                    for ek, n in theseStats.items():
+                        theseNEnt[ek] += n
+                        if not blocked:
+                            theseNVisible[ek] += n
+
+            nMatches = len(result[1])
+
+            if nMatches:
+                nEnt[&#34;&#34;][None] += nMatches
+                if not blocked:
+                    nVisible[&#34;&#34;][None] += nMatches
+
+            if node is None:
+                if fits is not None and not fits:
+                    continue
+
+                if (hasEnt or hasQTokens) and nMatches == 0:
+                    continue
+
+            results.append((b, *result))
+
+        if browse:
+            return (results, nFind, nVisible, nEnt)
+
+        nResults = len(results)
+
+        if showStats:
+            pluralF = &#34;&#34; if nFind == 1 else &#34;s&#34;
+            self.console(f&#34;{nFind} {bucketType}{pluralF} satisfy the filter&#34;)
+            for feat in (&#34;&#34;,) + (() if anyEnt else features):
+                if feat == &#34;&#34;:
+                    self.console(&#34;Combined features match:&#34;)
+                    for ek, n in sorted(nEnt[feat].items()):
+                        v = nVisible[feat][ek]
+                        self.console(f&#34;\t{v:&gt;5} of {n:&gt;5} x&#34;)
+                else:
+                    self.console(f&#34;Feature {feat}: found the following values:&#34;)
+                    for ek, n in sorted(nEnt[feat].items()):
+                        v = nVisible[feat][ek]
+                        self.console(f&#34;\t{v:&gt;5} of {n:&gt;5} x {ek}&#34;)
+        if showStats or showStats is None:
+            pluralR = &#34;&#34; if nResults == 1 else &#34;s&#34;
+            self.console(f&#34;{nResults} {bucketType}{pluralR}&#34;)
+        return results
 
     def lookup(self):
         &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
@@ -508,24 +923,23 @@ class NER(Annotate):
         if not self.properlySetup:
             return
 
-        app = self.app
-        app.indent(reset=True)
-        app.info(&#34;Looking up occurrences of many candidates ...&#34;)
-        self.findOccs()
-        self.reportHits()
+        self.processSheet(True)
 
     def reportHits(self):
         &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
         if not self.properlySetup:
             return
 
-        getHeadings = self.getHeadings
-        Trig = self.Trig
-        nameMap = Trig.nameMap
-        inventory = self.inventory
-        instructions = self.instructions
+        sheetName = self.sheetName
+        sheetData = self.sheets[sheetName]
 
-        reportDir = self.reportDir
+        getHeadings = self.getHeadings
+        nameMap = self.nameMap
+        inventory = sheetData.inventory
+        instructions = sheetData.instructions
+
+        reportBase = self.reportBase
+        reportDir = f&#34;{reportBase}/{sheetName}&#34;
         reportFile = f&#34;{reportDir}/hits.tsv&#34;
 
         allTriggers = set()
@@ -618,7 +1032,10 @@ class NER(Annotate):
         if not self.properlySetup:
             return
 
-        inventory = self.inventory
+        browse = self.browse
+        sheetName = self.sheetName
+        sheetData = self.sheets[sheetName]
+        inventory = sheetData.inventory
 
         newEntities = []
 
@@ -626,6 +1043,14 @@ class NER(Annotate):
             for (trigger, triggerData) in entData.items():
                 for matches in triggerData.values():
                     newEntities.append((eidkind, matches))
+
+        self.setSet(sheetName)
+
+        if self.getSetData():
+            if not browse:
+                console(f&#34;Set {sheetName} already exists. I will not overwrite it.&#34;)
+                console(&#34;Clear or delete this set before marking the entities&#34;)
+            return
 
         self.addEntities(newEntities, silent=False)
 
@@ -652,87 +1077,387 @@ class NER(Annotate):
 <dl>
 <dt id="tf.browser.ner.ner.NER"><code class="flex name class">
 <span>class <span class="ident">NER</span></span>
-<span>(</span><span>app)</span>
+<span>(</span><span>app, data=None, browse=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Bulk entity annotation.</p>
+<div class="desc"><p>Entity annotation.</p>
+<p>Basic methods to handle the various aspects of entity annotation.
+These methods can be used by code that runs in the TF browser
+and by code that runs in a Jupyter notebook.</p>
+<p>This class handles entity sets, it does not contain code to generate HTML.
+But it has a parent class, <code>Show</code>, that can generate HTML.</p>
+<p>This class works with a fixed annotation set.
+But it has a parent class, <code>Sets</code> that has method to manipulate such sets
+and switch between them.</p>
+<p>We consider the corpus as a list of buckets (typically level-3 sectional
+units; in TEI-derived corpora called <code>chunk</code>, being generalizations of
+<code>p</code> (paragraph) elements). What type exactly the buckets are is configured
+in the <code>ner/config.yaml</code> file.</p>
 <p>Contains methods to translate spreadsheets to YAML files with markup
 instructions; to locate all relevant occurrences; and to mark them up
 properly.</p>
 <p>It is a high-level class, building on the lower-level tools provided
-by the Annotate class on which it is based.</p>
+by the Sheets, Sets and Show classes on which it is based.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
 <dd>The object that corresponds to a loaded TF app for a corpus.</dd>
+<dt><strong><code>data</code></strong> :&ensp;<code>object</code>, optional <code>None</code></dt>
+<dd>Entity data to start with. If this class is initialized by the browser,
+the browser hands over the in-memory data that the tool needs.
+That way, it can maintain access to the same data between requests.
+If None, no data is handed over, and a fresh data store will be
+created by an ancestor class (Data)</dd>
+<dt><strong><code>browse</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, the object is informed that it is run by the TF
+browser. This will influence how results are reported back.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/ner.py#L234-L441" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/ner.py#L306-L802" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">class NER(Annotate):
-    def __init__(self, app):
-        &#34;&#34;&#34;Bulk entity annotation.
+<pre><code class="python">class NER(Sheets, Sets, Show):
+    def __init__(self, app, data=None, browse=False):
+        &#34;&#34;&#34;Entity annotation.
+
+        Basic methods to handle the various aspects of entity annotation.
+        These methods can be used by code that runs in the TF browser
+        and by code that runs in a Jupyter notebook.
+
+        This class handles entity sets, it does not contain code to generate HTML.
+        But it has a parent class, `Show`, that can generate HTML.
+
+        This class works with a fixed annotation set.
+        But it has a parent class, `Sets` that has method to manipulate such sets
+        and switch between them.
+
+        We consider the corpus as a list of buckets (typically level-3 sectional
+        units; in TEI-derived corpora called `chunk`, being generalizations of
+        `p` (paragraph) elements). What type exactly the buckets are is configured
+        in the `ner/config.yaml` file.
 
         Contains methods to translate spreadsheets to YAML files with markup
         instructions; to locate all relevant occurrences; and to mark them up
         properly.
 
         It is a high-level class, building on the lower-level tools provided
-        by the Annotate class on which it is based.
+        by the Sheets, Sets and Show classes on which it is based.
 
         Parameters
         ----------
         app: object
             The object that corresponds to a loaded TF app for a corpus.
+        data: object, optional None
+            Entity data to start with. If this class is initialized by the browser,
+            the browser hands over the in-memory data that the tool needs.
+            That way, it can maintain access to the same data between requests.
+            If None, no data is handed over, and a fresh data store will be
+            created by an ancestor class (Data)
+        browse: boolean, optional False
+            If True, the object is informed that it is run by the TF
+            browser. This will influence how results are reported back.
         &#34;&#34;&#34;
-        super().__init__(app)
+        if data is None:
+            data = AttrDict()
+
+        if data.sets is None:
+            data.sets = AttrDict()
+
+        if data.sheets is None:
+            data.sheets = AttrDict()
+
+        self.browse = browse
+        self.app = app
+
+        Sets.__init__(self, sets=data.sets)
         if not self.properlySetup:
             return
 
-        self.Trig = None
-        &#34;&#34;&#34;Will contain the object that has compiled the triggers for named entities.
+        Sheets.__init__(self, sheets=data.sheets)
+        if not self.properlySetup:
+            return
+
+    def findOccs(self):
+        &#34;&#34;&#34;Finds the occurrences of multiple triggers.
+
+        This is meant to efficiently list all occurrences of many token
+        sequences in the corpus.
+
+        The triggers are in member `instructions`, which must first
+        be constructed by reading a number of excel files.
+
+        It adds the member `inventory` to the object, which is a dict
+        with subdicts:
+
+        `occurrences`: keyed by tuples (eid, kind), the values are
+        the occurrences of that entity in the corpus.
+        A single occurrence is represented as a tuple of slots.
+
+        `names`: keyed by tuples (eid, kind) and then path,
+        the value is the name of that entity in the context indicated by path.
+
         &#34;&#34;&#34;
+        if not self.properlySetup:
+            return []
 
-        self.inventory = None
-        &#34;&#34;&#34;Will contain the locations of all surface forms in the current instructions.
-        &#34;&#34;&#34;
+        settings = self.settings
+        spaceEscaped = settings.spaceEscaped
 
-    def readInstructions(self, sheetName):
-        &#34;&#34;&#34;Reads the trigger specifications.
+        setData = self.getSetData()
+        getTokens = self.getTokens
+        getHeadings = self.getHeadings
 
-        See `tf.browser.ner.triggers`.
+        buckets = setData.buckets or ()
+
+        sheetName = self.sheetName
+        sheetData = self.sheets[sheetName]
+
+        instructions = sheetData.instructions
+        sheetData.inventory = occMatch(
+            getTokens, getHeadings, buckets, instructions, spaceEscaped
+        )
+
+    def filterContent(
+        self,
+        buckets=None,
+        node=None,
+        bFind=None,
+        bFindC=None,
+        bFindRe=None,
+        anyEnt=None,
+        eVals=None,
+        qTokens=None,
+        valSelect=None,
+        freeState=None,
+        showStats=None,
+    ):
+        &#34;&#34;&#34;Filter the buckets according to a variety of criteria.
+
+        Either the buckets of the whole corpus are filtered, or a given subset
+        of buckets, or a subset of buckets, namely those contained in a
+        particular node, see parameters `node`, and `buckets`.
+
+        **Bucket filtering**
+
+        The parameters `bFind`, `bFindC`, `bFindRe`  specify a regular expression
+        search on the texts of the buckets.
+
+        The positions of the found occurrences is included in the result.
+
+        The parameter `anyEnt` is a filter on the presence or absence of entities in
+        buckets in general.
+
+        **Entity filtering**
+
+        The parameter `eVals` holds the values of a specific entity to look for.
+
+        **Occurrence filtering**
+
+        The parameter `qTokens` is a sequence of tokens to look for.
+        The occurrences that are found, can be filtered further by `valSelect`
+        and `freeState`.
+
+        In entity filtering and occurrence filtering, the matching occurrences
+        are included in the result.
 
         Parameters
         ----------
-        sheetName: string
-            The file name without extension of the spreadsheet.
-            The spreadsheet is expected in the `ner/sheets` directory.
-            It may be accompanied by a directory with the same name (without extension)
-            containing more specialized trigger specs: per section level.
+        buckets: set of integer, optional None
+            The set of buckets to filter, instead of the whole corpus.
+            Works also if the parameter `node` is specified, which also restricts
+            the buckets to filter. If both are specified, their effect will be
+            combined.
+        node: integer, optional None
+            Gets the context of the node, typically the intermediate-level section
+            in which the node occurs. Then restricts the filtering to the buckets
+            contained in the context, instead of the whole corpus.
+        bFind: string, optional None
+            A search pattern that filters the buckets, before applying the search
+            for a token sequence.
+        bFindC: string, optional None
+            Whether the search is case sensitive or not.
+        bFindRe: object, optional None
+            A compiled regular expression.
+            This function searches on `bFindRe`, but if it is None, it compiles
+            `bFind` as regular expression and searches on that. If `bFind` itself
+            is not None, of course.
+        anyEnt: boolean, optional None
+            If True, it wants all buckets that contain at least one already
+            marked entity; if False, it wants all buckets that do not contain any
+            already marked entity.
+        eVals: tuple, optional None
+            A sequence of values corresponding with the entity features `eid`
+            and `kind`. If given, the function wants buckets that contain at least
+            an entity with those properties.
+        qTokens: tuple, optional None
+            A sequence of tokens whose occurrences in the corpus will be looked up.
+        valSelect: dict, optional None
+            If present, the keys are the entity features (`eid` and `kind`),
+            and the values are iterables of values that are allowed.
+
+            The feature values to filter on.
+            The results of searching for `eVals` or `qTokens` are filtered further.
+            If a result is also an instance of an already marked entity,
+            the properties of that entity will be compared feature by feature with
+            the allowed values that `valSelect` specifies for that feature.
+        freeState: boolean, optional None
+            If True, found occurrences may not intersect with already marked up
+            features.
+            If False, found occurrences must intersect with already marked up features.
+        showStats: boolean, optional None
+            Whether to show statistics of the find.
+            If None, it only shows gross totals, if False, it shows nothing,
+            if True, it shows totals by feature.
+
+        Returns
+        -------
+        list of tuples
+            For each bucket that passes the filter, a tuple with the following
+            members is added to the list:
+
+            *   the TF node of the bucket;
+            *   tokens: the tokens of the bucket, each token is a tuple consisting
+                of the TF slot of the token and its string value;
+            *   matches: the match positions of the found occurrences or entity;
+            *   positions: the token positions of where the text of the bucket
+                starts matching the `bFindRe`;
+
+            If `browse` is True, also some stats are passed next to the list
+            of results.
         &#34;&#34;&#34;
-        CI = CheckImport(&#34;openpyxl&#34;)
-        if CI.importOK(hint=True):
-            openpyxl = CI.importGet()
-            self.load_workbook = openpyxl.load_workbook
-        else:
-            return None
-
         if not self.properlySetup:
-            return None
+            return []
 
-        reportBase = self.reportBase
-        reportDir = f&#34;{reportBase}/{sheetName}&#34;
-        self.reportDir = reportDir
+        settings = self.settings
+        bucketType = settings.bucketType
+        features = settings.features
 
-        initTree(reportDir, fresh=False)
+        getTextR = self.getTextR
+        getTokens = self.getTokens
 
-        Trig = Triggers(self)
-        self.Trig = Trig
+        browse = self.browse
+        setData = self.getSetData()
+        entityIndex = setData.entityIndex
+        entityVal = setData.entityVal
+        entitySlotVal = setData.entitySlotVal
+        entitySlotAll = setData.entitySlotAll
+        entitySlotIndex = setData.entitySlotIndex
 
-        Trig.intake(sheetName)
-        self.instructions = Trig.instructions
+        bucketUniverse = (
+            setData.buckets
+            if buckets is None
+            else tuple(sorted(self.checkBuckets(buckets)))
+        )
+        buckets = (
+            bucketUniverse
+            if node is None
+            else tuple(sorted(set(bucketUniverse) &amp; set(self.getContext(node))))
+        )
+
+        nFind = 0
+        nEnt = {feat: collections.Counter() for feat in (&#34;&#34;,) + features}
+        nVisible = {feat: collections.Counter() for feat in (&#34;&#34;,) + features}
+
+        if bFindRe is None:
+            if bFind is not None:
+                (bFind, bFindRe, errorMsg) = findCompile(bFind, bFindC)
+                if errorMsg:
+                    self.console(errorMsg, error=True)
+
+        hasEnt = eVals is not None
+        hasQTokens = qTokens is not None and len(qTokens)
+        hasOcc = not hasEnt and hasQTokens
+
+        if eVals is not None and eVals in entityVal:
+            eSlots = entityVal[eVals]
+            eStarts = {s[0]: s[-1] for s in eSlots}
+        else:
+            eStarts = {}
+
+        useQTokens = qTokens if hasOcc else None
+
+        requireFree = (
+            True if freeState == &#34;free&#34; else False if freeState == &#34;bound&#34; else None
+        )
+
+        results = []
+
+        for b in buckets:
+            fValStats = {feat: collections.Counter() for feat in features}
+            (fits, result) = entityMatch(
+                entityIndex,
+                eStarts,
+                entitySlotVal,
+                entitySlotAll,
+                entitySlotIndex,
+                getTextR,
+                getTokens,
+                b,
+                bFindRe,
+                anyEnt,
+                eVals,
+                useQTokens,
+                valSelect,
+                requireFree,
+                fValStats,
+            )
+
+            blocked = fits is not None and not fits
+
+            if not blocked:
+                nFind += 1
+
+            for feat in features:
+                theseStats = fValStats[feat]
+                if len(theseStats):
+                    theseNEnt = nEnt[feat]
+                    theseNVisible = nVisible[feat]
+
+                    for ek, n in theseStats.items():
+                        theseNEnt[ek] += n
+                        if not blocked:
+                            theseNVisible[ek] += n
+
+            nMatches = len(result[1])
+
+            if nMatches:
+                nEnt[&#34;&#34;][None] += nMatches
+                if not blocked:
+                    nVisible[&#34;&#34;][None] += nMatches
+
+            if node is None:
+                if fits is not None and not fits:
+                    continue
+
+                if (hasEnt or hasQTokens) and nMatches == 0:
+                    continue
+
+            results.append((b, *result))
+
+        if browse:
+            return (results, nFind, nVisible, nEnt)
+
+        nResults = len(results)
+
+        if showStats:
+            pluralF = &#34;&#34; if nFind == 1 else &#34;s&#34;
+            self.console(f&#34;{nFind} {bucketType}{pluralF} satisfy the filter&#34;)
+            for feat in (&#34;&#34;,) + (() if anyEnt else features):
+                if feat == &#34;&#34;:
+                    self.console(&#34;Combined features match:&#34;)
+                    for ek, n in sorted(nEnt[feat].items()):
+                        v = nVisible[feat][ek]
+                        self.console(f&#34;\t{v:&gt;5} of {n:&gt;5} x&#34;)
+                else:
+                    self.console(f&#34;Feature {feat}: found the following values:&#34;)
+                    for ek, n in sorted(nEnt[feat].items()):
+                        v = nVisible[feat][ek]
+                        self.console(f&#34;\t{v:&gt;5} of {n:&gt;5} x {ek}&#34;)
+        if showStats or showStats is None:
+            pluralR = &#34;&#34; if nResults == 1 else &#34;s&#34;
+            self.console(f&#34;{nResults} {bucketType}{pluralR}&#34;)
+        return results
 
     def lookup(self):
         &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
@@ -748,24 +1473,23 @@ by the Annotate class on which it is based.</p>
         if not self.properlySetup:
             return
 
-        app = self.app
-        app.indent(reset=True)
-        app.info(&#34;Looking up occurrences of many candidates ...&#34;)
-        self.findOccs()
-        self.reportHits()
+        self.processSheet(True)
 
     def reportHits(self):
         &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
         if not self.properlySetup:
             return
 
-        getHeadings = self.getHeadings
-        Trig = self.Trig
-        nameMap = Trig.nameMap
-        inventory = self.inventory
-        instructions = self.instructions
+        sheetName = self.sheetName
+        sheetData = self.sheets[sheetName]
 
-        reportDir = self.reportDir
+        getHeadings = self.getHeadings
+        nameMap = self.nameMap
+        inventory = sheetData.inventory
+        instructions = sheetData.instructions
+
+        reportBase = self.reportBase
+        reportDir = f&#34;{reportBase}/{sheetName}&#34;
         reportFile = f&#34;{reportDir}/hits.tsv&#34;
 
         allTriggers = set()
@@ -858,7 +1582,10 @@ by the Annotate class on which it is based.</p>
         if not self.properlySetup:
             return
 
-        inventory = self.inventory
+        browse = self.browse
+        sheetName = self.sheetName
+        sheetData = self.sheets[sheetName]
+        inventory = sheetData.inventory
 
         newEntities = []
 
@@ -866,6 +1593,14 @@ by the Annotate class on which it is based.</p>
             for (trigger, triggerData) in entData.items():
                 for matches in triggerData.values():
                     newEntities.append((eidkind, matches))
+
+        self.setSet(sheetName)
+
+        if self.getSetData():
+            if not browse:
+                console(f&#34;Set {sheetName} already exists. I will not overwrite it.&#34;)
+                console(&#34;Clear or delete this set before marking the entities&#34;)
+            return
 
         self.addEntities(newEntities, silent=False)
 
@@ -882,24 +1617,13 @@ by the Annotate class on which it is based.</p>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="tf.browser.ner.annotate.Annotate" href="annotate.html#tf.browser.ner.annotate.Annotate">Annotate</a></li>
+<li><a title="tf.browser.ner.sheets.Sheets" href="sheets.html#tf.browser.ner.sheets.Sheets">Sheets</a></li>
 <li><a title="tf.browser.ner.sets.Sets" href="sets.html#tf.browser.ner.sets.Sets">Sets</a></li>
 <li><a title="tf.browser.ner.data.Data" href="data.html#tf.browser.ner.data.Data">Data</a></li>
 <li><a title="tf.browser.ner.corpus.Corpus" href="corpus.html#tf.browser.ner.corpus.Corpus">Corpus</a></li>
 <li><a title="tf.browser.ner.settings.Settings" href="settings.html#tf.browser.ner.settings.Settings">Settings</a></li>
 <li><a title="tf.browser.ner.show.Show" href="show.html#tf.browser.ner.show.Show">Show</a></li>
 </ul>
-<h3>Instance variables</h3>
-<dl>
-<dt id="tf.browser.ner.ner.NER.Trig"><code class="name">var <span class="ident">Trig</span></code></dt>
-<dd>
-<div class="desc"><p>Will contain the object that has compiled the triggers for named entities.</p></div>
-</dd>
-<dt id="tf.browser.ner.ner.NER.inventory"><code class="name">var <span class="ident">inventory</span></code></dt>
-<dd>
-<div class="desc"><p>Will contain the locations of all surface forms in the current instructions.</p></div>
-</dd>
-</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="tf.browser.ner.ner.NER.bakeEntities"><code class="name flex">
@@ -916,7 +1640,7 @@ with this string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/ner.py#L432-L441" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/ner.py#L793-L802" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def bakeEntities(self, versionExtension=&#34;e&#34;):
     &#34;&#34;&#34;Bakes the entities of the current set as nodes into a new TF data source.
@@ -928,6 +1652,406 @@ with this string.</dd>
         with this string.
     &#34;&#34;&#34;
     self.consolidateEntities(versionExtension=versionExtension)</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.ner.NER.filterContent"><code class="name flex">
+<span>def <span class="ident">filterContent</span></span>(<span>self, buckets=None, node=None, bFind=None, bFindC=None, bFindRe=None, anyEnt=None, eVals=None, qTokens=None, valSelect=None, freeState=None, showStats=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Filter the buckets according to a variety of criteria.</p>
+<p>Either the buckets of the whole corpus are filtered, or a given subset
+of buckets, or a subset of buckets, namely those contained in a
+particular node, see parameters <code>node</code>, and <code>buckets</code>.</p>
+<p><strong>Bucket filtering</strong></p>
+<p>The parameters <code>bFind</code>, <code>bFindC</code>, <code>bFindRe</code>
+specify a regular expression
+search on the texts of the buckets.</p>
+<p>The positions of the found occurrences is included in the result.</p>
+<p>The parameter <code>anyEnt</code> is a filter on the presence or absence of entities in
+buckets in general.</p>
+<p><strong>Entity filtering</strong></p>
+<p>The parameter <code>eVals</code> holds the values of a specific entity to look for.</p>
+<p><strong>Occurrence filtering</strong></p>
+<p>The parameter <code>qTokens</code> is a sequence of tokens to look for.
+The occurrences that are found, can be filtered further by <code>valSelect</code>
+and <code>freeState</code>.</p>
+<p>In entity filtering and occurrence filtering, the matching occurrences
+are included in the result.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>buckets</code></strong> :&ensp;<code>set</code> of <code>integer</code>, optional <code>None</code></dt>
+<dd>The set of buckets to filter, instead of the whole corpus.
+Works also if the parameter <code>node</code> is specified, which also restricts
+the buckets to filter. If both are specified, their effect will be
+combined.</dd>
+<dt><strong><code>node</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>Gets the context of the node, typically the intermediate-level section
+in which the node occurs. Then restricts the filtering to the buckets
+contained in the context, instead of the whole corpus.</dd>
+<dt><strong><code>bFind</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>A search pattern that filters the buckets, before applying the search
+for a token sequence.</dd>
+<dt><strong><code>bFindC</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>Whether the search is case sensitive or not.</dd>
+<dt><strong><code>bFindRe</code></strong> :&ensp;<code>object</code>, optional <code>None</code></dt>
+<dd>A compiled regular expression.
+This function searches on <code>bFindRe</code>, but if it is None, it compiles
+<code>bFind</code> as regular expression and searches on that. If <code>bFind</code> itself
+is not None, of course.</dd>
+<dt><strong><code>anyEnt</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
+<dd>If True, it wants all buckets that contain at least one already
+marked entity; if False, it wants all buckets that do not contain any
+already marked entity.</dd>
+<dt><strong><code>eVals</code></strong> :&ensp;<code>tuple</code>, optional <code>None</code></dt>
+<dd>A sequence of values corresponding with the entity features <code>eid</code>
+and <code>kind</code>. If given, the function wants buckets that contain at least
+an entity with those properties.</dd>
+<dt><strong><code>qTokens</code></strong> :&ensp;<code>tuple</code>, optional <code>None</code></dt>
+<dd>A sequence of tokens whose occurrences in the corpus will be looked up.</dd>
+<dt><strong><code>valSelect</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>
+<dd>
+<p>If present, the keys are the entity features (<code>eid</code> and <code>kind</code>),
+and the values are iterables of values that are allowed.</p>
+<p>The feature values to filter on.
+The results of searching for <code>eVals</code> or <code>qTokens</code> are filtered further.
+If a result is also an instance of an already marked entity,
+the properties of that entity will be compared feature by feature with
+the allowed values that <code>valSelect</code> specifies for that feature.</p>
+</dd>
+<dt><strong><code>freeState</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
+<dd>If True, found occurrences may not intersect with already marked up
+features.
+If False, found occurrences must intersect with already marked up features.</dd>
+<dt><strong><code>showStats</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
+<dd>Whether to show statistics of the find.
+If None, it only shows gross totals, if False, it shows nothing,
+if True, it shows totals by feature.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code> of <code>tuples</code></dt>
+<dd>
+<p>For each bucket that passes the filter, a tuple with the following
+members is added to the list:</p>
+<ul>
+<li>the TF node of the bucket;</li>
+<li>tokens: the tokens of the bucket, each token is a tuple consisting
+of the TF slot of the token and its string value;</li>
+<li>matches: the match positions of the found occurrences or entity;</li>
+<li>positions: the token positions of where the text of the bucket
+starts matching the <code>bFindRe</code>;</li>
+</ul>
+<p>If <code>browse</code> is True, also some stats are passed next to the list
+of results.</p>
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/ner.py#L407-L646" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def filterContent(
+    self,
+    buckets=None,
+    node=None,
+    bFind=None,
+    bFindC=None,
+    bFindRe=None,
+    anyEnt=None,
+    eVals=None,
+    qTokens=None,
+    valSelect=None,
+    freeState=None,
+    showStats=None,
+):
+    &#34;&#34;&#34;Filter the buckets according to a variety of criteria.
+
+    Either the buckets of the whole corpus are filtered, or a given subset
+    of buckets, or a subset of buckets, namely those contained in a
+    particular node, see parameters `node`, and `buckets`.
+
+    **Bucket filtering**
+
+    The parameters `bFind`, `bFindC`, `bFindRe`  specify a regular expression
+    search on the texts of the buckets.
+
+    The positions of the found occurrences is included in the result.
+
+    The parameter `anyEnt` is a filter on the presence or absence of entities in
+    buckets in general.
+
+    **Entity filtering**
+
+    The parameter `eVals` holds the values of a specific entity to look for.
+
+    **Occurrence filtering**
+
+    The parameter `qTokens` is a sequence of tokens to look for.
+    The occurrences that are found, can be filtered further by `valSelect`
+    and `freeState`.
+
+    In entity filtering and occurrence filtering, the matching occurrences
+    are included in the result.
+
+    Parameters
+    ----------
+    buckets: set of integer, optional None
+        The set of buckets to filter, instead of the whole corpus.
+        Works also if the parameter `node` is specified, which also restricts
+        the buckets to filter. If both are specified, their effect will be
+        combined.
+    node: integer, optional None
+        Gets the context of the node, typically the intermediate-level section
+        in which the node occurs. Then restricts the filtering to the buckets
+        contained in the context, instead of the whole corpus.
+    bFind: string, optional None
+        A search pattern that filters the buckets, before applying the search
+        for a token sequence.
+    bFindC: string, optional None
+        Whether the search is case sensitive or not.
+    bFindRe: object, optional None
+        A compiled regular expression.
+        This function searches on `bFindRe`, but if it is None, it compiles
+        `bFind` as regular expression and searches on that. If `bFind` itself
+        is not None, of course.
+    anyEnt: boolean, optional None
+        If True, it wants all buckets that contain at least one already
+        marked entity; if False, it wants all buckets that do not contain any
+        already marked entity.
+    eVals: tuple, optional None
+        A sequence of values corresponding with the entity features `eid`
+        and `kind`. If given, the function wants buckets that contain at least
+        an entity with those properties.
+    qTokens: tuple, optional None
+        A sequence of tokens whose occurrences in the corpus will be looked up.
+    valSelect: dict, optional None
+        If present, the keys are the entity features (`eid` and `kind`),
+        and the values are iterables of values that are allowed.
+
+        The feature values to filter on.
+        The results of searching for `eVals` or `qTokens` are filtered further.
+        If a result is also an instance of an already marked entity,
+        the properties of that entity will be compared feature by feature with
+        the allowed values that `valSelect` specifies for that feature.
+    freeState: boolean, optional None
+        If True, found occurrences may not intersect with already marked up
+        features.
+        If False, found occurrences must intersect with already marked up features.
+    showStats: boolean, optional None
+        Whether to show statistics of the find.
+        If None, it only shows gross totals, if False, it shows nothing,
+        if True, it shows totals by feature.
+
+    Returns
+    -------
+    list of tuples
+        For each bucket that passes the filter, a tuple with the following
+        members is added to the list:
+
+        *   the TF node of the bucket;
+        *   tokens: the tokens of the bucket, each token is a tuple consisting
+            of the TF slot of the token and its string value;
+        *   matches: the match positions of the found occurrences or entity;
+        *   positions: the token positions of where the text of the bucket
+            starts matching the `bFindRe`;
+
+        If `browse` is True, also some stats are passed next to the list
+        of results.
+    &#34;&#34;&#34;
+    if not self.properlySetup:
+        return []
+
+    settings = self.settings
+    bucketType = settings.bucketType
+    features = settings.features
+
+    getTextR = self.getTextR
+    getTokens = self.getTokens
+
+    browse = self.browse
+    setData = self.getSetData()
+    entityIndex = setData.entityIndex
+    entityVal = setData.entityVal
+    entitySlotVal = setData.entitySlotVal
+    entitySlotAll = setData.entitySlotAll
+    entitySlotIndex = setData.entitySlotIndex
+
+    bucketUniverse = (
+        setData.buckets
+        if buckets is None
+        else tuple(sorted(self.checkBuckets(buckets)))
+    )
+    buckets = (
+        bucketUniverse
+        if node is None
+        else tuple(sorted(set(bucketUniverse) &amp; set(self.getContext(node))))
+    )
+
+    nFind = 0
+    nEnt = {feat: collections.Counter() for feat in (&#34;&#34;,) + features}
+    nVisible = {feat: collections.Counter() for feat in (&#34;&#34;,) + features}
+
+    if bFindRe is None:
+        if bFind is not None:
+            (bFind, bFindRe, errorMsg) = findCompile(bFind, bFindC)
+            if errorMsg:
+                self.console(errorMsg, error=True)
+
+    hasEnt = eVals is not None
+    hasQTokens = qTokens is not None and len(qTokens)
+    hasOcc = not hasEnt and hasQTokens
+
+    if eVals is not None and eVals in entityVal:
+        eSlots = entityVal[eVals]
+        eStarts = {s[0]: s[-1] for s in eSlots}
+    else:
+        eStarts = {}
+
+    useQTokens = qTokens if hasOcc else None
+
+    requireFree = (
+        True if freeState == &#34;free&#34; else False if freeState == &#34;bound&#34; else None
+    )
+
+    results = []
+
+    for b in buckets:
+        fValStats = {feat: collections.Counter() for feat in features}
+        (fits, result) = entityMatch(
+            entityIndex,
+            eStarts,
+            entitySlotVal,
+            entitySlotAll,
+            entitySlotIndex,
+            getTextR,
+            getTokens,
+            b,
+            bFindRe,
+            anyEnt,
+            eVals,
+            useQTokens,
+            valSelect,
+            requireFree,
+            fValStats,
+        )
+
+        blocked = fits is not None and not fits
+
+        if not blocked:
+            nFind += 1
+
+        for feat in features:
+            theseStats = fValStats[feat]
+            if len(theseStats):
+                theseNEnt = nEnt[feat]
+                theseNVisible = nVisible[feat]
+
+                for ek, n in theseStats.items():
+                    theseNEnt[ek] += n
+                    if not blocked:
+                        theseNVisible[ek] += n
+
+        nMatches = len(result[1])
+
+        if nMatches:
+            nEnt[&#34;&#34;][None] += nMatches
+            if not blocked:
+                nVisible[&#34;&#34;][None] += nMatches
+
+        if node is None:
+            if fits is not None and not fits:
+                continue
+
+            if (hasEnt or hasQTokens) and nMatches == 0:
+                continue
+
+        results.append((b, *result))
+
+    if browse:
+        return (results, nFind, nVisible, nEnt)
+
+    nResults = len(results)
+
+    if showStats:
+        pluralF = &#34;&#34; if nFind == 1 else &#34;s&#34;
+        self.console(f&#34;{nFind} {bucketType}{pluralF} satisfy the filter&#34;)
+        for feat in (&#34;&#34;,) + (() if anyEnt else features):
+            if feat == &#34;&#34;:
+                self.console(&#34;Combined features match:&#34;)
+                for ek, n in sorted(nEnt[feat].items()):
+                    v = nVisible[feat][ek]
+                    self.console(f&#34;\t{v:&gt;5} of {n:&gt;5} x&#34;)
+            else:
+                self.console(f&#34;Feature {feat}: found the following values:&#34;)
+                for ek, n in sorted(nEnt[feat].items()):
+                    v = nVisible[feat][ek]
+                    self.console(f&#34;\t{v:&gt;5} of {n:&gt;5} x {ek}&#34;)
+    if showStats or showStats is None:
+        pluralR = &#34;&#34; if nResults == 1 else &#34;s&#34;
+        self.console(f&#34;{nResults} {bucketType}{pluralR}&#34;)
+    return results</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.ner.NER.findOccs"><code class="name flex">
+<span>def <span class="ident">findOccs</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Finds the occurrences of multiple triggers.</p>
+<p>This is meant to efficiently list all occurrences of many token
+sequences in the corpus.</p>
+<p>The triggers are in member <code>instructions</code>, which must first
+be constructed by reading a number of excel files.</p>
+<p>It adds the member <code>inventory</code> to the object, which is a dict
+with subdicts:</p>
+<p><code>occurrences</code>: keyed by tuples (eid, kind), the values are
+the occurrences of that entity in the corpus.
+A single occurrence is represented as a tuple of slots.</p>
+<p><code>names</code>: keyed by tuples (eid, kind) and then path,
+the value is the name of that entity in the context indicated by path.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/ner.py#L367-L405" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def findOccs(self):
+    &#34;&#34;&#34;Finds the occurrences of multiple triggers.
+
+    This is meant to efficiently list all occurrences of many token
+    sequences in the corpus.
+
+    The triggers are in member `instructions`, which must first
+    be constructed by reading a number of excel files.
+
+    It adds the member `inventory` to the object, which is a dict
+    with subdicts:
+
+    `occurrences`: keyed by tuples (eid, kind), the values are
+    the occurrences of that entity in the corpus.
+    A single occurrence is represented as a tuple of slots.
+
+    `names`: keyed by tuples (eid, kind) and then path,
+    the value is the name of that entity in the context indicated by path.
+
+    &#34;&#34;&#34;
+    if not self.properlySetup:
+        return []
+
+    settings = self.settings
+    spaceEscaped = settings.spaceEscaped
+
+    setData = self.getSetData()
+    getTokens = self.getTokens
+    getHeadings = self.getHeadings
+
+    buckets = setData.buckets or ()
+
+    sheetName = self.sheetName
+    sheetData = self.sheets[sheetName]
+
+    instructions = sheetData.instructions
+    sheetData.inventory = occMatch(
+        getTokens, getHeadings, buckets, instructions, spaceEscaped
+    )</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.ner.NER.lookup"><code class="name flex">
@@ -943,7 +2067,7 @@ slot sequences where those token sequences occur in the corpus.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/ner.py#L297-L315" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/ner.py#L648-L662" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def lookup(self):
     &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
@@ -959,11 +2083,7 @@ slot sequences where those token sequences occur in the corpus.</p></div>
     if not self.properlySetup:
         return
 
-    app = self.app
-    app.indent(reset=True)
-    app.info(&#34;Looking up occurrences of many candidates ...&#34;)
-    self.findOccs()
-    self.reportHits()</code></pre>
+    self.processSheet(True)</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.ner.NER.markEntities"><code class="name flex">
@@ -978,7 +2098,7 @@ If there is no inventory yet, it will be created.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/ner.py#L409-L430" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/ner.py#L759-L791" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def markEntities(self):
     &#34;&#34;&#34;Marks up the members of the inventory as entities.
@@ -992,7 +2112,10 @@ If there is no inventory yet, it will be created.</p></div>
     if not self.properlySetup:
         return
 
-    inventory = self.inventory
+    browse = self.browse
+    sheetName = self.sheetName
+    sheetData = self.sheets[sheetName]
+    inventory = sheetData.inventory
 
     newEntities = []
 
@@ -1001,62 +2124,15 @@ If there is no inventory yet, it will be created.</p></div>
             for matches in triggerData.values():
                 newEntities.append((eidkind, matches))
 
+    self.setSet(sheetName)
+
+    if self.getSetData():
+        if not browse:
+            console(f&#34;Set {sheetName} already exists. I will not overwrite it.&#34;)
+            console(&#34;Clear or delete this set before marking the entities&#34;)
+        return
+
     self.addEntities(newEntities, silent=False)</code></pre>
-</details>
-</dd>
-<dt id="tf.browser.ner.ner.NER.readInstructions"><code class="name flex">
-<span>def <span class="ident">readInstructions</span></span>(<span>self, sheetName)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Reads the trigger specifications.</p>
-<p>See <code><a title="tf.browser.ner.triggers" href="triggers.html">tf.browser.ner.triggers</a></code>.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>sheetName</code></strong> :&ensp;<code>string</code></dt>
-<dd>The file name without extension of the spreadsheet.
-The spreadsheet is expected in the <code>ner/sheets</code> directory.
-It may be accompanied by a directory with the same name (without extension)
-containing more specialized trigger specs: per section level.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/ner.py#L262-L295" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def readInstructions(self, sheetName):
-    &#34;&#34;&#34;Reads the trigger specifications.
-
-    See `tf.browser.ner.triggers`.
-
-    Parameters
-    ----------
-    sheetName: string
-        The file name without extension of the spreadsheet.
-        The spreadsheet is expected in the `ner/sheets` directory.
-        It may be accompanied by a directory with the same name (without extension)
-        containing more specialized trigger specs: per section level.
-    &#34;&#34;&#34;
-    CI = CheckImport(&#34;openpyxl&#34;)
-    if CI.importOK(hint=True):
-        openpyxl = CI.importGet()
-        self.load_workbook = openpyxl.load_workbook
-    else:
-        return None
-
-    if not self.properlySetup:
-        return None
-
-    reportBase = self.reportBase
-    reportDir = f&#34;{reportBase}/{sheetName}&#34;
-    self.reportDir = reportDir
-
-    initTree(reportDir, fresh=False)
-
-    Trig = Triggers(self)
-    self.Trig = Trig
-
-    Trig.intake(sheetName)
-    self.instructions = Trig.instructions</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.ner.NER.reportHits"><code class="name flex">
@@ -1067,20 +2143,23 @@ containing more specialized trigger specs: per section level.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/ner.py#L317-L407" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/ner.py#L664-L757" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reportHits(self):
     &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
     if not self.properlySetup:
         return
 
-    getHeadings = self.getHeadings
-    Trig = self.Trig
-    nameMap = Trig.nameMap
-    inventory = self.inventory
-    instructions = self.instructions
+    sheetName = self.sheetName
+    sheetData = self.sheets[sheetName]
 
-    reportDir = self.reportDir
+    getHeadings = self.getHeadings
+    nameMap = self.nameMap
+    inventory = sheetData.inventory
+    instructions = sheetData.instructions
+
+    reportBase = self.reportBase
+    reportDir = f&#34;{reportBase}/{sheetName}&#34;
     reportFile = f&#34;{reportDir}/hits.tsv&#34;
 
     allTriggers = set()
@@ -1165,56 +2244,71 @@ containing more specialized trigger specs: per section level.</dd>
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="tf.browser.ner.annotate.Annotate" href="annotate.html#tf.browser.ner.annotate.Annotate">Annotate</a></b></code>:
+<li><code><b><a title="tf.browser.ner.sheets.Sheets" href="sheets.html#tf.browser.ner.sheets.Sheets">Sheets</a></b></code>:
 <ul class="hlist">
-<li><code><a title="tf.browser.ner.annotate.Annotate.addEntities" href="data.html#tf.browser.ner.data.Data.addEntities">addEntities</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.addEntity" href="data.html#tf.browser.ner.data.Data.addEntity">addEntity</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.addEntityRich" href="data.html#tf.browser.ner.data.Data.addEntityRich">addEntityRich</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.annoSet" href="sets.html#tf.browser.ner.sets.Sets.annoSet">annoSet</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.annoSetRep" href="sets.html#tf.browser.ner.sets.Sets.annoSetRep">annoSetRep</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.checkBuckets" href="corpus.html#tf.browser.ner.corpus.Corpus.checkBuckets">checkBuckets</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.checkFeature" href="corpus.html#tf.browser.ner.corpus.Corpus.checkFeature">checkFeature</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.console" href="settings.html#tf.browser.ner.settings.Settings.console">console</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.consolidateEntities" href="data.html#tf.browser.ner.data.Data.consolidateEntities">consolidateEntities</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.delEntity" href="data.html#tf.browser.ner.data.Data.delEntity">delEntity</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.delEntityRich" href="data.html#tf.browser.ner.data.Data.delEntityRich">delEntityRich</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.featureDefault" href="corpus.html#tf.browser.ner.corpus.Corpus.featureDefault">featureDefault</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.filterContent" href="annotate.html#tf.browser.ner.annotate.Annotate.filterContent">filterContent</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.findOccs" href="annotate.html#tf.browser.ner.annotate.Annotate.findOccs">findOccs</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.fromSource" href="data.html#tf.browser.ner.data.Data.fromSource">fromSource</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.get0" href="corpus.html#tf.browser.ner.corpus.Corpus.get0">get0</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.get1" href="corpus.html#tf.browser.ner.corpus.Corpus.get1">get1</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.getAfter" href="corpus.html#tf.browser.ner.corpus.Corpus.getAfter">getAfter</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.getBucketNodes" href="corpus.html#tf.browser.ner.corpus.Corpus.getBucketNodes">getBucketNodes</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.getContext" href="corpus.html#tf.browser.ner.corpus.Corpus.getContext">getContext</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.getEntityNodes" href="corpus.html#tf.browser.ner.corpus.Corpus.getEntityNodes">getEntityNodes</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.getFVal" href="corpus.html#tf.browser.ner.corpus.Corpus.getFVal">getFVal</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.getHeadings" href="corpus.html#tf.browser.ner.corpus.Corpus.getHeadings">getHeadings</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.getSetData" href="sets.html#tf.browser.ner.sets.Sets.getSetData">getSetData</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.getSlots" href="corpus.html#tf.browser.ner.corpus.Corpus.getSlots">getSlots</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.getStr" href="corpus.html#tf.browser.ner.corpus.Corpus.getStr">getStr</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.getStrings" href="corpus.html#tf.browser.ner.corpus.Corpus.getStrings">getStrings</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.getText" href="corpus.html#tf.browser.ner.corpus.Corpus.getText">getText</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.getTextR" href="corpus.html#tf.browser.ner.corpus.Corpus.getTextR">getTextR</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.getTokens" href="corpus.html#tf.browser.ner.corpus.Corpus.getTokens">getTokens</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.loadData" href="data.html#tf.browser.ner.data.Data.loadData">loadData</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.mergeEntities" href="data.html#tf.browser.ner.data.Data.mergeEntities">mergeEntities</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.process" href="data.html#tf.browser.ner.data.Data.process">process</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.properlySetup" href="corpus.html#tf.browser.ner.corpus.Corpus.properlySetup">properlySetup</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.readSets" href="sets.html#tf.browser.ner.sets.Sets.readSets">readSets</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.resetSet" href="sets.html#tf.browser.ner.sets.Sets.resetSet">resetSet</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.saveEntitiesAs" href="data.html#tf.browser.ner.data.Data.saveEntitiesAs">saveEntitiesAs</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.sectionHead" href="corpus.html#tf.browser.ner.corpus.Corpus.sectionHead">sectionHead</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.setDel" href="sets.html#tf.browser.ner.sets.Sets.setDel">setDel</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.setDup" href="sets.html#tf.browser.ner.sets.Sets.setDup">setDup</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.setMove" href="sets.html#tf.browser.ner.sets.Sets.setMove">setMove</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.setNames" href="sets.html#tf.browser.ner.sets.Sets.setNames">setNames</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.setSet" href="sets.html#tf.browser.ner.sets.Sets.setSet">setSet</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.showContent" href="show.html#tf.browser.ner.show.Show.showContent">showContent</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.showEntities" href="show.html#tf.browser.ner.show.Show.showEntities">showEntities</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.showEntityOverview" href="show.html#tf.browser.ner.show.Show.showEntityOverview">showEntityOverview</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.slotType" href="corpus.html#tf.browser.ner.corpus.Corpus.slotType">slotType</a></code></li>
-<li><code><a title="tf.browser.ner.annotate.Annotate.weedEntities" href="data.html#tf.browser.ner.data.Data.weedEntities">weedEntities</a></code></li>
+<li><code><a title="tf.browser.ner.sheets.Sheets.fromSourceSheet" href="sheets.html#tf.browser.ner.sheets.Sheets.fromSourceSheet">fromSourceSheet</a></code></li>
+<li><code><a title="tf.browser.ner.sheets.Sheets.getSheetData" href="sheets.html#tf.browser.ner.sheets.Sheets.getSheetData">getSheetData</a></code></li>
+<li><code><a title="tf.browser.ner.sheets.Sheets.loadSheetData" href="sheets.html#tf.browser.ner.sheets.Sheets.loadSheetData">loadSheetData</a></code></li>
+<li><code><a title="tf.browser.ner.sheets.Sheets.nameMap" href="sheets.html#tf.browser.ner.sheets.Sheets.nameMap">nameMap</a></code></li>
+<li><code><a title="tf.browser.ner.sheets.Sheets.processSheet" href="sheets.html#tf.browser.ner.sheets.Sheets.processSheet">processSheet</a></code></li>
+<li><code><a title="tf.browser.ner.sheets.Sheets.readSheets" href="sheets.html#tf.browser.ner.sheets.Sheets.readSheets">readSheets</a></code></li>
+<li><code><a title="tf.browser.ner.sheets.Sheets.setSheet" href="sheets.html#tf.browser.ner.sheets.Sheets.setSheet">setSheet</a></code></li>
+<li><code><a title="tf.browser.ner.sheets.Sheets.sheetName" href="sheets.html#tf.browser.ner.sheets.Sheets.sheetName">sheetName</a></code></li>
+<li><code><a title="tf.browser.ner.sheets.Sheets.sheetNames" href="sheets.html#tf.browser.ner.sheets.Sheets.sheetNames">sheetNames</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="tf.browser.ner.sets.Sets" href="sets.html#tf.browser.ner.sets.Sets">Sets</a></b></code>:
+<ul class="hlist">
+<li><code><a title="tf.browser.ner.sets.Sets.addEntities" href="data.html#tf.browser.ner.data.Data.addEntities">addEntities</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.addEntity" href="data.html#tf.browser.ner.data.Data.addEntity">addEntity</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.addEntityRich" href="data.html#tf.browser.ner.data.Data.addEntityRich">addEntityRich</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.checkBuckets" href="corpus.html#tf.browser.ner.corpus.Corpus.checkBuckets">checkBuckets</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.checkFeature" href="corpus.html#tf.browser.ner.corpus.Corpus.checkFeature">checkFeature</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.console" href="settings.html#tf.browser.ner.settings.Settings.console">console</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.consolidateEntities" href="data.html#tf.browser.ner.data.Data.consolidateEntities">consolidateEntities</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.delEntity" href="data.html#tf.browser.ner.data.Data.delEntity">delEntity</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.delEntityRich" href="data.html#tf.browser.ner.data.Data.delEntityRich">delEntityRich</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.featureDefault" href="corpus.html#tf.browser.ner.corpus.Corpus.featureDefault">featureDefault</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.fromSourceSet" href="data.html#tf.browser.ner.data.Data.fromSourceSet">fromSourceSet</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.get0" href="corpus.html#tf.browser.ner.corpus.Corpus.get0">get0</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.get1" href="corpus.html#tf.browser.ner.corpus.Corpus.get1">get1</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getAfter" href="corpus.html#tf.browser.ner.corpus.Corpus.getAfter">getAfter</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getBucketNodes" href="corpus.html#tf.browser.ner.corpus.Corpus.getBucketNodes">getBucketNodes</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getContext" href="corpus.html#tf.browser.ner.corpus.Corpus.getContext">getContext</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getEntityNodes" href="corpus.html#tf.browser.ner.corpus.Corpus.getEntityNodes">getEntityNodes</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getFVal" href="corpus.html#tf.browser.ner.corpus.Corpus.getFVal">getFVal</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getHeadings" href="corpus.html#tf.browser.ner.corpus.Corpus.getHeadings">getHeadings</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getSetData" href="sets.html#tf.browser.ner.sets.Sets.getSetData">getSetData</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getSlots" href="corpus.html#tf.browser.ner.corpus.Corpus.getSlots">getSlots</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getStr" href="corpus.html#tf.browser.ner.corpus.Corpus.getStr">getStr</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getStrings" href="corpus.html#tf.browser.ner.corpus.Corpus.getStrings">getStrings</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getText" href="corpus.html#tf.browser.ner.corpus.Corpus.getText">getText</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getTextR" href="corpus.html#tf.browser.ner.corpus.Corpus.getTextR">getTextR</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.getTokens" href="corpus.html#tf.browser.ner.corpus.Corpus.getTokens">getTokens</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.loadSetData" href="data.html#tf.browser.ner.data.Data.loadSetData">loadSetData</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.mergeEntities" href="data.html#tf.browser.ner.data.Data.mergeEntities">mergeEntities</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.processSet" href="data.html#tf.browser.ner.data.Data.processSet">processSet</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.properlySetup" href="corpus.html#tf.browser.ner.corpus.Corpus.properlySetup">properlySetup</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.readSets" href="sets.html#tf.browser.ner.sets.Sets.readSets">readSets</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.resetSet" href="sets.html#tf.browser.ner.sets.Sets.resetSet">resetSet</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.saveEntitiesAs" href="data.html#tf.browser.ner.data.Data.saveEntitiesAs">saveEntitiesAs</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.sectionHead" href="corpus.html#tf.browser.ner.corpus.Corpus.sectionHead">sectionHead</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.setDel" href="sets.html#tf.browser.ner.sets.Sets.setDel">setDel</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.setDup" href="sets.html#tf.browser.ner.sets.Sets.setDup">setDup</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.setMove" href="sets.html#tf.browser.ner.sets.Sets.setMove">setMove</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.setName" href="sets.html#tf.browser.ner.sets.Sets.setName">setName</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.setNameRep" href="sets.html#tf.browser.ner.sets.Sets.setNameRep">setNameRep</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.setNames" href="sets.html#tf.browser.ner.sets.Sets.setNames">setNames</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.setSet" href="sets.html#tf.browser.ner.sets.Sets.setSet">setSet</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.slotType" href="corpus.html#tf.browser.ner.corpus.Corpus.slotType">slotType</a></code></li>
+<li><code><a title="tf.browser.ner.sets.Sets.weedEntities" href="data.html#tf.browser.ner.data.Data.weedEntities">weedEntities</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="tf.browser.ner.show.Show" href="show.html#tf.browser.ner.show.Show">Show</a></b></code>:
+<ul class="hlist">
+<li><code><a title="tf.browser.ner.show.Show.showContent" href="show.html#tf.browser.ner.show.Show.showContent">showContent</a></code></li>
+<li><code><a title="tf.browser.ner.show.Show.showEntities" href="show.html#tf.browser.ner.show.Show.showEntities">showEntities</a></code></li>
+<li><code><a title="tf.browser.ner.show.Show.showEntityOverview" href="show.html#tf.browser.ner.show.Show.showEntityOverview">showEntityOverview</a></code></li>
 </ul>
 </li>
 </ul>
@@ -1298,12 +2392,11 @@ setTimeout(() => input.focus(), 100);
 <li>
 <h4><code><a title="tf.browser.ner.ner.NER" href="#tf.browser.ner.ner.NER">NER</a></code></h4>
 <ul class="two-column">
-<li><code><a title="tf.browser.ner.ner.NER.Trig" href="#tf.browser.ner.ner.NER.Trig">Trig</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.bakeEntities" href="#tf.browser.ner.ner.NER.bakeEntities">bakeEntities</a></code></li>
-<li><code><a title="tf.browser.ner.ner.NER.inventory" href="#tf.browser.ner.ner.NER.inventory">inventory</a></code></li>
+<li><code><a title="tf.browser.ner.ner.NER.filterContent" href="#tf.browser.ner.ner.NER.filterContent">filterContent</a></code></li>
+<li><code><a title="tf.browser.ner.ner.NER.findOccs" href="#tf.browser.ner.ner.NER.findOccs">findOccs</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.lookup" href="#tf.browser.ner.ner.NER.lookup">lookup</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.markEntities" href="#tf.browser.ner.ner.NER.markEntities">markEntities</a></code></li>
-<li><code><a title="tf.browser.ner.ner.NER.readInstructions" href="#tf.browser.ner.ner.NER.readInstructions">readInstructions</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.reportHits" href="#tf.browser.ner.ner.NER.reportHits">reportHits</a></code></li>
 </ul>
 </li>

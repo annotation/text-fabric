@@ -30,16 +30,16 @@ crossorigin>
 <section id="section-intro">
 <p>Match functions.</p>
 <p>To see how this fits among all the modules of this package, see
-<code><a title="tf.browser.ner.annotate" href="annotate.html">tf.browser.ner.annotate</a></code> .</p>
+<code><a title="tf.browser.ner.ner" href="ner.html">tf.browser.ner.ner</a></code> .</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/match.py#L1-L363" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/match.py#L1-L363" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Match functions.
 
 To see how this fits among all the modules of this package, see
-`tf.browser.ner.annotate` .
+`tf.browser.ner.ner` .
 &#34;&#34;&#34;
 
 from .settings import NONE
@@ -244,7 +244,7 @@ def entityMatch(
     b: integer
         The node of the bucket in question
     bFindRe, anyEnt, eVals, qTokens, valSelect, freeState: object
-        As in `tf.browser.ner.annotate.Annotate.filterContent`
+        As in `tf.browser.ner.ner.NER.filterContent`
 
     Returns
     -------
@@ -425,7 +425,7 @@ def entityMatch(
 <dt><strong><code>b</code></strong> :&ensp;<code>integer</code></dt>
 <dd>The node of the bucket in question</dd>
 <dt><strong><code>bFindRe</code></strong>, <strong><code>anyEnt</code></strong>, <strong><code>eVals</code></strong>, <strong><code>qTokens</code></strong>, <strong><code>valSelect</code></strong>, <strong><code>freeState</code></strong> :&ensp;<code>object</code></dt>
-<dd>As in <code><a title="tf.browser.ner.annotate.Annotate.filterContent" href="annotate.html#tf.browser.ner.annotate.Annotate.filterContent">Annotate.filterContent()</a></code></dd>
+<dd>As in <code><a title="tf.browser.ner.ner.NER.filterContent" href="ner.html#tf.browser.ner.ner.NER.filterContent">NER.filterContent()</a></code></dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -449,7 +449,7 @@ of its slot number (position) and string value;</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/match.py#L177-L363" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/match.py#L177-L363" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def entityMatch(
     entityIndex,
@@ -483,7 +483,7 @@ of its slot number (position) and string value;</li>
     b: integer
         The node of the bucket in question
     bFindRe, anyEnt, eVals, qTokens, valSelect, freeState: object
-        As in `tf.browser.ner.annotate.Annotate.filterContent`
+        As in `tf.browser.ner.ner.NER.filterContent`
 
     Returns
     -------
@@ -669,7 +669,7 @@ have that token at that position.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/match.py#L11-L119" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/match.py#L11-L119" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
     &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens in a single bucket.
@@ -805,7 +805,7 @@ A single occurrence is represented as a tuple of slots.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/match.py#L122-L174" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/match.py#L122-L174" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def occMatchOld(getTokens, b, qSeqs, results):
     &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens in a single bucket.

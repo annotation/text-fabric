@@ -30,16 +30,16 @@ crossorigin>
 <section id="section-intro">
 <p>Corpus dependent setup of the annotation tool.</p>
 <p>To see how this fits among all the modules of this package, see
-<code><a title="tf.browser.ner.annotate" href="annotate.html">tf.browser.ner.annotate</a></code> .</p>
+<code><a title="tf.browser.ner.ner" href="ner.html">tf.browser.ner.ner</a></code> .</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/settings.py#L1-L232" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/settings.py#L1-L232" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Corpus dependent setup of the annotation tool.
 
 To see how this fits among all the modules of this package, see
-`tf.browser.ner.annotate` .
+`tf.browser.ner.ner` .
 &#34;&#34;&#34;
 
 
@@ -263,7 +263,7 @@ class Settings:
 
         This works exactly as `tf.core.helpers.console`
 
-        It is handy to have this as a method on the Annotate object,
+        It is handy to have this as a method on the NER object,
         so that we can issue temporary console statements during development
         without the need to add an `import` statement to the code.
         &#34;&#34;&#34;
@@ -393,7 +393,7 @@ Those configuration values are read from a YAML file, located in a directory
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/settings.py#L192-L232" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/settings.py#L192-L232" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Settings:
     def __init__(self):
@@ -431,7 +431,7 @@ Those configuration values are read from a YAML file, located in a directory
 
         This works exactly as `tf.core.helpers.console`
 
-        It is handy to have this as a method on the Annotate object,
+        It is handy to have this as a method on the NER object,
         so that we can issue temporary console statements during development
         without the need to add an `import` statement to the code.
         &#34;&#34;&#34;
@@ -449,20 +449,20 @@ Those configuration values are read from a YAML file, located in a directory
 <dd>
 <div class="desc"><p>Print something to the output.</p>
 <p>This works exactly as <code><a title="tf.core.helpers.console" href="../../core/helpers.html#tf.core.helpers.console">console()</a></code></p>
-<p>It is handy to have this as a method on the Annotate object,
+<p>It is handy to have this as a method on the NER object,
 so that we can issue temporary console statements during development
 without the need to add an <code>import</code> statement to the code.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/browser/ner/settings.py#L223-L232" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/settings.py#L223-L232" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(self, msg, **kwargs):
     &#34;&#34;&#34;Print something to the output.
 
     This works exactly as `tf.core.helpers.console`
 
-    It is handy to have this as a method on the Annotate object,
+    It is handy to have this as a method on the NER object,
     so that we can issue temporary console statements during development
     without the need to add an `import` statement to the code.
     &#34;&#34;&#34;

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>tf.about.annotateBrowser API documentation</title>
-<meta name="description" content="Annotate tool in TF Browser …" />
+<meta name="description" content="Named Entity tool in TF Browser …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css"
 integrity="sha512-kcbluZFacWN57NgWZ4aH6eUMBEaTyErFhIFD3y5qYZbKuuyImH0K/AKsBbfXlivh2z5C+3IDTIhI11YmKomzmA=="
@@ -28,7 +28,7 @@ crossorigin>
 <h1 class="title">Module <code>tf.about.annotateBrowser</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="annotate-tool-in-tf-browser">Annotate tool in TF Browser</h1>
+<h1 id="named-entity-tool-in-tf-browser">Named Entity tool in TF Browser</h1>
 <p>We explain the manual annotation process with a leading example:
 <a href="https://github.com/HuygensING/suriano"><code>HuygensING/suriano</code></a>.</p>
 <h2 id="prerequisites">Prerequisites</h2>
@@ -62,7 +62,7 @@ If you leave out the <code>--chrome</code> bit, the tool starts in your default 
 <p>Because of <code>-noweb</code> it will not open a new browser window and you can continue in the
 already open browser tab.</p>
 <p>The start-up window looks like this:</p>
-<p><img alt="browser" src="../images/Annotate/browser-start.png"></p>
+<p><img alt="browser" src="../images/Ner/browser-start.png"></p>
 <ul>
 <li>
 <p><strong>Left column</strong>:</p>
@@ -86,7 +86,7 @@ there are of each kind.</p>
 <p>At the bottom is the list of all entities, which you can filter and sort by the
 controls in between.</p>
 <p>You can click on each entity. Let's click on <code>Francia</code>:</p>
-<p><img alt="browser" src="../images/Annotate/browser-entity.png"></p>
+<p><img alt="browser" src="../images/Ner/browser-entity.png"></p>
 <p>On the right you see all occurrences of this entity, highlighted.</p>
 </li>
 <li>
@@ -107,7 +107,7 @@ we reset the viewer.</p>
 <p>On top you see a section <strong>Appearance</strong> with a button <code>plain</code>.
 Click that button. It changes to <code>decorated</code> plus a row of buttons next to it.</p>
 <p>Below, in the text, you see that something has changed:</p>
-<p><img alt="browser" src="../images/Annotate/entities-decorated.png"></p>
+<p><img alt="browser" src="../images/Ner/entities-decorated.png"></p>
 <ul>
 <li>every occurrence of an entity in the set is now underlined;</li>
 <li>the whole entity is wrapped between <code>|</code> with a little number indicating how
@@ -126,7 +126,7 @@ If you need more context around an occurrence, click the blue section indicator
 at the left of the relevant paragraph.</p>
 <p>You will get a scrollable view of the whole section (letter) in which that paragraph
 occurs. </p>
-<p><img alt="browser" src="../images/Annotate/context.png"></p>
+<p><img alt="browser" src="../images/Ner/context.png"></p>
 <p>The paragraph you started from is in the center. You can scroll up and down the
 whole letter that the paragraph is contained in.
 If you want to return to the paragraph you started from, click the blue dot.
@@ -154,7 +154,7 @@ The text view now shows only the paragraphs with <code>ernesto</code> in it, and
 <code>Ernesto</code>.
 The whole stretch <code>Gio. Ernesto di Nassau</code> becomes yellow highlighted.
 Above the text you see a new control section, titled <strong>Mark</strong>:</p>
-<p><img alt="browser" src="../images/Annotate/mark.png"></p>
+<p><img alt="browser" src="../images/Ner/mark.png"></p>
 <p>Click the ✅ button that you see there.</p>
 <p>The text below will contain all paragraphs in which the string
 <code>Gio. Ernesto di Nassau</code> occurs, with all those occurrences highlighted.
@@ -167,7 +167,7 @@ There are 15 of them.</p>
 shows you the identifiers and kinds of those entities.
 You may select values here in order to restrict the modification actions in the
 next step to these cases. </p>
-<p><img alt="browser" src="../images/Annotate/select.png"></p>
+<p><img alt="browser" src="../images/Ner/select.png"></p>
 <p>You also see the values <code>⌀</code>: they select occurrences that are <em>not</em> instances
 of any entity in the currently developed set.
 Since we just started with an empty set, these are the only values that you can
@@ -178,7 +178,7 @@ select, and the app has already selected them for you.</p>
 <p>Now you can act on the selected occurrences. There are two possible actions:
 <em>add</em> entities for these occurrences or <em>delete</em> existing entities for these
 occurrences. Since our set of entities is still empty, we can only add.</p>
-<p><img alt="browser" src="../images/Annotate/add.png"></p>
+<p><img alt="browser" src="../images/Ner/add.png"></p>
 <p>You have to tell the annotator the values for the entity identifier and kind that
 you will assign. The tool has already prefilled sensible values for you, but you
 can change them.</p>
@@ -186,12 +186,12 @@ can change them.</p>
 That will deselect this occurrence from the <code>add</code> operation.
 More about that below.</p>
 <p>The result looks like this:</p>
-<p><img alt="browser" src="../images/Annotate/results-para1.png"></p>
+<p><img alt="browser" src="../images/Ner/results-para1.png"></p>
 <p>(the first occurrence is unaffected)</p>
-<p><img alt="browser" src="../images/Annotate/results-para2.png"></p>
+<p><img alt="browser" src="../images/Ner/results-para2.png"></p>
 <p>(new entity markings show up!).</p>
 <p>Also the control sections look different now:</p>
-<p><img alt="browser" src="../images/Annotate/result-controls.png"></p>
+<p><img alt="browser" src="../images/Ner/result-controls.png"></p>
 <p>Note the lines with the black background: they report the result of the
 previous action.</p>
 <p>The <strong>select</strong> control now shows additional values under the selected occurrences:
@@ -221,7 +221,7 @@ or occurrences that do overlap with existing entities.</p>
 <p><strong>Select step</strong></p>
 <p>There is a button <code>all</code>. If you click on it, it changes
 to <code>filtered</code>, and you see the totals as <code>15 of 15</code> instead of <code>15</code>.</p>
-<p><img alt="browser" src="../images/Annotate/select-filtered.png"></p>
+<p><img alt="browser" src="../images/Ner/select-filtered.png"></p>
 <p>What does this mean?</p>
 <p>You can work with the <code>filtered</code> paragraphs only (the ones that contain the word
 <code>ernesto</code>, marked as blue), or you can work with all paragraphs, including the ones
@@ -229,7 +229,7 @@ that are not in the filtered view.
 In this case, both options coincide, because the filter pattern <code>ernesto</code> is also
 part of the entity pattern <code>Gio. Ernesto di Nassau</code>.</p>
 <p>If you replace <code>ernesto</code> by <code>paesi</code> in the filter, you'll see this:</p>
-<p><img alt="browser" src="../images/Annotate/filtered-paesi.png"></p>
+<p><img alt="browser" src="../images/Ner/filtered-paesi.png"></p>
 <p>Now you see that when you choose <code>filtered</code>, you act on 6 occurrences, instead
 of all 15.</p>
 <p><strong>Modify step</strong></p>
@@ -267,7 +267,7 @@ and make fine-tuning corrections.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e5cce2fc1d1af17d327f7aec105ed0ceffc563d/tf/about/annotateBrowser.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/about/annotateBrowser.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/annotateBrowser.md
@@ -338,7 +338,7 @@ setTimeout(() => input.focus(), 100);
 <h1>Index</h1>
 <div class="toc">
 <ul>
-<li><a href="#annotate-tool-in-tf-browser">Annotate tool in TF Browser</a><ul>
+<li><a href="#named-entity-tool-in-tf-browser">Named Entity tool in TF Browser</a><ul>
 <li><a href="#prerequisites">Prerequisites</a></li>
 <li><a href="#start-up">Start up</a></li>
 <li><a href="#annotation-workflow">Annotation workflow</a><ul>
