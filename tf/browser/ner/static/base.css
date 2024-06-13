@@ -154,3 +154,12 @@ p.e {
   border: 0;
   padding: 0 0.3rem;
 }
+.oname {
+  margin-left: 2rem;
+}
+.otrigger {
+  margin-left: 4rem;
+}
+.osheet {
+  margin-left: 6rem;
+}

@@ -4,7 +4,6 @@ To see how this fits among all the modules of this package, see
 `tf.browser.ner.ner` .
 """
 
-from ...core.generic import AttrDict
 from .settings import NONE
 from .helpers import getPath, fromTokens
 
@@ -33,6 +32,14 @@ def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
 
         read off, given a position and a token, the set of all triggers that
         have that token at that position.
+
+    Returns
+    -------
+    dict
+        A multiply nested dict, first keyed by tuples of entity identifier and kind,
+        then by its triggers then by the sheets where such a trigger occurs, and then
+        the value is a list of occurrences, where each occurrence is a tuple of slots.
+
     """
 
     # compile the token sequences that we search for into data to optimize search
@@ -47,9 +54,9 @@ def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
         heading = getHeadings(b)
         path = getPath(heading, instructions)
         data = instructions[path]
-        tPos = data.tPos
-        tMap = data.tMap
-        idMap = data.idMap
+        tPos = data["tPos"]
+        tMap = data["tMap"]
+        idMap = data["idMap"]
 
         # compile the bucket into logical tokens
         bTokensAll = getTokens(b)
@@ -109,7 +116,7 @@ def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
                     lastT = bStringLast[i + m]
                     slots = tuple(range(firstT, lastT + 1))
                     eidkind = idMap[trigger]
-                    dest = results.setdefault(eidkind, AttrDict()).setdefault(
+                    dest = results.setdefault(eidkind, {}).setdefault(
                         trigger, {}
                     )
                     destHits = dest.setdefault(tPath, [])

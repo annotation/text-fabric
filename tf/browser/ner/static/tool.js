@@ -263,7 +263,7 @@ const entityControls = () => {
   })
 
   entitiesDiv.off("click").click(e => {
-    e.preventDefault()
+    //e.preventDefault()
     const { target } = e
     const elem = $(target)
     const tag = elem[0].localName

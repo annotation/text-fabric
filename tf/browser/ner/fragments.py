@@ -137,7 +137,8 @@ class Fragments:
     def wrapLogs(self):
         v = self.v
         ner = self.ner
-        logData = ner.logData
+        sheetData = ner.getSheetData()
+        logData = sheetData.logData or []
 
         v.logs = "\n".join(
             H.p(

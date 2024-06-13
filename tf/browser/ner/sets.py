@@ -22,7 +22,7 @@ from ...core.files import (
     dirMove,
 )
 
-from .settings import ERROR
+from .settings import ERROR, SET_ENT, SET_SHEET, SET_MAIN
 
 
 class Sets(Data):
@@ -86,11 +86,11 @@ class Sets(Data):
         setIsSrc = setName == ""
 
         setNameRep = (
-            f"🟰 {entitySet}"
+            f"{SET_ENT} {entitySet}"
             if setName == ""
-            else f"🧾 {setName[1:]}"
+            else f"{SET_SHEET} {setName[1:]}"
             if setName.startswith(".")
-            else f"🖍️ {setName}"
+            else f"{SET_MAIN} {setName}"
         )
         if inObject:
             self.setNameRep = setNameRep

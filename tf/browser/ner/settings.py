@@ -188,6 +188,10 @@ defaultValues:
 spaceEscaped: false
 """
 
+SET_ENT = "🟰"
+SET_SHEET = "🧾"
+SET_MAIN = "🖍️"
+
 
 class Settings:
     def __init__(self):

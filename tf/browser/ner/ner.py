@@ -335,6 +335,10 @@ class NER(Sheets, Sets, Show):
         if not self.properlySetup:
             return
 
+    def setTask(self, task):
+        self.setSet(task)
+        self.setSheet(task[1:] if self.setIsRo and not self.setIsSrc else None)
+
     def findOccs(self):
         """Finds the occurrences of multiple triggers.
 
@@ -616,22 +620,6 @@ class NER(Sheets, Sets, Show):
             self.console(f"{nResults} {bucketType}{pluralR}")
         return results
 
-    def lookup(self):
-        """Explores the corpus for the surface forms mentioned in the instructions.
-
-        The instructions are present in the `instructions` attribute of the object.
-
-        The resulting inventory is stored in the `inventory` member of
-        the object.
-
-        It is a dictionary, keyed by sequences of tokens, whose values are the
-        slot sequences where those token sequences occur in the corpus.
-        """
-        if not self.properlySetup:
-            return
-
-        self.processSheet(True)
-
     def reportHits(self):
         """Reports the inventory."""
         if not self.properlySetup:
@@ -641,7 +629,7 @@ class NER(Sheets, Sets, Show):
         sheetData = self.sheets[sheetName]
 
         getHeadings = self.getHeadings
-        nameMap = self.nameMap
+        nameMap = sheetData.nameMap
         inventory = sheetData.inventory
         instructions = sheetData.instructions
 
@@ -653,8 +641,8 @@ class NER(Sheets, Sets, Show):
         allTriggers = set()
 
         for path, data in instructions.items():
-            idMap = data.idMap
-            tMap = data.tMap
+            idMap = data["idMap"]
+            tMap = data["tMap"]
 
             for trigger, tPath in tMap.items():
                 eidkind = idMap[trigger]

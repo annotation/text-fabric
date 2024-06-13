@@ -18,6 +18,7 @@ from .settings import (
     SORTDIR_DESC,
     LIMIT_BROWSER,
     LIMIT_NB,
+    SET_SHEET,
 )
 
 
@@ -170,6 +171,80 @@ class Show:
             )
 
         content = H.join(content)
+
+        if browse:
+            return content
+
+        dh(content)
+
+    def showTriggers(
+        self, activeName=None, activeTrigger=None, activeSheet=None, activeSection=None
+    ):
+        """Generates HTML for an expandable overview of the entities and their triggers.
+
+        Returns
+        -------
+        string or void
+            If called by the browser, it returns the HTML string.
+            Otherwise, it displays the HTML string in the output, assuming
+            it is a cell in a Jupyter Notebook.
+        """
+        browse = self.browse
+        sheetData = self.getSheetData()
+        hitData = sheetData.hitData or {}
+
+        def genNames(data):
+            content = []
+
+            for k in sorted(data):
+                v = data[k]
+                content.append(
+                    H.details(H.summary(k), H.div(genTriggers(v), cls="oname"))
+                )
+
+            return content
+
+        def genTriggers(data):
+            content = []
+
+            for k in sorted(data):
+                v = data[k]
+                content.append(
+                    H.details(
+                        H.summary(H.code(k)),
+                        H.div(genSheets(v), cls="otrigger"),
+                    )
+                )
+
+            return content
+
+        def genSheets(data):
+            content = []
+
+            for k in sorted(data):
+                v = data[k]
+                content.append(
+                    H.details(
+                        H.summary(f"{SET_SHEET} {k}"),
+                        H.div(genSections(v), cls="osheet"),
+                    )
+                )
+
+            return content
+
+        def genSections(data):
+            content = []
+
+            content.append(
+                H.ul(
+                    H.li(f"{len(v)} x in " + H.a(f"{k}", href="#"))
+                    for (k, v) in sorted(data.items())
+                )
+            )
+
+            return content
+
+        content = "\n".join(genNames(hitData))
 
         if browse:
             return content
@@ -348,7 +423,7 @@ class Show:
                     firstFound = min(foundSet) - charPos
                     lastFound = max(foundSet) - charPos
                     leading = "" if firstFound == charPos else w[0:firstFound]
-                    trailing = "" if lastFound == lenW - 1 else w[lastFound + 1:]
+                    trailing = "" if lastFound == lenW - 1 else w[lastFound + 1 :]
                     hit = w[firstFound : lastFound + 1]
                     wRep = H.join(leading, H.span(hit, cls="found"), trailing)
                 else:

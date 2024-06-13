@@ -42,6 +42,10 @@ class Request(Form):
         features = settings.features
 
         keysStr = """
+            activename
+            activetrigger
+            activesheet
+            activesection
             resetForm
             submitter
             sec0

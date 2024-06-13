@@ -39,11 +39,7 @@ class Serve(Request, Fragments):
         v = self.v
         setName = v.set
 
-        ner.setSet(setName)
-        ner.loadSetData()
-
-        ner.setSheet(setName[1:] if ner.setIsRo and not ner.setIsSrc else None)
-        ner.loadSheetData()
+        ner.setTask(setName)
 
     def setupFull(self):
         """Prepares to serve a complete page.
@@ -97,6 +93,11 @@ class Serve(Request, Fragments):
         sortKey = v.sortkey
         sortDir = v.sortdir
         activeEntity = v.activeentity
+        activeName = v.activename
+        activeTrigger = v.activetrigger
+        activeSheet = v.activesheet
+        activeSection = v.activesection
+        activeEntity = v.activeentity
         tokenStart = v.tokenstart
         tokenEnd = v.tokenend
         excludedTokens = v.excludedtokens
@@ -104,8 +105,17 @@ class Serve(Request, Fragments):
         buckets = self.buckets
 
         self.wrapQuery()
-        v.entitytable = ner.showEntities(
-            activeEntity=activeEntity, sortKey=sortKey, sortDir=sortDir
+        v.entitytable = (
+            ner.showEntities(
+                activeEntity=activeEntity, sortKey=sortKey, sortDir=sortDir
+            )
+            if ner.sheetName is None
+            else ner.showTriggers(
+                activeName=activeName,
+                activeTrigger=activeTrigger,
+                activeSheet=activeSheet,
+                activeSection=activeSection,
+            )
         )
         v.entityoverview = ner.showEntityOverview()
         v.entityheaders = self.wrapEntityHeaders()
@@ -223,6 +233,7 @@ class Serve(Request, Fragments):
         """
         ner = self.ner
         ner.readSets()
+        ner.readSheets()
 
         v = self.v
         chosenSet = v.set
@@ -250,7 +261,8 @@ class Serve(Request, Fragments):
         v.messagesrc = messages
 
         chosenSet = v.set
-        ner.setSet(chosenSet)
+        ner.setTask(chosenSet)
+        ner.loadSetData()
 
         self.wrapSets()
         self.wrapMessages()

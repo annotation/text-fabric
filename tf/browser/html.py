@@ -8,6 +8,7 @@ from ..core.helpers import console, NBSP
 
 
 H_ELEMENT_DEFS = """
+    a
     b
     br>
     button
@@ -16,12 +17,15 @@ H_ELEMENT_DEFS = """
     div
     i
     input>
+    li
+    ol
     option
     p
     select
     span
     style
     summary
+    ul
 """.strip().split()
 
 H_ELEMENTS = tuple(
