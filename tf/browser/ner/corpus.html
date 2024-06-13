@@ -39,7 +39,7 @@ control over how to customize the annotator for different corpora.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/corpus.py#L1-L388" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/corpus.py#L1-L387" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Access to the corpus.
 
@@ -89,14 +89,13 @@ class Corpus(Settings):
         self.appName = appName
         self.version = version
 
-        (specDir, annoDir, reportDir) = annotateDir(app, TOOLKEY)
+        (specDir, annoDir) = annotateDir(app, TOOLKEY)
 
         self.specDir = specDir
         self.annoDir = f&#34;{annoDir}/{version}&#34;
         self.sheetDir = f&#34;{specDir}/specs&#34;
-        self.reportBase = f&#34;{reportDir}/{version}&#34;
 
-        super().__init__()
+        Settings.__init__(self)
 
         api = app.api
         F = api.F
@@ -455,7 +454,7 @@ flag.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/corpus.py#L27-L388" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/corpus.py#L27-L387" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Corpus(Settings):
     def __init__(self):
@@ -479,14 +478,13 @@ flag.</p></div>
         self.appName = appName
         self.version = version
 
-        (specDir, annoDir, reportDir) = annotateDir(app, TOOLKEY)
+        (specDir, annoDir) = annotateDir(app, TOOLKEY)
 
         self.specDir = specDir
         self.annoDir = f&#34;{annoDir}/{version}&#34;
         self.sheetDir = f&#34;{specDir}/specs&#34;
-        self.reportBase = f&#34;{reportDir}/{version}&#34;
 
-        super().__init__()
+        Settings.__init__(self)
 
         api = app.api
         F = api.F

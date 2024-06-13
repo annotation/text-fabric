@@ -43,6 +43,20 @@ and in its top-level directory run the command:</strong></p>
 </code></pre>
 <h2 id="12">12</h2>
 <h3 id="125">12.5</h3>
+<h4 id="1252">12.5.2</h4>
+<p>2024-06-13</p>
+<ul>
+<li>
+<p>New function to show the types for which each feature has defined values.
+Thanks to Marek Polášek for asking for it, writing an algorithm to produce this
+information, and then speeding it up 10-fold! For details see this
+<a href="https://nbviewer.org/github/ETCBC/bhsa/blob/master/tutorial/cookbook/lexemes.ipynb">cookbook</a></p>
+</li>
+<li>
+<p>Working on integrating NER by spreadsheet in the TF browser. This is currently in
+an unfinished state.</p>
+</li>
+</ul>
 <h4 id="1251">12.5.1</h4>
 <p>2024-06-06</p>
 <ul>
@@ -486,7 +500,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -560,6 +574,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
 <li><a href="#125">12.5</a><ul>
+<li><a href="#1252">12.5.2</a></li>
 <li><a href="#1251">12.5.1</a></li>
 <li><a href="#1250">12.5.0</a></li>
 </ul>

@@ -34,7 +34,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/show.py#L1-L394" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/show.py#L1-L394" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Rendering of corpus extracts with annotations.
 
@@ -292,7 +292,7 @@ class Show:
 
         browse = self.browse
         setData = self.getSetData()
-        setName = self.setName
+        setIsRo = self.setIsRo
         afterv = self.getAfter()
         sectionHead = self.sectionHead
 
@@ -330,15 +330,15 @@ class Show:
             nBshown += 1
             charPos = 0
 
-            if setName:
+            if setIsRo:
+                allMatches = set(chain.from_iterable(matches))
+            else:
                 allMatches = set()
                 endMatches = set()
+
                 for match in matches:
                     allMatches |= set(match)
                     endMatches.add(match[-1])
-
-            else:
-                allMatches = set(chain.from_iterable(matches))
 
             headContent = H.span(
                 H.span(sectionHead(b), cls=&#34;bhl ltr&#34;, title=&#34;show context&#34;),
@@ -398,7 +398,7 @@ class Show:
                 hlClasses += f&#34; {style} &#34; if style else &#34;&#34;
                 hlClass = dict(cls=hlClasses) if hlClasses else {}
 
-                endQueried = setName and t in endMatches
+                endQueried = (not setIsRo) and t in endMatches
                 excl = &#34;x&#34; if t in excludedTokens else &#34;v&#34;
                 nodeRep = H.span(str(t), cls=&#34;nd&#34;) if withNodes else &#34;&#34;
 
@@ -449,7 +449,7 @@ class Show:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/show.py#L24-L394" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/show.py#L24-L394" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Show:
     def showEntityOverview(self):
@@ -684,7 +684,7 @@ class Show:
 
         browse = self.browse
         setData = self.getSetData()
-        setName = self.setName
+        setIsRo = self.setIsRo
         afterv = self.getAfter()
         sectionHead = self.sectionHead
 
@@ -722,15 +722,15 @@ class Show:
             nBshown += 1
             charPos = 0
 
-            if setName:
+            if setIsRo:
+                allMatches = set(chain.from_iterable(matches))
+            else:
                 allMatches = set()
                 endMatches = set()
+
                 for match in matches:
                     allMatches |= set(match)
                     endMatches.add(match[-1])
-
-            else:
-                allMatches = set(chain.from_iterable(matches))
 
             headContent = H.span(
                 H.span(sectionHead(b), cls=&#34;bhl ltr&#34;, title=&#34;show context&#34;),
@@ -790,7 +790,7 @@ class Show:
                 hlClasses += f&#34; {style} &#34; if style else &#34;&#34;
                 hlClass = dict(cls=hlClasses) if hlClasses else {}
 
-                endQueried = setName and t in endMatches
+                endQueried = (not setIsRo) and t in endMatches
                 excl = &#34;x&#34; if t in excludedTokens else &#34;v&#34;
                 nodeRep = H.span(str(t), cls=&#34;nd&#34;) if withNodes else &#34;&#34;
 
@@ -888,7 +888,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/show.py#L179-L394" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/show.py#L179-L394" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showContent(
     self,
@@ -968,7 +968,7 @@ it is a cell in a Jupyter Notebook.</dd>
 
     browse = self.browse
     setData = self.getSetData()
-    setName = self.setName
+    setIsRo = self.setIsRo
     afterv = self.getAfter()
     sectionHead = self.sectionHead
 
@@ -1006,15 +1006,15 @@ it is a cell in a Jupyter Notebook.</dd>
         nBshown += 1
         charPos = 0
 
-        if setName:
+        if setIsRo:
+            allMatches = set(chain.from_iterable(matches))
+        else:
             allMatches = set()
             endMatches = set()
+
             for match in matches:
                 allMatches |= set(match)
                 endMatches.add(match[-1])
-
-        else:
-            allMatches = set(chain.from_iterable(matches))
 
         headContent = H.span(
             H.span(sectionHead(b), cls=&#34;bhl ltr&#34;, title=&#34;show context&#34;),
@@ -1074,7 +1074,7 @@ it is a cell in a Jupyter Notebook.</dd>
             hlClasses += f&#34; {style} &#34; if style else &#34;&#34;
             hlClass = dict(cls=hlClasses) if hlClasses else {}
 
-            endQueried = setName and t in endMatches
+            endQueried = (not setIsRo) and t in endMatches
             excl = &#34;x&#34; if t in excludedTokens else &#34;v&#34;
             nodeRep = H.span(str(t), cls=&#34;nd&#34;) if withNodes else &#34;&#34;
 
@@ -1159,7 +1159,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/show.py#L61-L177" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/show.py#L61-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showEntities(
     self, activeEntity=None, sortKey=None, sortDir=None, cutOffFreq=None
@@ -1297,7 +1297,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/show.py#L25-L59" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/show.py#L25-L59" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showEntityOverview(self):
     &#34;&#34;&#34;Generates HTML for an overview of the entities.

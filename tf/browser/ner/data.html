@@ -43,7 +43,7 @@ processed if they are needed and out of date.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/data.py#L1-L1057" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/data.py#L1-L1085" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Annotation data module.
 
@@ -112,7 +112,8 @@ class Data(Corpus):
 
             In that way, the `Data` object can start with the sets already in memory.
         &#34;&#34;&#34;
-        super().__init__()
+        Corpus.__init__(self)
+
         if not self.properlySetup:
             return
 
@@ -121,7 +122,7 @@ class Data(Corpus):
         annoDir = self.annoDir
         initTree(annoDir, fresh=False)
 
-    def loadSetData(self):
+    def loadSetData(self, _lowlevel=False):
         &#34;&#34;&#34;Loads the current annotation set into memory.
 
         It has two phases:
@@ -140,6 +141,20 @@ class Data(Corpus):
 
         changed = self.fromSourceSet()
         self.processSet(changed)
+
+    def _clearSetData(self):
+        &#34;&#34;&#34;Clears the current annotation set data from memory.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
+        sets = self.sets
+        setName = self.setName
+
+        setData = AttrDict()
+        setData.entities = AttrDict()
+        sets[setName] = setData
+        self.processSet(True)
 
     def fromSourceSet(self):
         &#34;&#34;&#34;Loads an annotation set from source.
@@ -164,6 +179,7 @@ class Data(Corpus):
 
         settings = self.settings
         setName = self.setName
+        setIsSrc = self.setIsSrc
         setData = self.sets[setName]
         annoDir = self.annoDir
 
@@ -184,7 +200,25 @@ class Data(Corpus):
 
         changed = False
 
-        if setName:
+        if setIsSrc:
+            if &#34;entities&#34; not in setData:
+                entities = {}
+                hasFeature = {feat: checkFeature(feat) for feat in features}
+
+                for e in self.getEntityNodes():
+                    slots = getSlots(e)
+                    entities[e] = (
+                        tuple(
+                            getFVal(feat, e)
+                            if hasFeature[feat]
+                            else featureDefault[feat](slots)
+                            for feat in features
+                        ),
+                        tuple(slots),
+                    )
+
+                setData.entities = entities
+        else:
             if (
                 &#34;entities&#34; not in setData
                 or &#34;dateLoaded&#34; not in setData
@@ -205,24 +239,6 @@ class Data(Corpus):
 
                 setData.entities = entities
                 setData.dateLoaded = time.time()
-        else:
-            if &#34;entities&#34; not in setData:
-                entities = {}
-                hasFeature = {feat: checkFeature(feat) for feat in features}
-
-                for e in self.getEntityNodes():
-                    slots = getSlots(e)
-                    entities[e] = (
-                        tuple(
-                            getFVal(feat, e)
-                            if hasFeature[feat]
-                            else featureDefault[feat](slots)
-                            for feat in features
-                        ),
-                        tuple(slots),
-                    )
-
-                setData.entities = entities
 
         return changed
 
@@ -419,10 +435,10 @@ class Data(Corpus):
         if not self.properlySetup:
             return
 
-        setName = self.setName
+        setIsRo = self.setIsRo
         setNameRep = self.setNameRep
 
-        if not setName:
+        if setIsRo:
             if silent:
                 return (-1, -1)
             self.console(f&#34;Entity deletion not allowed on {setNameRep}&#34;, error=True)
@@ -499,11 +515,11 @@ class Data(Corpus):
         if not self.properlySetup:
             return
 
-        setName = self.setName
         setNameRep = self.setNameRep
+        setIsRo = self.setIsRo
         browse = self.browse
 
-        if not setName:
+        if setIsRo:
             msg = f&#34;Entity deletion not allowed on {setNameRep}&#34;
             if browse:
                 return [[msg]]
@@ -625,10 +641,10 @@ class Data(Corpus):
         if not self.properlySetup:
             return
 
-        setName = self.setName
         setNameRep = self.setNameRep
+        setIsRo = self.setIsRo
 
-        if not setName:
+        if setIsRo:
             if silent:
                 return (-1, -1)
             self.console(f&#34;Entity addition not allowed on {setNameRep}&#34;, error=True)
@@ -670,7 +686,7 @@ class Data(Corpus):
         self.console(f&#34;Already present: {present:&gt;5} x&#34;)
         self.console(f&#34;Added:           {added:&gt;5} x&#34;)
 
-    def addEntities(self, newEntities, silent=True):
+    def addEntities(self, newEntities, silent=True, _lowlevel=False):
         &#34;&#34;&#34;Add multiple entities efficiently to the current set.
 
         This operation is not allowed if the current set is the read-only set with the
@@ -680,7 +696,6 @@ class Data(Corpus):
         the corpus to find them.
 
         This method does them all in one fell swoop.
-        It is used by the method `tf.browser.ner.ner.NER.markEntities()`.
 
         Parameters
         ----------
@@ -705,13 +720,17 @@ class Data(Corpus):
         if not self.properlySetup:
             return
 
-        setName = self.setName
         setNameRep = self.setNameRep
+        setIsRo = self.setIsRo
+        setIsSrc = self.setIsSrc
 
-        if not setName:
+        if not _lowlevel and setIsRo:
             if silent:
                 return (-1, -1)
             self.console(f&#34;Entities addition not allowed on {setNameRep}&#34;, error=True)
+            return
+
+        if _lowlevel and (setIsSrc or not setIsRo):
             return
 
         setData = self.getSetData()
@@ -734,11 +753,14 @@ class Data(Corpus):
                     addE.add((fVals, slots))
 
         if len(addE):
-            self.mergeEntities(addE)
+            self.mergeEntities(addE, _lowlevel=_lowlevel)
 
         self.loadSetData()
         if silent:
             return (present, added)
+
+        if _lowlevel:
+            return
 
         self.console(f&#34;Already present: {present:&gt;5} x&#34;)
         self.console(f&#34;Added:           {added:&gt;5} x&#34;)
@@ -778,11 +800,11 @@ class Data(Corpus):
         if not self.properlySetup:
             return
 
-        setName = self.setName
         setNameRep = self.setNameRep
+        setIsRo = self.setIsRo
         browse = self.browse
 
-        if not setName:
+        if setIsRo:
             msg = f&#34;Entity addition not allowed on {setNameRep}&#34;
             if browse:
                 return [[msg]]
@@ -880,8 +902,9 @@ class Data(Corpus):
 
         setName = self.setName
         setNameRep = self.setNameRep
+        setIsRo = self.setIsRo
 
-        if not setName:
+        if setIsRo:
             self.console(f&#34;Entity weeding not allowed on {setNameRep}&#34;, error=True)
             return
 
@@ -908,7 +931,7 @@ class Data(Corpus):
         with fileOpen(dataFile, mode=&#34;w&#34;) as fh:
             fh.write(&#34;&#34;.join(newEntities))
 
-    def mergeEntities(self, newEntities):
+    def mergeEntities(self, newEntities, _lowlevel=False):
         &#34;&#34;&#34;Performs additions to the current annotation set.
 
         This operation is not allowed if the current set is the read-only set with the
@@ -925,9 +948,14 @@ class Data(Corpus):
 
         setName = self.setName
         setNameRep = self.setNameRep
+        setIsRo = self.setIsRo
+        setIsSrc = self.setIsSrc
 
-        if not setName:
+        if not _lowlevel and setIsRo:
             self.console(f&#34;Entity merging not allowed on {setNameRep}&#34;, error=True)
+            return
+
+        if _lowlevel and (setIsSrc or not setIsRo):
             return
 
         annoDir = self.annoDir
@@ -975,10 +1003,10 @@ class Data(Corpus):
         if not self.properlySetup:
             return
 
-        setName = self.setName
         setNameRep = self.setNameRep
+        setIsRo = self.setIsRo
 
-        if not setName:
+        if setIsRo:
             self.console(
                 f&#34;Entity consolidation not meaningful on {setNameRep}&#34;, error=True
             )
@@ -999,8 +1027,8 @@ class Data(Corpus):
         )
 
         slotLink = {}
-        nodeFeatures = {feat: {} for feat in features}
-        edgeFeatures = dict(eoccs={})
+        nodeFeatures = AttrDict({feat: {} for feat in features})
+        edgeFeatures = AttrDict(eoccs={})
         entities = {}
 
         n = 0
@@ -1015,7 +1043,7 @@ class Data(Corpus):
             entities.setdefault(fVals, []).append(n)
 
         nEntityOccs = len(entityOccs)
-        occEdge = edgeFeatures[&#34;eoccs&#34;]
+        occEdge = edgeFeatures.eoccs
 
         for fVals, occs in entities.items():
             n += 1
@@ -1030,7 +1058,7 @@ class Data(Corpus):
         self.console(f&#34;{nEntityOccs:&gt;6} entity occurrences&#34;)
         self.console(f&#34;{nEntities:&gt;6} distinct entities&#34;)
 
-        featureMeta[&#34;eoccs&#34;] = dict(
+        featureMeta.eoccs = dict(
             valueType=&#34;str&#34;,
             description=&#34;from entity nodes to their occurrence nodes&#34;,
         )
@@ -1144,7 +1172,7 @@ it to the initializer here.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/data.py#L39-L1057" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/data.py#L39-L1085" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Data(Corpus):
     def __init__(self, sets=None):
@@ -1175,7 +1203,8 @@ it to the initializer here.</p>
 
             In that way, the `Data` object can start with the sets already in memory.
         &#34;&#34;&#34;
-        super().__init__()
+        Corpus.__init__(self)
+
         if not self.properlySetup:
             return
 
@@ -1184,7 +1213,7 @@ it to the initializer here.</p>
         annoDir = self.annoDir
         initTree(annoDir, fresh=False)
 
-    def loadSetData(self):
+    def loadSetData(self, _lowlevel=False):
         &#34;&#34;&#34;Loads the current annotation set into memory.
 
         It has two phases:
@@ -1203,6 +1232,20 @@ it to the initializer here.</p>
 
         changed = self.fromSourceSet()
         self.processSet(changed)
+
+    def _clearSetData(self):
+        &#34;&#34;&#34;Clears the current annotation set data from memory.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
+        sets = self.sets
+        setName = self.setName
+
+        setData = AttrDict()
+        setData.entities = AttrDict()
+        sets[setName] = setData
+        self.processSet(True)
 
     def fromSourceSet(self):
         &#34;&#34;&#34;Loads an annotation set from source.
@@ -1227,6 +1270,7 @@ it to the initializer here.</p>
 
         settings = self.settings
         setName = self.setName
+        setIsSrc = self.setIsSrc
         setData = self.sets[setName]
         annoDir = self.annoDir
 
@@ -1247,7 +1291,25 @@ it to the initializer here.</p>
 
         changed = False
 
-        if setName:
+        if setIsSrc:
+            if &#34;entities&#34; not in setData:
+                entities = {}
+                hasFeature = {feat: checkFeature(feat) for feat in features}
+
+                for e in self.getEntityNodes():
+                    slots = getSlots(e)
+                    entities[e] = (
+                        tuple(
+                            getFVal(feat, e)
+                            if hasFeature[feat]
+                            else featureDefault[feat](slots)
+                            for feat in features
+                        ),
+                        tuple(slots),
+                    )
+
+                setData.entities = entities
+        else:
             if (
                 &#34;entities&#34; not in setData
                 or &#34;dateLoaded&#34; not in setData
@@ -1268,24 +1330,6 @@ it to the initializer here.</p>
 
                 setData.entities = entities
                 setData.dateLoaded = time.time()
-        else:
-            if &#34;entities&#34; not in setData:
-                entities = {}
-                hasFeature = {feat: checkFeature(feat) for feat in features}
-
-                for e in self.getEntityNodes():
-                    slots = getSlots(e)
-                    entities[e] = (
-                        tuple(
-                            getFVal(feat, e)
-                            if hasFeature[feat]
-                            else featureDefault[feat](slots)
-                            for feat in features
-                        ),
-                        tuple(slots),
-                    )
-
-                setData.entities = entities
 
         return changed
 
@@ -1482,10 +1526,10 @@ it to the initializer here.</p>
         if not self.properlySetup:
             return
 
-        setName = self.setName
+        setIsRo = self.setIsRo
         setNameRep = self.setNameRep
 
-        if not setName:
+        if setIsRo:
             if silent:
                 return (-1, -1)
             self.console(f&#34;Entity deletion not allowed on {setNameRep}&#34;, error=True)
@@ -1562,11 +1606,11 @@ it to the initializer here.</p>
         if not self.properlySetup:
             return
 
-        setName = self.setName
         setNameRep = self.setNameRep
+        setIsRo = self.setIsRo
         browse = self.browse
 
-        if not setName:
+        if setIsRo:
             msg = f&#34;Entity deletion not allowed on {setNameRep}&#34;
             if browse:
                 return [[msg]]
@@ -1688,10 +1732,10 @@ it to the initializer here.</p>
         if not self.properlySetup:
             return
 
-        setName = self.setName
         setNameRep = self.setNameRep
+        setIsRo = self.setIsRo
 
-        if not setName:
+        if setIsRo:
             if silent:
                 return (-1, -1)
             self.console(f&#34;Entity addition not allowed on {setNameRep}&#34;, error=True)
@@ -1733,7 +1777,7 @@ it to the initializer here.</p>
         self.console(f&#34;Already present: {present:&gt;5} x&#34;)
         self.console(f&#34;Added:           {added:&gt;5} x&#34;)
 
-    def addEntities(self, newEntities, silent=True):
+    def addEntities(self, newEntities, silent=True, _lowlevel=False):
         &#34;&#34;&#34;Add multiple entities efficiently to the current set.
 
         This operation is not allowed if the current set is the read-only set with the
@@ -1743,7 +1787,6 @@ it to the initializer here.</p>
         the corpus to find them.
 
         This method does them all in one fell swoop.
-        It is used by the method `tf.browser.ner.ner.NER.markEntities()`.
 
         Parameters
         ----------
@@ -1768,13 +1811,17 @@ it to the initializer here.</p>
         if not self.properlySetup:
             return
 
-        setName = self.setName
         setNameRep = self.setNameRep
+        setIsRo = self.setIsRo
+        setIsSrc = self.setIsSrc
 
-        if not setName:
+        if not _lowlevel and setIsRo:
             if silent:
                 return (-1, -1)
             self.console(f&#34;Entities addition not allowed on {setNameRep}&#34;, error=True)
+            return
+
+        if _lowlevel and (setIsSrc or not setIsRo):
             return
 
         setData = self.getSetData()
@@ -1797,11 +1844,14 @@ it to the initializer here.</p>
                     addE.add((fVals, slots))
 
         if len(addE):
-            self.mergeEntities(addE)
+            self.mergeEntities(addE, _lowlevel=_lowlevel)
 
         self.loadSetData()
         if silent:
             return (present, added)
+
+        if _lowlevel:
+            return
 
         self.console(f&#34;Already present: {present:&gt;5} x&#34;)
         self.console(f&#34;Added:           {added:&gt;5} x&#34;)
@@ -1841,11 +1891,11 @@ it to the initializer here.</p>
         if not self.properlySetup:
             return
 
-        setName = self.setName
         setNameRep = self.setNameRep
+        setIsRo = self.setIsRo
         browse = self.browse
 
-        if not setName:
+        if setIsRo:
             msg = f&#34;Entity addition not allowed on {setNameRep}&#34;
             if browse:
                 return [[msg]]
@@ -1943,8 +1993,9 @@ it to the initializer here.</p>
 
         setName = self.setName
         setNameRep = self.setNameRep
+        setIsRo = self.setIsRo
 
-        if not setName:
+        if setIsRo:
             self.console(f&#34;Entity weeding not allowed on {setNameRep}&#34;, error=True)
             return
 
@@ -1971,7 +2022,7 @@ it to the initializer here.</p>
         with fileOpen(dataFile, mode=&#34;w&#34;) as fh:
             fh.write(&#34;&#34;.join(newEntities))
 
-    def mergeEntities(self, newEntities):
+    def mergeEntities(self, newEntities, _lowlevel=False):
         &#34;&#34;&#34;Performs additions to the current annotation set.
 
         This operation is not allowed if the current set is the read-only set with the
@@ -1988,9 +2039,14 @@ it to the initializer here.</p>
 
         setName = self.setName
         setNameRep = self.setNameRep
+        setIsRo = self.setIsRo
+        setIsSrc = self.setIsSrc
 
-        if not setName:
+        if not _lowlevel and setIsRo:
             self.console(f&#34;Entity merging not allowed on {setNameRep}&#34;, error=True)
+            return
+
+        if _lowlevel and (setIsSrc or not setIsRo):
             return
 
         annoDir = self.annoDir
@@ -2038,10 +2094,10 @@ it to the initializer here.</p>
         if not self.properlySetup:
             return
 
-        setName = self.setName
         setNameRep = self.setNameRep
+        setIsRo = self.setIsRo
 
-        if not setName:
+        if setIsRo:
             self.console(
                 f&#34;Entity consolidation not meaningful on {setNameRep}&#34;, error=True
             )
@@ -2062,8 +2118,8 @@ it to the initializer here.</p>
         )
 
         slotLink = {}
-        nodeFeatures = {feat: {} for feat in features}
-        edgeFeatures = dict(eoccs={})
+        nodeFeatures = AttrDict({feat: {} for feat in features})
+        edgeFeatures = AttrDict(eoccs={})
         entities = {}
 
         n = 0
@@ -2078,7 +2134,7 @@ it to the initializer here.</p>
             entities.setdefault(fVals, []).append(n)
 
         nEntityOccs = len(entityOccs)
-        occEdge = edgeFeatures[&#34;eoccs&#34;]
+        occEdge = edgeFeatures.eoccs
 
         for fVals, occs in entities.items():
             n += 1
@@ -2093,7 +2149,7 @@ it to the initializer here.</p>
         self.console(f&#34;{nEntityOccs:&gt;6} entity occurrences&#34;)
         self.console(f&#34;{nEntities:&gt;6} distinct entities&#34;)
 
-        featureMeta[&#34;eoccs&#34;] = dict(
+        featureMeta.eoccs = dict(
             valueType=&#34;str&#34;,
             description=&#34;from entity nodes to their occurrence nodes&#34;,
         )
@@ -2186,8 +2242,7 @@ it to the initializer here.</p>
 empty name.</p>
 <p>If you have multiple entities to add, it is wasteful to do multiple passes over
 the corpus to find them.</p>
-<p>This method does them all in one fell swoop.
-It is used by the method <code><a title="tf.browser.ner.ner.NER.markEntities" href="ner.html#tf.browser.ner.ner.NER.markEntities">NER.markEntities()</a></code>.</p>
+<p>This method does them all in one fell swoop.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>newEntites</code></strong> :&ensp;<code>iterable</code> of <code>tuples</code> of <code>tuples</code></dt>
@@ -2211,9 +2266,9 @@ asked to be deleted and the number of actually deleted entities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/data.py#L626-L697" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/data.py#L642-L719" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def addEntities(self, newEntities, silent=True):
+<pre><code class="python">def addEntities(self, newEntities, silent=True, _lowlevel=False):
     &#34;&#34;&#34;Add multiple entities efficiently to the current set.
 
     This operation is not allowed if the current set is the read-only set with the
@@ -2223,7 +2278,6 @@ asked to be deleted and the number of actually deleted entities.</p>
     the corpus to find them.
 
     This method does them all in one fell swoop.
-    It is used by the method `tf.browser.ner.ner.NER.markEntities()`.
 
     Parameters
     ----------
@@ -2248,13 +2302,17 @@ asked to be deleted and the number of actually deleted entities.</p>
     if not self.properlySetup:
         return
 
-    setName = self.setName
     setNameRep = self.setNameRep
+    setIsRo = self.setIsRo
+    setIsSrc = self.setIsSrc
 
-    if not setName:
+    if not _lowlevel and setIsRo:
         if silent:
             return (-1, -1)
         self.console(f&#34;Entities addition not allowed on {setNameRep}&#34;, error=True)
+        return
+
+    if _lowlevel and (setIsSrc or not setIsRo):
         return
 
     setData = self.getSetData()
@@ -2277,11 +2335,14 @@ asked to be deleted and the number of actually deleted entities.</p>
                 addE.add((fVals, slots))
 
     if len(addE):
-        self.mergeEntities(addE)
+        self.mergeEntities(addE, _lowlevel=_lowlevel)
 
     self.loadSetData()
     if silent:
         return (present, added)
+
+    if _lowlevel:
+        return
 
     self.console(f&#34;Already present: {present:&gt;5} x&#34;)
     self.console(f&#34;Added:           {added:&gt;5} x&#34;)</code></pre>
@@ -2319,7 +2380,7 @@ asked to be deleted and the number of actually deleted entities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/data.py#L546-L624" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/data.py#L562-L640" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addEntity(self, vals, allMatches, silent=True):
     &#34;&#34;&#34;Add entity occurrences to the current set.
@@ -2356,10 +2417,10 @@ asked to be deleted and the number of actually deleted entities.</p>
     if not self.properlySetup:
         return
 
-    setName = self.setName
     setNameRep = self.setNameRep
+    setIsRo = self.setIsRo
 
-    if not setName:
+    if setIsRo:
         if silent:
             return (-1, -1)
         self.console(f&#34;Entity addition not allowed on {setNameRep}&#34;, error=True)
@@ -2436,7 +2497,7 @@ no entity will be added there.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/data.py#L699-L817" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/data.py#L721-L839" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addEntityRich(self, additions, buckets, excludedTokens=set()):
     &#34;&#34;&#34;Add specified entity occurrences to the current set.
@@ -2473,11 +2534,11 @@ no entity will be added there.</dd>
     if not self.properlySetup:
         return
 
-    setName = self.setName
     setNameRep = self.setNameRep
+    setIsRo = self.setIsRo
     browse = self.browse
 
-    if not setName:
+    if setIsRo:
         msg = f&#34;Entity addition not allowed on {setNameRep}&#34;
         if browse:
             return [[msg]]
@@ -2576,7 +2637,7 @@ with this string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/data.py#L915-L1057" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/data.py#L943-L1085" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def consolidateEntities(self, versionExtension):
     &#34;&#34;&#34;Consolidates the current entities as nodes into a new TF data source.
@@ -2594,10 +2655,10 @@ with this string.</dd>
     if not self.properlySetup:
         return
 
-    setName = self.setName
     setNameRep = self.setNameRep
+    setIsRo = self.setIsRo
 
-    if not setName:
+    if setIsRo:
         self.console(
             f&#34;Entity consolidation not meaningful on {setNameRep}&#34;, error=True
         )
@@ -2618,8 +2679,8 @@ with this string.</dd>
     )
 
     slotLink = {}
-    nodeFeatures = {feat: {} for feat in features}
-    edgeFeatures = dict(eoccs={})
+    nodeFeatures = AttrDict({feat: {} for feat in features})
+    edgeFeatures = AttrDict(eoccs={})
     entities = {}
 
     n = 0
@@ -2634,7 +2695,7 @@ with this string.</dd>
         entities.setdefault(fVals, []).append(n)
 
     nEntityOccs = len(entityOccs)
-    occEdge = edgeFeatures[&#34;eoccs&#34;]
+    occEdge = edgeFeatures.eoccs
 
     for fVals, occs in entities.items():
         n += 1
@@ -2649,7 +2710,7 @@ with this string.</dd>
     self.console(f&#34;{nEntityOccs:&gt;6} entity occurrences&#34;)
     self.console(f&#34;{nEntities:&gt;6} distinct entities&#34;)
 
-    featureMeta[&#34;eoccs&#34;] = dict(
+    featureMeta.eoccs = dict(
         valueType=&#34;str&#34;,
         description=&#34;from entity nodes to their occurrence nodes&#34;,
     )
@@ -2757,7 +2818,7 @@ asked to be deleted and the number of actually deleted entities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/data.py#L338-L418" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/data.py#L354-L434" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def delEntity(self, vals, allMatches=None, silent=True):
     &#34;&#34;&#34;Delete entity occurrences from the current set.
@@ -2796,10 +2857,10 @@ asked to be deleted and the number of actually deleted entities.</p>
     if not self.properlySetup:
         return
 
-    setName = self.setName
+    setIsRo = self.setIsRo
     setNameRep = self.setNameRep
 
-    if not setName:
+    if setIsRo:
         if silent:
             return (-1, -1)
         self.console(f&#34;Entity deletion not allowed on {setNameRep}&#34;, error=True)
@@ -2876,7 +2937,7 @@ the entity will not be deleted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/data.py#L420-L544" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/data.py#L436-L560" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def delEntityRich(self, deletions, buckets, excludedTokens=set()):
     &#34;&#34;&#34;Delete specified entity occurrences from the current set.
@@ -2913,11 +2974,11 @@ the entity will not be deleted.</dd>
     if not self.properlySetup:
         return
 
-    setName = self.setName
     setNameRep = self.setNameRep
+    setIsRo = self.setIsRo
     browse = self.browse
 
-    if not setName:
+    if setIsRo:
         msg = f&#34;Entity deletion not allowed on {setNameRep}&#34;
         if browse:
             return [[msg]]
@@ -3026,7 +3087,7 @@ that are part of the entity.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/data.py#L97-L180" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/data.py#L112-L196" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fromSourceSet(self):
     &#34;&#34;&#34;Loads an annotation set from source.
@@ -3051,6 +3112,7 @@ that are part of the entity.</li>
 
     settings = self.settings
     setName = self.setName
+    setIsSrc = self.setIsSrc
     setData = self.sets[setName]
     annoDir = self.annoDir
 
@@ -3071,7 +3133,25 @@ that are part of the entity.</li>
 
     changed = False
 
-    if setName:
+    if setIsSrc:
+        if &#34;entities&#34; not in setData:
+            entities = {}
+            hasFeature = {feat: checkFeature(feat) for feat in features}
+
+            for e in self.getEntityNodes():
+                slots = getSlots(e)
+                entities[e] = (
+                    tuple(
+                        getFVal(feat, e)
+                        if hasFeature[feat]
+                        else featureDefault[feat](slots)
+                        for feat in features
+                    ),
+                    tuple(slots),
+                )
+
+            setData.entities = entities
+    else:
         if (
             &#34;entities&#34; not in setData
             or &#34;dateLoaded&#34; not in setData
@@ -3092,24 +3172,6 @@ that are part of the entity.</li>
 
             setData.entities = entities
             setData.dateLoaded = time.time()
-    else:
-        if &#34;entities&#34; not in setData:
-            entities = {}
-            hasFeature = {feat: checkFeature(feat) for feat in features}
-
-            for e in self.getEntityNodes():
-                slots = getSlots(e)
-                entities[e] = (
-                    tuple(
-                        getFVal(feat, e)
-                        if hasFeature[feat]
-                        else featureDefault[feat](slots)
-                        for feat in features
-                    ),
-                    tuple(slots),
-                )
-
-            setData.entities = entities
 
     return changed</code></pre>
 </details>
@@ -3127,9 +3189,9 @@ that are part of the entity.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/data.py#L77-L95" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/data.py#L78-L96" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def loadSetData(self):
+<pre><code class="python">def loadSetData(self, _lowlevel=False):
     &#34;&#34;&#34;Loads the current annotation set into memory.
 
     It has two phases:
@@ -3166,9 +3228,9 @@ and an iterable of slot tuples where the entity is located.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/data.py#L864-L892" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/data.py#L887-L920" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def mergeEntities(self, newEntities):
+<pre><code class="python">def mergeEntities(self, newEntities, _lowlevel=False):
     &#34;&#34;&#34;Performs additions to the current annotation set.
 
     This operation is not allowed if the current set is the read-only set with the
@@ -3185,9 +3247,14 @@ and an iterable of slot tuples where the entity is located.</dd>
 
     setName = self.setName
     setNameRep = self.setNameRep
+    setIsRo = self.setIsRo
+    setIsSrc = self.setIsSrc
 
-    if not setName:
+    if not _lowlevel and setIsRo:
         self.console(f&#34;Entity merging not allowed on {setNameRep}&#34;, error=True)
+        return
+
+    if _lowlevel and (setIsSrc or not setIsRo):
         return
 
     annoDir = self.annoDir
@@ -3257,7 +3324,7 @@ entities in the surrounding context of tokens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/data.py#L182-L336" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/data.py#L198-L352" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def processSet(self, changed):
     &#34;&#34;&#34;Generates derived data structures out of the source set.
@@ -3431,7 +3498,7 @@ entities in the surrounding context of tokens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/data.py#L894-L913" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/data.py#L922-L941" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def saveEntitiesAs(self, dataFile):
     &#34;&#34;&#34;Export an annotation set to a file.
@@ -3471,7 +3538,7 @@ and an iterable of slot tuples where the entity is located.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/data.py#L819-L862" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/data.py#L841-L885" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def weedEntities(self, delEntities):
     &#34;&#34;&#34;Performs deletions to the current annotation set.
@@ -3490,8 +3557,9 @@ and an iterable of slot tuples where the entity is located.</dd>
 
     setName = self.setName
     setNameRep = self.setNameRep
+    setIsRo = self.setIsRo
 
-    if not setName:
+    if setIsRo:
         self.console(f&#34;Entity weeding not allowed on {setNameRep}&#34;, error=True)
         return
 

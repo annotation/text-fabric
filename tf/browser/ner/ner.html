@@ -188,8 +188,7 @@ jan.baptist.roelants:
 <h2 id="inventory">Inventory</h2>
 <p>A first step is to find out how many occurrences we find in the corpus for these
 surface forms:</p>
-<pre><code class="language-python">NE.lookup()
-NE.showHits()
+<pre><code class="language-python">NE.reportHits()
 </code></pre>
 <p>and the output looks like this</p>
 <pre><code>...
@@ -206,21 +205,6 @@ francois.doubleth        PER   Doublet                  2 x François Doubleth
 Total 150
 </code></pre>
 <p>Entities that are in the spreadsheet, but not in the corpus are skipped.</p>
-<h2 id="marking-up">Marking up</h2>
-<p>In order to create annotations for these entities, we have to switch to an
-annotation set. Let's start a new set and give it the name <code>power</code>.</p>
-<pre><code class="language-python">NE.setSet(&quot;power&quot;)
-</code></pre>
-<p>If it turns out that <code>power</code> has already annotations, and you want to clear them, say</p>
-<pre><code class="language-python">NE.resetSet(&quot;power&quot;)
-</code></pre>
-<p>Now we are ready for the big thing: creating the annotations:</p>
-<pre><code class="language-python">NE.markEntities()
-</code></pre>
-<p>It outputs this message:</p>
-<pre><code>Already present:     0 x
-Added:             150 x
-</code></pre>
 <h2 id="inspection">Inspection</h2>
 <p>We now revert to lower-level methods from the <code><a title="tf.browser.ner.ner" href="#tf.browser.ner.ner">tf.browser.ner.ner</a></code> class to
 inspect some of the results.</p>
@@ -260,7 +244,7 @@ slots.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/ner.py#L1-L802" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/ner.py#L1-L740" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;API for Named Entity marking.
 
@@ -455,8 +439,7 @@ A first step is to find out how many occurrences we find in the corpus for these
 surface forms:
 
 ``` python
-NE.lookup()
-NE.showHits()
+NE.reportHits()
 ```
 
 and the output looks like this
@@ -477,34 +460,6 @@ Total 150
 ```
 
 Entities that are in the spreadsheet, but not in the corpus are skipped.
-
-## Marking up
-
-In order to create annotations for these entities, we have to switch to an
-annotation set. Let&#39;s start a new set and give it the name `power`.
-
-``` python
-NE.setSet(&#34;power&#34;)
-```
-
-If it turns out that `power` has already annotations, and you want to clear them, say
-
-``` python
-NE.resetSet(&#34;power&#34;)
-```
-
-Now we are ready for the big thing: creating the annotations:
-
-``` python
-NE.markEntities()
-```
-
-It outputs this message:
-
-```
-Already present:     0 x
-Added:             150 x
-```
 
 ## Inspection
 
@@ -938,15 +893,16 @@ class NER(Sheets, Sets, Show):
         inventory = sheetData.inventory
         instructions = sheetData.instructions
 
-        reportBase = self.reportBase
-        reportDir = f&#34;{reportBase}/{sheetName}&#34;
-        reportFile = f&#34;{reportDir}/hits.tsv&#34;
+        setName = self.setName
+        annoDir = self.annoDir
+        setDir = f&#34;{annoDir}/{setName}&#34;
+        reportFile = f&#34;{setDir}/hits.tsv&#34;
 
         allTriggers = set()
 
         for path, data in instructions.items():
-            idMap = data[&#34;idMap&#34;]
-            tMap = data[&#34;tMap&#34;]
+            idMap = data.idMap
+            tMap = data.tMap
 
             for trigger, tPath in tMap.items():
                 eidkind = idMap[trigger]
@@ -1020,40 +976,6 @@ class NER(Sheets, Sets, Show):
             )
         )
 
-    def markEntities(self):
-        &#34;&#34;&#34;Marks up the members of the inventory as entities.
-
-        The instructions contain the entity identifier and the entity kind that
-        have to be assigned to the surface forms.
-
-        The inventory knows where the occurrences of the surface forms are.
-        If there is no inventory yet, it will be created.
-        &#34;&#34;&#34;
-        if not self.properlySetup:
-            return
-
-        browse = self.browse
-        sheetName = self.sheetName
-        sheetData = self.sheets[sheetName]
-        inventory = sheetData.inventory
-
-        newEntities = []
-
-        for (eidkind, entData) in inventory.items():
-            for (trigger, triggerData) in entData.items():
-                for matches in triggerData.values():
-                    newEntities.append((eidkind, matches))
-
-        self.setSet(sheetName)
-
-        if self.getSetData():
-            if not browse:
-                console(f&#34;Set {sheetName} already exists. I will not overwrite it.&#34;)
-                console(&#34;Clear or delete this set before marking the entities&#34;)
-            return
-
-        self.addEntities(newEntities, silent=False)
-
     def bakeEntities(self, versionExtension=&#34;e&#34;):
         &#34;&#34;&#34;Bakes the entities of the current set as nodes into a new TF data source.
 
@@ -1115,7 +1037,7 @@ browser. This will influence how results are reported back.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/ner.py#L306-L802" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/ner.py#L277-L740" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Sheets, Sets, Show):
     def __init__(self, app, data=None, browse=False):
@@ -1488,15 +1410,16 @@ browser. This will influence how results are reported back.</dd>
         inventory = sheetData.inventory
         instructions = sheetData.instructions
 
-        reportBase = self.reportBase
-        reportDir = f&#34;{reportBase}/{sheetName}&#34;
-        reportFile = f&#34;{reportDir}/hits.tsv&#34;
+        setName = self.setName
+        annoDir = self.annoDir
+        setDir = f&#34;{annoDir}/{setName}&#34;
+        reportFile = f&#34;{setDir}/hits.tsv&#34;
 
         allTriggers = set()
 
         for path, data in instructions.items():
-            idMap = data[&#34;idMap&#34;]
-            tMap = data[&#34;tMap&#34;]
+            idMap = data.idMap
+            tMap = data.tMap
 
             for trigger, tPath in tMap.items():
                 eidkind = idMap[trigger]
@@ -1570,40 +1493,6 @@ browser. This will influence how results are reported back.</dd>
             )
         )
 
-    def markEntities(self):
-        &#34;&#34;&#34;Marks up the members of the inventory as entities.
-
-        The instructions contain the entity identifier and the entity kind that
-        have to be assigned to the surface forms.
-
-        The inventory knows where the occurrences of the surface forms are.
-        If there is no inventory yet, it will be created.
-        &#34;&#34;&#34;
-        if not self.properlySetup:
-            return
-
-        browse = self.browse
-        sheetName = self.sheetName
-        sheetData = self.sheets[sheetName]
-        inventory = sheetData.inventory
-
-        newEntities = []
-
-        for (eidkind, entData) in inventory.items():
-            for (trigger, triggerData) in entData.items():
-                for matches in triggerData.values():
-                    newEntities.append((eidkind, matches))
-
-        self.setSet(sheetName)
-
-        if self.getSetData():
-            if not browse:
-                console(f&#34;Set {sheetName} already exists. I will not overwrite it.&#34;)
-                console(&#34;Clear or delete this set before marking the entities&#34;)
-            return
-
-        self.addEntities(newEntities, silent=False)
-
     def bakeEntities(self, versionExtension=&#34;e&#34;):
         &#34;&#34;&#34;Bakes the entities of the current set as nodes into a new TF data source.
 
@@ -1640,7 +1529,7 @@ with this string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/ner.py#L793-L802" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/ner.py#L731-L740" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def bakeEntities(self, versionExtension=&#34;e&#34;):
     &#34;&#34;&#34;Bakes the entities of the current set as nodes into a new TF data source.
@@ -1748,7 +1637,7 @@ of results.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/ner.py#L407-L646" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/ner.py#L378-L617" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def filterContent(
     self,
@@ -2011,7 +1900,7 @@ the value is the name of that entity in the context indicated by path.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/ner.py#L367-L405" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/ner.py#L338-L376" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findOccs(self):
     &#34;&#34;&#34;Finds the occurrences of multiple triggers.
@@ -2067,7 +1956,7 @@ slot sequences where those token sequences occur in the corpus.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/ner.py#L648-L662" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/ner.py#L619-L633" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def lookup(self):
     &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
@@ -2086,55 +1975,6 @@ slot sequences where those token sequences occur in the corpus.</p></div>
     self.processSheet(True)</code></pre>
 </details>
 </dd>
-<dt id="tf.browser.ner.ner.NER.markEntities"><code class="name flex">
-<span>def <span class="ident">markEntities</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Marks up the members of the inventory as entities.</p>
-<p>The instructions contain the entity identifier and the entity kind that
-have to be assigned to the surface forms.</p>
-<p>The inventory knows where the occurrences of the surface forms are.
-If there is no inventory yet, it will be created.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/ner.py#L759-L791" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def markEntities(self):
-    &#34;&#34;&#34;Marks up the members of the inventory as entities.
-
-    The instructions contain the entity identifier and the entity kind that
-    have to be assigned to the surface forms.
-
-    The inventory knows where the occurrences of the surface forms are.
-    If there is no inventory yet, it will be created.
-    &#34;&#34;&#34;
-    if not self.properlySetup:
-        return
-
-    browse = self.browse
-    sheetName = self.sheetName
-    sheetData = self.sheets[sheetName]
-    inventory = sheetData.inventory
-
-    newEntities = []
-
-    for (eidkind, entData) in inventory.items():
-        for (trigger, triggerData) in entData.items():
-            for matches in triggerData.values():
-                newEntities.append((eidkind, matches))
-
-    self.setSet(sheetName)
-
-    if self.getSetData():
-        if not browse:
-            console(f&#34;Set {sheetName} already exists. I will not overwrite it.&#34;)
-            console(&#34;Clear or delete this set before marking the entities&#34;)
-        return
-
-    self.addEntities(newEntities, silent=False)</code></pre>
-</details>
-</dd>
 <dt id="tf.browser.ner.ner.NER.reportHits"><code class="name flex">
 <span>def <span class="ident">reportHits</span></span>(<span>self)</span>
 </code></dt>
@@ -2143,7 +1983,7 @@ If there is no inventory yet, it will be created.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/ner.py#L664-L757" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/ner.py#L635-L729" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reportHits(self):
     &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
@@ -2158,15 +1998,16 @@ If there is no inventory yet, it will be created.</p></div>
     inventory = sheetData.inventory
     instructions = sheetData.instructions
 
-    reportBase = self.reportBase
-    reportDir = f&#34;{reportBase}/{sheetName}&#34;
-    reportFile = f&#34;{reportDir}/hits.tsv&#34;
+    setName = self.setName
+    annoDir = self.annoDir
+    setDir = f&#34;{annoDir}/{setName}&#34;
+    reportFile = f&#34;{setDir}/hits.tsv&#34;
 
     allTriggers = set()
 
     for path, data in instructions.items():
-        idMap = data[&#34;idMap&#34;]
-        tMap = data[&#34;tMap&#34;]
+        idMap = data.idMap
+        tMap = data.tMap
 
         for trigger, tPath in tMap.items():
             eidkind = idMap[trigger]
@@ -2297,7 +2138,6 @@ If there is no inventory yet, it will be created.</p></div>
 <li><code><a title="tf.browser.ner.sets.Sets.setDup" href="sets.html#tf.browser.ner.sets.Sets.setDup">setDup</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.setMove" href="sets.html#tf.browser.ner.sets.Sets.setMove">setMove</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.setName" href="sets.html#tf.browser.ner.sets.Sets.setName">setName</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.setNameRep" href="sets.html#tf.browser.ner.sets.Sets.setNameRep">setNameRep</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.setNames" href="sets.html#tf.browser.ner.sets.Sets.setNames">setNames</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.setSet" href="sets.html#tf.browser.ner.sets.Sets.setSet">setSet</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.slotType" href="corpus.html#tf.browser.ner.corpus.Corpus.slotType">slotType</a></code></li>
@@ -2375,7 +2215,6 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#starting-up">Starting up</a></li>
 <li><a href="#the-entity-spreadsheets">The entity spreadsheets</a></li>
 <li><a href="#inventory">Inventory</a></li>
-<li><a href="#marking-up">Marking up</a></li>
 <li><a href="#inspection">Inspection</a></li>
 </ul>
 </li>
@@ -2391,12 +2230,11 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li>
 <h4><code><a title="tf.browser.ner.ner.NER" href="#tf.browser.ner.ner.NER">NER</a></code></h4>
-<ul class="two-column">
+<ul class="">
 <li><code><a title="tf.browser.ner.ner.NER.bakeEntities" href="#tf.browser.ner.ner.NER.bakeEntities">bakeEntities</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.filterContent" href="#tf.browser.ner.ner.NER.filterContent">filterContent</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.findOccs" href="#tf.browser.ner.ner.NER.findOccs">findOccs</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.lookup" href="#tf.browser.ner.ner.NER.lookup">lookup</a></code></li>
-<li><code><a title="tf.browser.ner.ner.NER.markEntities" href="#tf.browser.ner.ner.NER.markEntities">markEntities</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.reportHits" href="#tf.browser.ner.ner.NER.reportHits">reportHits</a></code></li>
 </ul>
 </li>

@@ -35,7 +35,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/fragments.py#L1-L891" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L1-L919" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Wraps various pieces into HTML.
 
@@ -61,8 +61,7 @@ class Fragments:
     def wrapSets(self):
         &#34;&#34;&#34;HTML for the annotation set chooser.
 
-        It is a list of buttons, each corresponding to an existing annotation set.
-        A click on the button selects that set.
+        It is a dropdown with options, each corresponding to an existing annotation set.
         There is also a control to delete the set.
 
         Apart from these buttons there is a button to switch to the entities that are
@@ -74,8 +73,6 @@ class Fragments:
         &#34;&#34;&#34;
         ner = self.ner
         setNames = ner.setNames
-        settings = ner.settings
-        entitySet = settings.entitySet
 
         v = self.v
         chosenSet = v.set
@@ -118,7 +115,7 @@ class Fragments:
             H.select(
                 (
                     H.option(
-                        entitySet if setName == &#34;&#34; else setName,
+                        ner.setInfo(setName=setName)[0],
                         value=setName,
                         selected=setName == chosenSet,
                     )
@@ -153,11 +150,42 @@ class Fragments:
                     cls=&#34;mono&#34;,
                 ),
             ]
-            if chosenSet
+            if not (chosenSet == &#34;&#34; or chosenSet.startswith(&#34;.&#34;))
             else []
         )
 
         v.sets = H.p(content1, content2)
+
+    def wrapCaption(self):
+        v = self.v
+        ner = self.ner
+        setNameRep = ner.setNameRep
+        setIsSrc = ner.setIsSrc
+        setIsRo = ner.setIsRo
+        v.caption = H.p(H.b(setNameRep)) + H.p(
+            &#34;Entities as &#34;
+            + (
+                &#34;given in the source&#34;
+                if setIsSrc
+                else &#34;specified by a spreadsheet&#34;
+                if setIsRo
+                else &#34;marked up by hand&#34;
+            )
+        )
+
+    def wrapLogs(self):
+        v = self.v
+        ner = self.ner
+        logData = ner.logData
+
+        v.logs = &#34;\n&#34;.join(
+            H.p(
+                H.nb * indent + msg,
+                cls=&#34;msg &#34;
+                + (&#34;special&#34; if isError is None else &#34;error&#34; if isError else &#34;info&#34;),
+            )
+            for (isError, indent, msg) in logData
+        )
 
     def wrapQuery(self):
         &#34;&#34;&#34;HTML for all control widgets on the page.&#34;&#34;&#34;
@@ -533,7 +561,7 @@ class Fragments:
         &#34;&#34;&#34;
         v = self.v
         ner = self.ner
-        setName = ner.setName
+        setIsRo = ner.setIsRo
         scope = v.scope
         hasFilter = v.hasfilter
         txt = v.txt
@@ -544,7 +572,7 @@ class Fragments:
         scopeInit = H.input(type=&#34;hidden&#34;, id=&#34;scope&#34;, name=&#34;scope&#34;, value=scope)
         scopeFilter = &#34;&#34;
 
-        if setName and (hasOcc or hasEnt):
+        if (not setIsRo) and (hasOcc or hasEnt):
             # Scope of modification
 
             scopeFilter = (
@@ -572,13 +600,13 @@ class Fragments:
         ner = self.ner
         settings = ner.settings
         bucketType = settings.bucketType
-        setName = ner.setName
+        setIsRo = ner.setIsRo
         hasOcc = txt != &#34;&#34;
         hasEnt = eTxt != &#34;&#34;
 
         scopeExceptions = &#34;&#34;
 
-        if setName and (hasOcc or hasEnt):
+        if (not setIsRo) and (hasOcc or hasEnt):
             scopeExceptions = H.span(
                 H.nb,
                 H.button(
@@ -618,7 +646,7 @@ class Fragments:
         featureDefault = ner.featureDefault
 
         setData = ner.getSetData()
-        setName = ner.setName
+        setIsRo = ner.setIsRo
 
         txt = v.txt
         eTxt = v.etxt
@@ -647,7 +675,7 @@ class Fragments:
 
         somethingToDelete = True
 
-        if setName and (hasOcc or hasEnt):
+        if (not setIsRo) and (hasOcc or hasEnt):
             instances = self.wrapExceptions()
 
             for i, feat in enumerate(features):
@@ -947,7 +975,7 @@ class Fragments:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/fragments.py#L14-L891" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L14-L919" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Fragments:
     def wrapMessages(self):
@@ -960,8 +988,7 @@ class Fragments:
     def wrapSets(self):
         &#34;&#34;&#34;HTML for the annotation set chooser.
 
-        It is a list of buttons, each corresponding to an existing annotation set.
-        A click on the button selects that set.
+        It is a dropdown with options, each corresponding to an existing annotation set.
         There is also a control to delete the set.
 
         Apart from these buttons there is a button to switch to the entities that are
@@ -973,8 +1000,6 @@ class Fragments:
         &#34;&#34;&#34;
         ner = self.ner
         setNames = ner.setNames
-        settings = ner.settings
-        entitySet = settings.entitySet
 
         v = self.v
         chosenSet = v.set
@@ -1017,7 +1042,7 @@ class Fragments:
             H.select(
                 (
                     H.option(
-                        entitySet if setName == &#34;&#34; else setName,
+                        ner.setInfo(setName=setName)[0],
                         value=setName,
                         selected=setName == chosenSet,
                     )
@@ -1052,11 +1077,42 @@ class Fragments:
                     cls=&#34;mono&#34;,
                 ),
             ]
-            if chosenSet
+            if not (chosenSet == &#34;&#34; or chosenSet.startswith(&#34;.&#34;))
             else []
         )
 
         v.sets = H.p(content1, content2)
+
+    def wrapCaption(self):
+        v = self.v
+        ner = self.ner
+        setNameRep = ner.setNameRep
+        setIsSrc = ner.setIsSrc
+        setIsRo = ner.setIsRo
+        v.caption = H.p(H.b(setNameRep)) + H.p(
+            &#34;Entities as &#34;
+            + (
+                &#34;given in the source&#34;
+                if setIsSrc
+                else &#34;specified by a spreadsheet&#34;
+                if setIsRo
+                else &#34;marked up by hand&#34;
+            )
+        )
+
+    def wrapLogs(self):
+        v = self.v
+        ner = self.ner
+        logData = ner.logData
+
+        v.logs = &#34;\n&#34;.join(
+            H.p(
+                H.nb * indent + msg,
+                cls=&#34;msg &#34;
+                + (&#34;special&#34; if isError is None else &#34;error&#34; if isError else &#34;info&#34;),
+            )
+            for (isError, indent, msg) in logData
+        )
 
     def wrapQuery(self):
         &#34;&#34;&#34;HTML for all control widgets on the page.&#34;&#34;&#34;
@@ -1432,7 +1488,7 @@ class Fragments:
         &#34;&#34;&#34;
         v = self.v
         ner = self.ner
-        setName = ner.setName
+        setIsRo = ner.setIsRo
         scope = v.scope
         hasFilter = v.hasfilter
         txt = v.txt
@@ -1443,7 +1499,7 @@ class Fragments:
         scopeInit = H.input(type=&#34;hidden&#34;, id=&#34;scope&#34;, name=&#34;scope&#34;, value=scope)
         scopeFilter = &#34;&#34;
 
-        if setName and (hasOcc or hasEnt):
+        if (not setIsRo) and (hasOcc or hasEnt):
             # Scope of modification
 
             scopeFilter = (
@@ -1471,13 +1527,13 @@ class Fragments:
         ner = self.ner
         settings = ner.settings
         bucketType = settings.bucketType
-        setName = ner.setName
+        setIsRo = ner.setIsRo
         hasOcc = txt != &#34;&#34;
         hasEnt = eTxt != &#34;&#34;
 
         scopeExceptions = &#34;&#34;
 
-        if setName and (hasOcc or hasEnt):
+        if (not setIsRo) and (hasOcc or hasEnt):
             scopeExceptions = H.span(
                 H.nb,
                 H.button(
@@ -1517,7 +1573,7 @@ class Fragments:
         featureDefault = ner.featureDefault
 
         setData = ner.getSetData()
-        setName = ner.setName
+        setIsRo = ner.setIsRo
 
         txt = v.txt
         eTxt = v.etxt
@@ -1546,7 +1602,7 @@ class Fragments:
 
         somethingToDelete = True
 
-        if setName and (hasOcc or hasEnt):
+        if (not setIsRo) and (hasOcc or hasEnt):
             instances = self.wrapExceptions()
 
             for i, feat in enumerate(features):
@@ -1842,7 +1898,7 @@ class Fragments:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/fragments.py#L845-L859" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L873-L887" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapActive(self):
     &#34;&#34;&#34;HTML for the active entity.&#34;&#34;&#34;
@@ -1871,7 +1927,7 @@ appear: with or without underlining, identifier, kind, frequency.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/fragments.py#L134-L191" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L162-L219" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapAppearance(self):
     &#34;&#34;&#34;HTML for the appearance widget.
@@ -1933,6 +1989,34 @@ appear: with or without underlining, identifier, kind, frequency.</p></div>
     )</code></pre>
 </details>
 </dd>
+<dt id="tf.browser.ner.fragments.Fragments.wrapCaption"><code class="name flex">
+<span>def <span class="ident">wrapCaption</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L120-L135" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapCaption(self):
+    v = self.v
+    ner = self.ner
+    setNameRep = ner.setNameRep
+    setIsSrc = ner.setIsSrc
+    setIsRo = ner.setIsRo
+    v.caption = H.p(H.b(setNameRep)) + H.p(
+        &#34;Entities as &#34;
+        + (
+            &#34;given in the source&#34;
+            if setIsSrc
+            else &#34;specified by a spreadsheet&#34;
+            if setIsRo
+            else &#34;marked up by hand&#34;
+        )
+    )</code></pre>
+</details>
+</dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapEntity"><code class="name flex">
 <span>def <span class="ident">wrapEntity</span></span>(<span>self)</span>
 </code></dt>
@@ -1944,7 +2028,7 @@ hidden input elements.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/fragments.py#L267-L319" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L295-L347" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntity(self):
     &#34;&#34;&#34;Basic data for the selected entity widget.
@@ -2012,7 +2096,7 @@ thereby selecting a subset of the original set of occurrences.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/fragments.py#L399-L487" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L427-L515" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityFeats(self):
     &#34;&#34;&#34;HTML for the entity feature value selection.
@@ -2113,7 +2197,7 @@ thereby selecting a subset of the original set of occurrences.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/fragments.py#L321-L355" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L349-L383" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityHeaders(self):
     &#34;&#34;&#34;HTML for the header of the entity table, dependent on the state of sorting.&#34;&#34;&#34;
@@ -2160,7 +2244,7 @@ thereby selecting a subset of the original set of occurrences.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/fragments.py#L861-L869" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L889-L897" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityModReport(self):
     &#34;&#34;&#34;HTML for the combined report of add / del actions.&#34;&#34;&#34;
@@ -2185,7 +2269,7 @@ values.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/fragments.py#L564-L807" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L592-L835" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityModify(self):
     &#34;&#34;&#34;HTML for the add / del widget.
@@ -2205,7 +2289,7 @@ values.</p></div>
     featureDefault = ner.featureDefault
 
     setData = ner.getSetData()
-    setName = ner.setName
+    setIsRo = ner.setIsRo
 
     txt = v.txt
     eTxt = v.etxt
@@ -2234,7 +2318,7 @@ values.</p></div>
 
     somethingToDelete = True
 
-    if setName and (hasOcc or hasEnt):
+    if (not setIsRo) and (hasOcc or hasEnt):
         instances = self.wrapExceptions()
 
         for i, feat in enumerate(features):
@@ -2443,7 +2527,7 @@ versus in filtered buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/fragments.py#L823-L843" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L851-L871" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityStat(self, val, feat):
     &#34;&#34;&#34;HTML for statistics of feature values.
@@ -2476,7 +2560,7 @@ versus in filtered buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/fragments.py#L357-L397" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L385-L425" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityText(self):
     &#34;&#34;&#34;HTML for the selected entity widget.&#34;&#34;&#34;
@@ -2533,7 +2617,7 @@ the add / del operations.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/fragments.py#L522-L562" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L550-L590" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapExceptions(self):
     &#34;&#34;&#34;HTML for the select / deselect buttons.
@@ -2549,13 +2633,13 @@ the add / del operations.</p></div>
     ner = self.ner
     settings = ner.settings
     bucketType = settings.bucketType
-    setName = ner.setName
+    setIsRo = ner.setIsRo
     hasOcc = txt != &#34;&#34;
     hasEnt = eTxt != &#34;&#34;
 
     scopeExceptions = &#34;&#34;
 
-    if setName and (hasOcc or hasEnt):
+    if (not setIsRo) and (hasOcc or hasEnt):
         scopeExceptions = H.span(
             H.nb,
             H.button(
@@ -2589,7 +2673,7 @@ condition that the buckets do <em>not</em> contain entities).</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/fragments.py#L193-L265" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L221-L293" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapFilter(self):
     &#34;&#34;&#34;HTML for the filter widget.
@@ -2676,7 +2760,7 @@ buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/fragments.py#L809-L821" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L837-L849" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapFindStat(self):
     &#34;&#34;&#34;HTML for statistics.
@@ -2693,6 +2777,31 @@ buckets.</p></div>
     return H.span(n, cls=&#34;stat&#34;)</code></pre>
 </details>
 </dd>
+<dt id="tf.browser.ner.fragments.Fragments.wrapLogs"><code class="name flex">
+<span>def <span class="ident">wrapLogs</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L137-L149" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapLogs(self):
+    v = self.v
+    ner = self.ner
+    logData = ner.logData
+
+    v.logs = &#34;\n&#34;.join(
+        H.p(
+            H.nb * indent + msg,
+            cls=&#34;msg &#34;
+            + (&#34;special&#34; if isError is None else &#34;error&#34; if isError else &#34;info&#34;),
+        )
+        for (isError, indent, msg) in logData
+    )</code></pre>
+</details>
+</dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapMessages"><code class="name flex">
 <span>def <span class="ident">wrapMessages</span></span>(<span>self)</span>
 </code></dt>
@@ -2701,7 +2810,7 @@ buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/fragments.py#L15-L20" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L15-L20" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapMessages(self):
     &#34;&#34;&#34;HTML for messages.&#34;&#34;&#34;
@@ -2719,7 +2828,7 @@ buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/fragments.py#L123-L132" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L151-L160" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapQuery(self):
     &#34;&#34;&#34;HTML for all control widgets on the page.&#34;&#34;&#34;
@@ -2741,7 +2850,7 @@ buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/fragments.py#L871-L891" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L899-L919" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapReport(self, report, kind):
     &#34;&#34;&#34;HTML for the report of add / del actions.&#34;&#34;&#34;
@@ -2776,7 +2885,7 @@ be applied to all relevant buckets, or only to the filtered buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/fragments.py#L489-L520" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L517-L548" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapScope(self):
     &#34;&#34;&#34;HTML for the scope widget.
@@ -2786,7 +2895,7 @@ be applied to all relevant buckets, or only to the filtered buckets.</p></div>
     &#34;&#34;&#34;
     v = self.v
     ner = self.ner
-    setName = ner.setName
+    setIsRo = ner.setIsRo
     scope = v.scope
     hasFilter = v.hasfilter
     txt = v.txt
@@ -2797,7 +2906,7 @@ be applied to all relevant buckets, or only to the filtered buckets.</p></div>
     scopeInit = H.input(type=&#34;hidden&#34;, id=&#34;scope&#34;, name=&#34;scope&#34;, value=scope)
     scopeFilter = &#34;&#34;
 
-    if setName and (hasOcc or hasEnt):
+    if (not setIsRo) and (hasOcc or hasEnt):
         # Scope of modification
 
         scopeFilter = (
@@ -2817,8 +2926,7 @@ be applied to all relevant buckets, or only to the filtered buckets.</p></div>
 </code></dt>
 <dd>
 <div class="desc"><p>HTML for the annotation set chooser.</p>
-<p>It is a list of buttons, each corresponding to an existing annotation set.
-A click on the button selects that set.
+<p>It is a dropdown with options, each corresponding to an existing annotation set.
 There is also a control to delete the set.</p>
 <p>Apart from these buttons there is a button to switch to the entities that are
 present in the TF dataset as nodes of the entity type specified
@@ -2828,13 +2936,12 @@ features.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/58588b5b47e9a5d571aee2d1a3cf00dccc522dc9/tf/browser/ner/fragments.py#L22-L121" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L22-L118" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapSets(self):
     &#34;&#34;&#34;HTML for the annotation set chooser.
 
-    It is a list of buttons, each corresponding to an existing annotation set.
-    A click on the button selects that set.
+    It is a dropdown with options, each corresponding to an existing annotation set.
     There is also a control to delete the set.
 
     Apart from these buttons there is a button to switch to the entities that are
@@ -2846,8 +2953,6 @@ features.</p>
     &#34;&#34;&#34;
     ner = self.ner
     setNames = ner.setNames
-    settings = ner.settings
-    entitySet = settings.entitySet
 
     v = self.v
     chosenSet = v.set
@@ -2890,7 +2995,7 @@ features.</p>
         H.select(
             (
                 H.option(
-                    entitySet if setName == &#34;&#34; else setName,
+                    ner.setInfo(setName=setName)[0],
                     value=setName,
                     selected=setName == chosenSet,
                 )
@@ -2925,7 +3030,7 @@ features.</p>
                 cls=&#34;mono&#34;,
             ),
         ]
-        if chosenSet
+        if not (chosenSet == &#34;&#34; or chosenSet.startswith(&#34;.&#34;))
         else []
     )
 
@@ -3006,6 +3111,7 @@ setTimeout(() => input.focus(), 100);
 <ul class="two-column">
 <li><code><a title="tf.browser.ner.fragments.Fragments.wrapActive" href="#tf.browser.ner.fragments.Fragments.wrapActive">wrapActive</a></code></li>
 <li><code><a title="tf.browser.ner.fragments.Fragments.wrapAppearance" href="#tf.browser.ner.fragments.Fragments.wrapAppearance">wrapAppearance</a></code></li>
+<li><code><a title="tf.browser.ner.fragments.Fragments.wrapCaption" href="#tf.browser.ner.fragments.Fragments.wrapCaption">wrapCaption</a></code></li>
 <li><code><a title="tf.browser.ner.fragments.Fragments.wrapEntity" href="#tf.browser.ner.fragments.Fragments.wrapEntity">wrapEntity</a></code></li>
 <li><code><a title="tf.browser.ner.fragments.Fragments.wrapEntityFeats" href="#tf.browser.ner.fragments.Fragments.wrapEntityFeats">wrapEntityFeats</a></code></li>
 <li><code><a title="tf.browser.ner.fragments.Fragments.wrapEntityHeaders" href="#tf.browser.ner.fragments.Fragments.wrapEntityHeaders">wrapEntityHeaders</a></code></li>
@@ -3016,6 +3122,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.browser.ner.fragments.Fragments.wrapExceptions" href="#tf.browser.ner.fragments.Fragments.wrapExceptions">wrapExceptions</a></code></li>
 <li><code><a title="tf.browser.ner.fragments.Fragments.wrapFilter" href="#tf.browser.ner.fragments.Fragments.wrapFilter">wrapFilter</a></code></li>
 <li><code><a title="tf.browser.ner.fragments.Fragments.wrapFindStat" href="#tf.browser.ner.fragments.Fragments.wrapFindStat">wrapFindStat</a></code></li>
+<li><code><a title="tf.browser.ner.fragments.Fragments.wrapLogs" href="#tf.browser.ner.fragments.Fragments.wrapLogs">wrapLogs</a></code></li>
 <li><code><a title="tf.browser.ner.fragments.Fragments.wrapMessages" href="#tf.browser.ner.fragments.Fragments.wrapMessages">wrapMessages</a></code></li>
 <li><code><a title="tf.browser.ner.fragments.Fragments.wrapQuery" href="#tf.browser.ner.fragments.Fragments.wrapQuery">wrapQuery</a></code></li>
 <li><code><a title="tf.browser.ner.fragments.Fragments.wrapReport" href="#tf.browser.ner.fragments.Fragments.wrapReport">wrapReport</a></code></li>
