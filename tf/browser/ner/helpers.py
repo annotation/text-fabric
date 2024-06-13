@@ -10,7 +10,6 @@ import unicodedata
 
 from ...core.helpers import console
 from ..html import H
-
 from .settings import STYLES
 
 
@@ -280,6 +279,19 @@ def getPath(heading, instructions):
     return ()
 
 
-def log(rh, msg, error=False):
-    console(msg, error=error)
-    rh.write(f"{msg}\n")
+def consoleLine(isError, indent, msg):
+    tabs = "  " * indent
+    head = "-" * len(msg)
+
+    if isError is None:
+        console("")
+        console(f"{tabs}{head}")
+
+    console(f"{tabs}{msg}\n", error=isError)
+
+    if isError is None:
+        console(f"{tabs}{head}")
+
+
+def repSet(s):
+    return "{" + ", ".join(str(x) for x in sorted(s)) + "}"

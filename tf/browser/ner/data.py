@@ -65,7 +65,8 @@ class Data(Corpus):
 
             In that way, the `Data` object can start with the sets already in memory.
         """
-        super().__init__()
+        Corpus.__init__(self)
+
         if not self.properlySetup:
             return
 
@@ -74,7 +75,7 @@ class Data(Corpus):
         annoDir = self.annoDir
         initTree(annoDir, fresh=False)
 
-    def loadSetData(self):
+    def loadSetData(self, _lowlevel=False):
         """Loads the current annotation set into memory.
 
         It has two phases:
@@ -93,6 +94,20 @@ class Data(Corpus):
 
         changed = self.fromSourceSet()
         self.processSet(changed)
+
+    def _clearSetData(self):
+        """Clears the current annotation set data from memory.
+        """
+        if not self.properlySetup:
+            return
+
+        sets = self.sets
+        setName = self.setName
+
+        setData = AttrDict()
+        setData.entities = AttrDict()
+        sets[setName] = setData
+        self.processSet(True)
 
     def fromSourceSet(self):
         """Loads an annotation set from source.
@@ -117,6 +132,7 @@ class Data(Corpus):
 
         settings = self.settings
         setName = self.setName
+        setIsSrc = self.setIsSrc
         setData = self.sets[setName]
         annoDir = self.annoDir
 
@@ -137,7 +153,25 @@ class Data(Corpus):
 
         changed = False
 
-        if setName:
+        if setIsSrc:
+            if "entities" not in setData:
+                entities = {}
+                hasFeature = {feat: checkFeature(feat) for feat in features}
+
+                for e in self.getEntityNodes():
+                    slots = getSlots(e)
+                    entities[e] = (
+                        tuple(
+                            getFVal(feat, e)
+                            if hasFeature[feat]
+                            else featureDefault[feat](slots)
+                            for feat in features
+                        ),
+                        tuple(slots),
+                    )
+
+                setData.entities = entities
+        else:
             if (
                 "entities" not in setData
                 or "dateLoaded" not in setData
@@ -158,24 +192,6 @@ class Data(Corpus):
 
                 setData.entities = entities
                 setData.dateLoaded = time.time()
-        else:
-            if "entities" not in setData:
-                entities = {}
-                hasFeature = {feat: checkFeature(feat) for feat in features}
-
-                for e in self.getEntityNodes():
-                    slots = getSlots(e)
-                    entities[e] = (
-                        tuple(
-                            getFVal(feat, e)
-                            if hasFeature[feat]
-                            else featureDefault[feat](slots)
-                            for feat in features
-                        ),
-                        tuple(slots),
-                    )
-
-                setData.entities = entities
 
         return changed
 
@@ -372,10 +388,10 @@ class Data(Corpus):
         if not self.properlySetup:
             return
 
-        setName = self.setName
+        setIsRo = self.setIsRo
         setNameRep = self.setNameRep
 
-        if not setName:
+        if setIsRo:
             if silent:
                 return (-1, -1)
             self.console(f"Entity deletion not allowed on {setNameRep}", error=True)
@@ -452,11 +468,11 @@ class Data(Corpus):
         if not self.properlySetup:
             return
 
-        setName = self.setName
         setNameRep = self.setNameRep
+        setIsRo = self.setIsRo
         browse = self.browse
 
-        if not setName:
+        if setIsRo:
             msg = f"Entity deletion not allowed on {setNameRep}"
             if browse:
                 return [[msg]]
@@ -578,10 +594,10 @@ class Data(Corpus):
         if not self.properlySetup:
             return
 
-        setName = self.setName
         setNameRep = self.setNameRep
+        setIsRo = self.setIsRo
 
-        if not setName:
+        if setIsRo:
             if silent:
                 return (-1, -1)
             self.console(f"Entity addition not allowed on {setNameRep}", error=True)
@@ -623,7 +639,7 @@ class Data(Corpus):
         self.console(f"Already present: {present:>5} x")
         self.console(f"Added:           {added:>5} x")
 
-    def addEntities(self, newEntities, silent=True):
+    def addEntities(self, newEntities, silent=True, _lowlevel=False):
         """Add multiple entities efficiently to the current set.
 
         This operation is not allowed if the current set is the read-only set with the
@@ -633,7 +649,6 @@ class Data(Corpus):
         the corpus to find them.
 
         This method does them all in one fell swoop.
-        It is used by the method `tf.browser.ner.ner.NER.markEntities()`.
 
         Parameters
         ----------
@@ -658,13 +673,17 @@ class Data(Corpus):
         if not self.properlySetup:
             return
 
-        setName = self.setName
         setNameRep = self.setNameRep
+        setIsRo = self.setIsRo
+        setIsSrc = self.setIsSrc
 
-        if not setName:
+        if not _lowlevel and setIsRo:
             if silent:
                 return (-1, -1)
             self.console(f"Entities addition not allowed on {setNameRep}", error=True)
+            return
+
+        if _lowlevel and (setIsSrc or not setIsRo):
             return
 
         setData = self.getSetData()
@@ -687,11 +706,14 @@ class Data(Corpus):
                     addE.add((fVals, slots))
 
         if len(addE):
-            self.mergeEntities(addE)
+            self.mergeEntities(addE, _lowlevel=_lowlevel)
 
         self.loadSetData()
         if silent:
             return (present, added)
+
+        if _lowlevel:
+            return
 
         self.console(f"Already present: {present:>5} x")
         self.console(f"Added:           {added:>5} x")
@@ -731,11 +753,11 @@ class Data(Corpus):
         if not self.properlySetup:
             return
 
-        setName = self.setName
         setNameRep = self.setNameRep
+        setIsRo = self.setIsRo
         browse = self.browse
 
-        if not setName:
+        if setIsRo:
             msg = f"Entity addition not allowed on {setNameRep}"
             if browse:
                 return [[msg]]
@@ -833,8 +855,9 @@ class Data(Corpus):
 
         setName = self.setName
         setNameRep = self.setNameRep
+        setIsRo = self.setIsRo
 
-        if not setName:
+        if setIsRo:
             self.console(f"Entity weeding not allowed on {setNameRep}", error=True)
             return
 
@@ -861,7 +884,7 @@ class Data(Corpus):
         with fileOpen(dataFile, mode="w") as fh:
             fh.write("".join(newEntities))
 
-    def mergeEntities(self, newEntities):
+    def mergeEntities(self, newEntities, _lowlevel=False):
         """Performs additions to the current annotation set.
 
         This operation is not allowed if the current set is the read-only set with the
@@ -878,9 +901,14 @@ class Data(Corpus):
 
         setName = self.setName
         setNameRep = self.setNameRep
+        setIsRo = self.setIsRo
+        setIsSrc = self.setIsSrc
 
-        if not setName:
+        if not _lowlevel and setIsRo:
             self.console(f"Entity merging not allowed on {setNameRep}", error=True)
+            return
+
+        if _lowlevel and (setIsSrc or not setIsRo):
             return
 
         annoDir = self.annoDir
@@ -928,10 +956,10 @@ class Data(Corpus):
         if not self.properlySetup:
             return
 
-        setName = self.setName
         setNameRep = self.setNameRep
+        setIsRo = self.setIsRo
 
-        if not setName:
+        if setIsRo:
             self.console(
                 f"Entity consolidation not meaningful on {setNameRep}", error=True
             )
@@ -952,8 +980,8 @@ class Data(Corpus):
         )
 
         slotLink = {}
-        nodeFeatures = {feat: {} for feat in features}
-        edgeFeatures = dict(eoccs={})
+        nodeFeatures = AttrDict({feat: {} for feat in features})
+        edgeFeatures = AttrDict(eoccs={})
         entities = {}
 
         n = 0
@@ -968,7 +996,7 @@ class Data(Corpus):
             entities.setdefault(fVals, []).append(n)
 
         nEntityOccs = len(entityOccs)
-        occEdge = edgeFeatures["eoccs"]
+        occEdge = edgeFeatures.eoccs
 
         for fVals, occs in entities.items():
             n += 1
@@ -983,7 +1011,7 @@ class Data(Corpus):
         self.console(f"{nEntityOccs:>6} entity occurrences")
         self.console(f"{nEntities:>6} distinct entities")
 
-        featureMeta["eoccs"] = dict(
+        featureMeta.eoccs = dict(
             valueType="str",
             description="from entity nodes to their occurrence nodes",
         )

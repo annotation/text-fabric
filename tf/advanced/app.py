@@ -1,7 +1,7 @@
 import types
 import traceback
 
-from ..parameters import ORG, RELATIVE, OMAP
+from ..parameters import ORG, RELATIVE, OMAP, OTYPE
 from ..fabric import Fabric
 from ..lib import readSets
 from ..core.helpers import console, mergeDict
@@ -381,6 +381,67 @@ The app "{appName}" will not work!
             textApi(self)
             if hoist:
                 api.makeAvailableIn(hoist)
+
+    def featureTypes(self, show=True):
+        """For which node types is each feature defined?
+
+        It computes on the fly for each feature the node types for which
+        the feature has defined values.
+
+        Parameters
+        ----------
+        show: boolean, optional True
+            Whether to output the result in pretty markdown.
+
+        Returns
+        -------
+        dict
+            If `show` is true, None is returned, but if `show` is false,
+            a dict is returned, keyed by features and the value for each feature
+            is the list of types for which it has defined values.
+        """
+        if hasattr(self, "featureTypeMap"):
+            info = self.featureTypeMap
+        else:
+            api = self.api
+            F = api.F
+            Fs = api.Fs
+            Fall = api.Fall
+
+            nodesByType = {}
+
+            allFeatures = [p for p in Fall() if p != OTYPE]
+            allTypes = F.otype.all
+
+            for tp in allTypes:
+                nodesByType[tp] = set(F.otype.s(tp))
+
+            info = {}
+
+            for feat in allFeatures:
+                featNodes = {i[0] for i in Fs(feat).items()}
+
+                for tp in allTypes:
+                    if len(featNodes & nodesByType[tp]) > 0:
+                        info.setdefault(feat, []).append(tp)
+
+            self.featureTypeMap = info
+
+        if show:
+            md = []
+            md.extend(["""feature | node types""", """:- | :-"""])
+
+            for feat, tps in sorted(info.items()):
+                tpsRep = "*" + "*, *".join(tps) + "*"
+                md.append(f"""**{feat}** | {tpsRep}""")
+
+            self.dm("\n".join(md))
+            self.dm(
+                "To get this overview in a dict, "
+                "call `A.featureTypes(show=False)`\n"
+            )
+        else:
+            return info
 
 
 def findApp(

@@ -22,6 +22,12 @@ A.load(features)
 :   `tf.advanced.app.App.load`
 
 ``` python
+A.featureTypes(show=True)
+```
+:   show for which types each feature is defined
+:   `tf.advanced.app.App.featureTypes`
+
+``` python
 A.showContext(...)
 ```
 :   show app settings

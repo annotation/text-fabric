@@ -129,7 +129,7 @@ class Form:
         keysSetInt = self.keysSetInt
         keysJson = self.keysJson
 
-        form = {}
+        form = AttrDict()
 
         for k in keysStr:
             form[k] = self.fgets(k)

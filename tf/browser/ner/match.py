@@ -4,6 +4,7 @@ To see how this fits among all the modules of this package, see
 `tf.browser.ner.ner` .
 """
 
+from ...core.generic import AttrDict
 from .settings import NONE
 from .helpers import getPath, fromTokens
 
@@ -46,9 +47,9 @@ def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
         heading = getHeadings(b)
         path = getPath(heading, instructions)
         data = instructions[path]
-        tPos = data["tPos"]
-        tMap = data["tMap"]
-        idMap = data["idMap"]
+        tPos = data.tPos
+        tMap = data.tMap
+        idMap = data.idMap
 
         # compile the bucket into logical tokens
         bTokensAll = getTokens(b)
@@ -108,7 +109,9 @@ def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
                     lastT = bStringLast[i + m]
                     slots = tuple(range(firstT, lastT + 1))
                     eidkind = idMap[trigger]
-                    dest = results.setdefault(eidkind, {}).setdefault(trigger, {})
+                    dest = results.setdefault(eidkind, AttrDict()).setdefault(
+                        trigger, {}
+                    )
                     destHits = dest.setdefault(tPath, [])
                     destHits.append(slots)
                     break
@@ -117,61 +120,6 @@ def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
             i += shift
 
     return results
-
-
-def occMatchOld(getTokens, b, qSeqs, results):
-    """Finds the occurrences of multiple sequences of tokens in a single bucket.
-
-    Parameters
-    ----------
-    getTokens: function
-        See `tf.browser.ner.corpus.Corpus.getTokens`
-    b: integer
-        The node of the bucket in question
-    qSeqs: set, optional set()
-        A set of sequences of tokens. Each sequence in the set will be used as a
-        search pattern, and it occurrences in the bucket are collected.
-    result: dict
-        A dictionary to collect the results in.
-        Keyed by each member of parameter `qSeqs` the values are
-        the occurrences of that member in the corpus.
-        A single occurrence is represented as a tuple of slots.
-    """
-    bTokensAll = getTokens(b)
-    bTokens = [x for x in bTokensAll if (x[1] or "").strip()]
-    # bStrings = {s for (t, s) in bTokens}
-    bStrings = []
-    bStringFirst = {}
-    bStringLast = {}
-
-    for t, s in bTokens:
-        if len(bStrings) > 1 and bStrings[-1] == "-":
-            bStrings.pop()
-            bStrings[-1] += s
-            bStringLast[len(bStrings) - 1] = t
-        else:
-            bStrings.append(s)
-            bStringFirst[len(bStrings) - 1] = t
-            bStringLast[len(bStrings) - 1] = t
-
-    bStrings = tuple(bStrings)
-    bStringSet = set(bStrings)
-
-    for qTokens in qSeqs:
-        if any(s not in bStringSet for s in qTokens):
-            continue
-
-        nTokens = len(qTokens)
-
-        for i, s in enumerate(bStrings):
-            if qTokens != bStrings[i : i + nTokens]:
-                continue
-
-            firstT = bStringFirst[i]
-            lastT = bStringLast[i + nTokens - 1]
-            slots = tuple(range(firstT, lastT + 1))
-
-            results.setdefault(qTokens, []).append(slots)
 
 
 def entityMatch(

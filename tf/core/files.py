@@ -278,7 +278,6 @@ def annotateDir(app, tool):
     *   The input directory is located next to the TF data of the corpus
     *   The output directory is located in the `_temp` directory next to the TF data of
         the corpus
-    *   The report directory is located in the `report` directory next to the TF data
         of the corpus
 
     Parameters
@@ -297,7 +296,7 @@ def annotateDir(app, tool):
     appPath = context.appPath
     localDir = context.localDir
     baseDir = dirNm(appPath)
-    return (f"{baseDir}/{tool}", f"{localDir}/{tool}", f"{baseDir}/report/{tool}")
+    return (f"{baseDir}/{tool}", f"{localDir}/{tool}")
 
 
 URL_TFDOC = f"https://{ORG}.{backendRep(GH, 'pages')}/{REPO}/tf"

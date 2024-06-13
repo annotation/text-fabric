@@ -120,6 +120,18 @@ span.lge {
   border-right: 0.2em solid var(--ent-markup-color);
 }
 
+p.msg {
+  font-family: monospace;
+  margin: 0
+}
+.special {
+  font-weight: bold;
+  font-size: large;
+  background-color: #eeeef8;
+}
+p.msg.special {
+  margin-top: 1rem;
+}
 .error {
   font-weight: bold;
   background-color: #ffaaaa;

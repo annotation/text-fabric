@@ -4,7 +4,7 @@ To see how this fits among all the modules of this package, see
 `tf.browser.ner.ner` .
 """
 from ..core.generic import isIterable
-from ..core.helpers import console
+from ..core.helpers import console, NBSP
 
 
 H_ELEMENT_DEFS = """
@@ -131,7 +131,7 @@ class H:
     For each HTML element in the specs (`H_ELEMENTS`) a corresponding
     generating function is added as method.
     """
-    nb = "\u00a0"
+    nb = NBSP
 
 
 setattr(H, "join", dig)

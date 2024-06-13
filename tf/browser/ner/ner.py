@@ -191,8 +191,7 @@ A first step is to find out how many occurrences we find in the corpus for these
 surface forms:
 
 ``` python
-NE.lookup()
-NE.showHits()
+NE.reportHits()
 ```
 
 and the output looks like this
@@ -213,34 +212,6 @@ Total 150
 ```
 
 Entities that are in the spreadsheet, but not in the corpus are skipped.
-
-## Marking up
-
-In order to create annotations for these entities, we have to switch to an
-annotation set. Let's start a new set and give it the name `power`.
-
-``` python
-NE.setSet("power")
-```
-
-If it turns out that `power` has already annotations, and you want to clear them, say
-
-``` python
-NE.resetSet("power")
-```
-
-Now we are ready for the big thing: creating the annotations:
-
-``` python
-NE.markEntities()
-```
-
-It outputs this message:
-
-```
-Already present:     0 x
-Added:             150 x
-```
 
 ## Inspection
 
@@ -674,15 +645,16 @@ class NER(Sheets, Sets, Show):
         inventory = sheetData.inventory
         instructions = sheetData.instructions
 
-        reportBase = self.reportBase
-        reportDir = f"{reportBase}/{sheetName}"
-        reportFile = f"{reportDir}/hits.tsv"
+        setName = self.setName
+        annoDir = self.annoDir
+        setDir = f"{annoDir}/{setName}"
+        reportFile = f"{setDir}/hits.tsv"
 
         allTriggers = set()
 
         for path, data in instructions.items():
-            idMap = data["idMap"]
-            tMap = data["tMap"]
+            idMap = data.idMap
+            tMap = data.tMap
 
             for trigger, tPath in tMap.items():
                 eidkind = idMap[trigger]
@@ -755,40 +727,6 @@ class NER(Sheets, Sets, Show):
                 """
             )
         )
-
-    def markEntities(self):
-        """Marks up the members of the inventory as entities.
-
-        The instructions contain the entity identifier and the entity kind that
-        have to be assigned to the surface forms.
-
-        The inventory knows where the occurrences of the surface forms are.
-        If there is no inventory yet, it will be created.
-        """
-        if not self.properlySetup:
-            return
-
-        browse = self.browse
-        sheetName = self.sheetName
-        sheetData = self.sheets[sheetName]
-        inventory = sheetData.inventory
-
-        newEntities = []
-
-        for (eidkind, entData) in inventory.items():
-            for (trigger, triggerData) in entData.items():
-                for matches in triggerData.values():
-                    newEntities.append((eidkind, matches))
-
-        self.setSet(sheetName)
-
-        if self.getSetData():
-            if not browse:
-                console(f"Set {sheetName} already exists. I will not overwrite it.")
-                console("Clear or delete this set before marking the entities")
-            return
-
-        self.addEntities(newEntities, silent=False)
 
     def bakeEntities(self, versionExtension="e"):
         """Bakes the entities of the current set as nodes into a new TF data source.

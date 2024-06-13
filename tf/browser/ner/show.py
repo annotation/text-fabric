@@ -254,7 +254,7 @@ class Show:
 
         browse = self.browse
         setData = self.getSetData()
-        setName = self.setName
+        setIsRo = self.setIsRo
         afterv = self.getAfter()
         sectionHead = self.sectionHead
 
@@ -292,15 +292,15 @@ class Show:
             nBshown += 1
             charPos = 0
 
-            if setName:
+            if setIsRo:
+                allMatches = set(chain.from_iterable(matches))
+            else:
                 allMatches = set()
                 endMatches = set()
+
                 for match in matches:
                     allMatches |= set(match)
                     endMatches.add(match[-1])
-
-            else:
-                allMatches = set(chain.from_iterable(matches))
 
             headContent = H.span(
                 H.span(sectionHead(b), cls="bhl ltr", title="show context"),
@@ -360,7 +360,7 @@ class Show:
                 hlClasses += f" {style} " if style else ""
                 hlClass = dict(cls=hlClasses) if hlClasses else {}
 
-                endQueried = setName and t in endMatches
+                endQueried = (not setIsRo) and t in endMatches
                 excl = "x" if t in excludedTokens else "v"
                 nodeRep = H.span(str(t), cls="nd") if withNodes else ""
 

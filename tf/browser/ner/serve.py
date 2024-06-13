@@ -32,7 +32,7 @@ class Serve(Request, Fragments):
         ner = web.ner
         self.ner = ner
 
-        super().__init__()
+        Request.__init__(self)
 
         self.initVars()
 
@@ -42,7 +42,7 @@ class Serve(Request, Fragments):
         ner.setSet(setName)
         ner.loadSetData()
 
-        ner.setSheet(None)
+        ner.setSheet(setName[1:] if ner.setIsRo and not ner.setIsSrc else None)
         ner.loadSheetData()
 
     def setupFull(self):
@@ -254,6 +254,8 @@ class Serve(Request, Fragments):
 
         self.wrapSets()
         self.wrapMessages()
+        self.wrapCaption()
+        self.wrapLogs()
 
     def updateHandling(self):
         """Carries out modification actions in the current annotation set.

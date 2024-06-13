@@ -20,6 +20,18 @@ pip install -e .
 
 ### 12.5
 
+#### 12.5.2
+
+2024-06-13
+
+*   New function to show the types for which each feature has defined values.
+    Thanks to Marek Polášek for asking for it, writing an algorithm to produce this
+    information, and then speeding it up 10-fold! For details see this
+    [cookbook](https://nbviewer.org/github/ETCBC/bhsa/blob/master/tutorial/cookbook/lexemes.ipynb)
+
+*   Working on integrating NER by spreadsheet in the TF browser. This is currently in
+    an unfinished state.
+
 #### 12.5.1
 
 2024-06-06

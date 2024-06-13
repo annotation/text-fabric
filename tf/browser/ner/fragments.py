@@ -22,8 +22,7 @@ class Fragments:
     def wrapSets(self):
         """HTML for the annotation set chooser.
 
-        It is a list of buttons, each corresponding to an existing annotation set.
-        A click on the button selects that set.
+        It is a dropdown with options, each corresponding to an existing annotation set.
         There is also a control to delete the set.
 
         Apart from these buttons there is a button to switch to the entities that are
@@ -35,8 +34,6 @@ class Fragments:
         """
         ner = self.ner
         setNames = ner.setNames
-        settings = ner.settings
-        entitySet = settings.entitySet
 
         v = self.v
         chosenSet = v.set
@@ -79,7 +76,7 @@ class Fragments:
             H.select(
                 (
                     H.option(
-                        entitySet if setName == "" else setName,
+                        ner.setInfo(setName=setName)[0],
                         value=setName,
                         selected=setName == chosenSet,
                     )
@@ -114,11 +111,42 @@ class Fragments:
                     cls="mono",
                 ),
             ]
-            if chosenSet
+            if not (chosenSet == "" or chosenSet.startswith("."))
             else []
         )
 
         v.sets = H.p(content1, content2)
+
+    def wrapCaption(self):
+        v = self.v
+        ner = self.ner
+        setNameRep = ner.setNameRep
+        setIsSrc = ner.setIsSrc
+        setIsRo = ner.setIsRo
+        v.caption = H.p(H.b(setNameRep)) + H.p(
+            "Entities as "
+            + (
+                "given in the source"
+                if setIsSrc
+                else "specified by a spreadsheet"
+                if setIsRo
+                else "marked up by hand"
+            )
+        )
+
+    def wrapLogs(self):
+        v = self.v
+        ner = self.ner
+        logData = ner.logData
+
+        v.logs = "\n".join(
+            H.p(
+                H.nb * indent + msg,
+                cls="msg "
+                + ("special" if isError is None else "error" if isError else "info"),
+            )
+            for (isError, indent, msg) in logData
+        )
 
     def wrapQuery(self):
         """HTML for all control widgets on the page."""
@@ -494,7 +522,7 @@ class Fragments:
         """
         v = self.v
         ner = self.ner
-        setName = ner.setName
+        setIsRo = ner.setIsRo
         scope = v.scope
         hasFilter = v.hasfilter
         txt = v.txt
@@ -505,7 +533,7 @@ class Fragments:
         scopeInit = H.input(type="hidden", id="scope", name="scope", value=scope)
         scopeFilter = ""
 
-        if setName and (hasOcc or hasEnt):
+        if (not setIsRo) and (hasOcc or hasEnt):
             # Scope of modification
 
             scopeFilter = (
@@ -533,13 +561,13 @@ class Fragments:
         ner = self.ner
         settings = ner.settings
         bucketType = settings.bucketType
-        setName = ner.setName
+        setIsRo = ner.setIsRo
         hasOcc = txt != ""
         hasEnt = eTxt != ""
 
         scopeExceptions = ""
 
-        if setName and (hasOcc or hasEnt):
+        if (not setIsRo) and (hasOcc or hasEnt):
             scopeExceptions = H.span(
                 H.nb,
                 H.button(
@@ -579,7 +607,7 @@ class Fragments:
         featureDefault = ner.featureDefault
 
         setData = ner.getSetData()
-        setName = ner.setName
+        setIsRo = ner.setIsRo
 
         txt = v.txt
         eTxt = v.etxt
@@ -608,7 +636,7 @@ class Fragments:
 
         somethingToDelete = True
 
-        if setName and (hasOcc or hasEnt):
+        if (not setIsRo) and (hasOcc or hasEnt):
             instances = self.wrapExceptions()
 
             for i, feat in enumerate(features):

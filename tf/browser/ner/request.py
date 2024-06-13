@@ -51,6 +51,8 @@ class Request(Form):
             duset
             rset
             dset
+            caption
+            logs
             sortkey
             sortdir
             bfind
@@ -119,7 +121,8 @@ class Request(Form):
         for feat, featStr in valSelectProto.items():
             keysStr.append(featStr)
 
-        super().__init__(
+        Form.__init__(
+            self,
             features,
             defaults,
             keysStr=keysStr,
@@ -162,11 +165,11 @@ class Request(Form):
 
         form = self.fill()
 
-        form["formattingstate"] = {
+        form.formattingstate = {
             feat: self.fget2(featStr) for (feat, featStr) in formattingState.items()
         }
 
-        form["activeval"] = {
+        form.activeval = {
             feat: self.fgets(featStr) for (feat, featStr) in activeVal.items()
         }
 
@@ -174,7 +177,7 @@ class Request(Form):
             feat: self.fgets(featStr) for (feat, featStr) in valSelectProto.items()
         }
 
-        submitter = form["submitter"]
+        submitter = form.submitter
 
         valSelect = {}
 
@@ -190,7 +193,7 @@ class Request(Form):
             if startSearch:
                 valSelect[feat].add(NONE)
 
-        form["valselect"] = valSelect
+        form.valselect = valSelect
 
         return form
 
@@ -218,7 +221,7 @@ class Request(Form):
         slotType = ner.slotType
 
         form = self.getFormData()
-        resetForm = form["resetForm"]
+        resetForm = form.resetForm
 
         v = AttrDict()
         v.toolkey = TOOLKEY

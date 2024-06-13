@@ -330,7 +330,6 @@ tf/browser/servelib.py
 tf/browser/start.py
 tf/browser/web.py
 tf/browser/wrap.py
-tf/browser/ner/annotate.py
 tf/browser/ner/corpus.py
 tf/browser/ner/data.py
 tf/browser/ner/form.py
@@ -342,8 +341,8 @@ tf/browser/ner/request.py
 tf/browser/ner/serve.py
 tf/browser/ner/sets.py
 tf/browser/ner/settings.py
+tf/browser/ner/sheets.py
 tf/browser/ner/show.py
-tf/browser/ner/triggers.py
 tf/browser/ner/web.py
 tf/browser/ner/static/.DS_Store
 tf/browser/ner/static/base.css
