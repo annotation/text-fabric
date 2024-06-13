@@ -35,7 +35,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L1-L919" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L1-L920" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Wraps various pieces into HTML.
 
@@ -176,7 +176,8 @@ class Fragments:
     def wrapLogs(self):
         v = self.v
         ner = self.ner
-        logData = ner.logData
+        sheetData = ner.getSheetData()
+        logData = sheetData.logData or []
 
         v.logs = &#34;\n&#34;.join(
             H.p(
@@ -975,7 +976,7 @@ class Fragments:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L14-L919" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L14-L920" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Fragments:
     def wrapMessages(self):
@@ -1103,7 +1104,8 @@ class Fragments:
     def wrapLogs(self):
         v = self.v
         ner = self.ner
-        logData = ner.logData
+        sheetData = ner.getSheetData()
+        logData = sheetData.logData or []
 
         v.logs = &#34;\n&#34;.join(
             H.p(
@@ -1898,7 +1900,7 @@ class Fragments:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L873-L887" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L874-L888" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapActive(self):
     &#34;&#34;&#34;HTML for the active entity.&#34;&#34;&#34;
@@ -1927,7 +1929,7 @@ appear: with or without underlining, identifier, kind, frequency.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L162-L219" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L163-L220" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapAppearance(self):
     &#34;&#34;&#34;HTML for the appearance widget.
@@ -1997,7 +1999,7 @@ appear: with or without underlining, identifier, kind, frequency.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L120-L135" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L120-L135" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapCaption(self):
     v = self.v
@@ -2028,7 +2030,7 @@ hidden input elements.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L295-L347" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L296-L348" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntity(self):
     &#34;&#34;&#34;Basic data for the selected entity widget.
@@ -2096,7 +2098,7 @@ thereby selecting a subset of the original set of occurrences.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L427-L515" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L428-L516" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityFeats(self):
     &#34;&#34;&#34;HTML for the entity feature value selection.
@@ -2197,7 +2199,7 @@ thereby selecting a subset of the original set of occurrences.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L349-L383" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L350-L384" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityHeaders(self):
     &#34;&#34;&#34;HTML for the header of the entity table, dependent on the state of sorting.&#34;&#34;&#34;
@@ -2244,7 +2246,7 @@ thereby selecting a subset of the original set of occurrences.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L889-L897" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L890-L898" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityModReport(self):
     &#34;&#34;&#34;HTML for the combined report of add / del actions.&#34;&#34;&#34;
@@ -2269,7 +2271,7 @@ values.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L592-L835" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L593-L836" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityModify(self):
     &#34;&#34;&#34;HTML for the add / del widget.
@@ -2527,7 +2529,7 @@ versus in filtered buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L851-L871" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L852-L872" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityStat(self, val, feat):
     &#34;&#34;&#34;HTML for statistics of feature values.
@@ -2560,7 +2562,7 @@ versus in filtered buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L385-L425" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L386-L426" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityText(self):
     &#34;&#34;&#34;HTML for the selected entity widget.&#34;&#34;&#34;
@@ -2617,7 +2619,7 @@ the add / del operations.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L550-L590" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L551-L591" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapExceptions(self):
     &#34;&#34;&#34;HTML for the select / deselect buttons.
@@ -2673,7 +2675,7 @@ condition that the buckets do <em>not</em> contain entities).</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L221-L293" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L222-L294" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapFilter(self):
     &#34;&#34;&#34;HTML for the filter widget.
@@ -2760,7 +2762,7 @@ buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L837-L849" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L838-L850" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapFindStat(self):
     &#34;&#34;&#34;HTML for statistics.
@@ -2785,12 +2787,13 @@ buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L137-L149" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L137-L150" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapLogs(self):
     v = self.v
     ner = self.ner
-    logData = ner.logData
+    sheetData = ner.getSheetData()
+    logData = sheetData.logData or []
 
     v.logs = &#34;\n&#34;.join(
         H.p(
@@ -2810,7 +2813,7 @@ buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L15-L20" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L15-L20" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapMessages(self):
     &#34;&#34;&#34;HTML for messages.&#34;&#34;&#34;
@@ -2828,7 +2831,7 @@ buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L151-L160" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L152-L161" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapQuery(self):
     &#34;&#34;&#34;HTML for all control widgets on the page.&#34;&#34;&#34;
@@ -2850,7 +2853,7 @@ buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L899-L919" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L900-L920" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapReport(self, report, kind):
     &#34;&#34;&#34;HTML for the report of add / del actions.&#34;&#34;&#34;
@@ -2885,7 +2888,7 @@ be applied to all relevant buckets, or only to the filtered buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L517-L548" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L518-L549" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapScope(self):
     &#34;&#34;&#34;HTML for the scope widget.
@@ -2936,7 +2939,7 @@ features.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/fragments.py#L22-L118" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L22-L118" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapSets(self):
     &#34;&#34;&#34;HTML for the annotation set chooser.

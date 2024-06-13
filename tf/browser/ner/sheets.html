@@ -31,12 +31,15 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sheets.py#L1-L930" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L1-L964" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import collections
 import re
 import time
+import pickle
+import gzip
 
+from ...parameters import GZIP_LEVEL, PICKLE_PROTOCOL
 from ...capable import CheckImport
 from .helpers import tnorm, normalize, toSmallId, toTokens, consoleLine, repSet
 from ...core.generic import AttrDict
@@ -79,28 +82,95 @@ class Sheets:
 
         self.readSheets()
 
-        self.nameMap = {}
-        &#34;&#34;&#34;Will contain a mapping from entities to names.
-
-        The entities are keyed by their (eid, kind) tuple.
-        The values are names plus the sheet where they are first defined.
-        &#34;&#34;&#34;
-
-        self.logData = []
-
         if not browse:
             self.loadSheetData()
+
+    def readSheets(self):
+        &#34;&#34;&#34;Read the list current ner sheets (again).
+
+        Use this when you change ner sheets outside the NER browser, e.g.
+        by editing the spreadsheets in Excel.
+        &#34;&#34;&#34;
+        sheetDir = self.sheetDir
+        setNames = self.setNames
+
+        sheetNames = set()
+        self.sheetNames = sheetNames
+
+        for sheetFile in dirContents(sheetDir)[0]:
+            if extNm(sheetFile) == &#34;xlsx&#34;:
+                sheetName = sheetFile.removesuffix(&#34;.xlsx&#34;)
+                sheetNames.add(sheetName)
+                setNames.add(f&#34;.{sheetName}&#34;)
+
+    def readData(self, sheetData, sheetUpdated):
+        setName = self.setName
+        annoDir = self.annoDir
+        setDir = f&#34;{annoDir}/{setName}&#34;
+        dataFile = f&#34;{setDir}/data.gz&#34;
+        timeFile = f&#34;{setDir}/time.txt&#34;
+
+        tm = 0
+
+        uptodate = fileExists(timeFile)
+
+        if uptodate:
+            with open(timeFile) as fh:
+                info = fh.read().strip()
+
+            try:
+                tm = float(info)
+                uptodate = sheetUpdated &lt; tm
+            except Exception:
+                uptodate = False
+
+        if not uptodate:
+            return False
+
+        console(&#34;load sheet with uptodate data from disk&#34;)
+
+        if fileExists(dataFile):
+            with gzip.open(dataFile, mode=&#34;rb&#34;) as f:
+                data = pickle.load(f)
+
+            for k, v in data.items():
+                sheetData[k] = v
+
+            sheetData.time = tm
+
+            return True
+        else:
+            return False
+
+    def writeData(self, sheetData, tm):
+        setName = self.setName
+        annoDir = self.annoDir
+        setDir = f&#34;{annoDir}/{setName}&#34;
+        dataFile = f&#34;{setDir}/data.gz&#34;
+        timeFile = f&#34;{setDir}/time.txt&#34;
+
+        with gzip.open(dataFile, mode=&#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
+            f.write(pickle.dumps(sheetData, protocol=PICKLE_PROTOCOL))
+
+        with open(timeFile, &#34;w&#34;) as fh:
+            fh.write(f&#34;{tm}\n&#34;)
+
+    def log(self, isError, indent, msg):
+        browse = self.browse
+        sheetData = self.getSheetData()
+        logData = sheetData.logData
+
+        logData.append((isError, indent, msg))
+
+        if not browse:
+            consoleLine(isError, indent, msg)
 
     def getSheetData(self):
         &#34;&#34;&#34;Deliver the current sheet.&#34;&#34;&#34;
         sheetName = self.sheetName
-
-        if sheetName is None:
-            return None
-
         sheetsData = self.sheets
-        sheetData = sheetsData.setdefault(sheetName, AttrDict())
-        return sheetData
+
+        return sheetsData.get(sheetName, AttrDict())
 
     def setSheet(self, newSheet):
         &#34;&#34;&#34;Switch to a named ner sheet.
@@ -126,9 +196,11 @@ class Sheets:
         if newSheet not in sheetNames or not fileExists(sheetFile):
             if not browse:
                 self.console(f&#34;Ner sheet {newSheet} ({sheetFile}) does not exist&#34;)
-            return
+            if newSheet is not None:
+                return
 
-        self.setSet(&#34;&#34; if newSheet is None else f&#34;.{newSheet}&#34;)
+        if not browse:
+            self.setSet(&#34;&#34; if newSheet is None else f&#34;.{newSheet}&#34;)
 
         if newSheet != sheetName:
             sheetName = newSheet
@@ -150,8 +222,7 @@ class Sheets:
         if sheetName not in sheets:
             sheets[sheetName] = AttrDict()
 
-        changed = self.fromSourceSheet()
-        self.processSheet(changed)
+        self.fromSourceSheet()
 
     def fromSourceSheet(self):
         &#34;&#34;&#34;Loads a ner sheet from source.
@@ -163,14 +234,14 @@ class Sheets:
 
         After collection of the sheet it is stored under the following keys:
 
-        *   `dateLoaded`: datetime when the sheet was last loaded from disk;
+        *   `timeReadXls`: time when the sheet was last loaded from disk;
         *   `instructions`: the list of instructions as loaded and compiled
             from the source.
         &#34;&#34;&#34;
         if not self.properlySetup:
             return None
 
-        logData = self.logData
+        browse = self.browse
         sheetName = self.sheetName
 
         if sheetName is None:
@@ -182,6 +253,7 @@ class Sheets:
         sheetData = self.sheets[sheetName]
         sheetDir = self.sheetDir
         sheetFile = f&#34;{sheetDir}/{sheetName}.xlsx&#34;
+        sheetExists = fileExists(sheetFile)
 
         def timeXls(sheetRela):
             sep = &#34;/&#34; if sheetRela else &#34;&#34;
@@ -198,157 +270,45 @@ class Sheets:
 
             return max((mFiles, mDirs))
 
-        mT = max((timeXls(&#34;&#34;), timeDir(&#34;&#34;)))
+        sheetUpdated = max((timeXls(&#34;&#34;), timeDir(&#34;&#34;))) if sheetExists else 0
+        needReload = sheetData.get(&#34;time&#34;, 0) &lt; sheetUpdated
 
-        changed = False
+        showLog = True
 
-        if (
-            &#34;instructions&#34; not in sheetData
-            or &#34;dateLoaded&#34; not in sheetData
-            or (len(sheetData.instructions) &gt; 0 and not fileExists(sheetFile))
-            or (fileExists(sheetFile) and sheetData.dateLoaded &lt; mT)
-        ):
-            changed = True
-            self.clearLog()
-            self._readSheets(sheetData)
-            self._combineSheets(sheetData)
-            self._compileSheets(sheetData)
-            self._prepareSheets(sheetData)
-            sheetData.dateLoaded = time.time()
-            self.writeLog()
-        else:
-            if len(logData) == 0:
-                self.showLog()
-            else:
-                self.readLog()
+        if needReload:
+            loaded = self.readData(sheetData, sheetUpdated)
 
-        return changed
+            if not loaded:
+                console(&#34;compute sheet data from scratch&#34;)
+                sheetData.logData = []
 
-    def showLog(self):
-        browse = self.browse
-        logData = self.logData
+                self._readSheets(sheetData)
+                tm = time.time()
+                sheetData.time = tm
 
-        if not browse:
-            for x in logData:
-                consoleLine(*x)
+                self._combineSheets(sheetData)
+                self._compileSheets(sheetData)
+                self._prepareSheets(sheetData)
+                self._processSheet()
 
-    def clearLog(self):
-        self.logData.clear()
-
-    def readLog(self):
-        browse = self.browse
-        logData = self.logData
-        setName = self.setName
-        annoDir = self.annoDir
-        setDir = f&#34;{annoDir}/{setName}&#34;
-        logFile = f&#34;{setDir}/excel.tsv&#34;
-
-        if fileExists(logFile):
-            self.clearLog()
-
-            with open(logFile) as fh:
-                for line in fh:
-                    fields = line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)
-                    isError = None if fields[0] == &#34;special&#34; else fields[0] == &#34;error&#34;
-                    indent = int(fields[1])
-                    msg = fields[2]
-                    logData.append((isError, indent, msg))
-
-                    if not browse:
-                        consoleLine(isError, indent, msg)
-
-    def writeLog(self):
-        logData = self.logData
-        setName = self.setName
-        annoDir = self.annoDir
-        setDir = f&#34;{annoDir}/{setName}&#34;
-        logFile = f&#34;{setDir}/excel.tsv&#34;
-
-        with open(logFile, &#34;w&#34;) as fh:
-            for fields in logData:
-                mode = (
-                    &#34;special&#34; if fields[0] is None else &#34;error&#34; if fields[0] else &#34;info&#34;
+                writeKeys = [
+                    &#34;logData&#34;,
+                    &#34;nameMap&#34;,
+                    &#34;instructions&#34;,
+                    &#34;inventory&#34;,
+                    &#34;hitData&#34;,
+                ]
+                self.writeData(
+                    {k: sheetData[k] for k in writeKeys},
+                    tm,
                 )
-                fh.write(f&#34;{mode}\t{fields[1]}\t{fields[2]}\n&#34;)
+                showLog = False
+        else:
+            console(&#34;sheet data uptodate in memory&#34;)
 
-    def log(self, isError, indent, msg):
-        browse = self.browse
-        logData = self.logData
-
-        logData.append((isError, indent, msg))
-
-        if not browse:
-            consoleLine(isError, indent, msg)
-
-    def processSheet(self, changed):
-        &#34;&#34;&#34;Generates derived data structures out of the source sheet.
-
-        After loading we process the set into derived data structures.
-
-        We try to be lazy. We only load a set from disk if it is not
-        already in memory, or if the set on disk has been updated since the last load.
-
-        The resulting data is stored in the current set under the various keys.
-
-        After processing, the time of processing is recorded, so that it can be
-        observed if the processed set is no longer up to date w.r.t. the source.
-
-        For each such set we produce several data structures, which we store
-        under the following keys:
-
-        *   `dateProcessed`: datetime when the set was last processed
-        *   `entityText`: dict, text of entity by entity node or line number in
-            TSV file;
-        *   `inventory`: result of looking up all triggers
-
-        Parameters
-        ----------
-        changed: boolean
-            Whether the set has changed since last processing.
-        &#34;&#34;&#34;
-        if not self.properlySetup:
-            return
-
-        browse = self.browse
-        sheetName = self.sheetName
-        sheetData = self.sheets[sheetName]
-
-        dateLoaded = sheetData.dateLoaded
-        dateProcessed = sheetData.dateProcessed
-
-        if (
-            changed
-            or &#34;dateProcessed&#34; not in sheetData
-            or &#34;inventory&#34; not in sheetData
-            or dateLoaded is not None
-            and dateProcessed &lt; dateLoaded
-        ):
-            if not browse:
-                app = self.app
-                app.indent(reset=True)
-                app.info(&#34;Looking up occurrences of many candidates ...&#34;)
-
-            self.findOccs()
-
-            if not browse:
-                app.info(&#34;done&#34;)
-                self.reportHits()
-
-            self._markEntities()
-            sheetData.dateProcessed = time.time()
-
-    def readSheets(self):
-        &#34;&#34;&#34;Read the list current ner sheets (again).
-
-        Use this when you change ner sheets outside the NER browser, e.g.
-        by editing the spreadsheets in Excel.
-        &#34;&#34;&#34;
-        sheetDir = self.sheetDir
-        self.sheetNames = {
-            x.removesuffix(&#34;.xlsx&#34;)
-            for x in dirContents(sheetDir)[0]
-            if extNm(x) == &#34;xlsx&#34;
-        }
+        if showLog and not browse:
+            for x in sheetData.logData:
+                consoleLine(*x)
 
     def _readSheets(self, sheetData):
         &#34;&#34;&#34;Read all the spreadsheets, the main one and the tweaks.
@@ -361,7 +321,6 @@ class Sheets:
         loadXls = self.loadXls
         defaultKind = self.defaultKind
         transform = self.transform
-        nameMap = self.nameMap
         spaceEscaped = self.spaceEscaped
 
         def spec(msg):
@@ -383,6 +342,14 @@ class Sheets:
             self.log(True, 1, msg)
 
         spec(&#34;Reading sheets&#34;)
+
+        sheetData.nameMap = {}
+        &#34;&#34;&#34;Will contain a mapping from entities to names.
+
+        The entities are keyed by their (eid, kind) tuple.
+        The values are names plus the sheet where they are first defined.
+        &#34;&#34;&#34;
+        nameMap = sheetData.nameMap
 
         def readXls(sheetRela):
             sep = &#34;/&#34; if sheetRela else &#34;&#34;
@@ -597,7 +564,7 @@ class Sheets:
         The tweak may remove triggers from the sheet. We have to adapt the tMap
         for that.
         &#34;&#34;&#34;
-        nameMap = self.nameMap
+        nameMap = sheetData.nameMap
         combined = sheetData.combined
 
         compiled = AttrDict()
@@ -616,9 +583,9 @@ class Sheets:
             sheet = info.sheet
             newSheet = {}
             dest.sheet = newSheet
-            parentTMap = parentData.tMap or {}
+            parentTMap = parentData[&#34;tMap&#34;] or {}
             newTMap = {}
-            dest.tMap = newTMap
+            dest[&#34;tMap&#34;] = newTMap
             pathRep = f&#34;[{&#39;.&#39;.join(str(i) for i in path)}]&#34;
 
             for eidkind, triggers in parentSheet.items():
@@ -644,7 +611,7 @@ class Sheets:
         def compileDir(path, parentData, info, dest):
             if &#34;sheet&#34; in info:
                 compileSheet(path, parentData, info, dest)
-                parentData = AttrDict(sheet=dest.sheet, tMap=dest.tMap)
+                parentData = AttrDict(sheet=dest.sheet, tMap=dest[&#34;tMap&#34;])
 
             tweaks = info.tweaks or {}
             tweakDest = dest.setdefault(&#34;tweaks&#34;, {})
@@ -698,7 +665,7 @@ class Sheets:
         &#34;&#34;&#34;
 
         spaceEscaped = self.spaceEscaped
-        nameMap = self.nameMap
+        nameMap = sheetData.nameMap
         compiled = sheetData.compiled
 
         instructions = {}
@@ -732,15 +699,15 @@ class Sheets:
 
         def prepareSheet(path, info):
             sheet = info.sheet
-            tMap = info.tMap
+            tMap = info[&#34;tMap&#34;]
             sheetR = &#34;.&#34;.join(path)
             sheetRep = f&#34;[{sheetR}]&#34;
 
             triggerSet = set()
-            tPos = collections.defaultdict(lambda: collections.defaultdict(set))
-            idMap = collections.defaultdict(list)
+            tPos = {}
+            idMap = {}
 
-            prepared = AttrDict(tPos=tPos, tMap=tMap)
+            prepared = dict(tPos=tPos, tMap=tMap)
 
             instructions[path] = prepared
 
@@ -748,13 +715,13 @@ class Sheets:
                 for trigger in triggers:
                     triggerT = toTokens(trigger, spaceEscaped=spaceEscaped)
                     triggerSet.add(triggerT)
-                    idMap[trigger].append(eidkind)
+                    idMap.setdefault(trigger, []).append(eidkind)
 
             for triggerT in triggerSet:
                 for i, token in enumerate(triggerT):
-                    tPos[i][token].add(triggerT)
+                    tPos.setdefault(i, {}).setdefault(token, set()).add(triggerT)
 
-            prepared.idMap = {
+            prepared[&#34;idMap&#34;] = {
                 trigger: eidkinds[0] for (trigger, eidkinds) in idMap.items()
             }
 
@@ -804,6 +771,75 @@ class Sheets:
 
         prepareDir((), compiled)
 
+    def _processSheet(self):
+        &#34;&#34;&#34;Generates derived data structures out of the source sheet.
+
+        After loading we process the set into derived data structures.
+
+        For each such set we produce several data structures, which we store
+        under the following keys:
+
+        *   `inventory`: result of looking up all triggers
+
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
+        browse = self.browse
+
+        if not browse:
+            app = self.app
+            app.indent(reset=True)
+            app.info(&#34;Looking up occurrences of many candidates ...&#34;)
+
+        self.findOccs()
+        self._collectHits()
+
+        if not browse:
+            app.info(&#34;done&#34;)
+
+        self._markEntities()
+
+    def _collectHits(self):
+        &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
+        sheetName = self.sheetName
+        sheetData = self.sheets[sheetName]
+
+        getHeadings = self.getHeadings
+        nameMap = sheetData.nameMap
+        inventory = sheetData.inventory
+        instructions = sheetData.instructions
+
+        def log(msg):
+            self.log(False, 0, msg)
+
+        hitData = {}
+        sheetData.hitData = hitData
+
+        for path, data in instructions.items():
+            idMap = data[&#34;idMap&#34;]
+            tMap = data[&#34;tMap&#34;]
+
+            for trigger, tPath in tMap.items():
+                eidkind = idMap[trigger]
+                name = nameMap[eidkind][0]
+                sheet = &#34;.&#34;.join(tPath)
+
+                occs = inventory.get(eidkind, {}).get(trigger, {}).get(tPath, {})
+
+                sectionHits = {}
+
+                for slots in occs:
+                    section = &#34;.&#34;.join(getHeadings(slots[0]))
+                    sectionHits.setdefault(section, []).append(slots)
+
+                hitData.setdefault(name, {}).setdefault(trigger, {}).setdefault(
+                    sheet, sectionHits
+                )
+
     def _markEntities(self):
         &#34;&#34;&#34;Marks up the members of the inventory as entities.
 
@@ -836,8 +872,7 @@ class Sheets:
             console(&#34;Nothing to show&#34;)
 
         src = src.raw
-
-        nameMap = self.nameMap
+        nameMap = src.nameMap
 
         def showSheet(sheet, tab):
             for eidkind, triggers in sorted(sheet.items()):
@@ -879,8 +914,7 @@ class Sheets:
             console(&#34;Nothing to show&#34;)
 
         src = src.combined
-
-        nameMap = self.nameMap
+        nameMap = src.nameMap
 
         def showSheet(sheet, tab):
             for eidkind, triggers in sorted(sheet.items()):
@@ -912,7 +946,7 @@ class Sheets:
 
         def showSheet(info, tab):
             sheet = info.sheet
-            tMap = info.tMap
+            tMap = info[&#34;tMap&#34;]
 
             for eidkind, triggers in sorted(sheet.items()):
                 triggerSources = {tMap[t] for t in triggers}
@@ -983,7 +1017,7 @@ class Sheets:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sheets.py#L16-L930" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L19-L964" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Sheets:
     def __init__(self, sheets=None):
@@ -1016,28 +1050,95 @@ class Sheets:
 
         self.readSheets()
 
-        self.nameMap = {}
-        &#34;&#34;&#34;Will contain a mapping from entities to names.
-
-        The entities are keyed by their (eid, kind) tuple.
-        The values are names plus the sheet where they are first defined.
-        &#34;&#34;&#34;
-
-        self.logData = []
-
         if not browse:
             self.loadSheetData()
+
+    def readSheets(self):
+        &#34;&#34;&#34;Read the list current ner sheets (again).
+
+        Use this when you change ner sheets outside the NER browser, e.g.
+        by editing the spreadsheets in Excel.
+        &#34;&#34;&#34;
+        sheetDir = self.sheetDir
+        setNames = self.setNames
+
+        sheetNames = set()
+        self.sheetNames = sheetNames
+
+        for sheetFile in dirContents(sheetDir)[0]:
+            if extNm(sheetFile) == &#34;xlsx&#34;:
+                sheetName = sheetFile.removesuffix(&#34;.xlsx&#34;)
+                sheetNames.add(sheetName)
+                setNames.add(f&#34;.{sheetName}&#34;)
+
+    def readData(self, sheetData, sheetUpdated):
+        setName = self.setName
+        annoDir = self.annoDir
+        setDir = f&#34;{annoDir}/{setName}&#34;
+        dataFile = f&#34;{setDir}/data.gz&#34;
+        timeFile = f&#34;{setDir}/time.txt&#34;
+
+        tm = 0
+
+        uptodate = fileExists(timeFile)
+
+        if uptodate:
+            with open(timeFile) as fh:
+                info = fh.read().strip()
+
+            try:
+                tm = float(info)
+                uptodate = sheetUpdated &lt; tm
+            except Exception:
+                uptodate = False
+
+        if not uptodate:
+            return False
+
+        console(&#34;load sheet with uptodate data from disk&#34;)
+
+        if fileExists(dataFile):
+            with gzip.open(dataFile, mode=&#34;rb&#34;) as f:
+                data = pickle.load(f)
+
+            for k, v in data.items():
+                sheetData[k] = v
+
+            sheetData.time = tm
+
+            return True
+        else:
+            return False
+
+    def writeData(self, sheetData, tm):
+        setName = self.setName
+        annoDir = self.annoDir
+        setDir = f&#34;{annoDir}/{setName}&#34;
+        dataFile = f&#34;{setDir}/data.gz&#34;
+        timeFile = f&#34;{setDir}/time.txt&#34;
+
+        with gzip.open(dataFile, mode=&#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
+            f.write(pickle.dumps(sheetData, protocol=PICKLE_PROTOCOL))
+
+        with open(timeFile, &#34;w&#34;) as fh:
+            fh.write(f&#34;{tm}\n&#34;)
+
+    def log(self, isError, indent, msg):
+        browse = self.browse
+        sheetData = self.getSheetData()
+        logData = sheetData.logData
+
+        logData.append((isError, indent, msg))
+
+        if not browse:
+            consoleLine(isError, indent, msg)
 
     def getSheetData(self):
         &#34;&#34;&#34;Deliver the current sheet.&#34;&#34;&#34;
         sheetName = self.sheetName
-
-        if sheetName is None:
-            return None
-
         sheetsData = self.sheets
-        sheetData = sheetsData.setdefault(sheetName, AttrDict())
-        return sheetData
+
+        return sheetsData.get(sheetName, AttrDict())
 
     def setSheet(self, newSheet):
         &#34;&#34;&#34;Switch to a named ner sheet.
@@ -1063,9 +1164,11 @@ class Sheets:
         if newSheet not in sheetNames or not fileExists(sheetFile):
             if not browse:
                 self.console(f&#34;Ner sheet {newSheet} ({sheetFile}) does not exist&#34;)
-            return
+            if newSheet is not None:
+                return
 
-        self.setSet(&#34;&#34; if newSheet is None else f&#34;.{newSheet}&#34;)
+        if not browse:
+            self.setSet(&#34;&#34; if newSheet is None else f&#34;.{newSheet}&#34;)
 
         if newSheet != sheetName:
             sheetName = newSheet
@@ -1087,8 +1190,7 @@ class Sheets:
         if sheetName not in sheets:
             sheets[sheetName] = AttrDict()
 
-        changed = self.fromSourceSheet()
-        self.processSheet(changed)
+        self.fromSourceSheet()
 
     def fromSourceSheet(self):
         &#34;&#34;&#34;Loads a ner sheet from source.
@@ -1100,14 +1202,14 @@ class Sheets:
 
         After collection of the sheet it is stored under the following keys:
 
-        *   `dateLoaded`: datetime when the sheet was last loaded from disk;
+        *   `timeReadXls`: time when the sheet was last loaded from disk;
         *   `instructions`: the list of instructions as loaded and compiled
             from the source.
         &#34;&#34;&#34;
         if not self.properlySetup:
             return None
 
-        logData = self.logData
+        browse = self.browse
         sheetName = self.sheetName
 
         if sheetName is None:
@@ -1119,6 +1221,7 @@ class Sheets:
         sheetData = self.sheets[sheetName]
         sheetDir = self.sheetDir
         sheetFile = f&#34;{sheetDir}/{sheetName}.xlsx&#34;
+        sheetExists = fileExists(sheetFile)
 
         def timeXls(sheetRela):
             sep = &#34;/&#34; if sheetRela else &#34;&#34;
@@ -1135,157 +1238,45 @@ class Sheets:
 
             return max((mFiles, mDirs))
 
-        mT = max((timeXls(&#34;&#34;), timeDir(&#34;&#34;)))
+        sheetUpdated = max((timeXls(&#34;&#34;), timeDir(&#34;&#34;))) if sheetExists else 0
+        needReload = sheetData.get(&#34;time&#34;, 0) &lt; sheetUpdated
 
-        changed = False
+        showLog = True
 
-        if (
-            &#34;instructions&#34; not in sheetData
-            or &#34;dateLoaded&#34; not in sheetData
-            or (len(sheetData.instructions) &gt; 0 and not fileExists(sheetFile))
-            or (fileExists(sheetFile) and sheetData.dateLoaded &lt; mT)
-        ):
-            changed = True
-            self.clearLog()
-            self._readSheets(sheetData)
-            self._combineSheets(sheetData)
-            self._compileSheets(sheetData)
-            self._prepareSheets(sheetData)
-            sheetData.dateLoaded = time.time()
-            self.writeLog()
-        else:
-            if len(logData) == 0:
-                self.showLog()
-            else:
-                self.readLog()
+        if needReload:
+            loaded = self.readData(sheetData, sheetUpdated)
 
-        return changed
+            if not loaded:
+                console(&#34;compute sheet data from scratch&#34;)
+                sheetData.logData = []
 
-    def showLog(self):
-        browse = self.browse
-        logData = self.logData
+                self._readSheets(sheetData)
+                tm = time.time()
+                sheetData.time = tm
 
-        if not browse:
-            for x in logData:
-                consoleLine(*x)
+                self._combineSheets(sheetData)
+                self._compileSheets(sheetData)
+                self._prepareSheets(sheetData)
+                self._processSheet()
 
-    def clearLog(self):
-        self.logData.clear()
-
-    def readLog(self):
-        browse = self.browse
-        logData = self.logData
-        setName = self.setName
-        annoDir = self.annoDir
-        setDir = f&#34;{annoDir}/{setName}&#34;
-        logFile = f&#34;{setDir}/excel.tsv&#34;
-
-        if fileExists(logFile):
-            self.clearLog()
-
-            with open(logFile) as fh:
-                for line in fh:
-                    fields = line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)
-                    isError = None if fields[0] == &#34;special&#34; else fields[0] == &#34;error&#34;
-                    indent = int(fields[1])
-                    msg = fields[2]
-                    logData.append((isError, indent, msg))
-
-                    if not browse:
-                        consoleLine(isError, indent, msg)
-
-    def writeLog(self):
-        logData = self.logData
-        setName = self.setName
-        annoDir = self.annoDir
-        setDir = f&#34;{annoDir}/{setName}&#34;
-        logFile = f&#34;{setDir}/excel.tsv&#34;
-
-        with open(logFile, &#34;w&#34;) as fh:
-            for fields in logData:
-                mode = (
-                    &#34;special&#34; if fields[0] is None else &#34;error&#34; if fields[0] else &#34;info&#34;
+                writeKeys = [
+                    &#34;logData&#34;,
+                    &#34;nameMap&#34;,
+                    &#34;instructions&#34;,
+                    &#34;inventory&#34;,
+                    &#34;hitData&#34;,
+                ]
+                self.writeData(
+                    {k: sheetData[k] for k in writeKeys},
+                    tm,
                 )
-                fh.write(f&#34;{mode}\t{fields[1]}\t{fields[2]}\n&#34;)
+                showLog = False
+        else:
+            console(&#34;sheet data uptodate in memory&#34;)
 
-    def log(self, isError, indent, msg):
-        browse = self.browse
-        logData = self.logData
-
-        logData.append((isError, indent, msg))
-
-        if not browse:
-            consoleLine(isError, indent, msg)
-
-    def processSheet(self, changed):
-        &#34;&#34;&#34;Generates derived data structures out of the source sheet.
-
-        After loading we process the set into derived data structures.
-
-        We try to be lazy. We only load a set from disk if it is not
-        already in memory, or if the set on disk has been updated since the last load.
-
-        The resulting data is stored in the current set under the various keys.
-
-        After processing, the time of processing is recorded, so that it can be
-        observed if the processed set is no longer up to date w.r.t. the source.
-
-        For each such set we produce several data structures, which we store
-        under the following keys:
-
-        *   `dateProcessed`: datetime when the set was last processed
-        *   `entityText`: dict, text of entity by entity node or line number in
-            TSV file;
-        *   `inventory`: result of looking up all triggers
-
-        Parameters
-        ----------
-        changed: boolean
-            Whether the set has changed since last processing.
-        &#34;&#34;&#34;
-        if not self.properlySetup:
-            return
-
-        browse = self.browse
-        sheetName = self.sheetName
-        sheetData = self.sheets[sheetName]
-
-        dateLoaded = sheetData.dateLoaded
-        dateProcessed = sheetData.dateProcessed
-
-        if (
-            changed
-            or &#34;dateProcessed&#34; not in sheetData
-            or &#34;inventory&#34; not in sheetData
-            or dateLoaded is not None
-            and dateProcessed &lt; dateLoaded
-        ):
-            if not browse:
-                app = self.app
-                app.indent(reset=True)
-                app.info(&#34;Looking up occurrences of many candidates ...&#34;)
-
-            self.findOccs()
-
-            if not browse:
-                app.info(&#34;done&#34;)
-                self.reportHits()
-
-            self._markEntities()
-            sheetData.dateProcessed = time.time()
-
-    def readSheets(self):
-        &#34;&#34;&#34;Read the list current ner sheets (again).
-
-        Use this when you change ner sheets outside the NER browser, e.g.
-        by editing the spreadsheets in Excel.
-        &#34;&#34;&#34;
-        sheetDir = self.sheetDir
-        self.sheetNames = {
-            x.removesuffix(&#34;.xlsx&#34;)
-            for x in dirContents(sheetDir)[0]
-            if extNm(x) == &#34;xlsx&#34;
-        }
+        if showLog and not browse:
+            for x in sheetData.logData:
+                consoleLine(*x)
 
     def _readSheets(self, sheetData):
         &#34;&#34;&#34;Read all the spreadsheets, the main one and the tweaks.
@@ -1298,7 +1289,6 @@ class Sheets:
         loadXls = self.loadXls
         defaultKind = self.defaultKind
         transform = self.transform
-        nameMap = self.nameMap
         spaceEscaped = self.spaceEscaped
 
         def spec(msg):
@@ -1320,6 +1310,14 @@ class Sheets:
             self.log(True, 1, msg)
 
         spec(&#34;Reading sheets&#34;)
+
+        sheetData.nameMap = {}
+        &#34;&#34;&#34;Will contain a mapping from entities to names.
+
+        The entities are keyed by their (eid, kind) tuple.
+        The values are names plus the sheet where they are first defined.
+        &#34;&#34;&#34;
+        nameMap = sheetData.nameMap
 
         def readXls(sheetRela):
             sep = &#34;/&#34; if sheetRela else &#34;&#34;
@@ -1534,7 +1532,7 @@ class Sheets:
         The tweak may remove triggers from the sheet. We have to adapt the tMap
         for that.
         &#34;&#34;&#34;
-        nameMap = self.nameMap
+        nameMap = sheetData.nameMap
         combined = sheetData.combined
 
         compiled = AttrDict()
@@ -1553,9 +1551,9 @@ class Sheets:
             sheet = info.sheet
             newSheet = {}
             dest.sheet = newSheet
-            parentTMap = parentData.tMap or {}
+            parentTMap = parentData[&#34;tMap&#34;] or {}
             newTMap = {}
-            dest.tMap = newTMap
+            dest[&#34;tMap&#34;] = newTMap
             pathRep = f&#34;[{&#39;.&#39;.join(str(i) for i in path)}]&#34;
 
             for eidkind, triggers in parentSheet.items():
@@ -1581,7 +1579,7 @@ class Sheets:
         def compileDir(path, parentData, info, dest):
             if &#34;sheet&#34; in info:
                 compileSheet(path, parentData, info, dest)
-                parentData = AttrDict(sheet=dest.sheet, tMap=dest.tMap)
+                parentData = AttrDict(sheet=dest.sheet, tMap=dest[&#34;tMap&#34;])
 
             tweaks = info.tweaks or {}
             tweakDest = dest.setdefault(&#34;tweaks&#34;, {})
@@ -1635,7 +1633,7 @@ class Sheets:
         &#34;&#34;&#34;
 
         spaceEscaped = self.spaceEscaped
-        nameMap = self.nameMap
+        nameMap = sheetData.nameMap
         compiled = sheetData.compiled
 
         instructions = {}
@@ -1669,15 +1667,15 @@ class Sheets:
 
         def prepareSheet(path, info):
             sheet = info.sheet
-            tMap = info.tMap
+            tMap = info[&#34;tMap&#34;]
             sheetR = &#34;.&#34;.join(path)
             sheetRep = f&#34;[{sheetR}]&#34;
 
             triggerSet = set()
-            tPos = collections.defaultdict(lambda: collections.defaultdict(set))
-            idMap = collections.defaultdict(list)
+            tPos = {}
+            idMap = {}
 
-            prepared = AttrDict(tPos=tPos, tMap=tMap)
+            prepared = dict(tPos=tPos, tMap=tMap)
 
             instructions[path] = prepared
 
@@ -1685,13 +1683,13 @@ class Sheets:
                 for trigger in triggers:
                     triggerT = toTokens(trigger, spaceEscaped=spaceEscaped)
                     triggerSet.add(triggerT)
-                    idMap[trigger].append(eidkind)
+                    idMap.setdefault(trigger, []).append(eidkind)
 
             for triggerT in triggerSet:
                 for i, token in enumerate(triggerT):
-                    tPos[i][token].add(triggerT)
+                    tPos.setdefault(i, {}).setdefault(token, set()).add(triggerT)
 
-            prepared.idMap = {
+            prepared[&#34;idMap&#34;] = {
                 trigger: eidkinds[0] for (trigger, eidkinds) in idMap.items()
             }
 
@@ -1741,6 +1739,75 @@ class Sheets:
 
         prepareDir((), compiled)
 
+    def _processSheet(self):
+        &#34;&#34;&#34;Generates derived data structures out of the source sheet.
+
+        After loading we process the set into derived data structures.
+
+        For each such set we produce several data structures, which we store
+        under the following keys:
+
+        *   `inventory`: result of looking up all triggers
+
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
+        browse = self.browse
+
+        if not browse:
+            app = self.app
+            app.indent(reset=True)
+            app.info(&#34;Looking up occurrences of many candidates ...&#34;)
+
+        self.findOccs()
+        self._collectHits()
+
+        if not browse:
+            app.info(&#34;done&#34;)
+
+        self._markEntities()
+
+    def _collectHits(self):
+        &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
+        sheetName = self.sheetName
+        sheetData = self.sheets[sheetName]
+
+        getHeadings = self.getHeadings
+        nameMap = sheetData.nameMap
+        inventory = sheetData.inventory
+        instructions = sheetData.instructions
+
+        def log(msg):
+            self.log(False, 0, msg)
+
+        hitData = {}
+        sheetData.hitData = hitData
+
+        for path, data in instructions.items():
+            idMap = data[&#34;idMap&#34;]
+            tMap = data[&#34;tMap&#34;]
+
+            for trigger, tPath in tMap.items():
+                eidkind = idMap[trigger]
+                name = nameMap[eidkind][0]
+                sheet = &#34;.&#34;.join(tPath)
+
+                occs = inventory.get(eidkind, {}).get(trigger, {}).get(tPath, {})
+
+                sectionHits = {}
+
+                for slots in occs:
+                    section = &#34;.&#34;.join(getHeadings(slots[0]))
+                    sectionHits.setdefault(section, []).append(slots)
+
+                hitData.setdefault(name, {}).setdefault(trigger, {}).setdefault(
+                    sheet, sectionHits
+                )
+
     def _markEntities(self):
         &#34;&#34;&#34;Marks up the members of the inventory as entities.
 
@@ -1773,8 +1840,7 @@ class Sheets:
             console(&#34;Nothing to show&#34;)
 
         src = src.raw
-
-        nameMap = self.nameMap
+        nameMap = src.nameMap
 
         def showSheet(sheet, tab):
             for eidkind, triggers in sorted(sheet.items()):
@@ -1816,8 +1882,7 @@ class Sheets:
             console(&#34;Nothing to show&#34;)
 
         src = src.combined
-
-        nameMap = self.nameMap
+        nameMap = src.nameMap
 
         def showSheet(sheet, tab):
             for eidkind, triggers in sorted(sheet.items()):
@@ -1849,7 +1914,7 @@ class Sheets:
 
         def showSheet(info, tab):
             sheet = info.sheet
-            tMap = info.tMap
+            tMap = info[&#34;tMap&#34;]
 
             for eidkind, triggers in sorted(sheet.items()):
                 triggerSources = {tMap[t] for t in triggers}
@@ -1907,12 +1972,6 @@ class Sheets:
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="tf.browser.ner.sheets.Sheets.nameMap"><code class="name">var <span class="ident">nameMap</span></code></dt>
-<dd>
-<div class="desc"><p>Will contain a mapping from entities to names.</p>
-<p>The entities are keyed by their (eid, kind) tuple.
-The values are names plus the sheet where they are first defined.</p></div>
-</dd>
 <dt id="tf.browser.ner.sheets.Sheets.sheetName"><code class="name">var <span class="ident">sheetName</span></code></dt>
 <dd>
 <div class="desc"><p>The current ner sheet.</p></div>
@@ -1924,20 +1983,6 @@ The values are names plus the sheet where they are first defined.</p></div>
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="tf.browser.ner.sheets.Sheets.clearLog"><code class="name flex">
-<span>def <span class="ident">clearLog</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sheets.py#L200-L201" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def clearLog(self):
-    self.logData.clear()</code></pre>
-</details>
-</dd>
 <dt id="tf.browser.ner.sheets.Sheets.fromSourceSheet"><code class="name flex">
 <span>def <span class="ident">fromSourceSheet</span></span>(<span>self)</span>
 </code></dt>
@@ -1948,14 +1993,14 @@ The values are names plus the sheet where they are first defined.</p></div>
 into instructions.</p>
 <p>After collection of the sheet it is stored under the following keys:</p>
 <ul>
-<li><code>dateLoaded</code>: datetime when the sheet was last loaded from disk;</li>
+<li><code>timeReadXls</code>: time when the sheet was last loaded from disk;</li>
 <li><code>instructions</code>: the list of instructions as loaded and compiled
 from the source.</li>
 </ul></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sheets.py#L121-L190" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L192-L276" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fromSourceSheet(self):
     &#34;&#34;&#34;Loads a ner sheet from source.
@@ -1967,14 +2012,14 @@ from the source.</li>
 
     After collection of the sheet it is stored under the following keys:
 
-    *   `dateLoaded`: datetime when the sheet was last loaded from disk;
+    *   `timeReadXls`: time when the sheet was last loaded from disk;
     *   `instructions`: the list of instructions as loaded and compiled
         from the source.
     &#34;&#34;&#34;
     if not self.properlySetup:
         return None
 
-    logData = self.logData
+    browse = self.browse
     sheetName = self.sheetName
 
     if sheetName is None:
@@ -1986,6 +2031,7 @@ from the source.</li>
     sheetData = self.sheets[sheetName]
     sheetDir = self.sheetDir
     sheetFile = f&#34;{sheetDir}/{sheetName}.xlsx&#34;
+    sheetExists = fileExists(sheetFile)
 
     def timeXls(sheetRela):
         sep = &#34;/&#34; if sheetRela else &#34;&#34;
@@ -2002,31 +2048,45 @@ from the source.</li>
 
         return max((mFiles, mDirs))
 
-    mT = max((timeXls(&#34;&#34;), timeDir(&#34;&#34;)))
+    sheetUpdated = max((timeXls(&#34;&#34;), timeDir(&#34;&#34;))) if sheetExists else 0
+    needReload = sheetData.get(&#34;time&#34;, 0) &lt; sheetUpdated
 
-    changed = False
+    showLog = True
 
-    if (
-        &#34;instructions&#34; not in sheetData
-        or &#34;dateLoaded&#34; not in sheetData
-        or (len(sheetData.instructions) &gt; 0 and not fileExists(sheetFile))
-        or (fileExists(sheetFile) and sheetData.dateLoaded &lt; mT)
-    ):
-        changed = True
-        self.clearLog()
-        self._readSheets(sheetData)
-        self._combineSheets(sheetData)
-        self._compileSheets(sheetData)
-        self._prepareSheets(sheetData)
-        sheetData.dateLoaded = time.time()
-        self.writeLog()
+    if needReload:
+        loaded = self.readData(sheetData, sheetUpdated)
+
+        if not loaded:
+            console(&#34;compute sheet data from scratch&#34;)
+            sheetData.logData = []
+
+            self._readSheets(sheetData)
+            tm = time.time()
+            sheetData.time = tm
+
+            self._combineSheets(sheetData)
+            self._compileSheets(sheetData)
+            self._prepareSheets(sheetData)
+            self._processSheet()
+
+            writeKeys = [
+                &#34;logData&#34;,
+                &#34;nameMap&#34;,
+                &#34;instructions&#34;,
+                &#34;inventory&#34;,
+                &#34;hitData&#34;,
+            ]
+            self.writeData(
+                {k: sheetData[k] for k in writeKeys},
+                tm,
+            )
+            showLog = False
     else:
-        if len(logData) == 0:
-            self.showLog()
-        else:
-            self.readLog()
+        console(&#34;sheet data uptodate in memory&#34;)
 
-    return changed</code></pre>
+    if showLog and not browse:
+        for x in sheetData.logData:
+            consoleLine(*x)</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.sheets.Sheets.getSheetData"><code class="name flex">
@@ -2037,18 +2097,14 @@ from the source.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sheets.py#L59-L68" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L133-L138" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getSheetData(self):
     &#34;&#34;&#34;Deliver the current sheet.&#34;&#34;&#34;
     sheetName = self.sheetName
-
-    if sheetName is None:
-        return None
-
     sheetsData = self.sheets
-    sheetData = sheetsData.setdefault(sheetName, AttrDict())
-    return sheetData</code></pre>
+
+    return sheetsData.get(sheetName, AttrDict())</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.sheets.Sheets.loadSheetData"><code class="name flex">
@@ -2059,7 +2115,7 @@ from the source.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sheets.py#L104-L119" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L176-L190" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadSheetData(self):
     &#34;&#34;&#34;Loads the current ner sheet into memory, if there is one.&#34;&#34;&#34;
@@ -2075,8 +2131,7 @@ from the source.</li>
     if sheetName not in sheets:
         sheets[sheetName] = AttrDict()
 
-    changed = self.fromSourceSheet()
-    self.processSheet(changed)</code></pre>
+    self.fromSourceSheet()</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.sheets.Sheets.log"><code class="name flex">
@@ -2087,11 +2142,12 @@ from the source.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sheets.py#L239-L246" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L123-L131" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def log(self, isError, indent, msg):
     browse = self.browse
-    logData = self.logData
+    sheetData = self.getSheetData()
+    logData = sheetData.logData
 
     logData.append((isError, indent, msg))
 
@@ -2099,124 +2155,54 @@ from the source.</li>
         consoleLine(isError, indent, msg)</code></pre>
 </details>
 </dd>
-<dt id="tf.browser.ner.sheets.Sheets.processSheet"><code class="name flex">
-<span>def <span class="ident">processSheet</span></span>(<span>self, changed)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Generates derived data structures out of the source sheet.</p>
-<p>After loading we process the set into derived data structures.</p>
-<p>We try to be lazy. We only load a set from disk if it is not
-already in memory, or if the set on disk has been updated since the last load.</p>
-<p>The resulting data is stored in the current set under the various keys.</p>
-<p>After processing, the time of processing is recorded, so that it can be
-observed if the processed set is no longer up to date w.r.t. the source.</p>
-<p>For each such set we produce several data structures, which we store
-under the following keys:</p>
-<ul>
-<li><code>dateProcessed</code>: datetime when the set was last processed</li>
-<li><code>entityText</code>: dict, text of entity by entity node or line number in
-TSV file;</li>
-<li><code>inventory</code>: result of looking up all triggers</li>
-</ul>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>changed</code></strong> :&ensp;<code>boolean</code></dt>
-<dd>Whether the set has changed since last processing.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sheets.py#L248-L303" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def processSheet(self, changed):
-    &#34;&#34;&#34;Generates derived data structures out of the source sheet.
-
-    After loading we process the set into derived data structures.
-
-    We try to be lazy. We only load a set from disk if it is not
-    already in memory, or if the set on disk has been updated since the last load.
-
-    The resulting data is stored in the current set under the various keys.
-
-    After processing, the time of processing is recorded, so that it can be
-    observed if the processed set is no longer up to date w.r.t. the source.
-
-    For each such set we produce several data structures, which we store
-    under the following keys:
-
-    *   `dateProcessed`: datetime when the set was last processed
-    *   `entityText`: dict, text of entity by entity node or line number in
-        TSV file;
-    *   `inventory`: result of looking up all triggers
-
-    Parameters
-    ----------
-    changed: boolean
-        Whether the set has changed since last processing.
-    &#34;&#34;&#34;
-    if not self.properlySetup:
-        return
-
-    browse = self.browse
-    sheetName = self.sheetName
-    sheetData = self.sheets[sheetName]
-
-    dateLoaded = sheetData.dateLoaded
-    dateProcessed = sheetData.dateProcessed
-
-    if (
-        changed
-        or &#34;dateProcessed&#34; not in sheetData
-        or &#34;inventory&#34; not in sheetData
-        or dateLoaded is not None
-        and dateProcessed &lt; dateLoaded
-    ):
-        if not browse:
-            app = self.app
-            app.indent(reset=True)
-            app.info(&#34;Looking up occurrences of many candidates ...&#34;)
-
-        self.findOccs()
-
-        if not browse:
-            app.info(&#34;done&#34;)
-            self.reportHits()
-
-        self._markEntities()
-        sheetData.dateProcessed = time.time()</code></pre>
-</details>
-</dd>
-<dt id="tf.browser.ner.sheets.Sheets.readLog"><code class="name flex">
-<span>def <span class="ident">readLog</span></span>(<span>self)</span>
+<dt id="tf.browser.ner.sheets.Sheets.readData"><code class="name flex">
+<span>def <span class="ident">readData</span></span>(<span>self, sheetData, sheetUpdated)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sheets.py#L203-L223" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L71-L108" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def readLog(self):
-    browse = self.browse
-    logData = self.logData
+<pre><code class="python">def readData(self, sheetData, sheetUpdated):
     setName = self.setName
     annoDir = self.annoDir
     setDir = f&#34;{annoDir}/{setName}&#34;
-    logFile = f&#34;{setDir}/excel.tsv&#34;
+    dataFile = f&#34;{setDir}/data.gz&#34;
+    timeFile = f&#34;{setDir}/time.txt&#34;
 
-    if fileExists(logFile):
-        self.clearLog()
+    tm = 0
 
-        with open(logFile) as fh:
-            for line in fh:
-                fields = line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)
-                isError = None if fields[0] == &#34;special&#34; else fields[0] == &#34;error&#34;
-                indent = int(fields[1])
-                msg = fields[2]
-                logData.append((isError, indent, msg))
+    uptodate = fileExists(timeFile)
 
-                if not browse:
-                    consoleLine(isError, indent, msg)</code></pre>
+    if uptodate:
+        with open(timeFile) as fh:
+            info = fh.read().strip()
+
+        try:
+            tm = float(info)
+            uptodate = sheetUpdated &lt; tm
+        except Exception:
+            uptodate = False
+
+    if not uptodate:
+        return False
+
+    console(&#34;load sheet with uptodate data from disk&#34;)
+
+    if fileExists(dataFile):
+        with gzip.open(dataFile, mode=&#34;rb&#34;) as f:
+            data = pickle.load(f)
+
+        for k, v in data.items():
+            sheetData[k] = v
+
+        sheetData.time = tm
+
+        return True
+    else:
+        return False</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.sheets.Sheets.readSheets"><code class="name flex">
@@ -2229,7 +2215,7 @@ by editing the spreadsheets in Excel.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sheets.py#L305-L316" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L53-L69" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readSheets(self):
     &#34;&#34;&#34;Read the list current ner sheets (again).
@@ -2238,11 +2224,16 @@ by editing the spreadsheets in Excel.</p></div>
     by editing the spreadsheets in Excel.
     &#34;&#34;&#34;
     sheetDir = self.sheetDir
-    self.sheetNames = {
-        x.removesuffix(&#34;.xlsx&#34;)
-        for x in dirContents(sheetDir)[0]
-        if extNm(x) == &#34;xlsx&#34;
-    }</code></pre>
+    setNames = self.setNames
+
+    sheetNames = set()
+    self.sheetNames = sheetNames
+
+    for sheetFile in dirContents(sheetDir)[0]:
+        if extNm(sheetFile) == &#34;xlsx&#34;:
+            sheetName = sheetFile.removesuffix(&#34;.xlsx&#34;)
+            sheetNames.add(sheetName)
+            setNames.add(f&#34;.{sheetName}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.sheets.Sheets.setSheet"><code class="name flex">
@@ -2259,7 +2250,7 @@ by editing the spreadsheets in Excel.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sheets.py#L70-L102" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L140-L174" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setSheet(self, newSheet):
     &#34;&#34;&#34;Switch to a named ner sheet.
@@ -2285,9 +2276,11 @@ by editing the spreadsheets in Excel.</p></div>
     if newSheet not in sheetNames or not fileExists(sheetFile):
         if not browse:
             self.console(f&#34;Ner sheet {newSheet} ({sheetFile}) does not exist&#34;)
-        return
+        if newSheet is not None:
+            return
 
-    self.setSet(&#34;&#34; if newSheet is None else f&#34;.{newSheet}&#34;)
+    if not browse:
+        self.setSet(&#34;&#34; if newSheet is None else f&#34;.{newSheet}&#34;)
 
     if newSheet != sheetName:
         sheetName = newSheet
@@ -2304,7 +2297,7 @@ by editing the spreadsheets in Excel.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sheets.py#L922-L930" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L956-L964" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showInstructions(self):
     src = self.getSheetData()
@@ -2317,25 +2310,6 @@ by editing the spreadsheets in Excel.</p></div>
     console(&#34;\n&#34;.join(f&#34;{path}&#34; for path in instructions))</code></pre>
 </details>
 </dd>
-<dt id="tf.browser.ner.sheets.Sheets.showLog"><code class="name flex">
-<span>def <span class="ident">showLog</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sheets.py#L192-L198" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def showLog(self):
-    browse = self.browse
-    logData = self.logData
-
-    if not browse:
-        for x in logData:
-            consoleLine(*x)</code></pre>
-</details>
-</dd>
 <dt id="tf.browser.ner.sheets.Sheets.showSheetsCombined"><code class="name flex">
 <span>def <span class="ident">showSheetsCombined</span></span>(<span>self, main=False)</span>
 </code></dt>
@@ -2344,7 +2318,7 @@ by editing the spreadsheets in Excel.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sheets.py#L840-L872" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L875-L906" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showSheetsCombined(self, main=False):
     src = self.getSheetData()
@@ -2353,8 +2327,7 @@ by editing the spreadsheets in Excel.</p></div>
         console(&#34;Nothing to show&#34;)
 
     src = src.combined
-
-    nameMap = self.nameMap
+    nameMap = src.nameMap
 
     def showSheet(sheet, tab):
         for eidkind, triggers in sorted(sheet.items()):
@@ -2389,7 +2362,7 @@ by editing the spreadsheets in Excel.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sheets.py#L874-L920" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L908-L954" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showSheetsCompiled(self, main=False):
     nameMap = self.nameMap
@@ -2397,7 +2370,7 @@ by editing the spreadsheets in Excel.</p></div>
 
     def showSheet(info, tab):
         sheet = info.sheet
-        tMap = info.tMap
+        tMap = info[&#34;tMap&#34;]
 
         for eidkind, triggers in sorted(sheet.items()):
             triggerSources = {tMap[t] for t in triggers}
@@ -2448,7 +2421,7 @@ by editing the spreadsheets in Excel.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sheets.py#L797-L838" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L833-L873" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showSheetsRaw(self, main=False):
     src = self.getSheetData()
@@ -2457,8 +2430,7 @@ by editing the spreadsheets in Excel.</p></div>
         console(&#34;Nothing to show&#34;)
 
     src = src.raw
-
-    nameMap = self.nameMap
+    nameMap = src.nameMap
 
     def showSheet(sheet, tab):
         for eidkind, triggers in sorted(sheet.items()):
@@ -2494,29 +2466,28 @@ by editing the spreadsheets in Excel.</p></div>
     showDir(&#34;&#34;, src.sdr, 0)</code></pre>
 </details>
 </dd>
-<dt id="tf.browser.ner.sheets.Sheets.writeLog"><code class="name flex">
-<span>def <span class="ident">writeLog</span></span>(<span>self)</span>
+<dt id="tf.browser.ner.sheets.Sheets.writeData"><code class="name flex">
+<span>def <span class="ident">writeData</span></span>(<span>self, sheetData, tm)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sheets.py#L225-L237" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L110-L121" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def writeLog(self):
-    logData = self.logData
+<pre><code class="python">def writeData(self, sheetData, tm):
     setName = self.setName
     annoDir = self.annoDir
     setDir = f&#34;{annoDir}/{setName}&#34;
-    logFile = f&#34;{setDir}/excel.tsv&#34;
+    dataFile = f&#34;{setDir}/data.gz&#34;
+    timeFile = f&#34;{setDir}/time.txt&#34;
 
-    with open(logFile, &#34;w&#34;) as fh:
-        for fields in logData:
-            mode = (
-                &#34;special&#34; if fields[0] is None else &#34;error&#34; if fields[0] else &#34;info&#34;
-            )
-            fh.write(f&#34;{mode}\t{fields[1]}\t{fields[2]}\n&#34;)</code></pre>
+    with gzip.open(dataFile, mode=&#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
+        f.write(pickle.dumps(sheetData, protocol=PICKLE_PROTOCOL))
+
+    with open(timeFile, &#34;w&#34;) as fh:
+        fh.write(f&#34;{tm}\n&#34;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -2591,24 +2562,20 @@ setTimeout(() => input.focus(), 100);
 <li>
 <h4><code><a title="tf.browser.ner.sheets.Sheets" href="#tf.browser.ner.sheets.Sheets">Sheets</a></code></h4>
 <ul class="two-column">
-<li><code><a title="tf.browser.ner.sheets.Sheets.clearLog" href="#tf.browser.ner.sheets.Sheets.clearLog">clearLog</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.fromSourceSheet" href="#tf.browser.ner.sheets.Sheets.fromSourceSheet">fromSourceSheet</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.getSheetData" href="#tf.browser.ner.sheets.Sheets.getSheetData">getSheetData</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.loadSheetData" href="#tf.browser.ner.sheets.Sheets.loadSheetData">loadSheetData</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.log" href="#tf.browser.ner.sheets.Sheets.log">log</a></code></li>
-<li><code><a title="tf.browser.ner.sheets.Sheets.nameMap" href="#tf.browser.ner.sheets.Sheets.nameMap">nameMap</a></code></li>
-<li><code><a title="tf.browser.ner.sheets.Sheets.processSheet" href="#tf.browser.ner.sheets.Sheets.processSheet">processSheet</a></code></li>
-<li><code><a title="tf.browser.ner.sheets.Sheets.readLog" href="#tf.browser.ner.sheets.Sheets.readLog">readLog</a></code></li>
+<li><code><a title="tf.browser.ner.sheets.Sheets.readData" href="#tf.browser.ner.sheets.Sheets.readData">readData</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.readSheets" href="#tf.browser.ner.sheets.Sheets.readSheets">readSheets</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.setSheet" href="#tf.browser.ner.sheets.Sheets.setSheet">setSheet</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.sheetName" href="#tf.browser.ner.sheets.Sheets.sheetName">sheetName</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.sheetNames" href="#tf.browser.ner.sheets.Sheets.sheetNames">sheetNames</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.showInstructions" href="#tf.browser.ner.sheets.Sheets.showInstructions">showInstructions</a></code></li>
-<li><code><a title="tf.browser.ner.sheets.Sheets.showLog" href="#tf.browser.ner.sheets.Sheets.showLog">showLog</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.showSheetsCombined" href="#tf.browser.ner.sheets.Sheets.showSheetsCombined">showSheetsCombined</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.showSheetsCompiled" href="#tf.browser.ner.sheets.Sheets.showSheetsCompiled">showSheetsCompiled</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.showSheetsRaw" href="#tf.browser.ner.sheets.Sheets.showSheetsRaw">showSheetsRaw</a></code></li>
-<li><code><a title="tf.browser.ner.sheets.Sheets.writeLog" href="#tf.browser.ner.sheets.Sheets.writeLog">writeLog</a></code></li>
+<li><code><a title="tf.browser.ner.sheets.Sheets.writeData" href="#tf.browser.ner.sheets.Sheets.writeData">writeData</a></code></li>
 </ul>
 </li>
 </ul>

@@ -244,7 +244,7 @@ slots.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/ner.py#L1-L740" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/ner.py#L1-L728" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;API for Named Entity marking.
 
@@ -583,6 +583,10 @@ class NER(Sheets, Sets, Show):
         if not self.properlySetup:
             return
 
+    def setTask(self, task):
+        self.setSet(task)
+        self.setSheet(task[1:] if self.setIsRo and not self.setIsSrc else None)
+
     def findOccs(self):
         &#34;&#34;&#34;Finds the occurrences of multiple triggers.
 
@@ -864,22 +868,6 @@ class NER(Sheets, Sets, Show):
             self.console(f&#34;{nResults} {bucketType}{pluralR}&#34;)
         return results
 
-    def lookup(self):
-        &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
-
-        The instructions are present in the `instructions` attribute of the object.
-
-        The resulting inventory is stored in the `inventory` member of
-        the object.
-
-        It is a dictionary, keyed by sequences of tokens, whose values are the
-        slot sequences where those token sequences occur in the corpus.
-        &#34;&#34;&#34;
-        if not self.properlySetup:
-            return
-
-        self.processSheet(True)
-
     def reportHits(self):
         &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
         if not self.properlySetup:
@@ -889,7 +877,7 @@ class NER(Sheets, Sets, Show):
         sheetData = self.sheets[sheetName]
 
         getHeadings = self.getHeadings
-        nameMap = self.nameMap
+        nameMap = sheetData.nameMap
         inventory = sheetData.inventory
         instructions = sheetData.instructions
 
@@ -901,8 +889,8 @@ class NER(Sheets, Sets, Show):
         allTriggers = set()
 
         for path, data in instructions.items():
-            idMap = data.idMap
-            tMap = data.tMap
+            idMap = data[&#34;idMap&#34;]
+            tMap = data[&#34;tMap&#34;]
 
             for trigger, tPath in tMap.items():
                 eidkind = idMap[trigger]
@@ -1037,7 +1025,7 @@ browser. This will influence how results are reported back.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/ner.py#L277-L740" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/ner.py#L277-L728" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Sheets, Sets, Show):
     def __init__(self, app, data=None, browse=False):
@@ -1099,6 +1087,10 @@ browser. This will influence how results are reported back.</dd>
         Sheets.__init__(self, sheets=data.sheets)
         if not self.properlySetup:
             return
+
+    def setTask(self, task):
+        self.setSet(task)
+        self.setSheet(task[1:] if self.setIsRo and not self.setIsSrc else None)
 
     def findOccs(self):
         &#34;&#34;&#34;Finds the occurrences of multiple triggers.
@@ -1381,22 +1373,6 @@ browser. This will influence how results are reported back.</dd>
             self.console(f&#34;{nResults} {bucketType}{pluralR}&#34;)
         return results
 
-    def lookup(self):
-        &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
-
-        The instructions are present in the `instructions` attribute of the object.
-
-        The resulting inventory is stored in the `inventory` member of
-        the object.
-
-        It is a dictionary, keyed by sequences of tokens, whose values are the
-        slot sequences where those token sequences occur in the corpus.
-        &#34;&#34;&#34;
-        if not self.properlySetup:
-            return
-
-        self.processSheet(True)
-
     def reportHits(self):
         &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
         if not self.properlySetup:
@@ -1406,7 +1382,7 @@ browser. This will influence how results are reported back.</dd>
         sheetData = self.sheets[sheetName]
 
         getHeadings = self.getHeadings
-        nameMap = self.nameMap
+        nameMap = sheetData.nameMap
         inventory = sheetData.inventory
         instructions = sheetData.instructions
 
@@ -1418,8 +1394,8 @@ browser. This will influence how results are reported back.</dd>
         allTriggers = set()
 
         for path, data in instructions.items():
-            idMap = data.idMap
-            tMap = data.tMap
+            idMap = data[&#34;idMap&#34;]
+            tMap = data[&#34;tMap&#34;]
 
             for trigger, tPath in tMap.items():
                 eidkind = idMap[trigger]
@@ -1529,7 +1505,7 @@ with this string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/ner.py#L731-L740" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/ner.py#L719-L728" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def bakeEntities(self, versionExtension=&#34;e&#34;):
     &#34;&#34;&#34;Bakes the entities of the current set as nodes into a new TF data source.
@@ -1637,7 +1613,7 @@ of results.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/ner.py#L378-L617" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/ner.py#L382-L621" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def filterContent(
     self,
@@ -1900,7 +1876,7 @@ the value is the name of that entity in the context indicated by path.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/ner.py#L338-L376" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/ner.py#L342-L380" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findOccs(self):
     &#34;&#34;&#34;Finds the occurrences of multiple triggers.
@@ -1943,38 +1919,6 @@ the value is the name of that entity in the context indicated by path.</p></div>
     )</code></pre>
 </details>
 </dd>
-<dt id="tf.browser.ner.ner.NER.lookup"><code class="name flex">
-<span>def <span class="ident">lookup</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Explores the corpus for the surface forms mentioned in the instructions.</p>
-<p>The instructions are present in the <code>instructions</code> attribute of the object.</p>
-<p>The resulting inventory is stored in the <code>inventory</code> member of
-the object.</p>
-<p>It is a dictionary, keyed by sequences of tokens, whose values are the
-slot sequences where those token sequences occur in the corpus.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/ner.py#L619-L633" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def lookup(self):
-    &#34;&#34;&#34;Explores the corpus for the surface forms mentioned in the instructions.
-
-    The instructions are present in the `instructions` attribute of the object.
-
-    The resulting inventory is stored in the `inventory` member of
-    the object.
-
-    It is a dictionary, keyed by sequences of tokens, whose values are the
-    slot sequences where those token sequences occur in the corpus.
-    &#34;&#34;&#34;
-    if not self.properlySetup:
-        return
-
-    self.processSheet(True)</code></pre>
-</details>
-</dd>
 <dt id="tf.browser.ner.ner.NER.reportHits"><code class="name flex">
 <span>def <span class="ident">reportHits</span></span>(<span>self)</span>
 </code></dt>
@@ -1983,7 +1927,7 @@ slot sequences where those token sequences occur in the corpus.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/ner.py#L635-L729" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/ner.py#L623-L717" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reportHits(self):
     &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
@@ -1994,7 +1938,7 @@ slot sequences where those token sequences occur in the corpus.</p></div>
     sheetData = self.sheets[sheetName]
 
     getHeadings = self.getHeadings
-    nameMap = self.nameMap
+    nameMap = sheetData.nameMap
     inventory = sheetData.inventory
     instructions = sheetData.instructions
 
@@ -2006,8 +1950,8 @@ slot sequences where those token sequences occur in the corpus.</p></div>
     allTriggers = set()
 
     for path, data in instructions.items():
-        idMap = data.idMap
-        tMap = data.tMap
+        idMap = data[&#34;idMap&#34;]
+        tMap = data[&#34;tMap&#34;]
 
         for trigger, tPath in tMap.items():
             eidkind = idMap[trigger]
@@ -2082,6 +2026,21 @@ slot sequences where those token sequences occur in the corpus.</p></div>
     )</code></pre>
 </details>
 </dd>
+<dt id="tf.browser.ner.ner.NER.setTask"><code class="name flex">
+<span>def <span class="ident">setTask</span></span>(<span>self, task)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/ner.py#L338-L340" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def setTask(self, task):
+    self.setSet(task)
+    self.setSheet(task[1:] if self.setIsRo and not self.setIsSrc else None)</code></pre>
+</details>
+</dd>
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
@@ -2090,8 +2049,6 @@ slot sequences where those token sequences occur in the corpus.</p></div>
 <li><code><a title="tf.browser.ner.sheets.Sheets.fromSourceSheet" href="sheets.html#tf.browser.ner.sheets.Sheets.fromSourceSheet">fromSourceSheet</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.getSheetData" href="sheets.html#tf.browser.ner.sheets.Sheets.getSheetData">getSheetData</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.loadSheetData" href="sheets.html#tf.browser.ner.sheets.Sheets.loadSheetData">loadSheetData</a></code></li>
-<li><code><a title="tf.browser.ner.sheets.Sheets.nameMap" href="sheets.html#tf.browser.ner.sheets.Sheets.nameMap">nameMap</a></code></li>
-<li><code><a title="tf.browser.ner.sheets.Sheets.processSheet" href="sheets.html#tf.browser.ner.sheets.Sheets.processSheet">processSheet</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.readSheets" href="sheets.html#tf.browser.ner.sheets.Sheets.readSheets">readSheets</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.setSheet" href="sheets.html#tf.browser.ner.sheets.Sheets.setSheet">setSheet</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.sheetName" href="sheets.html#tf.browser.ner.sheets.Sheets.sheetName">sheetName</a></code></li>
@@ -2149,6 +2106,7 @@ slot sequences where those token sequences occur in the corpus.</p></div>
 <li><code><a title="tf.browser.ner.show.Show.showContent" href="show.html#tf.browser.ner.show.Show.showContent">showContent</a></code></li>
 <li><code><a title="tf.browser.ner.show.Show.showEntities" href="show.html#tf.browser.ner.show.Show.showEntities">showEntities</a></code></li>
 <li><code><a title="tf.browser.ner.show.Show.showEntityOverview" href="show.html#tf.browser.ner.show.Show.showEntityOverview">showEntityOverview</a></code></li>
+<li><code><a title="tf.browser.ner.show.Show.showTriggers" href="show.html#tf.browser.ner.show.Show.showTriggers">showTriggers</a></code></li>
 </ul>
 </li>
 </ul>
@@ -2234,8 +2192,8 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.browser.ner.ner.NER.bakeEntities" href="#tf.browser.ner.ner.NER.bakeEntities">bakeEntities</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.filterContent" href="#tf.browser.ner.ner.NER.filterContent">filterContent</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.findOccs" href="#tf.browser.ner.ner.NER.findOccs">findOccs</a></code></li>
-<li><code><a title="tf.browser.ner.ner.NER.lookup" href="#tf.browser.ner.ner.NER.lookup">lookup</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.reportHits" href="#tf.browser.ner.ner.NER.reportHits">reportHits</a></code></li>
+<li><code><a title="tf.browser.ner.ner.NER.setTask" href="#tf.browser.ner.ner.NER.setTask">setTask</a></code></li>
 </ul>
 </li>
 </ul>

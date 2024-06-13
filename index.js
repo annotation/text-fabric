@@ -4094,6 +4094,12 @@ INDEX=[
 "func":1
 },
 {
+"ref":"tf.browser.ner.show.Show.showTriggers",
+"url":96,
+"doc":"Generates HTML for an expandable overview of the entities and their triggers. Returns    - string or void If called by the browser, it returns the HTML string. Otherwise, it displays the HTML string in the output, assuming it is a cell in a Jupyter Notebook.",
+"func":1
+},
+{
 "ref":"tf.browser.ner.show.Show.showContent",
 "url":96,
 "doc":"Generates HTML for a given portion of the corpus. The corpus text will be marked up with entities, the positions of these entities are present in the input parameter  buckets . It is recommended to apply this function to the outcome of  tf.browser.ner.ner.NER.filterContent  ! caution \"Truncated\" Unless the user has selected an entity or forced a start and end boundary to the list of buckets, the display may be truncated. See the parameter  mayLimit below. Parameters      buckets: iterable of tuple A selection of buckets (chunks / paragraphs) of the corpus. Each bucket is given as a tuple. The exact form is this data structure is equal to what the function  tf.browser.ner.ner.NER.filterContent returns. activeEntity: tuple, optional None The entity that must be highlighted. excludedTokens: set, optional None If passed, it is a set of tokens where a \u274c has been placed by the user. They correspond to occurrences that have been deselected from being subject to add / delete operations. mayLimit: boolean, optional False It is possible that the buckets make up the whole corpus. Although we have optimised things in such a way that the browser can handle a webpage with thousands of pages of material in it, such large pages may compromise the performance. If the bucket set is potentially very large, and the  start and  end parameters are not both specified, we will truncate the list of buckets to a smallish value (see  settings.LIMIT_BROWSER and  settings.LIMIT_NB ). However, when there is an  activeEntity , we assume the buckets are those containing that entity, and that it is a limited set anyway, and in that case we do not truncate. start: integer, optional None If passed, start rendering the buckets at this position. end: integer, optional None If passed, stop rendering the buckets at this position. withNodes: boolean, optional None Shows the node in each token. Returns    - string or void If called by the browser, it returns the HTML string. Otherwise, it displays the HTML string in the output, assuming it is a cell in a Jupyter Notebook.",
@@ -4121,6 +4127,30 @@ INDEX=[
 "doc":""
 },
 {
+"ref":"tf.browser.ner.sheets.Sheets.readSheets",
+"url":98,
+"doc":"Read the list current ner sheets (again). Use this when you change ner sheets outside the NER browser, e.g. by editing the spreadsheets in Excel.",
+"func":1
+},
+{
+"ref":"tf.browser.ner.sheets.Sheets.readData",
+"url":98,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.ner.sheets.Sheets.writeData",
+"url":98,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.ner.sheets.Sheets.log",
+"url":98,
+"doc":"",
+"func":1
+},
+{
 "ref":"tf.browser.ner.sheets.Sheets.getSheetData",
 "url":98,
 "doc":"Deliver the current sheet.",
@@ -4141,49 +4171,7 @@ INDEX=[
 {
 "ref":"tf.browser.ner.sheets.Sheets.fromSourceSheet",
 "url":98,
-"doc":"Loads a ner sheet from source. If the current ner sheet is None, nothing has to be done. Otherwise, we read the corresponding excel sheet(s) from disk and compile them into instructions. After collection of the sheet it is stored under the following keys:   dateLoaded : datetime when the sheet was last loaded from disk;   instructions : the list of instructions as loaded and compiled from the source.",
-"func":1
-},
-{
-"ref":"tf.browser.ner.sheets.Sheets.showLog",
-"url":98,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.browser.ner.sheets.Sheets.clearLog",
-"url":98,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.browser.ner.sheets.Sheets.readLog",
-"url":98,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.browser.ner.sheets.Sheets.writeLog",
-"url":98,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.browser.ner.sheets.Sheets.log",
-"url":98,
-"doc":"",
-"func":1
-},
-{
-"ref":"tf.browser.ner.sheets.Sheets.processSheet",
-"url":98,
-"doc":"Generates derived data structures out of the source sheet. After loading we process the set into derived data structures. We try to be lazy. We only load a set from disk if it is not already in memory, or if the set on disk has been updated since the last load. The resulting data is stored in the current set under the various keys. After processing, the time of processing is recorded, so that it can be observed if the processed set is no longer up to date w.r.t. the source. For each such set we produce several data structures, which we store under the following keys:   dateProcessed : datetime when the set was last processed   entityText : dict, text of entity by entity node or line number in TSV file;   inventory : result of looking up all triggers Parameters      changed: boolean Whether the set has changed since last processing.",
-"func":1
-},
-{
-"ref":"tf.browser.ner.sheets.Sheets.readSheets",
-"url":98,
-"doc":"Read the list current ner sheets (again). Use this when you change ner sheets outside the NER browser, e.g. by editing the spreadsheets in Excel.",
+"doc":"Loads a ner sheet from source. If the current ner sheet is None, nothing has to be done. Otherwise, we read the corresponding excel sheet(s) from disk and compile them into instructions. After collection of the sheet it is stored under the following keys:   timeReadXls : time when the sheet was last loaded from disk;   instructions : the list of instructions as loaded and compiled from the source.",
 "func":1
 },
 {
@@ -4219,11 +4207,6 @@ INDEX=[
 "ref":"tf.browser.ner.sheets.Sheets.sheetNames",
 "url":98,
 "doc":"The set of names of ner sheets that are present on the file system."
-},
-{
-"ref":"tf.browser.ner.sheets.Sheets.nameMap",
-"url":98,
-"doc":"Will contain a mapping from entities to names. The entities are keyed by their (eid, kind) tuple. The values are names plus the sheet where they are first defined."
 },
 {
 "ref":"tf.browser.ner.request",
@@ -4626,6 +4609,12 @@ INDEX=[
 "doc":"Entity annotation. Basic methods to handle the various aspects of entity annotation. These methods can be used by code that runs in the TF browser and by code that runs in a Jupyter notebook. This class handles entity sets, it does not contain code to generate HTML. But it has a parent class,  Show , that can generate HTML. This class works with a fixed annotation set. But it has a parent class,  Sets that has method to manipulate such sets and switch between them. We consider the corpus as a list of buckets (typically level-3 sectional units; in TEI-derived corpora called  chunk , being generalizations of  p (paragraph) elements). What type exactly the buckets are is configured in the  ner/config.yaml file. Contains methods to translate spreadsheets to YAML files with markup instructions; to locate all relevant occurrences; and to mark them up properly. It is a high-level class, building on the lower-level tools provided by the Sheets, Sets and Show classes on which it is based. Parameters      app: object The object that corresponds to a loaded TF app for a corpus. data: object, optional None Entity data to start with. If this class is initialized by the browser, the browser hands over the in-memory data that the tool needs. That way, it can maintain access to the same data between requests. If None, no data is handed over, and a fresh data store will be created by an ancestor class (Data) browse: boolean, optional False If True, the object is informed that it is run by the TF browser. This will influence how results are reported back."
 },
 {
+"ref":"tf.browser.ner.ner.NER.setTask",
+"url":103,
+"doc":"",
+"func":1
+},
+{
 "ref":"tf.browser.ner.ner.NER.findOccs",
 "url":103,
 "doc":"Finds the occurrences of multiple triggers. This is meant to efficiently list all occurrences of many token sequences in the corpus. The triggers are in member  instructions , which must first be constructed by reading a number of excel files. It adds the member  inventory to the object, which is a dict with subdicts:  occurrences : keyed by tuples (eid, kind), the values are the occurrences of that entity in the corpus. A single occurrence is represented as a tuple of slots.  names : keyed by tuples (eid, kind) and then path, the value is the name of that entity in the context indicated by path.",
@@ -4638,12 +4627,6 @@ INDEX=[
 "func":1
 },
 {
-"ref":"tf.browser.ner.ner.NER.lookup",
-"url":103,
-"doc":"Explores the corpus for the surface forms mentioned in the instructions. The instructions are present in the  instructions attribute of the object. The resulting inventory is stored in the  inventory member of the object. It is a dictionary, keyed by sequences of tokens, whose values are the slot sequences where those token sequences occur in the corpus.",
-"func":1
-},
-{
 "ref":"tf.browser.ner.ner.NER.reportHits",
 "url":103,
 "doc":"Reports the inventory.",
@@ -4653,6 +4636,12 @@ INDEX=[
 "ref":"tf.browser.ner.ner.NER.bakeEntities",
 "url":103,
 "doc":"Bakes the entities of the current set as nodes into a new TF data source. Parameters      versionExtension: string, optional \"e\" The new dataset gets a version like the original dataset, but extended with this string.",
+"func":1
+},
+{
+"ref":"tf.browser.ner.ner.NER.readSheets",
+"url":98,
+"doc":"Read the list current ner sheets (again). Use this when you change ner sheets outside the NER browser, e.g. by editing the spreadsheets in Excel.",
 "func":1
 },
 {
@@ -4676,19 +4665,7 @@ INDEX=[
 {
 "ref":"tf.browser.ner.ner.NER.fromSourceSheet",
 "url":98,
-"doc":"Loads a ner sheet from source. If the current ner sheet is None, nothing has to be done. Otherwise, we read the corresponding excel sheet(s) from disk and compile them into instructions. After collection of the sheet it is stored under the following keys:   dateLoaded : datetime when the sheet was last loaded from disk;   instructions : the list of instructions as loaded and compiled from the source.",
-"func":1
-},
-{
-"ref":"tf.browser.ner.ner.NER.processSheet",
-"url":98,
-"doc":"Generates derived data structures out of the source sheet. After loading we process the set into derived data structures. We try to be lazy. We only load a set from disk if it is not already in memory, or if the set on disk has been updated since the last load. The resulting data is stored in the current set under the various keys. After processing, the time of processing is recorded, so that it can be observed if the processed set is no longer up to date w.r.t. the source. For each such set we produce several data structures, which we store under the following keys:   dateProcessed : datetime when the set was last processed   entityText : dict, text of entity by entity node or line number in TSV file;   inventory : result of looking up all triggers Parameters      changed: boolean Whether the set has changed since last processing.",
-"func":1
-},
-{
-"ref":"tf.browser.ner.ner.NER.readSheets",
-"url":98,
-"doc":"Read the list current ner sheets (again). Use this when you change ner sheets outside the NER browser, e.g. by editing the spreadsheets in Excel.",
+"doc":"Loads a ner sheet from source. If the current ner sheet is None, nothing has to be done. Otherwise, we read the corresponding excel sheet(s) from disk and compile them into instructions. After collection of the sheet it is stored under the following keys:   timeReadXls : time when the sheet was last loaded from disk;   instructions : the list of instructions as loaded and compiled from the source.",
 "func":1
 },
 {
@@ -4700,11 +4677,6 @@ INDEX=[
 "ref":"tf.browser.ner.ner.NER.sheetNames",
 "url":98,
 "doc":"The set of names of ner sheets that are present on the file system."
-},
-{
-"ref":"tf.browser.ner.ner.NER.nameMap",
-"url":98,
-"doc":"Will contain a mapping from entities to names. The entities are keyed by their (eid, kind) tuple. The values are names plus the sheet where they are first defined."
 },
 {
 "ref":"tf.browser.ner.ner.NER.readSets",
@@ -4946,6 +4918,12 @@ INDEX=[
 "ref":"tf.browser.ner.ner.NER.showEntities",
 "url":96,
 "doc":"Generates HTML for a sorted list of the entities. The entity list consists of a table of entity identifiers, with the columns for the kind and frequency of the entities. There may be one active entity, and that one will be highlighted. Parameters      activeEntity: tuple, optional None The entity that must be highlighted. sortKey: string, optional None The key by which the entity list is sorted. Possible values:   freqsort : by frequency   sort_0 or  sort_eid : by entity identifier   sort_1 or  sort_kind : by entity kind If  None is passed,  freqsort is filled in. sortDir: string, optional None The direction of the sort. Possible values:   a : ascending   d : descending If  None is passed,  a is filled in. However, if  None is passed for both  sortKey and  sortDir , a  d is filled in. As a consequence, the default sort order is by frequency, most frequent on top. cutOffFreq: integer, optional None If passed, it is a lower limit on the frequency of the entities that will be shown. Every entity with a lower frequency will be skipped. Returns    - string or void If called by the browser, it returns the HTML string. Otherwise, it displays the HTML string in the output, assuming it is a cell in a Jupyter Notebook.",
+"func":1
+},
+{
+"ref":"tf.browser.ner.ner.NER.showTriggers",
+"url":96,
+"doc":"Generates HTML for an expandable overview of the entities and their triggers. Returns    - string or void If called by the browser, it returns the HTML string. Otherwise, it displays the HTML string in the output, assuming it is a cell in a Jupyter Notebook.",
 "func":1
 },
 {
@@ -5827,7 +5805,7 @@ INDEX=[
 {
 "ref":"tf.browser.ner.match.occMatch",
 "url":109,
-"doc":"Finds the occurrences of multiple sequences of tokens in a single bucket. Parameters      getTokens: function See  tf.browser.ner.corpus.Corpus.getTokens getHeadings: function See  tf.browser.ner.corpus.Corpus.getHeadings buckets: tuple of integer The bucket nodes in question instructions: dict, optional None A nested dict, keyed by section headings, with trigger information per section. Generic trigger information is present under key    . The idea is that trigger info under nested keys override trigger info at parent keys. The value at a key is a dict with keys:  sheet : The information about the triggers;  tPos : A compilation of all triggers into a mapping so that you can read off, given a position and a token, the set of all triggers that have that token at that position.",
+"doc":"Finds the occurrences of multiple sequences of tokens in a single bucket. Parameters      getTokens: function See  tf.browser.ner.corpus.Corpus.getTokens getHeadings: function See  tf.browser.ner.corpus.Corpus.getHeadings buckets: tuple of integer The bucket nodes in question instructions: dict, optional None A nested dict, keyed by section headings, with trigger information per section. Generic trigger information is present under key    . The idea is that trigger info under nested keys override trigger info at parent keys. The value at a key is a dict with keys:  sheet : The information about the triggers;  tPos : A compilation of all triggers into a mapping so that you can read off, given a position and a token, the set of all triggers that have that token at that position. Returns    - dict A multiply nested dict, first keyed by tuples of entity identifier and kind, then by its triggers then by the sheets where such a trigger occurs, and then the value is a list of occurrences, where each occurrence is a tuple of slots.",
 "func":1
 },
 {
@@ -5916,6 +5894,12 @@ INDEX=[
 "func":1
 },
 {
+"ref":"tf.browser.html.H.a",
+"url":111,
+"doc":"",
+"func":1
+},
+{
 "ref":"tf.browser.html.H.b",
 "url":111,
 "doc":"",
@@ -5964,6 +5948,18 @@ INDEX=[
 "func":1
 },
 {
+"ref":"tf.browser.html.H.li",
+"url":111,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.html.H.ol",
+"url":111,
+"doc":"",
+"func":1
+},
+{
 "ref":"tf.browser.html.H.option",
 "url":111,
 "doc":"",
@@ -5995,6 +5991,12 @@ INDEX=[
 },
 {
 "ref":"tf.browser.html.H.summary",
+"url":111,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.html.H.ul",
 "url":111,
 "doc":"",
 "func":1

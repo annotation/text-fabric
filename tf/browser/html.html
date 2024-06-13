@@ -34,7 +34,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/html.py#L1-L151" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L1-L155" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;HTML generation done in the Pythonic way.
 
@@ -46,6 +46,7 @@ from ..core.helpers import console, NBSP
 
 
 H_ELEMENT_DEFS = &#34;&#34;&#34;
+    a
     b
     br&gt;
     button
@@ -54,12 +55,15 @@ H_ELEMENT_DEFS = &#34;&#34;&#34;
     div
     i
     input&gt;
+    li
+    ol
     option
     p
     select
     span
     style
     summary
+    ul
 &#34;&#34;&#34;.strip().split()
 
 H_ELEMENTS = tuple(
@@ -223,7 +227,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/html.py#L33-L58" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L37-L62" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dig(*content, sep=&#34;&#34;):
     &#34;&#34;&#34;A method to join nested iterables of strings into a string.
@@ -274,7 +278,7 @@ take the parameters <code>close</code> and <code>tag</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/html.py#L97-L123" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L101-L127" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def elemFunc(close, elem):
     &#34;&#34;&#34;Generates a function to serialize a specific HTML element.
@@ -330,7 +334,7 @@ strings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/html.py#L61-L94" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L65-L98" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def generate(close, tag, *content, **atts):
     &#34;&#34;&#34;Transform the logical information for an HTML element into an HTML string.
@@ -384,7 +388,7 @@ generating function is added as method.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/html.py#L126-L134" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L130-L138" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class H:
     &#34;&#34;&#34;Provider of HTML serializing functions per element type.
@@ -405,6 +409,20 @@ generating function is added as method.</p></div>
 </dl>
 <h3>Methods</h3>
 <dl>
+<dt id="tf.browser.html.H.a"><code class="name flex">
+<span>def <span class="ident">a</span></span>(<span>*content, **atts)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L119-L120" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def result(*content, **atts):
+    return generate(close, elem, *content, **atts)</code></pre>
+</details>
+</dd>
 <dt id="tf.browser.html.H.b"><code class="name flex">
 <span>def <span class="ident">b</span></span>(<span>*content, **atts)</span>
 </code></dt>
@@ -413,7 +431,7 @@ generating function is added as method.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/html.py#L115-L116" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L119-L120" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -427,7 +445,7 @@ generating function is added as method.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/html.py#L120-L121" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L124-L125" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(**atts):
     return generate(close, elem, **atts)</code></pre>
@@ -441,7 +459,7 @@ generating function is added as method.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/html.py#L115-L116" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L119-L120" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -455,7 +473,7 @@ generating function is added as method.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/html.py#L115-L116" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L119-L120" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -469,7 +487,7 @@ generating function is added as method.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/html.py#L115-L116" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L119-L120" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -483,7 +501,7 @@ generating function is added as method.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/html.py#L115-L116" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L119-L120" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -497,7 +515,7 @@ generating function is added as method.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/html.py#L115-L116" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L119-L120" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -511,7 +529,7 @@ generating function is added as method.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/html.py#L120-L121" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L124-L125" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(**atts):
     return generate(close, elem, **atts)</code></pre>
@@ -537,7 +555,7 @@ generating function is added as method.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/html.py#L33-L58" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L37-L62" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dig(*content, sep=&#34;&#34;):
     &#34;&#34;&#34;A method to join nested iterables of strings into a string.
@@ -567,6 +585,34 @@ generating function is added as method.</p></div>
     return sep.join(dig(c) for c in content)</code></pre>
 </details>
 </dd>
+<dt id="tf.browser.html.H.li"><code class="name flex">
+<span>def <span class="ident">li</span></span>(<span>*content, **atts)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L119-L120" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def result(*content, **atts):
+    return generate(close, elem, *content, **atts)</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.html.H.ol"><code class="name flex">
+<span>def <span class="ident">ol</span></span>(<span>*content, **atts)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L119-L120" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def result(*content, **atts):
+    return generate(close, elem, *content, **atts)</code></pre>
+</details>
+</dd>
 <dt id="tf.browser.html.H.option"><code class="name flex">
 <span>def <span class="ident">option</span></span>(<span>*content, **atts)</span>
 </code></dt>
@@ -575,7 +621,7 @@ generating function is added as method.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/html.py#L115-L116" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L119-L120" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -589,7 +635,7 @@ generating function is added as method.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/html.py#L115-L116" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L119-L120" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -603,7 +649,7 @@ generating function is added as method.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/html.py#L115-L116" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L119-L120" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -617,7 +663,7 @@ generating function is added as method.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/html.py#L115-L116" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L119-L120" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -631,7 +677,7 @@ generating function is added as method.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/html.py#L115-L116" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L119-L120" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -645,7 +691,21 @@ generating function is added as method.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/html.py#L115-L116" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L119-L120" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def result(*content, **atts):
+    return generate(close, elem, *content, **atts)</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.html.H.ul"><code class="name flex">
+<span>def <span class="ident">ul</span></span>(<span>*content, **atts)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/html.py#L119-L120" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def result(*content, **atts):
     return generate(close, elem, *content, **atts)</code></pre>
@@ -735,6 +795,7 @@ setTimeout(() => input.focus(), 100);
 <li>
 <h4><code><a title="tf.browser.html.H" href="#tf.browser.html.H">H</a></code></h4>
 <ul class="two-column">
+<li><code><a title="tf.browser.html.H.a" href="#tf.browser.html.H.a">a</a></code></li>
 <li><code><a title="tf.browser.html.H.b" href="#tf.browser.html.H.b">b</a></code></li>
 <li><code><a title="tf.browser.html.H.br" href="#tf.browser.html.H.br">br</a></code></li>
 <li><code><a title="tf.browser.html.H.button" href="#tf.browser.html.H.button">button</a></code></li>
@@ -744,13 +805,16 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.browser.html.H.i" href="#tf.browser.html.H.i">i</a></code></li>
 <li><code><a title="tf.browser.html.H.input" href="#tf.browser.html.H.input">input</a></code></li>
 <li><code><a title="tf.browser.html.H.join" href="#tf.browser.html.H.join">join</a></code></li>
+<li><code><a title="tf.browser.html.H.li" href="#tf.browser.html.H.li">li</a></code></li>
 <li><code><a title="tf.browser.html.H.nb" href="#tf.browser.html.H.nb">nb</a></code></li>
+<li><code><a title="tf.browser.html.H.ol" href="#tf.browser.html.H.ol">ol</a></code></li>
 <li><code><a title="tf.browser.html.H.option" href="#tf.browser.html.H.option">option</a></code></li>
 <li><code><a title="tf.browser.html.H.p" href="#tf.browser.html.H.p">p</a></code></li>
 <li><code><a title="tf.browser.html.H.select" href="#tf.browser.html.H.select">select</a></code></li>
 <li><code><a title="tf.browser.html.H.span" href="#tf.browser.html.H.span">span</a></code></li>
 <li><code><a title="tf.browser.html.H.style" href="#tf.browser.html.H.style">style</a></code></li>
 <li><code><a title="tf.browser.html.H.summary" href="#tf.browser.html.H.summary">summary</a></code></li>
+<li><code><a title="tf.browser.html.H.ul" href="#tf.browser.html.H.ul">ul</a></code></li>
 </ul>
 </li>
 </ul>

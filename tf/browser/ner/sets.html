@@ -36,7 +36,7 @@ the tool.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sets.py#L1-L377" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sets.py#L1-L377" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Annotation set management.
 
@@ -62,7 +62,7 @@ from ...core.files import (
     dirMove,
 )
 
-from .settings import ERROR
+from .settings import ERROR, SET_ENT, SET_SHEET, SET_MAIN
 
 
 class Sets(Data):
@@ -126,11 +126,11 @@ class Sets(Data):
         setIsSrc = setName == &#34;&#34;
 
         setNameRep = (
-            f&#34;🟰 {entitySet}&#34;
+            f&#34;{SET_ENT} {entitySet}&#34;
             if setName == &#34;&#34;
-            else f&#34;🧾 {setName[1:]}&#34;
+            else f&#34;{SET_SHEET} {setName[1:]}&#34;
             if setName.startswith(&#34;.&#34;)
-            else f&#34;🖍️ {setName}&#34;
+            else f&#34;{SET_MAIN} {setName}&#34;
         )
         if inObject:
             self.setNameRep = setNameRep
@@ -453,7 +453,7 @@ If None, a fresh store of sets will be created by a parent class (Data).</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sets.py#L28-L377" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sets.py#L28-L377" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Sets(Data):
     def __init__(self, sets=None):
@@ -516,11 +516,11 @@ If None, a fresh store of sets will be created by a parent class (Data).</dd>
         setIsSrc = setName == &#34;&#34;
 
         setNameRep = (
-            f&#34;🟰 {entitySet}&#34;
+            f&#34;{SET_ENT} {entitySet}&#34;
             if setName == &#34;&#34;
-            else f&#34;🧾 {setName[1:]}&#34;
+            else f&#34;{SET_SHEET} {setName[1:]}&#34;
             if setName.startswith(&#34;.&#34;)
-            else f&#34;🖍️ {setName}&#34;
+            else f&#34;{SET_MAIN} {setName}&#34;
         )
         if inObject:
             self.setNameRep = setNameRep
@@ -837,7 +837,7 @@ If None, a fresh store of sets will be created by a parent class (Data).</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sets.py#L111-L116" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sets.py#L111-L116" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getSetData(self):
     &#34;&#34;&#34;Deliver the current set.&#34;&#34;&#34;
@@ -857,7 +857,7 @@ by working with annotations in a Jupyter Notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sets.py#L102-L109" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sets.py#L102-L109" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readSets(self):
     &#34;&#34;&#34;Read the list current annotation sets (again).
@@ -878,7 +878,7 @@ by working with annotations in a Jupyter Notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sets.py#L187-L220" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sets.py#L187-L220" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resetSet(self):
     &#34;&#34;&#34;Clear the current annotation set.
@@ -932,7 +932,7 @@ It is not allowed to remove the special set named <code>""</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sets.py#L282-L322" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sets.py#L282-L322" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setDel(self, delSet):
     &#34;&#34;&#34;Remove a named set.
@@ -998,7 +998,7 @@ tool-generated annotations.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sets.py#L222-L280" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sets.py#L222-L280" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setDup(self, dupSet):
     &#34;&#34;&#34;Duplicates the current set to a set with a new name.
@@ -1069,7 +1069,7 @@ tool-generated annotations.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sets.py#L75-L100" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sets.py#L75-L100" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setInfo(self, setName=None):
     settings = self.settings
@@ -1085,11 +1085,11 @@ tool-generated annotations.</p>
     setIsSrc = setName == &#34;&#34;
 
     setNameRep = (
-        f&#34;🟰 {entitySet}&#34;
+        f&#34;{SET_ENT} {entitySet}&#34;
         if setName == &#34;&#34;
-        else f&#34;🧾 {setName[1:]}&#34;
+        else f&#34;{SET_SHEET} {setName[1:]}&#34;
         if setName.startswith(&#34;.&#34;)
-        else f&#34;🖍️ {setName}&#34;
+        else f&#34;{SET_MAIN} {setName}&#34;
     )
     if inObject:
         self.setNameRep = setNameRep
@@ -1115,7 +1115,7 @@ It is also forbidden to rename another set to the special set.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sets.py#L324-L377" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sets.py#L324-L377" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setMove(self, moveSet):
     &#34;&#34;&#34;Renames a named set.
@@ -1188,7 +1188,7 @@ After the switch, the new set will be loaded into memory.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/sets.py#L118-L162" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sets.py#L118-L162" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setSet(self, newSetName):
     &#34;&#34;&#34;Switch to a named annotation set.

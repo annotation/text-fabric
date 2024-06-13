@@ -34,7 +34,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/show.py#L1-L394" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/show.py#L1-L469" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Rendering of corpus extracts with annotations.
 
@@ -56,6 +56,7 @@ from .settings import (
     SORTDIR_DESC,
     LIMIT_BROWSER,
     LIMIT_NB,
+    SET_SHEET,
 )
 
 
@@ -214,6 +215,80 @@ class Show:
 
         dh(content)
 
+    def showTriggers(
+        self, activeName=None, activeTrigger=None, activeSheet=None, activeSection=None
+    ):
+        &#34;&#34;&#34;Generates HTML for an expandable overview of the entities and their triggers.
+
+        Returns
+        -------
+        string or void
+            If called by the browser, it returns the HTML string.
+            Otherwise, it displays the HTML string in the output, assuming
+            it is a cell in a Jupyter Notebook.
+        &#34;&#34;&#34;
+        browse = self.browse
+        sheetData = self.getSheetData()
+        hitData = sheetData.hitData or {}
+
+        def genNames(data):
+            content = []
+
+            for k in sorted(data):
+                v = data[k]
+                content.append(
+                    H.details(H.summary(k), H.div(genTriggers(v), cls=&#34;oname&#34;))
+                )
+
+            return content
+
+        def genTriggers(data):
+            content = []
+
+            for k in sorted(data):
+                v = data[k]
+                content.append(
+                    H.details(
+                        H.summary(H.code(k)),
+                        H.div(genSheets(v), cls=&#34;otrigger&#34;),
+                    )
+                )
+
+            return content
+
+        def genSheets(data):
+            content = []
+
+            for k in sorted(data):
+                v = data[k]
+                content.append(
+                    H.details(
+                        H.summary(f&#34;{SET_SHEET} {k}&#34;),
+                        H.div(genSections(v), cls=&#34;osheet&#34;),
+                    )
+                )
+
+            return content
+
+        def genSections(data):
+            content = []
+
+            content.append(
+                H.ul(
+                    H.li(f&#34;{len(v)} x in &#34; + H.a(f&#34;{k}&#34;, href=&#34;#&#34;))
+                    for (k, v) in sorted(data.items())
+                )
+            )
+
+            return content
+
+        content = &#34;\n&#34;.join(genNames(hitData))
+
+        if browse:
+            return content
+
+        dh(content)
+
     def showContent(
         self,
         buckets,
@@ -386,7 +461,7 @@ class Show:
                     firstFound = min(foundSet) - charPos
                     lastFound = max(foundSet) - charPos
                     leading = &#34;&#34; if firstFound == charPos else w[0:firstFound]
-                    trailing = &#34;&#34; if lastFound == lenW - 1 else w[lastFound + 1:]
+                    trailing = &#34;&#34; if lastFound == lenW - 1 else w[lastFound + 1 :]
                     hit = w[firstFound : lastFound + 1]
                     wRep = H.join(leading, H.span(hit, cls=&#34;found&#34;), trailing)
                 else:
@@ -449,7 +524,7 @@ class Show:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/show.py#L24-L394" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/show.py#L25-L469" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Show:
     def showEntityOverview(self):
@@ -606,6 +681,80 @@ class Show:
 
         dh(content)
 
+    def showTriggers(
+        self, activeName=None, activeTrigger=None, activeSheet=None, activeSection=None
+    ):
+        &#34;&#34;&#34;Generates HTML for an expandable overview of the entities and their triggers.
+
+        Returns
+        -------
+        string or void
+            If called by the browser, it returns the HTML string.
+            Otherwise, it displays the HTML string in the output, assuming
+            it is a cell in a Jupyter Notebook.
+        &#34;&#34;&#34;
+        browse = self.browse
+        sheetData = self.getSheetData()
+        hitData = sheetData.hitData or {}
+
+        def genNames(data):
+            content = []
+
+            for k in sorted(data):
+                v = data[k]
+                content.append(
+                    H.details(H.summary(k), H.div(genTriggers(v), cls=&#34;oname&#34;))
+                )
+
+            return content
+
+        def genTriggers(data):
+            content = []
+
+            for k in sorted(data):
+                v = data[k]
+                content.append(
+                    H.details(
+                        H.summary(H.code(k)),
+                        H.div(genSheets(v), cls=&#34;otrigger&#34;),
+                    )
+                )
+
+            return content
+
+        def genSheets(data):
+            content = []
+
+            for k in sorted(data):
+                v = data[k]
+                content.append(
+                    H.details(
+                        H.summary(f&#34;{SET_SHEET} {k}&#34;),
+                        H.div(genSections(v), cls=&#34;osheet&#34;),
+                    )
+                )
+
+            return content
+
+        def genSections(data):
+            content = []
+
+            content.append(
+                H.ul(
+                    H.li(f&#34;{len(v)} x in &#34; + H.a(f&#34;{k}&#34;, href=&#34;#&#34;))
+                    for (k, v) in sorted(data.items())
+                )
+            )
+
+            return content
+
+        content = &#34;\n&#34;.join(genNames(hitData))
+
+        if browse:
+            return content
+
+        dh(content)
+
     def showContent(
         self,
         buckets,
@@ -778,7 +927,7 @@ class Show:
                     firstFound = min(foundSet) - charPos
                     lastFound = max(foundSet) - charPos
                     leading = &#34;&#34; if firstFound == charPos else w[0:firstFound]
-                    trailing = &#34;&#34; if lastFound == lenW - 1 else w[lastFound + 1:]
+                    trailing = &#34;&#34; if lastFound == lenW - 1 else w[lastFound + 1 :]
                     hit = w[firstFound : lastFound + 1]
                     wRep = H.join(leading, H.span(hit, cls=&#34;found&#34;), trailing)
                 else:
@@ -888,7 +1037,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/show.py#L179-L394" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/show.py#L254-L469" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showContent(
     self,
@@ -1062,7 +1211,7 @@ it is a cell in a Jupyter Notebook.</dd>
                 firstFound = min(foundSet) - charPos
                 lastFound = max(foundSet) - charPos
                 leading = &#34;&#34; if firstFound == charPos else w[0:firstFound]
-                trailing = &#34;&#34; if lastFound == lenW - 1 else w[lastFound + 1:]
+                trailing = &#34;&#34; if lastFound == lenW - 1 else w[lastFound + 1 :]
                 hit = w[firstFound : lastFound + 1]
                 wRep = H.join(leading, H.span(hit, cls=&#34;found&#34;), trailing)
             else:
@@ -1159,7 +1308,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/show.py#L61-L177" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/show.py#L62-L178" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showEntities(
     self, activeEntity=None, sortKey=None, sortDir=None, cutOffFreq=None
@@ -1297,7 +1446,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d85b733a4b551884a652ebd5641e9bf3d176366f/tf/browser/ner/show.py#L25-L59" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/show.py#L26-L60" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showEntityOverview(self):
     &#34;&#34;&#34;Generates HTML for an overview of the entities.
@@ -1329,6 +1478,98 @@ it is a cell in a Jupyter Notebook.</dd>
             setData.entitySummary.items(), key=lambda x: (-len(x[1]), x[0])
         )
     )
+
+    if browse:
+        return content
+
+    dh(content)</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.show.Show.showTriggers"><code class="name flex">
+<span>def <span class="ident">showTriggers</span></span>(<span>self, activeName=None, activeTrigger=None, activeSheet=None, activeSection=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generates HTML for an expandable overview of the entities and their triggers.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>string</code> or <code>void</code></dt>
+<dd>If called by the browser, it returns the HTML string.
+Otherwise, it displays the HTML string in the output, assuming
+it is a cell in a Jupyter Notebook.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/show.py#L180-L252" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def showTriggers(
+    self, activeName=None, activeTrigger=None, activeSheet=None, activeSection=None
+):
+    &#34;&#34;&#34;Generates HTML for an expandable overview of the entities and their triggers.
+
+    Returns
+    -------
+    string or void
+        If called by the browser, it returns the HTML string.
+        Otherwise, it displays the HTML string in the output, assuming
+        it is a cell in a Jupyter Notebook.
+    &#34;&#34;&#34;
+    browse = self.browse
+    sheetData = self.getSheetData()
+    hitData = sheetData.hitData or {}
+
+    def genNames(data):
+        content = []
+
+        for k in sorted(data):
+            v = data[k]
+            content.append(
+                H.details(H.summary(k), H.div(genTriggers(v), cls=&#34;oname&#34;))
+            )
+
+        return content
+
+    def genTriggers(data):
+        content = []
+
+        for k in sorted(data):
+            v = data[k]
+            content.append(
+                H.details(
+                    H.summary(H.code(k)),
+                    H.div(genSheets(v), cls=&#34;otrigger&#34;),
+                )
+            )
+
+        return content
+
+    def genSheets(data):
+        content = []
+
+        for k in sorted(data):
+            v = data[k]
+            content.append(
+                H.details(
+                    H.summary(f&#34;{SET_SHEET} {k}&#34;),
+                    H.div(genSections(v), cls=&#34;osheet&#34;),
+                )
+            )
+
+        return content
+
+    def genSections(data):
+        content = []
+
+        content.append(
+            H.ul(
+                H.li(f&#34;{len(v)} x in &#34; + H.a(f&#34;{k}&#34;, href=&#34;#&#34;))
+                for (k, v) in sorted(data.items())
+            )
+        )
+
+        return content
+
+    content = &#34;\n&#34;.join(genNames(hitData))
 
     if browse:
         return content
@@ -1411,6 +1652,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.browser.ner.show.Show.showContent" href="#tf.browser.ner.show.Show.showContent">showContent</a></code></li>
 <li><code><a title="tf.browser.ner.show.Show.showEntities" href="#tf.browser.ner.show.Show.showEntities">showEntities</a></code></li>
 <li><code><a title="tf.browser.ner.show.Show.showEntityOverview" href="#tf.browser.ner.show.Show.showEntityOverview">showEntityOverview</a></code></li>
+<li><code><a title="tf.browser.ner.show.Show.showTriggers" href="#tf.browser.ner.show.Show.showTriggers">showTriggers</a></code></li>
 </ul>
 </li>
 </ul>
