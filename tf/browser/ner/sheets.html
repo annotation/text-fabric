@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L1-L964" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/sheets.py#L1-L957" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import collections
 import re
@@ -41,9 +41,8 @@ import gzip
 
 from ...parameters import GZIP_LEVEL, PICKLE_PROTOCOL
 from ...capable import CheckImport
-from .helpers import tnorm, normalize, toSmallId, toTokens, consoleLine, repSet
+from .helpers import tnorm, normalize, toSmallId, toTokens, repSet
 from ...core.generic import AttrDict
-from ...core.helpers import console
 from ...core.files import dirContents, extNm, fileExists, mTime
 
 
@@ -127,7 +126,7 @@ class Sheets:
         if not uptodate:
             return False
 
-        console(&#34;load sheet with uptodate data from disk&#34;)
+        self.console(&#34;load sheet with uptodate data from disk&#34;)
 
         if fileExists(dataFile):
             with gzip.open(dataFile, mode=&#34;rb&#34;) as f:
@@ -163,7 +162,7 @@ class Sheets:
         logData.append((isError, indent, msg))
 
         if not browse:
-            consoleLine(isError, indent, msg)
+            self.consoleLine(isError, indent, msg)
 
     def getSheetData(self):
         &#34;&#34;&#34;Deliver the current sheet.&#34;&#34;&#34;
@@ -279,7 +278,7 @@ class Sheets:
             loaded = self.readData(sheetData, sheetUpdated)
 
             if not loaded:
-                console(&#34;compute sheet data from scratch&#34;)
+                self.console(&#34;compute sheet data from scratch&#34;)
                 sheetData.logData = []
 
                 self._readSheets(sheetData)
@@ -296,6 +295,7 @@ class Sheets:
                     &#34;nameMap&#34;,
                     &#34;instructions&#34;,
                     &#34;inventory&#34;,
+                    &#34;triggerFromMatch&#34;,
                     &#34;hitData&#34;,
                 ]
                 self.writeData(
@@ -304,11 +304,11 @@ class Sheets:
                 )
                 showLog = False
         else:
-            console(&#34;sheet data uptodate in memory&#34;)
+            self.console(&#34;sheet data uptodate in memory&#34;)
 
         if showLog and not browse:
             for x in sheetData.logData:
-                consoleLine(*x)
+                self.consoleLine(*x)
 
     def _readSheets(self, sheetData):
         &#34;&#34;&#34;Read all the spreadsheets, the main one and the tweaks.
@@ -808,8 +808,6 @@ class Sheets:
         sheetName = self.sheetName
         sheetData = self.sheets[sheetName]
 
-        getHeadings = self.getHeadings
-        nameMap = sheetData.nameMap
         inventory = sheetData.inventory
         instructions = sheetData.instructions
 
@@ -825,20 +823,11 @@ class Sheets:
 
             for trigger, tPath in tMap.items():
                 eidkind = idMap[trigger]
-                name = nameMap[eidkind][0]
                 sheet = &#34;.&#34;.join(tPath)
 
                 occs = inventory.get(eidkind, {}).get(trigger, {}).get(tPath, {})
 
-                sectionHits = {}
-
-                for slots in occs:
-                    section = &#34;.&#34;.join(getHeadings(slots[0]))
-                    sectionHits.setdefault(section, []).append(slots)
-
-                hitData.setdefault(name, {}).setdefault(trigger, {}).setdefault(
-                    sheet, sectionHits
-                )
+                hitData.setdefault(eidkind, {})[(trigger, sheet)] = len(occs)
 
     def _markEntities(self):
         &#34;&#34;&#34;Marks up the members of the inventory as entities.
@@ -857,11 +846,15 @@ class Sheets:
         inventory = sheetData.inventory
 
         newEntities = []
+        triggerFromMatch = {}
+        sheetData.triggerFromMatch = triggerFromMatch
 
         for eidkind, entData in inventory.items():
             for trigger, triggerData in entData.items():
-                for matches in triggerData.values():
+                for (sheet, matches) in triggerData.items():
                     newEntities.append((eidkind, matches))
+                    for match in matches:
+                        triggerFromMatch[match] = (trigger, &#34;,&#34;.join(sheet))
 
         self._addToSet(newEntities, silent=False)
 
@@ -869,7 +862,7 @@ class Sheets:
         src = self.getSheetData()
 
         if src is None:
-            console(&#34;Nothing to show&#34;)
+            self.console(&#34;Nothing to show&#34;)
 
         src = src.raw
         nameMap = src.nameMap
@@ -880,21 +873,21 @@ class Sheets:
                 triggerRep = &#34;|&#34;.join(
                     t for t in sorted(triggers, key=lambda x: (-len(x), x))
                 )
-                console(f&#34;{tab}  &#39;{name}&#39; {eidkind} : {triggerRep}&#34;)
-            console(f&#34;{tab}  ---&#34;)
+                self.console(f&#34;{tab}  &#39;{name}&#39; {eidkind} : {triggerRep}&#34;)
+            self.console(f&#34;{tab}  ---&#34;)
 
         def showDir(head, tweaks, level):
             tab = &#34;  &#34; * level
-            console(f&#34;{tab}{head}&#34;)
+            self.console(f&#34;{tab}{head}&#34;)
 
             rng = tweaks.rng or {}
             for b, e in sorted(rng):
-                console(f&#34;{tab}  {b}-{e}.xslx&#34;)
+                self.console(f&#34;{tab}  {b}-{e}.xslx&#34;)
                 showSheet(rng[(b, e)], tab)
 
             sng = tweaks.sng or {}
             for k in sorted(sng):
-                console(f&#34;{tab}  {k}.xslx&#34;)
+                self.console(f&#34;{tab}  {k}.xslx&#34;)
                 showSheet(sng[k], tab)
 
             sdr = tweaks.sdr or {}
@@ -911,7 +904,7 @@ class Sheets:
         src = self.getSheetData()
 
         if src is None:
-            console(&#34;Nothing to show&#34;)
+            self.console(&#34;Nothing to show&#34;)
 
         src = src.combined
         nameMap = src.nameMap
@@ -922,12 +915,12 @@ class Sheets:
                 triggerRep = &#34;|&#34;.join(
                     t for t in sorted(triggers, key=lambda x: (-len(x), x))
                 )
-                console(f&#34;{tab}  &#39;{name}&#39; {eidkind} : {triggerRep}&#34;)
-            console(f&#34;{tab}  ---&#34;)
+                self.console(f&#34;{tab}  &#39;{name}&#39; {eidkind} : {triggerRep}&#34;)
+            self.console(f&#34;{tab}  ---&#34;)
 
         def showDir(head, info, level):
             tab = &#34;  &#34; * level
-            console(f&#34;{tab}{head}&#34;)
+            self.console(f&#34;{tab}{head}&#34;)
 
             if &#34;sheet&#34; in info:
                 if main or level &gt; 0:
@@ -970,12 +963,12 @@ class Sheets:
                     )
                     triggerInfo = f&#34;{sourceRep} =&gt; {triggerRep}&#34;
 
-                console(f&#34;{tab}  &#39;{name}&#39; {eidkind} : {triggerInfo}&#34;)
-            console(f&#34;{tab}  ---&#34;)
+                self.console(f&#34;{tab}  &#39;{name}&#39; {eidkind} : {triggerInfo}&#34;)
+            self.console(f&#34;{tab}  ---&#34;)
 
         def showDir(head, info, level):
             tab = &#34;  &#34; * level
-            console(f&#34;{tab}{head}&#34;)
+            self.console(f&#34;{tab}{head}&#34;)
 
             if &#34;sheet&#34; in info:
                 if main or level &gt; 0:
@@ -992,11 +985,11 @@ class Sheets:
         src = self.getSheetData()
 
         if src is None:
-            console(&#34;Nothing to show&#34;)
+            self.console(&#34;Nothing to show&#34;)
 
         instructions = src.instructions
 
-        console(&#34;\n&#34;.join(f&#34;{path}&#34; for path in instructions))</code></pre>
+        self.console(&#34;\n&#34;.join(f&#34;{path}&#34; for path in instructions))</code></pre>
 </details>
 </section>
 <section>
@@ -1017,7 +1010,7 @@ class Sheets:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L19-L964" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/sheets.py#L18-L957" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Sheets:
     def __init__(self, sheets=None):
@@ -1095,7 +1088,7 @@ class Sheets:
         if not uptodate:
             return False
 
-        console(&#34;load sheet with uptodate data from disk&#34;)
+        self.console(&#34;load sheet with uptodate data from disk&#34;)
 
         if fileExists(dataFile):
             with gzip.open(dataFile, mode=&#34;rb&#34;) as f:
@@ -1131,7 +1124,7 @@ class Sheets:
         logData.append((isError, indent, msg))
 
         if not browse:
-            consoleLine(isError, indent, msg)
+            self.consoleLine(isError, indent, msg)
 
     def getSheetData(self):
         &#34;&#34;&#34;Deliver the current sheet.&#34;&#34;&#34;
@@ -1247,7 +1240,7 @@ class Sheets:
             loaded = self.readData(sheetData, sheetUpdated)
 
             if not loaded:
-                console(&#34;compute sheet data from scratch&#34;)
+                self.console(&#34;compute sheet data from scratch&#34;)
                 sheetData.logData = []
 
                 self._readSheets(sheetData)
@@ -1264,6 +1257,7 @@ class Sheets:
                     &#34;nameMap&#34;,
                     &#34;instructions&#34;,
                     &#34;inventory&#34;,
+                    &#34;triggerFromMatch&#34;,
                     &#34;hitData&#34;,
                 ]
                 self.writeData(
@@ -1272,11 +1266,11 @@ class Sheets:
                 )
                 showLog = False
         else:
-            console(&#34;sheet data uptodate in memory&#34;)
+            self.console(&#34;sheet data uptodate in memory&#34;)
 
         if showLog and not browse:
             for x in sheetData.logData:
-                consoleLine(*x)
+                self.consoleLine(*x)
 
     def _readSheets(self, sheetData):
         &#34;&#34;&#34;Read all the spreadsheets, the main one and the tweaks.
@@ -1776,8 +1770,6 @@ class Sheets:
         sheetName = self.sheetName
         sheetData = self.sheets[sheetName]
 
-        getHeadings = self.getHeadings
-        nameMap = sheetData.nameMap
         inventory = sheetData.inventory
         instructions = sheetData.instructions
 
@@ -1793,20 +1785,11 @@ class Sheets:
 
             for trigger, tPath in tMap.items():
                 eidkind = idMap[trigger]
-                name = nameMap[eidkind][0]
                 sheet = &#34;.&#34;.join(tPath)
 
                 occs = inventory.get(eidkind, {}).get(trigger, {}).get(tPath, {})
 
-                sectionHits = {}
-
-                for slots in occs:
-                    section = &#34;.&#34;.join(getHeadings(slots[0]))
-                    sectionHits.setdefault(section, []).append(slots)
-
-                hitData.setdefault(name, {}).setdefault(trigger, {}).setdefault(
-                    sheet, sectionHits
-                )
+                hitData.setdefault(eidkind, {})[(trigger, sheet)] = len(occs)
 
     def _markEntities(self):
         &#34;&#34;&#34;Marks up the members of the inventory as entities.
@@ -1825,11 +1808,15 @@ class Sheets:
         inventory = sheetData.inventory
 
         newEntities = []
+        triggerFromMatch = {}
+        sheetData.triggerFromMatch = triggerFromMatch
 
         for eidkind, entData in inventory.items():
             for trigger, triggerData in entData.items():
-                for matches in triggerData.values():
+                for (sheet, matches) in triggerData.items():
                     newEntities.append((eidkind, matches))
+                    for match in matches:
+                        triggerFromMatch[match] = (trigger, &#34;,&#34;.join(sheet))
 
         self._addToSet(newEntities, silent=False)
 
@@ -1837,7 +1824,7 @@ class Sheets:
         src = self.getSheetData()
 
         if src is None:
-            console(&#34;Nothing to show&#34;)
+            self.console(&#34;Nothing to show&#34;)
 
         src = src.raw
         nameMap = src.nameMap
@@ -1848,21 +1835,21 @@ class Sheets:
                 triggerRep = &#34;|&#34;.join(
                     t for t in sorted(triggers, key=lambda x: (-len(x), x))
                 )
-                console(f&#34;{tab}  &#39;{name}&#39; {eidkind} : {triggerRep}&#34;)
-            console(f&#34;{tab}  ---&#34;)
+                self.console(f&#34;{tab}  &#39;{name}&#39; {eidkind} : {triggerRep}&#34;)
+            self.console(f&#34;{tab}  ---&#34;)
 
         def showDir(head, tweaks, level):
             tab = &#34;  &#34; * level
-            console(f&#34;{tab}{head}&#34;)
+            self.console(f&#34;{tab}{head}&#34;)
 
             rng = tweaks.rng or {}
             for b, e in sorted(rng):
-                console(f&#34;{tab}  {b}-{e}.xslx&#34;)
+                self.console(f&#34;{tab}  {b}-{e}.xslx&#34;)
                 showSheet(rng[(b, e)], tab)
 
             sng = tweaks.sng or {}
             for k in sorted(sng):
-                console(f&#34;{tab}  {k}.xslx&#34;)
+                self.console(f&#34;{tab}  {k}.xslx&#34;)
                 showSheet(sng[k], tab)
 
             sdr = tweaks.sdr or {}
@@ -1879,7 +1866,7 @@ class Sheets:
         src = self.getSheetData()
 
         if src is None:
-            console(&#34;Nothing to show&#34;)
+            self.console(&#34;Nothing to show&#34;)
 
         src = src.combined
         nameMap = src.nameMap
@@ -1890,12 +1877,12 @@ class Sheets:
                 triggerRep = &#34;|&#34;.join(
                     t for t in sorted(triggers, key=lambda x: (-len(x), x))
                 )
-                console(f&#34;{tab}  &#39;{name}&#39; {eidkind} : {triggerRep}&#34;)
-            console(f&#34;{tab}  ---&#34;)
+                self.console(f&#34;{tab}  &#39;{name}&#39; {eidkind} : {triggerRep}&#34;)
+            self.console(f&#34;{tab}  ---&#34;)
 
         def showDir(head, info, level):
             tab = &#34;  &#34; * level
-            console(f&#34;{tab}{head}&#34;)
+            self.console(f&#34;{tab}{head}&#34;)
 
             if &#34;sheet&#34; in info:
                 if main or level &gt; 0:
@@ -1938,12 +1925,12 @@ class Sheets:
                     )
                     triggerInfo = f&#34;{sourceRep} =&gt; {triggerRep}&#34;
 
-                console(f&#34;{tab}  &#39;{name}&#39; {eidkind} : {triggerInfo}&#34;)
-            console(f&#34;{tab}  ---&#34;)
+                self.console(f&#34;{tab}  &#39;{name}&#39; {eidkind} : {triggerInfo}&#34;)
+            self.console(f&#34;{tab}  ---&#34;)
 
         def showDir(head, info, level):
             tab = &#34;  &#34; * level
-            console(f&#34;{tab}{head}&#34;)
+            self.console(f&#34;{tab}{head}&#34;)
 
             if &#34;sheet&#34; in info:
                 if main or level &gt; 0:
@@ -1960,11 +1947,11 @@ class Sheets:
         src = self.getSheetData()
 
         if src is None:
-            console(&#34;Nothing to show&#34;)
+            self.console(&#34;Nothing to show&#34;)
 
         instructions = src.instructions
 
-        console(&#34;\n&#34;.join(f&#34;{path}&#34; for path in instructions))</code></pre>
+        self.console(&#34;\n&#34;.join(f&#34;{path}&#34; for path in instructions))</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -2000,7 +1987,7 @@ from the source.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L192-L276" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/sheets.py#L191-L276" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fromSourceSheet(self):
     &#34;&#34;&#34;Loads a ner sheet from source.
@@ -2057,7 +2044,7 @@ from the source.</li>
         loaded = self.readData(sheetData, sheetUpdated)
 
         if not loaded:
-            console(&#34;compute sheet data from scratch&#34;)
+            self.console(&#34;compute sheet data from scratch&#34;)
             sheetData.logData = []
 
             self._readSheets(sheetData)
@@ -2074,6 +2061,7 @@ from the source.</li>
                 &#34;nameMap&#34;,
                 &#34;instructions&#34;,
                 &#34;inventory&#34;,
+                &#34;triggerFromMatch&#34;,
                 &#34;hitData&#34;,
             ]
             self.writeData(
@@ -2082,11 +2070,11 @@ from the source.</li>
             )
             showLog = False
     else:
-        console(&#34;sheet data uptodate in memory&#34;)
+        self.console(&#34;sheet data uptodate in memory&#34;)
 
     if showLog and not browse:
         for x in sheetData.logData:
-            consoleLine(*x)</code></pre>
+            self.consoleLine(*x)</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.sheets.Sheets.getSheetData"><code class="name flex">
@@ -2097,7 +2085,7 @@ from the source.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L133-L138" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/sheets.py#L132-L137" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getSheetData(self):
     &#34;&#34;&#34;Deliver the current sheet.&#34;&#34;&#34;
@@ -2115,7 +2103,7 @@ from the source.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L176-L190" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/sheets.py#L175-L189" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadSheetData(self):
     &#34;&#34;&#34;Loads the current ner sheet into memory, if there is one.&#34;&#34;&#34;
@@ -2142,7 +2130,7 @@ from the source.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L123-L131" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/sheets.py#L122-L130" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def log(self, isError, indent, msg):
     browse = self.browse
@@ -2152,7 +2140,7 @@ from the source.</li>
     logData.append((isError, indent, msg))
 
     if not browse:
-        consoleLine(isError, indent, msg)</code></pre>
+        self.consoleLine(isError, indent, msg)</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.sheets.Sheets.readData"><code class="name flex">
@@ -2163,7 +2151,7 @@ from the source.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L71-L108" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/sheets.py#L70-L107" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readData(self, sheetData, sheetUpdated):
     setName = self.setName
@@ -2189,7 +2177,7 @@ from the source.</li>
     if not uptodate:
         return False
 
-    console(&#34;load sheet with uptodate data from disk&#34;)
+    self.console(&#34;load sheet with uptodate data from disk&#34;)
 
     if fileExists(dataFile):
         with gzip.open(dataFile, mode=&#34;rb&#34;) as f:
@@ -2215,7 +2203,7 @@ by editing the spreadsheets in Excel.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L53-L69" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/sheets.py#L52-L68" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readSheets(self):
     &#34;&#34;&#34;Read the list current ner sheets (again).
@@ -2250,7 +2238,7 @@ by editing the spreadsheets in Excel.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L140-L174" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/sheets.py#L139-L173" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setSheet(self, newSheet):
     &#34;&#34;&#34;Switch to a named ner sheet.
@@ -2297,17 +2285,17 @@ by editing the spreadsheets in Excel.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L956-L964" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/sheets.py#L949-L957" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showInstructions(self):
     src = self.getSheetData()
 
     if src is None:
-        console(&#34;Nothing to show&#34;)
+        self.console(&#34;Nothing to show&#34;)
 
     instructions = src.instructions
 
-    console(&#34;\n&#34;.join(f&#34;{path}&#34; for path in instructions))</code></pre>
+    self.console(&#34;\n&#34;.join(f&#34;{path}&#34; for path in instructions))</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.sheets.Sheets.showSheetsCombined"><code class="name flex">
@@ -2318,13 +2306,13 @@ by editing the spreadsheets in Excel.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L875-L906" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/sheets.py#L868-L899" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showSheetsCombined(self, main=False):
     src = self.getSheetData()
 
     if src is None:
-        console(&#34;Nothing to show&#34;)
+        self.console(&#34;Nothing to show&#34;)
 
     src = src.combined
     nameMap = src.nameMap
@@ -2335,12 +2323,12 @@ by editing the spreadsheets in Excel.</p></div>
             triggerRep = &#34;|&#34;.join(
                 t for t in sorted(triggers, key=lambda x: (-len(x), x))
             )
-            console(f&#34;{tab}  &#39;{name}&#39; {eidkind} : {triggerRep}&#34;)
-        console(f&#34;{tab}  ---&#34;)
+            self.console(f&#34;{tab}  &#39;{name}&#39; {eidkind} : {triggerRep}&#34;)
+        self.console(f&#34;{tab}  ---&#34;)
 
     def showDir(head, info, level):
         tab = &#34;  &#34; * level
-        console(f&#34;{tab}{head}&#34;)
+        self.console(f&#34;{tab}{head}&#34;)
 
         if &#34;sheet&#34; in info:
             if main or level &gt; 0:
@@ -2362,7 +2350,7 @@ by editing the spreadsheets in Excel.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L908-L954" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/sheets.py#L901-L947" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showSheetsCompiled(self, main=False):
     nameMap = self.nameMap
@@ -2394,12 +2382,12 @@ by editing the spreadsheets in Excel.</p></div>
                 )
                 triggerInfo = f&#34;{sourceRep} =&gt; {triggerRep}&#34;
 
-            console(f&#34;{tab}  &#39;{name}&#39; {eidkind} : {triggerInfo}&#34;)
-        console(f&#34;{tab}  ---&#34;)
+            self.console(f&#34;{tab}  &#39;{name}&#39; {eidkind} : {triggerInfo}&#34;)
+        self.console(f&#34;{tab}  ---&#34;)
 
     def showDir(head, info, level):
         tab = &#34;  &#34; * level
-        console(f&#34;{tab}{head}&#34;)
+        self.console(f&#34;{tab}{head}&#34;)
 
         if &#34;sheet&#34; in info:
             if main or level &gt; 0:
@@ -2421,13 +2409,13 @@ by editing the spreadsheets in Excel.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L833-L873" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/sheets.py#L826-L866" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showSheetsRaw(self, main=False):
     src = self.getSheetData()
 
     if src is None:
-        console(&#34;Nothing to show&#34;)
+        self.console(&#34;Nothing to show&#34;)
 
     src = src.raw
     nameMap = src.nameMap
@@ -2438,21 +2426,21 @@ by editing the spreadsheets in Excel.</p></div>
             triggerRep = &#34;|&#34;.join(
                 t for t in sorted(triggers, key=lambda x: (-len(x), x))
             )
-            console(f&#34;{tab}  &#39;{name}&#39; {eidkind} : {triggerRep}&#34;)
-        console(f&#34;{tab}  ---&#34;)
+            self.console(f&#34;{tab}  &#39;{name}&#39; {eidkind} : {triggerRep}&#34;)
+        self.console(f&#34;{tab}  ---&#34;)
 
     def showDir(head, tweaks, level):
         tab = &#34;  &#34; * level
-        console(f&#34;{tab}{head}&#34;)
+        self.console(f&#34;{tab}{head}&#34;)
 
         rng = tweaks.rng or {}
         for b, e in sorted(rng):
-            console(f&#34;{tab}  {b}-{e}.xslx&#34;)
+            self.console(f&#34;{tab}  {b}-{e}.xslx&#34;)
             showSheet(rng[(b, e)], tab)
 
         sng = tweaks.sng or {}
         for k in sorted(sng):
-            console(f&#34;{tab}  {k}.xslx&#34;)
+            self.console(f&#34;{tab}  {k}.xslx&#34;)
             showSheet(sng[k], tab)
 
         sdr = tweaks.sdr or {}
@@ -2474,7 +2462,7 @@ by editing the spreadsheets in Excel.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/sheets.py#L110-L121" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/sheets.py#L109-L120" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeData(self, sheetData, tm):
     setName = self.setName

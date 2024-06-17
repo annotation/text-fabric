@@ -34,7 +34,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/settings.py#L1-L236" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/settings.py#L1-L249" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Corpus dependent setup of the annotation tool.
 
@@ -271,7 +271,20 @@ class Settings:
         so that we can issue temporary console statements during development
         without the need to add an `import` statement to the code.
         &#34;&#34;&#34;
-        cs(msg, **kwargs)</code></pre>
+        cs(msg, **kwargs)
+
+    def consoleLine(isError, indent, msg):
+        tabs = &#34;  &#34; * indent
+        head = &#34;-&#34; * len(msg)
+
+        if isError is None:
+            cs(&#34;&#34;)
+            cs(f&#34;{tabs}{head}&#34;)
+
+        cs(f&#34;{tabs}{msg}\n&#34;, error=isError)
+
+        if isError is None:
+            cs(f&#34;{tabs}{head}&#34;)</code></pre>
 </details>
 </section>
 <section>
@@ -397,7 +410,7 @@ Those configuration values are read from a YAML file, located in a directory
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/settings.py#L196-L236" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/settings.py#L196-L249" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Settings:
     def __init__(self):
@@ -439,7 +452,20 @@ Those configuration values are read from a YAML file, located in a directory
         so that we can issue temporary console statements during development
         without the need to add an `import` statement to the code.
         &#34;&#34;&#34;
-        cs(msg, **kwargs)</code></pre>
+        cs(msg, **kwargs)
+
+    def consoleLine(isError, indent, msg):
+        tabs = &#34;  &#34; * indent
+        head = &#34;-&#34; * len(msg)
+
+        if isError is None:
+            cs(&#34;&#34;)
+            cs(f&#34;{tabs}{head}&#34;)
+
+        cs(f&#34;{tabs}{msg}\n&#34;, error=isError)
+
+        if isError is None:
+            cs(f&#34;{tabs}{head}&#34;)</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -459,7 +485,7 @@ without the need to add an <code>import</code> statement to the code.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/settings.py#L227-L236" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/settings.py#L227-L236" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(self, msg, **kwargs):
     &#34;&#34;&#34;Print something to the output.
@@ -471,6 +497,30 @@ without the need to add an <code>import</code> statement to the code.</p></div>
     without the need to add an `import` statement to the code.
     &#34;&#34;&#34;
     cs(msg, **kwargs)</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.settings.Settings.consoleLine"><code class="name flex">
+<span>def <span class="ident">consoleLine</span></span>(<span>isError, indent, msg)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/settings.py#L238-L249" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def consoleLine(isError, indent, msg):
+    tabs = &#34;  &#34; * indent
+    head = &#34;-&#34; * len(msg)
+
+    if isError is None:
+        cs(&#34;&#34;)
+        cs(f&#34;{tabs}{head}&#34;)
+
+    cs(f&#34;{tabs}{msg}\n&#34;, error=isError)
+
+    if isError is None:
+        cs(f&#34;{tabs}{head}&#34;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -563,6 +613,7 @@ setTimeout(() => input.focus(), 100);
 <h4><code><a title="tf.browser.ner.settings.Settings" href="#tf.browser.ner.settings.Settings">Settings</a></code></h4>
 <ul class="">
 <li><code><a title="tf.browser.ner.settings.Settings.console" href="#tf.browser.ner.settings.Settings.console">console</a></code></li>
+<li><code><a title="tf.browser.ner.settings.Settings.consoleLine" href="#tf.browser.ner.settings.Settings.consoleLine">consoleLine</a></code></li>
 </ul>
 </li>
 </ul>

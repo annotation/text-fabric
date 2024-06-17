@@ -244,7 +244,7 @@ slots.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/ner.py#L1-L728" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/ner.py#L1-L742" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;API for Named Entity marking.
 
@@ -513,7 +513,6 @@ Lines consist of tab separated fields:
 from textwrap import dedent
 import collections
 
-from ...core.helpers import console
 from ...core.generic import AttrDict
 from .sheets import Sheets
 from .helpers import findCompile
@@ -636,6 +635,7 @@ class NER(Sheets, Sets, Show):
         bFindRe=None,
         anyEnt=None,
         eVals=None,
+        trigger=None,
         qTokens=None,
         valSelect=None,
         freeState=None,
@@ -699,6 +699,10 @@ class NER(Sheets, Sets, Show):
             A sequence of values corresponding with the entity features `eid`
             and `kind`. If given, the function wants buckets that contain at least
             an entity with those properties.
+        trigger: string, optional None
+            If given, the function wants buckets that contain at least an
+            entity that is triggered by this string. The entity in question must
+            be the one given by the parameter `evals`.
         qTokens: tuple, optional None
             A sequence of tokens whose occurrences in the corpus will be looked up.
         valSelect: dict, optional None
@@ -746,12 +750,20 @@ class NER(Sheets, Sets, Show):
         getTokens = self.getTokens
 
         browse = self.browse
+        setIsRo = self.setIsRo
+        setIsSrc = self.setIsSrc
         setData = self.getSetData()
         entityIndex = setData.entityIndex
         entityVal = setData.entityVal
         entitySlotVal = setData.entitySlotVal
         entitySlotAll = setData.entitySlotAll
         entitySlotIndex = setData.entitySlotIndex
+
+        if setIsRo and not setIsSrc:
+            sheetData = self.getSheetData()
+            triggerFromMatch = sheetData.triggerFromMatch
+        else:
+            triggerFromMatch = None
 
         bucketUniverse = (
             setData.buckets
@@ -778,7 +790,7 @@ class NER(Sheets, Sets, Show):
         hasQTokens = qTokens is not None and len(qTokens)
         hasOcc = not hasEnt and hasQTokens
 
-        if eVals is not None and eVals in entityVal:
+        if hasEnt and eVals in entityVal:
             eSlots = entityVal[eVals]
             eStarts = {s[0]: s[-1] for s in eSlots}
         else:
@@ -800,12 +812,14 @@ class NER(Sheets, Sets, Show):
                 entitySlotVal,
                 entitySlotAll,
                 entitySlotIndex,
+                triggerFromMatch,
                 getTextR,
                 getTokens,
                 b,
                 bFindRe,
                 anyEnt,
                 eVals,
+                trigger,
                 useQTokens,
                 valSelect,
                 requireFree,
@@ -950,7 +964,7 @@ class NER(Sheets, Sets, Show):
         nTriggers = len(allTriggers)
         nHits = sum(e[-1] for e in hitData)
 
-        console(
+        self.console(
             dedent(
                 f&#34;&#34;&#34;
                 Entities targeted:       {nEnt:&gt;5}
@@ -1025,7 +1039,7 @@ browser. This will influence how results are reported back.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/ner.py#L277-L728" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/ner.py#L276-L742" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Sheets, Sets, Show):
     def __init__(self, app, data=None, browse=False):
@@ -1141,6 +1155,7 @@ browser. This will influence how results are reported back.</dd>
         bFindRe=None,
         anyEnt=None,
         eVals=None,
+        trigger=None,
         qTokens=None,
         valSelect=None,
         freeState=None,
@@ -1204,6 +1219,10 @@ browser. This will influence how results are reported back.</dd>
             A sequence of values corresponding with the entity features `eid`
             and `kind`. If given, the function wants buckets that contain at least
             an entity with those properties.
+        trigger: string, optional None
+            If given, the function wants buckets that contain at least an
+            entity that is triggered by this string. The entity in question must
+            be the one given by the parameter `evals`.
         qTokens: tuple, optional None
             A sequence of tokens whose occurrences in the corpus will be looked up.
         valSelect: dict, optional None
@@ -1251,12 +1270,20 @@ browser. This will influence how results are reported back.</dd>
         getTokens = self.getTokens
 
         browse = self.browse
+        setIsRo = self.setIsRo
+        setIsSrc = self.setIsSrc
         setData = self.getSetData()
         entityIndex = setData.entityIndex
         entityVal = setData.entityVal
         entitySlotVal = setData.entitySlotVal
         entitySlotAll = setData.entitySlotAll
         entitySlotIndex = setData.entitySlotIndex
+
+        if setIsRo and not setIsSrc:
+            sheetData = self.getSheetData()
+            triggerFromMatch = sheetData.triggerFromMatch
+        else:
+            triggerFromMatch = None
 
         bucketUniverse = (
             setData.buckets
@@ -1283,7 +1310,7 @@ browser. This will influence how results are reported back.</dd>
         hasQTokens = qTokens is not None and len(qTokens)
         hasOcc = not hasEnt and hasQTokens
 
-        if eVals is not None and eVals in entityVal:
+        if hasEnt and eVals in entityVal:
             eSlots = entityVal[eVals]
             eStarts = {s[0]: s[-1] for s in eSlots}
         else:
@@ -1305,12 +1332,14 @@ browser. This will influence how results are reported back.</dd>
                 entitySlotVal,
                 entitySlotAll,
                 entitySlotIndex,
+                triggerFromMatch,
                 getTextR,
                 getTokens,
                 b,
                 bFindRe,
                 anyEnt,
                 eVals,
+                trigger,
                 useQTokens,
                 valSelect,
                 requireFree,
@@ -1455,7 +1484,7 @@ browser. This will influence how results are reported back.</dd>
         nTriggers = len(allTriggers)
         nHits = sum(e[-1] for e in hitData)
 
-        console(
+        self.console(
             dedent(
                 f&#34;&#34;&#34;
                 Entities targeted:       {nEnt:&gt;5}
@@ -1505,7 +1534,7 @@ with this string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/ner.py#L719-L728" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/ner.py#L733-L742" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def bakeEntities(self, versionExtension=&#34;e&#34;):
     &#34;&#34;&#34;Bakes the entities of the current set as nodes into a new TF data source.
@@ -1520,7 +1549,7 @@ with this string.</dd>
 </details>
 </dd>
 <dt id="tf.browser.ner.ner.NER.filterContent"><code class="name flex">
-<span>def <span class="ident">filterContent</span></span>(<span>self, buckets=None, node=None, bFind=None, bFindC=None, bFindRe=None, anyEnt=None, eVals=None, qTokens=None, valSelect=None, freeState=None, showStats=None)</span>
+<span>def <span class="ident">filterContent</span></span>(<span>self, buckets=None, node=None, bFind=None, bFindC=None, bFindRe=None, anyEnt=None, eVals=None, trigger=None, qTokens=None, valSelect=None, freeState=None, showStats=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Filter the buckets according to a variety of criteria.</p>
@@ -1571,6 +1600,10 @@ already marked entity.</dd>
 <dd>A sequence of values corresponding with the entity features <code>eid</code>
 and <code>kind</code>. If given, the function wants buckets that contain at least
 an entity with those properties.</dd>
+<dt><strong><code>trigger</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>If given, the function wants buckets that contain at least an
+entity that is triggered by this string. The entity in question must
+be the one given by the parameter <code>evals</code>.</dd>
 <dt><strong><code>qTokens</code></strong> :&ensp;<code>tuple</code>, optional <code>None</code></dt>
 <dd>A sequence of tokens whose occurrences in the corpus will be looked up.</dd>
 <dt><strong><code>valSelect</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>
@@ -1613,7 +1646,7 @@ of results.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/ner.py#L382-L621" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/ner.py#L381-L635" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def filterContent(
     self,
@@ -1624,6 +1657,7 @@ of results.</p>
     bFindRe=None,
     anyEnt=None,
     eVals=None,
+    trigger=None,
     qTokens=None,
     valSelect=None,
     freeState=None,
@@ -1687,6 +1721,10 @@ of results.</p>
         A sequence of values corresponding with the entity features `eid`
         and `kind`. If given, the function wants buckets that contain at least
         an entity with those properties.
+    trigger: string, optional None
+        If given, the function wants buckets that contain at least an
+        entity that is triggered by this string. The entity in question must
+        be the one given by the parameter `evals`.
     qTokens: tuple, optional None
         A sequence of tokens whose occurrences in the corpus will be looked up.
     valSelect: dict, optional None
@@ -1734,12 +1772,20 @@ of results.</p>
     getTokens = self.getTokens
 
     browse = self.browse
+    setIsRo = self.setIsRo
+    setIsSrc = self.setIsSrc
     setData = self.getSetData()
     entityIndex = setData.entityIndex
     entityVal = setData.entityVal
     entitySlotVal = setData.entitySlotVal
     entitySlotAll = setData.entitySlotAll
     entitySlotIndex = setData.entitySlotIndex
+
+    if setIsRo and not setIsSrc:
+        sheetData = self.getSheetData()
+        triggerFromMatch = sheetData.triggerFromMatch
+    else:
+        triggerFromMatch = None
 
     bucketUniverse = (
         setData.buckets
@@ -1766,7 +1812,7 @@ of results.</p>
     hasQTokens = qTokens is not None and len(qTokens)
     hasOcc = not hasEnt and hasQTokens
 
-    if eVals is not None and eVals in entityVal:
+    if hasEnt and eVals in entityVal:
         eSlots = entityVal[eVals]
         eStarts = {s[0]: s[-1] for s in eSlots}
     else:
@@ -1788,12 +1834,14 @@ of results.</p>
             entitySlotVal,
             entitySlotAll,
             entitySlotIndex,
+            triggerFromMatch,
             getTextR,
             getTokens,
             b,
             bFindRe,
             anyEnt,
             eVals,
+            trigger,
             useQTokens,
             valSelect,
             requireFree,
@@ -1876,7 +1924,7 @@ the value is the name of that entity in the context indicated by path.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/ner.py#L342-L380" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/ner.py#L341-L379" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findOccs(self):
     &#34;&#34;&#34;Finds the occurrences of multiple triggers.
@@ -1927,7 +1975,7 @@ the value is the name of that entity in the context indicated by path.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/ner.py#L623-L717" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/ner.py#L637-L731" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reportHits(self):
     &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
@@ -2011,7 +2059,7 @@ the value is the name of that entity in the context indicated by path.</p></div>
     nTriggers = len(allTriggers)
     nHits = sum(e[-1] for e in hitData)
 
-    console(
+    self.console(
         dedent(
             f&#34;&#34;&#34;
             Entities targeted:       {nEnt:&gt;5}
@@ -2034,7 +2082,7 @@ the value is the name of that entity in the context indicated by path.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/ner.py#L338-L340" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/ner.py#L337-L339" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setTask(self, task):
     self.setSet(task)

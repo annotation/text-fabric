@@ -34,7 +34,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/match.py#L1-L318" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/match.py#L1-L324" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Match functions.
 
@@ -154,9 +154,7 @@ def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
                     lastT = bStringLast[i + m]
                     slots = tuple(range(firstT, lastT + 1))
                     eidkind = idMap[trigger]
-                    dest = results.setdefault(eidkind, {}).setdefault(
-                        trigger, {}
-                    )
+                    dest = results.setdefault(eidkind, {}).setdefault(trigger, {})
                     destHits = dest.setdefault(tPath, [])
                     destHits.append(slots)
                     break
@@ -173,12 +171,14 @@ def entityMatch(
     entitySlotVal,
     entitySlotAll,
     entitySlotIndex,
+    triggerFromMatch,
     getTextR,
     getTokens,
     b,
     bFindRe,
     anyEnt,
     eVals,
+    trigger,
     qTokens,
     valSelect,
     freeState,
@@ -198,7 +198,7 @@ def entityMatch(
         See `tf.browser.ner.corpus.Corpus.getTokens`
     b: integer
         The node of the bucket in question
-    bFindRe, anyEnt, eVals, qTokens, valSelect, freeState: object
+    bFindRe, anyEnt, eVals, trigger, qTokens, valSelect, freeState: object
         As in `tf.browser.ner.ner.NER.filterContent`
 
     Returns
@@ -211,7 +211,7 @@ def entityMatch(
             *   `tokens` all tokens of the bucket, each token is a tuple consisting
                 of its slot number (position) and string value;
             *   `matches`: a list of the positions of the found occurrences for the
-                `qTokens` and / or `eVals` in the bucket;
+                `qTokens` and / or `eVals` possibly with `trigger` in the bucket;
             *   `positions`: a set of positions in the bucket where the
                 `bFindRe` starts to match;
 
@@ -277,6 +277,12 @@ def entityMatch(
 
             if valOK:
                 matches.append(slots)
+
+        if trigger is not None:
+            triggerMatches = [slots for slots in matches if triggerFromMatch[slots] == trigger]
+
+            if len(triggerMatches) == 0:
+                matches = []
 
     elif qTokens is not None:
         nTokens = len(qTokens)
@@ -364,7 +370,7 @@ def entityMatch(
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.browser.ner.match.entityMatch"><code class="name flex">
-<span>def <span class="ident">entityMatch</span></span>(<span>entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex, getTextR, getTokens, b, bFindRe, anyEnt, eVals, qTokens, valSelect, freeState, fValStats)</span>
+<span>def <span class="ident">entityMatch</span></span>(<span>entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex, triggerFromMatch, getTextR, getTokens, b, bFindRe, anyEnt, eVals, trigger, qTokens, valSelect, freeState, fValStats)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Checks whether a bucket satisfies a variety of criteria.</p>
@@ -379,7 +385,7 @@ def entityMatch(
 <dd>See <code><a title="tf.browser.ner.corpus.Corpus.getTokens" href="corpus.html#tf.browser.ner.corpus.Corpus.getTokens">Corpus.getTokens</a></code></dd>
 <dt><strong><code>b</code></strong> :&ensp;<code>integer</code></dt>
 <dd>The node of the bucket in question</dd>
-<dt><strong><code>bFindRe</code></strong>, <strong><code>anyEnt</code></strong>, <strong><code>eVals</code></strong>, <strong><code>qTokens</code></strong>, <strong><code>valSelect</code></strong>, <strong><code>freeState</code></strong> :&ensp;<code>object</code></dt>
+<dt><strong><code>bFindRe</code></strong>, <strong><code>anyEnt</code></strong>, <strong><code>eVals</code></strong>, <strong><code>trigger</code></strong>, <strong><code>qTokens</code></strong>, <strong><code>valSelect</code></strong>, <strong><code>freeState</code></strong> :&ensp;<code>object</code></dt>
 <dd>As in <code><a title="tf.browser.ner.ner.NER.filterContent" href="ner.html#tf.browser.ner.ner.NER.filterContent">NER.filterContent()</a></code></dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -393,7 +399,7 @@ def entityMatch(
 <li><code>tokens</code> all tokens of the bucket, each token is a tuple consisting
 of its slot number (position) and string value;</li>
 <li><code>matches</code>: a list of the positions of the found occurrences for the
-<code>qTokens</code> and / or <code>eVals</code> in the bucket;</li>
+<code>qTokens</code> and / or <code>eVals</code> possibly with <code>trigger</code> in the bucket;</li>
 <li><code>positions</code>: a set of positions in the bucket where the
 <code>bFindRe</code> starts to match;</li>
 </ul>
@@ -404,7 +410,7 @@ of its slot number (position) and string value;</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/match.py#L132-L318" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/match.py#L130-L324" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def entityMatch(
     entityIndex,
@@ -412,12 +418,14 @@ of its slot number (position) and string value;</li>
     entitySlotVal,
     entitySlotAll,
     entitySlotIndex,
+    triggerFromMatch,
     getTextR,
     getTokens,
     b,
     bFindRe,
     anyEnt,
     eVals,
+    trigger,
     qTokens,
     valSelect,
     freeState,
@@ -437,7 +445,7 @@ of its slot number (position) and string value;</li>
         See `tf.browser.ner.corpus.Corpus.getTokens`
     b: integer
         The node of the bucket in question
-    bFindRe, anyEnt, eVals, qTokens, valSelect, freeState: object
+    bFindRe, anyEnt, eVals, trigger, qTokens, valSelect, freeState: object
         As in `tf.browser.ner.ner.NER.filterContent`
 
     Returns
@@ -450,7 +458,7 @@ of its slot number (position) and string value;</li>
             *   `tokens` all tokens of the bucket, each token is a tuple consisting
                 of its slot number (position) and string value;
             *   `matches`: a list of the positions of the found occurrences for the
-                `qTokens` and / or `eVals` in the bucket;
+                `qTokens` and / or `eVals` possibly with `trigger` in the bucket;
             *   `positions`: a set of positions in the bucket where the
                 `bFindRe` starts to match;
 
@@ -516,6 +524,12 @@ of its slot number (position) and string value;</li>
 
             if valOK:
                 matches.append(slots)
+
+        if trigger is not None:
+            triggerMatches = [slots for slots in matches if triggerFromMatch[slots] == trigger]
+
+            if len(triggerMatches) == 0:
+                matches = []
 
     elif qTokens is not None:
         nTokens = len(qTokens)
@@ -631,7 +645,7 @@ the value is a list of occurrences, where each occurrence is a tuple of slots.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/match.py#L11-L129" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/match.py#L11-L127" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
     &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens in a single bucket.
@@ -741,9 +755,7 @@ the value is a list of occurrences, where each occurrence is a tuple of slots.</
                     lastT = bStringLast[i + m]
                     slots = tuple(range(firstT, lastT + 1))
                     eidkind = idMap[trigger]
-                    dest = results.setdefault(eidkind, {}).setdefault(
-                        trigger, {}
-                    )
+                    dest = results.setdefault(eidkind, {}).setdefault(trigger, {})
                     destHits = dest.setdefault(tPath, [])
                     destHits.append(slots)
                     break

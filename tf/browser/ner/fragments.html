@@ -35,7 +35,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L1-L920" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/fragments.py#L1-L953" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Wraps various pieces into HTML.
 
@@ -345,6 +345,7 @@ class Fragments:
         features = settings.features
 
         activeEntity = v.activeentity
+        activeTrigger = v.activetrigger
         tokenStart = v.tokenstart
         tokenEnd = v.tokenend
 
@@ -358,6 +359,7 @@ class Fragments:
             eTxt = repIdent(features, activeEntity, active=&#34;active&#34;)
         elif hasOcc:
             v.activeentity = None
+            v.activetrigger = None
             txt = (
                 ner.getText(range(tokenStart, tokenEnd + 1))
                 if tokenStart and tokenEnd
@@ -366,12 +368,14 @@ class Fragments:
             eTxt = &#34;&#34;
         else:
             v.activeentity = None
+            v.activetrigger = None
             v.tokenstart = None
             v.tokenend = None
             txt = &#34;&#34;
             eTxt = &#34;&#34;
 
         v.activeentityrep = &#34;⊙&#34;.join(activeEntity) if activeEntity else &#34;&#34;
+        v.activetriggerrep = &#34;⊙&#34;.join(activeTrigger) if activeTrigger else &#34;&#34;
         tokenStart = v.tokenstart
         tokenEnd = v.tokenend
 
@@ -394,8 +398,15 @@ class Fragments:
         ner = self.ner
         settings = ner.settings
         features = settings.features
+        setIsSrc = ner.setIsSrc
+        setIsRo = ner.setIsRo
+        setIsX = setIsRo and not setIsSrc
 
-        sortKeys = ((feat, f&#34;sort_{i}&#34;) for (i, feat) in enumerate(features))
+        sortKeys = (
+            ((&#34;name&#34;, &#34;sort_0&#34;),)
+            if setIsX
+            else ((feat, f&#34;sort_{i}&#34;) for (i, feat) in enumerate(features))
+        )
 
         content = [
             H.input(type=&#34;hidden&#34;, name=&#34;sortkey&#34;, id=&#34;sortkey&#34;, value=sortKey),
@@ -425,43 +436,65 @@ class Fragments:
     def wrapEntityText(self):
         &#34;&#34;&#34;HTML for the selected entity widget.&#34;&#34;&#34;
         v = self.v
+        ner = self.ner
+        setIsRo = ner.setIsRo
+        setIsSrc = ner.setIsSrc
+        setIsX = setIsRo and not setIsSrc
 
         freeState = v.freestate
         txt = v.txt
         eTxt = v.etxt
 
         title = &#34;choose: free, intersecting with other entities, or all&#34;
-        v.entitytext = H.join(
-            H.span(txt if txt else eTxt or &#34;&#34;, id=&#34;qtextentshow&#34;),
-            &#34; &#34;,
-            H.button(&#34;❌&#34;, type=&#34;submit&#34;, id=&#34;queryclear&#34;, cls=&#34;icon&#34;),
-            &#34; &#34;,
-            H.button(
-                &#34;✅&#34;,
-                type=&#34;submit&#34;,
-                id=&#34;lookupq&#34;,
-                cls=&#34;icon&#34;,
-                title=&#34;look up and fill in green fields&#34;,
-            ),
-            H.button(
-                &#34;❎&#34;,
-                type=&#34;submit&#34;,
-                id=&#34;lookupn&#34;,
-                cls=&#34;icon&#34;,
-                title=&#34;look up and keep green fields as is&#34;,
-            ),
-            H.input(type=&#34;hidden&#34;, name=&#34;freestate&#34;, id=&#34;freestate&#34;, value=freeState),
-            H.button(
-                &#34;⚭ intersecting&#34;
-                if freeState == &#34;bound&#34;
-                else &#34;⚯ free&#34;
-                if freeState == &#34;free&#34;
-                else &#34;⚬ all&#34;,
-                type=&#34;submit&#34;,
-                id=&#34;freebutton&#34;,
-                cls=&#34;mono&#34;,
-                title=title,
-            ),
+        v.entitytext = (
+            &#34;&#34;
+            if setIsX
+            else H.div(
+                (
+                    H.b(&#34;Mark&#34;),
+                    H.span(
+                        H.join(
+                            H.span(txt if txt else eTxt or &#34;&#34;, id=&#34;qtextentshow&#34;),
+                            &#34; &#34;,
+                            H.button(&#34;❌&#34;, type=&#34;submit&#34;, id=&#34;queryclear&#34;, cls=&#34;icon&#34;),
+                            &#34; &#34;,
+                            H.button(
+                                &#34;✅&#34;,
+                                type=&#34;submit&#34;,
+                                id=&#34;lookupq&#34;,
+                                cls=&#34;icon&#34;,
+                                title=&#34;look up and fill in green fields&#34;,
+                            ),
+                            H.button(
+                                &#34;❎&#34;,
+                                type=&#34;submit&#34;,
+                                id=&#34;lookupn&#34;,
+                                cls=&#34;icon&#34;,
+                                title=&#34;look up and keep green fields as is&#34;,
+                            ),
+                            H.input(
+                                type=&#34;hidden&#34;,
+                                name=&#34;freestate&#34;,
+                                id=&#34;freestate&#34;,
+                                value=freeState,
+                            ),
+                            H.button(
+                                &#34;⚭ intersecting&#34;
+                                if freeState == &#34;bound&#34;
+                                else &#34;⚯ free&#34;
+                                if freeState == &#34;free&#34;
+                                else &#34;⚬ all&#34;,
+                                type=&#34;submit&#34;,
+                                id=&#34;freebutton&#34;,
+                                cls=&#34;mono&#34;,
+                                title=title,
+                            ),
+                        ),
+                        id=&#34;etextwidget&#34;,
+                    ),
+                ),
+                id=&#34;markwidget&#34;,
+            )
         )
 
     def wrapEntityFeats(self):
@@ -976,7 +1009,7 @@ class Fragments:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L14-L920" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/fragments.py#L14-L953" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Fragments:
     def wrapMessages(self):
@@ -1273,6 +1306,7 @@ class Fragments:
         features = settings.features
 
         activeEntity = v.activeentity
+        activeTrigger = v.activetrigger
         tokenStart = v.tokenstart
         tokenEnd = v.tokenend
 
@@ -1286,6 +1320,7 @@ class Fragments:
             eTxt = repIdent(features, activeEntity, active=&#34;active&#34;)
         elif hasOcc:
             v.activeentity = None
+            v.activetrigger = None
             txt = (
                 ner.getText(range(tokenStart, tokenEnd + 1))
                 if tokenStart and tokenEnd
@@ -1294,12 +1329,14 @@ class Fragments:
             eTxt = &#34;&#34;
         else:
             v.activeentity = None
+            v.activetrigger = None
             v.tokenstart = None
             v.tokenend = None
             txt = &#34;&#34;
             eTxt = &#34;&#34;
 
         v.activeentityrep = &#34;⊙&#34;.join(activeEntity) if activeEntity else &#34;&#34;
+        v.activetriggerrep = &#34;⊙&#34;.join(activeTrigger) if activeTrigger else &#34;&#34;
         tokenStart = v.tokenstart
         tokenEnd = v.tokenend
 
@@ -1322,8 +1359,15 @@ class Fragments:
         ner = self.ner
         settings = ner.settings
         features = settings.features
+        setIsSrc = ner.setIsSrc
+        setIsRo = ner.setIsRo
+        setIsX = setIsRo and not setIsSrc
 
-        sortKeys = ((feat, f&#34;sort_{i}&#34;) for (i, feat) in enumerate(features))
+        sortKeys = (
+            ((&#34;name&#34;, &#34;sort_0&#34;),)
+            if setIsX
+            else ((feat, f&#34;sort_{i}&#34;) for (i, feat) in enumerate(features))
+        )
 
         content = [
             H.input(type=&#34;hidden&#34;, name=&#34;sortkey&#34;, id=&#34;sortkey&#34;, value=sortKey),
@@ -1353,43 +1397,65 @@ class Fragments:
     def wrapEntityText(self):
         &#34;&#34;&#34;HTML for the selected entity widget.&#34;&#34;&#34;
         v = self.v
+        ner = self.ner
+        setIsRo = ner.setIsRo
+        setIsSrc = ner.setIsSrc
+        setIsX = setIsRo and not setIsSrc
 
         freeState = v.freestate
         txt = v.txt
         eTxt = v.etxt
 
         title = &#34;choose: free, intersecting with other entities, or all&#34;
-        v.entitytext = H.join(
-            H.span(txt if txt else eTxt or &#34;&#34;, id=&#34;qtextentshow&#34;),
-            &#34; &#34;,
-            H.button(&#34;❌&#34;, type=&#34;submit&#34;, id=&#34;queryclear&#34;, cls=&#34;icon&#34;),
-            &#34; &#34;,
-            H.button(
-                &#34;✅&#34;,
-                type=&#34;submit&#34;,
-                id=&#34;lookupq&#34;,
-                cls=&#34;icon&#34;,
-                title=&#34;look up and fill in green fields&#34;,
-            ),
-            H.button(
-                &#34;❎&#34;,
-                type=&#34;submit&#34;,
-                id=&#34;lookupn&#34;,
-                cls=&#34;icon&#34;,
-                title=&#34;look up and keep green fields as is&#34;,
-            ),
-            H.input(type=&#34;hidden&#34;, name=&#34;freestate&#34;, id=&#34;freestate&#34;, value=freeState),
-            H.button(
-                &#34;⚭ intersecting&#34;
-                if freeState == &#34;bound&#34;
-                else &#34;⚯ free&#34;
-                if freeState == &#34;free&#34;
-                else &#34;⚬ all&#34;,
-                type=&#34;submit&#34;,
-                id=&#34;freebutton&#34;,
-                cls=&#34;mono&#34;,
-                title=title,
-            ),
+        v.entitytext = (
+            &#34;&#34;
+            if setIsX
+            else H.div(
+                (
+                    H.b(&#34;Mark&#34;),
+                    H.span(
+                        H.join(
+                            H.span(txt if txt else eTxt or &#34;&#34;, id=&#34;qtextentshow&#34;),
+                            &#34; &#34;,
+                            H.button(&#34;❌&#34;, type=&#34;submit&#34;, id=&#34;queryclear&#34;, cls=&#34;icon&#34;),
+                            &#34; &#34;,
+                            H.button(
+                                &#34;✅&#34;,
+                                type=&#34;submit&#34;,
+                                id=&#34;lookupq&#34;,
+                                cls=&#34;icon&#34;,
+                                title=&#34;look up and fill in green fields&#34;,
+                            ),
+                            H.button(
+                                &#34;❎&#34;,
+                                type=&#34;submit&#34;,
+                                id=&#34;lookupn&#34;,
+                                cls=&#34;icon&#34;,
+                                title=&#34;look up and keep green fields as is&#34;,
+                            ),
+                            H.input(
+                                type=&#34;hidden&#34;,
+                                name=&#34;freestate&#34;,
+                                id=&#34;freestate&#34;,
+                                value=freeState,
+                            ),
+                            H.button(
+                                &#34;⚭ intersecting&#34;
+                                if freeState == &#34;bound&#34;
+                                else &#34;⚯ free&#34;
+                                if freeState == &#34;free&#34;
+                                else &#34;⚬ all&#34;,
+                                type=&#34;submit&#34;,
+                                id=&#34;freebutton&#34;,
+                                cls=&#34;mono&#34;,
+                                title=title,
+                            ),
+                        ),
+                        id=&#34;etextwidget&#34;,
+                    ),
+                ),
+                id=&#34;markwidget&#34;,
+            )
         )
 
     def wrapEntityFeats(self):
@@ -1900,7 +1966,7 @@ class Fragments:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L874-L888" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/fragments.py#L907-L921" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapActive(self):
     &#34;&#34;&#34;HTML for the active entity.&#34;&#34;&#34;
@@ -1929,7 +1995,7 @@ appear: with or without underlining, identifier, kind, frequency.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L163-L220" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/fragments.py#L163-L220" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapAppearance(self):
     &#34;&#34;&#34;HTML for the appearance widget.
@@ -1999,7 +2065,7 @@ appear: with or without underlining, identifier, kind, frequency.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L120-L135" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/fragments.py#L120-L135" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapCaption(self):
     v = self.v
@@ -2030,7 +2096,7 @@ hidden input elements.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L296-L348" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/fragments.py#L296-L352" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntity(self):
     &#34;&#34;&#34;Basic data for the selected entity widget.
@@ -2045,6 +2111,7 @@ hidden input elements.</p></div>
     features = settings.features
 
     activeEntity = v.activeentity
+    activeTrigger = v.activetrigger
     tokenStart = v.tokenstart
     tokenEnd = v.tokenend
 
@@ -2058,6 +2125,7 @@ hidden input elements.</p></div>
         eTxt = repIdent(features, activeEntity, active=&#34;active&#34;)
     elif hasOcc:
         v.activeentity = None
+        v.activetrigger = None
         txt = (
             ner.getText(range(tokenStart, tokenEnd + 1))
             if tokenStart and tokenEnd
@@ -2066,12 +2134,14 @@ hidden input elements.</p></div>
         eTxt = &#34;&#34;
     else:
         v.activeentity = None
+        v.activetrigger = None
         v.tokenstart = None
         v.tokenend = None
         txt = &#34;&#34;
         eTxt = &#34;&#34;
 
     v.activeentityrep = &#34;⊙&#34;.join(activeEntity) if activeEntity else &#34;&#34;
+    v.activetriggerrep = &#34;⊙&#34;.join(activeTrigger) if activeTrigger else &#34;&#34;
     tokenStart = v.tokenstart
     tokenEnd = v.tokenend
 
@@ -2098,7 +2168,7 @@ thereby selecting a subset of the original set of occurrences.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L428-L516" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/fragments.py#L461-L549" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityFeats(self):
     &#34;&#34;&#34;HTML for the entity feature value selection.
@@ -2199,7 +2269,7 @@ thereby selecting a subset of the original set of occurrences.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L350-L384" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/fragments.py#L354-L395" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityHeaders(self):
     &#34;&#34;&#34;HTML for the header of the entity table, dependent on the state of sorting.&#34;&#34;&#34;
@@ -2209,8 +2279,15 @@ thereby selecting a subset of the original set of occurrences.</p></div>
     ner = self.ner
     settings = ner.settings
     features = settings.features
+    setIsSrc = ner.setIsSrc
+    setIsRo = ner.setIsRo
+    setIsX = setIsRo and not setIsSrc
 
-    sortKeys = ((feat, f&#34;sort_{i}&#34;) for (i, feat) in enumerate(features))
+    sortKeys = (
+        ((&#34;name&#34;, &#34;sort_0&#34;),)
+        if setIsX
+        else ((feat, f&#34;sort_{i}&#34;) for (i, feat) in enumerate(features))
+    )
 
     content = [
         H.input(type=&#34;hidden&#34;, name=&#34;sortkey&#34;, id=&#34;sortkey&#34;, value=sortKey),
@@ -2246,7 +2323,7 @@ thereby selecting a subset of the original set of occurrences.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L890-L898" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/fragments.py#L923-L931" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityModReport(self):
     &#34;&#34;&#34;HTML for the combined report of add / del actions.&#34;&#34;&#34;
@@ -2271,7 +2348,7 @@ values.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L593-L836" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/fragments.py#L626-L869" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityModify(self):
     &#34;&#34;&#34;HTML for the add / del widget.
@@ -2529,7 +2606,7 @@ versus in filtered buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L852-L872" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/fragments.py#L885-L905" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityStat(self, val, feat):
     &#34;&#34;&#34;HTML for statistics of feature values.
@@ -2562,48 +2639,70 @@ versus in filtered buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L386-L426" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/fragments.py#L397-L459" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityText(self):
     &#34;&#34;&#34;HTML for the selected entity widget.&#34;&#34;&#34;
     v = self.v
+    ner = self.ner
+    setIsRo = ner.setIsRo
+    setIsSrc = ner.setIsSrc
+    setIsX = setIsRo and not setIsSrc
 
     freeState = v.freestate
     txt = v.txt
     eTxt = v.etxt
 
     title = &#34;choose: free, intersecting with other entities, or all&#34;
-    v.entitytext = H.join(
-        H.span(txt if txt else eTxt or &#34;&#34;, id=&#34;qtextentshow&#34;),
-        &#34; &#34;,
-        H.button(&#34;❌&#34;, type=&#34;submit&#34;, id=&#34;queryclear&#34;, cls=&#34;icon&#34;),
-        &#34; &#34;,
-        H.button(
-            &#34;✅&#34;,
-            type=&#34;submit&#34;,
-            id=&#34;lookupq&#34;,
-            cls=&#34;icon&#34;,
-            title=&#34;look up and fill in green fields&#34;,
-        ),
-        H.button(
-            &#34;❎&#34;,
-            type=&#34;submit&#34;,
-            id=&#34;lookupn&#34;,
-            cls=&#34;icon&#34;,
-            title=&#34;look up and keep green fields as is&#34;,
-        ),
-        H.input(type=&#34;hidden&#34;, name=&#34;freestate&#34;, id=&#34;freestate&#34;, value=freeState),
-        H.button(
-            &#34;⚭ intersecting&#34;
-            if freeState == &#34;bound&#34;
-            else &#34;⚯ free&#34;
-            if freeState == &#34;free&#34;
-            else &#34;⚬ all&#34;,
-            type=&#34;submit&#34;,
-            id=&#34;freebutton&#34;,
-            cls=&#34;mono&#34;,
-            title=title,
-        ),
+    v.entitytext = (
+        &#34;&#34;
+        if setIsX
+        else H.div(
+            (
+                H.b(&#34;Mark&#34;),
+                H.span(
+                    H.join(
+                        H.span(txt if txt else eTxt or &#34;&#34;, id=&#34;qtextentshow&#34;),
+                        &#34; &#34;,
+                        H.button(&#34;❌&#34;, type=&#34;submit&#34;, id=&#34;queryclear&#34;, cls=&#34;icon&#34;),
+                        &#34; &#34;,
+                        H.button(
+                            &#34;✅&#34;,
+                            type=&#34;submit&#34;,
+                            id=&#34;lookupq&#34;,
+                            cls=&#34;icon&#34;,
+                            title=&#34;look up and fill in green fields&#34;,
+                        ),
+                        H.button(
+                            &#34;❎&#34;,
+                            type=&#34;submit&#34;,
+                            id=&#34;lookupn&#34;,
+                            cls=&#34;icon&#34;,
+                            title=&#34;look up and keep green fields as is&#34;,
+                        ),
+                        H.input(
+                            type=&#34;hidden&#34;,
+                            name=&#34;freestate&#34;,
+                            id=&#34;freestate&#34;,
+                            value=freeState,
+                        ),
+                        H.button(
+                            &#34;⚭ intersecting&#34;
+                            if freeState == &#34;bound&#34;
+                            else &#34;⚯ free&#34;
+                            if freeState == &#34;free&#34;
+                            else &#34;⚬ all&#34;,
+                            type=&#34;submit&#34;,
+                            id=&#34;freebutton&#34;,
+                            cls=&#34;mono&#34;,
+                            title=title,
+                        ),
+                    ),
+                    id=&#34;etextwidget&#34;,
+                ),
+            ),
+            id=&#34;markwidget&#34;,
+        )
     )</code></pre>
 </details>
 </dd>
@@ -2619,7 +2718,7 @@ the add / del operations.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L551-L591" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/fragments.py#L584-L624" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapExceptions(self):
     &#34;&#34;&#34;HTML for the select / deselect buttons.
@@ -2675,7 +2774,7 @@ condition that the buckets do <em>not</em> contain entities).</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L222-L294" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/fragments.py#L222-L294" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapFilter(self):
     &#34;&#34;&#34;HTML for the filter widget.
@@ -2762,7 +2861,7 @@ buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L838-L850" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/fragments.py#L871-L883" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapFindStat(self):
     &#34;&#34;&#34;HTML for statistics.
@@ -2787,7 +2886,7 @@ buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L137-L150" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/fragments.py#L137-L150" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapLogs(self):
     v = self.v
@@ -2813,7 +2912,7 @@ buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L15-L20" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/fragments.py#L15-L20" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapMessages(self):
     &#34;&#34;&#34;HTML for messages.&#34;&#34;&#34;
@@ -2831,7 +2930,7 @@ buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L152-L161" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/fragments.py#L152-L161" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapQuery(self):
     &#34;&#34;&#34;HTML for all control widgets on the page.&#34;&#34;&#34;
@@ -2853,7 +2952,7 @@ buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L900-L920" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/fragments.py#L933-L953" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapReport(self, report, kind):
     &#34;&#34;&#34;HTML for the report of add / del actions.&#34;&#34;&#34;
@@ -2888,7 +2987,7 @@ be applied to all relevant buckets, or only to the filtered buckets.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L518-L549" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/fragments.py#L551-L582" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapScope(self):
     &#34;&#34;&#34;HTML for the scope widget.
@@ -2939,7 +3038,7 @@ features.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f89be70aa0cf2f8506d01e58d9c364833b39ec33/tf/browser/ner/fragments.py#L22-L118" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/fragments.py#L22-L118" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapSets(self):
     &#34;&#34;&#34;HTML for the annotation set chooser.
