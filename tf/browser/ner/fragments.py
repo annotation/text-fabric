@@ -306,6 +306,7 @@ class Fragments:
         features = settings.features
 
         activeEntity = v.activeentity
+        activeTrigger = v.activetrigger
         tokenStart = v.tokenstart
         tokenEnd = v.tokenend
 
@@ -319,6 +320,7 @@ class Fragments:
             eTxt = repIdent(features, activeEntity, active="active")
         elif hasOcc:
             v.activeentity = None
+            v.activetrigger = None
             txt = (
                 ner.getText(range(tokenStart, tokenEnd + 1))
                 if tokenStart and tokenEnd
@@ -327,12 +329,14 @@ class Fragments:
             eTxt = ""
         else:
             v.activeentity = None
+            v.activetrigger = None
             v.tokenstart = None
             v.tokenend = None
             txt = ""
             eTxt = ""
 
         v.activeentityrep = "⊙".join(activeEntity) if activeEntity else ""
+        v.activetriggerrep = "⊙".join(activeTrigger) if activeTrigger else ""
         tokenStart = v.tokenstart
         tokenEnd = v.tokenend
 
@@ -355,8 +359,15 @@ class Fragments:
         ner = self.ner
         settings = ner.settings
         features = settings.features
+        setIsSrc = ner.setIsSrc
+        setIsRo = ner.setIsRo
+        setIsX = setIsRo and not setIsSrc
 
-        sortKeys = ((feat, f"sort_{i}") for (i, feat) in enumerate(features))
+        sortKeys = (
+            (("name", "sort_0"),)
+            if setIsX
+            else ((feat, f"sort_{i}") for (i, feat) in enumerate(features))
+        )
 
         content = [
             H.input(type="hidden", name="sortkey", id="sortkey", value=sortKey),
@@ -386,43 +397,65 @@ class Fragments:
     def wrapEntityText(self):
         """HTML for the selected entity widget."""
         v = self.v
+        ner = self.ner
+        setIsRo = ner.setIsRo
+        setIsSrc = ner.setIsSrc
+        setIsX = setIsRo and not setIsSrc
 
         freeState = v.freestate
         txt = v.txt
         eTxt = v.etxt
 
         title = "choose: free, intersecting with other entities, or all"
-        v.entitytext = H.join(
-            H.span(txt if txt else eTxt or "", id="qtextentshow"),
-            " ",
-            H.button("❌", type="submit", id="queryclear", cls="icon"),
-            " ",
-            H.button(
-                "✅",
-                type="submit",
-                id="lookupq",
-                cls="icon",
-                title="look up and fill in green fields",
-            ),
-            H.button(
-                "❎",
-                type="submit",
-                id="lookupn",
-                cls="icon",
-                title="look up and keep green fields as is",
-            ),
-            H.input(type="hidden", name="freestate", id="freestate", value=freeState),
-            H.button(
-                "⚭ intersecting"
-                if freeState == "bound"
-                else "⚯ free"
-                if freeState == "free"
-                else "⚬ all",
-                type="submit",
-                id="freebutton",
-                cls="mono",
-                title=title,
-            ),
+        v.entitytext = (
+            ""
+            if setIsX
+            else H.div(
+                (
+                    H.b("Mark"),
+                    H.span(
+                        H.join(
+                            H.span(txt if txt else eTxt or "", id="qtextentshow"),
+                            " ",
+                            H.button("❌", type="submit", id="queryclear", cls="icon"),
+                            " ",
+                            H.button(
+                                "✅",
+                                type="submit",
+                                id="lookupq",
+                                cls="icon",
+                                title="look up and fill in green fields",
+                            ),
+                            H.button(
+                                "❎",
+                                type="submit",
+                                id="lookupn",
+                                cls="icon",
+                                title="look up and keep green fields as is",
+                            ),
+                            H.input(
+                                type="hidden",
+                                name="freestate",
+                                id="freestate",
+                                value=freeState,
+                            ),
+                            H.button(
+                                "⚭ intersecting"
+                                if freeState == "bound"
+                                else "⚯ free"
+                                if freeState == "free"
+                                else "⚬ all",
+                                type="submit",
+                                id="freebutton",
+                                cls="mono",
+                                title=title,
+                            ),
+                        ),
+                        id="etextwidget",
+                    ),
+                ),
+                id="markwidget",
+            )
         )
 
     def wrapEntityFeats(self):

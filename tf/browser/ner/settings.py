@@ -234,3 +234,16 @@ class Settings:
         without the need to add an `import` statement to the code.
         """
         cs(msg, **kwargs)
+
+    def consoleLine(isError, indent, msg):
+        tabs = "  " * indent
+        head = "-" * len(msg)
+
+        if isError is None:
+            cs("")
+            cs(f"{tabs}{head}")
+
+        cs(f"{tabs}{msg}\n", error=isError)
+
+        if isError is None:
+            cs(f"{tabs}{head}")

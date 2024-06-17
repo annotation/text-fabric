@@ -28,9 +28,15 @@ code.w {
   white-space: pre;
 }
 
-p.queried,span.queried {
+div.queried,p.queried,span.queried {
   border-radius: 0.2rem;
   background-color: yellow;
+  padding: 0 0.3rem;
+}
+
+div.tqueried,span.tqueried {
+  border-radius: 0.2rem;
+  background-color: orange;
   padding: 0 0.3rem;
 }
 
@@ -149,17 +155,28 @@ p.e {
   content-visible: auto;
   contain-intrinsic-size: 1rem 1rem;
 }
+div.e, div.et {
+  display: flex;
+	flex-flow: row nowrap;
+	justify-content: flex-start;
+	align-items: flex-start;
+  font-size: small;
+}
 .neutral {
   font-size: small;
   border: 0;
   padding: 0 0.3rem;
 }
-.oname {
-  margin-left: 2rem;
+.warnoccs {
+  border: 2pt solid orange;
+  padding: 1pt;
+  margin-top: 1pt;
+  margin-bottom: 1pt;
 }
-.otrigger {
-  margin-left: 4rem;
-}
-.osheet {
-  margin-left: 6rem;
+.nooccs {
+  border: 2pt solid red;
+  text-decoration: line-through;
+  padding: 1pt;
+  margin-top: 1pt;
+  margin-bottom: 1pt;
 }

@@ -85,6 +85,7 @@ class Request(Form):
 
         keysTup = """
             activeentity
+            activetrigger
         """.strip().split()
 
         keysSetInt = """

@@ -116,9 +116,7 @@ def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
                     lastT = bStringLast[i + m]
                     slots = tuple(range(firstT, lastT + 1))
                     eidkind = idMap[trigger]
-                    dest = results.setdefault(eidkind, {}).setdefault(
-                        trigger, {}
-                    )
+                    dest = results.setdefault(eidkind, {}).setdefault(trigger, {})
                     destHits = dest.setdefault(tPath, [])
                     destHits.append(slots)
                     break
@@ -135,12 +133,14 @@ def entityMatch(
     entitySlotVal,
     entitySlotAll,
     entitySlotIndex,
+    triggerFromMatch,
     getTextR,
     getTokens,
     b,
     bFindRe,
     anyEnt,
     eVals,
+    trigger,
     qTokens,
     valSelect,
     freeState,
@@ -160,7 +160,7 @@ def entityMatch(
         See `tf.browser.ner.corpus.Corpus.getTokens`
     b: integer
         The node of the bucket in question
-    bFindRe, anyEnt, eVals, qTokens, valSelect, freeState: object
+    bFindRe, anyEnt, eVals, trigger, qTokens, valSelect, freeState: object
         As in `tf.browser.ner.ner.NER.filterContent`
 
     Returns
@@ -173,7 +173,7 @@ def entityMatch(
             *   `tokens` all tokens of the bucket, each token is a tuple consisting
                 of its slot number (position) and string value;
             *   `matches`: a list of the positions of the found occurrences for the
-                `qTokens` and / or `eVals` in the bucket;
+                `qTokens` and / or `eVals` possibly with `trigger` in the bucket;
             *   `positions`: a set of positions in the bucket where the
                 `bFindRe` starts to match;
 
@@ -239,6 +239,12 @@ def entityMatch(
 
             if valOK:
                 matches.append(slots)
+
+        if trigger is not None:
+            triggerMatches = [slots for slots in matches if triggerFromMatch[slots] == trigger]
+
+            if len(triggerMatches) == 0:
+                matches = []
 
     elif qTokens is not None:
         nTokens = len(qTokens)

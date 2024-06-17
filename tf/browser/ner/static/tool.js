@@ -142,6 +142,8 @@ const updateModControls = () => {
 
 const entityControls = () => {
   const form = $("form")
+  const seth = $("#seth")
+  const isSheet = seth.val().startsWith(".")
   const subMitter = $("#submitter")
   const { features } = globalThis
   const findBox = $("#efind")
@@ -150,9 +152,10 @@ const entityControls = () => {
   const sortControls = $(`button[tp="sort"]`)
   const sortKeyInput = $("#sortkey")
   const sortDirInput = $("#sortdir")
-  const entities = $("p.e")
+  const entities = isSheet ? $("div.e") : $("p.e")
   const entitiesDiv = $("#entities")
   const activeEntity = $("#activeentity")
+  const activeTrigger = $("#activetrigger")
   const selectAll = $("#selectall")
   const selectNone = $("#selectnone")
   const tokenStart = $("#tokenstart")
@@ -160,7 +163,19 @@ const entityControls = () => {
 
   const gotoFocus = () => {
     const ea = activeEntity.val()
-    const rTarget = entitiesDiv.find(`p.e[enm="${ea}"]`)
+    let rTarget
+    if (isSheet) {
+      const et = activeTrigger.val()
+      rTarget = []
+      if (et) {
+        rTarget = entitiesDiv.find(`div.et[etr="${et}"]`)
+      }
+      if (rTarget.length == 0) {
+        rTarget = entitiesDiv.find(`div.e[enm="${ea}"]`)
+      }
+    } else {
+      rTarget = entitiesDiv.find(`p.e[enm="${ea}"]`)
+    }
     if (rTarget != null && rTarget[0] != null) {
       rTarget[0].scrollIntoView({ block: "center" })
     }
@@ -177,6 +192,7 @@ const entityControls = () => {
 
   const showSelected = (ss, always) => {
     let n = 0
+    let x = 0
     entities.each((i, elem) => {
       const el = $(elem)
 
@@ -190,10 +206,15 @@ const entityControls = () => {
       }
 
       if (!show) {
-        const et = el.find("span")
-        const text = et.html()
+        const text = isSheet
+          ? el.find("div.ntx").text() + el.find("code.ttx").text()
+          : el.find("span.eid").text()
         if (text.toLowerCase().includes(ss)) {
           show = true
+        }
+
+        if (x < 10) {
+          console.warn({ text, ss, hit: text.toLowerCase().includes(ss), show })
         }
       }
 
@@ -203,6 +224,7 @@ const entityControls = () => {
       } else {
         el.hide()
       }
+      x += 1
     })
     eStat.html(n)
     gotoFocus()
@@ -215,7 +237,7 @@ const entityControls = () => {
       showAll()
     } else {
       findClear.show()
-      const always = activeEntity.val()
+      const always = (isSheet && activeTrigger.val()) || activeEntity.val()
       showSelected(ss, always)
     }
   }
@@ -263,19 +285,47 @@ const entityControls = () => {
   })
 
   entitiesDiv.off("click").click(e => {
-    //e.preventDefault()
+    e.preventDefault()
     const { target } = e
     const elem = $(target)
     const tag = elem[0].localName
-    const eEntity = tag == "p" && elem.hasClass("e") ? elem : elem.closest("p.e")
+    const eEntity = isSheet
+      ? tag == "div" && elem.hasClass("e")
+        ? elem
+        : elem.closest("div.e")
+      : tag == "p" && elem.hasClass("e")
+      ? elem
+      : elem.closest("p.e")
+    const eTrigger = isSheet
+      ? tag == "div" && elem.hasClass("et")
+        ? elem
+        : elem.closest("div.et")
+      : null
     if (eEntity.length) {
       const enm = eEntity.attr("enm")
       activeEntity.val(enm)
       tokenStart.val("")
       tokenEnd.val("")
 
-      for (const feat of features) {
-        const val = eEntity.find(`span.${feat}`).html()
+      let myFeatures
+
+      if (isSheet) {
+        const [eid, kind] = enm.split("⊙")
+        myFeatures = { eid, kind }
+        if (eTrigger.length) {
+          const etr = eTrigger.attr("etr")
+          activeTrigger.val(etr)
+        } else {
+          activeTrigger.val("")
+        }
+      } else {
+        myFeatures = {}
+        for (const feat of features) {
+          const val = eEntity.find(`span.${feat}`).html()
+          myFeatures[feat] = val
+        }
+      }
+      for (const [feat, val] of Object.entries(myFeatures)) {
         $(`#${feat}_active`).val(val)
         $(`#${feat}_select`).val(val)
       }
@@ -298,6 +348,7 @@ const tokenControls = () => {
   const anyEntButton = $("#anyentbutton")
   const anyEntInput = $("#anyent")
   const activeEntity = $("#activeentity")
+  const activeTrigger = $("#activetrigger")
   const tokenStart = $("#tokenstart")
   const tokenEnd = $("#tokenend")
   const qTextEntShow = $("#qtextentshow")
@@ -623,6 +674,7 @@ const tokenControls = () => {
       tokenStart.val(`${tokenRange[0]}`)
       tokenEnd.val(`${tokenRange[1]}`)
       activeEntity.val("")
+      activeTrigger.val("")
 
       presentQueryControls(true)
     }
@@ -714,6 +766,7 @@ const tokenControls = () => {
     tokenEnd.val("")
     qTextEntShow.html("")
     activeEntity.val("")
+    activeTrigger.val("")
     for (const feat of features) {
       $(`#${feat}_active`).val("")
     }

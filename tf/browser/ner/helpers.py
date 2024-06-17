@@ -8,7 +8,6 @@ To see how this fits among all the modules of this package, see
 import re
 import unicodedata
 
-from ...core.helpers import console
 from ..html import H
 from .settings import STYLES
 
@@ -277,20 +276,6 @@ def getPath(heading, instructions):
             return path
 
     return ()
-
-
-def consoleLine(isError, indent, msg):
-    tabs = "  " * indent
-    head = "-" * len(msg)
-
-    if isError is None:
-        console("")
-        console(f"{tabs}{head}")
-
-    console(f"{tabs}{msg}\n", error=isError)
-
-    if isError is None:
-        console(f"{tabs}{head}")
 
 
 def repSet(s):

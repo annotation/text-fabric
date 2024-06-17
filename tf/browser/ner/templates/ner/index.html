@@ -50,6 +50,11 @@
                        name="activeentity"
                        value="{{activeentityrep}}"
                 >
+                <input type="hidden"
+                       id="activetrigger"
+                       name="activetrigger"
+                       value="{{activetriggerrep}}"
+                >
                 {{activevalrep|safe}}
             </p>
           </div>
@@ -69,10 +74,7 @@
               <b>Filter</b>
               {{filterwidget|safe}}
             </div>
-            <div id="markwidget">
-              <b>Mark</b>
-              <span id="etextwidget">{{entitytext|safe}}</span>
-            </div>
+            {{entitytext|safe}}
             {{selectentities|safe}}
             {{modifyreport|safe}}
             {{modifyentity|safe}}

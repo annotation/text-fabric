@@ -93,11 +93,7 @@ class Serve(Request, Fragments):
         sortKey = v.sortkey
         sortDir = v.sortdir
         activeEntity = v.activeentity
-        activeName = v.activename
         activeTrigger = v.activetrigger
-        activeSheet = v.activesheet
-        activeSection = v.activesection
-        activeEntity = v.activeentity
         tokenStart = v.tokenstart
         tokenEnd = v.tokenend
         excludedTokens = v.excludedtokens
@@ -111,10 +107,10 @@ class Serve(Request, Fragments):
             )
             if ner.sheetName is None
             else ner.showTriggers(
-                activeName=activeName,
+                activeEntity=activeEntity,
                 activeTrigger=activeTrigger,
-                activeSheet=activeSheet,
-                activeSection=activeSection,
+                sortKey=sortKey,
+                sortDir=sortDir,
             )
         )
         v.entityoverview = ner.showEntityOverview()
@@ -122,6 +118,7 @@ class Serve(Request, Fragments):
         v.buckets = ner.showContent(
             buckets,
             activeEntity=activeEntity,
+            activeTrigger=activeTrigger,
             excludedTokens=excludedTokens,
             mayLimit=not (tokenStart and tokenEnd),
         )
@@ -140,12 +137,14 @@ class Serve(Request, Fragments):
         ner = self.ner
         v = self.v
         activeEntity = v.activeentity
+        activeTrigger = v.activetrigger
         excludedTokens = v.excludedtokens
         buckets = self.buckets
 
         return ner.showContent(
             buckets,
             activeEntity=activeEntity,
+            activeTrigger=activeTrigger,
             excludedTokens=excludedTokens,
             mayLimit=False,
         )
@@ -185,6 +184,7 @@ class Serve(Request, Fragments):
         bFindRe = None if noFind else v.bfindre
         anyEnt = v.anyent
         activeEntity = v.activeentity
+        activeTrigger = v.activetrigger
         tokenStart = v.tokenstart
         tokenEnd = v.tokenend
         valSelect = v.valselect
@@ -196,6 +196,11 @@ class Serve(Request, Fragments):
         if activeEntity not in entityIdent:
             activeEntity = None
             v.activeentity = None
+            v.activetrigger = None
+
+        if activeTrigger is None:
+            activeTrigger = None
+            v.activetrigger = None
 
         qTokens = (
             ner.getStrings(tokenStart, tokenEnd) if tokenStart and tokenEnd else None
@@ -211,6 +216,7 @@ class Serve(Request, Fragments):
             bFindRe=bFindRe,
             anyEnt=anyEnt,
             eVals=activeEntity,
+            trigger=activeTrigger,
             qTokens=qTokens,
             valSelect=valSelect,
             freeState=freeState,
@@ -317,6 +323,7 @@ class Serve(Request, Fragments):
                     stillExists = activeEntity in entityIdent
                     if not stillExists:
                         v.activeentity = None
+                        v.activetrigger = None
 
             if submitter == "addgo" and addData:
                 report = ner.addEntityRich(

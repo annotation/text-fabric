@@ -162,8 +162,7 @@ class Show:
 
             content.append(
                 H.p(
-                    H.code(f"{x:>5}", cls="w"),
-                    " x ",
+                    H.span(f"{x} ", cls="stat"),
                     repIdent(features, vals, active=active),
                     cls=f"e {active}",
                     enm=identRep,
@@ -178,9 +177,42 @@ class Show:
         dh(content)
 
     def showTriggers(
-        self, activeName=None, activeTrigger=None, activeSheet=None, activeSection=None
+        self, activeEntity=None, activeTrigger=None, sortKey=None, sortDir=None
     ):
         """Generates HTML for an expandable overview of the entities and their triggers.
+
+        Parameters
+        ----------
+        activeEntity: tuple, optional None
+            The entity that must be highlighted.
+
+        activeTriggetrigger: tuple, optional None
+            The entity that must be highlighted.
+
+        sortKey: string, optional None
+            The key by which the entity list is sorted.
+
+            Possible values:
+
+            *   `freqsort`: by frequency
+            *   `sort_0` or `sort_name`: by entity name
+
+            If `None` is passed, `freqsort` is filled in.
+
+        sortDir: string, optional None
+            The direction of the sort.
+
+            Possible values:
+
+            *   `a`: ascending
+            *   `d`: descending
+
+            If `None` is passed, `a` is filled in.
+            However, if `None` is passed for both `sortKey` and `sortDir`,
+            a `d` is filled in.
+
+            As a consequence, the default sort order is by frequency, most
+            frequent on top.
 
         Returns
         -------
@@ -192,14 +224,86 @@ class Show:
         browse = self.browse
         sheetData = self.getSheetData()
         hitData = sheetData.hitData or {}
+        nameMap = sheetData.nameMap or {}
+
+        hasEnt = activeEntity is not None
+        hasTrig = activeTrigger is not None
+
+        def entryNames(data):
+            entries = []
+
+            for (eidkind, v) in data.items():
+                name = nameMap[eidkind][0]
+                tOccs = sum(v.values())
+
+                entries.append((eidkind, name, tOccs, entryTriggers(v)))
+
+            return entries
+
+        def entryTriggers(data):
+            entries = []
+
+            for (k, nOccs) in sorted(data.items(), key=lambda x: (-x[1], x[0])):
+                entries.append((k, nOccs))
+
+            return entries
+
+        entries = entryNames(hitData)
+        sortKeyMap = dict(name=0)
+
+        if sortKey is None and sortDir is None:
+            (sortKey, sortDir) = SORT_DEFAULT
+        else:
+            if sortKey is None:
+                sortKey = SORTKEY_DEFAULT
+            if sortDir is None:
+                sortDir = SORTDIR_DEFAULT
+
+        if sortKey == SORTKEY_DEFAULT:
+            entries = sorted(entries, key=lambda x: (x[2], x[1]))
+        else:
+            if sortKey.startswith("sort_"):
+                index = sortKey[5:]
+                if index.isdecimal():
+                    index = int(index)
+                    if index != 0:
+                        index = 0
+                else:
+                    index = sortKeyMap.get(index, 0)
+            else:
+                index = 0
+
+            entries = sorted(entries, key=lambda x: (x[1], -x[2]))
+
+        if sortDir == SORTDIR_DESC:
+            entries = reversed(entries)
 
         def genNames(data):
             content = []
 
-            for k in sorted(data):
-                v = data[k]
+            for (eidkind, name, tOccs, triggers) in entries:
+                identRep = "⊙".join(eidkind)
+                occsCls = (
+                    "nooccs"
+                    if tOccs == 0
+                    else " warnoccs "
+                    if any(x[1] == 0 for x in triggers)
+                    else ""
+                )
+                active = " queried " if hasEnt and eidkind == activeEntity else ""
+
                 content.append(
-                    H.details(H.summary(k), H.div(genTriggers(v), cls="oname"))
+                    H.div(
+                        H.div(H.span(f"{tOccs} ", cls="stat")),
+                        H.div(
+                            (
+                                H.div(name, cls=f"ntx {occsCls}"),
+                                H.div(genTriggers(triggers), cls="etrigger"),
+                            )
+                        ),
+                        cls=f"e {active}",
+                        enm=identRep,
+                    )
                 )
 
             return content
@@ -207,40 +311,31 @@ class Show:
         def genTriggers(data):
             content = []
 
-            for k in sorted(data):
-                v = data[k]
+            for (k, nOccs) in data:
+                occsCls = "nooccs" if nOccs == 0 else ""
+                (trigger, sheet) = k
+                triggerRep = "⊙".join(k)
+                active = (
+                    " tqueried "
+                    if hasTrig and (trigger, sheet) == activeTrigger
+                    else ""
+                )
                 content.append(
-                    H.details(
-                        H.summary(H.code(k)),
-                        H.div(genSheets(v), cls="otrigger"),
-                    )
+                    H.div(
+                        (
+                            H.span(f"{nOccs} ", cls="stat"),
+                            H.span(
+                                (
+                                    H.span(f"{sheet} {SET_SHEET} "),
+                                    H.code(trigger, cls="ttx"),
+                                ),
+                                cls=occsCls,
+                            ),
+                        ),
+                        cls=f"et {active}",
+                        etr=triggerRep,
+                    ),
                 )
-
-            return content
-
-        def genSheets(data):
-            content = []
-
-            for k in sorted(data):
-                v = data[k]
-                content.append(
-                    H.details(
-                        H.summary(f"{SET_SHEET} {k}"),
-                        H.div(genSections(v), cls="osheet"),
-                    )
-                )
-
-            return content
-
-        def genSections(data):
-            content = []
-
-            content.append(
-                H.ul(
-                    H.li(f"{len(v)} x in " + H.a(f"{k}", href="#"))
-                    for (k, v) in sorted(data.items())
-                )
-            )
 
             return content
 
@@ -255,6 +350,7 @@ class Show:
         self,
         buckets,
         activeEntity=None,
+        activeTrigger=None,
         excludedTokens=set(),
         mayLimit=True,
         start=None,
@@ -285,6 +381,9 @@ class Show:
 
         activeEntity: tuple, optional None
             The entity that must be highlighted.
+
+        activeTrigger: tuple, optional None
+            The trigger that must be highlighted.
 
         excludedTokens: set, optional None
             If passed, it is a set of tokens where a ❌ has been placed by the
@@ -330,6 +429,8 @@ class Show:
         browse = self.browse
         setData = self.getSetData()
         setIsRo = self.setIsRo
+        setIsSrc = self.setIsSrc
+        setIsX = setIsRo and not setIsSrc
         afterv = self.getAfter()
         sectionHead = self.sectionHead
 
@@ -337,6 +438,11 @@ class Show:
         entitySlotIndex = setData.entitySlotIndex
 
         hasEnt = activeEntity is not None
+        hasTrig = activeTrigger is not None
+
+        if setIsRo and not setIsSrc:
+            sheetData = self.getSheetData()
+            triggerFromMatch = sheetData.triggerFromMatch
 
         limited = mayLimit and not hasEnt and (start is None or end is None)
         limit = LIMIT_BROWSER if browse else LIMIT_NB
@@ -368,7 +474,14 @@ class Show:
             charPos = 0
 
             if setIsRo:
-                allMatches = set(chain.from_iterable(matches))
+                if setIsSrc:
+                    allMatches = set(chain.from_iterable(matches))
+                else:
+                    allMatches = {}
+                    for match in matches:
+                        trigger = triggerFromMatch.get(match, [])
+                        for m in match:
+                            allMatches[m] = trigger
             else:
                 allMatches = set()
                 endMatches = set()
@@ -394,7 +507,6 @@ class Show:
                         (x for x in info if x is not None), key=lambda z: z[1]
                     ):
                         (status, lg, ident) = item
-                        # e = eFirst[ident]
                         identRep = "⊙".join(ident)
 
                         if status:
@@ -415,7 +527,6 @@ class Show:
                 after = afterv(t) or ""
                 lenW = len(w)
                 lenWa = len(w) + len(after)
-                # found = any(charPos + i in positions for i in range(lenW))
                 foundSet = set(range(charPos, charPos + lenW)) & positions
                 found = len(foundSet) != 0
 
@@ -428,9 +539,14 @@ class Show:
                     wRep = H.join(leading, H.span(hit, cls="found"), trailing)
                 else:
                     wRep = w
+
                 queried = t in allMatches
+                tqueried = (
+                    setIsX and hasTrig and allMatches.get(t, None) == activeTrigger
+                )
 
                 hlClasses = " queried " if queried else ""
+                hlClasses += " tqueried " if tqueried else ""
                 hlClasses += " ei " if inEntity else ""
                 hlClasses += f" {style} " if style else ""
                 hlClass = dict(cls=hlClasses) if hlClasses else {}

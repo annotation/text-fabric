@@ -265,7 +265,6 @@ Lines consist of tab separated fields:
 from textwrap import dedent
 import collections
 
-from ...core.helpers import console
 from ...core.generic import AttrDict
 from .sheets import Sheets
 from .helpers import findCompile
@@ -388,6 +387,7 @@ class NER(Sheets, Sets, Show):
         bFindRe=None,
         anyEnt=None,
         eVals=None,
+        trigger=None,
         qTokens=None,
         valSelect=None,
         freeState=None,
@@ -451,6 +451,10 @@ class NER(Sheets, Sets, Show):
             A sequence of values corresponding with the entity features `eid`
             and `kind`. If given, the function wants buckets that contain at least
             an entity with those properties.
+        trigger: string, optional None
+            If given, the function wants buckets that contain at least an
+            entity that is triggered by this string. The entity in question must
+            be the one given by the parameter `evals`.
         qTokens: tuple, optional None
             A sequence of tokens whose occurrences in the corpus will be looked up.
         valSelect: dict, optional None
@@ -498,12 +502,20 @@ class NER(Sheets, Sets, Show):
         getTokens = self.getTokens
 
         browse = self.browse
+        setIsRo = self.setIsRo
+        setIsSrc = self.setIsSrc
         setData = self.getSetData()
         entityIndex = setData.entityIndex
         entityVal = setData.entityVal
         entitySlotVal = setData.entitySlotVal
         entitySlotAll = setData.entitySlotAll
         entitySlotIndex = setData.entitySlotIndex
+
+        if setIsRo and not setIsSrc:
+            sheetData = self.getSheetData()
+            triggerFromMatch = sheetData.triggerFromMatch
+        else:
+            triggerFromMatch = None
 
         bucketUniverse = (
             setData.buckets
@@ -530,7 +542,7 @@ class NER(Sheets, Sets, Show):
         hasQTokens = qTokens is not None and len(qTokens)
         hasOcc = not hasEnt and hasQTokens
 
-        if eVals is not None and eVals in entityVal:
+        if hasEnt and eVals in entityVal:
             eSlots = entityVal[eVals]
             eStarts = {s[0]: s[-1] for s in eSlots}
         else:
@@ -552,12 +564,14 @@ class NER(Sheets, Sets, Show):
                 entitySlotVal,
                 entitySlotAll,
                 entitySlotIndex,
+                triggerFromMatch,
                 getTextR,
                 getTokens,
                 b,
                 bFindRe,
                 anyEnt,
                 eVals,
+                trigger,
                 useQTokens,
                 valSelect,
                 requireFree,
@@ -702,7 +716,7 @@ class NER(Sheets, Sets, Show):
         nTriggers = len(allTriggers)
         nHits = sum(e[-1] for e in hitData)
 
-        console(
+        self.console(
             dedent(
                 f"""
                 Entities targeted:       {nEnt:>5}

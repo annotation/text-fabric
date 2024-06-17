@@ -6,9 +6,8 @@ import gzip
 
 from ...parameters import GZIP_LEVEL, PICKLE_PROTOCOL
 from ...capable import CheckImport
-from .helpers import tnorm, normalize, toSmallId, toTokens, consoleLine, repSet
+from .helpers import tnorm, normalize, toSmallId, toTokens, repSet
 from ...core.generic import AttrDict
-from ...core.helpers import console
 from ...core.files import dirContents, extNm, fileExists, mTime
 
 
@@ -92,7 +91,7 @@ class Sheets:
         if not uptodate:
             return False
 
-        console("load sheet with uptodate data from disk")
+        self.console("load sheet with uptodate data from disk")
 
         if fileExists(dataFile):
             with gzip.open(dataFile, mode="rb") as f:
@@ -128,7 +127,7 @@ class Sheets:
         logData.append((isError, indent, msg))
 
         if not browse:
-            consoleLine(isError, indent, msg)
+            self.consoleLine(isError, indent, msg)
 
     def getSheetData(self):
         """Deliver the current sheet."""
@@ -244,7 +243,7 @@ class Sheets:
             loaded = self.readData(sheetData, sheetUpdated)
 
             if not loaded:
-                console("compute sheet data from scratch")
+                self.console("compute sheet data from scratch")
                 sheetData.logData = []
 
                 self._readSheets(sheetData)
@@ -261,6 +260,7 @@ class Sheets:
                     "nameMap",
                     "instructions",
                     "inventory",
+                    "triggerFromMatch",
                     "hitData",
                 ]
                 self.writeData(
@@ -269,11 +269,11 @@ class Sheets:
                 )
                 showLog = False
         else:
-            console("sheet data uptodate in memory")
+            self.console("sheet data uptodate in memory")
 
         if showLog and not browse:
             for x in sheetData.logData:
-                consoleLine(*x)
+                self.consoleLine(*x)
 
     def _readSheets(self, sheetData):
         """Read all the spreadsheets, the main one and the tweaks.
@@ -773,8 +773,6 @@ class Sheets:
         sheetName = self.sheetName
         sheetData = self.sheets[sheetName]
 
-        getHeadings = self.getHeadings
-        nameMap = sheetData.nameMap
         inventory = sheetData.inventory
         instructions = sheetData.instructions
 
@@ -790,20 +788,11 @@ class Sheets:
 
             for trigger, tPath in tMap.items():
                 eidkind = idMap[trigger]
-                name = nameMap[eidkind][0]
                 sheet = ".".join(tPath)
 
                 occs = inventory.get(eidkind, {}).get(trigger, {}).get(tPath, {})
 
-                sectionHits = {}
-
-                for slots in occs:
-                    section = ".".join(getHeadings(slots[0]))
-                    sectionHits.setdefault(section, []).append(slots)
-
-                hitData.setdefault(name, {}).setdefault(trigger, {}).setdefault(
-                    sheet, sectionHits
-                )
+                hitData.setdefault(eidkind, {})[(trigger, sheet)] = len(occs)
 
     def _markEntities(self):
         """Marks up the members of the inventory as entities.
@@ -822,11 +811,15 @@ class Sheets:
         inventory = sheetData.inventory
 
         newEntities = []
+        triggerFromMatch = {}
+        sheetData.triggerFromMatch = triggerFromMatch
 
         for eidkind, entData in inventory.items():
             for trigger, triggerData in entData.items():
-                for matches in triggerData.values():
+                for (sheet, matches) in triggerData.items():
                     newEntities.append((eidkind, matches))
+                    for match in matches:
+                        triggerFromMatch[match] = (trigger, ",".join(sheet))
 
         self._addToSet(newEntities, silent=False)
 
@@ -834,7 +827,7 @@ class Sheets:
         src = self.getSheetData()
 
         if src is None:
-            console("Nothing to show")
+            self.console("Nothing to show")
 
         src = src.raw
         nameMap = src.nameMap
@@ -845,21 +838,21 @@ class Sheets:
                 triggerRep = "|".join(
                     t for t in sorted(triggers, key=lambda x: (-len(x), x))
                 )
-                console(f"{tab}  '{name}' {eidkind} : {triggerRep}")
-            console(f"{tab}  ---")
+                self.console(f"{tab}  '{name}' {eidkind} : {triggerRep}")
+            self.console(f"{tab}  ---")
 
         def showDir(head, tweaks, level):
             tab = "  " * level
-            console(f"{tab}{head}")
+            self.console(f"{tab}{head}")
 
             rng = tweaks.rng or {}
             for b, e in sorted(rng):
-                console(f"{tab}  {b}-{e}.xslx")
+                self.console(f"{tab}  {b}-{e}.xslx")
                 showSheet(rng[(b, e)], tab)
 
             sng = tweaks.sng or {}
             for k in sorted(sng):
-                console(f"{tab}  {k}.xslx")
+                self.console(f"{tab}  {k}.xslx")
                 showSheet(sng[k], tab)
 
             sdr = tweaks.sdr or {}
@@ -876,7 +869,7 @@ class Sheets:
         src = self.getSheetData()
 
         if src is None:
-            console("Nothing to show")
+            self.console("Nothing to show")
 
         src = src.combined
         nameMap = src.nameMap
@@ -887,12 +880,12 @@ class Sheets:
                 triggerRep = "|".join(
                     t for t in sorted(triggers, key=lambda x: (-len(x), x))
                 )
-                console(f"{tab}  '{name}' {eidkind} : {triggerRep}")
-            console(f"{tab}  ---")
+                self.console(f"{tab}  '{name}' {eidkind} : {triggerRep}")
+            self.console(f"{tab}  ---")
 
         def showDir(head, info, level):
             tab = "  " * level
-            console(f"{tab}{head}")
+            self.console(f"{tab}{head}")
 
             if "sheet" in info:
                 if main or level > 0:
@@ -935,12 +928,12 @@ class Sheets:
                     )
                     triggerInfo = f"{sourceRep} => {triggerRep}"
 
-                console(f"{tab}  '{name}' {eidkind} : {triggerInfo}")
-            console(f"{tab}  ---")
+                self.console(f"{tab}  '{name}' {eidkind} : {triggerInfo}")
+            self.console(f"{tab}  ---")
 
         def showDir(head, info, level):
             tab = "  " * level
-            console(f"{tab}{head}")
+            self.console(f"{tab}{head}")
 
             if "sheet" in info:
                 if main or level > 0:
@@ -957,8 +950,8 @@ class Sheets:
         src = self.getSheetData()
 
         if src is None:
-            console("Nothing to show")
+            self.console("Nothing to show")
 
         instructions = src.instructions
 
-        console("\n".join(f"{path}" for path in instructions))
+        self.console("\n".join(f"{path}" for path in instructions))
