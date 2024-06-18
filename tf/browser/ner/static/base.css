@@ -36,7 +36,7 @@ div.queried,p.queried,span.queried {
 
 div.tqueried,span.tqueried {
   border-radius: 0.2rem;
-  background-color: orange;
+  background-color: #dddd00;
   padding: 0 0.3rem;
 }
 
@@ -161,6 +161,7 @@ div.e, div.et {
 	justify-content: flex-start;
 	align-items: flex-start;
   font-size: small;
+  margin-bottom: 0.3rem;
 }
 .neutral {
   font-size: small;
@@ -168,15 +169,16 @@ div.e, div.et {
   padding: 0 0.3rem;
 }
 .warnoccs {
-  border: 2pt solid orange;
-  padding: 1pt;
-  margin-top: 1pt;
-  margin-bottom: 1pt;
+  color: #ff0000;
+  font-weight: bold;
 }
 .nooccs {
-  border: 2pt solid red;
-  text-decoration: line-through;
-  padding: 1pt;
-  margin-top: 1pt;
-  margin-bottom: 1pt;
+  background-color: #ffaa88;
+  padding: 0.3rem 0.1rem;
+  margin: 0.1rem;
+  border-radius: 0.3rem;
+}
+.subtle {
+  color: blue;
+  font-weight: bold;
 }

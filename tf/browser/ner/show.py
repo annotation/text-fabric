@@ -8,7 +8,7 @@ from itertools import chain
 
 from ...advanced.helpers import dh
 
-from .helpers import repIdent, repSummary
+from .helpers import repIdent, repSummary, toAscii
 from ..html import H
 
 from .settings import (
@@ -177,7 +177,12 @@ class Show:
         dh(content)
 
     def showTriggers(
-        self, activeEntity=None, activeTrigger=None, sortKey=None, sortDir=None
+        self,
+        activeEntity=None,
+        activeTrigger=None,
+        sortKey=None,
+        sortDir=None,
+        subtleFilter=None,
     ):
         """Generates HTML for an expandable overview of the entities and their triggers.
 
@@ -214,6 +219,15 @@ class Show:
             As a consequence, the default sort order is by frequency, most
             frequent on top.
 
+        subtleFilter: boolean, optional None
+            Filters on the kind of sheets in which triggers occur.
+
+            If None: all sheets are considered.
+
+            If True: only context sheets are considered.
+
+            If False: only the main sheet is considered.
+
         Returns
         -------
         string or void
@@ -232,24 +246,34 @@ class Show:
         def entryNames(data):
             entries = []
 
-            for (eidkind, v) in data.items():
+            for eidkind, triggers in data.items():
                 name = nameMap[eidkind][0]
-                tOccs = sum(v.values())
+                tOccs = sum(triggers.values())
+                subtle = any(t[1] != "" for t in triggers)
 
-                entries.append((eidkind, name, tOccs, entryTriggers(v)))
+                if (
+                    subtleFilter is None
+                    or subtleFilter
+                    and subtle
+                    or not subtleFilter
+                    and not subtle
+                ):
+                    entries.append(
+                        (eidkind, name, tOccs, subtle, entryTriggers(triggers))
+                    )
 
             return entries
 
         def entryTriggers(data):
             entries = []
 
-            for (k, nOccs) in sorted(data.items(), key=lambda x: (-x[1], x[0])):
-                entries.append((k, nOccs))
+            for trigger, nOccs in sorted(data.items(), key=lambda x: (-x[1], x[0])):
+                subtle = trigger[1] != ""
+                entries.append((trigger, nOccs, subtle))
 
             return entries
 
         entries = entryNames(hitData)
-        sortKeyMap = dict(name=0)
 
         if sortKey is None and sortDir is None:
             (sortKey, sortDir) = SORT_DEFAULT
@@ -260,20 +284,9 @@ class Show:
                 sortDir = SORTDIR_DEFAULT
 
         if sortKey == SORTKEY_DEFAULT:
-            entries = sorted(entries, key=lambda x: (x[2], x[1]))
+            entries = sorted(entries, key=lambda x: (x[2], toAscii(x[1]).lower()))
         else:
-            if sortKey.startswith("sort_"):
-                index = sortKey[5:]
-                if index.isdecimal():
-                    index = int(index)
-                    if index != 0:
-                        index = 0
-                else:
-                    index = sortKeyMap.get(index, 0)
-            else:
-                index = 0
-
-            entries = sorted(entries, key=lambda x: (x[1], -x[2]))
+            entries = sorted(entries, key=lambda x: (toAscii(x[1]).lower(), -x[2]))
 
         if sortDir == SORTDIR_DESC:
             entries = reversed(entries)
@@ -281,23 +294,24 @@ class Show:
         def genNames(data):
             content = []
 
-            for (eidkind, name, tOccs, triggers) in entries:
+            for eidkind, name, tOccs, subtle, triggers in entries:
                 identRep = "⊙".join(eidkind)
                 occsCls = (
                     "nooccs"
                     if tOccs == 0
-                    else " warnoccs "
+                    else "warnoccs"
                     if any(x[1] == 0 for x in triggers)
                     else ""
                 )
-                active = " queried " if hasEnt and eidkind == activeEntity else ""
+                subtleCls = "subtle" if subtle else ""
+                active = "queried" if hasEnt and eidkind == activeEntity else ""
 
                 content.append(
                     H.div(
                         H.div(H.span(f"{tOccs} ", cls="stat")),
                         H.div(
                             (
-                                H.div(name, cls=f"ntx {occsCls}"),
+                                H.div(name, cls=f"ntx {occsCls} {subtleCls}"),
                                 H.div(genTriggers(triggers), cls="etrigger"),
                             )
                         ),
@@ -311,14 +325,14 @@ class Show:
         def genTriggers(data):
             content = []
 
-            for (k, nOccs) in data:
-                occsCls = "nooccs" if nOccs == 0 else ""
+            for k, nOccs, subtle in data:
                 (trigger, sheet) = k
+                occsCls = "nooccs" if nOccs == 0 else ""
+                subtleCls = "subtle" if subtle else ""
+                sheetRep = f"{sheet}{SET_SHEET}" if subtle else sheet
                 triggerRep = "⊙".join(k)
                 active = (
-                    " tqueried "
-                    if hasTrig and (trigger, sheet) == activeTrigger
-                    else ""
+                    "tqueried" if hasTrig and (trigger, sheet) == activeTrigger else ""
                 )
                 content.append(
                     H.div(
@@ -326,10 +340,10 @@ class Show:
                             H.span(f"{nOccs} ", cls="stat"),
                             H.span(
                                 (
-                                    H.span(f"{sheet} {SET_SHEET} "),
+                                    H.span(f"{sheetRep} "),
                                     H.code(trigger, cls="ttx"),
                                 ),
-                                cls=occsCls,
+                                cls=f"{occsCls} {subtleCls}",
                             ),
                         ),
                         cls=f"et {active}",
@@ -428,9 +442,9 @@ class Show:
 
         browse = self.browse
         setData = self.getSetData()
+        setIsX = self.setIsX
         setIsRo = self.setIsRo
         setIsSrc = self.setIsSrc
-        setIsX = setIsRo and not setIsSrc
         afterv = self.getAfter()
         sectionHead = self.sectionHead
 
@@ -440,7 +454,7 @@ class Show:
         hasEnt = activeEntity is not None
         hasTrig = activeTrigger is not None
 
-        if setIsRo and not setIsSrc:
+        if setIsX:
             sheetData = self.getSheetData()
             triggerFromMatch = sheetData.triggerFromMatch
 

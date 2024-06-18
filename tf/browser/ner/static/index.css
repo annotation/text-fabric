@@ -255,6 +255,8 @@ span[te][st="v"]::after {
   padding: 0.5rem 0.5rem;
   margin: 0 0.5rem;
 }
+.subtlefilter {
+}
 #delwidget,#addwidget {
   margin: 0.5rem 0;
 }

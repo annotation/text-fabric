@@ -141,12 +141,14 @@ const updateModControls = () => {
 }
 
 const entityControls = () => {
-  const form = $("form")
   const seth = $("#seth")
   const isSheet = seth.val().startsWith(".")
+  const form = $("form")
   const subMitter = $("#submitter")
   const { features } = globalThis
   const findBox = $("#efind")
+  const subtleFilterButton = $("#subtlefilterbutton")
+  const subtleFilterInput = $("#subtlefilter")
   const eStat = $("#nentityentries")
   const findClear = $("#entityclear")
   const sortControls = $(`button[tp="sort"]`)
@@ -160,6 +162,14 @@ const entityControls = () => {
   const selectNone = $("#selectnone")
   const tokenStart = $("#tokenstart")
   const tokenEnd = $("#tokenend")
+
+  const setSubtleFilterControl = () => {
+    subtleFilterButton.off("click").click(() => {
+      const s = subtleFilterInput.val()
+      const newS = s == "v" ? "x" : s == "x" ? "" : "v"
+      subtleFilterInput.val(newS)
+    })
+  }
 
   const gotoFocus = () => {
     const ea = activeEntity.val()
@@ -258,6 +268,8 @@ const entityControls = () => {
     findBox.val("")
     showIt()
   })
+
+  setSubtleFilterControl()
 
   sortControls.off("click").click(e => {
     const { currentTarget } = e

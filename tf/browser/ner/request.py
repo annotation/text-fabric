@@ -6,7 +6,7 @@ To see how this fits among all the modules of this package, see
 
 
 from ...core.generic import AttrDict
-from .settings import TOOLKEY, EMPTY, NONE, SORTKEY_DEFAULT, SORTDIR_DEFAULT, SC_ALL
+from .settings import TOOLKEY, EMPTY, NONE, SC_ALL
 from .form import Form
 from .helpers import findCompile
 
@@ -76,6 +76,7 @@ class Request(Form):
 
         keysTri = """
             anyent
+            subtlefilter
         """.strip().split()
 
         keysInt = """
@@ -98,8 +99,8 @@ class Request(Form):
         """.strip().split()
 
         defaults = dict(
-            sortkey=SORTKEY_DEFAULT,
-            sortdir=SORTDIR_DEFAULT,
+            sortkey=None,
+            sortdir=None,
             freestate="all",
             scope=SC_ALL,
             modwidgetstate="add",

@@ -336,7 +336,8 @@ class NER(Sheets, Sets, Show):
 
     def setTask(self, task):
         self.setSet(task)
-        self.setSheet(task[1:] if self.setIsRo and not self.setIsSrc else None)
+        setIsX = self.setIsX
+        self.setSheet(task[1:] if setIsX else None)
 
     def findOccs(self):
         """Finds the occurrences of multiple triggers.
@@ -502,8 +503,7 @@ class NER(Sheets, Sets, Show):
         getTokens = self.getTokens
 
         browse = self.browse
-        setIsRo = self.setIsRo
-        setIsSrc = self.setIsSrc
+        setIsX = self.setIsX
         setData = self.getSetData()
         entityIndex = setData.entityIndex
         entityVal = setData.entityVal
@@ -511,7 +511,7 @@ class NER(Sheets, Sets, Show):
         entitySlotAll = setData.entitySlotAll
         entitySlotIndex = setData.entitySlotIndex
 
-        if setIsRo and not setIsSrc:
+        if setIsX:
             sheetData = self.getSheetData()
             triggerFromMatch = sheetData.triggerFromMatch
         else:

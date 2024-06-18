@@ -6,7 +6,7 @@ To see how this fits among all the modules of this package, see
 `tf.browser.ner.ner` .
 """
 
-from .settings import EMPTY, NONE, SORTDIR_ASC
+from .settings import EMPTY, NONE, SORTDIR_ASC, SORTDIR_DEFAULT, SORTKEY_DEFAULT, SORT_DEFAULT
 from ..html import H
 from .helpers import repIdent, valRep
 
@@ -239,58 +239,64 @@ class Fragments:
         v.hasfilter = bFindRe is not None or anyEnt is not None
         v.nbuckets = len(setData.buckets or [])
 
-        v.filterwidget = H.join(
-            H.span(
-                H.input(type="text", name="bfind", id="bfind", value=bFind),
-                H.input(
-                    type="hidden",
-                    name="bfindc",
-                    id="bfindc",
-                    value="v" if bFindC else "x",
+        v.filterwidget = H.div(
+            (
+                H.b("Filter"),
+                H.join(
+                    H.span(
+                        H.input(type="text", name="bfind", id="bfind", value=bFind),
+                        H.input(
+                            type="hidden",
+                            name="bfindc",
+                            id="bfindc",
+                            value="v" if bFindC else "x",
+                        ),
+                        H.button(
+                            "C" if bFindC else "¢",
+                            type="submit",
+                            id="bfindb",
+                            title="using case SENSITIVE search"
+                            if bFindC
+                            else "using case INSENSITIVE search",
+                            cls="mono",
+                        ),
+                        " ",
+                        H.button("❌", type="submit", id="findclear", cls="icon"),
+                        " ",
+                        H.span(bFindError, id="bfinderror", cls="error"),
+                        cls="filtercomponent",
+                    ),
+                    H.span(
+                        H.input(
+                            type="hidden",
+                            name="anyent",
+                            id="anyent",
+                            value="" if anyEnt is None else "v" if anyEnt else "x",
+                        ),
+                        H.button(
+                            "with or without"
+                            if anyEnt is None
+                            else "with"
+                            if anyEnt
+                            else "without",
+                            type="submit",
+                            id="anyentbutton",
+                            cls="mono",
+                        ),
+                        H.span(" marked entities"),
+                        cls="filtercomponent",
+                    ),
+                    H.span(
+                        H.button("🔎", type="submit", id="lookupf", cls="alt"),
+                        cls="filtercomponent",
+                    ),
+                    H.span(
+                        self.wrapFindStat(),
+                        cls="filtercomponent",
+                    ),
                 ),
-                H.button(
-                    "C" if bFindC else "¢",
-                    type="submit",
-                    id="bfindb",
-                    title="using case SENSITIVE search"
-                    if bFindC
-                    else "using case INSENSITIVE search",
-                    cls="mono",
-                ),
-                " ",
-                H.button("❌", type="submit", id="findclear", cls="icon"),
-                " ",
-                H.span(bFindError, id="bfinderror", cls="error"),
-                cls="filtercomponent",
             ),
-            H.span(
-                H.input(
-                    type="hidden",
-                    name="anyent",
-                    id="anyent",
-                    value="" if anyEnt is None else "v" if anyEnt else "x",
-                ),
-                H.button(
-                    "with or without"
-                    if anyEnt is None
-                    else "with"
-                    if anyEnt
-                    else "without",
-                    type="submit",
-                    id="anyentbutton",
-                    cls="mono",
-                ),
-                H.span(" marked entities"),
-                cls="filtercomponent",
-            ),
-            H.span(
-                H.button("🔎", type="submit", id="lookupf", cls="alt"),
-                cls="filtercomponent",
-            ),
-            H.span(
-                self.wrapFindStat(),
-                cls="filtercomponent",
-            ),
+            id="filterwidget",
         )
 
     def wrapEntity(self):
@@ -356,12 +362,19 @@ class Fragments:
         v = self.v
         sortKey = v.sortkey
         sortDir = v.sortdir
+
+        if not sortKey and not sortDir:
+            (sortKey, sortDir) = SORT_DEFAULT
+        else:
+            if not sortKey:
+                sortKey = SORTKEY_DEFAULT
+            if not sortDir:
+                sortDir = SORTDIR_DEFAULT
+
         ner = self.ner
         settings = ner.settings
         features = settings.features
-        setIsSrc = ner.setIsSrc
-        setIsRo = ner.setIsRo
-        setIsX = setIsRo and not setIsSrc
+        setIsX = ner.setIsX
 
         sortKeys = (
             (("name", "sort_0"),)
@@ -392,15 +405,41 @@ class Fragments:
                 ]
             )
 
+        content.append(self.wrapSubtle())
+
         return H.p(content)
+
+    def wrapSubtle(self):
+        v = self.v
+        subtleFilter = v.subtlefilter
+        ner = self.ner
+        setIsX = ner.setIsX
+
+        return H.span(
+            H.input(
+                type="hidden",
+                name="subtlefilter",
+                id="subtlefilter",
+                value="" if subtleFilter is None else "v" if subtleFilter else "x",
+            ),
+            "" if not setIsX else H.button(
+                "all sheets"
+                if subtleFilter is None
+                else "contexts"
+                if subtleFilter
+                else "main sheet",
+                type="submit",
+                id="subtlefilterbutton",
+                cls="mono",
+            ),
+            cls="subtlefilter",
+        )
 
     def wrapEntityText(self):
         """HTML for the selected entity widget."""
         v = self.v
         ner = self.ner
-        setIsRo = ner.setIsRo
-        setIsSrc = ner.setIsSrc
-        setIsX = setIsRo and not setIsSrc
+        setIsX = ner.setIsX
 
         freeState = v.freestate
         txt = v.txt
@@ -467,6 +506,7 @@ class Fragments:
         """
         v = self.v
         ner = self.ner
+        setIsX = ner.setIsX
         settings = ner.settings
         bucketType = settings.bucketType
         features = settings.features
@@ -531,7 +571,7 @@ class Fragments:
             H.div(
                 H.join(inputContent),
                 H.div(
-                    H.span(H.b("Select"), scopeInit, scopeFilter),
+                    H.span("" if setIsX else H.b("Select"), scopeInit, scopeFilter),
                     H.span(H.span(f"{total} {bucketType}(s)")),
                 )
                 if hasEnt

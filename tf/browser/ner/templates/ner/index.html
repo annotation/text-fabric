@@ -42,6 +42,7 @@
             <h1>Entities</h1>
             {{entityoverview|safe}}
             {{entityheaders|safe}}
+            {{subtlebuttons|safe}}
             <p><input type="text" name="efind" id="efind" value="{{efind}}">
                 <span class="stat" id="nentityentries"></span>
                 <button type="button" id="entityclear" class="icon">❌</button>
@@ -70,10 +71,7 @@
               <b>Appearance</b>
               {{formattingbuttons|safe}}
             </div>
-            <div id="filterwidget">
-              <b>Filter</b>
-              {{filterwidget|safe}}
-            </div>
+            {{filterwidget|safe}}
             {{entitytext|safe}}
             {{selectentities|safe}}
             {{modifyreport|safe}}

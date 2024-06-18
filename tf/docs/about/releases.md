@@ -20,6 +20,20 @@ pip install -e .
 
 ### 12.5
 
+#### 12.5.3
+
+2024-06-18
+
+The machinery of Named-Entity-Recognition by triggers defined in spreadsheets is now
+available in the Text-Fabric browser.
+
+You get the diagnostic messages after reading the spreadsheets, and a column with all
+defined names and triggers. You can click on names to view their occurrences, and you
+can click on triggers to view their occurrences in a slightly other highlight color.
+
+When you update a spreadsheet, and reload the browser, the changes are applied
+automatically.
+
 #### 12.5.2
 
 2024-06-13

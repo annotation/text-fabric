@@ -84,6 +84,7 @@ class Sets(Data):
 
         setIsRo = setName == "" or setName.startswith(".")
         setIsSrc = setName == ""
+        setIsX = setIsRo and not setIsSrc
 
         setNameRep = (
             f"{SET_ENT} {entitySet}"
@@ -96,8 +97,9 @@ class Sets(Data):
             self.setNameRep = setNameRep
             self.setIsRo = setIsRo
             self.setIsSrc = setIsSrc
+            self.setIsX = setIsX
         else:
-            return (setNameRep, setIsRo, setIsSrc)
+            return (setNameRep, setIsRo, setIsSrc, setIsX)
 
     def readSets(self):
         """Read the list current annotation sets (again).
@@ -140,7 +142,7 @@ class Sets(Data):
         annoDir = self.annoDir
         newSetDir = f"{annoDir}/{newSetName}"
 
-        (newSetNameRep, newSetRo, newSetSrc) = self.setInfo(newSetName)
+        (newSetNameRep, newSetRo, newSetSrc, newSetX) = self.setInfo(newSetName)
 
         if (not newSetSrc) and (newSetName not in setNames or not dirExists(newSetDir)):
             initTree(newSetDir, fresh=False)
@@ -175,10 +177,9 @@ class Sets(Data):
         if not self.properlySetup:
             return
 
-        setIsRo = self.setIsRo
-        setIsSrc = self.setIsSrc
+        setIsX = self.setIsX
 
-        if setIsSrc or not setIsRo:
+        if not setIsX:
             return
 
         self._clearSetData()
@@ -295,7 +296,7 @@ class Sets(Data):
             return []
 
         messages = []
-        (delSetRep, delSetRo, delSetSrc) = self.setInfo(setName=delSet)
+        (delSetRep, delSetRo, delSetSrc, delSetX) = self.setInfo(setName=delSet)
 
         if delSetRo:
             messages.append(
@@ -337,7 +338,7 @@ class Sets(Data):
             return []
 
         messages = []
-        (moveSetRep, moveSetRo, moveSetSrc) = self.setInfo(setName=moveSet)
+        (moveSetRep, moveSetRo, moveSetSrc, moveSetX) = self.setInfo(setName=moveSet)
 
         if moveSetRo:
             messages.append((ERROR, f"""Cannot rename a set to ""{moveSetRep}"""))

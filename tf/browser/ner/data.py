@@ -675,7 +675,7 @@ class Data(Corpus):
 
         setNameRep = self.setNameRep
         setIsRo = self.setIsRo
-        setIsSrc = self.setIsSrc
+        setIsX = self.setIsX
 
         if not _lowlevel and setIsRo:
             if silent:
@@ -683,7 +683,7 @@ class Data(Corpus):
             self.console(f"Entities addition not allowed on {setNameRep}", error=True)
             return
 
-        if _lowlevel and (setIsSrc or not setIsRo):
+        if _lowlevel and not setIsX:
             return
 
         setData = self.getSetData()
@@ -902,13 +902,13 @@ class Data(Corpus):
         setName = self.setName
         setNameRep = self.setNameRep
         setIsRo = self.setIsRo
-        setIsSrc = self.setIsSrc
+        setIsX = self.setIsX
 
         if not _lowlevel and setIsRo:
             self.console(f"Entity merging not allowed on {setNameRep}", error=True)
             return
 
-        if _lowlevel and (setIsSrc or not setIsRo):
+        if _lowlevel and not setIsX:
             return
 
         annoDir = self.annoDir

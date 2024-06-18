@@ -92,6 +92,7 @@ class Serve(Request, Fragments):
         v = self.v
         sortKey = v.sortkey
         sortDir = v.sortdir
+        subtleFilter = v.subtlefilter
         activeEntity = v.activeentity
         activeTrigger = v.activetrigger
         tokenStart = v.tokenstart
@@ -111,6 +112,7 @@ class Serve(Request, Fragments):
                 activeTrigger=activeTrigger,
                 sortKey=sortKey,
                 sortDir=sortDir,
+                subtleFilter=subtleFilter,
             )
         )
         v.entityoverview = ner.showEntityOverview()
