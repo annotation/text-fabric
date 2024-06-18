@@ -244,7 +244,7 @@ slots.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/ner.py#L1-L742" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/ner.py#L1-L742" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;API for Named Entity marking.
 
@@ -584,7 +584,8 @@ class NER(Sheets, Sets, Show):
 
     def setTask(self, task):
         self.setSet(task)
-        self.setSheet(task[1:] if self.setIsRo and not self.setIsSrc else None)
+        setIsX = self.setIsX
+        self.setSheet(task[1:] if setIsX else None)
 
     def findOccs(self):
         &#34;&#34;&#34;Finds the occurrences of multiple triggers.
@@ -750,8 +751,7 @@ class NER(Sheets, Sets, Show):
         getTokens = self.getTokens
 
         browse = self.browse
-        setIsRo = self.setIsRo
-        setIsSrc = self.setIsSrc
+        setIsX = self.setIsX
         setData = self.getSetData()
         entityIndex = setData.entityIndex
         entityVal = setData.entityVal
@@ -759,7 +759,7 @@ class NER(Sheets, Sets, Show):
         entitySlotAll = setData.entitySlotAll
         entitySlotIndex = setData.entitySlotIndex
 
-        if setIsRo and not setIsSrc:
+        if setIsX:
             sheetData = self.getSheetData()
             triggerFromMatch = sheetData.triggerFromMatch
         else:
@@ -1039,7 +1039,7 @@ browser. This will influence how results are reported back.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/ner.py#L276-L742" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/ner.py#L276-L742" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Sheets, Sets, Show):
     def __init__(self, app, data=None, browse=False):
@@ -1104,7 +1104,8 @@ browser. This will influence how results are reported back.</dd>
 
     def setTask(self, task):
         self.setSet(task)
-        self.setSheet(task[1:] if self.setIsRo and not self.setIsSrc else None)
+        setIsX = self.setIsX
+        self.setSheet(task[1:] if setIsX else None)
 
     def findOccs(self):
         &#34;&#34;&#34;Finds the occurrences of multiple triggers.
@@ -1270,8 +1271,7 @@ browser. This will influence how results are reported back.</dd>
         getTokens = self.getTokens
 
         browse = self.browse
-        setIsRo = self.setIsRo
-        setIsSrc = self.setIsSrc
+        setIsX = self.setIsX
         setData = self.getSetData()
         entityIndex = setData.entityIndex
         entityVal = setData.entityVal
@@ -1279,7 +1279,7 @@ browser. This will influence how results are reported back.</dd>
         entitySlotAll = setData.entitySlotAll
         entitySlotIndex = setData.entitySlotIndex
 
-        if setIsRo and not setIsSrc:
+        if setIsX:
             sheetData = self.getSheetData()
             triggerFromMatch = sheetData.triggerFromMatch
         else:
@@ -1534,7 +1534,7 @@ with this string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/ner.py#L733-L742" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/ner.py#L733-L742" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def bakeEntities(self, versionExtension=&#34;e&#34;):
     &#34;&#34;&#34;Bakes the entities of the current set as nodes into a new TF data source.
@@ -1646,7 +1646,7 @@ of results.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/ner.py#L381-L635" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/ner.py#L382-L635" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def filterContent(
     self,
@@ -1772,8 +1772,7 @@ of results.</p>
     getTokens = self.getTokens
 
     browse = self.browse
-    setIsRo = self.setIsRo
-    setIsSrc = self.setIsSrc
+    setIsX = self.setIsX
     setData = self.getSetData()
     entityIndex = setData.entityIndex
     entityVal = setData.entityVal
@@ -1781,7 +1780,7 @@ of results.</p>
     entitySlotAll = setData.entitySlotAll
     entitySlotIndex = setData.entitySlotIndex
 
-    if setIsRo and not setIsSrc:
+    if setIsX:
         sheetData = self.getSheetData()
         triggerFromMatch = sheetData.triggerFromMatch
     else:
@@ -1924,7 +1923,7 @@ the value is the name of that entity in the context indicated by path.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/ner.py#L341-L379" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/ner.py#L342-L380" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findOccs(self):
     &#34;&#34;&#34;Finds the occurrences of multiple triggers.
@@ -1975,7 +1974,7 @@ the value is the name of that entity in the context indicated by path.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/ner.py#L637-L731" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/ner.py#L637-L731" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reportHits(self):
     &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
@@ -2082,11 +2081,12 @@ the value is the name of that entity in the context indicated by path.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/ner.py#L337-L339" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/ner.py#L337-L340" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setTask(self, task):
     self.setSet(task)
-    self.setSheet(task[1:] if self.setIsRo and not self.setIsSrc else None)</code></pre>
+    setIsX = self.setIsX
+    self.setSheet(task[1:] if setIsX else None)</code></pre>
 </details>
 </dd>
 </dl>

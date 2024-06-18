@@ -34,7 +34,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/show.py#L1-L585" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/show.py#L1-L599" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Rendering of corpus extracts with annotations.
 
@@ -46,7 +46,7 @@ from itertools import chain
 
 from ...advanced.helpers import dh
 
-from .helpers import repIdent, repSummary
+from .helpers import repIdent, repSummary, toAscii
 from ..html import H
 
 from .settings import (
@@ -215,7 +215,12 @@ class Show:
         dh(content)
 
     def showTriggers(
-        self, activeEntity=None, activeTrigger=None, sortKey=None, sortDir=None
+        self,
+        activeEntity=None,
+        activeTrigger=None,
+        sortKey=None,
+        sortDir=None,
+        subtleFilter=None,
     ):
         &#34;&#34;&#34;Generates HTML for an expandable overview of the entities and their triggers.
 
@@ -252,6 +257,15 @@ class Show:
             As a consequence, the default sort order is by frequency, most
             frequent on top.
 
+        subtleFilter: boolean, optional None
+            Filters on the kind of sheets in which triggers occur.
+
+            If None: all sheets are considered.
+
+            If True: only context sheets are considered.
+
+            If False: only the main sheet is considered.
+
         Returns
         -------
         string or void
@@ -270,24 +284,34 @@ class Show:
         def entryNames(data):
             entries = []
 
-            for (eidkind, v) in data.items():
+            for eidkind, triggers in data.items():
                 name = nameMap[eidkind][0]
-                tOccs = sum(v.values())
+                tOccs = sum(triggers.values())
+                subtle = any(t[1] != &#34;&#34; for t in triggers)
 
-                entries.append((eidkind, name, tOccs, entryTriggers(v)))
+                if (
+                    subtleFilter is None
+                    or subtleFilter
+                    and subtle
+                    or not subtleFilter
+                    and not subtle
+                ):
+                    entries.append(
+                        (eidkind, name, tOccs, subtle, entryTriggers(triggers))
+                    )
 
             return entries
 
         def entryTriggers(data):
             entries = []
 
-            for (k, nOccs) in sorted(data.items(), key=lambda x: (-x[1], x[0])):
-                entries.append((k, nOccs))
+            for trigger, nOccs in sorted(data.items(), key=lambda x: (-x[1], x[0])):
+                subtle = trigger[1] != &#34;&#34;
+                entries.append((trigger, nOccs, subtle))
 
             return entries
 
         entries = entryNames(hitData)
-        sortKeyMap = dict(name=0)
 
         if sortKey is None and sortDir is None:
             (sortKey, sortDir) = SORT_DEFAULT
@@ -298,20 +322,9 @@ class Show:
                 sortDir = SORTDIR_DEFAULT
 
         if sortKey == SORTKEY_DEFAULT:
-            entries = sorted(entries, key=lambda x: (x[2], x[1]))
+            entries = sorted(entries, key=lambda x: (x[2], toAscii(x[1]).lower()))
         else:
-            if sortKey.startswith(&#34;sort_&#34;):
-                index = sortKey[5:]
-                if index.isdecimal():
-                    index = int(index)
-                    if index != 0:
-                        index = 0
-                else:
-                    index = sortKeyMap.get(index, 0)
-            else:
-                index = 0
-
-            entries = sorted(entries, key=lambda x: (x[1], -x[2]))
+            entries = sorted(entries, key=lambda x: (toAscii(x[1]).lower(), -x[2]))
 
         if sortDir == SORTDIR_DESC:
             entries = reversed(entries)
@@ -319,23 +332,24 @@ class Show:
         def genNames(data):
             content = []
 
-            for (eidkind, name, tOccs, triggers) in entries:
+            for eidkind, name, tOccs, subtle, triggers in entries:
                 identRep = &#34;⊙&#34;.join(eidkind)
                 occsCls = (
                     &#34;nooccs&#34;
                     if tOccs == 0
-                    else &#34; warnoccs &#34;
+                    else &#34;warnoccs&#34;
                     if any(x[1] == 0 for x in triggers)
                     else &#34;&#34;
                 )
-                active = &#34; queried &#34; if hasEnt and eidkind == activeEntity else &#34;&#34;
+                subtleCls = &#34;subtle&#34; if subtle else &#34;&#34;
+                active = &#34;queried&#34; if hasEnt and eidkind == activeEntity else &#34;&#34;
 
                 content.append(
                     H.div(
                         H.div(H.span(f&#34;{tOccs} &#34;, cls=&#34;stat&#34;)),
                         H.div(
                             (
-                                H.div(name, cls=f&#34;ntx {occsCls}&#34;),
+                                H.div(name, cls=f&#34;ntx {occsCls} {subtleCls}&#34;),
                                 H.div(genTriggers(triggers), cls=&#34;etrigger&#34;),
                             )
                         ),
@@ -349,14 +363,14 @@ class Show:
         def genTriggers(data):
             content = []
 
-            for (k, nOccs) in data:
-                occsCls = &#34;nooccs&#34; if nOccs == 0 else &#34;&#34;
+            for k, nOccs, subtle in data:
                 (trigger, sheet) = k
+                occsCls = &#34;nooccs&#34; if nOccs == 0 else &#34;&#34;
+                subtleCls = &#34;subtle&#34; if subtle else &#34;&#34;
+                sheetRep = f&#34;{sheet}{SET_SHEET}&#34; if subtle else sheet
                 triggerRep = &#34;⊙&#34;.join(k)
                 active = (
-                    &#34; tqueried &#34;
-                    if hasTrig and (trigger, sheet) == activeTrigger
-                    else &#34;&#34;
+                    &#34;tqueried&#34; if hasTrig and (trigger, sheet) == activeTrigger else &#34;&#34;
                 )
                 content.append(
                     H.div(
@@ -364,10 +378,10 @@ class Show:
                             H.span(f&#34;{nOccs} &#34;, cls=&#34;stat&#34;),
                             H.span(
                                 (
-                                    H.span(f&#34;{sheet} {SET_SHEET} &#34;),
+                                    H.span(f&#34;{sheetRep} &#34;),
                                     H.code(trigger, cls=&#34;ttx&#34;),
                                 ),
-                                cls=occsCls,
+                                cls=f&#34;{occsCls} {subtleCls}&#34;,
                             ),
                         ),
                         cls=f&#34;et {active}&#34;,
@@ -466,9 +480,9 @@ class Show:
 
         browse = self.browse
         setData = self.getSetData()
+        setIsX = self.setIsX
         setIsRo = self.setIsRo
         setIsSrc = self.setIsSrc
-        setIsX = setIsRo and not setIsSrc
         afterv = self.getAfter()
         sectionHead = self.sectionHead
 
@@ -478,7 +492,7 @@ class Show:
         hasEnt = activeEntity is not None
         hasTrig = activeTrigger is not None
 
-        if setIsRo and not setIsSrc:
+        if setIsX:
             sheetData = self.getSheetData()
             triggerFromMatch = sheetData.triggerFromMatch
 
@@ -640,7 +654,7 @@ class Show:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/show.py#L25-L585" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/show.py#L25-L599" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Show:
     def showEntityOverview(self):
@@ -797,7 +811,12 @@ class Show:
         dh(content)
 
     def showTriggers(
-        self, activeEntity=None, activeTrigger=None, sortKey=None, sortDir=None
+        self,
+        activeEntity=None,
+        activeTrigger=None,
+        sortKey=None,
+        sortDir=None,
+        subtleFilter=None,
     ):
         &#34;&#34;&#34;Generates HTML for an expandable overview of the entities and their triggers.
 
@@ -834,6 +853,15 @@ class Show:
             As a consequence, the default sort order is by frequency, most
             frequent on top.
 
+        subtleFilter: boolean, optional None
+            Filters on the kind of sheets in which triggers occur.
+
+            If None: all sheets are considered.
+
+            If True: only context sheets are considered.
+
+            If False: only the main sheet is considered.
+
         Returns
         -------
         string or void
@@ -852,24 +880,34 @@ class Show:
         def entryNames(data):
             entries = []
 
-            for (eidkind, v) in data.items():
+            for eidkind, triggers in data.items():
                 name = nameMap[eidkind][0]
-                tOccs = sum(v.values())
+                tOccs = sum(triggers.values())
+                subtle = any(t[1] != &#34;&#34; for t in triggers)
 
-                entries.append((eidkind, name, tOccs, entryTriggers(v)))
+                if (
+                    subtleFilter is None
+                    or subtleFilter
+                    and subtle
+                    or not subtleFilter
+                    and not subtle
+                ):
+                    entries.append(
+                        (eidkind, name, tOccs, subtle, entryTriggers(triggers))
+                    )
 
             return entries
 
         def entryTriggers(data):
             entries = []
 
-            for (k, nOccs) in sorted(data.items(), key=lambda x: (-x[1], x[0])):
-                entries.append((k, nOccs))
+            for trigger, nOccs in sorted(data.items(), key=lambda x: (-x[1], x[0])):
+                subtle = trigger[1] != &#34;&#34;
+                entries.append((trigger, nOccs, subtle))
 
             return entries
 
         entries = entryNames(hitData)
-        sortKeyMap = dict(name=0)
 
         if sortKey is None and sortDir is None:
             (sortKey, sortDir) = SORT_DEFAULT
@@ -880,20 +918,9 @@ class Show:
                 sortDir = SORTDIR_DEFAULT
 
         if sortKey == SORTKEY_DEFAULT:
-            entries = sorted(entries, key=lambda x: (x[2], x[1]))
+            entries = sorted(entries, key=lambda x: (x[2], toAscii(x[1]).lower()))
         else:
-            if sortKey.startswith(&#34;sort_&#34;):
-                index = sortKey[5:]
-                if index.isdecimal():
-                    index = int(index)
-                    if index != 0:
-                        index = 0
-                else:
-                    index = sortKeyMap.get(index, 0)
-            else:
-                index = 0
-
-            entries = sorted(entries, key=lambda x: (x[1], -x[2]))
+            entries = sorted(entries, key=lambda x: (toAscii(x[1]).lower(), -x[2]))
 
         if sortDir == SORTDIR_DESC:
             entries = reversed(entries)
@@ -901,23 +928,24 @@ class Show:
         def genNames(data):
             content = []
 
-            for (eidkind, name, tOccs, triggers) in entries:
+            for eidkind, name, tOccs, subtle, triggers in entries:
                 identRep = &#34;⊙&#34;.join(eidkind)
                 occsCls = (
                     &#34;nooccs&#34;
                     if tOccs == 0
-                    else &#34; warnoccs &#34;
+                    else &#34;warnoccs&#34;
                     if any(x[1] == 0 for x in triggers)
                     else &#34;&#34;
                 )
-                active = &#34; queried &#34; if hasEnt and eidkind == activeEntity else &#34;&#34;
+                subtleCls = &#34;subtle&#34; if subtle else &#34;&#34;
+                active = &#34;queried&#34; if hasEnt and eidkind == activeEntity else &#34;&#34;
 
                 content.append(
                     H.div(
                         H.div(H.span(f&#34;{tOccs} &#34;, cls=&#34;stat&#34;)),
                         H.div(
                             (
-                                H.div(name, cls=f&#34;ntx {occsCls}&#34;),
+                                H.div(name, cls=f&#34;ntx {occsCls} {subtleCls}&#34;),
                                 H.div(genTriggers(triggers), cls=&#34;etrigger&#34;),
                             )
                         ),
@@ -931,14 +959,14 @@ class Show:
         def genTriggers(data):
             content = []
 
-            for (k, nOccs) in data:
-                occsCls = &#34;nooccs&#34; if nOccs == 0 else &#34;&#34;
+            for k, nOccs, subtle in data:
                 (trigger, sheet) = k
+                occsCls = &#34;nooccs&#34; if nOccs == 0 else &#34;&#34;
+                subtleCls = &#34;subtle&#34; if subtle else &#34;&#34;
+                sheetRep = f&#34;{sheet}{SET_SHEET}&#34; if subtle else sheet
                 triggerRep = &#34;⊙&#34;.join(k)
                 active = (
-                    &#34; tqueried &#34;
-                    if hasTrig and (trigger, sheet) == activeTrigger
-                    else &#34;&#34;
+                    &#34;tqueried&#34; if hasTrig and (trigger, sheet) == activeTrigger else &#34;&#34;
                 )
                 content.append(
                     H.div(
@@ -946,10 +974,10 @@ class Show:
                             H.span(f&#34;{nOccs} &#34;, cls=&#34;stat&#34;),
                             H.span(
                                 (
-                                    H.span(f&#34;{sheet} {SET_SHEET} &#34;),
+                                    H.span(f&#34;{sheetRep} &#34;),
                                     H.code(trigger, cls=&#34;ttx&#34;),
                                 ),
-                                cls=occsCls,
+                                cls=f&#34;{occsCls} {subtleCls}&#34;,
                             ),
                         ),
                         cls=f&#34;et {active}&#34;,
@@ -1048,9 +1076,9 @@ class Show:
 
         browse = self.browse
         setData = self.getSetData()
+        setIsX = self.setIsX
         setIsRo = self.setIsRo
         setIsSrc = self.setIsSrc
-        setIsX = setIsRo and not setIsSrc
         afterv = self.getAfter()
         sectionHead = self.sectionHead
 
@@ -1060,7 +1088,7 @@ class Show:
         hasEnt = activeEntity is not None
         hasTrig = activeTrigger is not None
 
-        if setIsRo and not setIsSrc:
+        if setIsX:
             sheetData = self.getSheetData()
             triggerFromMatch = sheetData.triggerFromMatch
 
@@ -1271,7 +1299,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/show.py#L349-L585" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/show.py#L363-L599" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showContent(
     self,
@@ -1355,9 +1383,9 @@ it is a cell in a Jupyter Notebook.</dd>
 
     browse = self.browse
     setData = self.getSetData()
+    setIsX = self.setIsX
     setIsRo = self.setIsRo
     setIsSrc = self.setIsSrc
-    setIsX = setIsRo and not setIsSrc
     afterv = self.getAfter()
     sectionHead = self.sectionHead
 
@@ -1367,7 +1395,7 @@ it is a cell in a Jupyter Notebook.</dd>
     hasEnt = activeEntity is not None
     hasTrig = activeTrigger is not None
 
-    if setIsRo and not setIsSrc:
+    if setIsX:
         sheetData = self.getSheetData()
         triggerFromMatch = sheetData.triggerFromMatch
 
@@ -1563,7 +1591,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/show.py#L62-L177" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/show.py#L62-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showEntities(
     self, activeEntity=None, sortKey=None, sortDir=None, cutOffFreq=None
@@ -1700,7 +1728,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/show.py#L26-L60" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/show.py#L26-L60" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showEntityOverview(self):
     &#34;&#34;&#34;Generates HTML for an overview of the entities.
@@ -1740,7 +1768,7 @@ it is a cell in a Jupyter Notebook.</dd>
 </details>
 </dd>
 <dt id="tf.browser.ner.show.Show.showTriggers"><code class="name flex">
-<span>def <span class="ident">showTriggers</span></span>(<span>self, activeEntity=None, activeTrigger=None, sortKey=None, sortDir=None)</span>
+<span>def <span class="ident">showTriggers</span></span>(<span>self, activeEntity=None, activeTrigger=None, sortKey=None, sortDir=None, subtleFilter=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Generates HTML for an expandable overview of the entities and their triggers.</p>
@@ -1774,6 +1802,13 @@ a <code>d</code> is filled in.</p>
 <p>As a consequence, the default sort order is by frequency, most
 frequent on top.</p>
 </dd>
+<dt><strong><code>subtleFilter</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
+<dd>
+<p>Filters on the kind of sheets in which triggers occur.</p>
+<p>If None: all sheets are considered.</p>
+<p>If True: only context sheets are considered.</p>
+<p>If False: only the main sheet is considered.</p>
+</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -1785,10 +1820,15 @@ it is a cell in a Jupyter Notebook.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/show.py#L179-L347" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/show.py#L179-L361" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showTriggers(
-    self, activeEntity=None, activeTrigger=None, sortKey=None, sortDir=None
+    self,
+    activeEntity=None,
+    activeTrigger=None,
+    sortKey=None,
+    sortDir=None,
+    subtleFilter=None,
 ):
     &#34;&#34;&#34;Generates HTML for an expandable overview of the entities and their triggers.
 
@@ -1825,6 +1865,15 @@ it is a cell in a Jupyter Notebook.</dd>
         As a consequence, the default sort order is by frequency, most
         frequent on top.
 
+    subtleFilter: boolean, optional None
+        Filters on the kind of sheets in which triggers occur.
+
+        If None: all sheets are considered.
+
+        If True: only context sheets are considered.
+
+        If False: only the main sheet is considered.
+
     Returns
     -------
     string or void
@@ -1843,24 +1892,34 @@ it is a cell in a Jupyter Notebook.</dd>
     def entryNames(data):
         entries = []
 
-        for (eidkind, v) in data.items():
+        for eidkind, triggers in data.items():
             name = nameMap[eidkind][0]
-            tOccs = sum(v.values())
+            tOccs = sum(triggers.values())
+            subtle = any(t[1] != &#34;&#34; for t in triggers)
 
-            entries.append((eidkind, name, tOccs, entryTriggers(v)))
+            if (
+                subtleFilter is None
+                or subtleFilter
+                and subtle
+                or not subtleFilter
+                and not subtle
+            ):
+                entries.append(
+                    (eidkind, name, tOccs, subtle, entryTriggers(triggers))
+                )
 
         return entries
 
     def entryTriggers(data):
         entries = []
 
-        for (k, nOccs) in sorted(data.items(), key=lambda x: (-x[1], x[0])):
-            entries.append((k, nOccs))
+        for trigger, nOccs in sorted(data.items(), key=lambda x: (-x[1], x[0])):
+            subtle = trigger[1] != &#34;&#34;
+            entries.append((trigger, nOccs, subtle))
 
         return entries
 
     entries = entryNames(hitData)
-    sortKeyMap = dict(name=0)
 
     if sortKey is None and sortDir is None:
         (sortKey, sortDir) = SORT_DEFAULT
@@ -1871,20 +1930,9 @@ it is a cell in a Jupyter Notebook.</dd>
             sortDir = SORTDIR_DEFAULT
 
     if sortKey == SORTKEY_DEFAULT:
-        entries = sorted(entries, key=lambda x: (x[2], x[1]))
+        entries = sorted(entries, key=lambda x: (x[2], toAscii(x[1]).lower()))
     else:
-        if sortKey.startswith(&#34;sort_&#34;):
-            index = sortKey[5:]
-            if index.isdecimal():
-                index = int(index)
-                if index != 0:
-                    index = 0
-            else:
-                index = sortKeyMap.get(index, 0)
-        else:
-            index = 0
-
-        entries = sorted(entries, key=lambda x: (x[1], -x[2]))
+        entries = sorted(entries, key=lambda x: (toAscii(x[1]).lower(), -x[2]))
 
     if sortDir == SORTDIR_DESC:
         entries = reversed(entries)
@@ -1892,23 +1940,24 @@ it is a cell in a Jupyter Notebook.</dd>
     def genNames(data):
         content = []
 
-        for (eidkind, name, tOccs, triggers) in entries:
+        for eidkind, name, tOccs, subtle, triggers in entries:
             identRep = &#34;⊙&#34;.join(eidkind)
             occsCls = (
                 &#34;nooccs&#34;
                 if tOccs == 0
-                else &#34; warnoccs &#34;
+                else &#34;warnoccs&#34;
                 if any(x[1] == 0 for x in triggers)
                 else &#34;&#34;
             )
-            active = &#34; queried &#34; if hasEnt and eidkind == activeEntity else &#34;&#34;
+            subtleCls = &#34;subtle&#34; if subtle else &#34;&#34;
+            active = &#34;queried&#34; if hasEnt and eidkind == activeEntity else &#34;&#34;
 
             content.append(
                 H.div(
                     H.div(H.span(f&#34;{tOccs} &#34;, cls=&#34;stat&#34;)),
                     H.div(
                         (
-                            H.div(name, cls=f&#34;ntx {occsCls}&#34;),
+                            H.div(name, cls=f&#34;ntx {occsCls} {subtleCls}&#34;),
                             H.div(genTriggers(triggers), cls=&#34;etrigger&#34;),
                         )
                     ),
@@ -1922,14 +1971,14 @@ it is a cell in a Jupyter Notebook.</dd>
     def genTriggers(data):
         content = []
 
-        for (k, nOccs) in data:
-            occsCls = &#34;nooccs&#34; if nOccs == 0 else &#34;&#34;
+        for k, nOccs, subtle in data:
             (trigger, sheet) = k
+            occsCls = &#34;nooccs&#34; if nOccs == 0 else &#34;&#34;
+            subtleCls = &#34;subtle&#34; if subtle else &#34;&#34;
+            sheetRep = f&#34;{sheet}{SET_SHEET}&#34; if subtle else sheet
             triggerRep = &#34;⊙&#34;.join(k)
             active = (
-                &#34; tqueried &#34;
-                if hasTrig and (trigger, sheet) == activeTrigger
-                else &#34;&#34;
+                &#34;tqueried&#34; if hasTrig and (trigger, sheet) == activeTrigger else &#34;&#34;
             )
             content.append(
                 H.div(
@@ -1937,10 +1986,10 @@ it is a cell in a Jupyter Notebook.</dd>
                         H.span(f&#34;{nOccs} &#34;, cls=&#34;stat&#34;),
                         H.span(
                             (
-                                H.span(f&#34;{sheet} {SET_SHEET} &#34;),
+                                H.span(f&#34;{sheetRep} &#34;),
                                 H.code(trigger, cls=&#34;ttx&#34;),
                             ),
-                            cls=occsCls,
+                            cls=f&#34;{occsCls} {subtleCls}&#34;,
                         ),
                     ),
                     cls=f&#34;et {active}&#34;,

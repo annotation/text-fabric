@@ -43,7 +43,7 @@ processed if they are needed and out of date.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/data.py#L1-L1085" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L1-L1085" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Annotation data module.
 
@@ -722,7 +722,7 @@ class Data(Corpus):
 
         setNameRep = self.setNameRep
         setIsRo = self.setIsRo
-        setIsSrc = self.setIsSrc
+        setIsX = self.setIsX
 
         if not _lowlevel and setIsRo:
             if silent:
@@ -730,7 +730,7 @@ class Data(Corpus):
             self.console(f&#34;Entities addition not allowed on {setNameRep}&#34;, error=True)
             return
 
-        if _lowlevel and (setIsSrc or not setIsRo):
+        if _lowlevel and not setIsX:
             return
 
         setData = self.getSetData()
@@ -949,13 +949,13 @@ class Data(Corpus):
         setName = self.setName
         setNameRep = self.setNameRep
         setIsRo = self.setIsRo
-        setIsSrc = self.setIsSrc
+        setIsX = self.setIsX
 
         if not _lowlevel and setIsRo:
             self.console(f&#34;Entity merging not allowed on {setNameRep}&#34;, error=True)
             return
 
-        if _lowlevel and (setIsSrc or not setIsRo):
+        if _lowlevel and not setIsX:
             return
 
         annoDir = self.annoDir
@@ -1172,7 +1172,7 @@ it to the initializer here.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/data.py#L39-L1085" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L39-L1085" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Data(Corpus):
     def __init__(self, sets=None):
@@ -1813,7 +1813,7 @@ it to the initializer here.</p>
 
         setNameRep = self.setNameRep
         setIsRo = self.setIsRo
-        setIsSrc = self.setIsSrc
+        setIsX = self.setIsX
 
         if not _lowlevel and setIsRo:
             if silent:
@@ -1821,7 +1821,7 @@ it to the initializer here.</p>
             self.console(f&#34;Entities addition not allowed on {setNameRep}&#34;, error=True)
             return
 
-        if _lowlevel and (setIsSrc or not setIsRo):
+        if _lowlevel and not setIsX:
             return
 
         setData = self.getSetData()
@@ -2040,13 +2040,13 @@ it to the initializer here.</p>
         setName = self.setName
         setNameRep = self.setNameRep
         setIsRo = self.setIsRo
-        setIsSrc = self.setIsSrc
+        setIsX = self.setIsX
 
         if not _lowlevel and setIsRo:
             self.console(f&#34;Entity merging not allowed on {setNameRep}&#34;, error=True)
             return
 
-        if _lowlevel and (setIsSrc or not setIsRo):
+        if _lowlevel and not setIsX:
             return
 
         annoDir = self.annoDir
@@ -2266,7 +2266,7 @@ asked to be deleted and the number of actually deleted entities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/data.py#L642-L719" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L642-L719" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addEntities(self, newEntities, silent=True, _lowlevel=False):
     &#34;&#34;&#34;Add multiple entities efficiently to the current set.
@@ -2304,7 +2304,7 @@ asked to be deleted and the number of actually deleted entities.</p>
 
     setNameRep = self.setNameRep
     setIsRo = self.setIsRo
-    setIsSrc = self.setIsSrc
+    setIsX = self.setIsX
 
     if not _lowlevel and setIsRo:
         if silent:
@@ -2312,7 +2312,7 @@ asked to be deleted and the number of actually deleted entities.</p>
         self.console(f&#34;Entities addition not allowed on {setNameRep}&#34;, error=True)
         return
 
-    if _lowlevel and (setIsSrc or not setIsRo):
+    if _lowlevel and not setIsX:
         return
 
     setData = self.getSetData()
@@ -2380,7 +2380,7 @@ asked to be deleted and the number of actually deleted entities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/data.py#L562-L640" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L562-L640" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addEntity(self, vals, allMatches, silent=True):
     &#34;&#34;&#34;Add entity occurrences to the current set.
@@ -2497,7 +2497,7 @@ no entity will be added there.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/data.py#L721-L839" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L721-L839" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addEntityRich(self, additions, buckets, excludedTokens=set()):
     &#34;&#34;&#34;Add specified entity occurrences to the current set.
@@ -2637,7 +2637,7 @@ with this string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/data.py#L943-L1085" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L943-L1085" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def consolidateEntities(self, versionExtension):
     &#34;&#34;&#34;Consolidates the current entities as nodes into a new TF data source.
@@ -2818,7 +2818,7 @@ asked to be deleted and the number of actually deleted entities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/data.py#L354-L434" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L354-L434" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def delEntity(self, vals, allMatches=None, silent=True):
     &#34;&#34;&#34;Delete entity occurrences from the current set.
@@ -2937,7 +2937,7 @@ the entity will not be deleted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/data.py#L436-L560" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L436-L560" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def delEntityRich(self, deletions, buckets, excludedTokens=set()):
     &#34;&#34;&#34;Delete specified entity occurrences from the current set.
@@ -3087,7 +3087,7 @@ that are part of the entity.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/data.py#L112-L196" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L112-L196" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fromSourceSet(self):
     &#34;&#34;&#34;Loads an annotation set from source.
@@ -3189,7 +3189,7 @@ that are part of the entity.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/data.py#L78-L96" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L78-L96" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadSetData(self, _lowlevel=False):
     &#34;&#34;&#34;Loads the current annotation set into memory.
@@ -3228,7 +3228,7 @@ and an iterable of slot tuples where the entity is located.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/data.py#L887-L920" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L887-L920" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mergeEntities(self, newEntities, _lowlevel=False):
     &#34;&#34;&#34;Performs additions to the current annotation set.
@@ -3248,13 +3248,13 @@ and an iterable of slot tuples where the entity is located.</dd>
     setName = self.setName
     setNameRep = self.setNameRep
     setIsRo = self.setIsRo
-    setIsSrc = self.setIsSrc
+    setIsX = self.setIsX
 
     if not _lowlevel and setIsRo:
         self.console(f&#34;Entity merging not allowed on {setNameRep}&#34;, error=True)
         return
 
-    if _lowlevel and (setIsSrc or not setIsRo):
+    if _lowlevel and not setIsX:
         return
 
     annoDir = self.annoDir
@@ -3324,7 +3324,7 @@ entities in the surrounding context of tokens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/data.py#L198-L352" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L198-L352" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def processSet(self, changed):
     &#34;&#34;&#34;Generates derived data structures out of the source set.
@@ -3498,7 +3498,7 @@ entities in the surrounding context of tokens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/data.py#L922-L941" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L922-L941" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def saveEntitiesAs(self, dataFile):
     &#34;&#34;&#34;Export an annotation set to a file.
@@ -3538,7 +3538,7 @@ and an iterable of slot tuples where the entity is located.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1b06301d4a8277eddde3f965a97da01aea3f501d/tf/browser/ner/data.py#L841-L885" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L841-L885" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def weedEntities(self, delEntities):
     &#34;&#34;&#34;Performs deletions to the current annotation set.
