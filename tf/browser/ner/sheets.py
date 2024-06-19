@@ -27,7 +27,7 @@ class Sheets:
 
         self.properlySetup = True
 
-        browse = self.browse
+        # browse = self.browse
         self.sheets = sheets
         settings = self.settings
         self.spaceEscaped = settings.spaceEscaped
@@ -46,8 +46,8 @@ class Sheets:
 
         self.readSheets()
 
-        if not browse:
-            self.loadSheetData()
+        # if not browse:
+        #    self.loadSheetData()
 
     def readSheets(self):
         """Read the list current ner sheets (again).
@@ -90,8 +90,6 @@ class Sheets:
 
         if not uptodate:
             return False
-
-        self.console("load sheet with uptodate data from disk")
 
         if fileExists(dataFile):
             with gzip.open(dataFile, mode="rb") as f:
@@ -173,47 +171,36 @@ class Sheets:
         self.loadSheetData()
 
     def loadSheetData(self):
-        """Loads the current ner sheet into memory, if there is one."""
-        if not self.properlySetup:
-            return
-
-        sheets = self.sheets
-        sheetName = self.sheetName
-
-        if sheetName is None:
-            return
-
-        if sheetName not in sheets:
-            sheets[sheetName] = AttrDict()
-
-        self.fromSourceSheet()
-
-    def fromSourceSheet(self):
-        """Loads a ner sheet from source.
+        """Loads the current ner sheet into memory, if there is one.
 
         If the current ner sheet is None, nothing has to be done.
 
         Otherwise, we read the corresponding excel sheet(s) from disk and compile them
-        into instructions.
+        into instructions, if needed.
 
-        After collection of the sheet it is stored under the following keys:
+        When loading a sheet, it will be checked first whether its data is already
+        in memory and uptotdate, in that case nothing will be done.
 
-        *   `timeReadXls`: time when the sheet was last loaded from disk;
-        *   `instructions`: the list of instructions as loaded and compiled
-            from the source.
+        Otherwise, it will be checked wether an uptodate version of its data exists
+        on disk. If so, it will be loaded.
+
+        Otherwise, the data will be computed from scratch and saved to disk,
+        with a time stamp.
         """
         if not self.properlySetup:
-            return None
+            return
 
-        browse = self.browse
         sheetName = self.sheetName
 
         if sheetName is None:
-            return
+            return None
 
-        if sheetName not in self.sheets:
-            self.sheets[sheetName] = AttrDict()
+        sheets = self.sheets
 
+        if sheetName not in sheets:
+            sheets[sheetName] = AttrDict()
+
+        browse = self.browse
         sheetData = self.sheets[sheetName]
         sheetDir = self.sheetDir
         sheetFile = f"{sheetDir}/{sheetName}.xlsx"
@@ -242,8 +229,10 @@ class Sheets:
         if needReload:
             loaded = self.readData(sheetData, sheetUpdated)
 
-            if not loaded:
-                self.console("compute sheet data from scratch")
+            if loaded:
+                self.console("SHEET data: loaded from disk")
+            else:
+                self.console("SHEET data: computing from scratch ...", newline=False)
                 sheetData.logData = []
 
                 self._readSheets(sheetData)
@@ -267,9 +256,10 @@ class Sheets:
                     {k: sheetData[k] for k in writeKeys},
                     tm,
                 )
+                self.console("done")
                 showLog = False
         else:
-            self.console("sheet data uptodate in memory")
+            self.console("SHEET data: already in memory and uptodate")
 
         if showLog and not browse:
             for x in sheetData.logData:

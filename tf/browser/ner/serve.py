@@ -36,10 +36,10 @@ class Serve(Request, Fragments):
 
         self.initVars()
 
-        v = self.v
-        setName = v.set
+        # v = self.v
+        # setName = v.set
 
-        ner.setTask(setName)
+        # ner.setTask(setName)
 
     def setupFull(self):
         """Prepares to serve a complete page.
@@ -71,7 +71,6 @@ class Serve(Request, Fragments):
         *   modification actions in the selected set.
         """
         self.setHandling()
-
         self.getBuckets()
         self.updateHandling()
 

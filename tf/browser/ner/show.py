@@ -493,9 +493,10 @@ class Show:
                 else:
                     allMatches = {}
                     for match in matches:
-                        trigger = triggerFromMatch.get(match, [])
-                        for m in match:
-                            allMatches[m] = trigger
+                        trigger = triggerFromMatch.get(match, None)
+                        if trigger is not None:
+                            for m in match:
+                                allMatches[m] = trigger
             else:
                 allMatches = set()
                 endMatches = set()

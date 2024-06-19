@@ -154,7 +154,7 @@ These steps need some configuration information from the `ner/config.yaml` file.
 Translation is done by
 
 ``` python
-NE.setSheet("people")
+NE.setTask(".people")
 ```
 
 The resulting YAML ends up next to the

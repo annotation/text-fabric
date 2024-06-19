@@ -241,7 +241,11 @@ def entityMatch(
                 matches.append(slots)
 
         if trigger is not None:
-            triggerMatches = [slots for slots in matches if triggerFromMatch[slots] == trigger]
+            triggerMatches = [
+                slots
+                for slots in matches
+                if triggerFromMatch.get(slots, None) == trigger
+            ]
 
             if len(triggerMatches) == 0:
                 matches = []

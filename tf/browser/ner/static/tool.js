@@ -348,6 +348,8 @@ const entityControls = () => {
 }
 
 const tokenControls = () => {
+  const seth = $("#seth")
+  const isSheet = seth.val().startsWith(".")
   const form = $("form")
   const subMitter = $("#submitter")
   const { features, toolkey, bucketType } = globalThis
@@ -662,7 +664,7 @@ const tokenControls = () => {
         ? elem
         : elem.closest("span.bh[node]")
 
-    if (eToken.length) {
+    if (!isSheet && eToken.length) {
       const t = eToken.attr("t")
       const tInt = parseInt(t)
       upToDate = false
@@ -691,7 +693,7 @@ const tokenControls = () => {
       presentQueryControls(true)
     }
 
-    if (eTokenEnd.length) {
+    if (!isSheet && eTokenEnd.length) {
       const currentValue = eTokenEnd.attr("st")
       eTokenEnd.attr("st", currentValue == "v" ? "x" : "v")
       updateScope()
