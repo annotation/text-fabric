@@ -376,6 +376,7 @@ or
 ``` python
 dict(
     model="II",
+    keepPb=False,
     element="div",
     attributes=dict(type=["original", "translation"]),
     pbAtTop=True,
@@ -386,6 +387,7 @@ dict(
 For model II, the default parameters are:
 
 ``` python
+keepPb=False,
 element="div",
 pbAtTop=True,
 nodeType="page",
@@ -398,9 +400,18 @@ In model II the `<pb>` elements translate to nodes of type `page`, which span
 content, whereas the original `pb` elements just mark positions.
 Instead of `page`, you can also specify another node type by the parameter `element`.
 
+The original `<pb>` elements will not end up as nodes in the output, they are
+suppressed in favour of the new `page` nodes. But if you want them nevertheless,
+you may specify `keepPb=True`, which will convert them into nodes linked to a single,
+empty slot. There is one complication: the slots thus created may fall outside any
+chunk, which is undesired, because then they will not be shown if you display the
+corpus as a sequence of chunks. We will make sure to create a chunk around those
+`pb` nodes.
+
 We assume that the material that the `<pb>` elements divide up is the material
 that corresponds to their `<div>` parent element. Instead of `<div>`,
 you can also specify another element in the parameter `element`.
+
 If you want to restrict the parent elements of pages, you can do so by specifying
 attributes, like `type="original"`. Then only parents that carry those attributes
 will be chopped up into pages.
@@ -1121,7 +1132,7 @@ class TEI(CheckImport):
             return
 
         makeLineElems = lineModel["model"] == "II"
-        lineProperties = lineModel.get("properties", None)
+        lineProperties = lineModel["properties"]
         lineModel = lineModel["model"]
 
         self.makeLineElems = makeLineElems
@@ -1136,7 +1147,7 @@ class TEI(CheckImport):
             return
 
         makePageElems = pageModel["model"] == "II"
-        pageProperties = pageModel.get("properties", None)
+        pageProperties = pageModel["properties"]
         pageModel = pageModel["model"]
 
         self.makePageElems = makePageElems
@@ -1149,7 +1160,7 @@ class TEI(CheckImport):
             self.good = False
             return
 
-        sectionProperties = sectionModel.get("properties", None)
+        sectionProperties = sectionModel["properties"]
         sectionModel = sectionModel["model"]
         self.sectionModel = sectionModel
         self.sectionProperties = sectionProperties
@@ -3166,7 +3177,7 @@ class TEI(CheckImport):
             if s is not None:
                 addSlotFeatures(cv, cur, s)
 
-        def addEmpty(cv, cur):
+        def addEmpty(cv, cur, spaceChar):
             """Add an empty slot.
 
             We also terminate the current word.
@@ -3179,7 +3190,7 @@ class TEI(CheckImport):
             """
             if tokenAsSlot:
                 emptyNode = cv.slot()
-                cv.feature(emptyNode, str=ZWSP, after="", empty=1)
+                cv.feature(emptyNode, str=ZWSP, after=f"{spaceChar}", empty=1)
             else:
                 finishWord(cv, cur, None, None)
                 startWord(cv, cur, ZWSP)
@@ -3254,7 +3265,7 @@ class TEI(CheckImport):
             empty = len(slots) == 0
 
             if empty:
-                lastSlot = addEmpty(cv, cur)
+                lastSlot = addEmpty(cv, cur, "")
                 if cur["inNote"]:
                     cv.feature(lastSlot, is_note=1)
             else:
@@ -3265,6 +3276,7 @@ class TEI(CheckImport):
                 if after is not None and "\n" not in after:
                     cv.feature(lastSlot, after=f"{after.rstrip()}\n")
             cv.terminate(cur[NODE][lineType])
+            del cur[NODE][lineType]
 
         def endPage(cv, cur):
             """Ends a page node.
@@ -3284,10 +3296,11 @@ class TEI(CheckImport):
             empty = len(slots) == 0
 
             if empty:
-                lastSlot = addEmpty(cv, cur)
                 if cur["inNote"]:
+                    lastSlot = addEmpty(cv, cur, "")
                     cv.feature(lastSlot, is_note=1)
             cv.terminate(cur[NODE][pageType])
+            del cur[NODE][pageType]
 
         def beforeTag(cv, cur, xnode, tag, atts):
             """Actions before dealing with the element's tag.
@@ -3345,6 +3358,8 @@ class TEI(CheckImport):
             if makePageElems:
                 pageProperties = self.pageProperties
                 pageType = pageProperties["nodeType"]
+                keepPb = pageProperties["keepPb"]  # only defined if makePageElems
+
                 isPageContainer = matchModel(pageProperties, tag, atts)
                 inPage = cur["inPage"]
 
@@ -3371,28 +3386,25 @@ class TEI(CheckImport):
                     cur["chapterNum"] += 1
                     cur["prevChapter"] = cur[NODE].get(chapterSection, None)
                     cur[NODE][chapterSection] = cv.node(chapterSection)
-                    cv.link(cur[NODE][chapterSection], cur["danglingSlots"])
 
                     value = {chapterSection: f"{cur['chapterNum']} {tag}"}
                     cv.feature(cur[NODE][chapterSection], **value)
                     cur["chunkPNum"] = 0
                     cur["chunkONum"] = 0
-                    cur["prevChunk"] = cur[NODE].get(chunkSection, None)
+                    cur["prevChunk"] = None
                     cur[NODE][chunkSection] = cv.node(chunkSection)
-                    cv.link(cur[NODE][chunkSection], cur["danglingSlots"])
-                    cur["danglingSlots"] = set()
                     cur["infirstChunk"] = True
 
                 # N.B. A node can count both as chapter and as chunk,
                 # e.g. a <trailer> sibling of the chapter <div>s
                 # A trailer has mixed content, so its subelements aren't typical chunks.
+
                 if isChunk(cur):
                     if cur["infirstChunk"]:
                         cur["infirstChunk"] = False
                     else:
+                        cur["prevChunk"] = cur[NODE].get(chunkSection, None)
                         cur[NODE][chunkSection] = cv.node(chunkSection)
-                        cv.link(cur[NODE][chunkSection], cur["danglingSlots"])
-                        cur["danglingSlots"] = set()
                     if tag == "p":
                         cur["chunkPNum"] += 1
                         cn = cur["chunkPNum"]
@@ -3420,8 +3432,6 @@ class TEI(CheckImport):
                     cur["chunkNum"] += 1
                     cur["prevChunk"] = cur[NODE].get(chunkSection, None)
                     cur[NODE][chunkSection] = cv.node(chunkSection)
-                    cv.link(cur[NODE][chunkSection], cur["danglingSlots"])
-                    cur["danglingSlots"] = set()
                     value = {chunkSection: cur["chunkNum"]}
                     cv.feature(cur[NODE][chunkSection], **value)
 
@@ -3439,7 +3449,7 @@ class TEI(CheckImport):
 
             if makeLineElems:
                 if inLine and tag == "lb":
-                    if cur[NODE][lineType] is not None:
+                    if lineType in cur[NODE]:
                         if cur["lineAtts"] is not None and len(cur["lineAtts"]):
                             cv.feature(cur[NODE][lineType], **cur["lineAtts"])
                         endLine(cv, cur)
@@ -3449,13 +3459,13 @@ class TEI(CheckImport):
             if makePageElems:
                 if inPage and tag == "pb":
                     if pbAtTop:
-                        if cur[NODE][pageType] is not None:
+                        if pageType in cur[NODE]:
                             endPage(cv, cur)
                         cur[NODE][pageType] = cv.node(pageType)
                         if len(atts):
                             cv.feature(cur[NODE][pageType], **atts)
                     else:
-                        if cur[NODE][pageType] is not None:
+                        if pageType in cur[NODE]:
                             if cur["pageAtts"] is not None and len(cur["pageAtts"]):
                                 cv.feature(cur[NODE][pageType], **cur["pageAtts"])
                             endPage(cv, cur)
@@ -3463,13 +3473,17 @@ class TEI(CheckImport):
                         cur["pageAtts"] = atts
 
             isBoundaryElem = (
-                makeLineElems and tag == "lb" or makePageElems and tag == "pb"
+                makeLineElems
+                and tag == "lb"
+                or makePageElems
+                and not keepPb
+                and tag == "pb"
             )
 
             if tag not in PASS_THROUGH and not isBoundaryElem:
                 cur["afterSpace"] = False
-                cur[NODE][tag] = cv.node(tag)
-                curNode = cur[NODE][tag]
+                curNode = cv.node(tag)
+
                 if wordAsSlot:
                     if cur[NODE][WORD]:
                         cv.link(curNode, [cur[NODE][WORD][1]])
@@ -3545,7 +3559,7 @@ class TEI(CheckImport):
             if makePageElems:
                 pageProperties = self.pageProperties
                 pageType = pageProperties["nodeType"]
-                pageProperties = self.pageProperties
+                keepPb = pageProperties["keepPb"]  # only defined if makePageElems
 
             sectionModel = self.sectionModel
 
@@ -3581,12 +3595,16 @@ class TEI(CheckImport):
                 pass
 
             isBoundaryElem = (
-                makeLineElems and tag == "lb" or makePageElems and tag == "pb"
+                makeLineElems
+                and tag == "lb"
+                or makePageElems
+                and not keepPb
+                and tag == "pb"
             )
 
             if makeLineElems and isLineContainer:
                 # the page ends with the container
-                if cur[NODE][lineType] is not None:
+                if lineType in cur[NODE]:
                     endLine(cv, cur)
                 cur["inLine"] = False
 
@@ -3594,7 +3612,7 @@ class TEI(CheckImport):
                 pbAtTop = pageProperties["pbAtTop"]
                 if pbAtTop:
                     # the page ends with the container
-                    if cur[NODE][pageType] is not None:
+                    if pageType in cur[NODE]:
                         endPage(cv, cur)
                 else:
                     # material after the last pb is not in a page
@@ -3615,57 +3633,71 @@ class TEI(CheckImport):
                     and not hasContinuousAncestor(cur)
                     and not cur["afterSpace"]
                 ) and not empty:
+                    lastSlot = slots[-1]
                     spaceChar = "\n" if newLineTag or not hasMixedAncestor(cur) else " "
+
                     if tokenAsSlot:
                         cv.feature((T, slots[-1]), after=spaceChar)
                     else:
                         finishWord(cv, cur, None, spaceChar)
                         hasFinishedWord = True
 
-                slots = cv.linked(curNode)
-                empty = len(slots) == 0
-
                 if empty:
-                    lastSlot = addEmpty(cv, cur)
+                    lastSlot = addEmpty(cv, cur, "")
                     if cur["inHeader"]:
                         cv.feature(lastSlot, is_meta=1)
                     if cur["inNote"]:
                         cv.feature(lastSlot, is_note=1)
+
                     # take care that this empty slot falls under all sections
                     # for folders and files this is already guaranteed
                     # We need only to watch out for chapters and chunks
-                    if cur[NODE].get(chunkSection, None) is None:
+                    # If there is no previous chunk we create a new chunk
+
+                    if chunkSection not in cur[NODE]:
                         prevChunk = cur.get("prevChunk", None)
+
                         if prevChunk is None:
-                            cur["danglingSlots"].add(lastSlot[1])
+                            cur["chunkNum"] += 1
+                            cur["prevChunk"] = cur[NODE].get(chunkSection, None)
+                            newChunk = cv.node(chunkSection)
+                            cur[NODE][chunkSection] = newChunk
+                            cv.link(newChunk, [lastSlot[1]])
+                            value = {chunkSection: cur["chunkNum"]}
+                            cv.feature(newChunk, **value)
+                            cv.terminate(newChunk)
+                            del cur[NODE][chunkSection]
                         else:
-                            cv.link(prevChunk, lastSlot)
-                    if sectionModel == "II":
-                        if cur[NODE].get(chapterSection, None) is None:
-                            prevChapter = cur.get("prevChapter", None)
-                            if prevChapter is None:
-                                cur["danglingSlots"].add(lastSlot[1])
-                            else:
-                                cv.link(prevChapter, lastSlot)
+                            cv.link(prevChunk, [lastSlot[1]])
 
                 cv.terminate(curNode)
 
             if isChnk:
                 if tokenAsSlot:
-                    addSpace(cv, cur, "\n")
+                    slots = cv.linked(cur[NODE][chunkSection])
+                    lastSlot = slots[-1]
+
+                    if "\n" not in (cv.get("after", (T, lastSlot)) or ""):
+                        addSpace(cv, cur, "\n")
                 else:
                     if not hasFinishedWord:
                         finishWord(cv, cur, None, "\n")
                 cv.terminate(cur[NODE][chunkSection])
+                del cur[NODE][chunkSection]
 
             if sectionModel == "II":
                 if isChap:
                     if tokenAsSlot:
-                        addSpace(cv, cur, "\n")
+                        slots = cv.linked(cur[NODE][chapterSection])
+                        lastSlot = slots[-1]
+
+                        if "\n" not in (cv.get("after", (T, lastSlot)) or ""):
+                            addSpace(cv, cur, "\n")
                     else:
                         if not hasFinishedWord:
                             finishWord(cv, cur, None, "\n")
                     cv.terminate(cur[NODE][chapterSection])
+                    del cur[NODE][chapterSection]
 
         def afterTag(cv, cur, xnode, tag, atts):
             """Node actions after dealing with the children and after the end tag.
@@ -3855,7 +3887,6 @@ class TEI(CheckImport):
                             cur[TSIB] = []
                             cur["chunkNum"] = 0
                             cur["prevChunk"] = None
-                            cur["danglingSlots"] = set()
                             cur["prevWord"] = None
                             cur["wordStr"] = ""
                             cur["afterStr"] = ""
@@ -3867,13 +3898,17 @@ class TEI(CheckImport):
                             addSlot(cv, cur, None)
                         if tpl:
                             cv.terminate(cur[NODE][tpl])
+                            del cur[NODE][tpl]
+
                         cv.terminate(cur[NODE][fileSection])
+                        del cur[NODE][fileSection]
 
                     if verbose >= 0:
                         console("")
                         console(f"End   folder {xmlFolder}")
 
                     cv.terminate(cur[NODE][folderSection])
+                    del cur[NODE][folderSection]
 
             elif sectionModel == "II":
                 xmlFile = self.getXML()
@@ -3916,7 +3951,6 @@ class TEI(CheckImport):
                     cur["chunkONum"] = 0
                     cur["prevChunk"] = None
                     cur["prevChapter"] = None
-                    cur["danglingSlots"] = set()
                     cur["prevWord"] = None
                     cur["wordStr"] = ""
                     cur["afterStr"] = ""
@@ -4060,7 +4094,9 @@ class TEI(CheckImport):
             pageProperties = self.pageProperties
             pageType = pageProperties["nodeType"]
             pbAtTop = pageProperties["pbAtTop"] if makePageElems else None
+            keepPb = pageProperties["keepPb"] if makePageElems else None
 
+        sectionModel = self.sectionModel
         tfPath = self.tfPath
         teiPath = self.teiPath
 
@@ -4073,8 +4109,11 @@ class TEI(CheckImport):
 
             if makePageElems:
                 wrt = "started" if pbAtTop else "ended"
-                pbRep = f" with {pageType} nodes for pages {wrt} by pb elements"
+                extra = ("" if keepPb else "without") + " keeping the pb elements"
+                pbRep = f" with {pageType} nodes for pages {wrt} by pb elements {extra}"
                 console(f"Page model {pageModel}{pbRep}")
+
+            console(f"Section model {sectionModel}")
 
             console(
                 f"Processing instructions are {'treated' if procins else 'ignored'}"

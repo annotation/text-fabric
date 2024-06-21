@@ -42,6 +42,7 @@ LINE_MODEL_DEFAULT = "I"
 PAGE_MODELS = dict(
     I=dict(),
     II=dict(
+        keepPb=(bool, False),
         element=(str, "div"),
         attributes=(dict, {}),
         pbAtTop=(bool, True),
