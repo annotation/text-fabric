@@ -85,10 +85,11 @@ def render(app, isPretty, n, _inTuple, _asString, explain, **options):
 
     elem = "span" if _inTuple else "div"
     ubd = " ubd" if _inTuple else ""
+    kindRep = "pr-mode" if isPretty else "pl-mode"
     result = (
-        f"""{passage}<{elem} class="{ltr} children">{rep}</{elem}>"""
+        f"""{passage}<{elem} class="{ltr} children {kindRep}">{rep}</{elem}>"""
         if isPretty
-        else f"""<{elem} class="{ltr}{ubd}">{passage}{rep}</{elem}>"""
+        else f"""<{elem} class="{ltr}{ubd} {kindRep}">{passage}{rep}</{elem}>"""
     )
 
     if _browse or _asString:

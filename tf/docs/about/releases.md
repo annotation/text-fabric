@@ -20,6 +20,12 @@ pip install -e .
 
 ### 12.5
 
+#### 12.5.4
+
+2024-06-??
+
+*   Minor improvements in the TEI converter.
+
 #### 12.5.3
 
 2024-06-18
