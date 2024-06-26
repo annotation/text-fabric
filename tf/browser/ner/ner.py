@@ -264,8 +264,17 @@ Lines consist of tab separated fields:
 """
 from textwrap import dedent
 import collections
+from itertools import chain
 
+from ...dataset import modify
 from ...core.generic import AttrDict
+from ...core.files import (
+    fileOpen,
+    dirRemove,
+    dirNm,
+    dirExists,
+    APP_CONFIG,
+)
 from .sheets import Sheets
 from .helpers import findCompile
 from .sets import Sets
@@ -705,7 +714,7 @@ class NER(Sheets, Sets, Show):
             for section, hits in sorted(sectionInfo.items()):
                 hitData.append(("OK", *entry, section, hits))
 
-        with open(reportFile, "w") as rh:
+        with fileOpen(reportFile, "w") as rh:
             rh.write("label\tname\ttrigger\tsheet\tsection\thits\n")
 
             for h in sorted(hitData):
@@ -731,7 +740,11 @@ class NER(Sheets, Sets, Show):
         )
 
     def bakeEntities(self, versionExtension="e"):
-        """Bakes the entities of the current set as nodes into a new TF data source.
+        """Consolidates the current entities as nodes into a new TF data source.
+
+        This operation is not allowed if the current set is the read-only set with the
+        empty name, because these entities are already present as nodes in the
+        TF dataset.
 
         Parameters
         ----------
@@ -739,4 +752,133 @@ class NER(Sheets, Sets, Show):
             The new dataset gets a version like the original dataset, but extended
             with this string.
         """
-        self.consolidateEntities(versionExtension=versionExtension)
+        if not self.properlySetup:
+            return
+
+        setNameRep = self.setNameRep
+        setIsSrc = self.setIsSrc
+
+        if setIsSrc:
+            self.console(
+                f"Entity consolidation not meaningful on {setNameRep}", error=True
+            )
+            return False
+
+        version = self.version
+        settings = self.settings
+        features = settings.features
+        featureMeta = settings.featureMeta
+        setData = self.getSetData()
+
+        # Data preparation for the modify function
+
+        entityOccs = sorted(set(setData.entities.values()))
+        self.console(
+            f"Entity consolidation for {len(entityOccs)} entity occurrences "
+            f"into version {version}{versionExtension}"
+        )
+
+        slotLink = {}
+        nodeFeatures = AttrDict({feat: {} for feat in features})
+        edgeFeatures = AttrDict(eoccs={})
+        entities = {}
+
+        n = 0
+
+        for fVals, slots in entityOccs:
+            n += 1
+            slotLink[n] = slots
+
+            for feat, fVal in zip(features, fVals):
+                nodeFeatures[feat][n] = fVal
+
+            entities.setdefault(fVals, []).append(n)
+
+        nEntityOccs = len(entityOccs)
+        occEdge = edgeFeatures.eoccs
+
+        for fVals, occs in entities.items():
+            n += 1
+            occEdge[n] = set(occs)
+            slotLink[n] = tuple(chain.from_iterable(slotLink[m] for m in occs))
+
+            for feat, fVal in zip(features, fVals):
+                nodeFeatures[feat][n] = fVal
+
+        nEntities = len(entities)
+
+        self.console(f"{nEntityOccs:>6} entity occurrences")
+        self.console(f"{nEntities:>6} distinct entities")
+
+        featureMeta.eoccs = dict(
+            valueType="str",
+            description="from entity nodes to their occurrence nodes",
+        )
+
+        addTypes = dict(
+            ent=dict(
+                nodeFrom=1,
+                nodeTo=nEntityOccs,
+                nodeSlots=slotLink,
+                nodeFeatures=nodeFeatures,
+            ),
+            entity=dict(
+                nodeFrom=nEntityOccs + 1,
+                nodeTo=nEntityOccs + nEntities,
+                nodeSlots=slotLink,
+                nodeFeatures=nodeFeatures,
+                edgeFeatures=edgeFeatures,
+            ),
+        )
+        self.featureMeta = featureMeta
+
+        # Call the modify function
+
+        app = self.app
+        context = app.context
+        appPath = context.appPath
+        relative = context.relative
+        dataPath = f"{dirNm(appPath)}/{relative}"
+
+        origTf = f"{dataPath}/{app.version}"
+        newTf = f"{origTf}{versionExtension}"
+        newVersion = f"{app.version}{versionExtension}"
+
+        if dirExists(newTf):
+            dirRemove(newTf)
+
+        app.indent(reset=True)
+        app.info("Creating a dataset with entity nodes ...")
+
+        good = modify(
+            origTf,
+            newTf,
+            targetVersion=newVersion,
+            addTypes=addTypes,
+            featureMeta=featureMeta,
+            silent=True,
+        )
+
+        app.info("Done")
+
+        if not good:
+            return False
+
+        self.console(f"The dataset with entities is now in version {newVersion}")
+
+        # tweak the app
+
+        config = f"{appPath}/{APP_CONFIG}"
+
+        with fileOpen(config) as fh:
+            text = fh.read()
+
+        text = text.replace(f'version: {version}', f'version: "{newVersion}"')
+        text = text.replace(f'version: "{version}"', f'version: "{newVersion}"')
+
+        with fileOpen(config, mode="w") as fh:
+            fh.write(text)
+
+        self.console("The dataset with entities is now the standard version")
+
+        return True

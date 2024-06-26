@@ -10,13 +10,13 @@ TF browser infrastructure, such as
 *   `tf.browser.start`
 """
 
-import json
 from io import BytesIO
 from zipfile import ZipFile
 
 from flask import request
 
 from ..parameters import ZIP_OPTIONS
+from ..core.files import writeJson
 
 
 DEFAULT_NAME = "default"
@@ -238,8 +238,8 @@ def zipTables(csvs, tupleResultsX, queryResultsX, about, form):
     zipBuffer = BytesIO()
     with ZipFile(zipBuffer, "w", **ZIP_OPTIONS) as zipFile:
 
-        zipFile.writestr("job.json", json.dumps(form).encode("utf8"))
-        zipFile.writestr("job.json", json.dumps(
+        zipFile.writestr("job.json", writeJson(form).encode("utf8"))
+        zipFile.writestr("job.json", writeJson.dumps(
             {k: v for (k, v) in form.items() if k not in {"edgeHighlights", "colorMap"}}
         ).encode("utf8"))
         zipFile.writestr("about.md", about)

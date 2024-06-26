@@ -1,4 +1,5 @@
 import os
+import json
 import yaml
 
 from shutil import rmtree, copytree, copy
@@ -701,7 +702,111 @@ def chDir(directory):
     return os.chdir(directory)
 
 
+def readJson(text=None, plain=False, asFile=None, preferTuples=False):
+    """Read a JSON file or string.
+
+    The input data is either a text string or a file name or a file handle.
+    Exactly one of the optional parameters `text` and `asFile` should be `None`.
+
+    Parameters
+    ----------
+    text: string, optional None
+        The input text if it is a string.
+    asFile: string | object, optional None
+        The input text if it is a file.
+        If the value of `asFile` is a string, it is taken as a file name to read.
+        Otherwise, it is taken as a file handle from which data can be read.
+    plain: boolean, optional False
+        If True, it return a dictionary, otherwise it wraps the data structure
+        recursively in an AttrDict.
+    preferTuples: boolean, optional False
+        If the resulting data structure is to be wrapped in an AttrDict,
+        we will represent lists as tuples.
+
+    Returns
+    -------
+    object
+        The resulting data structure.
+    """
+    if asFile is None:
+        cfg = json.loads(text)
+    else:
+        if fileExists(asFile):
+            with fileOpen(asFile) as fh:
+                cfg = json.load(fh)
+        else:
+            cfg = {}
+
+    return cfg if plain else deepAttrDict(cfg, preferTuples=preferTuples)
+
+
+def writeJson(data, asFile=None, **kwargs):
+    """Write data as JSON.
+
+    The output is either delivered as string or written to a file.
+
+    Parameters
+    ----------
+    data: object
+        The input data.
+    asFile: string | object, optional None
+        The output destination.
+        If `None`, the output text is delivered as the function result.
+        If the value of `asFile` is a string, it is taken as a file name to write to.
+        Otherwise, it is taken as a file handle to which text can be written.
+    kwargs: dict, optional {}
+        Additional paramters for the underlying json.dump method.
+        By default, we use `indent=1, ensure_ascii=False`.
+
+    Returns
+    -------
+    str | void
+        If asFile is not None, the function returns None and the result is written
+        to a file. Otherwise, the result string is returned.
+    """
+    if "indent" not in kwargs:
+        kwargs["indent"] = 1
+    if "ensure_ascii" not in kwargs:
+        kwargs["ensure_ascii"] = False
+
+    if type(asFile) is str:
+        with fileOpen(asFile, "w") as fh:
+            json.dump(data, fh, **kwargs)
+    else:
+        dumped = json.dumps(data, **kwargs)
+
+        if asFile is None:
+            return dumped
+
+        asFile.write(dumped)
+
+
 def readYaml(text=None, plain=False, asFile=None, preferTuples=True):
+    """Read a YAML file or string.
+
+    The input data is either a text string or a file name or a file handle.
+    Exactly one of the optional parameters `text` and `asFile` should be `None`.
+
+    Parameters
+    ----------
+    text: string, optional None
+        The input text if it is a string.
+    asFile: string | object, optional None
+        The input text if it is a file.
+        If the value of `asFile` is a string, it is taken as a file name to read.
+        Otherwise, it is taken as a file handle from which data can be read.
+    plain: boolean, optional False
+        If True, it return a dictionary, otherwise it wraps the data structure
+        recursively in an AttrDict.
+    preferTuples: boolean, optional False
+        If the resulting data structure is to be wrapped in an AttrDict,
+        we will represent lists as tuples.
+
+    Returns
+    -------
+    object
+        The resulting data structure.
+    """
     kwargs = dict(Loader=yaml.FullLoader)
 
     if asFile is None:
@@ -717,10 +822,37 @@ def readYaml(text=None, plain=False, asFile=None, preferTuples=True):
 
 
 def writeYaml(data, asFile=None, sorted=False):
+    """Write data as YAML.
+
+    The output is either delivered as string or written to a file.
+
+    Parameters
+    ----------
+    data: object
+        The input data.
+    asFile: string | object, optional None
+        The output destination.
+        If `None`, the output text is delivered as the function result.
+        If the value of `asFile` is a string, it is taken as a file name to write to.
+        Otherwise, it is taken as a file handle to which text can be written.
+    sorted: boolean, optional False
+        If True, when writing out a dictionary, its keys will be sorted.
+
+    Returns
+    -------
+    str | void
+        If asFile is not None, the function returns None and the result is written
+        to a file. Otherwise, the result string is returned.
+    """
     kwargs = dict(allow_unicode=True, sort_keys=sorted)
 
-    if asFile is None:
-        return yaml.dump(data, **kwargs)
+    if type(asFile) is str:
+        with fileOpen(asFile, mode="w") as fh:
+            yaml.dump(data, fh, **kwargs)
+    else:
+        dumped = yaml.dump(data, **kwargs)
 
-    with fileOpen(asFile, mode="w") as fh:
-        yaml.dump(data, fh, **kwargs)
+        if asFile is None:
+            return dumped
+
+        asFile.write(dumped)

@@ -18,21 +18,15 @@ processed if they are needed and out of date.
 """
 
 import collections
-from itertools import chain
 import time
 
 from ...core.generic import AttrDict
 from ...core.files import (
     fileOpen,
     mTime,
-    dirNm,
-    dirExists,
-    dirRemove,
     fileExists,
     initTree,
-    APP_CONFIG,
 )
-from ...dataset import modify
 from .corpus import Corpus
 
 
@@ -939,147 +933,3 @@ class Data(Corpus):
         with fileOpen(dataFile, mode="a") as fh:
             for fVals, slots in entities.values():
                 fh.write("\t".join(str(x) for x in (*fVals, *slots)) + "\n")
-
-    def consolidateEntities(self, versionExtension):
-        """Consolidates the current entities as nodes into a new TF data source.
-
-        This operation is not allowed if the current set is the read-only set with the
-        empty name, because these entities are already present as nodes in the
-        TF dataset.
-
-        Parameters
-        ----------
-        versionExtension: string
-            The new dataset gets a version like the original dataset, but extended
-            with this string.
-        """
-        if not self.properlySetup:
-            return
-
-        setNameRep = self.setNameRep
-        setIsRo = self.setIsRo
-
-        if setIsRo:
-            self.console(
-                f"Entity consolidation not meaningful on {setNameRep}", error=True
-            )
-            return False
-
-        version = self.version
-        settings = self.settings
-        features = settings.features
-        featureMeta = settings.featureMeta
-        setData = self.getSetData()
-
-        # Data preparation for the modify function
-
-        entityOccs = sorted(set(setData.entities.values()))
-        self.console(
-            f"Entity consolidation for {len(entityOccs)} entity occurrences "
-            f"into version {version}{versionExtension}"
-        )
-
-        slotLink = {}
-        nodeFeatures = AttrDict({feat: {} for feat in features})
-        edgeFeatures = AttrDict(eoccs={})
-        entities = {}
-
-        n = 0
-
-        for fVals, slots in entityOccs:
-            n += 1
-            slotLink[n] = slots
-
-            for feat, fVal in zip(features, fVals):
-                nodeFeatures[feat][n] = fVal
-
-            entities.setdefault(fVals, []).append(n)
-
-        nEntityOccs = len(entityOccs)
-        occEdge = edgeFeatures.eoccs
-
-        for fVals, occs in entities.items():
-            n += 1
-            occEdge[n] = set(occs)
-            slotLink[n] = tuple(chain.from_iterable(slotLink[m] for m in occs))
-
-            for feat, fVal in zip(features, fVals):
-                nodeFeatures[feat][n] = fVal
-
-        nEntities = len(entities)
-
-        self.console(f"{nEntityOccs:>6} entity occurrences")
-        self.console(f"{nEntities:>6} distinct entities")
-
-        featureMeta.eoccs = dict(
-            valueType="str",
-            description="from entity nodes to their occurrence nodes",
-        )
-
-        addTypes = dict(
-            ent=dict(
-                nodeFrom=1,
-                nodeTo=nEntityOccs,
-                nodeSlots=slotLink,
-                nodeFeatures=nodeFeatures,
-            ),
-            entity=dict(
-                nodeFrom=nEntityOccs + 1,
-                nodeTo=nEntityOccs + nEntities,
-                nodeSlots=slotLink,
-                nodeFeatures=nodeFeatures,
-                edgeFeatures=edgeFeatures,
-            ),
-        )
-        self.featureMeta = featureMeta
-
-        # Call the modify function
-
-        app = self.app
-        context = app.context
-        appPath = context.appPath
-        relative = context.relative
-        dataPath = f"{dirNm(appPath)}/{relative}"
-
-        origTf = f"{dataPath}/{app.version}"
-        newTf = f"{origTf}{versionExtension}"
-        newVersion = f"{app.version}{versionExtension}"
-
-        if dirExists(newTf):
-            dirRemove(newTf)
-
-        app.indent(reset=True)
-        app.info("Creating a dataset with entity nodes ...")
-
-        good = modify(
-            origTf,
-            newTf,
-            targetVersion=newVersion,
-            addTypes=addTypes,
-            featureMeta=featureMeta,
-            silent=True,
-        )
-
-        app.info("Done")
-
-        if not good:
-            return False
-
-        self.console(f"The dataset with entities is now in version {newVersion}")
-
-        # tweak the app
-
-        config = f"{appPath}/{APP_CONFIG}"
-
-        with open(config) as fh:
-            text = fh.read()
-
-        text = text.replace(f'version: {version}', f'version: "{newVersion}"')
-        text = text.replace(f'version: "{version}"', f'version: "{newVersion}"')
-
-        with open(config, mode="w") as fh:
-            fh.write(text)
-
-        self.console("The dataset with entities is now the standard version")
-
-        return True

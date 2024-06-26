@@ -25,6 +25,9 @@ pip install -e .
 2024-06-??
 
 *   Minor improvements in the TEI converter.
+*   New functions `tf.core.files.readJson` and `tf.core.files.writeJson`
+*   Replaced raw `open()` calls by `tf.core.files.fileOpen()` calls to make sure that
+    `encoding="utf8"` is always passed to them.
 
 #### 12.5.3
 

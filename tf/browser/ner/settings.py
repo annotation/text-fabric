@@ -235,7 +235,7 @@ class Settings:
         """
         cs(msg, **kwargs)
 
-    def consoleLine(isError, indent, msg):
+    def consoleLine(self, isError, indent, msg):
         tabs = "  " * indent
         head = "-" * len(msg)
 

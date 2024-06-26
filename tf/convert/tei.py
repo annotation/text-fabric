@@ -2080,7 +2080,7 @@ class TEI(CheckImport):
         def writeLbParents():
             reportFile = f"{reportPath}/lb-parents.txt"
 
-            with open(reportFile, "w") as fh:
+            with fileOpen(reportFile, "w") as fh:
                 for parent, n in sorted(lbParents.items()):
                     fh.write(f"{n:>5} x {parent}\n")
 

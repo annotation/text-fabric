@@ -50,7 +50,6 @@ See  also:
 import sys
 import re
 import types
-import json
 import webbrowser
 
 from textwrap import dedent
@@ -82,6 +81,7 @@ from tf.core.files import (
     scanDir,
     readYaml,
     writeYaml,
+    writeJson,
 )
 from tf.parameters import REPO, ZIP_OPTIONS
 
@@ -759,7 +759,7 @@ class Make:
 
         with fileOpen(fileNameConfig, mode="w") as fh:
             fh.write("const configData = ")
-            json.dump(clientConfig, fh, ensure_ascii=False, indent=1)
+            writeJson(clientConfig, asFile=fh)
         A.info(f"Config written to file {fileNameConfig}")
 
     def compress(self, data):
@@ -855,10 +855,9 @@ class Make:
                     fh.write(thisData)
                     fh.write("`")
                 else:
-                    json.dump(
+                    writeJson.dump(
                         thisData,
-                        fh,
-                        ensure_ascii=False,
+                        asFile=fh,
                         indent=None,
                         separators=(",", ":"),
                     )

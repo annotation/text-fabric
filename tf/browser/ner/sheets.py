@@ -8,7 +8,7 @@ from ...parameters import GZIP_LEVEL, PICKLE_PROTOCOL
 from ...capable import CheckImport
 from .helpers import tnorm, normalize, toSmallId, toTokens, repSet
 from ...core.generic import AttrDict
-from ...core.files import dirContents, extNm, fileExists, mTime
+from ...core.files import fileOpen, dirContents, extNm, fileExists, mTime
 
 
 DS_STORE = ".DS_Store"
@@ -79,7 +79,7 @@ class Sheets:
         uptodate = fileExists(timeFile)
 
         if uptodate:
-            with open(timeFile) as fh:
+            with fileOpen(timeFile) as fh:
                 info = fh.read().strip()
 
             try:
@@ -114,7 +114,7 @@ class Sheets:
         with gzip.open(dataFile, mode="wb", compresslevel=GZIP_LEVEL) as f:
             f.write(pickle.dumps(sheetData, protocol=PICKLE_PROTOCOL))
 
-        with open(timeFile, "w") as fh:
+        with fileOpen(timeFile, "w") as fh:
             fh.write(f"{tm}\n")
 
     def log(self, isError, indent, msg):

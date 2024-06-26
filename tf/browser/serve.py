@@ -10,13 +10,13 @@ That dressing up is happening in this module, it has the higher level
 functions for composing tables and passages.
 """
 
-import json
 import markdown
 from textwrap import dedent
 
 from flask import jsonify, redirect, render_template, make_response
 
 from ..core.helpers import console, wrapMessages
+from ..core.files import writeJson
 from ..core.text import DEFAULT_FORMAT
 from ..advanced.helpers import RESULT
 from ..advanced.text import specialCharacters
@@ -283,7 +283,7 @@ def serveDownload(web, jobOnly):
             "Content-Encoding": "identity",
         }
 
-        buffer = json.dumps(
+        buffer = writeJson(
             {k: v for (k, v) in form.items() if k not in {"edgeHighlights", "colorMap"}}
         ).encode("utf8")
         return make_response(buffer, headers)

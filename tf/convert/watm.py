@@ -537,16 +537,18 @@ I am aware of the following:
 """
 
 import collections
-import json
 import re
 
 from tf.core.helpers import console
 from tf.core.files import (
+    fileOpen,
     initTree,
     dirContents,
     dirExists,
     fileExists,
     readYaml,
+    readJson,
+    writeJson,
     backendRep,
     APP_CONFIG,
 )
@@ -697,7 +699,7 @@ def getResultDir(baseDir, headPart, version, prod):
         if not fileExists(latestFile):
             latestNum = 0
         else:
-            with open(latestFile) as fh:
+            with fileOpen(latestFile) as fh:
                 contents = fh.read().strip()
                 latestNum = int(contents) if contents.isdecimal() else 0
 
@@ -710,7 +712,7 @@ def getResultDir(baseDir, headPart, version, prod):
                 continue
             break
 
-        with open(latestFile, "w") as fh:
+        with fileOpen(latestFile, "w") as fh:
             fh.write(f"{newNum}\n")
 
         resultVersionDir = f"{resultDirBase}/{version}-{newNumRep}"
@@ -1230,15 +1232,13 @@ class WATM:
             nText = len(text)
             total += nText
 
-            with open(textFile, "w") as fh:
+            with fileOpen(textFile, "w") as fh:
                 if asTsv:
                     fh.write("token\n")
                     for t in text:
                         fh.write(t.replace("\t", "\\t").replace("\n", "\\n") + "\n")
                 else:
-                    json.dump(
-                        dict(_ordered_segments=text), fh, ensure_ascii=False, indent=1
-                    )
+                    writeJson(dict(_ordered_segments=text), asFile=fh)
 
             if not silent:
                 console(
@@ -1273,14 +1273,14 @@ class WATM:
         def writeThis():
             annoFile = f"{resultDir}/anno-{thisA:>01}.{ext}"
 
-            with open(annoFile, "w") as fh:
+            with fileOpen(annoFile, "w") as fh:
                 if asTsv:
                     fh.write("annoid\tkind\tnamespace\tbody\ttarget\n")
                     for aId, (kind, namespace, body, target) in thisAnnoStore.items():
                         body = body.replace("\t", "\\t").replace("\n", "\\n")
                         fh.write(f"{aId}\t{kind}\t{namespace}\t{body}\t{target}\n")
                 else:
-                    json.dump(thisAnnoStore, fh, ensure_ascii=False, indent=1)
+                    writeJson(thisAnnoStore, asFile=fh)
 
             if not silent:
                 console(
@@ -1319,13 +1319,13 @@ class WATM:
         slotmapFile = f"{resultDir}/{SLOTMAP_FILE}"
         nodemapFile = f"{resultDir}/{NODEMAP_FILE}"
 
-        with open(slotmapFile, "w") as fh:
+        with fileOpen(slotmapFile, "w") as fh:
             fh.write("position\tnode\n")
             for n in range(1, maxSlotPlus):
                 (file, pos) = waFromTF[n]
                 fh.write(f"{file}:{pos}\t{n}\n")
 
-        with open(nodemapFile, "w") as fh:
+        with fileOpen(nodemapFile, "w") as fh:
             fh.write("annotation\tnode\n")
             for n in range(maxSlotPlus, maxNodePlus):
                 aId = waFromTF.get(n, None)
@@ -1531,7 +1531,7 @@ class WATM:
         slot = 1
 
         for tfl, textFile in enumerate(textFiles):
-            with open(f"{resultDir}/{textFile}") as fh:
+            with fileOpen(f"{resultDir}/{textFile}") as fh:
                 if asTsv:
                     next(fh)
                     tokens = [
@@ -1539,7 +1539,7 @@ class WATM:
                         for t in fh
                     ]
                 else:
-                    text = json.load(fh)
+                    text = readJson(asFile=fh, plain=True)
                     tokens = text["_ordered_segments"]
 
                 tokenFiles.append(tokens)
@@ -1559,7 +1559,7 @@ class WATM:
         annotations = []
 
         for annoFile in annoFiles:
-            with open(f"{resultDir}/{annoFile}") as fh:
+            with fileOpen(f"{resultDir}/{annoFile}") as fh:
                 if asTsv:
                     next(fh)
                     annos = {}
@@ -1568,7 +1568,7 @@ class WATM:
                         body = body.replace("\\t", "\t").replace("\\n", "\n")
                         annos[aId] = (kind, ns, body, target)
                 else:
-                    annos = json.load(fh)
+                    annos = readJson(asFile=fh, plain=True)
 
                 for aId, (kind, ns, body, target) in annos.items():
                     if "->" in target:
@@ -1614,14 +1614,14 @@ class WATM:
 
         nodeFromAid = {}
 
-        with open(f"{resultDir}/{SLOTMAP_FILE}") as fh:
+        with fileOpen(f"{resultDir}/{SLOTMAP_FILE}") as fh:
             next(fh)
             for line in fh:
                 (pos, slot) = line.rstrip("\n").split("\t")
                 key = tuple(int(p) for p in pos.split(":"))
                 nodeFromAid[key] = int(slot)
 
-        with open(f"{resultDir}/{NODEMAP_FILE}") as fh:
+        with fileOpen(f"{resultDir}/{NODEMAP_FILE}") as fh:
             next(fh)
             for line in fh:
                 (aId, node) = line.rstrip("\n").split("\t")

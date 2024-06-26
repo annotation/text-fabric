@@ -7,12 +7,12 @@ Also we need defaults for missing and / or empty values.
 To see how this fits among all the modules of this package, see
 `tf.browser.ner.ner` .
 """
-import json
 from urllib.parse import unquote
 
 from flask import request
 
-from ...core.generic import AttrDict, deepAttrDict
+from ...core.files import readJson
+from ...core.generic import AttrDict
 
 
 class Form:
@@ -104,10 +104,11 @@ class Form:
         quoted JSON.
         """
         formValue = self.fgets(k)
+
         return (
             AttrDict()
             if formValue == ""
-            else deepAttrDict(json.loads(unquote(formValue)))
+            else readJson(text=unquote(formValue))
         )
 
     def fill(self):
