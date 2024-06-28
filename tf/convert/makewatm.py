@@ -266,6 +266,7 @@ class MakeWATM:
         loadVerbose = DEEP if silent else TERSE
 
         Tei = TEI(verbose=verbose, tei=0, tf=f"{tfVersion}pre" if usenlp else tfVersion)
+        self.teiVersion = Tei.teiVersion
 
         console("Checking TEI ...")
 
