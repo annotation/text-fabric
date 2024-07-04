@@ -8,6 +8,7 @@ from ...parameters import GZIP_LEVEL, PICKLE_PROTOCOL
 from ...capable import CheckImport
 from .helpers import tnorm, normalize, toSmallId, toTokens, repSet
 from ...core.generic import AttrDict
+from ...core.helpers import console
 from ...core.files import fileOpen, dirContents, extNm, fileExists, mTime
 
 
@@ -118,6 +119,11 @@ class Sheets:
             fh.write(f"{tm}\n")
 
     def log(self, isError, indent, msg):
+        silent = self.silent
+
+        if silent:
+            return
+
         browse = self.browse
         sheetData = self.getSheetData()
         logData = sheetData.logData
@@ -157,7 +163,7 @@ class Sheets:
 
         if newSheet not in sheetNames or not fileExists(sheetFile):
             if not browse:
-                self.console(f"Ner sheet {newSheet} ({sheetFile}) does not exist")
+                console(f"Ner sheet {newSheet} ({sheetFile}) does not exist")
             if newSheet is not None:
                 return
 
@@ -259,6 +265,7 @@ class Sheets:
                 self.console("done")
                 showLog = False
         else:
+            print("B")
             self.console("SHEET data: already in memory and uptodate")
 
         if showLog and not browse:
@@ -740,9 +747,10 @@ class Sheets:
         if not self.properlySetup:
             return
 
+        silent = self.silent
         browse = self.browse
 
-        if not browse:
+        if not browse and not silent:
             app = self.app
             app.indent(reset=True)
             app.info("Looking up occurrences of many candidates ...")
@@ -750,7 +758,7 @@ class Sheets:
         self.findOccs()
         self._collectHits()
 
-        if not browse:
+        if not browse and not silent:
             app.info("done")
 
         self._markEntities()
@@ -811,7 +819,7 @@ class Sheets:
                     for match in matches:
                         triggerFromMatch[match] = (trigger, ",".join(sheet))
 
-        self._addToSet(newEntities, silent=False)
+        self._addToSet(newEntities)
 
     def showSheetsRaw(self, main=False):
         src = self.getSheetData()

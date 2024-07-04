@@ -2315,7 +2315,10 @@ class TEI(CheckImport):
             i = 0
             for xmlFolder, xmlFiles in self.getXML():
                 msg = "Start " if verbose >= 0 else "\t"
-                console(f"{msg}folder {xmlFolder}:")
+
+                if verbose >= 0:
+                    console(f"\t{msg}folder {xmlFolder}:")
+
                 j = 0
                 cr = ""
                 nl = True
@@ -2335,7 +2338,7 @@ class TEI(CheckImport):
                     label = f"{mdRep:<12} {tplRep:<12} {adRep:<12}"
 
                     if verbose >= 0:
-                        console(f"{cr}{i:>4} {label} {xmlFile:<50}", newline=nl)
+                        console(f"\t\t{cr}{i:>4} {label} {xmlFile:<50}", newline=nl)
                     xmlFilesByModel[model].append(xmlPath)
                 if verbose >= 0:
                     console("")
@@ -3820,7 +3823,8 @@ class TEI(CheckImport):
                 i = 0
                 for xmlFolder, xmlFiles in self.getXML():
                     msg = "Start " if verbose >= 0 else "\t"
-                    console(f"{msg}folder {xmlFolder}:")
+                    if verbose >= 0:
+                        console(f"\t{msg}folder {xmlFolder}:")
 
                     cur[NODE][folderSection] = cv.node(folderSection)
                     value = {folderSection: xmlFolder}
@@ -3849,7 +3853,7 @@ class TEI(CheckImport):
                         label = f"{modelRep:<12} {adRep:<12} {tplRep:<12}"
                         if verbose >= 0:
                             console(
-                                f"{cr}{i:>4} {label} {xmlFile:<50}",
+                                f"\t\t{cr}{i:>4} {label} {xmlFile:<50}",
                                 newline=nl,
                             )
 
@@ -4455,7 +4459,7 @@ class TEI(CheckImport):
 
         extraRep = " with NLP output " if tokenBased else ""
 
-        if verbose >= 0:
+        if verbose > 0:
             console(f"App updating {extraRep} ...")
 
         for name, info in genTasks.items():
@@ -4544,12 +4548,12 @@ class TEI(CheckImport):
                 with fileOpen(itemTarget, mode="w") as fh:
                     fh.write(targetText)
 
-            if verbose >= 0:
+            if verbose > 0:
                 console(f"\t{ux(itemTarget):30} {msg}")
 
-        if verbose >= 0:
+        if verbose > 0:
             console("Done")
-        else:
+        elif verbose == 0:
             console(f"App updated{extraRep}")
 
     # START the TEXT-FABRIC BROWSER on this CORPUS

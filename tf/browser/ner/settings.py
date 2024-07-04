@@ -5,7 +5,7 @@ To see how this fits among all the modules of this package, see
 """
 
 
-from ...core.helpers import console as cs
+from ...core.helpers import console
 from ...core.files import readYaml, fileExists, APP_CONFIG
 
 TOOLKEY = "ner"
@@ -229,21 +229,27 @@ class Settings:
 
         This works exactly as `tf.core.helpers.console`
 
-        It is handy to have this as a method on the NER object,
-        so that we can issue temporary console statements during development
-        without the need to add an `import` statement to the code.
+        When the silent member of the object is True, the message will be suppressed.
         """
-        cs(msg, **kwargs)
+        silent = self.silent
+
+        if not silent:
+            console(msg, **kwargs)
 
     def consoleLine(self, isError, indent, msg):
+        silent = self.silent
+
+        if not silent:
+            return
+
         tabs = "  " * indent
         head = "-" * len(msg)
 
         if isError is None:
-            cs("")
-            cs(f"{tabs}{head}")
+            console("")
+            console(f"{tabs}{head}")
 
-        cs(f"{tabs}{msg}\n", error=isError)
+        console(f"{tabs}{msg}\n", error=isError)
 
         if isError is None:
-            cs(f"{tabs}{head}")
+            console(f"{tabs}{head}")

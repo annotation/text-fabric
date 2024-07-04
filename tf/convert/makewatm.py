@@ -85,16 +85,17 @@ class MakeWATM:
         """
         )
         self.BASE_DOCS = dict(
-            tei2tf="Produce text-fabric data from TEI",
-            page2tf="Produce text-fabric data from PageXML",
-            watm="Produce text/anno repo data for the corpus",
-            watms="Produce text/anno repo data for a sequence of corpora",
+            tei2tf="TEI => TF",
+            page2tf="PageXML => TF",
+            watm="TF => WATM",
+            watms="multi TF => WATMS",
         )
         self.BASE_FLAGS = dict(
             silent="To run a bit more silent",
             relaxed="Accept XML validation errors",
             usenlp="Will run an NLP pipeline to mark tokens, sentences and entities",
             prod="Delivers WATM in production location",
+            force="Force execution even if (uptodate) data is present",
         )
         self.BASE_TASKS = ("tei2tf", "page2tf", "watm", "watms")
         self.TF_VERSION = "0.0.0test"
@@ -121,6 +122,7 @@ class MakeWATM:
             ("relaxed", None),
             ("usenlp", None),
             ("prod", None),
+            ("force", None),
         ),
         intro=None,
     ):
@@ -149,7 +151,7 @@ class MakeWATM:
                 continue
 
             self.TASKS.append(name)
-            self.DOCS[name] = doc
+            self.DOCS[name] = self.BASE_DOCS[name] if doc is None else doc
 
         for name, doc in flagSpecs:
             if name not in self.BASE_FLAGS:
@@ -210,7 +212,9 @@ class MakeWATM:
             else:
                 unrecognized.add(carg)
 
-        if not self.flag_silent:
+        silent = self.flag_silent
+
+        if not silent:
             console(f"Enabled tasks: {' '.join(self.TASKS)}")
         if version is None:
             console(
@@ -218,13 +222,16 @@ class MakeWATM:
             )
             version = self.TF_VERSION
         else:
-            console(f"Using TF version: {version}")
+            if not silent:
+                console(f"Using TF version: {version}")
 
         self.version = version
 
         if len(unrecognized):
             console(self.HELP)
-            console(f"Unrecognized arguments: {', '.join(sorted(unrecognized))}")
+            console(
+                f"Unrecognized arguments: {', '.join(sorted(unrecognized))}", error=True
+            )
             return -1
 
         if len(tasks) == 0:
@@ -240,10 +247,13 @@ class MakeWATM:
 
     def run(self, tasks):
         TASKS = self.TASKS
+        DOCS = self.DOCS
 
         for task in TASKS:
             if task not in tasks:
                 continue
+
+            console(f"{DOCS[task]} ...")
 
             method = getattr(self, f"doTask_{task}")
             method()
@@ -268,7 +278,7 @@ class MakeWATM:
         Tei = TEI(verbose=verbose, tei=0, tf=f"{tfVersion}pre" if usenlp else tfVersion)
         self.teiVersion = Tei.teiVersion
 
-        console("Checking TEI ...")
+        console("\tValidating TEI ...")
 
         if not Tei.task(check=True, verbose=verbose, validate=True):
             if relaxed:
@@ -277,13 +287,13 @@ class MakeWATM:
                 self.good = False
                 return
 
-        console("Converting TEI to TF ...")
+        console("\tConverting TEI ...")
 
         if not Tei.task(convert=True, verbose=verbose):
             self.good = False
             return
 
-        console("Loading TF ...")
+        console("\tLoading TF ...")
 
         if not Tei.task(load=True, verbose=verbose):
             self.good = False
@@ -297,7 +307,7 @@ class MakeWATM:
             return
 
         if usenlp:
-            console("Add tokens and sentences ...")
+            console("\tAdding NLP data ...")
 
             org = self.org
             repo = self.repo
@@ -343,23 +353,15 @@ class MakeWATM:
         repoBase = self.repoBase
         sourceDir = f"{repoBase}/organized/source"
 
-        console("Producing TF")
-
         verbose = -1 if silent else 0
 
         P = PageXML(sourceDir, repoBase, verbose=verbose, source=0, tf=tfVersion)
-
-        if not silent:
-            console("Converting PageXML to TF ...")
 
         if not P.task(convert=True, verbose=verbose):
             self.good = False
             return
 
-        if not silent:
-            console("Precomputing and loading TF ...")
-
-        console("Loading TF")
+        console("\tLoading TF")
 
         if not P.task(load=True, verbose=verbose):
             self.good = False
@@ -386,14 +388,11 @@ class MakeWATM:
                 console("Skipping 'produce WATM' because of an error condition")
             return
 
-        console("Producing WATM")
-
         backend = self.backend
         org = self.org
         repo = self.repo
 
-        if not silent:
-            console("Loading TF ...")
+        console("\tLoading TF ...")
 
         loadVerbose = DEEP if silent else TERSE
 
@@ -401,7 +400,7 @@ class MakeWATM:
             f"{org}/{repo}:clone", backend=backend, checkout="clone", silent=loadVerbose
         )
 
-        console(f"Making WATM for version {A.version}")
+        console(f"\tMaking WATM for version {A.version}")
 
         WA = WATM(A, "tei", skipMeta=False, silent=silent)
         WA.makeText()
@@ -423,7 +422,7 @@ class MakeWATM:
         org = self.org
         repo = self.repo
 
-        console("Producing WATMs")
+        console("\tMaking WATMs")
 
         W = WATMS(org, repo, backend, "pagexml", silent=silent)
         W.produce(prod=prod)

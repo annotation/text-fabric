@@ -632,7 +632,7 @@ def rep(status):
     return "OK" if status else "XX"
 
 
-def getResultDir(baseDir, headPart, version, prod):
+def getResultDir(baseDir, headPart, version, prod, silent):
     """Determines the directory for the resulting WATM.
 
     The directory to which the resulting WATM is written, depends on a number of
@@ -672,6 +672,8 @@ def getResultDir(baseDir, headPart, version, prod):
         The version of the TF on which the WATM is based
     prod: boolean:
         Whether we are in a production or development run
+    silent: boolean
+        Whether we should operate silently.
 
     Returns
     -------
@@ -716,15 +718,18 @@ def getResultDir(baseDir, headPart, version, prod):
             fh.write(f"{newNum}\n")
 
         resultVersionDir = f"{resultDirBase}/{version}-{newNumRep}"
-        console(f"Writing production data to {resultVersionDir}")
+
+        if not silent:
+            console(f"Writing production data to {resultVersionDir}")
     else:
         resultDirBase = f"{baseDir}/_temp{headPart}/{TT_NAME}"
         resultVersionDir = f"{resultDirBase}/{version}"
 
-        if dirExists(resultVersionDir):
-            console(f"Overwriting development data in {resultVersionDir}")
-        else:
-            console(f"Writing development data to new {resultVersionDir}")
+        if not silent:
+            if dirExists(resultVersionDir):
+                console(f"Overwriting development data in {resultVersionDir}")
+            else:
+                console(f"Writing development data to new {resultVersionDir}")
 
     return resultVersionDir
 
@@ -796,10 +801,9 @@ class WATM:
             return
 
         textRepoType = T.sectionTypes[textRepoLevel - 1]
-
-        if not silent:
-            console(f"textRepoLevel is section level '{textRepoType}'")
         self.textRepoType = textRepoType
+
+        self.console(f"textRepoLevel is section level '{textRepoType}'")
 
         self.excludeElements = set(cfg.excludeElements or [])
         self.excludeFeatures = set(cfg.excludeFeatures or [])
@@ -849,6 +853,18 @@ class WATM:
 
         self.skipMeta = skipMeta
 
+    def console(self, msg, **kwargs):
+        """Print something to the output.
+
+        This works exactly as `tf.core.helpers.console`
+
+        When the silent member of the object is True, the message will be suppressed.
+        """
+        silent = self.silent
+
+        if not silent:
+            console(msg, **kwargs)
+
     def makeText(self):
         """Creates the text data.
 
@@ -857,11 +873,9 @@ class WATM:
         to indices in this list is stored in member `waFromTF`.
         """
         error = self.error
-        silent = self.silent
 
         if error:
-            if not silent:
-                console("Cannot run because of an earlier error")
+            self.console("Cannot run because of an earlier error")
             return
 
         F = self.F
@@ -947,11 +961,9 @@ class WATM:
         tokens and/or annotations in WATM.
         """
         error = self.error
-        silent = self.silent
 
         if error:
-            if not silent:
-                console("Cannot run because of an earlier error")
+            self.console("Cannot run because of an earlier error")
             return
 
         Es = self.Es
@@ -1107,37 +1119,36 @@ class WATM:
                 self.mkAnno(KIND_ANNO, NS_TT, f"{feat}={value}", mkSingleTarget(n))
 
         if len(invertedTargets):
-            if not silent:
-                console(f"WARNING: inverted targets, {len(invertedTargets)}x")
-                for otype, ti0, start, end in invertedTargets:
-                    text = texts[ti0]
-                    sega = text[start]
-                    segb = text[end - 1]
-                    console(f"{otype:>20} {start:>6} `{sega}` > {end - 1} `{segb}`")
+            self.console(f"WARNING: inverted targets, {len(invertedTargets)}x")
+
+            for otype, ti0, start, end in invertedTargets:
+                text = texts[ti0]
+                sega = text[start]
+                segb = text[end - 1]
+                self.console(f"{otype:>20} {start:>6} `{sega}` > {end - 1} `{segb}`")
 
         if len(discontinuousNodes):
             nDis = sum(len(x) for x in discontinuousNodes.values())
-            console(f"WARNING: {nDis} discontinuous nodes encountered")
+            self.console(f"WARNING: {nDis} discontinuous nodes encountered")
 
             for otype, nodes in discontinuousNodes.items():
                 nn = len(nodes)
-                console(f"\t{nn} x of type {otype}")
+                self.console(f"\t{nn} x of type {otype}")
 
-                if not silent:
-                    examples = ", ".join(str(n) for n in nodes[0:10])
-                    console(f"\t\t{examples}")
+                examples = ", ".join(str(n) for n in nodes[0:10])
+                self.console(f"\t\t{examples}")
 
         nFarTargets = len(farTargets)
 
         if nFarTargets:
-            console(f"WARNING: targets across tier0 items, {nFarTargets}x")
-            if not silent:
-                for otype, ti0, start, ti1, end in farTargets[0:10]:
-                    console(
-                        f"{otype:>20} [{ti0:>4}:{start:>6}] - [{ti1:>4}:{end - 1:>6}]"
-                    )
-                if nFarTargets > 10:
-                    console(f"... and {nFarTargets - 10} more.")
+            self.console(f"WARNING: targets across tier0 items, {nFarTargets}x")
+
+            for otype, ti0, start, ti1, end in farTargets[0:10]:
+                self.console(
+                    f"{otype:>20} [{ti0:>4}:{start:>6}] - [{ti1:>4}:{end - 1:>6}]"
+                )
+            if nFarTargets > 10:
+                self.console(f"... and {nFarTargets - 10} more.")
 
     def writeAll(self, prod=False, resultVersion=None):
         """Write text and annotation data to disk.
@@ -1181,13 +1192,12 @@ class WATM:
         # text files
 
         error = self.error
-        silent = self.silent
 
         if error:
-            if not silent:
-                console("Cannot run because of an earlier error")
+            self.console("Cannot run because of an earlier error")
             return
 
+        silent = self.silent
         app = self.app
         texts = self.texts
         annos = self.annos
@@ -1198,12 +1208,14 @@ class WATM:
         relative = app.context.relative
         version = app.version
 
+        console("\tWriting WATM ...")
+
         match = REL_RE.match(relative)
         (headPart, tailPart) = match.group(1, 2)
         tailPart1 = f"/{tailPart}" if tailPart else ""
 
         resultVersionDir = (
-            getResultDir(baseDir, headPart, version, prod)
+            getResultDir(baseDir, headPart, version, prod, silent)
             if resultVersion is None
             else resultVersion
         )
@@ -1240,18 +1252,16 @@ class WATM:
                 else:
                     writeJson(dict(_ordered_segments=text), asFile=fh)
 
-            if not silent:
-                console(
-                    f"{cr}Text file {i:>4}: {nText:>8} segments to {textFile}",
-                    newline=nl,
-                )
+            self.console(
+                f"{cr}Text file {i:>4}: {nText:>8} segments to {textFile}",
+                newline=nl,
+            )
 
         nTexts = len(texts)
         sep = "" if nTexts == 1 else "s"
 
-        if not silent:
-            console("")
-            console(f"Text files all: {total:>8} segments to {nTexts} file{sep}")
+        self.console("")
+        self.console(f"Text files all: {total:>8} segments to {nTexts} file{sep}")
 
         # annotation files
 
@@ -1282,10 +1292,9 @@ class WATM:
                 else:
                     writeJson(thisAnnoStore, asFile=fh)
 
-            if not silent:
-                console(
-                    f"Anno file {thisA:>4}: {j:>8} annotations written to {annoFile}"
-                )
+            self.console(
+                f"Anno file {thisA:>4}: {j:>8} annotations written to {annoFile}"
+            )
 
         for aId in aIdSorted:
             if j >= LIMIT:
@@ -1311,8 +1320,9 @@ class WATM:
 
         sep = "" if nAnnoFiles == 1 else "s"
 
-        if not silent:
-            console(f"Anno files all: {total:>8} annotations to {nAnnoFiles} file{sep}")
+        self.console(
+            f"Anno files all: {total:>8} annotations to {nAnnoFiles} file{sep}"
+        )
 
         # node mapping files
 
@@ -1332,9 +1342,8 @@ class WATM:
                 if aId is not None:
                     fh.write(f"{aId}\t{n}\n")
 
-        if not silent:
-            console(f"Slot mapping written to {slotmapFile}")
-            console(f"Node mapping written to {nodemapFile}")
+        self.console(f"Slot mapping written to {slotmapFile}")
+        self.console(f"Node mapping written to {nodemapFile}")
 
     @staticmethod
     def numEqual(nTF, nWA, silent):
@@ -1439,10 +1448,10 @@ class WATM:
         silent = self.silent
 
         if error:
-            if not silent:
-                console("Cannot run because of an earlier error")
+            self.console("Cannot run because of an earlier error")
             return
 
+        console("\tTesting WATM ...")
         self.testSetup()
 
         if self.error:
@@ -1466,11 +1475,11 @@ class WATM:
         if not self.testEdges():
             good = False
 
-        if not silent:
-            console("Overall outcome ...")
+        self.console("Overall outcome ...")
 
         if not silent or not condensed:
-            console(f"{rep(good)} - whether all tests passed", error=not good)
+            sep = "\t" if silent else ""
+            console(f"{sep}{rep(good)} - whether all tests passed", error=not good)
 
         if not good:
             self.error = True
@@ -1647,8 +1656,7 @@ class WATM:
         waSlotTF = self.waSlotTF
         silent = self.silent
 
-        if not silent:
-            console("Testing the text ...")
+        self.console("Testing the text ...")
 
         nTokensTF = sum(1 if s in waSlotTF else 0 for s in range(1, maxSlotPlus))
         nTokensWA = sum(len(tokens) for tokens in tokenFiles)
@@ -1690,8 +1698,7 @@ class WATM:
         silent = self.silent
         excludeElements = self.excludeElements
 
-        if not silent:
-            console("Testing the elements ...")
+        self.console("Testing the elements ...")
 
         nElementsTF = 0
         nPisTF = 0
@@ -1740,8 +1747,7 @@ class WATM:
                 error=not pGood,
             )
 
-        if not silent:
-            console("Testing the element/pi annotations ...")
+        self.console("Testing the element/pi annotations ...")
 
         element = 0
         pi = 0
@@ -1750,8 +1756,7 @@ class WATM:
         wrongName = 0
         unmapped = 0
 
-        if not silent:
-            console(f"\t{len(nodeFromAid)} element/pi annotations")
+        self.console(f"\t{len(nodeFromAid)} element/pi annotations")
 
         wrongTargets = []
         allTargets = 0
@@ -1810,15 +1815,14 @@ class WATM:
 
             allTargets += 1
 
-        if not silent:
-            console(f"\tElement      : {element:>6} x")
-            console(f"\tPi           : {pi:>6} x")
-            console(f"\tOther        : {other:>6} x")
-            console(f"\tGood name    : {goodName:>6} x")
-            console(f"\tWrong name   : {wrongName:>6} x")
-            console(f"\tGood target  : {goodTargets:>6} x")
-            console(f"\tWrong target : {len(wrongTargets):>6} x")
-            console(f"\tUnmapped     : {unmapped:>6} x")
+        self.console(f"\tElement      : {element:>6} x")
+        self.console(f"\tPi           : {pi:>6} x")
+        self.console(f"\tOther        : {other:>6} x")
+        self.console(f"\tGood name    : {goodName:>6} x")
+        self.console(f"\tWrong name   : {wrongName:>6} x")
+        self.console(f"\tGood target  : {goodTargets:>6} x")
+        self.console(f"\tWrong target : {len(wrongTargets):>6} x")
+        self.console(f"\tUnmapped     : {unmapped:>6} x")
 
         aGood = wrongName == 0 and unmapped == 0
 
@@ -1872,8 +1876,7 @@ class WATM:
 
         isTei = nsOrig == NS_TEI
 
-        if not silent:
-            console("Testing the attributes ...")
+        self.console("Testing the attributes ...")
 
         attWA = []
 
@@ -1888,8 +1891,7 @@ class WATM:
 
         attWA = sorted(attWA)
 
-        if not silent:
-            console(f"\t{len(attWA)} attribute values")
+        self.console(f"\t{len(attWA)} attribute values")
 
         good = 0
         wrong = []
@@ -1905,8 +1907,8 @@ class WATM:
 
         consistent = len(wrong) == 0
 
-        if not silent:
-            console(f"\tGood:     {good:>5} x")
+        self.console(f"\tGood:     {good:>5} x")
+
         if not consistent or not silent:
             console(f"\tWrong:    {len(wrong):>5} x", error=not consistent)
 
@@ -1945,9 +1947,8 @@ class WATM:
 
         attTF = sorted(attTF)
 
-        if not silent:
-            console(f"\tWA attributes: {len(attWA)}")
-            console(f"\tTF attributes: {len(attTF)}")
+        self.console(f"\tWA attributes: {len(attWA)}")
+        self.console(f"\tTF attributes: {len(attTF)}")
 
         complete = attTF == attWA
 
@@ -1957,8 +1958,7 @@ class WATM:
                 error=not complete,
             )
 
-        if not silent:
-            console("Testing the format attributes ...")
+        self.console("Testing the format attributes ...")
 
         fmtWA = []
 
@@ -1981,6 +1981,7 @@ class WATM:
         if not silent:
             console(f"\t{len(fmtWA)} format values")
             console("\tformatting attributes: ")
+
             for fa, n in sorted(fmtFreqWA.items(), key=lambda x: (-x[1], x[0])):
                 console(f"\t\t{n:>6} x {fa}")
 
@@ -1998,15 +1999,16 @@ class WATM:
 
         fconsistent = len(wrong) == 0
 
-        if not silent:
-            console(f"\tGood:     {good:>5} x")
+        self.console(f"\tGood:     {good:>5} x")
 
         if not fconsistent or not silent:
             console(f"\tWrong:    {len(wrong):>5} x")
+
             for node, feat, valWA, valTF in wrong[0:5]:
                 console(f"\t\t{node:>6} {feat}:\n", error=True)
                 console(f"\t\t\tTF = «{valTF}»", error=True)
                 console(f"\t\t\tWA = «{valWA}»", error=True)
+
             console(
                 f"{rep(fconsistent)} - "
                 f"whether format annotations are consistent with features",
@@ -2038,9 +2040,8 @@ class WATM:
 
         fmtTF = sorted(fmtTF)
 
-        if not silent:
-            console(f"\tWA format attributes: {len(fmtWA)}")
-            console(f"\tTF format attributes: {len(fmtTF)}")
+        self.console(f"\tWA format attributes: {len(fmtWA)}")
+        self.console(f"\tTF format attributes: {len(fmtTF)}")
 
         fcomplete = fmtTF == fmtWA
 
@@ -2072,8 +2073,7 @@ class WATM:
         extra = self.extra
         silent = self.silent
 
-        if not silent:
-            console("Testing the extra annotations ...")
+        self.console("Testing the extra annotations ...")
 
         attWA = []
 
@@ -2094,9 +2094,8 @@ class WATM:
 
         attEX = sorted(attEX)
 
-        if not silent:
-            console(f"\t{len(attEX)} extra feature values")
-            console(f"\t{len(attWA)} extra annotations")
+        self.console(f"\t{len(attEX)} extra feature values")
+        self.console(f"\t{len(attWA)} extra annotations")
 
         good = attWA == attEX
 
@@ -2125,13 +2124,11 @@ class WATM:
             if len(onlyWA):
                 showData(onlyWA, "WA", "EX")
             else:
-                if not silent:
-                    console("\tWA: All extra annotations derive from the extra data")
+                self.console("\tWA: All extra annotations derive from the extra data")
             if len(onlyEX):
                 showData(onlyEX, "EX", "WA")
             else:
-                if not silent:
-                    console("\tEX: All extra data ended up as annotations")
+                self.console("\tEX: All extra data ended up as annotations")
 
         if not good or not silent:
             console(
@@ -2163,8 +2160,7 @@ class WATM:
         testNodes = self.testNodes
         excludeFeatures = self.excludeFeatures
 
-        if not silent:
-            console("Testing the edges ...")
+        self.console("Testing the edges ...")
 
         tfFromWAEdges = {}
 
@@ -2191,8 +2187,7 @@ class WATM:
             if edge == OSLOTS or edge in excludeFeatures:
                 continue
 
-            if not silent:
-                console(f"\tChecking edge {edge}")
+            self.console(f"\tChecking edge {edge}")
 
             good = True
 
@@ -2237,8 +2232,7 @@ class WATM:
             nFromWA = len(fromNodesWA)
 
             if fromNodesTF == fromNodesWA:
-                if not silent:
-                    console(f"\t\tsame {nFromTF} fromNodes")
+                self.console(f"\t\tsame {nFromTF} fromNodes")
             else:
                 console(
                     f"{x}from nodes differ: {nFromTF} in TF, {nFromWA} in WA",
@@ -2277,8 +2271,7 @@ class WATM:
                     nToWA = len(toNodesWA)
 
                     if toNodesTF == toNodesWA:
-                        if not silent:
-                            console(f"\t\t\tsame {nToTF} toNodes")
+                        self.console(f"\t\t\tsame {nToTF} toNodes")
                     else:
                         console(
                             f"{x}\ttoNodes differ: {nToTF} in TF, {nToWA} in WA",
@@ -2300,10 +2293,9 @@ class WATM:
 
                         if doCompare:
                             if valTF == valWA:
-                                if not silent:
-                                    console(
-                                        f"\t\t\t\ttoNode{t} values agree: {repr(valTF)}"
-                                    )
+                                self.console(
+                                    f"\t\t\t\ttoNode{t} values agree: {repr(valTF)}"
+                                )
                             else:
                                 console(
                                     f"{x}\t\ttoNode{t} values differ: "
@@ -2317,8 +2309,7 @@ class WATM:
             if not good:
                 allGood = False
 
-        if not silent:
-            console(f"{rep(allGood)} - whether all edges agree")
+        self.console(f"{rep(allGood)} - whether all edges agree")
 
         return allGood
 
@@ -2390,16 +2381,27 @@ class WATMS:
             self.error = True
             return
 
-        console(f"Making WATMS for version {tfVersion}")
+        console(f"Making WATMS for version {tfVersion} ...")
         self.tfVersion = tfVersion
 
         tfDir = f"{repoDir}/tf"
         docs = dirContents(tfDir)[1]
 
-        if not silent:
-            console(f"Found {len(docs)} docs in {tfDir}")
+        self.console(f"Found {len(docs)} docs in {tfDir}")
 
         self.docs = docs
+
+    def console(self, msg, **kwargs):
+        """Print something to the output.
+
+        This works exactly as `tf.core.helpers.console`
+
+        When the silent member of the object is True, the message will be suppressed.
+        """
+        silent = self.silent
+
+        if not silent:
+            console(msg, **kwargs)
 
     def produce(self, doc=None, prod=False):
         """Convert all relevant TF datasets.
@@ -2417,8 +2419,7 @@ class WATMS:
         silent = self.silent
 
         if error:
-            if not silent:
-                console("Cannot run because of an earlier error")
+            self.console("Cannot run because of an earlier error")
             return
 
         org = self.org
@@ -2434,7 +2435,7 @@ class WATMS:
 
         chosenDoc = doc
 
-        resultVersion = getResultDir(repoDir, "", tfVersion, prod)
+        resultVersion = getResultDir(repoDir, "", tfVersion, prod, silent)
 
         good = True
 
@@ -2442,8 +2443,8 @@ class WATMS:
             if chosenDoc is not None and chosenDoc != doc:
                 continue
 
-            if not silent:
-                console(f"{doc:>5} ... ", newline=False)
+            self.console(f"{doc:>5} ... ", newline=False)
+
             A = use(
                 f"{org}/{repo}:clone",
                 relative=f"/tf/{doc}",
@@ -2460,4 +2461,5 @@ class WATMS:
             if WA.error:
                 good = False
 
-        console(f"WATM generation: {rep(good)}", error=not good)
+        if not silent or error:
+            console(f"WATM generation: {rep(good)}", error=not good)

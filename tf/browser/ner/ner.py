@@ -268,6 +268,7 @@ from itertools import chain
 
 from ...dataset import modify
 from ...core.generic import AttrDict
+from ...core.helpers import console
 from ...core.files import (
     fileOpen,
     dirRemove,
@@ -283,7 +284,7 @@ from .match import entityMatch, occMatch
 
 
 class NER(Sheets, Sets, Show):
-    def __init__(self, app, data=None, browse=False):
+    def __init__(self, app, data=None, browse=False, silent=False):
         """Entity annotation.
 
         Basic methods to handle the various aspects of entity annotation.
@@ -322,6 +323,8 @@ class NER(Sheets, Sets, Show):
         browse: boolean, optional False
             If True, the object is informed that it is run by the TF
             browser. This will influence how results are reported back.
+        silent: boolean, optional False
+            Where to keep most operations silent
         """
         if data is None:
             data = AttrDict()
@@ -332,6 +335,7 @@ class NER(Sheets, Sets, Show):
         if data.sheets is None:
             data.sheets = AttrDict()
 
+        self.silent = silent
         self.browse = browse
         self.app = app
 
@@ -545,7 +549,7 @@ class NER(Sheets, Sets, Show):
             if bFind is not None:
                 (bFind, bFindRe, errorMsg) = findCompile(bFind, bFindC)
                 if errorMsg:
-                    self.console(errorMsg, error=True)
+                    console(errorMsg, error=True)
 
         hasEnt = eVals is not None
         hasQTokens = qTokens is not None and len(qTokens)
@@ -755,11 +759,12 @@ class NER(Sheets, Sets, Show):
         if not self.properlySetup:
             return
 
+        silent = self.silent
         setNameRep = self.setNameRep
         setIsSrc = self.setIsSrc
 
         if setIsSrc:
-            self.console(
+            console(
                 f"Entity consolidation not meaningful on {setNameRep}", error=True
             )
             return False
@@ -856,7 +861,7 @@ class NER(Sheets, Sets, Show):
             targetVersion=newVersion,
             addTypes=addTypes,
             featureMeta=featureMeta,
-            silent=True,
+            silent=silent,
         )
 
         app.info("Done")

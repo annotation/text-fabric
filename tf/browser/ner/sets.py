@@ -11,6 +11,7 @@ from .data import Data
 
 
 from ...core.generic import AttrDict
+from ...core.helpers import console
 from ...core.files import (
     fileExists,
     initTree,
@@ -163,7 +164,7 @@ class Sets(Data):
                 f"Annotation set {setNameRep} has {nEntities} annotation{plural}"
             )
 
-    def _addToSet(self, newEntities, silent=False):
+    def _addToSet(self, newEntities):
         """Add a bunch of entities to the current set.
 
         Only for sets that correspond to sheets. This is to create such a set,
@@ -183,7 +184,7 @@ class Sets(Data):
             return
 
         self._clearSetData()
-        self.addEntities(newEntities, silent=False, _lowlevel=True)
+        self.addEntities(newEntities, returns=False, _lowlevel=True)
 
     def resetSet(self):
         """Clear the current annotation set.
@@ -199,7 +200,7 @@ class Sets(Data):
         entitySet = settings.entitySet
 
         if setIsRo:
-            self.console(f"Resetting the {entitySet} has no effect")
+            console(f"Resetting the {entitySet} has no effect")
             return
 
         browse = self.browse

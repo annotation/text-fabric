@@ -21,6 +21,7 @@ import collections
 import time
 
 from ...core.generic import AttrDict
+from ...core.helpers import console
 from ...core.files import (
     fileOpen,
     mTime,
@@ -345,7 +346,7 @@ class Data(Corpus):
 
             setData.dateProcessed = time.time()
 
-    def delEntity(self, vals, allMatches=None, silent=True):
+    def delEntity(self, vals, allMatches=None, returns=True):
         """Delete entity occurrences from the current set.
 
         This operation is not allowed if the current set is the read-only set with the
@@ -367,14 +368,14 @@ class Data(Corpus):
             A number of slot tuples. They are the locations from which the candidate
             entities will be deleted.
             If it is None, the entity candidates will be removed wherever they occur.
-        silent: boolean, optional False
+        returns: boolean, optional False
             Reports how many entities have been deleted and how many were not present
             in the specified locations.
 
         Returns
         -------
         (int, int) or void
-            If `silent`, it returns the number of non-existing entities that were
+            If `returns`, it returns the number of non-existing entities that were
             asked to be deleted and the number of actually deleted entities.
 
             If the operation is not allowed, both integers above are set to -1.
@@ -386,9 +387,9 @@ class Data(Corpus):
         setNameRep = self.setNameRep
 
         if setIsRo:
-            if silent:
+            if returns:
                 return (-1, -1)
-            self.console(f"Entity deletion not allowed on {setNameRep}", error=True)
+            console(f"Entity deletion not allowed on {setNameRep}", error=True)
             return
 
         setData = self.getSetData()
@@ -421,7 +422,7 @@ class Data(Corpus):
 
         self.loadSetData()
 
-        if silent:
+        if returns:
             return (missing, deleted)
 
         self.console(f"Not present: {missing:>5} x")
@@ -471,7 +472,7 @@ class Data(Corpus):
             if browse:
                 return [[msg]]
             else:
-                self.console(msg, error=True)
+                console(msg, error=True)
                 return
 
         settings = self.settings
@@ -542,6 +543,7 @@ class Data(Corpus):
 
         self.loadSetData()
         (stats, *rest) = report
+
         if type(stats) is list:
             self.console("\n".join(stats))
         else:
@@ -553,7 +555,7 @@ class Data(Corpus):
         if len(rest):
             self.console("\n".join(rest))
 
-    def addEntity(self, vals, allMatches, silent=True):
+    def addEntity(self, vals, allMatches, returns=True):
         """Add entity occurrences to the current set.
 
         This operation is not allowed if the current set is the read-only set with the
@@ -573,14 +575,14 @@ class Data(Corpus):
         allMatches: iterable of tuple of int
             A number of slot tuples. They are the locations where the entities will be
             added.
-        silent: boolean, optional False
+        returns: boolean, optional False
             Reports how many entities have been added and how many were already present
             in the specified locations.
 
         Returns
         -------
         (int, int) or void
-            If `silent`, it returns the number of already existing entities that were
+            If `returns`, it returns the number of already existing entities that were
             asked to be deleted and the number of actually deleted entities.
 
             If the operation is not allowed, both integers above are set to -1.
@@ -592,9 +594,9 @@ class Data(Corpus):
         setIsRo = self.setIsRo
 
         if setIsRo:
-            if silent:
+            if returns:
                 return (-1, -1)
-            self.console(f"Entity addition not allowed on {setNameRep}", error=True)
+            console(f"Entity addition not allowed on {setNameRep}", error=True)
             return
 
         setData = self.getSetData()
@@ -627,13 +629,13 @@ class Data(Corpus):
 
         self.loadSetData()
 
-        if silent:
+        if returns:
             return (present, added)
 
         self.console(f"Already present: {present:>5} x")
         self.console(f"Added:           {added:>5} x")
 
-    def addEntities(self, newEntities, silent=True, _lowlevel=False):
+    def addEntities(self, newEntities, returns=True, _lowlevel=False):
         """Add multiple entities efficiently to the current set.
 
         This operation is not allowed if the current set is the read-only set with the
@@ -652,14 +654,14 @@ class Data(Corpus):
             *   a tuple of entity feature values, specifying the entity to add
             *   a list of slot tuples, specifying where to add this entity
 
-        silent: boolean, optional False
+        returns: boolean, optional False
             Reports how many entities have been added and how many were already present
             in the specified locations.
 
         Returns
         -------
         (int, int) or void
-            If `silent`, it returns the number of already existing entities that were
+            If `returns`, it returns the number of already existing entities that were
             asked to be deleted and the number of actually deleted entities.
 
             If the operation is not allowed, both integers above are set to -1.
@@ -672,9 +674,9 @@ class Data(Corpus):
         setIsX = self.setIsX
 
         if not _lowlevel and setIsRo:
-            if silent:
+            if returns:
                 return (-1, -1)
-            self.console(f"Entities addition not allowed on {setNameRep}", error=True)
+            console(f"Entities addition not allowed on {setNameRep}", error=True)
             return
 
         if _lowlevel and not setIsX:
@@ -703,7 +705,7 @@ class Data(Corpus):
             self.mergeEntities(addE, _lowlevel=_lowlevel)
 
         self.loadSetData()
-        if silent:
+        if returns:
             return (present, added)
 
         if _lowlevel:
@@ -756,7 +758,7 @@ class Data(Corpus):
             if browse:
                 return [[msg]]
             else:
-                self.console(msg, error=True)
+                console(msg, error=True)
                 return
 
         settings = self.settings
@@ -768,7 +770,7 @@ class Data(Corpus):
 
         report = []
 
-        addEntities = set()
+        addEnts = set()
 
         additions = tuple([x] if type(x) is str else x for x in additions)
 
@@ -803,8 +805,8 @@ class Data(Corpus):
                         if fVals in existing:
                             continue
                         info = (fVals, slots)
-                        if info not in addEntities:
-                            addEntities.add(info)
+                        if info not in addEnts:
+                            addEnts.add(info)
                             stats[fVals] += 1
 
             report.append(
@@ -813,8 +815,8 @@ class Data(Corpus):
             if excl:
                 report.append(f"Addition: occurrences excluded: {excl}")
 
-        if len(addEntities):
-            self.mergeEntities(addEntities)
+        if len(addEnts):
+            self.mergeEntities(addEnts)
 
         if browse:
             return report
@@ -852,7 +854,7 @@ class Data(Corpus):
         setIsRo = self.setIsRo
 
         if setIsRo:
-            self.console(f"Entity weeding not allowed on {setNameRep}", error=True)
+            console(f"Entity weeding not allowed on {setNameRep}", error=True)
             return
 
         settings = self.settings
@@ -899,7 +901,7 @@ class Data(Corpus):
         setIsX = self.setIsX
 
         if not _lowlevel and setIsRo:
-            self.console(f"Entity merging not allowed on {setNameRep}", error=True)
+            console(f"Entity merging not allowed on {setNameRep}", error=True)
             return
 
         if _lowlevel and not setIsX:
