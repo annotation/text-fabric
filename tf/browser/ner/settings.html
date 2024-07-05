@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.browser.ner.settings API documentation</title>
 <meta name="description" content="Corpus dependent setup of the annotation tool …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -34,7 +34,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/settings.py#L1-L249" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/browser/ner/settings.py#L1-L255" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Corpus dependent setup of the annotation tool.
 
@@ -43,7 +43,7 @@ To see how this fits among all the modules of this package, see
 &#34;&#34;&#34;
 
 
-from ...core.helpers import console as cs
+from ...core.helpers import console
 from ...core.files import readYaml, fileExists, APP_CONFIG
 
 TOOLKEY = &#34;ner&#34;
@@ -267,24 +267,30 @@ class Settings:
 
         This works exactly as `tf.core.helpers.console`
 
-        It is handy to have this as a method on the NER object,
-        so that we can issue temporary console statements during development
-        without the need to add an `import` statement to the code.
+        When the silent member of the object is True, the message will be suppressed.
         &#34;&#34;&#34;
-        cs(msg, **kwargs)
+        silent = self.silent
 
-    def consoleLine(isError, indent, msg):
+        if not silent:
+            console(msg, **kwargs)
+
+    def consoleLine(self, isError, indent, msg):
+        silent = self.silent
+
+        if not silent:
+            return
+
         tabs = &#34;  &#34; * indent
         head = &#34;-&#34; * len(msg)
 
         if isError is None:
-            cs(&#34;&#34;)
-            cs(f&#34;{tabs}{head}&#34;)
+            console(&#34;&#34;)
+            console(f&#34;{tabs}{head}&#34;)
 
-        cs(f&#34;{tabs}{msg}\n&#34;, error=isError)
+        console(f&#34;{tabs}{msg}\n&#34;, error=isError)
 
         if isError is None:
-            cs(f&#34;{tabs}{head}&#34;)</code></pre>
+            console(f&#34;{tabs}{head}&#34;)</code></pre>
 </details>
 </section>
 <section>
@@ -410,7 +416,7 @@ Those configuration values are read from a YAML file, located in a directory
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/settings.py#L196-L249" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/browser/ner/settings.py#L196-L255" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Settings:
     def __init__(self):
@@ -448,24 +454,30 @@ Those configuration values are read from a YAML file, located in a directory
 
         This works exactly as `tf.core.helpers.console`
 
-        It is handy to have this as a method on the NER object,
-        so that we can issue temporary console statements during development
-        without the need to add an `import` statement to the code.
+        When the silent member of the object is True, the message will be suppressed.
         &#34;&#34;&#34;
-        cs(msg, **kwargs)
+        silent = self.silent
 
-    def consoleLine(isError, indent, msg):
+        if not silent:
+            console(msg, **kwargs)
+
+    def consoleLine(self, isError, indent, msg):
+        silent = self.silent
+
+        if not silent:
+            return
+
         tabs = &#34;  &#34; * indent
         head = &#34;-&#34; * len(msg)
 
         if isError is None:
-            cs(&#34;&#34;)
-            cs(f&#34;{tabs}{head}&#34;)
+            console(&#34;&#34;)
+            console(f&#34;{tabs}{head}&#34;)
 
-        cs(f&#34;{tabs}{msg}\n&#34;, error=isError)
+        console(f&#34;{tabs}{msg}\n&#34;, error=isError)
 
         if isError is None:
-            cs(f&#34;{tabs}{head}&#34;)</code></pre>
+            console(f&#34;{tabs}{head}&#34;)</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -479,49 +491,13 @@ Those configuration values are read from a YAML file, located in a directory
 <dd>
 <div class="desc"><p>Print something to the output.</p>
 <p>This works exactly as <code><a title="tf.core.helpers.console" href="../../core/helpers.html#tf.core.helpers.console">console()</a></code></p>
-<p>It is handy to have this as a method on the NER object,
-so that we can issue temporary console statements during development
-without the need to add an <code>import</code> statement to the code.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/settings.py#L227-L236" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def console(self, msg, **kwargs):
-    &#34;&#34;&#34;Print something to the output.
-
-    This works exactly as `tf.core.helpers.console`
-
-    It is handy to have this as a method on the NER object,
-    so that we can issue temporary console statements during development
-    without the need to add an `import` statement to the code.
-    &#34;&#34;&#34;
-    cs(msg, **kwargs)</code></pre>
-</details>
+<p>When the silent member of the object is True, the message will be suppressed.</p></div>
 </dd>
 <dt id="tf.browser.ner.settings.Settings.consoleLine"><code class="name flex">
-<span>def <span class="ident">consoleLine</span></span>(<span>isError, indent, msg)</span>
+<span>def <span class="ident">consoleLine</span></span>(<span>self, isError, indent, msg)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/settings.py#L238-L249" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def consoleLine(isError, indent, msg):
-    tabs = &#34;  &#34; * indent
-    head = &#34;-&#34; * len(msg)
-
-    if isError is None:
-        cs(&#34;&#34;)
-        cs(f&#34;{tabs}{head}&#34;)
-
-    cs(f&#34;{tabs}{msg}\n&#34;, error=isError)
-
-    if isError is None:
-        cs(f&#34;{tabs}{head}&#34;)</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -624,7 +600,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

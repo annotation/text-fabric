@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.browser.ner.ner API documentation</title>
 <meta name="description" content="API for Named Entity marking …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -158,7 +158,7 @@ but probably that information will not end up in TF features.</li>
 </ul>
 <p>These steps need some configuration information from the <code>ner/config.yaml</code> file.</p>
 <p>Translation is done by</p>
-<pre><code class="language-python">NE.setSheet(&quot;people&quot;)
+<pre><code class="language-python">NE.setTask(&quot;.people&quot;)
 </code></pre>
 <p>The resulting YAML ends up next to the
 spreadsheet, and it looks like this:</p>
@@ -244,7 +244,7 @@ slots.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/ner.py#L1-L742" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/browser/ner/ner.py#L1-L893" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;API for Named Entity marking.
 
@@ -402,7 +402,7 @@ These steps need some configuration information from the `ner/config.yaml` file.
 Translation is done by
 
 ``` python
-NE.setSheet(&#34;people&#34;)
+NE.setTask(&#34;.people&#34;)
 ```
 
 The resulting YAML ends up next to the
@@ -512,8 +512,19 @@ Lines consist of tab separated fields:
 &#34;&#34;&#34;
 from textwrap import dedent
 import collections
+from itertools import chain
 
+from ...dataset import modify
 from ...core.generic import AttrDict
+from ...core.helpers import console
+from ...core.files import (
+    fileOpen,
+    dirRemove,
+    dirNm,
+    dirExists,
+    APP_CONFIG,
+)
+from ...core.timestamp import SILENT_D, DEEP
 from .sheets import Sheets
 from .helpers import findCompile
 from .sets import Sets
@@ -522,7 +533,7 @@ from .match import entityMatch, occMatch
 
 
 class NER(Sheets, Sets, Show):
-    def __init__(self, app, data=None, browse=False):
+    def __init__(self, app, data=None, browse=False, silent=False):
         &#34;&#34;&#34;Entity annotation.
 
         Basic methods to handle the various aspects of entity annotation.
@@ -561,6 +572,8 @@ class NER(Sheets, Sets, Show):
         browse: boolean, optional False
             If True, the object is informed that it is run by the TF
             browser. This will influence how results are reported back.
+        silent: boolean, optional False
+            Where to keep most operations silent
         &#34;&#34;&#34;
         if data is None:
             data = AttrDict()
@@ -571,6 +584,7 @@ class NER(Sheets, Sets, Show):
         if data.sheets is None:
             data.sheets = AttrDict()
 
+        self.silent = silent
         self.browse = browse
         self.app = app
 
@@ -784,7 +798,7 @@ class NER(Sheets, Sets, Show):
             if bFind is not None:
                 (bFind, bFindRe, errorMsg) = findCompile(bFind, bFindC)
                 if errorMsg:
-                    self.console(errorMsg, error=True)
+                    console(errorMsg, error=True)
 
         hasEnt = eVals is not None
         hasQTokens = qTokens is not None and len(qTokens)
@@ -953,7 +967,7 @@ class NER(Sheets, Sets, Show):
             for section, hits in sorted(sectionInfo.items()):
                 hitData.append((&#34;OK&#34;, *entry, section, hits))
 
-        with open(reportFile, &#34;w&#34;) as rh:
+        with fileOpen(reportFile, &#34;w&#34;) as rh:
             rh.write(&#34;label\tname\ttrigger\tsheet\tsection\thits\n&#34;)
 
             for h in sorted(hitData):
@@ -979,7 +993,11 @@ class NER(Sheets, Sets, Show):
         )
 
     def bakeEntities(self, versionExtension=&#34;e&#34;):
-        &#34;&#34;&#34;Bakes the entities of the current set as nodes into a new TF data source.
+        &#34;&#34;&#34;Consolidates the current entities as nodes into a new TF data source.
+
+        This operation is not allowed if the current set is the read-only set with the
+        empty name, because these entities are already present as nodes in the
+        TF dataset.
 
         Parameters
         ----------
@@ -987,7 +1005,140 @@ class NER(Sheets, Sets, Show):
             The new dataset gets a version like the original dataset, but extended
             with this string.
         &#34;&#34;&#34;
-        self.consolidateEntities(versionExtension=versionExtension)</code></pre>
+        if not self.properlySetup:
+            return
+
+        silent = self.silent
+        setNameRep = self.setNameRep
+        setIsSrc = self.setIsSrc
+
+        if setIsSrc:
+            console(
+                f&#34;Entity consolidation not meaningful on {setNameRep}&#34;, error=True
+            )
+            return False
+
+        version = self.version
+        settings = self.settings
+        features = settings.features
+        featureMeta = settings.featureMeta
+        setData = self.getSetData()
+
+        # Data preparation for the modify function
+
+        entityOccs = sorted(set(setData.entities.values()))
+        self.console(
+            f&#34;Entity consolidation for {len(entityOccs)} entity occurrences &#34;
+            f&#34;into version {version}{versionExtension}&#34;
+        )
+
+        slotLink = {}
+        nodeFeatures = AttrDict({feat: {} for feat in features})
+        edgeFeatures = AttrDict(eoccs={})
+        entities = {}
+
+        n = 0
+
+        for fVals, slots in entityOccs:
+            n += 1
+            slotLink[n] = slots
+
+            for feat, fVal in zip(features, fVals):
+                nodeFeatures[feat][n] = fVal
+
+            entities.setdefault(fVals, []).append(n)
+
+        nEntityOccs = len(entityOccs)
+        occEdge = edgeFeatures.eoccs
+
+        for fVals, occs in entities.items():
+            n += 1
+            occEdge[n] = set(occs)
+            slotLink[n] = tuple(chain.from_iterable(slotLink[m] for m in occs))
+
+            for feat, fVal in zip(features, fVals):
+                nodeFeatures[feat][n] = fVal
+
+        nEntities = len(entities)
+
+        self.console(f&#34;{nEntityOccs:&gt;6} entity occurrences&#34;)
+        self.console(f&#34;{nEntities:&gt;6} distinct entities&#34;)
+
+        featureMeta.eoccs = dict(
+            valueType=&#34;str&#34;,
+            description=&#34;from entity nodes to their occurrence nodes&#34;,
+        )
+
+        addTypes = dict(
+            ent=dict(
+                nodeFrom=1,
+                nodeTo=nEntityOccs,
+                nodeSlots=slotLink,
+                nodeFeatures=nodeFeatures,
+            ),
+            entity=dict(
+                nodeFrom=nEntityOccs + 1,
+                nodeTo=nEntityOccs + nEntities,
+                nodeSlots=slotLink,
+                nodeFeatures=nodeFeatures,
+                edgeFeatures=edgeFeatures,
+            ),
+        )
+        self.featureMeta = featureMeta
+
+        # Call the modify function
+
+        app = self.app
+        context = app.context
+        appPath = context.appPath
+        relative = context.relative
+        dataPath = f&#34;{dirNm(appPath)}/{relative}&#34;
+
+        origTf = f&#34;{dataPath}/{app.version}&#34;
+        newTf = f&#34;{origTf}{versionExtension}&#34;
+        newVersion = f&#34;{app.version}{versionExtension}&#34;
+
+        if dirExists(newTf):
+            dirRemove(newTf)
+
+        app.indent(reset=True)
+
+        if not silent:
+            app.info(&#34;Creating a dataset with entity nodes ...&#34;)
+
+        good = modify(
+            origTf,
+            newTf,
+            targetVersion=newVersion,
+            addTypes=addTypes,
+            featureMeta=featureMeta,
+            silent=DEEP if silent else SILENT_D,
+        )
+
+        if not silent:
+            app.info(&#34;Done&#34;)
+
+        if not good:
+            return False
+
+        self.console(f&#34;The dataset with entities is now in version {newVersion}&#34;)
+
+        # tweak the app
+
+        config = f&#34;{appPath}/{APP_CONFIG}&#34;
+
+        with fileOpen(config) as fh:
+            text = fh.read()
+
+        text = text.replace(f&#39;version: {version}&#39;, f&#39;version: &#34;{newVersion}&#34;&#39;)
+        text = text.replace(f&#39;version: &#34;{version}&#34;&#39;, f&#39;version: &#34;{newVersion}&#34;&#39;)
+
+        with fileOpen(config, mode=&#34;w&#34;) as fh:
+            fh.write(text)
+
+        self.console(&#34;The dataset with entities is now the standard version&#34;)
+
+        return True</code></pre>
 </details>
 </section>
 <section>
@@ -1001,7 +1152,7 @@ class NER(Sheets, Sets, Show):
 <dl>
 <dt id="tf.browser.ner.ner.NER"><code class="flex name class">
 <span>class <span class="ident">NER</span></span>
-<span>(</span><span>app, data=None, browse=False)</span>
+<span>(</span><span>app, data=None, browse=False, silent=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Entity annotation.</p>
@@ -1035,14 +1186,16 @@ created by an ancestor class (Data)</dd>
 <dt><strong><code>browse</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>If True, the object is informed that it is run by the TF
 browser. This will influence how results are reported back.</dd>
+<dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Where to keep most operations silent</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/ner.py#L276-L742" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/browser/ner/ner.py#L287-L893" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Sheets, Sets, Show):
-    def __init__(self, app, data=None, browse=False):
+    def __init__(self, app, data=None, browse=False, silent=False):
         &#34;&#34;&#34;Entity annotation.
 
         Basic methods to handle the various aspects of entity annotation.
@@ -1081,6 +1234,8 @@ browser. This will influence how results are reported back.</dd>
         browse: boolean, optional False
             If True, the object is informed that it is run by the TF
             browser. This will influence how results are reported back.
+        silent: boolean, optional False
+            Where to keep most operations silent
         &#34;&#34;&#34;
         if data is None:
             data = AttrDict()
@@ -1091,6 +1246,7 @@ browser. This will influence how results are reported back.</dd>
         if data.sheets is None:
             data.sheets = AttrDict()
 
+        self.silent = silent
         self.browse = browse
         self.app = app
 
@@ -1304,7 +1460,7 @@ browser. This will influence how results are reported back.</dd>
             if bFind is not None:
                 (bFind, bFindRe, errorMsg) = findCompile(bFind, bFindC)
                 if errorMsg:
-                    self.console(errorMsg, error=True)
+                    console(errorMsg, error=True)
 
         hasEnt = eVals is not None
         hasQTokens = qTokens is not None and len(qTokens)
@@ -1473,7 +1629,7 @@ browser. This will influence how results are reported back.</dd>
             for section, hits in sorted(sectionInfo.items()):
                 hitData.append((&#34;OK&#34;, *entry, section, hits))
 
-        with open(reportFile, &#34;w&#34;) as rh:
+        with fileOpen(reportFile, &#34;w&#34;) as rh:
             rh.write(&#34;label\tname\ttrigger\tsheet\tsection\thits\n&#34;)
 
             for h in sorted(hitData):
@@ -1499,7 +1655,11 @@ browser. This will influence how results are reported back.</dd>
         )
 
     def bakeEntities(self, versionExtension=&#34;e&#34;):
-        &#34;&#34;&#34;Bakes the entities of the current set as nodes into a new TF data source.
+        &#34;&#34;&#34;Consolidates the current entities as nodes into a new TF data source.
+
+        This operation is not allowed if the current set is the read-only set with the
+        empty name, because these entities are already present as nodes in the
+        TF dataset.
 
         Parameters
         ----------
@@ -1507,7 +1667,140 @@ browser. This will influence how results are reported back.</dd>
             The new dataset gets a version like the original dataset, but extended
             with this string.
         &#34;&#34;&#34;
-        self.consolidateEntities(versionExtension=versionExtension)</code></pre>
+        if not self.properlySetup:
+            return
+
+        silent = self.silent
+        setNameRep = self.setNameRep
+        setIsSrc = self.setIsSrc
+
+        if setIsSrc:
+            console(
+                f&#34;Entity consolidation not meaningful on {setNameRep}&#34;, error=True
+            )
+            return False
+
+        version = self.version
+        settings = self.settings
+        features = settings.features
+        featureMeta = settings.featureMeta
+        setData = self.getSetData()
+
+        # Data preparation for the modify function
+
+        entityOccs = sorted(set(setData.entities.values()))
+        self.console(
+            f&#34;Entity consolidation for {len(entityOccs)} entity occurrences &#34;
+            f&#34;into version {version}{versionExtension}&#34;
+        )
+
+        slotLink = {}
+        nodeFeatures = AttrDict({feat: {} for feat in features})
+        edgeFeatures = AttrDict(eoccs={})
+        entities = {}
+
+        n = 0
+
+        for fVals, slots in entityOccs:
+            n += 1
+            slotLink[n] = slots
+
+            for feat, fVal in zip(features, fVals):
+                nodeFeatures[feat][n] = fVal
+
+            entities.setdefault(fVals, []).append(n)
+
+        nEntityOccs = len(entityOccs)
+        occEdge = edgeFeatures.eoccs
+
+        for fVals, occs in entities.items():
+            n += 1
+            occEdge[n] = set(occs)
+            slotLink[n] = tuple(chain.from_iterable(slotLink[m] for m in occs))
+
+            for feat, fVal in zip(features, fVals):
+                nodeFeatures[feat][n] = fVal
+
+        nEntities = len(entities)
+
+        self.console(f&#34;{nEntityOccs:&gt;6} entity occurrences&#34;)
+        self.console(f&#34;{nEntities:&gt;6} distinct entities&#34;)
+
+        featureMeta.eoccs = dict(
+            valueType=&#34;str&#34;,
+            description=&#34;from entity nodes to their occurrence nodes&#34;,
+        )
+
+        addTypes = dict(
+            ent=dict(
+                nodeFrom=1,
+                nodeTo=nEntityOccs,
+                nodeSlots=slotLink,
+                nodeFeatures=nodeFeatures,
+            ),
+            entity=dict(
+                nodeFrom=nEntityOccs + 1,
+                nodeTo=nEntityOccs + nEntities,
+                nodeSlots=slotLink,
+                nodeFeatures=nodeFeatures,
+                edgeFeatures=edgeFeatures,
+            ),
+        )
+        self.featureMeta = featureMeta
+
+        # Call the modify function
+
+        app = self.app
+        context = app.context
+        appPath = context.appPath
+        relative = context.relative
+        dataPath = f&#34;{dirNm(appPath)}/{relative}&#34;
+
+        origTf = f&#34;{dataPath}/{app.version}&#34;
+        newTf = f&#34;{origTf}{versionExtension}&#34;
+        newVersion = f&#34;{app.version}{versionExtension}&#34;
+
+        if dirExists(newTf):
+            dirRemove(newTf)
+
+        app.indent(reset=True)
+
+        if not silent:
+            app.info(&#34;Creating a dataset with entity nodes ...&#34;)
+
+        good = modify(
+            origTf,
+            newTf,
+            targetVersion=newVersion,
+            addTypes=addTypes,
+            featureMeta=featureMeta,
+            silent=DEEP if silent else SILENT_D,
+        )
+
+        if not silent:
+            app.info(&#34;Done&#34;)
+
+        if not good:
+            return False
+
+        self.console(f&#34;The dataset with entities is now in version {newVersion}&#34;)
+
+        # tweak the app
+
+        config = f&#34;{appPath}/{APP_CONFIG}&#34;
+
+        with fileOpen(config) as fh:
+            text = fh.read()
+
+        text = text.replace(f&#39;version: {version}&#39;, f&#39;version: &#34;{newVersion}&#34;&#39;)
+        text = text.replace(f&#39;version: &#34;{version}&#34;&#39;, f&#39;version: &#34;{newVersion}&#34;&#39;)
+
+        with fileOpen(config, mode=&#34;w&#34;) as fh:
+            fh.write(text)
+
+        self.console(&#34;The dataset with entities is now the standard version&#34;)
+
+        return True</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1524,29 +1817,16 @@ browser. This will influence how results are reported back.</dd>
 <span>def <span class="ident">bakeEntities</span></span>(<span>self, versionExtension='e')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Bakes the entities of the current set as nodes into a new TF data source.</p>
+<div class="desc"><p>Consolidates the current entities as nodes into a new TF data source.</p>
+<p>This operation is not allowed if the current set is the read-only set with the
+empty name, because these entities are already present as nodes in the
+TF dataset.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>versionExtension</code></strong> :&ensp;<code>string</code>, optional <code>"e"</code></dt>
 <dd>The new dataset gets a version like the original dataset, but extended
 with this string.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/ner.py#L733-L742" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def bakeEntities(self, versionExtension=&#34;e&#34;):
-    &#34;&#34;&#34;Bakes the entities of the current set as nodes into a new TF data source.
-
-    Parameters
-    ----------
-    versionExtension: string, optional &#34;e&#34;
-        The new dataset gets a version like the original dataset, but extended
-        with this string.
-    &#34;&#34;&#34;
-    self.consolidateEntities(versionExtension=versionExtension)</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.ner.NER.filterContent"><code class="name flex">
 <span>def <span class="ident">filterContent</span></span>(<span>self, buckets=None, node=None, bFind=None, bFindC=None, bFindRe=None, anyEnt=None, eVals=None, trigger=None, qTokens=None, valSelect=None, freeState=None, showStats=None)</span>
@@ -1643,266 +1923,6 @@ starts matching the <code>bFindRe</code>;</li>
 of results.</p>
 </dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/ner.py#L382-L635" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def filterContent(
-    self,
-    buckets=None,
-    node=None,
-    bFind=None,
-    bFindC=None,
-    bFindRe=None,
-    anyEnt=None,
-    eVals=None,
-    trigger=None,
-    qTokens=None,
-    valSelect=None,
-    freeState=None,
-    showStats=None,
-):
-    &#34;&#34;&#34;Filter the buckets according to a variety of criteria.
-
-    Either the buckets of the whole corpus are filtered, or a given subset
-    of buckets, or a subset of buckets, namely those contained in a
-    particular node, see parameters `node`, and `buckets`.
-
-    **Bucket filtering**
-
-    The parameters `bFind`, `bFindC`, `bFindRe`  specify a regular expression
-    search on the texts of the buckets.
-
-    The positions of the found occurrences is included in the result.
-
-    The parameter `anyEnt` is a filter on the presence or absence of entities in
-    buckets in general.
-
-    **Entity filtering**
-
-    The parameter `eVals` holds the values of a specific entity to look for.
-
-    **Occurrence filtering**
-
-    The parameter `qTokens` is a sequence of tokens to look for.
-    The occurrences that are found, can be filtered further by `valSelect`
-    and `freeState`.
-
-    In entity filtering and occurrence filtering, the matching occurrences
-    are included in the result.
-
-    Parameters
-    ----------
-    buckets: set of integer, optional None
-        The set of buckets to filter, instead of the whole corpus.
-        Works also if the parameter `node` is specified, which also restricts
-        the buckets to filter. If both are specified, their effect will be
-        combined.
-    node: integer, optional None
-        Gets the context of the node, typically the intermediate-level section
-        in which the node occurs. Then restricts the filtering to the buckets
-        contained in the context, instead of the whole corpus.
-    bFind: string, optional None
-        A search pattern that filters the buckets, before applying the search
-        for a token sequence.
-    bFindC: string, optional None
-        Whether the search is case sensitive or not.
-    bFindRe: object, optional None
-        A compiled regular expression.
-        This function searches on `bFindRe`, but if it is None, it compiles
-        `bFind` as regular expression and searches on that. If `bFind` itself
-        is not None, of course.
-    anyEnt: boolean, optional None
-        If True, it wants all buckets that contain at least one already
-        marked entity; if False, it wants all buckets that do not contain any
-        already marked entity.
-    eVals: tuple, optional None
-        A sequence of values corresponding with the entity features `eid`
-        and `kind`. If given, the function wants buckets that contain at least
-        an entity with those properties.
-    trigger: string, optional None
-        If given, the function wants buckets that contain at least an
-        entity that is triggered by this string. The entity in question must
-        be the one given by the parameter `evals`.
-    qTokens: tuple, optional None
-        A sequence of tokens whose occurrences in the corpus will be looked up.
-    valSelect: dict, optional None
-        If present, the keys are the entity features (`eid` and `kind`),
-        and the values are iterables of values that are allowed.
-
-        The feature values to filter on.
-        The results of searching for `eVals` or `qTokens` are filtered further.
-        If a result is also an instance of an already marked entity,
-        the properties of that entity will be compared feature by feature with
-        the allowed values that `valSelect` specifies for that feature.
-    freeState: boolean, optional None
-        If True, found occurrences may not intersect with already marked up
-        features.
-        If False, found occurrences must intersect with already marked up features.
-    showStats: boolean, optional None
-        Whether to show statistics of the find.
-        If None, it only shows gross totals, if False, it shows nothing,
-        if True, it shows totals by feature.
-
-    Returns
-    -------
-    list of tuples
-        For each bucket that passes the filter, a tuple with the following
-        members is added to the list:
-
-        *   the TF node of the bucket;
-        *   tokens: the tokens of the bucket, each token is a tuple consisting
-            of the TF slot of the token and its string value;
-        *   matches: the match positions of the found occurrences or entity;
-        *   positions: the token positions of where the text of the bucket
-            starts matching the `bFindRe`;
-
-        If `browse` is True, also some stats are passed next to the list
-        of results.
-    &#34;&#34;&#34;
-    if not self.properlySetup:
-        return []
-
-    settings = self.settings
-    bucketType = settings.bucketType
-    features = settings.features
-
-    getTextR = self.getTextR
-    getTokens = self.getTokens
-
-    browse = self.browse
-    setIsX = self.setIsX
-    setData = self.getSetData()
-    entityIndex = setData.entityIndex
-    entityVal = setData.entityVal
-    entitySlotVal = setData.entitySlotVal
-    entitySlotAll = setData.entitySlotAll
-    entitySlotIndex = setData.entitySlotIndex
-
-    if setIsX:
-        sheetData = self.getSheetData()
-        triggerFromMatch = sheetData.triggerFromMatch
-    else:
-        triggerFromMatch = None
-
-    bucketUniverse = (
-        setData.buckets
-        if buckets is None
-        else tuple(sorted(self.checkBuckets(buckets)))
-    )
-    buckets = (
-        bucketUniverse
-        if node is None
-        else tuple(sorted(set(bucketUniverse) &amp; set(self.getContext(node))))
-    )
-
-    nFind = 0
-    nEnt = {feat: collections.Counter() for feat in (&#34;&#34;,) + features}
-    nVisible = {feat: collections.Counter() for feat in (&#34;&#34;,) + features}
-
-    if bFindRe is None:
-        if bFind is not None:
-            (bFind, bFindRe, errorMsg) = findCompile(bFind, bFindC)
-            if errorMsg:
-                self.console(errorMsg, error=True)
-
-    hasEnt = eVals is not None
-    hasQTokens = qTokens is not None and len(qTokens)
-    hasOcc = not hasEnt and hasQTokens
-
-    if hasEnt and eVals in entityVal:
-        eSlots = entityVal[eVals]
-        eStarts = {s[0]: s[-1] for s in eSlots}
-    else:
-        eStarts = {}
-
-    useQTokens = qTokens if hasOcc else None
-
-    requireFree = (
-        True if freeState == &#34;free&#34; else False if freeState == &#34;bound&#34; else None
-    )
-
-    results = []
-
-    for b in buckets:
-        fValStats = {feat: collections.Counter() for feat in features}
-        (fits, result) = entityMatch(
-            entityIndex,
-            eStarts,
-            entitySlotVal,
-            entitySlotAll,
-            entitySlotIndex,
-            triggerFromMatch,
-            getTextR,
-            getTokens,
-            b,
-            bFindRe,
-            anyEnt,
-            eVals,
-            trigger,
-            useQTokens,
-            valSelect,
-            requireFree,
-            fValStats,
-        )
-
-        blocked = fits is not None and not fits
-
-        if not blocked:
-            nFind += 1
-
-        for feat in features:
-            theseStats = fValStats[feat]
-            if len(theseStats):
-                theseNEnt = nEnt[feat]
-                theseNVisible = nVisible[feat]
-
-                for ek, n in theseStats.items():
-                    theseNEnt[ek] += n
-                    if not blocked:
-                        theseNVisible[ek] += n
-
-        nMatches = len(result[1])
-
-        if nMatches:
-            nEnt[&#34;&#34;][None] += nMatches
-            if not blocked:
-                nVisible[&#34;&#34;][None] += nMatches
-
-        if node is None:
-            if fits is not None and not fits:
-                continue
-
-            if (hasEnt or hasQTokens) and nMatches == 0:
-                continue
-
-        results.append((b, *result))
-
-    if browse:
-        return (results, nFind, nVisible, nEnt)
-
-    nResults = len(results)
-
-    if showStats:
-        pluralF = &#34;&#34; if nFind == 1 else &#34;s&#34;
-        self.console(f&#34;{nFind} {bucketType}{pluralF} satisfy the filter&#34;)
-        for feat in (&#34;&#34;,) + (() if anyEnt else features):
-            if feat == &#34;&#34;:
-                self.console(&#34;Combined features match:&#34;)
-                for ek, n in sorted(nEnt[feat].items()):
-                    v = nVisible[feat][ek]
-                    self.console(f&#34;\t{v:&gt;5} of {n:&gt;5} x&#34;)
-            else:
-                self.console(f&#34;Feature {feat}: found the following values:&#34;)
-                for ek, n in sorted(nEnt[feat].items()):
-                    v = nVisible[feat][ek]
-                    self.console(f&#34;\t{v:&gt;5} of {n:&gt;5} x {ek}&#34;)
-    if showStats or showStats is None:
-        pluralR = &#34;&#34; if nResults == 1 else &#34;s&#34;
-        self.console(f&#34;{nResults} {bucketType}{pluralR}&#34;)
-    return results</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.ner.NER.findOccs"><code class="name flex">
 <span>def <span class="ident">findOccs</span></span>(<span>self)</span>
@@ -1920,181 +1940,24 @@ the occurrences of that entity in the corpus.
 A single occurrence is represented as a tuple of slots.</p>
 <p><code>names</code>: keyed by tuples (eid, kind) and then path,
 the value is the name of that entity in the context indicated by path.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/ner.py#L342-L380" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def findOccs(self):
-    &#34;&#34;&#34;Finds the occurrences of multiple triggers.
-
-    This is meant to efficiently list all occurrences of many token
-    sequences in the corpus.
-
-    The triggers are in member `instructions`, which must first
-    be constructed by reading a number of excel files.
-
-    It adds the member `inventory` to the object, which is a dict
-    with subdicts:
-
-    `occurrences`: keyed by tuples (eid, kind), the values are
-    the occurrences of that entity in the corpus.
-    A single occurrence is represented as a tuple of slots.
-
-    `names`: keyed by tuples (eid, kind) and then path,
-    the value is the name of that entity in the context indicated by path.
-
-    &#34;&#34;&#34;
-    if not self.properlySetup:
-        return []
-
-    settings = self.settings
-    spaceEscaped = settings.spaceEscaped
-
-    setData = self.getSetData()
-    getTokens = self.getTokens
-    getHeadings = self.getHeadings
-
-    buckets = setData.buckets or ()
-
-    sheetName = self.sheetName
-    sheetData = self.sheets[sheetName]
-
-    instructions = sheetData.instructions
-    sheetData.inventory = occMatch(
-        getTokens, getHeadings, buckets, instructions, spaceEscaped
-    )</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.ner.NER.reportHits"><code class="name flex">
 <span>def <span class="ident">reportHits</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Reports the inventory.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/ner.py#L637-L731" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def reportHits(self):
-    &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
-    if not self.properlySetup:
-        return
-
-    sheetName = self.sheetName
-    sheetData = self.sheets[sheetName]
-
-    getHeadings = self.getHeadings
-    nameMap = sheetData.nameMap
-    inventory = sheetData.inventory
-    instructions = sheetData.instructions
-
-    setName = self.setName
-    annoDir = self.annoDir
-    setDir = f&#34;{annoDir}/{setName}&#34;
-    reportFile = f&#34;{setDir}/hits.tsv&#34;
-
-    allTriggers = set()
-
-    for path, data in instructions.items():
-        idMap = data[&#34;idMap&#34;]
-        tMap = data[&#34;tMap&#34;]
-
-        for trigger, tPath in tMap.items():
-            eidkind = idMap[trigger]
-            name = nameMap[eidkind][0]
-            allTriggers.add((name, eidkind, trigger, tPath))
-
-    hitData = []
-    names = set()
-    triggersSuccess = 0
-
-    for e in sorted(allTriggers):
-        (name, eidkind, trigger, tPath) = e
-
-        names.add(name)
-
-        sheet = &#34;.&#34;.join(tPath)
-        entry = (name, trigger, sheet)
-        section = &#34;&#34;
-        hits = &#34;&#34;
-
-        entInfo = inventory.get(eidkind, None)
-
-        if entInfo is None:
-            hitData.append((&#34;!E&#34;, *entry, &#34;&#34;, 0))
-            continue
-
-        triggerInfo = entInfo.get(trigger, None)
-
-        if triggerInfo is None:
-            hitData.append((&#34;!T&#34;, *entry, &#34;&#34;, 0))
-            continue
-
-        occs = triggerInfo.get(tPath, None)
-
-        if occs is None:
-            hitData.append((&#34;!P&#34;, *entry, &#34;&#34;, 0))
-            continue
-
-        triggersSuccess += 1
-        sectionInfo = collections.Counter()
-
-        for slots in occs:
-            section = &#34;.&#34;.join(getHeadings(slots[0]))
-            sectionInfo[section] += 1
-
-        for section, hits in sorted(sectionInfo.items()):
-            hitData.append((&#34;OK&#34;, *entry, section, hits))
-
-    with open(reportFile, &#34;w&#34;) as rh:
-        rh.write(&#34;label\tname\ttrigger\tsheet\tsection\thits\n&#34;)
-
-        for h in sorted(hitData):
-            line = &#34;\t&#34;.join(str(c) for c in h)
-            rh.write(f&#34;{line}\n&#34;)
-
-    nEnt = len(names)
-    nTriggers = len(allTriggers)
-    nHits = sum(e[-1] for e in hitData)
-
-    self.console(
-        dedent(
-            f&#34;&#34;&#34;
-            Entities targeted:       {nEnt:&gt;5}
-            Triggers searched for:   {nTriggers:&gt;5}
-            Triggers with hits:      {triggersSuccess:&gt;5}
-            Triggers without hits:   {nTriggers - triggersSuccess:&gt;5}
-            Total hits:              {nHits:&gt;5}
-
-            All hits in report file: {reportFile}
-            &#34;&#34;&#34;
-        )
-    )</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.ner.NER.setTask"><code class="name flex">
 <span>def <span class="ident">setTask</span></span>(<span>self, task)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/ner.py#L337-L340" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def setTask(self, task):
-    self.setSet(task)
-    setIsX = self.setIsX
-    self.setSheet(task[1:] if setIsX else None)</code></pre>
-</details>
 </dd>
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
 <li><code><b><a title="tf.browser.ner.sheets.Sheets" href="sheets.html#tf.browser.ner.sheets.Sheets">Sheets</a></b></code>:
 <ul class="hlist">
-<li><code><a title="tf.browser.ner.sheets.Sheets.fromSourceSheet" href="sheets.html#tf.browser.ner.sheets.Sheets.fromSourceSheet">fromSourceSheet</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.getSheetData" href="sheets.html#tf.browser.ner.sheets.Sheets.getSheetData">getSheetData</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.loadSheetData" href="sheets.html#tf.browser.ner.sheets.Sheets.loadSheetData">loadSheetData</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.readSheets" href="sheets.html#tf.browser.ner.sheets.Sheets.readSheets">readSheets</a></code></li>
@@ -2111,7 +1974,6 @@ the value is the name of that entity in the context indicated by path.</p></div>
 <li><code><a title="tf.browser.ner.sets.Sets.checkBuckets" href="corpus.html#tf.browser.ner.corpus.Corpus.checkBuckets">checkBuckets</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.checkFeature" href="corpus.html#tf.browser.ner.corpus.Corpus.checkFeature">checkFeature</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.console" href="settings.html#tf.browser.ner.settings.Settings.console">console</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.consolidateEntities" href="data.html#tf.browser.ner.data.Data.consolidateEntities">consolidateEntities</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.delEntity" href="data.html#tf.browser.ner.data.Data.delEntity">delEntity</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.delEntityRich" href="data.html#tf.browser.ner.data.Data.delEntityRich">delEntityRich</a></code></li>
 <li><code><a title="tf.browser.ner.sets.Sets.featureDefault" href="corpus.html#tf.browser.ner.corpus.Corpus.featureDefault">featureDefault</a></code></li>
@@ -2252,7 +2114,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

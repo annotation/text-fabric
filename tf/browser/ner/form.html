@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.browser.ner.form API documentation</title>
 <meta name="description" content="Machinery for request reading …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -37,7 +37,7 @@ Also we need defaults for missing and / or empty values.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/form.py#L1-L155" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/browser/ner/form.py#L1-L156" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Machinery for request reading.
 
@@ -48,12 +48,12 @@ Also we need defaults for missing and / or empty values.
 To see how this fits among all the modules of this package, see
 `tf.browser.ner.ner` .
 &#34;&#34;&#34;
-import json
 from urllib.parse import unquote
 
 from flask import request
 
-from ...core.generic import AttrDict, deepAttrDict
+from ...core.files import readJson
+from ...core.generic import AttrDict
 
 
 class Form:
@@ -145,10 +145,11 @@ class Form:
         quoted JSON.
         &#34;&#34;&#34;
         formValue = self.fgets(k)
+
         return (
             AttrDict()
             if formValue == &#34;&#34;
-            else deepAttrDict(json.loads(unquote(formValue)))
+            else readJson(text=unquote(formValue))
         )
 
     def fill(self):
@@ -228,7 +229,7 @@ See <code><a title="tf.browser.ner.request.Request" href="request.html#tf.browse
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/form.py#L18-L155" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/browser/ner/form.py#L18-L156" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Form:
     def __init__(
@@ -319,10 +320,11 @@ See <code><a title="tf.browser.ner.request.Request" href="request.html#tf.browse
         quoted JSON.
         &#34;&#34;&#34;
         formValue = self.fgets(k)
+
         return (
             AttrDict()
             if formValue == &#34;&#34;
-            else deepAttrDict(json.loads(unquote(formValue)))
+            else readJson(text=unquote(formValue))
         )
 
     def fill(self):
@@ -380,48 +382,18 @@ See <code><a title="tf.browser.ner.request.Request" href="request.html#tf.browse
 </code></dt>
 <dd>
 <div class="desc"><p>Makes form value under key <code>k</code> or its default into an boolean.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/form.py#L62-L65" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def fget2(self, k):
-    &#34;&#34;&#34;Makes form value under key `k` or its default into an boolean.&#34;&#34;&#34;
-    defaults = self.defaults
-    return request.form.get(k, defaults.get(k, &#34;x&#34;)) == &#34;v&#34;</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.form.Form.fget3"><code class="name flex">
 <span>def <span class="ident">fget3</span></span>(<span>self, k)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Makes form value under key <code>k</code> or its default into a 3-way boolean.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/form.py#L67-L70" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def fget3(self, k):
-    &#34;&#34;&#34;Makes form value under key `k` or its default into a 3-way boolean.&#34;&#34;&#34;
-    formValue = self.fgets(k)
-    return True if formValue == &#34;v&#34; else False if formValue == &#34;x&#34; else None</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.form.Form.fgeti"><code class="name flex">
 <span>def <span class="ident">fgeti</span></span>(<span>self, k)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Makes form value under key <code>k</code> or its default into an integer.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/form.py#L72-L75" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def fgeti(self, k):
-    &#34;&#34;&#34;Makes form value under key `k` or its default into an integer.&#34;&#34;&#34;
-    formValue = self.fgets(k)
-    return int(formValue) if formValue and formValue.isdecimal() else None</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.form.Form.fgetj"><code class="name flex">
 <span>def <span class="ident">fgetj</span></span>(<span>self, k)</span>
@@ -430,40 +402,12 @@ See <code><a title="tf.browser.ner.request.Request" href="request.html#tf.browse
 <div class="desc"><p>Makes form value under key <code>k</code> or its default into a data structure.</p>
 <p>The data structure is retrieved by interpreting the original string as
 quoted JSON.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/form.py#L100-L111" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def fgetj(self, k):
-    &#34;&#34;&#34;Makes form value under key `k` or its default into a data structure.
-
-    The data structure is retrieved by interpreting the original string as
-    quoted JSON.
-    &#34;&#34;&#34;
-    formValue = self.fgets(k)
-    return (
-        AttrDict()
-        if formValue == &#34;&#34;
-        else deepAttrDict(json.loads(unquote(formValue)))
-    )</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.form.Form.fgets"><code class="name flex">
 <span>def <span class="ident">fgets</span></span>(<span>self, k)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Makes form value under key <code>k</code> or its default into an string.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/form.py#L57-L60" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def fgets(self, k):
-    &#34;&#34;&#34;Makes form value under key `k` or its default into an string.&#34;&#34;&#34;
-    defaults = self.defaults
-    return request.form.get(k, defaults.get(k, &#34;&#34;))</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.form.Form.fgetsi"><code class="name flex">
 <span>def <span class="ident">fgetsi</span></span>(<span>self, k)</span>
@@ -473,25 +417,6 @@ quoted JSON.</p></div>
 <p>The values in the set are integers.
 The values are retrieved by splitting the original string value on <code>,</code> .
 Parts that do not form valid integers are skipped.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/form.py#L86-L98" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def fgetsi(self, k):
-    &#34;&#34;&#34;Makes form value under key `k` or its default into a set.
-
-    The values in the set are integers.
-    The values are retrieved by splitting the original string value on `,` .
-    Parts that do not form valid integers are skipped.
-    &#34;&#34;&#34;
-    formValue = self.fgets(k)
-    return (
-        {int(i) for s in formValue.split(&#34;,&#34;) if (i := s.strip()).isdecimal()}
-        if formValue
-        else set()
-    )</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.form.Form.fgettu"><code class="name flex">
 <span>def <span class="ident">fgettu</span></span>(<span>self, k)</span>
@@ -500,20 +425,6 @@ Parts that do not form valid integers are skipped.</p></div>
 <div class="desc"><p>Makes form value under key <code>k</code> or its default into a tuple.</p>
 <p>The values in the tuples are strings.
 The values are retrieved by splitting the original string value on <code>⊙</code> .</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/form.py#L77-L84" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def fgettu(self, k):
-    &#34;&#34;&#34;Makes form value under key `k` or its default into a tuple.
-
-    The values in the tuples are strings.
-    The values are retrieved by splitting the original string value on `⊙` .
-    &#34;&#34;&#34;
-    formValue = self.fgets(k)
-    return tuple(formValue.split(&#34;⊙&#34;)) if formValue else None</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.form.Form.fill"><code class="name flex">
 <span>def <span class="ident">fill</span></span>(<span>self)</span>
@@ -527,55 +438,6 @@ are the logical values derived from them by the methods in this class.</p>
 <dt><code>dict</code></dt>
 <dd>The filled in form.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/form.py#L113-L155" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def fill(self):
-    &#34;&#34;&#34;Fill a dictionary with interpreted form values.
-
-    The input data is the request data from Flask, the output data
-    are the logical values derived from them by the methods in this class.
-
-    Returns
-    -------
-    dict
-        The filled in form.
-    &#34;&#34;&#34;
-    keysStr = self.keysStr
-    keysBool = self.keysBool
-    keysTri = self.keysTri
-    keysInt = self.keysInt
-    keysTup = self.keysTup
-    keysSetInt = self.keysSetInt
-    keysJson = self.keysJson
-
-    form = AttrDict()
-
-    for k in keysStr:
-        form[k] = self.fgets(k)
-
-    for k in keysBool:
-        form[k] = self.fget2(k)
-
-    for k in keysTri:
-        form[k] = self.fget3(k)
-
-    for k in keysInt:
-        form[k] = self.fgeti(k)
-
-    for k in keysTup:
-        form[k] = self.fgettu(k)
-
-    for k in keysSetInt:
-        form[k] = self.fgetsi(k)
-
-    for k in keysJson:
-        form[k] = self.fgetj(k)
-
-    return form</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -667,7 +529,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

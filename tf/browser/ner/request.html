@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.browser.ner.request API documentation</title>
 <meta name="description" content="Auxiliary functions for managing request data …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -34,7 +34,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/request.py#L1-L311" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/browser/ner/request.py#L1-L311" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Auxiliary functions for managing request data.
 
@@ -384,7 +384,7 @@ several related keys in the form as a dictionary value under a new key.</p></div
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/request.py#L14-L311" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/browser/ner/request.py#L14-L311" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Request(Form):
     def __init__(self):
@@ -708,54 +708,6 @@ may have become obsolete or inconvenient for further actions.</p>
 <dt><strong><code>v</code></strong> :&ensp;<code>dict</code></dt>
 <dd>Contains the intermediate results of computing the new page.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/request.py#L247-L288" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def adaptValSelect(self):
-    &#34;&#34;&#34;Adapts the values contained in `valSelect` after a modification action.
-
-    After the addition or deletion of an entity, the values contained in `valSelect`
-    may have become obsolete or inconvenient for further actions.
-
-    This function adapts those values before having them rendered on the page.
-
-    Parameters
-    ----------
-    v: dict
-        Contains the intermediate results of computing the new page.
-    &#34;&#34;&#34;
-    v = self.v
-    ner = self.ner
-    settings = ner.settings
-    features = settings.features
-
-    submitter = v.submitter
-    valSelect = v.valselect
-
-    if submitter == &#34;addgo&#34;:
-        addData = v.adddata
-        additions = addData.additions
-        freeVals = addData.freeVals
-
-        freeState = v.freestate
-
-        for i, (feat, values) in enumerate(zip(features, additions)):
-            for val in values:
-                valSelect.setdefault(feat, set()).add(val)
-                if val == freeVals[i]:
-                    freeVals[i] = None
-
-        if freeState == &#34;free&#34;:
-            v.freestate = &#34;all&#34;
-
-    elif submitter == &#34;delgo&#34;:
-        for feat in features:
-            valSelect.setdefault(feat, set()).add(NONE)
-
-    v.submitter = &#34;&#34;</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.request.Request.findSetup"><code class="name flex">
 <span>def <span class="ident">findSetup</span></span>(<span>self)</span>
@@ -769,34 +721,6 @@ If there are errors in the pattern they will be reported.
 Whether or not the search is case sensitive or not is under user control,
 and it will influence the compilation of the pattern.</p>
 <p>All input and output data is in <code>v</code> .</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/request.py#L290-L311" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def findSetup(self):
-    &#34;&#34;&#34;Compiles the filter pattern into a regular expression.
-
-    When the user enters a search pattern in the box meant to filter the buckets,
-    the pattern will be interpreted as a regular expression.
-
-    We do the compilation here.
-    If there are errors in the pattern they will be reported.
-    Whether or not the search is case sensitive or not is under user control,
-    and it will influence the compilation of the pattern.
-
-    All input and output data is in `v` .
-    &#34;&#34;&#34;
-    v = self.v
-    bFind = v.bfind
-    bFindC = v.bfindc
-
-    (bFind, bFindRe, errorMsg) = findCompile(bFind, bFindC)
-
-    v.bfind = bFind
-    v.bfindre = bFindRe
-    v.errormsg = errorMsg</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.request.Request.getFormData"><code class="name flex">
 <span>def <span class="ident">getFormData</span></span>(<span>self)</span>
@@ -818,74 +742,6 @@ to each feature.</p>
 <p>The idea is that when the user is still engaged in filtering buckets,
 and there is an occurrence selected, the user should have the option
 to sub-select occurrences that do not yet have an entity assigned.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/request.py#L143-L204" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def getFormData(self):
-    &#34;&#34;&#34;Get form data.
-
-    The TF browser user interacts with the app by clicking and typing,
-    as a result of which a HTML form gets filled in.
-    This form as regularly submitted to the server with a request
-    for a new incarnation of the page: a response.
-
-    The values that come with a request, must be peeled out of the form,
-    and stored as logical values.
-
-    Additionally, some business logic is carried out:
-    we set values for the entity features, based on the form, especially the
-    keys ending in `_active`. We build a value under key `valselect`
-    based on the value for key `submitter`.
-    Depending on which button caused the submit, the NONE value is added
-    to each feature.
-
-    The idea is that when the user is still engaged in filtering buckets,
-    and there is an occurrence selected, the user should have the option
-    to sub-select occurrences that do not yet have an entity assigned.
-    &#34;&#34;&#34;
-    ner = self.ner
-    settings = ner.settings
-    features = settings.features
-    formattingState = self.formattingState
-    activeVal = self.activeVal
-    valSelectProto = self.valSelectProto
-
-    form = self.fill()
-
-    form.formattingstate = {
-        feat: self.fget2(featStr) for (feat, featStr) in formattingState.items()
-    }
-
-    form.activeval = {
-        feat: self.fgets(featStr) for (feat, featStr) in activeVal.items()
-    }
-
-    valSelectProto = {
-        feat: self.fgets(featStr) for (feat, featStr) in valSelectProto.items()
-    }
-
-    submitter = form.submitter
-
-    valSelect = {}
-
-    startSearch = submitter in {&#34;lookupq&#34;, &#34;lookupn&#34;, &#34;freebutton&#34;}
-
-    for feat in features:
-        valProto = valSelectProto[feat]
-        valSelect[feat] = (
-            set(&#34;&#34; if x == EMPTY else x for x in valProto.split(&#34;,&#34;))
-            if valProto
-            else set()
-        )
-        if startSearch:
-            valSelect[feat].add(NONE)
-
-    form.valselect = valSelect
-
-    return form</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.request.Request.initVars"><code class="name flex">
 <span>def <span class="ident">initVars</span></span>(<span>self)</span>
@@ -900,52 +756,6 @@ the request and filling in the final HTML template find a place under
 some key in the <code>v</code> dict which is stored in <code>self</code>.</p>
 <p>So, this function makes the transition from information that is in the
 <code>form</code> dictionary to values that are stored in the <code>v</code> dictionary.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/request.py#L206-L245" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def initVars(self):
-    &#34;&#34;&#34;Initializes the computation of the new page.
-
-    It collects the request data, gleans some info from the configuration
-    settings and the TF app, and initializes some data structures that
-    will collect further information for the page.
-
-    All bits and pieces that are needed during processing
-    the request and filling in the final HTML template find a place under
-    some key in the `v` dict which is stored in `self`.
-
-    So, this function makes the transition from information that is in the
-    `form` dictionary to values that are stored in the `v` dictionary.
-    &#34;&#34;&#34;
-    ner = self.ner
-    settings = ner.settings
-    bucketType = settings.bucketType
-    features = settings.features
-
-    appName = ner.appName
-    appName = appName.replace(&#34;/&#34;, &#34; / &#34;)
-    slotType = ner.slotType
-
-    form = self.getFormData()
-    resetForm = form.resetForm
-
-    v = AttrDict()
-    v.toolkey = TOOLKEY
-    v.buckettype = bucketType
-    v.featurelist = &#34;,&#34;.join(features)
-
-    for k, vl in form.items():
-        if not resetForm or k not in v:
-            v[k] = vl
-
-    v.appname = appName
-    v.slottype = slotType
-    v.resetform = &#34;&#34;
-
-    self.v = v</code></pre>
-</details>
 </dd>
 </dl>
 <h3>Inherited members</h3>
@@ -1048,7 +858,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.browser.ner.data API documentation</title>
 <meta name="description" content="Annotation data module …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -43,7 +43,7 @@ processed if they are needed and out of date.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L1-L1085" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/browser/ner/data.py#L1-L937" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Annotation data module.
 
@@ -65,21 +65,16 @@ processed if they are needed and out of date.
 &#34;&#34;&#34;
 
 import collections
-from itertools import chain
 import time
 
 from ...core.generic import AttrDict
+from ...core.helpers import console
 from ...core.files import (
     fileOpen,
     mTime,
-    dirNm,
-    dirExists,
-    dirRemove,
     fileExists,
     initTree,
-    APP_CONFIG,
 )
-from ...dataset import modify
 from .corpus import Corpus
 
 
@@ -398,7 +393,7 @@ class Data(Corpus):
 
             setData.dateProcessed = time.time()
 
-    def delEntity(self, vals, allMatches=None, silent=True):
+    def delEntity(self, vals, allMatches=None, returns=True):
         &#34;&#34;&#34;Delete entity occurrences from the current set.
 
         This operation is not allowed if the current set is the read-only set with the
@@ -420,14 +415,14 @@ class Data(Corpus):
             A number of slot tuples. They are the locations from which the candidate
             entities will be deleted.
             If it is None, the entity candidates will be removed wherever they occur.
-        silent: boolean, optional False
+        returns: boolean, optional False
             Reports how many entities have been deleted and how many were not present
             in the specified locations.
 
         Returns
         -------
         (int, int) or void
-            If `silent`, it returns the number of non-existing entities that were
+            If `returns`, it returns the number of non-existing entities that were
             asked to be deleted and the number of actually deleted entities.
 
             If the operation is not allowed, both integers above are set to -1.
@@ -439,9 +434,9 @@ class Data(Corpus):
         setNameRep = self.setNameRep
 
         if setIsRo:
-            if silent:
+            if returns:
                 return (-1, -1)
-            self.console(f&#34;Entity deletion not allowed on {setNameRep}&#34;, error=True)
+            console(f&#34;Entity deletion not allowed on {setNameRep}&#34;, error=True)
             return
 
         setData = self.getSetData()
@@ -474,7 +469,7 @@ class Data(Corpus):
 
         self.loadSetData()
 
-        if silent:
+        if returns:
             return (missing, deleted)
 
         self.console(f&#34;Not present: {missing:&gt;5} x&#34;)
@@ -524,7 +519,7 @@ class Data(Corpus):
             if browse:
                 return [[msg]]
             else:
-                self.console(msg, error=True)
+                console(msg, error=True)
                 return
 
         settings = self.settings
@@ -595,6 +590,7 @@ class Data(Corpus):
 
         self.loadSetData()
         (stats, *rest) = report
+
         if type(stats) is list:
             self.console(&#34;\n&#34;.join(stats))
         else:
@@ -606,7 +602,7 @@ class Data(Corpus):
         if len(rest):
             self.console(&#34;\n&#34;.join(rest))
 
-    def addEntity(self, vals, allMatches, silent=True):
+    def addEntity(self, vals, allMatches, returns=True):
         &#34;&#34;&#34;Add entity occurrences to the current set.
 
         This operation is not allowed if the current set is the read-only set with the
@@ -626,14 +622,14 @@ class Data(Corpus):
         allMatches: iterable of tuple of int
             A number of slot tuples. They are the locations where the entities will be
             added.
-        silent: boolean, optional False
+        returns: boolean, optional False
             Reports how many entities have been added and how many were already present
             in the specified locations.
 
         Returns
         -------
         (int, int) or void
-            If `silent`, it returns the number of already existing entities that were
+            If `returns`, it returns the number of already existing entities that were
             asked to be deleted and the number of actually deleted entities.
 
             If the operation is not allowed, both integers above are set to -1.
@@ -645,9 +641,9 @@ class Data(Corpus):
         setIsRo = self.setIsRo
 
         if setIsRo:
-            if silent:
+            if returns:
                 return (-1, -1)
-            self.console(f&#34;Entity addition not allowed on {setNameRep}&#34;, error=True)
+            console(f&#34;Entity addition not allowed on {setNameRep}&#34;, error=True)
             return
 
         setData = self.getSetData()
@@ -680,13 +676,13 @@ class Data(Corpus):
 
         self.loadSetData()
 
-        if silent:
+        if returns:
             return (present, added)
 
         self.console(f&#34;Already present: {present:&gt;5} x&#34;)
         self.console(f&#34;Added:           {added:&gt;5} x&#34;)
 
-    def addEntities(self, newEntities, silent=True, _lowlevel=False):
+    def addEntities(self, newEntities, returns=True, _lowlevel=False):
         &#34;&#34;&#34;Add multiple entities efficiently to the current set.
 
         This operation is not allowed if the current set is the read-only set with the
@@ -705,14 +701,14 @@ class Data(Corpus):
             *   a tuple of entity feature values, specifying the entity to add
             *   a list of slot tuples, specifying where to add this entity
 
-        silent: boolean, optional False
+        returns: boolean, optional False
             Reports how many entities have been added and how many were already present
             in the specified locations.
 
         Returns
         -------
         (int, int) or void
-            If `silent`, it returns the number of already existing entities that were
+            If `returns`, it returns the number of already existing entities that were
             asked to be deleted and the number of actually deleted entities.
 
             If the operation is not allowed, both integers above are set to -1.
@@ -725,9 +721,9 @@ class Data(Corpus):
         setIsX = self.setIsX
 
         if not _lowlevel and setIsRo:
-            if silent:
+            if returns:
                 return (-1, -1)
-            self.console(f&#34;Entities addition not allowed on {setNameRep}&#34;, error=True)
+            console(f&#34;Entities addition not allowed on {setNameRep}&#34;, error=True)
             return
 
         if _lowlevel and not setIsX:
@@ -756,7 +752,7 @@ class Data(Corpus):
             self.mergeEntities(addE, _lowlevel=_lowlevel)
 
         self.loadSetData()
-        if silent:
+        if returns:
             return (present, added)
 
         if _lowlevel:
@@ -809,7 +805,7 @@ class Data(Corpus):
             if browse:
                 return [[msg]]
             else:
-                self.console(msg, error=True)
+                console(msg, error=True)
                 return
 
         settings = self.settings
@@ -821,7 +817,7 @@ class Data(Corpus):
 
         report = []
 
-        addEntities = set()
+        addEnts = set()
 
         additions = tuple([x] if type(x) is str else x for x in additions)
 
@@ -856,8 +852,8 @@ class Data(Corpus):
                         if fVals in existing:
                             continue
                         info = (fVals, slots)
-                        if info not in addEntities:
-                            addEntities.add(info)
+                        if info not in addEnts:
+                            addEnts.add(info)
                             stats[fVals] += 1
 
             report.append(
@@ -866,8 +862,8 @@ class Data(Corpus):
             if excl:
                 report.append(f&#34;Addition: occurrences excluded: {excl}&#34;)
 
-        if len(addEntities):
-            self.mergeEntities(addEntities)
+        if len(addEnts):
+            self.mergeEntities(addEnts)
 
         if browse:
             return report
@@ -905,7 +901,7 @@ class Data(Corpus):
         setIsRo = self.setIsRo
 
         if setIsRo:
-            self.console(f&#34;Entity weeding not allowed on {setNameRep}&#34;, error=True)
+            console(f&#34;Entity weeding not allowed on {setNameRep}&#34;, error=True)
             return
 
         settings = self.settings
@@ -952,7 +948,7 @@ class Data(Corpus):
         setIsX = self.setIsX
 
         if not _lowlevel and setIsRo:
-            self.console(f&#34;Entity merging not allowed on {setNameRep}&#34;, error=True)
+            console(f&#34;Entity merging not allowed on {setNameRep}&#34;, error=True)
             return
 
         if _lowlevel and not setIsX:
@@ -985,151 +981,7 @@ class Data(Corpus):
 
         with fileOpen(dataFile, mode=&#34;a&#34;) as fh:
             for fVals, slots in entities.values():
-                fh.write(&#34;\t&#34;.join(str(x) for x in (*fVals, *slots)) + &#34;\n&#34;)
-
-    def consolidateEntities(self, versionExtension):
-        &#34;&#34;&#34;Consolidates the current entities as nodes into a new TF data source.
-
-        This operation is not allowed if the current set is the read-only set with the
-        empty name, because these entities are already present as nodes in the
-        TF dataset.
-
-        Parameters
-        ----------
-        versionExtension: string
-            The new dataset gets a version like the original dataset, but extended
-            with this string.
-        &#34;&#34;&#34;
-        if not self.properlySetup:
-            return
-
-        setNameRep = self.setNameRep
-        setIsRo = self.setIsRo
-
-        if setIsRo:
-            self.console(
-                f&#34;Entity consolidation not meaningful on {setNameRep}&#34;, error=True
-            )
-            return False
-
-        version = self.version
-        settings = self.settings
-        features = settings.features
-        featureMeta = settings.featureMeta
-        setData = self.getSetData()
-
-        # Data preparation for the modify function
-
-        entityOccs = sorted(set(setData.entities.values()))
-        self.console(
-            f&#34;Entity consolidation for {len(entityOccs)} entity occurrences &#34;
-            f&#34;into version {version}{versionExtension}&#34;
-        )
-
-        slotLink = {}
-        nodeFeatures = AttrDict({feat: {} for feat in features})
-        edgeFeatures = AttrDict(eoccs={})
-        entities = {}
-
-        n = 0
-
-        for fVals, slots in entityOccs:
-            n += 1
-            slotLink[n] = slots
-
-            for feat, fVal in zip(features, fVals):
-                nodeFeatures[feat][n] = fVal
-
-            entities.setdefault(fVals, []).append(n)
-
-        nEntityOccs = len(entityOccs)
-        occEdge = edgeFeatures.eoccs
-
-        for fVals, occs in entities.items():
-            n += 1
-            occEdge[n] = set(occs)
-            slotLink[n] = tuple(chain.from_iterable(slotLink[m] for m in occs))
-
-            for feat, fVal in zip(features, fVals):
-                nodeFeatures[feat][n] = fVal
-
-        nEntities = len(entities)
-
-        self.console(f&#34;{nEntityOccs:&gt;6} entity occurrences&#34;)
-        self.console(f&#34;{nEntities:&gt;6} distinct entities&#34;)
-
-        featureMeta.eoccs = dict(
-            valueType=&#34;str&#34;,
-            description=&#34;from entity nodes to their occurrence nodes&#34;,
-        )
-
-        addTypes = dict(
-            ent=dict(
-                nodeFrom=1,
-                nodeTo=nEntityOccs,
-                nodeSlots=slotLink,
-                nodeFeatures=nodeFeatures,
-            ),
-            entity=dict(
-                nodeFrom=nEntityOccs + 1,
-                nodeTo=nEntityOccs + nEntities,
-                nodeSlots=slotLink,
-                nodeFeatures=nodeFeatures,
-                edgeFeatures=edgeFeatures,
-            ),
-        )
-        self.featureMeta = featureMeta
-
-        # Call the modify function
-
-        app = self.app
-        context = app.context
-        appPath = context.appPath
-        relative = context.relative
-        dataPath = f&#34;{dirNm(appPath)}/{relative}&#34;
-
-        origTf = f&#34;{dataPath}/{app.version}&#34;
-        newTf = f&#34;{origTf}{versionExtension}&#34;
-        newVersion = f&#34;{app.version}{versionExtension}&#34;
-
-        if dirExists(newTf):
-            dirRemove(newTf)
-
-        app.indent(reset=True)
-        app.info(&#34;Creating a dataset with entity nodes ...&#34;)
-
-        good = modify(
-            origTf,
-            newTf,
-            targetVersion=newVersion,
-            addTypes=addTypes,
-            featureMeta=featureMeta,
-            silent=True,
-        )
-
-        app.info(&#34;Done&#34;)
-
-        if not good:
-            return False
-
-        self.console(f&#34;The dataset with entities is now in version {newVersion}&#34;)
-
-        # tweak the app
-
-        config = f&#34;{appPath}/{APP_CONFIG}&#34;
-
-        with open(config) as fh:
-            text = fh.read()
-
-        text = text.replace(f&#39;version: {version}&#39;, f&#39;version: &#34;{newVersion}&#34;&#39;)
-        text = text.replace(f&#39;version: &#34;{version}&#34;&#39;, f&#39;version: &#34;{newVersion}&#34;&#39;)
-
-        with open(config, mode=&#34;w&#34;) as fh:
-            fh.write(text)
-
-        self.console(&#34;The dataset with entities is now the standard version&#34;)
-
-        return True</code></pre>
+                fh.write(&#34;\t&#34;.join(str(x) for x in (*fVals, *slots)) + &#34;\n&#34;)</code></pre>
 </details>
 </section>
 <section>
@@ -1172,7 +1024,7 @@ it to the initializer here.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L39-L1085" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/browser/ner/data.py#L34-L937" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Data(Corpus):
     def __init__(self, sets=None):
@@ -1489,7 +1341,7 @@ it to the initializer here.</p>
 
             setData.dateProcessed = time.time()
 
-    def delEntity(self, vals, allMatches=None, silent=True):
+    def delEntity(self, vals, allMatches=None, returns=True):
         &#34;&#34;&#34;Delete entity occurrences from the current set.
 
         This operation is not allowed if the current set is the read-only set with the
@@ -1511,14 +1363,14 @@ it to the initializer here.</p>
             A number of slot tuples. They are the locations from which the candidate
             entities will be deleted.
             If it is None, the entity candidates will be removed wherever they occur.
-        silent: boolean, optional False
+        returns: boolean, optional False
             Reports how many entities have been deleted and how many were not present
             in the specified locations.
 
         Returns
         -------
         (int, int) or void
-            If `silent`, it returns the number of non-existing entities that were
+            If `returns`, it returns the number of non-existing entities that were
             asked to be deleted and the number of actually deleted entities.
 
             If the operation is not allowed, both integers above are set to -1.
@@ -1530,9 +1382,9 @@ it to the initializer here.</p>
         setNameRep = self.setNameRep
 
         if setIsRo:
-            if silent:
+            if returns:
                 return (-1, -1)
-            self.console(f&#34;Entity deletion not allowed on {setNameRep}&#34;, error=True)
+            console(f&#34;Entity deletion not allowed on {setNameRep}&#34;, error=True)
             return
 
         setData = self.getSetData()
@@ -1565,7 +1417,7 @@ it to the initializer here.</p>
 
         self.loadSetData()
 
-        if silent:
+        if returns:
             return (missing, deleted)
 
         self.console(f&#34;Not present: {missing:&gt;5} x&#34;)
@@ -1615,7 +1467,7 @@ it to the initializer here.</p>
             if browse:
                 return [[msg]]
             else:
-                self.console(msg, error=True)
+                console(msg, error=True)
                 return
 
         settings = self.settings
@@ -1686,6 +1538,7 @@ it to the initializer here.</p>
 
         self.loadSetData()
         (stats, *rest) = report
+
         if type(stats) is list:
             self.console(&#34;\n&#34;.join(stats))
         else:
@@ -1697,7 +1550,7 @@ it to the initializer here.</p>
         if len(rest):
             self.console(&#34;\n&#34;.join(rest))
 
-    def addEntity(self, vals, allMatches, silent=True):
+    def addEntity(self, vals, allMatches, returns=True):
         &#34;&#34;&#34;Add entity occurrences to the current set.
 
         This operation is not allowed if the current set is the read-only set with the
@@ -1717,14 +1570,14 @@ it to the initializer here.</p>
         allMatches: iterable of tuple of int
             A number of slot tuples. They are the locations where the entities will be
             added.
-        silent: boolean, optional False
+        returns: boolean, optional False
             Reports how many entities have been added and how many were already present
             in the specified locations.
 
         Returns
         -------
         (int, int) or void
-            If `silent`, it returns the number of already existing entities that were
+            If `returns`, it returns the number of already existing entities that were
             asked to be deleted and the number of actually deleted entities.
 
             If the operation is not allowed, both integers above are set to -1.
@@ -1736,9 +1589,9 @@ it to the initializer here.</p>
         setIsRo = self.setIsRo
 
         if setIsRo:
-            if silent:
+            if returns:
                 return (-1, -1)
-            self.console(f&#34;Entity addition not allowed on {setNameRep}&#34;, error=True)
+            console(f&#34;Entity addition not allowed on {setNameRep}&#34;, error=True)
             return
 
         setData = self.getSetData()
@@ -1771,13 +1624,13 @@ it to the initializer here.</p>
 
         self.loadSetData()
 
-        if silent:
+        if returns:
             return (present, added)
 
         self.console(f&#34;Already present: {present:&gt;5} x&#34;)
         self.console(f&#34;Added:           {added:&gt;5} x&#34;)
 
-    def addEntities(self, newEntities, silent=True, _lowlevel=False):
+    def addEntities(self, newEntities, returns=True, _lowlevel=False):
         &#34;&#34;&#34;Add multiple entities efficiently to the current set.
 
         This operation is not allowed if the current set is the read-only set with the
@@ -1796,14 +1649,14 @@ it to the initializer here.</p>
             *   a tuple of entity feature values, specifying the entity to add
             *   a list of slot tuples, specifying where to add this entity
 
-        silent: boolean, optional False
+        returns: boolean, optional False
             Reports how many entities have been added and how many were already present
             in the specified locations.
 
         Returns
         -------
         (int, int) or void
-            If `silent`, it returns the number of already existing entities that were
+            If `returns`, it returns the number of already existing entities that were
             asked to be deleted and the number of actually deleted entities.
 
             If the operation is not allowed, both integers above are set to -1.
@@ -1816,9 +1669,9 @@ it to the initializer here.</p>
         setIsX = self.setIsX
 
         if not _lowlevel and setIsRo:
-            if silent:
+            if returns:
                 return (-1, -1)
-            self.console(f&#34;Entities addition not allowed on {setNameRep}&#34;, error=True)
+            console(f&#34;Entities addition not allowed on {setNameRep}&#34;, error=True)
             return
 
         if _lowlevel and not setIsX:
@@ -1847,7 +1700,7 @@ it to the initializer here.</p>
             self.mergeEntities(addE, _lowlevel=_lowlevel)
 
         self.loadSetData()
-        if silent:
+        if returns:
             return (present, added)
 
         if _lowlevel:
@@ -1900,7 +1753,7 @@ it to the initializer here.</p>
             if browse:
                 return [[msg]]
             else:
-                self.console(msg, error=True)
+                console(msg, error=True)
                 return
 
         settings = self.settings
@@ -1912,7 +1765,7 @@ it to the initializer here.</p>
 
         report = []
 
-        addEntities = set()
+        addEnts = set()
 
         additions = tuple([x] if type(x) is str else x for x in additions)
 
@@ -1947,8 +1800,8 @@ it to the initializer here.</p>
                         if fVals in existing:
                             continue
                         info = (fVals, slots)
-                        if info not in addEntities:
-                            addEntities.add(info)
+                        if info not in addEnts:
+                            addEnts.add(info)
                             stats[fVals] += 1
 
             report.append(
@@ -1957,8 +1810,8 @@ it to the initializer here.</p>
             if excl:
                 report.append(f&#34;Addition: occurrences excluded: {excl}&#34;)
 
-        if len(addEntities):
-            self.mergeEntities(addEntities)
+        if len(addEnts):
+            self.mergeEntities(addEnts)
 
         if browse:
             return report
@@ -1996,7 +1849,7 @@ it to the initializer here.</p>
         setIsRo = self.setIsRo
 
         if setIsRo:
-            self.console(f&#34;Entity weeding not allowed on {setNameRep}&#34;, error=True)
+            console(f&#34;Entity weeding not allowed on {setNameRep}&#34;, error=True)
             return
 
         settings = self.settings
@@ -2043,7 +1896,7 @@ it to the initializer here.</p>
         setIsX = self.setIsX
 
         if not _lowlevel and setIsRo:
-            self.console(f&#34;Entity merging not allowed on {setNameRep}&#34;, error=True)
+            console(f&#34;Entity merging not allowed on {setNameRep}&#34;, error=True)
             return
 
         if _lowlevel and not setIsX:
@@ -2076,151 +1929,7 @@ it to the initializer here.</p>
 
         with fileOpen(dataFile, mode=&#34;a&#34;) as fh:
             for fVals, slots in entities.values():
-                fh.write(&#34;\t&#34;.join(str(x) for x in (*fVals, *slots)) + &#34;\n&#34;)
-
-    def consolidateEntities(self, versionExtension):
-        &#34;&#34;&#34;Consolidates the current entities as nodes into a new TF data source.
-
-        This operation is not allowed if the current set is the read-only set with the
-        empty name, because these entities are already present as nodes in the
-        TF dataset.
-
-        Parameters
-        ----------
-        versionExtension: string
-            The new dataset gets a version like the original dataset, but extended
-            with this string.
-        &#34;&#34;&#34;
-        if not self.properlySetup:
-            return
-
-        setNameRep = self.setNameRep
-        setIsRo = self.setIsRo
-
-        if setIsRo:
-            self.console(
-                f&#34;Entity consolidation not meaningful on {setNameRep}&#34;, error=True
-            )
-            return False
-
-        version = self.version
-        settings = self.settings
-        features = settings.features
-        featureMeta = settings.featureMeta
-        setData = self.getSetData()
-
-        # Data preparation for the modify function
-
-        entityOccs = sorted(set(setData.entities.values()))
-        self.console(
-            f&#34;Entity consolidation for {len(entityOccs)} entity occurrences &#34;
-            f&#34;into version {version}{versionExtension}&#34;
-        )
-
-        slotLink = {}
-        nodeFeatures = AttrDict({feat: {} for feat in features})
-        edgeFeatures = AttrDict(eoccs={})
-        entities = {}
-
-        n = 0
-
-        for fVals, slots in entityOccs:
-            n += 1
-            slotLink[n] = slots
-
-            for feat, fVal in zip(features, fVals):
-                nodeFeatures[feat][n] = fVal
-
-            entities.setdefault(fVals, []).append(n)
-
-        nEntityOccs = len(entityOccs)
-        occEdge = edgeFeatures.eoccs
-
-        for fVals, occs in entities.items():
-            n += 1
-            occEdge[n] = set(occs)
-            slotLink[n] = tuple(chain.from_iterable(slotLink[m] for m in occs))
-
-            for feat, fVal in zip(features, fVals):
-                nodeFeatures[feat][n] = fVal
-
-        nEntities = len(entities)
-
-        self.console(f&#34;{nEntityOccs:&gt;6} entity occurrences&#34;)
-        self.console(f&#34;{nEntities:&gt;6} distinct entities&#34;)
-
-        featureMeta.eoccs = dict(
-            valueType=&#34;str&#34;,
-            description=&#34;from entity nodes to their occurrence nodes&#34;,
-        )
-
-        addTypes = dict(
-            ent=dict(
-                nodeFrom=1,
-                nodeTo=nEntityOccs,
-                nodeSlots=slotLink,
-                nodeFeatures=nodeFeatures,
-            ),
-            entity=dict(
-                nodeFrom=nEntityOccs + 1,
-                nodeTo=nEntityOccs + nEntities,
-                nodeSlots=slotLink,
-                nodeFeatures=nodeFeatures,
-                edgeFeatures=edgeFeatures,
-            ),
-        )
-        self.featureMeta = featureMeta
-
-        # Call the modify function
-
-        app = self.app
-        context = app.context
-        appPath = context.appPath
-        relative = context.relative
-        dataPath = f&#34;{dirNm(appPath)}/{relative}&#34;
-
-        origTf = f&#34;{dataPath}/{app.version}&#34;
-        newTf = f&#34;{origTf}{versionExtension}&#34;
-        newVersion = f&#34;{app.version}{versionExtension}&#34;
-
-        if dirExists(newTf):
-            dirRemove(newTf)
-
-        app.indent(reset=True)
-        app.info(&#34;Creating a dataset with entity nodes ...&#34;)
-
-        good = modify(
-            origTf,
-            newTf,
-            targetVersion=newVersion,
-            addTypes=addTypes,
-            featureMeta=featureMeta,
-            silent=True,
-        )
-
-        app.info(&#34;Done&#34;)
-
-        if not good:
-            return False
-
-        self.console(f&#34;The dataset with entities is now in version {newVersion}&#34;)
-
-        # tweak the app
-
-        config = f&#34;{appPath}/{APP_CONFIG}&#34;
-
-        with open(config) as fh:
-            text = fh.read()
-
-        text = text.replace(f&#39;version: {version}&#39;, f&#39;version: &#34;{newVersion}&#34;&#39;)
-        text = text.replace(f&#39;version: &#34;{version}&#34;&#39;, f&#39;version: &#34;{newVersion}&#34;&#39;)
-
-        with open(config, mode=&#34;w&#34;) as fh:
-            fh.write(text)
-
-        self.console(&#34;The dataset with entities is now the standard version&#34;)
-
-        return True</code></pre>
+                fh.write(&#34;\t&#34;.join(str(x) for x in (*fVals, *slots)) + &#34;\n&#34;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -2234,7 +1943,7 @@ it to the initializer here.</p>
 <h3>Methods</h3>
 <dl>
 <dt id="tf.browser.ner.data.Data.addEntities"><code class="name flex">
-<span>def <span class="ident">addEntities</span></span>(<span>self, newEntities, silent=True)</span>
+<span>def <span class="ident">addEntities</span></span>(<span>self, newEntities, returns=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Add multiple entities efficiently to the current set.</p>
@@ -2253,103 +1962,19 @@ the corpus to find them.</p>
 <li>a list of slot tuples, specifying where to add this entity</li>
 </ul>
 </dd>
-<dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dt><strong><code>returns</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>Reports how many entities have been added and how many were already present
 in the specified locations.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <p>(int, int) or void
-If <code>silent</code>, it returns the number of already existing entities that were
+If <code>returns</code>, it returns the number of already existing entities that were
 asked to be deleted and the number of actually deleted entities.</p>
 <pre><code>If the operation is not allowed, both integers above are set to -1.
 </code></pre></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L642-L719" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def addEntities(self, newEntities, silent=True, _lowlevel=False):
-    &#34;&#34;&#34;Add multiple entities efficiently to the current set.
-
-    This operation is not allowed if the current set is the read-only set with the
-    empty name.
-
-    If you have multiple entities to add, it is wasteful to do multiple passes over
-    the corpus to find them.
-
-    This method does them all in one fell swoop.
-
-    Parameters
-    ----------
-    newEntites: iterable of tuples of tuples
-        each new entity consists of
-
-        *   a tuple of entity feature values, specifying the entity to add
-        *   a list of slot tuples, specifying where to add this entity
-
-    silent: boolean, optional False
-        Reports how many entities have been added and how many were already present
-        in the specified locations.
-
-    Returns
-    -------
-    (int, int) or void
-        If `silent`, it returns the number of already existing entities that were
-        asked to be deleted and the number of actually deleted entities.
-
-        If the operation is not allowed, both integers above are set to -1.
-    &#34;&#34;&#34;
-    if not self.properlySetup:
-        return
-
-    setNameRep = self.setNameRep
-    setIsRo = self.setIsRo
-    setIsX = self.setIsX
-
-    if not _lowlevel and setIsRo:
-        if silent:
-            return (-1, -1)
-        self.console(f&#34;Entities addition not allowed on {setNameRep}&#34;, error=True)
-        return
-
-    if _lowlevel and not setIsX:
-        return
-
-    setData = self.getSetData()
-
-    oldEntities = set(setData.entities.values())
-
-    addE = set()
-
-    present = 0
-    added = 0
-
-    for fVals, allMatches in newEntities:
-        for slots in allMatches:
-            if (fVals, slots) in oldEntities:
-                present += 1
-            elif (fVals, slots) in addE:
-                continue
-            else:
-                added += 1
-                addE.add((fVals, slots))
-
-    if len(addE):
-        self.mergeEntities(addE, _lowlevel=_lowlevel)
-
-    self.loadSetData()
-    if silent:
-        return (present, added)
-
-    if _lowlevel:
-        return
-
-    self.console(f&#34;Already present: {present:&gt;5} x&#34;)
-    self.console(f&#34;Added:           {added:&gt;5} x&#34;)</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.data.Data.addEntity"><code class="name flex">
-<span>def <span class="ident">addEntity</span></span>(<span>self, vals, allMatches, silent=True)</span>
+<span>def <span class="ident">addEntity</span></span>(<span>self, vals, allMatches, returns=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Add entity occurrences to the current set.</p>
@@ -2367,101 +1992,16 @@ which entities have will be added.</dd>
 <dt><strong><code>allMatches</code></strong> :&ensp;<code>iterable</code> of <code>tuple</code> of <code>int</code></dt>
 <dd>A number of slot tuples. They are the locations where the entities will be
 added.</dd>
-<dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dt><strong><code>returns</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>Reports how many entities have been added and how many were already present
 in the specified locations.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <p>(int, int) or void
-If <code>silent</code>, it returns the number of already existing entities that were
+If <code>returns</code>, it returns the number of already existing entities that were
 asked to be deleted and the number of actually deleted entities.</p>
 <pre><code>If the operation is not allowed, both integers above are set to -1.
 </code></pre></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L562-L640" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def addEntity(self, vals, allMatches, silent=True):
-    &#34;&#34;&#34;Add entity occurrences to the current set.
-
-    This operation is not allowed if the current set is the read-only set with the
-    empty name.
-
-    The entities to add are specified by their feature values.
-    So you can use this function to add entities with a certain
-    entity id and kind.
-
-    You also have to specify a set of locations where the entities should be added.
-
-    Parameters
-    ----------
-    vals: tuple
-        For each entity feature it has a value of that feature. This specifies
-        which entities have will be added.
-    allMatches: iterable of tuple of int
-        A number of slot tuples. They are the locations where the entities will be
-        added.
-    silent: boolean, optional False
-        Reports how many entities have been added and how many were already present
-        in the specified locations.
-
-    Returns
-    -------
-    (int, int) or void
-        If `silent`, it returns the number of already existing entities that were
-        asked to be deleted and the number of actually deleted entities.
-
-        If the operation is not allowed, both integers above are set to -1.
-    &#34;&#34;&#34;
-    if not self.properlySetup:
-        return
-
-    setNameRep = self.setNameRep
-    setIsRo = self.setIsRo
-
-    if setIsRo:
-        if silent:
-            return (-1, -1)
-        self.console(f&#34;Entity addition not allowed on {setNameRep}&#34;, error=True)
-        return
-
-    setData = self.getSetData()
-
-    oldEntities = setData.entities
-
-    addE = set()
-
-    oldEntitiesBySlots = set()
-
-    for e, (fVals, slots) in oldEntities.items():
-        if fVals == vals:
-            oldEntitiesBySlots.add(slots)
-
-    present = 0
-    added = 0
-
-    for slots in allMatches:
-        if slots in oldEntitiesBySlots:
-            present += 1
-            continue
-
-        info = (vals, slots)
-        if info not in addE:
-            addE.add(info)
-            added += 1
-
-    if len(addE):
-        self.mergeEntities(addE)
-
-    self.loadSetData()
-
-    if silent:
-        return (present, added)
-
-    self.console(f&#34;Already present: {present:&gt;5} x&#34;)
-    self.console(f&#34;Added:           {added:&gt;5} x&#34;)</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.data.Data.addEntityRich"><code class="name flex">
 <span>def <span class="ident">addEntityRich</span></span>(<span>self, additions, buckets, excludedTokens=set())</span>
@@ -2494,298 +2034,9 @@ Entities will only be added at these places.</dd>
 receive new entities. If the last slot of an entity is in this set,
 no entity will be added there.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L721-L839" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def addEntityRich(self, additions, buckets, excludedTokens=set()):
-    &#34;&#34;&#34;Add specified entity occurrences to the current set.
-
-    This operation is not allowed if the current set is the read-only set with the
-    empty name.
-
-    This function has more detailed instructions as to which entities
-    should be added than `Data.addEntity()` .
-
-    It is a handy function for the TF browser to call, but not so much when you
-    are manipulating entities yourself in a Jupyter notebook.
-
-    Parameters
-    ----------
-    additions: tuple of tuple or string
-        Each member of the tuple corresponds to an entity feature.
-        It is either a single value of such a feature, or an iterable
-        of such values.
-        The tuple together specifies a set of entities whose entity features
-        have values that are either equal to the corresponding member of
-        `additions` or contained in it.
-    buckets: iterable of list
-        This is typically the result of
-        `tf.browser.ner.ner.NER.filterContent()`.
-        The only important thing is that member 2 of each bucket is the list
-        of entity matches in that bucket.
-        Entities will only be added at these places.
-    excludedTokens: set, optional set()
-        This is the set of token positions that define the locations that must not
-        receive new entities. If the last slot of an entity is in this set,
-        no entity will be added there.
-    &#34;&#34;&#34;
-    if not self.properlySetup:
-        return
-
-    setNameRep = self.setNameRep
-    setIsRo = self.setIsRo
-    browse = self.browse
-
-    if setIsRo:
-        msg = f&#34;Entity addition not allowed on {setNameRep}&#34;
-        if browse:
-            return [[msg]]
-        else:
-            self.console(msg, error=True)
-            return
-
-    settings = self.settings
-    features = settings.features
-
-    setData = self.getSetData()
-
-    oldEntities = setData.entities
-
-    report = []
-
-    addEntities = set()
-
-    additions = tuple([x] if type(x) is str else x for x in additions)
-
-    if all(len(x) &gt; 0 for x in additions):
-        oldEntitiesBySlots = collections.defaultdict(set)
-
-        for e, (fVals, slots) in oldEntities.items():
-            oldEntitiesBySlots[slots].add(fVals)
-
-        excl = 0
-
-        fValTuples = [()]
-
-        for vals in additions:
-            newTuples = []
-            for val in vals:
-                newTuples.extend([ft + (val,) for ft in fValTuples])
-            fValTuples = newTuples
-
-        stats = collections.Counter()
-
-        for bucket in buckets:
-            allMatches = bucket[2]
-            for slots in allMatches:
-                if slots[-1] in excludedTokens:
-                    excl += 1
-                    continue
-
-                existing = oldEntitiesBySlots.get(slots, set())
-
-                for fVals in fValTuples:
-                    if fVals in existing:
-                        continue
-                    info = (fVals, slots)
-                    if info not in addEntities:
-                        addEntities.add(info)
-                        stats[fVals] += 1
-
-        report.append(
-            tuple(sorted(stats.items())) if len(stats) else [&#34;Nothing added&#34;]
-        )
-        if excl:
-            report.append(f&#34;Addition: occurrences excluded: {excl}&#34;)
-
-    if len(addEntities):
-        self.mergeEntities(addEntities)
-
-    if browse:
-        return report
-
-    self.loadSetData()
-    (stats, *rest) = report
-    if type(stats) is list:
-        self.console(&#34;\n&#34;.join(stats))
-    else:
-        for vals, freq in stats:
-            repVals = &#34; &#34;.join(
-                f&#34;{feat}={val}&#34; for (feat, val) in zip(features, vals)
-            )
-            self.console(f&#34;Added {freq:&gt;5} x {repVals}&#34;)
-    if len(rest):
-        self.console(&#34;\n&#34;.join(rest))</code></pre>
-</details>
-</dd>
-<dt id="tf.browser.ner.data.Data.consolidateEntities"><code class="name flex">
-<span>def <span class="ident">consolidateEntities</span></span>(<span>self, versionExtension)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Consolidates the current entities as nodes into a new TF data source.</p>
-<p>This operation is not allowed if the current set is the read-only set with the
-empty name, because these entities are already present as nodes in the
-TF dataset.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>versionExtension</code></strong> :&ensp;<code>string</code></dt>
-<dd>The new dataset gets a version like the original dataset, but extended
-with this string.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L943-L1085" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def consolidateEntities(self, versionExtension):
-    &#34;&#34;&#34;Consolidates the current entities as nodes into a new TF data source.
-
-    This operation is not allowed if the current set is the read-only set with the
-    empty name, because these entities are already present as nodes in the
-    TF dataset.
-
-    Parameters
-    ----------
-    versionExtension: string
-        The new dataset gets a version like the original dataset, but extended
-        with this string.
-    &#34;&#34;&#34;
-    if not self.properlySetup:
-        return
-
-    setNameRep = self.setNameRep
-    setIsRo = self.setIsRo
-
-    if setIsRo:
-        self.console(
-            f&#34;Entity consolidation not meaningful on {setNameRep}&#34;, error=True
-        )
-        return False
-
-    version = self.version
-    settings = self.settings
-    features = settings.features
-    featureMeta = settings.featureMeta
-    setData = self.getSetData()
-
-    # Data preparation for the modify function
-
-    entityOccs = sorted(set(setData.entities.values()))
-    self.console(
-        f&#34;Entity consolidation for {len(entityOccs)} entity occurrences &#34;
-        f&#34;into version {version}{versionExtension}&#34;
-    )
-
-    slotLink = {}
-    nodeFeatures = AttrDict({feat: {} for feat in features})
-    edgeFeatures = AttrDict(eoccs={})
-    entities = {}
-
-    n = 0
-
-    for fVals, slots in entityOccs:
-        n += 1
-        slotLink[n] = slots
-
-        for feat, fVal in zip(features, fVals):
-            nodeFeatures[feat][n] = fVal
-
-        entities.setdefault(fVals, []).append(n)
-
-    nEntityOccs = len(entityOccs)
-    occEdge = edgeFeatures.eoccs
-
-    for fVals, occs in entities.items():
-        n += 1
-        occEdge[n] = set(occs)
-        slotLink[n] = tuple(chain.from_iterable(slotLink[m] for m in occs))
-
-        for feat, fVal in zip(features, fVals):
-            nodeFeatures[feat][n] = fVal
-
-    nEntities = len(entities)
-
-    self.console(f&#34;{nEntityOccs:&gt;6} entity occurrences&#34;)
-    self.console(f&#34;{nEntities:&gt;6} distinct entities&#34;)
-
-    featureMeta.eoccs = dict(
-        valueType=&#34;str&#34;,
-        description=&#34;from entity nodes to their occurrence nodes&#34;,
-    )
-
-    addTypes = dict(
-        ent=dict(
-            nodeFrom=1,
-            nodeTo=nEntityOccs,
-            nodeSlots=slotLink,
-            nodeFeatures=nodeFeatures,
-        ),
-        entity=dict(
-            nodeFrom=nEntityOccs + 1,
-            nodeTo=nEntityOccs + nEntities,
-            nodeSlots=slotLink,
-            nodeFeatures=nodeFeatures,
-            edgeFeatures=edgeFeatures,
-        ),
-    )
-    self.featureMeta = featureMeta
-
-    # Call the modify function
-
-    app = self.app
-    context = app.context
-    appPath = context.appPath
-    relative = context.relative
-    dataPath = f&#34;{dirNm(appPath)}/{relative}&#34;
-
-    origTf = f&#34;{dataPath}/{app.version}&#34;
-    newTf = f&#34;{origTf}{versionExtension}&#34;
-    newVersion = f&#34;{app.version}{versionExtension}&#34;
-
-    if dirExists(newTf):
-        dirRemove(newTf)
-
-    app.indent(reset=True)
-    app.info(&#34;Creating a dataset with entity nodes ...&#34;)
-
-    good = modify(
-        origTf,
-        newTf,
-        targetVersion=newVersion,
-        addTypes=addTypes,
-        featureMeta=featureMeta,
-        silent=True,
-    )
-
-    app.info(&#34;Done&#34;)
-
-    if not good:
-        return False
-
-    self.console(f&#34;The dataset with entities is now in version {newVersion}&#34;)
-
-    # tweak the app
-
-    config = f&#34;{appPath}/{APP_CONFIG}&#34;
-
-    with open(config) as fh:
-        text = fh.read()
-
-    text = text.replace(f&#39;version: {version}&#39;, f&#39;version: &#34;{newVersion}&#34;&#39;)
-    text = text.replace(f&#39;version: &#34;{version}&#34;&#39;, f&#39;version: &#34;{newVersion}&#34;&#39;)
-
-    with open(config, mode=&#34;w&#34;) as fh:
-        fh.write(text)
-
-    self.console(&#34;The dataset with entities is now the standard version&#34;)
-
-    return True</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.data.Data.delEntity"><code class="name flex">
-<span>def <span class="ident">delEntity</span></span>(<span>self, vals, allMatches=None, silent=True)</span>
+<span>def <span class="ident">delEntity</span></span>(<span>self, vals, allMatches=None, returns=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Delete entity occurrences from the current set.</p>
@@ -2805,103 +2056,16 @@ which entities have to go.</dd>
 <dd>A number of slot tuples. They are the locations from which the candidate
 entities will be deleted.
 If it is None, the entity candidates will be removed wherever they occur.</dd>
-<dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dt><strong><code>returns</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>Reports how many entities have been deleted and how many were not present
 in the specified locations.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <p>(int, int) or void
-If <code>silent</code>, it returns the number of non-existing entities that were
+If <code>returns</code>, it returns the number of non-existing entities that were
 asked to be deleted and the number of actually deleted entities.</p>
 <pre><code>If the operation is not allowed, both integers above are set to -1.
 </code></pre></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L354-L434" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def delEntity(self, vals, allMatches=None, silent=True):
-    &#34;&#34;&#34;Delete entity occurrences from the current set.
-
-    This operation is not allowed if the current set is the read-only set with the
-    empty name.
-
-    The entities to delete are selected by their feature values.
-    So you can use this function to delete all entities with a certain
-    entity id and kind.
-
-    Moreover, you can also specify a set of locations and restrict the entity
-    removal to the entities that occupy those locations.
-
-    Parameters
-    ----------
-    vals: tuple
-        For each entity feature it has a value of that feature. This specifies
-        which entities have to go.
-    allMatches: iterable of tuple of int, optional None
-        A number of slot tuples. They are the locations from which the candidate
-        entities will be deleted.
-        If it is None, the entity candidates will be removed wherever they occur.
-    silent: boolean, optional False
-        Reports how many entities have been deleted and how many were not present
-        in the specified locations.
-
-    Returns
-    -------
-    (int, int) or void
-        If `silent`, it returns the number of non-existing entities that were
-        asked to be deleted and the number of actually deleted entities.
-
-        If the operation is not allowed, both integers above are set to -1.
-    &#34;&#34;&#34;
-    if not self.properlySetup:
-        return
-
-    setIsRo = self.setIsRo
-    setNameRep = self.setNameRep
-
-    if setIsRo:
-        if silent:
-            return (-1, -1)
-        self.console(f&#34;Entity deletion not allowed on {setNameRep}&#34;, error=True)
-        return
-
-    setData = self.getSetData()
-
-    oldEntities = setData.entities
-
-    delEntities = set()
-
-    oldEntitiesBySlots = set()
-
-    for e, (fVals, slots) in oldEntities.items():
-        if fVals == vals:
-            oldEntitiesBySlots.add(slots)
-
-    missing = 0
-    deleted = 0
-
-    delSlots = oldEntitiesBySlots if allMatches is None else allMatches
-
-    for slots in delSlots:
-        if slots not in oldEntitiesBySlots:
-            missing += 1
-            continue
-
-        delEntities.add((vals, slots))
-        deleted += 1
-
-    if len(delEntities):
-        self.weedEntities(delEntities)
-
-    self.loadSetData()
-
-    if silent:
-        return (missing, deleted)
-
-    self.console(f&#34;Not present: {missing:&gt;5} x&#34;)
-    self.console(f&#34;Deleted:     {deleted:&gt;5} x&#34;)</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.data.Data.delEntityRich"><code class="name flex">
 <span>def <span class="ident">delEntityRich</span></span>(<span>self, deletions, buckets, excludedTokens=set())</span>
@@ -2934,137 +2098,6 @@ Only entities that occupy these places will be removed.</dd>
 skipped from deletion. If the last slot of an entity is in this set,
 the entity will not be deleted.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L436-L560" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def delEntityRich(self, deletions, buckets, excludedTokens=set()):
-    &#34;&#34;&#34;Delete specified entity occurrences from the current set.
-
-    This operation is not allowed if the current set is the read-only set with the
-    empty name.
-
-    This function has more detailed instructions as to which entities
-    should be deleted than `Data.delEntity()` .
-
-    It is a handy function for the TF browser to call, but not so much when you
-    are manipulating entities yourself in a Jupyter notebook.
-
-    Parameters
-    ----------
-    deletions: tuple of tuple or string
-        Each member of the tuple corresponds to an entity feature.
-        It is either a single value of such a feature, or an iterable
-        of such values.
-        The tuple together specifies a set of entities whose entity features
-        have values that are either equal to the corresponding member of
-        `deletions` or contained in it.
-    buckets: iterable of list
-        This is typically the result of
-        `tf.browser.ner.ner.NER.filterContent()`.
-        The only important thing is that member 2 of each bucket is the list
-        of entity matches in that bucket.
-        Only entities that occupy these places will be removed.
-    excludedTokens: set, optional set()
-        This is the set of token positions that define the entities that must be
-        skipped from deletion. If the last slot of an entity is in this set,
-        the entity will not be deleted.
-    &#34;&#34;&#34;
-    if not self.properlySetup:
-        return
-
-    setNameRep = self.setNameRep
-    setIsRo = self.setIsRo
-    browse = self.browse
-
-    if setIsRo:
-        msg = f&#34;Entity deletion not allowed on {setNameRep}&#34;
-        if browse:
-            return [[msg]]
-        else:
-            self.console(msg, error=True)
-            return
-
-    settings = self.settings
-    features = settings.features
-    setData = self.getSetData()
-
-    oldEntities = setData.entities
-
-    report = []
-
-    delEntities = set()
-    delEntitiesByE = set()
-
-    deletions = tuple([x] if type(x) is str else x for x in deletions)
-
-    if any(len(x) &gt; 0 for x in deletions):
-        oldEntitiesBySlots = collections.defaultdict(set)
-
-        for e, info in oldEntities.items():
-            oldEntitiesBySlots[info[1]].add(e)
-
-        excl = 0
-
-        fValTuples = [()]
-
-        for vals in deletions:
-            delTuples = []
-            for val in vals:
-                delTuples.extend([ft + (val,) for ft in fValTuples])
-            fValTuples = delTuples
-
-        stats = collections.Counter()
-
-        for bucket in buckets:
-            allMatches = bucket[2]
-
-            for slots in allMatches:
-                if slots[-1] in excludedTokens:
-                    excl += 1
-                    continue
-
-                candidates = oldEntitiesBySlots.get(slots, set())
-
-                for e in candidates:
-                    toBeDeleted = False
-                    fVals = oldEntities[e][0]
-
-                    if fVals in fValTuples:
-                        toBeDeleted = True
-
-                    if toBeDeleted:
-                        if e not in delEntitiesByE:
-                            delEntitiesByE.add(e)
-                            delEntities.add((fVals, slots))
-                            stats[fVals] += 1
-
-        report.append(
-            tuple(sorted(stats.items())) if len(stats) else [&#34;Nothing deleted&#34;]
-        )
-        if excl:
-            report.append(f&#34;Deletion: occurrences excluded: {excl}&#34;)
-
-    if len(delEntities):
-        self.weedEntities(delEntities)
-
-    if browse:
-        return report
-
-    self.loadSetData()
-    (stats, *rest) = report
-    if type(stats) is list:
-        self.console(&#34;\n&#34;.join(stats))
-    else:
-        for vals, freq in stats:
-            repVals = &#34; &#34;.join(
-                f&#34;{feat}={val}&#34; for (feat, val) in zip(features, vals)
-            )
-            self.console(f&#34;Deleted {freq:&gt;5} x {repVals}&#34;)
-    if len(rest):
-        self.console(&#34;\n&#34;.join(rest))</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.data.Data.fromSourceSet"><code class="name flex">
 <span>def <span class="ident">fromSourceSet</span></span>(<span>self)</span>
@@ -3084,97 +2117,6 @@ it is a dict of entities, keyed by nodes or line numbers;
 each entity specifies a tuple of feature values and a list of slots
 that are part of the entity.</li>
 </ul></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L112-L196" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def fromSourceSet(self):
-    &#34;&#34;&#34;Loads an annotation set from source.
-
-    If the current annotation set is `&#34;&#34;`, the annotation set is already present in
-    the TF data, and we compile it into a dict of entity data keyed
-    by entity node.
-
-    Otherwise, we read the corresponding TSV file from disk and compile it
-    into a dict of entity data keyed by line number.
-
-    After collection of the set it is stored under the following keys:
-
-    *   `dateLoaded`: datetime when the set was last loaded from disk;
-    *   `entities`: the list of entities as loaded from the source;
-        it is a dict of entities, keyed by nodes or line numbers;
-        each entity specifies a tuple of feature values and a list of slots
-        that are part of the entity.
-    &#34;&#34;&#34;
-    if not self.properlySetup:
-        return None
-
-    settings = self.settings
-    setName = self.setName
-    setIsSrc = self.setIsSrc
-    setData = self.sets[setName]
-    annoDir = self.annoDir
-
-    settings = self.settings
-    features = settings.features
-
-    featureDefault = self.featureDefault
-    nF = len(features)
-
-    checkFeature = self.checkFeature
-    getFVal = self.getFVal
-    getSlots = self.getSlots
-
-    setFile = f&#34;{annoDir}/{setName}/entities.tsv&#34;
-
-    if &#34;buckets&#34; not in setData:
-        setData.buckets = self.getBucketNodes()
-
-    changed = False
-
-    if setIsSrc:
-        if &#34;entities&#34; not in setData:
-            entities = {}
-            hasFeature = {feat: checkFeature(feat) for feat in features}
-
-            for e in self.getEntityNodes():
-                slots = getSlots(e)
-                entities[e] = (
-                    tuple(
-                        getFVal(feat, e)
-                        if hasFeature[feat]
-                        else featureDefault[feat](slots)
-                        for feat in features
-                    ),
-                    tuple(slots),
-                )
-
-            setData.entities = entities
-    else:
-        if (
-            &#34;entities&#34; not in setData
-            or &#34;dateLoaded&#34; not in setData
-            or (len(setData.entities) &gt; 0 and not fileExists(setFile))
-            or (fileExists(setFile) and setData.dateLoaded &lt; mTime(setFile))
-        ):
-            changed = True
-            entities = {}
-
-            if fileExists(setFile):
-                with fileOpen(setFile) as df:
-                    for e, line in enumerate(df):
-                        fields = tuple(line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;))
-                        entities[e] = (
-                            tuple(fields[0:nF]),
-                            tuple(int(f) for f in fields[nF:]),
-                        )
-
-            setData.entities = entities
-            setData.dateLoaded = time.time()
-
-    return changed</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.data.Data.loadSetData"><code class="name flex">
 <span>def <span class="ident">loadSetData</span></span>(<span>self)</span>
@@ -3186,31 +2128,6 @@ that are part of the entity.</li>
 <li>loading the source set (see <code><a title="tf.browser.ner.data.Data.fromSourceSet" href="#tf.browser.ner.data.Data.fromSourceSet">Data.fromSourceSet()</a></code>)</li>
 <li>processing the loaded set (see <code><a title="tf.browser.ner.data.Data.processSet" href="#tf.browser.ner.data.Data.processSet">Data.processSet()</a></code>)</li>
 </ul></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L78-L96" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def loadSetData(self, _lowlevel=False):
-    &#34;&#34;&#34;Loads the current annotation set into memory.
-
-    It has two phases:
-
-    *   loading the source set (see `Data.fromSourceSet()`)
-    *   processing the loaded set (see `Data.processSet()`)
-    &#34;&#34;&#34;
-    if not self.properlySetup:
-        return
-
-    sets = self.sets
-    setName = self.setName
-
-    if setName not in sets:
-        sets[setName] = AttrDict()
-
-    changed = self.fromSourceSet()
-    self.processSet(changed)</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.data.Data.mergeEntities"><code class="name flex">
 <span>def <span class="ident">mergeEntities</span></span>(<span>self, newEntities)</span>
@@ -3225,46 +2142,6 @@ empty name.</p>
 <dd>The set consists of entity specs: a tuple of values of entity features,
 and an iterable of slot tuples where the entity is located.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L887-L920" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def mergeEntities(self, newEntities, _lowlevel=False):
-    &#34;&#34;&#34;Performs additions to the current annotation set.
-
-    This operation is not allowed if the current set is the read-only set with the
-    empty name.
-
-    Parameters
-    ----------
-    newEntities: set
-        The set consists of entity specs: a tuple of values of entity features,
-        and an iterable of slot tuples where the entity is located.
-    &#34;&#34;&#34;
-    if not self.properlySetup:
-        return
-
-    setName = self.setName
-    setNameRep = self.setNameRep
-    setIsRo = self.setIsRo
-    setIsX = self.setIsX
-
-    if not _lowlevel and setIsRo:
-        self.console(f&#34;Entity merging not allowed on {setNameRep}&#34;, error=True)
-        return
-
-    if _lowlevel and not setIsX:
-        return
-
-    annoDir = self.annoDir
-
-    dataFile = f&#34;{annoDir}/{setName}/entities.tsv&#34;
-
-    with fileOpen(dataFile, mode=&#34;a&#34;) as fh:
-        for fVals, slots in newEntities:
-            fh.write(&#34;\t&#34;.join(str(x) for x in (*fVals, *slots)) + &#34;\n&#34;)</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.data.Data.processSet"><code class="name flex">
 <span>def <span class="ident">processSet</span></span>(<span>self, changed)</span>
@@ -3321,167 +2198,6 @@ entities in the surrounding context of tokens.</p>
 <dt><strong><code>changed</code></strong> :&ensp;<code>boolean</code></dt>
 <dd>Whether the set has changed since last processing.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L198-L352" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def processSet(self, changed):
-    &#34;&#34;&#34;Generates derived data structures out of the source set.
-
-    After loading we process the set into derived data structures.
-
-    We try to be lazy. We only load a set from disk if it is not
-    already in memory, or if the set on disk has been updated since the last load.
-
-    The resulting data is stored in the current set under the various keys.
-
-    After processing, the time of processing is recorded, so that it can be
-    observed if the processed set is no longer up to date w.r.t. the source.
-
-    For each such set we produce several data structures, which we store
-    under the following keys:
-
-    *   `dateProcessed`: datetime when the set was last processed
-    *   `entityText`: dict, text of entity by entity node or line number in
-        TSV file;
-    *   `entityTextVal`: dict of dict, set of feature values of entity, keyed by
-        feature name and then by text of the entity;
-    *   `entitySummary`: dict, list of entity nodes / line numbers, keyed by value
-        of entity kind;
-    *   `entityIdent`: dict, list of entity nodes./line numbers, keyed by tuple of
-        entity feature values (these tuples are identifying for an entity);
-    *   `entityFreq`: dict of counters, a counter for each feature name; the
-        counter gives the number of times each value of that feature occurs in an
-        entity;
-    *   `entityIndex`: dict of dict, a dict for each feature name; the sub-dict
-        gives for each position the values that entities occupying that position
-        can have; positions are tuples of slots;
-    *   `entityVal`: dict, keyed by value tuples gives the set of positions
-        that entities with that value tuple occupy;
-    *   `entitySlotVal`: dict, keyed by positions gives the set of values
-        that entities occupying that position can have;
-    *   `entitySlotAll`: dict, keyed by single first slots gives the set of
-        ending slots that entities starting at that first slot have;
-    *   `entitySlotIndex`: dict, keyed by single slot gives list of items
-        corresponding to entities that occupy that slot;
-
-        *   if an entity starts there, an entry `[True, -n, values]` is made;
-        *   if an entity ends there, an entry `[False, n, values]` is made;
-        *   if an entity occupies that slot without starting or ending there,
-            an entry `None` is made;
-
-        Above, `n` is the length of the entity in tokens and `values` is the
-        tuple of feature values of that entity.
-
-        This is precisely the information we need if we want to mark up a set of
-        entities in the surrounding context of tokens.
-
-    Parameters
-    ----------
-    changed: boolean
-        Whether the set has changed since last processing.
-    &#34;&#34;&#34;
-    if not self.properlySetup:
-        return
-
-    settings = self.settings
-    features = settings.features
-    getText = self.getText
-    summaryIndices = settings.summaryIndices
-
-    setName = self.setName
-    setData = self.sets[setName]
-
-    dateLoaded = setData.dateLoaded
-    dateProcessed = setData.dateProcessed
-
-    if (
-        changed
-        or &#34;dateProcessed&#34; not in setData
-        or &#34;entityText&#34; not in setData
-        or &#34;entityTextVal&#34; not in setData
-        or &#34;entitySummary&#34; not in setData
-        or &#34;entityIdent&#34; not in setData
-        or &#34;entityFreq&#34; not in setData
-        or &#34;entityIndex&#34; not in setData
-        or &#34;entityVal&#34; not in setData
-        or &#34;entitySlotVal&#34; not in setData
-        or &#34;entitySlotAll&#34; not in setData
-        or &#34;entitySlotIndex&#34; not in setData
-        or dateLoaded is not None
-        and dateProcessed &lt; dateLoaded
-    ):
-        entityItems = setData.entities.items()
-
-        entityText = {}
-        entityTextVal = {feat: collections.defaultdict(set) for feat in features}
-        entitySummary = {}
-        entityIdent = {}
-        entityIdentFirst = {}
-        entityFreq = {feat: collections.Counter() for feat in features}
-        entityIndex = {feat: {} for feat in features}
-        entityVal = {}
-        entitySlotVal = {}
-        entitySlotAll = {}
-        entitySlotIndex = {}
-
-        for e, (fVals, slots) in entityItems:
-            txt = getText(slots)
-            ident = fVals
-            summary = tuple(fVals[i] for i in summaryIndices)
-
-            entityText[e] = txt
-            entityVal.setdefault(fVals, set()).add(slots)
-
-            for feat, val in zip(features, fVals):
-                entityFreq[feat][val] += 1
-                entityIndex[feat].setdefault(slots, set()).add(val)
-                entityTextVal[feat][txt].add(val)
-
-            entityIdent.setdefault(ident, []).append(e)
-            if ident not in entityIdentFirst:
-                entityIdentFirst[ident] = e
-
-            entitySummary.setdefault(summary, []).append(e)
-            entitySlotVal.setdefault(slots, set()).add(fVals)
-
-            firstSlot = slots[0]
-            lastSlot = slots[-1]
-
-            entitySlotAll.setdefault(firstSlot, set()).add(lastSlot)
-
-            for slot in slots:
-                isFirst = slot == firstSlot
-                isLast = slot == lastSlot
-                if isFirst or isLast:
-                    if isFirst:
-                        entitySlotIndex.setdefault(slot, []).append(
-                            [True, firstSlot - lastSlot - 1, ident]
-                        )
-                    if isLast:
-                        entitySlotIndex.setdefault(slot, []).append(
-                            [False, lastSlot - firstSlot + 1, ident]
-                        )
-                else:
-                    entitySlotIndex.setdefault(slot, []).append(None)
-
-        setData.entityText = entityText
-        setData.entityTextVal = entityTextVal
-        setData.entitySummary = entitySummary
-        setData.entityIdent = entityIdent
-        setData.entityIdentFirst = entityIdentFirst
-        setData.entityFreq = {
-            feat: sorted(entityFreq[feat].items()) for feat in features
-        }
-        setData.entityIndex = entityIndex
-        setData.entityVal = entityVal
-        setData.entitySlotVal = entitySlotVal
-        setData.entitySlotAll = entitySlotAll
-        setData.entitySlotIndex = entitySlotIndex
-
-        setData.dateProcessed = time.time()</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.data.Data.saveEntitiesAs"><code class="name flex">
 <span>def <span class="ident">saveEntitiesAs</span></span>(<span>self, dataFile)</span>
@@ -3495,32 +2211,6 @@ entities in the surrounding context of tokens.</p>
 <dt><strong><code>dataFile</code></strong> :&ensp;<code>string</code></dt>
 <dd>The path of the file to write to.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L922-L941" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def saveEntitiesAs(self, dataFile):
-    &#34;&#34;&#34;Export an annotation set to a file.
-
-    This function is used when a set has to be duplicated:
-    `tf.browser.ner.sets.Sets.setDup()`.
-
-    Parameters
-    ----------
-    dataFile: string
-        The path of the file to write to.
-    &#34;&#34;&#34;
-    if not self.properlySetup:
-        return
-
-    setData = self.getSetData()
-    entities = setData.entities
-
-    with fileOpen(dataFile, mode=&#34;a&#34;) as fh:
-        for fVals, slots in entities.values():
-            fh.write(&#34;\t&#34;.join(str(x) for x in (*fVals, *slots)) + &#34;\n&#34;)</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.data.Data.weedEntities"><code class="name flex">
 <span>def <span class="ident">weedEntities</span></span>(<span>self, delEntities)</span>
@@ -3535,57 +2225,6 @@ empty name.</p>
 <dd>The set consists of entity specs: a tuple of values of entity features,
 and an iterable of slot tuples where the entity is located.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/data.py#L841-L885" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def weedEntities(self, delEntities):
-    &#34;&#34;&#34;Performs deletions to the current annotation set.
-
-    This operation is not allowed if the current set is the read-only set with the
-    empty name.
-
-    Parameters
-    ----------
-    delEntities: set
-        The set consists of entity specs: a tuple of values of entity features,
-        and an iterable of slot tuples where the entity is located.
-    &#34;&#34;&#34;
-    if not self.properlySetup:
-        return
-
-    setName = self.setName
-    setNameRep = self.setNameRep
-    setIsRo = self.setIsRo
-
-    if setIsRo:
-        self.console(f&#34;Entity weeding not allowed on {setNameRep}&#34;, error=True)
-        return
-
-    settings = self.settings
-    features = settings.features
-    nF = len(features)
-
-    annoDir = self.annoDir
-
-    dataFile = f&#34;{annoDir}/{setName}/entities.tsv&#34;
-
-    newEntities = []
-
-    with fileOpen(dataFile) as fh:
-        for line in fh:
-            fields = tuple(line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;))
-            fVals = tuple(fields[0:nF])
-            slots = tuple(int(f) for f in fields[nF:])
-            info = (fVals, slots)
-            if info in delEntities:
-                continue
-            newEntities.append(line)
-
-    with fileOpen(dataFile, mode=&#34;w&#34;) as fh:
-        fh.write(&#34;&#34;.join(newEntities))</code></pre>
-</details>
 </dd>
 </dl>
 <h3>Inherited members</h3>
@@ -3690,7 +2329,6 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.browser.ner.data.Data.addEntities" href="#tf.browser.ner.data.Data.addEntities">addEntities</a></code></li>
 <li><code><a title="tf.browser.ner.data.Data.addEntity" href="#tf.browser.ner.data.Data.addEntity">addEntity</a></code></li>
 <li><code><a title="tf.browser.ner.data.Data.addEntityRich" href="#tf.browser.ner.data.Data.addEntityRich">addEntityRich</a></code></li>
-<li><code><a title="tf.browser.ner.data.Data.consolidateEntities" href="#tf.browser.ner.data.Data.consolidateEntities">consolidateEntities</a></code></li>
 <li><code><a title="tf.browser.ner.data.Data.delEntity" href="#tf.browser.ner.data.Data.delEntity">delEntity</a></code></li>
 <li><code><a title="tf.browser.ner.data.Data.delEntityRich" href="#tf.browser.ner.data.Data.delEntityRich">delEntityRich</a></code></li>
 <li><code><a title="tf.browser.ner.data.Data.fromSourceSet" href="#tf.browser.ner.data.Data.fromSourceSet">fromSourceSet</a></code></li>
@@ -3709,7 +2347,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

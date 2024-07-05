@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.browser.ner.helpers API documentation</title>
 <meta name="description" content="Auxiliary functions …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -35,7 +35,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/helpers.py#L1-L282" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/browser/ner/helpers.py#L1-L282" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Auxiliary functions.
 
@@ -362,41 +362,6 @@ def repSet(s):
 the regular expression object, if successful, otherwise None;
 the error message if the re-compilation was not successful.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/helpers.py#L181-L209" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def findCompile(bFind, bFindC):
-    &#34;&#34;&#34;Compiles a regular expression out of a search pattern.
-
-    Parameters
-    ----------
-    bFind: string
-        The search pattern as a plain string.
-    bFindC: boolean
-        Whether the search is case-sensitive.
-
-    Returns
-    -------
-    tuple
-        the white-space-stripped search pattern;
-        the regular expression object, if successful, otherwise None;
-        the error message if the re-compilation was not successful.
-    &#34;&#34;&#34;
-    bFind = (bFind or &#34;&#34;).strip()
-    bFindFlag = [] if bFindC else [re.I]
-    bFindRe = None
-    errorMsg = &#34;&#34;
-
-    if bFind:
-        try:
-            bFindRe = re.compile(bFind, *bFindFlag)
-        except Exception as e:
-            errorMsg = str(e)
-
-    return (bFind, bFindRe, errorMsg)</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.helpers.fromTokens"><code class="name flex">
 <span>def <span class="ident">fromTokens</span></span>(<span>tokens, spaceEscaped=False)</span>
@@ -408,44 +373,12 @@ So if you have to revert back from tokens to text,
 make sure that you have done a combo of toTokens and
 fromTokens first.
 You can use <code><a title="tf.browser.ner.helpers.tnorm" href="#tf.browser.ner.helpers.tnorm">tnorm()</a></code> for that.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/helpers.py#L67-L78" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def fromTokens(tokens, spaceEscaped=False):
-    &#34;&#34;&#34;The inverse of `toTokens()`.
-
-    Doing first toTokens and then fromTokens is idempotent.
-    So if you have to revert back from tokens to text,
-    make sure that you have done a combo of toTokens and
-    fromTokens first.
-    You can use `tnorm()` for that.
-    &#34;&#34;&#34;
-    return &#34; &#34;.join(
-        tuple(t.replace(&#34; &#34;, &#34;_&#34;) for t in tokens) if spaceEscaped else tokens
-    )</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.helpers.getPath"><code class="name flex">
 <span>def <span class="ident">getPath</span></span>(<span>heading, instructions)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/helpers.py#L271-L278" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def getPath(heading, instructions):
-    for n in range(len(heading), 0, -1):
-        path = heading[0:n]
-
-        if path in instructions:
-            return path
-
-    return ()</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.helpers.makeCss"><code class="name flex">
 <span>def <span class="ident">makeCss</span></span>(<span>features, keywordFeatures)</span>
@@ -461,84 +394,12 @@ differently than features with an unbounded set of values, such as <code>eid</co
 <dd>What the features are and what the keyword features are.
 These derive ultimately from the corpus-dependent <code>ner/config.yaml</code>.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/helpers.py#L212-L268" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def makeCss(features, keywordFeatures):
-    &#34;&#34;&#34;Generates CSS for the tool.
-
-    The CSS for this tool has a part that depends on the choice of entity features.
-    For now, the dependency is mild: keyword features such as `kind` are formatted
-    differently than features with an unbounded set of values, such as `eid`.
-
-    Parameters
-    ----------
-    features, keywordFeatures: iterable
-        What the features are and what the keyword features are.
-        These derive ultimately from the corpus-dependent `ner/config.yaml`.
-    &#34;&#34;&#34;
-    propMap = dict(
-        ff=&#34;font-family&#34;,
-        fz=&#34;font-size&#34;,
-        fw=&#34;font-weight&#34;,
-        fg=&#34;color&#34;,
-        bg=&#34;background-color&#34;,
-        bw=&#34;border-width&#34;,
-        bs=&#34;border-style&#34;,
-        bc=&#34;border-color&#34;,
-        br=&#34;border-radius&#34;,
-        p=&#34;padding&#34;,
-        m=&#34;margin&#34;,
-    )
-
-    def makeBlock(manner):
-        props = STYLES[manner]
-        defs = [f&#34;\t{propMap[abb]}: {val};\n&#34; for (abb, val) in props.items()]
-        return H.join(defs)
-
-    def makeCssDef(selector, *blocks):
-        return selector + &#34; {\n&#34; + H.join(blocks) + &#34;}\n&#34;
-
-    css = []
-
-    for feat in features:
-        manner = &#34;keyword&#34; if feat in keywordFeatures else &#34;free&#34;
-
-        plain = makeBlock(manner)
-        bordered = makeBlock(f&#34;{manner}_bordered&#34;)
-        active = makeBlock(f&#34;{manner}_active&#34;)
-        borderedActive = makeBlock(f&#34;{manner}_bordered_active&#34;)
-
-        css.extend(
-            [
-                makeCssDef(f&#34;.{feat}&#34;, plain),
-                makeCssDef(f&#34;.{feat}.active&#34;, active),
-                makeCssDef(f&#34;span.{feat}_sel,button.{feat}_sel&#34;, plain, bordered),
-                makeCssDef(f&#34;button.{feat}_sel[st=v]&#34;, borderedActive, active),
-            ]
-        )
-
-    featureCss = H.join(css, sep=&#34;\n&#34;)
-    allCss = H.style(featureCss, type=&#34;text/css&#34;)
-    return allCss</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.helpers.normalize"><code class="name flex">
 <span>def <span class="ident">normalize</span></span>(<span>text)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Normalize white-space in a text.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/helpers.py#L45-L47" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def normalize(text):
-    &#34;&#34;&#34;Normalize white-space in a text.&#34;&#34;&#34;
-    return WHITE_RE.sub(&#34; &#34;, text).strip()</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.helpers.repIdent"><code class="name flex">
 <span>def <span class="ident">repIdent</span></span>(<span>features, vals, active='')</span>
@@ -553,41 +414,12 @@ These derive ultimately from the corpus-dependent <code>ner/config.yaml</code>.<
 <dd>A CSS class name to add to the HTML representation.
 Can be used to mark the entity as active.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/helpers.py#L139-L153" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def repIdent(features, vals, active=&#34;&#34;):
-    &#34;&#34;&#34;Represents an identifier in HTML.
-
-    Parameters
-    ----------
-    vals: iterable
-        The material is given as a list of feature values.
-    active: string, optional &#34;&#34;
-        A CSS class name to add to the HTML representation.
-        Can be used to mark the entity as active.
-    &#34;&#34;&#34;
-    return H.join(
-        (H.span(val, cls=f&#34;{feat} {active}&#34;) for (feat, val) in zip(features, vals)),
-        sep=&#34; &#34;,
-    )</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.helpers.repSet"><code class="name flex">
 <span>def <span class="ident">repSet</span></span>(<span>s)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/helpers.py#L281-L282" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def repSet(s):
-    return &#34;{&#34; + &#34;, &#34;.join(str(x) for x in sorted(s)) + &#34;}&#34;</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.helpers.repSummary"><code class="name flex">
 <span>def <span class="ident">repSummary</span></span>(<span>keywordFeatures, vals, active='')</span>
@@ -602,46 +434,12 @@ Can be used to mark the entity as active.</dd>
 <dd>A CSS class name to add to the HTML representation.
 Can be used to mark the entity as active.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/helpers.py#L156-L173" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def repSummary(keywordFeatures, vals, active=&#34;&#34;):
-    &#34;&#34;&#34;Represents an keyword value in HTML.
-
-    Parameters
-    ----------
-    vals: iterable
-        The material is given as a list of values of keyword features.
-    active: string, optional &#34;&#34;
-        A CSS class name to add to the HTML representation.
-        Can be used to mark the entity as active.
-    &#34;&#34;&#34;
-    return H.join(
-        (
-            H.span(val, cls=f&#34;{feat} {active}&#34;)
-            for (feat, val) in zip(keywordFeatures, vals)
-        ),
-        sep=&#34; &#34;,
-    )</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.helpers.tnorm"><code class="name flex">
 <span>def <span class="ident">tnorm</span></span>(<span>text, spaceEscaped=False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/helpers.py#L81-L84" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def tnorm(text, spaceEscaped=False):
-    return fromTokens(
-        toTokens(text, spaceEscaped=spaceEscaped), spaceEscaped=spaceEscaped
-    )</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.helpers.toAscii"><code class="name flex">
 <span>def <span class="ident">toAscii</span></span>(<span>text)</span>
@@ -652,25 +450,6 @@ Can be used to mark the entity as active.</dd>
 Some characters with diacritics are considered by UNICODE to be undecomposable
 characters, such as <code>ø</code> and <code>ñ</code>.
 We use a table (<code><a title="tf.browser.ner.helpers.TO_ASCII_DEF" href="#tf.browser.ner.helpers.TO_ASCII_DEF">TO_ASCII_DEF</a></code>) to map these on their related ASCII characters.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/helpers.py#L87-L99" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def toAscii(text):
-    &#34;&#34;&#34;Transforms a text with diacritical marks into a plain ASCII text.
-
-    Characters with diacritics are replaced by their base character.
-    Some characters with diacritics are considered by UNICODE to be undecomposable
-    characters, such as `ø` and `ñ`.
-    We use a table (`TO_ASCII_DEF`) to map these on their related ASCII characters.
-    &#34;&#34;&#34;
-    return &#34;&#34;.join(
-        TO_ASCII.get(c, c)
-        for c in unicodedata.normalize(&#34;NFD&#34;, text)
-        if unicodedata.category(c) != &#34;Mn&#34;
-    )</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.helpers.toId"><code class="name flex">
 <span>def <span class="ident">toId</span></span>(<span>text)</span>
@@ -678,18 +457,6 @@ We use a table (<code><a title="tf.browser.ner.helpers.TO_ASCII_DEF" href="#tf.b
 <dd>
 <div class="desc"><p>Transforms text to an identifier string.</p>
 <p>Tokens are lower-cased, separated by <code>.</code>, reduced to ASCII.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/helpers.py#L102-L107" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def toId(text):
-    &#34;&#34;&#34;Transforms text to an identifier string.
-
-    Tokens are lower-cased, separated by `.`, reduced to ASCII.
-    &#34;&#34;&#34;
-    return NON_WORD.sub(&#34;.&#34;, toAscii(text.lower())).strip(&#34;.&#34;)</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.helpers.toSmallId"><code class="name flex">
 <span>def <span class="ident">toSmallId</span></span>(<span>text, transform={})</span>
@@ -701,39 +468,6 @@ either left out or replaced by shorter strings.</p>
 <p>This transformation is defined by the <code>transform</code> dictionary,
 which ultimately is provided in the corpus-dependent
 <code>ner/config.yaml</code> .</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/helpers.py#L110-L136" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def toSmallId(text, transform={}):
-    &#34;&#34;&#34;Transforms text to a smaller identifier string.
-
-    As `toId()`, but now certain parts of the resulting identifier are
-    either left out or replaced by shorter strings.
-
-    This transformation is defined by the `transform` dictionary,
-    which ultimately is provided in the corpus-dependent
-    `ner/config.yaml` .
-    &#34;&#34;&#34;
-    parts = [y for x in toId(text).split(&#34;.&#34;) if (y := transform.get(x, x))]
-    result = []
-    n = 0
-
-    for part in parts:
-        if len(part) &gt; PART_CUT_OFF:
-            part = part[0:PREFIX_PART] + &#34;~&#34; + part[-SUFFIX_PART:]
-
-        nPart = len(part)
-
-        result.append(part)
-        n += nPart
-
-        if n &gt; CUT_OFF:
-            break
-
-    return &#34;.&#34;.join(result)</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.helpers.toTokens"><code class="name flex">
 <span>def <span class="ident">toTokens</span></span>(<span>text, spaceEscaped=False)</span>
@@ -748,42 +482,12 @@ and individual non-word characters.</p>
 <dt><strong><code>spaceEscaped</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>If True, it is assumed that if a <code>_</code> occurs in a token string, a space is meant.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/helpers.py#L50-L64" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def toTokens(text, spaceEscaped=False):
-    &#34;&#34;&#34;Split a text into tokens.
-
-    The text is split on white-space.
-    Tokens are further split into maximal segments of word characters
-    and individual non-word characters.
-
-    Parameters
-    ----------
-    spaceEscaped: boolean, optional False
-        If True, it is assumed that if a `_` occurs in a token string, a space is meant.
-    &#34;&#34;&#34;
-    result = TOKEN_RE.findall(normalize(text))
-    result = tuple((t.replace(&#34;_&#34;, &#34; &#34;) for t in result) if spaceEscaped else result)
-    return tuple(t for t in result if t != &#34; &#34;)</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.helpers.valRep"><code class="name flex">
 <span>def <span class="ident">valRep</span></span>(<span>features, fVals)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>HTML representation of an entity as a sequence of <code>feat=val</code> strings.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/helpers.py#L176-L178" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def valRep(features, fVals):
-    &#34;&#34;&#34;HTML representation of an entity as a sequence of `feat=val` strings.&#34;&#34;&#34;
-    return &#34;, &#34;.join(f&#34;&lt;i&gt;{feat}&lt;/i&gt;={val}&#34; for (feat, val) in zip(features, fVals))</code></pre>
-</details>
 </dd>
 </dl>
 </section>
@@ -883,7 +587,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

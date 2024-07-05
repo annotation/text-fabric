@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.dataset.nodemaps API documentation</title>
 <meta name="description" content="Node maps …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -138,7 +138,7 @@ V.makeVersionMapping()
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/dataset/nodemaps.py#L1-L706" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/dataset/nodemaps.py#L1-L706" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Node maps
@@ -893,7 +893,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/dataset/nodemaps.py#L154-L706" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/dataset/nodemaps.py#L154-L706" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Versions:
     def __init__(self, api, va, vb, silent=SILENT_D, slotMap=None):
@@ -1456,115 +1456,12 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/dataset/nodemaps.py#L643-L706" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">    def caption(self, level, heading, good=None, newLine=True, continuation=False):
-        silent = self.silent
-        prefix = &#34;&#34; if good is None else &#34;SUCCES &#34; if good else &#34;FAILURE &#34;
-        reportHeading = &#34;{}{}&#34;.format(prefix, heading)
-
-        emit = (
-            silent == VERBOSE
-            or silent == AUTO
-            and level in {-1, 2, 3, 4}
-            or silent == TERSE
-            and level in {2, 3}
-        )
-
-        if level in {-1, 0}:  # non-heading message
-            decoration = &#34;&#34; if continuation else &#34;| &#34;
-            formattedString = &#34;&#34;&#34;{}{}&#34;&#34;&#34;.format(decoration, reportHeading)
-        elif level == 1:  # pipeline level
-            formattedString = &#34;&#34;&#34;
-##{}##
-# {} #
-# {} #
-# {} #
-##{}##
-    &#34;&#34;&#34;.format(
-                &#34;#&#34; * 90,
-                &#34; &#34; * 90,
-                &#34;{:&lt;90}&#34;.format(reportHeading),
-                &#34; &#34; * 90,
-                &#34;#&#34; * 90,
-            )
-        elif level == 2:  # repo level
-            formattedString = &#34;&#34;&#34;
-    **{}**
-    * {} *
-    * {} *
-    * {} *
-    **{}**
-    &#34;&#34;&#34;.format(
-                &#34;*&#34; * 90,
-                &#34; &#34; * 90,
-                &#34;{:&lt;90}&#34;.format(reportHeading),
-                &#34; &#34; * 90,
-                &#34;*&#34; * 90,
-            )
-        elif level == 3:  # task level
-            formattedString = &#34;&#34;&#34;
-    --{}--
-    - {} -
-    --{}--
-    &#34;&#34;&#34;.format(
-                &#34;-&#34; * 90,
-                &#34;{:&lt;90}&#34;.format(reportHeading),
-                &#34;-&#34; * 90,
-            )
-        elif level == 4:  # caption within task execution
-            formattedString = &#34;&#34;&#34;..{}..
-    . {} .
-    ..{}..&#34;&#34;&#34;.format(
-                &#34;.&#34; * 90,
-                &#34;{:&lt;90}&#34;.format(reportHeading),
-                &#34;.&#34; * 90,
-            )
-        if emit:
-            self.info(formattedString, nl=newLine, tm=not continuation, force=True)</code></pre>
-</details>
 </dd>
 <dt id="tf.dataset.nodemaps.Versions.exploreNodeMapping"><code class="name flex">
 <span>def <span class="ident">exploreNodeMapping</span></span>(<span>self, nodeType)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/dataset/nodemaps.py#L307-L333" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def exploreNodeMapping(self, nodeType):
-    va = self.va
-    vb = self.vb
-    diagnosis = self.diagnosis
-
-    self.caption(4, &#34;Statistics for {} ==&gt; {} ({})&#34;.format(va, vb, nodeType))
-
-    diag = diagnosis[nodeType]
-    total = len(diag)
-    if total == 0:
-        return
-
-    reasons = collections.Counter()
-
-    for (n, dia) in diag.items():
-        reasons[dia] += 1
-
-    self.caption(-1, &#34;\t{:&lt;30} : {:6.2f}% {:&gt;7}x&#34;.format(&#34;TOTAL&#34;, 100, total))
-    for stat in STAT_LABELS:
-        statLabel = STAT_LABELS[stat]
-        amount = reasons[stat]
-        if amount == 0:
-            continue
-        perc = 100 * amount / total
-        self.caption(
-            -1, &#34;\t{:&lt;30} : {:6.2f}% {:&gt;7}x&#34;.format(statLabel, perc, amount)
-        )</code></pre>
-</details>
 </dd>
 <dt id="tf.dataset.nodemaps.Versions.getDiagnosis"><code class="name flex">
 <span>def <span class="ident">getDiagnosis</span></span>(<span>self, node=None, label=None)</span>
@@ -1601,76 +1498,6 @@ if that is None, you get a dictionary keyed by node, and valued
 by diagnostic label but now for all nodes.</p>
 </dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/dataset/nodemaps.py#L335-L398" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def getDiagnosis(self, node=None, label=None):
-    &#34;&#34;&#34;Show the diagnosis of a mapping.
-
-    You can get various amounts of information about this:
-
-    *    A dictionary that maps all nodes of a given type to a diagnostic label
-    *    A list of nodes of a node type that have a given diagnostic label
-    *    The label of a given node
-
-    Parameters
-    ----------
-    node: string | int, optional None
-        The node or node type that you want to diagnose.
-        If a string, it is a node type, and you get information about the nodes
-        of that node type.
-        If an int, it is a node, and you get information about that node.
-        If `None`, you get information about all nodes.
-
-    label: char, optional None
-        If given, it is a diagnostic label (see `tf.dataset.nodemaps`),
-        and the result is dependent on the value passed to *node*:
-        if that is a single node, a boolean is returned telling whether that node
-        has the given label; if that is a node type, a tuple is returned of all
-        nodes in that node type that have this label;
-        if that is None, a tuple is returned of all nodes with that label.
-
-        If not given, the result depends again on the value passed to *node*:
-        if that is a single node, you get its diagnostic label;
-        if that is a node type, you get a dict, keyed by node, and valued
-        by diagnostic label, for all nodes in the node type;
-        if that is None, you get a dictionary keyed by node, and valued
-        by diagnostic label but now for all nodes.
-    &#34;&#34;&#34;
-
-    diagnosis = self.diagnosis
-    Fa = self.Fa
-    otypesa = Fa.otype.s
-
-    if label is None:
-        return (
-            dict(chain.from_iterable(x.items() for x in diagnosis.values()))
-            if node is None
-            else diagnosis.get(node, {})
-            if type(node) is str
-            else diagnosis.get(otypesa(node), {}).get(node, None)
-            if type(node) is int
-            else None
-        )
-    else:
-        return (
-            tuple(
-                y[0]
-                for y in chain.from_iterable(x.items() for x in diagnosis.values())
-                if y[1] == label
-            )
-            if node is None
-            else tuple(
-                y[0] for y in diagnosis.get(node, {}).items() if y[1] == label
-            )
-            if type(node) is str
-            else diagnosis.get(otypesa(node), {}).get(node, None) == label
-            if type(node) is int
-            else None
-        )</code></pre>
-</details>
 </dd>
 <dt id="tf.dataset.nodemaps.Versions.legend"><code class="name flex">
 <span>def <span class="ident">legend</span></span>(<span>self)</span>
@@ -1681,139 +1508,18 @@ by diagnostic label but now for all nodes.</p>
 the result can be categorized according to severity.</p>
 <p>This function shows that classification.
 See also <code><a title="tf.dataset.nodemaps" href="#tf.dataset.nodemaps">tf.dataset.nodemaps</a></code>.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/dataset/nodemaps.py#L400-L411" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def legend(self):
-    &#34;&#34;&#34;Show the labels and descriptions of the diagnosis classes.
-
-    When the mapping turns out to be not perfect for a node,
-    the result can be categorized according to severity.
-
-    This function shows that classification.
-    See also `tf.dataset.nodemaps`.
-    &#34;&#34;&#34;
-
-    for (acro, desc) in STAT_LABELS.items():
-        self.info(f&#34;{acro} = {desc}&#34;, tm=False)</code></pre>
-</details>
 </dd>
 <dt id="tf.dataset.nodemaps.Versions.makeNodeMapping"><code class="name flex">
 <span>def <span class="ident">makeNodeMapping</span></span>(<span>self, nodeType)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/dataset/nodemaps.py#L227-L305" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def makeNodeMapping(self, nodeType):
-    edge = self.edge
-
-    if edge is None:
-        self.error(&#34;Cannot make node mapping if no slot mapping is given&#34;)
-        return False
-
-    va = self.va
-    vb = self.vb
-    Lb = self.Lb
-    Ea = self.Ea
-    Eb = self.Eb
-    Fa = self.Fa
-
-    Lub = Lb.u
-    Eosa = Ea.oslots.s
-    Eosb = Eb.oslots.s
-    otypesa = Fa.otype.s
-
-    self.caption(2, f&#34;Mapping {nodeType} nodes {va} ==&gt; {vb}&#34;)
-
-    diag = {}
-    self.caption(0, f&#34;Extending slot mapping {va} ==&gt; {va} for {nodeType} nodes&#34;)
-    for n in otypesa(nodeType):
-        slots = Eosa(n)
-        mappedSlots = set(
-            chain.from_iterable(set(edge[s]) for s in slots if s in edge)
-        )
-        mappedNodes = set(
-            chain.from_iterable(set(Lub(s, nodeType)) for s in mappedSlots)
-        )
-        result = {}
-        nMs = len(mappedNodes)
-        if nMs == 0:
-            diag[n] = &#34;a&#34;
-
-        elif nMs &gt;= 1:
-            theseMSlots = {}
-            for m in mappedNodes:
-                mSlots = set(Eosb(m))
-                dis = len(mappedSlots | mSlots) - len(mappedSlots &amp; mSlots)
-                result[m] = dis
-                theseMSlots[m] = mSlots
-
-            # we wait further case analysis before we put these counterparts of n into the edge
-
-            if nMs == 1:
-                m = list(mappedNodes)[0]
-                dis = result[m]
-                if dis == 0:
-                    diag[n] = &#34;b&#34;
-                    edge[n] = {m: None}
-                    # this is the most freqent case, hence an optimization: no dis value.
-                    # all other cases require the dis value to be passed on, even if 0
-                else:
-                    diag[n] = &#34;c&#34;
-                    edge[n] = {m: dis}
-            else:
-                edge[n] = result
-                dis = min(result.values())
-                if dis == 0:
-                    diag[n] = &#34;d&#34;
-                else:
-                    allMSlots = set(
-                        chain.from_iterable(
-                            set(theseMSlots[m]) for m in mappedNodes
-                        )
-                    )
-                    composed = allMSlots == mappedSlots and sum(
-                        result.values()
-                    ) == len(mappedSlots) * (len(mappedNodes) - 1)
-
-                    if composed:
-                        diag[n] = &#34;f&#34;
-                    else:
-                        diag[n] = &#34;e&#34;
-
-    self.diagnosis[nodeType] = diag
-    self.caption(0, &#34;\tDone&#34;)</code></pre>
-</details>
 </dd>
 <dt id="tf.dataset.nodemaps.Versions.makeVersionMapping"><code class="name flex">
 <span>def <span class="ident">makeVersionMapping</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/dataset/nodemaps.py#L446-L457" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def makeVersionMapping(self):
-    Fa = self.Fa
-
-    self.diagnosis = {}
-
-    nodeTypes = Fa.otype.all
-
-    for nodeType in nodeTypes[0:-1]:
-        self.makeNodeMapping(nodeType)
-        self.exploreNodeMapping(nodeType)
-
-    self.writeMap()</code></pre>
-</details>
 </dd>
 <dt id="tf.dataset.nodemaps.Versions.migrateFeatures"><code class="name flex">
 <span>def <span class="ident">migrateFeatures</span></span>(<span>self, featureNames, silent=None, location=None)</span>
@@ -1852,250 +1558,18 @@ Otherwise it is a path where the new features should be saved.</dd>
 This will override the <code>silent</code> setting
 that has been used when creating the <code><a title="tf.dataset.nodemaps.Versions" href="#tf.dataset.nodemaps.Versions">Versions</a></code> object.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/dataset/nodemaps.py#L459-L641" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def migrateFeatures(self, featureNames, silent=None, location=None):
-    &#34;&#34;&#34;Migrate features from one version to another based on a node map.
-
-    If you have a dataset with several features, and if there is a node map between
-    the versions, you can migrate features from the older version to the newer.
-
-    The naive approach per feature is:
-
-    For each node in the old version that has a value for the feature,
-    map the node to the new version.
-    That could be several nodes.
-    Then give all those nodes the value found on the node in the old set.
-
-    The problem with that is this:
-
-    Suppose node `n` in the old version maps to nodes `p` and `q` in the
-    new version, but not with the same quality.
-    Suppose the value is `v`. Then the feature assignment will assign
-    `v` to nodes `p` and `q`.
-
-    But there could very well be a later node `m` with value `w` in the old version
-    that also maps to `p`, and with a lower quality.
-    Then later the node `p` in the new version will be assigned the value `w`
-    because of this, and this is sub optimal.
-
-    So we make sure that for each feature and each node in the new version
-    the value assigned to it is the value of the node in the old version that
-    maps with the highest quality to the new node.
-
-    Parameters
-    ----------
-    featureNames: tuple
-        The names of the features to migrate.
-        They may be node features or edge features or both.
-    location: string, optional None
-        If absent, the migrated features will be saved in the newer dataset.
-        Otherwise it is a path where the new features should be saved.
-    silent: string, optional None
-        See `tf.core.timestamp.Timestamp`
-        This will override the `silent` setting
-        that has been used when creating the `Versions` object.
-    &#34;&#34;&#34;
-
-    silent = self.silent if silent is None else silentConvert(silent)
-    omapName = self.omapName()
-    TFa = self.TFa
-    TFb = self.TFb
-    TFb.setSilent(silent)
-    TFb.warning(&#34;start migrating&#34;)
-    TFb.load(omapName, add=True, silent=silent)
-    Fsa = self.Fsa
-    Esa = self.Esa
-    Esb = self.Esb
-    va = self.va
-    vb = self.vb
-
-    emap = Esb(omapName).f
-
-    nodeFeatures = {}
-    edgeFeatures = {}
-    metaData = {}
-
-    def getBestMatches(n, dest):
-        result = []
-        mapped = emap(n)
-
-        if mapped:
-            perfect = [x for x in mapped if x[1] is None]
-            if perfect:
-                return [perfect[0]]
-
-            nearPerfect = [x for x in mapped if x[1] == 0]
-            if nearPerfect:
-                (m, q) = nearPerfect[0]
-                if m not in dest or m in dest and dest[m][1] is not None:
-                    return [nearPerfect[0]]
-
-            for (m, q) in mapped:
-                # these q cannot be None or 0
-                if m in dest:
-                    (origVal, origQ) = dest[m]
-                    higherQuality = origQ is not None and q &lt; origQ
-                    if origVal == val:
-                        if higherQuality:
-                            result.append((m, q))
-                    elif higherQuality:
-                        result.append((m, q))
-                else:
-                    result.append((m, q))
-        return result
-
-    for featureName in featureNames:
-        isEdge = TFa.features[featureName].isEdge
-        TFb.info(f&#34;Mapping {featureName} ({&#39;edge&#39; if isEdge else &#39;node&#39;})&#34;)
-        featureObj = (Esa if isEdge else Fsa)(featureName)
-        featureInfo = dict(featureObj.items())
-        metaData[featureName] = featureObj.meta
-        metaData[featureName][&#34;upgraded&#34;] = f&#34;‼️ from version {va} to {vb}&#34;
-
-        edgeValues = featureObj.doValues if isEdge else False
-
-        dest = edgeFeatures if isEdge else nodeFeatures
-        dest[featureName] = {}
-        dest = dest[featureName]
-
-        # we will not only store the feature value in dest,
-        # but also the quality of the mapping that
-        # produced the value.
-        # We only override an existing value
-        # if the quality of the mapping is better.
-        # Moreover, if one mapping has quality 0,
-        # it means that the mapping is perfect regarding the material in both nodes
-        # but there are lesser mappings as well.
-        # In those cases we do not extend the value to those lesser mappings
-        # Later, we strip the qualities again.
-
-        if isEdge:
-            if edgeValues:
-                for (n, ts) in featureInfo.items():
-                    matched = getBestMatches(n, dest)
-                    if matched:
-                        matchedTs = {}
-                        for (t, val) in ts.items():
-                            for (t, r) in getBestMatches(t, matchedTs):
-                                matchedTs[t] = (val, r)
-                        for t in matchedTs:
-                            matchedTs[t] = matchedTs[t][0]
-                        for (m, q) in matched:
-                            dest[m] = (matchedTs, q)
-
-                    &#34;&#34;&#34;
-                    mapped = emap(n)
-                    if mapped:
-                        mappedts = {}
-                        for (t, val) in ts.items():
-                            tmapped = emap(t)
-                            if tmapped:
-                                for tEntry in tmapped:
-                                    mappedts[tEntry[0]] = val
-                        for entry in mapped:
-                            dest[entry[0]] = mappedts
-                            &#34;&#34;&#34;
-            else:
-                for (n, ts) in featureInfo.items():
-                    matched = getBestMatches(n, dest)
-                    if matched:
-                        matchedTs = {}
-                        for t in ts:
-                            for (t, r) in getBestMatches(t, matchedTs):
-                                matchedTs[t] = (None, r)
-                        matchedTs = set(matchedTs)
-                        for (m, q) in matched:
-                            dest[m] = (matchedTs, q)
-
-                    &#34;&#34;&#34;
-                    mapped = emap(n)
-                    if mapped:
-                        mappedts = set()
-                        for t in ts:
-                            tmapped = emap(t)
-                            if tmapped:
-                                for tEntry in tmapped:
-                                    mappedts.add(tEntry[0])
-                        for entry in mapped:
-                            dest[entry[0]] = mappedts
-                            &#34;&#34;&#34;
-        else:
-            for (n, val) in featureInfo.items():
-                for (m, q) in getBestMatches(n, dest):
-                    dest[m] = (val, q)
-
-        for m in dest:
-            dest[m] = dest[m][0]
-
-    TFb.save(
-        nodeFeatures=nodeFeatures,
-        edgeFeatures=edgeFeatures,
-        metaData=metaData,
-        location=location,
-        module=vb,
-        silent=silent,
-    )
-    TFb.warning(&#34;Done&#34;)</code></pre>
-</details>
 </dd>
 <dt id="tf.dataset.nodemaps.Versions.omapName"><code class="name flex">
 <span>def <span class="ident">omapName</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/dataset/nodemaps.py#L413-L416" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def omapName(self):
-    va = self.va
-    vb = self.vb
-    return f&#34;omap@{va}-{vb}&#34;</code></pre>
-</details>
 </dd>
 <dt id="tf.dataset.nodemaps.Versions.writeMap"><code class="name flex">
 <span>def <span class="ident">writeMap</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/dataset/nodemaps.py#L418-L444" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def writeMap(self):
-    TFb = self.TFb
-    va = self.va
-    vb = self.vb
-    edge = self.edge
-    silent = self.silent
-
-    fName = self.omapName()
-    self.caption(4, &#34;Write edge as TF feature {}&#34;.format(fName))
-
-    edgeFeatures = {fName: edge}
-    metaData = {
-        fName: {
-            &#34;about&#34;: &#34;Mapping from the slots of version {} to version {}&#34;.format(
-                va, vb
-            ),
-            &#34;encoder&#34;: &#34;TF tf.dataset.nodemaps&#34;,
-            &#34;valueType&#34;: &#34;int&#34;,
-            &#34;edgeValues&#34;: True,
-        }
-    }
-    TFb.save(
-        nodeFeatures={},
-        edgeFeatures=edgeFeatures,
-        metaData=metaData,
-        silent=silent,
-    )</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -2197,7 +1671,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

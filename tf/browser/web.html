@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.browser.web API documentation</title>
 <meta name="description" content="Web interface …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -114,7 +114,7 @@ browsers, not even Edge.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/web.py#L1-L274" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/browser/web.py#L1-L274" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Web interface
@@ -404,182 +404,18 @@ def runWeb(webapp, debug, portWeb):
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/web.py#L125-L200" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def factory(web):
-    app = Flask(__name__)
-
-    # Here we add the annotation tools as blue prints
-    app.register_blueprint(nerFactory(web))
-    # End of adding annotation tools
-
-    aContext = web.context
-    appPath = aContext.appPath
-    localDir = aContext.localDir
-
-    @app.route(&#34;/browser/static/&lt;path:filepath&gt;&#34;)
-    def serveStatic(filepath):
-        theFile = f&#34;{MY_DIR}/static/{filepath}&#34;
-        return send_file(theFile) if fileExists(theFile) else &#34;&#34;
-
-    @app.route(&#34;/data/static/&lt;path:filepath&gt;&#34;)
-    def serveData(filepath):
-        theFile = f&#34;{appPath}/static/{filepath}&#34;
-        return send_file(theFile) if appPath and fileExists(theFile) else &#34;&#34;
-
-    @app.route(&#34;/local/&lt;path:filepath&gt;&#34;)
-    def serveLocal(filepath):
-        theFile = f&#34;{localDir}/{filepath}&#34;
-        return send_file(theFile) if fileExists(theFile) else &#34;&#34;
-
-    @app.route(&#34;/sections&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
-    def serveSectionsBare():
-        return serveTable(web, &#34;sections&#34;)
-
-    @app.route(&#34;/sections/&lt;int:getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
-    def serveSections(getx):
-        return serveTable(web, &#34;sections&#34;, getx=getx)
-
-    @app.route(&#34;/tuples&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
-    def serveTuplesBare():
-        return serveTable(web, &#34;tuples&#34;)
-
-    @app.route(&#34;/tuples/&lt;int:getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
-    def serveTuples(getx):
-        return serveTable(web, &#34;tuples&#34;, getx=getx)
-
-    @app.route(&#34;/query&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
-    def serveQueryBare():
-        return serveQuery(web)
-
-    @app.route(&#34;/query/&lt;int:getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
-    def serveQueryX(getx):
-        return serveQuery(web, getx=getx)
-
-    @app.route(&#34;/passage&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
-    def servePassageBare():
-        return servePassage(web)
-
-    @app.route(&#34;/passage/&lt;getx&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
-    def servePassageX(getx):
-        return servePassage(web, getx=getx)
-
-    @app.route(&#34;/export&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
-    def serveExportX():
-        return serveExport(web)
-
-    @app.route(&#34;/download&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
-    def serveDownloadX():
-        return serveDownload(web, False)
-
-    @app.route(&#34;/downloadj&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
-    def serveDownloadJ():
-        return serveDownload(web, True)
-
-    @app.route(&#34;/&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
-    @app.route(&#34;/&lt;path:anything&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
-    def serveAllX(anything=None):
-        return serveAll(web, anything)
-
-    return app</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.web.runWeb"><code class="name flex">
 <span>def <span class="ident">runWeb</span></span>(<span>webapp, debug, portWeb)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/web.py#L263-L274" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def runWeb(webapp, debug, portWeb):
-    run_simple(
-        HOST,
-        int(portWeb),
-        webapp,
-        use_reloader=debug,
-        use_debugger=debug,
-        use_evalex=debug,
-        threaded=True,
-    )
-
-    return 0</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.web.setup"><code class="name flex">
 <span>def <span class="ident">setup</span></span>(<span>debug, *args)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/web.py#L203-L260" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def setup(debug, *args):
-    appSpecs = argApp(args, False)
-
-    if not appSpecs:
-        cs(&#34;No TF dataset specified&#34;)
-        cs(f&#34;{TF_ERROR}&#34;)
-        return
-
-    backend = appSpecs.get(&#34;backend&#34;, GH) or GH
-    appName = appSpecs[&#34;appName&#34;]
-    checkout = appSpecs[&#34;checkout&#34;]
-    checkoutApp = appSpecs[&#34;checkoutApp&#34;]
-    relative = appSpecs[&#34;relative&#34;]
-    dataLoc = appSpecs[&#34;dataLoc&#34;]
-    moduleRefs = appSpecs[&#34;moduleRefs&#34;]
-    locations = appSpecs[&#34;locations&#34;]
-    modules = appSpecs[&#34;modules&#34;]
-    setFile = appSpecs[&#34;setFile&#34;]
-    version = appSpecs[&#34;version&#34;]
-
-    if checkout is None:
-        checkout = &#34;&#34;
-
-    versionRep = &#34;&#34; if version is None else f&#34; version {version}&#34;
-    cs(
-        f&#34;Setting up TF browser for {appName} {moduleRefs or &#39;&#39;} &#34;
-        f&#34;{setFile or &#39;&#39;}{versionRep}&#34;
-    )
-    app = findApp(
-        appName,
-        checkoutApp,
-        dataLoc,
-        backend,
-        True,
-        silent=AUTO,
-        checkout=checkout,
-        relative=relative,
-        mod=moduleRefs,
-        locations=locations,
-        modules=modules,
-        setFile=setFile,
-        version=version,
-    )
-    if app is None:
-        cs(f&#34;{TF_ERROR}&#34;)
-        return
-
-    cs(&#34;Loading TF corpus data. Please wait ...&#34;)
-
-    web = Web(makeTfKernel(app, appName))
-    webapp = factory(web)
-
-    if debug:
-        webapp.config[&#39;TEMPLATES_AUTO_RELOAD&#39;] = True
-    web.debug = debug
-    cs(f&#34;{TF_DONE}&#34;)
-
-    return webapp</code></pre>
-</details>
 </dd>
 </dl>
 </section>
@@ -595,7 +431,7 @@ def runWeb(webapp, debug, portWeb):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/web.py#L112-L122" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/browser/web.py#L112-L122" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Web:
     def __init__(self, kernelApi):
@@ -616,15 +452,6 @@ def runWeb(webapp, debug, portWeb):
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/web.py#L120-L122" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def console(self, msg):
-    if self.debug:
-        cs(msg)</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -726,7 +553,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

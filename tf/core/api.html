@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.core.api API documentation</title>
 <meta name="description" content="The core API of TF …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -33,7 +33,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/api.py#L1-L587" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/core/api.py#L1-L587" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # The core API of TF.
@@ -636,78 +636,30 @@ def addSearch(api, silent=SILENT_D):
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/api.py#L569-L571" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def addLocality(api):
-    api.L = Locality(api)
-    api.Locality = api.L</code></pre>
-</details>
 </dd>
 <dt id="tf.core.api.addNodes"><code class="name flex">
 <span>def <span class="ident">addNodes</span></span>(<span>api)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/api.py#L574-L576" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def addNodes(api):
-    api.N = Nodes(api)
-    api.Nodes = api.N</code></pre>
-</details>
 </dd>
 <dt id="tf.core.api.addOtype"><code class="name flex">
 <span>def <span class="ident">addOtype</span></span>(<span>api)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/api.py#L562-L566" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def addOtype(api):
-    setattr(api.F.otype, &#34;all&#34;, tuple(o[0] for o in api.C.levels.data))
-    setattr(
-        api.F.otype, &#34;support&#34;, dict(((o[0], (o[2], o[3])) for o in api.C.levels.data))
-    )</code></pre>
-</details>
 </dd>
 <dt id="tf.core.api.addSearch"><code class="name flex">
 <span>def <span class="ident">addSearch</span></span>(<span>api, silent='auto')</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/api.py#L584-L587" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def addSearch(api, silent=SILENT_D):
-    silent = silentConvert(silent)
-    api.S = Search(api, silent)
-    api.Search = api.S</code></pre>
-</details>
 </dd>
 <dt id="tf.core.api.addText"><code class="name flex">
 <span>def <span class="ident">addText</span></span>(<span>api)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/api.py#L579-L581" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def addText(api):
-    api.T = Text(api)
-    api.Text = api.T</code></pre>
-</details>
 </dd>
 </dl>
 </section>
@@ -723,7 +675,7 @@ def addSearch(api, silent=SILENT_D):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/api.py#L55-L559" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/core/api.py#L55-L559" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Api:
     def __init__(self, TF):
@@ -1247,16 +1199,6 @@ that is loaded later.</p></div>
 </code></dt>
 <dd>
 <div class="desc"><p>Returns a sorted list of all usable, loaded computed data names.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/api.py#L202-L205" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def Call(self):
-    &#34;&#34;&#34;Returns a sorted list of all usable, loaded computed data names.&#34;&#34;&#34;
-
-    return sorted(x[0] for x in self.C.__dict__.items())</code></pre>
-</details>
 </dd>
 <dt id="tf.core.api.Api.Cs"><code class="name flex">
 <span>def <span class="ident">Cs</span></span>(<span>self, fName, warn=True)</span>
@@ -1276,37 +1218,6 @@ you can not use <code>C.component</code>, but you should use
 </dl>
 <h2 id="returns">Returns</h2>
 <p>The feature API, or <code>None</code> if the feature is not loaded.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/api.py#L154-L178" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def Cs(self, fName, warn=True):
-    &#34;&#34;&#34;Get the computed data sub API.
-
-    If component name is not a valid python identifier,
-    or if you do not know its name in advance,
-    you can not use `C.component`, but you should use
-    `Cs(component)`.
-
-    Parameters
-    ----------
-    fName: string
-        The name of the feature.
-    warn: boolean, optional `True`
-        Whether to warn if the feature is not loaded.
-
-    Returns
-    -------
-    The feature API, or `None` if the feature is not loaded.
-    &#34;&#34;&#34;
-
-    if not hasattr(self.C, fName):
-        if warn:
-            self.TF.error(f&#39;Computed feature &#34;{fName}&#34; not loaded&#39;)
-        return None
-    return getattr(self.C, fName)</code></pre>
-</details>
 </dd>
 <dt id="tf.core.api.Api.Eall"><code class="name flex">
 <span>def <span class="ident">Eall</span></span>(<span>self, warp=True)</span>
@@ -1318,22 +1229,6 @@ you can not use <code>C.component</code>, but you should use
 <dt><strong><code>warp</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
 <dd>Whether to include the warp features, i.e. <code>oslots</code>.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/api.py#L191-L200" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def Eall(self, warp=True):
-    &#34;&#34;&#34;Returns a sorted list of all usable, loaded edge feature names.
-
-    Parameters
-    ----------
-    warp: boolean, optional True
-        Whether to include the warp features, i.e. `oslots`.
-    &#34;&#34;&#34;
-
-    return sorted(x[0] for x in self.E.__dict__.items() if warp or x[0] != OSLOTS)</code></pre>
-</details>
 </dd>
 <dt id="tf.core.api.Api.Es"><code class="name flex">
 <span>def <span class="ident">Es</span></span>(<span>self, fName, warn=True)</span>
@@ -1353,37 +1248,6 @@ you can not use <code>E.feature</code>, but you should use
 </dl>
 <h2 id="returns">Returns</h2>
 <p>The feature API, or <code>None</code> if the feature is not loaded.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/api.py#L128-L152" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def Es(self, fName, warn=True):
-    &#34;&#34;&#34;Get the edge feature sub API.
-
-    If feature name is not a valid python identifier,
-    or if you do not know its name in advance,
-    you can not use `E.feature`, but you should use
-    `Es(feature)`.
-
-    Parameters
-    ----------
-    fName: string
-        The name of the feature.
-    warn: boolean, optional `True`
-        Whether to warn if the feature is not loaded.
-
-    Returns
-    -------
-    The feature API, or `None` if the feature is not loaded.
-    &#34;&#34;&#34;
-
-    if not hasattr(self.E, fName):
-        if warn:
-            self.TF.error(f&#39;Edge feature &#34;{fName}&#34; not loaded&#39;)
-        return None
-    return getattr(self.E, fName)</code></pre>
-</details>
 </dd>
 <dt id="tf.core.api.Api.Fall"><code class="name flex">
 <span>def <span class="ident">Fall</span></span>(<span>self, warp=True)</span>
@@ -1395,22 +1259,6 @@ you can not use <code>E.feature</code>, but you should use
 <dt><strong><code>warp</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
 <dd>Whether to include the warp features, i.e. <code>otype</code>.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/api.py#L180-L189" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def Fall(self, warp=True):
-    &#34;&#34;&#34;Returns a sorted list of all usable, loaded node feature names.
-
-    Parameters
-    ----------
-    warp: boolean, optional True
-        Whether to include the warp features, i.e. `otype`.
-    &#34;&#34;&#34;
-
-    return sorted(x[0] for x in self.F.__dict__.items() if warp or x[0] != OTYPE)</code></pre>
-</details>
 </dd>
 <dt id="tf.core.api.Api.Fs"><code class="name flex">
 <span>def <span class="ident">Fs</span></span>(<span>self, fName, warn=True)</span>
@@ -1430,37 +1278,6 @@ you can not use <code>F.feature</code>, but you should use
 </dl>
 <h2 id="returns">Returns</h2>
 <p>The feature API, or <code>None</code> if the feature is not loaded.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/api.py#L102-L126" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def Fs(self, fName, warn=True):
-    &#34;&#34;&#34;Get the node feature sub API.
-
-    If feature name is not a valid python identifier,
-    or if you do not know its name in advance,
-    you can not use `F.feature`, but you should use
-    `Fs(feature)`.
-
-    Parameters
-    ----------
-    fName: string
-        The name of the feature.
-    warn: boolean, optional `True`
-        Whether to warn if the feature is not loaded.
-
-    Returns
-    -------
-    The feature API, or `None` if the feature is not loaded.
-    &#34;&#34;&#34;
-
-    if not hasattr(self.F, fName):
-        if warn:
-            self.TF.error(f&#39;Node feature &#34;{fName}&#34; not loaded&#39;)
-        return None
-    return getattr(self.F, fName)</code></pre>
-</details>
 </dd>
 <dt id="tf.core.api.Api.ensureLoaded"><code class="name flex">
 <span>def <span class="ident">ensureLoaded</span></span>(<span>self, features)</span>
@@ -1481,56 +1298,6 @@ without directory information and without extension.</dd>
 <dt><code>set</code></dt>
 <dd>The names of the features in question as a set of strings.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/api.py#L455-L498" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def ensureLoaded(self, features):
-    &#34;&#34;&#34;Checks if features are loaded and if not loads them.
-
-    All features in question will be made available to the core API.
-
-    Parameters
-    ----------
-    features: string | iterable of strings
-        It is a string containing space separated feature names,
-        or an iterable of feature names.
-        The feature names are just the names of `.tf` files
-        without directory information and without extension.
-
-    Returns
-    -------
-    set
-        The names of the features in question as a set of strings.
-    &#34;&#34;&#34;
-
-    F = self.F
-    E = self.E
-    TF = self.TF
-    warning = TF.warning
-
-    needToLoad = set()
-    loadedFeatures = set()
-
-    for fName in sorted(flattenToSet(features)):
-        fObj = TF.features.get(fName, None)
-        if not fObj:
-            warning(f&#39;Cannot load feature &#34;{fName}&#34;: not in dataset&#39;)
-            continue
-        if fObj.dataLoaded and (hasattr(F, fName) or hasattr(E, fName)):
-            loadedFeatures.add(fName)
-        else:
-            needToLoad.add(fName)
-    if len(needToLoad):
-        TF.load(
-            needToLoad,
-            add=True,
-            silent=DEEP,
-        )
-        loadedFeatures |= needToLoad
-    return loadedFeatures</code></pre>
-</details>
 </dd>
 <dt id="tf.core.api.Api.footprint"><code class="name flex">
 <span>def <span class="ident">footprint</span></span>(<span>self, recompute=False, bySize=True)</span>
@@ -1549,72 +1316,6 @@ If no earlier computed size data is found, sizes will be computed anyway.</dd>
 <dd>Whether to sort the features by the size they occupy in RAM.
 If False, the features will be sorted alphabetically.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/api.py#L500-L559" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def footprint(self, recompute=False, bySize=True):
-    &#34;&#34;&#34;Computes the memory footprint in RAM of the loaded TF data.
-
-    This includes the pre-computed data.
-
-    Parameters
-    ----------
-    recompute: boolean, optional False
-        The function looks first for earlier computed size data.
-        If that is found, it will be used, and no size computation will take place.
-        Unless this parameter is True.
-        If no earlier computed size data is found, sizes will be computed anyway.
-    bySize: boolean, optional True
-        Whether to sort the features by the size they occupy in RAM.
-        If False, the features will be sorted alphabetically.
-    &#34;&#34;&#34;
-    if hasattr(self, &#34;sizes&#34;) and not recompute:
-        sizes = self.sizes
-    else:
-        TF = self.TF
-        features = TF.features
-        nFeatures = len(features)
-        sizes = {}
-
-        for ft in sorted(features):
-            console(f&#34;\rcomputing size of {ft:&lt;30}&#34;, newline=False)
-            data = features[ft].data
-            if data is None:
-                continue
-            nData = len(data)
-            sData = deepSize(data)
-            sizes[ft] = (nData, sData)
-
-        console(f&#39;\r{&#34;&#34;:&gt;40}&#39;, newline=False)
-        self.sizes = sizes
-
-    material = &#34;&#34;
-
-    nFeatures = len(sizes)
-    totals = collections.Counter()
-
-    for (ft, (nData, sData)) in sorted(
-        sizes.items(),
-        key=(lambda x: (-x[1][1], x[0])) if bySize else lambda x: x[0],
-    ):
-        material += f&#34;{ft} | {nData:,} | {sData:,}\n&#34;
-        totals[&#34;nData&#34;] += nData
-        totals[&#34;sData&#34;] += sData
-
-    material += f&#39;TOTAL | {totals[&#34;nData&#34;]:,} | {totals[&#34;sData&#34;]:,}&#39;
-    header = dedent(
-        f&#34;&#34;&#34;
-        # {nFeatures} features
-
-        feature | members | size in bytes
-        --- | --- | ---
-        &#34;&#34;&#34;
-    )
-
-    dm(header + material)</code></pre>
-</details>
 </dd>
 <dt id="tf.core.api.Api.isLoaded"><code class="name flex">
 <span>def <span class="ident">isLoaded</span></span>(<span>self, features=None, pretty=True, valueType=True, path=False, meta='description')</span>
@@ -1670,185 +1371,6 @@ the edges have values. Otherwise <code>None</code>.</li>
 <p>If <code>pretty</code>, nothing is returned, but the dict is pretty printed.</p>
 </dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/api.py#L207-L379" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def isLoaded(
-    self, features=None, pretty=True, valueType=True, path=False, meta=&#34;description&#34;
-):
-    &#34;&#34;&#34;Show information about loaded features.
-
-    Parameters
-    ----------
-    features: iterable | string, optional None
-        The features to get info for.
-        If absent or None: all features seen by TF.
-        If a string, it is a comma and / or space separated list of feature names.
-        Otherwise the items of the iterable are feature names.
-
-    pretty: boolean, optional True
-        If True, it prints an overview of all features seen by TF with
-        information about kind, type, source location and loaded status.
-        The amount of information printed can be tweaked by other parameters.
-        Otherwise, it returns this information as a dict.
-
-    valueType: boolean, optional True
-        Only relevant if `pretty=True`: whether to print the value type of
-        the values in the feature file.
-
-    path: boolean, optional True
-        Only relevant if `pretty=True`: whether to print the path name of
-        the feature file.
-
-    meta: string|list|boolean, optional &#34;description&#34;
-        Only relevant if `pretty=True`: controls what metadata of the feature
-        should be printed.
-
-        If it is None, False, or the empty string or empty list:
-        no metadata will be printed.
-
-        It it is the boolean value True: all metadata will be printed.
-
-        If it is a list of key names or a string with key names
-        separated by white-space and / or commas, only these metadata keys
-        will be printed.
-
-    Returns
-    -------
-    dict of dict
-        The features are keys, the value per feature is None or a dict with the
-        following information:
-
-        `None` if  the feature is not loaded.
-
-        If the feature is loaded:
-
-        *   `kind`: `node`, `edge`, `config`, `computed`;
-        *   `type` is the type of values: `int`, or `str` or `&#34;&#34;`;
-        *   `edgeValues`: if an edge feature it indicates whether
-            the edges have values. Otherwise `None`.
-        *   `meta`: dictionary containing the metadata of the feature
-
-        If `pretty`, nothing is returned, but the dict is pretty printed.
-    &#34;&#34;&#34;
-
-    fNames = list(self.TF.features) if features is None else fitemize(features)
-    info = {}
-
-    for fName in fNames:
-        fMeta = {}
-        fType = None
-        edgeValues = None
-        fSource = None
-        hasInfo = True
-        if fName in self.TF.features:
-            fObj = self.TF.features[fName]
-            fSource = ux(fObj.dirName)
-            fMeta = fObj.metaData
-            fType = fMeta.get(&#34;valueType&#34;, &#34;&#34;)
-            fMeta = {k: v for (k, v) in fMeta.items() if k != &#34;valueType&#34;}
-
-        isLoadedF = hasattr(self.F, fName)
-        isLoadedE = hasattr(self.E, fName)
-        if isLoadedF or isLoadedE:
-            if isLoadedF:
-                fKind = &#34;node&#34;
-            elif isLoadedE:
-                fKind = &#34;edge&#34;
-                flObj = getattr(self.E, fName)
-                edgeValues = False if fName == &#34;oslots&#34; else flObj.doValues
-        elif (
-            fName.startswith(&#34;__&#34;)
-            and fName.endswith(&#34;__&#34;)
-            and hasattr(self.C, fName.strip(&#34;_&#34;))
-        ):
-            fKind = &#34;computed&#34;
-        elif fName in self.TF.features:
-            if fObj.isConfig:
-                fKind = &#34;config&#34;
-            else:
-                hasInfo = False
-        else:
-            hasInfo = False
-
-        info[fName] = (
-            dict(
-                kind=fKind,
-                type=fType,
-                meta=fMeta,
-                source=fSource,
-                edgeValues=edgeValues,
-            )
-            if hasInfo
-            else None
-        )
-    if pretty:
-        for (fName, fInfo) in sorted(info.items()):
-            if fInfo is None:
-                kind = &#34;NOT LOADED&#34;
-                kind = f&#34; {kind:&lt;10}&#34;
-                fSource = &#34;&#34;
-                metaRep = &#34;&#34;
-                heading = f&#34;{fName:&lt;20}{kind}{fSource}&#34;
-            else:
-                fKind = fInfo[&#34;kind&#34;]
-                fMeta = fInfo.get(&#34;meta&#34;, {})
-                fType = fInfo.get(&#34;type&#34;, &#34;&#34;)
-                fSource = fInfo.get(&#34;source&#34;, &#34;&#34;) if path else &#34;&#34;
-                fSource = f&#34; {fSource}&#34; if fSource else &#34;&#34;
-                fEV = fInfo.get(&#34;edgeValues&#34;, &#34;&#34;)
-                if valueType:
-                    kind = (
-                        f&#34;node ({fType})&#34;
-                        if fKind == &#34;node&#34;
-                        else f&#34;edge ({fType})&#34;
-                        if fKind == &#34;edge&#34; and fEV
-                        else &#34;edge&#34;
-                        if fKind == &#34;edge&#34;
-                        else f&#34;{fKind}&#34;
-                    )
-                    kind = f&#34; {kind:&lt;10}&#34; if kind else &#34;&#34;
-                else:
-                    kind = &#34;&#34;
-                if meta is True:
-                    metaKeys = sorted(fMeta.keys())
-                    metaInfo = fMeta
-                elif not meta:
-                    metaInfo = {}
-                else:
-                    metaKeys = fitemize(meta)
-                    metaInfo = {k: fMeta[k] for k in metaKeys if k in fMeta}
-
-                heading = f&#34;{fName:&lt;20}{kind}{fSource}&#34;
-                metaRep = &#34;&#34;
-                indent = &#34; &#34; * (len(heading) + 1)
-                if metaInfo:
-                    if len(metaKeys) == 1:
-                        value = metaInfo.get(metaKeys[0], &#34;&#34;)
-                        value = &#34;\n&#34;.join(
-                            wrap(value, width=80, subsequent_indent=indent)
-                        )
-                        metaRep = f&#34; {value}&#34; if value else &#34;&#34;
-                    else:
-                        indent = &#34; &#34; * 21
-                        for k in metaKeys:
-                            value = metaInfo.get(k, &#34;&#34;)
-                            value = &#34;\n&#34;.join(
-                                wrap(
-                                    value,
-                                    width=80,
-                                    subsequent_indent=f&#34;\t{indent}  &#34;,
-                                )
-                            )
-                            metaRep += f&#34;\n\t{k:&lt;20} = {value}&#34;
-
-            msg = f&#34;{heading}{metaRep}&#34;
-            console(msg)
-        return None
-    return info</code></pre>
-</details>
 </dd>
 <dt id="tf.core.api.Api.makeAvailableIn"><code class="name flex">
 <span>def <span class="ident">makeAvailableIn</span></span>(<span>self, scope)</span>
@@ -1948,82 +1470,6 @@ scope.</dd>
 define a function that looks into the <code>globals()</code> of its caller.
 So we have to pass it on.</p>
 </div></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/api.py#L381-L450" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def makeAvailableIn(self, scope):
-    &#34;&#34;&#34;Exports members of the API to the global namespace.
-
-    Only the members whose names start with a capital are exported.
-
-    If you are working with a single data source in your program, it is a bit
-    tedious to write the initial `TF.api.` or `A.api` all the time.
-    By this method you can avoid that.
-
-    !!! explanation &#34;Longer names&#34;
-        There are also longer names which can be used as aliases
-        to the single capital letters.
-        This might or might not improve the readability of your program.
-
-        short name | long name
-        --- | ---
-        `N` | `Nodes`
-        `F` | `Feature`
-        `Fs` | `FeatureString`
-        `Fall` | `AllFeatures`
-        `E` | `Edge`
-        `Es` | `EdgeString`
-        `Eall`  `AllEdges`
-        `C` | `Computed`
-        `Cs`  `ComputedString`
-        `Call` | `AllComputeds`
-        `L` | `Locality`
-        `T` | `Text`
-        `S` | `Search`
-
-    Parameters
-    ----------
-    scope: dict
-        A dictionary into which the members of the core API will be inserted.
-        The only sensible choice is: `globals()`.
-
-    Returns
-    -------
-    tuple
-        A grouped list of API members that has been hoisted to the global
-        scope.
-
-    Notes
-    -----
-    !!! explanation &#34;Why pass `globals()`?&#34;
-        Although we know it should always be `globals()`, we cannot
-        define a function that looks into the `globals()` of its caller.
-        So we have to pass it on.
-    &#34;&#34;&#34;
-
-    for member in dir(self):
-        if &#34;_&#34; not in member and member[0].isupper():
-            scope[member] = getattr(self, member)
-            if member not in API_REFS:
-                console(f&#39;WARNING: API member &#34;{member}&#34; not documented&#39;)
-
-    grouped = {}
-    for (member, (head, sub, ref)) in API_REFS.items():
-        grouped.setdefault(ref, {}).setdefault((head, sub), []).append(member)
-
-    # grouped
-    # node-features=&gt;(Features, node)=&gt;[F, ...]
-
-    docs = []
-    for (ref, groups) in sorted(grouped.items()):
-        chunks = []
-        for ((head, sub), members) in sorted(groups.items()):
-            chunks.append(&#34; &#34;.join(sorted(members, key=lambda x: (len(x), x))))
-        docs.append((head, ref, tuple(chunks)))
-    return docs</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -2129,7 +1575,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

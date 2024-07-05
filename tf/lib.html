@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.lib API documentation</title>
 <meta name="description" content="Utility functions …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -33,7 +33,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/lib.py#L1-L172" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/lib.py#L1-L172" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Utility functions
@@ -234,50 +234,6 @@ This file must contain a <code>gzipped</code>, <code>pickled</code> data structu
 <dt><code>data | boolean</code></dt>
 <dd>The list of tuples obtained from the file if all went well, False otherwise.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/lib.py#L75-L112" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def readList(source):
-    &#34;&#34;&#34;Reads list of tuples from a TSV file.
-
-    The first line of the TSV file will be interpreted as the types of the
-    columns.
-
-    Parameters
-    ----------
-    source: string
-        A file path. You may use `~` to refer to your home directory.
-        This file must contain a `gzipped`, `pickled` data structure.
-
-    Returns
-    -------
-    data | boolean
-        The list of tuples obtained from the file if all went well, False otherwise.
-
-    &#34;&#34;&#34;
-
-    sourcePath = ex(source)
-    if not fileExists(sourcePath):
-        console(f&#39;Sets file &#34;{source}&#34; does not exist.&#39;)
-        return False
-
-    data = []
-
-    with fileOpen(sourcePath) as fh:
-        colInt = {
-            i: tp == &#34;int&#34; for (i, tp) in enumerate(next(fh).rstrip(&#34;\n&#34;).split(&#34;\t&#34;))
-        }
-        for line in fh:
-            fields = tuple(
-                int(f) if colInt[i] else f.replace(&#34;\\n&#34;, &#34;\n&#34;).replace(&#34;\\t&#34;, &#34;\t&#34;)
-                for (i, f) in enumerate(line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;))
-            )
-            data.append(fields)
-
-    return data</code></pre>
-</details>
 </dd>
 <dt id="tf.lib.readSets"><code class="name flex">
 <span>def <span class="ident">readSets</span></span>(<span>source)</span>
@@ -297,38 +253,6 @@ This file must contain a <code>gzipped</code>, <code>pickled</code> data structu
 <dt><code>data | boolean</code></dt>
 <dd>The data structure contained in the file if all went well, False otherwise.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/lib.py#L147-L172" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def readSets(source):
-    &#34;&#34;&#34;Reads a dictionary of named sets from file.
-
-    This is used by the TF browser, when the user has passed a
-    `--sets=fileName` argument to it.
-
-    Parameters
-    ----------
-    source: string
-        A file path. You may use `~` to refer to your home directory.
-        This file must contain a `gzipped`, `pickled` data structure.
-
-    Returns
-    -------
-    data | boolean
-        The data structure contained in the file if all went well, False otherwise.
-
-    &#34;&#34;&#34;
-
-    sourcePath = ex(source)
-    if not fileExists(sourcePath):
-        console(f&#39;Sets file &#34;{source}&#34; does not exist.&#39;)
-        return False
-    with gzip.open(sourcePath, mode=&#34;rb&#34;) as f:
-        sets = pickle.load(f)
-    return sets</code></pre>
-</details>
 </dd>
 <dt id="tf.lib.writeList"><code class="name flex">
 <span>def <span class="ident">writeList</span></span>(<span>data, dest, intCols=None)</span>
@@ -367,71 +291,6 @@ If None, all columns are of type string.</dd>
 <dt><code>boolean</code></dt>
 <dd><code>True</code> if all went well, <code>False</code> otherwise.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/lib.py#L14-L72" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def writeList(data, dest, intCols=None):
-    &#34;&#34;&#34;Writes a list of tuples sets to a TSV file.
-
-    The members of the tuples will be written
-    as string values in tab separated lines, with newlines and tabs
-    escaped with backslashes.
-
-    The first line consists of tab-separated values that are either the
-    string `str` or the string `int`, indicating the type of values of the
-    corresponding column.
-    values are supposed to be integers.
-
-    Intended use: if you have data from an NLP pipeline, it usually comes as a list
-    of tuples, where each tuple has two position columns plus extra columns
-    for linguistic features, which are strings or numbers.
-
-    If there is no data, an empty file is created, with a header line.
-    If `intCols` is not given, the header line itself is empty.
-
-    !!! caution &#34;Equal length&#34;
-        It is assumed that all tuples have equal length.
-
-    Parameters
-    ----------
-    data: list of tuples
-    dest: string
-        A file path. You may use `~` to refer to your home directory.
-        The result will be written from this file.
-    intCols: tuple, optional None
-        A sequence of boolean values, indicating which columns have integer values.
-        If None, all columns are of type string.
-
-    Returns
-    -------
-    boolean
-        `True` if all went well, `False` otherwise.
-    &#34;&#34;&#34;
-
-    destPath = ex(dest)
-    (baseDir, fileName) = splitPath(destPath)
-
-    dirMake(baseDir)
-
-    with fileOpen(destPath, mode=&#34;w&#34;) as fh:
-        if intCols is None:
-            intCols = {i: False for i in range(len(data[0]))} if len(data) else {}
-        else:
-            intCols = {i: isInt for (i, isInt) in enumerate(intCols)}
-
-        headLine = &#34;\t&#34;.join(&#34;int&#34; if intCols[i] else &#34;str&#34; for i in sorted(intCols))
-        fh.write(f&#34;{headLine}\n&#34;)
-
-        for fields in data:
-            dataLine = &#34;\t&#34;.join(
-                str(f) if intCols[i] else str(f).replace(&#34;\t&#34;, &#34;\\t&#34;).replace(&#34;\n&#34;, &#34;\\n&#34;)
-                for (i, f) in enumerate(fields)
-            )
-            fh.write(f&#34;{dataLine}\n&#34;)
-    return True</code></pre>
-</details>
 </dd>
 <dt id="tf.lib.writeSets"><code class="name flex">
 <span>def <span class="ident">writeSets</span></span>(<span>sets, dest)</span>
@@ -454,42 +313,6 @@ The result will be written from this file.</dd>
 <dt><code>boolean</code></dt>
 <dd><code>True</code> if all went well, <code>False</code> otherwise.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/lib.py#L115-L144" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def writeSets(sets, dest):
-    &#34;&#34;&#34;Writes a dictionary of named sets to file.
-
-    The dictionary will be written as a `gzipped`, `pickled` data structure.
-
-    Intended use: if you have constructed custom node sets that you want to use
-    in search templates that run in the TF browser.
-
-    Parameters
-    ----------
-    sets: dict of sets
-        The keys are names for the values, which are sets of nodes.
-    dest: string
-        A file path. You may use `~` to refer to your home directory.
-        The result will be written from this file.
-
-    Returns
-    -------
-    boolean
-        `True` if all went well, `False` otherwise.
-    &#34;&#34;&#34;
-
-    destPath = ex(dest)
-    (baseDir, fileName) = splitPath(destPath)
-
-    dirMake(baseDir)
-
-    with gzip.open(destPath, mode=&#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
-        pickle.dump(sets, f, protocol=PICKLE_PROTOCOL)
-    return True</code></pre>
-</details>
 </dd>
 </dl>
 </section>
@@ -574,7 +397,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

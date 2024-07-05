@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.convert.xml API documentation</title>
 <meta name="description" content="XML import …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -135,7 +135,7 @@ conversion code is demonstrated in the Greek New Testament:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/xml.py#L1-L1245" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/convert/xml.py#L1-L1245" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # XML import
@@ -1396,23 +1396,6 @@ if __name__ == &#34;__main__&#34;:
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/xml.py#L1231-L1241" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def main():
-    (good, tasks, params, flags) = readArgs(
-        &#34;tf-fromxml&#34;, HELP, TASKS, PARAMS, FLAGS, notInAll=TASKS_EXCLUDED
-    )
-    if not good:
-        return False
-
-    Obj = XML(**params, **flags)
-    Obj.task(**tasks, **flags)
-
-    return Obj.good</code></pre>
-</details>
 </dd>
 </dl>
 </section>
@@ -1539,7 +1522,7 @@ relevant TF version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/xml.py#L194-L1228" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/convert/xml.py#L194-L1228" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class XML(CheckImport):
     def __init__(
@@ -2610,241 +2593,6 @@ that code between automatic generation of files.</p>
 <dt><code>boolean</code></dt>
 <dd>Whether the operation was successful.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/xml.py#L897-L1125" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def appTask(self, tokenBased=False):
-    &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
-
-    It creates / updates a corpus-specific app.
-    There should be a valid TF dataset in place, because some
-    settings in the app derive from it.
-
-    It will also read custom additions that are present in the target app directory.
-    These files are:
-
-    *   `config_custom.yaml`:
-        A YAML file with configuration data that will be *merged* into the generated
-        config.yaml.
-    *   `app_custom.py`:
-        A python file with named snippets of code to be inserted
-        at corresponding places in the generated `app.py`
-    *   `display_custom.css`:
-        Additional CSS definitions that will be put in place.
-
-    If the TF app for this resource needs custom code, this is the way to retain
-    that code between automatic generation of files.
-
-    Returns
-    -------
-    boolean
-        Whether the operation was successful.
-    &#34;&#34;&#34;
-    if not self.importOK():
-        return
-
-    if not self.good:
-        return
-
-    verbose = self.verbose
-
-    refDir = self.refDir
-    myDir = self.myDir
-
-    # key | parent directory | file | template based
-
-    # if parent directory is a tuple, the first part is the parent of the source
-    # end the second part is the parent of the destination
-
-    itemSpecs = (
-        (&#34;logo&#34;, &#34;app/static&#34;, &#34;logo.png&#34;, True),
-        (&#34;display&#34;, &#34;app/static&#34;, &#34;display.css&#34;, False),
-        (&#34;config&#34;, &#34;app&#34;, APP_CONFIG, False),
-        (&#34;app&#34;, &#34;app&#34;, &#34;app.py&#34;, False),
-    )
-    genTasks = {
-        s[0]: dict(parent=s[1], file=s[2], justCopy=s[3]) for s in itemSpecs
-    }
-
-    tfVersion = self.tfVersion
-    version = tfVersion
-
-    def createConfig(sourceText, customText):
-        text = sourceText.replace(&#34;«version»&#34;, f&#39;&#34;{version}&#34;&#39;)
-
-        settings = readYaml(text=text, plain=True)
-        settings.setdefault(&#34;provenanceSpec&#34;, {})[&#34;branch&#34;] = BRANCH_DEFAULT_NEW
-        dataDisplay = settings.setdefault(&#34;dataDisplay&#34;, {})
-        interfaceDefaults = settings.setdefault(&#34;interfaceDefaults&#34;, {})
-        if &#34;textFormats&#34; in dataDisplay:
-            del dataDisplay[&#34;textFormats&#34;]
-        dataDisplay[&#34;textFormat&#34;] = DEFAULT_FORMAT
-        interfaceDefaults[&#34;fmt&#34;] = DEFAULT_FORMAT
-
-        customSettings = (
-            {} if customText is None else readYaml(text=customText, plain=True)
-        )
-
-        mergeDict(settings, customSettings)
-
-        text = writeYaml(settings)
-
-        return text
-
-    def createDisplay(sourceText, customText):
-        &#34;&#34;&#34;Copies the custom display.css file of an TF app.&#34;&#34;&#34;
-        return customText or &#34;&#34;
-
-    def createApp(sourceText, customText):
-        &#34;&#34;&#34;Copies and tweaks the app.py file of an TF app.
-
-        The template app.py provides text formatting functions.
-        It retrieves text from features, but that is dependent on
-        the settings of the conversion.
-        &#34;&#34;&#34;
-        if customText is None:
-            return None
-
-        materialCode = &#39;&#39;&#39;F.ch.v(n) or &#34;&#34;&#39;&#39;&#39;
-
-        code = sourceText.replace(&#34;F.matérial&#34;, materialCode)
-        code = code.replace(&#39;&#34;rèndValues&#34;&#39;, &#34;{}&#34;)
-
-        hookStartRe = re.compile(r&#34;^# DEF (import|init|extra)\s*$&#34;, re.S)
-        hookEndRe = re.compile(r&#34;^# END DEF\s*$&#34;, re.S)
-        hookInsertRe = re.compile(r&#34;^\t# INSERT (import|init|extra)\s*$&#34;, re.S)
-
-        custom = {}
-        section = None
-
-        for line in (customText or &#34;&#34;).split(&#34;\n&#34;):
-            line = line.rstrip()
-
-            if section is None:
-                match = hookStartRe.match(line)
-                if match:
-                    section = match.group(1)
-                    custom[section] = []
-            else:
-                match = hookEndRe.match(line)
-                if match:
-                    section = None
-                else:
-                    custom[section].append(line)
-
-        codeLines = []
-
-        for line in code.split(&#34;\n&#34;):
-            line = line.rstrip()
-
-            match = hookInsertRe.match(line)
-            if match:
-                section = match.group(1)
-                codeLines.extend(custom.get(section, []))
-            else:
-                codeLines.append(line)
-
-        return &#34;\n&#34;.join(codeLines) + &#34;\n&#34;
-
-    if verbose &gt;= 0:
-        console(&#34;App updating ...&#34;)
-
-    for name, info in genTasks.items():
-        parent = info[&#34;parent&#34;]
-        (sourceBit, targetBit) = (
-            parent if type(parent) is tuple else (parent, parent)
-        )
-        file = info[FILE]
-        fileParts = file.rsplit(&#34;.&#34;, 1)
-        if len(fileParts) == 1:
-            fileParts = [file, &#34;&#34;]
-        (fileBase, fileExt) = fileParts
-        if fileExt:
-            fileExt = f&#34;.{fileExt}&#34;
-        targetDir = f&#34;{refDir}/{targetBit}&#34;
-        itemTarget = f&#34;{targetDir}/{file}&#34;
-        itemCustom = f&#34;{targetDir}/{fileBase}_custom{fileExt}&#34;
-        itemPre = f&#34;{targetDir}/{fileBase}_orig{fileExt}&#34;
-
-        justCopy = info[&#34;justCopy&#34;]
-        xmlDir = f&#34;{myDir}/{sourceBit}&#34;
-        itemSource = f&#34;{xmlDir}/{file}&#34;
-
-        # If there is custom info, we do not have to preserve the previous version.
-        # Otherwise we save the target before overwriting it; # unless it
-        # has been saved before
-
-        preExists = fileExists(itemPre)
-        targetExists = fileExists(itemTarget)
-        customExists = fileExists(itemCustom)
-
-        msg = &#34;&#34;
-
-        if justCopy:
-            if targetExists:
-                msg = &#34;(already exists, not overwritten)&#34;
-                safe = False
-            else:
-                msg = &#34;(copied)&#34;
-                safe = True
-        else:
-            if targetExists:
-                if customExists:
-                    msg = &#34;(generated with custom info)&#34;
-                else:
-                    if preExists:
-                        msg = &#34;(no custom info, older original exists)&#34;
-                    else:
-                        msg = &#34;(no custom info, original preserved)&#34;
-                        fileCopy(itemTarget, itemPre)
-            else:
-                msg = &#34;(created)&#34;
-
-        initTree(targetDir, fresh=False)
-
-        if justCopy:
-            if safe:
-                fileCopy(itemSource, itemTarget)
-        else:
-            if fileExists(itemSource):
-                with fileOpen(itemSource) as fh:
-                    sourceText = fh.read()
-            else:
-                sourceText = &#34;&#34;
-
-            if fileExists(itemCustom):
-                with fileOpen(itemCustom) as fh:
-                    customText = fh.read()
-            else:
-                customText = None
-
-            targetText = (
-                createConfig
-                if name == &#34;config&#34;
-                else createApp
-                if name == &#34;app&#34;
-                else createDisplay
-                if name == &#34;display&#34;
-                else fileCopy  # this cannot occur because justCopy is False
-            )(sourceText, customText)
-
-            if targetText is None:
-                fileRemove(itemTarget)
-                msg = &#34;(deleted)&#34;
-            else:
-                with fileOpen(itemTarget, mode=&#34;w&#34;) as fh:
-                    fh.write(targetText)
-
-        if verbose &gt;= 0:
-            console(f&#34;\t{ux(itemTarget):30} {msg}&#34;)
-
-    if verbose &gt;= 0:
-        console(&#34;Done&#34;)
-    else:
-        console(&#34;App updated&#34;)</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.xml.XML.browseTask"><code class="name flex">
 <span>def <span class="ident">browseTask</span></span>(<span>self)</span>
@@ -2859,49 +2607,6 @@ There should be a valid TF dataset and app configuration in place</p>
 <dt><code>boolean</code></dt>
 <dd>Whether the operation was successful.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/xml.py#L1129-L1165" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def browseTask(self):
-    &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
-
-    It gives a shell command to start the TF browser on
-    the newly created corpus.
-    There should be a valid TF dataset and app configuration in place
-
-    Returns
-    -------
-    boolean
-        Whether the operation was successful.
-    &#34;&#34;&#34;
-    if not self.importOK():
-        return
-
-    if not self.good:
-        return
-
-    org = self.org
-    repo = self.repo
-    relative = self.relative
-    backend = self.backend
-    tfVersion = self.tfVersion
-
-    backendOpt = &#34;&#34; if backend == &#34;github&#34; else f&#34;--backend={backend}&#34;
-    versionOpt = f&#34;--version={tfVersion}&#34;
-    versionOpt = &#34;&#34;
-    try:
-        run(
-            (
-                f&#34;tf {org}/{repo}{relative}:clone --checkout=clone &#34;
-                f&#34;{versionOpt} {backendOpt}&#34;
-            ),
-            shell=True,
-        )
-    except KeyboardInterrupt:
-        pass</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.xml.XML.checkTask"><code class="name flex">
 <span>def <span class="ident">checkTask</span></span>(<span>self)</span>
@@ -2925,241 +2630,6 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <li><code>errors.txt</code>: validation errors</li>
 <li><code>elements.txt</code>: element / attribute inventory.</li>
 </ul></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/xml.py#L579-L807" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def checkTask(self):
-    &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
-
-    Then it makes an inventory of all elements and attributes in the XML files.
-
-    If tags are used in multiple namespaces, it will be reported.
-
-    !!! caution &#34;Conflation of namespaces&#34;
-        The XML to TF conversion does construct node types and attributes
-        without taking namespaces into account.
-        However, the parsing process is namespace aware.
-
-    The inventory lists all elements and attributes, and many attribute values.
-    But is represents any digit with `n`, and some attributes that contain
-    ids or keywords, are reduced to the value `x`.
-
-    This information reduction helps to get a clear overview.
-
-    It writes reports to the `reportPath`:
-
-    *   `errors.txt`: validation errors
-    *   `elements.txt`: element / attribute inventory.
-    &#34;&#34;&#34;
-    if not self.importOK():
-        return
-
-    if not self.good:
-        return
-
-    etree = self.etree
-    verbose = self.verbose
-    procins = self.procins
-
-    trimAtts = self.trimAtts
-    keywordAtts = self.keywordAtts
-    renameAtts = self.renameAtts
-
-    xmlPath = self.xmlPath
-    reportPath = self.reportPath
-
-    if verbose == 1:
-        console(f&#34;XML to TF checking: {ux(xmlPath)} =&gt; {ux(reportPath)}&#34;)
-    if verbose &gt;= 0:
-        console(
-            f&#34;Processing instructions are {&#39;treated&#39; if procins else &#39;ignored&#39;}&#34;
-        )
-
-    kindLabels = dict(
-        keyword=&#34;Keyword Attributes&#34;,
-        rest=&#34;Remaining Attributes and Elements&#34;,
-    )
-    getStore = lambda: collections.defaultdict(  # noqa: E731
-        lambda: collections.defaultdict(collections.Counter)
-    )
-    analysis = {x: getStore() for x in kindLabels}
-    errors = []
-    tagByNs = collections.defaultdict(collections.Counter)
-
-    parser = self.getParser()
-
-    initTree(reportPath)
-
-    def analyse(root, analysis):
-        NUM_RE = re.compile(r&#34;&#34;&#34;[0-9]&#34;&#34;&#34;, re.S)
-
-        def nodeInfo(xnode):
-            if procins and isinstance(xnode, etree._ProcessingInstruction):
-                target = xnode.target
-                tag = f&#34;?{target}&#34;
-                ns = &#34;&#34;
-            else:
-                qName = etree.QName(xnode.tag)
-                tag = qName.localname
-                ns = qName.namespace
-
-            atts = xnode.attrib
-
-            tagByNs[tag][ns] += 1
-
-            if len(atts) == 0:
-                kind = &#34;rest&#34;
-                analysis[kind][tag][&#34;&#34;][&#34;&#34;] += 1
-            else:
-                for kOrig, v in atts.items():
-                    k = etree.QName(kOrig).localname
-                    kind = &#34;keyword&#34; if k in keywordAtts else &#34;rest&#34;
-                    dest = analysis[kind]
-
-                    if kind == &#34;rest&#34;:
-                        vTrim = &#34;X&#34; if k in trimAtts else NUM_RE.sub(&#34;N&#34;, v)
-                        dest[tag][k][vTrim] += 1
-                    else:
-                        words = v.strip().split()
-                        for w in words:
-                            dest[tag][k][w.strip()] += 1
-
-            for child in xnode.iterchildren(
-                tag=(etree.Element, etree.ProcessingInstruction)
-                if procins
-                else etree.Element
-            ):
-                nodeInfo(child)
-
-        nodeInfo(root)
-
-    def writeErrors():
-        errorFile = f&#34;{reportPath}/errors.txt&#34;
-
-        nErrors = 0
-
-        with fileOpen(errorFile, mode=&#34;w&#34;) as fh:
-            for xmlFile, lines in errors:
-                fh.write(f&#34;{xmlFile}\n&#34;)
-                for line in lines:
-                    fh.write(line)
-                    nErrors += 1
-                fh.write(&#34;\n&#34;)
-
-        console(
-            f&#34;{nErrors} error(s) in {len(errors)} file(s) written to {errorFile}&#34;
-            if verbose &gt;= 0 or nErrors
-            else &#34;Validation OK&#34;
-        )
-
-    def writeNamespaces():
-        errorFile = f&#34;{reportPath}/namespaces.txt&#34;
-
-        nErrors = 0
-
-        nTags = len(tagByNs)
-
-        with fileOpen(errorFile, mode=&#34;w&#34;) as fh:
-            for tag, nsInfo in sorted(
-                tagByNs.items(), key=lambda x: (-len(x[1]), x[0])
-            ):
-                label = &#34;OK&#34;
-                nNs = len(nsInfo)
-                if nNs &gt; 1:
-                    nErrors += 1
-                    label = &#34;XX&#34;
-
-                for ns, amount in sorted(
-                    nsInfo.items(), key=lambda x: (-x[1], x[0])
-                ):
-                    fh.write(
-                        f&#34;{label} {nNs:&gt;2} namespace for &#34;
-                        f&#34;{tag:&lt;16} : {amount:&gt;5}x {ns}\n&#34;
-                    )
-
-        console(
-            f&#34;{nTags} tags of which {nErrors} with multiple namespaces &#34;
-            f&#34;written to {errorFile}&#34;
-            if verbose &gt;= 0 or nErrors
-            else &#34;Namespaces OK&#34;
-        )
-
-    def writeReport():
-        reportFile = f&#34;{reportPath}/elements.txt&#34;
-        with fileOpen(reportFile, mode=&#34;w&#34;) as fh:
-            fh.write(
-                &#34;Inventory of tags and attributes in the source XML file(s).\n&#34;
-                &#34;Contains the following sections:\n&#34;
-            )
-            for label in kindLabels.values():
-                fh.write(f&#34;\t{label}\n&#34;)
-            fh.write(&#34;\n\n&#34;)
-
-            infoLines = 0
-
-            def writeAttInfo(tag, att, attInfo):
-                nonlocal infoLines
-                nl = &#34;&#34; if tag == &#34;&#34; else &#34;\n&#34;
-                tagRep = &#34;&#34; if tag == &#34;&#34; else f&#34;&lt;{tag}&gt;&#34;
-                attNew = renameAtts.get(att, att)
-                attX = att if att == attNew else f&#34;{attNew} (was {att})&#34;
-                attRep = &#34;&#34; if att == &#34;&#34; else f&#34;{attX}=&#34;
-                atts = sorted(attInfo.items())
-                (val, amount) = atts[0]
-                fh.write(
-                    f&#34;{nl}\t{tagRep:&lt;18} &#34; f&#34;{attRep:&lt;18} {amount:&gt;5}x {val}\n&#34;
-                )
-                infoLines += 1
-                for val, amount in atts[1:]:
-                    fh.write(f&#34;&#34;&#34;\t{&#39;&#39;:&lt;18} {&#39;&#34;&#39;:&lt;18} {amount:&gt;5}x {val}\n&#34;&#34;&#34;)
-                    infoLines += 1
-
-            def writeTagInfo(tag, tagInfo):
-                nonlocal infoLines
-                tags = sorted(tagInfo.items())
-                (att, attInfo) = tags[0]
-                writeAttInfo(tag, att, attInfo)
-                infoLines += 1
-                for att, attInfo in tags[1:]:
-                    writeAttInfo(&#34;&#34;, att, attInfo)
-
-            for kind, label in kindLabels.items():
-                fh.write(f&#34;\n{label}\n&#34;)
-                for tag, tagInfo in sorted(analysis[kind].items()):
-                    writeTagInfo(tag, tagInfo)
-
-        if verbose &gt;= 0:
-            console(f&#34;{infoLines} info line(s) written to {reportFile}&#34;)
-
-    def filterError(msg):
-        return msg == (
-            &#34;Element &#39;graphic&#39;, attribute &#39;url&#39;: [facet &#39;pattern&#39;] &#34;
-            &#34;The value &#39;&#39; is not accepted by the pattern &#39;\\S+&#39;.&#34;
-        )
-
-    def doXMLFile(xmlPath):
-        tree = etree.parse(xmlPath, parser)
-        root = tree.getroot()
-        analyse(root, analysis)
-
-    i = 0
-    for xmlFolder, xmlFiles in self.getXML():
-        console(f&#34;Start folder {xmlFolder}:&#34;)
-        for xmlFile in xmlFiles:
-            i += 1
-            console(f&#34;\r{i:&gt;4} {xmlFile:&lt;50}&#34;, newline=False)
-            thisXmlPath = f&#34;{xmlPath}/{xmlFolder}/{xmlFile}&#34;
-            doXMLFile(thisXmlPath)
-        console(&#34;&#34;)
-        console(f&#34;End   folder {xmlFolder}&#34;)
-
-    console(&#34;&#34;)
-    writeReport()
-    writeErrors()
-    writeNamespaces()</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.xml.XML.convertTask"><code class="name flex">
 <span>def <span class="ident">convertTask</span></span>(<span>self)</span>
@@ -3172,33 +2642,6 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <dt><code>boolean</code></dt>
 <dd>Whether the conversion was successful.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/xml.py#L811-L831" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def convertTask(self):
-    &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
-
-    It sets up the `tf.convert.walker` machinery and runs it.
-
-    Returns
-    -------
-    boolean
-        Whether the conversion was successful.
-    &#34;&#34;&#34;
-    if not self.importOK():
-        return
-
-    etree = self.etree
-    convertTaskCustom = self.convertTaskCustom
-
-    return (
-        convertTaskDefault(etree)
-        if convertTaskCustom is None
-        else convertTaskCustom
-    )(self)</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.xml.XML.getConverter"><code class="name flex">
 <span>def <span class="ident">getConverter</span></span>(<span>self)</span>
@@ -3210,26 +2653,6 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <dt><code>object</code></dt>
 <dd>The <code><a title="tf.convert.walker.CV" href="walker.html#tf.convert.walker.CV">CV</a></code> converter object, initialized.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/xml.py#L833-L846" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def getConverter(self):
-    &#34;&#34;&#34;Initializes a converter.
-
-    Returns
-    -------
-    object
-        The `tf.convert.walker.CV` converter object, initialized.
-    &#34;&#34;&#34;
-    verbose = self.verbose
-    tfPath = self.tfPath
-
-    silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
-    TF = Fabric(locations=tfPath, silent=silent)
-    return CV(TF, silent=silent)</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.xml.XML.getParser"><code class="name flex">
 <span>def <span class="ident">getParser</span></span>(<span>self)</span>
@@ -3242,35 +2665,6 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <dt><code>object</code></dt>
 <dd>A configured LXML parse object.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/xml.py#L518-L540" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def getParser(self):
-    &#34;&#34;&#34;Configure the LXML parser.
-
-    See [parser options](https://lxml.de/parsing.html#parser-options).
-
-    Returns
-    -------
-    object
-        A configured LXML parse object.
-    &#34;&#34;&#34;
-    if not self.importOK():
-        return None
-
-    etree = self.etree
-    procins = self.procins
-
-    return etree.XMLParser(
-        remove_blank_text=False,
-        collect_ids=False,
-        remove_comments=True,
-        remove_pis=not procins,
-        huge_tree=True,
-    )</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.xml.XML.getXML"><code class="name flex">
 <span>def <span class="ident">getXML</span></span>(<span>self)</span>
@@ -3285,48 +2679,6 @@ XML input directory.
 Each such entry consists of the folder name and an inner tuple
 that contains the file names in that folder, sorted.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/xml.py#L542-L577" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def getXML(self):
-    &#34;&#34;&#34;Make an inventory of the XML source files.
-
-    Returns
-    -------
-    tuple of tuple | string
-        The outer tuple has sorted entries corresponding to folders under the
-        XML input directory.
-        Each such entry consists of the folder name and an inner tuple
-        that contains the file names in that folder, sorted.
-    &#34;&#34;&#34;
-    xmlPath = self.xmlPath
-
-    IGNORE = &#34;__ignore__&#34;
-
-    xmlFilesRaw = collections.defaultdict(list)
-
-    with scanDir(xmlPath) as dh:
-        for folder in dh:
-            folderName = folder.name
-            if folderName == IGNORE:
-                continue
-            if not folder.is_dir():
-                continue
-            with scanDir(f&#34;{xmlPath}/{folderName}&#34;) as fh:
-                for file in fh:
-                    fileName = file.name
-                    if not (fileName.lower().endswith(&#34;.xml&#34;) and file.is_file()):
-                        continue
-                    xmlFilesRaw[folderName].append(fileName)
-
-    xmlFiles = tuple(
-        (folderName, tuple(sorted(fileNames)))
-        for (folderName, fileNames) in sorted(xmlFilesRaw.items())
-    )
-    return xmlFiles</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.xml.XML.loadTask"><code class="name flex">
 <span>def <span class="ident">loadTask</span></span>(<span>self)</span>
@@ -3345,58 +2697,6 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <dt><code>boolean</code></dt>
 <dd>Whether the loading was successful.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/xml.py#L848-L893" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def loadTask(self):
-    &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
-
-    It loads the TF data that resides in the directory where the &#34;convert&#34; task
-    deliver its results.
-
-    During loading there are additional checks. If they succeed, we have evidence
-    that we have a valid TF dataset.
-
-    Also, during the first load intensive pre-computation of TF data takes place,
-    the results of which will be cached in the invisible `.tf` directory there.
-
-    That makes the TF data ready to be loaded fast, next time it is needed.
-
-    Returns
-    -------
-    boolean
-        Whether the loading was successful.
-    &#34;&#34;&#34;
-    if not self.importOK():
-        return
-
-    if not self.good:
-        return
-
-    tfPath = self.tfPath
-    verbose = self.verbose
-    silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
-
-    if not dirExists(tfPath):
-        console(f&#34;Directory {ux(tfPath)} does not exist.&#34;)
-        console(&#34;No TF found, nothing to load&#34;)
-        self.good = False
-        return
-
-    TF = Fabric(locations=[tfPath], silent=silent)
-    allFeatures = TF.explore(silent=True, show=True)
-    loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
-    api = TF.load(loadableFeatures, silent=silent)
-    if api:
-        if verbose &gt;= 0:
-            console(f&#34;max node = {api.F.otype.maxNode}&#34;)
-        self.good = True
-        return
-
-    self.good = False</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.xml.XML.task"><code class="name flex">
 <span>def <span class="ident">task</span></span>(<span>self, check=False, convert=False, load=False, app=False, browse=False, verbose=None)</span>
@@ -3429,74 +2729,6 @@ will not be executed.</p>
 <dt><code>boolean</code></dt>
 <dd>Whether all tasks have executed successfully.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/xml.py#L1167-L1228" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def task(
-    self,
-    check=False,
-    convert=False,
-    load=False,
-    app=False,
-    browse=False,
-    verbose=None,
-):
-    &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
-
-    This is a higher level function that can execute a selection of tasks.
-
-    The tasks will be executed in a fixed order:
-    `check`, `convert`, `load`, `app`, `apptoken`, `browse`.
-    But you can select which one(s) must be executed.
-
-    If multiple tasks must be executed and one fails, the subsequent tasks
-    will not be executed.
-
-    Parameters
-    ----------
-    check: boolean, optional False
-        Whether to carry out the &#34;check&#34; task.
-    convert: boolean, optional False
-        Whether to carry out the &#34;convert&#34; task.
-    load: boolean, optional False
-        Whether to carry out the &#34;load&#34; task.
-    app: boolean, optional False
-        Whether to carry out the &#34;app&#34; task.
-    browse: boolean, optional False
-        Whether to carry out the &#34;browse&#34; task&#34;
-    verbose: integer, optional -1
-        Produce no (-1), some (0) or many (1) progress and reporting messages
-
-    Returns
-    -------
-    boolean
-        Whether all tasks have executed successfully.
-    &#34;&#34;&#34;
-    if not self.importOK():
-        return
-
-    if verbose is not None:
-        self.verbose = verbose
-
-    if not self.good:
-        return False
-
-    for condition, method, kwargs in (
-        (check, self.checkTask, {}),
-        (convert, self.convertTask, {}),
-        (load, self.loadTask, {}),
-        (app, self.appTask, {}),
-        (browse, self.browseTask, {}),
-    ):
-        if condition:
-            method(**kwargs)
-            if not self.good:
-                break
-
-    return self.good</code></pre>
-</details>
 </dd>
 </dl>
 <h3>Inherited members</h3>
@@ -3626,7 +2858,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

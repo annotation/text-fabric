@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.core.text API documentation</title>
 <meta name="description" content="Text API …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -374,7 +374,7 @@ in the file once!)</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/text.py#L1-L1273" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/core/text.py#L1-L1273" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Text API
@@ -1683,7 +1683,7 @@ and <code>lang='en'</code> the language of the book name.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/text.py#L366-L1273" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/core/text.py#L366-L1273" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Text:
     &#34;&#34;&#34;Low level text representation, including section headings.
@@ -2629,50 +2629,6 @@ longer than the one from <code>n</code>.</dd>
 <p>The children of <code>((book, Genesis), (chapter, 3))</code> are the nodes
 with heading <code>((book, Genesis), (chapter, 3), (verse, 1))</code>, etc.</p>
 </div></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/text.py#L849-L886" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def down(self, n):
-    &#34;&#34;&#34;Gives the children of a structural node.
-
-    Parameters
-    ----------
-    n: integer
-        The node whose children to retrieve.
-
-    Returns
-    -------
-    children: tuple of integers
-        The children are those structural nodes whose headings are one
-        longer than the one from `n`.
-
-    Notes
-    -----
-    !!!hint &#34;Example&#34;
-        The children of `((book, Genesis), (chapter, 3))` are the nodes
-        with heading `((book, Genesis), (chapter, 3), (verse, 1))`, etc.
-    &#34;&#34;&#34;
-
-    api = self.api
-    F = api.F
-    fOtype = F.otype.v
-    TF = api.TF
-    error = TF.error
-    hdDown = self.hdDown
-    if hdDown is None:
-        error(&#34;structure types are not configured&#34;, tm=False)
-        return None
-    nType = fOtype(n)
-    if nType not in self.structureTypeSet:
-        error(
-            f&#34;{n} is an {nType} which is not configured as a structure type&#34;,
-            tm=False,
-        )
-        return None
-    return hdDown.get(n, ())</code></pre>
-</details>
 </dd>
 <dt id="tf.core.text.Text.headingFromNode"><code class="name flex">
 <span>def <span class="ident">headingFromNode</span></span>(<span>self, n)</span>
@@ -2701,54 +2657,6 @@ is <code>((book, Genesis), (chapter, 3), (verse, 16))</code>.</p>
 <p>If you are interested in the complete mapping: it is stored in
 the dictionary <code>hdFromNd</code>.</p>
 </div></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/text.py#L888-L929" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def headingFromNode(self, n):
-    &#34;&#34;&#34;Gives the full heading of a structural node.
-
-    Parameters
-    ----------
-    n: integer
-        The node whose heading to retrieve.
-
-    Returns
-    -------
-    heading: tuple of pairs
-        It is the tuple of pairs (node type, feature value)
-        for all ancestors of `n`.
-
-    Notes
-    -----
-    !!!hint &#34;Example&#34;
-        E.g., the heading of the verse node corresponding to Genesis 3:16
-        is `((book, Genesis), (chapter, 3), (verse, 16))`.
-
-    !!!hint &#34;Power tip&#34;
-        If you are interested in the complete mapping: it is stored in
-        the dictionary `hdFromNd`.
-    &#34;&#34;&#34;
-
-    api = self.api
-    F = api.F
-    TF = api.TF
-    error = TF.error
-    fOtype = F.otype.v
-    hdFromNd = self.hdFromNd
-    if hdFromNd is None:
-        error(&#34;structure types are not configured&#34;, tm=False)
-        return None
-    nType = fOtype(n)
-    if nType not in self.structureTypeSet:
-        error(
-            f&#34;{n} is an {nType} which is not configured as a structure type&#34;,
-            tm=False,
-        )
-        return None
-    return hdFromNd.get(n, None)</code></pre>
-</details>
 </dd>
 <dt id="tf.core.text.Text.nodeFromHeading"><code class="name flex">
 <span>def <span class="ident">nodeFromHeading</span></span>(<span>self, head)</span>
@@ -2773,44 +2681,6 @@ only the last one in the corpus will be returned.
 <p>If you are interested in the complete mapping: it is stored in
 the dictionary <code>ndFromHd</code>.</p>
 </div></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/text.py#L931-L962" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def nodeFromHeading(self, head):
-    &#34;&#34;&#34;Gives the node corresponding to a heading, provided it exists.
-
-    Parameters
-    ----------
-    head: tuple of pairs
-        See the result of `headingFromNode`.
-
-    Returns
-    -------
-    node: int
-        If there is more than one node that corresponds to the heading,
-        only the last one in the corpus will be returned.
-        `hdMult` contains all such cases.
-
-    Notes
-    -----
-    !!!hint &#34;Power tip&#34;
-        If you are interested in the complete mapping: it is stored in
-        the dictionary `ndFromHd`.
-    &#34;&#34;&#34;
-
-    api = self.api
-    TF = api.TF
-    error = TF.error
-    ndFromHd = self.ndFromHd
-    if ndFromHd is None:
-        error(&#34;structure types are not configured&#34;, tm=False)
-    n = ndFromHd.get(head, None)
-    if n is None:
-        error(f&#34;no structure node with heading {head}&#34;, tm=False)
-    return n</code></pre>
-</details>
 </dd>
 <dt id="tf.core.text.Text.nodeFromSection"><code class="name flex">
 <span>def <span class="ident">nodeFromSection</span></span>(<span>self, section, lang='en')</span>
@@ -2838,48 +2708,6 @@ If the level 3 label has been left out, the result is a level 2 node.
 If both level 1 and level 2 labels have been left out,
 the result is a level 1 node.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/text.py#L610-L645" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def nodeFromSection(self, section, lang=&#34;en&#34;):
-    &#34;&#34;&#34;Given a section tuple, return the node of it.
-
-    Parameters
-    ----------
-    section: string
-        `section` consists of a book name (in language `lang`),
-        and a chapter number and a verse number
-        (both as strings or number depending on the value type of the
-        corresponding feature).
-    lang: string, optional en
-        The language assumed for the section parts,
-        as far as they are language dependent.
-        Must be a 2-letter language code.
-
-    Returns
-    -------
-    section node: integer
-        If section labels for all three levels is present,
-        the result is a level 3 node.
-        If the level 3 label has been left out, the result is a level 2 node.
-        If both level 1 and level 2 labels have been left out,
-        the result is a level 1 node.
-    &#34;&#34;&#34;
-
-    sTypes = self.sectionTypes
-    if len(sTypes) == 0:
-        return None
-    (sec1, sec2) = self.api.C.sections.data
-    sec0node = self._sec0Node(section[0], lang=lang)
-    if len(section) == 1:
-        return sec0node
-    elif len(section) == 2:
-        return sec1.get(sec0node, {}).get(section[1], None)
-    else:
-        return sec2.get(sec0node, {}).get(section[1], {}).get(section[2], None)</code></pre>
-</details>
 </dd>
 <dt id="tf.core.text.Text.sectionFromNode"><code class="name flex">
 <span>def <span class="ident">sectionFromNode</span></span>(<span>self, n, lastSlot=False, lang='en', fillup=False)</span>
@@ -2922,66 +2750,6 @@ In those cases, this function will return different results for
 <h2 id="warnings">Warnings</h2>
 <p>Nodes that lie outside any book, chapter, or verse
 will get a <code>None</code> in the corresponding members of the returned tuple.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/text.py#L555-L608" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def sectionFromNode(self, n, lastSlot=False, lang=&#34;en&#34;, fillup=False):
-    &#34;&#34;&#34;Gives the full heading of a section node.
-
-    Parameters
-    ----------
-    n: integer
-        The node whose heading to retrieve.
-    lastSlot: boolean, optional False
-        Whether the reference node will be the last slot contained by `n`
-        or the first slot.
-    lang: string, optional en
-        The language assumed for the section parts,
-        as far as they are language dependent.
-        Must be a 2-letter language code.
-    fillup: boolean, optional False
-        Whether to fill up the tuple with missing section elements.
-
-    Returns
-    -------
-    heading: tuple of pairs
-        If `n` is not a section node, a reference node `r` will be taken
-        according to the `lastSlot` parameter.
-
-        It is the tuple of integer / string values for section ancestors
-        of `r` and `r` itself,
-        where the `fillup` parameter plays the same role as in
-        `Text.sectionTuple`.
-
-    Notes
-    -----
-    !!! hint &#34;crossing verse boundaries&#34;
-        Sometimes a sentence or clause in a verse continue into the next verse.
-        In those cases, this function will return different results for
-        `lastSlot=False` and `lastSlot=True`.
-
-    Warnings
-    --------
-    Nodes that lie outside any book, chapter, or verse
-    will get a `None` in the corresponding members of the returned tuple.
-    &#34;&#34;&#34;
-    sTuple = self.sectionTuple(n, lastSlot=lastSlot, fillup=fillup)
-    if len(sTuple) == 0:
-        return ()
-
-    sFs = self.sectionFeatures
-
-    return tuple(
-        &#34;&#34;
-        if n is None
-        else self._sec0Name(n, lang=lang)
-        if i == 0
-        else sFs[i].get(n, None)
-        for (i, n) in enumerate(sTuple)
-    )</code></pre>
-</details>
 </dd>
 <dt id="tf.core.text.Text.sectionTuple"><code class="name flex">
 <span>def <span class="ident">sectionTuple</span></span>(<span>self, n, lastSlot=False, fillup=False)</span>
@@ -3021,151 +2789,18 @@ the enclosing level 0 and
 section nodes is returned.</p>
 </dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/text.py#L461-L553" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def sectionTuple(self, n, lastSlot=False, fillup=False):
-    &#34;&#34;&#34;Gives a tuple of nodes that correspond to a section.
-
-    More precisely, we retrieve the sections that contain a
-    reference node, which is either the first slot or the last slot of the node
-    in question.
-
-    Parameters
-    ----------
-    n: integer
-        The node whose containing section to retrieve.
-    lastSlot: boolean, optional False
-        Whether the reference node will be the last slot contained by `n`
-        or the first slot.
-    fillup: boolean, optional False
-        Whether to fill up the tuple with missing section elements.
-    Returns
-    -------
-    section: tuple of int
-        If `n` is not a section node, a reference node `r` will be taken
-        according to the `lastSlot` parameter.
-
-        If `fillup == False`:
-
-        If `r` is a level 0 section node,
-        `section` is the 1-element tuple `(r,)`.
-
-        If `r` is a level 1 section node,
-        *section* is a 2-element tuple, i.e.
-        the enclosing level 0 section node and `r` itself.
-
-        If `r` is a level 2 section node,
-        `section` is a 3-element tuple, i.e.
-        the enclosing level 0 and  1 section nodes and `r` itself.
-
-        If `fillup == True`, always a complete 3-tuple of a level 0, 1, and 2
-        section nodes is returned.
-    &#34;&#34;&#34;
-
-    sTypes = self.sectionTypes
-    lsTypes = len(sTypes)
-    if lsTypes == 0:
-        return ()
-    F = self.api.F
-    E = self.api.E
-    L = self.api.L
-    fOtype = F.otype.v
-    slotType = F.otype.slotType
-    maxSlot = F.otype.maxSlot
-    eoslots = E.oslots.data
-    nType = fOtype(n)
-
-    if nType == slotType:
-        r = n
-    else:
-        slots = eoslots[n - maxSlot - 1]
-        r = slots[-1 if lastSlot else 0]
-
-    if nType == sTypes[0]:
-        if fillup:
-            r1 = L.u(r, otype=sTypes[1])
-            r1 = r1[0] if r1 else &#34;&#34;
-            if lsTypes &gt; 2:
-                r2 = L.u(r, otype=sTypes[2])
-                r2 = r2[0] if r2 else &#34;&#34;
-                return (n, r1, r2)
-            return (n, r1)
-        return (n,)
-
-    r0s = L.u(r, sTypes[0])
-    r0 = r0s[0] if r0s else None
-
-    if nType == sTypes[1]:
-        if fillup:
-            if lsTypes &gt; 2:
-                r2 = L.u(r, otype=sTypes[2])
-                r2 = r2[0] if r2 else &#34;&#34;
-                return (r0, n, r2)
-        return (r0, n)
-
-    r1s = L.u(r, sTypes[1])
-    r1 = r1s[0] if r1s else &#34;&#34;
-
-    if lsTypes &lt; 3:
-        return (r0, r1)
-
-    if nType == sTypes[2]:
-        return (r0, r1, n)
-
-    r2s = L.u(r, sTypes[2])
-    r2 = r2s[0] if r2s else &#34;&#34;
-
-    return (r0, r1, r2)</code></pre>
-</details>
 </dd>
 <dt id="tf.core.text.Text.splitDefaultFormat"><code class="name flex">
 <span>def <span class="ident">splitDefaultFormat</span></span>(<span>self, tpl)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/text.py#L1222-L1232" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def splitDefaultFormat(self, tpl):
-    api = self.api
-    F = api.F
-    otypes = set(F.otype.all)
-
-    parts = tpl.rsplit(SEP, maxsplit=1)
-    return (
-        parts[0]
-        if len(parts) == 2 and parts[1] == &#34;default&#34; and parts[0] in otypes
-        else None
-    )</code></pre>
-</details>
 </dd>
 <dt id="tf.core.text.Text.splitFormat"><code class="name flex">
 <span>def <span class="ident">splitFormat</span></span>(<span>self, tpl)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/text.py#L1210-L1220" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def splitFormat(self, tpl):
-    api = self.api
-    F = api.F
-    slotType = F.otype.slotType
-    otypes = set(F.otype.all)
-
-    descendType = slotType
-    parts = tpl.split(TYPE_FMT_SEP, maxsplit=1)
-    if len(parts) == 2 and parts[0] in otypes:
-        (descendType, tpl) = parts
-    return (descendType, tpl)</code></pre>
-</details>
 </dd>
 <dt id="tf.core.text.Text.structure"><code class="name flex">
 <span>def <span class="ident">structure</span></span>(<span>self, node=None)</span>
@@ -3183,49 +2818,6 @@ If <em>node</em> is None, the complete structure of the whole dataset is returne
 <dt><strong><code>structure</code></strong> :&ensp;<code>tuple</code></dt>
 <dd>Nested tuple of nodes involved in the structure below a node.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/text.py#L715-L751" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def structure(self, node=None):
-    &#34;&#34;&#34;Gives the structure of node and everything below it as a tuple.
-
-    Parameters
-    ----------
-    node: integer, optional None
-        The node whose structure is asked for.
-        If *node* is None, the complete structure of the whole dataset is returned.
-
-    Returns
-    -------
-    structure: tuple
-        Nested tuple of nodes involved in the structure below a node.
-    &#34;&#34;&#34;
-
-    api = self.api
-    TF = api.TF
-    error = TF.error
-    F = api.F
-    fOtype = F.otype.v
-    hdTop = self.hdTop
-
-    if hdTop is None:
-        error(&#34;structure types are not configured&#34;, tm=False)
-        return None
-    if node is None:
-        return tuple(self.structure(node=t) for t in self.top())
-
-    nType = fOtype(node)
-    if nType not in self.structureTypeSet:
-        error(
-            f&#34;{node} is an {nType} which is not configured as a structure type&#34;,
-            tm=False,
-        )
-        return None
-
-    return (node, tuple(self.structure(node=d) for d in self.down(node)))</code></pre>
-</details>
 </dd>
 <dt id="tf.core.text.Text.structureInfo"><code class="name flex">
 <span>def <span class="ident">structureInfo</span></span>(<span>self)</span>
@@ -3236,79 +2828,6 @@ If <em>node</em> is None, the complete structure of the whole dataset is returne
 you'll get a warning here, and you are told how you can get all of those.</p>
 <p>It also shows a short description of all structure-related methods
 of the <code>T</code> API.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/text.py#L647-L713" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">    def structureInfo(self):
-        &#34;&#34;&#34;Gives a summary of how structure has been configured in the dataset.
-
-        If there are headings that are the same for multiple structural nodes,
-        you&#39;ll get a warning here, and you are told how you can get all of those.
-
-        It also shows a short description of all structure-related methods
-        of the `T` API.
-        &#34;&#34;&#34;
-
-        api = self.api
-        TF = api.TF
-        info = TF.info
-        error = TF.error
-        hdMult = self.hdMult
-        hdFromNd = self.hdFromNd
-        headings = self.headings
-
-        if hdFromNd is None:
-            info(&#34;No structural elements configured&#34;, tm=False)
-            return
-        info(&#34;A heading is a tuple of pairs (node type, feature value)&#34;, tm=False)
-        info(
-            &#34;\tof node types and features that have been configured as structural elements&#34;,
-            tm=False,
-        )
-        info(
-            f&#34;These {len(headings)} structural elements have been configured&#34;, tm=False
-        )
-        for (tp, ft) in headings:
-            info(f&#34;\tnode type {tp:&lt;10} with heading feature {ft}&#34;, tm=False)
-        info(&#34;You can get them as a tuple with T.headings.&#34;, tm=False)
-        info(
-            f&#34;&#34;&#34;
-Structure API:
-\tT.structure(node=None)       gives the structure below node, or everything if node is None
-\tT.structurePretty(node=None) prints the structure below node, or everything if node is None
-\tT.top()                      gives all top-level nodes
-\tT.up(node)                   gives the (immediate) parent node
-\tT.down(node)                 gives the (immediate) children nodes
-\tT.headingFromNode(node)      gives the heading of a node
-\tT.nodeFromHeading(heading)   gives the node of a heading
-\tT.ndFromHd                   complete mapping from headings to nodes
-\tT.hdFromNd                   complete mapping from nodes to headings
-\tT.hdMult are all headings    with their nodes that occur multiple times
-
-There are {len(hdFromNd)} structural elements in the dataset.
-&#34;&#34;&#34;,
-            tm=False,
-        )
-
-        if hdMult:
-            nMultiple = len(hdMult)
-            tMultiple = sum(len(x) for x in hdMult.values())
-            error(
-                f&#34;WARNING: {nMultiple} structure headings with hdMult occurrences (total {tMultiple})&#34;,
-                tm=False,
-            )
-            for (sKey, nodes) in sorted(hdMult.items())[0:10]:
-                sKeyRep = &#34;-&#34;.join(&#34;:&#34;.join(str(p) for p in part) for part in sKey)
-                nNodes = len(nodes)
-                error(f&#34;\t{sKeyRep} has {nNodes} occurrences&#34;, tm=False)
-                error(f&#39;\t\t{&#34;, &#34;.join(str(n) for n in nodes[0:5])}&#39;, tm=False)
-                if nNodes &gt; 5:
-                    error(f&#34;\t\tand {nNodes - 5} more&#34;, tm=False)
-            if nMultiple &gt; 10:
-                error(f&#34;\tand {nMultiple - 10} headings more&#34;)</code></pre>
-</details>
 </dd>
 <dt id="tf.core.text.Text.structurePretty"><code class="name flex">
 <span>def <span class="ident">structurePretty</span></span>(<span>self, node=None, fullHeading=False)</span>
@@ -3331,51 +2850,6 @@ node and all of its parents, pass <code>True</code> for this parameter.</dd>
 <dd>Pretty representation as string with indentations of the structure
 below a node.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/text.py#L753-L791" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def structurePretty(self, node=None, fullHeading=False):
-    &#34;&#34;&#34;Gives the structure of node and everything below it as a string.
-
-    Parameters
-    ----------
-    node: integer, optional None
-        The node whose structure is asked for.
-        If *node* is None, the complete structure of the whole dataset is returned.
-    fullHeading: boolean, optional False
-        Normally, for each structural element, only its own subheading is added.
-        But if you want to see the full heading, consisting of the headings of a
-        node and all of its parents, pass `True` for this parameter.
-
-    Returns
-    -------
-    structure: string
-        Pretty representation as string with indentations of the structure
-        below a node.
-    &#34;&#34;&#34;
-
-    structure = self.structure(node=node)
-    if structure is None:
-        return
-
-    material = []
-
-    def generate(struct, indent=&#34;&#34;):
-        if type(struct) is int:
-            sKey = self.headingFromNode(struct)
-            if not fullHeading:
-                sKey = (sKey[-1],)
-            sKeyRep = &#34;-&#34;.join(&#34;:&#34;.join(str(p) for p in part) for part in sKey)
-            material.append(f&#34;{indent}{sKeyRep}&#34;)
-        else:
-            for item in struct:
-                generate(item, indent=indent + &#34;  &#34;)
-
-    generate(structure)
-    return &#34;\n&#34;.join(material)</code></pre>
-</details>
 </dd>
 <dt id="tf.core.text.Text.text"><code class="name flex">
 <span>def <span class="ident">text</span></span>(<span>self, nodes, fmt=None, descend=None, func=None, explain=False, **kwargs)</span>
@@ -3432,223 +2906,6 @@ sequence of nodes and hence to an empty string.</p>
 If you call it and the results baffles you, pass <code>explain=True</code>
 and it will explain what it is doing.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/text.py#L964-L1174" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">    def text(self, nodes, fmt=None, descend=None, func=None, explain=False, **kwargs):
-        &#34;&#34;&#34;Gives the text that corresponds to a bunch of nodes.
-
-        The
-        [banks](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/formats.ipynb)
-        example corpus shows examples.
-
-        Parameters
-        ----------
-
-        nodes: dict
-            *nodes* can be a single node or an arbitrary iterable of nodes
-            of arbitrary types.
-            No attempt will be made to sort the nodes.
-            If you need order, it is better to sort the nodes first.
-
-        fmt: boolean, optional None
-            The text-format of the text representation.
-
-            If it is not specified or `None`, each node will be formatted with
-            a node type specific format, defined as `nodeType-default`, if it
-            exists.
-
-            If there is no node specific format, the default format
-            `text-orig-full` will be used.
-
-            If `text-orig-full` is not defined, an error message will be issued,
-            and the nodes will be represented by their types and numbers.
-
-            If a value for `fmt` is passed, but it is not a format defined in the
-            `otext.tf` feature, there will be an error message and `None` is returned.
-
-        descend: boolean, optional None
-            Whether to descend to constituent nodes.
-
-            If `True`, nodes will be replaced by a sequence of their constituent nodes,
-            which have a type specified by the format chosen, or, if the format does
-            not specify such a type, the node will be replaced
-            by the slots contained in it.
-
-            If `False`, nodes will not be replaced.
-
-            If *descend* is not specified or None,
-            a node will be replaced by its constituent nodes,
-            unless its type is associated with the given format or,
-            if no format is given, by the default format of its type, or,
-            if there is no such format, by its slots.
-
-            !!! caution &#34;no nodes to descend to&#34;
-                If you call `T.text(n, fmt=myfmt)`
-                and `myfmt` is targeted to a node type that is
-                bigger than the node type of `n`,
-                then the so-called descending leads to an empty
-                sequence of nodes and hence to an empty string.
-
-        explain: boolean, optional False
-            The logic of this function is subtle.
-            If you call it and the results baffles you, pass `explain=True`
-            and it will explain what it is doing.
-        &#34;&#34;&#34;
-
-        api = self.api
-        E = api.E
-        F = api.F
-        L = api.L
-        TF = api.TF
-        error = TF.error
-
-        fOtype = F.otype.v
-        slotType = F.otype.slotType
-        maxSlot = F.otype.maxSlot
-        eoslots = E.oslots.data
-
-        defaultFormats = self.defaultFormats
-        xformats = self._xformats
-        xdTypes = self._xdTypes
-
-        if fmt and fmt not in xformats:
-            error(f&#39;Undefined format &#34;{fmt}&#34;&#39;, tm=False)
-            return &#34;&#34;
-
-        def rescue(n, **kwargs):
-            return f&#34;{fOtype(n)}{n}&#34;
-
-        single = type(nodes) is int
-        material = []
-        good = True
-
-        if single:
-            nodes = [nodes]
-        else:
-            nodes = list(nodes) if explain else nodes
-        if explain:
-            fmttStr = &#34;format target type&#34;
-            ntStr = &#34;node type&#34;
-
-            nRep = &#34;single node&#34; if single else f&#34;iterable of {len(nodes)} nodes&#34;
-            fmtRep = &#34;implicit&#34; if not fmt else f&#34;{fmt} targeted at {xdTypes[fmt]}&#34;
-            descendRep = (
-                &#34;implicit&#34; if descend is None else &#34;True&#34; if descend else &#34;False&#34;
-            )
-            funcRep = f&#39;{&#34;&#34; if func else &#34;no &#34;}custom format implementation&#39;
-            error(
-                f&#34;&#34;&#34;
-EXPLANATION: T.text() called with parameters:
-\tnodes  : {nRep}
-\tfmt    : {fmtRep}
-\tdescend: {descendRep}
-\tfunc   : {funcRep}
-&#34;&#34;&#34;,
-                tm=False,
-            )
-
-        for node in nodes:
-            nType = fOtype(node)
-            if explain:
-                error(f&#34;\tNODE: {nType} {node}&#34;, tm=False)
-            if descend:
-                if explain:
-                    downRep = fmttStr
-                if fmt:
-                    repf = xformats[fmt]
-                    downType = xdTypes[fmt]
-                    if explain:
-                        fmtRep = f&#34;explicit {fmt} does {repf}&#34;
-                        expandRep = f&#34;{downType} {{}} (descend=True) ({downRep})&#34;
-                else:
-                    repf = xformats[DEFAULT_FORMAT]
-                    downType = xdTypes[DEFAULT_FORMAT]
-                    if explain:
-                        fmtRep = f&#34;implicit {DEFAULT_FORMAT} does {repf}&#34;
-                        expandRep = f&#34;{downType} {{}} (descend=True) ({downRep})&#34;
-            else:
-                downType = nType
-                if explain:
-                    downRep = ntStr
-                if fmt:
-                    repf = xformats[fmt]
-                    if descend is None:
-                        downType = xdTypes[fmt]
-                        if explain:
-                            downRep = fmttStr
-                    if explain:
-                        fmtRep = f&#34;explicit {fmt} does {repf}&#34;
-                        expandRep = f&#34;{downType} {{}} (descend=None) ({downRep})&#34;
-                elif nType in defaultFormats:
-                    dfmt = defaultFormats[nType]
-                    repf = xformats[dfmt]
-                    if descend is None:
-                        downType = nType
-                        if explain:
-                            downRep = fmttStr
-                    if explain:
-                        fmtRep = f&#34;implicit {dfmt} does {repf}&#34;
-                        expandRep = f&#34;{downType} {{}} (descend=None) ({downRep})&#34;
-                else:
-                    repf = xformats[DEFAULT_FORMAT]
-                    if descend is None:
-                        downType = xdTypes[DEFAULT_FORMAT]
-                        if explain:
-                            downRep = fmttStr
-                    if explain:
-                        fmtRep = f&#34;implicit {DEFAULT_FORMAT} does {repf}&#34;
-                        expandRep = f&#34;{downType} {{}} (descend=None) ({downRep})&#34;
-
-            if explain:
-                expandRep2 = &#34;&#34;
-            if downType == nType:
-                if explain:
-                    expandRep2 = &#34;(no expansion needed)&#34;
-                downType = None
-
-            if explain:
-                error(f&#34;\t\tTARGET LEVEL: {expandRep.format(expandRep2)}&#34;, tm=False)
-
-            if explain:
-                plural = &#34;s&#34;
-            if downType == slotType:
-                xnodes = eoslots[node - maxSlot - 1]
-            elif downType:
-                xnodes = L.d(node, otype=downType)
-            else:
-                xnodes = [node]
-                if explain:
-                    plural = &#34;&#34;
-            if explain:
-                nodeRep = f&#39;{len(xnodes)} {downType or nType}{plural} {&#34;, &#34;.join(str(x) for x in xnodes)}&#39;
-                error(f&#34;\t\tEXPANSION: {nodeRep}&#34;, tm=False)
-
-            if func:
-                repf = func
-                if explain:
-                    fmtRep += f&#34; (overridden with the explicit func argument {repf})&#34;
-            if not repf:
-                repf = rescue
-                good = False
-                if explain:
-                    fmtRep += &#34;\n\t\t\twhich is not defined: formatting as node types and numbers&#34;
-
-            if explain:
-                error(f&#34;\t\tFORMATTING: {fmtRep}&#34;, tm=False)
-                error(&#34;\t\tMATERIAL:&#34;, tm=False)
-            for n in xnodes:
-                rep = repf(n, **kwargs)
-                material.append(rep)
-                if explain:
-                    error(f&#39;\t\t\t{fOtype(n)} {n} ADDS &#34;{rep}&#34;&#39;, tm=False)
-
-        if not good:
-            error(&#39;Text format &#34;{DEFAULT_FORMAT}&#34; not defined in otext.tf&#39;, tm=False)
-        return &#34;&#34;.join(material)</code></pre>
-</details>
 </dd>
 <dt id="tf.core.text.Text.top"><code class="name flex">
 <span>def <span class="ident">top</span></span>(<span>self)</span>
@@ -3657,27 +2914,6 @@ EXPLANATION: T.text() called with parameters:
 <div class="desc"><p>Gives all top-level structural nodes in the dataset.
 These are the nodes that are not embedded in a structural node of the same
 or a higher level.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/text.py#L793-L807" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def top(self):
-    &#34;&#34;&#34;Gives all top-level structural nodes in the dataset.
-    These are the nodes that are not embedded in a structural node of the same
-    or a higher level.
-    &#34;&#34;&#34;
-
-    api = self.api
-    TF = api.TF
-    error = TF.error
-    hdTop = self.hdTop
-
-    if hdTop is None:
-        error(&#34;structure types are not configured&#34;, tm=False)
-        return None
-    return hdTop</code></pre>
-</details>
 </dd>
 <dt id="tf.core.text.Text.up"><code class="name flex">
 <span>def <span class="ident">up</span></span>(<span>self, n)</span>
@@ -3701,51 +2937,6 @@ the heading of <code>n</code> minus its last element.</dd>
 <p>The parent of <code>((book, Genesis), (chapter, 3), (verse, 16))</code>
 is the node that has heading <code>((book, Genesis), (chapter, 3))</code>.</p>
 </div></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/text.py#L809-L847" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def up(self, n):
-    &#34;&#34;&#34;Gives the parent of a structural node.
-
-    Parameters
-    ----------
-    n: integer
-        The node whose parent to retrieve.
-
-    Returns
-    -------
-    parent: integer
-        The parent is that structural node that whose heading you get from
-        the heading of `n` minus its last element.
-
-    Notes
-    -----
-    !!!hint &#34;Example&#34;
-        The parent of `((book, Genesis), (chapter, 3), (verse, 16))`
-        is the node that has heading `((book, Genesis), (chapter, 3))`.
-    &#34;&#34;&#34;
-
-    api = self.api
-    F = api.F
-    TF = api.TF
-    error = TF.error
-    fOtype = F.otype.v
-
-    hdUp = self.hdUp
-    if hdUp is None:
-        error(&#34;structure types are not configured&#34;, tm=False)
-        return None
-    nType = fOtype(n)
-    if nType not in self.structureTypeSet:
-        error(
-            f&#34;{n} is an {nType} which is not configured as a structure type&#34;,
-            tm=False,
-        )
-        return None
-    return hdUp.get(n, None)</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -3856,7 +3047,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

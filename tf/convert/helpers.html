@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.convert.helpers API documentation</title>
 <meta name="description" content="" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -31,12 +31,13 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/helpers.py#L1-L669" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/convert/helpers.py#L1-L780" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 from textwrap import dedent
 
 from ..core.helpers import console
+from ..core.generic import AttrDict
 
 
 PRE = &#34;pre&#34;
@@ -77,6 +78,7 @@ LINE_MODEL_DEFAULT = &#34;I&#34;
 PAGE_MODELS = dict(
     I=dict(),
     II=dict(
+        keepPb=(bool, False),
         element=(str, &#34;div&#34;),
         attributes=(dict, {}),
         pbAtTop=(bool, True),
@@ -292,9 +294,7 @@ def checkModel(kind, thisModel, verbose):
     modelDefault = (
         LINE_MODEL_DEFAULT
         if kind == LINE
-        else PAGE_MODEL_DEFAULT
-        if kind == PAGE
-        else SECTION_MODEL_DEFAULT
+        else PAGE_MODEL_DEFAULT if kind == PAGE else SECTION_MODEL_DEFAULT
     )
     modelSpecs = (
         LINE_MODELS if kind == LINE else PAGE_MODELS if kind == PAGE else SECTION_MODELS
@@ -701,7 +701,118 @@ def lookupSource(cv, cur, tokenAsSlot, specs):
         )
         sourceText = (sourceText or &#34;&#34;).strip()
         source = {feature: sourceText}
-        cv.feature(targetNode, **source)</code></pre>
+        cv.feature(targetNode, **source)
+
+
+def parseIIIF(settings, prod, selector):
+    &#34;&#34;&#34;Parse the iiif yaml file.
+
+    We fill in the parameters.
+    &#34;&#34;&#34;
+
+    def applySwitches(prod, constants, switches):
+        for k, v in switches[&#34;prod&#34; if prod else &#34;dev&#34;].items():
+            constants[k] = v
+
+        return constants
+
+    def substituteConstants(data, macros, constants):
+        tpd = type(data)
+
+        if tpd is str:
+            for k, v in constants.items():
+                if len(data) &gt; 1 and data[0] == &#34;!&#34; and data[1:] in macros:
+                    data = macros[data[1:]]
+
+                pattern = f&#34;«{k}»&#34;
+
+                if type(v) is int and data == pattern:
+                    data = v
+                    break
+                else:
+                    data = data.replace(pattern, str(v))
+
+            return data
+
+        if tpd is list:
+            return [substituteConstants(item, macros, constants) for item in data]
+
+        if tpd is dict:
+            return {
+                k: substituteConstants(v, macros, constants) for (k, v) in data.items()
+            }
+
+        return data
+
+    constants = applySwitches(prod, settings[&#34;constants&#34;], settings[&#34;switches&#34;])
+    macros = applySwitches(prod, settings[&#34;macros&#34;], settings[&#34;switches&#34;])
+
+    return AttrDict(
+        {
+            x: substituteConstants(xText, macros, constants)
+            for (x, xText) in settings[selector].items()
+        }
+    )
+
+
+def operationalize(data):
+    scanInfo = {}
+
+    for extraFeat, info in data.items():
+        nodeType = info[&#34;nodeType&#34;]
+        variables = info[&#34;vars&#34;]
+        urlPattern = info[&#34;urlPattern&#34;]
+
+        newVars = {}
+
+        for name, val in variables.items():
+            if val.endswith(&#34;-1&#34;):
+                newVal = val[0:-2]
+                shift = -1
+            elif val.endswith(&#34;+1&#34;):
+                newVal = val[0:-2]
+                shift = 1
+            else:
+                newVal = val
+                shift = 0
+
+            feat = tuple(newVal.split(&#34;.&#34;, 1))
+
+            if len(feat) == 1:
+                parent = None
+                feat = feat[0]
+            else:
+                parent, feat = feat
+
+            newVars[name] = (parent, feat, shift)
+
+        scanInfo.setdefault(nodeType, []).append((extraFeat, urlPattern, newVars))
+
+    return scanInfo
+
+
+def fillinIIIF(data, **kwargs):
+    tpd = type(data)
+
+    if tpd is str:
+        for k, v in kwargs.items():
+            pattern = &#34;{&#34; + k + &#34;}&#34;
+
+            if type(v) is int and data == pattern:
+                data = v
+                break
+            else:
+                data = data.replace(pattern, str(v))
+
+        return data
+
+    if tpd is list:
+        return [fillinIIIF(item, **kwargs) for item in data]
+
+    if tpd is dict:
+        return {k: fillinIIIF(v, **kwargs) for (k, v) in data.items()}
+
+    return data</code></pre>
 </details>
 </section>
 <section>
@@ -832,118 +943,18 @@ or by elements within a single TEI source file.</p>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/helpers.py#L256-L333" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def checkModel(kind, thisModel, verbose):
-    modelDefault = (
-        LINE_MODEL_DEFAULT
-        if kind == LINE
-        else PAGE_MODEL_DEFAULT
-        if kind == PAGE
-        else SECTION_MODEL_DEFAULT
-    )
-    modelSpecs = (
-        LINE_MODELS if kind == LINE else PAGE_MODELS if kind == PAGE else SECTION_MODELS
-    )
-
-    if thisModel is None:
-        model = modelDefault
-        if verbose == 1:
-            console(f&#34;WARNING: No {kind} model specified. Assuming model {model}.&#34;)
-        properties = {k: v[1] for (k, v) in modelSpecs[model].items()}
-        return dict(model=model, properties=properties)
-
-    if type(thisModel) is str:
-        if thisModel in modelSpecs:
-            thisModel = dict(model=thisModel)
-        else:
-            console(f&#34;ERROR: unknown {kind} model: {thisModel}&#34;)
-            return False
-
-    elif type(thisModel) is not dict:
-        console(f&#34;ERROR: {kind} model must be a dict. You passed a {type(thisModel)}&#34;)
-        return False
-
-    model = thisModel.get(&#34;model&#34;, None)
-
-    if model is None:
-        model = modelDefault
-        if verbose == 1:
-            console(f&#34;WARNING: No {kind} model specified. Assuming model {model}.&#34;)
-        thisModel[&#34;model&#34;] = model
-
-    if model not in modelSpecs:
-        console(f&#34;WARNING: unknown {kind} model: {thisModel}&#34;)
-        return False
-
-    if verbose &gt;= 0:
-        console(f&#34;{kind} model is {model}&#34;)
-
-    properties = {k: v for (k, v) in thisModel.items() if k != &#34;model&#34;}
-    modelProperties = modelSpecs[model]
-
-    good = True
-    delKeys = []
-
-    for k, v in properties.items():
-        if k not in modelProperties:
-            console(f&#34;WARNING: ignoring unknown {kind} model property {k}={v}&#34;)
-            delKeys.append(k)
-        elif type(v) is not modelProperties[k][0]:
-            console(
-                f&#34;ERROR: {kind} property {k} should have type {modelProperties[k][0]}&#34;
-                f&#34; but {v} has type {type(v)}&#34;
-            )
-            good = False
-    if good:
-        for k in delKeys:
-            del properties[k]
-
-    for k, v in modelProperties.items():
-        if k not in properties:
-            if verbose == 1:
-                console(
-                    f&#34;WARNING: {kind} model property {k} not specified, &#34;
-                    f&#34;taking default {v[1]}&#34;
-                )
-            properties[k] = v[1]
-
-    if not good:
-        return False
-
-    return dict(model=model, properties=properties)</code></pre>
-</details>
+</dd>
+<dt id="tf.convert.helpers.fillinIIIF"><code class="name flex">
+<span>def <span class="ident">fillinIIIF</span></span>(<span>data, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
 </dd>
 <dt id="tf.convert.helpers.getWhites"><code class="name flex">
 <span>def <span class="ident">getWhites</span></span>(<span>text)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/helpers.py#L213-L228" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def getWhites(text):
-    match = W_BEFORE.match(text)
-    if match:
-        before = match.group(0)
-        rest = text[len(before) :]
-    else:
-        before = &#34;&#34;
-        rest = text
-    match = W_AFTER.search(rest)
-    if match:
-        after = match.group(0)
-        material = rest[0 : -len(after)]
-    else:
-        after = &#34;&#34;
-        material = rest
-    return (&#34; &#34; if before else &#34;&#34;, material, &#34; &#34; if after else &#34;&#34;)</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.helpers.lookupSource"><code class="name flex">
 <span>def <span class="ident">lookupSource</span></span>(<span>cv, cur, tokenAsSlot, specs)</span>
@@ -994,421 +1005,49 @@ appended to it. That means that the information will be extracted from
 that attribute, not from the content of the element.</p>
 </dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/helpers.py#L563-L669" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def lookupSource(cv, cur, tokenAsSlot, specs):
-    &#34;&#34;&#34;Looks up information from the current XML stack.
-
-    The current XML stack contains the ancestry of the current node, including
-    the current node itself.
-
-    It is a list of components, corresponding to the path from the root node to the
-    current node.
-    Each component is a tuple, consisting of the tag name and the attributes of
-    an XML node.
-
-    Against this stack a sequence of instructions, given in `specs`, is executed.
-    These instructions collect information from the stack, under certain conditions,
-    and put that information into a feature, as value for a certain node.
-
-    Here is an example of a single instruction:
-
-    Parameters
-    ----------
-    cv: object
-        The converter object, needed to issue actions.
-    cur: dict
-        Various pieces of data collected during walking
-        and relevant for some next steps in the walk.
-    specs: tuple
-        A sequence of instructions what to look for.
-        Each instruction has the following parts:
-
-        *   `pathSpec`
-        *   `nodeType`
-        *   `featureName`
-
-        The effect is:
-
-        The `pathSpec` is compared to the current XML stack.
-        If it matches the current node, the text content of the current node or one of
-        its attributes will be collected and put in a feature with name
-        `featureName`, for the current TF node of type `nodeType`.
-
-        The `pathSpec` is a list of components.
-        The first component should match the top of the XML stack, the second
-        component the element that is below the top, etc.
-        Each component is a tuple of
-
-        *   a tag name;
-        *   a dictionary of attribute values;
-
-        The first component may have a tag name that has `@` plus an attribute name
-        appended to it. That means that the information will be extracted from
-        that attribute, not from the content of the element.
-    &#34;&#34;&#34;
-    nest = cur[XNEST]
-    nNest = len(nest)
-
-    for path, nodeType, feature in specs:
-        nPath = len(path)
-
-        if nPath &gt; nNest:
-            continue
-
-        ok = True
-        extractAttr = None
-
-        for p, (lookForTag, lookForAtts) in enumerate(path):
-            (compareToTag, compareToAtts) = nest[-(p + 1)]
-
-            if p == 0:
-                pieces = lookForTag.split(&#34;@&#34;, 1)
-                if len(pieces) == 2:
-                    (lookForTag, extractAttr) = pieces
-                else:
-                    extractAttr = None
-            ok = compareToTag == lookForTag
-
-            if not ok:
-                break
-
-            if lookForAtts is not None:
-                for att, val in lookForAtts.items():
-                    if att not in compareToAtts or compareToAtts[att] != val:
-                        ok = False
-                        break
-
-            if not ok:
-                break
-
-        if not ok:
-            continue
-
-        targetNode = cur[NODE][nodeType]
-        sourceNode = cur[TNEST][-1]
-        slots = cv.linked(sourceNode)
-        sourceText = (
-            (
-                &#34;&#34;.join(
-                    cv.get(&#34;str&#34;, (T, slot)) + cv.get(&#34;after&#34;, (T, slot))
-                    for slot in slots
-                )
-                if tokenAsSlot
-                else &#34;&#34;.join(cv.get(&#34;ch&#34;, (CHAR, slot)) for slot in slots)
-            )
-            if extractAttr is None
-            else cv.get(extractAttr, sourceNode)
-        )
-        sourceText = (sourceText or &#34;&#34;).strip()
-        source = {feature: sourceText}
-        cv.feature(targetNode, **source)</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.helpers.matchModel"><code class="name flex">
 <span>def <span class="ident">matchModel</span></span>(<span>properties, tag, atts)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/helpers.py#L336-L351" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def matchModel(properties, tag, atts):
-    if tag == properties[&#34;element&#34;]:
-        criticalAtts = properties[&#34;attributes&#34;]
-        match = True
-        for k, cVal in criticalAtts.items():
-            aVal = atts.get(k, None)
-
-            thisNoMatch = (
-                all(aVal != cV for cV in cVal)
-                if type(cVal) in {list, tuple, set}
-                else aVal != cVal
-            )
-            if thisNoMatch:
-                match = False
-                break
-        return match</code></pre>
-</details>
+</dd>
+<dt id="tf.convert.helpers.operationalize"><code class="name flex">
+<span>def <span class="ident">operationalize</span></span>(<span>data)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.convert.helpers.parseIIIF"><code class="name flex">
+<span>def <span class="ident">parseIIIF</span></span>(<span>settings, prod, selector)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Parse the iiif yaml file.</p>
+<p>We fill in the parameters.</p></div>
 </dd>
 <dt id="tf.convert.helpers.repTokens"><code class="name flex">
 <span>def <span class="ident">repTokens</span></span>(<span>tokens)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/helpers.py#L249-L253" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def repTokens(tokens):
-    text = []
-    for t, space in tokens:
-        text.append(f&#34;‹{t}›{space}&#34;)
-    return &#34;&#34;.join(text)</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.helpers.setUp"><code class="name flex">
 <span>def <span class="ident">setUp</span></span>(<span>kind)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/helpers.py#L354-L394" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def setUp(kind):
-    helpText = f&#34;&#34;&#34;
-    Convert {kind} to TF.
-
-    There are also commands to check the {kind} and to load the TF.&#34;&#34;&#34;
-
-    taskSpec = dict(
-        check=&#34;reports on the elements in the source&#34;,
-        convert=f&#34;converts {kind} to TF&#34;,
-        load=&#34;loads the generated TF&#34;,
-        app=&#34;configures the TF app for the result&#34;,
-        apptoken=&#34;modifies the TF app to make it token- instead of character-based&#34;,
-        browse=&#34;starts the TF browser on the result&#34;,
-    )
-    taskExcluded = {&#34;apptoken&#34;, &#34;browse&#34;}
-
-    paramSpec = {
-        &#34;tf&#34;: (
-            (
-                &#34;0 or latest: update latest version;\n\t\t&#34;
-                &#34;1 2 3: increase major, intermediate, minor TF version;\n\t\t&#34;
-                &#34;rest: explicit version.&#34;
-            ),
-            &#34;latest&#34;,
-        ),
-        kind.lower(): (
-            (
-                &#34;0 or latest: latest version;\n\t\t&#34;
-                &#34;-1 -2 etc: previous version, before previous, ...;\n\t\t&#34;
-                &#34;1 2 etc: first version, second version, ...;\n\t\t&#34;
-                &#34;rest: explicit version.&#34;
-            ),
-            &#34;latest&#34;,
-        ),
-        &#34;validate&#34;: (&#34;Whether to validate the XML input&#34;, True),
-    }
-
-    flagSpec = dict(
-        verbose=(&#34;Produce less or more progress and reporting messages&#34;, -1, 3),
-    )
-    return (helpText, taskSpec, taskExcluded, paramSpec, flagSpec)</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.helpers.tokenize"><code class="name flex">
 <span>def <span class="ident">tokenize</span></span>(<span>line)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/helpers.py#L231-L246" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def tokenize(line):
-    tokens = []
-
-    for word in line.split():
-        ts = (
-            [[word, &#34;&#34;]]
-            if NUMBER_RE.match(word)
-            else [[t, &#34;&#34;] for t in TOKEN_RE.findall(word)]
-        )
-        if len(ts):
-            ts[-1][-1] = &#34; &#34;
-        tokens.extend(ts)
-
-    if len(tokens):
-        tokens[-1][-1] = &#34;&#34;
-    return tuple(tokens)</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.helpers.tweakTrans"><code class="name flex">
 <span>def <span class="ident">tweakTrans</span></span>(<span>template, procins, wordAsSlot, tokenAsSlot, charAsSlot, parentEdges, siblingEdges, tokenBased, sectionModel, sectionProperties, rendDesc, extra)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/helpers.py#L397-L560" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def tweakTrans(
-    template,
-    procins,
-    wordAsSlot,
-    tokenAsSlot,
-    charAsSlot,
-    parentEdges,
-    siblingEdges,
-    tokenBased,
-    sectionModel,
-    sectionProperties,
-    rendDesc,
-    extra,
-):
-    if wordAsSlot:
-        slot = WORD
-        slotc = &#34;Word&#34;
-        slotf = &#34;words&#34;
-        xslot = &#34;`word`&#34;
-    elif charAsSlot:
-        slotc = &#34;Char&#34;
-        slot = CHAR
-        slotf = &#34;characters&#34;
-        xslot = &#34;`char` and `word`&#34;
-    elif tokenAsSlot or True:
-        slotc = &#34;Token&#34;
-        slot = T
-        slotf = &#34;tokens&#34;
-        xslot = &#34;`t` and `word`&#34;
-
-    if parentEdges:
-        hasParent = &#34;Yes&#34;
-    else:
-        hasParent = &#34;No&#34;
-
-    if siblingEdges:
-        hasSibling = &#34;Yes&#34;
-    else:
-        hasSibling = &#34;No&#34;
-
-    if tokenBased:
-        slot = TOKEN
-        slotc = &#34;Token&#34;
-        slotf = &#34;tokens&#34;
-        xslot = &#34;`token`&#34;
-        tokenGen = dedent(
-            &#34;&#34;&#34;
-            Tokens and sentence boundaries have been generated by a Natural Language
-            Pipeline, such as Spacy.
-            &#34;&#34;&#34;
-        )
-        tokenWord = &#34;token&#34;
-        hasToken = &#34;Yes&#34;
-    else:
-        tokenGen = &#34;&#34;
-        tokenWord = &#34;word&#34;
-        hasToken = &#34;No&#34;
-
-    if extra:
-        hasExtra = &#34;Yes&#34;
-    else:
-        hasExtra = &#34;No&#34;
-
-    if procins:
-        doProcins = &#34;Yes&#34;
-    else:
-        doProcins = &#34;No&#34;
-
-    levelNames = sectionProperties[&#34;levels&#34;]
-
-    if sectionModel == &#34;II&#34;:
-        nLevels = &#34;2&#34;
-        chapterSection = levelNames[0]
-        chunkSection = levelNames[1]
-        head = sectionProperties[&#34;element&#34;]
-        attributes = sectionProperties[&#34;attributes&#34;]
-        propertiesRaw = repr(sectionProperties)
-        properties = (
-            &#34;&#34;.join(
-                f&#34;\t*\t`{att}` = `{val}`\n&#34; for (att, val) in sorted(attributes.items())
-            )
-            if attributes
-            else &#34;\t*\t*no attribute properties*\n&#34;
-        )
-    else:
-        nLevels = &#34;3&#34;
-        folderSection = levelNames[0]
-        fileSection = levelNames[1]
-        chunkSection = levelNames[2]
-
-    rendDescStr = &#34;\n&#34;.join(
-        f&#34;`{val}` | {desc}&#34; for (val, desc) in sorted(rendDesc.items())
-    )
-    modelKeepRe = re.compile(rf&#34;«(?:begin|end)Model{sectionModel}»&#34;)
-    modelRemoveRe = re.compile(r&#34;«beginModel([^»]+)».*?«endModel\1»&#34;, re.S)
-    slotKeepRe = re.compile(rf&#34;«(?:begin|end)Slot{slot}»&#34;)
-    slotRemoveRe = re.compile(r&#34;«beginSlot([^»]+)».*?«endSlot\1»&#34;, re.S)
-    tokenKeepRe = re.compile(rf&#34;«(?:begin|end)Token{hasToken}»&#34;)
-    tokenRemoveRe = re.compile(r&#34;«beginToken([^»]+)».*?«endToken\1»&#34;, re.S)
-    parentKeepRe = re.compile(rf&#34;«(?:begin|end)Parent{hasParent}»&#34;)
-    parentRemoveRe = re.compile(r&#34;«beginParent([^»]+)».*?«endParent\1»&#34;, re.S)
-    siblingKeepRe = re.compile(rf&#34;«(?:begin|end)Sibling{hasSibling}»&#34;)
-    siblingRemoveRe = re.compile(r&#34;«beginSibling([^»]+)».*?«endSibling\1»&#34;, re.S)
-    extraKeepRe = re.compile(rf&#34;«(?:begin|end)Extra{hasExtra}»&#34;)
-    extraRemoveRe = re.compile(r&#34;«beginExtra([^»]+)».*?«endToken\1»&#34;, re.S)
-    procinsKeepRe = re.compile(rf&#34;«(?:begin|end)Procins{doProcins}»&#34;)
-    procinsRemoveRe = re.compile(r&#34;«beginProcins([^»]+)».*?«endToken\1»&#34;, re.S)
-
-    skipVars = re.compile(r&#34;«[^»]+»&#34;)
-
-    text = (
-        template.replace(&#34;«slot»&#34;, slot)
-        .replace(&#34;«Slot»&#34;, slotc)
-        .replace(&#34;«slotf»&#34;, slotf)
-        .replace(&#34;«char and word»&#34;, xslot)
-        .replace(&#34;«tokenWord»&#34;, tokenWord)
-        .replace(&#34;«token generation»&#34;, tokenGen)
-        .replace(&#34;«nLevels»&#34;, nLevels)
-        .replace(&#34;«sectionModel»&#34;, sectionModel)
-        .replace(&#34;«rendDesc»&#34;, rendDescStr)
-        .replace(&#34;«extraFeatures»&#34;, extra)
-    )
-    if sectionModel == &#34;II&#34;:
-        text = (
-            text.replace(&#34;«head»&#34;, head)
-            .replace(&#34;«properties»&#34;, properties)
-            .replace(&#34;«propertiesRaw»&#34;, propertiesRaw)
-            .replace(&#34;«chapter»&#34;, chapterSection)
-            .replace(&#34;«chunk»&#34;, chunkSection)
-        )
-    else:
-        text = (
-            text.replace(&#34;«folder»&#34;, folderSection)
-            .replace(&#34;«file»&#34;, fileSection)
-            .replace(&#34;«chunk»&#34;, chunkSection)
-        )
-
-    text = parentKeepRe.sub(&#34;&#34;, text)
-    text = parentRemoveRe.sub(&#34;&#34;, text)
-    text = siblingKeepRe.sub(&#34;&#34;, text)
-    text = siblingRemoveRe.sub(&#34;&#34;, text)
-    text = tokenKeepRe.sub(&#34;&#34;, text)
-    text = tokenRemoveRe.sub(&#34;&#34;, text)
-    text = modelKeepRe.sub(&#34;&#34;, text)
-    text = modelRemoveRe.sub(&#34;&#34;, text)
-    text = slotKeepRe.sub(&#34;&#34;, text)
-    text = slotRemoveRe.sub(&#34;&#34;, text)
-    text = extraKeepRe.sub(&#34;&#34;, text)
-    text = extraRemoveRe.sub(&#34;&#34;, text)
-    text = procinsKeepRe.sub(&#34;&#34;, text)
-    text = procinsRemoveRe.sub(&#34;&#34;, text)
-
-    text = skipVars.sub(&#34;&#34;, text)
-
-    if extra:
-        text += dedent(
-            f&#34;&#34;&#34;
-            # Additional features
-
-            {extra}
-            &#34;&#34;&#34;
-        )
-
-    return text</code></pre>
-</details>
 </dd>
 </dl>
 </section>
@@ -1492,9 +1131,12 @@ setTimeout(() => input.focus(), 100);
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="two-column">
 <li><code><a title="tf.convert.helpers.checkModel" href="#tf.convert.helpers.checkModel">checkModel</a></code></li>
+<li><code><a title="tf.convert.helpers.fillinIIIF" href="#tf.convert.helpers.fillinIIIF">fillinIIIF</a></code></li>
 <li><code><a title="tf.convert.helpers.getWhites" href="#tf.convert.helpers.getWhites">getWhites</a></code></li>
 <li><code><a title="tf.convert.helpers.lookupSource" href="#tf.convert.helpers.lookupSource">lookupSource</a></code></li>
 <li><code><a title="tf.convert.helpers.matchModel" href="#tf.convert.helpers.matchModel">matchModel</a></code></li>
+<li><code><a title="tf.convert.helpers.operationalize" href="#tf.convert.helpers.operationalize">operationalize</a></code></li>
+<li><code><a title="tf.convert.helpers.parseIIIF" href="#tf.convert.helpers.parseIIIF">parseIIIF</a></code></li>
 <li><code><a title="tf.convert.helpers.repTokens" href="#tf.convert.helpers.repTokens">repTokens</a></code></li>
 <li><code><a title="tf.convert.helpers.setUp" href="#tf.convert.helpers.setUp">setUp</a></code></li>
 <li><code><a title="tf.convert.helpers.tokenize" href="#tf.convert.helpers.tokenize">tokenize</a></code></li>
@@ -1507,7 +1149,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

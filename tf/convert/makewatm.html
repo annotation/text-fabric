@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.convert.makewatm API documentation</title>
 <meta name="description" content="" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/makewatm.py#L1-L428" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/convert/makewatm.py#L1-L428" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 from textwrap import dedent
@@ -120,16 +120,17 @@ class MakeWATM:
         &#34;&#34;&#34;
         )
         self.BASE_DOCS = dict(
-            tei2tf=&#34;Produce text-fabric data from TEI&#34;,
-            page2tf=&#34;Produce text-fabric data from PageXML&#34;,
-            watm=&#34;Produce text/anno repo data for the corpus&#34;,
-            watms=&#34;Produce text/anno repo data for a sequence of corpora&#34;,
+            tei2tf=&#34;TEI =&gt; TF&#34;,
+            page2tf=&#34;PageXML =&gt; TF&#34;,
+            watm=&#34;TF =&gt; WATM&#34;,
+            watms=&#34;multi TF =&gt; WATMS&#34;,
         )
         self.BASE_FLAGS = dict(
             silent=&#34;To run a bit more silent&#34;,
             relaxed=&#34;Accept XML validation errors&#34;,
             usenlp=&#34;Will run an NLP pipeline to mark tokens, sentences and entities&#34;,
             prod=&#34;Delivers WATM in production location&#34;,
+            force=&#34;Force execution even if (uptodate) data is present&#34;,
         )
         self.BASE_TASKS = (&#34;tei2tf&#34;, &#34;page2tf&#34;, &#34;watm&#34;, &#34;watms&#34;)
         self.TF_VERSION = &#34;0.0.0test&#34;
@@ -156,6 +157,7 @@ class MakeWATM:
             (&#34;relaxed&#34;, None),
             (&#34;usenlp&#34;, None),
             (&#34;prod&#34;, None),
+            (&#34;force&#34;, None),
         ),
         intro=None,
     ):
@@ -184,7 +186,7 @@ class MakeWATM:
                 continue
 
             self.TASKS.append(name)
-            self.DOCS[name] = doc
+            self.DOCS[name] = self.BASE_DOCS[name] if doc is None else doc
 
         for name, doc in flagSpecs:
             if name not in self.BASE_FLAGS:
@@ -245,7 +247,9 @@ class MakeWATM:
             else:
                 unrecognized.add(carg)
 
-        if not self.flag_silent:
+        silent = self.flag_silent
+
+        if not silent:
             console(f&#34;Enabled tasks: {&#39; &#39;.join(self.TASKS)}&#34;)
         if version is None:
             console(
@@ -253,13 +257,16 @@ class MakeWATM:
             )
             version = self.TF_VERSION
         else:
-            console(f&#34;Using TF version: {version}&#34;)
+            if not silent:
+                console(f&#34;Using TF version: {version}&#34;)
 
         self.version = version
 
         if len(unrecognized):
             console(self.HELP)
-            console(f&#34;Unrecognized arguments: {&#39;, &#39;.join(sorted(unrecognized))}&#34;)
+            console(
+                f&#34;Unrecognized arguments: {&#39;, &#39;.join(sorted(unrecognized))}&#34;, error=True
+            )
             return -1
 
         if len(tasks) == 0:
@@ -275,10 +282,13 @@ class MakeWATM:
 
     def run(self, tasks):
         TASKS = self.TASKS
+        DOCS = self.DOCS
 
         for task in TASKS:
             if task not in tasks:
                 continue
+
+            console(f&#34;{DOCS[task]} ...&#34;)
 
             method = getattr(self, f&#34;doTask_{task}&#34;)
             method()
@@ -301,8 +311,9 @@ class MakeWATM:
         loadVerbose = DEEP if silent else TERSE
 
         Tei = TEI(verbose=verbose, tei=0, tf=f&#34;{tfVersion}pre&#34; if usenlp else tfVersion)
+        self.teiVersion = Tei.teiVersion
 
-        console(&#34;Checking TEI ...&#34;)
+        console(&#34;\tValidating TEI ...&#34;)
 
         if not Tei.task(check=True, verbose=verbose, validate=True):
             if relaxed:
@@ -311,13 +322,13 @@ class MakeWATM:
                 self.good = False
                 return
 
-        console(&#34;Converting TEI to TF ...&#34;)
+        console(&#34;\tConverting TEI ...&#34;)
 
         if not Tei.task(convert=True, verbose=verbose):
             self.good = False
             return
 
-        console(&#34;Loading TF ...&#34;)
+        console(&#34;\tLoading TF ...&#34;)
 
         if not Tei.task(load=True, verbose=verbose):
             self.good = False
@@ -331,7 +342,7 @@ class MakeWATM:
             return
 
         if usenlp:
-            console(&#34;Add tokens and sentences ...&#34;)
+            console(&#34;\tAdding NLP data ...&#34;)
 
             org = self.org
             repo = self.repo
@@ -377,23 +388,15 @@ class MakeWATM:
         repoBase = self.repoBase
         sourceDir = f&#34;{repoBase}/organized/source&#34;
 
-        console(&#34;Producing TF&#34;)
-
         verbose = -1 if silent else 0
 
         P = PageXML(sourceDir, repoBase, verbose=verbose, source=0, tf=tfVersion)
-
-        if not silent:
-            console(&#34;Converting PageXML to TF ...&#34;)
 
         if not P.task(convert=True, verbose=verbose):
             self.good = False
             return
 
-        if not silent:
-            console(&#34;Precomputing and loading TF ...&#34;)
-
-        console(&#34;Loading TF&#34;)
+        console(&#34;\tLoading TF&#34;)
 
         if not P.task(load=True, verbose=verbose):
             self.good = False
@@ -420,14 +423,11 @@ class MakeWATM:
                 console(&#34;Skipping &#39;produce WATM&#39; because of an error condition&#34;)
             return
 
-        console(&#34;Producing WATM&#34;)
-
         backend = self.backend
         org = self.org
         repo = self.repo
 
-        if not silent:
-            console(&#34;Loading TF ...&#34;)
+        console(&#34;\tLoading TF ...&#34;)
 
         loadVerbose = DEEP if silent else TERSE
 
@@ -435,12 +435,12 @@ class MakeWATM:
             f&#34;{org}/{repo}:clone&#34;, backend=backend, checkout=&#34;clone&#34;, silent=loadVerbose
         )
 
-        console(f&#34;Making WATM for version {A.version}&#34;)
+        console(f&#34;\tMaking WATM for version {A.version}&#34;)
 
-        WA = WATM(A, &#34;tei&#34;, skipMeta=False, silent=silent)
+        WA = WATM(A, &#34;tei&#34;, skipMeta=False, silent=silent, prod=prod)
         WA.makeText()
         WA.makeAnno()
-        WA.writeAll(prod=prod)
+        WA.writeAll()
         WA.testAll()
 
     def doTask_watms(self):
@@ -457,7 +457,7 @@ class MakeWATM:
         org = self.org
         repo = self.repo
 
-        console(&#34;Producing WATMs&#34;)
+        console(&#34;\tMaking WATMs&#34;)
 
         W = WATMS(org, repo, backend, &#34;pagexml&#34;, silent=silent)
         W.produce(prod=prod)</code></pre>
@@ -515,7 +515,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/makewatm.py#L18-L428" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/convert/makewatm.py#L18-L428" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class MakeWATM:
     &#34;&#34;&#34;Base class for running conversions to WATM.
@@ -587,16 +587,17 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
         &#34;&#34;&#34;
         )
         self.BASE_DOCS = dict(
-            tei2tf=&#34;Produce text-fabric data from TEI&#34;,
-            page2tf=&#34;Produce text-fabric data from PageXML&#34;,
-            watm=&#34;Produce text/anno repo data for the corpus&#34;,
-            watms=&#34;Produce text/anno repo data for a sequence of corpora&#34;,
+            tei2tf=&#34;TEI =&gt; TF&#34;,
+            page2tf=&#34;PageXML =&gt; TF&#34;,
+            watm=&#34;TF =&gt; WATM&#34;,
+            watms=&#34;multi TF =&gt; WATMS&#34;,
         )
         self.BASE_FLAGS = dict(
             silent=&#34;To run a bit more silent&#34;,
             relaxed=&#34;Accept XML validation errors&#34;,
             usenlp=&#34;Will run an NLP pipeline to mark tokens, sentences and entities&#34;,
             prod=&#34;Delivers WATM in production location&#34;,
+            force=&#34;Force execution even if (uptodate) data is present&#34;,
         )
         self.BASE_TASKS = (&#34;tei2tf&#34;, &#34;page2tf&#34;, &#34;watm&#34;, &#34;watms&#34;)
         self.TF_VERSION = &#34;0.0.0test&#34;
@@ -623,6 +624,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
             (&#34;relaxed&#34;, None),
             (&#34;usenlp&#34;, None),
             (&#34;prod&#34;, None),
+            (&#34;force&#34;, None),
         ),
         intro=None,
     ):
@@ -651,7 +653,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
                 continue
 
             self.TASKS.append(name)
-            self.DOCS[name] = doc
+            self.DOCS[name] = self.BASE_DOCS[name] if doc is None else doc
 
         for name, doc in flagSpecs:
             if name not in self.BASE_FLAGS:
@@ -712,7 +714,9 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
             else:
                 unrecognized.add(carg)
 
-        if not self.flag_silent:
+        silent = self.flag_silent
+
+        if not silent:
             console(f&#34;Enabled tasks: {&#39; &#39;.join(self.TASKS)}&#34;)
         if version is None:
             console(
@@ -720,13 +724,16 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
             )
             version = self.TF_VERSION
         else:
-            console(f&#34;Using TF version: {version}&#34;)
+            if not silent:
+                console(f&#34;Using TF version: {version}&#34;)
 
         self.version = version
 
         if len(unrecognized):
             console(self.HELP)
-            console(f&#34;Unrecognized arguments: {&#39;, &#39;.join(sorted(unrecognized))}&#34;)
+            console(
+                f&#34;Unrecognized arguments: {&#39;, &#39;.join(sorted(unrecognized))}&#34;, error=True
+            )
             return -1
 
         if len(tasks) == 0:
@@ -742,10 +749,13 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 
     def run(self, tasks):
         TASKS = self.TASKS
+        DOCS = self.DOCS
 
         for task in TASKS:
             if task not in tasks:
                 continue
+
+            console(f&#34;{DOCS[task]} ...&#34;)
 
             method = getattr(self, f&#34;doTask_{task}&#34;)
             method()
@@ -768,8 +778,9 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
         loadVerbose = DEEP if silent else TERSE
 
         Tei = TEI(verbose=verbose, tei=0, tf=f&#34;{tfVersion}pre&#34; if usenlp else tfVersion)
+        self.teiVersion = Tei.teiVersion
 
-        console(&#34;Checking TEI ...&#34;)
+        console(&#34;\tValidating TEI ...&#34;)
 
         if not Tei.task(check=True, verbose=verbose, validate=True):
             if relaxed:
@@ -778,13 +789,13 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
                 self.good = False
                 return
 
-        console(&#34;Converting TEI to TF ...&#34;)
+        console(&#34;\tConverting TEI ...&#34;)
 
         if not Tei.task(convert=True, verbose=verbose):
             self.good = False
             return
 
-        console(&#34;Loading TF ...&#34;)
+        console(&#34;\tLoading TF ...&#34;)
 
         if not Tei.task(load=True, verbose=verbose):
             self.good = False
@@ -798,7 +809,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
             return
 
         if usenlp:
-            console(&#34;Add tokens and sentences ...&#34;)
+            console(&#34;\tAdding NLP data ...&#34;)
 
             org = self.org
             repo = self.repo
@@ -844,23 +855,15 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
         repoBase = self.repoBase
         sourceDir = f&#34;{repoBase}/organized/source&#34;
 
-        console(&#34;Producing TF&#34;)
-
         verbose = -1 if silent else 0
 
         P = PageXML(sourceDir, repoBase, verbose=verbose, source=0, tf=tfVersion)
-
-        if not silent:
-            console(&#34;Converting PageXML to TF ...&#34;)
 
         if not P.task(convert=True, verbose=verbose):
             self.good = False
             return
 
-        if not silent:
-            console(&#34;Precomputing and loading TF ...&#34;)
-
-        console(&#34;Loading TF&#34;)
+        console(&#34;\tLoading TF&#34;)
 
         if not P.task(load=True, verbose=verbose):
             self.good = False
@@ -887,14 +890,11 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
                 console(&#34;Skipping &#39;produce WATM&#39; because of an error condition&#34;)
             return
 
-        console(&#34;Producing WATM&#34;)
-
         backend = self.backend
         org = self.org
         repo = self.repo
 
-        if not silent:
-            console(&#34;Loading TF ...&#34;)
+        console(&#34;\tLoading TF ...&#34;)
 
         loadVerbose = DEEP if silent else TERSE
 
@@ -902,12 +902,12 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
             f&#34;{org}/{repo}:clone&#34;, backend=backend, checkout=&#34;clone&#34;, silent=loadVerbose
         )
 
-        console(f&#34;Making WATM for version {A.version}&#34;)
+        console(f&#34;\tMaking WATM for version {A.version}&#34;)
 
-        WA = WATM(A, &#34;tei&#34;, skipMeta=False, silent=silent)
+        WA = WATM(A, &#34;tei&#34;, skipMeta=False, silent=silent, prod=prod)
         WA.makeText()
         WA.makeAnno()
-        WA.writeAll(prod=prod)
+        WA.writeAll()
         WA.testAll()
 
     def doTask_watms(self):
@@ -924,7 +924,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
         org = self.org
         repo = self.repo
 
-        console(&#34;Producing WATMs&#34;)
+        console(&#34;\tMaking WATMs&#34;)
 
         W = WATMS(org, repo, backend, &#34;pagexml&#34;, silent=silent)
         W.produce(prod=prod)</code></pre>
@@ -936,405 +936,48 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/makewatm.py#L332-L376" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def doTask_page2tf(self):
-    good = self.good
-    silent = self.flag_silent
-
-    if not good:
-        if not silent:
-            console(&#34;Skipping &#39;produce TF&#39; because of an error condition&#34;)
-        return
-
-    tfVersion = self.version
-    repoBase = self.repoBase
-    sourceDir = f&#34;{repoBase}/organized/source&#34;
-
-    console(&#34;Producing TF&#34;)
-
-    verbose = -1 if silent else 0
-
-    P = PageXML(sourceDir, repoBase, verbose=verbose, source=0, tf=tfVersion)
-
-    if not silent:
-        console(&#34;Converting PageXML to TF ...&#34;)
-
-    if not P.task(convert=True, verbose=verbose):
-        self.good = False
-        return
-
-    if not silent:
-        console(&#34;Precomputing and loading TF ...&#34;)
-
-    console(&#34;Loading TF&#34;)
-
-    if not P.task(load=True, verbose=verbose):
-        self.good = False
-        return
-
-    if not silent:
-        console(&#34;Set up TF-app ...&#34;)
-
-    if not P.task(app=True, verbose=verbose):
-        self.good = False
-        return
-
-    if not P.good:
-        self.good = False
-        return</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.makewatm.MakeWATM.doTask_tei2tf"><code class="name flex">
 <span>def <span class="ident">doTask_tei2tf</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/makewatm.py#L253-L330" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def doTask_tei2tf(self):
-    good = self.good
-    silent = self.flag_silent
-    relaxed = self.flag_relaxed
-    usenlp = self.flag_usenlp
-
-    if not good:
-        if not silent:
-            console(&#34;Skipping &#39;produce TF&#39; because of an error condition&#34;)
-        return
-
-    tfVersion = self.version
-    verbose = -1 if silent else 0
-    loadVerbose = DEEP if silent else TERSE
-
-    Tei = TEI(verbose=verbose, tei=0, tf=f&#34;{tfVersion}pre&#34; if usenlp else tfVersion)
-
-    console(&#34;Checking TEI ...&#34;)
-
-    if not Tei.task(check=True, verbose=verbose, validate=True):
-        if relaxed:
-            Tei.good = True
-        else:
-            self.good = False
-            return
-
-    console(&#34;Converting TEI to TF ...&#34;)
-
-    if not Tei.task(convert=True, verbose=verbose):
-        self.good = False
-        return
-
-    console(&#34;Loading TF ...&#34;)
-
-    if not Tei.task(load=True, verbose=verbose):
-        self.good = False
-        return
-
-    if not silent:
-        console(&#34;Set up TF-app ...&#34;)
-
-    if not Tei.task(app=True, verbose=verbose):
-        self.good = False
-        return
-
-    if usenlp:
-        console(&#34;Add tokens and sentences ...&#34;)
-
-        org = self.org
-        repo = self.repo
-        backend = self.backend
-
-        Apre = use(
-            f&#34;{org}/{repo}:clone&#34;,
-            backend=backend,
-            checkout=&#34;clone&#34;,
-            silent=loadVerbose,
-        )
-        NLP = NLPipeline(
-            lang=&#34;it&#34;, ner=True, parser=True, verbose=verbose, write=True
-        )
-        NLP.loadApp(Apre)
-        NLP.task(plaintext=True, lingo=True, ingest=True)
-
-        if not NLP.good:
-            self.good = False
-            return
-
-        if not silent:
-            console(&#34;Set up TF-app ...&#34;)
-
-        if not Tei.task(apptoken=True, verbose=-1):
-            self.good = False
-            return
-
-        if not Tei.task(load=True, verbose=-1):
-            self.good = False
-            return</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.makewatm.MakeWATM.doTask_watm"><code class="name flex">
 <span>def <span class="ident">doTask_watm</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/makewatm.py#L378-L409" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def doTask_watm(self):
-    good = self.good
-    silent = self.flag_silent
-    prod = self.flag_prod
-
-    if not good:
-        if not silent:
-            console(&#34;Skipping &#39;produce WATM&#39; because of an error condition&#34;)
-        return
-
-    console(&#34;Producing WATM&#34;)
-
-    backend = self.backend
-    org = self.org
-    repo = self.repo
-
-    if not silent:
-        console(&#34;Loading TF ...&#34;)
-
-    loadVerbose = DEEP if silent else TERSE
-
-    A = use(
-        f&#34;{org}/{repo}:clone&#34;, backend=backend, checkout=&#34;clone&#34;, silent=loadVerbose
-    )
-
-    console(f&#34;Making WATM for version {A.version}&#34;)
-
-    WA = WATM(A, &#34;tei&#34;, skipMeta=False, silent=silent)
-    WA.makeText()
-    WA.makeAnno()
-    WA.writeAll(prod=prod)
-    WA.testAll()</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.makewatm.MakeWATM.doTask_watms"><code class="name flex">
 <span>def <span class="ident">doTask_watms</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/makewatm.py#L411-L428" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def doTask_watms(self):
-    good = self.good
-    silent = self.flag_silent
-    prod = self.flag_prod
-
-    if not good:
-        if not silent:
-            console(&#34;Skipping &#39;produce WATM&#39; because of an error condition&#34;)
-        return
-
-    backend = self.backend
-    org = self.org
-    repo = self.repo
-
-    console(&#34;Producing WATMs&#34;)
-
-    W = WATMS(org, repo, backend, &#34;pagexml&#34;, silent=silent)
-    W.produce(prod=prod)</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.makewatm.MakeWATM.main"><code class="name flex">
 <span>def <span class="ident">main</span></span>(<span>self, cmdLine=None, cargs=['--force', '--html', '--output-dir', 'site', '--template-dir', 'tf/docs/templates', 'tf'])</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/makewatm.py#L177-L236" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def main(self, cmdLine=None, cargs=sys.argv[1:]):
-    FLAGS = self.FLAGS
-    TASKS = self.TASKS
-
-    if cmdLine is not None:
-        cargs = cmdLine.split()
-
-    if &#34;--help&#34; in cargs:
-        console(self.HELP)
-        return 0
-
-    unrecognized = set()
-    tasks = set()
-    version = None
-
-    for flag in FLAGS:
-        setattr(self, f&#34;flag_{flag}&#34;, False)
-
-    for carg in cargs:
-        if carg.startswith(&#34;--&#34;):
-            flag = carg[2:]
-
-            if flag not in FLAGS:
-                unrecognized.add(carg)
-            else:
-                setattr(self, f&#34;flag_{flag}&#34;, True)
-        elif carg == &#34;all&#34;:
-            for task in TASKS:
-                tasks.add(task)
-        elif carg in TASKS:
-            tasks.add(carg)
-        elif &#34;.&#34; in carg:
-            version = carg
-        else:
-            unrecognized.add(carg)
-
-    if not self.flag_silent:
-        console(f&#34;Enabled tasks: {&#39; &#39;.join(self.TASKS)}&#34;)
-    if version is None:
-        console(
-            f&#34;No version for the TF data given. Using default: {self.TF_VERSION}&#34;
-        )
-        version = self.TF_VERSION
-    else:
-        console(f&#34;Using TF version: {version}&#34;)
-
-    self.version = version
-
-    if len(unrecognized):
-        console(self.HELP)
-        console(f&#34;Unrecognized arguments: {&#39;, &#39;.join(sorted(unrecognized))}&#34;)
-        return -1
-
-    if len(tasks) == 0:
-        console(&#34;Nothing to do&#34;)
-        return 0
-
-    self.prepareRun(tasks)
-
-    return self.run(tasks)</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.makewatm.MakeWATM.prepareRun"><code class="name flex">
 <span>def <span class="ident">prepareRun</span></span>(<span>self, tasks)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/makewatm.py#L238-L239" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def prepareRun(self, tasks):
-    return</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.makewatm.MakeWATM.run"><code class="name flex">
 <span>def <span class="ident">run</span></span>(<span>self, tasks)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/makewatm.py#L241-L251" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def run(self, tasks):
-    TASKS = self.TASKS
-
-    for task in TASKS:
-        if task not in tasks:
-            continue
-
-        method = getattr(self, f&#34;doTask_{task}&#34;)
-        method()
-
-    return 0 if self.good else 1</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.makewatm.MakeWATM.setOptions"><code class="name flex">
-<span>def <span class="ident">setOptions</span></span>(<span>self, taskSpecs=(('tei2tf', None), ('watm', None)), flagSpecs=(('silent', None), ('relaxed', None), ('usenlp', None), ('prod', None)), intro=None)</span>
+<span>def <span class="ident">setOptions</span></span>(<span>self, taskSpecs=(('tei2tf', None), ('watm', None)), flagSpecs=(('silent', None), ('relaxed', None), ('usenlp', None), ('prod', None), ('force', None)), intro=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/makewatm.py#L113-L175" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def setOptions(
-    self,
-    taskSpecs=(
-        (&#34;tei2tf&#34;, None),
-        (&#34;watm&#34;, None),
-    ),
-    flagSpecs=(
-        (&#34;silent&#34;, None),
-        (&#34;relaxed&#34;, None),
-        (&#34;usenlp&#34;, None),
-        (&#34;prod&#34;, None),
-    ),
-    intro=None,
-):
-    self.TASKS = []
-    self.DOCS = {}
-    self.FLAGS = {}
-
-    good = True
-
-    for name, doc in taskSpecs:
-        if name not in self.BASE_TASKS:
-            if doc is None:
-                console(f&#34;task {name}: no help text given&#34;, error=True)
-                good = False
-
-            method = f&#34;doTask_{name}&#34;
-
-            if not hasattr(self, method):
-                console(
-                    f&#34;task {name}: no method {method} defined in subclass&#34;,
-                    error=True,
-                )
-                good = False
-
-        if not good:
-            continue
-
-        self.TASKS.append(name)
-        self.DOCS[name] = doc
-
-    for name, doc in flagSpecs:
-        if name not in self.BASE_FLAGS:
-            if doc is None:
-                console(f&#34;flag --{name}: no help text given&#34;, error=True)
-                good = False
-
-        if not good:
-            continue
-
-        self.FLAGS[name] = doc
-
-    self.good = good
-
-    self.HELP = (
-        (f&#34;{intro}\n\n&#34; if intro else &#34;&#34;)
-        + self.BASE_HELP
-        + &#34;\nFLAGS\n\n&#34;
-        + &#34;&#34;.join(f&#34;{name}\n\t{doc}&#34; for (name, doc) in self.FLAGS.items())
-        + &#34;\nTASKS\n\n&#34;
-        + &#34;&#34;.join(f&#34;{name}\n\t{doc}&#34; for (name, doc) in self.DOCS.items())
-        + &#34;\n\nall\n\trun all (enabled) tasks\n\n&#34;
-    )</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -1426,7 +1069,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.clean API documentation</title>
 <meta name="description" content="Clean …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -40,7 +40,7 @@ that you no longer need.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/clean.py#L1-L118" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/clean.py#L1-L118" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Clean
@@ -204,118 +204,18 @@ be removed.</dd>
 what will be deleted if it were not a dry run.
 If you pass <code>dry=False</code> the delete actions will really be executed.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/clean.py#L45-L118" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def clean(tfd=True, backend=None, dry=True, specific=None, current=False):
-    &#34;&#34;&#34;Clean up older compressed `.tfx` files.
-
-    Parameters
-    ----------
-
-    Removes all pre-computed data resulting from other `PACK_VERSION`
-    than the one currently used by TF.
-
-    You find the current pack version in
-    `tf.parameters`
-
-    tfd: boolean,  optional True
-        By default, your `~/text-fabric-data` is traversed and cleaned,
-        but if you pass `tfd=False` it will be skipped.
-    backend: string, optional, `None`
-        If None, only material in `text-fabric-data` will be cleaned.
-        But you can also clean clones of GitHub / GitLab.
-
-        To clean GitHub / GitLab clones, pass `github` / `gitlab`.
-
-        To clean the clones from a specific GitLab server,
-        pass its server name.
-    specific: string, optional, `None`
-        You can pass a specific directory here. The standard directories
-        `~/github` and `~/text-fabric-data` will not be used, only
-        the directory you pass here. `~` will be expanded to your home directory.
-    current: boolean, optional, `False`
-        If current=True, also the pre-computed results of the current version will
-        be removed.
-    dry: boolean, optional, `False`
-        By default, nothing will be deleted, and you only get a list of
-        what will be deleted if it were not a dry run.
-        If you pass `dry=False` the delete actions will really be executed.
-    &#34;&#34;&#34;
-
-    if specific is not None:
-        bases = [ex(specific)]
-    else:
-        if backend is not None:
-            backend = backendRep(backend, &#34;norm&#34;)
-            bases = [backendRep(backend, kind) for kind in (&#34;cache&#34;, &#34;clone&#34;)]
-
-    for base in bases:
-        for triple in walkDir(base):
-            d = triple[0]
-            if binRe.search(d):
-                files = triple[2]
-                if files:
-                    err(f&#34;{d} legacy: delete {len(files)} files ... &#34;)
-                    if dry:
-                        err(&#34;dry\n&#34;)
-                    else:
-                        for f in files:
-                            fileRemove(f&#34;{d}/{f}&#34;)
-                        err(&#34;done\n&#34;)
-                    continue
-            match = binvRe.search(d)
-            if match:
-                binv = match.group(1)
-                if not current and binv == PACK_VERSION:
-                    out(f&#34;{d} version {binv}: keep\n&#34;)
-                else:
-                    files = triple[2]
-                    err(f&#34;{d} version {binv}: delete it and its {len(files)} files ...&#34;)
-                    if dry:
-                        err(&#34;dry\n&#34;)
-                    else:
-                        dirRemove(d)
-                        err(&#34;done\n&#34;)
-    if dry:
-        sys.stdout.write(&#34;\n&#34;)
-        sys.stderr.write(&#34;This was a dry run\n&#34;)
-        sys.stderr.write(&#34;Say clean(dry=False) to perform the cleaning\n&#34;)</code></pre>
-</details>
 </dd>
 <dt id="tf.clean.err"><code class="name flex">
 <span>def <span class="ident">err</span></span>(<span>msg)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Write to standard error output immediately.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/clean.py#L39-L42" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def err(msg):
-    &#34;&#34;&#34;Write to standard error output immediately.&#34;&#34;&#34;
-    sys.stderr.write(ux(msg))
-    sys.stderr.flush()</code></pre>
-</details>
 </dd>
 <dt id="tf.clean.out"><code class="name flex">
 <span>def <span class="ident">out</span></span>(<span>msg)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Write to standard normal output immediately.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/clean.py#L33-L36" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def out(msg):
-    &#34;&#34;&#34;Write to standard normal output immediately.&#34;&#34;&#34;
-    sys.stdout.write(ux(msg))
-    sys.stdout.flush()</code></pre>
-</details>
 </dd>
 </dl>
 </section>
@@ -399,7 +299,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

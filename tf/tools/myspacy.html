@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.tools.myspacy API documentation</title>
 <meta name="description" content="Get words and tokens from a plain text with the help of Spacy …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -41,7 +41,7 @@ language modules.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/tools/myspacy.py#L1-L393" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/tools/myspacy.py#L1-L393" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Get words and tokens from a plain text with the help of Spacy.
 
@@ -481,48 +481,6 @@ def nlpOutput(text, lang=&#34;en&#34;, ner=False, parser=False):
 <p>Entities are tuples (start, end, text, kind).</p>
 </dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/tools/myspacy.py#L358-L393" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def nlpOutput(text, lang=&#34;en&#34;, ner=False, parser=False):
-    &#34;&#34;&#34;Runs the Spacy NLP pipeline and delivers the results.
-
-    Parameters
-    ----------
-    text: string
-        The complete, raw text.
-    lang: string, optional en
-        The language to be used; its model should be installed; see
-        `tf.tools.myspacy` for how to get language models.
-    ner: boolean, optional False
-        Whether to include named entities in the output.
-    parser: boolean, optional False
-        Whether to run the NLP parser.
-
-    Returns
-    -------
-    tuple
-        `tokens`: the token list as tuples
-        `sentences`: the sentence list as tuples
-        `entities`: the entity list as tuples, only if `ner=True`
-
-        Tokens are tuples (start, end, text, after).
-
-        Sentences are tuples (start, end, text).
-
-        Entities are tuples (start, end, text, kind).
-    &#34;&#34;&#34;
-    S = Spacy(lang=lang, parser=parser)
-    S.read(text)
-
-    tokens = S.getTokens()
-    sentences = S.getSentences()
-    entities = S.getEntities() if ner else None
-
-    return tuple(x for x in (tokens, sentences, entities) if x is not None)</code></pre>
-</details>
 </dd>
 </dl>
 </section>
@@ -554,7 +512,7 @@ called <code>xx</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/tools/myspacy.py#L56-L355" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/tools/myspacy.py#L56-L355" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Spacy(CheckImport):
     def __init__(self, lang=None, parser=False):
@@ -882,51 +840,6 @@ Character positions start at 0.</li>
 <dt><code>list</code></dt>
 <dd>All entities as tuples.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/tools/myspacy.py#L317-L355" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def getEntities(self):
-    &#34;&#34;&#34;Get the resulting named entities.
-
-    A named entity is represented as a tuple consisting of
-
-    *   *start*: first character position that the entity occupies in the text.
-        Character positions start at 0.
-    *   *end*: last character position that the entity occupies in the text
-        *plus one*.
-    *   *text*: text of the entity.
-    *   *kind*: kind of the entity.
-
-    Returns
-    -------
-    list
-        All entities as tuples.
-    &#34;&#34;&#34;
-    if not self.importOK():
-        return []
-
-    doc = self.doc
-    if doc is None:
-        console(&#34;No results available from the NLP pipeline&#34;)
-        return []
-
-    if not hasattr(doc, &#34;ents&#34;):
-        console(&#34;No entity results available from the NLP pipeline&#34;)
-        return []
-
-    result = []
-
-    for ent in doc.ents:
-        start = ent.start_char
-        end = ent.end_char
-        text = ent.text
-        kind = ent.label_
-        result.append((start, end, text, kind))
-
-    return result</code></pre>
-</details>
 </dd>
 <dt id="tf.tools.myspacy.Spacy.getSentences"><code class="name flex">
 <span>def <span class="ident">getSentences</span></span>(<span>self)</span>
@@ -946,62 +859,6 @@ Character positions start at 0.</li>
 <dt><code>list</code></dt>
 <dd>All sentences as tuples.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/tools/myspacy.py#L266-L315" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def getSentences(self):
-    &#34;&#34;&#34;Get the resulting sentences.
-
-    A sentence is represented as a tuple consisting of
-
-    *   *start*: first character position that the sentence occupies in the text.
-        Character positions start at 0.
-    *   *end*: last character position that the sentence occupies in the text
-        *plus one*.
-    *   *text*: text of the sentence.
-
-    Returns
-    -------
-    list
-        All sentences as tuples.
-    &#34;&#34;&#34;
-    if not self.importOK():
-        return []
-
-    doc = self.doc
-
-    if doc is None:
-        console(&#34;No results available from the NLP pipeline&#34;)
-        return []
-
-    if not self.canSentence:
-        console(&#34;No sentence results available from the NLP pipeline&#34;)
-        return []
-
-    result = []
-
-    whiteRe = re.compile(r&#34;^[.?!\s]*$&#34;, re.S)
-    spuriousNlBefore = re.compile(r&#34;\n+(\W)&#34;, re.S)
-    spuriousNlAfter = re.compile(r&#34;(\W)\n+&#34;, re.S)
-
-    for s in doc.sents:
-        text = s.text.strip(&#34;\n&#34;)
-        if whiteRe.match(text):
-            continue
-
-        tokenStart = doc[s.start]
-        tokenEnd = doc[s.end - 1]
-        sentStart = tokenStart.idx
-        sentEnd = tokenEnd.idx + len(tokenEnd.text)
-
-        text = spuriousNlBefore.sub(r&#34;\1&#34;, text)
-        text = spuriousNlAfter.sub(r&#34;\1&#34;, text)
-        result.append((sentStart, sentEnd, text))
-
-    return result</code></pre>
-</details>
 </dd>
 <dt id="tf.tools.myspacy.Spacy.getTokens"><code class="name flex">
 <span>def <span class="ident">getTokens</span></span>(<span>self)</span>
@@ -1029,59 +886,6 @@ where the tokens themselves are, and spaces do not belong to the tokens.</p>
 <dt><code>list</code></dt>
 <dd>All tokens as tuples.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/tools/myspacy.py#L218-L264" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def getTokens(self):
-    &#34;&#34;&#34;Get the resulting tokens.
-
-    A token is represented as a tuple consisting of
-
-    *   *start*: first character position that the token occupies in the text.
-        Character positions start at 0.
-    *   *end*: last character position that the token occupies in the text
-        *plus one*.
-    *   *text*: text of the token, **excluding any trailing white-space**.
-    *   *space*: any white-space behind the token, if present, otherwise
-        the empty string.
-
-
-    !!! note &#34;End position and space&#34;
-        If there is a space behind the token, it will not add to the end position
-        of the token. So the start and end positions of the tokens reflect
-        where the tokens themselves are, and spaces do not belong to the tokens.
-
-    Returns
-    -------
-    list
-        All tokens as tuples.
-    &#34;&#34;&#34;
-    doc = self.doc
-    if doc is None:
-        console(&#34;No results available from the NLP pipeline&#34;)
-        return []
-
-    canTag = self.canTag
-    canMorph = self.canMorph
-    canLemma = self.canLemma
-
-    result = []
-
-    for token in doc:
-        start = token.idx
-        text = token.text
-        space = token.whitespace_
-        end = start + len(text)
-
-        pos = token.pos_ if canMorph else token.tag_ if canTag else None
-        morph = str(token.morph) if canMorph else None
-        lemma = token.lemma_.strip().lower() if canLemma else None
-        result.append((start, end, text, space, pos, morph, lemma))
-
-    return result</code></pre>
-</details>
 </dd>
 <dt id="tf.tools.myspacy.Spacy.read"><code class="name flex">
 <span>def <span class="ident">read</span></span>(<span>self, text)</span>
@@ -1096,37 +900,6 @@ words on a decent laptop.</p>
 <dt><strong><code>text</code></strong> :&ensp;<code>string</code></dt>
 <dd>The complete, raw text.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/tools/myspacy.py#L192-L216" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def read(self, text):
-    &#34;&#34;&#34;Process a plain text.
-
-    A text is ingested and tokenised. Sentences are detected.
-    This may require quite some processing time, think of 30 seconds for 200,000
-    words on a decent laptop.
-
-    Parameters
-    ----------
-    text: string
-        The complete, raw text.
-    &#34;&#34;&#34;
-    if not self.importOK():
-        return
-
-    nText = len(text)
-    nlp = self.nlp
-
-    if nlp is None:
-        console(&#34;The NLP pipeline is not functioning&#34;)
-        return
-
-    nlp.max_length = nText
-    doc = nlp(text)
-    self.doc = doc</code></pre>
-</details>
 </dd>
 </dl>
 <h3>Inherited members</h3>
@@ -1233,7 +1006,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

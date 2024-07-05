@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.advanced.tables API documentation</title>
 <meta name="description" content="" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/advanced/tables.py#L1-L350" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/advanced/tables.py#L1-L350" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from ..core.text import DEFAULT_FORMAT
 from .helpers import getHeaders, RESULT
@@ -413,111 +413,6 @@ it is an index in the list for which a pretty display will be retrieved.
 Typically, this happens when a TF browser user clicks on a table row
 in order to expand it.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/advanced/tables.py#L6-L104" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def compose(
-    app,
-    tuples,
-    features,
-    position,
-    opened,
-    getx=None,
-    **options,
-):
-    &#34;&#34;&#34;Takes a list of tuples and composes it into an HTML table.
-
-    Some of the rows will be expandable, namely the rows specified by `opened`,
-    for which extra data has been fetched.
-
-    Parameters
-    ----------
-    features: list
-        The names of features that will be shown in expanded pretty displays.
-        Typically, it is the list of features used in the query that delivered
-        the tuples.
-
-    position: integer
-        The current position in the list. Will be highlighted in the display.
-
-    getx: integer, optional None
-        If `None`, a portion of the tuples will be put in a table. otherwise,
-        it is an index in the list for which a pretty display will be retrieved.
-        Typically, this happens when a TF browser user clicks on a table row
-        in order to expand it.
-    &#34;&#34;&#34;
-
-    display = app.display
-    dContext = display.distill(options)
-    condensed = dContext.condensed
-    condenseType = dContext.condenseType
-
-    api = app.api
-
-    item = condenseType if condensed else RESULT
-
-    if features:
-        api.ensureLoaded(features)
-        features = features.split()
-    else:
-        features = []
-
-    if getx is not None:
-        tup = None
-        for i, tp in tuples:
-            if i == getx:
-                tup = tp
-                break
-        return (
-            prettyTuple(
-                app,
-                tup,
-                seq=getx,
-                # extraFeatures=(features, {}),
-                tupleFeatures=features,
-                # **display.consume(options, &#34;extraFeatures&#34;),
-                **display.consume(options, &#34;tupleFeatures&#34;),
-            )
-            if tup is not None
-            else &#34;&#34;
-        )
-
-    tuplesHtml = []
-    doHeader = False
-    for i, tup in tuples:
-        if i is None:
-            if tup == &#34;results&#34;:
-                doHeader = True
-            else:
-                tuplesHtml.append(
-                    f&#39;&lt;div class=&#34;dtheadrow&#34;&gt;&lt;span&gt;n&lt;/span&gt;&lt;span&gt;{tup}&lt;/span&gt;&lt;/div&gt;&#39;
-                )
-            continue
-
-        if doHeader:
-            doHeader = False
-            tuplesHtml.append(getHeaders(app, tuples))
-
-        tuplesHtml.append(
-            plainTuple(
-                app,
-                tup,
-                seq=i,
-                item=item,
-                position=position,
-                opened=i in opened,
-                _asString=True,
-                # extraFeatures=(features, {}),
-                tupleFeatures=features,
-                # **display.consume(options, &#34;extraFeatures&#34;),
-                **display.consume(options, &#34;tupleFeatures&#34;),
-            )
-        )
-
-    return &#34;\n&#34;.join(tuplesHtml)</code></pre>
-</details>
 </dd>
 <dt id="tf.advanced.tables.composeP"><code class="name flex">
 <span>def <span class="ident">composeP</span></span>(<span>app, browseNavLevel, finalSecType, features, items, opened, secFinal, getx=None, **options)</span>
@@ -539,106 +434,6 @@ section node in question, and then items is a single node.
 Normally, the items is the list of section nodes one level lower than the
 section node in question. See <code>browseContentPretty</code> in <code><a title="tf.advanced.settings" href="settings.html">tf.advanced.settings</a></code>.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/advanced/tables.py#L189-L282" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def composeP(
-    app,
-    browseNavLevel,
-    finalSecType,
-    features,
-    items,
-    opened,
-    secFinal,
-    getx=None,
-    **options,
-):
-    &#34;&#34;&#34;Takes a list of tuples and composes it into an HTML table.
-
-    Like `composeT`, but this is meant to compose the items at section level 2
-    (verses) within an item of section level 1 (chapter) within an item of
-    section level 0 (a book).
-
-    Typically invoked when a user of the TF browser is browsing passages.
-    The query is used to highlight its results in the passages that the user is
-    browsing.
-
-    Parameters
-    ----------
-    items: int or list of int
-        A node or list of nodes.
-        Some corpora require a passage to be shown as a pretty display of the
-        section node in question, and then items is a single node.
-        Normally, the items is the list of section nodes one level lower than the
-        section node in question. See `browseContentPretty` in `tf.advanced.settings`.
-    &#34;&#34;&#34;
-
-    display = app.display
-
-    api = app.api
-    T = api.T
-
-    if features:
-        api.ensureLoaded(features)
-        features = features.split()
-    else:
-        features = []
-
-    if not items:
-        return &#34;&#34;
-
-    if type(items) is int:
-        return pretty(app, items, **options)
-
-    if getx is not None:
-        tup = None
-        for sFinal in items:
-            i = T.sectionFromNode(sFinal)[browseNavLevel]
-            if i == getx:
-                tup = (sFinal,)
-                break
-        return (
-            prettyTuple(
-                app,
-                tup,
-                seq=getx,
-                condensed=False,
-                condenseType=finalSecType,
-                # extraFeatures=(features, {}),
-                # **display.consume(
-                #     options, &#34;condensed&#34;, &#34;condenseType&#34;, &#34;extraFeatures&#34;
-                # ),
-                tupleFeatures=features,
-                **display.consume(
-                    options, &#34;condensed&#34;, &#34;condenseType&#34;, &#34;tupleFeatures&#34;
-                ),
-            )
-            if tup is not None
-            else &#34;&#34;
-        )
-
-    passageHtml = []
-
-    for item in items:
-        passageHtml.append(
-            _plainTextSFinal(
-                app,
-                browseNavLevel,
-                finalSecType,
-                item,
-                opened,
-                secFinal,
-                # extraFeatures=(features, {}),
-                # **display.consume(options, &#34;extraFeatures&#34;),
-                tupleFeatures=features,
-                **display.consume(options, &#34;tupleFeatures&#34;),
-            )
-        )
-
-    return &#34;\n&#34;.join(passageHtml)</code></pre>
-</details>
 </dd>
 <dt id="tf.advanced.tables.composeT"><code class="name flex">
 <span>def <span class="ident">composeT</span></span>(<span>app, features, tuples, opened, getx=None, **options)</span>
@@ -648,86 +443,6 @@ section node in question. See <code>browseContentPretty</code> in <code><a title
 <p>Very much like <code><a title="tf.advanced.tables.compose" href="#tf.advanced.tables.compose">compose()</a></code>,
 but here the tuples come from a sections and / or tuples specification
 in the TF browser.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/advanced/tables.py#L110-L183" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def composeT(
-    app,
-    features,
-    tuples,
-    opened,
-    getx=None,
-    **options,
-):
-    &#34;&#34;&#34;Takes a list of tuples and composes it into an HTML table.
-
-    Very much like `compose`,
-    but here the tuples come from a sections and / or tuples specification
-    in the TF browser.
-    &#34;&#34;&#34;
-
-    display = app.display
-
-    api = app.api
-
-    if features:
-        api.ensureLoaded(features)
-        features = features.split()
-    else:
-        features = []
-
-    if getx is not None:
-        tup = None
-        for i, tp in tuples:
-            if i == getx:
-                tup = tp
-                break
-        return (
-            prettyTuple(
-                app,
-                tup,
-                seq=getx,
-                condensed=False,
-                extraFeatures=(features, {}),
-                **display.consume(options, &#34;condensed&#34;, &#34;extraFeatures&#34;),
-            )
-            if tup is not None
-            else &#34;&#34;
-        )
-
-    tuplesHtml = []
-    doHeader = False
-    for i, tup in tuples:
-        if i is None:
-            if tup == &#34;results&#34;:
-                doHeader = True
-            else:
-                tuplesHtml.append(
-                    f&#39;&lt;div class=&#34;dtheadrow&#34;&gt;&lt;span&gt;n&lt;/span&gt;&lt;span&gt;{tup}&lt;/span&gt;&lt;/div&gt;&#39;
-                )
-            continue
-
-        if doHeader:
-            doHeader = False
-            tuplesHtml.append(getHeaders(app, tuples))
-
-        tuplesHtml.append(
-            plainTuple(
-                app,
-                tup,
-                seq=i,
-                condensed=False,
-                extraFeatures=(features, {}),
-                opened=i in opened,
-                _asString=True,
-                **display.consume(options, &#34;condensed&#34;, &#34;extraFeatures&#34;),
-            )
-        )
-
-    return &#34;\n&#34;.join(tuplesHtml)</code></pre>
-</details>
 </dd>
 </dl>
 </section>
@@ -809,7 +524,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

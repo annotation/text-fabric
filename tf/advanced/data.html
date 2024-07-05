@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.advanced.data API documentation</title>
 <meta name="description" content="" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/advanced/data.py#L1-L440" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/advanced/data.py#L1-L440" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from ..core.helpers import itemize
 from ..core.files import backendRep, expandDir, prefixSlash, normpath
@@ -493,29 +493,6 @@ def getModulesData(*args):
 <dd>All parameters needed to retrieve all associated data.
 They are the same as are needed to construct an <code><a title="tf.advanced.data.AppData" href="#tf.advanced.data.AppData">AppData</a></code> object.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/advanced/data.py#L424-L440" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def getModulesData(*args):
-    &#34;&#34;&#34;Retrieve all data for a corpus.
-
-    Parameters
-    ----------
-    args: list
-        All parameters needed to retrieve all associated data.
-        They are the same as are needed to construct an `AppData` object.
-    &#34;&#34;&#34;
-
-    mData = AppData(*args)
-    mData.getModules()
-
-    if not mData.good or mData.locations is None:
-        return None
-
-    return (mData.locations, mData.modules)</code></pre>
-</details>
 </dd>
 </dl>
 </section>
@@ -556,7 +533,7 @@ level just below the search locations.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/advanced/data.py#L11-L421" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/advanced/data.py#L11-L421" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AppData:
     def __init__(
@@ -986,55 +963,6 @@ It probably is not even TF data.</p>
 <dt><code><a title="tf.advanced.settings" href="settings.html">tf.advanced.settings</a></code></dt>
 <dd>options allowed in <code>config.yaml</code></dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/advanced/data.py#L156-L198" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def getExtra(self):
-    &#34;&#34;&#34;Get the extra data specified by the settings of the corpus.
-
-    These are specified in the `extraData` setting under
-    `provenanceSpecs` in `config.yaml`.
-
-    This data will be downloaded if needed, but it will not be loaded.
-    It probably is not even TF data.
-
-    See Also
-    --------
-    tf.advanced.settings: options allowed in `config.yaml`
-    &#34;&#34;&#34;
-
-    app = self.app
-    loadData = app.loadData
-
-    if not loadData or loadData == &#34;core&#34;:
-        return
-
-    aContext = app.context
-    extraData = aContext.extraData
-
-    if not extraData:
-        return
-
-    checkout = self.checkout
-    backend = self.backend
-
-    org = aContext.org
-    repo = aContext.repo
-    relative = extraData
-
-    if not self.getModule(
-        org,
-        repo,
-        relative,
-        checkout,
-        backend=backend,
-        isExtra=True,
-        versionOverride=app.versionOverride,
-    ):
-        self.good = False</code></pre>
-</details>
 </dd>
 <dt id="tf.advanced.data.AppData.getMain"><code class="name flex">
 <span>def <span class="ident">getMain</span></span>(<span>self)</span>
@@ -1048,49 +976,6 @@ It probably is not even TF data.</p>
 <dt><code><a title="tf.advanced.settings" href="settings.html">tf.advanced.settings</a></code></dt>
 <dd>options allowed in <code>config.yaml</code></dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/advanced/data.py#L67-L103" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def getMain(self):
-    &#34;&#34;&#34;Get the main data of the corpus.
-
-    This is specified by the `org`, `repo` and `relative` settings under
-    `provenanceSpec` in `config.yaml`.
-
-    See Also
-    --------
-    tf.advanced.settings: options allowed in `config.yaml`
-    &#34;&#34;&#34;
-
-    app = self.app
-    checkout = self.checkout
-    aContext = app.context
-    org = aContext.org
-    repo = aContext.repo
-    relative = prefixSlash(aContext.relative)
-    appPath = aContext.appPath
-    appName = aContext.appName
-
-    if appName.startswith(&#34;app:&#34;):
-        appParent = appPath.rsplit(&#34;/&#34;, 1)[0]
-        relative = f&#34;{appParent}{relative}&#34;
-    elif org is None or repo is None:
-        appPathRep = f&#34;{appPath}/&#34; if appPath else &#34;&#34;
-        relative = f&#34;{appPathRep}{appName}&#34;
-        self.checkout = &#34;local&#34;
-
-    if not self.getModule(
-        org,
-        repo,
-        prefixSlash(relative),
-        checkout,
-        isBase=True,
-        versionOverride=app.versionOverride,
-    ):
-        self.good = False</code></pre>
-</details>
 </dd>
 <dt id="tf.advanced.data.AppData.getModule"><code class="name flex">
 <span>def <span class="ident">getModule</span></span>(<span>self, org, repo, relative, checkout, backend=None, isBase=False, isExtra=False, specs=None, versionOverride=False)</span>
@@ -1123,144 +1008,6 @@ The data must be obtained, but not loaded.</dd>
 <dt><strong><code>versionOverride</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>Whether we ask for the data of a non-standard version</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/advanced/data.py#L290-L421" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def getModule(
-    self,
-    org,
-    repo,
-    relative,
-    checkout,
-    backend=None,
-    isBase=False,
-    isExtra=False,
-    specs=None,
-    versionOverride=False,
-):
-    &#34;&#34;&#34;Prepare to load a single module.
-
-    Eventually, all TF data will be downloaded from local directories, bases
-    on a list of location paths and module paths.
-
-    This function computes the contribution of a single module to both the
-    location paths and the module paths.
-
-    Parameters
-    ----------
-    org: string
-        GitHub organization or GitLab group of the module
-    repo: string:
-        GitHub repository or GitLab project of the module
-    relative: string
-        Path within the repository of the module
-    checkout: string
-        A specifier to use a specific release or commit of a data repository.
-    backend: string
-        The back-end if different from the back-end of the main module
-    isExtra: boolean, optional False
-        If this is True, we are dealing with extra (non-TF) data.
-        The data must be obtained, but not loaded.
-    isBase: boolean, optional False
-        Whether this module is the main data of the corpus.
-    specs: dict, optional False
-        Additional informational attributes of the module, e.g. a DOI
-    versionOverride: boolean, optional False
-        Whether we ask for the data of a non-standard version
-    &#34;&#34;&#34;
-
-    backend = self.backend if backend is None else backendRep(backend, &#34;norm&#34;)
-    bRep = backendRep(backend, &#34;spec&#34;, default=self.backend)
-    version = self.version
-    silent = self.silent
-    mLocations = self.mLocations
-    provenance = self.provenance
-    seen = self.seen
-    app = self.app
-    _browse = app._browse
-    aContext = app.context
-    branch = aContext.provenanceSpec[&#34;branch&#34;]
-
-    relative = prefixSlash(normpath(relative))
-
-    moduleRef = f&#34;{bRep}{org}/{repo}{relative}&#34;
-    if moduleRef in self.seen:
-        return True
-
-    if org is None or repo is None:
-        relativeBare = relative.removeprefix(&#34;/&#34;)
-        repoLocation = relativeBare
-        if not isExtra:
-            mLocations.append(relativeBare)
-        (commit, local, release) = (None, None, None)
-    else:
-        (commit, release, local, localBase, localDir) = checkoutRepo(
-            backend,
-            _browse=_browse,
-            org=org,
-            repo=repo,
-            folder=relative,
-            version=None if isExtra else version,
-            versionOverride=versionOverride,
-            checkout=checkout,
-            withPaths=True if isExtra else False,
-            keep=True if isExtra else False,
-            silent=silent,
-        )
-        if not localBase:
-            return False
-
-        repoLocation = f&#34;{localBase}/{org}/{repo}&#34;
-        if not isExtra:
-            mLocations.append(f&#34;{localBase}/{localDir}&#34;)
-
-    seen.add(moduleRef)
-    if isBase:
-        app.repoLocation = repoLocation
-
-    if isExtra:
-        return True
-
-    info = {}
-    for item in (
-        (&#34;doi&#34;, None),
-        (&#34;corpus&#34;, f&#34;{org}/{repo}{relative}&#34;),
-    ):
-        (key, default) = item
-        info[key] = (
-            getattr(aContext, key)
-            if isBase
-            else specs[key]
-            if specs and key in specs
-            else default
-        )
-    provenance.append(
-        (
-            (&#34;corpus&#34;, info[&#34;corpus&#34;]),
-            (&#34;version&#34;, version),
-            (&#34;commit&#34;, commit or &#34;??&#34;),
-            (&#34;release&#34;, release or &#34;none&#34;),
-            (
-                &#34;live&#34;,
-                provenanceLink(
-                    backend,
-                    org,
-                    repo,
-                    version,
-                    branch,
-                    commit,
-                    local,
-                    release,
-                    relative,
-                ),
-            ),
-            (&#34;doi&#34;, info[&#34;doi&#34;]),
-        )
-    )
-    return True</code></pre>
-</details>
 </dd>
 <dt id="tf.advanced.data.AppData.getModules"><code class="name flex">
 <span>def <span class="ident">getModules</span></span>(<span>self)</span>
@@ -1268,68 +1015,6 @@ The data must be obtained, but not loaded.</dd>
 <dd>
 <div class="desc"><p>Get data from additional local directories.</p>
 <p>These are specified in the <code>locations</code> and <code>modules</code> parameters of <code><a title="tf.advanced.data.AppData" href="#tf.advanced.data.AppData">AppData</a></code>.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/advanced/data.py#L233-L288" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def getModules(self):
-    &#34;&#34;&#34;Get data from additional local directories.
-
-    These are specified in the `locations` and `modules` parameters of `AppData`.
-    &#34;&#34;&#34;
-
-    self.provenance = []
-    provenance = self.provenance
-    self.mLocations = []
-    mLocations = self.mLocations
-
-    self.locations = None
-    self.modules = None
-
-    self.good = True
-    self.seen = set()
-
-    self.getMain()
-    self.getRefs()
-    self.getStandard()
-    self.getExtra()
-
-    version = self.version
-    good = self.good
-    app = self.app
-
-    if good:
-        app.mLocations = mLocations
-        app.provenance = provenance
-    else:
-        return
-
-    mModules = []
-    if mLocations:
-        mModules.append(version or &#34;&#34;)
-
-    locations = self.locationsArg
-    modules = self.modulesArg
-
-    givenLocations = (
-        []
-        if locations is None
-        else [expandDir(app, x.strip()) for x in itemize(locations, &#34;\n&#34;)]
-        if type(locations) is str
-        else [str(x) for x in locations]
-    )
-    givenModules = (
-        []
-        if modules is None
-        else [normpath(x.strip()) for x in itemize(modules, &#34;\n&#34;)]
-        if type(modules) is str
-        else [normpath(str(x)) for x in modules]
-    )
-
-    self.locations = mLocations + givenLocations
-    self.modules = mModules + givenModules</code></pre>
-</details>
 </dd>
 <dt id="tf.advanced.data.AppData.getRefs"><code class="name flex">
 <span>def <span class="ident">getRefs</span></span>(<span>self)</span>
@@ -1339,44 +1024,6 @@ The data must be obtained, but not loaded.</dd>
 <p>These are specified in the <code>moduleRefs</code> parameter of <code><a title="tf.advanced.data.AppData" href="#tf.advanced.data.AppData">AppData</a></code>.
 We store the set of special modules in order to skip them
 later when we are loading the standard modules.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/advanced/data.py#L200-L231" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def getRefs(self):
-    &#34;&#34;&#34;Get data from additional modules.
-
-    These are specified in the `moduleRefs` parameter of `AppData`.
-    We store the set of special modules in order to skip them
-    later when we are loading the standard modules.
-    &#34;&#34;&#34;
-
-    app = self.app
-    backend = self.backend
-    refs = self.moduleRefs
-    for ref in refs:
-        refPure = ref.rsplit(&#34;:&#34;, 1)[0]
-        if refPure in self.seen:
-            continue
-
-        parts = splitModRef(ref)
-        if not parts:
-            self.good = False
-            continue
-
-        parts[2] = prefixSlash(normpath(parts[2]))  # the relative bit
-        theBackend = (
-            None if parts[-1] is None or parts[-1] == backend else parts[-1]
-        )
-
-        if not self.getModule(
-            *parts[0:-1],
-            backend=theBackend,
-            versionOverride=app.versionOverride,
-        ):
-            self.good = False</code></pre>
-</details>
 </dd>
 <dt id="tf.advanced.data.AppData.getStandard"><code class="name flex">
 <span>def <span class="ident">getStandard</span></span>(<span>self)</span>
@@ -1394,62 +1041,6 @@ checkout specifiers to the standard modules.</p>
 <dt><code><a title="tf.advanced.settings" href="settings.html">tf.advanced.settings</a></code></dt>
 <dd>options allowed in <code>config.yaml</code></dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/advanced/data.py#L105-L154" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def getStandard(self):
-    &#34;&#34;&#34;Get the data of the standard modules specified by the settings of the corpus.
-
-    These are specified in the `moduleSpecs` setting under
-    `provenanceSpecs` in `config.yaml`.
-
-    They will be loaded *after* the extra modules specified in the `mod`
-    parameter, and only in as far they have not been specified in the
-    `mod` parameter. In this way you can pass overriding
-    checkout specifiers to the standard modules.
-
-    See Also
-    --------
-    tf.advanced.settings: options allowed in `config.yaml`
-    &#34;&#34;&#34;
-
-    app = self.app
-    loadData = app.loadData
-
-    if not loadData or loadData == &#34;core&#34;:
-        return
-
-    aContext = app.context
-    moduleSpecs = aContext.moduleSpecs
-    seen = self.seen
-    checkout = self.checkout
-    backend = self.backend
-
-    for m in moduleSpecs or []:
-        org = m[&#34;org&#34;]
-        repo = m[&#34;repo&#34;]
-        relative = m[&#34;relative&#34;]
-        theCheckout = m.get(&#34;checkout&#34;, checkout)
-        theBackend = m.get(&#34;backend&#34;, backend)
-        bRep = backendRep(theBackend, &#34;spec&#34;, default=backend)
-
-        ref = f&#34;{bRep}{org}/{repo}{relative}&#34;
-        if ref in seen:
-            continue
-
-        if not self.getModule(
-            org,
-            repo,
-            relative,
-            theCheckout,
-            backend=theBackend,
-            specs=m,
-            versionOverride=app.versionOverride,
-        ):
-            self.good = False</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -1544,7 +1135,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

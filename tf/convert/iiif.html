@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.11.1" />
+<title>tf.convert.iiif API documentation</title>
+<meta name="description" content="" />
+<!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css"
+integrity="sha512-kcbluZFacWN57NgWZ4aH6eUMBEaTyErFhIFD3y5qYZbKuuyImH0K/AKsBbfXlivh2z5C+3IDTIhI11YmKomzmA=="
+crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css"
+integrity="sha512-uVeAgzAmieLUTGba0qr9vXQgVD7fko2kcbYIKIraXUIDg9iJLxveTFUrg3DJhqn3cAf3HFDbgmhq0eGko5wEAA=="
+crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.convert.iiif</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/convert/iiif.py#L1-L160" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">from ..core.files import (
+    readYaml,
+    readJson,
+    writeJson,
+    fileOpen,
+    initTree,
+    dirExists,
+    dirCopy,
+)
+from ..core.helpers import console
+from .helpers import parseIIIF, fillinIIIF
+
+
+class IIIF:
+    def __init__(self, teiVersion, app, prod=False, silent=False):
+        self.teiVersion = teiVersion
+        self.app = app
+        self.prod = prod
+        self.silent = silent
+
+        F = app.api.F
+
+        repoLocation = app.repoLocation
+        iiifDir = f&#34;{repoLocation}/iiif&#34;
+        self.logoDir = f&#34;{iiifDir}/logo&#34;
+        self.manifestDir = (
+            f&#34;{iiifDir}/manifests/{teiVersion}/{&#39;prod&#39; if prod else &#39;dev&#39;}&#34;
+        )
+        self.thumbDir = (
+            f&#34;{repoLocation}/{app.context.provenanceSpec[&#39;graphicsRelative&#39;]}&#34;
+        )
+        self.origDir = f&#34;{repoLocation}/scans&#34;
+        self.reportDir = f&#34;{repoLocation}/report/{teiVersion}&#34;
+
+        settings = readYaml(asFile=f&#34;{repoLocation}/programs/iiif.yaml&#34;, plain=True)
+        self.templates = parseIIIF(settings, prod, &#34;templates&#34;)
+
+        self.getSizes()
+        self.getPageSeq()
+        pages = self.pages
+        folders = [F.folder.v(f) for f in F.otype.s(&#34;folder&#34;)]
+        self.folders = folders
+
+        self.console(&#34;Collections:&#34;)
+
+        for folder in folders:
+            n = len(pages[folder])
+            self.console(f&#34;{folder:&gt;5} with {n:&gt;4} pages&#34;)
+
+    def console(self, msg, **kwargs):
+        &#34;&#34;&#34;Print something to the output.
+
+        This works exactly as `tf.core.helpers.console`
+
+        When the silent member of the object is True, the message will be suppressed.
+        &#34;&#34;&#34;
+        silent = self.silent
+
+        if not silent:
+            console(msg, **kwargs)
+
+    def getSizes(self):
+        prod = self.prod
+        thumbDir = self.thumbDir
+        origDir = self.origDir
+        sizeFile = f&#34;{origDir if prod else thumbDir}/sizes.tsv&#34;
+
+        sizeInfo = {}
+        self.sizeInfo = sizeInfo
+
+        maxW, maxH = 0, 0
+
+        n = 0
+
+        totW, totH = 0, 0
+
+        ws, hs = [], []
+
+        with fileOpen(sizeFile) as rh:
+            next(rh)
+            for line in rh:
+                fields = line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)
+                p = fields[0]
+                (w, h) = (int(x) for x in fields[1:3])
+                sizeInfo[p] = (w, h)
+                ws.append(w)
+                hs.append(h)
+                n += 1
+                totW += w
+                totH += h
+
+                if w &gt; maxW:
+                    maxW = w
+                if h &gt; maxH:
+                    maxH = h
+
+        avW = int(round(totW / n))
+        avH = int(round(totH / n))
+
+        devW = int(round(sum(abs(w - avW) for w in ws) / n))
+        devH = int(round(sum(abs(h - avH) for h in hs) / n))
+
+        self.console(f&#34;Maximum dimensions: W = {maxW:&gt;4} H = {maxH:&gt;4}&#34;)
+        self.console(f&#34;Average dimensions: W = {avW:&gt;4} H = {avH:&gt;4}&#34;)
+        self.console(f&#34;Average deviation:  W = {devW:&gt;4} H = {devH:&gt;4}&#34;)
+
+    def getPageSeq(self):
+        reportDir = self.reportDir
+        pageSeqFile = f&#34;{reportDir}/pageseq.json&#34;
+        self.pages = readJson(asFile=pageSeqFile, plain=True)
+
+    def genFolder(self, folder):
+        templates = self.templates
+        sizeInfo = self.sizeInfo
+        pages = self.pages
+        thesePages = pages[folder]
+
+        canvasLevel = templates.canvasLevel
+
+        items = []
+
+        for p in thesePages:
+            item = {}
+            w, h = sizeInfo.get(p, (0, 0))
+
+            for k, v in canvasLevel.items():
+                v = fillinIIIF(v, folder=folder, page=p, width=w, height=h)
+                item[k] = v
+
+            items.append(item)
+
+        manifestLevel = templates.manifestLevel
+        manifestDir = self.manifestDir
+
+        data = {}
+
+        for k, v in manifestLevel.items():
+            v = fillinIIIF(v, folder=folder)
+            data[k] = v
+
+        data[&#34;items&#34;] = items
+
+        writeJson(data, asFile=f&#34;{manifestDir}/{folder}.json&#34;)
+
+    def manifests(self):
+        folders = self.folders
+        manifestDir = self.manifestDir
+        logoDir = self.logoDir
+
+        initTree(manifestDir, fresh=True)
+
+        for folder in folders:
+            self.genFolder(folder)
+
+        if dirExists(logoDir):
+            dirCopy(logoDir, f&#34;{manifestDir}/logo&#34;)
+        else:
+            console(f&#34;Directory with logos not found: {logoDir}&#34;, error=True)
+
+        self.console(f&#34;IIIF manifests generated in {manifestDir}&#34;)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.convert.iiif.IIIF"><code class="flex name class">
+<span>class <span class="ident">IIIF</span></span>
+<span>(</span><span>teiVersion, app, prod=False, silent=False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/convert/iiif.py#L14-L160" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class IIIF:
+    def __init__(self, teiVersion, app, prod=False, silent=False):
+        self.teiVersion = teiVersion
+        self.app = app
+        self.prod = prod
+        self.silent = silent
+
+        F = app.api.F
+
+        repoLocation = app.repoLocation
+        iiifDir = f&#34;{repoLocation}/iiif&#34;
+        self.logoDir = f&#34;{iiifDir}/logo&#34;
+        self.manifestDir = (
+            f&#34;{iiifDir}/manifests/{teiVersion}/{&#39;prod&#39; if prod else &#39;dev&#39;}&#34;
+        )
+        self.thumbDir = (
+            f&#34;{repoLocation}/{app.context.provenanceSpec[&#39;graphicsRelative&#39;]}&#34;
+        )
+        self.origDir = f&#34;{repoLocation}/scans&#34;
+        self.reportDir = f&#34;{repoLocation}/report/{teiVersion}&#34;
+
+        settings = readYaml(asFile=f&#34;{repoLocation}/programs/iiif.yaml&#34;, plain=True)
+        self.templates = parseIIIF(settings, prod, &#34;templates&#34;)
+
+        self.getSizes()
+        self.getPageSeq()
+        pages = self.pages
+        folders = [F.folder.v(f) for f in F.otype.s(&#34;folder&#34;)]
+        self.folders = folders
+
+        self.console(&#34;Collections:&#34;)
+
+        for folder in folders:
+            n = len(pages[folder])
+            self.console(f&#34;{folder:&gt;5} with {n:&gt;4} pages&#34;)
+
+    def console(self, msg, **kwargs):
+        &#34;&#34;&#34;Print something to the output.
+
+        This works exactly as `tf.core.helpers.console`
+
+        When the silent member of the object is True, the message will be suppressed.
+        &#34;&#34;&#34;
+        silent = self.silent
+
+        if not silent:
+            console(msg, **kwargs)
+
+    def getSizes(self):
+        prod = self.prod
+        thumbDir = self.thumbDir
+        origDir = self.origDir
+        sizeFile = f&#34;{origDir if prod else thumbDir}/sizes.tsv&#34;
+
+        sizeInfo = {}
+        self.sizeInfo = sizeInfo
+
+        maxW, maxH = 0, 0
+
+        n = 0
+
+        totW, totH = 0, 0
+
+        ws, hs = [], []
+
+        with fileOpen(sizeFile) as rh:
+            next(rh)
+            for line in rh:
+                fields = line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)
+                p = fields[0]
+                (w, h) = (int(x) for x in fields[1:3])
+                sizeInfo[p] = (w, h)
+                ws.append(w)
+                hs.append(h)
+                n += 1
+                totW += w
+                totH += h
+
+                if w &gt; maxW:
+                    maxW = w
+                if h &gt; maxH:
+                    maxH = h
+
+        avW = int(round(totW / n))
+        avH = int(round(totH / n))
+
+        devW = int(round(sum(abs(w - avW) for w in ws) / n))
+        devH = int(round(sum(abs(h - avH) for h in hs) / n))
+
+        self.console(f&#34;Maximum dimensions: W = {maxW:&gt;4} H = {maxH:&gt;4}&#34;)
+        self.console(f&#34;Average dimensions: W = {avW:&gt;4} H = {avH:&gt;4}&#34;)
+        self.console(f&#34;Average deviation:  W = {devW:&gt;4} H = {devH:&gt;4}&#34;)
+
+    def getPageSeq(self):
+        reportDir = self.reportDir
+        pageSeqFile = f&#34;{reportDir}/pageseq.json&#34;
+        self.pages = readJson(asFile=pageSeqFile, plain=True)
+
+    def genFolder(self, folder):
+        templates = self.templates
+        sizeInfo = self.sizeInfo
+        pages = self.pages
+        thesePages = pages[folder]
+
+        canvasLevel = templates.canvasLevel
+
+        items = []
+
+        for p in thesePages:
+            item = {}
+            w, h = sizeInfo.get(p, (0, 0))
+
+            for k, v in canvasLevel.items():
+                v = fillinIIIF(v, folder=folder, page=p, width=w, height=h)
+                item[k] = v
+
+            items.append(item)
+
+        manifestLevel = templates.manifestLevel
+        manifestDir = self.manifestDir
+
+        data = {}
+
+        for k, v in manifestLevel.items():
+            v = fillinIIIF(v, folder=folder)
+            data[k] = v
+
+        data[&#34;items&#34;] = items
+
+        writeJson(data, asFile=f&#34;{manifestDir}/{folder}.json&#34;)
+
+    def manifests(self):
+        folders = self.folders
+        manifestDir = self.manifestDir
+        logoDir = self.logoDir
+
+        initTree(manifestDir, fresh=True)
+
+        for folder in folders:
+            self.genFolder(folder)
+
+        if dirExists(logoDir):
+            dirCopy(logoDir, f&#34;{manifestDir}/logo&#34;)
+        else:
+            console(f&#34;Directory with logos not found: {logoDir}&#34;, error=True)
+
+        self.console(f&#34;IIIF manifests generated in {manifestDir}&#34;)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.convert.iiif.IIIF.console"><code class="name flex">
+<span>def <span class="ident">console</span></span>(<span>self, msg, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Print something to the output.</p>
+<p>This works exactly as <code><a title="tf.core.helpers.console" href="../core/helpers.html#tf.core.helpers.console">console()</a></code></p>
+<p>When the silent member of the object is True, the message will be suppressed.</p></div>
+</dd>
+<dt id="tf.convert.iiif.IIIF.genFolder"><code class="name flex">
+<span>def <span class="ident">genFolder</span></span>(<span>self, folder)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.convert.iiif.IIIF.getPageSeq"><code class="name flex">
+<span>def <span class="ident">getPageSeq</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.convert.iiif.IIIF.getSizes"><code class="name flex">
+<span>def <span class="ident">getSizes</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.convert.iiif.IIIF.manifests"><code class="name flex">
+<span>def <span class="ident">manifests</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.convert" href="index.html">tf.convert</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.convert.iiif.IIIF" href="#tf.convert.iiif.IIIF">IIIF</a></code></h4>
+<ul class="">
+<li><code><a title="tf.convert.iiif.IIIF.console" href="#tf.convert.iiif.IIIF.console">console</a></code></li>
+<li><code><a title="tf.convert.iiif.IIIF.genFolder" href="#tf.convert.iiif.IIIF.genFolder">genFolder</a></code></li>
+<li><code><a title="tf.convert.iiif.IIIF.getPageSeq" href="#tf.convert.iiif.IIIF.getPageSeq">getPageSeq</a></code></li>
+<li><code><a title="tf.convert.iiif.IIIF.getSizes" href="#tf.convert.iiif.IIIF.getSizes">getSizes</a></code></li>
+<li><code><a title="tf.convert.iiif.IIIF.manifests" href="#tf.convert.iiif.IIIF.manifests">manifests</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+</footer>
+</body>
+</html>

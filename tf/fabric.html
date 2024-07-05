@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.fabric API documentation</title>
 <meta name="description" content="`Fabric` …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -52,7 +52,7 @@ collect volumes into a new work.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/fabric.py#L1-L246" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/fabric.py#L1-L246" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # `Fabric`
@@ -346,7 +346,7 @@ The collection takes precedence, and the volume is ignored in that case.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/fabric.py#L47-L246" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/fabric.py#L47-L246" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Fabric(FabricCore):
     &#34;&#34;&#34;Initialize the core API for a corpus.
@@ -569,50 +569,6 @@ The collection takes precedence, and the volume is ignored in that case.</p>
 </dl>
 <p>See <code><a title="tf.volumes.collect" href="volumes/collect.html">tf.volumes.collect</a></code> for the other parameters and note that parameter
 <code>workLocation</code> will be supplied automatically from <code>collection</code>.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/fabric.py#L209-L246" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def collect(
-    self,
-    volumes,
-    collection,
-    volumeType=None,
-    volumeFeature=None,
-    mergeTypes=None,
-    featureMeta=None,
-    silent=SILENT_D,
-    overwrite=None,
-):
-    &#34;&#34;&#34;Creates a work out of a number of volumes.
-
-    Parameters
-    ----------
-
-    volumes: tuple
-        Just the names of the volumes that you want to collect.
-
-    collection: string
-        The name of the new collection
-
-    See `tf.volumes.collect` for the other parameters and note that parameter
-    `workLocation` will be supplied automatically from `collection`.
-    &#34;&#34;&#34;
-
-    volumeBase = self.volumeBase
-
-    return collect(
-        tuple(f&#34;{volumeBase}/{name}&#34; for name in volumes),
-        f&#34;{volumeBase}/{collection}&#34;,
-        volumeType=volumeType,
-        volumeFeature=volumeFeature,
-        mergeTypes=mergeTypes,
-        featureMeta=featureMeta,
-        silent=silent,
-        overwrite=overwrite,
-    )</code></pre>
-</details>
 </dd>
 <dt id="tf.fabric.Fabric.extract"><code class="name flex">
 <span>def <span class="ident">extract</span></span>(<span>self, volumes=True, byTitle=True, silent='auto', overwrite=None, show=False)</span>
@@ -625,46 +581,6 @@ When a single volume of a work is loaded, there is no <code>extract</code> metho
 <p>See <code><a title="tf.volumes.extract" href="volumes/extract.html">tf.volumes.extract</a></code> and note that parameters
 <code>workLocation</code>, <code>volumesLocation</code>, <code>api</code>
 will be supplied automatically.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/fabric.py#L174-L207" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def extract(
-    self, volumes=True, byTitle=True, silent=SILENT_D, overwrite=None, show=False
-):
-    &#34;&#34;&#34;Extract volumes from the currently loaded work.
-
-    This function is only provided if the dataset is a work,
-    i.e. it is loaded as a whole.
-    When a single volume of a work is loaded, there is no `extract` method.
-
-    See `tf.volumes.extract` and note that parameters
-    `workLocation`, `volumesLocation`, `api`
-    will be supplied automatically.
-    &#34;&#34;&#34;
-
-    silent = silentConvert(silent)
-    volume = self.volume
-    volumeBase = self.volumeBase
-    api = self.api
-
-    if volume:
-        self.error(&#34;Cannot extract volumes from a single volume of a work&#34;)
-        return
-
-    return extract(
-        None,
-        volumeBase,
-        volumes=volumes,
-        byTitle=byTitle,
-        silent=silent,
-        api=api,
-        overwrite=overwrite,
-        checkOnly=False,
-        show=show,
-    )</code></pre>
-</details>
 </dd>
 <dt id="tf.fabric.Fabric.getVolumes"><code class="name flex">
 <span>def <span class="ident">getVolumes</span></span>(<span>self)</span>
@@ -672,20 +588,6 @@ will be supplied automatically.</p></div>
 <dd>
 <div class="desc"><p>Lists available volumes within the dataset.</p>
 <p>See <code><a title="tf.volumes.extract.getVolumes" href="volumes/extract.html#tf.volumes.extract.getVolumes">getVolumes()</a></code>.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/fabric.py#L165-L172" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def getVolumes(self):
-    &#34;&#34;&#34;Lists available volumes within the dataset.
-
-    See `tf.volumes.extract.getVolumes`.
-    &#34;&#34;&#34;
-
-    volumeBase = self.volumeBase
-    return getVolumes(volumeBase)</code></pre>
-</details>
 </dd>
 </dl>
 <h3>Inherited members</h3>
@@ -789,7 +691,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.search.spin API documentation</title>
 <meta name="description" content="Search pre-processing" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -32,7 +32,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/search/spin.py#L1-L433" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/search/spin.py#L1-L433" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Search pre-processing
@@ -481,130 +481,18 @@ def spinEdges(searchExe):
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/search/spin.py#L246-L311" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def estimateSpreads(searchExe, both=False):
-    TRY_LIMIT_F = searchExe.perfParams[&#34;tryLimitFrom&#34;]
-    TRY_LIMIT_T = searchExe.perfParams[&#34;tryLimitTo&#34;]
-    qnodes = searchExe.qnodes
-    relations = searchExe.relations
-    converse = searchExe.converse
-    qedges = searchExe.qedges
-    yarns = searchExe.yarns
-
-    spreadsC = {}
-    spreads = {}
-
-    for (e, (f, rela, t)) in enumerate(qedges):
-        tasks = [(f, rela, t, 1)]
-        if both:
-            tasks.append((t, converse[rela], f, -1))
-        for (tf, trela, tt, dir) in tasks:
-            s = relations[trela][&#34;spin&#34;]
-            yarnF = yarns[tf]
-            yarnT = yarns[tt]
-            dest = spreads if dir == 1 else spreadsC
-            if type(s) is float:
-                # fixed estimates
-                dest[e] = len(yarnT) * s
-                continue
-            yarnF = list(yarnF)
-            yarnT = yarns[tt]
-            yarnFl = len(yarnF)
-            if yarnFl &lt; TRY_LIMIT_F:
-                triesn = yarnF
-            else:
-                triesn = {yarnF[randrange(yarnFl)] for n in range(TRY_LIMIT_F)}
-
-            if len(triesn) == 0:
-                dest[e] = 0
-            else:
-                r = relations[trela][&#34;func&#34;](qnodes[tf][0], qnodes[tt][0])
-                nparams = len(signature(r).parameters)
-                totalSpread = 0
-                if nparams == 1:
-                    for n in triesn:
-                        mFromN = {m for m in r(n) or () if m in yarnT}
-                        totalSpread += len(mFromN)
-                else:
-                    yarnTl = len(yarnT)
-                    yarnTL = list(yarnT)
-                    for n in triesn:
-                        triesm = (
-                            yarnT
-                            if yarnTl &lt; TRY_LIMIT_T
-                            else set(
-                                yarnTL[randrange(yarnTl)] for m in range(TRY_LIMIT_T)
-                            )
-                        )
-                        if len(triesm) == 0:
-                            thisSpread = 0
-                        else:
-                            thisSpread = 0
-                            for m in triesm:
-                                if r(n, m):
-                                    thisSpread += 1
-                            thisSpread = thisSpread / len(triesm)
-                        totalSpread += yarnTl * thisSpread
-                dest[e] = totalSpread / len(triesn)
-    searchExe.spreads = spreads
-    searchExe.spreadsC = spreadsC</code></pre>
-</details>
 </dd>
 <dt id="tf.search.spin.spinAtoms"><code class="name flex">
 <span>def <span class="ident">spinAtoms</span></span>(<span>searchExe)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/search/spin.py#L240-L243" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def spinAtoms(searchExe):
-    qnodes = searchExe.qnodes
-    for q in range(len(qnodes)):
-        _spinAtom(searchExe, q)</code></pre>
-</details>
 </dd>
 <dt id="tf.search.spin.spinEdges"><code class="name flex">
 <span>def <span class="ident">spinEdges</span></span>(<span>searchExe)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/search/spin.py#L410-L433" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def spinEdges(searchExe):
-    qnodes = searchExe.qnodes
-    qedges = searchExe.qedges
-    yarns = searchExe.yarns
-    uptodate = searchExe.uptodate
-    thinned = {}
-
-    estimateSpreads(searchExe, both=True)
-
-    for e in range(len(qedges)):
-        uptodate[e] = False
-    it = 0
-    while 1:
-        if min(len(yarns[q]) for q in range(len(qnodes))) == 0:
-            break
-        if all(uptodate[e] for e in range(len(qedges))):
-            break
-        e = _chooseEdge(searchExe)
-        (f, rela, t) = qedges[e]
-        affected = _spinEdge(searchExe, e)
-        if affected:
-            thinned[e] = 1
-        it += 1
-    searchExe.thinned = thinned</code></pre>
-</details>
 </dd>
 </dl>
 </section>
@@ -688,7 +576,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

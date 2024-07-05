@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.browser.ner.sheets API documentation</title>
 <meta name="description" content="" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/sheets.py#L1-L957" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/browser/ner/sheets.py#L1-L955" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import collections
 import re
@@ -43,7 +43,8 @@ from ...parameters import GZIP_LEVEL, PICKLE_PROTOCOL
 from ...capable import CheckImport
 from .helpers import tnorm, normalize, toSmallId, toTokens, repSet
 from ...core.generic import AttrDict
-from ...core.files import dirContents, extNm, fileExists, mTime
+from ...core.helpers import console
+from ...core.files import fileOpen, dirContents, extNm, fileExists, mTime
 
 
 DS_STORE = &#34;.DS_Store&#34;
@@ -62,7 +63,7 @@ class Sheets:
 
         self.properlySetup = True
 
-        browse = self.browse
+        # browse = self.browse
         self.sheets = sheets
         settings = self.settings
         self.spaceEscaped = settings.spaceEscaped
@@ -81,8 +82,8 @@ class Sheets:
 
         self.readSheets()
 
-        if not browse:
-            self.loadSheetData()
+        # if not browse:
+        #    self.loadSheetData()
 
     def readSheets(self):
         &#34;&#34;&#34;Read the list current ner sheets (again).
@@ -114,7 +115,7 @@ class Sheets:
         uptodate = fileExists(timeFile)
 
         if uptodate:
-            with open(timeFile) as fh:
+            with fileOpen(timeFile) as fh:
                 info = fh.read().strip()
 
             try:
@@ -125,8 +126,6 @@ class Sheets:
 
         if not uptodate:
             return False
-
-        self.console(&#34;load sheet with uptodate data from disk&#34;)
 
         if fileExists(dataFile):
             with gzip.open(dataFile, mode=&#34;rb&#34;) as f:
@@ -151,10 +150,15 @@ class Sheets:
         with gzip.open(dataFile, mode=&#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
             f.write(pickle.dumps(sheetData, protocol=PICKLE_PROTOCOL))
 
-        with open(timeFile, &#34;w&#34;) as fh:
+        with fileOpen(timeFile, &#34;w&#34;) as fh:
             fh.write(f&#34;{tm}\n&#34;)
 
     def log(self, isError, indent, msg):
+        silent = self.silent
+
+        if silent:
+            return
+
         browse = self.browse
         sheetData = self.getSheetData()
         logData = sheetData.logData
@@ -194,7 +198,7 @@ class Sheets:
 
         if newSheet not in sheetNames or not fileExists(sheetFile):
             if not browse:
-                self.console(f&#34;Ner sheet {newSheet} ({sheetFile}) does not exist&#34;)
+                console(f&#34;Ner sheet {newSheet} ({sheetFile}) does not exist&#34;)
             if newSheet is not None:
                 return
 
@@ -208,47 +212,36 @@ class Sheets:
         self.loadSheetData()
 
     def loadSheetData(self):
-        &#34;&#34;&#34;Loads the current ner sheet into memory, if there is one.&#34;&#34;&#34;
-        if not self.properlySetup:
-            return
-
-        sheets = self.sheets
-        sheetName = self.sheetName
-
-        if sheetName is None:
-            return
-
-        if sheetName not in sheets:
-            sheets[sheetName] = AttrDict()
-
-        self.fromSourceSheet()
-
-    def fromSourceSheet(self):
-        &#34;&#34;&#34;Loads a ner sheet from source.
+        &#34;&#34;&#34;Loads the current ner sheet into memory, if there is one.
 
         If the current ner sheet is None, nothing has to be done.
 
         Otherwise, we read the corresponding excel sheet(s) from disk and compile them
-        into instructions.
+        into instructions, if needed.
 
-        After collection of the sheet it is stored under the following keys:
+        When loading a sheet, it will be checked first whether its data is already
+        in memory and uptotdate, in that case nothing will be done.
 
-        *   `timeReadXls`: time when the sheet was last loaded from disk;
-        *   `instructions`: the list of instructions as loaded and compiled
-            from the source.
+        Otherwise, it will be checked wether an uptodate version of its data exists
+        on disk. If so, it will be loaded.
+
+        Otherwise, the data will be computed from scratch and saved to disk,
+        with a time stamp.
         &#34;&#34;&#34;
         if not self.properlySetup:
-            return None
+            return
 
-        browse = self.browse
         sheetName = self.sheetName
 
         if sheetName is None:
-            return
+            return None
 
-        if sheetName not in self.sheets:
-            self.sheets[sheetName] = AttrDict()
+        sheets = self.sheets
 
+        if sheetName not in sheets:
+            sheets[sheetName] = AttrDict()
+
+        browse = self.browse
         sheetData = self.sheets[sheetName]
         sheetDir = self.sheetDir
         sheetFile = f&#34;{sheetDir}/{sheetName}.xlsx&#34;
@@ -277,8 +270,10 @@ class Sheets:
         if needReload:
             loaded = self.readData(sheetData, sheetUpdated)
 
-            if not loaded:
-                self.console(&#34;compute sheet data from scratch&#34;)
+            if loaded:
+                self.console(&#34;SHEET data: loaded from disk&#34;)
+            else:
+                self.console(&#34;SHEET data: computing from scratch ...&#34;, newline=False)
                 sheetData.logData = []
 
                 self._readSheets(sheetData)
@@ -302,9 +297,11 @@ class Sheets:
                     {k: sheetData[k] for k in writeKeys},
                     tm,
                 )
+                self.console(&#34;done&#34;)
                 showLog = False
         else:
-            self.console(&#34;sheet data uptodate in memory&#34;)
+            print(&#34;B&#34;)
+            self.console(&#34;SHEET data: already in memory and uptodate&#34;)
 
         if showLog and not browse:
             for x in sheetData.logData:
@@ -785,9 +782,10 @@ class Sheets:
         if not self.properlySetup:
             return
 
+        silent = self.silent
         browse = self.browse
 
-        if not browse:
+        if not browse and not silent:
             app = self.app
             app.indent(reset=True)
             app.info(&#34;Looking up occurrences of many candidates ...&#34;)
@@ -795,7 +793,7 @@ class Sheets:
         self.findOccs()
         self._collectHits()
 
-        if not browse:
+        if not browse and not silent:
             app.info(&#34;done&#34;)
 
         self._markEntities()
@@ -856,7 +854,7 @@ class Sheets:
                     for match in matches:
                         triggerFromMatch[match] = (trigger, &#34;,&#34;.join(sheet))
 
-        self._addToSet(newEntities, silent=False)
+        self._addToSet(newEntities)
 
     def showSheetsRaw(self, main=False):
         src = self.getSheetData()
@@ -1010,7 +1008,7 @@ class Sheets:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/sheets.py#L18-L957" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/browser/ner/sheets.py#L19-L955" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Sheets:
     def __init__(self, sheets=None):
@@ -1024,7 +1022,7 @@ class Sheets:
 
         self.properlySetup = True
 
-        browse = self.browse
+        # browse = self.browse
         self.sheets = sheets
         settings = self.settings
         self.spaceEscaped = settings.spaceEscaped
@@ -1043,8 +1041,8 @@ class Sheets:
 
         self.readSheets()
 
-        if not browse:
-            self.loadSheetData()
+        # if not browse:
+        #    self.loadSheetData()
 
     def readSheets(self):
         &#34;&#34;&#34;Read the list current ner sheets (again).
@@ -1076,7 +1074,7 @@ class Sheets:
         uptodate = fileExists(timeFile)
 
         if uptodate:
-            with open(timeFile) as fh:
+            with fileOpen(timeFile) as fh:
                 info = fh.read().strip()
 
             try:
@@ -1087,8 +1085,6 @@ class Sheets:
 
         if not uptodate:
             return False
-
-        self.console(&#34;load sheet with uptodate data from disk&#34;)
 
         if fileExists(dataFile):
             with gzip.open(dataFile, mode=&#34;rb&#34;) as f:
@@ -1113,10 +1109,15 @@ class Sheets:
         with gzip.open(dataFile, mode=&#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
             f.write(pickle.dumps(sheetData, protocol=PICKLE_PROTOCOL))
 
-        with open(timeFile, &#34;w&#34;) as fh:
+        with fileOpen(timeFile, &#34;w&#34;) as fh:
             fh.write(f&#34;{tm}\n&#34;)
 
     def log(self, isError, indent, msg):
+        silent = self.silent
+
+        if silent:
+            return
+
         browse = self.browse
         sheetData = self.getSheetData()
         logData = sheetData.logData
@@ -1156,7 +1157,7 @@ class Sheets:
 
         if newSheet not in sheetNames or not fileExists(sheetFile):
             if not browse:
-                self.console(f&#34;Ner sheet {newSheet} ({sheetFile}) does not exist&#34;)
+                console(f&#34;Ner sheet {newSheet} ({sheetFile}) does not exist&#34;)
             if newSheet is not None:
                 return
 
@@ -1170,47 +1171,36 @@ class Sheets:
         self.loadSheetData()
 
     def loadSheetData(self):
-        &#34;&#34;&#34;Loads the current ner sheet into memory, if there is one.&#34;&#34;&#34;
-        if not self.properlySetup:
-            return
-
-        sheets = self.sheets
-        sheetName = self.sheetName
-
-        if sheetName is None:
-            return
-
-        if sheetName not in sheets:
-            sheets[sheetName] = AttrDict()
-
-        self.fromSourceSheet()
-
-    def fromSourceSheet(self):
-        &#34;&#34;&#34;Loads a ner sheet from source.
+        &#34;&#34;&#34;Loads the current ner sheet into memory, if there is one.
 
         If the current ner sheet is None, nothing has to be done.
 
         Otherwise, we read the corresponding excel sheet(s) from disk and compile them
-        into instructions.
+        into instructions, if needed.
 
-        After collection of the sheet it is stored under the following keys:
+        When loading a sheet, it will be checked first whether its data is already
+        in memory and uptotdate, in that case nothing will be done.
 
-        *   `timeReadXls`: time when the sheet was last loaded from disk;
-        *   `instructions`: the list of instructions as loaded and compiled
-            from the source.
+        Otherwise, it will be checked wether an uptodate version of its data exists
+        on disk. If so, it will be loaded.
+
+        Otherwise, the data will be computed from scratch and saved to disk,
+        with a time stamp.
         &#34;&#34;&#34;
         if not self.properlySetup:
-            return None
+            return
 
-        browse = self.browse
         sheetName = self.sheetName
 
         if sheetName is None:
-            return
+            return None
 
-        if sheetName not in self.sheets:
-            self.sheets[sheetName] = AttrDict()
+        sheets = self.sheets
 
+        if sheetName not in sheets:
+            sheets[sheetName] = AttrDict()
+
+        browse = self.browse
         sheetData = self.sheets[sheetName]
         sheetDir = self.sheetDir
         sheetFile = f&#34;{sheetDir}/{sheetName}.xlsx&#34;
@@ -1239,8 +1229,10 @@ class Sheets:
         if needReload:
             loaded = self.readData(sheetData, sheetUpdated)
 
-            if not loaded:
-                self.console(&#34;compute sheet data from scratch&#34;)
+            if loaded:
+                self.console(&#34;SHEET data: loaded from disk&#34;)
+            else:
+                self.console(&#34;SHEET data: computing from scratch ...&#34;, newline=False)
                 sheetData.logData = []
 
                 self._readSheets(sheetData)
@@ -1264,9 +1256,11 @@ class Sheets:
                     {k: sheetData[k] for k in writeKeys},
                     tm,
                 )
+                self.console(&#34;done&#34;)
                 showLog = False
         else:
-            self.console(&#34;sheet data uptodate in memory&#34;)
+            print(&#34;B&#34;)
+            self.console(&#34;SHEET data: already in memory and uptodate&#34;)
 
         if showLog and not browse:
             for x in sheetData.logData:
@@ -1747,9 +1741,10 @@ class Sheets:
         if not self.properlySetup:
             return
 
+        silent = self.silent
         browse = self.browse
 
-        if not browse:
+        if not browse and not silent:
             app = self.app
             app.indent(reset=True)
             app.info(&#34;Looking up occurrences of many candidates ...&#34;)
@@ -1757,7 +1752,7 @@ class Sheets:
         self.findOccs()
         self._collectHits()
 
-        if not browse:
+        if not browse and not silent:
             app.info(&#34;done&#34;)
 
         self._markEntities()
@@ -1818,7 +1813,7 @@ class Sheets:
                     for match in matches:
                         triggerFromMatch[match] = (trigger, &#34;,&#34;.join(sheet))
 
-        self._addToSet(newEntities, silent=False)
+        self._addToSet(newEntities)
 
     def showSheetsRaw(self, main=False):
         src = self.getSheetData()
@@ -1970,228 +1965,38 @@ class Sheets:
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="tf.browser.ner.sheets.Sheets.fromSourceSheet"><code class="name flex">
-<span>def <span class="ident">fromSourceSheet</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Loads a ner sheet from source.</p>
-<p>If the current ner sheet is None, nothing has to be done.</p>
-<p>Otherwise, we read the corresponding excel sheet(s) from disk and compile them
-into instructions.</p>
-<p>After collection of the sheet it is stored under the following keys:</p>
-<ul>
-<li><code>timeReadXls</code>: time when the sheet was last loaded from disk;</li>
-<li><code>instructions</code>: the list of instructions as loaded and compiled
-from the source.</li>
-</ul></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/sheets.py#L191-L276" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def fromSourceSheet(self):
-    &#34;&#34;&#34;Loads a ner sheet from source.
-
-    If the current ner sheet is None, nothing has to be done.
-
-    Otherwise, we read the corresponding excel sheet(s) from disk and compile them
-    into instructions.
-
-    After collection of the sheet it is stored under the following keys:
-
-    *   `timeReadXls`: time when the sheet was last loaded from disk;
-    *   `instructions`: the list of instructions as loaded and compiled
-        from the source.
-    &#34;&#34;&#34;
-    if not self.properlySetup:
-        return None
-
-    browse = self.browse
-    sheetName = self.sheetName
-
-    if sheetName is None:
-        return
-
-    if sheetName not in self.sheets:
-        self.sheets[sheetName] = AttrDict()
-
-    sheetData = self.sheets[sheetName]
-    sheetDir = self.sheetDir
-    sheetFile = f&#34;{sheetDir}/{sheetName}.xlsx&#34;
-    sheetExists = fileExists(sheetFile)
-
-    def timeXls(sheetRela):
-        sep = &#34;/&#34; if sheetRela else &#34;&#34;
-        sheetPath = f&#34;{sheetDir}/{sheetName}{sep}{sheetRela}.xlsx&#34;
-        return mTime(sheetPath)
-
-    def timeDir(sheetRela):
-        sep = &#34;/&#34; if sheetRela else &#34;&#34;
-        dirPath = f&#34;{sheetDir}/{sheetName}{sep}{sheetRela}&#34;
-
-        (files, dirs) = dirContents(f&#34;{sheetDir}/{sheetName}{sep}{sheetRela}&#34;)
-        mFiles = max((mTime(f&#34;{dirPath}/{fl}&#34;) for fl in files), default=0)
-        mDirs = max((timeDir(f&#34;{sheetRela}{sep}{dr}&#34;) for dr in dirs), default=0)
-
-        return max((mFiles, mDirs))
-
-    sheetUpdated = max((timeXls(&#34;&#34;), timeDir(&#34;&#34;))) if sheetExists else 0
-    needReload = sheetData.get(&#34;time&#34;, 0) &lt; sheetUpdated
-
-    showLog = True
-
-    if needReload:
-        loaded = self.readData(sheetData, sheetUpdated)
-
-        if not loaded:
-            self.console(&#34;compute sheet data from scratch&#34;)
-            sheetData.logData = []
-
-            self._readSheets(sheetData)
-            tm = time.time()
-            sheetData.time = tm
-
-            self._combineSheets(sheetData)
-            self._compileSheets(sheetData)
-            self._prepareSheets(sheetData)
-            self._processSheet()
-
-            writeKeys = [
-                &#34;logData&#34;,
-                &#34;nameMap&#34;,
-                &#34;instructions&#34;,
-                &#34;inventory&#34;,
-                &#34;triggerFromMatch&#34;,
-                &#34;hitData&#34;,
-            ]
-            self.writeData(
-                {k: sheetData[k] for k in writeKeys},
-                tm,
-            )
-            showLog = False
-    else:
-        self.console(&#34;sheet data uptodate in memory&#34;)
-
-    if showLog and not browse:
-        for x in sheetData.logData:
-            self.consoleLine(*x)</code></pre>
-</details>
-</dd>
 <dt id="tf.browser.ner.sheets.Sheets.getSheetData"><code class="name flex">
 <span>def <span class="ident">getSheetData</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Deliver the current sheet.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/sheets.py#L132-L137" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def getSheetData(self):
-    &#34;&#34;&#34;Deliver the current sheet.&#34;&#34;&#34;
-    sheetName = self.sheetName
-    sheetsData = self.sheets
-
-    return sheetsData.get(sheetName, AttrDict())</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.sheets.Sheets.loadSheetData"><code class="name flex">
 <span>def <span class="ident">loadSheetData</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Loads the current ner sheet into memory, if there is one.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/sheets.py#L175-L189" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def loadSheetData(self):
-    &#34;&#34;&#34;Loads the current ner sheet into memory, if there is one.&#34;&#34;&#34;
-    if not self.properlySetup:
-        return
-
-    sheets = self.sheets
-    sheetName = self.sheetName
-
-    if sheetName is None:
-        return
-
-    if sheetName not in sheets:
-        sheets[sheetName] = AttrDict()
-
-    self.fromSourceSheet()</code></pre>
-</details>
+<div class="desc"><p>Loads the current ner sheet into memory, if there is one.</p>
+<p>If the current ner sheet is None, nothing has to be done.</p>
+<p>Otherwise, we read the corresponding excel sheet(s) from disk and compile them
+into instructions, if needed.</p>
+<p>When loading a sheet, it will be checked first whether its data is already
+in memory and uptotdate, in that case nothing will be done.</p>
+<p>Otherwise, it will be checked wether an uptodate version of its data exists
+on disk. If so, it will be loaded.</p>
+<p>Otherwise, the data will be computed from scratch and saved to disk,
+with a time stamp.</p></div>
 </dd>
 <dt id="tf.browser.ner.sheets.Sheets.log"><code class="name flex">
 <span>def <span class="ident">log</span></span>(<span>self, isError, indent, msg)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/sheets.py#L122-L130" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def log(self, isError, indent, msg):
-    browse = self.browse
-    sheetData = self.getSheetData()
-    logData = sheetData.logData
-
-    logData.append((isError, indent, msg))
-
-    if not browse:
-        self.consoleLine(isError, indent, msg)</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.sheets.Sheets.readData"><code class="name flex">
 <span>def <span class="ident">readData</span></span>(<span>self, sheetData, sheetUpdated)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/sheets.py#L70-L107" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def readData(self, sheetData, sheetUpdated):
-    setName = self.setName
-    annoDir = self.annoDir
-    setDir = f&#34;{annoDir}/{setName}&#34;
-    dataFile = f&#34;{setDir}/data.gz&#34;
-    timeFile = f&#34;{setDir}/time.txt&#34;
-
-    tm = 0
-
-    uptodate = fileExists(timeFile)
-
-    if uptodate:
-        with open(timeFile) as fh:
-            info = fh.read().strip()
-
-        try:
-            tm = float(info)
-            uptodate = sheetUpdated &lt; tm
-        except Exception:
-            uptodate = False
-
-    if not uptodate:
-        return False
-
-    self.console(&#34;load sheet with uptodate data from disk&#34;)
-
-    if fileExists(dataFile):
-        with gzip.open(dataFile, mode=&#34;rb&#34;) as f:
-            data = pickle.load(f)
-
-        for k, v in data.items():
-            sheetData[k] = v
-
-        sheetData.time = tm
-
-        return True
-    else:
-        return False</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.sheets.Sheets.readSheets"><code class="name flex">
 <span>def <span class="ident">readSheets</span></span>(<span>self)</span>
@@ -2200,29 +2005,6 @@ from the source.</li>
 <div class="desc"><p>Read the list current ner sheets (again).</p>
 <p>Use this when you change ner sheets outside the NER browser, e.g.
 by editing the spreadsheets in Excel.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/sheets.py#L52-L68" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def readSheets(self):
-    &#34;&#34;&#34;Read the list current ner sheets (again).
-
-    Use this when you change ner sheets outside the NER browser, e.g.
-    by editing the spreadsheets in Excel.
-    &#34;&#34;&#34;
-    sheetDir = self.sheetDir
-    setNames = self.setNames
-
-    sheetNames = set()
-    self.sheetNames = sheetNames
-
-    for sheetFile in dirContents(sheetDir)[0]:
-        if extNm(sheetFile) == &#34;xlsx&#34;:
-            sheetName = sheetFile.removesuffix(&#34;.xlsx&#34;)
-            sheetNames.add(sheetName)
-            setNames.add(f&#34;.{sheetName}&#34;)</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.sheets.Sheets.setSheet"><code class="name flex">
 <span>def <span class="ident">setSheet</span></span>(<span>self, newSheet)</span>
@@ -2235,248 +2017,36 @@ by editing the spreadsheets in Excel.</p></div>
 <dt><strong><code>newSheet</code></strong> :&ensp;<code>string</code></dt>
 <dd>The name of the new ner sheet to switch to.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/sheets.py#L139-L173" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def setSheet(self, newSheet):
-    &#34;&#34;&#34;Switch to a named ner sheet.
-
-    After the switch, the new sheet will be loaded into memory.
-
-    Parameters
-    ----------
-    newSheet: string
-        The name of the new ner sheet to switch to.
-    &#34;&#34;&#34;
-    if not self.properlySetup:
-        return
-
-    browse = self.browse
-
-    sheetName = self.sheetName
-
-    sheetNames = self.sheetNames
-    sheetDir = self.sheetDir
-    sheetFile = f&#34;{sheetDir}/{newSheet}.xlsx&#34;
-
-    if newSheet not in sheetNames or not fileExists(sheetFile):
-        if not browse:
-            self.console(f&#34;Ner sheet {newSheet} ({sheetFile}) does not exist&#34;)
-        if newSheet is not None:
-            return
-
-    if not browse:
-        self.setSet(&#34;&#34; if newSheet is None else f&#34;.{newSheet}&#34;)
-
-    if newSheet != sheetName:
-        sheetName = newSheet
-        self.sheetName = sheetName
-
-    self.loadSheetData()</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.sheets.Sheets.showInstructions"><code class="name flex">
 <span>def <span class="ident">showInstructions</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/sheets.py#L949-L957" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def showInstructions(self):
-    src = self.getSheetData()
-
-    if src is None:
-        self.console(&#34;Nothing to show&#34;)
-
-    instructions = src.instructions
-
-    self.console(&#34;\n&#34;.join(f&#34;{path}&#34; for path in instructions))</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.sheets.Sheets.showSheetsCombined"><code class="name flex">
 <span>def <span class="ident">showSheetsCombined</span></span>(<span>self, main=False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/sheets.py#L868-L899" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def showSheetsCombined(self, main=False):
-    src = self.getSheetData()
-
-    if src is None:
-        self.console(&#34;Nothing to show&#34;)
-
-    src = src.combined
-    nameMap = src.nameMap
-
-    def showSheet(sheet, tab):
-        for eidkind, triggers in sorted(sheet.items()):
-            (name, sheetRela) = nameMap[eidkind]
-            triggerRep = &#34;|&#34;.join(
-                t for t in sorted(triggers, key=lambda x: (-len(x), x))
-            )
-            self.console(f&#34;{tab}  &#39;{name}&#39; {eidkind} : {triggerRep}&#34;)
-        self.console(f&#34;{tab}  ---&#34;)
-
-    def showDir(head, info, level):
-        tab = &#34;  &#34; * level
-        self.console(f&#34;{tab}{head}&#34;)
-
-        if &#34;sheet&#34; in info:
-            if main or level &gt; 0:
-                showSheet(info.sheet, tab)
-
-        tweaks = info.tweaks or {}
-
-        for k in sorted(tweaks):
-            showDir(k, tweaks[k], level + 1)
-
-    showDir(&#34;&#34;, src, 0)</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.sheets.Sheets.showSheetsCompiled"><code class="name flex">
 <span>def <span class="ident">showSheetsCompiled</span></span>(<span>self, main=False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/sheets.py#L901-L947" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def showSheetsCompiled(self, main=False):
-    nameMap = self.nameMap
-    src = self.compiled
-
-    def showSheet(info, tab):
-        sheet = info.sheet
-        tMap = info[&#34;tMap&#34;]
-
-        for eidkind, triggers in sorted(sheet.items()):
-            triggerSources = {tMap[t] for t in triggers}
-            nTriggers = len(triggers)
-
-            if not main and (nTriggers == 0 or triggerSources == {()}):
-                continue
-
-            (name, sheetRela) = nameMap[eidkind]
-
-            if nTriggers == 0:
-                triggerInfo = &#34;X&#34;
-            else:
-                sourceRep = (
-                    &#34;X&#34;
-                    if len(triggerSources) == 0
-                    else list(list(triggerSources)[0])
-                )
-                triggerRep = &#34;|&#34;.join(
-                    t for t in sorted(triggers, key=lambda x: (-len(x), x))
-                )
-                triggerInfo = f&#34;{sourceRep} =&gt; {triggerRep}&#34;
-
-            self.console(f&#34;{tab}  &#39;{name}&#39; {eidkind} : {triggerInfo}&#34;)
-        self.console(f&#34;{tab}  ---&#34;)
-
-    def showDir(head, info, level):
-        tab = &#34;  &#34; * level
-        self.console(f&#34;{tab}{head}&#34;)
-
-        if &#34;sheet&#34; in info:
-            if main or level &gt; 0:
-                showSheet(info, tab)
-
-        tweaks = info.tweaks or {}
-
-        for k in sorted(tweaks):
-            showDir(k, tweaks[k], level + 1)
-
-    showDir(&#34;&#34;, src, 0)</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.sheets.Sheets.showSheetsRaw"><code class="name flex">
 <span>def <span class="ident">showSheetsRaw</span></span>(<span>self, main=False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/sheets.py#L826-L866" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def showSheetsRaw(self, main=False):
-    src = self.getSheetData()
-
-    if src is None:
-        self.console(&#34;Nothing to show&#34;)
-
-    src = src.raw
-    nameMap = src.nameMap
-
-    def showSheet(sheet, tab):
-        for eidkind, triggers in sorted(sheet.items()):
-            (name, sheetRela) = nameMap[eidkind]
-            triggerRep = &#34;|&#34;.join(
-                t for t in sorted(triggers, key=lambda x: (-len(x), x))
-            )
-            self.console(f&#34;{tab}  &#39;{name}&#39; {eidkind} : {triggerRep}&#34;)
-        self.console(f&#34;{tab}  ---&#34;)
-
-    def showDir(head, tweaks, level):
-        tab = &#34;  &#34; * level
-        self.console(f&#34;{tab}{head}&#34;)
-
-        rng = tweaks.rng or {}
-        for b, e in sorted(rng):
-            self.console(f&#34;{tab}  {b}-{e}.xslx&#34;)
-            showSheet(rng[(b, e)], tab)
-
-        sng = tweaks.sng or {}
-        for k in sorted(sng):
-            self.console(f&#34;{tab}  {k}.xslx&#34;)
-            showSheet(sng[k], tab)
-
-        sdr = tweaks.sdr or {}
-
-        for k in sorted(sdr):
-            showDir(k, sdr[k], level + 1)
-
-    if main:
-        showSheet(src.main, &#34;&#34;)
-
-    showDir(&#34;&#34;, src.sdr, 0)</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.ner.sheets.Sheets.writeData"><code class="name flex">
 <span>def <span class="ident">writeData</span></span>(<span>self, sheetData, tm)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/ner/sheets.py#L109-L120" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def writeData(self, sheetData, tm):
-    setName = self.setName
-    annoDir = self.annoDir
-    setDir = f&#34;{annoDir}/{setName}&#34;
-    dataFile = f&#34;{setDir}/data.gz&#34;
-    timeFile = f&#34;{setDir}/time.txt&#34;
-
-    with gzip.open(dataFile, mode=&#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
-        f.write(pickle.dumps(sheetData, protocol=PICKLE_PROTOCOL))
-
-    with open(timeFile, &#34;w&#34;) as fh:
-        fh.write(f&#34;{tm}\n&#34;)</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -2550,7 +2120,6 @@ setTimeout(() => input.focus(), 100);
 <li>
 <h4><code><a title="tf.browser.ner.sheets.Sheets" href="#tf.browser.ner.sheets.Sheets">Sheets</a></code></h4>
 <ul class="two-column">
-<li><code><a title="tf.browser.ner.sheets.Sheets.fromSourceSheet" href="#tf.browser.ner.sheets.Sheets.fromSourceSheet">fromSourceSheet</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.getSheetData" href="#tf.browser.ner.sheets.Sheets.getSheetData">getSheetData</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.loadSheetData" href="#tf.browser.ner.sheets.Sheets.loadSheetData">loadSheetData</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.log" href="#tf.browser.ner.sheets.Sheets.log">log</a></code></li>
@@ -2574,7 +2143,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

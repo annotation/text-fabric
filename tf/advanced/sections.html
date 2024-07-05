@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.advanced.sections API documentation</title>
 <meta name="description" content="Section …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -49,7 +49,7 @@ without regard for how they are to be displayed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/advanced/sections.py#L1-L202" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/advanced/sections.py#L1-L202" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Section
 
@@ -309,95 +309,6 @@ Must be a 2-letter language code.</dd>
 <p>If there is no such section heading, an error string is returned.</p>
 </dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/advanced/sections.py#L37-L119" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def nodeFromSectionStr(app, sectionStr, lang=&#34;en&#34;):
-    &#34;&#34;&#34;Find the node of a section string.
-
-    Compare `tf.core.text.Text.nodeFromSection`.
-
-    Parameters
-    ----------
-    sectionStr: string
-        Must be a valid section specification in the
-        language specified in `lang`.
-
-        The string may specify a section 0 level only (book / tablet), or
-        section 0 and 1 levels (book / tablet; chapter / column),
-        or all levels
-        (book / tablet; chapter / column; verse / line).
-
-        !!! hint &#34;examples&#34;
-            A few sections:
-
-                Genesis
-
-                Genesis 1
-
-                Genesis 1:1
-
-                P005381
-
-                P005381 1
-
-                P005381 1:1
-
-    lang: string, optional en
-        The language assumed for the section parts,
-        as far as they are language dependent.
-        Must be a 2-letter language code.
-
-    Returns
-    -------
-    node | error: integer | string
-        Depending on what is passed, the result is a node of section level
-        0, 1, or 2.
-
-        If there is no such section heading, an error string is returned.
-    &#34;&#34;&#34;
-
-    api = app.api
-    T = api.T
-
-    aContext = app.context
-    sep1 = aContext.sectionSep1
-    sep2 = aContext.sectionSep2
-
-    msg = f&#39;Not a valid passage: &#34;{sectionStr}&#34;&#39;
-    msgi = &#39;{} &#34;{}&#34; is not a number&#39;
-    section = sectionStr.split(sep1)
-    if len(section) &gt; 2:
-        return msg
-    elif len(section) == 2:
-        section2 = section[1].split(sep2)
-        if len(section2) &gt; 2:
-            return msg
-        section = [section[0]] + section2
-    dataTypes = T.sectionFeatureTypes
-    sectionTypes = T.sectionTypes
-    sectionTyped = []
-    msgs = []
-    for (i, sectionPart) in enumerate(section):
-        if dataTypes[i] == &#34;int&#34;:
-            try:
-                part = int(sectionPart)
-            except ValueError:
-                msgs.append(msgi.format(sectionTypes[i], sectionPart))
-                part = None
-        else:
-            part = sectionPart
-        sectionTyped.append(part)
-    if msgs:
-        return &#34;\n&#34;.join(msgs)
-
-    sectionNode = T.nodeFromSection(sectionTyped, lang=lang)
-    if sectionNode is None:
-        return msg
-    return sectionNode</code></pre>
-</details>
 </dd>
 <dt id="tf.advanced.sections.sectionStrFromNode"><code class="name flex">
 <span>def <span class="ident">sectionStrFromNode</span></span>(<span>app, n, lang='en', lastSlot=False, fillup=False)</span>
@@ -427,70 +338,12 @@ Must be a 2-letter language code.</dd>
 The result is built from the labels of the individual section levels,
 with dummies for missing parts if <code>fillup</code> is true.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/advanced/sections.py#L122-L162" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def sectionStrFromNode(app, n, lang=&#34;en&#34;, lastSlot=False, fillup=False):
-    &#34;&#34;&#34;The heading of a section to which a node belongs.
-
-    Compare `tf.core.text.Text.nodeFromSection`.
-
-    Parameters
-    ----------
-    node: integer
-        The node from which we obtain a section specification.
-    lastSlot: boolean, optional False
-        Whether the reference node will be the last slot contained by the
-        `node` argument or the first node.
-        Otherwise it will be the first slot.
-    lang: string, optional en
-        The language assumed for the section parts,
-        as far as they are language dependent.
-        Must be a 2-letter language code.
-    fillup: boolean, optional False
-        Same as for `tf.core.text.Text.sectionTuple`.
-
-    Returns
-    -------
-    section heading:string
-        Corresponds to the reference node.
-        The result is built from the labels of the individual section levels,
-        with dummies for missing parts if `fillup` is true.
-    &#34;&#34;&#34;
-
-    api = app.api
-    T = api.T
-
-    aContext = app.context
-    sep1 = aContext.sectionSep1
-    sep2 = aContext.sectionSep2
-
-    seps = (&#34;&#34;, sep1, sep2)
-
-    section = T.sectionFromNode(n, lang=lang, lastSlot=lastSlot, fillup=fillup)
-    return &#34;&#34;.join(
-        &#34;&#34; if part is None else f&#34;{seps[i]}{part}&#34; for (i, part) in enumerate(section)
-    )</code></pre>
-</details>
 </dd>
 <dt id="tf.advanced.sections.sectionsApi"><code class="name flex">
 <span>def <span class="ident">sectionsApi</span></span>(<span>app)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/advanced/sections.py#L30-L34" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def sectionsApi(app):
-    app.nodeFromSectionStr = types.MethodType(nodeFromSectionStr, app)
-    app.sectionStrFromNode = types.MethodType(sectionStrFromNode, app)
-    app.structureStrFromNode = types.MethodType(structureStrFromNode, app)
-    app._sectionLink = types.MethodType(_sectionLink, app)</code></pre>
-</details>
 </dd>
 <dt id="tf.advanced.sections.structureStrFromNode"><code class="name flex">
 <span>def <span class="ident">structureStrFromNode</span></span>(<span>app, n)</span>
@@ -506,43 +359,6 @@ The node from which we obtain a structure specification.</p>
 <dd>Corresponds to the first structure node containing the first slot of <code>n</code>.
 The result is built from the labels of the individual section levels.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/advanced/sections.py#L165-L195" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def structureStrFromNode(app, n):
-    &#34;&#34;&#34;The heading of a structure to which a node belongs.
-
-    Compare `tf.core.text.Text.headingFromNode`.
-
-
-    node: integer
-        The node from which we obtain a structure specification.
-
-    Returns
-    -------
-    structure heading:string
-        Corresponds to the first structure node containing the first slot of `n`.
-        The result is built from the labels of the individual section levels.
-    &#34;&#34;&#34;
-
-    api = app.api
-    T = api.T
-
-    struct = T.headingFromNode(n)
-
-    sep = &#39;&#39;
-    result = &#39;&#39;
-
-    for (i, part) in enumerate(struct):
-        if part is None:
-            continue
-        (nType, label) = part
-        result += f&#39;{sep}&lt;span class=&#34;nd&#34;&gt;{nType}&lt;/span&gt; {label}&#39;
-        sep = &#34;, &#34;
-    return result</code></pre>
-</details>
 </dd>
 </dl>
 </section>
@@ -628,7 +444,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

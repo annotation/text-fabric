@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.browser.command API documentation</title>
 <meta name="description" content="Command-line argument processing" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -32,7 +32,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/command.py#L1-L105" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/browser/command.py#L1-L105" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Command-line argument processing
@@ -153,128 +153,24 @@ def argParam(cargs):
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/command.py#L18-L61" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def argApp(cargs, simple):
-    (appName, checkoutApp, dataLoc) = argParam(cargs)
-    backend = _argCollect(&#34;backend&#34;, cargs)
-    checkout = _argCollect(&#34;checkout&#34;, cargs)
-    dataRelative = _argCollect(&#34;relative&#34;, cargs)
-
-    if (
-        appName is None
-        and checkoutApp is None
-        and dataLoc is None
-        and backend is None
-        and checkout is None
-    ):
-        (backend, org, repo, relative) = getLocation()
-        appName = f&#34;{org}/{repo}{relative}&#34;
-        checkoutApp = &#34;clone&#34;
-        checkout = &#34;clone&#34;
-
-    if simple:
-        return appName
-
-    locations = _argCollect(&#34;locations&#34;, cargs)
-    modules = _argCollect(&#34;modules&#34;, cargs)
-    moduleRefs = _argCollect(&#34;mod&#34;, cargs)
-    version = _argCollect(&#34;version&#34;, cargs)
-    setFile = _argCollect(&#34;sets&#34;, cargs)
-
-    return (
-        None
-        if appName is None
-        else dict(
-            appName=appName,
-            backend=backend,
-            checkoutApp=checkoutApp,
-            dataLoc=dataLoc,
-            checkout=checkout,
-            relative=dataRelative,
-            locations=locations,
-            modules=modules,
-            moduleRefs=moduleRefs,
-            setFile=setFile,
-            version=version,
-        )
-    )</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.command.argNoweb"><code class="name flex">
 <span>def <span class="ident">argNoweb</span></span>(<span>cargs)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/command.py#L64-L68" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def argNoweb(cargs):
-    for arg in cargs:
-        if arg == &#34;-noweb&#34;:
-            return True
-    return False</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.command.argParam"><code class="name flex">
 <span>def <span class="ident">argParam</span></span>(<span>cargs)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/command.py#L78-L105" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def argParam(cargs):
-    appName = None
-    checkoutApp = None
-
-    for arg in cargs:
-        if arg.startswith(&#34;-&#34;):
-            continue
-        appName = arg
-        break
-
-    if appName is None:
-        return (None, None, None)
-
-    if appName.startswith(&#34;data:&#34;):
-        dataLoc = appName[5:]
-        appName = None
-        checkoutApp = None
-    elif appName.startswith(&#34;app:&#34;):
-        dataLoc = None
-        checkoutApp = None
-    else:
-        dataLoc = None
-        parts = appName.split(&#34;:&#34;, maxsplit=1)
-        if len(parts) == 1:
-            parts.append(&#34;&#34;)
-        (appName, checkoutApp) = parts
-
-    return (appName, checkoutApp, dataLoc)</code></pre>
-</details>
 </dd>
 <dt id="tf.browser.command.getPort"><code class="name flex">
 <span>def <span class="ident">getPort</span></span>(<span>slug)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/browser/command.py#L13-L15" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def getPort(slug):
-    portOffset = crc32(slug.encode(&#34;utf8&#34;)) % 10000
-    return PORT_BASE + portOffset</code></pre>
-</details>
 </dd>
 </dl>
 </section>
@@ -357,7 +253,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.convert.variants API documentation</title>
 <meta name="description" content="Variants …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -38,7 +38,7 @@ the
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/variants.py#L1-L552" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/convert/variants.py#L1-L552" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Variants
@@ -676,7 +676,7 @@ in <code>cur</code> to generate an indication where the warning / error occurred
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/variants.py#L43-L552" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/convert/variants.py#L43-L552" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Variants:
     def __init__(self, cv, cur, baseWitness, sentType, checkPunc, addWarning, addError):
@@ -1212,40 +1212,6 @@ The actual check will be done by the function <code>checkPunc</code>,
 which has been passed as parameter when the <code><a title="tf.convert.variants.Variants" href="#tf.convert.variants.Variants">Variants</a></code> object was
 created.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/variants.py#L337-L364" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def checkSent(self, trans, punc):
-    &#34;&#34;&#34;Checks whether there is a &#34;sentence&#34; boundary at this point.
-
-    Use this every time you have added a slot node.
-
-    Parameters
-    ----------
-    trans: string
-        The text of the newly added slot node.
-        If this is empty, the text of the slot before that will be consulted.
-        This value is taken from the context information.
-        This very function is responsible for putting the last text value into
-        the context.
-    punc: string
-        The non-alphanumeric text material after the text of the last slot.
-        Will be used to determine whether there is a &#34;sentence&#34; break here.
-        The actual check will be done by the function `checkPunc`,
-        which has been passed as parameter when the `Variants` object was
-        created.
-    &#34;&#34;&#34;
-    cur = self.cur
-    checkPunc = self.checkPunc
-
-    lastTrans = trans or cur[TRANS_LAST] or &#34;&#34;
-    if checkPunc(lastTrans, trans, punc):
-        self.endSent()
-    else:
-        cur[TRANS_LAST] = trans</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.variants.Variants.collectWitnesses"><code class="name flex">
 <span>def <span class="ident">collectWitnesses</span></span>(<span>self, node)</span>
@@ -1260,64 +1226,6 @@ such a way that it can be retrieved later on.</p>
 <code>app</code>-element.</p>
 <p>We also check that multiple direct-<code>rdg</code> children of the same
 app have disjoint witnesses.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/variants.py#L139-L190" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def collectWitnesses(self, node):
-    &#34;&#34;&#34;Collect all witnesses.
-
-    Call this for the root nodes of every TEI file of the corpus.
-
-    Collects the witnesses from all `rdg`-elements.
-    For each `lem`-element the set of witnesses of its `rdg` siblings is collected in
-    such a way that it can be retrieved later on.
-
-    We also store a pointer to the parent `app`-element of each nested
-    `app`-element.
-
-    We also check that multiple direct-`rdg` children of the same
-    app have disjoint witnesses.
-    &#34;&#34;&#34;
-
-    cur = self.cur
-    addWarning = self.addWarning
-
-    tag = node.tag.lower()
-    atts = node.attrib
-
-    appStack = cur[APP_STACK]
-    apps = cur[APPS]
-
-    if tag == APP:
-        parentApp = appStack[-1] if len(appStack) else None
-        nApp = cur[N_APP]
-        cur[N_APP] = nApp + 1
-        appStack.append(nApp + 1)
-        apps[nApp + 1] = dict(parent=parentApp, xwits=set(), rdgs=[])
-
-    elif tag == RDG:
-        att = WIT
-
-        if att in atts:
-            ws = {w.strip(&#34;.&#34;).lower() for w in atts[att].split()}
-            cur[WITNESSES] |= ws
-            apps[appStack[-1]][X_WITS] |= ws
-            rdgSeen = apps[appStack[-1]][RDGS]
-            for rdg in rdgSeen:
-                if rdg &amp; ws:
-                    addWarning(
-                        &#34;witnesses of rdg not disjoint from sibling rdgs&#34;, cur
-                    )
-            apps[appStack[-1]][RDGS].append(ws)
-
-    for child in node:
-        self.collectWitnesses(child)
-
-    if tag == APP:
-        appStack.pop()</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.variants.Variants.endApp"><code class="name flex">
 <span>def <span class="ident">endApp</span></span>(<span>self, tag)</span>
@@ -1330,53 +1238,6 @@ app have disjoint witnesses.</p></div>
 <dt><strong><code>tag</code></strong> :&ensp;<code>string</code></dt>
 <dd>The tag name of the XML element that is being left</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/variants.py#L295-L335" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def endApp(self, tag):
-    &#34;&#34;&#34;Actions at the end of `app`- `lem`- and `rdg`-elements.
-
-    Use this each time you leave one of these XML elements.
-
-    Parameters
-    ----------
-    tag: string
-        The tag name of the XML element that is being left
-    &#34;&#34;&#34;
-
-    cur = self.cur
-    curStackSent = cur[self.stackSent]
-
-    if tag == APP:
-        cur[X_WITS].pop()
-
-        xWits = self._getXwits()
-        for wit in self._getWits():
-            if wit not in xWits:
-                self._resume(wit)
-
-        curStackSent.pop()
-        cur[TRANS_LAST] = cur[TRANS_NEXT].pop()
-
-    elif tag == LEM:
-        cur[TRANS_NEXT][-1] = cur[TRANS_LAST]
-
-        xWits = self._getXwits()
-        for wit in self._getWits():
-
-            if wit not in xWits:
-                self._suspend(wit)
-
-    elif tag == RDG:
-        wits = cur[WITS][-1]
-
-        for wit in wits:
-            self._suspend(wit)
-
-        cur[WITS].pop()</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.variants.Variants.endSent"><code class="name flex">
 <span>def <span class="ident">endSent</span></span>(<span>self)</span>
@@ -1390,37 +1251,6 @@ at the end of certain elements, such as paragraphs.</p>
 that agree with the base text here are also ended.
 No new sentences for these witnesses are started, since we are in
 the base text.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/variants.py#L389-L413" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def endSent(self):
-    &#34;&#34;&#34;Ends a &#34;sentence&#34; if there is a current sentence.
-
-    Use this at the end of each XML file if you are sure that
-    there should not remain pending sentences. You can also call this
-    at the end of certain elements, such as paragraphs.
-
-    When in a `lem`-element, all pending &#34;sentences&#34; of all witnesses
-    that agree with the base text here are also ended.
-    No new sentences for these witnesses are started, since we are in
-    the base text.
-    &#34;&#34;&#34;
-
-    cur = self.cur
-
-    inRdg = RDG in cur and len(cur[RDG]) &gt; 0
-    inLem = LEM in cur and len(cur[LEM]) &gt; 0
-
-    if inLem:
-        self._endSentLem()
-    elif inRdg:
-        self._endSentRdg()
-    else:
-        for wit in self._getWits():
-            self._terminate(wit)</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.variants.Variants.initApps"><code class="name flex">
 <span>def <span class="ident">initApps</span></span>(<span>self)</span>
@@ -1429,24 +1259,6 @@ the base text.</p></div>
 <div class="desc"><p>Initialize app- processing and witness collection.</p>
 <p>You can issue this command once for the whole corpus,
 or each time before entering a volume.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/variants.py#L192-L203" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def initApps(self):
-    &#34;&#34;&#34;Initialize app- processing and witness collection.
-
-    You can issue this command once for the whole corpus,
-    or each time before entering a volume.
-    &#34;&#34;&#34;
-    cur = self.cur
-
-    cur[APPS] = dict()
-    cur[APP_STACK] = []
-    cur[TRANS_NEXT] = []
-    cur[N_APP] = 0</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.variants.Variants.resetApps"><code class="name flex">
 <span>def <span class="ident">resetApps</span></span>(<span>self)</span>
@@ -1458,35 +1270,6 @@ Do this after collecting the witnesses.</p>
 <p>You can issue this command once for the whole corpus,
 or each time before entering a volume.
 But it should be kept in tandem with <code><a title="tf.convert.variants.Variants.initApps" href="#tf.convert.variants.Variants.initApps">Variants.initApps()</a></code>.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/variants.py#L205-L227" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def resetApps(self):
-    &#34;&#34;&#34;Initialize app- and &#34;sentence&#34; processing.
-
-    Set up the data store for collecting information and &#34;sentence&#34; processing.
-    Do this after collecting the witnesses.
-
-    You can issue this command once for the whole corpus,
-    or each time before entering a volume.
-    But it should be kept in tandem with `Variants.initApps`.
-    &#34;&#34;&#34;
-    cur = self.cur
-    baseWitness = self.baseWitness
-    nSent = self.nSent
-    stackSent = self.stackSent
-    varSent = self.varSent
-
-    cur[N_APP] = 0
-    cur[WITS] = []
-    cur[X_WITS] = []
-    cur[TRANS_LAST] = None
-    cur[nSent] = 0
-    cur[stackSent] = []
-    cur[varSent] = {baseWitness: None}</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.variants.Variants.startApp"><code class="name flex">
 <span>def <span class="ident">startApp</span></span>(<span>self, tag, atts)</span>
@@ -1501,77 +1284,6 @@ But it should be kept in tandem with <code><a title="tf.convert.variants.Variant
 <dt><strong><code>atts</code></strong> :&ensp;<code>dict</code></dt>
 <dd>The attributes of the XML element that is being entered</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/variants.py#L229-L293" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def startApp(self, tag, atts):
-    &#34;&#34;&#34;Actions at the start of `app`- `lem`- and `rdg`-elements.
-
-    Use this each time you enter one of these XML elements.
-
-    Parameters
-    ----------
-    tag: string
-        The tag name of the XML element that is being entered
-    atts: dict
-        The attributes of the XML element that is being entered
-    &#34;&#34;&#34;
-
-    cur = self.cur
-    curStackSent = cur[self.stackSent]
-
-    if tag == APP:
-        nApp = cur[N_APP]
-        cur[N_APP] = nApp + 1
-        appInfo = cur[APPS][nApp + 1]
-        parentApp = appInfo[PARENT]
-        xwits = appInfo[X_WITS]
-
-        slots = self._diverge()
-        cur[TRANS_NEXT].append(&#34;&#34;)
-
-        curStackSent.append(
-            dict(
-                translast=cur[TRANS_LAST],
-                slots=slots,
-            )
-        )
-
-        while parentApp is not None:
-            appInfo = cur[APPS][parentApp]
-
-            # keep xwits immutable, don&#39;t say xwits |= blabla
-            # because that will change xwits in place
-
-            xwits = xwits | appInfo[X_WITS]
-            parentApp = appInfo[PARENT]
-
-        cur[X_WITS].append(xwits)
-
-    elif tag == LEM:
-        xWits = self._getXwits()
-        for wit in self._getWits():
-            if wit in xWits:
-                self._suspend(wit)
-            else:
-                self._resume(wit)
-
-    elif tag == RDG:
-        wits = set()
-        if WIT in atts:
-            wits = {w.strip(&#34;.&#34;).lower() for w in atts[WIT].split()}
-            atts[WIT] = &#34; &#34;.join(wits)
-
-        cur[WITS].append(wits)
-
-        for wit in self._getWits():
-            if wit in wits:
-                self._resume(wit)
-            else:
-                self._suspend(wit)</code></pre>
-</details>
 </dd>
 <dt id="tf.convert.variants.Variants.startSent"><code class="name flex">
 <span>def <span class="ident">startSent</span></span>(<span>self)</span>
@@ -1582,34 +1294,6 @@ But it should be kept in tandem with <code><a title="tf.convert.variants.Variant
 are created for each witness for the <code>rdg</code>.</p>
 <p>Use this before creating a slot and / or at the start of certain elements
 such as paragraphs.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/convert/variants.py#L366-L387" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def startSent(self):
-    &#34;&#34;&#34;Starts a &#34;sentence&#34; if there is no current sentence.
-
-    When in an `rdg`-element, witness-dependent &#34;sentence&#34; nodes
-    are created for each witness for the `rdg`.
-
-    Use this before creating a slot and / or at the start of certain elements
-    such as paragraphs.
-    &#34;&#34;&#34;
-
-    cur = self.cur
-    baseWitness = self.baseWitness
-
-    inRdg = RDG in cur and len(cur[RDG]) &gt; 0
-    inLem = LEM in cur and len(cur[LEM]) &gt; 0
-
-    if inLem:
-        self._startSentLem()
-    elif inRdg:
-        self._startSentRdg()
-    else:
-        self._start(baseWitness, witAtt=False)</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -1703,7 +1387,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

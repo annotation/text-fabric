@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.11.1" />
 <title>tf.core.edgefeature API documentation</title>
 <meta name="description" content="Mappings from edges to values …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -46,7 +46,7 @@ dictionary: <code><a title="tf.core.edgefeature.EdgeFeature.items" href="#tf.cor
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/edgefeature.py#L1-L278" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/core/edgefeature.py#L1-L278" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Mappings from edges to values.
@@ -347,7 +347,7 @@ class EdgeFeature:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/edgefeature.py#L33-L278" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/core/edgefeature.py#L33-L278" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class EdgeFeature:
     &#34;&#34;&#34;Provides access to (edge) feature data.
@@ -669,91 +669,6 @@ m == value=6 ==&gt; n
 E.b(m) = (n, 6)
 </code></pre>
 </div></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/edgefeature.py#L139-L217" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def b(self, n):
-    &#34;&#34;&#34;Query *both* incoming edges to, and outgoing edges from a node.
-
-    The edges are those pairs of nodes specified in the feature data,
-    whose first or second node is the `n`.
-
-    Parameters
-    ----------
-    node: integer
-        The node **from** which the edges in question start or
-        **to** which the edges in question connect.
-
-    Returns
-    -------
-    set | dict
-        The nodes where the edges **to** a certain node start.
-        The members of the result are just nodes, if this feature does not
-        assign values to edges.
-        Otherwise the members are tuples of the start node and the
-        value that the feature assigns to this pair of nodes.
-
-        If there are no edges to the node, the empty tuple is returned,
-        rather than `None`.
-
-    Notes
-    -----
-    !!! hint &#34;symmetric closure&#34;
-        This method gives the *symmetric closure* of a set of edges:
-        if there is an edge between `n` and `m`, this method will deliver
-        its value, no matter the direction of the edge.
-
-    !!! example &#34;symmetric edges&#34;
-        Some edge sets are semantically symmetric, for example *similarity*.
-        If `n` is similar to `m`, then `m` is similar to `n`.
-
-        But if you store such an edge feature completely,
-        half of the data is redundant.
-        By virtue of this method you do not have to do that, you only need to store
-        one of the edges between `n` and `m` (it does not matter which one),
-        and `E.fff.b(n)` will nevertheless produce the complete results.
-
-    !!! caution &#34;conflicting values&#34;
-        If your set of edges is not symmetric, and edges carry values, it might
-        very well be the case that edges between the same pair of nodes carry
-        different values for the two directions.
-
-        In that case, this method gives precedence to the edges that
-        *depart* from the node to those that go *to* the node.
-
-    !!! example &#34;conflicting values&#34;
-        Suppose we have
-
-            n == value=4 ==&gt; m
-            m == value=6 ==&gt; n
-
-        then
-
-            E.b(n) = (m, 4)
-            E.b(m) = (n, 6)
-
-    &#34;&#34;&#34;
-
-    if n not in self.data and n not in self.dataInv:
-        return ()
-    Crank = self.api.C.rank.data
-    if self.doValues:
-        result = {}
-        if n in self.dataInv:
-            result.update(self.dataInv[n].items())
-        if n in self.data:
-            result.update(self.data[n].items())
-        return tuple(sorted(result.items(), key=lambda mv: Crank[mv[0] - 1]))
-    else:
-        result = set()
-        if n in self.dataInv:
-            result |= self.dataInv[n]
-        if n in self.data:
-            result |= self.data[n]
-        return tuple(sorted(result, key=lambda m: Crank[m - 1]))</code></pre>
-</details>
 </dd>
 <dt id="tf.core.edgefeature.EdgeFeature.f"><code class="name flex">
 <span>def <span class="ident">f</span></span>(<span>self, n)</span>
@@ -780,43 +695,6 @@ value that the feature assigns to this pair of nodes.</p>
 rather than <code>None</code>.</p>
 </dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/edgefeature.py#L73-L103" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def f(self, n):
-    &#34;&#34;&#34;Get outgoing edges *from* a node.
-
-    The edges are those pairs of nodes specified in the feature data,
-    whose first node is the `n`.
-
-    Parameters
-    ----------
-    node: integer
-        The node **from** which the edges in question start.
-
-    Returns
-    -------
-    set | tuple
-        The nodes reached by the edges **from** a certain node.
-        The members of the result are just nodes, if this feature does not
-        assign values to edges.
-        Otherwise the members are tuples of the destination node and the
-        value that the feature assigns to this pair of nodes.
-
-        If there are no edges from the node, the empty tuple is returned,
-        rather than `None`.
-    &#34;&#34;&#34;
-
-    if n not in self.data:
-        return ()
-    Crank = self.api.C.rank.data
-    if self.doValues:
-        return tuple(sorted(self.data[n].items(), key=lambda mv: Crank[mv[0] - 1]))
-    else:
-        return tuple(sorted(self.data[n], key=lambda m: Crank[m - 1]))</code></pre>
-</details>
 </dd>
 <dt id="tf.core.edgefeature.EdgeFeature.freqList"><code class="name flex">
 <span>def <span class="ident">freqList</span></span>(<span>self, nodeTypesFrom=None, nodeTypesTo=None)</span>
@@ -845,72 +723,6 @@ that go <em>to</em> a node with such a type will be counted.</dd>
 <dd>A tuple of <code>(value, frequency)</code>, items, ordered by <code>frequency</code>,
 highest frequencies first.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/edgefeature.py#L219-L278" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def freqList(self, nodeTypesFrom=None, nodeTypesTo=None):
-    &#34;&#34;&#34;Frequency list of the values of this feature.
-
-    Inspect the values of this feature and see how often they occur.
-
-    If the feature does not assign values, return the number of node pairs
-    in this edge.
-
-    If the edge feature does have values, inspect them and see
-    how often they occur.
-    The result is a list of pairs `(value, frequency)`, ordered by `frequency`,
-    highest frequencies first.
-
-    Parameters
-    ----------
-    nodeTypesFrom: set of string, optional None
-        If you pass a set of node types here, only the values for edges
-        that start *from* a node with such a type will be counted.
-    nodeTypesTo: set of string, optional None
-        If you pass a set of node types here, only the values for edges
-        that go *to* a node with such a type will be counted.
-
-    Returns
-    -------
-    tuple of 2-tuple
-        A tuple of `(value, frequency)`, items, ordered by `frequency`,
-        highest frequencies first.
-
-    &#34;&#34;&#34;
-
-    if nodeTypesFrom is None and nodeTypesTo is None:
-        if self.doValues:
-            fql = collections.Counter()
-            for (n, vals) in self.data.items():
-                for val in vals.values():
-                    fql[val] += 1
-            return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))
-        else:
-            fql = 0
-            for (n, ms) in self.data.items():
-                fql += len(ms)
-            return fql
-    else:
-        fOtype = self.api.F.otype.v
-        if self.doValues:
-            fql = collections.Counter()
-            for (n, vals) in self.data.items():
-                if nodeTypesFrom is None or fOtype(n) in nodeTypesFrom:
-                    for (m, val) in vals.items():
-                        if nodeTypesTo is None or fOtype(m) in nodeTypesTo:
-                            fql[val] += 1
-            return tuple(sorted(fql.items(), key=lambda x: (-x[1], x[0])))
-        else:
-            fql = 0
-            for (n, ms) in self.data.items():
-                if nodeTypesFrom is None or fOtype(n) in nodeTypesFrom:
-                    for m in ms:
-                        if nodeTypesTo is None or fOtype(m) in nodeTypesTo:
-                            fql += len(ms)
-            return fql</code></pre>
-</details>
 </dd>
 <dt id="tf.core.edgefeature.EdgeFeature.items"><code class="name flex">
 <span>def <span class="ident">items</span></span>(<span>self)</span>
@@ -922,26 +734,6 @@ just the feature data.</p>
 <p>If you need this repeatedly, or you need the whole dictionary,
 you can store the result as follows:</p>
 <p>data = dict(E.fff.items())</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/edgefeature.py#L58-L71" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def items(self):
-    &#34;&#34;&#34;A generator that yields the items of the feature, seen as a mapping.
-
-    This gives you a rather efficient way to iterate over
-    just the feature data.
-
-    If you need this repeatedly, or you need the whole dictionary,
-    you can store the result as follows:
-
-       data = dict(E.fff.items())
-
-    &#34;&#34;&#34;
-
-    return self.data.items()</code></pre>
-</details>
 </dd>
 <dt id="tf.core.edgefeature.EdgeFeature.t"><code class="name flex">
 <span>def <span class="ident">t</span></span>(<span>self, n)</span>
@@ -968,45 +760,6 @@ value that the feature assigns to this pair of nodes.</p>
 rather than <code>None</code>.</p>
 </dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/edgefeature.py#L105-L137" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def t(self, n):
-    &#34;&#34;&#34;Get incoming edges *to* a node.
-
-    The edges are those pairs of nodes specified in the feature data,
-    whose second node is the `n`.
-
-    Parameters
-    ----------
-    node: integer
-        The node **to** which the edges in question connect.
-
-    Returns
-    -------
-    set | tuple
-        The nodes where the edges **to** a certain node start.
-        The members of the result are just nodes, if this feature does not
-        assign values to edges.
-        Otherwise the members are tuples of the start node and the
-        value that the feature assigns to this pair of nodes.
-
-        If there are no edges to the node, the empty tuple is returned,
-        rather than `None`.
-    &#34;&#34;&#34;
-
-    if n not in self.dataInv:
-        return ()
-    Crank = self.api.C.rank.data
-    if self.doValues:
-        return tuple(
-            sorted(self.dataInv[n].items(), key=lambda mv: Crank[mv[0] - 1])
-        )
-    else:
-        return tuple(sorted(self.dataInv[n], key=lambda m: Crank[m - 1]))</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -1018,7 +771,7 @@ rather than <code>None</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a7411eac0a5106077cb23353d60aa9676de3a8ee/tf/core/edgefeature.py#L29-L30" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/59134cdc744611678610bd47d33c860041665cd8/tf/core/edgefeature.py#L29-L30" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class EdgeFeatures:
     pass</code></pre>
@@ -1113,7 +866,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>
