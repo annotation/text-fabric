@@ -536,6 +536,7 @@ tf/client/static/png/tf.png
 tf/convert/__init__.py
 tf/convert/addnlp.py
 tf/convert/helpers.py
+tf/convert/iiif.py
 tf/convert/makewatm.py
 tf/convert/mql.py
 tf/convert/pagexml.py
