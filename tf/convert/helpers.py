@@ -2,6 +2,7 @@ import re
 from textwrap import dedent
 
 from ..core.helpers import console
+from ..core.generic import AttrDict
 
 
 PRE = "pre"
@@ -258,9 +259,7 @@ def checkModel(kind, thisModel, verbose):
     modelDefault = (
         LINE_MODEL_DEFAULT
         if kind == LINE
-        else PAGE_MODEL_DEFAULT
-        if kind == PAGE
-        else SECTION_MODEL_DEFAULT
+        else PAGE_MODEL_DEFAULT if kind == PAGE else SECTION_MODEL_DEFAULT
     )
     modelSpecs = (
         LINE_MODELS if kind == LINE else PAGE_MODELS if kind == PAGE else SECTION_MODELS
@@ -668,3 +667,114 @@ def lookupSource(cv, cur, tokenAsSlot, specs):
         sourceText = (sourceText or "").strip()
         source = {feature: sourceText}
         cv.feature(targetNode, **source)
+
+
+def parseIIIF(settings, prod, selector):
+    """Parse the iiif yaml file.
+
+    We fill in the parameters.
+    """
+
+    def applySwitches(prod, constants, switches):
+        for k, v in switches["prod" if prod else "dev"].items():
+            constants[k] = v
+
+        return constants
+
+    def substituteConstants(data, macros, constants):
+        tpd = type(data)
+
+        if tpd is str:
+            for k, v in constants.items():
+                if len(data) > 1 and data[0] == "!" and data[1:] in macros:
+                    data = macros[data[1:]]
+
+                pattern = f"«{k}»"
+
+                if type(v) is int and data == pattern:
+                    data = v
+                    break
+                else:
+                    data = data.replace(pattern, str(v))
+
+            return data
+
+        if tpd is list:
+            return [substituteConstants(item, macros, constants) for item in data]
+
+        if tpd is dict:
+            return {
+                k: substituteConstants(v, macros, constants) for (k, v) in data.items()
+            }
+
+        return data
+
+    constants = applySwitches(prod, settings["constants"], settings["switches"])
+    macros = applySwitches(prod, settings["macros"], settings["switches"])
+
+    return AttrDict(
+        {
+            x: substituteConstants(xText, macros, constants)
+            for (x, xText) in settings[selector].items()
+        }
+    )
+
+
+def operationalize(data):
+    scanInfo = {}
+
+    for extraFeat, info in data.items():
+        nodeType = info["nodeType"]
+        variables = info["vars"]
+        urlPattern = info["urlPattern"]
+
+        newVars = {}
+
+        for name, val in variables.items():
+            if val.endswith("-1"):
+                newVal = val[0:-2]
+                shift = -1
+            elif val.endswith("+1"):
+                newVal = val[0:-2]
+                shift = 1
+            else:
+                newVal = val
+                shift = 0
+
+            feat = tuple(newVal.split(".", 1))
+
+            if len(feat) == 1:
+                parent = None
+                feat = feat[0]
+            else:
+                parent, feat = feat
+
+            newVars[name] = (parent, feat, shift)
+
+        scanInfo.setdefault(nodeType, []).append((extraFeat, urlPattern, newVars))
+
+    return scanInfo
+
+
+def fillinIIIF(data, **kwargs):
+    tpd = type(data)
+
+    if tpd is str:
+        for k, v in kwargs.items():
+            pattern = "{" + k + "}"
+
+            if type(v) is int and data == pattern:
+                data = v
+                break
+            else:
+                data = data.replace(pattern, str(v))
+
+        return data
+
+    if tpd is list:
+        return [fillinIIIF(item, **kwargs) for item in data]
+
+    if tpd is dict:
+        return {k: fillinIIIF(v, **kwargs) for (k, v) in data.items()}
+
+    return data

@@ -484,6 +484,7 @@ class FabricCore:
         edges = set()
         configs = set()
         computeds = set()
+
         for (fName, fObj) in self.features.items():
             fObj.load(silent=silent, metaOnly=True)
             dest = None

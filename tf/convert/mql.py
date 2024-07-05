@@ -32,6 +32,13 @@ Only if the feature is a number feature, you may omit the quotes:
 [verse chapter=1 and verse=1]
 ```
 
+## Integers in MQL
+
+We restrict the values of integers to those between minus `2 ** 31 - 1` and plus
+`2 ** 31 - 1` because Emdros does not dealt with arbitrarily small or large integers.
+If there are TF features with integer values that are out of bounds, it
+will be reported, and no conversion will be made.
+
 ## Enumeration types
 
 It is attractive to use enumeration types for the values of a feature, where ever
@@ -168,6 +175,9 @@ from ..core.timestamp import SILENT_D, silentConvert
 ENUM_LIMIT = 1000
 
 ONE_ENUM_TYPE = True
+
+MAX_INT = 2**31 - 1
+MIN_INT = -MAX_INT
 
 
 def exportMQL(app, mqlDb, exportDir=None):
@@ -363,27 +373,46 @@ class MQL:
         self.features = {}
         self.featureList = []
         indent(level=1)
-        for (f, fo) in sorted(tfFeatures.items()):
+        good = True
+
+        for f, fo in sorted(tfFeatures.items()):
             if fo.method is not None or f in WARP:
                 continue
+
             fo.load(metaOnly=True, silent=silent)
+
             if fo.isConfig:
                 continue
+
+            if fo.dataType == "int":
+                fMap = fo.data
+                outOfBound = {x for x in fMap.values() if x < MIN_INT or x > MAX_INT}
+                nOutOfBound = len(outOfBound)
+
+                if nOutOfBound:
+                    error(
+                        f'integer feature "{f}" has {nOutOfBound} values '
+                        f"less than {MIN_INT} or larger than {MAX_INT}"
+                    )
+                    good = False
+
             cleanF = cleanName(f)
+
             if cleanF != f:
                 error(f'feature "{f}" => "{cleanF}"')
+
             self.featureList.append(cleanF)
             self.features[cleanF] = fo
-        good = True
+
         for feat in (OTYPE, OSLOTS, "__levels__"):
             if feat not in tfFeatures:
                 error(
                     "{} feature {} is missing from data set".format(
-                        "Warp"
-                        if feat in WARP
-                        else "Computed"
-                        if feat.startswith("__")
-                        else "Data",
+                        (
+                            "Warp"
+                            if feat in WARP
+                            else "Computed" if feat.startswith("__") else "Data"
+                        ),
                         feat,
                     )
                 )
@@ -392,11 +421,14 @@ class MQL:
                 fObj = tfFeatures[feat]
                 if not fObj.load(silent=silent):
                     good = False
+
         indent(level=0)
+
         if not good:
             error("Export to MQL aborted")
         else:
             info(f"{len(self.featureList)} features to export to MQL ...")
+
         self.good = good
 
     def _writeStartDb(self):
@@ -431,13 +463,18 @@ GO
         for ft in self.featureList:
             ftClean = cleanName(ft)
             fObj = self.features[ft]
+
             if fObj.isEdge or fObj.dataType == "int":
                 continue
+
             fMap = fObj.data
             fValues = sorted(set(fMap.values()))
+
             if len(fValues) > ENUM_LIMIT:
                 continue
+
             eligible = all(isClean(fVal) for fVal in fValues)
+
             if not eligible:
                 unclean = [fVal for fVal in fValues if not isClean(fVal)]
                 console(
@@ -527,7 +564,8 @@ GO
             )
         )
         otypeSupport = {}
-        for (otype, av, start, end) in self.levels:
+
+        for otype, av, start, end in self.levels:
             cleanOtype = cleanName(otype)
             if cleanOtype != otype:
                 warning(f'otype "{otype}" => "{cleanOtype}"')
@@ -599,7 +637,8 @@ GO
         oslotsData = tfFeatures[OSLOTS].data
         self.oslots = oslotsData[0]
         self.maxSlot = oslotsData[1]
-        for (otype, av, start, end) in self.levels:
+
+        for otype, av, start, end in self.levels:
             self._writeData(otype, start, end)
 
     def _writeData(self, otype, start, end):
@@ -631,15 +670,18 @@ WITH OBJECT TYPE[{o}]
         t = 0
         j = 0
         indent(level=2, reset=True)
+
         for n in range(start, end + 1):
             oMql = """
 CREATE OBJECT
 FROM MONADS= {{ {m} }}
 WITH ID_D={i} [
 """.format(
-                m=n
-                if n <= maxSlot
-                else specFromRanges(rangesFromList(oslots[n - maxSlot - 1])),
+                m=(
+                    n
+                    if n <= maxSlot
+                    else specFromRanges(rangesFromList(oslots[n - maxSlot - 1]))
+                ),
                 i=n,
             )
             for ft in oFeats:
@@ -757,7 +799,7 @@ def parseMql(mqlFile, tmObj):
 
     good = True
 
-    for (ln, line) in enumerate(fh):
+    for ln, line in enumerate(fh):
         inThisChunk += 1
         if inThisChunk == chunkSize:
             info(f"\tline {ln + 1:>9}")
@@ -820,13 +862,15 @@ def parseMql(mqlFile, tmObj):
                 ftype = (
                     "str"
                     if fMQLType in enums
-                    else "int"
-                    if fMQLType == "integer"
-                    else "str"
-                    if fMQLType in STRING_TYPES
-                    else "int"
-                    if fInfo == "id_d"
-                    else "str"
+                    else (
+                        "int"
+                        if fMQLType == "integer"
+                        else (
+                            "str"
+                            if fMQLType in STRING_TYPES
+                            else "int" if fInfo == "id_d" else "str"
+                        )
+                    )
                 )
                 isEdge = fMQLType == "id_d"
                 if isEdge:
@@ -844,7 +888,7 @@ def parseMql(mqlFile, tmObj):
             if curObject is not None:
                 if line.startswith("]"):
                     objectType = objectTypes[curTable]
-                    for (feature, (ftype, default)) in objectType.items():
+                    for feature, (ftype, default) in objectType.items():
                         if feature not in curObject["feats"] and default is not None:
                             curObject["feats"][feature] = default
                     tables[curTable][curId] = curObject
@@ -1019,14 +1063,14 @@ def tfFromData(tmObj, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
         info(f"\tfeatures from {t}s")
         inThisChunk = 0
         thisTable = tables.get(t, {})
-        for (i, idd) in enumerate(thisTable):
+        for i, idd in enumerate(thisTable):
             inThisChunk += 1
             if inThisChunk == chunkSize:
                 info(f"\t{i + 1:>9} {t}s")
                 inThisChunk = 0
             node = nodeFromIdd[idd]
             features = tables[t][idd]["feats"]
-            for (f, v) in features.items():
+            for f, v in features.items():
                 isEdge = f in edgeF.get(t, set())
                 if isEdge:
                     if v not in NIL:

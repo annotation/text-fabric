@@ -276,6 +276,7 @@ from ...core.files import (
     dirExists,
     APP_CONFIG,
 )
+from ...core.timestamp import SILENT_D, DEEP
 from .sheets import Sheets
 from .helpers import findCompile
 from .sets import Sets
@@ -853,7 +854,9 @@ class NER(Sheets, Sets, Show):
             dirRemove(newTf)
 
         app.indent(reset=True)
-        app.info("Creating a dataset with entity nodes ...")
+
+        if not silent:
+            app.info("Creating a dataset with entity nodes ...")
 
         good = modify(
             origTf,
@@ -861,10 +864,11 @@ class NER(Sheets, Sets, Show):
             targetVersion=newVersion,
             addTypes=addTypes,
             featureMeta=featureMeta,
-            silent=silent,
+            silent=DEEP if silent else SILENT_D,
         )
 
-        app.info("Done")
+        if not silent:
+            app.info("Done")
 
         if not good:
             return False

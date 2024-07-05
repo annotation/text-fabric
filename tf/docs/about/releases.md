@@ -20,18 +20,11 @@ pip install -e .
 
 ### 12.5
 
-#### 12.5.4
-
-2024-06-??
-
-*   Minor improvements in the TEI converter.
-*   New functions `tf.core.files.readJson` and `tf.core.files.writeJson`
-*   Replaced raw `open()` calls by `tf.core.files.fileOpen()` calls to make sure that
-    `encoding="utf8"` is always passed to them.
-
 #### 12.5.3
 
-2024-06-18
+2024-07-05
+
+**NER** 
 
 The machinery of Named-Entity-Recognition by triggers defined in spreadsheets is now
 available in the Text-Fabric browser.
@@ -42,6 +35,29 @@ can click on triggers to view their occurrences in a slightly other highlight co
 
 When you update a spreadsheet, and reload the browser, the changes are applied
 automatically.
+
+**NB:** The docs are lagging behind on this point.
+
+**WATM**
+
+Further development in converting TF data to WATM (see `tf.convert.watm`), including
+generating IIIF manifests for page scans.
+This is work in progress and the documentation is lagging behind.
+The work is targeted at the
+[Suriano Letters](https://annotation.github.io/text-fabric/tf/about/corpora.html#knawhuygensing-and-gitlabhucknawnl).
+
+**NB:** The docs are lagging behind on this point.
+
+**Lesser points**
+
+*   Minor improvements in the TEI converter.
+*   New functions `tf.core.files.readJson` and `tf.core.files.writeJson`
+*   Replaced raw `open()` calls by `tf.core.files.fileOpen()` calls to make sure that
+    `encoding="utf8"` is always passed to them.
+*   MQL export now checks whether int-valued features have values within reasonable
+    bounds, otherwise MQL will choke on them when importing the resulting MQL file.
+    Thanks to Saulo Oliviera de Cantanhêde for spotting this.
+
 
 #### 12.5.2
 

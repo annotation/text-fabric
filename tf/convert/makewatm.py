@@ -402,10 +402,10 @@ class MakeWATM:
 
         console(f"\tMaking WATM for version {A.version}")
 
-        WA = WATM(A, "tei", skipMeta=False, silent=silent)
+        WA = WATM(A, "tei", skipMeta=False, silent=silent, prod=prod)
         WA.makeText()
         WA.makeAnno()
-        WA.writeAll(prod=prod)
+        WA.writeAll()
         WA.testAll()
 
     def doTask_watms(self):

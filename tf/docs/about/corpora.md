@@ -213,12 +213,16 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 [`suriano/letters`](https://gitlab.huc.knaw.nl/suriano/letters)
 :   *Italian*
     Correspondence of Christofforo Suriano , 1616-1623.
-    Straight conversion from TEI to TF,
-    Nina Lamal et al., Dirk Roorda
+    Complex conversion from DOCX through simple TEI to TF,
+    From the TF a stream of annotations is generated
+    (WATM) that drives the publishing machinery of
+    [HuC Team Text](https://di.huc.knaw.nl/text-analysis-en.html)
+    Nina Lamal, Helmer Helmers, Sebastiaan van Dalen, Bram Buitendijk, Hayco de Jong,
+    Hennie Brugman, Dirk Roorda
 
     **Work in progress.**
 
-    *with NLP output from Spacy woven in*
+    **with additional meta data, named entities, and page scans.**
 
 [`translatin/corpus`](https://gitlab.huc.knaw.nl/translatin/corpus)
 :   *Latin*

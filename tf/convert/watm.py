@@ -539,8 +539,8 @@ I am aware of the following:
 import collections
 import re
 
-from tf.core.helpers import console
-from tf.core.files import (
+from ..core.helpers import console
+from ..core.files import (
     fileOpen,
     initTree,
     dirContents,
@@ -552,9 +552,11 @@ from tf.core.files import (
     backendRep,
     APP_CONFIG,
 )
-from tf.core.timestamp import DEEP
-from tf.parameters import OTYPE, OSLOTS, URL_TF_DOCS
-from tf.app import use
+from ..core.timestamp import DEEP
+from ..parameters import OTYPE, OSLOTS, URL_TF_DOCS
+from ..app import use
+
+from .helpers import parseIIIF, operationalize
 
 AFTER = "after"
 STR = "str"
@@ -564,6 +566,7 @@ TF_SPECIFIC_FEATURES = {OTYPE, OSLOTS, AFTER, STR}
 PROGRESS_LIMIT = 5
 
 CONFIG_FILE = "watm.yaml"
+IIIF_FILE = "iiif.yaml"
 NODEMAP_FILE = "anno2node.tsv"
 SLOTMAP_FILE = "pos2node.tsv"
 
@@ -574,6 +577,7 @@ NS_PAGEXML = "pagexml"
 NS_TEI = "tei"
 NS_NLP = "nlp"
 NS_TT = "tt"
+NS_TV = "tv"
 NS_NONE = "tf"
 
 NS_FROM_OTYPE = dict(
@@ -737,7 +741,7 @@ def getResultDir(baseDir, headPart, version, prod, silent):
 class WATM:
     """The export machinery is exposed as a class, wrapped around a TF dataset."""
 
-    def __init__(self, app, nsOrig, skipMeta=False, extra={}, silent=False):
+    def __init__(self, app, nsOrig, skipMeta=False, extra={}, silent=False, prod=False):
         """Wrap the WATM exporter around a TF dataset.
 
         Given an already loaded TF dataset, we make an inventory of all data
@@ -770,6 +774,7 @@ class WATM:
         self.nsOrig = nsOrig
         self.extra = extra
         self.silent = silent
+        self.prod = prod
         api = app.api
         F = api.F
         E = api.E
@@ -778,6 +783,10 @@ class WATM:
 
         cfg = readYaml(asFile=CONFIG_FILE)
         self.cfg = cfg
+
+        settings = readYaml(asFile=IIIF_FILE, plain=True)
+        self.scanInfo = operationalize(parseIIIF(settings, prod, "scans"))
+
         self.error = False
 
         textRepoLevel = cfg.textRepoLevel or 1
@@ -966,6 +975,7 @@ class WATM:
             self.console("Cannot run because of an earlier error")
             return
 
+        L = self.L
         Es = self.Es
         F = self.F
         Fs = self.Fs
@@ -980,6 +990,7 @@ class WATM:
         extra = self.extra
         excludeElements = self.excludeElements
         excludeFeatures = self.excludeFeatures
+        scanInfo = self.scanInfo
 
         waFromTF = self.waFromTF
 
@@ -1003,7 +1014,9 @@ class WATM:
             if otype == slotType or otype in excludeElements:
                 continue
 
-            for n in F.otype.s(otype):
+            nodes = F.otype.s(otype)
+
+            for n in nodes:
                 ws = eoslots(n)
                 sb, se = (ws[0], ws[-1])
                 if len(ws) != se - sb + 1:
@@ -1037,6 +1050,30 @@ class WATM:
                     )
                 )
                 waFromTF[n] = aId
+
+            if otype in scanInfo:
+                lastI = len(nodes) - 1
+                thisScanInfo = scanInfo[otype]
+
+                for i, n in enumerate(nodes):
+                    for extraFeat, urlPattern, variables in thisScanInfo:
+
+                        values = {}
+
+                        for var, (parent, feat, shift) in variables.items():
+                            refI = min((max((0, i + shift)), lastI))
+                            refN = nodes[refI]
+
+                            if parent is not None:
+                                refN = L.u(refN, otype=parent)[0]
+
+                            values[var] = Fs(feat).v(refN)
+
+                        url = urlPattern.format(**values)
+
+                        self.mkAnno(
+                            KIND_ATTR, NS_TV, f"{extraFeat}={url}", mkSingleTarget(n)
+                        )
 
         for feat in nodeFeatures:
             if feat in excludeFeatures:
@@ -1150,7 +1187,7 @@ class WATM:
             if nFarTargets > 10:
                 self.console(f"... and {nFarTargets - 10} more.")
 
-    def writeAll(self, prod=False, resultVersion=None):
+    def writeAll(self, resultVersion=None):
         """Write text and annotation data to disk.
 
         The data will be written as JSON files, or, is `asTsv` is in force, as TSV
@@ -1198,6 +1235,7 @@ class WATM:
             return
 
         silent = self.silent
+        prod = self.prod
         app = self.app
         texts = self.texts
         annos = self.annos
@@ -1572,6 +1610,7 @@ class WATM:
                 if asTsv:
                     next(fh)
                     annos = {}
+
                     for line in fh:
                         (aId, kind, ns, body, target) = line.rstrip("\n").split("\t")
                         body = body.replace("\\t", "\t").replace("\\n", "\n")
@@ -1580,6 +1619,9 @@ class WATM:
                     annos = readJson(asFile=fh, plain=True)
 
                 for aId, (kind, ns, body, target) in annos.items():
+                    if ns == NS_TV:
+                        continue
+
                     if "->" in target:
                         parts = target.split("->", 1)
                     else:
@@ -2452,10 +2494,12 @@ class WATMS:
                 backend=backend,
                 silent=DEEP,
             )
-            WA = WATM(A, nsOrig, skipMeta=skipMeta, extra=extra, silent=silent)
+            WA = WATM(
+                A, nsOrig, skipMeta=skipMeta, extra=extra, silent=silent, prod=prod
+            )
             WA.makeText()
             WA.makeAnno()
-            WA.writeAll(prod=prod, resultVersion=resultVersion)
+            WA.writeAll(resultVersion=resultVersion)
             WA.testAll(condensed=True)
 
             if WA.error:

@@ -801,7 +801,7 @@ def modify(
         if not good:
             return False
 
-        api = TF.loadAll()
+        api = TF.loadAll(silent=silent)
 
         info("done")
         return True
