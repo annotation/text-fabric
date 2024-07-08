@@ -769,6 +769,24 @@ class WATM:
             value for each key is a dictionary that maps nodes to values.
         silent: boolean, optional False
             Whether to suppress output to the console
+        prod: boolean, optional False
+            If True, we make a production version, if False we make a
+            development version.
+            Production versions end up in the `watm` directory, development versions
+            in the `_temp/watm` directory.
+
+            Production versions have an extra sequence number behind the TF version
+            on which they are based, e.g. `2.1.0e-001`, `2.1.0e-002`.
+            They will never be overwritten, subsequent runs will increase the
+            sequence number.
+            The sequence number is stored in a file `latest` in the `watm` directory.
+
+            Development versions are always equal to the TF versions and can be
+            overwritten.
+
+            This mechanism helps you to ensure that you do not change existing
+            versions in the `watm` directory.
+
         """
         self.app = app
         self.nsOrig = nsOrig
@@ -1056,8 +1074,7 @@ class WATM:
                 thisScanInfo = scanInfo[otype]
 
                 for i, n in enumerate(nodes):
-                    for extraFeat, urlPattern, variables in thisScanInfo:
-
+                    for extraFeat, value, variables in thisScanInfo:
                         values = {}
 
                         for var, (parent, feat, shift) in variables.items():
@@ -1067,12 +1084,12 @@ class WATM:
                             if parent is not None:
                                 refN = L.u(refN, otype=parent)[0]
 
-                            values[var] = Fs(feat).v(refN)
+                            values[var] = refN if feat == "=" else Fs(feat).v(refN)
 
-                        url = urlPattern.format(**values)
+                        val = value.format(**values)
 
                         self.mkAnno(
-                            KIND_ATTR, NS_TV, f"{extraFeat}={url}", mkSingleTarget(n)
+                            KIND_ATTR, NS_TV, f"{extraFeat}={val}", mkSingleTarget(n)
                         )
 
         for feat in nodeFeatures:
@@ -1199,26 +1216,8 @@ class WATM:
 
         Parameters
         ----------
-        prod: boolean, optional False
-            If True, we make a production version, if False we make a
-            development version.
-            Production versions end up in the `watm` directory, development versions
-            in the `_temp/watm` directory.
-
-            Production versions have an extra sequence number behind the TF version
-            on which they are based, e.g. `2.1.0e-001`, `2.1.0e-002`.
-            They will never be overwritten, subsequent runs will increase the
-            sequence number.
-            The sequence number is stored in a file `latest` in the `watm` directory.
-
-            Development versions are always equal to the TF versions and can be
-            overwritten.
-
-            This mechanism helps you to ensure that you do not change existing
-            versions in the `watm` directory.
-
         resultVersion: string, optional None
-            If not None, the resultVersion isin  this directory.
+            If not None, the resultVersion is in  this directory.
             This is needed if WATM is generated for a series of related datasets that
             have the same result base.
         """

@@ -265,7 +265,6 @@ class Sheets:
                 self.console("done")
                 showLog = False
         else:
-            print("B")
             self.console("SHEET data: already in memory and uptodate")
 
         if showLog and not browse:

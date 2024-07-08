@@ -723,35 +723,35 @@ def parseIIIF(settings, prod, selector):
 def operationalize(data):
     scanInfo = {}
 
-    for extraFeat, info in data.items():
-        nodeType = info["nodeType"]
-        variables = info["vars"]
-        urlPattern = info["urlPattern"]
+    for extraFeat, featInfo in data.items():
+        for nodeType, info in featInfo.items():
+            variables = info["vars"]
+            value = info["value"]
 
-        newVars = {}
+            newVars = {}
 
-        for name, val in variables.items():
-            if val.endswith("-1"):
-                newVal = val[0:-2]
-                shift = -1
-            elif val.endswith("+1"):
-                newVal = val[0:-2]
-                shift = 1
-            else:
-                newVal = val
-                shift = 0
+            for name, val in variables.items():
+                if val.endswith("-1"):
+                    newVal = val[0:-2]
+                    shift = -1
+                elif val.endswith("+1"):
+                    newVal = val[0:-2]
+                    shift = 1
+                else:
+                    newVal = val
+                    shift = 0
 
-            feat = tuple(newVal.split(".", 1))
+                feat = tuple(newVal.split(".", 1))
 
-            if len(feat) == 1:
-                parent = None
-                feat = feat[0]
-            else:
-                parent, feat = feat
+                if len(feat) == 1:
+                    parent = None
+                    feat = feat[0]
+                else:
+                    parent, feat = feat
 
-            newVars[name] = (parent, feat, shift)
+                newVars[name] = (parent, feat, shift)
 
-        scanInfo.setdefault(nodeType, []).append((extraFeat, urlPattern, newVars))
+            scanInfo.setdefault(nodeType, []).append((extraFeat, value, newVars))
 
     return scanInfo
 

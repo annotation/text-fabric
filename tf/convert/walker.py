@@ -1671,11 +1671,13 @@ class CV:
             sortedSeqs = sorted(sortedSeqs, key=lambda x: (slotKeys.get(x, ""), x))
         else:
             info("No slot sorting needed")
+
         for seq in sortedSeqs:
             newN += 1
             nodeMap[(slotType, seq)] = newN
 
         # now we adapt the oslots feature
+
         if len(slotKeys) > 0:
             self.oslots = {
                 n: {nodeMap[(slotType, s)] for s in slots}

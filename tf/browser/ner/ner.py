@@ -262,6 +262,7 @@ Lines consist of tab separated fields:
     slots.
 
 """
+
 from textwrap import dedent
 import collections
 from itertools import chain
@@ -648,11 +649,12 @@ class NER(Sheets, Sets, Show):
             self.console(f"{nResults} {bucketType}{pluralR}")
         return results
 
-    def reportHits(self):
+    def reportHits(self, silent=None):
         """Reports the inventory."""
         if not self.properlySetup:
             return
 
+        silent = self.silent if silent is None else silent
         sheetName = self.sheetName
         sheetData = self.sheets[sheetName]
 
@@ -730,8 +732,10 @@ class NER(Sheets, Sets, Show):
         nTriggers = len(allTriggers)
         nHits = sum(e[-1] for e in hitData)
 
-        self.console(
-            dedent(
+        msg = (
+            f"\t{nEnt} entities targeted with {nHits} occurrences. See {reportFile}"
+            if silent
+            else dedent(
                 f"""
                 Entities targeted:       {nEnt:>5}
                 Triggers searched for:   {nTriggers:>5}
@@ -743,6 +747,7 @@ class NER(Sheets, Sets, Show):
                 """
             )
         )
+        console(msg)
 
     def bakeEntities(self, versionExtension="e"):
         """Consolidates the current entities as nodes into a new TF data source.
@@ -765,9 +770,7 @@ class NER(Sheets, Sets, Show):
         setIsSrc = self.setIsSrc
 
         if setIsSrc:
-            console(
-                f"Entity consolidation not meaningful on {setNameRep}", error=True
-            )
+            console(f"Entity consolidation not meaningful on {setNameRep}", error=True)
             return False
 
         version = self.version
@@ -882,7 +885,7 @@ class NER(Sheets, Sets, Show):
         with fileOpen(config) as fh:
             text = fh.read()
 
-        text = text.replace(f'version: {version}', f'version: "{newVersion}"')
+        text = text.replace(f"version: {version}", f'version: "{newVersion}"')
         text = text.replace(f'version: "{version}"', f'version: "{newVersion}"')
 
         with fileOpen(config, mode="w") as fh:
