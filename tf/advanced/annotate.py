@@ -10,8 +10,8 @@ import types
 from ..browser.ner.ner import NER
 
 
-def makeNer(app, silent=False):
-    return NER(app, silent=silent)
+def makeNer(app, silent=False, **kwargs):
+    return NER(app, silent=silent, **kwargs)
 
 
 def annotateApi(app):

@@ -286,7 +286,7 @@ from .match import entityMatch, occMatch
 
 
 class NER(Sheets, Sets, Show):
-    def __init__(self, app, data=None, browse=False, silent=False):
+    def __init__(self, app, normalizeChars=None, data=None, browse=False, silent=False):
         """Entity annotation.
 
         Basic methods to handle the various aspects of entity annotation.
@@ -316,6 +316,15 @@ class NER(Sheets, Sets, Show):
         ----------
         app: object
             The object that corresponds to a loaded TF app for a corpus.
+        normalizeChars: function, optional None
+            If passed, it is a text transformation function that will be applied
+            when reading string data from spreadsheets.
+            The idea is that if the corpus is normalized for certain characters,
+            you can normalize the search terms and names in the spreadsheet in the
+            same way. For example, in the Suriano corpus, all incarnations of an
+            apaostrophe, such as `’` or `'` or `‘` have been normalized to `’`.
+            But the spreadsheet might introduce the variants again. By providing a
+            suitable function you can prevent that.
         data: object, optional None
             Entity data to start with. If this class is initialized by the browser,
             the browser hands over the in-memory data that the tool needs.
@@ -340,6 +349,7 @@ class NER(Sheets, Sets, Show):
         self.silent = silent
         self.browse = browse
         self.app = app
+        self.normalizeChars = normalizeChars
 
         Sets.__init__(self, sets=data.sets)
         if not self.properlySetup:

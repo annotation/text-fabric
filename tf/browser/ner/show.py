@@ -183,6 +183,7 @@ class Show:
         sortKey=None,
         sortDir=None,
         subtleFilter=None,
+        zeroFilter=0,
     ):
         """Generates HTML for an expandable overview of the entities and their triggers.
 
@@ -227,6 +228,16 @@ class Show:
             If True: only context sheets are considered.
 
             If False: only the main sheet is considered.
+
+        zeroFilter: integer, optional 0
+            Filters on triggers with zero hits.
+            If `0`: no filtering.
+            If `1` or `-1`: shows all entities that have at least one trigger
+            with zero hits.
+            If `1`, for those entities, all triggers will be shown, also the
+            one with hits.
+            If `-1`, for those entities only the triggers with zero hits will be shown.
+            Only shows triggers without hits.
 
         Returns
         -------
@@ -296,12 +307,14 @@ class Show:
 
             for eidkind, name, tOccs, subtle, triggers in entries:
                 identRep = "⊙".join(eidkind)
+                hasTriggerNoOccs = any(x[1] == 0 for x in triggers)
+                hasNoOccs = tOccs == 0
+
+                if zeroFilter and not (hasNoOccs or hasTriggerNoOccs):
+                    continue
+
                 occsCls = (
-                    "nooccs"
-                    if tOccs == 0
-                    else "warnoccs"
-                    if any(x[1] == 0 for x in triggers)
-                    else ""
+                    "nooccs" if hasNoOccs else "warnoccs" if hasTriggerNoOccs else ""
                 )
                 subtleCls = "subtle" if subtle else ""
                 active = "queried" if hasEnt and eidkind == activeEntity else ""
@@ -327,6 +340,11 @@ class Show:
 
             for k, nOccs, subtle in data:
                 (trigger, sheet) = k
+                hasNoOccs = nOccs == 0
+
+                if zeroFilter == -1 and not hasNoOccs:
+                    continue
+
                 occsCls = "nooccs" if nOccs == 0 else ""
                 subtleCls = "subtle" if subtle else ""
                 sheetRep = f"{sheet}{SET_SHEET}" if subtle else sheet

@@ -283,6 +283,7 @@ class Sheets:
         defaultKind = self.defaultKind
         transform = self.transform
         spaceEscaped = self.spaceEscaped
+        normalizeChars = self.normalizeChars
 
         def spec(msg):
             self.log(None, 0, msg)
@@ -329,6 +330,9 @@ class Sheets:
             idFirstRow = {}
             noTrig = 0
 
+            def myNormalize(x):
+                return normalize(x if normalizeChars is None else normalizeChars(x))
+
             for r, row in enumerate(ws.rows):
                 if r in {0, 1}:
                     continue
@@ -336,7 +340,7 @@ class Sheets:
                     continue
 
                 (name, kind, triggerStr) = (
-                    normalize(row[i].value or "") for i in range(3)
+                    myNormalize(row[i].value or "") for i in range(3)
                 )
                 triggers = (
                     set()
@@ -813,7 +817,7 @@ class Sheets:
 
         for eidkind, entData in inventory.items():
             for trigger, triggerData in entData.items():
-                for (sheet, matches) in triggerData.items():
+                for sheet, matches in triggerData.items():
                     newEntities.append((eidkind, matches))
                     for match in matches:
                         triggerFromMatch[match] = (trigger, ",".join(sheet))
