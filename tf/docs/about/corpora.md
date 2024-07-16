@@ -141,41 +141,6 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 
 ## [Eep Talstra Center for Bible and Computer](https://github.com/ETCBC)
 
-**Disclaimer**
-
-In the list below you see religious writings, some of them still being used
-in religious ways.
-I (Dirk Roorda) have played my role in preparing these texts in their
-Text-Fabric incarnation with a lot of care. But that does not mean that I endorse
-their contents: there are very black passages to be found, e.g. in the Hebrew Bible:
-
-> Now go, attack the Amalekites and totally destroy all that belongs to
-> them. Do not spare them; put to death men and women, children and infants,
-> cattle and sheep, camels and donkeys. (1 Samuel 15:3)
-
-The reason why I find myself compelled to express this, are the currently
-ongoing attacks on Gaza by the state of Israel (medio July 2024).
-The total lack of respect for the lives of countless Palestinian civilians is a
-disgrace, and I see it as an echo of a brutal past, a past of perpetrating
-genocide and being a victim of one of the worst genocides in history.
-
-I do acknowledge that we are in this together, that I belong to a strain of humanity
-that has perpetrated such crimes to a much greater extent than we see now in Israel.
-
-I think religious writings should be studied, but not be believed as literal truths,
-and I hope these datasets are instrumental in exposing religious writings as
-multi-layered records of the human condition. Luckily, there are also other
-voices in the bible:
-
-> You shall not take vengeance or bear a grudge against your countrymen. Love
-> your fellow as yourself: I am the Lord. (Leviticus 19:18)
-
-> Love the Lord your God with all your heart and with all
-> your soul and with all your mind. This is the first and greatest
-> commandment. And the second is like it: Love your neighbor as
-> yourself. All the Law and the Prophets hang on these two
-> commandments. (Matthew 22: 37-40)
-
 [`ETCBC/bhsa`](https://github.com/ETCBC/bhsa)
 :   *Hebrew*
     Bible (Old Testament), 1000 BCE - 900 AD,

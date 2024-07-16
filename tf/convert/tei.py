@@ -983,8 +983,9 @@ class TEI(CheckImport):
 
         Parameters
         ----------
-        tei: string, optional ""
-            If empty, use the latest version under the `tei` directory with sources.
+        tei: string, optional None
+            If empty, assume the `tei` directory with sources is not versioned.
+
             Otherwise it should be a valid integer, and it is the index in the
             sorted list of versions there.
 
@@ -1225,57 +1226,68 @@ class TEI(CheckImport):
         teiDir = f"{refDir}/tei"
         tfDir = f"{refDir}/tf"
 
-        teiVersions = sorted(dirContents(teiDir)[1], key=versionSort)
-        nTeiVersions = len(teiVersions)
-
-        if tei in {"latest", "", "0", 0} or str(tei).lstrip("-").isdecimal():
-            teiIndex = (0 if tei == "latest" else int(tei)) - 1
-
-            try:
-                teiVersion = teiVersions[teiIndex]
-            except Exception:
-                absIndex = teiIndex + (nTeiVersions if teiIndex < 0 else 0) + 1
-                console(
-                    (
-                        f"no item in {absIndex} in {nTeiVersions} source versions "
-                        f"in {ux(teiDir)}"
-                    )
-                    if len(teiVersions)
-                    else f"no source versions in {ux(teiDir)}",
-                    error=True,
-                )
-                self.good = False
-                return
+        if tei in {"", None}:
+            teiPath = f"{teiDir}"
+            reportPath = f"{reportDir}"
+            errMsg = f"source directory does not exist: {ux(teiDir)}"
+            teiVersion = ""
         else:
-            teiVersion = tei
+            teiVersions = sorted(dirContents(teiDir)[1], key=versionSort)
+            nTeiVersions = len(teiVersions)
 
-        teiPath = f"{teiDir}/{teiVersion}"
-        reportPath = f"{reportDir}/{teiVersion}"
+            if tei in {"latest", "0", 0} or str(tei).lstrip("-").isdecimal():
+                teiIndex = (0 if tei == "latest" else int(tei)) - 1
+
+                try:
+                    teiVersion = teiVersions[teiIndex]
+                except Exception:
+                    absIndex = teiIndex + (nTeiVersions if teiIndex < 0 else 0) + 1
+                    console(
+                        (
+                            (
+                                f"no item in {absIndex} in {nTeiVersions} source versions "
+                                f"in {ux(teiDir)}"
+                            )
+                            if len(teiVersions)
+                            else f"no source versions in {ux(teiDir)}"
+                        ),
+                        error=True,
+                    )
+                    self.good = False
+                    return
+            else:
+                teiVersion = tei
+
+            teiPath = f"{teiDir}/{teiVersion}"
+            reportPath = f"{reportDir}/{teiVersion}"
+            errMsg = f"source version {teiVersion} does not exists in {ux(teiDir)}"
 
         if not dirExists(teiPath):
-            console(
-                f"source version {teiVersion} does not exists in {ux(teiDir)}",
-                error=True,
-            )
+            console(errMsg, error=True)
             self.good = False
             return
 
-        teiStatuses = {tv: i for (i, tv) in enumerate(reversed(teiVersions))}
-        teiStatus = teiStatuses[teiVersion]
-        teiStatusRep = (
-            "most recent"
-            if teiStatus == 0
-            else "previous"
-            if teiStatus == 1
-            else f"{teiStatus - 1} before previous"
-        )
-        if teiStatus == len(teiVersions) - 1 and len(teiVersions) > 1:
-            teiStatusRep = "oldest"
+        if tei in {"", None}:
+            teiStatusRep = "single"
+            teiMsg = "TEI data is not versioned"
+        else:
+            teiStatuses = {tv: i for (i, tv) in enumerate(reversed(teiVersions))}
+            teiStatus = teiStatuses[teiVersion]
+            teiStatusRep = (
+                "most recent"
+                if teiStatus == 0
+                else "previous" if teiStatus == 1 else f"{teiStatus - 1} before previous"
+            )
+            if teiStatus == len(teiVersions) - 1 and len(teiVersions) > 1:
+                teiStatusRep = "oldest"
+
+            teiMsg = f"TEI data version is {teiVersion} ({teiStatusRep})"
 
         if verbose >= 0:
-            console(f"TEI data version is {teiVersion} ({teiStatusRep})")
+            console(teiMsg)
 
         tfVersions = sorted(dirContents(tfDir)[1], key=versionSort)
+
         if prelim:
             tfVersions = [tv for tv in tfVersions if tv.endswith(PRE)]
 
@@ -1851,9 +1863,7 @@ class TEI(CheckImport):
                         kind = (
                             "format"
                             if k in FORMAT_ATTS
-                            else "keyword"
-                            if k in KEYWORD_ATTS
-                            else "rest"
+                            else "keyword" if k in KEYWORD_ATTS else "rest"
                         )
                         dest = analysis[kind]
 
@@ -1866,9 +1876,11 @@ class TEI(CheckImport):
                                 dest[tag][k][w.strip()] += 1
 
                 for child in xnode.iterchildren(
-                    tag=(etree.Element, etree.ProcessingInstruction)
-                    if procins
-                    else etree.Element
+                    tag=(
+                        (etree.Element, etree.ProcessingInstruction)
+                        if procins
+                        else etree.Element
+                    )
                 ):
                     nodeInfo(child)
 
@@ -2045,11 +2057,11 @@ class TEI(CheckImport):
                             mixedRep = (
                                 ""
                                 if mixed == teiMixed
-                                else "??"
-                                if mixed is None
-                                else "mixed"
-                                if mixed
-                                else "pure"
+                                else (
+                                    "??"
+                                    if mixed is None
+                                    else "mixed" if mixed else "pure"
+                                )
                             )
                             tagLines.append((tag, [model], typRep, mixedRep))
                     tagLines.insert(0, (tag, mds, teiTypRep, teiMixedRep))
@@ -2664,9 +2676,11 @@ class TEI(CheckImport):
                     cur[TSIB].append([])
 
             for child in xnode.iterchildren(
-                tag=(etree.Element, etree.ProcessingInstruction)
-                if procins
-                else etree.Element
+                tag=(
+                    (etree.Element, etree.ProcessingInstruction)
+                    if procins
+                    else etree.Element
+                )
             ):
                 walkNode(cv, cur, child)
 
@@ -4534,15 +4548,19 @@ class TEI(CheckImport):
                 targetText = (
                     createConfig
                     if name == "config"
-                    else createApp
-                    if name == "app"
-                    else createDisplay
-                    if name == "display"
-                    else createTranscription
-                    if name == "trans"
-                    else createAbout
-                    if name == "about"
-                    else fileCopy  # this cannot occur because justCopy is False
+                    else (
+                        createApp
+                        if name == "app"
+                        else (
+                            createDisplay
+                            if name == "display"
+                            else (
+                                createTranscription
+                                if name == "trans"
+                                else createAbout if name == "about" else fileCopy
+                            )
+                        )
+                    )  # this cannot occur because justCopy is False
                 )(sourceText, customText)
 
                 with fileOpen(itemTarget, mode="w") as fh:

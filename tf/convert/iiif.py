@@ -6,9 +6,12 @@ from ..core.files import (
     initTree,
     dirExists,
     dirCopy,
+    dirContents,
 )
 from ..core.helpers import console
 from .helpers import parseIIIF, fillinIIIF
+
+DS_STORE = ".DS_Store"
 
 
 class IIIF:
@@ -21,15 +24,19 @@ class IIIF:
         F = app.api.F
 
         repoLocation = app.repoLocation
-        iiifDir = f"{repoLocation}/iiif"
-        self.logoDir = f"{iiifDir}/logo"
-        self.manifestDir = (
-            f"{iiifDir}/manifests/{teiVersion}/{'prod' if prod else 'dev'}"
-        )
+        staticDir = f"{repoLocation}/{teiVersion}/{'prod' if prod else 'dev'}"
+        self.staticDir = staticDir
+        self.manifestDir = f"{staticDir}/manifests"
         self.thumbDir = (
             f"{repoLocation}/{app.context.provenanceSpec['graphicsRelative']}"
         )
-        self.origDir = f"{repoLocation}/scans"
+        scanDir = f"{repoLocation}/scans"
+        self.scanDir = scanDir
+        coversDir = f"{scanDir}/covers"
+        self.coversDir = coversDir
+        self.pagesDir = f"{scanDir}/pages"
+        self.logoInDir = f"{scanDir}/logo"
+        self.logoDir = f"{staticDir}/logo"
         self.reportDir = f"{repoLocation}/report/{teiVersion}"
 
         settings = readYaml(asFile=f"{repoLocation}/programs/iiif.yaml", plain=True)
@@ -38,6 +45,8 @@ class IIIF:
         self.getSizes()
         self.getPageSeq()
         pages = self.pages
+        covers = sorted(f for f in dirContents(coversDir)[0] if f is not DS_STORE)
+        self.covers = covers
         folders = [F.folder.v(f) for f in F.otype.s("folder")]
         self.folders = folders
 
@@ -62,60 +71,71 @@ class IIIF:
     def getSizes(self):
         prod = self.prod
         thumbDir = self.thumbDir
-        origDir = self.origDir
-        sizeFile = f"{origDir if prod else thumbDir}/sizes.tsv"
+        scanDir = self.scanDir
 
-        sizeInfo = {}
-        self.sizeInfo = sizeInfo
+        self.sizeInfo = {}
 
-        maxW, maxH = 0, 0
+        for kind in ("covers", "pages"):
+            sizeFile = f"{scanDir if prod else thumbDir}/sizes_{kind}.tsv"
 
-        n = 0
+            sizeInfo = {}
+            self.sizeInfo[kind] = sizeInfo
 
-        totW, totH = 0, 0
+            maxW, maxH = 0, 0
 
-        ws, hs = [], []
+            n = 0
 
-        with fileOpen(sizeFile) as rh:
-            next(rh)
-            for line in rh:
-                fields = line.rstrip("\n").split("\t")
-                p = fields[0]
-                (w, h) = (int(x) for x in fields[1:3])
-                sizeInfo[p] = (w, h)
-                ws.append(w)
-                hs.append(h)
-                n += 1
-                totW += w
-                totH += h
+            totW, totH = 0, 0
 
-                if w > maxW:
-                    maxW = w
-                if h > maxH:
-                    maxH = h
+            ws, hs = [], []
 
-        avW = int(round(totW / n))
-        avH = int(round(totH / n))
+            with fileOpen(sizeFile) as rh:
+                next(rh)
+                for line in rh:
+                    fields = line.rstrip("\n").split("\t")
+                    p = fields[0]
+                    (w, h) = (int(x) for x in fields[1:3])
+                    sizeInfo[p] = (w, h)
+                    ws.append(w)
+                    hs.append(h)
+                    n += 1
+                    totW += w
+                    totH += h
 
-        devW = int(round(sum(abs(w - avW) for w in ws) / n))
-        devH = int(round(sum(abs(h - avH) for h in hs) / n))
+                    if w > maxW:
+                        maxW = w
+                    if h > maxH:
+                        maxH = h
 
-        self.console(f"Maximum dimensions: W = {maxW:>4} H = {maxH:>4}")
-        self.console(f"Average dimensions: W = {avW:>4} H = {avH:>4}")
-        self.console(f"Average deviation:  W = {devW:>4} H = {devH:>4}")
+            avW = int(round(totW / n))
+            avH = int(round(totH / n))
+
+            devW = int(round(sum(abs(w - avW) for w in ws) / n))
+            devH = int(round(sum(abs(h - avH) for h in hs) / n))
+
+            self.console(f"Maximum dimensions: W = {maxW:>4} H = {maxH:>4}")
+            self.console(f"Average dimensions: W = {avW:>4} H = {avH:>4}")
+            self.console(f"Average deviation:  W = {devW:>4} H = {devH:>4}")
 
     def getPageSeq(self):
         reportDir = self.reportDir
+        covers = self.covers
         pageSeqFile = f"{reportDir}/pageseq.json"
-        self.pages = readJson(asFile=pageSeqFile, plain=True)
 
-    def genFolder(self, folder):
+        self.pages = {}
+        self.pages = dict(
+            pages=readJson(asFile=pageSeqFile, plain=True), covers=dict(covers=covers)
+        )
+
+    def genPages(self, kind, folder=None):
+        if kind == "covers":
+            folder = kind
         templates = self.templates
-        sizeInfo = self.sizeInfo
-        pages = self.pages
+        sizeInfo = self.sizeInfo[kind]
+        pages = self.pages[kind]
         thesePages = pages[folder]
 
-        canvasLevel = templates.canvasLevel
+        pageItem = templates.coverItem if kind == "covers" else templates.pageItem
 
         items = []
 
@@ -123,18 +143,20 @@ class IIIF:
             item = {}
             w, h = sizeInfo.get(p, (0, 0))
 
-            for k, v in canvasLevel.items():
+            for k, v in pageItem.items():
                 v = fillinIIIF(v, folder=folder, page=p, width=w, height=h)
                 item[k] = v
 
             items.append(item)
 
-        manifestLevel = templates.manifestLevel
+        pageSequence = (
+            templates.coverSequence if kind == "covers" else templates.pageSequence
+        )
         manifestDir = self.manifestDir
 
         data = {}
 
-        for k, v in manifestLevel.items():
+        for k, v in pageSequence.items():
             v = fillinIIIF(v, folder=folder)
             data[k] = v
 
@@ -145,16 +167,19 @@ class IIIF:
     def manifests(self):
         folders = self.folders
         manifestDir = self.manifestDir
+        logoInDir = self.logoInDir
         logoDir = self.logoDir
 
         initTree(manifestDir, fresh=True)
 
-        for folder in folders:
-            self.genFolder(folder)
+        self.genPages("covers")
 
-        if dirExists(logoDir):
-            dirCopy(logoDir, f"{manifestDir}/logo")
+        for folder in folders:
+            self.genPages("pages", folder=folder)
+
+        if dirExists(logoInDir):
+            dirCopy(logoInDir, logoDir)
         else:
-            console(f"Directory with logos not found: {logoDir}", error=True)
+            console(f"Directory with logos not found: {logoInDir}", error=True)
 
         self.console(f"IIIF manifests generated in {manifestDir}")
