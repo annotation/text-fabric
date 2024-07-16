@@ -163,7 +163,7 @@ I do acknowledge that we are in this together, that I belong to a strain of huma
 that has perpetrated such crimes to a much greater extent than we see now in Israel.
 
 I think religious writings should be studied, but not be believed as literal truths,
-and I hope these datasets are instrumental in exposing relgious writings as
+and I hope these datasets are instrumental in exposing religious writings as
 multi-layered records of the human condition. Luckily, there are also other
 voices in the bible:
 
