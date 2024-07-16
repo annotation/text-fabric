@@ -34,7 +34,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6a2651a0b02a70b3e6fdd89f6d02b727626cd8bf/tf/browser/ner/show.py#L1-L600" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/add551b339b9ae155c03ced7090c7374578dd1fb/tf/browser/ner/show.py#L1-L618" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Rendering of corpus extracts with annotations.
 
@@ -221,6 +221,7 @@ class Show:
         sortKey=None,
         sortDir=None,
         subtleFilter=None,
+        zeroFilter=0,
     ):
         &#34;&#34;&#34;Generates HTML for an expandable overview of the entities and their triggers.
 
@@ -265,6 +266,16 @@ class Show:
             If True: only context sheets are considered.
 
             If False: only the main sheet is considered.
+
+        zeroFilter: integer, optional 0
+            Filters on triggers with zero hits.
+            If `0`: no filtering.
+            If `1` or `-1`: shows all entities that have at least one trigger
+            with zero hits.
+            If `1`, for those entities, all triggers will be shown, also the
+            one with hits.
+            If `-1`, for those entities only the triggers with zero hits will be shown.
+            Only shows triggers without hits.
 
         Returns
         -------
@@ -334,12 +345,14 @@ class Show:
 
             for eidkind, name, tOccs, subtle, triggers in entries:
                 identRep = &#34;⊙&#34;.join(eidkind)
+                hasTriggerNoOccs = any(x[1] == 0 for x in triggers)
+                hasNoOccs = tOccs == 0
+
+                if zeroFilter and not (hasNoOccs or hasTriggerNoOccs):
+                    continue
+
                 occsCls = (
-                    &#34;nooccs&#34;
-                    if tOccs == 0
-                    else &#34;warnoccs&#34;
-                    if any(x[1] == 0 for x in triggers)
-                    else &#34;&#34;
+                    &#34;nooccs&#34; if hasNoOccs else &#34;warnoccs&#34; if hasTriggerNoOccs else &#34;&#34;
                 )
                 subtleCls = &#34;subtle&#34; if subtle else &#34;&#34;
                 active = &#34;queried&#34; if hasEnt and eidkind == activeEntity else &#34;&#34;
@@ -365,6 +378,11 @@ class Show:
 
             for k, nOccs, subtle in data:
                 (trigger, sheet) = k
+                hasNoOccs = nOccs == 0
+
+                if zeroFilter == -1 and not hasNoOccs:
+                    continue
+
                 occsCls = &#34;nooccs&#34; if nOccs == 0 else &#34;&#34;
                 subtleCls = &#34;subtle&#34; if subtle else &#34;&#34;
                 sheetRep = f&#34;{sheet}{SET_SHEET}&#34; if subtle else sheet
@@ -655,7 +673,7 @@ class Show:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6a2651a0b02a70b3e6fdd89f6d02b727626cd8bf/tf/browser/ner/show.py#L25-L600" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/add551b339b9ae155c03ced7090c7374578dd1fb/tf/browser/ner/show.py#L25-L618" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Show:
     def showEntityOverview(self):
@@ -818,6 +836,7 @@ class Show:
         sortKey=None,
         sortDir=None,
         subtleFilter=None,
+        zeroFilter=0,
     ):
         &#34;&#34;&#34;Generates HTML for an expandable overview of the entities and their triggers.
 
@@ -862,6 +881,16 @@ class Show:
             If True: only context sheets are considered.
 
             If False: only the main sheet is considered.
+
+        zeroFilter: integer, optional 0
+            Filters on triggers with zero hits.
+            If `0`: no filtering.
+            If `1` or `-1`: shows all entities that have at least one trigger
+            with zero hits.
+            If `1`, for those entities, all triggers will be shown, also the
+            one with hits.
+            If `-1`, for those entities only the triggers with zero hits will be shown.
+            Only shows triggers without hits.
 
         Returns
         -------
@@ -931,12 +960,14 @@ class Show:
 
             for eidkind, name, tOccs, subtle, triggers in entries:
                 identRep = &#34;⊙&#34;.join(eidkind)
+                hasTriggerNoOccs = any(x[1] == 0 for x in triggers)
+                hasNoOccs = tOccs == 0
+
+                if zeroFilter and not (hasNoOccs or hasTriggerNoOccs):
+                    continue
+
                 occsCls = (
-                    &#34;nooccs&#34;
-                    if tOccs == 0
-                    else &#34;warnoccs&#34;
-                    if any(x[1] == 0 for x in triggers)
-                    else &#34;&#34;
+                    &#34;nooccs&#34; if hasNoOccs else &#34;warnoccs&#34; if hasTriggerNoOccs else &#34;&#34;
                 )
                 subtleCls = &#34;subtle&#34; if subtle else &#34;&#34;
                 active = &#34;queried&#34; if hasEnt and eidkind == activeEntity else &#34;&#34;
@@ -962,6 +993,11 @@ class Show:
 
             for k, nOccs, subtle in data:
                 (trigger, sheet) = k
+                hasNoOccs = nOccs == 0
+
+                if zeroFilter == -1 and not hasNoOccs:
+                    continue
+
                 occsCls = &#34;nooccs&#34; if nOccs == 0 else &#34;&#34;
                 subtleCls = &#34;subtle&#34; if subtle else &#34;&#34;
                 sheetRep = f&#34;{sheet}{SET_SHEET}&#34; if subtle else sheet
@@ -1364,7 +1400,7 @@ it is a cell in a Jupyter Notebook.</dd>
 </dl></div>
 </dd>
 <dt id="tf.browser.ner.show.Show.showTriggers"><code class="name flex">
-<span>def <span class="ident">showTriggers</span></span>(<span>self, activeEntity=None, activeTrigger=None, sortKey=None, sortDir=None, subtleFilter=None)</span>
+<span>def <span class="ident">showTriggers</span></span>(<span>self, activeEntity=None, activeTrigger=None, sortKey=None, sortDir=None, subtleFilter=None, zeroFilter=0)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Generates HTML for an expandable overview of the entities and their triggers.</p>
@@ -1405,6 +1441,15 @@ frequent on top.</p>
 <p>If True: only context sheets are considered.</p>
 <p>If False: only the main sheet is considered.</p>
 </dd>
+<dt><strong><code>zeroFilter</code></strong> :&ensp;<code>integer</code>, optional <code>0</code></dt>
+<dd>Filters on triggers with zero hits.
+If <code>0</code>: no filtering.
+If <code>1</code> or <code>-1</code>: shows all entities that have at least one trigger
+with zero hits.
+If <code>1</code>, for those entities, all triggers will be shown, also the
+one with hits.
+If <code>-1</code>, for those entities only the triggers with zero hits will be shown.
+Only shows triggers without hits.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>

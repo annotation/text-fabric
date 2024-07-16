@@ -589,7 +589,7 @@ information from reaching the WATM.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6a2651a0b02a70b3e6fdd89f6d02b727626cd8bf/tf/convert/watm.py#L1-L2509" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/add551b339b9ae155c03ced7090c7374578dd1fb/tf/convert/watm.py#L1-L2508" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Export to Web Annotation Text Model
 
@@ -1362,6 +1362,24 @@ class WATM:
             value for each key is a dictionary that maps nodes to values.
         silent: boolean, optional False
             Whether to suppress output to the console
+        prod: boolean, optional False
+            If True, we make a production version, if False we make a
+            development version.
+            Production versions end up in the `watm` directory, development versions
+            in the `_temp/watm` directory.
+
+            Production versions have an extra sequence number behind the TF version
+            on which they are based, e.g. `2.1.0e-001`, `2.1.0e-002`.
+            They will never be overwritten, subsequent runs will increase the
+            sequence number.
+            The sequence number is stored in a file `latest` in the `watm` directory.
+
+            Development versions are always equal to the TF versions and can be
+            overwritten.
+
+            This mechanism helps you to ensure that you do not change existing
+            versions in the `watm` directory.
+
         &#34;&#34;&#34;
         self.app = app
         self.nsOrig = nsOrig
@@ -1649,8 +1667,7 @@ class WATM:
                 thisScanInfo = scanInfo[otype]
 
                 for i, n in enumerate(nodes):
-                    for extraFeat, urlPattern, variables in thisScanInfo:
-
+                    for extraFeat, value, variables in thisScanInfo:
                         values = {}
 
                         for var, (parent, feat, shift) in variables.items():
@@ -1660,12 +1677,12 @@ class WATM:
                             if parent is not None:
                                 refN = L.u(refN, otype=parent)[0]
 
-                            values[var] = Fs(feat).v(refN)
+                            values[var] = refN if feat == &#34;=&#34; else Fs(feat).v(refN)
 
-                        url = urlPattern.format(**values)
+                        val = value.format(**values)
 
                         self.mkAnno(
-                            KIND_ATTR, NS_TV, f&#34;{extraFeat}={url}&#34;, mkSingleTarget(n)
+                            KIND_ATTR, NS_TV, f&#34;{extraFeat}={val}&#34;, mkSingleTarget(n)
                         )
 
         for feat in nodeFeatures:
@@ -1792,26 +1809,8 @@ class WATM:
 
         Parameters
         ----------
-        prod: boolean, optional False
-            If True, we make a production version, if False we make a
-            development version.
-            Production versions end up in the `watm` directory, development versions
-            in the `_temp/watm` directory.
-
-            Production versions have an extra sequence number behind the TF version
-            on which they are based, e.g. `2.1.0e-001`, `2.1.0e-002`.
-            They will never be overwritten, subsequent runs will increase the
-            sequence number.
-            The sequence number is stored in a file `latest` in the `watm` directory.
-
-            Development versions are always equal to the TF versions and can be
-            overwritten.
-
-            This mechanism helps you to ensure that you do not change existing
-            versions in the `watm` directory.
-
         resultVersion: string, optional None
-            If not None, the resultVersion isin  this directory.
+            If not None, the resultVersion is in  this directory.
             This is needed if WATM is generated for a series of related datasets that
             have the same result base.
         &#34;&#34;&#34;
@@ -3204,11 +3203,27 @@ namespace <code>anno</code>. The keys are the names of features/attributes, the
 value for each key is a dictionary that maps nodes to values.</dd>
 <dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>Whether to suppress output to the console</dd>
+<dt><strong><code>prod</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>
+<p>If True, we make a production version, if False we make a
+development version.
+Production versions end up in the <code>watm</code> directory, development versions
+in the <code>_temp/watm</code> directory.</p>
+<p>Production versions have an extra sequence number behind the TF version
+on which they are based, e.g. <code>2.1.0e-001</code>, <code>2.1.0e-002</code>.
+They will never be overwritten, subsequent runs will increase the
+sequence number.
+The sequence number is stored in a file <code>latest</code> in the <code>watm</code> directory.</p>
+<p>Development versions are always equal to the TF versions and can be
+overwritten.</p>
+<p>This mechanism helps you to ensure that you do not change existing
+versions in the <code>watm</code> directory.</p>
+</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6a2651a0b02a70b3e6fdd89f6d02b727626cd8bf/tf/convert/watm.py#L741-L2356" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/add551b339b9ae155c03ced7090c7374578dd1fb/tf/convert/watm.py#L741-L2355" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WATM:
     &#34;&#34;&#34;The export machinery is exposed as a class, wrapped around a TF dataset.&#34;&#34;&#34;
@@ -3241,6 +3256,24 @@ value for each key is a dictionary that maps nodes to values.</dd>
             value for each key is a dictionary that maps nodes to values.
         silent: boolean, optional False
             Whether to suppress output to the console
+        prod: boolean, optional False
+            If True, we make a production version, if False we make a
+            development version.
+            Production versions end up in the `watm` directory, development versions
+            in the `_temp/watm` directory.
+
+            Production versions have an extra sequence number behind the TF version
+            on which they are based, e.g. `2.1.0e-001`, `2.1.0e-002`.
+            They will never be overwritten, subsequent runs will increase the
+            sequence number.
+            The sequence number is stored in a file `latest` in the `watm` directory.
+
+            Development versions are always equal to the TF versions and can be
+            overwritten.
+
+            This mechanism helps you to ensure that you do not change existing
+            versions in the `watm` directory.
+
         &#34;&#34;&#34;
         self.app = app
         self.nsOrig = nsOrig
@@ -3528,8 +3561,7 @@ value for each key is a dictionary that maps nodes to values.</dd>
                 thisScanInfo = scanInfo[otype]
 
                 for i, n in enumerate(nodes):
-                    for extraFeat, urlPattern, variables in thisScanInfo:
-
+                    for extraFeat, value, variables in thisScanInfo:
                         values = {}
 
                         for var, (parent, feat, shift) in variables.items():
@@ -3539,12 +3571,12 @@ value for each key is a dictionary that maps nodes to values.</dd>
                             if parent is not None:
                                 refN = L.u(refN, otype=parent)[0]
 
-                            values[var] = Fs(feat).v(refN)
+                            values[var] = refN if feat == &#34;=&#34; else Fs(feat).v(refN)
 
-                        url = urlPattern.format(**values)
+                        val = value.format(**values)
 
                         self.mkAnno(
-                            KIND_ATTR, NS_TV, f&#34;{extraFeat}={url}&#34;, mkSingleTarget(n)
+                            KIND_ATTR, NS_TV, f&#34;{extraFeat}={val}&#34;, mkSingleTarget(n)
                         )
 
         for feat in nodeFeatures:
@@ -3671,26 +3703,8 @@ value for each key is a dictionary that maps nodes to values.</dd>
 
         Parameters
         ----------
-        prod: boolean, optional False
-            If True, we make a production version, if False we make a
-            development version.
-            Production versions end up in the `watm` directory, development versions
-            in the `_temp/watm` directory.
-
-            Production versions have an extra sequence number behind the TF version
-            on which they are based, e.g. `2.1.0e-001`, `2.1.0e-002`.
-            They will never be overwritten, subsequent runs will increase the
-            sequence number.
-            The sequence number is stored in a file `latest` in the `watm` directory.
-
-            Development versions are always equal to the TF versions and can be
-            overwritten.
-
-            This mechanism helps you to ensure that you do not change existing
-            versions in the `watm` directory.
-
         resultVersion: string, optional None
-            If not None, the resultVersion isin  this directory.
+            If not None, the resultVersion is in  this directory.
             This is needed if WATM is generated for a series of related datasets that
             have the same result base.
         &#34;&#34;&#34;
@@ -5036,24 +5050,8 @@ divided over several files.</p>
 <p>The annotations are sorted by annotation id.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>prod</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>
-<p>If True, we make a production version, if False we make a
-development version.
-Production versions end up in the <code>watm</code> directory, development versions
-in the <code>_temp/watm</code> directory.</p>
-<p>Production versions have an extra sequence number behind the TF version
-on which they are based, e.g. <code>2.1.0e-001</code>, <code>2.1.0e-002</code>.
-They will never be overwritten, subsequent runs will increase the
-sequence number.
-The sequence number is stored in a file <code>latest</code> in the <code>watm</code> directory.</p>
-<p>Development versions are always equal to the TF versions and can be
-overwritten.</p>
-<p>This mechanism helps you to ensure that you do not change existing
-versions in the <code>watm</code> directory.</p>
-</dd>
 <dt><strong><code>resultVersion</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
-<dd>If not None, the resultVersion isin
+<dd>If not None, the resultVersion is in
 this directory.
 This is needed if WATM is generated for a series of related datasets that
 have the same result base.</dd>
@@ -5097,7 +5095,7 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6a2651a0b02a70b3e6fdd89f6d02b727626cd8bf/tf/convert/watm.py#L2359-L2509" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/add551b339b9ae155c03ced7090c7374578dd1fb/tf/convert/watm.py#L2358-L2508" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WATMS:
     &#34;&#34;&#34;Export corpora that are divided over multiple TF datasets.

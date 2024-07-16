@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6a2651a0b02a70b3e6fdd89f6d02b727626cd8bf/tf/browser/ner/sheets.py#L1-L955" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/add551b339b9ae155c03ced7090c7374578dd1fb/tf/browser/ner/sheets.py#L1-L958" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import collections
 import re
@@ -300,7 +300,6 @@ class Sheets:
                 self.console(&#34;done&#34;)
                 showLog = False
         else:
-            print(&#34;B&#34;)
             self.console(&#34;SHEET data: already in memory and uptodate&#34;)
 
         if showLog and not browse:
@@ -319,6 +318,7 @@ class Sheets:
         defaultKind = self.defaultKind
         transform = self.transform
         spaceEscaped = self.spaceEscaped
+        normalizeChars = self.normalizeChars
 
         def spec(msg):
             self.log(None, 0, msg)
@@ -365,6 +365,9 @@ class Sheets:
             idFirstRow = {}
             noTrig = 0
 
+            def myNormalize(x):
+                return normalize(x if normalizeChars is None else normalizeChars(x))
+
             for r, row in enumerate(ws.rows):
                 if r in {0, 1}:
                     continue
@@ -372,7 +375,7 @@ class Sheets:
                     continue
 
                 (name, kind, triggerStr) = (
-                    normalize(row[i].value or &#34;&#34;) for i in range(3)
+                    myNormalize(row[i].value or &#34;&#34;) for i in range(3)
                 )
                 triggers = (
                     set()
@@ -849,7 +852,7 @@ class Sheets:
 
         for eidkind, entData in inventory.items():
             for trigger, triggerData in entData.items():
-                for (sheet, matches) in triggerData.items():
+                for sheet, matches in triggerData.items():
                     newEntities.append((eidkind, matches))
                     for match in matches:
                         triggerFromMatch[match] = (trigger, &#34;,&#34;.join(sheet))
@@ -1008,7 +1011,7 @@ class Sheets:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6a2651a0b02a70b3e6fdd89f6d02b727626cd8bf/tf/browser/ner/sheets.py#L19-L955" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/add551b339b9ae155c03ced7090c7374578dd1fb/tf/browser/ner/sheets.py#L19-L958" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Sheets:
     def __init__(self, sheets=None):
@@ -1259,7 +1262,6 @@ class Sheets:
                 self.console(&#34;done&#34;)
                 showLog = False
         else:
-            print(&#34;B&#34;)
             self.console(&#34;SHEET data: already in memory and uptodate&#34;)
 
         if showLog and not browse:
@@ -1278,6 +1280,7 @@ class Sheets:
         defaultKind = self.defaultKind
         transform = self.transform
         spaceEscaped = self.spaceEscaped
+        normalizeChars = self.normalizeChars
 
         def spec(msg):
             self.log(None, 0, msg)
@@ -1324,6 +1327,9 @@ class Sheets:
             idFirstRow = {}
             noTrig = 0
 
+            def myNormalize(x):
+                return normalize(x if normalizeChars is None else normalizeChars(x))
+
             for r, row in enumerate(ws.rows):
                 if r in {0, 1}:
                     continue
@@ -1331,7 +1337,7 @@ class Sheets:
                     continue
 
                 (name, kind, triggerStr) = (
-                    normalize(row[i].value or &#34;&#34;) for i in range(3)
+                    myNormalize(row[i].value or &#34;&#34;) for i in range(3)
                 )
                 triggers = (
                     set()
@@ -1808,7 +1814,7 @@ class Sheets:
 
         for eidkind, entData in inventory.items():
             for trigger, triggerData in entData.items():
-                for (sheet, matches) in triggerData.items():
+                for sheet, matches in triggerData.items():
                     newEntities.append((eidkind, matches))
                     for match in matches:
                         triggerFromMatch[match] = (trigger, &#34;,&#34;.join(sheet))

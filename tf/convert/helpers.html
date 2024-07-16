@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6a2651a0b02a70b3e6fdd89f6d02b727626cd8bf/tf/convert/helpers.py#L1-L780" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/add551b339b9ae155c03ced7090c7374578dd1fb/tf/convert/helpers.py#L1-L780" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 from textwrap import dedent
@@ -758,35 +758,35 @@ def parseIIIF(settings, prod, selector):
 def operationalize(data):
     scanInfo = {}
 
-    for extraFeat, info in data.items():
-        nodeType = info[&#34;nodeType&#34;]
-        variables = info[&#34;vars&#34;]
-        urlPattern = info[&#34;urlPattern&#34;]
+    for extraFeat, featInfo in data.items():
+        for nodeType, info in featInfo.items():
+            variables = info[&#34;vars&#34;]
+            value = info[&#34;value&#34;]
 
-        newVars = {}
+            newVars = {}
 
-        for name, val in variables.items():
-            if val.endswith(&#34;-1&#34;):
-                newVal = val[0:-2]
-                shift = -1
-            elif val.endswith(&#34;+1&#34;):
-                newVal = val[0:-2]
-                shift = 1
-            else:
-                newVal = val
-                shift = 0
+            for name, val in variables.items():
+                if val.endswith(&#34;-1&#34;):
+                    newVal = val[0:-2]
+                    shift = -1
+                elif val.endswith(&#34;+1&#34;):
+                    newVal = val[0:-2]
+                    shift = 1
+                else:
+                    newVal = val
+                    shift = 0
 
-            feat = tuple(newVal.split(&#34;.&#34;, 1))
+                feat = tuple(newVal.split(&#34;.&#34;, 1))
 
-            if len(feat) == 1:
-                parent = None
-                feat = feat[0]
-            else:
-                parent, feat = feat
+                if len(feat) == 1:
+                    parent = None
+                    feat = feat[0]
+                else:
+                    parent, feat = feat
 
-            newVars[name] = (parent, feat, shift)
+                newVars[name] = (parent, feat, shift)
 
-        scanInfo.setdefault(nodeType, []).append((extraFeat, urlPattern, newVars))
+            scanInfo.setdefault(nodeType, []).append((extraFeat, value, newVars))
 
     return scanInfo
 

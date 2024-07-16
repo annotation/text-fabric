@@ -157,7 +157,7 @@ that steer the graph building:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6a2651a0b02a70b3e6fdd89f6d02b727626cd8bf/tf/convert/walker.py#L1-L1790" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/add551b339b9ae155c03ced7090c7374578dd1fb/tf/convert/walker.py#L1-L1792" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Walker
@@ -1832,11 +1832,13 @@ class CV:
             sortedSeqs = sorted(sortedSeqs, key=lambda x: (slotKeys.get(x, &#34;&#34;), x))
         else:
             info(&#34;No slot sorting needed&#34;)
+
         for seq in sortedSeqs:
             newN += 1
             nodeMap[(slotType, seq)] = newN
 
         # now we adapt the oslots feature
+
         if len(slotKeys) &gt; 0:
             self.oslots = {
                 n: {nodeMap[(slotType, s)] for s in slots}
@@ -1971,7 +1973,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6a2651a0b02a70b3e6fdd89f6d02b727626cd8bf/tf/convert/walker.py#L171-L1790" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/add551b339b9ae155c03ced7090c7374578dd1fb/tf/convert/walker.py#L171-L1792" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CV:
     S = &#34;slot&#34;
@@ -3476,11 +3478,13 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
             sortedSeqs = sorted(sortedSeqs, key=lambda x: (slotKeys.get(x, &#34;&#34;), x))
         else:
             info(&#34;No slot sorting needed&#34;)
+
         for seq in sortedSeqs:
             newN += 1
             nodeMap[(slotType, seq)] = newN
 
         # now we adapt the oslots feature
+
         if len(slotKeys) &gt; 0:
             self.oslots = {
                 n: {nodeMap[(slotType, s)] for s in slots}

@@ -244,7 +244,7 @@ slots.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6a2651a0b02a70b3e6fdd89f6d02b727626cd8bf/tf/browser/ner/ner.py#L1-L893" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/add551b339b9ae155c03ced7090c7374578dd1fb/tf/browser/ner/ner.py#L1-L906" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;API for Named Entity marking.
 
@@ -510,6 +510,7 @@ Lines consist of tab separated fields:
     slots.
 
 &#34;&#34;&#34;
+
 from textwrap import dedent
 import collections
 from itertools import chain
@@ -533,7 +534,7 @@ from .match import entityMatch, occMatch
 
 
 class NER(Sheets, Sets, Show):
-    def __init__(self, app, data=None, browse=False, silent=False):
+    def __init__(self, app, normalizeChars=None, data=None, browse=False, silent=False):
         &#34;&#34;&#34;Entity annotation.
 
         Basic methods to handle the various aspects of entity annotation.
@@ -563,6 +564,15 @@ class NER(Sheets, Sets, Show):
         ----------
         app: object
             The object that corresponds to a loaded TF app for a corpus.
+        normalizeChars: function, optional None
+            If passed, it is a text transformation function that will be applied
+            when reading string data from spreadsheets.
+            The idea is that if the corpus is normalized for certain characters,
+            you can normalize the search terms and names in the spreadsheet in the
+            same way. For example, in the Suriano corpus, all incarnations of an
+            apaostrophe, such as `’` or `&#39;` or `‘` have been normalized to `’`.
+            But the spreadsheet might introduce the variants again. By providing a
+            suitable function you can prevent that.
         data: object, optional None
             Entity data to start with. If this class is initialized by the browser,
             the browser hands over the in-memory data that the tool needs.
@@ -587,6 +597,7 @@ class NER(Sheets, Sets, Show):
         self.silent = silent
         self.browse = browse
         self.app = app
+        self.normalizeChars = normalizeChars
 
         Sets.__init__(self, sets=data.sets)
         if not self.properlySetup:
@@ -896,11 +907,12 @@ class NER(Sheets, Sets, Show):
             self.console(f&#34;{nResults} {bucketType}{pluralR}&#34;)
         return results
 
-    def reportHits(self):
+    def reportHits(self, silent=None):
         &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
         if not self.properlySetup:
             return
 
+        silent = self.silent if silent is None else silent
         sheetName = self.sheetName
         sheetData = self.sheets[sheetName]
 
@@ -978,8 +990,10 @@ class NER(Sheets, Sets, Show):
         nTriggers = len(allTriggers)
         nHits = sum(e[-1] for e in hitData)
 
-        self.console(
-            dedent(
+        msg = (
+            f&#34;\t{nEnt} entities targeted with {nHits} occurrences. See {reportFile}&#34;
+            if silent
+            else dedent(
                 f&#34;&#34;&#34;
                 Entities targeted:       {nEnt:&gt;5}
                 Triggers searched for:   {nTriggers:&gt;5}
@@ -991,6 +1005,7 @@ class NER(Sheets, Sets, Show):
                 &#34;&#34;&#34;
             )
         )
+        console(msg)
 
     def bakeEntities(self, versionExtension=&#34;e&#34;):
         &#34;&#34;&#34;Consolidates the current entities as nodes into a new TF data source.
@@ -1013,9 +1028,7 @@ class NER(Sheets, Sets, Show):
         setIsSrc = self.setIsSrc
 
         if setIsSrc:
-            console(
-                f&#34;Entity consolidation not meaningful on {setNameRep}&#34;, error=True
-            )
+            console(f&#34;Entity consolidation not meaningful on {setNameRep}&#34;, error=True)
             return False
 
         version = self.version
@@ -1130,7 +1143,7 @@ class NER(Sheets, Sets, Show):
         with fileOpen(config) as fh:
             text = fh.read()
 
-        text = text.replace(f&#39;version: {version}&#39;, f&#39;version: &#34;{newVersion}&#34;&#39;)
+        text = text.replace(f&#34;version: {version}&#34;, f&#39;version: &#34;{newVersion}&#34;&#39;)
         text = text.replace(f&#39;version: &#34;{version}&#34;&#39;, f&#39;version: &#34;{newVersion}&#34;&#39;)
 
         with fileOpen(config, mode=&#34;w&#34;) as fh:
@@ -1152,7 +1165,7 @@ class NER(Sheets, Sets, Show):
 <dl>
 <dt id="tf.browser.ner.ner.NER"><code class="flex name class">
 <span>class <span class="ident">NER</span></span>
-<span>(</span><span>app, data=None, browse=False, silent=False)</span>
+<span>(</span><span>app, normalizeChars=None, data=None, browse=False, silent=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Entity annotation.</p>
@@ -1177,6 +1190,15 @@ by the Sheets, Sets and Show classes on which it is based.</p>
 <dl>
 <dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
 <dd>The object that corresponds to a loaded TF app for a corpus.</dd>
+<dt><strong><code>normalizeChars</code></strong> :&ensp;<code>function</code>, optional <code>None</code></dt>
+<dd>If passed, it is a text transformation function that will be applied
+when reading string data from spreadsheets.
+The idea is that if the corpus is normalized for certain characters,
+you can normalize the search terms and names in the spreadsheet in the
+same way. For example, in the Suriano corpus, all incarnations of an
+apaostrophe, such as <code>’</code> or <code>'</code> or <code>‘</code> have been normalized to <code>’</code>.
+But the spreadsheet might introduce the variants again. By providing a
+suitable function you can prevent that.</dd>
 <dt><strong><code>data</code></strong> :&ensp;<code>object</code>, optional <code>None</code></dt>
 <dd>Entity data to start with. If this class is initialized by the browser,
 the browser hands over the in-memory data that the tool needs.
@@ -1192,10 +1214,10 @@ browser. This will influence how results are reported back.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6a2651a0b02a70b3e6fdd89f6d02b727626cd8bf/tf/browser/ner/ner.py#L287-L893" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/add551b339b9ae155c03ced7090c7374578dd1fb/tf/browser/ner/ner.py#L288-L906" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Sheets, Sets, Show):
-    def __init__(self, app, data=None, browse=False, silent=False):
+    def __init__(self, app, normalizeChars=None, data=None, browse=False, silent=False):
         &#34;&#34;&#34;Entity annotation.
 
         Basic methods to handle the various aspects of entity annotation.
@@ -1225,6 +1247,15 @@ browser. This will influence how results are reported back.</dd>
         ----------
         app: object
             The object that corresponds to a loaded TF app for a corpus.
+        normalizeChars: function, optional None
+            If passed, it is a text transformation function that will be applied
+            when reading string data from spreadsheets.
+            The idea is that if the corpus is normalized for certain characters,
+            you can normalize the search terms and names in the spreadsheet in the
+            same way. For example, in the Suriano corpus, all incarnations of an
+            apaostrophe, such as `’` or `&#39;` or `‘` have been normalized to `’`.
+            But the spreadsheet might introduce the variants again. By providing a
+            suitable function you can prevent that.
         data: object, optional None
             Entity data to start with. If this class is initialized by the browser,
             the browser hands over the in-memory data that the tool needs.
@@ -1249,6 +1280,7 @@ browser. This will influence how results are reported back.</dd>
         self.silent = silent
         self.browse = browse
         self.app = app
+        self.normalizeChars = normalizeChars
 
         Sets.__init__(self, sets=data.sets)
         if not self.properlySetup:
@@ -1558,11 +1590,12 @@ browser. This will influence how results are reported back.</dd>
             self.console(f&#34;{nResults} {bucketType}{pluralR}&#34;)
         return results
 
-    def reportHits(self):
+    def reportHits(self, silent=None):
         &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
         if not self.properlySetup:
             return
 
+        silent = self.silent if silent is None else silent
         sheetName = self.sheetName
         sheetData = self.sheets[sheetName]
 
@@ -1640,8 +1673,10 @@ browser. This will influence how results are reported back.</dd>
         nTriggers = len(allTriggers)
         nHits = sum(e[-1] for e in hitData)
 
-        self.console(
-            dedent(
+        msg = (
+            f&#34;\t{nEnt} entities targeted with {nHits} occurrences. See {reportFile}&#34;
+            if silent
+            else dedent(
                 f&#34;&#34;&#34;
                 Entities targeted:       {nEnt:&gt;5}
                 Triggers searched for:   {nTriggers:&gt;5}
@@ -1653,6 +1688,7 @@ browser. This will influence how results are reported back.</dd>
                 &#34;&#34;&#34;
             )
         )
+        console(msg)
 
     def bakeEntities(self, versionExtension=&#34;e&#34;):
         &#34;&#34;&#34;Consolidates the current entities as nodes into a new TF data source.
@@ -1675,9 +1711,7 @@ browser. This will influence how results are reported back.</dd>
         setIsSrc = self.setIsSrc
 
         if setIsSrc:
-            console(
-                f&#34;Entity consolidation not meaningful on {setNameRep}&#34;, error=True
-            )
+            console(f&#34;Entity consolidation not meaningful on {setNameRep}&#34;, error=True)
             return False
 
         version = self.version
@@ -1792,7 +1826,7 @@ browser. This will influence how results are reported back.</dd>
         with fileOpen(config) as fh:
             text = fh.read()
 
-        text = text.replace(f&#39;version: {version}&#39;, f&#39;version: &#34;{newVersion}&#34;&#39;)
+        text = text.replace(f&#34;version: {version}&#34;, f&#39;version: &#34;{newVersion}&#34;&#39;)
         text = text.replace(f&#39;version: &#34;{version}&#34;&#39;, f&#39;version: &#34;{newVersion}&#34;&#39;)
 
         with fileOpen(config, mode=&#34;w&#34;) as fh:
@@ -1942,7 +1976,7 @@ A single occurrence is represented as a tuple of slots.</p>
 the value is the name of that entity in the context indicated by path.</p></div>
 </dd>
 <dt id="tf.browser.ner.ner.NER.reportHits"><code class="name flex">
-<span>def <span class="ident">reportHits</span></span>(<span>self)</span>
+<span>def <span class="ident">reportHits</span></span>(<span>self, silent=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Reports the inventory.</p></div>
