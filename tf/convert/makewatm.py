@@ -176,6 +176,19 @@ class MakeWATM:
             + "\n\nall\n\trun all (enabled) tasks\n\n"
         )
 
+    def warnVersion(self):
+        version = self.version
+        silent = self.flag_silent
+
+        if version is None:
+            console(
+                f"No version for the TF data given. Using default: {self.TF_VERSION}"
+            )
+            self.version = self.TF_VERSION
+        else:
+            if not silent:
+                console(f"Using TF version: {version}")
+
     def main(self, cmdLine=None, cargs=sys.argv[1:]):
         FLAGS = self.FLAGS
         TASKS = self.TASKS
@@ -189,6 +202,7 @@ class MakeWATM:
 
         unrecognized = set()
         tasks = set()
+        srcVersion = None
         version = None
 
         for flag in FLAGS:
@@ -207,6 +221,8 @@ class MakeWATM:
                     tasks.add(task)
             elif carg in TASKS:
                 tasks.add(carg)
+            elif "-" in carg:
+                srcVersion = carg
             elif "." in carg:
                 version = carg
             else:
@@ -216,15 +232,10 @@ class MakeWATM:
 
         if not silent:
             console(f"Enabled tasks: {' '.join(self.TASKS)}")
-        if version is None:
-            console(
-                f"No version for the TF data given. Using default: {self.TF_VERSION}"
-            )
-            version = self.TF_VERSION
-        else:
-            if not silent:
-                console(f"Using TF version: {version}")
 
+        self.srcVersion = (
+            0 if srcVersion is None else None if srcVersion == "-" else srcVersion
+        )
         self.version = version
 
         if len(unrecognized):
@@ -265,17 +276,23 @@ class MakeWATM:
         silent = self.flag_silent
         relaxed = self.flag_relaxed
         usenlp = self.flag_usenlp
+        srcVersion = self.srcVersion
 
         if not good:
             if not silent:
                 console("Skipping 'produce TF' because of an error condition")
             return
 
+        self.warnVersion()
         tfVersion = self.version
         verbose = -1 if silent else 0
         loadVerbose = DEEP if silent else TERSE
 
-        Tei = TEI(verbose=verbose, tei=0, tf=f"{tfVersion}pre" if usenlp else tfVersion)
+        Tei = TEI(
+            verbose=verbose,
+            tei=srcVersion,
+            tf=f"{tfVersion}pre" if usenlp else tfVersion,
+        )
         self.teiVersion = Tei.teiVersion
 
         console("\tValidating TEI ...")
@@ -349,6 +366,7 @@ class MakeWATM:
                 console("Skipping 'produce TF' because of an error condition")
             return
 
+        self.warnVersion()
         tfVersion = self.version
         repoBase = self.repoBase
         sourceDir = f"{repoBase}/organized/source"

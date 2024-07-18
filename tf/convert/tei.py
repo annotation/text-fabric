@@ -1231,6 +1231,7 @@ class TEI(CheckImport):
             reportPath = f"{reportDir}"
             errMsg = f"source directory does not exist: {ux(teiDir)}"
             teiVersion = ""
+            teiVersionRep = ""
         else:
             teiVersions = sorted(dirContents(teiDir)[1], key=versionSort)
             nTeiVersions = len(teiVersions)
@@ -1258,9 +1259,11 @@ class TEI(CheckImport):
             else:
                 teiVersion = tei
 
-            teiPath = f"{teiDir}/{teiVersion}"
-            reportPath = f"{reportDir}/{teiVersion}"
             errMsg = f"source version {teiVersion} does not exists in {ux(teiDir)}"
+            teiVersionRep = f"/{teiVersion}"
+
+        teiPath = f"{teiDir}{teiVersionRep}"
+        reportPath = f"{reportDir}{teiVersionRep}"
 
         if not dirExists(teiPath):
             console(errMsg, error=True)
@@ -1477,7 +1480,7 @@ class TEI(CheckImport):
 
         generic["sourceFormat"] = "TEI"
         generic["version"] = tfVersion
-        generic["teiVersion"] = teiVersion
+        generic["teiVersion"] = teiVersion or "not specified"
         generic["schema"] = "TEI" + (" + " + (" + ".join(models))) if models else ""
 
         extraInstructions = []

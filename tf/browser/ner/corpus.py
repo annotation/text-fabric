@@ -137,7 +137,7 @@ class Corpus(Settings):
             return L.d(T.sectionTuple(node)[1], otype=bucketType)
 
         def getHeadings(node):
-            return tuple(str(x).lstrip("0") for x in T.sectionFromNode(node))
+            return tuple(int(str(x).lstrip("0")) for x in T.sectionFromNode(node))
 
         def get0(slots):
             text = getText(slots)

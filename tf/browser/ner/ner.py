@@ -686,7 +686,7 @@ class NER(Sheets, Sets, Show):
 
             for trigger, tPath in tMap.items():
                 eidkind = idMap[trigger]
-                name = nameMap[eidkind][0]
+                name = nameMap[eidkind]
                 allTriggers.add((name, eidkind, trigger, tPath))
 
         hitData = []
@@ -725,7 +725,7 @@ class NER(Sheets, Sets, Show):
             sectionInfo = collections.Counter()
 
             for slots in occs:
-                section = ".".join(getHeadings(slots[0]))
+                section = ".".join(str(x) for x in getHeadings(slots[0]))
                 sectionInfo[section] += 1
 
             for section, hits in sorted(sectionInfo.items()):

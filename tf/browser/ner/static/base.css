@@ -163,6 +163,10 @@ div.e, div.et {
   font-size: small;
   margin-bottom: 0.3rem;
 }
+span.xr {
+  font-family: monospace;
+  font-size: small;
+}
 .neutral {
   font-size: small;
   border: 0;

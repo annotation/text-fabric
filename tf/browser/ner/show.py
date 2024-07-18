@@ -258,7 +258,7 @@ class Show:
             entries = []
 
             for eidkind, triggers in data.items():
-                name = nameMap[eidkind][0]
+                name = nameMap[eidkind]
                 tOccs = sum(triggers.values())
                 subtle = any(t[1] != "" for t in triggers)
 
@@ -338,8 +338,8 @@ class Show:
         def genTriggers(data):
             content = []
 
-            for k, nOccs, subtle in data:
-                (trigger, sheet) = k
+            for tInfo, nOccs, subtle in data:
+                (trigger, scope, r) = tInfo
                 hasNoOccs = nOccs == 0
 
                 if zeroFilter == -1 and not hasNoOccs:
@@ -347,18 +347,19 @@ class Show:
 
                 occsCls = "nooccs" if nOccs == 0 else ""
                 subtleCls = "subtle" if subtle else ""
-                sheetRep = f"{sheet}{SET_SHEET}" if subtle else sheet
-                triggerRep = "⊙".join(k)
+                scopeRep = f"{SET_SHEET}{scope}"
+                triggerRep = "⊙".join(str(x) for x in tInfo)
                 active = (
-                    "tqueried" if hasTrig and (trigger, sheet) == activeTrigger else ""
+                    "tqueried" if hasTrig and (trigger, scope) == activeTrigger else ""
                 )
                 content.append(
                     H.div(
                         (
-                            H.span(f"{nOccs} ", cls="stat"),
+                            H.span(f"{nOccs}", cls="stat"),
                             H.span(
                                 (
-                                    H.span(f"{sheetRep} "),
+                                    H.span(f"{scopeRep} "),
+                                    H.span(f"@{r}", cls="xr"),
                                     H.code(trigger, cls="ttx"),
                                 ),
                                 cls=f"{occsCls} {subtleCls}",

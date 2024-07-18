@@ -5,7 +5,7 @@ To see how this fits among all the modules of this package, see
 """
 
 from .settings import NONE
-from .helpers import getPath, fromTokens
+from .helpers import fromTokens, getIntvIndex
 
 
 def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
@@ -48,12 +48,12 @@ def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
     # at that position
 
     results = {}
-    shown = False
+
+    intvIndex = getIntvIndex(buckets, instructions, getHeadings)
 
     for b in buckets:
-        heading = getHeadings(b)
-        path = getPath(heading, instructions)
-        data = instructions[path]
+        intv = intvIndex[b]
+        data = instructions[intv]
         tPos = data["tPos"]
         tMap = data["tMap"]
         idMap = data["idMap"]
@@ -77,9 +77,6 @@ def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
 
         bStrings = tuple(bStrings)
         nBStrings = len(bStrings)
-
-        if not shown and heading[0] == "4" and heading[1] == "48":
-            shown = True
 
         # perform the search
         i = 0
@@ -111,13 +108,13 @@ def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
                 if len(resultMatches):
                     resultMatch = resultMatches[0]
                     trigger = fromTokens(resultMatch, spaceEscaped=spaceEscaped)
-                    tPath = tMap[trigger]
+                    scope = tMap[trigger]
                     firstT = bStringFirst[i]
                     lastT = bStringLast[i + m]
                     slots = tuple(range(firstT, lastT + 1))
                     eidkind = idMap[trigger]
                     dest = results.setdefault(eidkind, {}).setdefault(trigger, {})
-                    destHits = dest.setdefault(tPath, [])
+                    destHits = dest.setdefault(scope, [])
                     destHits.append(slots)
                     break
 

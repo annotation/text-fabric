@@ -705,6 +705,7 @@ class Data(Corpus):
             self.mergeEntities(addE, _lowlevel=_lowlevel)
 
         self.loadSetData()
+
         if returns:
             return (present, added)
 
@@ -911,7 +912,7 @@ class Data(Corpus):
 
         dataFile = f"{annoDir}/{setName}/entities.tsv"
 
-        with fileOpen(dataFile, mode="a") as fh:
+        with fileOpen(dataFile, mode="w" if _lowlevel else "a") as fh:
             for fVals, slots in newEntities:
                 fh.write("\t".join(str(x) for x in (*fVals, *slots)) + "\n")
 

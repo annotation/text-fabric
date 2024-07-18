@@ -21,10 +21,12 @@ class IIIF:
         self.prod = prod
         self.silent = silent
 
+        teiVersionRep = f"/{teiVersion}" if teiVersion else teiVersion
+
         F = app.api.F
 
         repoLocation = app.repoLocation
-        staticDir = f"{repoLocation}/{teiVersion}/{'prod' if prod else 'dev'}"
+        staticDir = f"{repoLocation}/static{teiVersionRep}/{'prod' if prod else 'dev'}"
         self.staticDir = staticDir
         self.manifestDir = f"{staticDir}/manifests"
         self.thumbDir = (
@@ -37,7 +39,7 @@ class IIIF:
         self.pagesDir = f"{scanDir}/pages"
         self.logoInDir = f"{scanDir}/logo"
         self.logoDir = f"{staticDir}/logo"
-        self.reportDir = f"{repoLocation}/report/{teiVersion}"
+        self.reportDir = f"{repoLocation}/report{teiVersionRep}"
 
         settings = readYaml(asFile=f"{repoLocation}/programs/iiif.yaml", plain=True)
         self.templates = parseIIIF(settings, prod, "templates")

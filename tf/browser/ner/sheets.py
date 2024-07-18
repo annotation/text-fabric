@@ -1,4 +1,3 @@
-import collections
 import re
 import time
 import pickle
@@ -6,7 +5,15 @@ import gzip
 
 from ...parameters import GZIP_LEVEL, PICKLE_PROTOCOL
 from ...capable import CheckImport
-from .helpers import tnorm, normalize, toSmallId, toTokens, repSet
+from .helpers import (
+    tnorm,
+    normalize,
+    toSmallId,
+    toTokens,
+    parseScopes,
+    partitionScopes,
+    repScope,
+)
 from ...core.generic import AttrDict
 from ...core.helpers import console
 from ...core.files import fileOpen, dirContents, extNm, fileExists, mTime
@@ -14,6 +21,21 @@ from ...core.files import fileOpen, dirContents, extNm, fileExists, mTime
 
 DS_STORE = ".DS_Store"
 SHEET_RE = re.compile(r"""^([0-9]+)((?:-[0-9]+)?)\.xlsx$""", re.I)
+
+SHEET_KEYS = """
+    logData
+    nameMap
+    scopeMap
+    instructions
+    inventory
+    triggerFromMatch
+    hitData
+""".strip().split()
+
+CLEAR_KEYS = """
+    raw
+    compiled
+""".strip().split()
 
 
 class Sheets:
@@ -47,9 +69,6 @@ class Sheets:
 
         self.readSheets()
 
-        # if not browse:
-        #    self.loadSheetData()
-
     def readSheets(self):
         """Read the list current ner sheets (again).
 
@@ -68,79 +87,7 @@ class Sheets:
                 sheetNames.add(sheetName)
                 setNames.add(f".{sheetName}")
 
-    def readData(self, sheetData, sheetUpdated):
-        setName = self.setName
-        annoDir = self.annoDir
-        setDir = f"{annoDir}/{setName}"
-        dataFile = f"{setDir}/data.gz"
-        timeFile = f"{setDir}/time.txt"
-
-        tm = 0
-
-        uptodate = fileExists(timeFile)
-
-        if uptodate:
-            with fileOpen(timeFile) as fh:
-                info = fh.read().strip()
-
-            try:
-                tm = float(info)
-                uptodate = sheetUpdated < tm
-            except Exception:
-                uptodate = False
-
-        if not uptodate:
-            return False
-
-        if fileExists(dataFile):
-            with gzip.open(dataFile, mode="rb") as f:
-                data = pickle.load(f)
-
-            for k, v in data.items():
-                sheetData[k] = v
-
-            sheetData.time = tm
-
-            return True
-        else:
-            return False
-
-    def writeData(self, sheetData, tm):
-        setName = self.setName
-        annoDir = self.annoDir
-        setDir = f"{annoDir}/{setName}"
-        dataFile = f"{setDir}/data.gz"
-        timeFile = f"{setDir}/time.txt"
-
-        with gzip.open(dataFile, mode="wb", compresslevel=GZIP_LEVEL) as f:
-            f.write(pickle.dumps(sheetData, protocol=PICKLE_PROTOCOL))
-
-        with fileOpen(timeFile, "w") as fh:
-            fh.write(f"{tm}\n")
-
-    def log(self, isError, indent, msg):
-        silent = self.silent
-
-        if silent:
-            return
-
-        browse = self.browse
-        sheetData = self.getSheetData()
-        logData = sheetData.logData
-
-        logData.append((isError, indent, msg))
-
-        if not browse:
-            self.consoleLine(isError, indent, msg)
-
-    def getSheetData(self):
-        """Deliver the current sheet."""
-        sheetName = self.sheetName
-        sheetsData = self.sheets
-
-        return sheetsData.get(sheetName, AttrDict())
-
-    def setSheet(self, newSheet):
+    def setSheet(self, newSheet, force=False):
         """Switch to a named ner sheet.
 
         After the switch, the new sheet will be loaded into memory.
@@ -163,7 +110,7 @@ class Sheets:
 
         if newSheet not in sheetNames or not fileExists(sheetFile):
             if not browse:
-                console(f"Ner sheet {newSheet} ({sheetFile}) does not exist")
+                console(f"NER sheet {newSheet} ({sheetFile}) does not exist")
             if newSheet is not None:
                 return
 
@@ -174,9 +121,9 @@ class Sheets:
             sheetName = newSheet
             self.sheetName = sheetName
 
-        self.loadSheetData()
+        self.loadSheetData(force=force)
 
-    def loadSheetData(self):
+    def loadSheetData(self, force=False):
         """Loads the current ner sheet into memory, if there is one.
 
         If the current ner sheet is None, nothing has to be done.
@@ -197,6 +144,11 @@ class Sheets:
             return
 
         sheetName = self.sheetName
+        setName = self.setName
+        annoDir = self.annoDir
+        setDir = f"{annoDir}/{setName}"
+        dataFile = f"{setDir}/data.gz"
+        timeFile = f"{setDir}/time.txt"
 
         if sheetName is None:
             return None
@@ -211,67 +163,90 @@ class Sheets:
         sheetDir = self.sheetDir
         sheetFile = f"{sheetDir}/{sheetName}.xlsx"
         sheetExists = fileExists(sheetFile)
-
-        def timeXls(sheetRela):
-            sep = "/" if sheetRela else ""
-            sheetPath = f"{sheetDir}/{sheetName}{sep}{sheetRela}.xlsx"
-            return mTime(sheetPath)
-
-        def timeDir(sheetRela):
-            sep = "/" if sheetRela else ""
-            dirPath = f"{sheetDir}/{sheetName}{sep}{sheetRela}"
-
-            (files, dirs) = dirContents(f"{sheetDir}/{sheetName}{sep}{sheetRela}")
-            mFiles = max((mTime(f"{dirPath}/{fl}") for fl in files), default=0)
-            mDirs = max((timeDir(f"{sheetRela}{sep}{dr}") for dr in dirs), default=0)
-
-            return max((mFiles, mDirs))
-
-        sheetUpdated = max((timeXls(""), timeDir(""))) if sheetExists else 0
-        needReload = sheetData.get("time", 0) < sheetUpdated
+        sheetUpdated = mTime(sheetFile) if sheetExists else 0
+        needReload = force or sheetData.get("time", 0) < sheetUpdated
 
         showLog = True
 
         if needReload:
-            loaded = self.readData(sheetData, sheetUpdated)
+            # try to load from zipped data file first
+            tm = 0
+            dataUptodate = not force and fileExists(timeFile)
+
+            if dataUptodate:
+                with fileOpen(timeFile) as fh:
+                    info = fh.read().strip()
+                try:
+                    tm = float(info)
+                    dataUptodate = sheetUpdated < tm
+                except Exception:
+                    dataUptodate = False
+
+            # only load if that data exists and is still up to date
+
+            if dataUptodate:
+                if fileExists(dataFile):
+                    with gzip.open(dataFile, mode="rb") as f:
+                        data = pickle.load(f)
+
+                    for k in CLEAR_KEYS:
+                        if k in sheetData:
+                            sheetData[k].clear()
+
+                    for k in SHEET_KEYS:
+                        v = data.get(k, None)
+
+                        if v is None:
+                            if k in sheetData:
+                                sheetData[k].clear()
+                        else:
+                            sheetData[k] = v
+
+                    sheetData.time = tm
+                    loaded = True
+                else:
+                    loaded = False
+            else:
+                loaded = False
 
             if loaded:
+                # we have loaded valid, up-to-date, previously compiled spreadsheet data
                 self.console("SHEET data: loaded from disk")
             else:
+                # now we really heave to read and compile the spreadsheet
                 self.console("SHEET data: computing from scratch ...", newline=False)
                 sheetData.logData = []
 
-                self._readSheets(sheetData)
+                self._readSheet(sheetData)
                 tm = time.time()
                 sheetData.time = tm
 
-                self._combineSheets(sheetData)
-                self._compileSheets(sheetData)
-                self._prepareSheets(sheetData)
+                self._compileSheet(sheetData)
+                self._prepareSheet(sheetData)
                 self._processSheet()
 
-                writeKeys = [
-                    "logData",
-                    "nameMap",
-                    "instructions",
-                    "inventory",
-                    "triggerFromMatch",
-                    "hitData",
-                ]
-                self.writeData(
-                    {k: sheetData[k] for k in writeKeys},
-                    tm,
-                )
+                with gzip.open(dataFile, mode="wb", compresslevel=GZIP_LEVEL) as f:
+                    f.write(
+                        pickle.dumps(
+                            {k: sheetData[k] for k in SHEET_KEYS},
+                            protocol=PICKLE_PROTOCOL,
+                        )
+                    )
+
+                with fileOpen(timeFile, "w") as fh:
+                    fh.write(f"{tm}\n")
+
                 self.console("done")
                 showLog = False
         else:
+            # the compiled spreadsheet data we have in memory is still up to date
             self.console("SHEET data: already in memory and uptodate")
 
         if showLog and not browse:
             for x in sheetData.logData:
                 self.consoleLine(*x)
 
-    def _readSheets(self, sheetData):
+    def _readSheet(self, sheetData):
         """Read all the spreadsheets, the main one and the tweaks.
 
         Store the results in a hierarchy that mimicks the way they are organized in the
@@ -305,216 +280,119 @@ class Sheets:
 
         spec("Reading sheets")
 
-        sheetData.nameMap = {}
+        nameMap = {}
+        sheetData.nameMap = nameMap
         """Will contain a mapping from entities to names.
 
         The entities are keyed by their (eid, kind) tuple.
         The values are names plus the sheet where they are first defined.
         """
-        nameMap = sheetData.nameMap
 
-        def readXls(sheetRela):
-            sep = "/" if sheetRela else ""
-            sheetRep = f"[{sheetRela}]"
+        for k in CLEAR_KEYS:
+            if k in sheetData:
+                sheetData[k].clear()
 
-            sheetPath = f"{sheetDir}/{sheetName}{sep}{sheetRela}.xlsx"
+        for k in SHEET_KEYS:
+            if k in sheetData:
+                sheetData[k].clear()
 
-            wb = loadXls(sheetPath, data_only=True)
-            ws = wb.active
+        scopeMap = {}
+        sheetData.scopeMap = scopeMap
 
-            (headRow, subHeadRow, *rows) = list(ws.rows)
-            rows = [row for row in rows if any(c.value for c in row)]
+        sheetPath = f"{sheetDir}/{sheetName}.xlsx"
 
-            sheet = {}
+        wb = loadXls(sheetPath, data_only=True)
+        ws = wb.active
 
-            idFirstRow = {}
-            noTrig = 0
+        raw = {}
+        sheetData.raw = raw
 
-            def myNormalize(x):
-                return normalize(x if normalizeChars is None else normalizeChars(x))
+        noNames = set()
+        noTrigs = set()
+        emptyLines = set()
+        scopeMistakes = {}
 
-            for r, row in enumerate(ws.rows):
-                if r in {0, 1}:
-                    continue
-                if not any(c.value for c in row):
-                    continue
+        def myNormalize(x):
+            return normalize(x if normalizeChars is None else normalizeChars(x))
 
-                (name, kind, triggerStr) = (
-                    myNormalize(row[i].value or "") for i in range(3)
-                )
-                triggers = (
-                    set()
-                    if not triggerStr
-                    else {
-                        y
-                        for x in triggerStr.split(";")
-                        if (y := tnorm(x, spaceEscaped=spaceEscaped)) != ""
-                    }
-                )
-                if not name:
-                    name = list(triggers)[0] if len(triggers) else ""
+        for r, row in enumerate(ws.rows):
+            if r in {0, 1}:
+                continue
+            if not any(c.value for c in row):
+                continue
 
-                    if name == "":
-                        if kind:
-                            msg = (
-                                f"{sheetRep} row {r + 1:>3}: {kind}: "
-                                "no entity name and no triggers"
-                            )
-                            log(msg)
-                        continue
-                    else:
-                        msg = (
-                            f"{sheetRep} row {r + 1:>3}: {kind}: "
-                            f"no entity name, supplied synonym {name}"
-                        )
-                        log(msg)
-
-                if not kind:
-                    kind = defaultKind
-                    msg = (
-                        f"{sheetRep} row {r + 1:>3}: "
-                        f"no kind name, supplied {defaultKind}"
-                    )
-                    log(msg)
-
-                eid = toSmallId(name, transform=transform)
-                eidkind = (eid, kind)
-                ekRep = f"{kind}-{eid}"
-                firstRowEid = idFirstRow.get((eidkind), None)
-
-                if firstRowEid is None:
-                    idFirstRow[eidkind] = (r, name)
-
-                    if len(triggers) == 0:
-                        if sheetRela == "":
-                            noTrig += 1
-                        else:
-                            sheet[eidkind] = triggers
-                    else:
-                        sheet[eidkind] = triggers
-
-                    prev = nameMap.get(eidkind, None)
-
-                    if prev is None:
-                        nameMap[eidkind] = (name, sheetRela)
-                    else:
-                        (prevName, prevSheet) = prev
-
-                        if prevName != name:
-                            err(f"{ekRep} in {sheetRep}:")
-                            log1(f"{prevName}: ✅ in {prevSheet}")
-                            log1(f"{name}: ❌ in {sheetRep}")
-
+            (name, kind, scopeStr, triggerStr) = (
+                myNormalize(row[i].value or "") for i in range(4)
+            )
+            if not name or not triggerStr:
+                if name:
+                    noTrigs.add(r + 1)
+                elif triggerStr:
+                    noNames.add(r + 1)
                 else:
-                    (firstRow, firstName) = firstRowEid
-                    err(f"{ekRep} in {sheetRep}:")
+                    emptyLines.add(r + 1)
+                continue
 
-                    if firstName == name:
-                        log1(f"{name}: in {firstRow + 1:<3} and {r + 1}")
-                        log2(repSet(triggers))
-                        log2(repSet(sheet.get(eidkind, set())))
-                    else:
-                        log1(f"{firstName}: in {firstRow + 1:<3}")
-                        log2(repSet(triggers))
-                        log1(f"{name}: in {r + 1:<3}")
-                        log2(repSet(sheet.get(eidkind, set())))
+            triggers = {
+                y
+                for x in triggerStr.split(";")
+                if (y := tnorm(x, spaceEscaped=spaceEscaped)) != ""
+            }
+            if len(triggers) == 0:
+                noTrigs.add(r + 1)
+                continue
 
-                    theseTriggers = sheet.get(eidkind, set()) | triggers
-                    if len(theseTriggers):
-                        sheet[eidkind] = theseTriggers
+            if not kind:
+                kind = defaultKind
+                msg = f"row {r + 1:>3}: " f"no kind name, supplied {defaultKind}"
+                log(msg)
 
-            if noTrig > 0:
-                err(f"{sheetRep} has {noTrig} names without triggers")
-            return sheet
+            info = parseScopes(scopeStr, plain=False)
+            warnings = info["warning"]
 
-        def readDir(sheetRela, level):
-            sheetRep = f"[{sheetRela}]"
-            sep = "/" if sheetRela else ""
+            if len(warnings):
+                scopeMistakes[r + 1] = "; ".join(warnings)
+                continue
 
-            (files, dirs) = dirContents(f"{sheetDir}/{sheetName}{sep}{sheetRela}")
+            normScopeStr = info["normal"]
 
-            sheetSingle = {}
-            sheetRange = {}
+            if normScopeStr != "":
+                scopes = info["result"]
 
-            for file in files:
-                if file == DS_STORE:
-                    continue
+                if normScopeStr not in scopeMap:
+                    scopeMap[normScopeStr] = scopes
 
-                match = SHEET_RE.match(file)
-                if not match:
-                    log(f"{sheetRep} contains unrecognized file {file}")
-                    continue
+            eid = toSmallId(name, transform=transform)
+            eidkind = (eid, kind)
 
-                (start, end) = match.group(1, 2)
-                fileBase = f"{start}{end}"
+            if eidkind not in nameMap:
+                nameMap[eidkind] = name
 
-                start = int(start)
-                end = int(end[1:]) if end else None
-                key = start if end is None else (start, end)
+            raw.setdefault(eidkind, {})[normScopeStr] = (r + 1, triggers)
 
-                sheetDest = sheetSingle if end is None else sheetRange
-                sheetDest[key] = readXls(f"{sheetRela}/{fileBase}")
+        for diags, isdict, label in (
+            (emptyLines, False, "without a name and triggers"),
+            (noNames, False, "without a name"),
+            (scopeMistakes, True, "with scope mistakes"),
+            (noTrigs, False, "without triggers"),
+        ):
+            n = len(diags)
 
-            sheetSubdirs = {}
+            if n > 0:
+                if isdict:
+                    if n > 0:
+                        plural = "" if n == 1 else "s"
+                        err(f"{n} row{plural} {label}:")
 
-            for dr in dirs:
-                if level >= 3:
-                    log(f"{sheetRep} is at max depth, yet contains subdir {dr}")
-                    continue
+                        for r in sorted(diags):
+                            msg = diags[r]
+                            err(f"\trow {r:>3}: {msg}")
+                else:
+                    rep = ", ".join(str(x) for x in sorted(diags)[0:10])
+                    plural = "" if n == 1 else "s"
+                    err(f"{n} row{plural} {label}:\n\te.g.: {rep}")
 
-                if not dr.isdecimal():
-                    log(f"{sheetRep} contains non-numeric subdir {dr}")
-                    continue
-
-                sheetSubdirs[int(dr)] = readDir(f"{sheetRela}{sep}{dr}", level + 1)
-
-            return AttrDict(sng=sheetSingle, rng=sheetRange, sdr=sheetSubdirs)
-
-        sheetMain = readXls("")
-        sheetSubdirs = readDir("", 1)
-        sheetData.raw = AttrDict(main=sheetMain, sdr=sheetSubdirs)
-
-    def _combineSheets(self, sheetData):
-        """Combines the spreadsheet info in single-section spreadsheets.
-
-        Among the tweaks, there may be *ranged* spreadsheets, i.e. having the name
-        *start*`-`*end*, which indicate that they contain tweaks for sections
-        *start* to *end*. These will be converted to individual spreadsheet
-        *start*, *start + 1*, ..., *end - 1*, *end*.
-        """
-        raw = sheetData.raw
-
-        sheetMain = raw.main
-        sheetTweaked = raw.sdr
-
-        # combine the info in ranged sheets into single number sheets
-
-        combined = AttrDict(sheet=sheetMain, tweaks=AttrDict())
-        sheetData.combined = combined
-
-        def combineDir(info, dest):
-            ranged = info.rng or {}
-            single = info.sng or {}
-            subdirs = info.sdr or {}
-
-            for (start, end), sheet in sorted(ranged.items()):
-                for i in range(start, end + 1):
-                    updateDest = dest.setdefault(i, AttrDict()).setdefault("sheet", {})
-                    for eidkind, triggers in sheet.items():
-                        updateDest[eidkind] = triggers
-
-            for i, sheet in single.items():
-                updateDest = dest.setdefault(i, AttrDict()).setdefault("sheet", {})
-                for eidkind, triggers in sheet.items():
-                    updateDest[eidkind] = triggers
-
-            for i, tweaks in subdirs.items():
-                updateDest = dest.setdefault(i, AttrDict()).setdefault("tweaks", {})
-                combineDir(tweaks, updateDest)
-
-        combineDir(sheetTweaked, combined.tweaks)
-
-    def _compileSheets(self, sheetData):
+    def _compileSheet(self, sheetData):
         """Compiles the info in tweaked sheets into complete sheets.
 
         For every tweak spreadsheet, a copy of its parent sheet will be made,
@@ -530,8 +408,6 @@ class Sheets:
         for that.
         """
         nameMap = sheetData.nameMap
-        combined = sheetData.combined
-
         compiled = AttrDict()
         sheetData.compiled = compiled
 
@@ -541,57 +417,116 @@ class Sheets:
         def err(msg):
             self.log(True, 0, msg)
 
-        spec("Compiling data")
+        def err1(msg):
+            self.log(True, 1, msg)
 
-        def compileSheet(path, parentData, info, dest):
-            parentSheet = parentData.sheet
-            sheet = info.sheet
+        def err2(msg):
+            self.log(True, 2, msg)
+
+        def err3(msg):
+            self.log(True, 3, msg)
+
+        def log1(msg):
+            self.log(False, 1, msg)
+
+        def log2(msg):
+            self.log(False, 2, msg)
+
+        def log3(msg):
+            self.log(False, 3, msg)
+
+        spec("Checking scopes ...")
+
+        raw = sheetData.raw
+        scopeMap = sheetData.scopeMap
+        intervals = partitionScopes(scopeMap)
+
+        for b, e, scopeStrs in [[None, None, None]] + intervals:
+            scopeStrSet = {""} if scopeStrs is None else set(scopeStrs)
+            intv = (b, e) if b is not None and e is not None else ()
+
+            info = AttrDict()
+            compiled[intv] = info
+
             newSheet = {}
-            dest.sheet = newSheet
-            parentTMap = parentData["tMap"] or {}
-            newTMap = {}
-            dest["tMap"] = newTMap
-            pathRep = f"[{'.'.join(str(i) for i in path)}]"
+            info.sheet = newSheet
 
-            for eidkind, triggers in parentSheet.items():
-                newSheet[eidkind] = triggers
+            tMap = {}
+            info.tMap = tMap
 
-            for eidkind, triggers in sheet.items():
-                if len(triggers) == 0:
-                    if eidkind in newSheet:
-                        del newSheet[eidkind]
-                    else:
-                        err(f"{pathRep} {nameMap[eidkind][0]} has no triggers")
-                else:
+            rMap = {}
+            info.rMap = rMap
+
+            tFullMap = {}
+
+            for eidkind, info in raw.items():
+                if "" in info and "" in scopeStrSet:
+                    (r, triggers) = info[""]
                     newSheet[eidkind] = triggers
 
                     for trigger in triggers:
-                        newTMap[trigger] = tuple(str(k) for k in path)
+                        tFullMap.setdefault(trigger, {}).setdefault(eidkind, set()).add(
+                            (r, "")
+                        )
+                        tMap[trigger] = ""
+                        rMap[trigger] = r
 
-            for eidkind, triggers in newSheet.items():
-                for trigger in triggers:
-                    if trigger not in newTMap:
-                        newTMap[trigger] = parentTMap[trigger]
+                for scopeStr, (r, triggers) in info.items():
+                    if scopeStr == "":
+                        continue
 
-        def compileDir(path, parentData, info, dest):
-            if "sheet" in info:
-                compileSheet(path, parentData, info, dest)
-                parentData = AttrDict(sheet=dest.sheet, tMap=dest["tMap"])
+                    if scopeStr in scopeStrSet:
+                        newSheet[eidkind] = triggers
 
-            tweaks = info.tweaks or {}
-            tweakDest = dest.setdefault("tweaks", {})
+                        for trigger in triggers:
+                            tFullMap.setdefault(trigger, {}).setdefault(
+                                eidkind, set()
+                            ).add((r, scopeStr))
+                            tMap[trigger] = scopeStr
+                            rMap[trigger] = r
 
-            for k in sorted(tweaks):
-                compileDir(
-                    path + (k,),
-                    parentData,
-                    tweaks[k],
-                    tweakDest.setdefault(k, AttrDict()),
+            hasTriggerConflicts = any(len(x) > 1 for x in tFullMap.values())
+            hasScopeConflicts = any(
+                any(sum(1 for z in y if z[1] != "") > 1 for y in x.values())
+                for x in tFullMap.values()
+            )
+            if not (hasTriggerConflicts or hasScopeConflicts):
+                continue
+
+            scopeRep = "all" if b is None else repScope((b, e))
+            err(f"Interval {scopeRep}")
+
+            for trigger, info in tFullMap.items():
+                ambiTrigger = len(info) > 1
+                conflictScope = any(
+                    sum(1 for z in y if z[1] != "") > 1 for y in info.values()
                 )
 
-        compileDir((), combined, combined, compiled)
+                if not (ambiTrigger or conflictScope):
+                    continue
 
-    def _prepareSheets(self, sheetData):
+                if ambiTrigger:
+                    err1(f"Ambi: {trigger}")
+                else:
+                    log1(trigger)
+
+                for eidkind, scopeInfo in info.items():
+                    name = nameMap[eidkind]
+
+                    if ambiTrigger:
+                        err2(name)
+                    else:
+                        log2(name)
+
+                    conflict = sum(1 for z in scopeInfo if z[1] != "") > 1
+
+                    for r, scopeStr in scopeInfo:
+                        if conflict:
+                            err3(f"row {r}: {scopeStr}")
+                        else:
+                            log3(f"row {r}: {scopeStr}")
+
+    def _prepareSheet(self, sheetData):
         """Transform the sheets into instructions.
 
         Now we have complete sheets for every context, the inheritance is resolved.
@@ -630,51 +565,23 @@ class Sheets:
         """
 
         spaceEscaped = self.spaceEscaped
-        nameMap = sheetData.nameMap
         compiled = sheetData.compiled
 
         instructions = {}
         sheetData.instructions = instructions
 
-        def spec(msg):
-            self.log(None, 0, msg)
-
-        def log(msg):
-            self.log(False, 0, msg)
-
-        def log1(msg):
-            self.log(False, 1, msg)
-
-        def log2(msg):
-            self.log(False, 2, msg)
-
-        def log3(msg):
-            self.log(False, 3, msg)
-
-        def err(msg):
-            self.log(True, 0, msg)
-
-        def err1(msg):
-            self.log(True, 1, msg)
-
-        def err2(msg):
-            self.log(True, 2, msg)
-
-        spec("Checking triggers ...")
-
-        def prepareSheet(path, info):
+        for intv, info in compiled.items():
             sheet = info.sheet
-            tMap = info["tMap"]
-            sheetR = ".".join(path)
-            sheetRep = f"[{sheetR}]"
+            tMap = info.tMap
+            rMap = info.rMap
 
             triggerSet = set()
             tPos = {}
             idMap = {}
 
-            prepared = dict(tPos=tPos, tMap=tMap)
+            prepared = dict(tPos=tPos, tMap=tMap, rMap=rMap)
 
-            instructions[path] = prepared
+            instructions[intv] = prepared
 
             for eidkind, triggers in sheet.items():
                 for trigger in triggers:
@@ -689,52 +596,6 @@ class Sheets:
             prepared["idMap"] = {
                 trigger: eidkinds[0] for (trigger, eidkinds) in idMap.items()
             }
-
-            nEnt = len(sheet)
-            nTriggers = sum(len(triggers) for triggers in sheet.values())
-            noTriggers = sum(1 for triggers in sheet.values() if len(triggers) == 0)
-
-            ambis = collections.defaultdict(list)
-
-            for trigger, eidkinds in sorted(idMap.items()):
-                if len(eidkinds) <= 1:
-                    continue
-
-                tPath = tMap[trigger]
-
-                if path != tPath:
-                    continue
-
-                for eidkind in eidkinds:
-                    name = nameMap[eidkind][0]
-                    ambis[trigger].append(name)
-
-            log(f"{sheetRep} {nTriggers} triggers for {nEnt} entities")
-
-            if noTriggers > 0:
-                err1(f"{noTriggers} without triggers")
-
-            nAmbi = len(ambis)
-
-            if nAmbi > 0:
-                err1(f"{nAmbi} ambiguous triggers")
-
-                for trigger, names in ambis.items():
-                    err2(trigger)
-
-                    for name in names:
-                        log3(name)
-
-        def prepareDir(path, info):
-            if "sheet" in info:
-                prepareSheet(path, info)
-
-            tweaks = info.tweaks or {}
-
-            for k in sorted(tweaks):
-                prepareDir(path + (str(k),), tweaks[k])
-
-        prepareDir((), compiled)
 
     def _processSheet(self):
         """Generates derived data structures out of the source sheet.
@@ -786,14 +647,14 @@ class Sheets:
         for path, data in instructions.items():
             idMap = data["idMap"]
             tMap = data["tMap"]
+            rMap = data["rMap"]
 
-            for trigger, tPath in tMap.items():
+            for trigger, scope in tMap.items():
+                r = rMap[trigger]
                 eidkind = idMap[trigger]
-                sheet = ".".join(tPath)
 
-                occs = inventory.get(eidkind, {}).get(trigger, {}).get(tPath, {})
-
-                hitData.setdefault(eidkind, {})[(trigger, sheet)] = len(occs)
+                occs = inventory.get(eidkind, {}).get(trigger, {}).get(scope, {})
+                hitData.setdefault(eidkind, {})[(trigger, scope, r)] = len(occs)
 
     def _markEntities(self):
         """Marks up the members of the inventory as entities.
@@ -817,142 +678,31 @@ class Sheets:
 
         for eidkind, entData in inventory.items():
             for trigger, triggerData in entData.items():
-                for sheet, matches in triggerData.items():
+                for scope, matches in triggerData.items():
                     newEntities.append((eidkind, matches))
                     for match in matches:
-                        triggerFromMatch[match] = (trigger, ",".join(sheet))
+                        triggerFromMatch[match] = (trigger, scope)
 
         self._addToSet(newEntities)
 
-    def showSheetsRaw(self, main=False):
-        src = self.getSheetData()
+    def getSheetData(self):
+        """Deliver the current sheet."""
+        sheetName = self.sheetName
+        sheetsData = self.sheets
 
-        if src is None:
-            self.console("Nothing to show")
+        return sheetsData.get(sheetName, AttrDict())
 
-        src = src.raw
-        nameMap = src.nameMap
+    def log(self, isError, indent, msg):
+        silent = self.silent
 
-        def showSheet(sheet, tab):
-            for eidkind, triggers in sorted(sheet.items()):
-                (name, sheetRela) = nameMap[eidkind]
-                triggerRep = "|".join(
-                    t for t in sorted(triggers, key=lambda x: (-len(x), x))
-                )
-                self.console(f"{tab}  '{name}' {eidkind} : {triggerRep}")
-            self.console(f"{tab}  ---")
+        if silent and not isError:
+            return
 
-        def showDir(head, tweaks, level):
-            tab = "  " * level
-            self.console(f"{tab}{head}")
+        browse = self.browse
+        sheetData = self.getSheetData()
+        logData = sheetData.logData
 
-            rng = tweaks.rng or {}
-            for b, e in sorted(rng):
-                self.console(f"{tab}  {b}-{e}.xslx")
-                showSheet(rng[(b, e)], tab)
+        logData.append((isError, indent, msg))
 
-            sng = tweaks.sng or {}
-            for k in sorted(sng):
-                self.console(f"{tab}  {k}.xslx")
-                showSheet(sng[k], tab)
-
-            sdr = tweaks.sdr or {}
-
-            for k in sorted(sdr):
-                showDir(k, sdr[k], level + 1)
-
-        if main:
-            showSheet(src.main, "")
-
-        showDir("", src.sdr, 0)
-
-    def showSheetsCombined(self, main=False):
-        src = self.getSheetData()
-
-        if src is None:
-            self.console("Nothing to show")
-
-        src = src.combined
-        nameMap = src.nameMap
-
-        def showSheet(sheet, tab):
-            for eidkind, triggers in sorted(sheet.items()):
-                (name, sheetRela) = nameMap[eidkind]
-                triggerRep = "|".join(
-                    t for t in sorted(triggers, key=lambda x: (-len(x), x))
-                )
-                self.console(f"{tab}  '{name}' {eidkind} : {triggerRep}")
-            self.console(f"{tab}  ---")
-
-        def showDir(head, info, level):
-            tab = "  " * level
-            self.console(f"{tab}{head}")
-
-            if "sheet" in info:
-                if main or level > 0:
-                    showSheet(info.sheet, tab)
-
-            tweaks = info.tweaks or {}
-
-            for k in sorted(tweaks):
-                showDir(k, tweaks[k], level + 1)
-
-        showDir("", src, 0)
-
-    def showSheetsCompiled(self, main=False):
-        nameMap = self.nameMap
-        src = self.compiled
-
-        def showSheet(info, tab):
-            sheet = info.sheet
-            tMap = info["tMap"]
-
-            for eidkind, triggers in sorted(sheet.items()):
-                triggerSources = {tMap[t] for t in triggers}
-                nTriggers = len(triggers)
-
-                if not main and (nTriggers == 0 or triggerSources == {()}):
-                    continue
-
-                (name, sheetRela) = nameMap[eidkind]
-
-                if nTriggers == 0:
-                    triggerInfo = "X"
-                else:
-                    sourceRep = (
-                        "X"
-                        if len(triggerSources) == 0
-                        else list(list(triggerSources)[0])
-                    )
-                    triggerRep = "|".join(
-                        t for t in sorted(triggers, key=lambda x: (-len(x), x))
-                    )
-                    triggerInfo = f"{sourceRep} => {triggerRep}"
-
-                self.console(f"{tab}  '{name}' {eidkind} : {triggerInfo}")
-            self.console(f"{tab}  ---")
-
-        def showDir(head, info, level):
-            tab = "  " * level
-            self.console(f"{tab}{head}")
-
-            if "sheet" in info:
-                if main or level > 0:
-                    showSheet(info, tab)
-
-            tweaks = info.tweaks or {}
-
-            for k in sorted(tweaks):
-                showDir(k, tweaks[k], level + 1)
-
-        showDir("", src, 0)
-
-    def showInstructions(self):
-        src = self.getSheetData()
-
-        if src is None:
-            self.console("Nothing to show")
-
-        instructions = src.instructions
-
-        self.console("\n".join(f"{path}" for path in instructions))
+        if not browse:
+            self.consoleLine(isError, indent, msg)

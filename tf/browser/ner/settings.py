@@ -239,7 +239,7 @@ class Settings:
     def consoleLine(self, isError, indent, msg):
         silent = self.silent
 
-        if not silent:
+        if silent and not isError:
             return
 
         tabs = "  " * indent
