@@ -423,11 +423,11 @@ class Fragments:
                 value="" if subtleFilter is None else "v" if subtleFilter else "x",
             ),
             "" if not setIsX else H.button(
-                "all sheets"
+                "all scopes"
                 if subtleFilter is None
-                else "contexts"
+                else "scoped"
                 if subtleFilter
-                else "main sheet",
+                else "unscoped",
                 type="submit",
                 id="subtlefilterbutton",
                 cls="mono",

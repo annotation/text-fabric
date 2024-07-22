@@ -250,6 +250,7 @@ class Show:
         sheetData = self.getSheetData()
         hitData = sheetData.hitData or {}
         nameMap = sheetData.nameMap or {}
+        rowMap = sheetData.rowMap or {}
 
         hasEnt = activeEntity is not None
         hasTrig = activeTrigger is not None
@@ -339,12 +340,14 @@ class Show:
             content = []
 
             for tInfo, nOccs, subtle in data:
-                (trigger, scope, r) = tInfo
+                (trigger, scope) = tInfo
                 hasNoOccs = nOccs == 0
 
                 if zeroFilter == -1 and not hasNoOccs:
                     continue
 
+                rows = rowMap.get(trigger, [])
+                r = "?" if len(rows) == 0 else ", ".join(str(x) for x in rows)
                 occsCls = "nooccs" if nOccs == 0 else ""
                 subtleCls = "subtle" if subtle else ""
                 scopeRep = f"{SET_SHEET}{scope}"
@@ -359,8 +362,7 @@ class Show:
                             H.span(
                                 (
                                     H.span(f"{scopeRep} "),
-                                    H.span(f"@{r}", cls="xr"),
-                                    H.code(trigger, cls="ttx"),
+                                    H.code(trigger, cls="ttx", title=f"r{r}"),
                                 ),
                                 cls=f"{occsCls} {subtleCls}",
                             ),

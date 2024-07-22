@@ -9,6 +9,7 @@ import re
 import unicodedata
 import functools
 
+from ...core.helpers import console
 from ..html import H
 from .settings import STYLES
 
@@ -585,39 +586,6 @@ def partitionScopes(scopesDict):
 
         x[2] = tuple(newX)
 
-    """
-    print("Scopes by String")
-
-    for s in sorted(scopeFromStr):
-        print(s)
-        for sc in sortScopes(scopeFromStr[s]):
-            print(f"\t{sc}")
-
-    print("\nStrings by Scope")
-
-    for sc in sortScopes(strFromScope):
-        print(sc)
-        for s in sorted(strFromScope[sc]):
-            print(f"\t{s}")
-
-    print("\nBoundaries")
-
-    for x in sortLocs(boundaries):
-        print(f"\t{repLoc(x)}")
-        for kind in ("b", "e"):
-            if kind in boundaries[x]:
-                scopes = boundaries[x][kind]
-                print(f"\t\t{kind}: {repScopes(scopes)}")
-
-    print("\nIntervals")
-
-    for b, e, scopes in intervals:
-        repS = "\n".join(f"{' ' * 60}{s}" for s in scopes)
-        print(
-            f"\tinterval from {repLoc(b):<10} to {repLoc(e):<10} for scopes\n{repS}"
-        )
-    """
-
     return intervals
 
 
@@ -629,11 +597,11 @@ def testScopes(scopeStrs):
         warning = info["warning"]
 
         if len(warning):
-            print(f"Errors in {scopeStr}: {'; '.join(warning)}")
+            console(f"Errors in {scopeStr}: {'; '.join(warning)}")
         else:
             scopes = info["result"]
             normScopeStr = info["normal"]
-            print(f"{scopeStr} => {normScopeStr}\n\t{repScopes(sortScopes(scopes))}")
+            console(f"{scopeStr} => {normScopeStr}\n\t{repScopes(sortScopes(scopes))}")
             scopeIndex[normScopeStr] = scopes
 
     partitionScopes(scopeIndex)

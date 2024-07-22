@@ -26,6 +26,7 @@ SHEET_KEYS = """
     logData
     nameMap
     scopeMap
+    rowMap
     instructions
     inventory
     triggerFromMatch
@@ -159,7 +160,7 @@ class Sheets:
             sheets[sheetName] = AttrDict()
 
         browse = self.browse
-        sheetData = self.sheets[sheetName]
+        sheetData = self.getSheetData()
         sheetDir = self.sheetDir
         sheetFile = f"{sheetDir}/{sheetName}.xlsx"
         sheetExists = fileExists(sheetFile)
@@ -266,19 +267,11 @@ class Sheets:
         def log(msg):
             self.log(False, 0, msg)
 
-        def log1(msg):
-            self.log(False, 1, msg)
-
-        def log2(msg):
-            self.log(False, 2, msg)
-
         def err(msg):
             self.log(True, 0, msg)
 
         def err1(msg):
             self.log(True, 1, msg)
-
-        spec("Reading sheets")
 
         nameMap = {}
         sheetData.nameMap = nameMap
@@ -288,6 +281,9 @@ class Sheets:
         The values are names plus the sheet where they are first defined.
         """
 
+        rowMap = {}
+        sheetData.rowMap = rowMap
+
         for k in CLEAR_KEYS:
             if k in sheetData:
                 sheetData[k].clear()
@@ -295,6 +291,8 @@ class Sheets:
         for k in SHEET_KEYS:
             if k in sheetData:
                 sheetData[k].clear()
+
+        spec("Reading sheets")
 
         scopeMap = {}
         sheetData.scopeMap = scopeMap
@@ -307,6 +305,7 @@ class Sheets:
         raw = {}
         sheetData.raw = raw
 
+        multiNames = {}
         noNames = set()
         noTrigs = set()
         emptyLines = set()
@@ -338,13 +337,17 @@ class Sheets:
                 for x in triggerStr.split(";")
                 if (y := tnorm(x, spaceEscaped=spaceEscaped)) != ""
             }
+
+            for trigger in triggers:
+                rowMap.setdefault(trigger, []).append(r + 1)
+
             if len(triggers) == 0:
                 noTrigs.add(r + 1)
                 continue
 
             if not kind:
                 kind = defaultKind
-                msg = f"row {r + 1:>3}: " f"no kind name, supplied {defaultKind}"
+                msg = f"r{r + 1:>3}: " f"no kind name, supplied {defaultKind}"
                 log(msg)
 
             info = parseScopes(scopeStr, plain=False)
@@ -365,13 +368,17 @@ class Sheets:
             eid = toSmallId(name, transform=transform)
             eidkind = (eid, kind)
 
-            if eidkind not in nameMap:
+            if eidkind in nameMap:
+                multiNames[r + 1] = nameMap[eidkind]
+                continue
+            else:
                 nameMap[eidkind] = name
 
             raw.setdefault(eidkind, {})[normScopeStr] = (r + 1, triggers)
 
         for diags, isdict, label in (
             (emptyLines, False, "without a name and triggers"),
+            (multiNames, True, "with a duplicate name"),
             (noNames, False, "without a name"),
             (scopeMistakes, True, "with scope mistakes"),
             (noTrigs, False, "without triggers"),
@@ -386,7 +393,7 @@ class Sheets:
 
                         for r in sorted(diags):
                             msg = diags[r]
-                            err(f"\trow {r:>3}: {msg}")
+                            err1(f"r{r:>3}: {msg}")
                 else:
                     rep = ", ".join(str(x) for x in sorted(diags)[0:10])
                     plural = "" if n == 1 else "s"
@@ -407,33 +414,17 @@ class Sheets:
         The tweak may remove triggers from the sheet. We have to adapt the tMap
         for that.
         """
-        nameMap = sheetData.nameMap
         compiled = AttrDict()
         sheetData.compiled = compiled
 
         def spec(msg):
             self.log(None, 0, msg)
 
+        def log(msg):
+            self.log(False, 0, msg)
+
         def err(msg):
             self.log(True, 0, msg)
-
-        def err1(msg):
-            self.log(True, 1, msg)
-
-        def err2(msg):
-            self.log(True, 2, msg)
-
-        def err3(msg):
-            self.log(True, 3, msg)
-
-        def log1(msg):
-            self.log(False, 1, msg)
-
-        def log2(msg):
-            self.log(False, 2, msg)
-
-        def log3(msg):
-            self.log(False, 3, msg)
 
         spec("Checking scopes ...")
 
@@ -441,26 +432,25 @@ class Sheets:
         scopeMap = sheetData.scopeMap
         intervals = partitionScopes(scopeMap)
 
+        clashes = set()
+
         for b, e, scopeStrs in [[None, None, None]] + intervals:
             scopeStrSet = {""} if scopeStrs is None else set(scopeStrs)
             intv = (b, e) if b is not None and e is not None else ()
 
-            info = AttrDict()
-            compiled[intv] = info
+            thisCompiled = AttrDict()
+            compiled[intv] = thisCompiled
 
             newSheet = {}
-            info.sheet = newSheet
+            thisCompiled.sheet = newSheet
 
             tMap = {}
-            info.tMap = tMap
-
-            rMap = {}
-            info.rMap = rMap
+            thisCompiled.tMap = tMap
 
             tFullMap = {}
 
             for eidkind, info in raw.items():
-                if "" in info and "" in scopeStrSet:
+                if "" in info:
                     (r, triggers) = info[""]
                     newSheet[eidkind] = triggers
 
@@ -469,7 +459,6 @@ class Sheets:
                             (r, "")
                         )
                         tMap[trigger] = ""
-                        rMap[trigger] = r
 
                 for scopeStr, (r, triggers) in info.items():
                     if scopeStr == "":
@@ -483,7 +472,6 @@ class Sheets:
                                 eidkind, set()
                             ).add((r, scopeStr))
                             tMap[trigger] = scopeStr
-                            rMap[trigger] = r
 
             hasTriggerConflicts = any(len(x) > 1 for x in tFullMap.values())
             hasScopeConflicts = any(
@@ -494,7 +482,9 @@ class Sheets:
                 continue
 
             scopeRep = "all" if b is None else repScope((b, e))
-            err(f"Interval {scopeRep}")
+            spec(f"Interval {scopeRep}")
+
+            specificClashes = 0
 
             for trigger, info in tFullMap.items():
                 ambiTrigger = len(info) > 1
@@ -505,26 +495,24 @@ class Sheets:
                 if not (ambiTrigger or conflictScope):
                     continue
 
-                if ambiTrigger:
-                    err1(f"Ambi: {trigger}")
-                else:
-                    log1(trigger)
+                msg = f"Clash: {trigger}"
+                emsgs = []
 
                 for eidkind, scopeInfo in info.items():
-                    name = nameMap[eidkind]
-
-                    if ambiTrigger:
-                        err2(name)
-                    else:
-                        log2(name)
-
-                    conflict = sum(1 for z in scopeInfo if z[1] != "") > 1
 
                     for r, scopeStr in scopeInfo:
-                        if conflict:
-                            err3(f"row {r}: {scopeStr}")
-                        else:
-                            log3(f"row {r}: {scopeStr}")
+                        scopeRep = " (scopeStr)" if scopeStr else ""
+                        emsgs.append(f"r{r}{scopeRep}")
+
+                clash = f"{msg}: {' vs '.join(emsgs)}"
+
+                if clash not in clashes:
+                    clashes.add(clash)
+                    err(clash)
+                    specificClashes += 1
+
+            if specificClashes == 0:
+                log("no context-specific clashes")
 
     def _prepareSheet(self, sheetData):
         """Transform the sheets into instructions.
@@ -570,18 +558,16 @@ class Sheets:
         instructions = {}
         sheetData.instructions = instructions
 
-        for intv, info in compiled.items():
-            sheet = info.sheet
-            tMap = info.tMap
-            rMap = info.rMap
+        for intv, thisCompiled in compiled.items():
+            sheet = thisCompiled.sheet
+            tMap = thisCompiled.tMap
 
             triggerSet = set()
             tPos = {}
             idMap = {}
 
-            prepared = dict(tPos=tPos, tMap=tMap, rMap=rMap)
-
-            instructions[intv] = prepared
+            theseInstructions = dict(tPos=tPos, tMap=tMap)
+            instructions[intv] = theseInstructions
 
             for eidkind, triggers in sheet.items():
                 for trigger in triggers:
@@ -593,7 +579,7 @@ class Sheets:
                 for i, token in enumerate(triggerT):
                     tPos.setdefault(i, {}).setdefault(token, set()).add(triggerT)
 
-            prepared["idMap"] = {
+            theseInstructions["idMap"] = {
                 trigger: eidkinds[0] for (trigger, eidkinds) in idMap.items()
             }
 
@@ -647,14 +633,12 @@ class Sheets:
         for path, data in instructions.items():
             idMap = data["idMap"]
             tMap = data["tMap"]
-            rMap = data["rMap"]
 
             for trigger, scope in tMap.items():
-                r = rMap[trigger]
-                eidkind = idMap[trigger]
+                eidkind = idMap.get(trigger, None)
 
                 occs = inventory.get(eidkind, {}).get(trigger, {}).get(scope, {})
-                hitData.setdefault(eidkind, {})[(trigger, scope, r)] = len(occs)
+                hitData.setdefault(eidkind, {})[(trigger, scope)] = len(occs)
 
     def _markEntities(self):
         """Marks up the members of the inventory as entities.
@@ -690,7 +674,7 @@ class Sheets:
         sheetName = self.sheetName
         sheetsData = self.sheets
 
-        return sheetsData.get(sheetName, AttrDict())
+        return sheetsData.setdefault(sheetName, AttrDict())
 
     def log(self, isError, indent, msg):
         silent = self.silent

@@ -37,7 +37,7 @@ def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
     -------
     dict
         A multiply nested dict, first keyed by tuples of entity identifier and kind,
-        then by its triggers then by the sheets where such a trigger occurs, and then
+        then by its triggers then by the scope of such a trigger, and then
         the value is a list of occurrences, where each occurrence is a tuple of slots.
 
     """
@@ -54,6 +54,7 @@ def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
     for b in buckets:
         intv = intvIndex[b]
         data = instructions[intv]
+
         tPos = data["tPos"]
         tMap = data["tMap"]
         idMap = data["idMap"]
@@ -109,6 +110,7 @@ def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
                     resultMatch = resultMatches[0]
                     trigger = fromTokens(resultMatch, spaceEscaped=spaceEscaped)
                     scope = tMap[trigger]
+
                     firstT = bStringFirst[i]
                     lastT = bStringLast[i + m]
                     slots = tuple(range(firstT, lastT + 1))

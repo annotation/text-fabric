@@ -680,26 +680,25 @@ class NER(Sheets, Sets, Show):
 
         allTriggers = set()
 
-        for path, data in instructions.items():
+        for intv, data in instructions.items():
             idMap = data["idMap"]
             tMap = data["tMap"]
 
-            for trigger, tPath in tMap.items():
+            for trigger, scope in tMap.items():
                 eidkind = idMap[trigger]
                 name = nameMap[eidkind]
-                allTriggers.add((name, eidkind, trigger, tPath))
+                allTriggers.add((name, eidkind, trigger, scope))
 
         hitData = []
         names = set()
         triggersSuccess = 0
 
         for e in sorted(allTriggers):
-            (name, eidkind, trigger, tPath) = e
+            (name, eidkind, trigger, scope) = e
 
             names.add(name)
 
-            sheet = ".".join(tPath)
-            entry = (name, trigger, sheet)
+            entry = (name, trigger, scope)
             section = ""
             hits = ""
 
@@ -715,7 +714,7 @@ class NER(Sheets, Sets, Show):
                 hitData.append(("!T", *entry, "", 0))
                 continue
 
-            occs = triggerInfo.get(tPath, None)
+            occs = triggerInfo.get(scope, None)
 
             if occs is None:
                 hitData.append(("!P", *entry, "", 0))
