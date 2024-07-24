@@ -45,17 +45,16 @@ class IIIF:
         self.templates = parseIIIF(settings, prod, "templates")
 
         self.getSizes()
+        self.getRotations()
         self.getPageSeq()
         pages = self.pages
-        covers = sorted(f for f in dirContents(coversDir)[0] if f is not DS_STORE)
-        self.covers = covers
         folders = [F.folder.v(f) for f in F.otype.s("folder")]
         self.folders = folders
 
         self.console("Collections:")
 
         for folder in folders:
-            n = len(pages[folder])
+            n = len(pages["pages"][folder])
             self.console(f"{folder:>5} with {n:>4} pages")
 
     def console(self, msg, **kwargs):
@@ -69,6 +68,24 @@ class IIIF:
 
         if not silent:
             console(msg, **kwargs)
+
+    def getRotations(self):
+        prod = self.prod
+        thumbDir = self.thumbDir
+        scanDir = self.scanDir
+
+        rotateFile = f"{scanDir if prod else thumbDir}/rotation_pages.tsv"
+
+        rotateInfo = {}
+        self.rotateInfo = rotateInfo
+
+        with fileOpen(rotateFile) as rh:
+            next(rh)
+            for line in rh:
+                fields = line.rstrip("\n").split("\t")
+                p = fields[0]
+                rot = int(fields[1])
+                rotateInfo[p] = rot
 
     def getSizes(self):
         prod = self.prod
@@ -121,10 +138,11 @@ class IIIF:
 
     def getPageSeq(self):
         reportDir = self.reportDir
-        covers = self.covers
+        coversDir = self.coversDir
         pageSeqFile = f"{reportDir}/pageseq.json"
 
-        self.pages = {}
+        covers = sorted(f for f in dirContents(coversDir)[0] if f is not DS_STORE)
+        self.covers = covers
         self.pages = dict(
             pages=readJson(asFile=pageSeqFile, plain=True), covers=dict(covers=covers)
         )
@@ -134,6 +152,7 @@ class IIIF:
             folder = kind
         templates = self.templates
         sizeInfo = self.sizeInfo[kind]
+        rotateInfo = None if kind == "covers" else self.rotateInfo
         pages = self.pages[kind]
         thesePages = pages[folder]
 
@@ -144,9 +163,10 @@ class IIIF:
         for p in thesePages:
             item = {}
             w, h = sizeInfo.get(p, (0, 0))
+            rot = 0 if rotateInfo is None else rotateInfo.get(p, 0)
 
             for k, v in pageItem.items():
-                v = fillinIIIF(v, folder=folder, page=p, width=w, height=h)
+                v = fillinIIIF(v, folder=folder, page=p, width=w, height=h, rot=rot)
                 item[k] = v
 
             items.append(item)
