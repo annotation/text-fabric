@@ -685,10 +685,11 @@ def parseIIIF(settings, prod, selector):
         tpd = type(data)
 
         if tpd is str:
-            for k, v in constants.items():
-                if len(data) > 1 and data[0] == "!" and data[1:] in macros:
-                    data = macros[data[1:]]
+            for k, v in macros.items():
+                pattern = f"<{k}>"
+                data = data.replace(pattern, str(v))
 
+            for k, v in constants.items():
                 pattern = f"«{k}»"
 
                 if type(v) is int and data == pattern:
