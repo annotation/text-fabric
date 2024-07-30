@@ -685,7 +685,9 @@ class NER(Sheets, Sets, Show):
             tMap = data["tMap"]
 
             for trigger, scope in tMap.items():
-                eidkind = idMap[trigger]
+                eidkind = idMap.get(trigger, None)
+                if eidkind is None:
+                    continue
                 name = nameMap[eidkind]
                 allTriggers.add((name, eidkind, trigger, scope))
 

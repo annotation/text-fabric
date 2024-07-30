@@ -259,6 +259,10 @@ class Show:
             entries = []
 
             for eidkind, triggers in data.items():
+                if eidkind not in nameMap:
+                    # should not occur!
+                    continue
+
                 name = nameMap[eidkind]
                 tOccs = sum(triggers.values())
                 subtle = any(t[1] != "" for t in triggers)

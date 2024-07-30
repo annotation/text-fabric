@@ -646,16 +646,13 @@ def getResultDir(baseDir, headPart, version, prod, silent):
     *   the repo location
     *   the relative location of the tf directory in the repo
 
-    In development, the WATM is written to a `watm` directory inside the
-    `_temp` directory of the repo.
-    The version of the WATM is the version of the TF from which it is generated.
+    The WATM is written to somewhere under the `watm` directory at the toplevel
+    of the repo.
 
-    In production, the WATM is written to the `watm` directory outside the
-    `_temp` directory of the repo.
     The version of the WATM is the version of the TF from which it is generated plus
     a suffix, containing a sequence number.
 
-    Whenever a prodcution generation is executed, a new sequence number is chosen,
+    Whenever a pgeneration is executed, a new sequence number is chosen,
     so that no previous version gets overwritten.
 
     If there is a file `latest` in the directory of the WATM versions, its number is
@@ -665,6 +662,9 @@ def getResultDir(baseDir, headPart, version, prod, silent):
 
     Whatever we got, we increment it and write it to the file `latest`.
     That is the new version suffix.
+
+    Inside the resulting directory, the production WATM resides under `prod` and
+    the development WATM resides under `dev`.
 
     Parameters
     ----------
@@ -683,50 +683,51 @@ def getResultDir(baseDir, headPart, version, prod, silent):
     -------
     The path to the versioned dir where the WATM ends up.
     """
+    prodRep = "production" if prod else "development"
+    prodFix = "prod" if prod else "dev"
+    resultDirBase = f"{baseDir}{headPart}/{TT_NAME}"
+    latestFile = f"{resultDirBase}/latest"
+
+    prefix = f"{version}-"
+    numReps = {
+        pv.removeprefix(prefix)
+        for pv in dirContents(resultDirBase)[1]
+        if pv.startswith(prefix)
+    }
+
+    maxNum = max(
+        (int(num) for numRep in numReps if (num := numRep.lstrip("0")).isdecimal()),
+        default=0,
+    )
+
+    if not fileExists(latestFile):
+        latestNum = 0
+    else:
+        with fileOpen(latestFile) as fh:
+            contents = fh.read().strip().split("-", 1)
+            latestNumStr = (contents[1] if len(contents) == 2 else "").lstrip("0")
+            latestNum = int(latestNumStr) if latestNumStr.isdecimal() else 0
+
     if prod:
-        resultDirBase = f"{baseDir}{headPart}/{TT_NAME}"
-        latestFile = f"{resultDirBase}/latest"
-        prefix = f"{version}-"
-        prodNumReps = {
-            pv.removeprefix(prefix)
-            for pv in dirContents(resultDirBase)[1]
-            if pv.startswith(prefix)
-        }
-
-        maxProdNum = max(
-            (
-                int(prodNum)
-                for prodNumRep in prodNumReps
-                if (prodNum := prodNumRep.lstrip("0")).isdecimal()
-            ),
-            default=0,
-        )
-
-        if not fileExists(latestFile):
-            latestNum = 0
-        else:
-            with fileOpen(latestFile) as fh:
-                contents = fh.read().strip()
-                latestNum = int(contents) if contents.isdecimal() else 0
-
-        newNum = max((latestNum, maxProdNum))
+        newNum = max((latestNum, maxNum))
 
         while True:
             newNum += 1
             newNumRep = f"{newNum:>03}"
-            if newNumRep in prodNumReps:
+            if newNumRep in numReps:
                 continue
             break
 
         with fileOpen(latestFile, "w") as fh:
-            fh.write(f"{newNum}\n")
-
-        resultVersionDir = f"{resultDirBase}/{version}-{newNumRep}"
-
-        if not silent:
-            console(f"Writing production data to {resultVersionDir}")
+            fh.write(f"{version}-{newNumRep}\n")
     else:
-        resultDirBase = f"{baseDir}/_temp{headPart}/{TT_NAME}"
+        newNumRep = f"{latestNum:>03}"
+
+    resultVersionDir = f"{resultDirBase}/{version}-{newNumRep}/{prodFix}"
+
+    if not silent:
+        console(f"Writing {prodRep} data to {resultVersionDir}")
+    else:
         resultVersionDir = f"{resultDirBase}/{version}"
 
         if not silent:
@@ -1076,15 +1077,26 @@ class WATM:
                 for i, n in enumerate(nodes):
                     for extraFeat, value, variables in thisScanInfo:
                         values = {}
+                        valuesOK = True
 
-                        for var, (parent, feat, shift) in variables.items():
-                            refI = min((max((0, i + shift)), lastI))
+                        for var, (parent, child, feat, shift) in variables.items():
+                            refI = i + shift
+
+                            if refI < 0 or refI > lastI:
+                                valuesOK = False
+                                break
+
                             refN = nodes[refI]
 
                             if parent is not None:
                                 refN = L.u(refN, otype=parent)[0]
+                            elif child is not None:
+                                refN = L.d(refN, otype=child)[0]
 
                             values[var] = refN if feat == "=" else Fs(feat).v(refN)
+
+                        if not valuesOK:
+                            continue
 
                         val = value.format(**values)
 

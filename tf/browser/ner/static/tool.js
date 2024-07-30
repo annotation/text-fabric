@@ -315,6 +315,8 @@ const entityControls = () => {
       : null
     if (eEntity.length) {
       const enm = eEntity.attr("enm")
+      const prevActiveEntity = activeEntity.val()
+      const sameEntity = prevActiveEntity == enm
       activeEntity.val(enm)
       tokenStart.val("")
       tokenEnd.val("")
@@ -323,12 +325,24 @@ const entityControls = () => {
 
       if (isSheet) {
         const [eid, kind] = enm.split("⊙")
+        const prevActiveTrigger = activeTrigger.val()
         myFeatures = { eid, kind }
+        let sameTrigger
         if (eTrigger.length) {
           const etr = eTrigger.attr("etr")
+          sameTrigger = prevActiveTrigger == etr
           activeTrigger.val(etr)
         } else {
           activeTrigger.val("")
+          sameTrigger = prevActiveTrigger == ""
+        }
+        if (sameEntity && sameTrigger) {
+          if (prevActiveTrigger) {
+            activeTrigger.val("")
+          }
+          else {
+            activeEntity.val("")
+          }
         }
       } else {
         myFeatures = {}

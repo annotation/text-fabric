@@ -746,11 +746,18 @@ def operationalize(data):
 
                 if len(feat) == 1:
                     parent = None
+                    child = None
                     feat = feat[0]
                 else:
                     parent, feat = feat
 
-                newVars[name] = (parent, feat, shift)
+                    if parent.startswith("-"):
+                        child = parent[1:]
+                        parent = None
+                    else:
+                        child = None
+
+                newVars[name] = (parent, child, feat, shift)
 
             scanInfo.setdefault(nodeType, []).append((extraFeat, value, newVars))
 

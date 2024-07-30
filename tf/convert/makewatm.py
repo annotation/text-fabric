@@ -118,10 +118,10 @@ class MakeWATM:
             ("watm", None),
         ),
         flagSpecs=(
-            ("silent", None),
+            ("silent", True),
             ("relaxed", None),
             ("usenlp", None),
-            ("prod", None),
+            ("prod", True),
             ("force", None),
         ),
         intro=None,
@@ -209,8 +209,15 @@ class MakeWATM:
             setattr(self, f"flag_{flag}", False)
 
         for carg in cargs:
-            if carg.startswith("--"):
+            if carg.startswith("--no-"):
                 flag = carg[2:]
+
+                if flag not in FLAGS:
+                    unrecognized.add(carg)
+                else:
+                    setattr(self, f"flag_{flag}", False)
+            elif carg.startswith("--"):
+                flag = carg[5:]
 
                 if flag not in FLAGS:
                     unrecognized.add(carg)

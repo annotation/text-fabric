@@ -320,6 +320,14 @@ class Sheets:
             if not any(c.value for c in row):
                 continue
 
+            triggerStr = row[3].value
+
+            if triggerStr is not None and "\n" in triggerStr:
+                triggerRep = triggerStr.replace("\n", "\\n")
+                msg = f"r{r + 1:>3}: newline in trigger string: {triggerRep}"
+                log(msg)
+                continue
+
             (name, kind, scopeStr, triggerStr) = (
                 myNormalize(row[i].value or "") for i in range(4)
             )
@@ -368,8 +376,9 @@ class Sheets:
             eid = toSmallId(name, transform=transform)
             eidkind = (eid, kind)
 
-            if eidkind in nameMap:
-                multiNames[r + 1] = nameMap[eidkind]
+            if normScopeStr in raw.get(eidkind, {}):
+                # if eidkind in nameMap:
+                multiNames[r + 1] = f"({normScopeStr}) {nameMap[eidkind]}"
                 continue
             else:
                 nameMap[eidkind] = name
@@ -636,6 +645,8 @@ class Sheets:
 
             for trigger, scope in tMap.items():
                 eidkind = idMap.get(trigger, None)
+                if eidkind is None:
+                    continue
 
                 occs = inventory.get(eidkind, {}).get(trigger, {}).get(scope, {})
                 hitData.setdefault(eidkind, {})[(trigger, scope)] = len(occs)

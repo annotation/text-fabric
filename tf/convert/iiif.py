@@ -7,6 +7,7 @@ from ..core.files import (
     dirExists,
     dirCopy,
     dirContents,
+    stripExt,
 )
 from ..core.helpers import console
 from .helpers import parseIIIF, fillinIIIF
@@ -41,7 +42,10 @@ class IIIF:
         self.logoDir = f"{staticDir}/logo"
         self.reportDir = f"{repoLocation}/report{teiVersionRep}"
 
+        self.coversHtmlIn = f"{repoLocation}/programs/covers.html"
+        self.coversHtmlOut = f"{staticDir}/covers.html"
         settings = readYaml(asFile=f"{repoLocation}/programs/iiif.yaml", plain=True)
+        self.settings = settings
         self.templates = parseIIIF(settings, prod, "templates")
 
         self.getSizes()
@@ -141,7 +145,9 @@ class IIIF:
         coversDir = self.coversDir
         pageSeqFile = f"{reportDir}/pageseq.json"
 
-        covers = sorted(f for f in dirContents(coversDir)[0] if f is not DS_STORE)
+        covers = sorted(
+            stripExt(f) for f in dirContents(coversDir)[0] if f is not DS_STORE
+        )
         self.covers = covers
         self.pages = dict(
             pages=readJson(asFile=pageSeqFile, plain=True), covers=dict(covers=covers)
@@ -191,6 +197,19 @@ class IIIF:
         manifestDir = self.manifestDir
         logoInDir = self.logoInDir
         logoDir = self.logoDir
+        coversHtmlIn = self.coversHtmlIn
+        coversHtmlOut = self.coversHtmlOut
+        prod = self.prod
+        settings = self.settings
+
+        with fileOpen(coversHtmlIn) as fh:
+            coversHtml = fh.read()
+
+        server = settings["switches"]["prod" if prod else "dev"]["server"]
+        coversHtml = coversHtml.replace("«server»", server)
+
+        with fileOpen(coversHtmlOut, "w") as fh:
+            fh.write(coversHtml)
 
         initTree(manifestDir, fresh=True)
 
