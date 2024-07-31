@@ -60,14 +60,16 @@ def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
         idMap = data["idMap"]
 
         # compile the bucket into logical tokens
-        bTokensAll = getTokens(b)
+        (lineEnds, bTokensAll) = getTokens(b, lineBoundaries=True)
+        # bTokensAll = getTokens(b, lineBoundaries=False)
         bTokens = [x for x in bTokensAll if (x[1] or "").strip()]
         bStrings = []
         bStringFirst = {}
         bStringLast = {}
 
         for t, s in bTokens:
-            if len(bStrings) > 1 and bStrings[-1] == "-":
+            # if len(bStrings) > 1 and bStrings[-1] == "-":
+            if t - 1 in lineEnds and len(bStrings) > 1 and bStrings[-1] == "-":
                 bStrings.pop()
                 bStrings[-1] += s
                 bStringLast[len(bStrings) - 1] = t

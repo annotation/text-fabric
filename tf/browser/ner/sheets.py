@@ -23,6 +23,8 @@ DS_STORE = ".DS_Store"
 SHEET_RE = re.compile(r"""^([0-9]+)((?:-[0-9]+)?)\.xlsx$""", re.I)
 
 SHEET_KEYS = """
+    metaFields
+    metaData
     logData
     nameMap
     scopeMap
@@ -281,6 +283,16 @@ class Sheets:
         The values are names plus the sheet where they are first defined.
         """
 
+        metaData = {}
+        sheetData.metaData = metaData
+        """Will contain the data of most columns in the spreadsheet.
+
+        The scope and triggers columns are not stored.
+
+        For each row, a key is computed (the small eid based on the name in the first
+        column). Under this key we store the list of values.
+        """
+
         rowMap = {}
         sheetData.rowMap = rowMap
 
@@ -301,6 +313,10 @@ class Sheets:
 
         wb = loadXls(sheetPath, data_only=True)
         ws = wb.active
+        maxCol = ws.max_column
+        maxRow = ws.max_row
+
+        self.console(f"Sheet with {maxRow} rows and {maxCol} columns")
 
         raw = {}
         sheetData.raw = raw
@@ -312,10 +328,21 @@ class Sheets:
         scopeMistakes = {}
 
         def myNormalize(x):
-            return normalize(x if normalizeChars is None else normalizeChars(x))
+            return normalize(
+                str(x) if normalizeChars is None else normalizeChars(str(x))
+            )
 
         for r, row in enumerate(ws.rows):
-            if r in {0, 1}:
+            if r == 0:
+                metaFields = [
+                    myNormalize(row[i].value or "")
+                    for i in range(maxCol)
+                    if i not in {2, 3}
+                ]
+                sheetData.metaFields = metaFields
+
+                continue
+            if r == 1:
                 continue
             if not any(c.value for c in row):
                 continue
@@ -384,6 +411,13 @@ class Sheets:
                 nameMap[eidkind] = name
 
             raw.setdefault(eidkind, {})[normScopeStr] = (r + 1, triggers)
+
+            metaKey = f"{eid}-{kind}"
+            metaData[metaKey] = [
+                myNormalize(row[i].value or "")
+                for i in range(maxCol)
+                if i not in {2, 3}
+            ]
 
         for diags, isdict, label in (
             (emptyLines, False, "without a name and triggers"),

@@ -12,7 +12,6 @@ By collecting all corpus access methods in one class, we have good conceptual
 control over how to customize the annotator for different corpora.
 """
 
-
 import re
 
 from .settings import Settings, TOOLKEY
@@ -68,6 +67,7 @@ class Corpus(Settings):
         features = settings.features
         keywordFeatures = settings.keywordFeatures
         bucketType = settings.bucketType
+        lineType = settings.lineType
         entityType = settings.entityType
         strFeature = settings.strFeature
         afterFeature = settings.afterFeature
@@ -123,8 +123,20 @@ class Corpus(Settings):
             # text = WHITE_RE.sub(" ", text)
             return text
 
-        def getTokens(node):
-            return [(t, strv(t)) or "" for t in L.d(node, otype=slotType)]
+        def getTokens(node, lineBoundaries=False):
+            if lineBoundaries and lineType is None:
+                lineBoundaries = False
+
+            ts = L.d(node, otype=slotType)
+            tokens = [(t, strv(t) or "") for t in ts]
+
+            if not lineBoundaries:
+                return tokens
+
+            lines = L.d(node, otype=lineType) or []
+            lineEnds = {L.d(ln, otype=slotType)[-1] for ln in lines}
+
+            return (lineEnds, tokens)
 
         def getStrings(tokenStart, tokenEnd):
             return tuple(

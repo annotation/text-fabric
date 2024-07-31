@@ -25,6 +25,9 @@ H_ELEMENT_DEFS = """
     span
     style
     summary
+    table
+    td
+    tr
     ul
 """.strip().split()
 

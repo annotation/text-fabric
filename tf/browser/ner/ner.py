@@ -364,6 +364,12 @@ class NER(Sheets, Sets, Show):
         setIsX = self.setIsX
         self.setSheet(task[1:] if setIsX else None)
 
+    def getMeta(self):
+        """Retrieves the metadata of the current sheet.
+        """
+        sheetData = self.getSheetData()
+        return (sheetData.metaFields, sheetData.metaData)
+
     def findOccs(self):
         """Finds the occurrences of multiple triggers.
 

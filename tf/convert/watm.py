@@ -33,91 +33,6 @@ software to build a
 from a corpus of letters by P.C. Hooft in Folia format to text segments and
 web annotations.
 
-# Excursion: STAM
-
-![stam](../images/stam.png)
-
-We now have two sytems,
-[STAM](https://github.com/annotation/stam)
-and Text-Fabric that can untangle text and markup.
-They are implemented very differently, and have a different flavour, but at the
-same time they share the preference of separating the textual data from all the data
-around the text.
-
-*   *intent*
-
-    *   **STAM**: make it easier for tools and infrastructure to handle texts with
-    annotations.
-    *   **TF**: support researchers in analysing textual corpora.
-
-*   *implementation*
-
-    *   **STAM**: Rust + [Python bindings](https://github.com/annotation/stam-python).
-    *   **TF**: Pure Python.
-
-*   *organization*
-
-    *   **STAM**: very neatly in a core with extensions.
-    *   **TF**: core data functionality in `tf.core` modules, search functionality in
-        `tf.search` modules, lots of other functions are included in the code with
-        varying degrees of integration and orderliness!
-
-*   *standards*
-
-    *   **STAM**: actively seeks to interoperate with existing standards, but
-        internally it uses its own way of organizing the data.
-    *   **TF**: also relies on a few simple conventions w.r.t. data
-        organization and efficient serialization. These conventions are
-        documented. It has several import and export functions, e.g. from TEI,
-        PageXML, MQL, and to MQL, TSV. But it prefers to input and output data
-        in minimalistic streams, without the often redundant strings that are
-        attached to standard formats.
-
-*   *model*
-
-    *   **STAM**: very generic w.r.t. annotations, annotations can target
-        annotations and /or text segments.
-    *   **TF**:
-        [graph model](https://annotation.github.io/text-fabric/tf/about/datamodel.html)
-        where nodes stand for textual positions and subsets of them, nodes and
-        edges can have features, which are the raw material of annotations, but
-        annotations are not a TF concept.
-
-*   *query language*
-
-    *   **STAM**:
-        [STAMQL](https://github.com/annotation/stam/tree/master/extensions/stam-query),
-        evolving as an SQL-like language, with user-friendly primitives for
-        annotations.
-    *   **TF**:
-        [TF-Query](https://annotation.github.io/text-fabric/tf/about/searchusage.html),
-        a noise-free language for graph templates with reasonable performance.
-
-*   *display*
-
-    *   **STAM**: In development, see `stam view` in
-        [STAM tools](https://github.com/annotation/stam-tools).
-    *   **TF**: Powerful functions to display corpus fragments with highlighting in
-        `tf.advanced`. The challenge is to build generic display functions that detect
-        the peculiarities of the corpora.
-
-*   *API*
-
-    *   **STAM**: in Rust and Python.
-    *   **TF**: Python.
-
-*   *GUI*
-
-    *   **STAM**: not yet.
-    *   **TF**: locally served web interface for browsing and searching the corpus.
-
-Both libraries can be used to manage corpus data in intricate ways for research
-and publishing purposes.
-How STAM and Text-Fabric will evolve in the dynamic landscape of corpora, analytical
-methods and AI, is something we cannot predict.
-For now, their different flavour and intent will define their appeal to the different
-categories of users.
-
 # The general idea
 
 The idea of WATM is, like the idea of Text-Fabric, to untangle the text from its
@@ -170,6 +85,10 @@ configuration setting `asTsv` in the `watm.yaml` file in the project.
     the `text-`*i*`.json` files!
 *   a pair of files `anno2node.tsv` and `pos2node.tsv` that map annotations resp. text
     positions to their corresponding TF nodes.
+*   a file `logicalpairs.tsv` (only if it is configured to produce it).
+    For each pair of tokens across a line boundary of which the first ends
+    with an hyphen, it contains three rows: two with the node numbers of both
+    tokens, and one with the combined text of the tokens without the hyphen.
 
 ## Format of the text files
 
@@ -480,6 +399,11 @@ parameters can be set:
 
     The tsv files will have exactly one header line.
 
+*   `hyphenation`: information on combining tokens around an end-of-line hyphen.
+    The information consists of the `lineType` (the node type of lines in the
+    corpus).
+    It is assumed that the node type of the tokens is the slot type.
+
 # Caveat
 
 The WATM representation of the corpus is a faithful and complete representation
@@ -569,6 +493,7 @@ CONFIG_FILE = "watm.yaml"
 IIIF_FILE = "iiif.yaml"
 NODEMAP_FILE = "anno2node.tsv"
 SLOTMAP_FILE = "pos2node.tsv"
+LOGICAL_FILE = "logicalpairs.tsv"
 
 TT_NAME = "watm"
 
@@ -798,7 +723,12 @@ class WATM:
         F = api.F
         E = api.E
         T = api.T
+        Fall = api.Fall
+        Eall = api.Eall
+        FAllSet = set(Fall())
+
         sectionTypes = T.sectionTypes
+        strv = F.str.v if STR in FAllSet else None
 
         cfg = readYaml(asFile=CONFIG_FILE)
         self.cfg = cfg
@@ -825,6 +755,29 @@ class WATM:
             )
             self.error = True
 
+        hyphenation = cfg.hyphenation
+
+        if hyphenation is not None:
+            if strv is None:
+                console(
+                    f"{CONFIG_FILE}: hyphenation cannot be solved "
+                    "because feature str does not exist in the TF dataset",
+                    error=True,
+                )
+                hyphenation = None
+                self.error = True
+
+            if hyphenation.lineType not in F.otype.all:
+                console(
+                    f"{CONFIG_FILE}: hyphenation.lineType "
+                    "must be an existing node type",
+                    error=True,
+                )
+                hyphenation = None
+                self.error = True
+
+        self.hyphenation = hyphenation
+
         if self.error:
             return
 
@@ -843,26 +796,23 @@ class WATM:
         self.E = E
         self.Fs = api.Fs
         self.slotType = self.F.otype.slotType
+        self.maxSlot = self.F.otype.maxSlot
         self.maxSlotPlus = self.F.otype.maxSlot + 1
         self.maxNodePlus = self.F.otype.maxNode + 1
         self.otypes = self.F.otype.all
         self.info = app.info
         self.repoLocation = app.repoLocation
 
-        Fall = api.Fall
-        Eall = api.Eall
         self.Fall = Fall
         self.Eall = Eall
 
         self.nodeFeatures = [f for f in Fall() if f not in TF_SPECIFIC_FEATURES]
         self.edgeFeatures = [f for f in Eall() if f not in TF_SPECIFIC_FEATURES]
 
-        FAllSet = set(Fall())
-
         self.fotypev = F.otype.v
         self.eoslots = E.oslots.s
         self.emptyv = F.empty.v if "empty" in FAllSet else None
-        self.strv = F.str.v if STR in FAllSet else None
+        self.strv = strv
         self.rstrv = F.rstr.v if "rstr" in FAllSet else None
         self.afterv = F.after.v if AFTER in FAllSet else None
         self.rafterv = F.rafter.v if "rafter" in FAllSet else None
@@ -1216,6 +1166,36 @@ class WATM:
             if nFarTargets > 10:
                 self.console(f"... and {nFarTargets - 10} more.")
 
+    def getLogicalPairs(self):
+        hyphenation = self.hyphenation
+        F = self.F
+        L = self.L
+        slotType = self.slotType
+        strv = self.strv
+        maxSlot = self.maxSlot
+
+        if hyphenation is None:
+            return []
+
+        lineType = hyphenation.lineType
+
+        pairs = []
+        lines = F.otype.s(lineType)
+
+        for line in lines:
+            lastSlot = L.d(line, otype=slotType)[-1]
+
+            if strv(lastSlot) == "-" and lastSlot > 1 and lastSlot < maxSlot:
+                pairs.append(
+                    (
+                        lastSlot - 1,
+                        lastSlot + 1,
+                        f"{strv(lastSlot - 1)}{strv(lastSlot + 1)}",
+                    )
+                )
+
+        return tuple(pairs)
+
     def writeAll(self, resultVersion=None):
         """Write text and annotation data to disk.
 
@@ -1233,6 +1213,7 @@ class WATM:
             This is needed if WATM is generated for a series of related datasets that
             have the same result base.
         """
+        hyphenation = self.hyphenation
 
         maxNodePlus = self.maxNodePlus
         maxSlotPlus = self.maxSlotPlus
@@ -1394,6 +1375,21 @@ class WATM:
         self.console(f"Slot mapping written to {slotmapFile}")
         self.console(f"Node mapping written to {nodemapFile}")
 
+        # hyphenation information files
+
+        if hyphenation is not None:
+            logicalFile = f"{resultDir}/{LOGICAL_FILE}"
+
+            with fileOpen(logicalFile, "w") as fh:
+                fh.write("token1\ttoken2\tstr\n")
+
+                pairs = self.getLogicalPairs()
+
+                for t1, t2, text in pairs:
+                    fh.write(f"{t1}\t{t2}\t{text}\n")
+
+            self.console(f"Logical pairs ({len(pairs)}) written to {logicalFile}")
+
     @staticmethod
     def numEqual(nTF, nWA, silent):
         """Compare two numbers and report the outcome.
@@ -1545,6 +1541,7 @@ class WATM:
         # collect the files
 
         asTsv = self.asTsv
+        hyphenation = self.hyphenation
         resultDir = self.resultDir
         resultFiles = dirContents(resultDir)[0]
 
@@ -1573,6 +1570,9 @@ class WATM:
             self.error = True
         if SLOTMAP_FILE not in mapFiles:
             console(f"ERROR: Missing map file {SLOTMAP_FILE}")
+            self.error = True
+        if hyphenation is not None and LOGICAL_FILE not in resultFiles:
+            console(f"ERROR: Missing logical file {LOGICAL_FILE}")
             self.error = True
 
         if self.error:
