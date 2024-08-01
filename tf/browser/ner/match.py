@@ -5,10 +5,12 @@ To see how this fits among all the modules of this package, see
 """
 
 from .settings import NONE
-from .helpers import fromTokens, getIntvIndex
+from .helpers import fromTokens, getIntvIndex, xstrip
 
 
-def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
+def occMatch(
+    getTokens, getHeadings, buckets, instructions, spaceEscaped, caseSensitive=True
+):
     """Finds the occurrences of multiple sequences of tokens in a single bucket.
 
     Parameters
@@ -62,7 +64,7 @@ def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
         # compile the bucket into logical tokens
         (lineEnds, bTokensAll) = getTokens(b, lineBoundaries=True)
         # bTokensAll = getTokens(b, lineBoundaries=False)
-        bTokens = [x for x in bTokensAll if (x[1] or "").strip()]
+        bTokens = [x for x in bTokensAll if xstrip(x[1] or "")]
         bStrings = []
         bStringFirst = {}
         bStringLast = {}
@@ -79,6 +81,10 @@ def occMatch(getTokens, getHeadings, buckets, instructions, spaceEscaped):
                 bStringLast[len(bStrings) - 1] = t
 
         bStrings = tuple(bStrings)
+
+        if not caseSensitive:
+            bStrings = tuple(t.lower() for t in bStrings)
+
         nBStrings = len(bStrings)
 
         # perform the search
@@ -192,7 +198,7 @@ def entityMatch(
             fits = True
 
     bTokensAll = getTokens(b)
-    bTokens = [x for x in bTokensAll if (x[1] or "").strip()]
+    bTokens = [x for x in bTokensAll if xstrip(x[1] or "")]
 
     if fits is None or fits:
         if anyEnt is not None:

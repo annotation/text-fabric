@@ -20,29 +20,30 @@ class Fragments:
         v.messages = H.p((H.span(text, cls=lev) + H.br() for (lev, text) in messageSrc))
 
     def wrapSets(self):
-        """HTML for the annotation set chooser.
+        """HTML for the annotation task chooser.
 
-        It is a dropdown with options, each corresponding to an existing annotation set.
-        There is also a control to delete the set.
+        It is a dropdown with options, each corresponding to an existing annotation task.
+        There is also a control to delete the task.
 
         Apart from these buttons there is a button to switch to the entities that are
         present in the TF dataset as nodes of the entity type specified
         in the YAML file with corresponding
         features.
 
-        Finally, it is possible to create a new, empty annotation set.
+        Finally, it is possible to create a new, empty annotation task.
         """
         ner = self.ner
-        setNames = ner.setNames
+        taskNames = ner.getTasks()
 
         v = self.v
-        chosenSet = v.set
+        chosenTask = v.task
+        sheetCase = v.sheetcase
 
         content1 = [
             H.input(
                 type="hidden",
-                name="set",
-                value=chosenSet,
+                name="task",
+                value=chosenTask,
                 id="seth",
             ),
             H.input(
@@ -61,7 +62,7 @@ class Fragments:
                 "+",
                 type="submit",
                 id="anew",
-                title="create a new annotation set",
+                title="create a new annotation task",
                 cls="mono",
             ),
             " ",
@@ -69,21 +70,35 @@ class Fragments:
                 "++",
                 type="submit",
                 id="adup",
-                title="duplicate this annotation set",
+                title="duplicate this annotation task",
                 cls="mono",
             ),
             " ",
             H.select(
                 (
                     H.option(
-                        ner.setInfo(setName=setName)[0],
-                        value=setName,
-                        selected=setName == chosenSet,
+                        ner.setInfo(taskName)[0],
+                        value=taskName,
+                        selected=taskName == chosenTask,
                     )
-                    for setName in [""] + sorted(setNames)
+                    for taskName in [""] + sorted(taskNames)
                 ),
                 cls="selinp",
                 id="achange",
+            ),
+            " ",
+            H.input(
+                type="hidden",
+                id="sheetcase",
+                name="sheetcase",
+                value="v" if sheetCase else "x",
+            ),
+            H.button(
+                "C" if sheetCase else "¢",
+                type="submit",
+                id="sheetcasebutton",
+                title="toggle case-sensitivity",
+                cls="mono",
             ),
         ]
 
@@ -99,7 +114,7 @@ class Fragments:
                     "→",
                     type="submit",
                     id="arename",
-                    title="rename current annotation set",
+                    title="rename current annotation task",
                     cls="mono",
                 ),
                 " ",
@@ -107,15 +122,15 @@ class Fragments:
                     "-",
                     type="submit",
                     id="adelete",
-                    title="delete current annotation set",
+                    title="delete current annotation task",
                     cls="mono",
                 ),
             ]
-            if not (chosenSet == "" or chosenSet.startswith("."))
+            if not (chosenTask == "" or chosenTask.startswith("."))
             else []
         )
 
-        v.sets = H.p(content1, content2)
+        v.tasks = H.p(content1, content2)
 
     def wrapCaption(self):
         v = self.v

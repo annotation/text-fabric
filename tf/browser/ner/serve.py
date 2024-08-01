@@ -37,9 +37,10 @@ class Serve(Request, Fragments):
         self.initVars()
 
         # v = self.v
-        # setName = v.set
+        # taskName = v.task
+        # sheetCase = v.sheetcase
 
-        # ner.setTask(setName)
+        # ner.setTask(setName, caseSensitive=sheetCase)
 
     def setupFull(self):
         """Prepares to serve a complete page.
@@ -243,7 +244,7 @@ class Serve(Request, Fragments):
         ner.readSheets()
 
         v = self.v
-        chosenSet = v.set
+        chosenTask = v.task
         dupSet = v.duset
         renamedSet = v.rset
         deleteSet = v.dset
@@ -253,22 +254,23 @@ class Serve(Request, Fragments):
         if deleteSet:
             messages.extend(ner.setDel(deleteSet))
             v.dset = ""
-            v.set = ""
+            v.task = ""
 
         if dupSet:
             messages.extend(ner.setDup(dupSet))
-            v.set = dupSet
+            v.task = dupSet
             v.duset = ""
 
-        if renamedSet and chosenSet:
+        if renamedSet and chosenTask:
             messages.extend(ner.setMove(renamedSet))
-            v.set = renamedSet
+            v.task = renamedSet
             v.rset = ""
 
         v.messagesrc = messages
 
-        chosenSet = v.set
-        ner.setTask(chosenSet)
+        chosenTask = v.task
+        sheetCase = v.sheetcase
+        ner.setTask(chosenTask, caseSensitive=sheetCase)
         ner.loadSetData()
 
         self.wrapSets()

@@ -90,9 +90,11 @@ class Sets(Data):
         setNameRep = (
             f"{SET_ENT} {entitySet}"
             if setName == ""
-            else f"{SET_SHEET} {setName[1:]}"
-            if setName.startswith(".")
-            else f"{SET_MAIN} {setName}"
+            else (
+                f"{SET_SHEET} " f"{setName[1:]}"
+                if setName.startswith(".")
+                else f"{SET_MAIN} {setName}"
+            )
         )
         if inObject:
             self.setNameRep = setNameRep
@@ -109,6 +111,7 @@ class Sets(Data):
         by working with annotations in a Jupyter Notebook.
         """
         annoDir = self.annoDir
+
         self.setNames = set(dirContents(annoDir)[1])
 
     def getSetData(self):
@@ -161,7 +164,7 @@ class Sets(Data):
             nEntities = len(entities)
             plural = "" if nEntities == 1 else "s"
             self.console(
-                f"Annotation set {setNameRep} has {nEntities} annotation{plural}"
+                f"Annotation set {setNameRep} " f"has {nEntities} annotation{plural}"
             )
 
     def _addToSet(self, newEntities):

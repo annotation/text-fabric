@@ -23,6 +23,7 @@ DS_STORE = ".DS_Store"
 SHEET_RE = re.compile(r"""^([0-9]+)((?:-[0-9]+)?)\.xlsx$""", re.I)
 
 SHEET_KEYS = """
+    caseSensitive
     metaFields
     metaData
     logData
@@ -90,7 +91,7 @@ class Sheets:
                 sheetNames.add(sheetName)
                 setNames.add(f".{sheetName}")
 
-    def setSheet(self, newSheet, force=False):
+    def setSheet(self, newSheet, force=False, caseSensitive=True):
         """Switch to a named ner sheet.
 
         After the switch, the new sheet will be loaded into memory.
@@ -117,16 +118,16 @@ class Sheets:
             if newSheet is not None:
                 return
 
-        if not browse:
-            self.setSet("" if newSheet is None else f".{newSheet}")
+        # if not browse:
+        #    self.setSet("" if newSheet is None else f".{newSheet}")
 
         if newSheet != sheetName:
             sheetName = newSheet
             self.sheetName = sheetName
 
-        self.loadSheetData(force=force)
+        self.loadSheetData(force=force, caseSensitive=caseSensitive)
 
-    def loadSheetData(self, force=False):
+    def loadSheetData(self, force=False, caseSensitive=True):
         """Loads the current ner sheet into memory, if there is one.
 
         If the current ner sheet is None, nothing has to be done.
@@ -150,8 +151,10 @@ class Sheets:
         setName = self.setName
         annoDir = self.annoDir
         setDir = f"{annoDir}/{setName}"
+        caseRep = "with-case" if caseSensitive else "no-case"
         dataFile = f"{setDir}/data.gz"
         timeFile = f"{setDir}/time.txt"
+        timeKey = "time"
 
         if sheetName is None:
             return None
@@ -167,7 +170,11 @@ class Sheets:
         sheetFile = f"{sheetDir}/{sheetName}.xlsx"
         sheetExists = fileExists(sheetFile)
         sheetUpdated = mTime(sheetFile) if sheetExists else 0
-        needReload = force or sheetData.get("time", 0) < sheetUpdated
+        needReload = (
+            force
+            or sheetData.caseSensitive != caseSensitive
+            or sheetData.get(timeKey, 0) < sheetUpdated
+        )
 
         showLog = True
 
@@ -201,11 +208,14 @@ class Sheets:
 
                         if v is None:
                             if k in sheetData:
-                                sheetData[k].clear()
+                                if type(sheetData[k]) in {list, dict, set}:
+                                    sheetData[k].clear()
+                                else:
+                                    sheetData[k] = None
                         else:
                             sheetData[k] = v
 
-                    sheetData.time = tm
+                    sheetData[timeKey] = tm
                     loaded = True
                 else:
                     loaded = False
@@ -214,15 +224,18 @@ class Sheets:
 
             if loaded:
                 # we have loaded valid, up-to-date, previously compiled spreadsheet data
-                self.console("SHEET data: loaded from disk")
+                self.console(f"SHEET data ({caseRep}): loaded from disk")
             else:
                 # now we really heave to read and compile the spreadsheet
-                self.console("SHEET data: computing from scratch ...", newline=False)
+                self.console(
+                    f"SHEET data ({caseRep}): computing from scratch ...", newline=False
+                )
                 sheetData.logData = []
+                sheetData.caseSensitive = caseSensitive
 
                 self._readSheet(sheetData)
                 tm = time.time()
-                sheetData.time = tm
+                sheetData[timeKey] = tm
 
                 self._compileSheet(sheetData)
                 self._prepareSheet(sheetData)
@@ -243,7 +256,7 @@ class Sheets:
                 showLog = False
         else:
             # the compiled spreadsheet data we have in memory is still up to date
-            self.console("SHEET data: already in memory and uptodate")
+            self.console(f"SHEET data ({caseRep}): already in memory and uptodate")
 
         if showLog and not browse:
             for x in sheetData.logData:
@@ -275,6 +288,8 @@ class Sheets:
         def err1(msg):
             self.log(True, 1, msg)
 
+        caseSensitive = sheetData.caseSensitive
+
         nameMap = {}
         sheetData.nameMap = nameMap
         """Will contain a mapping from entities to names.
@@ -302,7 +317,8 @@ class Sheets:
 
         for k in SHEET_KEYS:
             if k in sheetData:
-                sheetData[k].clear()
+                if type(sheetData[k]) in {list, dict, set}:
+                    sheetData[k].clear()
 
         spec("Reading sheets")
 
@@ -370,7 +386,12 @@ class Sheets:
             triggers = {
                 y
                 for x in triggerStr.split(";")
-                if (y := tnorm(x, spaceEscaped=spaceEscaped)) != ""
+                if (
+                    y := tnorm(
+                        x, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
+                    )
+                )
+                != ""
             }
 
             for trigger in triggers:

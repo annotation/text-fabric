@@ -14,6 +14,13 @@ from ..html import H
 from .settings import STYLES
 
 
+WHITE_STRIP_RE = re.compile(r"""(?:\s|[​‌‍])+""")
+
+
+def xstrip(x):
+    return WHITE_STRIP_RE.sub("", x)
+
+
 WHITE_RE = re.compile(r"""\s+""", re.S)
 NON_WORD = re.compile(r"""\W+""", re.S)
 
@@ -49,7 +56,7 @@ def normalize(text):
     return WHITE_RE.sub(" ", text).strip()
 
 
-def toTokens(text, spaceEscaped=False):
+def toTokens(text, spaceEscaped=False, caseSensitive=True):
     """Split a text into tokens.
 
     The text is split on white-space.
@@ -63,6 +70,10 @@ def toTokens(text, spaceEscaped=False):
     """
     result = TOKEN_RE.findall(normalize(text))
     result = tuple((t.replace("_", " ") for t in result) if spaceEscaped else result)
+
+    if not caseSensitive:
+        result = tuple(t.lower() for t in result)
+
     return tuple(t for t in result if t != " ")
 
 
@@ -80,9 +91,10 @@ def fromTokens(tokens, spaceEscaped=False):
     )
 
 
-def tnorm(text, spaceEscaped=False):
+def tnorm(text, spaceEscaped=False, caseSensitive=True):
     return fromTokens(
-        toTokens(text, spaceEscaped=spaceEscaped), spaceEscaped=spaceEscaped
+        toTokens(text, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive),
+        spaceEscaped=spaceEscaped,
     )
 
 

@@ -359,14 +359,30 @@ class NER(Sheets, Sets, Show):
         if not self.properlySetup:
             return
 
-    def setTask(self, task):
-        self.setSet(task)
-        setIsX = self.setIsX
-        self.setSheet(task[1:] if setIsX else None)
+    def setTask(self, task, force=False, caseSensitive=True):
+        (newSetNameRep, newSetRo, newSetSrc, newSetX) = self.setInfo(task)
+        caseRep = "with-case" if caseSensitive else "no-case"
+        self.setSet(f"{task}-{caseRep}" if newSetX else task)
+        self.setSheet(
+            task[1:] if newSetX else None, force=force, caseSensitive=caseSensitive
+        )
+
+    def getTasks(self):
+        setNames = self.setNames
+
+        tasks = set()
+
+        for setName in setNames:
+            tasks.add(
+                setName.removesuffix("-no-case").removesuffix("-with-case")
+                if setName.startswith(".")
+                else setName
+            )
+
+        return tasks
 
     def getMeta(self):
-        """Retrieves the metadata of the current sheet.
-        """
+        """Retrieves the metadata of the current sheet."""
         sheetData = self.getSheetData()
         return (sheetData.metaFields, sheetData.metaData)
 
@@ -406,8 +422,14 @@ class NER(Sheets, Sets, Show):
         sheetData = self.sheets[sheetName]
 
         instructions = sheetData.instructions
+        caseSensitive = sheetData.caseSensitive
         sheetData.inventory = occMatch(
-            getTokens, getHeadings, buckets, instructions, spaceEscaped
+            getTokens,
+            getHeadings,
+            buckets,
+            instructions,
+            spaceEscaped,
+            caseSensitive=caseSensitive,
         )
 
     def filterContent(

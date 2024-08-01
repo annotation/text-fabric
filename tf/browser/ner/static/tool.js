@@ -8,7 +8,7 @@ const scFilt = "f"
 const suggestName = oldName => {
   let cancelled = false
   let newName = null
-  const answer = prompt("Name for annotation set:", oldName || "")
+  const answer = prompt("Name for annotation task:", oldName || "")
   if (answer == null) {
     cancelled = true
   } else {
@@ -43,6 +43,9 @@ const setControls = () => {
   const aRename = $("#arename")
   const aDelete = $("#adelete")
   const aChange = $("#achange")
+
+  const sheetCase = $("#sheetcase")
+  const sheetCaseButton = $("#sheetcasebutton")
 
   const form = $("form")
 
@@ -92,11 +95,18 @@ const setControls = () => {
 
   aDelete.off("click").click(() => {
     const setName = seth.val()
-    if (confirm(`Delete annotation set ${setName}?`)) {
+    if (confirm(`Delete annotation task ${setName}?`)) {
       dseth.val(setName)
     }
     storeForm()
   })
+
+  sheetCaseButton.off("click").click(() => {
+    const val = sheetCase.val()
+    const newVal = val == "v" ? "x" : "v"
+    sheetCase.val(newVal)
+  })
+
 }
 
 const updateScope = () => {

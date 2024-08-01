@@ -51,7 +51,7 @@ class Request(Form):
             sec0
             sec1
             sec2
-            set
+            task
             duset
             rset
             dset
@@ -72,6 +72,7 @@ class Request(Form):
         keysBool = """
             formattingdo
             bfindc
+            sheetcase
         """.strip().split()
 
         keysTri = """
@@ -101,6 +102,7 @@ class Request(Form):
         defaults = dict(
             sortkey=None,
             sortdir=None,
+            sheetcase="v",
             freestate="all",
             scope=SC_ALL,
             modwidgetstate="add",
