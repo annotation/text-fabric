@@ -279,7 +279,7 @@ from ...core.files import (
 )
 from ...core.timestamp import SILENT_D, DEEP
 from .sheets import Sheets
-from .helpers import findCompile
+from .helpers import findCompile, toTokens
 from .sets import Sets
 from .show import Show
 from .match import entityMatch, occMatch
@@ -359,12 +359,13 @@ class NER(Sheets, Sets, Show):
         if not self.properlySetup:
             return
 
-    def setTask(self, task, force=False, caseSensitive=True):
+    def setTask(self, task, force=False, caseSensitive=False):
         (newSetNameRep, newSetRo, newSetSrc, newSetX) = self.setInfo(task)
-        caseRep = "with-case" if caseSensitive else "no-case"
-        self.setSet(f"{task}-{caseRep}" if newSetX else task)
+        self.setSet(task)
         self.setSheet(
-            task[1:] if newSetX else None, force=force, caseSensitive=caseSensitive
+            task[1:] if newSetX else None,
+            force=force,
+            caseSensitive=caseSensitive,
         )
 
     def getTasks(self):
@@ -385,6 +386,69 @@ class NER(Sheets, Sets, Show):
         """Retrieves the metadata of the current sheet."""
         sheetData = self.getSheetData()
         return (sheetData.metaFields, sheetData.metaData)
+
+    def findTrigger(self, trigger, show=True):
+        if not self.properlySetup:
+            return []
+
+        app = self.app
+        L = app.api.L
+
+        settings = self.settings
+        spaceEscaped = settings.spaceEscaped
+
+        setData = self.getSetData()
+        getTokens = self.getTokens
+        getHeadings = self.getHeadings
+
+        buckets = setData.buckets or ()
+
+        sheetName = self.sheetName
+        sheetData = self.sheets[sheetName]
+
+        caseSensitive = sheetData.caseSensitive
+
+        triggerT = toTokens(
+            trigger, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
+        )
+        idMap = {trigger: trigger}
+        tMap = {trigger: ""}
+        tPos = {}
+
+        for i, token in enumerate(triggerT):
+            tPos.setdefault(i, {}).setdefault(token, set()).add(triggerT)
+
+        instructions = {(): dict(tPos=tPos, tMap=tMap, idMap=idMap)}
+
+        inventory = occMatch(
+            getTokens,
+            getHeadings,
+            buckets,
+            instructions,
+            spaceEscaped,
+            caseSensitive=caseSensitive,
+        )
+
+        occs = inventory.get(trigger, {}).get(trigger, {}).get("", [])
+
+        if show:
+            nOccs = len(occs)
+
+            if nOccs:
+                plural = "" if nOccs == 1 else "s"
+                app.dm(f"**{nOccs} occurrence{plural}**\n")
+
+                headings = set()
+                highlights = set()
+
+                for occ in occs:
+                    headings.add(L.u(occ[0], otype="chunk")[0])
+
+                    for slot in occ:
+                        highlights.add(slot)
+
+                for hd in sorted(headings):
+                    app.plain(hd, highlights=highlights)
 
     def findOccs(self):
         """Finds the occurrences of multiple triggers.
@@ -420,7 +484,6 @@ class NER(Sheets, Sets, Show):
 
         sheetName = self.sheetName
         sheetData = self.sheets[sheetName]
-
         instructions = sheetData.instructions
         caseSensitive = sheetData.caseSensitive
         sheetData.inventory = occMatch(
@@ -687,7 +750,7 @@ class NER(Sheets, Sets, Show):
             self.console(f"{nResults} {bucketType}{pluralR}")
         return results
 
-    def reportHits(self, silent=None):
+    def reportHits(self, silent=None, showNoHits=False):
         """Reports the inventory."""
         if not self.properlySetup:
             return
@@ -714,14 +777,16 @@ class NER(Sheets, Sets, Show):
 
             for trigger, scope in tMap.items():
                 eidkind = idMap.get(trigger, None)
+
                 if eidkind is None:
                     continue
+
                 name = nameMap[eidkind]
                 allTriggers.add((name, eidkind, trigger, scope))
 
         hitData = []
         names = set()
-        triggersSuccess = 0
+        noHits = set()
 
         for e in sorted(allTriggers):
             (name, eidkind, trigger, scope) = e
@@ -736,21 +801,23 @@ class NER(Sheets, Sets, Show):
 
             if entInfo is None:
                 hitData.append(("!E", *entry, "", 0))
+                noHits.add(trigger)
                 continue
 
             triggerInfo = entInfo.get(trigger, None)
 
             if triggerInfo is None:
                 hitData.append(("!T", *entry, "", 0))
+                noHits.add(trigger)
                 continue
 
             occs = triggerInfo.get(scope, None)
 
-            if occs is None:
+            if occs is None or len(occs) == 0:
                 hitData.append(("!P", *entry, "", 0))
+                noHits.add(trigger)
                 continue
 
-            triggersSuccess += 1
             sectionInfo = collections.Counter()
 
             for slots in occs:
@@ -759,6 +826,20 @@ class NER(Sheets, Sets, Show):
 
             for section, hits in sorted(sectionInfo.items()):
                 hitData.append(("OK", *entry, section, hits))
+
+        trigWithout = len(noHits)
+
+        if showNoHits and (trigWithout > 0):
+            console(
+                "Triggers without hits: " f"{trigWithout}x:",
+                error=True,
+            )
+
+            if len(noHits):
+                console("  triggers without hits:")
+
+                for trigger in sorted(noHits):
+                    console(f"    {trigger}", error=True)
 
         with fileOpen(reportFile, "w") as rh:
             rh.write("label\tname\ttrigger\tsheet\tsection\thits\n")
@@ -776,11 +857,11 @@ class NER(Sheets, Sets, Show):
             if silent
             else dedent(
                 f"""
-                Entities targeted:       {nEnt:>5}
-                Triggers searched for:   {nTriggers:>5}
-                Triggers with hits:      {triggersSuccess:>5}
-                Triggers without hits:   {nTriggers - triggersSuccess:>5}
-                Total hits:              {nHits:>5}
+                Entities targeted:     {nEnt:>5}
+                Triggers searched for: {nTriggers:>5}
+                Triggers without hits: {trigWithout:>5}
+                Triggers with hits:    {nTriggers - trigWithout:>5}
+                Total hits:            {nHits:>5}
 
                 All hits in report file: {reportFile}
                 """

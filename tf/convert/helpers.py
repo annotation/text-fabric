@@ -355,7 +355,7 @@ def setUp(kind):
     helpText = f"""
     Convert {kind} to TF.
 
-    There are also commands to check the {kind} and to load the TF."""
+    There are also commands to check the {kind} and to load the resulting TF."""
 
     taskSpec = dict(
         check="reports on the elements in the source",
@@ -365,7 +365,6 @@ def setUp(kind):
         apptoken="modifies the TF app to make it token- instead of character-based",
         browse="starts the TF browser on the result",
     )
-    taskExcluded = {"apptoken", "browse"}
 
     paramSpec = {
         "tf": (
@@ -375,6 +374,13 @@ def setUp(kind):
                 "rest: explicit version."
             ),
             "latest",
+        ),
+        "sourceBase": (
+            (
+                "empty: refDir/{kind};\n\t\t"
+                "any directory of choice."
+            ),
+            "",
         ),
         kind.lower(): (
             (
@@ -390,8 +396,9 @@ def setUp(kind):
 
     flagSpec = dict(
         verbose=("Produce less or more progress and reporting messages", -1, 3),
+        doc=("Do only this document", None, 0),
     )
-    return (helpText, taskSpec, taskExcluded, paramSpec, flagSpec)
+    return (helpText, taskSpec, paramSpec, flagSpec)
 
 
 def tweakTrans(

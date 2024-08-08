@@ -275,7 +275,13 @@ class Show:
                     and not subtle
                 ):
                     entries.append(
-                        (eidkind, name, tOccs, subtle, entryTriggers(triggers))
+                        (
+                            eidkind,
+                            name,
+                            tOccs,
+                            subtle,
+                            entryTriggers(triggers),
+                        )
                     )
 
             return entries
@@ -319,14 +325,14 @@ class Show:
                     continue
 
                 occsCls = (
-                    "nooccs" if hasNoOccs else "warnoccs" if hasTriggerNoOccs else ""
+                    "nooccs" if hasNoOccs else ("warnoccs" if hasTriggerNoOccs else "")
                 )
                 subtleCls = "subtle" if subtle else ""
                 active = "queried" if hasEnt and eidkind == activeEntity else ""
 
                 content.append(
                     H.div(
-                        H.div(H.span(f"{tOccs} ", cls="stat")),
+                        H.div((H.span(f"{tOccs} ", cls="stat"))),
                         H.div(
                             (
                                 H.div(name, cls=f"ntx {occsCls} {subtleCls}"),
@@ -362,7 +368,7 @@ class Show:
                 content.append(
                     H.div(
                         (
-                            H.span(f"{nOccs}", cls="stat"),
+                            H.span(f"{nOccs} ", cls="stat"),
                             H.span(
                                 (
                                     H.span(f"{scopeRep} "),

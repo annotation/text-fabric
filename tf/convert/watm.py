@@ -466,6 +466,7 @@ import re
 from ..core.helpers import console
 from ..core.files import (
     fileOpen,
+    fileCopy,
     initTree,
     dirContents,
     dirExists,
@@ -1213,8 +1214,9 @@ class WATM:
             This is needed if WATM is generated for a series of related datasets that
             have the same result base.
         """
+        cfg = self.cfg
+        extra = cfg.extra
         hyphenation = self.hyphenation
-
         maxNodePlus = self.maxNodePlus
         maxSlotPlus = self.maxSlotPlus
 
@@ -1389,6 +1391,15 @@ class WATM:
                     fh.write(f"{t1}\t{t2}\t{text}\n")
 
             self.console(f"Logical pairs ({len(pairs)}) written to {logicalFile}")
+
+        # extra files
+
+        for extraDir, files in extra.items():
+            for file in files:
+                fileCopy(f"{baseDir}/{extraDir}/{file}", f"{resultDir}/{file}")
+                self.console(
+                    f"Extra file {extraDir}/{file} copied to the WATM directory"
+                )
 
     @staticmethod
     def numEqual(nTF, nWA, silent):

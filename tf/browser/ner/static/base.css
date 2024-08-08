@@ -142,13 +142,16 @@ p.msg.special {
   font-weight: bold;
   background-color: #ffaaaa;
 }
-span.stat {
+span.stat,span.statx {
   font-family: monospace;
   font-weight: bold;
   font-size: small;
   color: #aaaaff;
   background-color: white;
   padding-left: 0.5rem;
+}
+span.statx {
+  text-decoration: line-through;
 }
 p.e {
   margin: 0.1rem 0;

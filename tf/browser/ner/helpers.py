@@ -24,6 +24,8 @@ def xstrip(x):
 WHITE_RE = re.compile(r"""\s+""", re.S)
 NON_WORD = re.compile(r"""\W+""", re.S)
 
+LOC_RE = re.compile(r"[.:@]")
+
 PART_CUT_OFF = 8
 """Maximum length of parts of entity identifiers."""
 
@@ -56,7 +58,7 @@ def normalize(text):
     return WHITE_RE.sub(" ", text).strip()
 
 
-def toTokens(text, spaceEscaped=False, caseSensitive=True):
+def toTokens(text, spaceEscaped=False, caseSensitive=False):
     """Split a text into tokens.
 
     The text is split on white-space.
@@ -91,7 +93,7 @@ def fromTokens(tokens, spaceEscaped=False):
     )
 
 
-def tnorm(text, spaceEscaped=False, caseSensitive=True):
+def tnorm(text, spaceEscaped=False, caseSensitive=False):
     return fromTokens(
         toTokens(text, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive),
         spaceEscaped=spaceEscaped,
@@ -131,7 +133,12 @@ def toSmallId(text, transform={}):
     which ultimately is provided in the corpus-dependent
     `ner/config.yaml` .
     """
-    parts = [y for x in toId(text).split(".") if (y := transform.get(x, x))]
+    eid = toId(text)
+
+    if len(eid) <= CUT_OFF:
+        return eid
+
+    parts = [y for x in eid.split(".") if (y := transform.get(x, x))]
     result = []
     n = 0
 
@@ -421,9 +428,9 @@ def parseLoc(locStr, plain=True):
         result = ()
         return () if plain else dict(result=(), warning=None, normal=repLoc(result))
 
-    parts = locStr.split(".", 2)
+    parts = LOC_RE.split(locStr, maxsplit=2)
 
-    if any(not (x.lstrip("0") or "0").isdecimal() for x in parts):
+    if any(x != "-1" and not (x.lstrip("0") or "0").isdecimal() for x in parts):
         result = None
         normal = None
         warning = f"not a valid location: {locStr}"
@@ -436,6 +443,9 @@ def parseLoc(locStr, plain=True):
 
 
 def repScope(scope):
+    if scope is None or len(scope) == 0:
+        return "()"
+
     (b, e) = scope
     return repLoc(b) if _sameLoc(b, e) else f"{repLoc(b)}-{repLoc(e)}"
 

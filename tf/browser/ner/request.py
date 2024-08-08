@@ -102,7 +102,7 @@ class Request(Form):
         defaults = dict(
             sortkey=None,
             sortdir=None,
-            sheetcase="v",
+            sheetcase="x",
             freestate="all",
             scope=SC_ALL,
             modwidgetstate="add",

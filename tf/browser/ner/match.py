@@ -9,7 +9,12 @@ from .helpers import fromTokens, getIntvIndex, xstrip
 
 
 def occMatch(
-    getTokens, getHeadings, buckets, instructions, spaceEscaped, caseSensitive=True
+    getTokens,
+    getHeadings,
+    buckets,
+    instructions,
+    spaceEscaped,
+    caseSensitive=False,
 ):
     """Finds the occurrences of multiple sequences of tokens in a single bucket.
 
@@ -48,6 +53,15 @@ def occMatch(
     # we produce dicts, keyed by a postion number and valued by a dict whose
     # keys are tokens and whose values are the token sequences that have that token
     # at that position
+
+    LONGEST_ONLY = True
+
+    # We can switch between two behaviours:
+    #
+    # 1. once a match is found, stop looking for smaller matches that start at the same place
+    #    of that match, or somewhere inside that match
+    #
+    # 2. find all matches, irrespective of overlap
 
     results = {}
 
@@ -92,6 +106,7 @@ def occMatch(
 
         while i < nBStrings:
             j = 0
+
             candidateMatches = None
             matches = {}
 
@@ -116,6 +131,7 @@ def occMatch(
 
                 if len(resultMatches):
                     resultMatch = resultMatches[0]
+
                     trigger = fromTokens(resultMatch, spaceEscaped=spaceEscaped)
                     scope = tMap[trigger]
 
@@ -123,13 +139,18 @@ def occMatch(
                     lastT = bStringLast[i + m]
                     slots = tuple(range(firstT, lastT + 1))
                     eidkind = idMap[trigger]
-                    dest = results.setdefault(eidkind, {}).setdefault(trigger, {})
-                    destHits = dest.setdefault(scope, [])
-                    destHits.append(slots)
-                    break
 
-            shift = m + 1
-            i += shift
+                    dest = (
+                        results.setdefault(eidkind, {})
+                        .setdefault(trigger, {})
+                        .setdefault(scope, [])
+                    )
+                    dest.append(slots)
+
+                    if LONGEST_ONLY:
+                        break
+
+            i += m + 1 if LONGEST_ONLY else 1
 
     return results
 

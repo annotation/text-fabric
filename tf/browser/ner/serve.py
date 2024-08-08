@@ -36,12 +36,6 @@ class Serve(Request, Fragments):
 
         self.initVars()
 
-        # v = self.v
-        # taskName = v.task
-        # sheetCase = v.sheetcase
-
-        # ner.setTask(setName, caseSensitive=sheetCase)
-
     def setupFull(self):
         """Prepares to serve a complete page.
 

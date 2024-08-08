@@ -534,6 +534,9 @@ def fileCopy(pathSrc, pathDst):
 
     Wipes the destination file, if it exists.
     """
+    if pathSrc == pathDst:
+        return
+
     if fileExists(pathSrc):
         fileRemove(pathDst)
         copy(pathSrc, pathDst)

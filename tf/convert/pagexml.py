@@ -26,55 +26,15 @@ from ..parameters import BRANCH_DEFAULT_NEW
 from ..fabric import Fabric
 from ..convert.walker import CV
 
-from .helpers import FILE, PAGE, DOC, REGION, LINE, NODE, tokenize
+from .helpers import FILE, PAGE, DOC, REGION, LINE, NODE, tokenize, setUp
 
 
 TOKEN = "token"
 SOFT_HYPHEN_CHARS = {"¬", "\u00ad"}
 
 
-def setUp():
-    helpText = """
-    Convert PageXML to TF.
-
-    There are also commands to check the to load and browse the resulting TF."""
-
-    taskSpec = dict(
-        convert="converts PageXML to TF",
-        load="loads the generated TF",
-        app="configures the TF app for the result",
-        browse="starts the TF browser on the result",
-    )
-    taskExcluded = {"browse"}
-
-    paramSpec = {
-        "tf": (
-            (
-                "0 or latest: update latest version;\n\t\t"
-                "1 2 3: increase major, intermediate, minor TF version;\n\t\t"
-                "rest: explicit version."
-            ),
-            "latest",
-        ),
-        "source": (
-            (
-                "0 or latest: latest version;\n\t\t"
-                "-1 -2 etc: previous version, before previous, ...;\n\t\t"
-                "1 2 etc: first version, second version, ...;\n\t\t"
-                "rest: explicit version."
-            ),
-            "latest",
-        ),
-    }
-
-    flagSpec = dict(
-        verbose=("Produce less or more progress and reporting messages", -1, 3),
-        doc=("Do only this document", None, 0),
-    )
-    return (helpText, taskSpec, taskExcluded, paramSpec, flagSpec)
-
-
-(HELP, TASKS, TASKS_EXCLUDED, PARAMS, FLAGS) = setUp()
+TASKS_EXCLUDED = {"apptoken", "browse"}
+(HELP, TASKS, PARAMS, FLAGS) = setUp("source")
 
 
 def diverge(cv, s, rtx, rsp, ltx, lsp):

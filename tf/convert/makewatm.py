@@ -48,10 +48,15 @@ class MakeWATM:
                 (flag2, docLine2),
                 ...
             ),
+            paramSpecs=(
+                (param1, docLine1),
+                (param2, docLine2),
+                ...
+            ),
         )
     """
 
-    def __init__(self, fileLoc):
+    def __init__(self, fileLoc, **kwargs):
         """Localize upon creation.
 
         When an object of this class is initialized, we assume that the script
@@ -69,15 +74,21 @@ class MakeWATM:
 
         USAGE
 
-        python make.py tasks
+        python make.py flags params tasks
 
         Converts data from TEI files
 
         ARGS
 
+        flags
+            Any argument starting with --
+        params
+            Any argument with an = in it
         tfversion
             Any arg that contains a . is considered to be the tf version number.
             If no version is passed, we resort to the hard coded default.
+        tasks
+            Any remaining argument
 
         all
             run all (enabled) tasks
@@ -97,6 +108,9 @@ class MakeWATM:
             prod="Delivers WATM in production location",
             force="Force execution even if (uptodate) data is present",
         )
+        self.BASE_PARAMS = dict(
+            sourceBase="Base directory under which the sources are",
+        )
         self.BASE_TASKS = ("tei2tf", "page2tf", "watm", "watms")
         self.TF_VERSION = "0.0.0test"
 
@@ -109,7 +123,7 @@ class MakeWATM:
             targetDir=repoBase
         )
         self.repoBase = repoBase
-        self.setOptions()
+        self.setOptions(**kwargs)
 
     def setOptions(
         self,
@@ -124,11 +138,17 @@ class MakeWATM:
             ("prod", True),
             ("force", None),
         ),
+        paramSpecs=(
+            ("sourceBase", None),
+        ),
         intro=None,
+        **kwargs,
     ):
         self.TASKS = []
         self.DOCS = {}
         self.FLAGS = {}
+        self.PARAMS = {}
+        self.PARAM_DEFAULTS = {}
 
         good = True
 
@@ -164,6 +184,23 @@ class MakeWATM:
 
             self.FLAGS[name] = doc
 
+        for name, doc in paramSpecs:
+            if name not in self.BASE_PARAMS:
+                if doc is None:
+                    console(f"param {name}=: no help text given", error=True)
+                    good = False
+
+            if not good:
+                continue
+
+            self.PARAMS[name] = doc
+
+        for (param, value) in kwargs.items():
+            if param in self.PARAMS:
+                self.PARAM_DEFAULTS[param] = value
+            else:
+                console(f"Unrecognized parameter {param}='{value}'", error=True)
+
         self.good = good
 
         self.HELP = (
@@ -171,6 +208,8 @@ class MakeWATM:
             + self.BASE_HELP
             + "\nFLAGS\n\n"
             + "".join(f"{name}\n\t{doc}" for (name, doc) in self.FLAGS.items())
+            + "\nPARAMS\n\n"
+            + "".join(f"{name}\n\t{doc}" for (name, doc) in self.PARAMS.items())
             + "\nTASKS\n\n"
             + "".join(f"{name}\n\t{doc}" for (name, doc) in self.DOCS.items())
             + "\n\nall\n\trun all (enabled) tasks\n\n"
@@ -191,6 +230,7 @@ class MakeWATM:
 
     def main(self, cmdLine=None, cargs=sys.argv[1:]):
         FLAGS = self.FLAGS
+        PARAMS = self.PARAMS
         TASKS = self.TASKS
 
         if cmdLine is not None:
@@ -208,6 +248,9 @@ class MakeWATM:
         for flag in FLAGS:
             setattr(self, f"flag_{flag}", False)
 
+        for param in PARAMS:
+            setattr(self, f"param_{param}", self.PARAM_DEFAULTS.get(param, ""))
+
         for carg in cargs:
             if carg.startswith("--no-"):
                 flag = carg[2:]
@@ -216,6 +259,7 @@ class MakeWATM:
                     unrecognized.add(carg)
                 else:
                     setattr(self, f"flag_{flag}", False)
+
             elif carg.startswith("--"):
                 flag = carg[5:]
 
@@ -223,15 +267,33 @@ class MakeWATM:
                     unrecognized.add(carg)
                 else:
                     setattr(self, f"flag_{flag}", True)
+
+            elif "=" in carg and not carg.startswith("="):
+                parts = carg.split("=", 1)
+
+                if len(parts) == 1:
+                    parts.append("")
+
+                (param, value) = parts
+
+                if param not in PARAMS:
+                    unrecognized.add(carg)
+                else:
+                    setattr(self, f"param_{param}", True)
+
             elif carg == "all":
                 for task in TASKS:
                     tasks.add(task)
+
             elif carg in TASKS:
                 tasks.add(carg)
+
             elif "-" in carg:
                 srcVersion = carg
+
             elif "." in carg:
                 version = carg
+
             else:
                 unrecognized.add(carg)
 
@@ -280,6 +342,7 @@ class MakeWATM:
 
     def doTask_tei2tf(self):
         good = self.good
+        sourceBase = self.param_sourceBase
         silent = self.flag_silent
         relaxed = self.flag_relaxed
         usenlp = self.flag_usenlp
@@ -297,6 +360,7 @@ class MakeWATM:
 
         Tei = TEI(
             verbose=verbose,
+            sourceBase=sourceBase,
             tei=srcVersion,
             tf=f"{tfVersion}pre" if usenlp else tfVersion,
         )

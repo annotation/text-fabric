@@ -629,7 +629,8 @@ from ..core.files import (
 from ..tools.xmlschema import Analysis
 
 
-(HELP, TASKS, TASKS_EXCLUDED, PARAMS, FLAGS) = setUp("TEI")
+TASKS_EXCLUDED = {"apptoken", "browse"}
+(HELP, TASKS, PARAMS, FLAGS) = setUp("TEI")
 
 CSS_REND = dict(
     h1=(
@@ -866,6 +867,7 @@ def getRefs(tag, atts, xmlFile):
 class TEI(CheckImport):
     def __init__(
         self,
+        sourceBase=PARAMS["sourceBase"][1],
         tei=PARAMS["tei"][1],
         tf=PARAMS["tf"][1],
         validate=PARAMS["validate"][1],
@@ -916,6 +918,13 @@ class TEI(CheckImport):
         input / output directories.
 
         ## Input directories
+
+        ### `sourceBase`
+
+        *Top-level directory of the TEI-XML sources.*
+
+        By default (if left empty) it is the `tei` directory at the top-level of the
+        repo, but you can specify any directory you want.
 
         ### `tei`
 
@@ -1047,10 +1056,13 @@ class TEI(CheckImport):
         repoDir = f"{base}/{org}/{repo}"
         refDir = f"{repoDir}{relative}"
         programDir = f"{refDir}/programs"
-        schemaDir = f"{refDir}/schema"
         convertSpec = f"{programDir}/tei.yaml"
         convertCustom = f"{programDir}/tei.py"
 
+        sourceRefDir = sourceBase if sourceBase else refDir
+        teiDir = f"{sourceRefDir}/tei"
+        reportDir = f"{sourceRefDir}/report"
+        schemaDir = f"{sourceRefDir}/schema"
         self.schemaDir = schemaDir
 
         settings = readYaml(asFile=convertSpec, plain=True)
@@ -1220,10 +1232,8 @@ class TEI(CheckImport):
         self.siblingEdges = siblingEdges
         self.procins = procins
 
-        reportDir = f"{refDir}/report"
         appDir = f"{refDir}/app"
         docsDir = f"{refDir}/docs"
-        teiDir = f"{refDir}/tei"
         tfDir = f"{refDir}/tf"
 
         if tei in {"", None}:
@@ -4497,8 +4507,8 @@ class TEI(CheckImport):
             itemPre = f"{targetDir}/{fileBase}_orig{fileExt}"
 
             justCopy = info["justCopy"]
-            teiDir = f"{myDir}/{sourceBit}"
-            itemSource = f"{teiDir}/{file}"
+            srcDir = f"{myDir}/{sourceBit}"
+            itemSource = f"{srcDir}/{file}"
 
             # If there is custom info, we do not have to preserve the previous version.
             # Otherwise we save the target before overwriting it; # unless it

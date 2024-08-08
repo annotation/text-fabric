@@ -10,9 +10,9 @@ from .helpers import (
     normalize,
     toSmallId,
     toTokens,
+    repScope,
     parseScopes,
     partitionScopes,
-    repScope,
 )
 from ...core.generic import AttrDict
 from ...core.helpers import console
@@ -48,6 +48,7 @@ class Sheets:
         if CI.importOK(hint=True):
             openpyxl = CI.importGet()
             self.loadXls = openpyxl.load_workbook
+            self.Workbook = openpyxl.Workbook
         else:
             self.properlySetup = False
             return None
@@ -91,7 +92,7 @@ class Sheets:
                 sheetNames.add(sheetName)
                 setNames.add(f".{sheetName}")
 
-    def setSheet(self, newSheet, force=False, caseSensitive=True):
+    def setSheet(self, newSheet, force=False, caseSensitive=False):
         """Switch to a named ner sheet.
 
         After the switch, the new sheet will be loaded into memory.
@@ -112,7 +113,7 @@ class Sheets:
         sheetDir = self.sheetDir
         sheetFile = f"{sheetDir}/{newSheet}.xlsx"
 
-        if newSheet not in sheetNames or not fileExists(sheetFile):
+        if newSheet not in sheetNames and not fileExists(sheetFile):
             if not browse:
                 console(f"NER sheet {newSheet} ({sheetFile}) does not exist")
             if newSheet is not None:
@@ -127,7 +128,7 @@ class Sheets:
 
         self.loadSheetData(force=force, caseSensitive=caseSensitive)
 
-    def loadSheetData(self, force=False, caseSensitive=True):
+    def loadSheetData(self, force=False, caseSensitive=False):
         """Loads the current ner sheet into memory, if there is one.
 
         If the current ner sheet is None, nothing has to be done.
@@ -151,7 +152,6 @@ class Sheets:
         setName = self.setName
         annoDir = self.annoDir
         setDir = f"{annoDir}/{setName}"
-        caseRep = "with-case" if caseSensitive else "no-case"
         dataFile = f"{setDir}/data.gz"
         timeFile = f"{setDir}/time.txt"
         timeKey = "time"
@@ -199,24 +199,27 @@ class Sheets:
                     with gzip.open(dataFile, mode="rb") as f:
                         data = pickle.load(f)
 
-                    for k in CLEAR_KEYS:
-                        if k in sheetData:
-                            sheetData[k].clear()
-
-                    for k in SHEET_KEYS:
-                        v = data.get(k, None)
-
-                        if v is None:
+                    if data["caseSensitive"] != caseSensitive:
+                        loaded = False
+                    else:
+                        for k in CLEAR_KEYS:
                             if k in sheetData:
-                                if type(sheetData[k]) in {list, dict, set}:
-                                    sheetData[k].clear()
-                                else:
-                                    sheetData[k] = None
-                        else:
-                            sheetData[k] = v
+                                sheetData[k].clear()
 
-                    sheetData[timeKey] = tm
-                    loaded = True
+                        for k in SHEET_KEYS:
+                            v = data.get(k, None)
+
+                            if v is None:
+                                if k in sheetData:
+                                    if type(sheetData[k]) in {list, dict, set}:
+                                        sheetData[k].clear()
+                                    else:
+                                        sheetData[k] = None
+                            else:
+                                sheetData[k] = v
+
+                        sheetData[timeKey] = tm
+                        loaded = True
                 else:
                     loaded = False
             else:
@@ -224,21 +227,19 @@ class Sheets:
 
             if loaded:
                 # we have loaded valid, up-to-date, previously compiled spreadsheet data
-                self.console(f"SHEET data ({caseRep}): loaded from disk")
+                self.console("SHEET data: loaded from disk")
             else:
                 # now we really heave to read and compile the spreadsheet
-                self.console(
-                    f"SHEET data ({caseRep}): computing from scratch ...", newline=False
-                )
+                self.console("SHEET data: computing from scratch ...", newline=False)
                 sheetData.logData = []
                 sheetData.caseSensitive = caseSensitive
 
-                self._readSheet(sheetData)
+                self._readSheet()
                 tm = time.time()
                 sheetData[timeKey] = tm
 
-                self._compileSheet(sheetData)
-                self._prepareSheet(sheetData)
+                self._compileSheet()
+                self._prepareSheet()
                 self._processSheet()
 
                 with gzip.open(dataFile, mode="wb", compresslevel=GZIP_LEVEL) as f:
@@ -256,13 +257,59 @@ class Sheets:
                 showLog = False
         else:
             # the compiled spreadsheet data we have in memory is still up to date
-            self.console(f"SHEET data ({caseRep}): already in memory and uptodate")
+            self.console("SHEET data: already in memory and uptodate")
 
         if showLog and not browse:
             for x in sheetData.logData:
                 self.consoleLine(*x)
 
-    def _readSheet(self, sheetData):
+    def makeSheetOfSingleTokens(self):
+        Workbook = self.Workbook
+        sheetName = self.sheetName
+        sheetDir = self.sheetDir
+        sheetPath = f"{sheetDir}/{sheetName}-single.xlsx"
+        sheetData = self.getSheetData()
+        raw = sheetData.raw
+
+        # raw.setdefault(eidkind, {})[normScopeStr] = (r + 1, triggers)
+        words = {}
+
+        for eidkind, eData in raw.items():
+            for scopeStr, (r, triggers) in eData.items():
+                for trigger in triggers:
+                    for word in trigger.split():
+                        if word.isalpha():
+                            words.setdefault(word, {}).setdefault(scopeStr, set()).add(
+                                r
+                            )
+
+        wb = Workbook()
+        ws = wb.active
+        ws.append(("name", "kind", "scope", "triggers", "origrow"))
+        ws.append(("", "", "", "", ""))
+
+        eids = {}
+
+        for word in sorted(words):
+            wordData = words[word]
+            eid = toSmallId(word).replace(".", " ")
+            n = eids.get(eid, 0)
+
+            eidDis = eid if n == 0 else f"{eid}({n})"
+
+            n += 1
+            eids[eid] = n
+            rows = set()
+
+            for scopeStr in sorted(wordData):
+                rows |= set(wordData[scopeStr])
+
+            rowRep = ",".join(str(r) for r in sorted(rows))
+            ws.append((eidDis, "x", "", word, rowRep))
+
+        wb.save(sheetPath)
+
+    def _readSheet(self):
         """Read all the spreadsheets, the main one and the tweaks.
 
         Store the results in a hierarchy that mimicks the way they are organized in the
@@ -288,6 +335,7 @@ class Sheets:
         def err1(msg):
             self.log(True, 1, msg)
 
+        sheetData = self.getSheetData()
         caseSensitive = sheetData.caseSensitive
 
         nameMap = {}
@@ -425,8 +473,8 @@ class Sheets:
             eidkind = (eid, kind)
 
             if normScopeStr in raw.get(eidkind, {}):
-                # if eidkind in nameMap:
-                multiNames[r + 1] = f"({normScopeStr}) {nameMap[eidkind]}"
+                ar = raw[eidkind][normScopeStr][0]
+                multiNames[r + 1] = f"({normScopeStr}) {nameMap[eidkind]} also in r{ar}"
                 continue
             else:
                 nameMap[eidkind] = name
@@ -463,7 +511,7 @@ class Sheets:
                     plural = "" if n == 1 else "s"
                     err(f"{n} row{plural} {label}:\n\te.g.: {rep}")
 
-    def _compileSheet(self, sheetData):
+    def _compileSheet(self):
         """Compiles the info in tweaked sheets into complete sheets.
 
         For every tweak spreadsheet, a copy of its parent sheet will be made,
@@ -478,8 +526,10 @@ class Sheets:
         The tweak may remove triggers from the sheet. We have to adapt the tMap
         for that.
         """
+        sheetData = self.getSheetData()
         compiled = AttrDict()
         sheetData.compiled = compiled
+        nameMap = sheetData.nameMap
 
         def spec(msg):
             self.log(None, 0, msg)
@@ -490,20 +540,69 @@ class Sheets:
         def err(msg):
             self.log(True, 0, msg)
 
+        def errProblem(problem):
+            for indent, msg in problem:
+                self.log(True, indent, msg)
+
+        tFullMap = {}
+
+        def getTriggerRep(tr):
+            triggerInfo = tFullMap[tr]
+
+            result = []
+
+            for scope in sorted(triggerInfo):
+                scopeRep = "" if not scope else f"({scope})"
+                scopeInfo = triggerInfo[scope]
+
+                for eidkind in sorted(scopeInfo):
+                    name = sheetData.nameMap[eidkind]
+                    rowRep = ",".join(str(r) for r in sorted(scopeInfo[eidkind]))
+                    result.append(f"'{tr}'{scopeRep} r{rowRep} for {name}")
+            return result
+
         spec("Checking scopes ...")
 
         raw = sheetData.raw
         scopeMap = sheetData.scopeMap
         intervals = partitionScopes(scopeMap)
 
-        clashes = set()
+        problems = set()
 
         for b, e, scopeStrs in [[None, None, None]] + intervals:
             scopeStrSet = {""} if scopeStrs is None else set(scopeStrs)
             intv = (b, e) if b is not None and e is not None else ()
 
+            spec(repScope(intv))
+
             thisCompiled = AttrDict()
             compiled[intv] = thisCompiled
+
+            # check which triggers are a substring in which other triggers
+            # these triggers can never be found!
+
+            tFullMap.clear()
+
+            for eidkind, info in raw.items():
+                if "" in info:
+                    (r, triggers) = info[""]
+
+                    for trigger in triggers:
+                        tFullMap.setdefault(trigger, {}).setdefault("", {}).setdefault(
+                            eidkind, set()
+                        ).add(r)
+
+                for scopeStr, (r, triggers) in info.items():
+                    if scopeStr == "":
+                        continue
+
+                    if scopeStr in scopeStrSet:
+                        for trigger in triggers:
+                            tFullMap.setdefault(trigger, {}).setdefault(
+                                scopeStr, {}
+                            ).setdefault(eidkind, set()).add(r)
+
+            # now compile the result information: tMap, newSheet
 
             newSheet = {}
             thisCompiled.sheet = newSheet
@@ -511,17 +610,12 @@ class Sheets:
             tMap = {}
             thisCompiled.tMap = tMap
 
-            tFullMap = {}
-
             for eidkind, info in raw.items():
                 if "" in info:
                     (r, triggers) = info[""]
                     newSheet[eidkind] = triggers
 
                     for trigger in triggers:
-                        tFullMap.setdefault(trigger, {}).setdefault(eidkind, set()).add(
-                            (r, "")
-                        )
                         tMap[trigger] = ""
 
                 for scopeStr, (r, triggers) in info.items():
@@ -532,53 +626,65 @@ class Sheets:
                         newSheet[eidkind] = triggers
 
                         for trigger in triggers:
-                            tFullMap.setdefault(trigger, {}).setdefault(
-                                eidkind, set()
-                            ).add((r, scopeStr))
                             tMap[trigger] = scopeStr
 
-            hasTriggerConflicts = any(len(x) > 1 for x in tFullMap.values())
-            hasScopeConflicts = any(
-                any(sum(1 for z in y if z[1] != "") > 1 for y in x.values())
-                for x in tFullMap.values()
-            )
-            if not (hasTriggerConflicts or hasScopeConflicts):
-                continue
+            # the sheet is now compiled, all compiled data has been created
+            # the rest only deals with error reporting
 
-            scopeRep = "all" if b is None else repScope((b, e))
-            spec(f"Interval {scopeRep}")
+            ambi = 0
+            clashes = 0
 
-            specificClashes = 0
+            for trigger in sorted(tFullMap):
+                problem = []
+                triggerInfo = tFullMap[trigger]
 
-            for trigger, info in tFullMap.items():
-                ambiTrigger = len(info) > 1
-                conflictScope = any(
-                    sum(1 for z in y if z[1] != "") > 1 for y in info.values()
-                )
+                for scopeStr in sorted(triggerInfo):
+                    scopeInfo = triggerInfo[scopeStr]
+                    scopeRep = f" in scope {scopeStr}" if scopeStr else ""
 
-                if not (ambiTrigger or conflictScope):
-                    continue
+                    thisAmbi = False
+                    theseClashes = 0
 
-                msg = f"Clash: {trigger}"
-                emsgs = []
+                    if len(scopeInfo) > 1:
+                        problem.append((0, f"Ambi: '{trigger}'{scopeRep}: "))
+                        thisAmbi = True
 
-                for eidkind, scopeInfo in info.items():
+                    for eidkind, rs in scopeInfo.items():
+                        name = nameMap[eidkind]
+                        rowRep = ",".join(str(r) for r in rs)
+                        nRs = len(rs)
 
-                    for r, scopeStr in scopeInfo:
-                        scopeRep = " (scopeStr)" if scopeStr else ""
-                        emsgs.append(f"r{r}{scopeRep}")
+                        if nRs > 1:
+                            theseClashes += 1
 
-                clash = f"{msg}: {' vs '.join(emsgs)}"
+                        if thisAmbi:
+                            problem.append((1, f"{name}: {rowRep}"))
+                        elif nRs > 1:
+                            problem.append(
+                                (0, f"Clash: '{trigger}' for {name}: {rowRep}")
+                            )
 
-                if clash not in clashes:
-                    clashes.add(clash)
-                    err(clash)
-                    specificClashes += 1
+                    clashes += theseClashes
 
-            if specificClashes == 0:
-                log("no context-specific clashes")
+                    if len(problem):
+                        problem = tuple(problem)
 
-    def _prepareSheet(self, sheetData):
+                        if problem not in problems:
+                            if thisAmbi:
+                                ambi += 1
+                            if theseClashes:
+                                clashes += theseClashes
+
+                            problems.add(problem)
+                            errProblem(problem)
+
+            if ambi > 0:
+                err(f"Ambiguous triggers: {ambi} x")
+
+            if clashes > 0:
+                err(f"Reused triggers scope: {clashes} x")
+
+    def _prepareSheet(self):
         """Transform the sheets into instructions.
 
         Now we have complete sheets for every context, the inheritance is resolved.
@@ -617,7 +723,10 @@ class Sheets:
         """
 
         spaceEscaped = self.spaceEscaped
+
+        sheetData = self.getSheetData()
         compiled = sheetData.compiled
+        caseSensitive = sheetData.caseSensitive
 
         instructions = {}
         sheetData.instructions = instructions
@@ -635,7 +744,9 @@ class Sheets:
 
             for eidkind, triggers in sheet.items():
                 for trigger in triggers:
-                    triggerT = toTokens(trigger, spaceEscaped=spaceEscaped)
+                    triggerT = toTokens(
+                        trigger, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
+                    )
                     triggerSet.add(triggerT)
                     idMap.setdefault(trigger, []).append(eidkind)
 
@@ -682,8 +793,7 @@ class Sheets:
         if not self.properlySetup:
             return
 
-        sheetName = self.sheetName
-        sheetData = self.sheets[sheetName]
+        sheetData = self.getSheetData()
 
         inventory = sheetData.inventory
         instructions = sheetData.instructions
@@ -703,7 +813,7 @@ class Sheets:
                 if eidkind is None:
                     continue
 
-                occs = inventory.get(eidkind, {}).get(trigger, {}).get(scope, {})
+                occs = inventory.get(eidkind, {}).get(trigger, {}).get(scope, [])
                 hitData.setdefault(eidkind, {})[(trigger, scope)] = len(occs)
 
     def _markEntities(self):
@@ -718,8 +828,7 @@ class Sheets:
         if not self.properlySetup:
             return
 
-        sheetName = self.sheetName
-        sheetData = self.sheets[sheetName]
+        sheetData = self.getSheetData()
         inventory = sheetData.inventory
 
         newEntities = []
@@ -729,9 +838,10 @@ class Sheets:
         for eidkind, entData in inventory.items():
             for trigger, triggerData in entData.items():
                 for scope, matches in triggerData.items():
-                    newEntities.append((eidkind, matches))
                     for match in matches:
                         triggerFromMatch[match] = (trigger, scope)
+
+                    newEntities.append((eidkind, matches))
 
         self._addToSet(newEntities)
 

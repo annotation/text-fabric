@@ -16,9 +16,10 @@ DS_STORE = ".DS_Store"
 
 
 class IIIF:
-    def __init__(self, teiVersion, app, prod=False, silent=False):
+    def __init__(self, teiVersion, app, pageInfoFile, prod=False, silent=False):
         self.teiVersion = teiVersion
         self.app = app
+        self.pageInfoFile = pageInfoFile
         self.prod = prod
         self.silent = silent
 
@@ -40,7 +41,6 @@ class IIIF:
         self.pagesDir = f"{scanDir}/pages"
         self.logoInDir = f"{scanDir}/logo"
         self.logoDir = f"{staticDir}/logo"
-        self.reportDir = f"{repoLocation}/report{teiVersionRep}"
 
         self.coversHtmlIn = f"{repoLocation}/programs/covers.html"
         self.coversHtmlOut = f"{staticDir}/covers.html"
@@ -141,16 +141,15 @@ class IIIF:
             self.console(f"Average deviation:  W = {devW:>4} H = {devH:>4}")
 
     def getPageSeq(self):
-        reportDir = self.reportDir
         coversDir = self.coversDir
-        pageSeqFile = f"{reportDir}/pageseq.json"
+        pageInfoFile = self.pageInfoFile
 
         covers = sorted(
             stripExt(f) for f in dirContents(coversDir)[0] if f is not DS_STORE
         )
         self.covers = covers
         self.pages = dict(
-            pages=readJson(asFile=pageSeqFile, plain=True), covers=dict(covers=covers)
+            pages=readJson(asFile=pageInfoFile, plain=True), covers=dict(covers=covers)
         )
 
     def genPages(self, kind, folder=None):

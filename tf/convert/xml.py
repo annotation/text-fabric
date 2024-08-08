@@ -179,7 +179,8 @@ from ..core.files import (
     APP_CONFIG
 )
 
-(HELP, TASKS, TASKS_EXCLUDED, PARAMS, FLAGS) = setUp("XML")
+TASKS_EXCLUDED = {"apptoken", "browse"}
+(HELP, TASKS, PARAMS, FLAGS) = setUp("XML")
 
 TRIM_ATTS = set(
     """
@@ -198,6 +199,7 @@ class XML(CheckImport):
         trimAtts=set(),
         keywordAtts=set(),
         renameAtts={},
+        sourceBase=PARAMS["sourceBase"][1],
         xml=PARAMS["xml"][1],
         tf=PARAMS["tf"][1],
         verbose=FLAGS["verbose"][1],
@@ -370,6 +372,10 @@ class XML(CheckImport):
         convertSpec = f"{programDir}/xml.yaml"
         convertCustom = f"{programDir}/xml.py"
 
+        sourceRefDir = sourceBase if sourceBase else refDir
+        xmlDir = f"{sourceRefDir}/xml"
+        reportDir = f"{sourceRefDir}/report"
+
         settings = readYaml(asFile=convertSpec, plain=True)
 
         self.transform = None
@@ -396,9 +402,7 @@ class XML(CheckImport):
         procins = settings.get("procins", False)
         self.procins = procins
 
-        reportDir = f"{refDir}/report"
         appDir = f"{refDir}/app"
-        xmlDir = f"{refDir}/xml"
         tfDir = f"{refDir}/tf"
 
         xmlVersions = sorted(dirContents(xmlDir)[1], key=versionSort)
