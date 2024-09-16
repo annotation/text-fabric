@@ -19,6 +19,7 @@ def argApp(cargs, simple):
     (appName, checkoutApp, dataLoc) = argParam(cargs)
     backend = _argCollect("backend", cargs)
     checkout = _argCollect("checkout", cargs)
+    version = _argCollect("version", cargs)
     dataRelative = _argCollect("relative", cargs)
 
     if (
@@ -34,7 +35,7 @@ def argApp(cargs, simple):
         checkout = "clone"
 
     if simple:
-        return appName
+        return f"{appName}:{version}"
 
     locations = _argCollect("locations", cargs)
     modules = _argCollect("modules", cargs)

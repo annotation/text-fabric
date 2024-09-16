@@ -1173,6 +1173,7 @@ class WATM:
         L = self.L
         slotType = self.slotType
         strv = self.strv
+        afterv = self.afterv
         maxSlot = self.maxSlot
 
         if hyphenation is None:
@@ -1187,11 +1188,13 @@ class WATM:
             lastSlot = L.d(line, otype=slotType)[-1]
 
             if strv(lastSlot) == "-" and lastSlot > 1 and lastSlot < maxSlot:
+                s1 = lastSlot - 1
+                s2 = lastSlot + 1
                 pairs.append(
                     (
-                        lastSlot - 1,
-                        lastSlot + 1,
-                        f"{strv(lastSlot - 1)}{strv(lastSlot + 1)}",
+                        s1,
+                        s2,
+                        f"{strv(s1)}{strv(s2)}{afterv(s2)}",
                     )
                 )
 

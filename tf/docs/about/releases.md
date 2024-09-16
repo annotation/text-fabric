@@ -20,6 +20,20 @@ pip install -e .
 
 ### 12.5
 
+#### 12.5.4
+
+2024-09-16
+
+Many changes in NER, TEI conversion, WATM generation, IIIF manifest generation.
+Documentation on these points may lag behind.
+
+Also: when the TF browser starts, it selects a port to listen to.
+For each datasource, a different port number is chosen.
+However, different versions of the same datasource were assigned the same version.
+Now the version number is taken into account when selecting a port number, so
+that you can have a TF brtowser running on different versions of the same datasource
+at the same time.
+
 #### 12.5.3
 
 2024-07-05
