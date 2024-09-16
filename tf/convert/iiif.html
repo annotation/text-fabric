@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/convert/iiif.py#L1-L185" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/convert/iiif.py#L1-L225" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from ..core.files import (
     readYaml,
@@ -42,6 +42,7 @@ crossorigin>
     dirExists,
     dirCopy,
     dirContents,
+    stripExt,
 )
 from ..core.helpers import console
 from .helpers import parseIIIF, fillinIIIF
@@ -50,16 +51,19 @@ DS_STORE = &#34;.DS_Store&#34;
 
 
 class IIIF:
-    def __init__(self, teiVersion, app, prod=False, silent=False):
+    def __init__(self, teiVersion, app, pageInfoFile, prod=False, silent=False):
         self.teiVersion = teiVersion
         self.app = app
+        self.pageInfoFile = pageInfoFile
         self.prod = prod
         self.silent = silent
+
+        teiVersionRep = f&#34;/{teiVersion}&#34; if teiVersion else teiVersion
 
         F = app.api.F
 
         repoLocation = app.repoLocation
-        staticDir = f&#34;{repoLocation}/{teiVersion}/{&#39;prod&#39; if prod else &#39;dev&#39;}&#34;
+        staticDir = f&#34;{repoLocation}/static{teiVersionRep}/{&#39;prod&#39; if prod else &#39;dev&#39;}&#34;
         self.staticDir = staticDir
         self.manifestDir = f&#34;{staticDir}/manifests&#34;
         self.thumbDir = (
@@ -72,23 +76,24 @@ class IIIF:
         self.pagesDir = f&#34;{scanDir}/pages&#34;
         self.logoInDir = f&#34;{scanDir}/logo&#34;
         self.logoDir = f&#34;{staticDir}/logo&#34;
-        self.reportDir = f&#34;{repoLocation}/report/{teiVersion}&#34;
 
+        self.coversHtmlIn = f&#34;{repoLocation}/programs/covers.html&#34;
+        self.coversHtmlOut = f&#34;{staticDir}/covers.html&#34;
         settings = readYaml(asFile=f&#34;{repoLocation}/programs/iiif.yaml&#34;, plain=True)
+        self.settings = settings
         self.templates = parseIIIF(settings, prod, &#34;templates&#34;)
 
         self.getSizes()
+        self.getRotations()
         self.getPageSeq()
         pages = self.pages
-        covers = sorted(f for f in dirContents(coversDir)[0] if f is not DS_STORE)
-        self.covers = covers
         folders = [F.folder.v(f) for f in F.otype.s(&#34;folder&#34;)]
         self.folders = folders
 
         self.console(&#34;Collections:&#34;)
 
         for folder in folders:
-            n = len(pages[folder])
+            n = len(pages[&#34;pages&#34;][folder])
             self.console(f&#34;{folder:&gt;5} with {n:&gt;4} pages&#34;)
 
     def console(self, msg, **kwargs):
@@ -102,6 +107,24 @@ class IIIF:
 
         if not silent:
             console(msg, **kwargs)
+
+    def getRotations(self):
+        prod = self.prod
+        thumbDir = self.thumbDir
+        scanDir = self.scanDir
+
+        rotateFile = f&#34;{scanDir if prod else thumbDir}/rotation_pages.tsv&#34;
+
+        rotateInfo = {}
+        self.rotateInfo = rotateInfo
+
+        with fileOpen(rotateFile) as rh:
+            next(rh)
+            for line in rh:
+                fields = line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)
+                p = fields[0]
+                rot = int(fields[1])
+                rotateInfo[p] = rot
 
     def getSizes(self):
         prod = self.prod
@@ -153,13 +176,15 @@ class IIIF:
             self.console(f&#34;Average deviation:  W = {devW:&gt;4} H = {devH:&gt;4}&#34;)
 
     def getPageSeq(self):
-        reportDir = self.reportDir
-        covers = self.covers
-        pageSeqFile = f&#34;{reportDir}/pageseq.json&#34;
+        coversDir = self.coversDir
+        pageInfoFile = self.pageInfoFile
 
-        self.pages = {}
+        covers = sorted(
+            stripExt(f) for f in dirContents(coversDir)[0] if f is not DS_STORE
+        )
+        self.covers = covers
         self.pages = dict(
-            pages=readJson(asFile=pageSeqFile, plain=True), covers=dict(covers=covers)
+            pages=readJson(asFile=pageInfoFile, plain=True), covers=dict(covers=covers)
         )
 
     def genPages(self, kind, folder=None):
@@ -167,6 +192,7 @@ class IIIF:
             folder = kind
         templates = self.templates
         sizeInfo = self.sizeInfo[kind]
+        rotateInfo = None if kind == &#34;covers&#34; else self.rotateInfo
         pages = self.pages[kind]
         thesePages = pages[folder]
 
@@ -177,9 +203,10 @@ class IIIF:
         for p in thesePages:
             item = {}
             w, h = sizeInfo.get(p, (0, 0))
+            rot = 0 if rotateInfo is None else rotateInfo.get(p, 0)
 
             for k, v in pageItem.items():
-                v = fillinIIIF(v, folder=folder, page=p, width=w, height=h)
+                v = fillinIIIF(v, folder=folder, page=p, width=w, height=h, rot=rot)
                 item[k] = v
 
             items.append(item)
@@ -204,6 +231,19 @@ class IIIF:
         manifestDir = self.manifestDir
         logoInDir = self.logoInDir
         logoDir = self.logoDir
+        coversHtmlIn = self.coversHtmlIn
+        coversHtmlOut = self.coversHtmlOut
+        prod = self.prod
+        settings = self.settings
+
+        with fileOpen(coversHtmlIn) as fh:
+            coversHtml = fh.read()
+
+        server = settings[&#34;switches&#34;][&#34;prod&#34; if prod else &#34;dev&#34;][&#34;server&#34;]
+        coversHtml = coversHtml.replace(&#34;«server»&#34;, server)
+
+        with fileOpen(coversHtmlOut, &#34;w&#34;) as fh:
+            fh.write(coversHtml)
 
         initTree(manifestDir, fresh=True)
 
@@ -231,26 +271,29 @@ class IIIF:
 <dl>
 <dt id="tf.convert.iiif.IIIF"><code class="flex name class">
 <span>class <span class="ident">IIIF</span></span>
-<span>(</span><span>teiVersion, app, prod=False, silent=False)</span>
+<span>(</span><span>teiVersion, app, pageInfoFile, prod=False, silent=False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/convert/iiif.py#L17-L185" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/convert/iiif.py#L18-L225" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class IIIF:
-    def __init__(self, teiVersion, app, prod=False, silent=False):
+    def __init__(self, teiVersion, app, pageInfoFile, prod=False, silent=False):
         self.teiVersion = teiVersion
         self.app = app
+        self.pageInfoFile = pageInfoFile
         self.prod = prod
         self.silent = silent
+
+        teiVersionRep = f&#34;/{teiVersion}&#34; if teiVersion else teiVersion
 
         F = app.api.F
 
         repoLocation = app.repoLocation
-        staticDir = f&#34;{repoLocation}/{teiVersion}/{&#39;prod&#39; if prod else &#39;dev&#39;}&#34;
+        staticDir = f&#34;{repoLocation}/static{teiVersionRep}/{&#39;prod&#39; if prod else &#39;dev&#39;}&#34;
         self.staticDir = staticDir
         self.manifestDir = f&#34;{staticDir}/manifests&#34;
         self.thumbDir = (
@@ -263,23 +306,24 @@ class IIIF:
         self.pagesDir = f&#34;{scanDir}/pages&#34;
         self.logoInDir = f&#34;{scanDir}/logo&#34;
         self.logoDir = f&#34;{staticDir}/logo&#34;
-        self.reportDir = f&#34;{repoLocation}/report/{teiVersion}&#34;
 
+        self.coversHtmlIn = f&#34;{repoLocation}/programs/covers.html&#34;
+        self.coversHtmlOut = f&#34;{staticDir}/covers.html&#34;
         settings = readYaml(asFile=f&#34;{repoLocation}/programs/iiif.yaml&#34;, plain=True)
+        self.settings = settings
         self.templates = parseIIIF(settings, prod, &#34;templates&#34;)
 
         self.getSizes()
+        self.getRotations()
         self.getPageSeq()
         pages = self.pages
-        covers = sorted(f for f in dirContents(coversDir)[0] if f is not DS_STORE)
-        self.covers = covers
         folders = [F.folder.v(f) for f in F.otype.s(&#34;folder&#34;)]
         self.folders = folders
 
         self.console(&#34;Collections:&#34;)
 
         for folder in folders:
-            n = len(pages[folder])
+            n = len(pages[&#34;pages&#34;][folder])
             self.console(f&#34;{folder:&gt;5} with {n:&gt;4} pages&#34;)
 
     def console(self, msg, **kwargs):
@@ -293,6 +337,24 @@ class IIIF:
 
         if not silent:
             console(msg, **kwargs)
+
+    def getRotations(self):
+        prod = self.prod
+        thumbDir = self.thumbDir
+        scanDir = self.scanDir
+
+        rotateFile = f&#34;{scanDir if prod else thumbDir}/rotation_pages.tsv&#34;
+
+        rotateInfo = {}
+        self.rotateInfo = rotateInfo
+
+        with fileOpen(rotateFile) as rh:
+            next(rh)
+            for line in rh:
+                fields = line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)
+                p = fields[0]
+                rot = int(fields[1])
+                rotateInfo[p] = rot
 
     def getSizes(self):
         prod = self.prod
@@ -344,13 +406,15 @@ class IIIF:
             self.console(f&#34;Average deviation:  W = {devW:&gt;4} H = {devH:&gt;4}&#34;)
 
     def getPageSeq(self):
-        reportDir = self.reportDir
-        covers = self.covers
-        pageSeqFile = f&#34;{reportDir}/pageseq.json&#34;
+        coversDir = self.coversDir
+        pageInfoFile = self.pageInfoFile
 
-        self.pages = {}
+        covers = sorted(
+            stripExt(f) for f in dirContents(coversDir)[0] if f is not DS_STORE
+        )
+        self.covers = covers
         self.pages = dict(
-            pages=readJson(asFile=pageSeqFile, plain=True), covers=dict(covers=covers)
+            pages=readJson(asFile=pageInfoFile, plain=True), covers=dict(covers=covers)
         )
 
     def genPages(self, kind, folder=None):
@@ -358,6 +422,7 @@ class IIIF:
             folder = kind
         templates = self.templates
         sizeInfo = self.sizeInfo[kind]
+        rotateInfo = None if kind == &#34;covers&#34; else self.rotateInfo
         pages = self.pages[kind]
         thesePages = pages[folder]
 
@@ -368,9 +433,10 @@ class IIIF:
         for p in thesePages:
             item = {}
             w, h = sizeInfo.get(p, (0, 0))
+            rot = 0 if rotateInfo is None else rotateInfo.get(p, 0)
 
             for k, v in pageItem.items():
-                v = fillinIIIF(v, folder=folder, page=p, width=w, height=h)
+                v = fillinIIIF(v, folder=folder, page=p, width=w, height=h, rot=rot)
                 item[k] = v
 
             items.append(item)
@@ -395,6 +461,19 @@ class IIIF:
         manifestDir = self.manifestDir
         logoInDir = self.logoInDir
         logoDir = self.logoDir
+        coversHtmlIn = self.coversHtmlIn
+        coversHtmlOut = self.coversHtmlOut
+        prod = self.prod
+        settings = self.settings
+
+        with fileOpen(coversHtmlIn) as fh:
+            coversHtml = fh.read()
+
+        server = settings[&#34;switches&#34;][&#34;prod&#34; if prod else &#34;dev&#34;][&#34;server&#34;]
+        coversHtml = coversHtml.replace(&#34;«server»&#34;, server)
+
+        with fileOpen(coversHtmlOut, &#34;w&#34;) as fh:
+            fh.write(coversHtml)
 
         initTree(manifestDir, fresh=True)
 
@@ -428,6 +507,12 @@ class IIIF:
 </dd>
 <dt id="tf.convert.iiif.IIIF.getPageSeq"><code class="name flex">
 <span>def <span class="ident">getPageSeq</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.convert.iiif.IIIF.getRotations"><code class="name flex">
+<span>def <span class="ident">getRotations</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -515,10 +600,11 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li>
 <h4><code><a title="tf.convert.iiif.IIIF" href="#tf.convert.iiif.IIIF">IIIF</a></code></h4>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="tf.convert.iiif.IIIF.console" href="#tf.convert.iiif.IIIF.console">console</a></code></li>
 <li><code><a title="tf.convert.iiif.IIIF.genPages" href="#tf.convert.iiif.IIIF.genPages">genPages</a></code></li>
 <li><code><a title="tf.convert.iiif.IIIF.getPageSeq" href="#tf.convert.iiif.IIIF.getPageSeq">getPageSeq</a></code></li>
+<li><code><a title="tf.convert.iiif.IIIF.getRotations" href="#tf.convert.iiif.IIIF.getRotations">getRotations</a></code></li>
 <li><code><a title="tf.convert.iiif.IIIF.getSizes" href="#tf.convert.iiif.IIIF.getSizes">getSizes</a></code></li>
 <li><code><a title="tf.convert.iiif.IIIF.manifests" href="#tf.convert.iiif.IIIF.manifests">manifests</a></code></li>
 </ul>

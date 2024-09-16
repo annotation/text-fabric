@@ -35,7 +35,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/browser/ner/fragments.py#L1-L993" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/browser/ner/fragments.py#L1-L1008" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Wraps various pieces into HTML.
 
@@ -59,29 +59,30 @@ class Fragments:
         v.messages = H.p((H.span(text, cls=lev) + H.br() for (lev, text) in messageSrc))
 
     def wrapSets(self):
-        &#34;&#34;&#34;HTML for the annotation set chooser.
+        &#34;&#34;&#34;HTML for the annotation task chooser.
 
-        It is a dropdown with options, each corresponding to an existing annotation set.
-        There is also a control to delete the set.
+        It is a dropdown with options, each corresponding to an existing annotation task.
+        There is also a control to delete the task.
 
         Apart from these buttons there is a button to switch to the entities that are
         present in the TF dataset as nodes of the entity type specified
         in the YAML file with corresponding
         features.
 
-        Finally, it is possible to create a new, empty annotation set.
+        Finally, it is possible to create a new, empty annotation task.
         &#34;&#34;&#34;
         ner = self.ner
-        setNames = ner.setNames
+        taskNames = ner.getTasks()
 
         v = self.v
-        chosenSet = v.set
+        chosenTask = v.task
+        sheetCase = v.sheetcase
 
         content1 = [
             H.input(
                 type=&#34;hidden&#34;,
-                name=&#34;set&#34;,
-                value=chosenSet,
+                name=&#34;task&#34;,
+                value=chosenTask,
                 id=&#34;seth&#34;,
             ),
             H.input(
@@ -100,7 +101,7 @@ class Fragments:
                 &#34;+&#34;,
                 type=&#34;submit&#34;,
                 id=&#34;anew&#34;,
-                title=&#34;create a new annotation set&#34;,
+                title=&#34;create a new annotation task&#34;,
                 cls=&#34;mono&#34;,
             ),
             &#34; &#34;,
@@ -108,21 +109,35 @@ class Fragments:
                 &#34;++&#34;,
                 type=&#34;submit&#34;,
                 id=&#34;adup&#34;,
-                title=&#34;duplicate this annotation set&#34;,
+                title=&#34;duplicate this annotation task&#34;,
                 cls=&#34;mono&#34;,
             ),
             &#34; &#34;,
             H.select(
                 (
                     H.option(
-                        ner.setInfo(setName=setName)[0],
-                        value=setName,
-                        selected=setName == chosenSet,
+                        ner.setInfo(taskName)[0],
+                        value=taskName,
+                        selected=taskName == chosenTask,
                     )
-                    for setName in [&#34;&#34;] + sorted(setNames)
+                    for taskName in [&#34;&#34;] + sorted(taskNames)
                 ),
                 cls=&#34;selinp&#34;,
                 id=&#34;achange&#34;,
+            ),
+            &#34; &#34;,
+            H.input(
+                type=&#34;hidden&#34;,
+                id=&#34;sheetcase&#34;,
+                name=&#34;sheetcase&#34;,
+                value=&#34;v&#34; if sheetCase else &#34;x&#34;,
+            ),
+            H.button(
+                &#34;C&#34; if sheetCase else &#34;¢&#34;,
+                type=&#34;submit&#34;,
+                id=&#34;sheetcasebutton&#34;,
+                title=&#34;toggle case-sensitivity&#34;,
+                cls=&#34;mono&#34;,
             ),
         ]
 
@@ -138,7 +153,7 @@ class Fragments:
                     &#34;→&#34;,
                     type=&#34;submit&#34;,
                     id=&#34;arename&#34;,
-                    title=&#34;rename current annotation set&#34;,
+                    title=&#34;rename current annotation task&#34;,
                     cls=&#34;mono&#34;,
                 ),
                 &#34; &#34;,
@@ -146,15 +161,15 @@ class Fragments:
                     &#34;-&#34;,
                     type=&#34;submit&#34;,
                     id=&#34;adelete&#34;,
-                    title=&#34;delete current annotation set&#34;,
+                    title=&#34;delete current annotation task&#34;,
                     cls=&#34;mono&#34;,
                 ),
             ]
-            if not (chosenSet == &#34;&#34; or chosenSet.startswith(&#34;.&#34;))
+            if not (chosenTask == &#34;&#34; or chosenTask.startswith(&#34;.&#34;))
             else []
         )
 
-        v.sets = H.p(content1, content2)
+        v.tasks = H.p(content1, content2)
 
     def wrapCaption(self):
         v = self.v
@@ -462,11 +477,11 @@ class Fragments:
                 value=&#34;&#34; if subtleFilter is None else &#34;v&#34; if subtleFilter else &#34;x&#34;,
             ),
             &#34;&#34; if not setIsX else H.button(
-                &#34;all sheets&#34;
+                &#34;all scopes&#34;
                 if subtleFilter is None
-                else &#34;contexts&#34;
+                else &#34;scoped&#34;
                 if subtleFilter
-                else &#34;main sheet&#34;,
+                else &#34;unscoped&#34;,
                 type=&#34;submit&#34;,
                 id=&#34;subtlefilterbutton&#34;,
                 cls=&#34;mono&#34;,
@@ -1049,7 +1064,7 @@ class Fragments:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/browser/ner/fragments.py#L14-L993" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/browser/ner/fragments.py#L14-L1008" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Fragments:
     def wrapMessages(self):
@@ -1060,29 +1075,30 @@ class Fragments:
         v.messages = H.p((H.span(text, cls=lev) + H.br() for (lev, text) in messageSrc))
 
     def wrapSets(self):
-        &#34;&#34;&#34;HTML for the annotation set chooser.
+        &#34;&#34;&#34;HTML for the annotation task chooser.
 
-        It is a dropdown with options, each corresponding to an existing annotation set.
-        There is also a control to delete the set.
+        It is a dropdown with options, each corresponding to an existing annotation task.
+        There is also a control to delete the task.
 
         Apart from these buttons there is a button to switch to the entities that are
         present in the TF dataset as nodes of the entity type specified
         in the YAML file with corresponding
         features.
 
-        Finally, it is possible to create a new, empty annotation set.
+        Finally, it is possible to create a new, empty annotation task.
         &#34;&#34;&#34;
         ner = self.ner
-        setNames = ner.setNames
+        taskNames = ner.getTasks()
 
         v = self.v
-        chosenSet = v.set
+        chosenTask = v.task
+        sheetCase = v.sheetcase
 
         content1 = [
             H.input(
                 type=&#34;hidden&#34;,
-                name=&#34;set&#34;,
-                value=chosenSet,
+                name=&#34;task&#34;,
+                value=chosenTask,
                 id=&#34;seth&#34;,
             ),
             H.input(
@@ -1101,7 +1117,7 @@ class Fragments:
                 &#34;+&#34;,
                 type=&#34;submit&#34;,
                 id=&#34;anew&#34;,
-                title=&#34;create a new annotation set&#34;,
+                title=&#34;create a new annotation task&#34;,
                 cls=&#34;mono&#34;,
             ),
             &#34; &#34;,
@@ -1109,21 +1125,35 @@ class Fragments:
                 &#34;++&#34;,
                 type=&#34;submit&#34;,
                 id=&#34;adup&#34;,
-                title=&#34;duplicate this annotation set&#34;,
+                title=&#34;duplicate this annotation task&#34;,
                 cls=&#34;mono&#34;,
             ),
             &#34; &#34;,
             H.select(
                 (
                     H.option(
-                        ner.setInfo(setName=setName)[0],
-                        value=setName,
-                        selected=setName == chosenSet,
+                        ner.setInfo(taskName)[0],
+                        value=taskName,
+                        selected=taskName == chosenTask,
                     )
-                    for setName in [&#34;&#34;] + sorted(setNames)
+                    for taskName in [&#34;&#34;] + sorted(taskNames)
                 ),
                 cls=&#34;selinp&#34;,
                 id=&#34;achange&#34;,
+            ),
+            &#34; &#34;,
+            H.input(
+                type=&#34;hidden&#34;,
+                id=&#34;sheetcase&#34;,
+                name=&#34;sheetcase&#34;,
+                value=&#34;v&#34; if sheetCase else &#34;x&#34;,
+            ),
+            H.button(
+                &#34;C&#34; if sheetCase else &#34;¢&#34;,
+                type=&#34;submit&#34;,
+                id=&#34;sheetcasebutton&#34;,
+                title=&#34;toggle case-sensitivity&#34;,
+                cls=&#34;mono&#34;,
             ),
         ]
 
@@ -1139,7 +1169,7 @@ class Fragments:
                     &#34;→&#34;,
                     type=&#34;submit&#34;,
                     id=&#34;arename&#34;,
-                    title=&#34;rename current annotation set&#34;,
+                    title=&#34;rename current annotation task&#34;,
                     cls=&#34;mono&#34;,
                 ),
                 &#34; &#34;,
@@ -1147,15 +1177,15 @@ class Fragments:
                     &#34;-&#34;,
                     type=&#34;submit&#34;,
                     id=&#34;adelete&#34;,
-                    title=&#34;delete current annotation set&#34;,
+                    title=&#34;delete current annotation task&#34;,
                     cls=&#34;mono&#34;,
                 ),
             ]
-            if not (chosenSet == &#34;&#34; or chosenSet.startswith(&#34;.&#34;))
+            if not (chosenTask == &#34;&#34; or chosenTask.startswith(&#34;.&#34;))
             else []
         )
 
-        v.sets = H.p(content1, content2)
+        v.tasks = H.p(content1, content2)
 
     def wrapCaption(self):
         v = self.v
@@ -1463,11 +1493,11 @@ class Fragments:
                 value=&#34;&#34; if subtleFilter is None else &#34;v&#34; if subtleFilter else &#34;x&#34;,
             ),
             &#34;&#34; if not setIsX else H.button(
-                &#34;all sheets&#34;
+                &#34;all scopes&#34;
                 if subtleFilter is None
-                else &#34;contexts&#34;
+                else &#34;scoped&#34;
                 if subtleFilter
-                else &#34;main sheet&#34;,
+                else &#34;unscoped&#34;,
                 type=&#34;submit&#34;,
                 id=&#34;subtlefilterbutton&#34;,
                 cls=&#34;mono&#34;,
@@ -2175,14 +2205,14 @@ be applied to all relevant buckets, or only to the filtered buckets.</p></div>
 <span>def <span class="ident">wrapSets</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>HTML for the annotation set chooser.</p>
-<p>It is a dropdown with options, each corresponding to an existing annotation set.
-There is also a control to delete the set.</p>
+<div class="desc"><p>HTML for the annotation task chooser.</p>
+<p>It is a dropdown with options, each corresponding to an existing annotation task.
+There is also a control to delete the task.</p>
 <p>Apart from these buttons there is a button to switch to the entities that are
 present in the TF dataset as nodes of the entity type specified
 in the YAML file with corresponding
 features.</p>
-<p>Finally, it is possible to create a new, empty annotation set.</p></div>
+<p>Finally, it is possible to create a new, empty annotation task.</p></div>
 </dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapSubtle"><code class="name flex">
 <span>def <span class="ident">wrapSubtle</span></span>(<span>self)</span>

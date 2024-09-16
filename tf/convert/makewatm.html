@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/convert/makewatm.py#L1-L428" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/convert/makewatm.py#L1-L517" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 from textwrap import dedent
@@ -83,10 +83,15 @@ class MakeWATM:
                 (flag2, docLine2),
                 ...
             ),
+            paramSpecs=(
+                (param1, docLine1),
+                (param2, docLine2),
+                ...
+            ),
         )
     &#34;&#34;&#34;
 
-    def __init__(self, fileLoc):
+    def __init__(self, fileLoc, **kwargs):
         &#34;&#34;&#34;Localize upon creation.
 
         When an object of this class is initialized, we assume that the script
@@ -104,15 +109,21 @@ class MakeWATM:
 
         USAGE
 
-        python make.py tasks
+        python make.py flags params tasks
 
         Converts data from TEI files
 
         ARGS
 
+        flags
+            Any argument starting with --
+        params
+            Any argument with an = in it
         tfversion
             Any arg that contains a . is considered to be the tf version number.
             If no version is passed, we resort to the hard coded default.
+        tasks
+            Any remaining argument
 
         all
             run all (enabled) tasks
@@ -132,6 +143,9 @@ class MakeWATM:
             prod=&#34;Delivers WATM in production location&#34;,
             force=&#34;Force execution even if (uptodate) data is present&#34;,
         )
+        self.BASE_PARAMS = dict(
+            sourceBase=&#34;Base directory under which the sources are&#34;,
+        )
         self.BASE_TASKS = (&#34;tei2tf&#34;, &#34;page2tf&#34;, &#34;watm&#34;, &#34;watms&#34;)
         self.TF_VERSION = &#34;0.0.0test&#34;
 
@@ -144,7 +158,7 @@ class MakeWATM:
             targetDir=repoBase
         )
         self.repoBase = repoBase
-        self.setOptions()
+        self.setOptions(**kwargs)
 
     def setOptions(
         self,
@@ -153,17 +167,23 @@ class MakeWATM:
             (&#34;watm&#34;, None),
         ),
         flagSpecs=(
-            (&#34;silent&#34;, None),
+            (&#34;silent&#34;, True),
             (&#34;relaxed&#34;, None),
             (&#34;usenlp&#34;, None),
-            (&#34;prod&#34;, None),
+            (&#34;prod&#34;, True),
             (&#34;force&#34;, None),
         ),
+        paramSpecs=(
+            (&#34;sourceBase&#34;, None),
+        ),
         intro=None,
+        **kwargs,
     ):
         self.TASKS = []
         self.DOCS = {}
         self.FLAGS = {}
+        self.PARAMS = {}
+        self.PARAM_DEFAULTS = {}
 
         good = True
 
@@ -199,6 +219,23 @@ class MakeWATM:
 
             self.FLAGS[name] = doc
 
+        for name, doc in paramSpecs:
+            if name not in self.BASE_PARAMS:
+                if doc is None:
+                    console(f&#34;param {name}=: no help text given&#34;, error=True)
+                    good = False
+
+            if not good:
+                continue
+
+            self.PARAMS[name] = doc
+
+        for (param, value) in kwargs.items():
+            if param in self.PARAMS:
+                self.PARAM_DEFAULTS[param] = value
+            else:
+                console(f&#34;Unrecognized parameter {param}=&#39;{value}&#39;&#34;, error=True)
+
         self.good = good
 
         self.HELP = (
@@ -206,13 +243,29 @@ class MakeWATM:
             + self.BASE_HELP
             + &#34;\nFLAGS\n\n&#34;
             + &#34;&#34;.join(f&#34;{name}\n\t{doc}&#34; for (name, doc) in self.FLAGS.items())
+            + &#34;\nPARAMS\n\n&#34;
+            + &#34;&#34;.join(f&#34;{name}\n\t{doc}&#34; for (name, doc) in self.PARAMS.items())
             + &#34;\nTASKS\n\n&#34;
             + &#34;&#34;.join(f&#34;{name}\n\t{doc}&#34; for (name, doc) in self.DOCS.items())
             + &#34;\n\nall\n\trun all (enabled) tasks\n\n&#34;
         )
 
+    def warnVersion(self):
+        version = self.version
+        silent = self.flag_silent
+
+        if version is None:
+            console(
+                f&#34;No version for the TF data given. Using default: {self.TF_VERSION}&#34;
+            )
+            self.version = self.TF_VERSION
+        else:
+            if not silent:
+                console(f&#34;Using TF version: {version}&#34;)
+
     def main(self, cmdLine=None, cargs=sys.argv[1:]):
         FLAGS = self.FLAGS
+        PARAMS = self.PARAMS
         TASKS = self.TASKS
 
         if cmdLine is not None:
@@ -224,26 +277,58 @@ class MakeWATM:
 
         unrecognized = set()
         tasks = set()
+        srcVersion = None
         version = None
 
         for flag in FLAGS:
             setattr(self, f&#34;flag_{flag}&#34;, False)
 
+        for param in PARAMS:
+            setattr(self, f&#34;param_{param}&#34;, self.PARAM_DEFAULTS.get(param, &#34;&#34;))
+
         for carg in cargs:
-            if carg.startswith(&#34;--&#34;):
+            if carg.startswith(&#34;--no-&#34;):
                 flag = carg[2:]
 
                 if flag not in FLAGS:
                     unrecognized.add(carg)
                 else:
+                    setattr(self, f&#34;flag_{flag}&#34;, False)
+
+            elif carg.startswith(&#34;--&#34;):
+                flag = carg[5:]
+
+                if flag not in FLAGS:
+                    unrecognized.add(carg)
+                else:
                     setattr(self, f&#34;flag_{flag}&#34;, True)
+
+            elif &#34;=&#34; in carg and not carg.startswith(&#34;=&#34;):
+                parts = carg.split(&#34;=&#34;, 1)
+
+                if len(parts) == 1:
+                    parts.append(&#34;&#34;)
+
+                (param, value) = parts
+
+                if param not in PARAMS:
+                    unrecognized.add(carg)
+                else:
+                    setattr(self, f&#34;param_{param}&#34;, True)
+
             elif carg == &#34;all&#34;:
                 for task in TASKS:
                     tasks.add(task)
+
             elif carg in TASKS:
                 tasks.add(carg)
+
+            elif &#34;-&#34; in carg:
+                srcVersion = carg
+
             elif &#34;.&#34; in carg:
                 version = carg
+
             else:
                 unrecognized.add(carg)
 
@@ -251,15 +336,10 @@ class MakeWATM:
 
         if not silent:
             console(f&#34;Enabled tasks: {&#39; &#39;.join(self.TASKS)}&#34;)
-        if version is None:
-            console(
-                f&#34;No version for the TF data given. Using default: {self.TF_VERSION}&#34;
-            )
-            version = self.TF_VERSION
-        else:
-            if not silent:
-                console(f&#34;Using TF version: {version}&#34;)
 
+        self.srcVersion = (
+            0 if srcVersion is None else None if srcVersion == &#34;-&#34; else srcVersion
+        )
         self.version = version
 
         if len(unrecognized):
@@ -297,20 +377,28 @@ class MakeWATM:
 
     def doTask_tei2tf(self):
         good = self.good
+        sourceBase = self.param_sourceBase
         silent = self.flag_silent
         relaxed = self.flag_relaxed
         usenlp = self.flag_usenlp
+        srcVersion = self.srcVersion
 
         if not good:
             if not silent:
                 console(&#34;Skipping &#39;produce TF&#39; because of an error condition&#34;)
             return
 
+        self.warnVersion()
         tfVersion = self.version
         verbose = -1 if silent else 0
         loadVerbose = DEEP if silent else TERSE
 
-        Tei = TEI(verbose=verbose, tei=0, tf=f&#34;{tfVersion}pre&#34; if usenlp else tfVersion)
+        Tei = TEI(
+            verbose=verbose,
+            sourceBase=sourceBase,
+            tei=srcVersion,
+            tf=f&#34;{tfVersion}pre&#34; if usenlp else tfVersion,
+        )
         self.teiVersion = Tei.teiVersion
 
         console(&#34;\tValidating TEI ...&#34;)
@@ -384,6 +472,7 @@ class MakeWATM:
                 console(&#34;Skipping &#39;produce TF&#39; because of an error condition&#34;)
             return
 
+        self.warnVersion()
         tfVersion = self.version
         repoBase = self.repoBase
         sourceDir = f&#34;{repoBase}/organized/source&#34;
@@ -474,7 +563,7 @@ class MakeWATM:
 <dl>
 <dt id="tf.convert.makewatm.MakeWATM"><code class="flex name class">
 <span>class <span class="ident">MakeWATM</span></span>
-<span>(</span><span>fileLoc)</span>
+<span>(</span><span>fileLoc, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Base class for running conversions to WATM.</p>
@@ -502,6 +591,11 @@ as follows:</p>
         (flag2, docLine2),
         ...
     ),
+    paramSpecs=(
+        (param1, docLine1),
+        (param2, docLine2),
+        ...
+    ),
 )
 </code></pre>
 <p>Localize upon creation.</p>
@@ -515,7 +609,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/convert/makewatm.py#L18-L428" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/convert/makewatm.py#L18-L517" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class MakeWATM:
     &#34;&#34;&#34;Base class for running conversions to WATM.
@@ -550,10 +644,15 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
                 (flag2, docLine2),
                 ...
             ),
+            paramSpecs=(
+                (param1, docLine1),
+                (param2, docLine2),
+                ...
+            ),
         )
     &#34;&#34;&#34;
 
-    def __init__(self, fileLoc):
+    def __init__(self, fileLoc, **kwargs):
         &#34;&#34;&#34;Localize upon creation.
 
         When an object of this class is initialized, we assume that the script
@@ -571,15 +670,21 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 
         USAGE
 
-        python make.py tasks
+        python make.py flags params tasks
 
         Converts data from TEI files
 
         ARGS
 
+        flags
+            Any argument starting with --
+        params
+            Any argument with an = in it
         tfversion
             Any arg that contains a . is considered to be the tf version number.
             If no version is passed, we resort to the hard coded default.
+        tasks
+            Any remaining argument
 
         all
             run all (enabled) tasks
@@ -599,6 +704,9 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
             prod=&#34;Delivers WATM in production location&#34;,
             force=&#34;Force execution even if (uptodate) data is present&#34;,
         )
+        self.BASE_PARAMS = dict(
+            sourceBase=&#34;Base directory under which the sources are&#34;,
+        )
         self.BASE_TASKS = (&#34;tei2tf&#34;, &#34;page2tf&#34;, &#34;watm&#34;, &#34;watms&#34;)
         self.TF_VERSION = &#34;0.0.0test&#34;
 
@@ -611,7 +719,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
             targetDir=repoBase
         )
         self.repoBase = repoBase
-        self.setOptions()
+        self.setOptions(**kwargs)
 
     def setOptions(
         self,
@@ -620,17 +728,23 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
             (&#34;watm&#34;, None),
         ),
         flagSpecs=(
-            (&#34;silent&#34;, None),
+            (&#34;silent&#34;, True),
             (&#34;relaxed&#34;, None),
             (&#34;usenlp&#34;, None),
-            (&#34;prod&#34;, None),
+            (&#34;prod&#34;, True),
             (&#34;force&#34;, None),
         ),
+        paramSpecs=(
+            (&#34;sourceBase&#34;, None),
+        ),
         intro=None,
+        **kwargs,
     ):
         self.TASKS = []
         self.DOCS = {}
         self.FLAGS = {}
+        self.PARAMS = {}
+        self.PARAM_DEFAULTS = {}
 
         good = True
 
@@ -666,6 +780,23 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 
             self.FLAGS[name] = doc
 
+        for name, doc in paramSpecs:
+            if name not in self.BASE_PARAMS:
+                if doc is None:
+                    console(f&#34;param {name}=: no help text given&#34;, error=True)
+                    good = False
+
+            if not good:
+                continue
+
+            self.PARAMS[name] = doc
+
+        for (param, value) in kwargs.items():
+            if param in self.PARAMS:
+                self.PARAM_DEFAULTS[param] = value
+            else:
+                console(f&#34;Unrecognized parameter {param}=&#39;{value}&#39;&#34;, error=True)
+
         self.good = good
 
         self.HELP = (
@@ -673,13 +804,29 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
             + self.BASE_HELP
             + &#34;\nFLAGS\n\n&#34;
             + &#34;&#34;.join(f&#34;{name}\n\t{doc}&#34; for (name, doc) in self.FLAGS.items())
+            + &#34;\nPARAMS\n\n&#34;
+            + &#34;&#34;.join(f&#34;{name}\n\t{doc}&#34; for (name, doc) in self.PARAMS.items())
             + &#34;\nTASKS\n\n&#34;
             + &#34;&#34;.join(f&#34;{name}\n\t{doc}&#34; for (name, doc) in self.DOCS.items())
             + &#34;\n\nall\n\trun all (enabled) tasks\n\n&#34;
         )
 
+    def warnVersion(self):
+        version = self.version
+        silent = self.flag_silent
+
+        if version is None:
+            console(
+                f&#34;No version for the TF data given. Using default: {self.TF_VERSION}&#34;
+            )
+            self.version = self.TF_VERSION
+        else:
+            if not silent:
+                console(f&#34;Using TF version: {version}&#34;)
+
     def main(self, cmdLine=None, cargs=sys.argv[1:]):
         FLAGS = self.FLAGS
+        PARAMS = self.PARAMS
         TASKS = self.TASKS
 
         if cmdLine is not None:
@@ -691,26 +838,58 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 
         unrecognized = set()
         tasks = set()
+        srcVersion = None
         version = None
 
         for flag in FLAGS:
             setattr(self, f&#34;flag_{flag}&#34;, False)
 
+        for param in PARAMS:
+            setattr(self, f&#34;param_{param}&#34;, self.PARAM_DEFAULTS.get(param, &#34;&#34;))
+
         for carg in cargs:
-            if carg.startswith(&#34;--&#34;):
+            if carg.startswith(&#34;--no-&#34;):
                 flag = carg[2:]
 
                 if flag not in FLAGS:
                     unrecognized.add(carg)
                 else:
+                    setattr(self, f&#34;flag_{flag}&#34;, False)
+
+            elif carg.startswith(&#34;--&#34;):
+                flag = carg[5:]
+
+                if flag not in FLAGS:
+                    unrecognized.add(carg)
+                else:
                     setattr(self, f&#34;flag_{flag}&#34;, True)
+
+            elif &#34;=&#34; in carg and not carg.startswith(&#34;=&#34;):
+                parts = carg.split(&#34;=&#34;, 1)
+
+                if len(parts) == 1:
+                    parts.append(&#34;&#34;)
+
+                (param, value) = parts
+
+                if param not in PARAMS:
+                    unrecognized.add(carg)
+                else:
+                    setattr(self, f&#34;param_{param}&#34;, True)
+
             elif carg == &#34;all&#34;:
                 for task in TASKS:
                     tasks.add(task)
+
             elif carg in TASKS:
                 tasks.add(carg)
+
+            elif &#34;-&#34; in carg:
+                srcVersion = carg
+
             elif &#34;.&#34; in carg:
                 version = carg
+
             else:
                 unrecognized.add(carg)
 
@@ -718,15 +897,10 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 
         if not silent:
             console(f&#34;Enabled tasks: {&#39; &#39;.join(self.TASKS)}&#34;)
-        if version is None:
-            console(
-                f&#34;No version for the TF data given. Using default: {self.TF_VERSION}&#34;
-            )
-            version = self.TF_VERSION
-        else:
-            if not silent:
-                console(f&#34;Using TF version: {version}&#34;)
 
+        self.srcVersion = (
+            0 if srcVersion is None else None if srcVersion == &#34;-&#34; else srcVersion
+        )
         self.version = version
 
         if len(unrecognized):
@@ -764,20 +938,28 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 
     def doTask_tei2tf(self):
         good = self.good
+        sourceBase = self.param_sourceBase
         silent = self.flag_silent
         relaxed = self.flag_relaxed
         usenlp = self.flag_usenlp
+        srcVersion = self.srcVersion
 
         if not good:
             if not silent:
                 console(&#34;Skipping &#39;produce TF&#39; because of an error condition&#34;)
             return
 
+        self.warnVersion()
         tfVersion = self.version
         verbose = -1 if silent else 0
         loadVerbose = DEEP if silent else TERSE
 
-        Tei = TEI(verbose=verbose, tei=0, tf=f&#34;{tfVersion}pre&#34; if usenlp else tfVersion)
+        Tei = TEI(
+            verbose=verbose,
+            sourceBase=sourceBase,
+            tei=srcVersion,
+            tf=f&#34;{tfVersion}pre&#34; if usenlp else tfVersion,
+        )
         self.teiVersion = Tei.teiVersion
 
         console(&#34;\tValidating TEI ...&#34;)
@@ -851,6 +1033,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
                 console(&#34;Skipping &#39;produce TF&#39; because of an error condition&#34;)
             return
 
+        self.warnVersion()
         tfVersion = self.version
         repoBase = self.repoBase
         sourceDir = f&#34;{repoBase}/organized/source&#34;
@@ -974,7 +1157,13 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 <div class="desc"></div>
 </dd>
 <dt id="tf.convert.makewatm.MakeWATM.setOptions"><code class="name flex">
-<span>def <span class="ident">setOptions</span></span>(<span>self, taskSpecs=(('tei2tf', None), ('watm', None)), flagSpecs=(('silent', None), ('relaxed', None), ('usenlp', None), ('prod', None), ('force', None)), intro=None)</span>
+<span>def <span class="ident">setOptions</span></span>(<span>self, taskSpecs=(('tei2tf', None), ('watm', None)), flagSpecs=(('silent', True), ('relaxed', None), ('usenlp', None), ('prod', True), ('force', None)), paramSpecs=(('sourceBase', None),), intro=None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.convert.makewatm.MakeWATM.warnVersion"><code class="name flex">
+<span>def <span class="ident">warnVersion</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1059,6 +1248,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.convert.makewatm.MakeWATM.prepareRun" href="#tf.convert.makewatm.MakeWATM.prepareRun">prepareRun</a></code></li>
 <li><code><a title="tf.convert.makewatm.MakeWATM.run" href="#tf.convert.makewatm.MakeWATM.run">run</a></code></li>
 <li><code><a title="tf.convert.makewatm.MakeWATM.setOptions" href="#tf.convert.makewatm.MakeWATM.setOptions">setOptions</a></code></li>
+<li><code><a title="tf.convert.makewatm.MakeWATM.warnVersion" href="#tf.convert.makewatm.MakeWATM.warnVersion">warnVersion</a></code></li>
 </ul>
 </li>
 </ul>

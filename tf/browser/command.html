@@ -32,7 +32,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/browser/command.py#L1-L105" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/browser/command.py#L1-L106" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Command-line argument processing
@@ -55,6 +55,7 @@ def argApp(cargs, simple):
     (appName, checkoutApp, dataLoc) = argParam(cargs)
     backend = _argCollect(&#34;backend&#34;, cargs)
     checkout = _argCollect(&#34;checkout&#34;, cargs)
+    version = _argCollect(&#34;version&#34;, cargs)
     dataRelative = _argCollect(&#34;relative&#34;, cargs)
 
     if (
@@ -70,7 +71,7 @@ def argApp(cargs, simple):
         checkout = &#34;clone&#34;
 
     if simple:
-        return appName
+        return f&#34;{appName}:{version}&#34;
 
     locations = _argCollect(&#34;locations&#34;, cargs)
     modules = _argCollect(&#34;modules&#34;, cargs)

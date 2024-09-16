@@ -34,7 +34,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/browser/ner/settings.py#L1-L255" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/browser/ner/settings.py#L1-L255" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Corpus dependent setup of the annotation tool.
 
@@ -277,7 +277,7 @@ class Settings:
     def consoleLine(self, isError, indent, msg):
         silent = self.silent
 
-        if not silent:
+        if silent and not isError:
             return
 
         tabs = &#34;  &#34; * indent
@@ -416,7 +416,7 @@ Those configuration values are read from a YAML file, located in a directory
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/browser/ner/settings.py#L196-L255" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/browser/ner/settings.py#L196-L255" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Settings:
     def __init__(self):
@@ -464,7 +464,7 @@ Those configuration values are read from a YAML file, located in a directory
     def consoleLine(self, isError, indent, msg):
         silent = self.silent
 
-        if not silent:
+        if silent and not isError:
             return
 
         tabs = &#34;  &#34; * indent

@@ -55,107 +55,6 @@ software to build a
 <a href="https://github.com/knaw-huc/brieven-van-hooft-pipeline/blob/main/README.md">pipeline</a>
 from a corpus of letters by P.C. Hooft in Folia format to text segments and
 web annotations.</p>
-<h1 id="excursion-stam">Excursion: STAM</h1>
-<p><img alt="stam" src="../images/stam.png"></p>
-<p>We now have two sytems,
-<a href="https://github.com/annotation/stam">STAM</a>
-and Text-Fabric that can untangle text and markup.
-They are implemented very differently, and have a different flavour, but at the
-same time they share the preference of separating the textual data from all the data
-around the text.</p>
-<ul>
-<li>
-<p><em>intent</em></p>
-<ul>
-<li><strong>STAM</strong>: make it easier for tools and infrastructure to handle texts with
-annotations.</li>
-<li><strong>TF</strong>: support researchers in analysing textual corpora.</li>
-</ul>
-</li>
-<li>
-<p><em>implementation</em></p>
-<ul>
-<li><strong>STAM</strong>: Rust + <a href="https://github.com/annotation/stam-python">Python bindings</a>.</li>
-<li><strong>TF</strong>: Pure Python.</li>
-</ul>
-</li>
-<li>
-<p><em>organization</em></p>
-<ul>
-<li><strong>STAM</strong>: very neatly in a core with extensions.</li>
-<li><strong>TF</strong>: core data functionality in <code><a title="tf.core" href="../core/index.html">tf.core</a></code> modules, search functionality in
-<code><a title="tf.search" href="../search/index.html">tf.search</a></code> modules, lots of other functions are included in the code with
-varying degrees of integration and orderliness!</li>
-</ul>
-</li>
-<li>
-<p><em>standards</em></p>
-<ul>
-<li><strong>STAM</strong>: actively seeks to interoperate with existing standards, but
-internally it uses its own way of organizing the data.</li>
-<li><strong>TF</strong>: also relies on a few simple conventions w.r.t. data
-organization and efficient serialization. These conventions are
-documented. It has several import and export functions, e.g. from TEI,
-PageXML, MQL, and to MQL, TSV. But it prefers to input and output data
-in minimalistic streams, without the often redundant strings that are
-attached to standard formats.</li>
-</ul>
-</li>
-<li>
-<p><em>model</em></p>
-<ul>
-<li><strong>STAM</strong>: very generic w.r.t. annotations, annotations can target
-annotations and /or text segments.</li>
-<li><strong>TF</strong>:
-<a href="https://annotation.github.io/text-fabric/tf/about/datamodel.html">graph model</a>
-where nodes stand for textual positions and subsets of them, nodes and
-edges can have features, which are the raw material of annotations, but
-annotations are not a TF concept.</li>
-</ul>
-</li>
-<li>
-<p><em>query language</em></p>
-<ul>
-<li><strong>STAM</strong>:
-<a href="https://github.com/annotation/stam/tree/master/extensions/stam-query">STAMQL</a>,
-evolving as an SQL-like language, with user-friendly primitives for
-annotations.</li>
-<li><strong>TF</strong>:
-<a href="https://annotation.github.io/text-fabric/tf/about/searchusage.html">TF-Query</a>,
-a noise-free language for graph templates with reasonable performance.</li>
-</ul>
-</li>
-<li>
-<p><em>display</em></p>
-<ul>
-<li><strong>STAM</strong>: In development, see <code>stam view</code> in
-<a href="https://github.com/annotation/stam-tools">STAM tools</a>.</li>
-<li><strong>TF</strong>: Powerful functions to display corpus fragments with highlighting in
-<code><a title="tf.advanced" href="../advanced/index.html">tf.advanced</a></code>. The challenge is to build generic display functions that detect
-the peculiarities of the corpora.</li>
-</ul>
-</li>
-<li>
-<p><em>API</em></p>
-<ul>
-<li><strong>STAM</strong>: in Rust and Python.</li>
-<li><strong>TF</strong>: Python.</li>
-</ul>
-</li>
-<li>
-<p><em>GUI</em></p>
-<ul>
-<li><strong>STAM</strong>: not yet.</li>
-<li><strong>TF</strong>: locally served web interface for browsing and searching the corpus.</li>
-</ul>
-</li>
-</ul>
-<p>Both libraries can be used to manage corpus data in intricate ways for research
-and publishing purposes.
-How STAM and Text-Fabric will evolve in the dynamic landscape of corpora, analytical
-methods and AI, is something we cannot predict.
-For now, their different flavour and intent will define their appeal to the different
-categories of users.</p>
 <h1 id="the-general-idea">The general idea</h1>
 <p>The idea of WATM is, like the idea of Text-Fabric, to untangle the text from its
 markup. Everything outside the text itself is coded in annotations.</p>
@@ -200,6 +99,10 @@ The numbering in the <code>anno-</code><em>i</em><code>.*ext* files it independe
 the</code>text-`<em>i</em><code>.json</code> files!</li>
 <li>a pair of files <code>anno2node.tsv</code> and <code>pos2node.tsv</code> that map annotations resp. text
 positions to their corresponding TF nodes.</li>
+<li>a file <code>logicalpairs.tsv</code> (only if it is configured to produce it).
+For each pair of tokens across a line boundary of which the first ends
+with an hyphen, it contains three rows: two with the node numbers of both
+tokens, and one with the combined text of the tokens without the hyphen.</li>
 </ul>
 <h2 id="format-of-the-text-files">Format of the text files</h2>
 <p>A <code>text-i.json</code> is a JSON file with the following structure:</p>
@@ -535,6 +438,12 @@ are <em>anno id</em>, <em>kind</em>, <em>namespace</em>, <em>body</em>, <em>targ
 Any tab or newline in the body must be written as <code> </code> resp. <code></code>.</p>
 <p>The tsv files will have exactly one header line.</p>
 </li>
+<li>
+<p><code>hyphenation</code>: information on combining tokens around an end-of-line hyphen.
+The information consists of the <code>lineType</code> (the node type of lines in the
+corpus).
+It is assumed that the node type of the tokens is the slot type.</p>
+</li>
 </ul>
 <h1 id="caveat">Caveat</h1>
 <p>The WATM representation of the corpus is a faithful and complete representation
@@ -589,7 +498,7 @@ information from reaching the WATM.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/convert/watm.py#L1-L2508" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/convert/watm.py#L1-L2534" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Export to Web Annotation Text Model
 
@@ -625,91 +534,6 @@ software to build a
 [pipeline](https://github.com/knaw-huc/brieven-van-hooft-pipeline/blob/main/README.md)
 from a corpus of letters by P.C. Hooft in Folia format to text segments and
 web annotations.
-
-# Excursion: STAM
-
-![stam](../images/stam.png)
-
-We now have two sytems,
-[STAM](https://github.com/annotation/stam)
-and Text-Fabric that can untangle text and markup.
-They are implemented very differently, and have a different flavour, but at the
-same time they share the preference of separating the textual data from all the data
-around the text.
-
-*   *intent*
-
-    *   **STAM**: make it easier for tools and infrastructure to handle texts with
-    annotations.
-    *   **TF**: support researchers in analysing textual corpora.
-
-*   *implementation*
-
-    *   **STAM**: Rust + [Python bindings](https://github.com/annotation/stam-python).
-    *   **TF**: Pure Python.
-
-*   *organization*
-
-    *   **STAM**: very neatly in a core with extensions.
-    *   **TF**: core data functionality in `tf.core` modules, search functionality in
-        `tf.search` modules, lots of other functions are included in the code with
-        varying degrees of integration and orderliness!
-
-*   *standards*
-
-    *   **STAM**: actively seeks to interoperate with existing standards, but
-        internally it uses its own way of organizing the data.
-    *   **TF**: also relies on a few simple conventions w.r.t. data
-        organization and efficient serialization. These conventions are
-        documented. It has several import and export functions, e.g. from TEI,
-        PageXML, MQL, and to MQL, TSV. But it prefers to input and output data
-        in minimalistic streams, without the often redundant strings that are
-        attached to standard formats.
-
-*   *model*
-
-    *   **STAM**: very generic w.r.t. annotations, annotations can target
-        annotations and /or text segments.
-    *   **TF**:
-        [graph model](https://annotation.github.io/text-fabric/tf/about/datamodel.html)
-        where nodes stand for textual positions and subsets of them, nodes and
-        edges can have features, which are the raw material of annotations, but
-        annotations are not a TF concept.
-
-*   *query language*
-
-    *   **STAM**:
-        [STAMQL](https://github.com/annotation/stam/tree/master/extensions/stam-query),
-        evolving as an SQL-like language, with user-friendly primitives for
-        annotations.
-    *   **TF**:
-        [TF-Query](https://annotation.github.io/text-fabric/tf/about/searchusage.html),
-        a noise-free language for graph templates with reasonable performance.
-
-*   *display*
-
-    *   **STAM**: In development, see `stam view` in
-        [STAM tools](https://github.com/annotation/stam-tools).
-    *   **TF**: Powerful functions to display corpus fragments with highlighting in
-        `tf.advanced`. The challenge is to build generic display functions that detect
-        the peculiarities of the corpora.
-
-*   *API*
-
-    *   **STAM**: in Rust and Python.
-    *   **TF**: Python.
-
-*   *GUI*
-
-    *   **STAM**: not yet.
-    *   **TF**: locally served web interface for browsing and searching the corpus.
-
-Both libraries can be used to manage corpus data in intricate ways for research
-and publishing purposes.
-How STAM and Text-Fabric will evolve in the dynamic landscape of corpora, analytical
-methods and AI, is something we cannot predict.
-For now, their different flavour and intent will define their appeal to the different
-categories of users.
 
 # The general idea
 
@@ -763,6 +587,10 @@ configuration setting `asTsv` in the `watm.yaml` file in the project.
     the `text-`*i*`.json` files!
 *   a pair of files `anno2node.tsv` and `pos2node.tsv` that map annotations resp. text
     positions to their corresponding TF nodes.
+*   a file `logicalpairs.tsv` (only if it is configured to produce it).
+    For each pair of tokens across a line boundary of which the first ends
+    with an hyphen, it contains three rows: two with the node numbers of both
+    tokens, and one with the combined text of the tokens without the hyphen.
 
 ## Format of the text files
 
@@ -1073,6 +901,11 @@ parameters can be set:
 
     The tsv files will have exactly one header line.
 
+*   `hyphenation`: information on combining tokens around an end-of-line hyphen.
+    The information consists of the `lineType` (the node type of lines in the
+    corpus).
+    It is assumed that the node type of the tokens is the slot type.
+
 # Caveat
 
 The WATM representation of the corpus is a faithful and complete representation
@@ -1135,6 +968,7 @@ import re
 from ..core.helpers import console
 from ..core.files import (
     fileOpen,
+    fileCopy,
     initTree,
     dirContents,
     dirExists,
@@ -1162,6 +996,7 @@ CONFIG_FILE = &#34;watm.yaml&#34;
 IIIF_FILE = &#34;iiif.yaml&#34;
 NODEMAP_FILE = &#34;anno2node.tsv&#34;
 SLOTMAP_FILE = &#34;pos2node.tsv&#34;
+LOGICAL_FILE = &#34;logicalpairs.tsv&#34;
 
 TT_NAME = &#34;watm&#34;
 
@@ -1239,16 +1074,13 @@ def getResultDir(baseDir, headPart, version, prod, silent):
     *   the repo location
     *   the relative location of the tf directory in the repo
 
-    In development, the WATM is written to a `watm` directory inside the
-    `_temp` directory of the repo.
-    The version of the WATM is the version of the TF from which it is generated.
+    The WATM is written to somewhere under the `watm` directory at the toplevel
+    of the repo.
 
-    In production, the WATM is written to the `watm` directory outside the
-    `_temp` directory of the repo.
     The version of the WATM is the version of the TF from which it is generated plus
     a suffix, containing a sequence number.
 
-    Whenever a prodcution generation is executed, a new sequence number is chosen,
+    Whenever a pgeneration is executed, a new sequence number is chosen,
     so that no previous version gets overwritten.
 
     If there is a file `latest` in the directory of the WATM versions, its number is
@@ -1258,6 +1090,9 @@ def getResultDir(baseDir, headPart, version, prod, silent):
 
     Whatever we got, we increment it and write it to the file `latest`.
     That is the new version suffix.
+
+    Inside the resulting directory, the production WATM resides under `prod` and
+    the development WATM resides under `dev`.
 
     Parameters
     ----------
@@ -1276,50 +1111,51 @@ def getResultDir(baseDir, headPart, version, prod, silent):
     -------
     The path to the versioned dir where the WATM ends up.
     &#34;&#34;&#34;
+    prodRep = &#34;production&#34; if prod else &#34;development&#34;
+    prodFix = &#34;prod&#34; if prod else &#34;dev&#34;
+    resultDirBase = f&#34;{baseDir}{headPart}/{TT_NAME}&#34;
+    latestFile = f&#34;{resultDirBase}/latest&#34;
+
+    prefix = f&#34;{version}-&#34;
+    numReps = {
+        pv.removeprefix(prefix)
+        for pv in dirContents(resultDirBase)[1]
+        if pv.startswith(prefix)
+    }
+
+    maxNum = max(
+        (int(num) for numRep in numReps if (num := numRep.lstrip(&#34;0&#34;)).isdecimal()),
+        default=0,
+    )
+
+    if not fileExists(latestFile):
+        latestNum = 0
+    else:
+        with fileOpen(latestFile) as fh:
+            contents = fh.read().strip().split(&#34;-&#34;, 1)
+            latestNumStr = (contents[1] if len(contents) == 2 else &#34;&#34;).lstrip(&#34;0&#34;)
+            latestNum = int(latestNumStr) if latestNumStr.isdecimal() else 0
+
     if prod:
-        resultDirBase = f&#34;{baseDir}{headPart}/{TT_NAME}&#34;
-        latestFile = f&#34;{resultDirBase}/latest&#34;
-        prefix = f&#34;{version}-&#34;
-        prodNumReps = {
-            pv.removeprefix(prefix)
-            for pv in dirContents(resultDirBase)[1]
-            if pv.startswith(prefix)
-        }
-
-        maxProdNum = max(
-            (
-                int(prodNum)
-                for prodNumRep in prodNumReps
-                if (prodNum := prodNumRep.lstrip(&#34;0&#34;)).isdecimal()
-            ),
-            default=0,
-        )
-
-        if not fileExists(latestFile):
-            latestNum = 0
-        else:
-            with fileOpen(latestFile) as fh:
-                contents = fh.read().strip()
-                latestNum = int(contents) if contents.isdecimal() else 0
-
-        newNum = max((latestNum, maxProdNum))
+        newNum = max((latestNum, maxNum))
 
         while True:
             newNum += 1
             newNumRep = f&#34;{newNum:&gt;03}&#34;
-            if newNumRep in prodNumReps:
+            if newNumRep in numReps:
                 continue
             break
 
         with fileOpen(latestFile, &#34;w&#34;) as fh:
-            fh.write(f&#34;{newNum}\n&#34;)
-
-        resultVersionDir = f&#34;{resultDirBase}/{version}-{newNumRep}&#34;
-
-        if not silent:
-            console(f&#34;Writing production data to {resultVersionDir}&#34;)
+            fh.write(f&#34;{version}-{newNumRep}\n&#34;)
     else:
-        resultDirBase = f&#34;{baseDir}/_temp{headPart}/{TT_NAME}&#34;
+        newNumRep = f&#34;{latestNum:&gt;03}&#34;
+
+    resultVersionDir = f&#34;{resultDirBase}/{version}-{newNumRep}/{prodFix}&#34;
+
+    if not silent:
+        console(f&#34;Writing {prodRep} data to {resultVersionDir}&#34;)
+    else:
         resultVersionDir = f&#34;{resultDirBase}/{version}&#34;
 
         if not silent:
@@ -1390,7 +1226,12 @@ class WATM:
         F = api.F
         E = api.E
         T = api.T
+        Fall = api.Fall
+        Eall = api.Eall
+        FAllSet = set(Fall())
+
         sectionTypes = T.sectionTypes
+        strv = F.str.v if STR in FAllSet else None
 
         cfg = readYaml(asFile=CONFIG_FILE)
         self.cfg = cfg
@@ -1417,6 +1258,29 @@ class WATM:
             )
             self.error = True
 
+        hyphenation = cfg.hyphenation
+
+        if hyphenation is not None:
+            if strv is None:
+                console(
+                    f&#34;{CONFIG_FILE}: hyphenation cannot be solved &#34;
+                    &#34;because feature str does not exist in the TF dataset&#34;,
+                    error=True,
+                )
+                hyphenation = None
+                self.error = True
+
+            if hyphenation.lineType not in F.otype.all:
+                console(
+                    f&#34;{CONFIG_FILE}: hyphenation.lineType &#34;
+                    &#34;must be an existing node type&#34;,
+                    error=True,
+                )
+                hyphenation = None
+                self.error = True
+
+        self.hyphenation = hyphenation
+
         if self.error:
             return
 
@@ -1435,26 +1299,23 @@ class WATM:
         self.E = E
         self.Fs = api.Fs
         self.slotType = self.F.otype.slotType
+        self.maxSlot = self.F.otype.maxSlot
         self.maxSlotPlus = self.F.otype.maxSlot + 1
         self.maxNodePlus = self.F.otype.maxNode + 1
         self.otypes = self.F.otype.all
         self.info = app.info
         self.repoLocation = app.repoLocation
 
-        Fall = api.Fall
-        Eall = api.Eall
         self.Fall = Fall
         self.Eall = Eall
 
         self.nodeFeatures = [f for f in Fall() if f not in TF_SPECIFIC_FEATURES]
         self.edgeFeatures = [f for f in Eall() if f not in TF_SPECIFIC_FEATURES]
 
-        FAllSet = set(Fall())
-
         self.fotypev = F.otype.v
         self.eoslots = E.oslots.s
         self.emptyv = F.empty.v if &#34;empty&#34; in FAllSet else None
-        self.strv = F.str.v if STR in FAllSet else None
+        self.strv = strv
         self.rstrv = F.rstr.v if &#34;rstr&#34; in FAllSet else None
         self.afterv = F.after.v if AFTER in FAllSet else None
         self.rafterv = F.rafter.v if &#34;rafter&#34; in FAllSet else None
@@ -1669,15 +1530,26 @@ class WATM:
                 for i, n in enumerate(nodes):
                     for extraFeat, value, variables in thisScanInfo:
                         values = {}
+                        valuesOK = True
 
-                        for var, (parent, feat, shift) in variables.items():
-                            refI = min((max((0, i + shift)), lastI))
+                        for var, (parent, child, feat, shift) in variables.items():
+                            refI = i + shift
+
+                            if refI &lt; 0 or refI &gt; lastI:
+                                valuesOK = False
+                                break
+
                             refN = nodes[refI]
 
                             if parent is not None:
                                 refN = L.u(refN, otype=parent)[0]
+                            elif child is not None:
+                                refN = L.d(refN, otype=child)[0]
 
                             values[var] = refN if feat == &#34;=&#34; else Fs(feat).v(refN)
+
+                        if not valuesOK:
+                            continue
 
                         val = value.format(**values)
 
@@ -1797,6 +1669,39 @@ class WATM:
             if nFarTargets &gt; 10:
                 self.console(f&#34;... and {nFarTargets - 10} more.&#34;)
 
+    def getLogicalPairs(self):
+        hyphenation = self.hyphenation
+        F = self.F
+        L = self.L
+        slotType = self.slotType
+        strv = self.strv
+        afterv = self.afterv
+        maxSlot = self.maxSlot
+
+        if hyphenation is None:
+            return []
+
+        lineType = hyphenation.lineType
+
+        pairs = []
+        lines = F.otype.s(lineType)
+
+        for line in lines:
+            lastSlot = L.d(line, otype=slotType)[-1]
+
+            if strv(lastSlot) == &#34;-&#34; and lastSlot &gt; 1 and lastSlot &lt; maxSlot:
+                s1 = lastSlot - 1
+                s2 = lastSlot + 1
+                pairs.append(
+                    (
+                        s1,
+                        s2,
+                        f&#34;{strv(s1)}{strv(s2)}{afterv(s2)}&#34;,
+                    )
+                )
+
+        return tuple(pairs)
+
     def writeAll(self, resultVersion=None):
         &#34;&#34;&#34;Write text and annotation data to disk.
 
@@ -1814,7 +1719,9 @@ class WATM:
             This is needed if WATM is generated for a series of related datasets that
             have the same result base.
         &#34;&#34;&#34;
-
+        cfg = self.cfg
+        extra = cfg.extra
+        hyphenation = self.hyphenation
         maxNodePlus = self.maxNodePlus
         maxSlotPlus = self.maxSlotPlus
 
@@ -1975,6 +1882,30 @@ class WATM:
         self.console(f&#34;Slot mapping written to {slotmapFile}&#34;)
         self.console(f&#34;Node mapping written to {nodemapFile}&#34;)
 
+        # hyphenation information files
+
+        if hyphenation is not None:
+            logicalFile = f&#34;{resultDir}/{LOGICAL_FILE}&#34;
+
+            with fileOpen(logicalFile, &#34;w&#34;) as fh:
+                fh.write(&#34;token1\ttoken2\tstr\n&#34;)
+
+                pairs = self.getLogicalPairs()
+
+                for t1, t2, text in pairs:
+                    fh.write(f&#34;{t1}\t{t2}\t{text}\n&#34;)
+
+            self.console(f&#34;Logical pairs ({len(pairs)}) written to {logicalFile}&#34;)
+
+        # extra files
+
+        for extraDir, files in extra.items():
+            for file in files:
+                fileCopy(f&#34;{baseDir}/{extraDir}/{file}&#34;, f&#34;{resultDir}/{file}&#34;)
+                self.console(
+                    f&#34;Extra file {extraDir}/{file} copied to the WATM directory&#34;
+                )
+
     @staticmethod
     def numEqual(nTF, nWA, silent):
         &#34;&#34;&#34;Compare two numbers and report the outcome.
@@ -2126,6 +2057,7 @@ class WATM:
         # collect the files
 
         asTsv = self.asTsv
+        hyphenation = self.hyphenation
         resultDir = self.resultDir
         resultFiles = dirContents(resultDir)[0]
 
@@ -2154,6 +2086,9 @@ class WATM:
             self.error = True
         if SLOTMAP_FILE not in mapFiles:
             console(f&#34;ERROR: Missing map file {SLOTMAP_FILE}&#34;)
+            self.error = True
+        if hyphenation is not None and LOGICAL_FILE not in resultFiles:
+            console(f&#34;ERROR: Missing logical file {LOGICAL_FILE}&#34;)
             self.error = True
 
         if self.error:
@@ -3120,14 +3055,11 @@ factors:</p>
 <li>the repo location</li>
 <li>the relative location of the tf directory in the repo</li>
 </ul>
-<p>In development, the WATM is written to a <code>watm</code> directory inside the
-<code>_temp</code> directory of the repo.
-The version of the WATM is the version of the TF from which it is generated.</p>
-<p>In production, the WATM is written to the <code>watm</code> directory outside the
-<code>_temp</code> directory of the repo.
-The version of the WATM is the version of the TF from which it is generated plus
+<p>The WATM is written to somewhere under the <code>watm</code> directory at the toplevel
+of the repo.</p>
+<p>The version of the WATM is the version of the TF from which it is generated plus
 a suffix, containing a sequence number.</p>
-<p>Whenever a prodcution generation is executed, a new sequence number is chosen,
+<p>Whenever a pgeneration is executed, a new sequence number is chosen,
 so that no previous version gets overwritten.</p>
 <p>If there is a file <code>latest</code> in the directory of the WATM versions, its number is
 taken as the previous version suffix. But if there are versions with a higher
@@ -3135,6 +3067,8 @@ suffix in that directory, we take the highest one of them as previous version
 suffix.</p>
 <p>Whatever we got, we increment it and write it to the file <code>latest</code>.
 That is the new version suffix.</p>
+<p>Inside the resulting directory, the production WATM resides under <code>prod</code> and
+the development WATM resides under <code>dev</code>.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>baseDir</code></strong> :&ensp;<code>string</code></dt>
@@ -3223,7 +3157,7 @@ versions in the <code>watm</code> directory.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/convert/watm.py#L741-L2355" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/convert/watm.py#L668-L2381" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WATM:
     &#34;&#34;&#34;The export machinery is exposed as a class, wrapped around a TF dataset.&#34;&#34;&#34;
@@ -3284,7 +3218,12 @@ versions in the <code>watm</code> directory.</p>
         F = api.F
         E = api.E
         T = api.T
+        Fall = api.Fall
+        Eall = api.Eall
+        FAllSet = set(Fall())
+
         sectionTypes = T.sectionTypes
+        strv = F.str.v if STR in FAllSet else None
 
         cfg = readYaml(asFile=CONFIG_FILE)
         self.cfg = cfg
@@ -3311,6 +3250,29 @@ versions in the <code>watm</code> directory.</p>
             )
             self.error = True
 
+        hyphenation = cfg.hyphenation
+
+        if hyphenation is not None:
+            if strv is None:
+                console(
+                    f&#34;{CONFIG_FILE}: hyphenation cannot be solved &#34;
+                    &#34;because feature str does not exist in the TF dataset&#34;,
+                    error=True,
+                )
+                hyphenation = None
+                self.error = True
+
+            if hyphenation.lineType not in F.otype.all:
+                console(
+                    f&#34;{CONFIG_FILE}: hyphenation.lineType &#34;
+                    &#34;must be an existing node type&#34;,
+                    error=True,
+                )
+                hyphenation = None
+                self.error = True
+
+        self.hyphenation = hyphenation
+
         if self.error:
             return
 
@@ -3329,26 +3291,23 @@ versions in the <code>watm</code> directory.</p>
         self.E = E
         self.Fs = api.Fs
         self.slotType = self.F.otype.slotType
+        self.maxSlot = self.F.otype.maxSlot
         self.maxSlotPlus = self.F.otype.maxSlot + 1
         self.maxNodePlus = self.F.otype.maxNode + 1
         self.otypes = self.F.otype.all
         self.info = app.info
         self.repoLocation = app.repoLocation
 
-        Fall = api.Fall
-        Eall = api.Eall
         self.Fall = Fall
         self.Eall = Eall
 
         self.nodeFeatures = [f for f in Fall() if f not in TF_SPECIFIC_FEATURES]
         self.edgeFeatures = [f for f in Eall() if f not in TF_SPECIFIC_FEATURES]
 
-        FAllSet = set(Fall())
-
         self.fotypev = F.otype.v
         self.eoslots = E.oslots.s
         self.emptyv = F.empty.v if &#34;empty&#34; in FAllSet else None
-        self.strv = F.str.v if STR in FAllSet else None
+        self.strv = strv
         self.rstrv = F.rstr.v if &#34;rstr&#34; in FAllSet else None
         self.afterv = F.after.v if AFTER in FAllSet else None
         self.rafterv = F.rafter.v if &#34;rafter&#34; in FAllSet else None
@@ -3563,15 +3522,26 @@ versions in the <code>watm</code> directory.</p>
                 for i, n in enumerate(nodes):
                     for extraFeat, value, variables in thisScanInfo:
                         values = {}
+                        valuesOK = True
 
-                        for var, (parent, feat, shift) in variables.items():
-                            refI = min((max((0, i + shift)), lastI))
+                        for var, (parent, child, feat, shift) in variables.items():
+                            refI = i + shift
+
+                            if refI &lt; 0 or refI &gt; lastI:
+                                valuesOK = False
+                                break
+
                             refN = nodes[refI]
 
                             if parent is not None:
                                 refN = L.u(refN, otype=parent)[0]
+                            elif child is not None:
+                                refN = L.d(refN, otype=child)[0]
 
                             values[var] = refN if feat == &#34;=&#34; else Fs(feat).v(refN)
+
+                        if not valuesOK:
+                            continue
 
                         val = value.format(**values)
 
@@ -3691,6 +3661,39 @@ versions in the <code>watm</code> directory.</p>
             if nFarTargets &gt; 10:
                 self.console(f&#34;... and {nFarTargets - 10} more.&#34;)
 
+    def getLogicalPairs(self):
+        hyphenation = self.hyphenation
+        F = self.F
+        L = self.L
+        slotType = self.slotType
+        strv = self.strv
+        afterv = self.afterv
+        maxSlot = self.maxSlot
+
+        if hyphenation is None:
+            return []
+
+        lineType = hyphenation.lineType
+
+        pairs = []
+        lines = F.otype.s(lineType)
+
+        for line in lines:
+            lastSlot = L.d(line, otype=slotType)[-1]
+
+            if strv(lastSlot) == &#34;-&#34; and lastSlot &gt; 1 and lastSlot &lt; maxSlot:
+                s1 = lastSlot - 1
+                s2 = lastSlot + 1
+                pairs.append(
+                    (
+                        s1,
+                        s2,
+                        f&#34;{strv(s1)}{strv(s2)}{afterv(s2)}&#34;,
+                    )
+                )
+
+        return tuple(pairs)
+
     def writeAll(self, resultVersion=None):
         &#34;&#34;&#34;Write text and annotation data to disk.
 
@@ -3708,7 +3711,9 @@ versions in the <code>watm</code> directory.</p>
             This is needed if WATM is generated for a series of related datasets that
             have the same result base.
         &#34;&#34;&#34;
-
+        cfg = self.cfg
+        extra = cfg.extra
+        hyphenation = self.hyphenation
         maxNodePlus = self.maxNodePlus
         maxSlotPlus = self.maxSlotPlus
 
@@ -3869,6 +3874,30 @@ versions in the <code>watm</code> directory.</p>
         self.console(f&#34;Slot mapping written to {slotmapFile}&#34;)
         self.console(f&#34;Node mapping written to {nodemapFile}&#34;)
 
+        # hyphenation information files
+
+        if hyphenation is not None:
+            logicalFile = f&#34;{resultDir}/{LOGICAL_FILE}&#34;
+
+            with fileOpen(logicalFile, &#34;w&#34;) as fh:
+                fh.write(&#34;token1\ttoken2\tstr\n&#34;)
+
+                pairs = self.getLogicalPairs()
+
+                for t1, t2, text in pairs:
+                    fh.write(f&#34;{t1}\t{t2}\t{text}\n&#34;)
+
+            self.console(f&#34;Logical pairs ({len(pairs)}) written to {logicalFile}&#34;)
+
+        # extra files
+
+        for extraDir, files in extra.items():
+            for file in files:
+                fileCopy(f&#34;{baseDir}/{extraDir}/{file}&#34;, f&#34;{resultDir}/{file}&#34;)
+                self.console(
+                    f&#34;Extra file {extraDir}/{file} copied to the WATM directory&#34;
+                )
+
     @staticmethod
     def numEqual(nTF, nWA, silent):
         &#34;&#34;&#34;Compare two numbers and report the outcome.
@@ -4020,6 +4049,7 @@ versions in the <code>watm</code> directory.</p>
         # collect the files
 
         asTsv = self.asTsv
+        hyphenation = self.hyphenation
         resultDir = self.resultDir
         resultFiles = dirContents(resultDir)[0]
 
@@ -4048,6 +4078,9 @@ versions in the <code>watm</code> directory.</p>
             self.error = True
         if SLOTMAP_FILE not in mapFiles:
             console(f&#34;ERROR: Missing map file {SLOTMAP_FILE}&#34;)
+            self.error = True
+        if hyphenation is not None and LOGICAL_FILE not in resultFiles:
+            console(f&#34;ERROR: Missing logical file {LOGICAL_FILE}&#34;)
             self.error = True
 
         if self.error:
@@ -4892,6 +4925,12 @@ versions in the <code>watm</code> directory.</p>
 <p>This works exactly as <code><a title="tf.core.helpers.console" href="../core/helpers.html#tf.core.helpers.console">console()</a></code></p>
 <p>When the silent member of the object is True, the message will be suppressed.</p></div>
 </dd>
+<dt id="tf.convert.watm.WATM.getLogicalPairs"><code class="name flex">
+<span>def <span class="ident">getLogicalPairs</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="tf.convert.watm.WATM.makeAnno"><code class="name flex">
 <span>def <span class="ident">makeAnno</span></span>(<span>self)</span>
 </code></dt>
@@ -5095,7 +5134,7 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/convert/watm.py#L2358-L2508" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/convert/watm.py#L2384-L2534" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WATMS:
     &#34;&#34;&#34;Export corpora that are divided over multiple TF datasets.
@@ -5335,7 +5374,6 @@ setTimeout(() => input.focus(), 100);
 <div class="toc">
 <ul>
 <li><a href="#the-situation">The situation</a></li>
-<li><a href="#excursion-stam">Excursion: STAM</a></li>
 <li><a href="#the-general-idea">The general idea</a></li>
 <li><a href="#the-specifics">The specifics</a><ul>
 <li><a href="#format-of-the-text-files">Format of the text files</a><ul>
@@ -5372,6 +5410,7 @@ setTimeout(() => input.focus(), 100);
 <h4><code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a></code></h4>
 <ul class="two-column">
 <li><code><a title="tf.convert.watm.WATM.console" href="#tf.convert.watm.WATM.console">console</a></code></li>
+<li><code><a title="tf.convert.watm.WATM.getLogicalPairs" href="#tf.convert.watm.WATM.getLogicalPairs">getLogicalPairs</a></code></li>
 <li><code><a title="tf.convert.watm.WATM.makeAnno" href="#tf.convert.watm.WATM.makeAnno">makeAnno</a></code></li>
 <li><code><a title="tf.convert.watm.WATM.makeText" href="#tf.convert.watm.WATM.makeText">makeText</a></code></li>
 <li><code><a title="tf.convert.watm.WATM.mkAnno" href="#tf.convert.watm.WATM.mkAnno">mkAnno</a></code></li>

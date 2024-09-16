@@ -34,7 +34,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/browser/ner/request.py#L1-L311" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/browser/ner/request.py#L1-L313" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Auxiliary functions for managing request data.
 
@@ -89,7 +89,7 @@ class Request(Form):
             sec0
             sec1
             sec2
-            set
+            task
             duset
             rset
             dset
@@ -110,6 +110,7 @@ class Request(Form):
         keysBool = &#34;&#34;&#34;
             formattingdo
             bfindc
+            sheetcase
         &#34;&#34;&#34;.strip().split()
 
         keysTri = &#34;&#34;&#34;
@@ -139,6 +140,7 @@ class Request(Form):
         defaults = dict(
             sortkey=None,
             sortdir=None,
+            sheetcase=&#34;x&#34;,
             freestate=&#34;all&#34;,
             scope=SC_ALL,
             modwidgetstate=&#34;add&#34;,
@@ -384,7 +386,7 @@ several related keys in the form as a dictionary value under a new key.</p></div
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/browser/ner/request.py#L14-L311" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/browser/ner/request.py#L14-L313" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Request(Form):
     def __init__(self):
@@ -426,7 +428,7 @@ several related keys in the form as a dictionary value under a new key.</p></div
             sec0
             sec1
             sec2
-            set
+            task
             duset
             rset
             dset
@@ -447,6 +449,7 @@ several related keys in the form as a dictionary value under a new key.</p></div
         keysBool = &#34;&#34;&#34;
             formattingdo
             bfindc
+            sheetcase
         &#34;&#34;&#34;.strip().split()
 
         keysTri = &#34;&#34;&#34;
@@ -476,6 +479,7 @@ several related keys in the form as a dictionary value under a new key.</p></div
         defaults = dict(
             sortkey=None,
             sortdir=None,
+            sheetcase=&#34;x&#34;,
             freestate=&#34;all&#34;,
             scope=SC_ALL,
             modwidgetstate=&#34;add&#34;,

@@ -34,7 +34,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/browser/html.py#L1-L155" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/browser/html.py#L1-L158" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;HTML generation done in the Pythonic way.
 
@@ -63,6 +63,9 @@ H_ELEMENT_DEFS = &#34;&#34;&#34;
     span
     style
     summary
+    table
+    td
+    tr
     ul
 &#34;&#34;&#34;.strip().split()
 
@@ -283,7 +286,7 @@ generating function is added as method.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/browser/html.py#L130-L138" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/browser/html.py#L133-L141" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class H:
     &#34;&#34;&#34;Provider of HTML serializing functions per element type.
@@ -424,6 +427,24 @@ generating function is added as method.</p></div>
 <dd>
 <div class="desc"></div>
 </dd>
+<dt id="tf.browser.html.H.table"><code class="name flex">
+<span>def <span class="ident">table</span></span>(<span>*content, **atts)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.browser.html.H.td"><code class="name flex">
+<span>def <span class="ident">td</span></span>(<span>*content, **atts)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.browser.html.H.tr"><code class="name flex">
+<span>def <span class="ident">tr</span></span>(<span>*content, **atts)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="tf.browser.html.H.ul"><code class="name flex">
 <span>def <span class="ident">ul</span></span>(<span>*content, **atts)</span>
 </code></dt>
@@ -533,6 +554,9 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.browser.html.H.span" href="#tf.browser.html.H.span">span</a></code></li>
 <li><code><a title="tf.browser.html.H.style" href="#tf.browser.html.H.style">style</a></code></li>
 <li><code><a title="tf.browser.html.H.summary" href="#tf.browser.html.H.summary">summary</a></code></li>
+<li><code><a title="tf.browser.html.H.table" href="#tf.browser.html.H.table">table</a></code></li>
+<li><code><a title="tf.browser.html.H.td" href="#tf.browser.html.H.td">td</a></code></li>
+<li><code><a title="tf.browser.html.H.tr" href="#tf.browser.html.H.tr">tr</a></code></li>
 <li><code><a title="tf.browser.html.H.ul" href="#tf.browser.html.H.ul">ul</a></code></li>
 </ul>
 </li>

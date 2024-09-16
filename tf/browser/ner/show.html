@@ -34,7 +34,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/browser/ner/show.py#L1-L618" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/browser/ner/show.py#L1-L631" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Rendering of corpus extracts with annotations.
 
@@ -288,6 +288,7 @@ class Show:
         sheetData = self.getSheetData()
         hitData = sheetData.hitData or {}
         nameMap = sheetData.nameMap or {}
+        rowMap = sheetData.rowMap or {}
 
         hasEnt = activeEntity is not None
         hasTrig = activeTrigger is not None
@@ -296,7 +297,11 @@ class Show:
             entries = []
 
             for eidkind, triggers in data.items():
-                name = nameMap[eidkind][0]
+                if eidkind not in nameMap:
+                    # should not occur!
+                    continue
+
+                name = nameMap[eidkind]
                 tOccs = sum(triggers.values())
                 subtle = any(t[1] != &#34;&#34; for t in triggers)
 
@@ -308,7 +313,13 @@ class Show:
                     and not subtle
                 ):
                     entries.append(
-                        (eidkind, name, tOccs, subtle, entryTriggers(triggers))
+                        (
+                            eidkind,
+                            name,
+                            tOccs,
+                            subtle,
+                            entryTriggers(triggers),
+                        )
                     )
 
             return entries
@@ -352,14 +363,14 @@ class Show:
                     continue
 
                 occsCls = (
-                    &#34;nooccs&#34; if hasNoOccs else &#34;warnoccs&#34; if hasTriggerNoOccs else &#34;&#34;
+                    &#34;nooccs&#34; if hasNoOccs else (&#34;warnoccs&#34; if hasTriggerNoOccs else &#34;&#34;)
                 )
                 subtleCls = &#34;subtle&#34; if subtle else &#34;&#34;
                 active = &#34;queried&#34; if hasEnt and eidkind == activeEntity else &#34;&#34;
 
                 content.append(
                     H.div(
-                        H.div(H.span(f&#34;{tOccs} &#34;, cls=&#34;stat&#34;)),
+                        H.div((H.span(f&#34;{tOccs} &#34;, cls=&#34;stat&#34;))),
                         H.div(
                             (
                                 H.div(name, cls=f&#34;ntx {occsCls} {subtleCls}&#34;),
@@ -376,19 +387,21 @@ class Show:
         def genTriggers(data):
             content = []
 
-            for k, nOccs, subtle in data:
-                (trigger, sheet) = k
+            for tInfo, nOccs, subtle in data:
+                (trigger, scope) = tInfo
                 hasNoOccs = nOccs == 0
 
                 if zeroFilter == -1 and not hasNoOccs:
                     continue
 
+                rows = rowMap.get(trigger, [])
+                r = &#34;?&#34; if len(rows) == 0 else &#34;, &#34;.join(str(x) for x in rows)
                 occsCls = &#34;nooccs&#34; if nOccs == 0 else &#34;&#34;
                 subtleCls = &#34;subtle&#34; if subtle else &#34;&#34;
-                sheetRep = f&#34;{sheet}{SET_SHEET}&#34; if subtle else sheet
-                triggerRep = &#34;⊙&#34;.join(k)
+                scopeRep = f&#34;{SET_SHEET}{scope}&#34;
+                triggerRep = &#34;⊙&#34;.join(str(x) for x in tInfo)
                 active = (
-                    &#34;tqueried&#34; if hasTrig and (trigger, sheet) == activeTrigger else &#34;&#34;
+                    &#34;tqueried&#34; if hasTrig and (trigger, scope) == activeTrigger else &#34;&#34;
                 )
                 content.append(
                     H.div(
@@ -396,8 +409,8 @@ class Show:
                             H.span(f&#34;{nOccs} &#34;, cls=&#34;stat&#34;),
                             H.span(
                                 (
-                                    H.span(f&#34;{sheetRep} &#34;),
-                                    H.code(trigger, cls=&#34;ttx&#34;),
+                                    H.span(f&#34;{scopeRep} &#34;),
+                                    H.code(trigger, cls=&#34;ttx&#34;, title=f&#34;r{r}&#34;),
                                 ),
                                 cls=f&#34;{occsCls} {subtleCls}&#34;,
                             ),
@@ -673,7 +686,7 @@ class Show:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/browser/ner/show.py#L25-L618" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/browser/ner/show.py#L25-L631" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Show:
     def showEntityOverview(self):
@@ -903,6 +916,7 @@ class Show:
         sheetData = self.getSheetData()
         hitData = sheetData.hitData or {}
         nameMap = sheetData.nameMap or {}
+        rowMap = sheetData.rowMap or {}
 
         hasEnt = activeEntity is not None
         hasTrig = activeTrigger is not None
@@ -911,7 +925,11 @@ class Show:
             entries = []
 
             for eidkind, triggers in data.items():
-                name = nameMap[eidkind][0]
+                if eidkind not in nameMap:
+                    # should not occur!
+                    continue
+
+                name = nameMap[eidkind]
                 tOccs = sum(triggers.values())
                 subtle = any(t[1] != &#34;&#34; for t in triggers)
 
@@ -923,7 +941,13 @@ class Show:
                     and not subtle
                 ):
                     entries.append(
-                        (eidkind, name, tOccs, subtle, entryTriggers(triggers))
+                        (
+                            eidkind,
+                            name,
+                            tOccs,
+                            subtle,
+                            entryTriggers(triggers),
+                        )
                     )
 
             return entries
@@ -967,14 +991,14 @@ class Show:
                     continue
 
                 occsCls = (
-                    &#34;nooccs&#34; if hasNoOccs else &#34;warnoccs&#34; if hasTriggerNoOccs else &#34;&#34;
+                    &#34;nooccs&#34; if hasNoOccs else (&#34;warnoccs&#34; if hasTriggerNoOccs else &#34;&#34;)
                 )
                 subtleCls = &#34;subtle&#34; if subtle else &#34;&#34;
                 active = &#34;queried&#34; if hasEnt and eidkind == activeEntity else &#34;&#34;
 
                 content.append(
                     H.div(
-                        H.div(H.span(f&#34;{tOccs} &#34;, cls=&#34;stat&#34;)),
+                        H.div((H.span(f&#34;{tOccs} &#34;, cls=&#34;stat&#34;))),
                         H.div(
                             (
                                 H.div(name, cls=f&#34;ntx {occsCls} {subtleCls}&#34;),
@@ -991,19 +1015,21 @@ class Show:
         def genTriggers(data):
             content = []
 
-            for k, nOccs, subtle in data:
-                (trigger, sheet) = k
+            for tInfo, nOccs, subtle in data:
+                (trigger, scope) = tInfo
                 hasNoOccs = nOccs == 0
 
                 if zeroFilter == -1 and not hasNoOccs:
                     continue
 
+                rows = rowMap.get(trigger, [])
+                r = &#34;?&#34; if len(rows) == 0 else &#34;, &#34;.join(str(x) for x in rows)
                 occsCls = &#34;nooccs&#34; if nOccs == 0 else &#34;&#34;
                 subtleCls = &#34;subtle&#34; if subtle else &#34;&#34;
-                sheetRep = f&#34;{sheet}{SET_SHEET}&#34; if subtle else sheet
-                triggerRep = &#34;⊙&#34;.join(k)
+                scopeRep = f&#34;{SET_SHEET}{scope}&#34;
+                triggerRep = &#34;⊙&#34;.join(str(x) for x in tInfo)
                 active = (
-                    &#34;tqueried&#34; if hasTrig and (trigger, sheet) == activeTrigger else &#34;&#34;
+                    &#34;tqueried&#34; if hasTrig and (trigger, scope) == activeTrigger else &#34;&#34;
                 )
                 content.append(
                     H.div(
@@ -1011,8 +1037,8 @@ class Show:
                             H.span(f&#34;{nOccs} &#34;, cls=&#34;stat&#34;),
                             H.span(
                                 (
-                                    H.span(f&#34;{sheetRep} &#34;),
-                                    H.code(trigger, cls=&#34;ttx&#34;),
+                                    H.span(f&#34;{scopeRep} &#34;),
+                                    H.code(trigger, cls=&#34;ttx&#34;, title=f&#34;r{r}&#34;),
                                 ),
                                 cls=f&#34;{occsCls} {subtleCls}&#34;,
                             ),

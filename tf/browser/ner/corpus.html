@@ -39,7 +39,7 @@ control over how to customize the annotator for different corpora.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/browser/ner/corpus.py#L1-L387" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/browser/ner/corpus.py#L1-L399" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Access to the corpus.
 
@@ -54,7 +54,6 @@ At this point we have the information from the settings and from the corpus.
 By collecting all corpus access methods in one class, we have good conceptual
 control over how to customize the annotator for different corpora.
 &#34;&#34;&#34;
-
 
 import re
 
@@ -111,6 +110,7 @@ class Corpus(Settings):
         features = settings.features
         keywordFeatures = settings.keywordFeatures
         bucketType = settings.bucketType
+        lineType = settings.lineType
         entityType = settings.entityType
         strFeature = settings.strFeature
         afterFeature = settings.afterFeature
@@ -166,8 +166,20 @@ class Corpus(Settings):
             # text = WHITE_RE.sub(&#34; &#34;, text)
             return text
 
-        def getTokens(node):
-            return [(t, strv(t)) or &#34;&#34; for t in L.d(node, otype=slotType)]
+        def getTokens(node, lineBoundaries=False):
+            if lineBoundaries and lineType is None:
+                lineBoundaries = False
+
+            ts = L.d(node, otype=slotType)
+            tokens = [(t, strv(t) or &#34;&#34;) for t in ts]
+
+            if not lineBoundaries:
+                return tokens
+
+            lines = L.d(node, otype=lineType) or []
+            lineEnds = {L.d(ln, otype=slotType)[-1] for ln in lines}
+
+            return (lineEnds, tokens)
 
         def getStrings(tokenStart, tokenEnd):
             return tuple(
@@ -180,7 +192,7 @@ class Corpus(Settings):
             return L.d(T.sectionTuple(node)[1], otype=bucketType)
 
         def getHeadings(node):
-            return tuple(str(x).lstrip(&#34;0&#34;) for x in T.sectionFromNode(node))
+            return tuple(int(str(x).lstrip(&#34;0&#34;)) for x in T.sectionFromNode(node))
 
         def get0(slots):
             text = getText(slots)
@@ -454,7 +466,7 @@ flag.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/browser/ner/corpus.py#L27-L387" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/browser/ner/corpus.py#L26-L399" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Corpus(Settings):
     def __init__(self):
@@ -500,6 +512,7 @@ flag.</p></div>
         features = settings.features
         keywordFeatures = settings.keywordFeatures
         bucketType = settings.bucketType
+        lineType = settings.lineType
         entityType = settings.entityType
         strFeature = settings.strFeature
         afterFeature = settings.afterFeature
@@ -555,8 +568,20 @@ flag.</p></div>
             # text = WHITE_RE.sub(&#34; &#34;, text)
             return text
 
-        def getTokens(node):
-            return [(t, strv(t)) or &#34;&#34; for t in L.d(node, otype=slotType)]
+        def getTokens(node, lineBoundaries=False):
+            if lineBoundaries and lineType is None:
+                lineBoundaries = False
+
+            ts = L.d(node, otype=slotType)
+            tokens = [(t, strv(t) or &#34;&#34;) for t in ts]
+
+            if not lineBoundaries:
+                return tokens
+
+            lines = L.d(node, otype=lineType) or []
+            lineEnds = {L.d(ln, otype=slotType)[-1] for ln in lines}
+
+            return (lineEnds, tokens)
 
         def getStrings(tokenStart, tokenEnd):
             return tuple(
@@ -569,7 +594,7 @@ flag.</p></div>
             return L.d(T.sectionTuple(node)[1], otype=bucketType)
 
         def getHeadings(node):
-            return tuple(str(x).lstrip(&#34;0&#34;) for x in T.sectionFromNode(node))
+            return tuple(int(str(x).lstrip(&#34;0&#34;)) for x in T.sectionFromNode(node))
 
         def get0(slots):
             text = getText(slots)

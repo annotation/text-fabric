@@ -43,6 +43,16 @@ and in its top-level directory run the command:</strong></p>
 </code></pre>
 <h2 id="12">12</h2>
 <h3 id="125">12.5</h3>
+<h4 id="1254">12.5.4</h4>
+<p>2024-09-16</p>
+<p>Many changes in NER, TEI conversion, WATM generation, IIIF manifest generation.
+Documentation on these points may lag behind.</p>
+<p>Also: when the TF browser starts, it selects a port to listen to.
+For each datasource, a different port number is chosen.
+However, different versions of the same datasource were assigned the same version.
+Now the version number is taken into account when selecting a port number, so
+that you can have a TF brtowser running on different versions of the same datasource
+at the same time.</p>
 <h4 id="1253">12.5.3</h4>
 <p>2024-07-05</p>
 <p><strong>NER</strong> </p>
@@ -528,7 +538,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -602,6 +612,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
 <li><a href="#125">12.5</a><ul>
+<li><a href="#1254">12.5.4</a></li>
 <li><a href="#1253">12.5.3</a></li>
 <li><a href="#1252">12.5.2</a></li>
 <li><a href="#1251">12.5.1</a></li>

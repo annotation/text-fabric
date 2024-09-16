@@ -135,7 +135,7 @@ conversion code is demonstrated in the Greek New Testament:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/convert/xml.py#L1-L1245" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/convert/xml.py#L1-L1249" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # XML import
@@ -318,7 +318,8 @@ from ..core.files import (
     APP_CONFIG
 )
 
-(HELP, TASKS, TASKS_EXCLUDED, PARAMS, FLAGS) = setUp(&#34;XML&#34;)
+TASKS_EXCLUDED = {&#34;apptoken&#34;, &#34;browse&#34;}
+(HELP, TASKS, PARAMS, FLAGS) = setUp(&#34;XML&#34;)
 
 TRIM_ATTS = set(
     &#34;&#34;&#34;
@@ -337,6 +338,7 @@ class XML(CheckImport):
         trimAtts=set(),
         keywordAtts=set(),
         renameAtts={},
+        sourceBase=PARAMS[&#34;sourceBase&#34;][1],
         xml=PARAMS[&#34;xml&#34;][1],
         tf=PARAMS[&#34;tf&#34;][1],
         verbose=FLAGS[&#34;verbose&#34;][1],
@@ -509,6 +511,10 @@ class XML(CheckImport):
         convertSpec = f&#34;{programDir}/xml.yaml&#34;
         convertCustom = f&#34;{programDir}/xml.py&#34;
 
+        sourceRefDir = sourceBase if sourceBase else refDir
+        xmlDir = f&#34;{sourceRefDir}/xml&#34;
+        reportDir = f&#34;{sourceRefDir}/report&#34;
+
         settings = readYaml(asFile=convertSpec, plain=True)
 
         self.transform = None
@@ -535,9 +541,7 @@ class XML(CheckImport):
         procins = settings.get(&#34;procins&#34;, False)
         self.procins = procins
 
-        reportDir = f&#34;{refDir}/report&#34;
         appDir = f&#34;{refDir}/app&#34;
-        xmlDir = f&#34;{refDir}/xml&#34;
         tfDir = f&#34;{refDir}/tf&#34;
 
         xmlVersions = sorted(dirContents(xmlDir)[1], key=versionSort)
@@ -1404,7 +1408,7 @@ if __name__ == &#34;__main__&#34;:
 <dl>
 <dt id="tf.convert.xml.XML"><code class="flex name class">
 <span>class <span class="ident">XML</span></span>
-<span>(</span><span>convertTaskCustom=None, trimAtts=set(), keywordAtts=set(), renameAtts={}, xml='latest', tf='latest', verbose=-1)</span>
+<span>(</span><span>convertTaskCustom=None, trimAtts=set(), keywordAtts=set(), renameAtts={}, sourceBase='', xml='latest', tf='latest', verbose=-1)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Converts XML to TF.</p>
@@ -1522,7 +1526,7 @@ relevant TF version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/convert/xml.py#L194-L1228" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/convert/xml.py#L195-L1232" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class XML(CheckImport):
     def __init__(
@@ -1531,6 +1535,7 @@ relevant TF version:</p>
         trimAtts=set(),
         keywordAtts=set(),
         renameAtts={},
+        sourceBase=PARAMS[&#34;sourceBase&#34;][1],
         xml=PARAMS[&#34;xml&#34;][1],
         tf=PARAMS[&#34;tf&#34;][1],
         verbose=FLAGS[&#34;verbose&#34;][1],
@@ -1703,6 +1708,10 @@ relevant TF version:</p>
         convertSpec = f&#34;{programDir}/xml.yaml&#34;
         convertCustom = f&#34;{programDir}/xml.py&#34;
 
+        sourceRefDir = sourceBase if sourceBase else refDir
+        xmlDir = f&#34;{sourceRefDir}/xml&#34;
+        reportDir = f&#34;{sourceRefDir}/report&#34;
+
         settings = readYaml(asFile=convertSpec, plain=True)
 
         self.transform = None
@@ -1729,9 +1738,7 @@ relevant TF version:</p>
         procins = settings.get(&#34;procins&#34;, False)
         self.procins = procins
 
-        reportDir = f&#34;{refDir}/report&#34;
         appDir = f&#34;{refDir}/app&#34;
-        xmlDir = f&#34;{refDir}/xml&#34;
         tfDir = f&#34;{refDir}/tf&#34;
 
         xmlVersions = sorted(dirContents(xmlDir)[1], key=versionSort)

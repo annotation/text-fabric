@@ -461,7 +461,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/convert/tei.py#L1-L4708" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/convert/tei.py#L1-L4721" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -1094,7 +1094,8 @@ from ..core.files import (
 from ..tools.xmlschema import Analysis
 
 
-(HELP, TASKS, TASKS_EXCLUDED, PARAMS, FLAGS) = setUp(&#34;TEI&#34;)
+TASKS_EXCLUDED = {&#34;apptoken&#34;, &#34;browse&#34;}
+(HELP, TASKS, PARAMS, FLAGS) = setUp(&#34;TEI&#34;)
 
 CSS_REND = dict(
     h1=(
@@ -1331,6 +1332,7 @@ def getRefs(tag, atts, xmlFile):
 class TEI(CheckImport):
     def __init__(
         self,
+        sourceBase=PARAMS[&#34;sourceBase&#34;][1],
         tei=PARAMS[&#34;tei&#34;][1],
         tf=PARAMS[&#34;tf&#34;][1],
         validate=PARAMS[&#34;validate&#34;][1],
@@ -1381,6 +1383,13 @@ class TEI(CheckImport):
         input / output directories.
 
         ## Input directories
+
+        ### `sourceBase`
+
+        *Top-level directory of the TEI-XML sources.*
+
+        By default (if left empty) it is the `tei` directory at the top-level of the
+        repo, but you can specify any directory you want.
 
         ### `tei`
 
@@ -1512,10 +1521,13 @@ class TEI(CheckImport):
         repoDir = f&#34;{base}/{org}/{repo}&#34;
         refDir = f&#34;{repoDir}{relative}&#34;
         programDir = f&#34;{refDir}/programs&#34;
-        schemaDir = f&#34;{refDir}/schema&#34;
         convertSpec = f&#34;{programDir}/tei.yaml&#34;
         convertCustom = f&#34;{programDir}/tei.py&#34;
 
+        sourceRefDir = sourceBase if sourceBase else refDir
+        teiDir = f&#34;{sourceRefDir}/tei&#34;
+        reportDir = f&#34;{sourceRefDir}/report&#34;
+        schemaDir = f&#34;{sourceRefDir}/schema&#34;
         self.schemaDir = schemaDir
 
         settings = readYaml(asFile=convertSpec, plain=True)
@@ -1685,10 +1697,8 @@ class TEI(CheckImport):
         self.siblingEdges = siblingEdges
         self.procins = procins
 
-        reportDir = f&#34;{refDir}/report&#34;
         appDir = f&#34;{refDir}/app&#34;
         docsDir = f&#34;{refDir}/docs&#34;
-        teiDir = f&#34;{refDir}/tei&#34;
         tfDir = f&#34;{refDir}/tf&#34;
 
         if tei in {&#34;&#34;, None}:
@@ -1696,6 +1706,7 @@ class TEI(CheckImport):
             reportPath = f&#34;{reportDir}&#34;
             errMsg = f&#34;source directory does not exist: {ux(teiDir)}&#34;
             teiVersion = &#34;&#34;
+            teiVersionRep = &#34;&#34;
         else:
             teiVersions = sorted(dirContents(teiDir)[1], key=versionSort)
             nTeiVersions = len(teiVersions)
@@ -1723,9 +1734,11 @@ class TEI(CheckImport):
             else:
                 teiVersion = tei
 
-            teiPath = f&#34;{teiDir}/{teiVersion}&#34;
-            reportPath = f&#34;{reportDir}/{teiVersion}&#34;
             errMsg = f&#34;source version {teiVersion} does not exists in {ux(teiDir)}&#34;
+            teiVersionRep = f&#34;/{teiVersion}&#34;
+
+        teiPath = f&#34;{teiDir}{teiVersionRep}&#34;
+        reportPath = f&#34;{reportDir}{teiVersionRep}&#34;
 
         if not dirExists(teiPath):
             console(errMsg, error=True)
@@ -1942,7 +1955,7 @@ class TEI(CheckImport):
 
         generic[&#34;sourceFormat&#34;] = &#34;TEI&#34;
         generic[&#34;version&#34;] = tfVersion
-        generic[&#34;teiVersion&#34;] = teiVersion
+        generic[&#34;teiVersion&#34;] = teiVersion or &#34;not specified&#34;
         generic[&#34;schema&#34;] = &#34;TEI&#34; + (&#34; + &#34; + (&#34; + &#34;.join(models))) if models else &#34;&#34;
 
         extraInstructions = []
@@ -4959,8 +4972,8 @@ class TEI(CheckImport):
             itemPre = f&#34;{targetDir}/{fileBase}_orig{fileExt}&#34;
 
             justCopy = info[&#34;justCopy&#34;]
-            teiDir = f&#34;{myDir}/{sourceBit}&#34;
-            itemSource = f&#34;{teiDir}/{file}&#34;
+            srcDir = f&#34;{myDir}/{sourceBit}&#34;
+            itemSource = f&#34;{srcDir}/{file}&#34;
 
             # If there is custom info, we do not have to preserve the previous version.
             # Otherwise we save the target before overwriting it; # unless it
@@ -5205,7 +5218,7 @@ if __name__ == &#34;__main__&#34;:
 <dl>
 <dt id="tf.convert.tei.TEI"><code class="flex name class">
 <span>class <span class="ident">TEI</span></span>
-<span>(</span><span>tei='latest', tf='latest', validate=True, verbose=-1)</span>
+<span>(</span><span>sourceBase='', tei='latest', tf='latest', validate=True, verbose=-1)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Converts TEI to TF.</p>
@@ -5241,6 +5254,10 @@ as a sequence of <code>home/backend/org/repo/relative</code>.</p>
 <p>Relative to this directory the program expects and creates
 input / output directories.</p>
 <h2 id="input-directories">Input directories</h2>
+<h3 id="sourcebase"><code>sourceBase</code></h3>
+<p><em>Top-level directory of the TEI-XML sources.</em></p>
+<p>By default (if left empty) it is the <code>tei</code> directory at the top-level of the
+repo, but you can specify any directory you want.</p>
 <h3 id="tei"><code>tei</code></h3>
 <p><em>Location of the TEI-XML sources.</em></p>
 <p><strong>If it does not exist, the program aborts with an error.</strong></p>
@@ -5327,11 +5344,12 @@ relevant TF version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/convert/tei.py#L866-L4691" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/convert/tei.py#L867-L4704" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI(CheckImport):
     def __init__(
         self,
+        sourceBase=PARAMS[&#34;sourceBase&#34;][1],
         tei=PARAMS[&#34;tei&#34;][1],
         tf=PARAMS[&#34;tf&#34;][1],
         validate=PARAMS[&#34;validate&#34;][1],
@@ -5382,6 +5400,13 @@ relevant TF version:</p>
         input / output directories.
 
         ## Input directories
+
+        ### `sourceBase`
+
+        *Top-level directory of the TEI-XML sources.*
+
+        By default (if left empty) it is the `tei` directory at the top-level of the
+        repo, but you can specify any directory you want.
 
         ### `tei`
 
@@ -5513,10 +5538,13 @@ relevant TF version:</p>
         repoDir = f&#34;{base}/{org}/{repo}&#34;
         refDir = f&#34;{repoDir}{relative}&#34;
         programDir = f&#34;{refDir}/programs&#34;
-        schemaDir = f&#34;{refDir}/schema&#34;
         convertSpec = f&#34;{programDir}/tei.yaml&#34;
         convertCustom = f&#34;{programDir}/tei.py&#34;
 
+        sourceRefDir = sourceBase if sourceBase else refDir
+        teiDir = f&#34;{sourceRefDir}/tei&#34;
+        reportDir = f&#34;{sourceRefDir}/report&#34;
+        schemaDir = f&#34;{sourceRefDir}/schema&#34;
         self.schemaDir = schemaDir
 
         settings = readYaml(asFile=convertSpec, plain=True)
@@ -5686,10 +5714,8 @@ relevant TF version:</p>
         self.siblingEdges = siblingEdges
         self.procins = procins
 
-        reportDir = f&#34;{refDir}/report&#34;
         appDir = f&#34;{refDir}/app&#34;
         docsDir = f&#34;{refDir}/docs&#34;
-        teiDir = f&#34;{refDir}/tei&#34;
         tfDir = f&#34;{refDir}/tf&#34;
 
         if tei in {&#34;&#34;, None}:
@@ -5697,6 +5723,7 @@ relevant TF version:</p>
             reportPath = f&#34;{reportDir}&#34;
             errMsg = f&#34;source directory does not exist: {ux(teiDir)}&#34;
             teiVersion = &#34;&#34;
+            teiVersionRep = &#34;&#34;
         else:
             teiVersions = sorted(dirContents(teiDir)[1], key=versionSort)
             nTeiVersions = len(teiVersions)
@@ -5724,9 +5751,11 @@ relevant TF version:</p>
             else:
                 teiVersion = tei
 
-            teiPath = f&#34;{teiDir}/{teiVersion}&#34;
-            reportPath = f&#34;{reportDir}/{teiVersion}&#34;
             errMsg = f&#34;source version {teiVersion} does not exists in {ux(teiDir)}&#34;
+            teiVersionRep = f&#34;/{teiVersion}&#34;
+
+        teiPath = f&#34;{teiDir}{teiVersionRep}&#34;
+        reportPath = f&#34;{reportDir}{teiVersionRep}&#34;
 
         if not dirExists(teiPath):
             console(errMsg, error=True)
@@ -5943,7 +5972,7 @@ relevant TF version:</p>
 
         generic[&#34;sourceFormat&#34;] = &#34;TEI&#34;
         generic[&#34;version&#34;] = tfVersion
-        generic[&#34;teiVersion&#34;] = teiVersion
+        generic[&#34;teiVersion&#34;] = teiVersion or &#34;not specified&#34;
         generic[&#34;schema&#34;] = &#34;TEI&#34; + (&#34; + &#34; + (&#34; + &#34;.join(models))) if models else &#34;&#34;
 
         extraInstructions = []
@@ -8960,8 +8989,8 @@ relevant TF version:</p>
             itemPre = f&#34;{targetDir}/{fileBase}_orig{fileExt}&#34;
 
             justCopy = info[&#34;justCopy&#34;]
-            teiDir = f&#34;{myDir}/{sourceBit}&#34;
-            itemSource = f&#34;{teiDir}/{file}&#34;
+            srcDir = f&#34;{myDir}/{sourceBit}&#34;
+            itemSource = f&#34;{srcDir}/{file}&#34;
 
             # If there is custom info, we do not have to preserve the previous version.
             # Otherwise we save the target before overwriting it; # unless it

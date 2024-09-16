@@ -244,7 +244,7 @@ slots.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/browser/ner/ner.py#L1-L906" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/browser/ner/ner.py#L1-L1016" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;API for Named Entity marking.
 
@@ -527,7 +527,7 @@ from ...core.files import (
 )
 from ...core.timestamp import SILENT_D, DEEP
 from .sheets import Sheets
-from .helpers import findCompile
+from .helpers import findCompile, toTokens
 from .sets import Sets
 from .show import Show
 from .match import entityMatch, occMatch
@@ -607,10 +607,96 @@ class NER(Sheets, Sets, Show):
         if not self.properlySetup:
             return
 
-    def setTask(self, task):
+    def setTask(self, task, force=False, caseSensitive=False):
+        (newSetNameRep, newSetRo, newSetSrc, newSetX) = self.setInfo(task)
         self.setSet(task)
-        setIsX = self.setIsX
-        self.setSheet(task[1:] if setIsX else None)
+        self.setSheet(
+            task[1:] if newSetX else None,
+            force=force,
+            caseSensitive=caseSensitive,
+        )
+
+    def getTasks(self):
+        setNames = self.setNames
+
+        tasks = set()
+
+        for setName in setNames:
+            tasks.add(
+                setName.removesuffix(&#34;-no-case&#34;).removesuffix(&#34;-with-case&#34;)
+                if setName.startswith(&#34;.&#34;)
+                else setName
+            )
+
+        return tasks
+
+    def getMeta(self):
+        &#34;&#34;&#34;Retrieves the metadata of the current sheet.&#34;&#34;&#34;
+        sheetData = self.getSheetData()
+        return (sheetData.metaFields, sheetData.metaData)
+
+    def findTrigger(self, trigger, show=True):
+        if not self.properlySetup:
+            return []
+
+        app = self.app
+        L = app.api.L
+
+        settings = self.settings
+        spaceEscaped = settings.spaceEscaped
+
+        setData = self.getSetData()
+        getTokens = self.getTokens
+        getHeadings = self.getHeadings
+
+        buckets = setData.buckets or ()
+
+        sheetName = self.sheetName
+        sheetData = self.sheets[sheetName]
+
+        caseSensitive = sheetData.caseSensitive
+
+        triggerT = toTokens(
+            trigger, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
+        )
+        idMap = {trigger: trigger}
+        tMap = {trigger: &#34;&#34;}
+        tPos = {}
+
+        for i, token in enumerate(triggerT):
+            tPos.setdefault(i, {}).setdefault(token, set()).add(triggerT)
+
+        instructions = {(): dict(tPos=tPos, tMap=tMap, idMap=idMap)}
+
+        inventory = occMatch(
+            getTokens,
+            getHeadings,
+            buckets,
+            instructions,
+            spaceEscaped,
+            caseSensitive=caseSensitive,
+        )
+
+        occs = inventory.get(trigger, {}).get(trigger, {}).get(&#34;&#34;, [])
+
+        if show:
+            nOccs = len(occs)
+
+            if nOccs:
+                plural = &#34;&#34; if nOccs == 1 else &#34;s&#34;
+                app.dm(f&#34;**{nOccs} occurrence{plural}**\n&#34;)
+
+                headings = set()
+                highlights = set()
+
+                for occ in occs:
+                    headings.add(L.u(occ[0], otype=&#34;chunk&#34;)[0])
+
+                    for slot in occ:
+                        highlights.add(slot)
+
+                for hd in sorted(headings):
+                    app.plain(hd, highlights=highlights)
 
     def findOccs(self):
         &#34;&#34;&#34;Finds the occurrences of multiple triggers.
@@ -646,10 +732,15 @@ class NER(Sheets, Sets, Show):
 
         sheetName = self.sheetName
         sheetData = self.sheets[sheetName]
-
         instructions = sheetData.instructions
+        caseSensitive = sheetData.caseSensitive
         sheetData.inventory = occMatch(
-            getTokens, getHeadings, buckets, instructions, spaceEscaped
+            getTokens,
+            getHeadings,
+            buckets,
+            instructions,
+            spaceEscaped,
+            caseSensitive=caseSensitive,
         )
 
     def filterContent(
@@ -907,7 +998,7 @@ class NER(Sheets, Sets, Show):
             self.console(f&#34;{nResults} {bucketType}{pluralR}&#34;)
         return results
 
-    def reportHits(self, silent=None):
+    def reportHits(self, silent=None, showNoHits=False):
         &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
         if not self.properlySetup:
             return
@@ -928,26 +1019,29 @@ class NER(Sheets, Sets, Show):
 
         allTriggers = set()
 
-        for path, data in instructions.items():
+        for intv, data in instructions.items():
             idMap = data[&#34;idMap&#34;]
             tMap = data[&#34;tMap&#34;]
 
-            for trigger, tPath in tMap.items():
-                eidkind = idMap[trigger]
-                name = nameMap[eidkind][0]
-                allTriggers.add((name, eidkind, trigger, tPath))
+            for trigger, scope in tMap.items():
+                eidkind = idMap.get(trigger, None)
+
+                if eidkind is None:
+                    continue
+
+                name = nameMap[eidkind]
+                allTriggers.add((name, eidkind, trigger, scope))
 
         hitData = []
         names = set()
-        triggersSuccess = 0
+        noHits = set()
 
         for e in sorted(allTriggers):
-            (name, eidkind, trigger, tPath) = e
+            (name, eidkind, trigger, scope) = e
 
             names.add(name)
 
-            sheet = &#34;.&#34;.join(tPath)
-            entry = (name, trigger, sheet)
+            entry = (name, trigger, scope)
             section = &#34;&#34;
             hits = &#34;&#34;
 
@@ -955,29 +1049,45 @@ class NER(Sheets, Sets, Show):
 
             if entInfo is None:
                 hitData.append((&#34;!E&#34;, *entry, &#34;&#34;, 0))
+                noHits.add(trigger)
                 continue
 
             triggerInfo = entInfo.get(trigger, None)
 
             if triggerInfo is None:
                 hitData.append((&#34;!T&#34;, *entry, &#34;&#34;, 0))
+                noHits.add(trigger)
                 continue
 
-            occs = triggerInfo.get(tPath, None)
+            occs = triggerInfo.get(scope, None)
 
-            if occs is None:
+            if occs is None or len(occs) == 0:
                 hitData.append((&#34;!P&#34;, *entry, &#34;&#34;, 0))
+                noHits.add(trigger)
                 continue
 
-            triggersSuccess += 1
             sectionInfo = collections.Counter()
 
             for slots in occs:
-                section = &#34;.&#34;.join(getHeadings(slots[0]))
+                section = &#34;.&#34;.join(str(x) for x in getHeadings(slots[0]))
                 sectionInfo[section] += 1
 
             for section, hits in sorted(sectionInfo.items()):
                 hitData.append((&#34;OK&#34;, *entry, section, hits))
+
+        trigWithout = len(noHits)
+
+        if showNoHits and (trigWithout &gt; 0):
+            console(
+                &#34;Triggers without hits: &#34; f&#34;{trigWithout}x:&#34;,
+                error=True,
+            )
+
+            if len(noHits):
+                console(&#34;  triggers without hits:&#34;)
+
+                for trigger in sorted(noHits):
+                    console(f&#34;    {trigger}&#34;, error=True)
 
         with fileOpen(reportFile, &#34;w&#34;) as rh:
             rh.write(&#34;label\tname\ttrigger\tsheet\tsection\thits\n&#34;)
@@ -995,11 +1105,11 @@ class NER(Sheets, Sets, Show):
             if silent
             else dedent(
                 f&#34;&#34;&#34;
-                Entities targeted:       {nEnt:&gt;5}
-                Triggers searched for:   {nTriggers:&gt;5}
-                Triggers with hits:      {triggersSuccess:&gt;5}
-                Triggers without hits:   {nTriggers - triggersSuccess:&gt;5}
-                Total hits:              {nHits:&gt;5}
+                Entities targeted:     {nEnt:&gt;5}
+                Triggers searched for: {nTriggers:&gt;5}
+                Triggers without hits: {trigWithout:&gt;5}
+                Triggers with hits:    {nTriggers - trigWithout:&gt;5}
+                Total hits:            {nHits:&gt;5}
 
                 All hits in report file: {reportFile}
                 &#34;&#34;&#34;
@@ -1214,7 +1324,7 @@ browser. This will influence how results are reported back.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/browser/ner/ner.py#L288-L906" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/browser/ner/ner.py#L288-L1016" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Sheets, Sets, Show):
     def __init__(self, app, normalizeChars=None, data=None, browse=False, silent=False):
@@ -1290,10 +1400,96 @@ browser. This will influence how results are reported back.</dd>
         if not self.properlySetup:
             return
 
-    def setTask(self, task):
+    def setTask(self, task, force=False, caseSensitive=False):
+        (newSetNameRep, newSetRo, newSetSrc, newSetX) = self.setInfo(task)
         self.setSet(task)
-        setIsX = self.setIsX
-        self.setSheet(task[1:] if setIsX else None)
+        self.setSheet(
+            task[1:] if newSetX else None,
+            force=force,
+            caseSensitive=caseSensitive,
+        )
+
+    def getTasks(self):
+        setNames = self.setNames
+
+        tasks = set()
+
+        for setName in setNames:
+            tasks.add(
+                setName.removesuffix(&#34;-no-case&#34;).removesuffix(&#34;-with-case&#34;)
+                if setName.startswith(&#34;.&#34;)
+                else setName
+            )
+
+        return tasks
+
+    def getMeta(self):
+        &#34;&#34;&#34;Retrieves the metadata of the current sheet.&#34;&#34;&#34;
+        sheetData = self.getSheetData()
+        return (sheetData.metaFields, sheetData.metaData)
+
+    def findTrigger(self, trigger, show=True):
+        if not self.properlySetup:
+            return []
+
+        app = self.app
+        L = app.api.L
+
+        settings = self.settings
+        spaceEscaped = settings.spaceEscaped
+
+        setData = self.getSetData()
+        getTokens = self.getTokens
+        getHeadings = self.getHeadings
+
+        buckets = setData.buckets or ()
+
+        sheetName = self.sheetName
+        sheetData = self.sheets[sheetName]
+
+        caseSensitive = sheetData.caseSensitive
+
+        triggerT = toTokens(
+            trigger, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
+        )
+        idMap = {trigger: trigger}
+        tMap = {trigger: &#34;&#34;}
+        tPos = {}
+
+        for i, token in enumerate(triggerT):
+            tPos.setdefault(i, {}).setdefault(token, set()).add(triggerT)
+
+        instructions = {(): dict(tPos=tPos, tMap=tMap, idMap=idMap)}
+
+        inventory = occMatch(
+            getTokens,
+            getHeadings,
+            buckets,
+            instructions,
+            spaceEscaped,
+            caseSensitive=caseSensitive,
+        )
+
+        occs = inventory.get(trigger, {}).get(trigger, {}).get(&#34;&#34;, [])
+
+        if show:
+            nOccs = len(occs)
+
+            if nOccs:
+                plural = &#34;&#34; if nOccs == 1 else &#34;s&#34;
+                app.dm(f&#34;**{nOccs} occurrence{plural}**\n&#34;)
+
+                headings = set()
+                highlights = set()
+
+                for occ in occs:
+                    headings.add(L.u(occ[0], otype=&#34;chunk&#34;)[0])
+
+                    for slot in occ:
+                        highlights.add(slot)
+
+                for hd in sorted(headings):
+                    app.plain(hd, highlights=highlights)
 
     def findOccs(self):
         &#34;&#34;&#34;Finds the occurrences of multiple triggers.
@@ -1329,10 +1525,15 @@ browser. This will influence how results are reported back.</dd>
 
         sheetName = self.sheetName
         sheetData = self.sheets[sheetName]
-
         instructions = sheetData.instructions
+        caseSensitive = sheetData.caseSensitive
         sheetData.inventory = occMatch(
-            getTokens, getHeadings, buckets, instructions, spaceEscaped
+            getTokens,
+            getHeadings,
+            buckets,
+            instructions,
+            spaceEscaped,
+            caseSensitive=caseSensitive,
         )
 
     def filterContent(
@@ -1590,7 +1791,7 @@ browser. This will influence how results are reported back.</dd>
             self.console(f&#34;{nResults} {bucketType}{pluralR}&#34;)
         return results
 
-    def reportHits(self, silent=None):
+    def reportHits(self, silent=None, showNoHits=False):
         &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
         if not self.properlySetup:
             return
@@ -1611,26 +1812,29 @@ browser. This will influence how results are reported back.</dd>
 
         allTriggers = set()
 
-        for path, data in instructions.items():
+        for intv, data in instructions.items():
             idMap = data[&#34;idMap&#34;]
             tMap = data[&#34;tMap&#34;]
 
-            for trigger, tPath in tMap.items():
-                eidkind = idMap[trigger]
-                name = nameMap[eidkind][0]
-                allTriggers.add((name, eidkind, trigger, tPath))
+            for trigger, scope in tMap.items():
+                eidkind = idMap.get(trigger, None)
+
+                if eidkind is None:
+                    continue
+
+                name = nameMap[eidkind]
+                allTriggers.add((name, eidkind, trigger, scope))
 
         hitData = []
         names = set()
-        triggersSuccess = 0
+        noHits = set()
 
         for e in sorted(allTriggers):
-            (name, eidkind, trigger, tPath) = e
+            (name, eidkind, trigger, scope) = e
 
             names.add(name)
 
-            sheet = &#34;.&#34;.join(tPath)
-            entry = (name, trigger, sheet)
+            entry = (name, trigger, scope)
             section = &#34;&#34;
             hits = &#34;&#34;
 
@@ -1638,29 +1842,45 @@ browser. This will influence how results are reported back.</dd>
 
             if entInfo is None:
                 hitData.append((&#34;!E&#34;, *entry, &#34;&#34;, 0))
+                noHits.add(trigger)
                 continue
 
             triggerInfo = entInfo.get(trigger, None)
 
             if triggerInfo is None:
                 hitData.append((&#34;!T&#34;, *entry, &#34;&#34;, 0))
+                noHits.add(trigger)
                 continue
 
-            occs = triggerInfo.get(tPath, None)
+            occs = triggerInfo.get(scope, None)
 
-            if occs is None:
+            if occs is None or len(occs) == 0:
                 hitData.append((&#34;!P&#34;, *entry, &#34;&#34;, 0))
+                noHits.add(trigger)
                 continue
 
-            triggersSuccess += 1
             sectionInfo = collections.Counter()
 
             for slots in occs:
-                section = &#34;.&#34;.join(getHeadings(slots[0]))
+                section = &#34;.&#34;.join(str(x) for x in getHeadings(slots[0]))
                 sectionInfo[section] += 1
 
             for section, hits in sorted(sectionInfo.items()):
                 hitData.append((&#34;OK&#34;, *entry, section, hits))
+
+        trigWithout = len(noHits)
+
+        if showNoHits and (trigWithout &gt; 0):
+            console(
+                &#34;Triggers without hits: &#34; f&#34;{trigWithout}x:&#34;,
+                error=True,
+            )
+
+            if len(noHits):
+                console(&#34;  triggers without hits:&#34;)
+
+                for trigger in sorted(noHits):
+                    console(f&#34;    {trigger}&#34;, error=True)
 
         with fileOpen(reportFile, &#34;w&#34;) as rh:
             rh.write(&#34;label\tname\ttrigger\tsheet\tsection\thits\n&#34;)
@@ -1678,11 +1898,11 @@ browser. This will influence how results are reported back.</dd>
             if silent
             else dedent(
                 f&#34;&#34;&#34;
-                Entities targeted:       {nEnt:&gt;5}
-                Triggers searched for:   {nTriggers:&gt;5}
-                Triggers with hits:      {triggersSuccess:&gt;5}
-                Triggers without hits:   {nTriggers - triggersSuccess:&gt;5}
-                Total hits:              {nHits:&gt;5}
+                Entities targeted:     {nEnt:&gt;5}
+                Triggers searched for: {nTriggers:&gt;5}
+                Triggers without hits: {trigWithout:&gt;5}
+                Triggers with hits:    {nTriggers - trigWithout:&gt;5}
+                Total hits:            {nHits:&gt;5}
 
                 All hits in report file: {reportFile}
                 &#34;&#34;&#34;
@@ -1975,14 +2195,32 @@ A single occurrence is represented as a tuple of slots.</p>
 <p><code>names</code>: keyed by tuples (eid, kind) and then path,
 the value is the name of that entity in the context indicated by path.</p></div>
 </dd>
+<dt id="tf.browser.ner.ner.NER.findTrigger"><code class="name flex">
+<span>def <span class="ident">findTrigger</span></span>(<span>self, trigger, show=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.browser.ner.ner.NER.getMeta"><code class="name flex">
+<span>def <span class="ident">getMeta</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Retrieves the metadata of the current sheet.</p></div>
+</dd>
+<dt id="tf.browser.ner.ner.NER.getTasks"><code class="name flex">
+<span>def <span class="ident">getTasks</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="tf.browser.ner.ner.NER.reportHits"><code class="name flex">
-<span>def <span class="ident">reportHits</span></span>(<span>self, silent=None)</span>
+<span>def <span class="ident">reportHits</span></span>(<span>self, silent=None, showNoHits=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Reports the inventory.</p></div>
 </dd>
 <dt id="tf.browser.ner.ner.NER.setTask"><code class="name flex">
-<span>def <span class="ident">setTask</span></span>(<span>self, task)</span>
+<span>def <span class="ident">setTask</span></span>(<span>self, task, force=False, caseSensitive=False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -2132,10 +2370,13 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li>
 <h4><code><a title="tf.browser.ner.ner.NER" href="#tf.browser.ner.ner.NER">NER</a></code></h4>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="tf.browser.ner.ner.NER.bakeEntities" href="#tf.browser.ner.ner.NER.bakeEntities">bakeEntities</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.filterContent" href="#tf.browser.ner.ner.NER.filterContent">filterContent</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.findOccs" href="#tf.browser.ner.ner.NER.findOccs">findOccs</a></code></li>
+<li><code><a title="tf.browser.ner.ner.NER.findTrigger" href="#tf.browser.ner.ner.NER.findTrigger">findTrigger</a></code></li>
+<li><code><a title="tf.browser.ner.ner.NER.getMeta" href="#tf.browser.ner.ner.NER.getMeta">getMeta</a></code></li>
+<li><code><a title="tf.browser.ner.ner.NER.getTasks" href="#tf.browser.ner.ner.NER.getTasks">getTasks</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.reportHits" href="#tf.browser.ner.ner.NER.reportHits">reportHits</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.setTask" href="#tf.browser.ner.ner.NER.setTask">setTask</a></code></li>
 </ul>

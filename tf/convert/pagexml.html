@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/convert/pagexml.py#L1-L1063" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/convert/pagexml.py#L1-L1023" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 from subprocess import run
@@ -61,55 +61,15 @@ from ..parameters import BRANCH_DEFAULT_NEW
 from ..fabric import Fabric
 from ..convert.walker import CV
 
-from .helpers import FILE, PAGE, DOC, REGION, LINE, NODE, tokenize
+from .helpers import FILE, PAGE, DOC, REGION, LINE, NODE, tokenize, setUp
 
 
 TOKEN = &#34;token&#34;
 SOFT_HYPHEN_CHARS = {&#34;¬&#34;, &#34;\u00ad&#34;}
 
 
-def setUp():
-    helpText = &#34;&#34;&#34;
-    Convert PageXML to TF.
-
-    There are also commands to check the to load and browse the resulting TF.&#34;&#34;&#34;
-
-    taskSpec = dict(
-        convert=&#34;converts PageXML to TF&#34;,
-        load=&#34;loads the generated TF&#34;,
-        app=&#34;configures the TF app for the result&#34;,
-        browse=&#34;starts the TF browser on the result&#34;,
-    )
-    taskExcluded = {&#34;browse&#34;}
-
-    paramSpec = {
-        &#34;tf&#34;: (
-            (
-                &#34;0 or latest: update latest version;\n\t\t&#34;
-                &#34;1 2 3: increase major, intermediate, minor TF version;\n\t\t&#34;
-                &#34;rest: explicit version.&#34;
-            ),
-            &#34;latest&#34;,
-        ),
-        &#34;source&#34;: (
-            (
-                &#34;0 or latest: latest version;\n\t\t&#34;
-                &#34;-1 -2 etc: previous version, before previous, ...;\n\t\t&#34;
-                &#34;1 2 etc: first version, second version, ...;\n\t\t&#34;
-                &#34;rest: explicit version.&#34;
-            ),
-            &#34;latest&#34;,
-        ),
-    }
-
-    flagSpec = dict(
-        verbose=(&#34;Produce less or more progress and reporting messages&#34;, -1, 3),
-        doc=(&#34;Do only this document&#34;, None, 0),
-    )
-    return (helpText, taskSpec, taskExcluded, paramSpec, flagSpec)
-
-
-(HELP, TASKS, TASKS_EXCLUDED, PARAMS, FLAGS) = setUp()
+TASKS_EXCLUDED = {&#34;apptoken&#34;, &#34;browse&#34;}
+(HELP, TASKS, PARAMS, FLAGS) = setUp(&#34;source&#34;)
 
 
 def diverge(cv, s, rtx, rsp, ltx, lsp):
@@ -1129,12 +1089,6 @@ if __name__ == &#34;__main__&#34;:
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.convert.pagexml.setUp"><code class="name flex">
-<span>def <span class="ident">setUp</span></span>(<span>)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
 <dt id="tf.convert.pagexml.tokenLogic"><code class="name flex">
 <span>def <span class="ident">tokenLogic</span></span>(<span>cv, s, token, hangover, isFirst, isSecondLast, isLast)</span>
 </code></dt>
@@ -1275,7 +1229,7 @@ relevant TF version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/convert/pagexml.py#L214-L1046" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/convert/pagexml.py#L174-L1006" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PageXML(CheckImport):
     def __init__(
@@ -2337,7 +2291,6 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.convert.pagexml.emptySlot" href="#tf.convert.pagexml.emptySlot">emptySlot</a></code></li>
 <li><code><a title="tf.convert.pagexml.linebreakSlot" href="#tf.convert.pagexml.linebreakSlot">linebreakSlot</a></code></li>
 <li><code><a title="tf.convert.pagexml.main" href="#tf.convert.pagexml.main">main</a></code></li>
-<li><code><a title="tf.convert.pagexml.setUp" href="#tf.convert.pagexml.setUp">setUp</a></code></li>
 <li><code><a title="tf.convert.pagexml.tokenLogic" href="#tf.convert.pagexml.tokenLogic">tokenLogic</a></code></li>
 <li><code><a title="tf.convert.pagexml.walkObject" href="#tf.convert.pagexml.walkObject">walkObject</a></code></li>
 </ul>

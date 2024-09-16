@@ -35,7 +35,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/22c1eaf8bab7e534bdb2121015d0c48763764e8e/tf/browser/ner/helpers.py#L1-L282" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/browser/ner/helpers.py#L1-L629" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Auxiliary functions.
 
@@ -46,13 +46,24 @@ To see how this fits among all the modules of this package, see
 
 import re
 import unicodedata
+import functools
 
+from ...core.helpers import console
 from ..html import H
 from .settings import STYLES
 
 
+WHITE_STRIP_RE = re.compile(r&#34;&#34;&#34;(?:\s|[​‌‍])+&#34;&#34;&#34;)
+
+
+def xstrip(x):
+    return WHITE_STRIP_RE.sub(&#34;&#34;, x)
+
+
 WHITE_RE = re.compile(r&#34;&#34;&#34;\s+&#34;&#34;&#34;, re.S)
 NON_WORD = re.compile(r&#34;&#34;&#34;\W+&#34;&#34;&#34;, re.S)
+
+LOC_RE = re.compile(r&#34;[.:@]&#34;)
 
 PART_CUT_OFF = 8
 &#34;&#34;&#34;Maximum length of parts of entity identifiers.&#34;&#34;&#34;
@@ -86,7 +97,7 @@ def normalize(text):
     return WHITE_RE.sub(&#34; &#34;, text).strip()
 
 
-def toTokens(text, spaceEscaped=False):
+def toTokens(text, spaceEscaped=False, caseSensitive=False):
     &#34;&#34;&#34;Split a text into tokens.
 
     The text is split on white-space.
@@ -100,6 +111,10 @@ def toTokens(text, spaceEscaped=False):
     &#34;&#34;&#34;
     result = TOKEN_RE.findall(normalize(text))
     result = tuple((t.replace(&#34;_&#34;, &#34; &#34;) for t in result) if spaceEscaped else result)
+
+    if not caseSensitive:
+        result = tuple(t.lower() for t in result)
+
     return tuple(t for t in result if t != &#34; &#34;)
 
 
@@ -117,9 +132,10 @@ def fromTokens(tokens, spaceEscaped=False):
     )
 
 
-def tnorm(text, spaceEscaped=False):
+def tnorm(text, spaceEscaped=False, caseSensitive=False):
     return fromTokens(
-        toTokens(text, spaceEscaped=spaceEscaped), spaceEscaped=spaceEscaped
+        toTokens(text, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive),
+        spaceEscaped=spaceEscaped,
     )
 
 
@@ -156,7 +172,12 @@ def toSmallId(text, transform={}):
     which ultimately is provided in the corpus-dependent
     `ner/config.yaml` .
     &#34;&#34;&#34;
-    parts = [y for x in toId(text).split(&#34;.&#34;) if (y := transform.get(x, x))]
+    eid = toId(text)
+
+    if len(eid) &lt;= CUT_OFF:
+        return eid
+
+    parts = [y for x in eid.split(&#34;.&#34;) if (y := transform.get(x, x))]
     result = []
     n = 0
 
@@ -307,18 +328,344 @@ def makeCss(features, keywordFeatures):
     return allCss
 
 
-def getPath(heading, instructions):
-    for n in range(len(heading), 0, -1):
-        path = heading[0:n]
+def getIntvIndex(buckets, instructions, getHeadings):
+    intervals = sortScopes(x for x in instructions if x != ())
 
-        if path in instructions:
-            return path
+    nIntervals = len(intervals)
 
-    return ()
+    if nIntervals == 0:
+        return {bucket: () for bucket in buckets}
+
+    intvIndex = {}
+    i = 0
+    intv = intervals[i]
+    (b, e) = intv
+
+    for bucket in buckets:
+        hd = getHeadings(bucket)
+
+        assigned = False
+
+        if _locCmp(b, hd) == 1:
+            intvIndex[bucket] = ()
+            continue
+
+        while i &lt; nIntervals:
+            if _locCmp(e, hd) == -1:
+                i += 1
+
+                if i &lt; nIntervals:
+                    intv = intervals[i]
+                    (b, e) = intv
+                else:
+                    intvIndex[bucket] = ()
+                    assigned = True
+                    break
+            else:
+                intvIndex[bucket] = () if _locCmp(b, hd) == 1 else intv
+                assigned = True
+                break
+
+        if not assigned:
+            intvIndex[bucket] = ()
+
+    return intvIndex
 
 
 def repSet(s):
-    return &#34;{&#34; + &#34;, &#34;.join(str(x) for x in sorted(s)) + &#34;}&#34;</code></pre>
+    return &#34;{&#34; + &#34;, &#34;.join(str(x) for x in sorted(s)) + &#34;}&#34;
+
+
+# SCOPES
+
+
+def _prevLoc(x):
+    # only for locs that can start a scope
+
+    if x[2] != 0:
+        return (x[0], x[1], x[2] - 1)
+
+    if x[1] != 0:
+        return (x[0], x[1] - 1, -1)
+
+    if x[0] != 0:
+        return (x[0] - 1, -1, -1)
+
+    return (0, 0, 0)
+
+
+def _nextLoc(x):
+    # only for locs that can end a scope
+
+    if x[2] != -1:
+        return (x[0], x[1], x[2] + 1)
+
+    if x[1] != -1:
+        return (x[0], x[1] + 1, 0)
+
+    if x[0] != -1:
+        return (x[0] + 1, 0, 0)
+
+    return (-1, -1, -1)
+
+
+def _pointCmp(x, y):
+    return 0 if x == y else -1 if y == -1 or (x != -1 and x &lt; y) else 1
+
+
+def _locCmp(xLoc, yLoc):
+    for x, y in zip(xLoc, yLoc):
+        if x != y:
+            eq = _pointCmp(x, y)
+
+            if eq != 0:
+                return eq
+
+    return 0
+
+
+def _sameLoc(xLoc, yLoc):
+    return all(
+        xc == yc or ((xc == -1 or xc == 0) and (yc == -1 or yc == 0))
+        for (xc, yc) in zip(xLoc, yLoc)
+    )
+
+
+def _scopeBefore(xScope, yScope):
+    (xB, xE) = xScope
+    (yB, yE) = yScope
+
+    eqx = _locCmp(xB, yB)
+
+    return _locCmp(yE, xE) if eqx == 0 else eqx
+
+
+_locSort = functools.cmp_to_key(_locCmp)
+_scopeSort = functools.cmp_to_key(_scopeBefore)
+
+
+def sortLocs(locs):
+    return tuple(sorted(locs, key=_locSort))
+
+
+def sortScopes(scopes):
+    return tuple(sorted(scopes, key=_scopeSort))
+
+
+def repLoc(loc):
+    return &#34;.&#34;.join(
+        f&#34;{x:02}&#34; if i == 0 else f&#34;{x:03}&#34; if i == 1 else f&#34;{x}&#34;
+        for (i, x) in enumerate(loc)
+        if x != 0 and x != -1
+    )
+
+
+def parseLoc(locStr, plain=True):
+    locStr = locStr.strip()
+
+    if not locStr:
+        result = ()
+        return () if plain else dict(result=(), warning=None, normal=repLoc(result))
+
+    parts = LOC_RE.split(locStr, maxsplit=2)
+
+    if any(x != &#34;-1&#34; and not (x.lstrip(&#34;0&#34;) or &#34;0&#34;).isdecimal() for x in parts):
+        result = None
+        normal = None
+        warning = f&#34;not a valid location: {locStr}&#34;
+    else:
+        result = tuple(int(x.lstrip(&#34;0&#34;) or &#34;0&#34;) for x in parts)
+        normal = repLoc(result)
+        warning = None
+
+    return result if plain else dict(result=result, warning=warning, normal=normal)
+
+
+def repScope(scope):
+    if scope is None or len(scope) == 0:
+        return &#34;()&#34;
+
+    (b, e) = scope
+    return repLoc(b) if _sameLoc(b, e) else f&#34;{repLoc(b)}-{repLoc(e)}&#34;
+
+
+def repScopes(scopes):
+    return &#34;, &#34;.join(repScope(scope) for scope in scopes)
+
+
+def parseScope(scopeStr, plain=True):
+    result = None
+    warnings = []
+
+    scopeStr = scopeStr.strip()
+
+    if not scopeStr:
+        result = ((0, 0, 0), (-1, -1, -1))
+        return (
+            result
+            if plain
+            else dict(result=result, warning=warnings, normal=repScope(result))
+        )
+
+    parts = scopeStr.split(&#34;-&#34;, 1)
+
+    if len(parts) == 1:
+        info = parseLoc(scopeStr, plain=False)
+        w = info[&#34;warning&#34;]
+
+        if w:
+            warnings.append(w)
+        else:
+            s = info[&#34;result&#34;]
+            result = (
+                (s + (0, 0, 0))[0:3],
+                (s + (-1, -1, -1))[0:3],
+            )
+    else:
+        part = parts[0].strip()
+        info1 = parseLoc(part, plain=False)
+        w1 = info1[&#34;warning&#34;]
+
+        part = parts[1].strip()
+        info2 = parseLoc(part, plain=False)
+        w2 = info2[&#34;warning&#34;]
+
+        if w1 or w2:
+            if w1:
+                warnings.append(w1)
+            if w2:
+                warnings.append(w2)
+        else:
+            s1 = info1[&#34;result&#34;]
+            s2 = info2[&#34;result&#34;]
+            result = (
+                (s1 + (0, 0, 0))[0:3],
+                (s2 + (-1, -1, -1))[0:3],
+            )
+
+    normal = None if result is None else repScope(result)
+
+    return result if plain else dict(result=result, warning=warnings, normal=normal)
+
+
+def parseScopes(scopeStr, plain=True):
+    results = []
+    warnings = []
+
+    if not scopeStr:
+        return () if plain else dict(result=(), warning=warnings, normal=&#34;&#34;)
+
+    for scopeStrPart in scopeStr.split(&#34;,&#34;):
+
+        if not scopeStrPart:
+            continue
+
+        info = parseScope(scopeStrPart, plain=plain)
+        result = info if plain else info[&#34;result&#34;]
+
+        if result is None:
+            if not plain:
+                warnings.extend(info[&#34;warning&#34;])
+            continue
+
+        results.append(result)
+
+    results = tuple(sortScopes(results))
+
+    return (
+        results
+        if plain
+        else dict(result=results, warning=warnings, normal=repScopes(results))
+    )
+
+
+def partitionScopes(scopesDict):
+    scopeFromStr = {}
+    strFromScope = {}
+    boundaries = {}
+    intervals = []
+
+    for scopeStr, scopes in scopesDict.items():
+        for scope in scopes:
+            (b, e) = scope
+            boundaries.setdefault(b, {}).setdefault(&#34;b&#34;, set()).add(scope)
+            boundaries.setdefault(e, {}).setdefault(&#34;e&#34;, set()).add(scope)
+
+            scopeFromStr.setdefault(scopeStr, set()).add(scope)
+            strFromScope.setdefault(scope, set()).add(scopeStr)
+
+    curScopes = set()
+    inScope = False
+
+    for x in sortLocs(boundaries):
+        beginScopes = boundaries[x].get(&#34;b&#34;, set())
+        endScopes = boundaries[x].get(&#34;e&#34;, set())
+
+        inScope = len(curScopes) &gt; 0
+
+        hasB = len(beginScopes) &gt; 0
+        hasE = len(endScopes) &gt; 0
+
+        if hasB and hasE:
+            intervals[-1][1] = _prevLoc(x)
+            if intervals[-1][1] &lt; intervals[-1][0]:
+                intervals.pop()
+            curScopes |= beginScopes
+            intervals.append([x, x, sortScopes(curScopes)])
+            curScopes -= endScopes
+            inScope = len(curScopes) &gt; 0
+            if inScope:
+                intervals.append([_nextLoc(x), None, sortScopes(curScopes)])
+        elif hasB:
+            if inScope:
+                intervals[-1][1] = _prevLoc(x)
+                if intervals[-1][1] &lt; intervals[-1][0]:
+                    intervals.pop()
+            curScopes |= beginScopes
+            intervals.append([x, None, sortScopes(curScopes)])
+        elif hasE:
+            intervals[-1][1] = x
+            curScopes -= endScopes
+            inScope = len(curScopes) &gt; 0
+            if inScope:
+                intervals.append([_nextLoc(x), None, sortScopes(curScopes)])
+
+    if inScope:
+        intervals[-1][1] = x
+
+    for x in intervals:
+        newX = []
+        seen = set()
+
+        for scope in x[2]:
+            for scopeStr in strFromScope[scope]:
+                if scopeStr in seen:
+                    continue
+
+                seen.add(scopeStr)
+                newX.append(scopeStr)
+
+        x[2] = tuple(newX)
+
+    return intervals
+
+
+def testScopes(scopeStrs):
+    scopeIndex = {}
+
+    for scopeStr in scopeStrs:
+        info = parseScopes(scopeStr, plain=False)
+        warning = info[&#34;warning&#34;]
+
+        if len(warning):
+            console(f&#34;Errors in {scopeStr}: {&#39;; &#39;.join(warning)}&#34;)
+        else:
+            scopes = info[&#34;result&#34;]
+            normScopeStr = info[&#34;normal&#34;]
+            console(f&#34;{scopeStr} =&gt; {normScopeStr}\n\t{repScopes(sortScopes(scopes))}&#34;)
+            scopeIndex[normScopeStr] = scopes
+
+    partitionScopes(scopeIndex)</code></pre>
 </details>
 </section>
 <section>
@@ -374,8 +721,8 @@ make sure that you have done a combo of toTokens and
 fromTokens first.
 You can use <code><a title="tf.browser.ner.helpers.tnorm" href="#tf.browser.ner.helpers.tnorm">tnorm()</a></code> for that.</p></div>
 </dd>
-<dt id="tf.browser.ner.helpers.getPath"><code class="name flex">
-<span>def <span class="ident">getPath</span></span>(<span>heading, instructions)</span>
+<dt id="tf.browser.ner.helpers.getIntvIndex"><code class="name flex">
+<span>def <span class="ident">getIntvIndex</span></span>(<span>buckets, instructions, getHeadings)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -401,6 +748,30 @@ These derive ultimately from the corpus-dependent <code>ner/config.yaml</code>.<
 <dd>
 <div class="desc"><p>Normalize white-space in a text.</p></div>
 </dd>
+<dt id="tf.browser.ner.helpers.parseLoc"><code class="name flex">
+<span>def <span class="ident">parseLoc</span></span>(<span>locStr, plain=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.browser.ner.helpers.parseScope"><code class="name flex">
+<span>def <span class="ident">parseScope</span></span>(<span>scopeStr, plain=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.browser.ner.helpers.parseScopes"><code class="name flex">
+<span>def <span class="ident">parseScopes</span></span>(<span>scopeStr, plain=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.browser.ner.helpers.partitionScopes"><code class="name flex">
+<span>def <span class="ident">partitionScopes</span></span>(<span>scopesDict)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="tf.browser.ner.helpers.repIdent"><code class="name flex">
 <span>def <span class="ident">repIdent</span></span>(<span>features, vals, active='')</span>
 </code></dt>
@@ -414,6 +785,24 @@ These derive ultimately from the corpus-dependent <code>ner/config.yaml</code>.<
 <dd>A CSS class name to add to the HTML representation.
 Can be used to mark the entity as active.</dd>
 </dl></div>
+</dd>
+<dt id="tf.browser.ner.helpers.repLoc"><code class="name flex">
+<span>def <span class="ident">repLoc</span></span>(<span>loc)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.browser.ner.helpers.repScope"><code class="name flex">
+<span>def <span class="ident">repScope</span></span>(<span>scope)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.browser.ner.helpers.repScopes"><code class="name flex">
+<span>def <span class="ident">repScopes</span></span>(<span>scopes)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
 </dd>
 <dt id="tf.browser.ner.helpers.repSet"><code class="name flex">
 <span>def <span class="ident">repSet</span></span>(<span>s)</span>
@@ -435,8 +824,26 @@ Can be used to mark the entity as active.</dd>
 Can be used to mark the entity as active.</dd>
 </dl></div>
 </dd>
+<dt id="tf.browser.ner.helpers.sortLocs"><code class="name flex">
+<span>def <span class="ident">sortLocs</span></span>(<span>locs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.browser.ner.helpers.sortScopes"><code class="name flex">
+<span>def <span class="ident">sortScopes</span></span>(<span>scopes)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.browser.ner.helpers.testScopes"><code class="name flex">
+<span>def <span class="ident">testScopes</span></span>(<span>scopeStrs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="tf.browser.ner.helpers.tnorm"><code class="name flex">
-<span>def <span class="ident">tnorm</span></span>(<span>text, spaceEscaped=False)</span>
+<span>def <span class="ident">tnorm</span></span>(<span>text, spaceEscaped=False, caseSensitive=False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -470,7 +877,7 @@ which ultimately is provided in the corpus-dependent
 <code>ner/config.yaml</code> .</p></div>
 </dd>
 <dt id="tf.browser.ner.helpers.toTokens"><code class="name flex">
-<span>def <span class="ident">toTokens</span></span>(<span>text, spaceEscaped=False)</span>
+<span>def <span class="ident">toTokens</span></span>(<span>text, spaceEscaped=False, caseSensitive=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Split a text into tokens.</p>
@@ -488,6 +895,12 @@ and individual non-word characters.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>HTML representation of an entity as a sequence of <code>feat=val</code> strings.</p></div>
+</dd>
+<dt id="tf.browser.ner.helpers.xstrip"><code class="name flex">
+<span>def <span class="ident">xstrip</span></span>(<span>x)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
 </dd>
 </dl>
 </section>
@@ -567,18 +980,29 @@ setTimeout(() => input.focus(), 100);
 <ul class="two-column">
 <li><code><a title="tf.browser.ner.helpers.findCompile" href="#tf.browser.ner.helpers.findCompile">findCompile</a></code></li>
 <li><code><a title="tf.browser.ner.helpers.fromTokens" href="#tf.browser.ner.helpers.fromTokens">fromTokens</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.getPath" href="#tf.browser.ner.helpers.getPath">getPath</a></code></li>
+<li><code><a title="tf.browser.ner.helpers.getIntvIndex" href="#tf.browser.ner.helpers.getIntvIndex">getIntvIndex</a></code></li>
 <li><code><a title="tf.browser.ner.helpers.makeCss" href="#tf.browser.ner.helpers.makeCss">makeCss</a></code></li>
 <li><code><a title="tf.browser.ner.helpers.normalize" href="#tf.browser.ner.helpers.normalize">normalize</a></code></li>
+<li><code><a title="tf.browser.ner.helpers.parseLoc" href="#tf.browser.ner.helpers.parseLoc">parseLoc</a></code></li>
+<li><code><a title="tf.browser.ner.helpers.parseScope" href="#tf.browser.ner.helpers.parseScope">parseScope</a></code></li>
+<li><code><a title="tf.browser.ner.helpers.parseScopes" href="#tf.browser.ner.helpers.parseScopes">parseScopes</a></code></li>
+<li><code><a title="tf.browser.ner.helpers.partitionScopes" href="#tf.browser.ner.helpers.partitionScopes">partitionScopes</a></code></li>
 <li><code><a title="tf.browser.ner.helpers.repIdent" href="#tf.browser.ner.helpers.repIdent">repIdent</a></code></li>
+<li><code><a title="tf.browser.ner.helpers.repLoc" href="#tf.browser.ner.helpers.repLoc">repLoc</a></code></li>
+<li><code><a title="tf.browser.ner.helpers.repScope" href="#tf.browser.ner.helpers.repScope">repScope</a></code></li>
+<li><code><a title="tf.browser.ner.helpers.repScopes" href="#tf.browser.ner.helpers.repScopes">repScopes</a></code></li>
 <li><code><a title="tf.browser.ner.helpers.repSet" href="#tf.browser.ner.helpers.repSet">repSet</a></code></li>
 <li><code><a title="tf.browser.ner.helpers.repSummary" href="#tf.browser.ner.helpers.repSummary">repSummary</a></code></li>
+<li><code><a title="tf.browser.ner.helpers.sortLocs" href="#tf.browser.ner.helpers.sortLocs">sortLocs</a></code></li>
+<li><code><a title="tf.browser.ner.helpers.sortScopes" href="#tf.browser.ner.helpers.sortScopes">sortScopes</a></code></li>
+<li><code><a title="tf.browser.ner.helpers.testScopes" href="#tf.browser.ner.helpers.testScopes">testScopes</a></code></li>
 <li><code><a title="tf.browser.ner.helpers.tnorm" href="#tf.browser.ner.helpers.tnorm">tnorm</a></code></li>
 <li><code><a title="tf.browser.ner.helpers.toAscii" href="#tf.browser.ner.helpers.toAscii">toAscii</a></code></li>
 <li><code><a title="tf.browser.ner.helpers.toId" href="#tf.browser.ner.helpers.toId">toId</a></code></li>
 <li><code><a title="tf.browser.ner.helpers.toSmallId" href="#tf.browser.ner.helpers.toSmallId">toSmallId</a></code></li>
 <li><code><a title="tf.browser.ner.helpers.toTokens" href="#tf.browser.ner.helpers.toTokens">toTokens</a></code></li>
 <li><code><a title="tf.browser.ner.helpers.valRep" href="#tf.browser.ner.helpers.valRep">valRep</a></code></li>
+<li><code><a title="tf.browser.ner.helpers.xstrip" href="#tf.browser.ner.helpers.xstrip">xstrip</a></code></li>
 </ul>
 </li>
 </ul>
