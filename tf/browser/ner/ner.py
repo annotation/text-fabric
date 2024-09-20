@@ -286,7 +286,15 @@ from .match import entityMatch, occMatch
 
 
 class NER(Sheets, Sets, Show):
-    def __init__(self, app, normalizeChars=None, data=None, browse=False, silent=False):
+    def __init__(
+        self,
+        app,
+        normalizeChars=None,
+        data=None,
+        browse=False,
+        caseSensitive=False,
+        silent=False,
+    ):
         """Entity annotation.
 
         Basic methods to handle the various aspects of entity annotation.
@@ -350,6 +358,7 @@ class NER(Sheets, Sets, Show):
         self.browse = browse
         self.app = app
         self.normalizeChars = normalizeChars
+        self.caseSensitive = caseSensitive
 
         Sets.__init__(self, sets=data.sets)
         if not self.properlySetup:
@@ -359,7 +368,10 @@ class NER(Sheets, Sets, Show):
         if not self.properlySetup:
             return
 
-    def setTask(self, task, force=False, caseSensitive=False):
+    def setTask(self, task, force=False, caseSensitive=None):
+        if caseSensitive is None:
+            caseSensitive = self.caseSensitive
+
         (newSetNameRep, newSetRo, newSetSrc, newSetX) = self.setInfo(task)
         self.setSet(task)
         self.setSheet(

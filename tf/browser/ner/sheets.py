@@ -92,7 +92,7 @@ class Sheets:
                 sheetNames.add(sheetName)
                 setNames.add(f".{sheetName}")
 
-    def setSheet(self, newSheet, force=False, caseSensitive=False):
+    def setSheet(self, newSheet, force=False, caseSensitive=None):
         """Switch to a named ner sheet.
 
         After the switch, the new sheet will be loaded into memory.
@@ -125,6 +125,9 @@ class Sheets:
         if newSheet != sheetName:
             sheetName = newSheet
             self.sheetName = sheetName
+
+        if caseSensitive is None:
+            caseSensitive = self.caseSensitive
 
         self.loadSheetData(force=force, caseSensitive=caseSensitive)
 
