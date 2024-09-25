@@ -54,6 +54,9 @@ class Sheets:
             return None
 
         self.properlySetup = True
+        self.scopeI = 3
+        self.trigI = 4
+        self.commentI = 0
 
         # browse = self.browse
         self.sheets = sheets
@@ -288,8 +291,8 @@ class Sheets:
 
         wb = Workbook()
         ws = wb.active
-        ws.append(("name", "kind", "scope", "triggers", "origrow"))
-        ws.append(("", "", "", "", ""))
+        ws.append(("comment", "name", "kind", "scope", "triggers", "origrow"))
+        ws.append(("", "", "", "", "", ""))
 
         eids = {}
 
@@ -308,9 +311,87 @@ class Sheets:
                 rows |= set(wordData[scopeStr])
 
             rowRep = ",".join(str(r) for r in sorted(rows))
-            ws.append((eidDis, "x", "", word, rowRep))
+            ws.append(("", eidDis, "x", "", word, rowRep))
 
         wb.save(sheetPath)
+
+    def writeSheetData(self, rows, asFile=None):
+        if not asFile:
+            console("Pass the path of a destination file in param asFile")
+            return
+
+        Workbook = self.Workbook
+        trigI = self.trigI
+        commentI = self.commentI
+        wb = Workbook()
+        ws = wb.active
+
+        for r, row in enumerate(rows):
+            if r <= 1:
+                ws.append(row)
+                continue
+
+            isCommentRow = row[commentI].startswith("#")
+
+            if not isCommentRow:
+                row[trigI] = "; ".join(row[trigI])
+
+            ws.append(row)
+
+        wb.save(asFile)
+
+    def readSheetData(self):
+        """Read the data of the spreadsheet and deliver it as a list of lists"""
+        sheetName = self.sheetName
+        sheetDir = self.sheetDir
+        loadXls = self.loadXls
+        trigI = self.trigI
+        commentI = self.commentI
+        normalizeChars = self.normalizeChars
+        spaceEscaped = self.spaceEscaped
+
+        sheetData = self.getSheetData()
+        caseSensitive = sheetData.caseSensitive
+
+        def myNormalize(x):
+            return normalize(
+                str(x) if normalizeChars is None else normalizeChars(str(x))
+            )
+
+        sheetPath = f"{sheetDir}/{sheetName}.xlsx"
+
+        wb = loadXls(sheetPath, data_only=True)
+        ws = wb.active
+
+        result = []
+
+        for r, row in enumerate(ws.rows):
+            fields = []
+            result.append(fields)
+
+            isCommentRow = (row[commentI].value or "").startswith("#")
+
+            for i, field in enumerate(row):
+                value = field.value or ""
+
+                if not isCommentRow and r > 1 and i == trigI:
+                    value = myNormalize(value)
+                    value = {
+                        y
+                        for x in value.split(";")
+                        if (
+                            y := tnorm(
+                                x,
+                                spaceEscaped=spaceEscaped,
+                                caseSensitive=caseSensitive,
+                            )
+                        )
+                        != ""
+                    }
+
+                fields.append(value)
+
+        return result
 
     def _readSheet(self):
         """Read all the spreadsheets, the main one and the tweaks.
@@ -325,6 +406,8 @@ class Sheets:
         transform = self.transform
         spaceEscaped = self.spaceEscaped
         normalizeChars = self.normalizeChars
+        trigI = self.trigI
+        scopeI = self.scopeI
 
         def spec(msg):
             self.log(None, 0, msg)
@@ -404,7 +487,7 @@ class Sheets:
                 metaFields = [
                     myNormalize(row[i].value or "")
                     for i in range(maxCol)
-                    if i not in {2, 3}
+                    if i not in {0, scopeI, trigI}
                 ]
                 sheetData.metaFields = metaFields
 
@@ -414,7 +497,7 @@ class Sheets:
             if not any(c.value for c in row):
                 continue
 
-            triggerStr = row[3].value
+            triggerStr = row[trigI].value
 
             if triggerStr is not None and "\n" in triggerStr:
                 triggerRep = triggerStr.replace("\n", "\\n")
@@ -422,9 +505,13 @@ class Sheets:
                 log(msg)
                 continue
 
-            (name, kind, scopeStr, triggerStr) = (
-                myNormalize(row[i].value or "") for i in range(4)
+            (comment, name, kind, scopeStr, triggerStr) = (
+                myNormalize(row[i].value or "") for i in range(trigI + 1)
             )
+
+            if comment.startswith("#"):
+                continue
+
             if not name or not triggerStr:
                 if name:
                     noTrigs.add(r + 1)
@@ -488,7 +575,7 @@ class Sheets:
             metaData[metaKey] = [
                 myNormalize(row[i].value or "")
                 for i in range(maxCol)
-                if i not in {2, 3}
+                if i not in {0, scopeI, trigI}
             ]
 
         for diags, isdict, label in (

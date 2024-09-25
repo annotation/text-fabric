@@ -20,6 +20,14 @@ pip install -e .
 
 ### 12.5
 
+#### 12.5.5
+
+2024-??-??
+
+New functions in NER to help analyze triggers that do not find named entities.
+Also to add spelling variants of triggers automatically to the spreadsheets
+of names and triggers.
+
 #### 12.5.4
 
 2024-09-16

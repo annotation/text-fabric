@@ -279,7 +279,7 @@ from ...core.files import (
 )
 from ...core.timestamp import SILENT_D, DEEP
 from .sheets import Sheets
-from .helpers import findCompile, toTokens
+from .helpers import findCompile, toTokens, hasCommon
 from .sets import Sets
 from .show import Show
 from .match import entityMatch, occMatch
@@ -399,6 +399,49 @@ class NER(Sheets, Sets, Show):
         sheetData = self.getSheetData()
         return (sheetData.metaFields, sheetData.metaData)
 
+    def findTriggers(self, triggers):
+        if not self.properlySetup:
+            return []
+
+        settings = self.settings
+        spaceEscaped = settings.spaceEscaped
+
+        setData = self.getSetData()
+        getTokens = self.getTokens
+        getHeadings = self.getHeadings
+
+        buckets = setData.buckets or ()
+        sheetData = self.getSheetData()
+
+        caseSensitive = sheetData.caseSensitive
+
+        idMap = {trigger: trigger for trigger in triggers}
+        tMap = {trigger: "" for trigger in triggers}
+        tPos = {}
+        triggerSet = set()
+        instructions = {(): dict(tPos=tPos, tMap=tMap, idMap=idMap)}
+
+        for trigger in triggers:
+            triggerT = toTokens(
+                trigger, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
+            )
+            triggerSet.add(triggerT)
+
+        for triggerT in triggerSet:
+            for i, token in enumerate(triggerT):
+                tPos.setdefault(i, {}).setdefault(token, set()).add(triggerT)
+
+        inventory = occMatch(
+            getTokens,
+            getHeadings,
+            buckets,
+            instructions,
+            spaceEscaped,
+            caseSensitive=caseSensitive,
+        )
+
+        return inventory
+
     def findTrigger(self, trigger, show=True):
         if not self.properlySetup:
             return []
@@ -414,9 +457,7 @@ class NER(Sheets, Sets, Show):
         getHeadings = self.getHeadings
 
         buckets = setData.buckets or ()
-
-        sheetName = self.sheetName
-        sheetData = self.sheets[sheetName]
+        sheetData = self.getSheetData()
 
         caseSensitive = sheetData.caseSensitive
 
@@ -445,11 +486,10 @@ class NER(Sheets, Sets, Show):
 
         if show:
             nOccs = len(occs)
+            plural = "" if nOccs == 1 else "s"
+            app.dm(f"**{nOccs} occurrence{plural}**\n")
 
             if nOccs:
-                plural = "" if nOccs == 1 else "s"
-                app.dm(f"**{nOccs} occurrence{plural}**\n")
-
                 headings = set()
                 highlights = set()
 
@@ -461,6 +501,180 @@ class NER(Sheets, Sets, Show):
 
                 for hd in sorted(headings):
                     app.plain(hd, highlights=highlights)
+        else:
+            return occs
+
+    def partitionTriggers(self, triggers):
+        """Partition a set of triggers into groups where triggers are pairwise disjoint.
+
+        The intention is to explore all triggers that apparently do not have hits.
+        We need to look them up in isolation, because then they might have hits.
+
+        But searching per trigger is expensive. We want to group triggers together
+        that can not interact with each other: triggers whose tokens are pairwise
+        disjoint. A hit of one trigger can then never be part of a hit of any other
+        trigger in the group.
+        """
+        settings = self.settings
+        spaceEscaped = settings.spaceEscaped
+        sheetData = self.getSheetData()
+        caseSensitive = sheetData.caseSensitive
+
+        triggerTokens = {}
+        nTriggerTokens = {}
+
+        for trigger in triggers:
+            tokens = toTokens(
+                trigger, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
+            )
+            triggerTokens[trigger] = tokens
+            nTriggerTokens.setdefault(len(tokens), {})[trigger] = tokens
+
+        singleTokenTriggers = list(nTriggerTokens[1])
+
+        partition = [singleTokenTriggers]
+
+        for n in sorted(nTriggerTokens):
+            if n == 1:
+                continue
+            for triggerA, tokensA in nTriggerTokens[n].items():
+                added = False
+
+                for part in partition:
+                    common = False
+
+                    for triggerB in part:
+                        tokensB = triggerTokens[triggerB]
+
+                        if hasCommon(tokensA, tokensB) or hasCommon(tokensB, tokensA):
+                            common = True
+                            break
+
+                    if common:
+                        continue
+
+                    part.append(triggerA)
+                    added = True
+                    break
+
+                if not added:
+                    partition.append([triggerA])
+
+        return partition
+
+    def diagnoseTriggers(self, triggers, detail=True):
+        triggerScopes = self.triggerScopes
+
+        parts = self.partitionTriggers(triggers)
+
+        uncovered = 0
+
+        for part in parts:
+            inventory = self.findTriggers(part)
+
+            for trigger, data in sorted(
+                inventory.items(),
+                key=lambda x: (", ".join(sorted(triggerScopes[x[0]])), x[0].lower()),
+            ):
+                occs = data.get(trigger, {}).get("", [])
+
+                uncovered += self.diagnoseTrigger(trigger, occs, detail=detail)
+
+        return uncovered
+
+    def diagnoseTrigger(self, trigger, occs, detail=True):
+        app = self.app
+        L = app.api.L
+        triggerBySlot = self.triggerBySlot
+        triggerScopes = self.triggerScopes
+
+        uncoveredSlots = set()
+        coveredBy = {}
+
+        for slots in occs:
+            for slot in slots:
+                cTrigger = triggerBySlot.get(slot, None)
+
+                if cTrigger is None:
+                    uncoveredSlots.add(slot)
+                else:
+                    coveredBy.setdefault(cTrigger, set()).add(slot)
+
+        properHits = {}
+
+        nUncoveredSlots = len(uncoveredSlots)
+        ok = nUncoveredSlots == 0
+
+        if nUncoveredSlots:
+            for slot in sorted(uncoveredSlots):
+                heading = app.sectionStrFromNode(L.u(slot, otype="chunk")[0])
+                occ = properHits.setdefault(heading, [[]])
+
+                if len(occ[-1]) == 0 or occ[-1][-1] + 1 == slot:
+                    occ[-1].append(slot)
+                else:
+                    occ.append([slot])
+
+        nMissedHits = 0
+        properOccsDiag = []
+        properOccsDiagCompact = []
+
+        for heading, occs in properHits.items():
+            nOccs = len(occs)
+            nMissedHits += nOccs
+            properOccsDiag.append(f"\t\t{heading}: {nOccs} x")
+            properOccsDiagCompact.append(f"{heading} x {nOccs}")
+
+        properOccsDiag[0:0] = [f"\tuncovered: {nMissedHits} x"]
+
+        coveredOccsDiag = []
+
+        for cTrigger in sorted(coveredBy, key=lambda x: x.lower()):
+            thisCoveredOccsDiag = []
+            coveredSlots = sorted(coveredBy[cTrigger])
+
+            coveredHits = {}
+
+            for slot in sorted(coveredSlots):
+                heading = app.sectionStrFromNode(L.u(slot, otype="chunk")[0])
+                occ = coveredHits.setdefault(heading, [[]])
+
+                if len(occ[-1]) == 0 or occ[-1][-1] + 1 == slot:
+                    occ[-1].append(slot)
+                else:
+                    occ.append([slot])
+
+            nCoveredHits = 0
+
+            for heading, occs in coveredHits.items():
+                nOccs = len(occs)
+                nCoveredHits += nOccs
+                thisCoveredOccsDiag.append(f"\t\t{heading}: {nOccs} x")
+
+            thisCoveredOccsDiag[0:0] = [f"\tcovered by: {cTrigger}: {nCoveredHits} x"]
+
+            coveredOccsDiag.extend(thisCoveredOccsDiag)
+
+        scopeRep = ", ".join(sorted(triggerScopes[trigger]))
+
+        if detail:
+            console(f"{trigger} ({scopeRep}):")
+
+            for line in properOccsDiag:
+                console(line)
+
+            for line in coveredOccsDiag:
+                console(line)
+
+        else:
+            if nUncoveredSlots == 0:
+                if False:
+                    console(f"{trigger} ({scopeRep}): covered by other triggers")
+            else:
+                missedHitsRep = f"\t{', '.join(properOccsDiagCompact)}"
+                console(f"{trigger} ({scopeRep}): {missedHitsRep}", error=True)
+
+        return ok
 
     def findOccs(self):
         """Finds the occurrences of multiple triggers.
@@ -494,8 +708,7 @@ class NER(Sheets, Sets, Show):
 
         buckets = setData.buckets or ()
 
-        sheetName = self.sheetName
-        sheetData = self.sheets[sheetName]
+        sheetData = self.getSheetData()
         instructions = sheetData.instructions
         caseSensitive = sheetData.caseSensitive
         sheetData.inventory = occMatch(
@@ -768,8 +981,7 @@ class NER(Sheets, Sets, Show):
             return
 
         silent = self.silent if silent is None else silent
-        sheetName = self.sheetName
-        sheetData = self.sheets[sheetName]
+        sheetData = self.getSheetData()
 
         getHeadings = self.getHeadings
         nameMap = sheetData.nameMap
@@ -780,6 +992,8 @@ class NER(Sheets, Sets, Show):
         annoDir = self.annoDir
         setDir = f"{annoDir}/{setName}"
         reportFile = f"{setDir}/hits.tsv"
+        reportTriggerBySlotFile = f"{setDir}/triggerBySlot.tsv"
+        reportTriggerScopesFile = f"{setDir}/triggerScopes.tsv"
 
         allTriggers = set()
 
@@ -799,9 +1013,14 @@ class NER(Sheets, Sets, Show):
         hitData = []
         names = set()
         noHits = set()
+        triggersBySlot = {}
+        triggerScopes = {}
+        self.triggerScopes = triggerScopes
 
         for e in sorted(allTriggers):
             (name, eidkind, trigger, scope) = e
+
+            triggerScopes.setdefault(trigger, set()).add(scope)
 
             names.add(name)
 
@@ -833,25 +1052,47 @@ class NER(Sheets, Sets, Show):
             sectionInfo = collections.Counter()
 
             for slots in occs:
+                for slot in slots:
+                    triggersBySlot.setdefault(slot, set()).add(trigger)
+
                 section = ".".join(str(x) for x in getHeadings(slots[0]))
                 sectionInfo[section] += 1
 
             for section, hits in sorted(sectionInfo.items()):
                 hitData.append(("OK", *entry, section, hits))
 
+        multipleTriggers = {}
+        triggerBySlot = {}
+        self.triggerBySlot = triggerBySlot
+
+        for slot, triggers in triggersBySlot.items():
+            if len(triggers) > 1:
+                multipleTriggers[slot] = triggers
+
+            triggerBySlot[slot] = list(triggers)[0]
+
+        if len(multipleTriggers) == 0:
+            self.console("No slot is covered by more than one trigger")
+        else:
+            console(
+                f"Slots covered by multiple triggers: {len(multipleTriggers)}",
+                error=True,
+            )
+            for slot, triggers in multipleTriggers.items():
+                triggersRep = ", ".join(f"«{trigger}»" for trigger in sorted(triggers))
+                self.console(f"{slot:>7}: {triggersRep}", error=True)
+
         trigWithout = len(noHits)
 
         if showNoHits and (trigWithout > 0):
+            uncovered = 0
             console(
                 "Triggers without hits: " f"{trigWithout}x:",
                 error=True,
             )
 
             if len(noHits):
-                console("  triggers without hits:")
-
-                for trigger in sorted(noHits):
-                    console(f"    {trigger}", error=True)
+                uncovered = self.diagnoseTriggers(noHits, detail=False)
 
         with fileOpen(reportFile, "w") as rh:
             rh.write("label\tname\ttrigger\tsheet\tsection\thits\n")
@@ -859,6 +1100,22 @@ class NER(Sheets, Sets, Show):
             for h in sorted(hitData):
                 line = "\t".join(str(c) for c in h)
                 rh.write(f"{line}\n")
+
+        with fileOpen(reportTriggerScopesFile, "w") as rh:
+            rh.write("trigger\tscopes\n")
+
+            for trigger in sorted(triggerScopes, key=lambda x: x.lower()):
+                scopes = sorted(triggerScopes[trigger])
+                scopeRep = ", ".join(scopes)
+                rh.write(f"{trigger}\t{scopeRep}\n")
+
+        with fileOpen(reportTriggerBySlotFile, "w") as rh:
+            rh.write("slot\ttrigger\n")
+
+            for slot, trigger in sorted(
+                triggerBySlot.items(), key=lambda x: (x[1], x[0])
+            ):
+                rh.write(f"{slot}\t{trigger}\n")
 
         nEnt = len(names)
         nTriggers = len(allTriggers)
@@ -869,13 +1126,17 @@ class NER(Sheets, Sets, Show):
             if silent
             else dedent(
                 f"""
-                Entities targeted:     {nEnt:>5}
-                Triggers searched for: {nTriggers:>5}
-                Triggers without hits: {trigWithout:>5}
-                Triggers with hits:    {nTriggers - trigWithout:>5}
-                Total hits:            {nHits:>5}
+                Entities targeted:          {nEnt:>5}
+                Triggers searched for:      {nTriggers:>5}
+                Triggers without hits:      {trigWithout:>5}
+                 - completely covered:      {trigWithout - uncovered:>5}
+                 - missing hits:            {uncovered:>5}
+                Triggers with hits:         {nTriggers - trigWithout:>5}
+                Total hits:                 {nHits:>5}
 
-                All hits in report file: {reportFile}
+                All hits in report file:      {reportFile}
+                Triggers with scopes in file: {reportTriggerScopesFile}
+                Triggers by slot in file:     {reportTriggerBySlotFile}
                 """
             )
         )

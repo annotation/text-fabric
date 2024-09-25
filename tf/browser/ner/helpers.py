@@ -337,6 +337,23 @@ def repSet(s):
     return "{" + ", ".join(str(x) for x in sorted(s)) + "}"
 
 
+# COMMON TOKENS
+
+
+def hasCommon(tokensA, tokensB):
+    nA = len(tokensA)
+    nB = len(tokensB)
+
+    for i in range(min((nA, nB))):
+        pA = nA - i - 1
+        pB = i + 1
+
+        if tokensA[pA:] == tokensB[0:pB]:
+            return True
+
+    return False
+
+
 # SCOPES
 
 
