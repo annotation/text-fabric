@@ -578,7 +578,9 @@ class NER(Sheets, Sets, Show):
             ):
                 occs = data.get(trigger, {}).get("", [])
 
-                uncovered += self.diagnoseTrigger(trigger, occs, detail=detail)
+                uncovered += (
+                    0 if self.diagnoseTrigger(trigger, occs, detail=detail) else 1
+                )
 
         return uncovered
 
