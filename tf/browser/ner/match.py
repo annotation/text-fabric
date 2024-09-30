@@ -68,6 +68,7 @@ def occMatch(
     intvIndex = getIntvIndex(buckets, instructions, getHeadings)
 
     for b in buckets:
+        debug = b == 1797493
         intv = intvIndex[b]
         data = instructions[intv]
 
@@ -98,6 +99,14 @@ def occMatch(
 
         if not caseSensitive:
             bStrings = tuple(t.lower() for t in bStrings)
+
+        if debug:
+            for n in sorted(tPos):
+                print(n)
+                data = tPos[n]
+                if "duchessa" in data:
+                    print(f"duchessa => {data['duchessa']}")
+            print(f"{bStrings=}")
 
         nBStrings = len(bStrings)
 

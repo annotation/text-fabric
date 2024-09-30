@@ -341,18 +341,236 @@ def repSet(s):
 
 
 def hasCommon(tokensA, tokensB):
+    """Whether one sequence of tokens interferes with another.
+
+    The idea is: we want to determine whether matches for tokensA may interfere
+    with matches for tokensB.
+
+    This happens if tokensB is a sublist of tokensA, or if an initial segment of
+    tokensB forms a tail inside tokensA.
+
+    Or the same with tokensA and tokensB reversed.
+
+    Proposition: tokensA en tokensB have something in common (in the above sense)
+    if and only if you can make a text where tokensA and tokensB have overlapping
+    matches.
+
+    Proof:
+
+    (direction =>)
+
+    Suppose tokensA and tokensB have something in common.
+
+    Let i, j be the start-end position of the (part of) tokensB that occur in tokensA.
+    Construct a match for the combination of tokensA and tokensB as follows:
+
+    tokensA[0:i] + tokensA[i:j] + xxx
+
+    Two cases:
+
+    1.  tokensB is fully contained in tokensA.
+        Then take for xxx: tokensA[j:].
+        The result is a match for tokensA and hence for tokensB.
+    2.  tokensB is only contained in A up to index k. By definition of common, this
+        means that tokensB[0:k] is equal to tokensA[-k:] and hence
+        that j == len(tokensA).
+        Then take for xxx: tokensB[k:].
+        We then have:
+
+        tokensA + tokensB[k:] =
+
+        tokensA[0:i] + tokensA[i:] + tokensB[k:]
+
+        tkoensA[0:i] + tokensA[i:j] + tokensB[k:] = (because j == len(tokensA))
+
+        tokensA[0:i] + tokensA[i:j] + tokensB[k:] =
+
+        tokensA[0:i] + tokensB[0:k] + tokensB[k:] =
+
+        tokensA[0:i] + tokensB
+
+        So, this text is a match for tokensA and for tokensB
+
+        (direction <=)
+
+        Suppose we have a text T with an overlapping match for tokensA and tokensB.
+
+        Suppose T[i:j] is a match for tokensA and T[n:m] is a match for tokensB, and
+        T[i:j] and T[m:n] overlap.
+
+        Two cases:
+
+        1.  one match is contained in the other. We consider T[m:n] is
+            contained in T[i:j]. For the reverse case, the argument is the same
+            with tokensA and tokensB interchanged.
+
+            T[m:n] is part of a match of tokensA, so T[m:n] occurs in tokensA.
+            T[m:n] is also a match for tokensB, so tokensB == T[m:n], so tokensB
+            is a part of tokensA, hence, by definition: tokensA and tokensB
+            have something in common.
+        2.  the two matches have a region in common, but none is contained in the
+            other.
+            We consider the case where m is between i and j. The case where i is
+            between m and n is analogous, with tokensA and tokensB interchanged.
+
+            Now T[m:j] is part of a match for tokensA and for tokensB.
+            Then T[m:j] is at the end of T[i:j], so part of tokensB is at the
+            end of tokensA.
+
+    Test:
+
+    ```
+    from tf.browser.ner.helpers import hasCommon
+
+    tokensA = list("abcd")
+    tokensB = list("cdef")
+    tokensC = list("defg")
+    tokensD = list("bc")
+    tokensE = list("ab")
+    tokensF = list("cd")
+    assert hasCommon(tokensA, tokensB) == (1, 2, 2)
+    assert hasCommon(tokensB, tokensA) == (-1, 2, 2)
+    assert hasCommon(tokensA, tokensC) == (1, 3, 1)
+    assert hasCommon(tokensC, tokensA) == (-1, 3, 1)
+    assert hasCommon(tokensA, tokensD) == (1, 1, 2)
+    assert hasCommon(tokensD, tokensA) == (-1, 1, 2)
+    assert hasCommon(tokensA, tokensE) == (1, 0, 2)
+    assert hasCommon(tokensE, tokensA) == (-1, 0, 2)
+    assert hasCommon(tokensA, tokensF) == (1, 2, 2)
+    assert hasCommon(tokensF, tokensA) == (-1, 2, 2)
+
+    tokensA = list("abcd")
+    tokensB = list("cef")
+    tokensC = list("efg")
+    tokensD = list("bd")
+    tokensE = list("ac")
+    tokensF = list("ad")
+
+    assert hasCommon(tokensA, tokensB) == None
+    assert hasCommon(tokensB, tokensA) == None
+    assert hasCommon(tokensA, tokensC) == None
+    assert hasCommon(tokensC, tokensA) == None
+    assert hasCommon(tokensA, tokensD) == None
+    assert hasCommon(tokensD, tokensA) == None
+    assert hasCommon(tokensA, tokensE) == None
+    assert hasCommon(tokensE, tokensA) == None
+    assert hasCommon(tokensA, tokensF) == None
+    assert hasCommon(tokensF, tokensA) == None
+    ```
+    """
     nA = len(tokensA)
     nB = len(tokensB)
 
-    for i in range(min((nA, nB))):
-        pA = nA - i - 1
-        pB = i + 1
+    for i in range(nA - 1, -1, -1):
+        end = min((nB, nA - i))
 
-        if tokensA[pA:] == tokensB[0:pB]:
-            return True
+        if tokensA[i:i + end] == tokensB[0:end]:
+            return (1, i, end)
 
-    return False
+    for i in range(nB - 1, -1, -1):
+        end = min((nA, nB - i))
 
+        if tokensB[i:i + end] == tokensA[0:end]:
+            return (-1, i, end)
+
+    return None
+
+
+def makePartitions(triggers, myToTokens):
+    """Partition a set of triggers into groups where triggers are pairwise disjoint.
+
+    The intention is to explore all triggers that apparently do not have hits.
+    We need to look them up in isolation, because then they might have hits.
+
+    But searching per trigger is expensive. We want to group triggers together
+    that can not interact with each other: triggers whose tokens are pairwise
+    disjoint. A hit of one trigger can then never be part of a hit of any other
+    trigger in the group.
+    """
+
+    triggerTokens = {}
+    nTriggerTokens = {}
+
+    for trigger in triggers:
+        tokens = myToTokens(trigger)
+        triggerTokens[trigger] = tokens
+        nTriggerTokens.setdefault(len(tokens), {})[trigger] = tokens
+
+    singleTokenTriggers = list(nTriggerTokens[1]) if 1 in nTriggerTokens else []
+
+    partition = [singleTokenTriggers]
+
+    for n in sorted(nTriggerTokens):
+        if n == 1:
+            continue
+        for triggerA, tokensA in nTriggerTokens[n].items():
+            added = False
+
+            for part in partition:
+                common = False
+
+                for triggerB in part:
+                    tokensB = triggerTokens[triggerB]
+
+                    if hasCommon(tokensA, tokensB):
+                        common = True
+                        break
+
+                if common:
+                    continue
+
+                part.append(triggerA)
+                added = True
+                break
+
+            if not added:
+                partition.append([triggerA])
+
+    return (triggerTokens, partition)
+
+
+def interference(rowMap, myToTokens):
+    triggers = list(rowMap)
+
+    triggerTokens, parts = makePartitions(triggers, myToTokens)
+
+    nParts = len(parts)
+
+    interferences = []
+
+    for i, part in enumerate(parts):
+        if i == nParts - 1:
+            break
+        for otherPart in parts[i + 1:nParts]:
+            for triggerA in part:
+                for triggerB in otherPart:
+                    tokensA = triggerTokens[triggerA]
+                    tokensB = triggerTokens[triggerB]
+                    common = hasCommon(tokensA, tokensB)
+
+                    if common is None:
+                        continue
+
+                    ref, pos, length = common
+
+                    if ref == 1:
+                        nB = len(tokensB)
+                        union = tokensA
+
+                        if length < nB:
+                            union += tokensB[length:]
+                    else:
+                        nA = len(tokensA)
+                        union = tokensB
+
+                        if length < nA:
+                            union += tokensA[length:]
+
+                    interferences.append((triggerA, triggerB, " ".join(union)))
+
+    parts = makePartitions([x[2] for x in interferences], myToTokens)[1]
+
+    return interferences, parts
 
 # SCOPES
 

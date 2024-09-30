@@ -279,7 +279,7 @@ from ...core.files import (
 )
 from ...core.timestamp import SILENT_D, DEEP
 from .sheets import Sheets
-from .helpers import findCompile, toTokens, hasCommon
+from .helpers import findCompile, toTokens, makePartitions, interference
 from .sets import Sets
 from .show import Show
 from .match import entityMatch, occMatch
@@ -504,72 +504,152 @@ class NER(Sheets, Sets, Show):
         else:
             return occs
 
-    def partitionTriggers(self, triggers):
-        """Partition a set of triggers into groups where triggers are pairwise disjoint.
-
-        The intention is to explore all triggers that apparently do not have hits.
-        We need to look them up in isolation, because then they might have hits.
-
-        But searching per trigger is expensive. We want to group triggers together
-        that can not interact with each other: triggers whose tokens are pairwise
-        disjoint. A hit of one trigger can then never be part of a hit of any other
-        trigger in the group.
-        """
+    def getToTokensFunc(self):
         settings = self.settings
         spaceEscaped = settings.spaceEscaped
         sheetData = self.getSheetData()
         caseSensitive = sheetData.caseSensitive
 
-        triggerTokens = {}
-        nTriggerTokens = {}
-
-        for trigger in triggers:
-            tokens = toTokens(
+        def myToTokens(trigger):
+            return toTokens(
                 trigger, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
             )
-            triggerTokens[trigger] = tokens
-            nTriggerTokens.setdefault(len(tokens), {})[trigger] = tokens
 
-        singleTokenTriggers = list(nTriggerTokens[1])
+        return myToTokens
 
-        partition = [singleTokenTriggers]
+    def partitionTriggers(self, triggers):
+        return makePartitions(triggers, self.getToTokensFunc())[1]
 
-        for n in sorted(nTriggerTokens):
-            if n == 1:
+    def triggerInterference(self):
+        setName = self.setName
+        annoDir = self.annoDir
+        setDir = f"{annoDir}/{setName}"
+        reportFile = f"{setDir}/interference.tsv"
+
+        app = self.app
+        L = app.api.L
+        sheetData = self.getSheetData()
+        rowMap = sheetData.rowMap
+        triggerScopes = sheetData.triggerScopes
+
+        interferences, parts = interference(rowMap, self.getToTokensFunc())
+
+        messages = []
+        witnessed = {}
+
+        nParts = len(parts)
+        plural = "" if nParts == 1 else "es"
+        self.console(
+            f"Looking up {len(interferences)} interferences "
+            f"in {len(parts)} pass{plural} over the corpus ",
+            newline=False,
+        )
+
+        for part in parts:
+            self.console(".", newline=False)
+            inventory = self.findTriggers(part)
+
+            for trigger, data in inventory.items():
+                occs = data.get(trigger, {}).get("", [])
+                nOccs = len(occs)
+
+                if nOccs:
+                    witnessed[trigger] = occs
+
+        self.console("")
+
+        msg = (
+            f"{len(witnessed)} conflicting trigger pairs with "
+            f"{sum(len(x) for x in witnessed.values())} conflicts"
+        )
+        console(msg)
+        messages.append(msg)
+
+        conflicts = {}
+
+        for triggerA, triggerB, triggerC in interferences:
+            if triggerC not in witnessed:
                 continue
-            for triggerA, tokensA in nTriggerTokens[n].items():
-                added = False
 
-                for part in partition:
-                    common = False
+            rowA = rowMap[triggerA]
+            rowB = rowMap[triggerB]
+            key = "same row" if rowA == rowB else "different rows"
+            conflicts.setdefault(key, []).append(
+                (rowA, rowB, triggerA, triggerB, witnessed[triggerC])
+            )
 
-                    for triggerB in part:
-                        tokensB = triggerTokens[triggerB]
+        for key, confls in conflicts.items():
+            msg = f"{key} ({len(confls)} pairs)"
+            msg = f"----------\n{msg}\n----------"
+            console(msg)
+            messages.append(msg)
 
-                        if hasCommon(tokensA, tokensB) or hasCommon(tokensB, tokensA):
-                            common = True
-                            break
+            for rowA, rowB, triggerA, triggerB, occs in confls:
+                rowRepA = ",".join(str(r) for r in rowA)
+                rowRepB = ",".join(str(r) for r in rowB)
+                scopeRepA = f"({', '.join(sorted(triggerScopes[triggerA]))})"
+                scopeRepB = f"({', '.join(sorted(triggerScopes[triggerB]))})"
+                msg = (
+                    f"{rowRepA:<12} {scopeRepA:<12}: «{triggerA}»\n"
+                    f"{rowRepB:<12} {scopeRepB:<12}: «{triggerB}»"
+                )
+                console(msg)
+                messages.append(msg)
+                hits = {}
 
-                    if common:
-                        continue
+                for occ in sorted(occs):
+                    heading = app.sectionStrFromNode(L.u(occ[0], otype="chunk")[0])
+                    hits.setdefault(heading, []).append(occ)
 
-                    part.append(triggerA)
-                    added = True
-                    break
+                diags = []
 
-                if not added:
-                    partition.append([triggerA])
+                i = 0
 
-        return partition
+                for heading, occs in sorted(hits.items()):
+                    nOccs = len(occs)
+
+                    if i == 0:
+                        diags.append([])
+
+                    diags[-1].append(f"{heading} x {nOccs}")
+                    i += 1
+
+                    if i == 5:
+                        i = 0
+
+                first = True
+
+                for batch in diags:
+                    label = f"{'occurrences':>25}: " if first else (" " * 27)
+                    first = False
+                    msg = f"{label} {', '.join(batch)}"
+                    console(msg)
+                    messages.append(msg)
+
+        with fileOpen(reportFile, "w") as fh:
+            for msg in messages:
+                fh.write(f"{msg}\n")
+
+        console(f"Diagnostic trigger interferences written to {reportFile}")
 
     def diagnoseTriggers(self, triggers, detail=True):
-        triggerScopes = self.triggerScopes
+        sheetData = self.getSheetData()
+        triggerScopes = sheetData.triggerScopes
 
         parts = self.partitionTriggers(triggers)
 
         uncovered = 0
 
+        nParts = len(parts)
+        plural = "" if nParts == 1 else "es"
+        self.console(
+            f"Looking up {len(triggers)} triggers "
+            f"in {len(parts)} pass{plural} over the corpus ",
+            newline=False,
+        )
+
         for part in parts:
+            self.console(".", newline=False)
             inventory = self.findTriggers(part)
 
             for trigger, data in sorted(
@@ -582,13 +662,16 @@ class NER(Sheets, Sets, Show):
                     0 if self.diagnoseTrigger(trigger, occs, detail=detail) else 1
                 )
 
+        self.console("")
+
         return uncovered
 
     def diagnoseTrigger(self, trigger, occs, detail=True):
         app = self.app
         L = app.api.L
         triggerBySlot = self.triggerBySlot
-        triggerScopes = self.triggerScopes
+        sheetData = self.getSheetData()
+        triggerScopes = sheetData.triggerScopes
 
         uncoveredSlots = set()
         coveredBy = {}
@@ -986,43 +1069,22 @@ class NER(Sheets, Sets, Show):
         sheetData = self.getSheetData()
 
         getHeadings = self.getHeadings
-        nameMap = sheetData.nameMap
+        allTriggers = sheetData.allTriggers
         inventory = sheetData.inventory
-        instructions = sheetData.instructions
 
         setName = self.setName
         annoDir = self.annoDir
         setDir = f"{annoDir}/{setName}"
         reportFile = f"{setDir}/hits.tsv"
         reportTriggerBySlotFile = f"{setDir}/triggerBySlot.tsv"
-        reportTriggerScopesFile = f"{setDir}/triggerScopes.tsv"
-
-        allTriggers = set()
-
-        for intv, data in instructions.items():
-            idMap = data["idMap"]
-            tMap = data["tMap"]
-
-            for trigger, scope in tMap.items():
-                eidkind = idMap.get(trigger, None)
-
-                if eidkind is None:
-                    continue
-
-                name = nameMap[eidkind]
-                allTriggers.add((name, eidkind, trigger, scope))
 
         hitData = []
         names = set()
         noHits = set()
         triggersBySlot = {}
-        triggerScopes = {}
-        self.triggerScopes = triggerScopes
 
         for e in sorted(allTriggers):
             (name, eidkind, trigger, scope) = e
-
-            triggerScopes.setdefault(trigger, set()).add(scope)
 
             names.add(name)
 
@@ -1103,14 +1165,6 @@ class NER(Sheets, Sets, Show):
                 line = "\t".join(str(c) for c in h)
                 rh.write(f"{line}\n")
 
-        with fileOpen(reportTriggerScopesFile, "w") as rh:
-            rh.write("trigger\tscopes\n")
-
-            for trigger in sorted(triggerScopes, key=lambda x: x.lower()):
-                scopes = sorted(triggerScopes[trigger])
-                scopeRep = ", ".join(scopes)
-                rh.write(f"{trigger}\t{scopeRep}\n")
-
         with fileOpen(reportTriggerBySlotFile, "w") as rh:
             rh.write("slot\ttrigger\n")
 
@@ -1137,7 +1191,6 @@ class NER(Sheets, Sets, Show):
                 Total hits:                 {nHits:>5}
 
                 All hits in report file:      {reportFile}
-                Triggers with scopes in file: {reportTriggerScopesFile}
                 Triggers by slot in file:     {reportTriggerBySlotFile}
                 """
             )

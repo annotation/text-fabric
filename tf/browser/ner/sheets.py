@@ -33,6 +33,8 @@ SHEET_KEYS = """
     instructions
     inventory
     triggerFromMatch
+    triggerScopes
+    allTriggers
     hitData
 """.strip().split()
 
@@ -885,6 +887,7 @@ class Sheets:
 
         sheetData = self.getSheetData()
 
+        nameMap = sheetData.nameMap
         inventory = sheetData.inventory
         instructions = sheetData.instructions
 
@@ -894,15 +897,25 @@ class Sheets:
         hitData = {}
         sheetData.hitData = hitData
 
+        triggerScopes = {}
+        sheetData.triggerScopes = triggerScopes
+
+        allTriggers = set()
+        sheetData.allTriggers = allTriggers
+
         for path, data in instructions.items():
             idMap = data["idMap"]
             tMap = data["tMap"]
 
             for trigger, scope in tMap.items():
                 eidkind = idMap.get(trigger, None)
+
                 if eidkind is None:
                     continue
 
+                name = nameMap[eidkind]
+                allTriggers.add((name, eidkind, trigger, scope))
+                triggerScopes.setdefault(trigger, set()).add(scope)
                 occs = inventory.get(eidkind, {}).get(trigger, {}).get(scope, [])
                 hitData.setdefault(eidkind, {})[(trigger, scope)] = len(occs)
 
