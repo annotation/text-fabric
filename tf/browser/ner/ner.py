@@ -279,7 +279,13 @@ from ...core.files import (
 )
 from ...core.timestamp import SILENT_D, DEEP
 from .sheets import Sheets
-from .helpers import findCompile, toTokens, makePartitions, interference
+from .helpers import (
+    findCompile,
+    toTokens,
+    makePartitions,
+    interference,
+    locInScopes,
+)
 from .sets import Sets
 from .show import Show
 from .match import entityMatch, occMatch
@@ -520,7 +526,38 @@ class NER(Sheets, Sets, Show):
     def partitionTriggers(self, triggers):
         return makePartitions(triggers, self.getToTokensFunc())[1]
 
-    def triggerInterference(self):
+    def triggerInterference(self, alsoInternal=False, alsoExpected=False):
+        """Produce a report of interferences between triggers.
+
+        Triggers interfere if they have matches that intersect, i.e. there is a match
+        m1 of trigger t1 and a match m2 of trigger t2 such that m1 and m2 intersect.
+
+        Triggers may interfere *potentially*: if the triggers overlap they can have
+        intersecting matches. But it does not mean that the corpus contains overlapping
+        matches, i.e. that the triggers conflict actually.
+
+        We report *actually* interfering triggers.
+
+        Triggers within one row are associated to the same entity and work in the same
+        row. It is not bad if they are conflicting with each other. If there
+        are conflicting matches, the trigger that wins still flags the same entity.
+        The worst thing is that some of these triggers are superfluous, but there is
+        no reason to be picky on superfluous triggers.
+
+        When one trigger is a proper part of another, this is mostly intentional.
+        If the longer trigger matches, it wins it from the shorter trigger, unless
+        the shorter trigger's match starts before the longer trigger's match.
+
+        We think the user expects the longer trigger to win, but it may surprise him
+        if the shorter triggers wins because it starts earlier.
+
+        Parameters
+        ----------
+        alsoInternal: boolean, optional False
+            Also report interference between triggers on the same row.
+        alsoExpected: boolean, optional False
+            Also report expected interferences.
+        """
         setName = self.setName
         annoDir = self.annoDir
         setDir = f"{annoDir}/{setName}"
@@ -528,11 +565,18 @@ class NER(Sheets, Sets, Show):
 
         app = self.app
         L = app.api.L
+        T = app.api.T
         sheetData = self.getSheetData()
         rowMap = sheetData.rowMap
         triggerScopes = sheetData.triggerScopes
 
-        interferences, parts = interference(rowMap, self.getToTokensFunc())
+        interferences, parts = interference(
+            rowMap,
+            triggerScopes,
+            self.getToTokensFunc(),
+            alsoInternal=alsoInternal,
+            alsoExpected=alsoExpected,
+        )
 
         messages = []
         witnessed = {}
@@ -540,7 +584,7 @@ class NER(Sheets, Sets, Show):
         nParts = len(parts)
         plural = "" if nParts == 1 else "es"
         self.console(
-            f"Looking up {len(interferences)} interferences "
+            f"Looking up {len(interferences)} potential interferences "
             f"in {len(parts)} pass{plural} over the corpus ",
             newline=False,
         )
@@ -559,7 +603,7 @@ class NER(Sheets, Sets, Show):
         self.console("")
 
         msg = (
-            f"{len(witnessed)} conflicting trigger pairs with "
+            f"{len(witnessed)} potential conflicting trigger pairs with "
             f"{sum(len(x) for x in witnessed.values())} conflicts"
         )
         console(msg)
@@ -567,39 +611,91 @@ class NER(Sheets, Sets, Show):
 
         conflicts = {}
 
-        for triggerA, triggerB, triggerC in interferences:
+        for (
+            triggerA,
+            triggerB,
+            triggerC,
+            scopeRepA,
+            scopeRepB,
+            commonScopes,
+        ) in interferences:
             if triggerC not in witnessed:
                 continue
 
-            rowA = rowMap[triggerA]
-            rowB = rowMap[triggerB]
+            rowA = sorted(set(rowMap[triggerA]))
+            rowB = sorted(set(rowMap[triggerB]))
             key = "same row" if rowA == rowB else "different rows"
             conflicts.setdefault(key, []).append(
-                (rowA, rowB, triggerA, triggerB, witnessed[triggerC])
+                (
+                    rowA,
+                    rowB,
+                    triggerA,
+                    triggerB,
+                    witnessed[triggerC],
+                    scopeRepA,
+                    scopeRepB,
+                    commonScopes,
+                )
             )
 
         for key, confls in conflicts.items():
-            msg = f"{key} ({len(confls)} pairs)"
+            newConfls = []
+
+            for (
+                rowA,
+                rowB,
+                triggerA,
+                triggerB,
+                occs,
+                scopeRepA,
+                scopeRepB,
+                commonScopes,
+            ) in confls:
+                hits = {}
+
+                for occ in sorted(occs):
+                    sectionNode = L.u(occ[0], otype="chunk")[0]
+                    heading = tuple(
+                        int(x if type(x) is int else x.lstrip("0") or "0")
+                        for x in T.sectionFromNode(sectionNode, fillup=True)
+                    )
+
+                    if not locInScopes(heading, commonScopes):
+                        continue
+
+                    heading = app.sectionStrFromNode(sectionNode)
+                    hits.setdefault(heading, []).append(occ)
+
+                if len(hits) == 0:
+                    continue
+
+                newConfls.append(
+                    (rowA, rowB, triggerA, triggerB, hits, scopeRepA, scopeRepB)
+                )
+
+            msg = f"{key} ({len(newConfls)} pairs)"
             msg = f"----------\n{msg}\n----------"
             console(msg)
             messages.append(msg)
 
-            for rowA, rowB, triggerA, triggerB, occs in confls:
+            for (
+                rowA,
+                rowB,
+                triggerA,
+                triggerB,
+                hits,
+                scopeRepA,
+                scopeRepB,
+            ) in newConfls:
                 rowRepA = ",".join(str(r) for r in rowA)
                 rowRepB = ",".join(str(r) for r in rowB)
-                scopeRepA = f"({', '.join(sorted(triggerScopes[triggerA]))})"
-                scopeRepB = f"({', '.join(sorted(triggerScopes[triggerB]))})"
                 msg = (
-                    f"{rowRepA:<12} {scopeRepA:<12}: «{triggerA}»\n"
-                    f"{rowRepB:<12} {scopeRepB:<12}: «{triggerB}»"
+                    f"{rowRepA:<12} ({scopeRepA:<12}): «{triggerA}»\n"
+                    f"{rowRepB:<12} ({scopeRepB:<12}): «{triggerB}»"
                 )
                 console(msg)
                 messages.append(msg)
-                hits = {}
-
-                for occ in sorted(occs):
-                    heading = app.sectionStrFromNode(L.u(occ[0], otype="chunk")[0])
-                    hits.setdefault(heading, []).append(occ)
+                console(f"{hits=}")
 
                 diags = []
 
@@ -648,19 +744,23 @@ class NER(Sheets, Sets, Show):
             newline=False,
         )
 
+        items = []
+
         for part in parts:
             self.console(".", newline=False)
             inventory = self.findTriggers(part)
 
-            for trigger, data in sorted(
-                inventory.items(),
-                key=lambda x: (", ".join(sorted(triggerScopes[x[0]])), x[0].lower()),
-            ):
+            for trigger, data in inventory.items():
                 occs = data.get(trigger, {}).get("", [])
+                items.append((trigger, occs))
 
-                uncovered += (
-                    0 if self.diagnoseTrigger(trigger, occs, detail=detail) else 1
-                )
+        for (trigger, occs) in sorted(
+            items,
+            key=lambda x: (", ".join(sorted(triggerScopes[x[0]])), x[0].lower()),
+        ):
+            uncovered += (
+                0 if self.diagnoseTrigger(trigger, occs, detail=detail) else 1
+            )
 
         self.console("")
 
@@ -740,10 +840,10 @@ class NER(Sheets, Sets, Show):
 
             coveredOccsDiag.extend(thisCoveredOccsDiag)
 
-        scopeRep = ", ".join(sorted(triggerScopes[trigger]))
+        scopeRep = f"({', '.join(sorted(triggerScopes[trigger]))})"
 
         if detail:
-            console(f"{trigger} ({scopeRep}):")
+            console(f"{trigger} {scopeRep}:")
 
             for line in properOccsDiag:
                 console(line)
@@ -754,10 +854,27 @@ class NER(Sheets, Sets, Show):
         else:
             if nUncoveredSlots == 0:
                 if False:
-                    console(f"{trigger} ({scopeRep}): covered by other triggers")
+                    console(f"{trigger} {scopeRep}: covered by other triggers")
             else:
-                missedHitsRep = f"\t{', '.join(properOccsDiagCompact)}"
-                console(f"{trigger} ({scopeRep}): {missedHitsRep}", error=True)
+                missedHits = []
+
+                i = 0
+                for occRep in properOccsDiagCompact:
+                    if i == 0:
+                        missedHits.append([occRep])
+                    else:
+                        missedHits[-1].append(occRep)
+
+                    i += 1
+                    if i == 5:
+                        i = 0
+
+                missedHitsRep = ', '.join(missedHits[0])
+                console(f"{trigger:<40} {scopeRep:<12}: {missedHitsRep}", error=True)
+
+                for m in missedHits[1:]:
+                    missedHitsRep = ", ".join(m)
+                    console(f"{' ' * 55}{missedHitsRep}", error=True)
 
         return ok
 
@@ -1066,9 +1183,8 @@ class NER(Sheets, Sets, Show):
             return
 
         silent = self.silent if silent is None else silent
-        sheetData = self.getSheetData()
-
         getHeadings = self.getHeadings
+        sheetData = self.getSheetData()
         allTriggers = sheetData.allTriggers
         inventory = sheetData.inventory
 

@@ -818,10 +818,17 @@ class Sheets:
 
         sheetData = self.getSheetData()
         compiled = sheetData.compiled
+        nameMap = sheetData.nameMap
         caseSensitive = sheetData.caseSensitive
 
         instructions = {}
         sheetData.instructions = instructions
+
+        triggerScopes = {}
+        sheetData.triggerScopes = triggerScopes
+
+        allTriggers = set()
+        sheetData.allTriggers = allTriggers
 
         for intv, thisCompiled in compiled.items():
             sheet = thisCompiled.sheet
@@ -849,6 +856,19 @@ class Sheets:
             theseInstructions["idMap"] = {
                 trigger: eidkinds[0] for (trigger, eidkinds) in idMap.items()
             }
+
+            tMap = theseInstructions["tMap"]
+            idMap = theseInstructions["idMap"]
+
+            for trigger, scope in tMap.items():
+                eidkind = idMap.get(trigger, None)
+
+                if eidkind is None:
+                    continue
+
+                name = nameMap[eidkind]
+                allTriggers.add((name, eidkind, trigger, scope))
+                triggerScopes.setdefault(trigger, set()).add(scope)
 
     def _processSheet(self):
         """Generates derived data structures out of the source sheet.
@@ -886,8 +906,6 @@ class Sheets:
             return
 
         sheetData = self.getSheetData()
-
-        nameMap = sheetData.nameMap
         inventory = sheetData.inventory
         instructions = sheetData.instructions
 
@@ -896,12 +914,6 @@ class Sheets:
 
         hitData = {}
         sheetData.hitData = hitData
-
-        triggerScopes = {}
-        sheetData.triggerScopes = triggerScopes
-
-        allTriggers = set()
-        sheetData.allTriggers = allTriggers
 
         for path, data in instructions.items():
             idMap = data["idMap"]
@@ -913,9 +925,6 @@ class Sheets:
                 if eidkind is None:
                     continue
 
-                name = nameMap[eidkind]
-                allTriggers.add((name, eidkind, trigger, scope))
-                triggerScopes.setdefault(trigger, set()).add(scope)
                 occs = inventory.get(eidkind, {}).get(trigger, {}).get(scope, [])
                 hitData.setdefault(eidkind, {})[(trigger, scope)] = len(occs)
 

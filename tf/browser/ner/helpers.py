@@ -353,7 +353,16 @@ def hasCommon(tokensA, tokensB):
 
     Proposition: tokensA en tokensB have something in common (in the above sense)
     if and only if you can make a text where tokensA and tokensB have overlapping
-    matches.
+    matches. Proof follows.
+
+    We return a result consisting of 3 integers: `ref`, `pos`, `length`
+
+    *   `ref` is either 0, 1 or -1.
+
+        It is 0 if tokensA and tokensB are identical.
+        It is 1 if tokensA properly contains B or if tokensB starts somewhere
+        in tokensA.
+        It is -1 otherwise.
 
     Proof:
 
@@ -428,16 +437,20 @@ def hasCommon(tokensA, tokensB):
     tokensD = list("bc")
     tokensE = list("ab")
     tokensF = list("cd")
-    assert hasCommon(tokensA, tokensB) == (1, 2, 2)
-    assert hasCommon(tokensB, tokensA) == (-1, 2, 2)
-    assert hasCommon(tokensA, tokensC) == (1, 3, 1)
-    assert hasCommon(tokensC, tokensA) == (-1, 3, 1)
-    assert hasCommon(tokensA, tokensD) == (1, 1, 2)
-    assert hasCommon(tokensD, tokensA) == (-1, 1, 2)
-    assert hasCommon(tokensA, tokensE) == (1, 0, 2)
-    assert hasCommon(tokensE, tokensA) == (-1, 0, 2)
-    assert hasCommon(tokensA, tokensF) == (1, 2, 2)
-    assert hasCommon(tokensF, tokensA) == (-1, 2, 2)
+    tokensG = list("a")
+    assert hasCommon(tokensA, tokensA) == (0, 0, 4), hasCommon(tokensA, tokensA)
+    assert hasCommon(tokensA, tokensB) == (1, 2, 2), hasCommon(tokensA, tokensB)
+    assert hasCommon(tokensB, tokensA) == (-1, 2, 2), hasCommon(tokensB, tokensA)
+    assert hasCommon(tokensA, tokensC) == (1, 3, 1), hasCommon(tokensA, tokensC)
+    assert hasCommon(tokensC, tokensA) == (-1, 3, 1), hasCommon(tokensC, tokensA)
+    assert hasCommon(tokensA, tokensD) == (1, 1, 2), hasCommon(tokensA, tokensD)
+    assert hasCommon(tokensD, tokensA) == (-1, 1, 2), hasCommon(tokensD, tokensA)
+    assert hasCommon(tokensA, tokensE) == (1, 0, 2), hasCommon(tokensA, tokensE)
+    assert hasCommon(tokensE, tokensA) == (-1, 0, 2), hasCommon(tokensE, tokensA)
+    assert hasCommon(tokensA, tokensF) == (1, 2, 2), hasCommon(tokensA, tokensF)
+    assert hasCommon(tokensF, tokensA) == (-1, 2, 2), hasCommon(tokensF, tokensA)
+    assert hasCommon(tokensE, tokensG) == (1, 0, 1), hasCommon(tokensE, tokensG)
+    assert hasCommon(tokensG, tokensE) == (-1, 0, 1), hasCommon(tokensG, tokensE)
 
     tokensA = list("abcd")
     tokensB = list("cef")
@@ -446,32 +459,37 @@ def hasCommon(tokensA, tokensB):
     tokensE = list("ac")
     tokensF = list("ad")
 
-    assert hasCommon(tokensA, tokensB) == None
-    assert hasCommon(tokensB, tokensA) == None
-    assert hasCommon(tokensA, tokensC) == None
-    assert hasCommon(tokensC, tokensA) == None
-    assert hasCommon(tokensA, tokensD) == None
-    assert hasCommon(tokensD, tokensA) == None
-    assert hasCommon(tokensA, tokensE) == None
-    assert hasCommon(tokensE, tokensA) == None
-    assert hasCommon(tokensA, tokensF) == None
-    assert hasCommon(tokensF, tokensA) == None
+    assert hasCommon(tokensA, tokensB) == None, hasCommon(tokensA, tokensB)
+    assert hasCommon(tokensB, tokensA) == None, hasCommon(tokensB, tokensA)
+    assert hasCommon(tokensA, tokensC) == None, hasCommon(tokensA, tokensC)
+    assert hasCommon(tokensC, tokensA) == None, hasCommon(tokensC, tokensA)
+    assert hasCommon(tokensA, tokensD) == None, hasCommon(tokensA, tokensD)
+    assert hasCommon(tokensD, tokensA) == None, hasCommon(tokensD, tokensA)
+    assert hasCommon(tokensA, tokensE) == None, hasCommon(tokensA, tokensE)
+    assert hasCommon(tokensE, tokensA) == None, hasCommon(tokensE, tokensA)
+    assert hasCommon(tokensA, tokensF) == None, hasCommon(tokensA, tokensF)
+    assert hasCommon(tokensF, tokensA) == None, hasCommon(tokensF, tokensA)
     ```
     """
     nA = len(tokensA)
     nB = len(tokensB)
 
+    if tokensA == tokensB:
+        return (0, 0, nA)
+
     for i in range(nA - 1, -1, -1):
         end = min((nB, nA - i))
 
-        if tokensA[i:i + end] == tokensB[0:end]:
-            return (1, i, end)
+        if tokensA[i : i + end] == tokensB[0:end]:
+            ref = 1 if i > 0 else 1 if nA >= nB else -1
+            return (ref, i, end)
 
     for i in range(nB - 1, -1, -1):
         end = min((nA, nB - i))
 
-        if tokensB[i:i + end] == tokensA[0:end]:
-            return (-1, i, end)
+        if tokensB[i : i + end] == tokensA[0:end]:
+            ref = -1 if i > 0 else -1 if nB >= nA else 1
+            return (ref, i, end)
 
     return None
 
@@ -529,7 +547,9 @@ def makePartitions(triggers, myToTokens):
     return (triggerTokens, partition)
 
 
-def interference(rowMap, myToTokens):
+def interference(
+    rowMap, triggerScopes, myToTokens, alsoInternal=False, alsoExpected=False
+):
     triggers = list(rowMap)
 
     triggerTokens, parts = makePartitions(triggers, myToTokens)
@@ -538,20 +558,50 @@ def interference(rowMap, myToTokens):
 
     interferences = []
 
+    intersections = {}
+
     for i, part in enumerate(parts):
         if i == nParts - 1:
             break
-        for otherPart in parts[i + 1:nParts]:
+
+        for otherPart in parts[i + 1 : nParts]:
             for triggerA in part:
                 for triggerB in otherPart:
                     tokensA = triggerTokens[triggerA]
                     tokensB = triggerTokens[triggerB]
+
+                    if not alsoInternal:
+                        rowsA = set(rowMap[triggerA])
+                        rowsB = set(rowMap[triggerB])
+                        if rowsA == rowsB:
+                            continue
+
+                    scopesA = ",".join(sorted(triggerScopes[triggerA]))
+                    scopesB = ",".join(sorted(triggerScopes[triggerB]))
+                    commonScopes = intersections.get((triggerA, triggerB), None)
+
+                    if commonScopes is None:
+                        commonScopes = intersectScopes(scopesA, scopesB)
+                        intersections[(triggerA, triggerB)] = commonScopes
+
+                    if len(commonScopes) == 0:
+                        continue
+
                     common = hasCommon(tokensA, tokensB)
 
                     if common is None:
                         continue
 
                     ref, pos, length = common
+                    nTokensA = len(tokensA)
+                    nTokensB = len(tokensB)
+
+                    nTokensLatter = nTokensB if ref == 1 else nTokensA
+
+                    expected = length == nTokensLatter
+
+                    if expected and not alsoExpected:
+                        continue
 
                     if ref == 1:
                         nB = len(tokensB)
@@ -566,11 +616,21 @@ def interference(rowMap, myToTokens):
                         if length < nA:
                             union += tokensA[length:]
 
-                    interferences.append((triggerA, triggerB, " ".join(union)))
+                    interferences.append(
+                        (
+                            triggerA,
+                            triggerB,
+                            " ".join(union),
+                            scopesA,
+                            scopesB,
+                            commonScopes,
+                        )
+                    )
 
     parts = makePartitions([x[2] for x in interferences], myToTokens)[1]
 
     return interferences, parts
+
 
 # SCOPES
 
@@ -620,6 +680,14 @@ def _locCmp(xLoc, yLoc):
     return 0
 
 
+def _locMax(xLoc, yLoc):
+    return xLoc if _locCmp(xLoc, yLoc) == 1 else yLoc
+
+
+def _locMin(xLoc, yLoc):
+    return xLoc if _locCmp(xLoc, yLoc) == -1 else yLoc
+
+
 def _sameLoc(xLoc, yLoc):
     return all(
         xc == yc or ((xc == -1 or xc == 0) and (yc == -1 or yc == 0))
@@ -646,6 +714,18 @@ def sortLocs(locs):
 
 def sortScopes(scopes):
     return tuple(sorted(scopes, key=_scopeSort))
+
+
+def locInScope(loc, scope):
+    (b, e) = scope
+    return _locCmp(b, loc) <= 0 and _locCmp(loc, e) <= 0
+
+
+def locInScopes(loc, scopes):
+    if not len(scopes):
+        return False
+
+    return any(locInScope(loc, scope) for scope in scopes)
 
 
 def repLoc(loc):
@@ -773,6 +853,33 @@ def parseScopes(scopeStr, plain=True):
         if plain
         else dict(result=results, warning=warnings, normal=repScopes(results))
     )
+
+
+def intersectScopes(*scopeStrs):
+    curIntersection = [parseScope("")]
+
+    for scopeStr in scopeStrs:
+        newIntersection = []
+        for bLoc, eLoc in parseScopes(scopeStr):
+
+            for ibLoc, ieLoc in curIntersection:
+                if _locCmp(ieLoc, bLoc) == -1:
+                    # ieLoc < bLoc
+                    continue
+                if _locCmp(ibLoc, eLoc) == 1:
+                    # ibLoc > eLoc
+                    break
+
+                # now
+                # bLoc <= ieLoc
+                # ibLoc <= eLoc
+                newIbLoc = _locMax(ibLoc, bLoc)
+                newIeLoc = _locMin(ieLoc, eLoc)
+                newIntersection.append((newIbLoc, newIeLoc))
+
+        curIntersection = newIntersection
+
+    return tuple(curIntersection)
 
 
 def partitionScopes(scopesDict):
