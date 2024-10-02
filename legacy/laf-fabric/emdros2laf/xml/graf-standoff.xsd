@@ -1,0 +1,689 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.xces.org/ns/GrAF/1.0/" xmlns:graf="http://www.xces.org/ns/GrAF/1.0/">
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+  <!--
+    Schema generated from ODD source 2013-03-25T12:02:54Z. 
+    Edition: 1.9.1. Last updated on March 5th 2011.
+    Edition Location: http://www.tei-c.org/Vault/P5/1.9.1/
+    
+  -->
+  <!--
+    
+    Copyright 2013 The American National Corpus
+    
+    Unmodified versions of this document may be freely redistributed
+                        and used for any purpose.
+  -->
+  <xs:attributeGroup name="so_graf.fs.atts.attributes">
+    <xs:attributeGroup ref="graf:so_graf.att.xmlid.optional.attributes"/>
+    <xs:attributeGroup ref="graf:so_graf.fs.atts.attribute.xmllang"/>
+    <xs:attributeGroup ref="graf:so_graf.fs.atts.attribute.xmlbase"/>
+    <xs:attributeGroup ref="graf:so_graf.fs.atts.attribute.xmlspace"/>
+    <xs:attributeGroup ref="graf:so_graf.fs.atts.attribute.n"/>
+    <xs:attributeGroup ref="graf:so_graf.fs.atts.attribute.rend"/>
+    <xs:attributeGroup ref="graf:so_graf.fs.atts.attribute.rendition"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="so_graf.fs.atts.attribute.xmllang">
+    <xs:attribute ref="xml:lang"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="so_graf.fs.atts.attribute.xmlbase">
+    <xs:attribute ref="xml:base"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="so_graf.fs.atts.attribute.xmlspace">
+    <xs:attribute ref="xml:space"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="so_graf.fs.atts.attribute.n">
+    <xs:attribute name="n">
+      <xs:annotation>
+        <xs:documentation/>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="so_graf.fs.atts.attribute.rend">
+    <xs:attribute name="rend">
+      <xs:annotation>
+        <xs:documentation/>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="so_graf.fs.atts.attribute.rendition">
+    <xs:attribute name="rendition">
+      <xs:annotation>
+        <xs:documentation/>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:group name="so_graf.fs.model.featureValue">
+    <xs:choice>
+      <xs:group ref="graf:so_graf.fs.model.simpleValue"/>
+      <xs:group ref="graf:so_graf.fs.model.complexValue"/>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="so_graf.fs.model.simpleValue">
+    <xs:choice>
+      <xs:element ref="graf:binary"/>
+      <xs:element ref="graf:symbol"/>
+      <xs:element ref="graf:numeric"/>
+      <xs:element ref="graf:string"/>
+      <xs:element ref="graf:vAlt"/>
+      <xs:element ref="graf:vLabel"/>
+      <xs:element ref="graf:default"/>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="so_graf.fs.model.simpleValue_alternation">
+    <xs:choice>
+      <xs:element ref="graf:binary"/>
+      <xs:element ref="graf:symbol"/>
+      <xs:element ref="graf:numeric"/>
+      <xs:element ref="graf:string"/>
+      <xs:element ref="graf:vAlt"/>
+      <xs:element ref="graf:vLabel"/>
+      <xs:element ref="graf:default"/>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="so_graf.fs.model.simpleValue_sequence">
+    <xs:sequence>
+      <xs:element ref="graf:binary"/>
+      <xs:element ref="graf:symbol"/>
+      <xs:element ref="graf:numeric"/>
+      <xs:element ref="graf:string"/>
+      <xs:element ref="graf:vAlt"/>
+      <xs:element ref="graf:vLabel"/>
+      <xs:element ref="graf:default"/>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="so_graf.fs.model.simpleValue_sequenceOptional">
+    <xs:sequence>
+      <xs:element minOccurs="0" ref="graf:binary"/>
+      <xs:element minOccurs="0" ref="graf:symbol"/>
+      <xs:element minOccurs="0" ref="graf:numeric"/>
+      <xs:element minOccurs="0" ref="graf:string"/>
+      <xs:element minOccurs="0" ref="graf:vAlt"/>
+      <xs:element minOccurs="0" ref="graf:vLabel"/>
+      <xs:element minOccurs="0" ref="graf:default"/>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="so_graf.fs.model.simpleValue_sequenceOptionalRepeatable">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="graf:binary"/>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="graf:symbol"/>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="graf:numeric"/>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="graf:string"/>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="graf:vAlt"/>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="graf:vLabel"/>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="graf:default"/>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="so_graf.fs.model.simpleValue_sequenceRepeatable">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" ref="graf:binary"/>
+      <xs:element maxOccurs="unbounded" ref="graf:symbol"/>
+      <xs:element maxOccurs="unbounded" ref="graf:numeric"/>
+      <xs:element maxOccurs="unbounded" ref="graf:string"/>
+      <xs:element maxOccurs="unbounded" ref="graf:vAlt"/>
+      <xs:element maxOccurs="unbounded" ref="graf:vLabel"/>
+      <xs:element maxOccurs="unbounded" ref="graf:default"/>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="so_graf.fs.model.complexValue">
+    <xs:choice>
+      <xs:element ref="graf:fs"/>
+      <xs:element ref="graf:vColl"/>
+      <xs:element ref="graf:vNot"/>
+      <xs:element ref="graf:vMerge"/>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="so_graf.fs.model.complexValue_alternation">
+    <xs:choice>
+      <xs:element ref="graf:fs"/>
+      <xs:element ref="graf:vColl"/>
+      <xs:element ref="graf:vNot"/>
+      <xs:element ref="graf:vMerge"/>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="so_graf.fs.model.complexValue_sequence">
+    <xs:sequence>
+      <xs:element ref="graf:fs"/>
+      <xs:element ref="graf:vColl"/>
+      <xs:element ref="graf:vNot"/>
+      <xs:element ref="graf:vMerge"/>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="so_graf.fs.model.complexValue_sequenceOptional">
+    <xs:sequence>
+      <xs:element minOccurs="0" ref="graf:fs"/>
+      <xs:element minOccurs="0" ref="graf:vColl"/>
+      <xs:element minOccurs="0" ref="graf:vNot"/>
+      <xs:element minOccurs="0" ref="graf:vMerge"/>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="so_graf.fs.model.complexValue_sequenceOptionalRepeatable">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="graf:fs"/>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="graf:vColl"/>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="graf:vNot"/>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="graf:vMerge"/>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="so_graf.fs.model.complexValue_sequenceRepeatable">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" ref="graf:fs"/>
+      <xs:element maxOccurs="unbounded" ref="graf:vColl"/>
+      <xs:element maxOccurs="unbounded" ref="graf:vNot"/>
+      <xs:element maxOccurs="unbounded" ref="graf:vMerge"/>
+    </xs:sequence>
+  </xs:group>
+  <xs:element name="fs">
+    <xs:annotation>
+      <xs:documentation>(feature structure) A feature structure organized as a attribute/value matrix.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="graf:f"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="graf:so_graf.fs.atts.attributes"/>
+      <xs:attribute name="type">
+        <xs:annotation>
+          <xs:documentation>specifies the type of the feature structure.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="feat" type="xs:IDREFS">
+        <xs:annotation>
+          <xs:documentation>a whitespace delimited list of references to other f elements that make up this feature structure.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="f">
+    <xs:annotation>
+      <xs:documentation>(feature) a name/value pair.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0">
+        <xs:group ref="graf:so_graf.fs.model.simpleValue"/>
+        <xs:group ref="graf:so_graf.fs.model.complexValue"/>
+      </xs:choice>
+      <xs:attributeGroup ref="graf:so_graf.fs.atts.attributes"/>
+      <xs:attribute name="name" use="required">
+        <xs:annotation>
+          <xs:documentation>the feature name.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="fVal" type="xs:anyURI">
+        <xs:annotation>
+          <xs:documentation>(feature value) references an element that can be used to represent the value of this feature.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="value" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>contains a simple untyped value.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="binary">
+    <xs:annotation>
+      <xs:documentation>a binary value that contain exactly one of two possible values.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="graf:so_graf.fs.atts.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="symbol">
+    <xs:annotation>
+      <xs:documentation>A value that contains one of a finite list of possible symbols.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="value" use="required">
+        <xs:annotation>
+          <xs:documentation/>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="numeric">
+    <xs:annotation>
+      <xs:documentation>a numeric value</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="graf:so_graf.fs.atts.attributes"/>
+      <xs:attribute name="value" use="required">
+        <xs:annotation>
+          <xs:documentation/>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="max">
+        <xs:annotation>
+          <xs:documentation>specifies the upper bound of the value.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="trunc">
+        <xs:annotation>
+          <xs:documentation>specifies whether the value represented should be truncated to give an integer value.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="string">
+    <xs:annotation>
+      <xs:documentation>a string value</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attributeGroup ref="graf:so_graf.fs.atts.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="vAlt">
+    <xs:annotation>
+      <xs:documentation>specifies a list of alternative feature values, only one of which can be valid.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="graf:so_graf.fs.model.featureValue"/>
+        <xs:group maxOccurs="unbounded" ref="graf:so_graf.fs.model.featureValue"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="graf:so_graf.fs.atts.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="vLabel">
+    <xs:annotation>
+      <xs:documentation>specifies a value which appears at more than one point in a feature structure.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:group minOccurs="0" ref="graf:so_graf.fs.model.featureValue"/>
+      <xs:attributeGroup ref="graf:so_graf.fs.atts.attributes"/>
+      <xs:attribute name="name" use="required">
+        <xs:annotation>
+          <xs:documentation>the label name</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="default">
+    <xs:annotation>
+      <xs:documentation>specifies that this feature assumes the default value.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="graf:so_graf.fs.atts.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="vColl">
+    <xs:annotation>
+      <xs:documentation>a collection of features organized as a bag, set, or list.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="graf:fs"/>
+        <xs:group ref="graf:so_graf.fs.model.simpleValue"/>
+      </xs:choice>
+      <xs:attributeGroup ref="graf:so_graf.fs.atts.attributes"/>
+      <xs:attribute name="org">
+        <xs:annotation>
+          <xs:documentation/>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="bag">
+              <xs:annotation>
+                <xs:documentation> (bag) indicates a bag (multiset) of values.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="set">
+              <xs:annotation>
+                <xs:documentation> (set) indicates a set of values.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="list">
+              <xs:annotation>
+                <xs:documentation> (list) indicates a list of values.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="vNot">
+    <xs:annotation>
+      <xs:documentation>A feature value that represents the negation of its content.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:group ref="graf:so_graf.fs.model.featureValue"/>
+      <xs:attributeGroup ref="graf:so_graf.fs.atts.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="vMerge">
+    <xs:annotation>
+      <xs:documentation>a value that is the result of merging together all children elements. The @org attribute specifies how the children are to be interpreted.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="graf:so_graf.fs.atts.attributes"/>
+      <xs:attribute name="org">
+        <xs:annotation>
+          <xs:documentation/>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="bag">
+              <xs:annotation>
+                <xs:documentation> (bag) indicates a bag (multiset) of values.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="set">
+              <xs:annotation>
+                <xs:documentation> (set) indicates a set of values.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="list">
+              <xs:annotation>
+                <xs:documentation> (list) indicates a list of values.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="so_graf.att.xmlid.required.attributes">
+    <xs:attributeGroup ref="graf:so_graf.att.xmlid.required.attribute.xmlid"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="so_graf.att.xmlid.required.attribute.xmlid">
+    <xs:attribute ref="xml:id" use="required"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="so_graf.att.xmlid.optional.attributes">
+    <xs:attributeGroup ref="graf:so_graf.att.xmlid.optional.attribute.xmlid"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="so_graf.att.xmlid.optional.attribute.xmlid">
+    <xs:attribute ref="xml:id"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="so_graf.att.version.attributes">
+    <xs:attributeGroup ref="graf:so_graf.att.version.attribute.version"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="so_graf.att.version.attribute.version">
+    <xs:attribute name="version" type="xs:string">
+      <xs:annotation>
+        <xs:documentation/>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:group name="so_model.graph">
+    <xs:choice>
+      <xs:element ref="graf:region"/>
+      <xs:element ref="graf:anchor"/>
+      <xs:element ref="graf:a"/>
+      <xs:element ref="graf:node"/>
+      <xs:element ref="graf:edge"/>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="so_model.so.header">
+    <xs:choice>
+      <xs:element ref="graf:roots"/>
+      <xs:element ref="graf:labelsDecl"/>
+      <xs:element ref="graf:dependencies"/>
+      <xs:element ref="graf:annotationSpaces"/>
+    </xs:choice>
+  </xs:group>
+  <xs:element name="p" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>a paragraph. Contains text only.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="region">
+    <xs:annotation>
+      <xs:documentation>a region in the primary data. A region is
+                                the area defined by a non empty, ordered list of anchors. The number of anchors required
+                                to bound a region depends on the type of media being annotated.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="graf:so_graf.att.xmlid.required.attributes"/>
+      <xs:attribute name="anchors" type="xs:NMTOKENS">
+        <xs:annotation>
+          <xs:documentation>the anchors that bound this region. The anchors
+                                        attribute contains a whitespace delimited list of values that
+                                        represent the anchor values. Applications are expected to know
+                                        how to parse the string representation of an anchor into a
+                                        location in the artifact being annotated.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="refs">
+        <xs:annotation>
+          <xs:documentation>ID references to the anchor elements that bound this region.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="atype.id" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>The anchor type used in the @anchors attribute. This
+                                        is the @xml:id of one of the anchorTypes defined in the header. If no @atype
+                                        is specified for the region then the default anchor type for the document
+                                        is assumed.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="anchor">
+    <xs:annotation>
+      <xs:documentation>a location in the primary data.  How the location is represented is
+                            media dependent. However, applications are required to be able to serialize and deserialize location values
+                            to and from strings.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="graf:so_graf.att.xmlid.required.attributes"/>
+      <xs:attribute name="anchor.id" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>The anchor type determines how the anchor @value will be interpreted. If the @anchor.id
+                                     is not specified then the default anchor type, as defined in the document or resource header, is assumed.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="value" use="required" type="xs:NMTOKEN">
+        <xs:annotation>
+          <xs:documentation>The offset value of the anchor. How the attribute value is
+                                    interpreted as a location in the primary data is media dependent.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="a">
+    <xs:annotation>
+      <xs:documentation>a labeled feature structure.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="graf:fs"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="graf:so_graf.att.xmlid.required.attributes"/>
+      <xs:attribute name="label" use="required" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>the annotation label.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="ref" use="required" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>the ID of the node or edge this annotation is attached to.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="as" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>the annotation space this annotation belongs to, if any.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="graph">
+    <xs:annotation>
+      <xs:documentation>The root element of a GrAF standoff annotation file.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="graf:graphHeader"/>
+        <xs:group minOccurs="0" maxOccurs="unbounded" ref="graf:so_model.graph"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="graf:so_graf.att.xmlid.optional.attributes"/>
+      <xs:attributeGroup ref="graf:so_graf.att.version.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="node">
+    <xs:annotation>
+      <xs:documentation>Represents a node (vertex) in the graph. Nodes are associated with
+                                regions in the media with the link element.
+                            </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="graf:link"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="graf:so_graf.att.xmlid.required.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="edge">
+    <xs:annotation>
+      <xs:documentation>An edge (arc) between two nodes.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="graf:so_graf.att.xmlid.required.attributes"/>
+      <xs:attribute name="from" use="required">
+        <xs:annotation>
+          <xs:documentation/>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="to" use="required">
+        <xs:annotation>
+          <xs:documentation/>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="link">
+    <xs:annotation>
+      <xs:documentation>Links a node (vertex) to a region in the primary data.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="targets" use="required" type="xs:NMTOKENS">
+        <xs:annotation>
+          <xs:documentation>The ID values of the regions the node is linked to. These
+                                        should be IDREFs, however the regions may be defined in a
+                                        different annotation document.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="graphHeader">
+    <xs:annotation>
+      <xs:documentation>groups header information found at the top of each
+                            standoff annotation file. Only minimal header information is stored in
+                            the standoff file, namely a list of the annotation labels
+                            and the number of times they appear in the file, the list of root nodes
+                            (if applicable), any file/annotation dependencies, the annotation
+                            sets used in the file, and possible additional group definitions.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:group minOccurs="0" maxOccurs="unbounded" ref="graf:so_model.so.header"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="roots">
+    <xs:annotation>
+      <xs:documentation>A list of root elements that identify the root nodes in the graph. This
+                    	element is used when the graph contains a forest, that is, more than one tree. </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="graf:root"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="root">
+    <xs:annotation>
+      <xs:documentation>The node id of a root node in the graph. Not all graphs will form a
+                    tree, but those that do can use the root element to identify the root node of the tree.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:token">
+          <xs:attribute name="node.id" use="required" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>the @xml:id of the root node of a tree.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="labelsDecl">
+    <xs:annotation>
+      <xs:documentation>An optional section that lists the annotation labels used in the
+                    	standoff annotation file.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="graf:labelUsage"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="labelUsage">
+    <xs:annotation>
+      <xs:documentation>Contains information about the number of occurences of a
+                    		particular annotation label in a standoff annotation file.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="label" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>label name</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="occurs" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>number of occurences in the document.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="dependencies">
+    <xs:annotation>
+      <xs:documentation>Documents required to process the annotations in this document, which will include 
+                            a segmentation document and/or any annotation documents directly referenced in this document.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="graf:dependsOn"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="dependsOn">
+    <xs:annotation>
+      <xs:documentation>A reference to the annotation file that is required to for a well-formed
+                    		graph. The annotation file is referenced by the file type id defined in the document header.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="f.id" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>a file type id referenced in the annotation section of the document header.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="annotationSpaces">
+    <xs:annotation>
+      <xs:documentation>the annotationSpaces used in this standoff document.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="graf:annotationSpace"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="annotationSpace">
+    <xs:annotation>
+      <xs:documentation>an annotation space defined in the resource header.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="as.id" type="xs:anyURI">
+        <xs:annotation>
+          <xs:documentation>a reference to the @xml:id of </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="default">
+        <xs:annotation>
+          <xs:documentation>indicates this is the default annotationSpace if one is not explicitly proviced. Default is no.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

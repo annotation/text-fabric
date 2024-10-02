@@ -1,0 +1,8 @@
+<node xml:id="n{xmlid}"><link targets="{region}"/></node>
+<a xml:id="a{part}{aid}" label="{akind}" ref="n{xmlid}"><fs>
+    <f name="otype" value="{objecttype}"/>
+    <f name="oid" value="{objectid}"/>
+    <f name="monads" value="{monads}"/>
+    <f name="minmonad" value="{minmonad}"/>
+    <f name="maxmonad" value="{maxmonad}"/>
+</fs></a>

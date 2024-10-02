@@ -87,9 +87,9 @@ converted from TEI by `tf.convert.tei`.
 ## Examples
 
 Exactly how you can call the methods of this module is demonstrated in the small
-corpus of 14 letter by the Dutch artist Piet Mondriaan.
+corpus of 14 letters by the Dutch artist Piet Mondriaan.
 
-*   [Mondriaan](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/convertExpress.ipynb).
+*   [Mondriaan](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/convertPlain.ipynb).
 """
 
 import sys

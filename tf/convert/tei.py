@@ -285,7 +285,7 @@ get distance 1.
     direct children, the number of sibling edges is comparable to the size of the
     corpus squared. That means that the TF dataset will consist for 50-99% of
     sibling edges!
-    An example is [`ETCBC/nestle1904`](https://github.com/ETCBC/nestle1904) (Greek New
+    An example is [ETCBC/nestle1904](https://github.com/ETCBC/nestle1904) (Greek New
     Testament) where each book element has all of its sentences as direct children.
     In that dataset, the siblings would occupy 40% of the size, and we have taken care
     not to produce sibling edges for sentences.
@@ -562,7 +562,7 @@ tf-fromtei tf=1.8.3  # explicit version
 Exactly how you can call the methods of this module is demonstrated in the small
 corpus of 14 letter by the Dutch artist Piet Mondriaan.
 
-*   [Mondriaan](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/convertExpress.ipynb).
+*   [Mondriaan](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/convertPlain.ipynb).
 """
 
 import sys

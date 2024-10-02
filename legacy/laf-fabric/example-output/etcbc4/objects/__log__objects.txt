@@ -1,0 +1,32 @@
+OPENED AT:2016-01-04T08-08-16
+  0.00s LOGFILE=/Users/dirk/SURFdrive/current/demos/github/laf-fabric/example-output/etcbc4/objects/__log__objects.txt
+  0.00s DETAIL: prep prep: G.node_sort
+  0.00s DETAIL: prep prep: G.node_sort_inv
+  0.00s DETAIL: prep prep: L.node_up
+  0.00s DETAIL: prep prep: L.node_down
+  0.00s ETCBC reference: http://laf-fabric.readthedocs.org/en/latest/texts/ETCBC-reference.html
+  0.00s LOADING API with EXTRAs: please wait ... 
+  0.00s DETAIL: COMPILING m: UP TO DATE
+  0.00s INFO: USING DATA COMPILED AT: 2015-10-02T18-02-31
+  0.00s DETAIL: COMPILING a: UP TO DATE
+  0.00s DETAIL: keep main: G.node_anchor_min
+  0.00s DETAIL: keep main: G.node_anchor_max
+  0.00s DETAIL: keep main: G.node_sort
+  0.00s DETAIL: keep main: G.node_sort_inv
+  0.00s DETAIL: keep main: G.edges_from
+  0.00s DETAIL: keep main: G.edges_to
+  0.00s DETAIL: keep main: F.etcbc4_db_otype [node] 
+  0.00s DETAIL: load main: F.etcbc4_ft_number [node] 
+  0.00s DETAIL: load main: F.etcbc4_sft_book [node] 
+  0.00s DETAIL: load main: F.etcbc4_sft_chapter [node] 
+  0.00s DETAIL: load main: F.etcbc4_sft_verse [node] 
+  0.00s INFO: DATA LOADED FROM SOURCE etcbc4 AND ANNOX -- FOR TASK objects AT 2016-01-04T08-08-16
+  0.00s INFO: DATA LOADED FROM SOURCE etcbc4 AND ANNOX -- FOR TASK objects AT 2016-01-04T08-08-16
+  0.00s Get the objects ... 
+  0.00s Results directory:
+/Users/dirk/SURFdrive/current/demos/github/laf-fabric/example-output/etcbc4/objects
+
+__log__objects.txt                     1336 Mon Jan  4 09:08:16 2016
+objects.txt                            4717 Mon Jan  4 09:08:16 2016
+
+CLOSED AT:2016-01-04T08-08-16

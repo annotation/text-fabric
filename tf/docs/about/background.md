@@ -84,10 +84,10 @@ Efficiency in data processing has been a design criterion from the start.
 
 !!! example "Comparisons"
     See e.g. the comparisons between the TF way of serializing
-    (`pickle` + `gzip`) and
-    [`avro`](https://nbviewer.jupyter.org/github/annotation/text-fabric/blob/master/test/avro/avro.ipynb),
-    [`joblib`](https://nbviewer.jupyter.org/github/annotation/text-fabric/blob/master/test/joblib/joblib.ipynb), and
-    [`marshal`](https://nbviewer.jupyter.org/github/annotation/text-fabric/blob/master/test/marshal/marshal.ipynb).
+    (pickle + gzip) and
+    [avro](https://nbviewer.jupyter.org/github/annotation/text-fabric/blob/master/test/avro/avro.ipynb),
+    [joblib](https://nbviewer.jupyter.org/github/annotation/text-fabric/blob/master/test/joblib/joblib.ipynb), and
+    [marshal](https://nbviewer.jupyter.org/github/annotation/text-fabric/blob/master/test/marshal/marshal.ipynb).
 
 ## Code organization and statistics
 
@@ -107,7 +107,7 @@ I entered in that world in 2007 as a
 [DANS](https://dans.knaw.nl/en) employee, doing a joint small data project,
 and a bigger project SHEBANQ in 2013/2014.
 In 2013 I developed
-[LAF-Fabric](https://github.com/annotation/laf-fabric)
+[LAF-Fabric](https://github.com/annotation/text-fabric/tree/master/legacy/laf-fabric)
 as a tool for constructing the website
 [SHEBANQ](https://shebanq.ancient-data.org).
 

@@ -1,0 +1,3 @@
+	<fDecl xml:id="feature_{i}" rendition="{name}" name="{isoname}">
+		<fDescr>{isodescr}</fDescr>{values}
+    </fDecl>

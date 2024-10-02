@@ -82,7 +82,7 @@ then this module takes care to read that spreadsheet, translate it to YAML,
 and then use the YAML as instructions to add entity annotations to the corpus.
 
 See this
-[example notebook](https://nbviewer.jupyter.org/github/HuygensING/suriano/blob/main/programs/ner.ipynb).
+[example notebook](https://nbviewer.org/urls/gitlab.huc.knaw.nl/suriano/letters/-/raw/main/programs/ner.ipynb/%3Fref_type%3Dheads%26inline%3Dfalse).
 
 Here are more details.
 

@@ -156,7 +156,7 @@ that steer the graph building:
     [conversion tutorial](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/convert.ipynb)
 
     Or study a more involved example:
-    [Old Babylonian](https://github.com/Nino-cunei/oldbabylonian/blob/master/programs/tfFromATF.py)
+    [Old Babylonian](https://github.com/Nino-cunei/tfFromAtf/blob/master/programs/convert.py)
 """
 
 import collections

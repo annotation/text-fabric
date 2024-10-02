@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resourceHeader xmlns="http://www.xces.org/ns/GrAF/1.0/" xmlns:lnk="http://www.w3.org/1999/xlink"
+    version="1.0" creator="ETBC" date.created="2013-12-17" type="text">
+    <fileDesc>
+        <titleStmt>
+            <title>Hebrew Text Database</title>
+            <funder>Eep Talstra Centre for Bible and Computing Faculty of Theology, VU University Amsterdam Netherlands; CLARIN-NL; Data Archiving and Networked Services</funder>
+            <respStmt>
+                <resp lnk:href="http://www.godgeleerdheid.vu.nl/etcbc">Eep Talstra Centre for Bibleand Computing</resp>
+            </respStmt>
+        </titleStmt>
+        <editionStmt version="etcbc4"/>
+        <extent count="0" unit="words"/>
+        <publicationStmt>
+            <distributor>Eep Talstra Centre for Bible and Computing</distributor>
+            <pubAddress>Faculty of Theology, VU University, Amsterdam</pubAddress>
+            <eAddress>w.t.van.peursen@vu.nl</eAddress>
+            <pubDate value="2014-06-01"/>
+            <availability lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999" status="free"/>
+        </publicationStmt>
+    </fileDesc>
+    <encodingDesc>
+        <projectDesc>The Hebrew Text Database of the VU University Amsterdam is known as the WIVU database. It consists of the full text of the Biblia
+		Hebraica Stuttgartensia plus linguistic features from the morpheme level up to the sentence level. Text and features are stored in a special database (EMDROS) that supports the model of objects with features. The SHEBANQ project (2013-2014) has turned this database into a linked data resource, with the possibility of saving queries as annotations to the linked data version. SHEBANQ also converted the database into a LAF resource, to be archived at DANS.</projectDesc>
+        <samplingDecl>The plain full text of the Biblia Hebraica is stored in one file as UNICODE text in the utf8 encoding, using combining characters whereever possible. The text consists of 0 words (prepositions that are attached to other words count as separate words). The text contains all the vocalization, pointing, cantillation and other punctuation that is present in the BHS.</samplingDecl>
+        <editorialDecl>
+            <transduction>The text file has been generated from the EMDROS database. This database contains so called monad objects for each word. The various spellings of each word is available in the features of the associated monad object. This also holds for the punctuation. By applying a few simple rules it is possible to recreate the complete text of the BHS edition. The linguistic features are present as features on the monad objects and other objects corresponding to phrases, clauses and sentences. These features have been translated literally, with the understanding that values consisting of utf8 codes have been translated into real UNICODE characters in the utf8 encoding. The meaning of the features have been documented in the ISOcat metadata registry.</transduction>
+            <correction>No corrections have been applied.
+                </correction>
+            <segmentation>The primary text is divided into four kinds of regions: (i) regions that correspond to words; (ii) regions that correspond white space; (iii) regions that correspond to punctuatio; (iv) regions that correspond to sectioning objects such as books, chapters and verses. Linguistic objects refer to multiple regions: the regions of all words that belong to it. So linguistic objects do not refer to white space and punctuation. Sectioning objects refer to larger regions which contain whitespace and punctuation. Section regions overlap all other kinds of regions. All regions are specified by means of character positions in the utf8 primary data file.</segmentation>
+        </editorialDecl>
+    </encodingDesc>
+    <resourceDesc>
+        <fileStruct>
+            <!-- The following information identifies the physical files included in the corpus, 
+                their content types, and dependencies -->
+            <directories>
+                <directory xml:id="written" d.name="results" root="yes" f.ids="
+					f.hdr
+					f.primary.hdr
+					f.primary
+					f_monad.region
+					f_monad
+					f_lingo
+					f_section
+					f_monad.txt
+					f_lingo.c
+					f_lingo.p
+					f_lingo.pa
+					f_lingo.s
+					f_lingo.subp
+					f_lingo.w
+				"/>
+            </directories>
+            <fileTypes>
+				<fileType xml:id="f.hdr" f.suffix=".hdr" medium="xml"/>
+				<fileType xml:id="f.primary" f.suffix=".txt" medium="text"/>
+				<fileType xml:id="f.primary.hdr" f.suffix=".text.hdr" medium="xml"/>
+				<fileType xml:id="f_lingo" f.suffix="_lingo.xml" a.ids="db" medium="xml">
+            		<requires f.id="f_monad"/>
+				</fileType>
+				<fileType xml:id="f_lingo.c" f.suffix="_lingo.c.xml" a.ids="mother parents ft" medium="xml">
+            		<requires f.id="f_lingo"/>
+				</fileType>
+				<fileType xml:id="f_lingo.p" f.suffix="_lingo.p.xml" a.ids="mother parents ft" medium="xml">
+            		<requires f.id="f_lingo"/>
+				</fileType>
+				<fileType xml:id="f_lingo.pa" f.suffix="_lingo.pa.xml" a.ids="mother parents ft" medium="xml">
+            		<requires f.id="f_lingo"/>
+				</fileType>
+				<fileType xml:id="f_lingo.s" f.suffix="_lingo.s.xml" a.ids="mother parents ft" medium="xml">
+            		<requires f.id="f_lingo"/>
+				</fileType>
+				<fileType xml:id="f_lingo.subp" f.suffix="_lingo.subp.xml" a.ids="mother parents ft" medium="xml">
+            		<requires f.id="f_lingo"/>
+				</fileType>
+				<fileType xml:id="f_lingo.w" f.suffix="_lingo.w.xml" a.ids="mother parents ft" medium="xml">
+            		<requires f.id="f_lingo"/>
+				</fileType>
+				<fileType xml:id="f_monad" f.suffix="_monads.xml" a.ids="db" medium="xml">
+            		<requires f.id="f_monad.region"/>
+				</fileType>
+				<fileType xml:id="f_monad.txt" f.suffix="_monads.txt.xml" a.ids="ft" medium="xml">
+            		<requires f.id="f_monad"/>
+				</fileType>
+				<fileType xml:id="f_monad.gmorfo" f.suffix="_monads.gmorfo.xml" a.ids="ft" medium="xml">
+            		<requires f.id="f_monad"/>
+				</fileType>
+				<fileType xml:id="f_monad.graphical" f.suffix="_monads.graphical.xml" a.ids="ft" medium="xml">
+            		<requires f.id="f_monad"/>
+				</fileType>
+				<fileType xml:id="f_monad.lang" f.suffix="_monads.lang.xml" a.ids="ft" medium="xml">
+            		<requires f.id="f_monad"/>
+				</fileType>
+				<fileType xml:id="f_monad.morpho" f.suffix="_monads.morpho.xml" a.ids="ft" medium="xml">
+            		<requires f.id="f_monad"/>
+				</fileType>
+				<fileType xml:id="f_monad.order" f.suffix="_monads.order.xml" a.ids="ft" medium="xml">
+            		<requires f.id="f_monad"/>
+				</fileType>
+				<fileType xml:id="f_monad.paradigmatic" f.suffix="_monads.paradigmatic.xml" a.ids="ft" medium="xml">
+            		<requires f.id="f_monad"/>
+				</fileType>
+				<fileType xml:id="f_monad.plain" f.suffix="_monads.plain.xml" a.ids="ft" medium="xml">
+            		<requires f.id="f_monad"/>
+				</fileType>
+				<fileType xml:id="f_monad.pos" f.suffix="_monads.pos.xml" a.ids="ft" medium="xml">
+            		<requires f.id="f_monad"/>
+				</fileType>
+				<fileType xml:id="f_monad.region" f.suffix="_regions.xml" medium="xml"/>
+				<fileType xml:id="f_monad.suffix" f.suffix="_monads.suffix.xml" a.ids="ft" medium="xml">
+            		<requires f.id="f_monad"/>
+				</fileType>
+				<fileType xml:id="f_monad.text" f.suffix="_monads.text.xml" a.ids="ft" medium="xml">
+            		<requires f.id="f_monad"/>
+				</fileType>
+				<fileType xml:id="f_monad.utf8" f.suffix="_monads.utf8.xml" a.ids="ft" medium="xml">
+            		<requires f.id="f_monad"/>
+				</fileType>
+				<fileType xml:id="f_section" f.suffix="_sections.xml" a.ids="db sft" medium="xml"/>
+            </fileTypes>
+        </fileStruct>
+        <annotationSpaces>
+            <annotationSpace xml:id="etcbc4" pid="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999"/>
+        </annotationSpaces>
+        <annotationDecls>
+            <annotationDecl xml:id="a.mother" as.id="etcbc4">
+                <a.desc>linguistic relationships: mother</a.desc>
+                <a.resp>ETCBC via SHEBANQ project</a.resp>
+                <a.method type="conversion script"/>
+                <a.doc lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999"/>
+				<a.schema lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999/decl/ft.xml" type="fsDecl"/>
+            </annotationDecl>
+            <annotationDecl xml:id="a.parents" as.id="etcbc4">
+                <a.desc>linguistic relationships: parents</a.desc>
+                <a.resp>ETCBC via SHEBANQ project</a.resp>
+                <a.method type="conversion script"/>
+                <a.doc lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999"/>
+				<a.schema lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999/decl/ft.xml" type="fsDecl"/>
+            </annotationDecl>
+            <annotationDecl xml:id="a.clause" as.id="etcbc4">
+                <a.desc>linguistic objects: clause</a.desc>
+                <a.resp>ETCBC via SHEBANQ project</a.resp>
+                <a.method type="conversion script"/>
+                <a.doc lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999"/>
+				<a.schema lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999" type="text"/>
+            </annotationDecl>
+            <annotationDecl xml:id="a.clause_atom" as.id="etcbc4">
+                <a.desc>linguistic objects: clause_atom</a.desc>
+                <a.resp>ETCBC via SHEBANQ project</a.resp>
+                <a.method type="conversion script"/>
+                <a.doc lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999"/>
+				<a.schema lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999" type="text"/>
+            </annotationDecl>
+            <annotationDecl xml:id="a.phrase" as.id="etcbc4">
+                <a.desc>linguistic objects: phrase</a.desc>
+                <a.resp>ETCBC via SHEBANQ project</a.resp>
+                <a.method type="conversion script"/>
+                <a.doc lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999"/>
+				<a.schema lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999" type="text"/>
+            </annotationDecl>
+            <annotationDecl xml:id="a.phrase_atom" as.id="etcbc4">
+                <a.desc>linguistic objects: phrase_atom</a.desc>
+                <a.resp>ETCBC via SHEBANQ project</a.resp>
+                <a.method type="conversion script"/>
+                <a.doc lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999"/>
+				<a.schema lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999" type="text"/>
+            </annotationDecl>
+            <annotationDecl xml:id="a.sentence" as.id="etcbc4">
+                <a.desc>linguistic objects: sentence</a.desc>
+                <a.resp>ETCBC via SHEBANQ project</a.resp>
+                <a.method type="conversion script"/>
+                <a.doc lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999"/>
+				<a.schema lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999" type="text"/>
+            </annotationDecl>
+            <annotationDecl xml:id="a.sentence_atom" as.id="etcbc4">
+                <a.desc>linguistic objects: sentence_atom</a.desc>
+                <a.resp>ETCBC via SHEBANQ project</a.resp>
+                <a.method type="conversion script"/>
+                <a.doc lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999"/>
+				<a.schema lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999" type="text"/>
+            </annotationDecl>
+            <annotationDecl xml:id="a.subphrase" as.id="etcbc4">
+                <a.desc>linguistic objects: subphrase</a.desc>
+                <a.resp>ETCBC via SHEBANQ project</a.resp>
+                <a.method type="conversion script"/>
+                <a.doc lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999"/>
+				<a.schema lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999" type="text"/>
+            </annotationDecl>
+            <annotationDecl xml:id="a.word" as.id="etcbc4">
+                <a.desc>minimal objects: word</a.desc>
+                <a.resp>ETCBC via SHEBANQ project</a.resp>
+                <a.method type="conversion script"/>
+                <a.doc lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999"/>
+				<a.schema lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999" type="text"/>
+            </annotationDecl>
+            <annotationDecl xml:id="a.book" as.id="etcbc4">
+                <a.desc>section objects: book</a.desc>
+                <a.resp>ETCBC via SHEBANQ project</a.resp>
+                <a.method type="conversion script"/>
+                <a.doc lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999"/>
+				<a.schema lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999" type="text"/>
+            </annotationDecl>
+            <annotationDecl xml:id="a.chapter" as.id="etcbc4">
+                <a.desc>section objects: chapter</a.desc>
+                <a.resp>ETCBC via SHEBANQ project</a.resp>
+                <a.method type="conversion script"/>
+                <a.doc lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999"/>
+				<a.schema lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999" type="text"/>
+            </annotationDecl>
+            <annotationDecl xml:id="a.half_verse" as.id="etcbc4">
+                <a.desc>section objects: half_verse</a.desc>
+                <a.resp>ETCBC via SHEBANQ project</a.resp>
+                <a.method type="conversion script"/>
+                <a.doc lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999"/>
+				<a.schema lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999" type="text"/>
+            </annotationDecl>
+            <annotationDecl xml:id="a.verse" as.id="etcbc4">
+                <a.desc>section objects: verse</a.desc>
+                <a.resp>ETCBC via SHEBANQ project</a.resp>
+                <a.method type="conversion script"/>
+                <a.doc lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999"/>
+				<a.schema lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999" type="text"/>
+            </annotationDecl>
+            <annotationDecl xml:id="a.db" as.id="etcbc4">
+                <a.desc>database features: db</a.desc>
+                <a.resp>ETCBC via SHEBANQ project</a.resp>
+                <a.method type="conversion script"/>
+                <a.doc lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999"/>
+				<a.schema lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999/decl/db.xml" type="fsDecl"/>
+            </annotationDecl>
+            <annotationDecl xml:id="a.ft" as.id="etcbc4">
+                <a.desc>linguistic features: ft</a.desc>
+                <a.resp>ETCBC via SHEBANQ project</a.resp>
+                <a.method type="conversion script"/>
+                <a.doc lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999"/>
+				<a.schema lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999/decl/ft.xml" type="fsDecl"/>
+            </annotationDecl>
+            <annotationDecl xml:id="a.sft" as.id="etcbc4">
+                <a.desc>sectional features: sft</a.desc>
+                <a.resp>ETCBC via SHEBANQ project</a.resp>
+                <a.method type="conversion script"/>
+                <a.doc lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999"/>
+				<a.schema lnk:href="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999/decl/sft.xml" type="fsDecl"/>
+            </annotationDecl>
+        </annotationDecls>
+
+        <media>
+            <medium xml:id="text" type="text/plain" encoding="utf-8" extension="txt"/>
+            <medium xml:id="xml" type="text/xml" encoding="utf-8" extension="xml"/>
+        </media>
+        <anchorTypes>
+            <anchorType xml:id="anchor.character" medium="text" default="true"
+                lnk:href="http://www.xces.org/ns/GrAF/1.0/#character-anchor"/>
+        </anchorTypes>
+    </resourceDesc>
+</resourceHeader>

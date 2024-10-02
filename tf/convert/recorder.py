@@ -103,7 +103,7 @@ You can write the information of a recorder to disk and read it back later.
 And you can generate features from a CSV file using the mapped positions.
 
 To see it in action, see this
-[tutorial](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/annotate.ipynb)
+[tutorial](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/annotate.ipynb)
 """
 
 

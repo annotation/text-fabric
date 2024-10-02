@@ -1,0 +1,88 @@
+OPENED AT:2016-01-04T08-08-16
+  0.01s LOGFILE=/Users/dirk/SURFdrive/current/demos/github/laf-fabric/example-output/etcbc4/parents/__log__parents.txt
+  0.01s INFO: DATA LOADED FROM SOURCE etcbc4 AND ANNOX -- FOR TASK parents AT 2016-01-04T08-08-16
+  0.00s Get the parents ...
+  0.00s sentence_atom=32 -> sentence=31
+  0.00s clause=33 -> sentence_atom=32
+  0.00s clause_atom=34 -> clause=33
+  0.00s phrase=35 -> clause_atom=34
+  0.00s phrase_atom=39 -> phrase=35
+  0.00s word=בְּ -> phrase_atom=39
+  0.00s word=רֵאשִׁ֖ית -> phrase_atom=39
+  0.00s phrase=36 -> clause_atom=34
+  0.00s phrase_atom=40 -> phrase=36
+  0.00s word=בָּרָ֣א -> phrase_atom=40
+  0.00s phrase=37 -> clause_atom=34
+  0.00s phrase_atom=41 -> phrase=37
+  0.00s word=אֱלֹהִ֑ים -> phrase_atom=41
+  0.00s phrase=38 -> clause_atom=34
+  0.00s phrase_atom=42 -> phrase=38
+  0.00s subphrase=43 -> phrase_atom=42
+  0.00s word=אֵ֥ת -> subphrase=43
+  0.00s word=הַ -> subphrase=43
+  0.00s word=שָּׁמַ֖יִם -> subphrase=43
+  0.00s word=וְ -> phrase_atom=42
+  0.00s subphrase=44 -> phrase_atom=42
+  0.00s word=אֵ֥ת -> subphrase=44
+  0.00s word=הָ -> subphrase=44
+  0.00s word=אָֽרֶץ -> subphrase=44
+  0.00s sentence_atom=47 -> sentence=45
+  0.00s clause=49 -> sentence_atom=47
+  0.00s clause_atom=51 -> clause=49
+  0.00s phrase=53 -> clause_atom=51
+  0.00s phrase_atom=60 -> phrase=53
+  0.00s word=אֶתֵּ֤ן -> phrase_atom=60
+  0.00s phrase=54 -> clause_atom=51
+  0.00s phrase_atom=61 -> phrase=54
+  0.00s word=בַּ -> phrase_atom=61
+  0.00s word= -> phrase_atom=61
+  0.00s word=מִּדְבָּר֙ -> phrase_atom=61
+  0.00s phrase=55 -> clause_atom=51
+  0.00s phrase_atom=62 -> phrase=55
+  0.00s subphrase=67 -> phrase_atom=62
+  0.00s subphrase=68 -> subphrase=67
+  0.00s subphrase=69 -> subphrase=68
+  0.00s word=אֶ֣רֶז -> subphrase=69
+  0.00s subphrase=70 -> subphrase=68
+  0.00s word=שִׁטָּ֔ה -> subphrase=70
+  0.00s word=וַ -> subphrase=67
+  0.00s subphrase=71 -> subphrase=67
+  0.00s word=הֲדַ֖ס -> subphrase=71
+  0.00s word=וְ -> phrase_atom=62
+  0.00s subphrase=72 -> phrase_atom=62
+  0.00s subphrase=73 -> subphrase=72
+  0.00s word=עֵ֣ץ -> subphrase=73
+  0.00s subphrase=74 -> subphrase=72
+  0.00s word=שָׁ֑מֶן -> subphrase=74
+  0.00s sentence_atom=48 -> sentence=46
+  0.00s clause=50 -> sentence_atom=48
+  0.00s clause_atom=52 -> clause=50
+  0.00s phrase=56 -> clause_atom=52
+  0.00s phrase_atom=63 -> phrase=56
+  0.00s word=אָשִׂ֣ים -> phrase_atom=63
+  0.00s phrase=57 -> clause_atom=52
+  0.00s phrase_atom=64 -> phrase=57
+  0.00s word=בָּ -> phrase_atom=64
+  0.00s word= -> phrase_atom=64
+  0.00s word=עֲרָבָ֗ה -> phrase_atom=64
+  0.00s phrase=58 -> clause_atom=52
+  0.00s phrase_atom=65 -> phrase=58
+  0.00s subphrase=75 -> phrase_atom=65
+  0.00s subphrase=76 -> subphrase=75
+  0.00s word=בְּרֹ֛ושׁ -> subphrase=76
+  0.00s subphrase=77 -> subphrase=75
+  0.00s word=תִּדְהָ֥ר -> subphrase=77
+  0.00s word=וּ -> phrase_atom=65
+  0.00s subphrase=78 -> phrase_atom=65
+  0.00s word=תְאַשּׁ֖וּר -> subphrase=78
+  0.00s phrase=59 -> clause_atom=52
+  0.00s phrase_atom=66 -> phrase=59
+  0.00s word=יַחְדָּֽו -> phrase_atom=66
+  0.00s Travel from node sets ...
+  0.00s Results directory:
+/Users/dirk/SURFdrive/current/demos/github/laf-fabric/example-output/etcbc4/parents
+
+__log__parents.txt                     3279 Mon Jan  4 09:08:16 2016
+parents_of.csv                            0 Mon Jan  4 09:08:16 2016
+
+CLOSED AT:2016-01-04T08-08-16

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graph xmlns="http://www.xces.org/ns/GrAF/1.0/" xmlns:graf="http://www.xces.org/ns/GrAF/1.0/">
+    <graphHeader>
+        <labelsDecl>
+            <labelUsage        label="ft" occurs="178448"      />
+        </labelsDecl>
+        <dependencies><!--
+            <dependsOn f.id="f_lingo"/>-->
+        </dependencies>
+        <annotationSpaces>
+            <annotationSpace   as.id="etcbc4" default="yes"/>
+        </annotationSpaces>
+    </graphHeader>
+<a xml:id="alf1" label="ft" ref="n28737"><fs>
+	<f name="rela" value="none"/>
+	<f name="typ" value="xQtl"/>
+	<f name="txt" value="Unknown"/>
+</fs></a>
+<edge xml:id="el1" from="n28737" to="n88917"/>
+<a xml:id="ale1" label="ft" ref="el1"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf88388" label="ft" ref="n34680"><fs>
+	<f name="number" value="1"/>
+	<f name="code" value="0"/>
+	<f name="typ" value="xQtl"/>
+</fs></a>
+<edge xml:id="el101734" from="n34680" to="n28737"/>
+<a xml:id="ale101734" label="ft" ref="el101734"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf43523" label="ft" ref="n717061"><fs>
+	<f name="rela" value="none"/>
+	<f name="typ" value="NullYqt"/>
+	<f name="txt" value="Quotation"/>
+</fs></a>
+<edge xml:id="el53244" from="n717061" to="n768033"/>
+<a xml:id="ale53244" label="ft" ref="el53244"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf43524" label="ft" ref="n717062"><fs>
+	<f name="rela" value="none"/>
+	<f name="typ" value="NullYqt"/>
+	<f name="txt" value="Quotation"/>
+</fs></a>
+<edge xml:id="el53245" from="n717062" to="n768034"/>
+<a xml:id="ale53245" label="ft" ref="el53245"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf133162" label="ft" ref="n722765"><fs>
+	<f name="number" value="3322"/>
+	<f name="code" value="200"/>
+	<f name="typ" value="NullYqt"/>
+</fs></a>
+<!--<edge xml:id="el190839" from="n722765" to="n722763"/>
+<a xml:id="ale190839" label="mother" ref="el190839"/>-->
+<edge xml:id="el190840" from="n722765" to="n717061"/>
+<a xml:id="ale190840" label="ft" ref="el190840"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf133163" label="ft" ref="n722766"><fs>
+	<f name="number" value="3323"/>
+	<f name="code" value="200"/>
+	<f name="typ" value="NullYqt"/>
+</fs></a>
+<edge xml:id="el190841" from="n722766" to="n722765"/>
+<a xml:id="ale190841" label="ft" ref="el190841"><fs>
+    <f name="mother" value=""/>
+</fs></a>
+<edge xml:id="el190842" from="n722766" to="n717062"/>
+<a xml:id="ale190842" label="ft" ref="el190842"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+</graph>

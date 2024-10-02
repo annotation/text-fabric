@@ -6,8 +6,9 @@ These settings will be read, checked, and transformed into configuration data
 that is read by the app, see `tf.advanced.settings.showContext`
 
 See for examples:
-*   [`ETCBC/bhsa`](https://github.com/etcbc/bhsa/blob/master/app/config.yaml).
-*   [`Nino-cunei/uruk`](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml).
+
+*   [ETCBC/bhsa](https://github.com/etcbc/bhsa/blob/master/app/config.yaml).
+*   [Nino-cunei/uruk](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml).
 
 # Config specs
 
@@ -713,7 +714,7 @@ All nodes that satisfy at least one of these conditions will be left out.
 
 !!! hint
     Use this if you want to exclude particular nodes of some type, e.g. in
-    [`ETCBC/dss`](https://github.com/etcbc/dss/blob/master/app/config.yaml).
+    [ETCBC/dss](https://github.com/etcbc/dss/blob/master/app/config.yaml).
     where we want to prevent line terminator signs.
 
 The value is a dictionary of feature name - value pairs.
@@ -779,7 +780,7 @@ getGraphics(isPretty, node, nodeType, isOuter)
 
 results in HTML code for sourcing the graphics.
 
-See [`Nino-cunei/uruk`](https://github.com/Nino-cunei/uruk/blob/master/app/app.py).
+See [Nino-cunei/uruk](https://github.com/Nino-cunei/uruk/blob/master/app/app.py).
 
 Default
 :   boolean `null`
@@ -886,7 +887,7 @@ Default
 
 !!! hint
     For some types in
-    [`Nino-cunei/uruk`](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml)
+    [Nino-cunei/uruk](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml)
     it is needed to deviate from the default.
 
 ---
@@ -956,7 +957,7 @@ The default is:
 `true` for the lowest section type, if there are section types in `otext.tf`.
 
 But more types can be declared as verse-like, e.g. `halfverse` in the
-[`bhsa`](https://github.com/etcbc/bhsa/blob/master/app/config.yaml).
+[ETCBC/bhsa](https://github.com/etcbc/bhsa/blob/master/app/config.yaml).
 
 ---
 
@@ -973,7 +974,7 @@ Default:
 
 !!! hint
     For some types in
-    [`Nino-cunei/uruk`](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml)
+    [Nino-cunei/uruk](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml)
     it is needed to deviate from the default.
 
 ---

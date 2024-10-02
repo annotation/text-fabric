@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <graph xmlns="http://www.xces.org/ns/GrAF/1.0/" xmlns:graf="http://www.xces.org/ns/GrAF/1.0/">
+    <graphHeader>
+        <labelsDecl/>
+        <dependencies/>
+        <annotationSpaces/>
+    </graphHeader>
+<a xml:id="a12" as="etcbc4" label="px" ref="n722765"><fs>
+	<f name="pargr" value="1"/>
+	<f name="number_in_ch" value="49"/>
+	<f name="instruction" value=".."/>
+</fs></a>
+<a xml:id="a13" as="etcbc4" label="px" ref="n722766"><fs>
+	<f name="pargr" value="1.1"/>
+	<f name="number_in_ch" value="156"/>
+	<f name="instruction" value=".$"/>
+</fs></a>
+<a xml:id="a14" as="etcbc4" label="px" ref="n34680"><fs>
+	<f name="pargr" value="2.1.2.1.1.4.2.2"/>
+	<f name="number_in_ch" value="100"/>
+	<f name="instruction" value=".N"/>
+</fs></a>
+<a xml:id="a15" as="dirk" label="db" ref="n34680"><fs>
+	<f name="otype" value="cl_at"/>
+</fs></a>
+<a xml:id="a16" as="dirk" label="dbs" ref="n34680"><fs>
+	<f name="otype" value="cl_ats"/>
+</fs></a>
+<a xml:id="a17" as="dirk" label="part" ref="es24143"><fs>
+	<f name="sectioning" value="from verse to its first half verse"/>
+</fs></a>
+<a xml:id="a18" as="dirk" label="part" ref="es24144"><fs>
+	<f name="sectioning" value="from verse to its second half verse"/>
+</fs></a>
+</graph>

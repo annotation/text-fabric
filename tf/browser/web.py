@@ -33,7 +33,7 @@ anything else | submits the form with user data and return the processed request
 ## Templates
 
 There are two templates in
-[views](https://github.com/annotation/text-fabric/tree/master/tf/browser/views)
+[templates](https://github.com/annotation/text-fabric/tree/master/tf/browser/templates)
 :
 
 *   *index*: the normal template for returning responses
@@ -56,15 +56,15 @@ There are several sources of CSS formatting:
     for pretty displays;
 *   [index.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/static/index.css):
     the formatting of the *index* web page with which the user interacts;
-*   [export.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/views/export.css)
+*   [export.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/templates/export.css)
     the formatting of the export page;
-*   [base.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/views/base.css)
+*   [base.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/templates/base.css)
     shared formatting between the index and export pages.
 
 ## JavaScript
 
 We use a
-[modest amount of JavaScript](https://github.com/annotation/text-fabric/blob/master/tf/browser/static/tf.js)
+[modest amount of JavaScript](https://github.com/annotation/text-fabric/blob/master/tf/browser/static/tf3.0.js)
 on top of
 [JQuery](https://api.jquery.com).
 

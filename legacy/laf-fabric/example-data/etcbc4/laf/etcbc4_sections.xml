@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graph xmlns="http://www.xces.org/ns/GrAF/1.0/" xmlns:graf="http://www.xces.org/ns/GrAF/1.0/">
+    <graphHeader>
+        <labelsDecl>
+            <labelUsage        label="db" occurs="68864"       />
+            <labelUsage        label="sft" occurs="68864"       />
+        </labelsDecl>
+        <dependencies>
+        </dependencies>
+        <annotationSpaces>
+            <annotationSpace   as.id="etcbc4" default="yes"/>
+        </annotationSpaces>
+    </graphHeader>
+<region xml:id="s_1" anchors="0 185245"/>
+<node xml:id="n1"><link targets="s_1"/></node>
+<a xml:id="as1" label="db" ref="n1"><fs>
+    <f name="otype" value="book"/>
+    <f name="oid" value="1"/>
+    <f name="monads" value="1-28735"/>
+    <f name="minmonad" value="1"/>
+    <f name="maxmonad" value="28735"/>
+</fs></a>
+<a xml:id="asf1" label="sft" ref="n1"><fs>
+	<f name="book" value="Genesis"/>
+</fs></a>
+
+<region xml:id="s_93473" anchors="0 3901"/>
+<node xml:id="n93473"><link targets="s_93473"/></node>
+<a xml:id="as93473" label="db" ref="n93473"><fs>
+    <f name="otype" value="chapter"/>
+    <f name="oid" value="93473"/>
+    <f name="monads" value="1-673"/>
+    <f name="minmonad" value="1"/>
+    <f name="maxmonad" value="673"/>
+</fs></a>
+<a xml:id="asf40" label="sft" ref="n93473"><fs>
+	<f name="book" value="Genesis"/>
+	<f name="chapter" value="1"/>
+</fs></a>
+
+<region xml:id="s_93523" anchors="0 65"/>
+<node xml:id="n93523"><link targets="s_93523"/></node>
+<a xml:id="as93523" label="db" ref="n93523"><fs>
+    <f name="otype" value="verse"/>
+    <f name="oid" value="93523"/>
+    <f name="monads" value="1-11"/>
+    <f name="minmonad" value="1"/>
+    <f name="maxmonad" value="11"/>
+</fs></a>
+<a xml:id="asf45652" label="sft" ref="n93523"><fs>
+	<f name="book" value="Genesis"/>
+	<f name="chapter" value="1"/>
+	<f name="verse" value="1"/>
+	<f name="label" value=" GEN 01,01"/>
+</fs></a>
+
+<region xml:id="s_95056" anchors="0 31"/>
+<node xml:id="n95056"><link targets="s_95056"/></node>
+<a xml:id="as95056" label="db" ref="n95056"><fs>
+    <f name="otype" value="half_verse"/>
+    <f name="oid" value="95056"/>
+    <f name="monads" value="1-4"/>
+    <f name="minmonad" value="1"/>
+    <f name="maxmonad" value="4"/>
+</fs></a>
+<a xml:id="asf969" label="sft" ref="n95056"><fs>
+	<f name="half_verse" value="A"/>
+</fs></a>
+
+<region xml:id="s_95057" anchors="31 65"/>
+<node xml:id="n95057"><link targets="s_95057"/></node>
+<a xml:id="as95057" label="db" ref="n95057"><fs>
+    <f name="otype" value="half_verse"/>
+    <f name="oid" value="95057"/>
+    <f name="monads" value="5-11"/>
+    <f name="minmonad" value="5"/>
+    <f name="maxmonad" value="11"/>
+</fs></a>
+<a xml:id="asf970" label="sft" ref="n95057"><fs>
+	<f name="half_verse" value="B"/>
+</fs></a>
+
+<region xml:id="s_690878" anchors="1365328 1522388"/>
+<node xml:id="n690878"><link targets="s_690878"/></node>
+<a xml:id="as690878" label="db" ref="n690878"><fs>
+    <f name="otype" value="book"/>
+    <f name="oid" value="690878"/>
+    <f name="monads" value="213000-235931"/>
+    <f name="minmonad" value="213000"/>
+    <f name="maxmonad" value="235931"/>
+</fs></a>
+<a xml:id="asf12" label="sft" ref="n690878"><fs>
+	<f name="book" value="Isaiah"/>
+</fs></a>
+
+<region xml:id="s_769812" anchors="1459635 1463012"/>
+<node xml:id="n769812"><link targets="s_769812"/></node>
+<a xml:id="as769812" label="db" ref="n769812"><fs>
+    <f name="otype" value="chapter"/>
+    <f name="oid" value="769812"/>
+    <f name="monads" value="226996-227458"/>
+    <f name="minmonad" value="226996"/>
+    <f name="maxmonad" value="227458"/>
+</fs></a>
+<a xml:id="asf414" label="sft" ref="n769812"><fs>
+	<f name="book" value="Isaiah"/>
+	<f name="chapter" value="41"/>
+</fs></a>
+
+<region xml:id="s_770653" anchors="1461757 1461884"/>
+<node xml:id="n770653"><link targets="s_770653"/></node>
+<a xml:id="as770653" label="db" ref="n770653"><fs>
+    <f name="otype" value="verse"/>
+    <f name="oid" value="770653"/>
+    <f name="monads" value="227281-227300"/>
+    <f name="minmonad" value="227281"/>
+    <f name="maxmonad" value="227300"/>
+</fs></a>
+<a xml:id="asf56638" label="sft" ref="n770653"><fs>
+	<f name="book" value="Isaiah"/>
+	<f name="chapter" value="41"/>
+	<f name="verse" value="19"/>
+	<f name="label" value=" JES 41,19"/>
+</fs></a>
+
+<region xml:id="s_772740" anchors="1461757 1461819"/>
+<node xml:id="n772740"><link targets="s_772740"/></node>
+<a xml:id="as772740" label="db" ref="n772740"><fs>
+    <f name="otype" value="half_verse"/>
+    <f name="oid" value="772740"/>
+    <f name="monads" value="227281-227291"/>
+    <f name="minmonad" value="227281"/>
+    <f name="maxmonad" value="227291"/>
+</fs></a>
+<a xml:id="asf22347" label="sft" ref="n772740"><fs>
+	<f name="half_verse" value="A"/>
+</fs></a>
+
+<region xml:id="s_772741" anchors="1461819 1461884"/>
+<node xml:id="n772741"><link targets="s_772741"/></node>
+<a xml:id="as772741" label="db" ref="n772741"><fs>
+    <f name="otype" value="half_verse"/>
+    <f name="oid" value="772741"/>
+    <f name="monads" value="227292-227300"/>
+    <f name="minmonad" value="227292"/>
+    <f name="maxmonad" value="227300"/>
+</fs></a>
+<a xml:id="asf22348" label="sft" ref="n772741"><fs>
+	<f name="half_verse" value="B"/>
+</fs></a>
+
+<edge xml:id="es1" from="n1" to="n93473"/>
+<edge xml:id="es930" from="n93473" to="n93523"/>
+<edge xml:id="es24143" from="n93523" to="n95056"/>
+<edge xml:id="es24144" from="n93523" to="n95057"/>
+
+<edge xml:id="es375" from="n690878" to="n769812"/>
+<edge xml:id="es11916" from="n769812" to="n770653"/>
+<edge xml:id="es45521" from="n770653" to="n772740"/>
+<edge xml:id="es45522" from="n770653" to="n772741"/>
+</graph>

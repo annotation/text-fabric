@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<documentHeader xmlns="http://www.xces.org/ns/GrAF/1.0/" xmlns:graf="http://www.xces.org/ns/GrAF/1.0/" docId="http://persistent-identifier/?identifier=urn:nbn:nl:ui:13-xxx-999" creator="SHEBANQ" date.created="2013-12-05" version="1.0">
+  <fileDesc>
+    <titleStmt>
+      <title>Literary annotations</title>
+    </titleStmt>
+    <extent count="0" unit="byte"/>
+    <sourceDesc>
+      <title>Biblia Hebraica Stuttgartentis</title>
+      <author>tradition</author>
+      <publisher>Deutsche Bibelgesellschaft</publisher>
+      <pubDate value="1900-00-00">1900</pubDate>
+      <pubPlace>Germany</pubPlace>
+    </sourceDesc>
+  </fileDesc>
+  <profileDesc>
+    <primaryData f.id="f.primary" loc="etcbc4.txt"/>
+	<langUsage>
+		<language iso639="hbo"/> <!-- ancient hebrew http://www-01.sil.org/iso639-3/documentation.asp?id=hbo -->
+		<language iso639="arc"/> <!-- aramaic http://www-01.sil.org/iso639-3/documentation.asp?id=arc -->
+	</langUsage>
+    <annotations>
+		<annotation f.id="f_node" loc="para.xml"/>
+    </annotations>
+  </profileDesc>
+</documentHeader>

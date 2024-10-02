@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graph xmlns="http://www.xces.org/ns/GrAF/1.0/" xmlns:graf="http://www.xces.org/ns/GrAF/1.0/">
+    <graphHeader>
+        <labelsDecl>
+            <labelUsage        label="mother" occurs="12528"       />
+        </labelsDecl>
+        <dependencies><!--
+            <dependsOn f.id="f_lingo"/>-->
+        </dependencies>
+        <annotationSpaces>
+            <annotationSpace   as.id="etcbc4" default="yes"/>
+        </annotationSpaces>
+    </graphHeader>
+<a xml:id="alf435558" label="ft" ref="n40767"><fs>
+	<f name="det" value="indetermined"/>
+	<f name="rela" value="none"/>
+	<f name="typ" value="PP"/>
+</fs></a>
+<edge xml:id="el511117" from="n40767" to="n59556"/>
+<a xml:id="ale511117" label="ft" ref="el511117"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf435559" label="ft" ref="n40768"><fs>
+	<f name="det" value="NA"/>
+	<f name="rela" value="none"/>
+	<f name="typ" value="VP"/>
+</fs></a>
+<edge xml:id="el511118" from="n40768" to="n59557"/>
+<a xml:id="ale511118" label="ft" ref="el511118"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf435560" label="ft" ref="n40769"><fs>
+	<f name="det" value="indetermined"/>
+	<f name="rela" value="none"/>
+	<f name="typ" value="NP"/>
+</fs></a>
+<edge xml:id="el511119" from="n40769" to="n59558"/>
+<a xml:id="ale511119" label="ft" ref="el511119"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf435561" label="ft" ref="n40770"><fs>
+	<f name="det" value="determined"/>
+	<f name="rela" value="none"/>
+	<f name="typ" value="PP"/>
+</fs></a>
+<edge xml:id="el511120" from="n40770" to="n59559"/>
+<a xml:id="ale511120" label="ft" ref="el511120"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf574986" label="ft" ref="n734528"><fs>
+	<f name="det" value="NA"/>
+	<f name="rela" value="none"/>
+	<f name="typ" value="VP"/>
+</fs></a>
+<edge xml:id="el657926" from="n734528" to="n749941"/>
+<a xml:id="ale657926" label="ft" ref="el657926"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf574987" label="ft" ref="n734529"><fs>
+	<f name="det" value="determined"/>
+	<f name="rela" value="none"/>
+	<f name="typ" value="PP"/>
+</fs></a>
+<edge xml:id="el657927" from="n734529" to="n749942"/>
+<a xml:id="ale657927" label="ft" ref="el657927"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf574988" label="ft" ref="n734530"><fs>
+	<f name="det" value="indetermined"/>
+	<f name="rela" value="none"/>
+	<f name="typ" value="NP"/>
+</fs></a>
+<edge xml:id="el657928" from="n734530" to="n749943"/>
+<a xml:id="ale657928" label="ft" ref="el657928"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf574989" label="ft" ref="n734531"><fs>
+	<f name="det" value="NA"/>
+	<f name="rela" value="none"/>
+	<f name="typ" value="VP"/>
+</fs></a>
+<edge xml:id="el657929" from="n734531" to="n749944"/>
+<a xml:id="ale657929" label="ft" ref="el657929"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf574990" label="ft" ref="n734532"><fs>
+	<f name="det" value="determined"/>
+	<f name="rela" value="none"/>
+	<f name="typ" value="PP"/>
+</fs></a>
+<edge xml:id="el657930" from="n734532" to="n749945"/>
+<a xml:id="ale657930" label="ft" ref="el657930"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf574991" label="ft" ref="n734533"><fs>
+	<f name="det" value="indetermined"/>
+	<f name="rela" value="none"/>
+	<f name="typ" value="NP"/>
+</fs></a>
+<edge xml:id="el657931" from="n734533" to="n749946"/>
+<a xml:id="ale657931" label="ft" ref="el657931"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf574992" label="ft" ref="n734534"><fs>
+	<f name="det" value="NA"/>
+	<f name="rela" value="none"/>
+	<f name="typ" value="AdvP"/>
+</fs></a>
+<edge xml:id="el657932" from="n734534" to="n749947"/>
+<a xml:id="ale657932" label="ft" ref="el657932"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+</graph>

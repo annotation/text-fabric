@@ -1,0 +1,100 @@
+OPENED AT:2016-01-04T08-08-16
+  0.00s LOGFILE=/Users/dirk/SURFdrive/current/demos/github/laf-fabric/example-output/etcbc4/xmlids/__log__xmlids.txt
+  0.01s INFO: DATA LOADED FROM SOURCE etcbc4 AND ANNOX -- FOR TASK xmlids AT 2016-01-04T08-08-16
+  0.00s Get the xmlids ...
+  0.00s nid=79 n=79 book(oid=1) xid=n1
+  0.00s nid=80 n=80 chapter(oid=93473) xid=n93473
+  0.00s nid=81 n=81 verse(oid=93523) xid=n93523
+  0.00s nid=31 n=31 sentence(oid=84383) xid=n84383
+  0.00s nid=32 n=32 sentence_atom(oid=88917) xid=n88917
+  0.00s nid=33 n=33 clause(oid=28737) xid=n28737
+  0.00s nid=34 n=34 clause_atom(oid=34680) xid=n34680
+  0.00s nid=82 n=82 half_verse(oid=95056) xid=n95056
+  0.00s nid=35 n=35 phrase(oid=59556) xid=n59556
+  0.00s nid=39 n=39 phrase_atom(oid=40767) xid=n40767
+  0.00s nid=0 n=0 word(oid=2) xid=n2
+  0.00s nid=1 n=1 word(oid=3) xid=n3
+  0.00s nid=36 n=36 phrase(oid=59557) xid=n59557
+  0.00s nid=40 n=40 phrase_atom(oid=40768) xid=n40768
+  0.00s nid=2 n=2 word(oid=4) xid=n4
+  0.00s nid=37 n=37 phrase(oid=59558) xid=n59558
+  0.00s nid=41 n=41 phrase_atom(oid=40769) xid=n40769
+  0.00s nid=3 n=3 word(oid=5) xid=n5
+  0.00s nid=83 n=83 half_verse(oid=95057) xid=n95057
+  0.00s nid=38 n=38 phrase(oid=59559) xid=n59559
+  0.00s nid=42 n=42 phrase_atom(oid=40770) xid=n40770
+  0.00s nid=43 n=43 subphrase(oid=77637) xid=n77637
+  0.00s nid=4 n=4 word(oid=6) xid=n6
+  0.00s nid=5 n=5 word(oid=7) xid=n7
+  0.00s nid=6 n=6 word(oid=8) xid=n8
+  0.00s nid=7 n=7 word(oid=9) xid=n9
+  0.00s nid=44 n=44 subphrase(oid=77638) xid=n77638
+  0.00s nid=8 n=8 word(oid=10) xid=n10
+  0.00s nid=9 n=9 word(oid=11) xid=n11
+  0.00s nid=10 n=10 word(oid=12) xid=n12
+  0.00s nid=84 n=84 book(oid=690878) xid=n690878
+  0.00s nid=85 n=85 chapter(oid=769812) xid=n769812
+  0.00s nid=86 n=86 verse(oid=770653) xid=n770653
+  0.00s nid=87 n=87 half_verse(oid=772740) xid=n772740
+  0.00s nid=45 n=45 sentence(oid=763819) xid=n763819
+  0.00s nid=47 n=47 sentence_atom(oid=768033) xid=n768033
+  0.00s nid=49 n=49 clause(oid=717061) xid=n717061
+  0.00s nid=51 n=51 clause_atom(oid=722765) xid=n722765
+  0.00s nid=53 n=53 phrase(oid=749941) xid=n749941
+  0.00s nid=60 n=60 phrase_atom(oid=734528) xid=n734528
+  0.00s nid=11 n=11 word(oid=705160) xid=n705160
+  0.00s nid=54 n=54 phrase(oid=749942) xid=n749942
+  0.00s nid=61 n=61 phrase_atom(oid=734529) xid=n734529
+  0.00s nid=12 n=12 word(oid=705161) xid=n705161
+  0.00s nid=13 n=13 word(oid=705162) xid=n705162
+  0.00s nid=14 n=14 word(oid=705163) xid=n705163
+  0.00s nid=55 n=55 phrase(oid=749943) xid=n749943
+  0.00s nid=62 n=62 phrase_atom(oid=734530) xid=n734530
+  0.00s nid=67 n=67 subphrase(oid=759929) xid=n759929
+  0.00s nid=68 n=68 subphrase(oid=759927) xid=n759927
+  0.00s nid=69 n=69 subphrase(oid=759925) xid=n759925
+  0.00s nid=15 n=15 word(oid=705164) xid=n705164
+  0.00s nid=70 n=70 subphrase(oid=759926) xid=n759926
+  0.00s nid=16 n=16 word(oid=705165) xid=n705165
+  0.00s nid=17 n=17 word(oid=705166) xid=n705166
+  0.00s nid=71 n=71 subphrase(oid=759928) xid=n759928
+  0.00s nid=18 n=18 word(oid=705167) xid=n705167
+  0.00s nid=19 n=19 word(oid=705168) xid=n705168
+  0.00s nid=72 n=72 subphrase(oid=759932) xid=n759932
+  0.00s nid=73 n=73 subphrase(oid=759930) xid=n759930
+  0.00s nid=20 n=20 word(oid=705169) xid=n705169
+  0.00s nid=74 n=74 subphrase(oid=759931) xid=n759931
+  0.00s nid=21 n=21 word(oid=705170) xid=n705170
+  0.00s nid=88 n=88 half_verse(oid=772741) xid=n772741
+  0.00s nid=46 n=46 sentence(oid=763820) xid=n763820
+  0.00s nid=48 n=48 sentence_atom(oid=768034) xid=n768034
+  0.00s nid=50 n=50 clause(oid=717062) xid=n717062
+  0.00s nid=52 n=52 clause_atom(oid=722766) xid=n722766
+  0.00s nid=56 n=56 phrase(oid=749944) xid=n749944
+  0.00s nid=63 n=63 phrase_atom(oid=734531) xid=n734531
+  0.00s nid=22 n=22 word(oid=705171) xid=n705171
+  0.00s nid=57 n=57 phrase(oid=749945) xid=n749945
+  0.00s nid=64 n=64 phrase_atom(oid=734532) xid=n734532
+  0.00s nid=23 n=23 word(oid=705172) xid=n705172
+  0.00s nid=24 n=24 word(oid=705173) xid=n705173
+  0.00s nid=25 n=25 word(oid=705174) xid=n705174
+  0.00s nid=58 n=58 phrase(oid=749946) xid=n749946
+  0.00s nid=65 n=65 phrase_atom(oid=734533) xid=n734533
+  0.00s nid=75 n=75 subphrase(oid=759935) xid=n759935
+  0.00s nid=76 n=76 subphrase(oid=759933) xid=n759933
+  0.00s nid=26 n=26 word(oid=705175) xid=n705175
+  0.00s nid=77 n=77 subphrase(oid=759934) xid=n759934
+  0.00s nid=27 n=27 word(oid=705176) xid=n705176
+  0.00s nid=28 n=28 word(oid=705177) xid=n705177
+  0.00s nid=78 n=78 subphrase(oid=759936) xid=n759936
+  0.00s nid=29 n=29 word(oid=705178) xid=n705178
+  0.00s nid=59 n=59 phrase(oid=749947) xid=n749947
+  0.00s nid=66 n=66 phrase_atom(oid=734534) xid=n734534
+  0.00s nid=30 n=30 word(oid=705179) xid=n705179
+  0.00s Results directory:
+/Users/dirk/SURFdrive/current/demos/github/laf-fabric/example-output/etcbc4/xmlids
+
+__log__xmlids.txt                      4729 Mon Jan  4 09:08:16 2016
+xmlids-nodes.txt                          0 Mon Jan  4 09:08:16 2016
+
+CLOSED AT:2016-01-04T08-08-16

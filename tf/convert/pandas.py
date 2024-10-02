@@ -29,7 +29,7 @@ programs, such as TF, to process the same data.
 # Examples
 
 *   [BHSA](https://nbviewer.org/github/ETCBC/bhsa/blob/master/tutorial/export.ipynb)
-*   [Moby Dick](https://nbviewer.org/github/CLARIAH/wp6-mobydick/blob/main/tutorial/export.ipynb)
+*   [Moby Dick](https://nbviewer.org/github/annotation/mobydick/blob/main/tutorial/exportPandas.ipynb)
 *   [Ferdinand Huyck](https://nbviewer.org/github/CLARIAH/wp6-ferdinandhuyck/blob/main/tutorial/export.ipynb)
 """
 

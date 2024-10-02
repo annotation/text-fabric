@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graph xmlns="http://www.xces.org/ns/GrAF/1.0/" xmlns:graf="http://www.xces.org/ns/GrAF/1.0/">
+    <graphHeader>
+        <labelsDecl>
+            <labelUsage        label="ft" occurs="426499"      />
+        </labelsDecl>
+        <dependencies><!--
+            <dependsOn f.id="f_monad"/>-->
+        </dependencies>
+        <annotationSpaces>
+            <annotationSpace   as.id="etcbc4" default="yes"/>
+        </annotationSpaces>
+    </graphHeader>
+<a xml:id="amf1" label="ft" ref="n2"><fs>
+	<f name="trailer_utf8" value=""/>
+	<f name="g_word_utf8" value="בְּ"/>
+</fs></a>
+
+<a xml:id="amf13" label="ft" ref="n3"><fs>
+	<f name="trailer_utf8" value=" "/>
+	<f name="g_word_utf8" value="רֵאשִׁ֖ית"/>
+</fs></a>
+
+<a xml:id="amf25" label="ft" ref="n4"><fs>
+	<f name="trailer_utf8" value=" "/>
+	<f name="g_word_utf8" value="בָּרָ֣א"/>
+</fs></a>
+
+<a xml:id="amf37" label="ft" ref="n5"><fs>
+	<f name="trailer_utf8" value=" "/>
+	<f name="g_word_utf8" value="אֱלֹהִ֑ים"/>
+</fs></a>
+
+<a xml:id="amf49" label="ft" ref="n6"><fs>
+	<f name="trailer_utf8" value=" "/>
+	<f name="g_word_utf8" value="אֵ֥ת"/>
+</fs></a>
+
+<a xml:id="amf61" label="ft" ref="n7"><fs>
+	<f name="trailer_utf8" value=""/>
+	<f name="g_word_utf8" value="הַ"/>
+</fs></a>
+
+<a xml:id="amf73" label="ft" ref="n8"><fs>
+	<f name="trailer_utf8" value=" "/>
+	<f name="g_word_utf8" value="שָּׁמַ֖יִם"/>
+</fs></a>
+
+<a xml:id="amf85" label="ft" ref="n9"><fs>
+	<f name="trailer_utf8" value=""/>
+	<f name="g_word_utf8" value="וְ"/>
+</fs></a>
+
+<a xml:id="amf97" label="ft" ref="n10"><fs>
+	<f name="trailer_utf8" value=" "/>
+	<f name="g_word_utf8" value="אֵ֥ת"/>
+</fs></a>
+
+<a xml:id="amf109" label="ft" ref="n11"><fs>
+	<f name="trailer_utf8" value=""/>
+	<f name="g_word_utf8" value="הָ"/>
+</fs></a>
+
+<a xml:id="amf121" label="ft" ref="n12"><fs>
+	<f name="trailer_utf8" value="׃"/>
+	<f name="g_word_utf8" value="אָֽרֶץ"/>
+</fs></a>
+
+<a xml:id="amf2715505" label="ft" ref="n705160"><fs>
+	<f name="trailer_utf8" value=" "/>
+	<f name="g_word_utf8" value="אֶתֵּ֤ן"/>
+</fs></a>
+
+<a xml:id="amf2715517" label="ft" ref="n705161"><fs>
+	<f name="trailer_utf8" value=""/>
+	<f name="g_word_utf8" value="בַּ"/>
+</fs></a>
+
+<a xml:id="amf2715529" label="ft" ref="n705162"><fs>
+	<f name="trailer_utf8" value=""/>
+	<f name="g_word_utf8" value=""/>
+</fs></a>
+
+<a xml:id="amf2715541" label="ft" ref="n705163"><fs>
+	<f name="trailer_utf8" value=" "/>
+	<f name="g_word_utf8" value="מִּדְבָּר֙"/>
+</fs></a>
+
+<a xml:id="amf2715553" label="ft" ref="n705164"><fs>
+	<f name="trailer_utf8" value=" "/>
+	<f name="g_word_utf8" value="אֶ֣רֶז"/>
+</fs></a>
+
+<a xml:id="amf2715565" label="ft" ref="n705165"><fs>
+	<f name="trailer_utf8" value=" "/>
+	<f name="g_word_utf8" value="שִׁטָּ֔ה"/>
+</fs></a>
+
+<a xml:id="amf2715577" label="ft" ref="n705166"><fs>
+	<f name="trailer_utf8" value=""/>
+	<f name="g_word_utf8" value="וַ"/>
+</fs></a>
+
+<a xml:id="amf2715589" label="ft" ref="n705167"><fs>
+	<f name="trailer_utf8" value=" "/>
+	<f name="g_word_utf8" value="הֲדַ֖ס"/>
+</fs></a>
+
+<a xml:id="amf2715601" label="ft" ref="n705168"><fs>
+	<f name="trailer_utf8" value=""/>
+	<f name="g_word_utf8" value="וְ"/>
+</fs></a>
+
+<a xml:id="amf2715613" label="ft" ref="n705169"><fs>
+	<f name="trailer_utf8" value=" "/>
+	<f name="g_word_utf8" value="עֵ֣ץ"/>
+</fs></a>
+
+<a xml:id="amf2715625" label="ft" ref="n705170"><fs>
+	<f name="trailer_utf8" value=" "/>
+	<f name="g_word_utf8" value="שָׁ֑מֶן"/>
+</fs></a>
+
+<a xml:id="amf2715637" label="ft" ref="n705171"><fs>
+	<f name="trailer_utf8" value=" "/>
+	<f name="g_word_utf8" value="אָשִׂ֣ים"/>
+</fs></a>
+
+<a xml:id="amf2715649" label="ft" ref="n705172"><fs>
+	<f name="trailer_utf8" value=""/>
+	<f name="g_word_utf8" value="בָּ"/>
+</fs></a>
+
+<a xml:id="amf2715661" label="ft" ref="n705173"><fs>
+	<f name="trailer_utf8" value=""/>
+	<f name="g_word_utf8" value=""/>
+</fs></a>
+
+<a xml:id="amf2715673" label="ft" ref="n705174"><fs>
+	<f name="trailer_utf8" value=" "/>
+	<f name="g_word_utf8" value="עֲרָבָ֗ה"/>
+</fs></a>
+
+<a xml:id="amf2715685" label="ft" ref="n705175"><fs>
+	<f name="trailer_utf8" value=" "/>
+	<f name="g_word_utf8" value="בְּרֹ֛ושׁ"/>
+</fs></a>
+
+<a xml:id="amf2715697" label="ft" ref="n705176"><fs>
+	<f name="trailer_utf8" value=" "/>
+	<f name="g_word_utf8" value="תִּדְהָ֥ר"/>
+</fs></a>
+
+<a xml:id="amf2715709" label="ft" ref="n705177"><fs>
+	<f name="trailer_utf8" value=""/>
+	<f name="g_word_utf8" value="וּ"/>
+</fs></a>
+
+<a xml:id="amf2715721" label="ft" ref="n705178"><fs>
+	<f name="trailer_utf8" value=" "/>
+	<f name="g_word_utf8" value="תְאַשּׁ֖וּר"/>
+</fs></a>
+
+<a xml:id="amf2715733" label="ft" ref="n705179"><fs>
+	<f name="trailer_utf8" value="׃"/>
+	<f name="g_word_utf8" value="יַחְדָּֽו"/>
+</fs></a>
+
+</graph>

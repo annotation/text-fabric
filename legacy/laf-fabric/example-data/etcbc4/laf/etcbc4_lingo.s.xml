@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graph xmlns="http://www.xces.org/ns/GrAF/1.0/" xmlns:graf="http://www.xces.org/ns/GrAF/1.0/">
+    <graphHeader>
+        <labelsDecl>
+            <labelUsage        label="mother" occurs="0"           />
+        </labelsDecl>
+        <dependencies><!--
+            <dependsOn f.id="f_lingo"/>-->
+        </dependencies>
+        <annotationSpaces>
+            <annotationSpace   as.id="etcbc4" default="yes"/>
+        </annotationSpaces>
+    </graphHeader>
+<a xml:id="alf705196" label="ft" ref="n84383"><fs>
+	<f name="number" value="1"/>
+</fs></a>
+
+<a xml:id="alf776550" label="ft" ref="n88917"><fs>
+	<f name="number" value="0"/>
+</fs></a>
+<edge xml:id="el793283" from="n88917" to="n84383"/>
+<a xml:id="ale793283" label="ft" ref="el793283"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf736835" label="ft" ref="n763819"><fs>
+	<f name="number" value="74"/>
+</fs></a>
+
+<a xml:id="alf736836" label="ft" ref="n763820"><fs>
+	<f name="number" value="75"/>
+</fs></a>
+
+<a xml:id="alf808425" label="ft" ref="n768033"><fs>
+	<f name="number" value="0"/>
+</fs></a>
+<edge xml:id="el825158" from="n768033" to="n763819"/>
+<a xml:id="ale825158" label="ft" ref="el825158"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf808426" label="ft" ref="n768034"><fs>
+	<f name="number" value="0"/>
+</fs></a>
+<edge xml:id="el825159" from="n768034" to="n763820"/>
+<a xml:id="ale825159" label="ft" ref="el825159"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+
+</graph>

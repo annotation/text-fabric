@@ -35,7 +35,7 @@ features that give information about those nodes.
 ## Supported corpora
 
 This tool is being developed against the
-[`HuygensING/suriano` corpus](https://github.com/HuygensING/suriano).
+[Suriano/letters](https://gitlab.huc.knaw.nl/suriano/letters) corpus.
 Yet it is meant to be usable for all TF corpora. No corpus knowledge is baked in.
 If corpus specifics are needed, it will be fetched from the already present TF
 configuration of that corpus.
@@ -51,8 +51,8 @@ corpus.
 See also the following Jupyter Notebooks that show the work-in-progress:
 
 *   Suriano
-    *   [basic annotation API](https://nbviewer.org/github/HuygensING/suriano/blob/main/programs/nerTest.ipynb)
-    *   [using a spreadsheet with instructions](https://nbviewer.org/github/HuygensING/suriano/blob/main/programs/ner.ipynb)
+    *   [basic annotation API](https://nbviewer.org/urls/gitlab.huc.knaw.nl/suriano/letters/-/raw/main/programs/ner.ipynb/%3Fref_type%3Dheads%26inline%3Dfalse)
+    *   [using a spreadsheet with instructions](https://nbviewer.org/urls/gitlab.huc.knaw.nl/suriano/letters/-/raw/main/programs/convertPlain.ipynb/%3Fref_type%3Dheads%26inline%3Dfalse)
 
 *   BHSA
     *   [basic annotation API](https://nbviewer.org/github/ETCBC/bhsa/blob/master/programs/nerTest.ipynb)
@@ -68,8 +68,8 @@ you miss the fine points in your corpus.
 We need to gather experience in order to arrive at a truly usable tool.
 
 We are going to mark up the 
-[`HuygensING/suriano` corpus](https://github.com/HuygensING/suriano) in this way and hope
-to acquire a lot of experience in the process.
+[Suriano/letters](https://gitlab.huc.knaw.nl/suriano/letters) corpus in this
+way and hope to acquire a lot of experience in the process.
 
 ## Delivery of annotation data
 
@@ -206,7 +206,7 @@ They are corpus specific, so they must be specified in a YAML file in the corpus
 repository.
 
 As an example, we refer to the
-[Suriano corpus](https://github.com/HuygensING/suriano).
+[Suriano/letters](https://gitlab.huc.knaw.nl/suriano/letters) corpus:
 
 *   `config.yaml` in directory `ner`;
 *   optional Excel sheets in directory `ner/sheets` with instructions to

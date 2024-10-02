@@ -1,0 +1,106 @@
+########################################################################
+#                                                                      #
+#  Definition of the transliteration alphabet for Hebrew               #
+#                                                                      #
+########################################################################
+
+#ident "@(#)alphabet	2.1 01/10/23"
+
+letters:
+aleph	">"
+beth	"B"
+gimel	"G"
+daleth	"D"
+heh	"H"
+waw	"W"
+zayin	"Z"
+cheth	"X"
+theth	"V"
+yod	"J"
+kaph	"K"
+lamed	"L"
+mem	"M"
+nun	"N"
+samekh	"S"
+ayin	"<"
+peh	"P"
+tsade	"Y"
+qoph	"Q"
+resh	"R"
+sin	"F"
+shin	"C"
+taw	"T"
+
+
+diacritics:
+
+# Vowels
+chataph_patach	":A"
+chataph_qamats	":@"
+chataph_segol	":E"
+chiriq		"I"
+cholam		"O"
+patach		"A"
+qamats		"@"
+qubbuts		"U"
+segol		"E"
+shewa		":"
+tsere		";"
+
+# Dagesh is sometimes decisive
+dagesh		"."	# Also mappiq
+raphe		","
+
+
+accents:
+
+# Cantillation
+atnach			"92"
+azla			"63"
+darga			"94"
+dechi			"13"
+garshayim		"62"
+geresh			"61"
+illuy			"64"
+mehuppach		"70"
+merecha			"71"
+merecha_kepula		"72"
+meteg			"35"
+meteg_yamin		"95"
+mugrash			"11"
+munach			"74"
+ole_weyored		"60"
+paseq			"05"
+pashta			"03"
+pashta_med		"33"
+pazer			"83"
+pazer_gadol		"84"
+rebia			"81"
+segolta			"01"
+shalshelet		"65"
+silluq			"75"
+sinnor			"02"
+sinnorit		"82"
+sof_pasuq		"00"
+tebir			"91"
+telisha_gedola		"14"
+telisha_gedola_med	"44"	# Once: II Kings 17:24
+telisha_qetana		"04"
+telisha_qetana_med	"24"
+tifcha			"73"
+yerach			"93"
+yetib			"10"
+zaqef_gadol		"85"
+zaqef_qatan		"80"
+
+# Other word bound markers
+puncta_above		"52"
+puncta_below		"53"
+large_letter		"55"
+small_letter		"56"
+suspended_letter	"57"
+
+punctuation marks:
+ketib			"*"
+maqqef			"-"
+qere			"**"

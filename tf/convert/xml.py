@@ -140,7 +140,7 @@ tf-fromxml tf=1.8.3  # explicit version
 Exactly how you can call the methods of this module and add your own customised
 conversion code is demonstrated in the Greek New Testament:
 
-*   [`ETCBC/nestle1904`](https://nbviewer.org/github/ETCBC/nestle1904/blob/master/programs/tfFromLowfat.ipynb).
+*   [ETCBC/nestle1904](https://nbviewer.org/github/ETCBC/nestle1904/blob/master/programs/tfFromLowfat.ipynb).
 """
 
 import sys

@@ -1,0 +1,905 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.xces.org/ns/GrAF/1.0/" xmlns:graf="http://www.xces.org/ns/GrAF/1.0/" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+  <!--
+    Schema generated from ODD source 2013-03-25T11:52:35Z. 
+    Edition: 1.9.1. Last updated on March 5th 2011.
+    Edition Location: http://www.tei-c.org/Vault/P5/1.9.1/
+    
+  -->
+  <!--
+    
+    Copyright 2013 The American National Corpus
+    
+    Unmodified versions of this document may be freely redistributed
+                        and used for any purpose.
+  -->
+  <xs:group name="graf_graf.macro.pLike">
+    <xs:sequence>
+      <xs:group minOccurs="0" maxOccurs="unbounded" ref="graf:graf_graf.model.pLike"/>
+    </xs:sequence>
+  </xs:group>
+  <xs:simpleType name="graf_graf.data.numeric">
+    <xs:union memberTypes="xs:double xs:decimal">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:pattern value="(\d{1,3}(,\d{3})*)"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:group name="graf_graf.model.pLike">
+    <xs:sequence>
+      <xs:element ref="graf:p"/>
+    </xs:sequence>
+  </xs:group>
+  <xs:attributeGroup name="graf_graf.att.xmlid.required.attributes">
+    <xs:attributeGroup ref="graf:graf_graf.att.xmlid.required.attribute.xmlid"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="graf_graf.att.xmlid.required.attribute.xmlid">
+    <xs:attribute ref="xml:id" use="required"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="graf_graf.att.xmlid.optional.attributes">
+    <xs:attributeGroup ref="graf:graf_graf.att.xmlid.optional.attribute.xmlid"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="graf_graf.att.xmlid.optional.attribute.xmlid">
+    <xs:attribute ref="xml:id"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="graf_graf.att.type.optional.attributes">
+    <xs:attributeGroup ref="graf:graf_graf.att.type.optional.attribute.type"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="graf_graf.att.type.optional.attribute.type">
+    <xs:attribute name="type" type="xs:string">
+      <xs:annotation>
+        <xs:documentation/>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="graf_graf.att.type.required.attributes">
+    <xs:attributeGroup ref="graf:graf_graf.att.type.required.attribute.type"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="graf_graf.att.type.required.attribute.type">
+    <xs:attribute name="type" use="required" type="xs:string">
+      <xs:annotation>
+        <xs:documentation/>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="graf_graf.att.version.attributes">
+    <xs:attributeGroup ref="graf:graf_graf.att.version.attribute.version"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="graf_graf.att.version.attribute.version">
+    <xs:attribute name="version" type="xs:string">
+      <xs:annotation>
+        <xs:documentation/>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="graf_graf.att.xmllang.attributes">
+    <xs:attributeGroup ref="graf:graf_graf.att.xmllang.attribute.xmllang"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="graf_graf.att.xmllang.attribute.xmllang">
+    <xs:attribute ref="xml:lang"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="graf_graf.att.xmlbase.attributes">
+    <xs:attributeGroup ref="graf:graf_graf.att.xmlbase.attribute.xmlbase"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="graf_graf.att.xmlbase.attribute.xmlbase">
+    <xs:attribute ref="xml:base"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="graf_graf.att.xlink.attributes">
+    <xs:attributeGroup ref="graf:graf_graf.att.xlink.attribute.xlinkhref"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="graf_graf.att.xlink.attribute.xlinkhref">
+    <xs:attribute ref="xlink:href"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="graf_graf.att.pid.required.attributes">
+    <xs:attributeGroup ref="graf:graf_graf.att.pid.required.attribute.pid"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="graf_graf.att.pid.required.attribute.pid">
+    <xs:attribute name="pid" use="required" type="xs:anyURI">
+      <xs:annotation>
+        <xs:documentation/>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:group name="graf_graf.model.header">
+    <xs:choice>
+      <xs:element ref="graf:fileDesc"/>
+      <xs:element ref="graf:revisionDesc"/>
+      <xs:element ref="graf:encodingDesc"/>
+      <xs:element ref="graf:resourceDesc"/>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="graf_graf.model.fileDesc">
+    <xs:choice>
+      <xs:element ref="graf:titleStmt"/>
+      <xs:element ref="graf:extent"/>
+      <xs:element ref="graf:editionStmt"/>
+      <xs:element ref="graf:publicationStmt"/>
+    </xs:choice>
+  </xs:group>
+  <xs:attributeGroup name="graf_graf.att.header.attributes">
+    <xs:attributeGroup ref="graf:graf_graf.att.version.attributes"/>
+    <xs:attributeGroup ref="graf:graf_graf.att.type.optional.attributes"/>
+    <xs:attributeGroup ref="graf:graf_graf.att.header.attribute.docId"/>
+    <xs:attributeGroup ref="graf:graf_graf.att.header.attribute.date.created"/>
+    <xs:attributeGroup ref="graf:graf_graf.att.header.attribute.creator"/>
+    <xs:attributeGroup ref="graf:graf_graf.att.header.attribute.date.updated"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="graf_graf.att.header.attribute.docId">
+    <xs:attribute name="docId" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>A unique identifier for the GrAF document.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="graf_graf.att.header.attribute.date.created">
+    <xs:attribute name="date.created" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>The date the GrAF document was created formatted according to ISO 8601:2004</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="graf_graf.att.header.attribute.creator">
+    <xs:attribute name="creator" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>The name of the person responsible for the creation of the GrAF document.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="graf_graf.att.header.attribute.date.updated">
+    <xs:attribute name="date.updated" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>The date, if any, the GrAF document was last updated formatted according to ISO 8601:2004</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:group name="graf_graf.model.publicationStmt">
+    <xs:choice>
+      <xs:element ref="graf:distributor"/>
+      <xs:element ref="graf:authority"/>
+      <xs:element ref="graf:idno"/>
+      <xs:element ref="graf:availability"/>
+      <xs:element ref="graf:pubAddress"/>
+      <xs:element ref="graf:pubDate"/>
+      <xs:element ref="graf:fax"/>
+      <xs:element ref="graf:telephone"/>
+      <xs:element ref="graf:eAddress"/>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="graf_graf.model.encodingDesc">
+    <xs:choice>
+      <xs:element ref="graf:classDecl"/>
+      <xs:element ref="graf:projectDesc"/>
+      <xs:element ref="graf:samplingDecl"/>
+      <xs:element ref="graf:editorialDecl"/>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="graf_graf.model.editorialDecl">
+    <xs:choice>
+      <xs:element ref="graf:transduction"/>
+      <xs:element ref="graf:correction"/>
+      <xs:element ref="graf:segmentation"/>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="graf_graf.model.classDecl">
+    <xs:sequence>
+      <xs:element ref="graf:taxonomy"/>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="graf_graf.model.resourceDesc">
+    <xs:choice>
+      <xs:element ref="graf:groups"/>
+      <xs:element ref="graf:fileStruct"/>
+      <xs:element ref="graf:annotationDecls"/>
+      <xs:element ref="graf:annotationSpaces"/>
+      <xs:element ref="graf:media"/>
+      <xs:element ref="graf:anchorTypes"/>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="graf_graf.model.fileStruct">
+    <xs:choice>
+      <xs:element ref="graf:directories"/>
+      <xs:element ref="graf:fileTypes"/>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="graf_graf.model.annotationDecl">
+    <xs:choice>
+      <xs:element ref="graf:a.desc"/>
+      <xs:element ref="graf:a.schema"/>
+      <xs:element ref="graf:a.resp"/>
+      <xs:element ref="graf:a.method"/>
+      <xs:element ref="graf:a.doc"/>
+    </xs:choice>
+  </xs:group>
+  <xs:element name="p" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>a paragraph. Contains text only.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="group">
+    <xs:annotation>
+      <xs:documentation>a logical group of annotations (e.g., layer, tier, etc.)</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="graf:g.desc"/>
+        <xs:element maxOccurs="unbounded" ref="graf:g.member"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="graf:graf_graf.att.xmlid.required.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="g.desc">
+    <xs:annotation>
+      <xs:documentation>A prose description of the group.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:group ref="graf:graf_graf.macro.pLike"/>
+      <xs:attributeGroup ref="graf:graf_graf.att.xmllang.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="g.member">
+    <xs:annotation>
+      <xs:documentation>defines a member of the group.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="graf:graf_graf.att.xmlbase.attributes"/>
+      <xs:attribute name="value" use="required" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>the value to be evaluated to determine group membership.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="type" use="required">
+        <xs:annotation>
+          <xs:documentation>used to indicate how the @value attribute should be interpreted.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="fileDesc">
+    <xs:annotation>
+      <xs:documentation>Description of a resource.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:group minOccurs="0" maxOccurs="unbounded" ref="graf:graf_graf.model.fileDesc"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="titleStmt">
+    <xs:annotation>
+      <xs:documentation>Title and related information.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="graf:title"/>
+        <xs:choice>
+          <xs:element ref="graf:author"/>
+          <xs:element ref="graf:funder"/>
+          <xs:element ref="graf:respStmt"/>
+        </xs:choice>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="title" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Title of the primary data document.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="author">
+    <xs:annotation>
+      <xs:documentation>The name of a single author. Use multiple &lt;author&gt;
+                            elements for multiple authors.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attribute name="age" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>The age of the author, if known.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="sex" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>The gender of the author, if known.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="funder">
+    <xs:annotation>
+      <xs:documentation>Entity or agency providing fundion for the creation of the resource.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attributeGroup ref="graf:graf_graf.att.type.optional.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="respStmt">
+    <xs:annotation>
+      <xs:documentation>Responsibility declarations.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="graf:resp"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="graf:graf_graf.att.xlink.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="resp">
+    <xs:annotation>
+      <xs:documentation>Entity or individual that created the resource. The @xlink:href
+                        attribute is used to provide a PID of the entity or individual that created the resource.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attributeGroup ref="graf:graf_graf.att.xlink.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="extent">
+    <xs:annotation>
+      <xs:documentation>Provides a measure of the size of the artifact being annotated.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="count" type="graf:graf_graf.data.numeric">
+        <xs:annotation>
+          <xs:documentation>The size of the resource.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="unit" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Unit in which the size of the resource is expressed (words, bytes, tokens, etc.)</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="revisionDesc">
+    <xs:annotation>
+      <xs:documentation>Documentation of revisions.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="graf:change"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="change">
+    <xs:annotation>
+      <xs:documentation>Information about a particular change to the document.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="graf:changeDate"/>
+        <xs:element ref="graf:respName"/>
+        <xs:element maxOccurs="unbounded" ref="graf:item"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="changeDate">
+    <xs:annotation>
+      <xs:documentation>The date this revision was made. The value of the 
+                            date can be placed in the @value attribute or the text
+                            content of the element. If both values are included @value
+                            attribute takes precedence. The date should be formatted
+                            accorting to ISO 8601:2004.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attribute name="value" type="xs:string">
+        <xs:annotation>
+          <xs:documentation/>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="respName" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Identification of the person responsible for the change.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="item" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Description of the change.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="resourceHeader">
+    <xs:annotation>
+      <xs:documentation>root element for the resource header.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:group maxOccurs="unbounded" ref="graf:graf_graf.model.header"/>
+      <xs:attributeGroup ref="graf:graf_graf.att.header.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="editionStmt">
+    <xs:annotation>
+      <xs:documentation>Practices followed in creating the resource.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:group ref="graf:graf_graf.macro.pLike"/>
+      <xs:attributeGroup ref="graf:graf_graf.att.version.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="classDecl">
+    <xs:annotation>
+      <xs:documentation>Declaration(s) of classifications applied to portions of the resource.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:group minOccurs="0" maxOccurs="unbounded" ref="graf:graf_graf.model.classDecl"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="taxonomy">
+    <xs:annotation>
+      <xs:documentation>A set of categories used to classify parts of hte resource, such as genre
+                        labels for text.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="graf:category"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="graf:graf_graf.att.xmlid.required.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="category">
+    <xs:annotation>
+      <xs:documentation>A category usec to classify components of the resource. Category elements
+                        may be nested to indicate sub-category relations.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="graf:catDesc"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="graf:category"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="graf:graf_graf.att.xmlid.required.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="catDesc">
+    <xs:annotation>
+      <xs:documentation>A prose description of the category.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:group minOccurs="0" maxOccurs="unbounded" ref="graf:graf_graf.macro.pLike"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="encodingDesc">
+    <xs:annotation>
+      <xs:documentation>Encoding practices used to create the resource.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:group minOccurs="0" maxOccurs="unbounded" ref="graf:graf_graf.model.encodingDesc"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="projectDesc">
+    <xs:annotation>
+      <xs:documentation>A prose description of the project that created the resource.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:group ref="graf:graf_graf.macro.pLike"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="samplingDecl">
+    <xs:annotation>
+      <xs:documentation>Information concerning the choice of data included in the resource.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:group ref="graf:graf_graf.macro.pLike"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="editorialDecl">
+    <xs:annotation>
+      <xs:documentation>Editorial practices applied in creating the resource.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:group maxOccurs="unbounded" ref="graf:graf_graf.model.editorialDecl"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="transduction">
+    <xs:annotation>
+      <xs:documentation>Transduction practices applied to transform the data from its
+                        source format (e.g., PDF, recorded speech) to the primary data format.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:group ref="graf:graf_graf.macro.pLike"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="correction">
+    <xs:annotation>
+      <xs:documentation>Correction practices applied to the data in its source form, such
+                        as spelling correction, normalization of special characters, etc.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:group ref="graf:graf_graf.macro.pLike"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="segmentation">
+    <xs:annotation>
+      <xs:documentation>Unit(s) of segmentation applied to the data for the purpose of annotation.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:group ref="graf:graf_graf.macro.pLike"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="publicationStmt">
+    <xs:annotation>
+      <xs:documentation>Information about obtaining the resource.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:group maxOccurs="unbounded" ref="graf:graf_graf.model.publicationStmt"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="distributor">
+    <xs:annotation>
+      <xs:documentation>Name of the resource distributor. The distributor and publisher may not be the same,
+                            e.g. New York Times articles distributed by the LDC."</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:group ref="graf:graf_graf.macro.pLike"/>
+      <xs:attributeGroup ref="graf:graf_graf.att.xmlid.optional.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="authority">
+    <xs:annotation>
+      <xs:documentation/>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:group ref="graf:graf_graf.macro.pLike"/>
+      <xs:attributeGroup ref="graf:graf_graf.att.xmlid.optional.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="idno">
+    <xs:annotation>
+      <xs:documentation>A number uniquely identifying the resource, e.g. ISBN, catalogue number, etc.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:group ref="graf:graf_graf.macro.pLike"/>
+      <xs:attributeGroup ref="graf:graf_graf.att.type.optional.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="availability">
+    <xs:annotation>
+      <xs:documentation/>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:group ref="graf:graf_graf.macro.pLike"/>
+      <xs:attributeGroup ref="graf:graf_graf.att.xlink.attributes"/>
+      <xs:attribute name="status">
+        <xs:annotation>
+          <xs:documentation/>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="license" type="xs:anyURI">
+        <xs:annotation>
+          <xs:documentation/>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="pubAddress" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>The publishers address</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="pubDate">
+    <xs:annotation>
+      <xs:documentation>Date of publication.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attribute name="value" type="xs:string">
+        <xs:annotation>
+          <xs:documentation/>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="fax" type="xs:string">
+    <xs:annotation>
+      <xs:documentation/>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="telephone" type="xs:string">
+    <xs:annotation>
+      <xs:documentation/>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="eAddress">
+    <xs:annotation>
+      <xs:documentation>An electronic address in any format.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attributeGroup ref="graf:graf_graf.att.type.optional.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="resourceDesc">
+    <xs:annotation>
+      <xs:documentation>Objects and descriptors used in the resource.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:group maxOccurs="unbounded" ref="graf:graf_graf.model.resourceDesc"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="directories">
+    <xs:annotation>
+      <xs:documentation>Directories (folders) appearing in this resource.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="graf:directory"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="directory">
+    <xs:annotation>
+      <xs:documentation>A directory (folder) in this resource. This element may contain one
+                        or more nested directory elements that describe sub-directories.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="graf:d.desc"/>
+        <xs:element maxOccurs="unbounded" ref="graf:directory"/>
+      </xs:choice>
+      <xs:attributeGroup ref="graf:graf_graf.att.xmlid.required.attributes"/>
+      <xs:attribute name="d.name" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>the directory (folder) name.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="f.ids">
+        <xs:annotation>
+          <xs:documentation>a space-delimited list of file type ids that may appear
+                                in this directory.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="root">
+        <xs:annotation>
+          <xs:documentation>indicates whether this directory is the root directory for the resource;
+                                if not specified, the default is no.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="d.desc">
+    <xs:annotation>
+      <xs:documentation>A prose description of the directory contents.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:group ref="graf:graf_graf.macro.pLike"/>
+      <xs:attributeGroup ref="graf:graf_graf.att.xmllang.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="groups">
+    <xs:annotation>
+      <xs:documentation>The groups element becomes a member of the
+                            resourceDesc in the resource header.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="graf:group"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="fileStruct">
+    <xs:annotation>
+      <xs:documentation>File types included in the resource.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:group maxOccurs="unbounded" ref="graf:graf_graf.model.fileStruct"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="fileTypes">
+    <xs:annotation>
+      <xs:documentation>Groups fileType elements in the fileStruct.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="graf:fileType"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="fileType">
+    <xs:annotation>
+      <xs:documentation>Description of a specific file type in terms of its contents.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="graf:requires"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="graf:graf_graf.att.xmlid.required.attributes"/>
+      <xs:attribute name="medium" use="required" type="xs:IDREF">
+        <xs:annotation>
+          <xs:documentation>medium type as defined in the resource header.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="required">
+        <xs:annotation>
+          <xs:documentation>Indicates that this file type must be present for the 
+                                    resource to be valid. Default value is yes.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="a.ids" type="xs:IDREFS">
+        <xs:annotation>
+          <xs:documentation/>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="f.suffix" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>suffix applied to filenames to identify the filetype. Note
+                                this is appended to the file itself, not applied as a file extension. File 
+                                extentions are define on the medium element.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="requires">
+    <xs:annotation>
+      <xs:documentation>Other file type required to process this file type</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="f.id" type="xs:IDREF">
+        <xs:annotation>
+          <xs:documentation/>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="annotationDecls">
+    <xs:annotation>
+      <xs:documentation>Groups annotation declarations.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="graf:annotationDecl"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="annotationDecl">
+    <xs:annotation>
+      <xs:documentation>Describes an annotation types, its provenance, documentation, etc.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:group minOccurs="0" maxOccurs="unbounded" ref="graf:graf_graf.model.annotationDecl"/>
+      <xs:attributeGroup ref="graf:graf_graf.att.xmlid.required.attributes"/>
+      <xs:attribute name="as.id" use="required">
+        <xs:annotation>
+          <xs:documentation>Annotation space to which the annotation belongs.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="a.desc">
+    <xs:annotation>
+      <xs:documentation>Prose description of the annotation
+                            space.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:group ref="graf:graf_graf.macro.pLike"/>
+      <xs:attributeGroup ref="graf:graf_graf.att.xmllang.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="a.schema">
+    <xs:annotation>
+      <xs:documentation>A formal annotation schema for this annotation space. Multiple
+                        a.schema elements may be provided if several external schemata exist.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:group ref="graf:graf_graf.macro.pLike"/>
+      <xs:attributeGroup ref="graf:graf_graf.att.type.optional.attributes"/>
+      <xs:attributeGroup ref="graf:graf_graf.att.xlink.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="a.resp">
+    <xs:annotation>
+      <xs:documentation>Entity that produced the annotations.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:group ref="graf:graf_graf.macro.pLike"/>
+      <xs:attributeGroup ref="graf:graf_graf.att.xlink.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="a.method">
+    <xs:annotation>
+      <xs:documentation>Method by which the annotations were produces.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:group ref="graf:graf_graf.macro.pLike"/>
+      <xs:attributeGroup ref="graf:graf_graf.att.type.required.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="a.doc">
+    <xs:annotation>
+      <xs:documentation>A pointer to more extensive documentation on the
+                            annotation space.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:group ref="graf:graf_graf.macro.pLike"/>
+      <xs:attributeGroup ref="graf:graf_graf.att.xlink.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="annotationSpaces">
+    <xs:annotation>
+      <xs:documentation>Defines the annotationSpaces used in this resource.
+                            An annotationSpace is a name/value pair consisting of an @xml:id and
+                            a persistent identifier.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="graf:annotationSpace"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="annotationSpace">
+    <xs:annotation>
+      <xs:documentation>The definition of a single annotationSpace.
+                            Annotation Spaces are used to resolve name conflicts if two, or more,
+                            annotations from different source share the same label. GrAF annotation
+                            spaces are similar to, but not identical to, XML Namespaces. The
+                            difference between GrAF annotation spaces and XML namespaces is that the
+                                prefix is defined as a formal part of the annotation space
+                            and can not be redefined as they can in XML namespaces.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="graf:graf_graf.att.xmlid.required.attributes"/>
+      <xs:attributeGroup ref="graf:graf_graf.att.pid.required.attributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="media">
+    <xs:annotation>
+      <xs:documentation>Declarations of media types used in this resource.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="graf:medium"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="medium">
+    <xs:annotation>
+      <xs:documentation>A medium used in the resource.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="graf:graf_graf.att.xmlid.required.attributes"/>
+      <xs:attribute name="type" use="required" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>The media type. Usually specified as the mime
+                                type if possible.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="encoding">
+        <xs:annotation>
+          <xs:documentation>The encoding system used, if applicable.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="extension" use="required">
+        <xs:annotation>
+          <xs:documentation>File extension used in the resource to identify files
+                                    containing data in this medium.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="anchorTypes">
+    <xs:annotation>
+      <xs:documentation>Describes the anchor types use to address locations
+                            in the media.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="graf:anchorType"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="anchorType">
+    <xs:annotation>
+      <xs:documentation>Defines a type of anchor used to ground annotations in primary
+                            data. The @xlink:href attribute links to a formal description of hte anchor type.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="graf:graf_graf.att.xmlid.required.attributes"/>
+      <xs:attributeGroup ref="graf:graf_graf.att.xlink.attributes"/>
+      <xs:attribute name="medium" use="required" type="xs:IDREF">
+        <xs:annotation>
+          <xs:documentation>medium to which this anchor type applies.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="default">
+        <xs:annotation>
+          <xs:documentation/>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

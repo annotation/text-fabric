@@ -1,7 +1,8 @@
 # Named Entity tool in TF Browser
 
 We explain the manual annotation process with a leading example:
-[`HuygensING/suriano`](https://github.com/HuygensING/suriano).
+[Suriano/letters](https://gitlab.huc.knaw.nl/suriano/letters).
+
 
 ## Prerequisites
 

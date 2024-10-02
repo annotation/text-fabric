@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graph xmlns="http://www.xces.org/ns/GrAF/1.0/" xmlns:graf="http://www.xces.org/ns/GrAF/1.0/">
+    <graphHeader>
+        <labelsDecl>
+            <labelUsage        label="mother" occurs="0"           />
+        </labelsDecl>
+        <dependencies><!--
+            <dependsOn f.id="f_lingo"/>-->
+        </dependencies>
+        <annotationSpaces>
+            <annotationSpace   as.id="etcbc4" default="yes"/>
+        </annotationSpaces>
+    </graphHeader>
+<a xml:id="alf178449" label="ft" ref="n59556"><fs>
+	<f name="det" value="indetermined"/>
+	<f name="function" value="Time"/>
+	<f name="typ" value="PP"/>
+</fs></a>
+<edge xml:id="el253771" from="n59556" to="n34680"/>
+<a xml:id="ale253771" label="ft" ref="el253771"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf178450" label="ft" ref="n59557"><fs>
+	<f name="det" value="NA"/>
+	<f name="function" value="Pred"/>
+	<f name="typ" value="VP"/>
+</fs></a>
+<edge xml:id="el253772" from="n59557" to="n34680"/>
+<a xml:id="ale253772" label="ft" ref="el253772"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf178451" label="ft" ref="n59558"><fs>
+	<f name="det" value="indetermined"/>
+	<f name="function" value="Subj"/>
+	<f name="typ" value="NP"/>
+</fs></a>
+<edge xml:id="el253773" from="n59558" to="n34680"/>
+<a xml:id="ale253773" label="ft" ref="el253773"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf178452" label="ft" ref="n59559"><fs>
+	<f name="det" value="determined"/>
+	<f name="function" value="Objc"/>
+	<f name="typ" value="PP"/>
+</fs></a>
+<edge xml:id="el253774" from="n59559" to="n34680"/>
+<a xml:id="ale253774" label="ft" ref="el253774"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf310495" label="ft" ref="n749941"><fs>
+	<f name="det" value="NA"/>
+	<f name="function" value="Pred"/>
+	<f name="typ" value="VP"/>
+</fs></a>
+<edge xml:id="el385981" from="n749941" to="n722765"/>
+<a xml:id="ale385981" label="ft" ref="el385981"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf310496" label="ft" ref="n749942"><fs>
+	<f name="det" value="determined"/>
+	<f name="function" value="Loca"/>
+	<f name="typ" value="PP"/>
+</fs></a>
+<edge xml:id="el385982" from="n749942" to="n722765"/>
+<a xml:id="ale385982" label="ft" ref="el385982"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf310497" label="ft" ref="n749943"><fs>
+	<f name="det" value="indetermined"/>
+	<f name="function" value="Objc"/>
+	<f name="typ" value="NP"/>
+</fs></a>
+<edge xml:id="el385983" from="n749943" to="n722765"/>
+<a xml:id="ale385983" label="ft" ref="el385983"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf310498" label="ft" ref="n749944"><fs>
+	<f name="det" value="NA"/>
+	<f name="function" value="Pred"/>
+	<f name="typ" value="VP"/>
+</fs></a>
+<edge xml:id="el385984" from="n749944" to="n722766"/>
+<a xml:id="ale385984" label="ft" ref="el385984"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf310499" label="ft" ref="n749945"><fs>
+	<f name="det" value="determined"/>
+	<f name="function" value="Loca"/>
+	<f name="typ" value="PP"/>
+</fs></a>
+<edge xml:id="el385985" from="n749945" to="n722766"/>
+<a xml:id="ale385985" label="ft" ref="el385985"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf310500" label="ft" ref="n749946"><fs>
+	<f name="det" value="indetermined"/>
+	<f name="function" value="Objc"/>
+	<f name="typ" value="NP"/>
+</fs></a>
+<edge xml:id="el385986" from="n749946" to="n722766"/>
+<a xml:id="ale385986" label="ft" ref="el385986"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<a xml:id="alf310501" label="ft" ref="n749947"><fs>
+	<f name="det" value="NA"/>
+	<f name="function" value="Modi"/>
+	<f name="typ" value="AdvP"/>
+</fs></a>
+<edge xml:id="el385987" from="n749947" to="n722766"/>
+<a xml:id="ale385987" label="ft" ref="el385987"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+</graph>

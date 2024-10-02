@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graph xmlns="http://www.xces.org/ns/GrAF/1.0/" xmlns:graf="http://www.xces.org/ns/GrAF/1.0/">
+    <graphHeader>
+        <labelsDecl>{labels}
+        </labelsDecl>
+        <dependencies>{dependencies}
+        </dependencies>
+        <annotationSpaces>
+            <annotationSpace   as.id="{annot_space_def}" default="yes"/>
+        </annotationSpaces>
+    </graphHeader>

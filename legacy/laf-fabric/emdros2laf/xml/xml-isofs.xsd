@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.w3.org/XML/1998/namespace" xmlns:dcr="http://www.isocat.org/ns/dcr" xmlns:ns1="http://www.tei-c.org/ns/1.0">
+  <xs:import namespace="http://www.isocat.org/ns/dcr" schemaLocation="dcr.xsd"/>
+  <xs:import namespace="http://www.tei-c.org/ns/1.0" schemaLocation="isofs_dcr.xsd"/>
+  <xs:attribute name="id" type="xs:ID">
+    <xs:annotation>
+      <xs:documentation>(identifier) provides a unique identifier for the element bearing the attribute.</xs:documentation>
+    </xs:annotation>
+  </xs:attribute>
+  <xs:attribute name="lang" type="ns1:data.language">
+    <xs:annotation>
+      <xs:documentation>(language) indicates the language of the element content using a tag generated according to BCP 47.</xs:documentation>
+    </xs:annotation>
+  </xs:attribute>
+</xs:schema>

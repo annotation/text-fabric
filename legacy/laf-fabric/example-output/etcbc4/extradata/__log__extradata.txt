@@ -1,0 +1,14 @@
+OPENED AT:2016-01-04T08-08-16
+  0.01s LOGFILE=/Users/dirk/SURFdrive/current/demos/github/laf-fabric/example-output/etcbc4/extradata/__log__extradata.txt
+  0.01s INFO: DATA LOADED FROM SOURCE etcbc4 AND ANNOX para FOR TASK extradata AT 2016-01-04T08-08-16
+  0.00s Get the annotations ...
+  0.00s cl_ats(34)	intro='.N'	role='2.1.2.1.1.4.2.2'
+  0.00s None(51)	intro='..'	role='1'
+  0.00s None(52)	intro='.$'	role='1.1'
+  0.00s Results directory:
+/Users/dirk/SURFdrive/current/demos/github/laf-fabric/example-output/etcbc4/extradata
+
+__log__extradata.txt                    416 Mon Jan  4 09:08:16 2016
+annotations.txt                           0 Mon Jan  4 09:08:16 2016
+
+CLOSED AT:2016-01-04T08-08-16

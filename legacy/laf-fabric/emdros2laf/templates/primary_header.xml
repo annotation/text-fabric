@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<documentHeader
+    xmlns="http://www.xces.org/ns/GrAF/1.0/"
+    xmlns:graf="http://www.xces.org/ns/GrAF/1.0/"
+    docId="{danspid_act}"
+    creator="{prim_creator}"
+    date.created="{createdate}"
+    version="{version}"
+>
+  <fileDesc>
+    <titleStmt>
+      <title>{prim_title}</title>
+    </titleStmt>
+    <extent count="{charsize}" unit="char"/>
+    <sourceDesc>
+      <title>{prim_source_title}</title>
+      <author>{prim_source_author}</author>
+      <publisher>{prim_source_publisher}</publisher>
+      <pubDate value="{prim_source_date}">{prim_source_year}</pubDate>
+      <pubPlace>{prim_source_place}</pubPlace>
+    </sourceDesc>
+  </fileDesc>
+  <profileDesc>
+    <primaryData f.id="f.primary" loc="{source}.txt"/>
+	<langUsage>
+{prim_languages}
+	</langUsage>
+    <annotations>{annotationitems}
+    </annotations>
+  </profileDesc>
+</documentHeader>

@@ -16,5 +16,5 @@ in the Banks tutorial.
 """
 
 
-from .modify import modify
-from .nodemaps import Versions
+from .modify import modify  # NOQA F401
+from .nodemaps import Versions  # NOQA F401

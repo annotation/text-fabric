@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graph xmlns="http://www.xces.org/ns/GrAF/1.0/" xmlns:graf="http://www.xces.org/ns/GrAF/1.0/">
+    <graphHeader>
+        <labelsDecl>
+            <labelUsage        label="mother" occurs="0"           />
+        </labelsDecl>
+        <dependencies><!--
+            <dependsOn f.id="f_lingo"/>-->
+        </dependencies>
+        <annotationSpaces>
+            <annotationSpace   as.id="etcbc4" default="yes"/>
+        </annotationSpaces>
+    </graphHeader>
+<edge xml:id="el1029314" from="n2" to="n40767"/>
+<a xml:id="ale1029314" label="ft" ref="el1029314"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1029315" from="n3" to="n40767"/>
+<a xml:id="ale1029315" label="ft" ref="el1029315"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1029316" from="n4" to="n40768"/>
+<a xml:id="ale1029316" label="ft" ref="el1029316"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1029317" from="n5" to="n40769"/>
+<a xml:id="ale1029317" label="ft" ref="el1029317"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1029318" from="n6" to="n77637"/>
+<a xml:id="ale1029318" label="ft" ref="el1029318"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1029319" from="n7" to="n77637"/>
+<a xml:id="ale1029319" label="ft" ref="el1029319"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1029320" from="n8" to="n77637"/>
+<a xml:id="ale1029320" label="ft" ref="el1029320"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1029321" from="n9" to="n40770"/>
+<a xml:id="ale1029321" label="ft" ref="el1029321"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1029322" from="n10" to="n77638"/>
+<a xml:id="ale1029322" label="ft" ref="el1029322"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1029323" from="n11" to="n77638"/>
+<a xml:id="ale1029323" label="ft" ref="el1029323"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1029324" from="n12" to="n77638"/>
+<a xml:id="ale1029324" label="ft" ref="el1029324"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1255606" from="n705160" to="n734528"/>
+<a xml:id="ale1255606" label="ft" ref="el1255606"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1255607" from="n705161" to="n734529"/>
+<a xml:id="ale1255607" label="ft" ref="el1255607"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1255608" from="n705162" to="n734529"/>
+<a xml:id="ale1255608" label="ft" ref="el1255608"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1255609" from="n705163" to="n734529"/>
+<a xml:id="ale1255609" label="ft" ref="el1255609"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1255610" from="n705164" to="n759925"/>
+<a xml:id="ale1255610" label="ft" ref="el1255610"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1255611" from="n705165" to="n759926"/>
+<a xml:id="ale1255611" label="ft" ref="el1255611"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1255612" from="n705166" to="n759929"/>
+<a xml:id="ale1255612" label="ft" ref="el1255612"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1255613" from="n705167" to="n759928"/>
+<a xml:id="ale1255613" label="ft" ref="el1255613"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1255614" from="n705168" to="n734530"/>
+<a xml:id="ale1255614" label="ft" ref="el1255614"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1255615" from="n705169" to="n759930"/>
+<a xml:id="ale1255615" label="ft" ref="el1255615"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1255616" from="n705170" to="n759931"/>
+<a xml:id="ale1255616" label="ft" ref="el1255616"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1255617" from="n705171" to="n734531"/>
+<a xml:id="ale1255617" label="ft" ref="el1255617"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1255618" from="n705172" to="n734532"/>
+<a xml:id="ale1255618" label="ft" ref="el1255618"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1255619" from="n705173" to="n734532"/>
+<a xml:id="ale1255619" label="ft" ref="el1255619"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1255620" from="n705174" to="n734532"/>
+<a xml:id="ale1255620" label="ft" ref="el1255620"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1255621" from="n705175" to="n759933"/>
+<a xml:id="ale1255621" label="ft" ref="el1255621"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1255622" from="n705176" to="n759934"/>
+<a xml:id="ale1255622" label="ft" ref="el1255622"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1255623" from="n705177" to="n734533"/>
+<a xml:id="ale1255623" label="ft" ref="el1255623"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1255624" from="n705178" to="n759936"/>
+<a xml:id="ale1255624" label="ft" ref="el1255624"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+<edge xml:id="el1255625" from="n705179" to="n734534"/>
+<a xml:id="ale1255625" label="ft" ref="el1255625"><fs>
+    <f name="functional_parent" value=""/>
+</fs></a>
+
+</graph>

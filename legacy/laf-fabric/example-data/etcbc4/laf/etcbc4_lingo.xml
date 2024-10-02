@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graph xmlns="http://www.xces.org/ns/GrAF/1.0/" xmlns:graf="http://www.xces.org/ns/GrAF/1.0/">
+    <graphHeader>
+        <labelsDecl>
+            <labelUsage        label="db" occurs="957812"      />
+        </labelsDecl>
+        <dependencies><!--
+            <dependsOn f.id="f_monad"/>-->
+        </dependencies>
+        <annotationSpaces>
+            <annotationSpace   as.id="etcbc4" default="yes"/>
+        </annotationSpaces>
+    </graphHeader>
+<node xml:id="n84383"><link targets="w_1 w_2 w_3 w_4 w_5 w_6 w_7 w_8 w_9 w_10 w_11"/></node>
+<a xml:id="al84383" label="db" ref="n84383"><fs>
+    <f name="otype" value="sentence"/>
+    <f name="oid" value="84383"/>
+    <f name="monads" value="1-11"/>
+    <f name="minmonad" value="1"/>
+    <f name="maxmonad" value="11"/>
+</fs></a>
+
+<node xml:id="n88917"><link targets="w_1 w_2 w_3 w_4 w_5 w_6 w_7 w_8 w_9 w_10 w_11"/></node>
+<a xml:id="al88917" label="db" ref="n88917"><fs>
+    <f name="otype" value="sentence_atom"/>
+    <f name="oid" value="88917"/>
+    <f name="monads" value="1-11"/>
+    <f name="minmonad" value="1"/>
+    <f name="maxmonad" value="11"/>
+</fs></a>
+
+<node xml:id="n28737"><link targets="w_1 w_2 w_3 w_4 w_5 w_6 w_7 w_8 w_9 w_10 w_11"/></node>
+<a xml:id="al28737" label="db" ref="n28737"><fs>
+    <f name="otype" value="clause"/>
+    <f name="oid" value="28737"/>
+    <f name="monads" value="1-11"/>
+    <f name="minmonad" value="1"/>
+    <f name="maxmonad" value="11"/>
+</fs></a>
+
+<node xml:id="n34680"><link targets="w_1 w_2 w_3 w_4 w_5 w_6 w_7 w_8 w_9 w_10 w_11"/></node>
+<a xml:id="al34680" label="db" ref="n34680"><fs>
+    <f name="otype" value="clause_atom"/>
+    <f name="oid" value="34680"/>
+    <f name="monads" value="1-11"/>
+    <f name="minmonad" value="1"/>
+    <f name="maxmonad" value="11"/>
+</fs></a>
+
+<node xml:id="n59556"><link targets="w_1 w_2"/></node>
+<a xml:id="al59556" label="db" ref="n59556"><fs>
+    <f name="otype" value="phrase"/>
+    <f name="oid" value="59556"/>
+    <f name="monads" value="1-2"/>
+    <f name="minmonad" value="1"/>
+    <f name="maxmonad" value="2"/>
+</fs></a>
+
+<node xml:id="n59557"><link targets="w_3"/></node>
+<a xml:id="al59557" label="db" ref="n59557"><fs>
+    <f name="otype" value="phrase"/>
+    <f name="oid" value="59557"/>
+    <f name="monads" value="3"/>
+    <f name="minmonad" value="3"/>
+    <f name="maxmonad" value="3"/>
+</fs></a>
+
+<node xml:id="n59558"><link targets="w_4"/></node>
+<a xml:id="al59558" label="db" ref="n59558"><fs>
+    <f name="otype" value="phrase"/>
+    <f name="oid" value="59558"/>
+    <f name="monads" value="4"/>
+    <f name="minmonad" value="4"/>
+    <f name="maxmonad" value="4"/>
+</fs></a>
+
+<node xml:id="n59559"><link targets="w_5 w_6 w_7 w_8 w_9 w_10 w_11"/></node>
+<a xml:id="al59559" label="db" ref="n59559"><fs>
+    <f name="otype" value="phrase"/>
+    <f name="oid" value="59559"/>
+    <f name="monads" value="5-11"/>
+    <f name="minmonad" value="5"/>
+    <f name="maxmonad" value="11"/>
+</fs></a>
+
+<node xml:id="n40767"><link targets="w_1 w_2"/></node>
+<a xml:id="al40767" label="db" ref="n40767"><fs>
+    <f name="otype" value="phrase_atom"/>
+    <f name="oid" value="40767"/>
+    <f name="monads" value="1-2"/>
+    <f name="minmonad" value="1"/>
+    <f name="maxmonad" value="2"/>
+</fs></a>
+
+<node xml:id="n40768"><link targets="w_3"/></node>
+<a xml:id="al40768" label="db" ref="n40768"><fs>
+    <f name="otype" value="phrase_atom"/>
+    <f name="oid" value="40768"/>
+    <f name="monads" value="3"/>
+    <f name="minmonad" value="3"/>
+    <f name="maxmonad" value="3"/>
+</fs></a>
+
+<node xml:id="n40769"><link targets="w_4"/></node>
+<a xml:id="al40769" label="db" ref="n40769"><fs>
+    <f name="otype" value="phrase_atom"/>
+    <f name="oid" value="40769"/>
+    <f name="monads" value="4"/>
+    <f name="minmonad" value="4"/>
+    <f name="maxmonad" value="4"/>
+</fs></a>
+
+<node xml:id="n40770"><link targets="w_5 w_6 w_7 w_8 w_9 w_10 w_11"/></node>
+<a xml:id="al40770" label="db" ref="n40770"><fs>
+    <f name="otype" value="phrase_atom"/>
+    <f name="oid" value="40770"/>
+    <f name="monads" value="5-11"/>
+    <f name="minmonad" value="5"/>
+    <f name="maxmonad" value="11"/>
+</fs></a>
+
+<node xml:id="n77637"><link targets="w_5 w_6 w_7"/></node>
+<a xml:id="al77637" label="db" ref="n77637"><fs>
+    <f name="otype" value="subphrase"/>
+    <f name="oid" value="77637"/>
+    <f name="monads" value="5-7"/>
+    <f name="minmonad" value="5"/>
+    <f name="maxmonad" value="7"/>
+</fs></a>
+
+<node xml:id="n77638"><link targets="w_9 w_10 w_11"/></node>
+<a xml:id="al77638" label="db" ref="n77638"><fs>
+    <f name="otype" value="subphrase"/>
+    <f name="oid" value="77638"/>
+    <f name="monads" value="9-11"/>
+    <f name="minmonad" value="9"/>
+    <f name="maxmonad" value="11"/>
+</fs></a>
+
+<node xml:id="n763819"><link targets="w_227281 w_227282 w_227283 w_227284 w_227285 w_227286 w_227287 w_227288 w_227289 w_227290 w_227291"/></node>
+<a xml:id="al763819" label="db" ref="n763819"><fs>
+    <f name="otype" value="sentence"/>
+    <f name="oid" value="763819"/>
+    <f name="monads" value="227281-227291"/>
+    <f name="minmonad" value="227281"/>
+    <f name="maxmonad" value="227291"/>
+</fs></a>
+
+<node xml:id="n763820"><link targets="w_227292 w_227293 w_227294 w_227295 w_227296 w_227297 w_227298 w_227299 w_227300"/></node>
+<a xml:id="al763820" label="db" ref="n763820"><fs>
+    <f name="otype" value="sentence"/>
+    <f name="oid" value="763820"/>
+    <f name="monads" value="227292-227300"/>
+    <f name="minmonad" value="227292"/>
+    <f name="maxmonad" value="227300"/>
+</fs></a>
+
+<node xml:id="n768033"><link targets="w_227281 w_227282 w_227283 w_227284 w_227285 w_227286 w_227287 w_227288 w_227289 w_227290 w_227291"/></node>
+<a xml:id="al768033" label="db" ref="n768033"><fs>
+    <f name="otype" value="sentence_atom"/>
+    <f name="oid" value="768033"/>
+    <f name="monads" value="227281-227291"/>
+    <f name="minmonad" value="227281"/>
+    <f name="maxmonad" value="227291"/>
+</fs></a>
+
+<node xml:id="n768034"><link targets="w_227292 w_227293 w_227294 w_227295 w_227296 w_227297 w_227298 w_227299 w_227300"/></node>
+<a xml:id="al768034" label="db" ref="n768034"><fs>
+    <f name="otype" value="sentence_atom"/>
+    <f name="oid" value="768034"/>
+    <f name="monads" value="227292-227300"/>
+    <f name="minmonad" value="227292"/>
+    <f name="maxmonad" value="227300"/>
+</fs></a>
+
+<node xml:id="n717061"><link targets="w_227281 w_227282 w_227283 w_227284 w_227285 w_227286 w_227287 w_227288 w_227289 w_227290 w_227291"/></node>
+<a xml:id="al717061" label="db" ref="n717061"><fs>
+    <f name="otype" value="clause"/>
+    <f name="oid" value="717061"/>
+    <f name="monads" value="227281-227291"/>
+    <f name="minmonad" value="227281"/>
+    <f name="maxmonad" value="227291"/>
+</fs></a>
+
+<node xml:id="n717062"><link targets="w_227292 w_227293 w_227294 w_227295 w_227296 w_227297 w_227298 w_227299 w_227300"/></node>
+<a xml:id="al717062" label="db" ref="n717062"><fs>
+    <f name="otype" value="clause"/>
+    <f name="oid" value="717062"/>
+    <f name="monads" value="227292-227300"/>
+    <f name="minmonad" value="227292"/>
+    <f name="maxmonad" value="227300"/>
+</fs></a>
+
+<node xml:id="n722765"><link targets="w_227281 w_227282 w_227283 w_227284 w_227285 w_227286 w_227287 w_227288 w_227289 w_227290 w_227291"/></node>
+<a xml:id="al722765" label="db" ref="n722765"><fs>
+    <f name="otype" value="clause_atom"/>
+    <f name="oid" value="722765"/>
+    <f name="monads" value="227281-227291"/>
+    <f name="minmonad" value="227281"/>
+    <f name="maxmonad" value="227291"/>
+</fs></a>
+
+<node xml:id="n722766"><link targets="w_227292 w_227293 w_227294 w_227295 w_227296 w_227297 w_227298 w_227299 w_227300"/></node>
+<a xml:id="al722766" label="db" ref="n722766"><fs>
+    <f name="otype" value="clause_atom"/>
+    <f name="oid" value="722766"/>
+    <f name="monads" value="227292-227300"/>
+    <f name="minmonad" value="227292"/>
+    <f name="maxmonad" value="227300"/>
+</fs></a>
+
+<node xml:id="n749941"><link targets="w_227281"/></node>
+<a xml:id="al749941" label="db" ref="n749941"><fs>
+    <f name="otype" value="phrase"/>
+    <f name="oid" value="749941"/>
+    <f name="monads" value="227281"/>
+    <f name="minmonad" value="227281"/>
+    <f name="maxmonad" value="227281"/>
+</fs></a>
+
+<node xml:id="n749942"><link targets="w_227282 w_227283 w_227284"/></node>
+<a xml:id="al749942" label="db" ref="n749942"><fs>
+    <f name="otype" value="phrase"/>
+    <f name="oid" value="749942"/>
+    <f name="monads" value="227282-227284"/>
+    <f name="minmonad" value="227282"/>
+    <f name="maxmonad" value="227284"/>
+</fs></a>
+
+<node xml:id="n749943"><link targets="w_227285 w_227286 w_227287 w_227288 w_227289 w_227290 w_227291"/></node>
+<a xml:id="al749943" label="db" ref="n749943"><fs>
+    <f name="otype" value="phrase"/>
+    <f name="oid" value="749943"/>
+    <f name="monads" value="227285-227291"/>
+    <f name="minmonad" value="227285"/>
+    <f name="maxmonad" value="227291"/>
+</fs></a>
+
+<node xml:id="n749944"><link targets="w_227292"/></node>
+<a xml:id="al749944" label="db" ref="n749944"><fs>
+    <f name="otype" value="phrase"/>
+    <f name="oid" value="749944"/>
+    <f name="monads" value="227292"/>
+    <f name="minmonad" value="227292"/>
+    <f name="maxmonad" value="227292"/>
+</fs></a>
+
+<node xml:id="n749945"><link targets="w_227293 w_227294 w_227295"/></node>
+<a xml:id="al749945" label="db" ref="n749945"><fs>
+    <f name="otype" value="phrase"/>
+    <f name="oid" value="749945"/>
+    <f name="monads" value="227293-227295"/>
+    <f name="minmonad" value="227293"/>
+    <f name="maxmonad" value="227295"/>
+</fs></a>
+
+<node xml:id="n749946"><link targets="w_227296 w_227297 w_227298 w_227299"/></node>
+<a xml:id="al749946" label="db" ref="n749946"><fs>
+    <f name="otype" value="phrase"/>
+    <f name="oid" value="749946"/>
+    <f name="monads" value="227296-227299"/>
+    <f name="minmonad" value="227296"/>
+    <f name="maxmonad" value="227299"/>
+</fs></a>
+
+<node xml:id="n749947"><link targets="w_227300"/></node>
+<a xml:id="al749947" label="db" ref="n749947"><fs>
+    <f name="otype" value="phrase"/>
+    <f name="oid" value="749947"/>
+    <f name="monads" value="227300"/>
+    <f name="minmonad" value="227300"/>
+    <f name="maxmonad" value="227300"/>
+</fs></a>
+
+<node xml:id="n734528"><link targets="w_227281"/></node>
+<a xml:id="al734528" label="db" ref="n734528"><fs>
+    <f name="otype" value="phrase_atom"/>
+    <f name="oid" value="734528"/>
+    <f name="monads" value="227281"/>
+    <f name="minmonad" value="227281"/>
+    <f name="maxmonad" value="227281"/>
+</fs></a>
+
+<node xml:id="n734529"><link targets="w_227282 w_227283 w_227284"/></node>
+<a xml:id="al734529" label="db" ref="n734529"><fs>
+    <f name="otype" value="phrase_atom"/>
+    <f name="oid" value="734529"/>
+    <f name="monads" value="227282-227284"/>
+    <f name="minmonad" value="227282"/>
+    <f name="maxmonad" value="227284"/>
+</fs></a>
+
+<node xml:id="n734530"><link targets="w_227285 w_227286 w_227287 w_227288 w_227289 w_227290 w_227291"/></node>
+<a xml:id="al734530" label="db" ref="n734530"><fs>
+    <f name="otype" value="phrase_atom"/>
+    <f name="oid" value="734530"/>
+    <f name="monads" value="227285-227291"/>
+    <f name="minmonad" value="227285"/>
+    <f name="maxmonad" value="227291"/>
+</fs></a>
+
+<node xml:id="n734531"><link targets="w_227292"/></node>
+<a xml:id="al734531" label="db" ref="n734531"><fs>
+    <f name="otype" value="phrase_atom"/>
+    <f name="oid" value="734531"/>
+    <f name="monads" value="227292"/>
+    <f name="minmonad" value="227292"/>
+    <f name="maxmonad" value="227292"/>
+</fs></a>
+
+<node xml:id="n734532"><link targets="w_227293 w_227294 w_227295"/></node>
+<a xml:id="al734532" label="db" ref="n734532"><fs>
+    <f name="otype" value="phrase_atom"/>
+    <f name="oid" value="734532"/>
+    <f name="monads" value="227293-227295"/>
+    <f name="minmonad" value="227293"/>
+    <f name="maxmonad" value="227295"/>
+</fs></a>
+
+<node xml:id="n734533"><link targets="w_227296 w_227297 w_227298 w_227299"/></node>
+<a xml:id="al734533" label="db" ref="n734533"><fs>
+    <f name="otype" value="phrase_atom"/>
+    <f name="oid" value="734533"/>
+    <f name="monads" value="227296-227299"/>
+    <f name="minmonad" value="227296"/>
+    <f name="maxmonad" value="227299"/>
+</fs></a>
+
+<node xml:id="n734534"><link targets="w_227300"/></node>
+<a xml:id="al734534" label="db" ref="n734534"><fs>
+    <f name="otype" value="phrase_atom"/>
+    <f name="oid" value="734534"/>
+    <f name="monads" value="227300"/>
+    <f name="minmonad" value="227300"/>
+    <f name="maxmonad" value="227300"/>
+</fs></a>
+
+<node xml:id="n759929"><link targets="w_227285 w_227286 w_227287 w_227288"/></node>
+<a xml:id="al759929" label="db" ref="n759929"><fs>
+    <f name="otype" value="subphrase"/>
+    <f name="oid" value="759929"/>
+    <f name="monads" value="227285-227288"/>
+    <f name="minmonad" value="227285"/>
+    <f name="maxmonad" value="227288"/>
+</fs></a>
+
+<node xml:id="n759927"><link targets="w_227285 w_227286"/></node>
+<a xml:id="al759927" label="db" ref="n759927"><fs>
+    <f name="otype" value="subphrase"/>
+    <f name="oid" value="759927"/>
+    <f name="monads" value="227285-227286"/>
+    <f name="minmonad" value="227285"/>
+    <f name="maxmonad" value="227286"/>
+</fs></a>
+
+<node xml:id="n759925"><link targets="w_227285"/></node>
+<a xml:id="al759925" label="db" ref="n759925"><fs>
+    <f name="otype" value="subphrase"/>
+    <f name="oid" value="759925"/>
+    <f name="monads" value="227285"/>
+    <f name="minmonad" value="227285"/>
+    <f name="maxmonad" value="227285"/>
+</fs></a>
+
+<node xml:id="n759926"><link targets="w_227286"/></node>
+<a xml:id="al759926" label="db" ref="n759926"><fs>
+    <f name="otype" value="subphrase"/>
+    <f name="oid" value="759926"/>
+    <f name="monads" value="227286"/>
+    <f name="minmonad" value="227286"/>
+    <f name="maxmonad" value="227286"/>
+</fs></a>
+
+<node xml:id="n759928"><link targets="w_227288"/></node>
+<a xml:id="al759928" label="db" ref="n759928"><fs>
+    <f name="otype" value="subphrase"/>
+    <f name="oid" value="759928"/>
+    <f name="monads" value="227288"/>
+    <f name="minmonad" value="227288"/>
+    <f name="maxmonad" value="227288"/>
+</fs></a>
+
+<node xml:id="n759932"><link targets="w_227290 w_227291"/></node>
+<a xml:id="al759932" label="db" ref="n759932"><fs>
+    <f name="otype" value="subphrase"/>
+    <f name="oid" value="759932"/>
+    <f name="monads" value="227290-227291"/>
+    <f name="minmonad" value="227290"/>
+    <f name="maxmonad" value="227291"/>
+</fs></a>
+
+<node xml:id="n759930"><link targets="w_227290"/></node>
+<a xml:id="al759930" label="db" ref="n759930"><fs>
+    <f name="otype" value="subphrase"/>
+    <f name="oid" value="759930"/>
+    <f name="monads" value="227290"/>
+    <f name="minmonad" value="227290"/>
+    <f name="maxmonad" value="227290"/>
+</fs></a>
+
+<node xml:id="n759931"><link targets="w_227291"/></node>
+<a xml:id="al759931" label="db" ref="n759931"><fs>
+    <f name="otype" value="subphrase"/>
+    <f name="oid" value="759931"/>
+    <f name="monads" value="227291"/>
+    <f name="minmonad" value="227291"/>
+    <f name="maxmonad" value="227291"/>
+</fs></a>
+
+<node xml:id="n759935"><link targets="w_227296 w_227297"/></node>
+<a xml:id="al759935" label="db" ref="n759935"><fs>
+    <f name="otype" value="subphrase"/>
+    <f name="oid" value="759935"/>
+    <f name="monads" value="227296-227297"/>
+    <f name="minmonad" value="227296"/>
+    <f name="maxmonad" value="227297"/>
+</fs></a>
+
+<node xml:id="n759933"><link targets="w_227296"/></node>
+<a xml:id="al759933" label="db" ref="n759933"><fs>
+    <f name="otype" value="subphrase"/>
+    <f name="oid" value="759933"/>
+    <f name="monads" value="227296"/>
+    <f name="minmonad" value="227296"/>
+    <f name="maxmonad" value="227296"/>
+</fs></a>
+
+<node xml:id="n759934"><link targets="w_227297"/></node>
+<a xml:id="al759934" label="db" ref="n759934"><fs>
+    <f name="otype" value="subphrase"/>
+    <f name="oid" value="759934"/>
+    <f name="monads" value="227297"/>
+    <f name="minmonad" value="227297"/>
+    <f name="maxmonad" value="227297"/>
+</fs></a>
+
+<node xml:id="n759936"><link targets="w_227299"/></node>
+<a xml:id="al759936" label="db" ref="n759936"><fs>
+    <f name="otype" value="subphrase"/>
+    <f name="oid" value="759936"/>
+    <f name="monads" value="227299"/>
+    <f name="minmonad" value="227299"/>
+    <f name="maxmonad" value="227299"/>
+</fs></a>
+
+</graph>

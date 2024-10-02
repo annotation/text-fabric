@@ -891,7 +891,7 @@ def publishRelease(app, increase, message=None, description=None):
     release on GitHub.
 
     For an example, see
-    [`annotation/mondriaan`](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/publish.ipynb)
+    [annotation/mondriaan](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/publish.ipynb)
 
     Parameters
     ----------

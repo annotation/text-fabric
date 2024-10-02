@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resourceHeader
+    xmlns="http://www.xces.org/ns/GrAF/1.0/"
+    xmlns:lnk="http://www.w3.org/1999/xlink"
+    version="1.0"
+    creator="{res_creator}"
+    date.created="{createdate}"
+    type="text"
+>
+    <fileDesc>
+        <titleStmt>
+            <title>{res_title}</title>
+            <funder>{res_funder}</funder>
+            <respStmt>
+                <resp lnk:href="{res_respons_link}">{res_respons_link}</resp>
+            </respStmt>
+        </titleStmt>
+        <editionStmt version="{source}"/>
+        <extent count="{nmonads}" unit="words"/>
+        <publicationStmt>
+            <distributor>{res_distributor}</distributor>
+            <pubAddress>{res_institute}</pubAddress>
+            <eAddress>w.t.van.peursen@vu.nl</eAddress>
+            <pubDate value="{publicationdate}"/>
+            <availability lnk:href="{danspid_act}" status="free"/>
+        </publicationStmt>
+    </fileDesc>
+    <encodingDesc>
+        <projectDesc>{res_project_desc}</projectDesc>
+        <samplingDecl>{res_sampling_desc}</samplingDecl>
+        <editorialDecl>
+            <transduction>{res_transduction}</transduction>
+            <correction>{res_correction}</correction>
+            <segmentation>{res_segmentation}</segmentation>
+        </editorialDecl>
+    </encodingDesc>
+    <resourceDesc>
+        <fileStruct>
+            <!-- The following information identifies the physical files included in the corpus, 
+                their content types, and dependencies -->
+            <directories>
+                <directory xml:id="written" d.name="results" root="yes" f.ids="{filetypeslist}
+				"/>
+            </directories>
+            <fileTypes>{filetypesdecl}
+            </fileTypes>
+        </fileStruct>
+        <annotationSpaces>
+            <annotationSpace xml:id="{annot_space_def}" pid="{danspid_act}"/>
+        </annotationSpaces>
+        <annotationDecls>{annotationdecls}
+        </annotationDecls>
+
+        <media>
+            <medium xml:id="text" type="text/plain" encoding="utf-8" extension="txt"/>
+            <medium xml:id="xml" type="text/xml" encoding="utf-8" extension="xml"/>
+        </media>
+        <anchorTypes>
+            <anchorType xml:id="anchor.character" medium="text" default="true"
+                lnk:href="http://www.xces.org/ns/GrAF/1.0/#character-anchor"/>
+        </anchorTypes>
+    </resourceDesc>
+</resourceHeader>

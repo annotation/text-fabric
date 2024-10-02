@@ -421,7 +421,7 @@ class Make:
                     ),
                     maker=(
                         None,
-                        "https://huc.knaw.nl/di/text/",
+                        "https://di.huc.knaw.nl/text-analysis-en.html",
                         "Website of KNAW/Humanities Cluster/Team Text",
                     ),
                     corpus=(

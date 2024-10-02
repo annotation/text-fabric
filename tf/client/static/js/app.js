@@ -10,7 +10,7 @@
  * Author:
  *
  * Dirk Roorda (https://pure.knaw.nl/portal/en/persons/dirk-roorda)
- * Organization: KNAW/HuC (https://huc.knaw.nl)
+ * Organization: KNAW/HuC - Digital Infrastructure (https://di.huc.knaw.nl)
  * License: MIT (https://mit-license.org)
  *
  * Acknowledgments:
