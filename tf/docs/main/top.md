@@ -116,33 +116,32 @@ Tutorials:
 
 Papers:
 
-*   [Coding the Hebrew Bible](https://doi.org/10.1163/24523666-01000011)
-*   [Parallel Texts in the Hebrew Bible, New Methods and Visualizations ](https://arxiv.org/abs/1603.01541)
-*   [The Hebrew Bible as Data: Laboratory - Sharing - Experiences](https://www.ubiquitypress.com/site/chapters/10.5334/bbi.18/)
+*   (2018) [Text-Fabric: handling Biblical data withIKEA logistics](https://tidsskrift.dk/hiphilnovum/article/view/142740/186442)
+*   (2018) [Coding the Hebrew Bible](https://doi.org/10.1163/24523666-01000011)
+*   (2017) [The Hebrew Bible as Data: Laboratory - Sharing - Experiences](https://www.ubiquitypress.com/site/chapters/10.5334/bbi.18/)
      (preprint: [arxiv](https://arxiv.org/abs/1501.01866))
-*   [LAF-Fabric: a data analysis tool for Linguistic Annotation Framework with an application to the Hebrew Bible](https://arxiv.org/abs/1410.0286)
-*   [Annotation as a New Paradigm in Research Archiving](https://arxiv.org/abs/1412.6069)
+*   (2016) [Parallel Texts in the Hebrew Bible, New Methods and Visualizations ](https://arxiv.org/abs/1603.01541)
+*   (2014) [LAF-Fabric: a data analysis tool for Linguistic Annotation Framework with an application to the Hebrew Bible](https://arxiv.org/abs/1410.0286)
+*   (2012) [Annotation as a New Paradigm in Research Archiving](https://arxiv.org/abs/1412.6069)
 
 ---
 
 Presentations:
 
-[Hands on with Dead Sea Scrolls, Old Babylonian Tablets, and the Quran](https://nbviewer.jupyter.org/github/annotation/text-fabric/blob/master/conferences/Lorentz2020/start.ipynb)
-(Lorentz Leiden 2020)
+*   (Lorentz Leiden 2020)
+    [Hands on with Dead Sea Scrolls, Old Babylonian Tablets, and the Quran](https://nbviewer.jupyter.org/github/annotation/text-fabric/blob/master/conferences/Lorentz2020/start.ipynb)
+    and
+    [Text-Fabric in Context](https://github.com./annotation/text-fabric/blob/master/conferences/Lorentz2020/TF-in-context.pdf)
 
-[Text-Fabric in Context](https://github.com./annotation/text-fabric/blob/master/conferences/Lorentz2020/TF-in-context.pdf)
-(Lorentz Leiden 2020)
+*   (Cambridge 2019, with Cody Kingham)
+    [Data Analysis in Ancient Corpora](https://github.com./annotation/text-fabric/blob/master/conferences/Cambridge2019/ancient-corpora-analysis.pdf)
 
-[Data Analysis in Ancient
-Corpora](https://www.slideshare.net/dirkroorda/ancient-corpora-analysis)
-(Cambridge 2019, with Cody Kingham)
-
-[Text-Fabric as IKEA
-logistics](https://nbviewer.jupyter.org/github/ETCBC/lingo/blob/master/presentations/Copenhagen2018.ipynb)
-(Copenhagen 2017)
-
-Here is a motivational
-[presentation](http://www.slideshare.net/dirkroorda/text-fabric),
-given just before
-[SBL 2016](https://global-learning.org/mod/forum/discuss.php?d=22)
-in the Lutheran Church of San Antonio.
+*   (San Antonio 2016)
+    [Text-Fabric](https://github.com./annotation/text-fabric/blob/master/conferences/SBL2016/Text-Fabric.pdf),
+    A motivational presentation given just before
+    [SBL 2016](https://global-learning.org/mod/forum/discuss.php?d=22)
+    in the Lutheran Church of San Antonio.
+    The day after this presentation, during the SBL conference, sitting in one
+    of the broad corridors of the building, I started with the first code of
+    Text-Fabric: reading and writing TF-feature files, somewhat like
+    [here](https://github.com/annotation/text-fabric/blob/94ddafd955a5042f565229151dc88db9333cfabd/tf/data.py).
