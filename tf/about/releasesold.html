@@ -154,7 +154,7 @@ alternately.</li>
 <li>New function <code>A.publishRelease()</code> by which you can publish a release of a TF
 dataset straight from your program or notebook, without clicking around in
 a browser. See <code><a title="tf.advanced.repo.publishRelease" href="../advanced/repo.html#tf.advanced.repo.publishRelease">publishRelease()</a></code> or the
-<a href="https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/publish.ipynb"><code>annotation/mondriaan</code></a>
+<a href="https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/publish.ipynb">annotation/mondriaan</a>
 example.</li>
 </ul>
 <h4 id="11414">11.4.14</h4>
@@ -179,12 +179,12 @@ not be lost when you transform the TF further, e.g. by adding tokens and sentenc
 <li>
 <p>The <code><a title="tf.convert.walker" href="../convert/walker.html">tf.convert.walker</a></code> conversion can now reorder slot nodes.
 In the conversion of the Greek syntax trees from LOWFAT XML,
-see <a href="https://github.com/ETCBC/nestle1904"><code>ETCBC/nestle1904</code></a>,
+see <a href="https://github.com/ETCBC/nestle1904">ETCBC/nestle1904</a>,
 the words are not in sentence order, but in a word-group-hierarchy order.
 By passing a suitable key to <code>cv.slot()</code>, we can let TF reorder the word nodes
 while keeping all linkage intact. We get interrupted word groups then.
 See this code to see how that is done:</p>
-<p><a href="https://github.com/ETCBC/nestle1904/blob/master/programs/lowfat.py"><code>lowfat.py</code></a>
+<p><a href="https://github.com/ETCBC/nestle1904/blob/master/programs/lowfat.py">lowfat.py</a>
 *
 You can tweak how attribute values are reported when you run preliminary checks.</p>
 </li>
@@ -207,7 +207,7 @@ where we compare a minimalistic version of the BHSA with the complete BHSA.</li>
 <li>If you need custom code to handle the XML, you can now supply it much more
 easily and feed it to the converter.</li>
 <li>For an example, see the
-<a href="https://nbviewer.org/github/ETCBC/nestle1904/blob/master/programs/tfFromLowfat.ipynb"><code>ETCBC/nestle1904</code> dataset</a>
+<a href="https://nbviewer.org/github/ETCBC/nestle1904/blob/master/programs/tfFromLowfat.ipynb">ETCBC/nestle1904 dataset</a>
 (Greek New Testament)</li>
 </ul>
 <h4 id="1148">11.4.8</h4>
@@ -416,7 +416,7 @@ node type. For example, you can use this function to add tokens to a dataset
 that is character-based and make the tokens the new slot type and cause all
 character nodes to be discarded. This can be done in one go.</li>
 <li>Examples are in the Mondriaan test garden:
-<a href="https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/convertExpress.ipynb"><code>annotation/mondriaan</code></a>
+<a href="https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/convertPlain.ipynb">annotation/mondriaan</a>
 in three levels of detail.</li>
 </ul>
 <h3 id="113">11.3</h3>
@@ -499,7 +499,7 @@ converted literally from an intricate TEI nest of files.</p>
 <p>New conversion from TF to <code><a title="tf.convert.pandas" href="../convert/pandas.html">tf.convert.pandas</a></code>, callable as
 <code>A.exportPandas()</code>. For examples see:
 <a href="https://nbviewer.org/github/ETCBC/bhsa/blob/master/tutorial/export.ipynb">BHSA</a>
-<a href="https://nbviewer.org/github/CLARIAH/wp6-mobydick/blob/main/tutorial/export.ipynb">Moby Dick</a>
+<a href="https://nbviewer.org/github/annotation/mobydick/blob/main/tutorial/exportPandas.ipynb">Moby Dick</a>
 <a href="https://nbviewer.org/github/CLARIAH/wp6-ferdinandhuyck/blob/main/tutorial/export.ipynb">Ferdinand Huyck</a></p>
 </li>
 <li>
@@ -679,7 +679,7 @@ there is no difference in the reported file names.</p>
 <h4 id="1101">11.0.1</h4>
 <p>2022-11-18</p>
 <p>Small fixes: the newest version of the
-<a href="https://pygithub.readthedocs.io/en/latest/introduction.html"><code>pygithub</code></a>
+<a href="https://pygithub.readthedocs.io/en/latest/introduction.html">pygithub</a>
 module issues slightly different errors.
 TF did not catch some of them, and went on after failures,
 which led to unspeakable and incomprehensible further errors.
@@ -929,7 +929,7 @@ of a list of subsection items (setting <code>browseContentPretty</code> in <code
 did not respond to the display options, because in this particular case the options
 were not passed to the <code><a title="tf.advanced.display.pretty" href="../advanced/display.html#tf.advanced.display.pretty">pretty()</a></code> function. That has been
 remedied. The only corpus that makes use of this setting (that I know of) is the
-<a href="https://github.com/Nino-cunei/uruk"><code>Nino-cunei/uruk</code></a> corpus.</p>
+<a href="https://github.com/Nino-cunei/uruk">Nino-cunei/uruk</a> corpus.</p>
 <h4 id="930-1">9.3.0-1</h4>
 <p>2022-02-10</p>
 <p>The text-Fabric browser now displays hard-to-type characters, depending on the
@@ -1099,7 +1099,7 @@ were not shown in the search results. Now they do.</li>
 <p>In TF apps, in the config.yaml where you specify an online location based on
 section headings, you can configure the app to put leading zeroes before
 section headings.
-See <a href="https://annotation.github.io/text-fabric/tf/advanced/settings.html#weburlzeros"><code>webUrlZeros</code></a>.
+See <a href="https://annotation.github.io/text-fabric/tf/advanced/settings.html#weburlzeros">webUrlZeros</a>.
 Small fixes in the handling of these configuration settings.</p>
 <h4 id="911">9.1.1</h4>
 <p>2021-10-25</p>
@@ -1294,7 +1294,7 @@ The documentation has now a working search interface.</p>
 <p>2021-01-30</p>
 <p>Added logic to map nodes between versions of TF datasets.
 This logic existed in a notebook that explores versions of the Hebrew Bible:
-<a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/programs/versionMappings.ipynb"><code>versionMappings</code></a>.
+<a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/programs/versionMappings.ipynb">versionMappings</a>.
 Whereas the code to map slots between versions is highly dependent on the dataset in
 question, the code to extend a slot mapping to a node mapping is generic.
 That code is now in "tf.compose.nodemaps" (as of version 9 in <code><a title="tf.dataset.nodemaps" href="../dataset/nodemaps.html">tf.dataset.nodemaps</a></code>).
@@ -1696,6 +1696,10 @@ some sort of message as to why.</p>
 TF in such a way that the position of nodes in that text is stored.
 Then you can annotate the plain text in some tool, e.g. BRAT,
 and after that, the Recorder can turn those annotations into TF features.</p>
+<blockquote>
+<p>(2024-10-02). The documentation is in <code><a title="tf.convert.recorder" href="../convert/recorder.html">tf.convert.recorder</a></code> and
+the following notebook does not exist anymore.</p>
+</blockquote>
 <p>It is not documented yet, but this
 <a href="https://nbviewer.jupyter.org/github/annotation/text-fabric/blob/master/test/varia/recorder.ipynb">notebook</a>
 shows you a complete example.</p>
@@ -1820,11 +1824,11 @@ Especially the ones with <code>==</code> (same slots), <code>&amp;&amp;</code> (
 <p>The performance of the machinery has been tuned with new parameters, and all BHSA
 queries in the tutorials have been tested.</p>
 <p>There was a pair of queries in
-<a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/searchGaps.ipynb"><code>searchGaps</code></a>
+<a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/searchGaps.ipynb">searchGaps</a>
 that
 either took 9 seconds or 40, randomly. Now it is consistently 9 seconds.</p>
 <p>See
-<a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/searchRough.ipynb"><code>searchRough</code></a>
+<a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/searchRough.ipynb">searchRough</a>
 at the end where the performance parameters are tweaked.</p>
 <h4 id="776-8">7.7.6-8</h4>
 <p>2019-05-20</p>
@@ -2223,7 +2227,7 @@ to the <code>app-xxxx</code> repositories.</li>
 Now you can also export to Excel from a notebook,
 using <code>A.export(results)</code>.</p>
 <p>Jump to the tutorial:
-<a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/exportExcel.ipynb"><code>exportExcel</code></a></p>
+<a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/exportExcel.ipynb">exportExcel</a></p>
 <p>For more info: see <a href="https://github.com/annotation/text-fabric/issues/38">#38</a> </p>
 <h4 id="722">7.2.2</h4>
 <p>2018-12-12</p>
@@ -2555,6 +2559,9 @@ However, there is only one version kept in <code>~/text-fabric-data</code>, so t
 <p><code>T.text()</code> has got more behaviours.</p>
 <p>This change was needed for the TF browser, in order to represent
 <em>lexemes</em> in exported files.</p>
+<blockquote>
+<p>(2024-10-02 The following links are broken, these files no longer exist)</p>
+</blockquote>
 <div class="admonition hint">
 <p class="admonition-title">Showcase: BHSA dictionary</p>
 <p>Here is how you can collect the BHSA lexemes in an Excel sheet.</p>
@@ -3208,7 +3215,7 @@ MQL for version 3 of the <a href="https://github.com/ETCBC/bhsa">BHSA</a>.</p>
 <p>2017-10-04</p>
 <p>Little tweak in the <code><a title="tf.convert.mql.importMQL" href="../convert/mql.html#tf.convert.mql.importMQL">importMQL()</a></code> function so that it can handle
 more patterns in the MQL dump file. The issue arose when converting MQL for
-<a href="https://github.com/ETCBC/extrabiblical"><code>extrabiblical</code></a> material.</p>
+<a href="https://github.com/ETCBC/extrabiblical">extrabiblical</a> material.</p>
 <h4 id="302-303">3.0.2, 3.0.3</h4>
 <p>2017-10-03</p>
 <p>No changes, only an update of the package metadata, to reflect that TF
@@ -3271,6 +3278,12 @@ features in a dataset.</p>
 <ul>
 <li>Small fix in Search: the implementation of the relation operator <code>||</code>
 (disjoint slot sets) was faulty. Repaired.</li>
+</ul>
+<blockquote>
+<p>(2024-10-02) The following tutorial no longer exists. What comes closest is the
+<a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/searchGaps.ipynb">BHSA searchGaps tutorial</a></p>
+</blockquote>
+<ul>
 <li>The
 <a href="https://github.com/annotation/text-fabric/blob/master/docs/searchTutorial.ipynb">search tutorial</a>
 got an extra example: how to look for gaps. Gaps are not a primitive in the TF
@@ -3334,6 +3347,10 @@ nodes were delivered as integers, instead of 1-tuples of integers.</p>
 <p>2017-01-06</p>
 <h5 id="new-sortkey">New: <code>sortKey</code></h5>
 <p>The API has a new member: <code>sortKey</code></p>
+<blockquote>
+<p>(2024-10-02) The following tutorial no longer exists. What comes closest is the
+<a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/search.ipynb">BHSA search tutorial</a></p>
+</blockquote>
 <p>New relationships in templates: <code>nearness</code>. See for examples the end of the
 <a href="https://github.com/annotation/text-fabric/blob/master/docs/searchTutorial.ipynb">search tutorial</a>.
 Thanks to James Cuénod for requesting nearness operators.</p>
@@ -3361,6 +3378,10 @@ same slot and end at same slot</em></li>
 <h5 id="new-enhanced-search-templates">New: enhanced search templates</h5>
 <p>You can now easily make extra constraints in search templates without naming
 atoms.</p>
+<blockquote>
+<p>(2024-10-02) The following tutorial no longer exists. What comes closest is the
+<a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/search.ipynb">BHSA search tutorial</a></p>
+</blockquote>
 <p>See the
 <a href="https://github.com/annotation/text-fabric/blob/master/docs/searchTutorial.ipynb">search tutorial</a>
 for an updated exposition on searching.</p>
@@ -3375,6 +3396,10 @@ with your queries!</em></p>
 <p>TF just got a powerful search facility, based on (graph)-templates.</p>
 <p>It is still very fresh, and more experimentation will be needed. Feedback is
 welcome.</p>
+<blockquote>
+<p>(2024-10-02) The following tutorial no longer exists. What comes closest is the
+<a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/search.ipynb">BHSA search tutorial</a></p>
+</blockquote>
 <p>Start with the
 <a href="https://github.com/annotation/text-fabric/blob/master/docs/searchTutorial.ipynb">tutorial</a>.</p>
 <p>The implementation of this search engine can be nicely explained with a textile
@@ -3430,7 +3455,7 @@ see in TF if they want to use it in MQL and vice versa.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d8a411038811d054fb14fcd21d104325cb45d52/tf/about/releasesold.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/57f429578f811e68000d50034a8bbf4565ea36c7/tf/about/releasesold.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releasesold.md
