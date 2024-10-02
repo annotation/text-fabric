@@ -22,7 +22,7 @@ tf org/repo
 Here is a list of corpora that can be loaded this way.
 Since everybody can put a TF corpus on GitHub / GitLab, the list may not be complete!
 
-[`annotation/banks`](https://github.com/annotation/banks)
+[annotation/banks](https://github.com/annotation/banks)
 :   *modern English*
     Iain M. Banks, 1954 - 2013,
     99 words from the SF novel
@@ -31,7 +31,7 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 
     *to see the details*
 
-[`annotation/mobydick`](https://github.com/annotation/mobydick)
+[annotation/mobydick](https://github.com/annotation/mobydick)
 :   *English*
     Herman Melville, 1819 - 1891,
     Novel, 1851;
@@ -40,7 +40,7 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 
     *with NLP output from Spacy woven in*
 
-[`annotation/mondriaan`](https://github.com/annotation/mondriaan)
+[annotation/mondriaan](https://github.com/annotation/mondriaan)
 :   *English*
     Piet Mondriaan, 1872 - 1944,
     Test corpus of 14 letters (proeftuin);
@@ -51,7 +51,7 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 
 ## [Cambridge Semitics Lab](https://github.com/CambridgeSemiticsLab)
 
-[`CambridgeSemiticsLab/nena_tf`](https://github.com/CambridgeSemiticsLab/nena_tf)
+[CambridgeSemiticsLab/nena_tf](https://github.com/CambridgeSemiticsLab/nena_tf)
 :   *Aramaic*
     North Eastern Neo-Aramaic Corpus, 2000,
     **[Nena Cambridge](https://nena.ames.cam.ac.uk)**,
@@ -61,32 +61,32 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 
 ## [CenterBLC Andrews University](https://github.com/CenterBLC)
 
-[`CenterBLC/LXX`](https://github.com/CenterBLC/LXX)
+[CenterBLC/LXX](https://github.com/CenterBLC/LXX)
 :   *Greek*
     [Septuagint](https://en.wikipedia.org/wiki/Septuagint), 300 - 100 BCE,
     **LXX Rahlf's edition 1935 plus additional features by CenterBLC**;
     earliest extant Greek translation of Hebrew Bible books;
     Oliver Glanz, Adrian Negrea
 
-[`CenterBLC/NA`](https://github.com/CenterBLC/NA)
+[CenterBLC/NA](https://github.com/CenterBLC/NA)
 :   *Greek*
     New Testament, 100 - 400,
     **GNT Nestle-Aland edition 1904 with new features by CenterBLC**,
     converted from 
-    [`biblicalhumanities/Nestle1904`](https://github.com/biblicalhumanities/Nestle1904)
+    [biblicalhumanities/Nestle1904](https://github.com/biblicalhumanities/Nestle1904)
     contributed by Ulrik Sandborg Petersen, Jonathan Robie;
     Oliver Glanz
 
-[`CenterBLC/SBLGNT`](https://github.com/CenterBLC/SBLGNT)
+[CenterBLC/SBLGNT](https://github.com/CenterBLC/SBLGNT)
 :   *Greek*
     New Testament, 100 - 400,
     converted from
-    **James Tauber's [`morphgnt` / `sblgnt`](https://github.com/morphgnt/sblgnt) with additional features by CenterBLC**;
+    **James Tauber's [morphgnt / sblgnt](https://github.com/morphgnt/sblgnt) with additional features by CenterBLC**;
     Adrian Negrea, Clacir Virmes, Oliver Glanz, Krysten Thomas
 
 ## [CLARIAH](https://github.com/CLARIAH)
 
-[`CLARIAH/descartes-tf`](https://github.com/CLARIAH/descartes-tf)
+[CLARIAH/descartes-tf](https://github.com/CLARIAH/descartes-tf)
 :   *French*, *Latin*, *Dutch* 
     Letters from and to Descartes, 1619 - 1650,
     **René Descartes - Correspondance**;
@@ -97,7 +97,7 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 
     *with math display and illustrations*
 
-[`CLARIAH/wp6-ferdinandhuyck`](https://github.com/CLARIAH/wp6-ferdinandhuyck)
+[CLARIAH/wp6-ferdinandhuyck](https://github.com/CLARIAH/wp6-ferdinandhuyck)
 :   *Dutch* 
     a novel by Jacob van Lennep, 1840,
     **Jacob van Lennep - Ferdinand Huyck**;
@@ -106,13 +106,13 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 
     *with NLP output from Spacy woven in*
 
-[`CLARIAH/wp6-missieven`](https://github.com/CLARIAH/wp6-missieven)
+[CLARIAH/wp6-missieven](https://github.com/CLARIAH/wp6-missieven)
 :   *Dutch* 
     General Missives, 1600 - 1800,
     **General Missives, Dutch East-Indian Company**,
     Jesse van der Does, Sophie Arnoult, Dirk Roorda
 
-[`CLARIAH/wp6-daghregisters`](https://github.com/CLARIAH/wp6-daghregisters)
+[CLARIAH/wp6-daghregisters](https://github.com/CLARIAH/wp6-daghregisters)
 :   *Dutch* 
     Dagh Registers Batavia, 1640 - 1641,
     **Daily events at Batavia, Indonesia, historical source for
@@ -124,7 +124,7 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 
 ## [Cody Kingham](https://github.com/codykingham)
 
-[`codykingham/tischendorf_tf`](https://github.com/codykingham/tischendorf_tf)
+[codykingham/tischendorf_tf](https://github.com/codykingham/tischendorf_tf)
 :   *Greek*
     New Testament, 50 - 450,
     **Tischendorf 8th Edition**,
@@ -132,7 +132,7 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 
 ## [Digital Theologians of the University of Copenhagen](https://github.com/DT-UCPH)
 
-[`DT-UCPH/sp`](https://github.com/DT-UCPH)
+[DT-UCPH/sp](https://github.com/DT-UCPH)
 :   *Hebrew*
     [Samaritan Pentateuch](https://en.wikipedia.org/wiki/Samaritan_Pentateuch)
     , 516 BCE - 70 AD,
@@ -141,7 +141,7 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 
 ## [Eep Talstra Center for Bible and Computer](https://github.com/ETCBC)
 
-[`ETCBC/bhsa`](https://github.com/ETCBC/bhsa)
+[ETCBC/bhsa](https://github.com/ETCBC/bhsa)
 :   *Hebrew*
     Bible (Old Testament), 1000 BCE - 900 AD,
     **[Biblia Hebraica Stuttgartensia (Amstelodamensis)](https://ETCBC.github.io/bhsa/)**,
@@ -149,42 +149,42 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 
     *the canonical TF dataset, where it all started*
 
-[`ETCBC/dhammapada`](https://github.com/ETCBC/dhammapada)
+[ETCBC/dhammapada](https://github.com/ETCBC/dhammapada)
 :   *Pāli* and *Latin*
     Ancient Buddhist verses, 300 BCE and 1855 AD,
     **Transcription with Latin translations based on Viggo Fausbøll's book**,
     Bee Scherer, Yvonne Mataar, Dirk Roorda
 
-[`ETCBC/dss`](https://github.com/ETCBC/dss)
+[ETCBC/dss](https://github.com/ETCBC/dss)
 :   *Hebrew*
     Dead Sea Scrolls, 300 BCE - 100 AD,
     **Transcriptions with morphology based on Martin Abegg's data files**,
     Martijn Naaijer, Jarod Jacobs, Dirk Roorda
 
-[`ETCBC/nestle1904`](https://github.com/ETCBC/nestle1904)
+[ETCBC/nestle1904](https://github.com/ETCBC/nestle1904)
 :   *Greek*
     New Testament, 100 - 400,
     **GNT Nestle-Aland edition 1904 from LOWFAT-XML syntax trees**,
     converted from 
-    [`biblicalhumanities/greek-new-testament`](https://github.com/biblicalhumanities/greek-new-testament/tree/master/syntax-trees/sblgnt-lowfat)
+    [biblicalhumanities/greek-new-testament](https://github.com/biblicalhumanities/greek-new-testament/tree/master/syntax-trees/sblgnt-lowfat)
     contributed by Jonathan Robie and Micheal Palmer;
     Oliver Glanz, Tony Jurg, Saulo de Oliveira Cantanhêde, Dirk Roorda
 
-[`ETCBC/peshitta`](https://github.com/ETCBC/peshitta)
+[ETCBC/peshitta](https://github.com/ETCBC/peshitta)
 :   *Syriac*
     Peshitta (Old Testament), 1000 BCE - 900 AD,
     **Vetus Testamentum Syriace**,
     Hannes Vlaardingerbroek, Dirk Roorda
 
-[`ETCBC/syrnt`](https://github.com/ETCBC/syrnt)
+[ETCBC/syrnt](https://github.com/ETCBC/syrnt)
 :   *Syriac*
     New Testament, 0 - 1000,
     **Novum Testamentum Syriace**,
     Hannes Vlaardingerbroek, Dirk Roorda
 
-## [`KNAW/HuygensING`](https://github.com/HuygensING) and [gitlab.huc.knaw.nl](https://gitlab.huc.knaw.nl)
+## [KNAW/HuygensING](https://github.com/HuygensING) and [gitlab.huc.knaw.nl](https://gitlab.huc.knaw.nl)
 
-[`hermans/works`](https://gitlab.huc.knaw.nl/hermans/works)
+[hermans/works](https://gitlab.huc.knaw.nl/hermans/works)
 :   *Dutch*
     Complete Works of W.F. Hermans.
     The conversion to TF is work in progress.
@@ -200,7 +200,7 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 
     *with a critical apparatus*
 
-[`mondriaan/letters`](https://github.com/annotation/mondriaan)
+[mondriaan/letters](https://github.com/annotation/mondriaan)
 :   *Dutch*
     Letters of Piet Mondriaan , 1892-1923.
     Straight conversion from TEI to TF,
@@ -210,7 +210,7 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 
     *with NLP output from Spacy woven in*
 
-[`suriano/letters`](https://gitlab.huc.knaw.nl/suriano/letters)
+[suriano/letters](https://gitlab.huc.knaw.nl/suriano/letters)
 :   *Italian*
     Correspondence of Christofforo Suriano , 1616-1623.
     Complex conversion from DOCX through simple TEI to TF,
@@ -224,7 +224,7 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 
     **with additional meta data, named entities, and page scans.**
 
-[`translatin/corpus`](https://gitlab.huc.knaw.nl/translatin/corpus)
+[translatin/corpus](https://gitlab.huc.knaw.nl/translatin/corpus)
 :   *Latin*
     The transnational impact of Latin drama from the early modern Netherlands,
     a qualitative and computational analysis.
@@ -235,25 +235,25 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 
 ## [NINO Cuneiform](https://github.com/Nino-cunei)
 
-[`Nino-cunei/ninmed`](https://github.com/Nino-cunei/ninmed)
+[Nino-cunei/ninmed](https://github.com/Nino-cunei/ninmed)
 :   *Akkadian / cuneiform*
     Medical Encyclopedia from Nineveh, ca. 800 BCE,
     **Medical documents with lemma annotations**,
     Cale Johnson, Dirk Roorda
 
-[`Nino-cunei/oldassyrian`](https://github.com/Nino-cunei/oldassyrian)
+[Nino-cunei/oldassyrian](https://github.com/Nino-cunei/oldassyrian)
 :   *Akkadian / cuneiform*
     Old Assyrian documents, 2000 - 1600 BCE,
     **Documents from Ashur**
     Cale Johnson, Alba de Ridder, Martijn Kokken, Dirk Roorda
 
-[`Nino-cunei/oldbabylonian`](https://github.com/Nino-cunei/oldbabylonian)
+[Nino-cunei/oldbabylonian](https://github.com/Nino-cunei/oldbabylonian)
 :   *Akkadian / cuneiform*
     Old Babylonian letters, 1900 - 1600 BCE,
     **Altbabylonische Briefe in Umschrift und Übersetzung**,
     Cale Johnson, Dirk Roorda
 
-[`Nino-cunei/uruk`](https://github.com/Nino-cunei/uruk)
+[Nino-cunei/uruk](https://github.com/Nino-cunei/uruk)
 :   *proto-cuneiform*
     Uruk, 4000 - 3100 BCE,
     **Archaic tablets from Uruk**,
@@ -270,7 +270,7 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
     [Open Greek and Latin Project](https://github.com/OpenGreekAndLatin/First1KGreek)
     The result of a massive conversion effort by Ernst Boogert.
 
-[`pthu/athenaeus`](https://github.com/pthu/athenaeus)
+[pthu/athenaeus](https://github.com/pthu/athenaeus)
 :   *Greek*
     Works of Athenaeus, 80 - 170,
     **[Deipnosophistae](https://en.wikipedia.org/wiki/Deipnosophistae)**,
@@ -278,7 +278,7 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 
 ## [Quran](https://github.com/q-ran)
 
-[`q-ran/quran`](https://github.com/q-ran/quran)
+[q-ran/quran](https://github.com/q-ran/quran)
 :   *Arabic*
     Quran, 600 - 900,
     **Quranic Arabic Corpus**,
@@ -286,7 +286,7 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 
 ## [University of Utrecht: Cornelis van Lit](https://github.com/among)
 
-[`among/fusus`](https://github.com/among/fusus)
+[among/fusus](https://github.com/among/fusus)
 :   *Arabic*
     Fusus Al Hikam,  1165- 2000,
     **editions (Lakhnawi and Afifi) of Ibn Arabi's Fusus plus commentaries in the centuries thereafter**,

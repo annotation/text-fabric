@@ -150,5 +150,5 @@ and uses a strategy that is very different from Ulrik's MQL search engine.
 
 I continued working on TF while I was at DANS, till 2022.
 
-Now, at [KNAW/Humanities Cluster](https://huc.knaw.nl), I apply it
-to new contexts: it can work with GitLab as well.
+Now, at [KNAW/Humanities Cluster](https://di.huc.knaw.nl/text-analysis-en.html),
+I apply it to new contexts: it can work with GitLab as well.
