@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/browser/ner/sheets.py#L1-L868" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/dcb61dd4acf4318648508850c11f180ea534b65f/tf/browser/ner/sheets.py#L1-L980" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 import time
@@ -68,6 +68,8 @@ SHEET_KEYS = &#34;&#34;&#34;
     instructions
     inventory
     triggerFromMatch
+    triggerScopes
+    allTriggers
     hitData
 &#34;&#34;&#34;.strip().split()
 
@@ -89,6 +91,9 @@ class Sheets:
             return None
 
         self.properlySetup = True
+        self.scopeI = 3
+        self.trigI = 4
+        self.commentI = 0
 
         # browse = self.browse
         self.sheets = sheets
@@ -127,7 +132,7 @@ class Sheets:
                 sheetNames.add(sheetName)
                 setNames.add(f&#34;.{sheetName}&#34;)
 
-    def setSheet(self, newSheet, force=False, caseSensitive=False):
+    def setSheet(self, newSheet, force=False, caseSensitive=None):
         &#34;&#34;&#34;Switch to a named ner sheet.
 
         After the switch, the new sheet will be loaded into memory.
@@ -160,6 +165,9 @@ class Sheets:
         if newSheet != sheetName:
             sheetName = newSheet
             self.sheetName = sheetName
+
+        if caseSensitive is None:
+            caseSensitive = self.caseSensitive
 
         self.loadSheetData(force=force, caseSensitive=caseSensitive)
 
@@ -320,8 +328,8 @@ class Sheets:
 
         wb = Workbook()
         ws = wb.active
-        ws.append((&#34;name&#34;, &#34;kind&#34;, &#34;scope&#34;, &#34;triggers&#34;, &#34;origrow&#34;))
-        ws.append((&#34;&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;))
+        ws.append((&#34;comment&#34;, &#34;name&#34;, &#34;kind&#34;, &#34;scope&#34;, &#34;triggers&#34;, &#34;origrow&#34;))
+        ws.append((&#34;&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;))
 
         eids = {}
 
@@ -340,9 +348,87 @@ class Sheets:
                 rows |= set(wordData[scopeStr])
 
             rowRep = &#34;,&#34;.join(str(r) for r in sorted(rows))
-            ws.append((eidDis, &#34;x&#34;, &#34;&#34;, word, rowRep))
+            ws.append((&#34;&#34;, eidDis, &#34;x&#34;, &#34;&#34;, word, rowRep))
 
         wb.save(sheetPath)
+
+    def writeSheetData(self, rows, asFile=None):
+        if not asFile:
+            console(&#34;Pass the path of a destination file in param asFile&#34;)
+            return
+
+        Workbook = self.Workbook
+        trigI = self.trigI
+        commentI = self.commentI
+        wb = Workbook()
+        ws = wb.active
+
+        for r, row in enumerate(rows):
+            if r &lt;= 1:
+                ws.append(row)
+                continue
+
+            isCommentRow = row[commentI].startswith(&#34;#&#34;)
+
+            if not isCommentRow:
+                row[trigI] = &#34;; &#34;.join(row[trigI])
+
+            ws.append(row)
+
+        wb.save(asFile)
+
+    def readSheetData(self):
+        &#34;&#34;&#34;Read the data of the spreadsheet and deliver it as a list of lists&#34;&#34;&#34;
+        sheetName = self.sheetName
+        sheetDir = self.sheetDir
+        loadXls = self.loadXls
+        trigI = self.trigI
+        commentI = self.commentI
+        normalizeChars = self.normalizeChars
+        spaceEscaped = self.spaceEscaped
+
+        sheetData = self.getSheetData()
+        caseSensitive = sheetData.caseSensitive
+
+        def myNormalize(x):
+            return normalize(
+                str(x) if normalizeChars is None else normalizeChars(str(x))
+            )
+
+        sheetPath = f&#34;{sheetDir}/{sheetName}.xlsx&#34;
+
+        wb = loadXls(sheetPath, data_only=True)
+        ws = wb.active
+
+        result = []
+
+        for r, row in enumerate(ws.rows):
+            fields = []
+            result.append(fields)
+
+            isCommentRow = (row[commentI].value or &#34;&#34;).startswith(&#34;#&#34;)
+
+            for i, field in enumerate(row):
+                value = field.value or &#34;&#34;
+
+                if not isCommentRow and r &gt; 1 and i == trigI:
+                    value = myNormalize(value)
+                    value = {
+                        y
+                        for x in value.split(&#34;;&#34;)
+                        if (
+                            y := tnorm(
+                                x,
+                                spaceEscaped=spaceEscaped,
+                                caseSensitive=caseSensitive,
+                            )
+                        )
+                        != &#34;&#34;
+                    }
+
+                fields.append(value)
+
+        return result
 
     def _readSheet(self):
         &#34;&#34;&#34;Read all the spreadsheets, the main one and the tweaks.
@@ -357,6 +443,8 @@ class Sheets:
         transform = self.transform
         spaceEscaped = self.spaceEscaped
         normalizeChars = self.normalizeChars
+        trigI = self.trigI
+        scopeI = self.scopeI
 
         def spec(msg):
             self.log(None, 0, msg)
@@ -436,7 +524,7 @@ class Sheets:
                 metaFields = [
                     myNormalize(row[i].value or &#34;&#34;)
                     for i in range(maxCol)
-                    if i not in {2, 3}
+                    if i not in {0, scopeI, trigI}
                 ]
                 sheetData.metaFields = metaFields
 
@@ -446,7 +534,7 @@ class Sheets:
             if not any(c.value for c in row):
                 continue
 
-            triggerStr = row[3].value
+            triggerStr = row[trigI].value
 
             if triggerStr is not None and &#34;\n&#34; in triggerStr:
                 triggerRep = triggerStr.replace(&#34;\n&#34;, &#34;\\n&#34;)
@@ -454,9 +542,13 @@ class Sheets:
                 log(msg)
                 continue
 
-            (name, kind, scopeStr, triggerStr) = (
-                myNormalize(row[i].value or &#34;&#34;) for i in range(4)
+            (comment, name, kind, scopeStr, triggerStr) = (
+                myNormalize(row[i].value or &#34;&#34;) for i in range(trigI + 1)
             )
+
+            if comment.startswith(&#34;#&#34;):
+                continue
+
             if not name or not triggerStr:
                 if name:
                     noTrigs.add(r + 1)
@@ -520,7 +612,7 @@ class Sheets:
             metaData[metaKey] = [
                 myNormalize(row[i].value or &#34;&#34;)
                 for i in range(maxCol)
-                if i not in {2, 3}
+                if i not in {0, scopeI, trigI}
             ]
 
         for diags, isdict, label in (
@@ -761,10 +853,17 @@ class Sheets:
 
         sheetData = self.getSheetData()
         compiled = sheetData.compiled
+        nameMap = sheetData.nameMap
         caseSensitive = sheetData.caseSensitive
 
         instructions = {}
         sheetData.instructions = instructions
+
+        triggerScopes = {}
+        sheetData.triggerScopes = triggerScopes
+
+        allTriggers = set()
+        sheetData.allTriggers = allTriggers
 
         for intv, thisCompiled in compiled.items():
             sheet = thisCompiled.sheet
@@ -792,6 +891,19 @@ class Sheets:
             theseInstructions[&#34;idMap&#34;] = {
                 trigger: eidkinds[0] for (trigger, eidkinds) in idMap.items()
             }
+
+            tMap = theseInstructions[&#34;tMap&#34;]
+            idMap = theseInstructions[&#34;idMap&#34;]
+
+            for trigger, scope in tMap.items():
+                eidkind = idMap.get(trigger, None)
+
+                if eidkind is None:
+                    continue
+
+                name = nameMap[eidkind]
+                allTriggers.add((name, eidkind, trigger, scope))
+                triggerScopes.setdefault(trigger, set()).add(scope)
 
     def _processSheet(self):
         &#34;&#34;&#34;Generates derived data structures out of the source sheet.
@@ -829,7 +941,6 @@ class Sheets:
             return
 
         sheetData = self.getSheetData()
-
         inventory = sheetData.inventory
         instructions = sheetData.instructions
 
@@ -845,6 +956,7 @@ class Sheets:
 
             for trigger, scope in tMap.items():
                 eidkind = idMap.get(trigger, None)
+
                 if eidkind is None:
                     continue
 
@@ -921,7 +1033,7 @@ class Sheets:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/browser/ner/sheets.py#L45-L868" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/dcb61dd4acf4318648508850c11f180ea534b65f/tf/browser/ner/sheets.py#L47-L980" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Sheets:
     def __init__(self, sheets=None):
@@ -935,6 +1047,9 @@ class Sheets:
             return None
 
         self.properlySetup = True
+        self.scopeI = 3
+        self.trigI = 4
+        self.commentI = 0
 
         # browse = self.browse
         self.sheets = sheets
@@ -973,7 +1088,7 @@ class Sheets:
                 sheetNames.add(sheetName)
                 setNames.add(f&#34;.{sheetName}&#34;)
 
-    def setSheet(self, newSheet, force=False, caseSensitive=False):
+    def setSheet(self, newSheet, force=False, caseSensitive=None):
         &#34;&#34;&#34;Switch to a named ner sheet.
 
         After the switch, the new sheet will be loaded into memory.
@@ -1006,6 +1121,9 @@ class Sheets:
         if newSheet != sheetName:
             sheetName = newSheet
             self.sheetName = sheetName
+
+        if caseSensitive is None:
+            caseSensitive = self.caseSensitive
 
         self.loadSheetData(force=force, caseSensitive=caseSensitive)
 
@@ -1166,8 +1284,8 @@ class Sheets:
 
         wb = Workbook()
         ws = wb.active
-        ws.append((&#34;name&#34;, &#34;kind&#34;, &#34;scope&#34;, &#34;triggers&#34;, &#34;origrow&#34;))
-        ws.append((&#34;&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;))
+        ws.append((&#34;comment&#34;, &#34;name&#34;, &#34;kind&#34;, &#34;scope&#34;, &#34;triggers&#34;, &#34;origrow&#34;))
+        ws.append((&#34;&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;))
 
         eids = {}
 
@@ -1186,9 +1304,87 @@ class Sheets:
                 rows |= set(wordData[scopeStr])
 
             rowRep = &#34;,&#34;.join(str(r) for r in sorted(rows))
-            ws.append((eidDis, &#34;x&#34;, &#34;&#34;, word, rowRep))
+            ws.append((&#34;&#34;, eidDis, &#34;x&#34;, &#34;&#34;, word, rowRep))
 
         wb.save(sheetPath)
+
+    def writeSheetData(self, rows, asFile=None):
+        if not asFile:
+            console(&#34;Pass the path of a destination file in param asFile&#34;)
+            return
+
+        Workbook = self.Workbook
+        trigI = self.trigI
+        commentI = self.commentI
+        wb = Workbook()
+        ws = wb.active
+
+        for r, row in enumerate(rows):
+            if r &lt;= 1:
+                ws.append(row)
+                continue
+
+            isCommentRow = row[commentI].startswith(&#34;#&#34;)
+
+            if not isCommentRow:
+                row[trigI] = &#34;; &#34;.join(row[trigI])
+
+            ws.append(row)
+
+        wb.save(asFile)
+
+    def readSheetData(self):
+        &#34;&#34;&#34;Read the data of the spreadsheet and deliver it as a list of lists&#34;&#34;&#34;
+        sheetName = self.sheetName
+        sheetDir = self.sheetDir
+        loadXls = self.loadXls
+        trigI = self.trigI
+        commentI = self.commentI
+        normalizeChars = self.normalizeChars
+        spaceEscaped = self.spaceEscaped
+
+        sheetData = self.getSheetData()
+        caseSensitive = sheetData.caseSensitive
+
+        def myNormalize(x):
+            return normalize(
+                str(x) if normalizeChars is None else normalizeChars(str(x))
+            )
+
+        sheetPath = f&#34;{sheetDir}/{sheetName}.xlsx&#34;
+
+        wb = loadXls(sheetPath, data_only=True)
+        ws = wb.active
+
+        result = []
+
+        for r, row in enumerate(ws.rows):
+            fields = []
+            result.append(fields)
+
+            isCommentRow = (row[commentI].value or &#34;&#34;).startswith(&#34;#&#34;)
+
+            for i, field in enumerate(row):
+                value = field.value or &#34;&#34;
+
+                if not isCommentRow and r &gt; 1 and i == trigI:
+                    value = myNormalize(value)
+                    value = {
+                        y
+                        for x in value.split(&#34;;&#34;)
+                        if (
+                            y := tnorm(
+                                x,
+                                spaceEscaped=spaceEscaped,
+                                caseSensitive=caseSensitive,
+                            )
+                        )
+                        != &#34;&#34;
+                    }
+
+                fields.append(value)
+
+        return result
 
     def _readSheet(self):
         &#34;&#34;&#34;Read all the spreadsheets, the main one and the tweaks.
@@ -1203,6 +1399,8 @@ class Sheets:
         transform = self.transform
         spaceEscaped = self.spaceEscaped
         normalizeChars = self.normalizeChars
+        trigI = self.trigI
+        scopeI = self.scopeI
 
         def spec(msg):
             self.log(None, 0, msg)
@@ -1282,7 +1480,7 @@ class Sheets:
                 metaFields = [
                     myNormalize(row[i].value or &#34;&#34;)
                     for i in range(maxCol)
-                    if i not in {2, 3}
+                    if i not in {0, scopeI, trigI}
                 ]
                 sheetData.metaFields = metaFields
 
@@ -1292,7 +1490,7 @@ class Sheets:
             if not any(c.value for c in row):
                 continue
 
-            triggerStr = row[3].value
+            triggerStr = row[trigI].value
 
             if triggerStr is not None and &#34;\n&#34; in triggerStr:
                 triggerRep = triggerStr.replace(&#34;\n&#34;, &#34;\\n&#34;)
@@ -1300,9 +1498,13 @@ class Sheets:
                 log(msg)
                 continue
 
-            (name, kind, scopeStr, triggerStr) = (
-                myNormalize(row[i].value or &#34;&#34;) for i in range(4)
+            (comment, name, kind, scopeStr, triggerStr) = (
+                myNormalize(row[i].value or &#34;&#34;) for i in range(trigI + 1)
             )
+
+            if comment.startswith(&#34;#&#34;):
+                continue
+
             if not name or not triggerStr:
                 if name:
                     noTrigs.add(r + 1)
@@ -1366,7 +1568,7 @@ class Sheets:
             metaData[metaKey] = [
                 myNormalize(row[i].value or &#34;&#34;)
                 for i in range(maxCol)
-                if i not in {2, 3}
+                if i not in {0, scopeI, trigI}
             ]
 
         for diags, isdict, label in (
@@ -1607,10 +1809,17 @@ class Sheets:
 
         sheetData = self.getSheetData()
         compiled = sheetData.compiled
+        nameMap = sheetData.nameMap
         caseSensitive = sheetData.caseSensitive
 
         instructions = {}
         sheetData.instructions = instructions
+
+        triggerScopes = {}
+        sheetData.triggerScopes = triggerScopes
+
+        allTriggers = set()
+        sheetData.allTriggers = allTriggers
 
         for intv, thisCompiled in compiled.items():
             sheet = thisCompiled.sheet
@@ -1638,6 +1847,19 @@ class Sheets:
             theseInstructions[&#34;idMap&#34;] = {
                 trigger: eidkinds[0] for (trigger, eidkinds) in idMap.items()
             }
+
+            tMap = theseInstructions[&#34;tMap&#34;]
+            idMap = theseInstructions[&#34;idMap&#34;]
+
+            for trigger, scope in tMap.items():
+                eidkind = idMap.get(trigger, None)
+
+                if eidkind is None:
+                    continue
+
+                name = nameMap[eidkind]
+                allTriggers.add((name, eidkind, trigger, scope))
+                triggerScopes.setdefault(trigger, set()).add(scope)
 
     def _processSheet(self):
         &#34;&#34;&#34;Generates derived data structures out of the source sheet.
@@ -1675,7 +1897,6 @@ class Sheets:
             return
 
         sheetData = self.getSheetData()
-
         inventory = sheetData.inventory
         instructions = sheetData.instructions
 
@@ -1691,6 +1912,7 @@ class Sheets:
 
             for trigger, scope in tMap.items():
                 eidkind = idMap.get(trigger, None)
+
                 if eidkind is None:
                     continue
 
@@ -1798,6 +2020,12 @@ with a time stamp.</p></div>
 <dd>
 <div class="desc"></div>
 </dd>
+<dt id="tf.browser.ner.sheets.Sheets.readSheetData"><code class="name flex">
+<span>def <span class="ident">readSheetData</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Read the data of the spreadsheet and deliver it as a list of lists</p></div>
+</dd>
 <dt id="tf.browser.ner.sheets.Sheets.readSheets"><code class="name flex">
 <span>def <span class="ident">readSheets</span></span>(<span>self)</span>
 </code></dt>
@@ -1807,7 +2035,7 @@ with a time stamp.</p></div>
 by editing the spreadsheets in Excel.</p></div>
 </dd>
 <dt id="tf.browser.ner.sheets.Sheets.setSheet"><code class="name flex">
-<span>def <span class="ident">setSheet</span></span>(<span>self, newSheet, force=False, caseSensitive=False)</span>
+<span>def <span class="ident">setSheet</span></span>(<span>self, newSheet, force=False, caseSensitive=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Switch to a named ner sheet.</p>
@@ -1817,6 +2045,12 @@ by editing the spreadsheets in Excel.</p></div>
 <dt><strong><code>newSheet</code></strong> :&ensp;<code>string</code></dt>
 <dd>The name of the new ner sheet to switch to.</dd>
 </dl></div>
+</dd>
+<dt id="tf.browser.ner.sheets.Sheets.writeSheetData"><code class="name flex">
+<span>def <span class="ident">writeSheetData</span></span>(<span>self, rows, asFile=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
 </dd>
 </dl>
 </dd>
@@ -1894,10 +2128,12 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.browser.ner.sheets.Sheets.loadSheetData" href="#tf.browser.ner.sheets.Sheets.loadSheetData">loadSheetData</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.log" href="#tf.browser.ner.sheets.Sheets.log">log</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.makeSheetOfSingleTokens" href="#tf.browser.ner.sheets.Sheets.makeSheetOfSingleTokens">makeSheetOfSingleTokens</a></code></li>
+<li><code><a title="tf.browser.ner.sheets.Sheets.readSheetData" href="#tf.browser.ner.sheets.Sheets.readSheetData">readSheetData</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.readSheets" href="#tf.browser.ner.sheets.Sheets.readSheets">readSheets</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.setSheet" href="#tf.browser.ner.sheets.Sheets.setSheet">setSheet</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.sheetName" href="#tf.browser.ner.sheets.Sheets.sheetName">sheetName</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.sheetNames" href="#tf.browser.ner.sheets.Sheets.sheetNames">sheetNames</a></code></li>
+<li><code><a title="tf.browser.ner.sheets.Sheets.writeSheetData" href="#tf.browser.ner.sheets.Sheets.writeSheetData">writeSheetData</a></code></li>
 </ul>
 </li>
 </ul>

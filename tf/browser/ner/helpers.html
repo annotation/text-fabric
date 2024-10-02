@@ -35,7 +35,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/browser/ner/helpers.py#L1-L629" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/dcb61dd4acf4318648508850c11f180ea534b65f/tf/browser/ner/helpers.py#L1-L971" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Auxiliary functions.
 
@@ -376,6 +376,301 @@ def repSet(s):
     return &#34;{&#34; + &#34;, &#34;.join(str(x) for x in sorted(s)) + &#34;}&#34;
 
 
+# COMMON TOKENS
+
+
+def hasCommon(tokensA, tokensB):
+    &#34;&#34;&#34;Whether one sequence of tokens interferes with another.
+
+    The idea is: we want to determine whether matches for tokensA may interfere
+    with matches for tokensB.
+
+    This happens if tokensB is a sublist of tokensA, or if an initial segment of
+    tokensB forms a tail inside tokensA.
+
+    Or the same with tokensA and tokensB reversed.
+
+    Proposition: tokensA en tokensB have something in common (in the above sense)
+    if and only if you can make a text where tokensA and tokensB have overlapping
+    matches. Proof follows.
+
+    We return a result consisting of 3 integers: `ref`, `pos`, `length`
+
+    *   `ref` is either 0, 1 or -1.
+
+        It is 0 if tokensA and tokensB are identical.
+        It is 1 if tokensA properly contains B or if tokensB starts somewhere
+        in tokensA.
+        It is -1 otherwise.
+
+    Proof:
+
+    (direction =&gt;)
+
+    Suppose tokensA and tokensB have something in common.
+
+    Let i, j be the start-end position of the (part of) tokensB that occur in tokensA.
+    Construct a match for the combination of tokensA and tokensB as follows:
+
+    tokensA[0:i] + tokensA[i:j] + xxx
+
+    Two cases:
+
+    1.  tokensB is fully contained in tokensA.
+        Then take for xxx: tokensA[j:].
+        The result is a match for tokensA and hence for tokensB.
+    2.  tokensB is only contained in A up to index k. By definition of common, this
+        means that tokensB[0:k] is equal to tokensA[-k:] and hence
+        that j == len(tokensA).
+        Then take for xxx: tokensB[k:].
+        We then have:
+
+        tokensA + tokensB[k:] =
+
+        tokensA[0:i] + tokensA[i:] + tokensB[k:]
+
+        tkoensA[0:i] + tokensA[i:j] + tokensB[k:] = (because j == len(tokensA))
+
+        tokensA[0:i] + tokensA[i:j] + tokensB[k:] =
+
+        tokensA[0:i] + tokensB[0:k] + tokensB[k:] =
+
+        tokensA[0:i] + tokensB
+
+        So, this text is a match for tokensA and for tokensB
+
+        (direction &lt;=)
+
+        Suppose we have a text T with an overlapping match for tokensA and tokensB.
+
+        Suppose T[i:j] is a match for tokensA and T[n:m] is a match for tokensB, and
+        T[i:j] and T[m:n] overlap.
+
+        Two cases:
+
+        1.  one match is contained in the other. We consider T[m:n] is
+            contained in T[i:j]. For the reverse case, the argument is the same
+            with tokensA and tokensB interchanged.
+
+            T[m:n] is part of a match of tokensA, so T[m:n] occurs in tokensA.
+            T[m:n] is also a match for tokensB, so tokensB == T[m:n], so tokensB
+            is a part of tokensA, hence, by definition: tokensA and tokensB
+            have something in common.
+        2.  the two matches have a region in common, but none is contained in the
+            other.
+            We consider the case where m is between i and j. The case where i is
+            between m and n is analogous, with tokensA and tokensB interchanged.
+
+            Now T[m:j] is part of a match for tokensA and for tokensB.
+            Then T[m:j] is at the end of T[i:j], so part of tokensB is at the
+            end of tokensA.
+
+    Test:
+
+    ```
+    from tf.browser.ner.helpers import hasCommon
+
+    tokensA = list(&#34;abcd&#34;)
+    tokensB = list(&#34;cdef&#34;)
+    tokensC = list(&#34;defg&#34;)
+    tokensD = list(&#34;bc&#34;)
+    tokensE = list(&#34;ab&#34;)
+    tokensF = list(&#34;cd&#34;)
+    tokensG = list(&#34;a&#34;)
+    assert hasCommon(tokensA, tokensA) == (0, 0, 4), hasCommon(tokensA, tokensA)
+    assert hasCommon(tokensA, tokensB) == (1, 2, 2), hasCommon(tokensA, tokensB)
+    assert hasCommon(tokensB, tokensA) == (-1, 2, 2), hasCommon(tokensB, tokensA)
+    assert hasCommon(tokensA, tokensC) == (1, 3, 1), hasCommon(tokensA, tokensC)
+    assert hasCommon(tokensC, tokensA) == (-1, 3, 1), hasCommon(tokensC, tokensA)
+    assert hasCommon(tokensA, tokensD) == (1, 1, 2), hasCommon(tokensA, tokensD)
+    assert hasCommon(tokensD, tokensA) == (-1, 1, 2), hasCommon(tokensD, tokensA)
+    assert hasCommon(tokensA, tokensE) == (1, 0, 2), hasCommon(tokensA, tokensE)
+    assert hasCommon(tokensE, tokensA) == (-1, 0, 2), hasCommon(tokensE, tokensA)
+    assert hasCommon(tokensA, tokensF) == (1, 2, 2), hasCommon(tokensA, tokensF)
+    assert hasCommon(tokensF, tokensA) == (-1, 2, 2), hasCommon(tokensF, tokensA)
+    assert hasCommon(tokensE, tokensG) == (1, 0, 1), hasCommon(tokensE, tokensG)
+    assert hasCommon(tokensG, tokensE) == (-1, 0, 1), hasCommon(tokensG, tokensE)
+
+    tokensA = list(&#34;abcd&#34;)
+    tokensB = list(&#34;cef&#34;)
+    tokensC = list(&#34;efg&#34;)
+    tokensD = list(&#34;bd&#34;)
+    tokensE = list(&#34;ac&#34;)
+    tokensF = list(&#34;ad&#34;)
+
+    assert hasCommon(tokensA, tokensB) == None, hasCommon(tokensA, tokensB)
+    assert hasCommon(tokensB, tokensA) == None, hasCommon(tokensB, tokensA)
+    assert hasCommon(tokensA, tokensC) == None, hasCommon(tokensA, tokensC)
+    assert hasCommon(tokensC, tokensA) == None, hasCommon(tokensC, tokensA)
+    assert hasCommon(tokensA, tokensD) == None, hasCommon(tokensA, tokensD)
+    assert hasCommon(tokensD, tokensA) == None, hasCommon(tokensD, tokensA)
+    assert hasCommon(tokensA, tokensE) == None, hasCommon(tokensA, tokensE)
+    assert hasCommon(tokensE, tokensA) == None, hasCommon(tokensE, tokensA)
+    assert hasCommon(tokensA, tokensF) == None, hasCommon(tokensA, tokensF)
+    assert hasCommon(tokensF, tokensA) == None, hasCommon(tokensF, tokensA)
+    ```
+    &#34;&#34;&#34;
+    nA = len(tokensA)
+    nB = len(tokensB)
+
+    if tokensA == tokensB:
+        return (0, 0, nA)
+
+    for i in range(nA - 1, -1, -1):
+        end = min((nB, nA - i))
+
+        if tokensA[i : i + end] == tokensB[0:end]:
+            ref = 1 if i &gt; 0 else 1 if nA &gt;= nB else -1
+            return (ref, i, end)
+
+    for i in range(nB - 1, -1, -1):
+        end = min((nA, nB - i))
+
+        if tokensB[i : i + end] == tokensA[0:end]:
+            ref = -1 if i &gt; 0 else -1 if nB &gt;= nA else 1
+            return (ref, i, end)
+
+    return None
+
+
+def makePartitions(triggers, myToTokens):
+    &#34;&#34;&#34;Partition a set of triggers into groups where triggers are pairwise disjoint.
+
+    The intention is to explore all triggers that apparently do not have hits.
+    We need to look them up in isolation, because then they might have hits.
+
+    But searching per trigger is expensive. We want to group triggers together
+    that can not interact with each other: triggers whose tokens are pairwise
+    disjoint. A hit of one trigger can then never be part of a hit of any other
+    trigger in the group.
+    &#34;&#34;&#34;
+
+    triggerTokens = {}
+    nTriggerTokens = {}
+
+    for trigger in triggers:
+        tokens = myToTokens(trigger)
+        triggerTokens[trigger] = tokens
+        nTriggerTokens.setdefault(len(tokens), {})[trigger] = tokens
+
+    singleTokenTriggers = list(nTriggerTokens[1]) if 1 in nTriggerTokens else []
+
+    partition = [singleTokenTriggers]
+
+    for n in sorted(nTriggerTokens):
+        if n == 1:
+            continue
+        for triggerA, tokensA in nTriggerTokens[n].items():
+            added = False
+
+            for part in partition:
+                common = False
+
+                for triggerB in part:
+                    tokensB = triggerTokens[triggerB]
+
+                    if hasCommon(tokensA, tokensB):
+                        common = True
+                        break
+
+                if common:
+                    continue
+
+                part.append(triggerA)
+                added = True
+                break
+
+            if not added:
+                partition.append([triggerA])
+
+    return (triggerTokens, partition)
+
+
+def interference(
+    rowMap, triggerScopes, myToTokens, alsoInternal=False, alsoExpected=False
+):
+    triggers = list(rowMap)
+
+    triggerTokens, parts = makePartitions(triggers, myToTokens)
+
+    nParts = len(parts)
+
+    interferences = []
+
+    intersections = {}
+
+    for i, part in enumerate(parts):
+        if i == nParts - 1:
+            break
+
+        for otherPart in parts[i + 1 : nParts]:
+            for triggerA in part:
+                for triggerB in otherPart:
+                    tokensA = triggerTokens[triggerA]
+                    tokensB = triggerTokens[triggerB]
+
+                    if not alsoInternal:
+                        rowsA = set(rowMap[triggerA])
+                        rowsB = set(rowMap[triggerB])
+                        if rowsA == rowsB:
+                            continue
+
+                    scopesA = &#34;,&#34;.join(sorted(triggerScopes[triggerA]))
+                    scopesB = &#34;,&#34;.join(sorted(triggerScopes[triggerB]))
+                    commonScopes = intersections.get((triggerA, triggerB), None)
+
+                    if commonScopes is None:
+                        commonScopes = intersectScopes(scopesA, scopesB)
+                        intersections[(triggerA, triggerB)] = commonScopes
+
+                    if len(commonScopes) == 0:
+                        continue
+
+                    common = hasCommon(tokensA, tokensB)
+
+                    if common is None:
+                        continue
+
+                    ref, pos, length = common
+                    nTokensA = len(tokensA)
+                    nTokensB = len(tokensB)
+
+                    nTokensLatter = nTokensB if ref == 1 else nTokensA
+
+                    expected = length == nTokensLatter
+
+                    if expected and not alsoExpected:
+                        continue
+
+                    if ref == 1:
+                        nB = len(tokensB)
+                        union = tokensA
+
+                        if length &lt; nB:
+                            union += tokensB[length:]
+                    else:
+                        nA = len(tokensA)
+                        union = tokensB
+
+                        if length &lt; nA:
+                            union += tokensA[length:]
+
+                    interferences.append(
+                        (
+                            triggerA,
+                            triggerB,
+                            &#34; &#34;.join(union),
+                            scopesA,
+                            scopesB,
+                            commonScopes,
+                        )
+                    )
+
+    parts = makePartitions([x[2] for x in interferences], myToTokens)[1]
+
+    return interferences, parts
+
+
 # SCOPES
 
 
@@ -424,6 +719,14 @@ def _locCmp(xLoc, yLoc):
     return 0
 
 
+def _locMax(xLoc, yLoc):
+    return xLoc if _locCmp(xLoc, yLoc) == 1 else yLoc
+
+
+def _locMin(xLoc, yLoc):
+    return xLoc if _locCmp(xLoc, yLoc) == -1 else yLoc
+
+
 def _sameLoc(xLoc, yLoc):
     return all(
         xc == yc or ((xc == -1 or xc == 0) and (yc == -1 or yc == 0))
@@ -450,6 +753,18 @@ def sortLocs(locs):
 
 def sortScopes(scopes):
     return tuple(sorted(scopes, key=_scopeSort))
+
+
+def locInScope(loc, scope):
+    (b, e) = scope
+    return _locCmp(b, loc) &lt;= 0 and _locCmp(loc, e) &lt;= 0
+
+
+def locInScopes(loc, scopes):
+    if not len(scopes):
+        return False
+
+    return any(locInScope(loc, scope) for scope in scopes)
 
 
 def repLoc(loc):
@@ -577,6 +892,33 @@ def parseScopes(scopeStr, plain=True):
         if plain
         else dict(result=results, warning=warnings, normal=repScopes(results))
     )
+
+
+def intersectScopes(*scopeStrs):
+    curIntersection = [parseScope(&#34;&#34;)]
+
+    for scopeStr in scopeStrs:
+        newIntersection = []
+        for bLoc, eLoc in parseScopes(scopeStr):
+
+            for ibLoc, ieLoc in curIntersection:
+                if _locCmp(ieLoc, bLoc) == -1:
+                    # ieLoc &lt; bLoc
+                    continue
+                if _locCmp(ibLoc, eLoc) == 1:
+                    # ibLoc &gt; eLoc
+                    break
+
+                # now
+                # bLoc &lt;= ieLoc
+                # ibLoc &lt;= eLoc
+                newIbLoc = _locMax(ibLoc, bLoc)
+                newIeLoc = _locMin(ieLoc, eLoc)
+                newIntersection.append((newIbLoc, newIeLoc))
+
+        curIntersection = newIntersection
+
+    return tuple(curIntersection)
 
 
 def partitionScopes(scopesDict):
@@ -727,6 +1069,146 @@ You can use <code><a title="tf.browser.ner.helpers.tnorm" href="#tf.browser.ner.
 <dd>
 <div class="desc"></div>
 </dd>
+<dt id="tf.browser.ner.helpers.hasCommon"><code class="name flex">
+<span>def <span class="ident">hasCommon</span></span>(<span>tokensA, tokensB)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Whether one sequence of tokens interferes with another.</p>
+<p>The idea is: we want to determine whether matches for tokensA may interfere
+with matches for tokensB.</p>
+<p>This happens if tokensB is a sublist of tokensA, or if an initial segment of
+tokensB forms a tail inside tokensA.</p>
+<p>Or the same with tokensA and tokensB reversed.</p>
+<p>Proposition: tokensA en tokensB have something in common (in the above sense)
+if and only if you can make a text where tokensA and tokensB have overlapping
+matches. Proof follows.</p>
+<p>We return a result consisting of 3 integers: <code>ref</code>, <code>pos</code>, <code>length</code></p>
+<ul>
+<li>
+<p><code>ref</code> is either 0, 1 or -1.</p>
+<p>It is 0 if tokensA and tokensB are identical.
+It is 1 if tokensA properly contains B or if tokensB starts somewhere
+in tokensA.
+It is -1 otherwise.</p>
+</li>
+</ul>
+<p>Proof:</p>
+<p>(direction =&gt;)</p>
+<p>Suppose tokensA and tokensB have something in common.</p>
+<p>Let i, j be the start-end position of the (part of) tokensB that occur in tokensA.
+Construct a match for the combination of tokensA and tokensB as follows:</p>
+<p>tokensA[0:i] + tokensA[i:j] + xxx</p>
+<p>Two cases:</p>
+<ol>
+<li>tokensB is fully contained in tokensA.
+Then take for xxx: tokensA[j:].
+The result is a match for tokensA and hence for tokensB.</li>
+<li>
+<p>tokensB is only contained in A up to index k. By definition of common, this
+means that tokensB[0:k] is equal to tokensA[-k:] and hence
+that j == len(tokensA).
+Then take for xxx: tokensB[k:].
+We then have:</p>
+<p>tokensA + tokensB[k:] =</p>
+<p>tokensA[0:i] + tokensA[i:] + tokensB[k:]</p>
+<p>tkoensA[0:i] + tokensA[i:j] + tokensB[k:] = (because j == len(tokensA))</p>
+<p>tokensA[0:i] + tokensA[i:j] + tokensB[k:] =</p>
+<p>tokensA[0:i] + tokensB[0:k] + tokensB[k:] =</p>
+<p>tokensA[0:i] + tokensB</p>
+<p>So, this text is a match for tokensA and for tokensB</p>
+<p>(direction &lt;=)</p>
+<p>Suppose we have a text T with an overlapping match for tokensA and tokensB.</p>
+<p>Suppose T[i:j] is a match for tokensA and T[n:m] is a match for tokensB, and
+T[i:j] and T[m:n] overlap.</p>
+<p>Two cases:</p>
+<ol>
+<li>
+<p>one match is contained in the other. We consider T[m:n] is
+contained in T[i:j]. For the reverse case, the argument is the same
+with tokensA and tokensB interchanged.</p>
+<p>T[m:n] is part of a match of tokensA, so T[m:n] occurs in tokensA.
+T[m:n] is also a match for tokensB, so tokensB == T[m:n], so tokensB
+is a part of tokensA, hence, by definition: tokensA and tokensB
+have something in common.
+2.
+the two matches have a region in common, but none is contained in the
+other.
+We consider the case where m is between i and j. The case where i is
+between m and n is analogous, with tokensA and tokensB interchanged.</p>
+<p>Now T[m:j] is part of a match for tokensA and for tokensB.
+Then T[m:j] is at the end of T[i:j], so part of tokensB is at the
+end of tokensA.</p>
+</li>
+</ol>
+</li>
+</ol>
+<p>Test:</p>
+<pre><code>from tf.browser.ner.helpers import hasCommon
+
+tokensA = list(&quot;abcd&quot;)
+tokensB = list(&quot;cdef&quot;)
+tokensC = list(&quot;defg&quot;)
+tokensD = list(&quot;bc&quot;)
+tokensE = list(&quot;ab&quot;)
+tokensF = list(&quot;cd&quot;)
+tokensG = list(&quot;a&quot;)
+assert hasCommon(tokensA, tokensA) == (0, 0, 4), hasCommon(tokensA, tokensA)
+assert hasCommon(tokensA, tokensB) == (1, 2, 2), hasCommon(tokensA, tokensB)
+assert hasCommon(tokensB, tokensA) == (-1, 2, 2), hasCommon(tokensB, tokensA)
+assert hasCommon(tokensA, tokensC) == (1, 3, 1), hasCommon(tokensA, tokensC)
+assert hasCommon(tokensC, tokensA) == (-1, 3, 1), hasCommon(tokensC, tokensA)
+assert hasCommon(tokensA, tokensD) == (1, 1, 2), hasCommon(tokensA, tokensD)
+assert hasCommon(tokensD, tokensA) == (-1, 1, 2), hasCommon(tokensD, tokensA)
+assert hasCommon(tokensA, tokensE) == (1, 0, 2), hasCommon(tokensA, tokensE)
+assert hasCommon(tokensE, tokensA) == (-1, 0, 2), hasCommon(tokensE, tokensA)
+assert hasCommon(tokensA, tokensF) == (1, 2, 2), hasCommon(tokensA, tokensF)
+assert hasCommon(tokensF, tokensA) == (-1, 2, 2), hasCommon(tokensF, tokensA)
+assert hasCommon(tokensE, tokensG) == (1, 0, 1), hasCommon(tokensE, tokensG)
+assert hasCommon(tokensG, tokensE) == (-1, 0, 1), hasCommon(tokensG, tokensE)
+
+tokensA = list(&quot;abcd&quot;)
+tokensB = list(&quot;cef&quot;)
+tokensC = list(&quot;efg&quot;)
+tokensD = list(&quot;bd&quot;)
+tokensE = list(&quot;ac&quot;)
+tokensF = list(&quot;ad&quot;)
+
+assert hasCommon(tokensA, tokensB) == None, hasCommon(tokensA, tokensB)
+assert hasCommon(tokensB, tokensA) == None, hasCommon(tokensB, tokensA)
+assert hasCommon(tokensA, tokensC) == None, hasCommon(tokensA, tokensC)
+assert hasCommon(tokensC, tokensA) == None, hasCommon(tokensC, tokensA)
+assert hasCommon(tokensA, tokensD) == None, hasCommon(tokensA, tokensD)
+assert hasCommon(tokensD, tokensA) == None, hasCommon(tokensD, tokensA)
+assert hasCommon(tokensA, tokensE) == None, hasCommon(tokensA, tokensE)
+assert hasCommon(tokensE, tokensA) == None, hasCommon(tokensE, tokensA)
+assert hasCommon(tokensA, tokensF) == None, hasCommon(tokensA, tokensF)
+assert hasCommon(tokensF, tokensA) == None, hasCommon(tokensF, tokensA)
+</code></pre></div>
+</dd>
+<dt id="tf.browser.ner.helpers.interference"><code class="name flex">
+<span>def <span class="ident">interference</span></span>(<span>rowMap, triggerScopes, myToTokens, alsoInternal=False, alsoExpected=False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.browser.ner.helpers.intersectScopes"><code class="name flex">
+<span>def <span class="ident">intersectScopes</span></span>(<span>*scopeStrs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.browser.ner.helpers.locInScope"><code class="name flex">
+<span>def <span class="ident">locInScope</span></span>(<span>loc, scope)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.browser.ner.helpers.locInScopes"><code class="name flex">
+<span>def <span class="ident">locInScopes</span></span>(<span>loc, scopes)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="tf.browser.ner.helpers.makeCss"><code class="name flex">
 <span>def <span class="ident">makeCss</span></span>(<span>features, keywordFeatures)</span>
 </code></dt>
@@ -741,6 +1223,18 @@ differently than features with an unbounded set of values, such as <code>eid</co
 <dd>What the features are and what the keyword features are.
 These derive ultimately from the corpus-dependent <code>ner/config.yaml</code>.</dd>
 </dl></div>
+</dd>
+<dt id="tf.browser.ner.helpers.makePartitions"><code class="name flex">
+<span>def <span class="ident">makePartitions</span></span>(<span>triggers, myToTokens)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Partition a set of triggers into groups where triggers are pairwise disjoint.</p>
+<p>The intention is to explore all triggers that apparently do not have hits.
+We need to look them up in isolation, because then they might have hits.</p>
+<p>But searching per trigger is expensive. We want to group triggers together
+that can not interact with each other: triggers whose tokens are pairwise
+disjoint. A hit of one trigger can then never be part of a hit of any other
+trigger in the group.</p></div>
 </dd>
 <dt id="tf.browser.ner.helpers.normalize"><code class="name flex">
 <span>def <span class="ident">normalize</span></span>(<span>text)</span>
@@ -981,7 +1475,13 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.browser.ner.helpers.findCompile" href="#tf.browser.ner.helpers.findCompile">findCompile</a></code></li>
 <li><code><a title="tf.browser.ner.helpers.fromTokens" href="#tf.browser.ner.helpers.fromTokens">fromTokens</a></code></li>
 <li><code><a title="tf.browser.ner.helpers.getIntvIndex" href="#tf.browser.ner.helpers.getIntvIndex">getIntvIndex</a></code></li>
+<li><code><a title="tf.browser.ner.helpers.hasCommon" href="#tf.browser.ner.helpers.hasCommon">hasCommon</a></code></li>
+<li><code><a title="tf.browser.ner.helpers.interference" href="#tf.browser.ner.helpers.interference">interference</a></code></li>
+<li><code><a title="tf.browser.ner.helpers.intersectScopes" href="#tf.browser.ner.helpers.intersectScopes">intersectScopes</a></code></li>
+<li><code><a title="tf.browser.ner.helpers.locInScope" href="#tf.browser.ner.helpers.locInScope">locInScope</a></code></li>
+<li><code><a title="tf.browser.ner.helpers.locInScopes" href="#tf.browser.ner.helpers.locInScopes">locInScopes</a></code></li>
 <li><code><a title="tf.browser.ner.helpers.makeCss" href="#tf.browser.ner.helpers.makeCss">makeCss</a></code></li>
+<li><code><a title="tf.browser.ner.helpers.makePartitions" href="#tf.browser.ner.helpers.makePartitions">makePartitions</a></code></li>
 <li><code><a title="tf.browser.ner.helpers.normalize" href="#tf.browser.ner.helpers.normalize">normalize</a></code></li>
 <li><code><a title="tf.browser.ner.helpers.parseLoc" href="#tf.browser.ner.helpers.parseLoc">parseLoc</a></code></li>
 <li><code><a title="tf.browser.ner.helpers.parseScope" href="#tf.browser.ner.helpers.parseScope">parseScope</a></code></li>

@@ -244,7 +244,7 @@ slots.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/browser/ner/ner.py#L1-L1016" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/dcb61dd4acf4318648508850c11f180ea534b65f/tf/browser/ner/ner.py#L1-L1460" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;API for Named Entity marking.
 
@@ -527,14 +527,28 @@ from ...core.files import (
 )
 from ...core.timestamp import SILENT_D, DEEP
 from .sheets import Sheets
-from .helpers import findCompile, toTokens
+from .helpers import (
+    findCompile,
+    toTokens,
+    makePartitions,
+    interference,
+    locInScopes,
+)
 from .sets import Sets
 from .show import Show
 from .match import entityMatch, occMatch
 
 
 class NER(Sheets, Sets, Show):
-    def __init__(self, app, normalizeChars=None, data=None, browse=False, silent=False):
+    def __init__(
+        self,
+        app,
+        normalizeChars=None,
+        data=None,
+        browse=False,
+        caseSensitive=False,
+        silent=False,
+    ):
         &#34;&#34;&#34;Entity annotation.
 
         Basic methods to handle the various aspects of entity annotation.
@@ -598,6 +612,7 @@ class NER(Sheets, Sets, Show):
         self.browse = browse
         self.app = app
         self.normalizeChars = normalizeChars
+        self.caseSensitive = caseSensitive
 
         Sets.__init__(self, sets=data.sets)
         if not self.properlySetup:
@@ -607,7 +622,10 @@ class NER(Sheets, Sets, Show):
         if not self.properlySetup:
             return
 
-    def setTask(self, task, force=False, caseSensitive=False):
+    def setTask(self, task, force=False, caseSensitive=None):
+        if caseSensitive is None:
+            caseSensitive = self.caseSensitive
+
         (newSetNameRep, newSetRo, newSetSrc, newSetX) = self.setInfo(task)
         self.setSet(task)
         self.setSheet(
@@ -635,6 +653,49 @@ class NER(Sheets, Sets, Show):
         sheetData = self.getSheetData()
         return (sheetData.metaFields, sheetData.metaData)
 
+    def findTriggers(self, triggers):
+        if not self.properlySetup:
+            return []
+
+        settings = self.settings
+        spaceEscaped = settings.spaceEscaped
+
+        setData = self.getSetData()
+        getTokens = self.getTokens
+        getHeadings = self.getHeadings
+
+        buckets = setData.buckets or ()
+        sheetData = self.getSheetData()
+
+        caseSensitive = sheetData.caseSensitive
+
+        idMap = {trigger: trigger for trigger in triggers}
+        tMap = {trigger: &#34;&#34; for trigger in triggers}
+        tPos = {}
+        triggerSet = set()
+        instructions = {(): dict(tPos=tPos, tMap=tMap, idMap=idMap)}
+
+        for trigger in triggers:
+            triggerT = toTokens(
+                trigger, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
+            )
+            triggerSet.add(triggerT)
+
+        for triggerT in triggerSet:
+            for i, token in enumerate(triggerT):
+                tPos.setdefault(i, {}).setdefault(token, set()).add(triggerT)
+
+        inventory = occMatch(
+            getTokens,
+            getHeadings,
+            buckets,
+            instructions,
+            spaceEscaped,
+            caseSensitive=caseSensitive,
+        )
+
+        return inventory
+
     def findTrigger(self, trigger, show=True):
         if not self.properlySetup:
             return []
@@ -650,9 +711,7 @@ class NER(Sheets, Sets, Show):
         getHeadings = self.getHeadings
 
         buckets = setData.buckets or ()
-
-        sheetName = self.sheetName
-        sheetData = self.sheets[sheetName]
+        sheetData = self.getSheetData()
 
         caseSensitive = sheetData.caseSensitive
 
@@ -681,11 +740,10 @@ class NER(Sheets, Sets, Show):
 
         if show:
             nOccs = len(occs)
+            plural = &#34;&#34; if nOccs == 1 else &#34;s&#34;
+            app.dm(f&#34;**{nOccs} occurrence{plural}**\n&#34;)
 
             if nOccs:
-                plural = &#34;&#34; if nOccs == 1 else &#34;s&#34;
-                app.dm(f&#34;**{nOccs} occurrence{plural}**\n&#34;)
-
                 headings = set()
                 highlights = set()
 
@@ -697,6 +755,376 @@ class NER(Sheets, Sets, Show):
 
                 for hd in sorted(headings):
                     app.plain(hd, highlights=highlights)
+        else:
+            return occs
+
+    def getToTokensFunc(self):
+        settings = self.settings
+        spaceEscaped = settings.spaceEscaped
+        sheetData = self.getSheetData()
+        caseSensitive = sheetData.caseSensitive
+
+        def myToTokens(trigger):
+            return toTokens(
+                trigger, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
+            )
+
+        return myToTokens
+
+    def partitionTriggers(self, triggers):
+        return makePartitions(triggers, self.getToTokensFunc())[1]
+
+    def triggerInterference(self, alsoInternal=False, alsoExpected=False):
+        &#34;&#34;&#34;Produce a report of interferences between triggers.
+
+        Triggers interfere if they have matches that intersect, i.e. there is a match
+        m1 of trigger t1 and a match m2 of trigger t2 such that m1 and m2 intersect.
+
+        Triggers may interfere *potentially*: if the triggers overlap they can have
+        intersecting matches. But it does not mean that the corpus contains overlapping
+        matches, i.e. that the triggers conflict actually.
+
+        We report *actually* interfering triggers.
+
+        Triggers within one row are associated to the same entity and work in the same
+        row. It is not bad if they are conflicting with each other. If there
+        are conflicting matches, the trigger that wins still flags the same entity.
+        The worst thing is that some of these triggers are superfluous, but there is
+        no reason to be picky on superfluous triggers.
+
+        When one trigger is a proper part of another, this is mostly intentional.
+        If the longer trigger matches, it wins it from the shorter trigger, unless
+        the shorter trigger&#39;s match starts before the longer trigger&#39;s match.
+
+        We think the user expects the longer trigger to win, but it may surprise him
+        if the shorter triggers wins because it starts earlier.
+
+        Parameters
+        ----------
+        alsoInternal: boolean, optional False
+            Also report interference between triggers on the same row.
+        alsoExpected: boolean, optional False
+            Also report expected interferences.
+        &#34;&#34;&#34;
+        setName = self.setName
+        annoDir = self.annoDir
+        setDir = f&#34;{annoDir}/{setName}&#34;
+        reportFile = f&#34;{setDir}/interference.tsv&#34;
+
+        app = self.app
+        L = app.api.L
+        T = app.api.T
+        sheetData = self.getSheetData()
+        rowMap = sheetData.rowMap
+        triggerScopes = sheetData.triggerScopes
+
+        interferences, parts = interference(
+            rowMap,
+            triggerScopes,
+            self.getToTokensFunc(),
+            alsoInternal=alsoInternal,
+            alsoExpected=alsoExpected,
+        )
+
+        messages = []
+        witnessed = {}
+
+        nParts = len(parts)
+        plural = &#34;&#34; if nParts == 1 else &#34;es&#34;
+        self.console(
+            f&#34;Looking up {len(interferences)} potential interferences &#34;
+            f&#34;in {len(parts)} pass{plural} over the corpus &#34;,
+            newline=False,
+        )
+
+        for part in parts:
+            self.console(&#34;.&#34;, newline=False)
+            inventory = self.findTriggers(part)
+
+            for trigger, data in inventory.items():
+                occs = data.get(trigger, {}).get(&#34;&#34;, [])
+                nOccs = len(occs)
+
+                if nOccs:
+                    witnessed[trigger] = occs
+
+        self.console(&#34;&#34;)
+
+        msg = (
+            f&#34;{len(witnessed)} potential conflicting trigger pairs with &#34;
+            f&#34;{sum(len(x) for x in witnessed.values())} conflicts&#34;
+        )
+        console(msg)
+        messages.append(msg)
+
+        conflicts = {}
+
+        for (
+            triggerA,
+            triggerB,
+            triggerC,
+            scopeRepA,
+            scopeRepB,
+            commonScopes,
+        ) in interferences:
+            if triggerC not in witnessed:
+                continue
+
+            rowA = sorted(set(rowMap[triggerA]))
+            rowB = sorted(set(rowMap[triggerB]))
+            key = &#34;same row&#34; if rowA == rowB else &#34;different rows&#34;
+            conflicts.setdefault(key, []).append(
+                (
+                    rowA,
+                    rowB,
+                    triggerA,
+                    triggerB,
+                    witnessed[triggerC],
+                    scopeRepA,
+                    scopeRepB,
+                    commonScopes,
+                )
+            )
+
+        for key, confls in conflicts.items():
+            newConfls = []
+
+            for (
+                rowA,
+                rowB,
+                triggerA,
+                triggerB,
+                occs,
+                scopeRepA,
+                scopeRepB,
+                commonScopes,
+            ) in confls:
+                hits = {}
+
+                for occ in sorted(occs):
+                    sectionNode = L.u(occ[0], otype=&#34;chunk&#34;)[0]
+                    heading = tuple(
+                        int(x if type(x) is int else x.lstrip(&#34;0&#34;) or &#34;0&#34;)
+                        for x in T.sectionFromNode(sectionNode, fillup=True)
+                    )
+
+                    if not locInScopes(heading, commonScopes):
+                        continue
+
+                    heading = app.sectionStrFromNode(sectionNode)
+                    hits.setdefault(heading, []).append(occ)
+
+                if len(hits) == 0:
+                    continue
+
+                newConfls.append(
+                    (rowA, rowB, triggerA, triggerB, hits, scopeRepA, scopeRepB)
+                )
+
+            msg = f&#34;{key} ({len(newConfls)} pairs)&#34;
+            msg = f&#34;----------\n{msg}\n----------&#34;
+            console(msg)
+            messages.append(msg)
+
+            for (
+                rowA,
+                rowB,
+                triggerA,
+                triggerB,
+                hits,
+                scopeRepA,
+                scopeRepB,
+            ) in newConfls:
+                rowRepA = &#34;,&#34;.join(str(r) for r in rowA)
+                rowRepB = &#34;,&#34;.join(str(r) for r in rowB)
+                msg = (
+                    f&#34;{rowRepA:&lt;12} ({scopeRepA:&lt;12}): «{triggerA}»\n&#34;
+                    f&#34;{rowRepB:&lt;12} ({scopeRepB:&lt;12}): «{triggerB}»&#34;
+                )
+                console(msg)
+                messages.append(msg)
+                console(f&#34;{hits=}&#34;)
+
+                diags = []
+
+                i = 0
+
+                for heading, occs in sorted(hits.items()):
+                    nOccs = len(occs)
+
+                    if i == 0:
+                        diags.append([])
+
+                    diags[-1].append(f&#34;{heading} x {nOccs}&#34;)
+                    i += 1
+
+                    if i == 5:
+                        i = 0
+
+                first = True
+
+                for batch in diags:
+                    label = f&#34;{&#39;occurrences&#39;:&gt;25}: &#34; if first else (&#34; &#34; * 27)
+                    first = False
+                    msg = f&#34;{label} {&#39;, &#39;.join(batch)}&#34;
+                    console(msg)
+                    messages.append(msg)
+
+        with fileOpen(reportFile, &#34;w&#34;) as fh:
+            for msg in messages:
+                fh.write(f&#34;{msg}\n&#34;)
+
+        console(f&#34;Diagnostic trigger interferences written to {reportFile}&#34;)
+
+    def diagnoseTriggers(self, triggers, detail=True):
+        sheetData = self.getSheetData()
+        triggerScopes = sheetData.triggerScopes
+
+        parts = self.partitionTriggers(triggers)
+
+        uncovered = 0
+
+        nParts = len(parts)
+        plural = &#34;&#34; if nParts == 1 else &#34;es&#34;
+        self.console(
+            f&#34;Looking up {len(triggers)} triggers &#34;
+            f&#34;in {len(parts)} pass{plural} over the corpus &#34;,
+            newline=False,
+        )
+
+        items = []
+
+        for part in parts:
+            self.console(&#34;.&#34;, newline=False)
+            inventory = self.findTriggers(part)
+
+            for trigger, data in inventory.items():
+                occs = data.get(trigger, {}).get(&#34;&#34;, [])
+                items.append((trigger, occs))
+
+        for (trigger, occs) in sorted(
+            items,
+            key=lambda x: (&#34;, &#34;.join(sorted(triggerScopes[x[0]])), x[0].lower()),
+        ):
+            uncovered += (
+                0 if self.diagnoseTrigger(trigger, occs, detail=detail) else 1
+            )
+
+        self.console(&#34;&#34;)
+
+        return uncovered
+
+    def diagnoseTrigger(self, trigger, occs, detail=True):
+        app = self.app
+        L = app.api.L
+        triggerBySlot = self.triggerBySlot
+        sheetData = self.getSheetData()
+        triggerScopes = sheetData.triggerScopes
+
+        uncoveredSlots = set()
+        coveredBy = {}
+
+        for slots in occs:
+            for slot in slots:
+                cTrigger = triggerBySlot.get(slot, None)
+
+                if cTrigger is None:
+                    uncoveredSlots.add(slot)
+                else:
+                    coveredBy.setdefault(cTrigger, set()).add(slot)
+
+        properHits = {}
+
+        nUncoveredSlots = len(uncoveredSlots)
+        ok = nUncoveredSlots == 0
+
+        if nUncoveredSlots:
+            for slot in sorted(uncoveredSlots):
+                heading = app.sectionStrFromNode(L.u(slot, otype=&#34;chunk&#34;)[0])
+                occ = properHits.setdefault(heading, [[]])
+
+                if len(occ[-1]) == 0 or occ[-1][-1] + 1 == slot:
+                    occ[-1].append(slot)
+                else:
+                    occ.append([slot])
+
+        nMissedHits = 0
+        properOccsDiag = []
+        properOccsDiagCompact = []
+
+        for heading, occs in properHits.items():
+            nOccs = len(occs)
+            nMissedHits += nOccs
+            properOccsDiag.append(f&#34;\t\t{heading}: {nOccs} x&#34;)
+            properOccsDiagCompact.append(f&#34;{heading} x {nOccs}&#34;)
+
+        properOccsDiag[0:0] = [f&#34;\tuncovered: {nMissedHits} x&#34;]
+
+        coveredOccsDiag = []
+
+        for cTrigger in sorted(coveredBy, key=lambda x: x.lower()):
+            thisCoveredOccsDiag = []
+            coveredSlots = sorted(coveredBy[cTrigger])
+
+            coveredHits = {}
+
+            for slot in sorted(coveredSlots):
+                heading = app.sectionStrFromNode(L.u(slot, otype=&#34;chunk&#34;)[0])
+                occ = coveredHits.setdefault(heading, [[]])
+
+                if len(occ[-1]) == 0 or occ[-1][-1] + 1 == slot:
+                    occ[-1].append(slot)
+                else:
+                    occ.append([slot])
+
+            nCoveredHits = 0
+
+            for heading, occs in coveredHits.items():
+                nOccs = len(occs)
+                nCoveredHits += nOccs
+                thisCoveredOccsDiag.append(f&#34;\t\t{heading}: {nOccs} x&#34;)
+
+            thisCoveredOccsDiag[0:0] = [f&#34;\tcovered by: {cTrigger}: {nCoveredHits} x&#34;]
+
+            coveredOccsDiag.extend(thisCoveredOccsDiag)
+
+        scopeRep = f&#34;({&#39;, &#39;.join(sorted(triggerScopes[trigger]))})&#34;
+
+        if detail:
+            console(f&#34;{trigger} {scopeRep}:&#34;)
+
+            for line in properOccsDiag:
+                console(line)
+
+            for line in coveredOccsDiag:
+                console(line)
+
+        else:
+            if nUncoveredSlots == 0:
+                if False:
+                    console(f&#34;{trigger} {scopeRep}: covered by other triggers&#34;)
+            else:
+                missedHits = []
+
+                i = 0
+                for occRep in properOccsDiagCompact:
+                    if i == 0:
+                        missedHits.append([occRep])
+                    else:
+                        missedHits[-1].append(occRep)
+
+                    i += 1
+                    if i == 5:
+                        i = 0
+
+                missedHitsRep = &#39;, &#39;.join(missedHits[0])
+                console(f&#34;{trigger:&lt;40} {scopeRep:&lt;12}: {missedHitsRep}&#34;, error=True)
+
+                for m in missedHits[1:]:
+                    missedHitsRep = &#34;, &#34;.join(m)
+                    console(f&#34;{&#39; &#39; * 55}{missedHitsRep}&#34;, error=True)
+
+        return ok
 
     def findOccs(self):
         &#34;&#34;&#34;Finds the occurrences of multiple triggers.
@@ -730,8 +1158,7 @@ class NER(Sheets, Sets, Show):
 
         buckets = setData.buckets or ()
 
-        sheetName = self.sheetName
-        sheetData = self.sheets[sheetName]
+        sheetData = self.getSheetData()
         instructions = sheetData.instructions
         caseSensitive = sheetData.caseSensitive
         sheetData.inventory = occMatch(
@@ -1004,37 +1431,21 @@ class NER(Sheets, Sets, Show):
             return
 
         silent = self.silent if silent is None else silent
-        sheetName = self.sheetName
-        sheetData = self.sheets[sheetName]
-
         getHeadings = self.getHeadings
-        nameMap = sheetData.nameMap
+        sheetData = self.getSheetData()
+        allTriggers = sheetData.allTriggers
         inventory = sheetData.inventory
-        instructions = sheetData.instructions
 
         setName = self.setName
         annoDir = self.annoDir
         setDir = f&#34;{annoDir}/{setName}&#34;
         reportFile = f&#34;{setDir}/hits.tsv&#34;
-
-        allTriggers = set()
-
-        for intv, data in instructions.items():
-            idMap = data[&#34;idMap&#34;]
-            tMap = data[&#34;tMap&#34;]
-
-            for trigger, scope in tMap.items():
-                eidkind = idMap.get(trigger, None)
-
-                if eidkind is None:
-                    continue
-
-                name = nameMap[eidkind]
-                allTriggers.add((name, eidkind, trigger, scope))
+        reportTriggerBySlotFile = f&#34;{setDir}/triggerBySlot.tsv&#34;
 
         hitData = []
         names = set()
         noHits = set()
+        triggersBySlot = {}
 
         for e in sorted(allTriggers):
             (name, eidkind, trigger, scope) = e
@@ -1069,25 +1480,47 @@ class NER(Sheets, Sets, Show):
             sectionInfo = collections.Counter()
 
             for slots in occs:
+                for slot in slots:
+                    triggersBySlot.setdefault(slot, set()).add(trigger)
+
                 section = &#34;.&#34;.join(str(x) for x in getHeadings(slots[0]))
                 sectionInfo[section] += 1
 
             for section, hits in sorted(sectionInfo.items()):
                 hitData.append((&#34;OK&#34;, *entry, section, hits))
 
+        multipleTriggers = {}
+        triggerBySlot = {}
+        self.triggerBySlot = triggerBySlot
+
+        for slot, triggers in triggersBySlot.items():
+            if len(triggers) &gt; 1:
+                multipleTriggers[slot] = triggers
+
+            triggerBySlot[slot] = list(triggers)[0]
+
+        if len(multipleTriggers) == 0:
+            self.console(&#34;No slot is covered by more than one trigger&#34;)
+        else:
+            console(
+                f&#34;Slots covered by multiple triggers: {len(multipleTriggers)}&#34;,
+                error=True,
+            )
+            for slot, triggers in multipleTriggers.items():
+                triggersRep = &#34;, &#34;.join(f&#34;«{trigger}»&#34; for trigger in sorted(triggers))
+                self.console(f&#34;{slot:&gt;7}: {triggersRep}&#34;, error=True)
+
         trigWithout = len(noHits)
 
         if showNoHits and (trigWithout &gt; 0):
+            uncovered = 0
             console(
                 &#34;Triggers without hits: &#34; f&#34;{trigWithout}x:&#34;,
                 error=True,
             )
 
             if len(noHits):
-                console(&#34;  triggers without hits:&#34;)
-
-                for trigger in sorted(noHits):
-                    console(f&#34;    {trigger}&#34;, error=True)
+                uncovered = self.diagnoseTriggers(noHits, detail=False)
 
         with fileOpen(reportFile, &#34;w&#34;) as rh:
             rh.write(&#34;label\tname\ttrigger\tsheet\tsection\thits\n&#34;)
@@ -1095,6 +1528,14 @@ class NER(Sheets, Sets, Show):
             for h in sorted(hitData):
                 line = &#34;\t&#34;.join(str(c) for c in h)
                 rh.write(f&#34;{line}\n&#34;)
+
+        with fileOpen(reportTriggerBySlotFile, &#34;w&#34;) as rh:
+            rh.write(&#34;slot\ttrigger\n&#34;)
+
+            for slot, trigger in sorted(
+                triggerBySlot.items(), key=lambda x: (x[1], x[0])
+            ):
+                rh.write(f&#34;{slot}\t{trigger}\n&#34;)
 
         nEnt = len(names)
         nTriggers = len(allTriggers)
@@ -1105,13 +1546,16 @@ class NER(Sheets, Sets, Show):
             if silent
             else dedent(
                 f&#34;&#34;&#34;
-                Entities targeted:     {nEnt:&gt;5}
-                Triggers searched for: {nTriggers:&gt;5}
-                Triggers without hits: {trigWithout:&gt;5}
-                Triggers with hits:    {nTriggers - trigWithout:&gt;5}
-                Total hits:            {nHits:&gt;5}
+                Entities targeted:          {nEnt:&gt;5}
+                Triggers searched for:      {nTriggers:&gt;5}
+                Triggers without hits:      {trigWithout:&gt;5}
+                 - completely covered:      {trigWithout - uncovered:&gt;5}
+                 - missing hits:            {uncovered:&gt;5}
+                Triggers with hits:         {nTriggers - trigWithout:&gt;5}
+                Total hits:                 {nHits:&gt;5}
 
-                All hits in report file: {reportFile}
+                All hits in report file:      {reportFile}
+                Triggers by slot in file:     {reportTriggerBySlotFile}
                 &#34;&#34;&#34;
             )
         )
@@ -1275,7 +1719,7 @@ class NER(Sheets, Sets, Show):
 <dl>
 <dt id="tf.browser.ner.ner.NER"><code class="flex name class">
 <span>class <span class="ident">NER</span></span>
-<span>(</span><span>app, normalizeChars=None, data=None, browse=False, silent=False)</span>
+<span>(</span><span>app, normalizeChars=None, data=None, browse=False, caseSensitive=False, silent=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Entity annotation.</p>
@@ -1324,10 +1768,18 @@ browser. This will influence how results are reported back.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/eb6b83f63f0531cede8b8d2a6cef467a0d009d87/tf/browser/ner/ner.py#L288-L1016" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/dcb61dd4acf4318648508850c11f180ea534b65f/tf/browser/ner/ner.py#L294-L1460" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Sheets, Sets, Show):
-    def __init__(self, app, normalizeChars=None, data=None, browse=False, silent=False):
+    def __init__(
+        self,
+        app,
+        normalizeChars=None,
+        data=None,
+        browse=False,
+        caseSensitive=False,
+        silent=False,
+    ):
         &#34;&#34;&#34;Entity annotation.
 
         Basic methods to handle the various aspects of entity annotation.
@@ -1391,6 +1843,7 @@ browser. This will influence how results are reported back.</dd>
         self.browse = browse
         self.app = app
         self.normalizeChars = normalizeChars
+        self.caseSensitive = caseSensitive
 
         Sets.__init__(self, sets=data.sets)
         if not self.properlySetup:
@@ -1400,7 +1853,10 @@ browser. This will influence how results are reported back.</dd>
         if not self.properlySetup:
             return
 
-    def setTask(self, task, force=False, caseSensitive=False):
+    def setTask(self, task, force=False, caseSensitive=None):
+        if caseSensitive is None:
+            caseSensitive = self.caseSensitive
+
         (newSetNameRep, newSetRo, newSetSrc, newSetX) = self.setInfo(task)
         self.setSet(task)
         self.setSheet(
@@ -1428,6 +1884,49 @@ browser. This will influence how results are reported back.</dd>
         sheetData = self.getSheetData()
         return (sheetData.metaFields, sheetData.metaData)
 
+    def findTriggers(self, triggers):
+        if not self.properlySetup:
+            return []
+
+        settings = self.settings
+        spaceEscaped = settings.spaceEscaped
+
+        setData = self.getSetData()
+        getTokens = self.getTokens
+        getHeadings = self.getHeadings
+
+        buckets = setData.buckets or ()
+        sheetData = self.getSheetData()
+
+        caseSensitive = sheetData.caseSensitive
+
+        idMap = {trigger: trigger for trigger in triggers}
+        tMap = {trigger: &#34;&#34; for trigger in triggers}
+        tPos = {}
+        triggerSet = set()
+        instructions = {(): dict(tPos=tPos, tMap=tMap, idMap=idMap)}
+
+        for trigger in triggers:
+            triggerT = toTokens(
+                trigger, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
+            )
+            triggerSet.add(triggerT)
+
+        for triggerT in triggerSet:
+            for i, token in enumerate(triggerT):
+                tPos.setdefault(i, {}).setdefault(token, set()).add(triggerT)
+
+        inventory = occMatch(
+            getTokens,
+            getHeadings,
+            buckets,
+            instructions,
+            spaceEscaped,
+            caseSensitive=caseSensitive,
+        )
+
+        return inventory
+
     def findTrigger(self, trigger, show=True):
         if not self.properlySetup:
             return []
@@ -1443,9 +1942,7 @@ browser. This will influence how results are reported back.</dd>
         getHeadings = self.getHeadings
 
         buckets = setData.buckets or ()
-
-        sheetName = self.sheetName
-        sheetData = self.sheets[sheetName]
+        sheetData = self.getSheetData()
 
         caseSensitive = sheetData.caseSensitive
 
@@ -1474,11 +1971,10 @@ browser. This will influence how results are reported back.</dd>
 
         if show:
             nOccs = len(occs)
+            plural = &#34;&#34; if nOccs == 1 else &#34;s&#34;
+            app.dm(f&#34;**{nOccs} occurrence{plural}**\n&#34;)
 
             if nOccs:
-                plural = &#34;&#34; if nOccs == 1 else &#34;s&#34;
-                app.dm(f&#34;**{nOccs} occurrence{plural}**\n&#34;)
-
                 headings = set()
                 highlights = set()
 
@@ -1490,6 +1986,376 @@ browser. This will influence how results are reported back.</dd>
 
                 for hd in sorted(headings):
                     app.plain(hd, highlights=highlights)
+        else:
+            return occs
+
+    def getToTokensFunc(self):
+        settings = self.settings
+        spaceEscaped = settings.spaceEscaped
+        sheetData = self.getSheetData()
+        caseSensitive = sheetData.caseSensitive
+
+        def myToTokens(trigger):
+            return toTokens(
+                trigger, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
+            )
+
+        return myToTokens
+
+    def partitionTriggers(self, triggers):
+        return makePartitions(triggers, self.getToTokensFunc())[1]
+
+    def triggerInterference(self, alsoInternal=False, alsoExpected=False):
+        &#34;&#34;&#34;Produce a report of interferences between triggers.
+
+        Triggers interfere if they have matches that intersect, i.e. there is a match
+        m1 of trigger t1 and a match m2 of trigger t2 such that m1 and m2 intersect.
+
+        Triggers may interfere *potentially*: if the triggers overlap they can have
+        intersecting matches. But it does not mean that the corpus contains overlapping
+        matches, i.e. that the triggers conflict actually.
+
+        We report *actually* interfering triggers.
+
+        Triggers within one row are associated to the same entity and work in the same
+        row. It is not bad if they are conflicting with each other. If there
+        are conflicting matches, the trigger that wins still flags the same entity.
+        The worst thing is that some of these triggers are superfluous, but there is
+        no reason to be picky on superfluous triggers.
+
+        When one trigger is a proper part of another, this is mostly intentional.
+        If the longer trigger matches, it wins it from the shorter trigger, unless
+        the shorter trigger&#39;s match starts before the longer trigger&#39;s match.
+
+        We think the user expects the longer trigger to win, but it may surprise him
+        if the shorter triggers wins because it starts earlier.
+
+        Parameters
+        ----------
+        alsoInternal: boolean, optional False
+            Also report interference between triggers on the same row.
+        alsoExpected: boolean, optional False
+            Also report expected interferences.
+        &#34;&#34;&#34;
+        setName = self.setName
+        annoDir = self.annoDir
+        setDir = f&#34;{annoDir}/{setName}&#34;
+        reportFile = f&#34;{setDir}/interference.tsv&#34;
+
+        app = self.app
+        L = app.api.L
+        T = app.api.T
+        sheetData = self.getSheetData()
+        rowMap = sheetData.rowMap
+        triggerScopes = sheetData.triggerScopes
+
+        interferences, parts = interference(
+            rowMap,
+            triggerScopes,
+            self.getToTokensFunc(),
+            alsoInternal=alsoInternal,
+            alsoExpected=alsoExpected,
+        )
+
+        messages = []
+        witnessed = {}
+
+        nParts = len(parts)
+        plural = &#34;&#34; if nParts == 1 else &#34;es&#34;
+        self.console(
+            f&#34;Looking up {len(interferences)} potential interferences &#34;
+            f&#34;in {len(parts)} pass{plural} over the corpus &#34;,
+            newline=False,
+        )
+
+        for part in parts:
+            self.console(&#34;.&#34;, newline=False)
+            inventory = self.findTriggers(part)
+
+            for trigger, data in inventory.items():
+                occs = data.get(trigger, {}).get(&#34;&#34;, [])
+                nOccs = len(occs)
+
+                if nOccs:
+                    witnessed[trigger] = occs
+
+        self.console(&#34;&#34;)
+
+        msg = (
+            f&#34;{len(witnessed)} potential conflicting trigger pairs with &#34;
+            f&#34;{sum(len(x) for x in witnessed.values())} conflicts&#34;
+        )
+        console(msg)
+        messages.append(msg)
+
+        conflicts = {}
+
+        for (
+            triggerA,
+            triggerB,
+            triggerC,
+            scopeRepA,
+            scopeRepB,
+            commonScopes,
+        ) in interferences:
+            if triggerC not in witnessed:
+                continue
+
+            rowA = sorted(set(rowMap[triggerA]))
+            rowB = sorted(set(rowMap[triggerB]))
+            key = &#34;same row&#34; if rowA == rowB else &#34;different rows&#34;
+            conflicts.setdefault(key, []).append(
+                (
+                    rowA,
+                    rowB,
+                    triggerA,
+                    triggerB,
+                    witnessed[triggerC],
+                    scopeRepA,
+                    scopeRepB,
+                    commonScopes,
+                )
+            )
+
+        for key, confls in conflicts.items():
+            newConfls = []
+
+            for (
+                rowA,
+                rowB,
+                triggerA,
+                triggerB,
+                occs,
+                scopeRepA,
+                scopeRepB,
+                commonScopes,
+            ) in confls:
+                hits = {}
+
+                for occ in sorted(occs):
+                    sectionNode = L.u(occ[0], otype=&#34;chunk&#34;)[0]
+                    heading = tuple(
+                        int(x if type(x) is int else x.lstrip(&#34;0&#34;) or &#34;0&#34;)
+                        for x in T.sectionFromNode(sectionNode, fillup=True)
+                    )
+
+                    if not locInScopes(heading, commonScopes):
+                        continue
+
+                    heading = app.sectionStrFromNode(sectionNode)
+                    hits.setdefault(heading, []).append(occ)
+
+                if len(hits) == 0:
+                    continue
+
+                newConfls.append(
+                    (rowA, rowB, triggerA, triggerB, hits, scopeRepA, scopeRepB)
+                )
+
+            msg = f&#34;{key} ({len(newConfls)} pairs)&#34;
+            msg = f&#34;----------\n{msg}\n----------&#34;
+            console(msg)
+            messages.append(msg)
+
+            for (
+                rowA,
+                rowB,
+                triggerA,
+                triggerB,
+                hits,
+                scopeRepA,
+                scopeRepB,
+            ) in newConfls:
+                rowRepA = &#34;,&#34;.join(str(r) for r in rowA)
+                rowRepB = &#34;,&#34;.join(str(r) for r in rowB)
+                msg = (
+                    f&#34;{rowRepA:&lt;12} ({scopeRepA:&lt;12}): «{triggerA}»\n&#34;
+                    f&#34;{rowRepB:&lt;12} ({scopeRepB:&lt;12}): «{triggerB}»&#34;
+                )
+                console(msg)
+                messages.append(msg)
+                console(f&#34;{hits=}&#34;)
+
+                diags = []
+
+                i = 0
+
+                for heading, occs in sorted(hits.items()):
+                    nOccs = len(occs)
+
+                    if i == 0:
+                        diags.append([])
+
+                    diags[-1].append(f&#34;{heading} x {nOccs}&#34;)
+                    i += 1
+
+                    if i == 5:
+                        i = 0
+
+                first = True
+
+                for batch in diags:
+                    label = f&#34;{&#39;occurrences&#39;:&gt;25}: &#34; if first else (&#34; &#34; * 27)
+                    first = False
+                    msg = f&#34;{label} {&#39;, &#39;.join(batch)}&#34;
+                    console(msg)
+                    messages.append(msg)
+
+        with fileOpen(reportFile, &#34;w&#34;) as fh:
+            for msg in messages:
+                fh.write(f&#34;{msg}\n&#34;)
+
+        console(f&#34;Diagnostic trigger interferences written to {reportFile}&#34;)
+
+    def diagnoseTriggers(self, triggers, detail=True):
+        sheetData = self.getSheetData()
+        triggerScopes = sheetData.triggerScopes
+
+        parts = self.partitionTriggers(triggers)
+
+        uncovered = 0
+
+        nParts = len(parts)
+        plural = &#34;&#34; if nParts == 1 else &#34;es&#34;
+        self.console(
+            f&#34;Looking up {len(triggers)} triggers &#34;
+            f&#34;in {len(parts)} pass{plural} over the corpus &#34;,
+            newline=False,
+        )
+
+        items = []
+
+        for part in parts:
+            self.console(&#34;.&#34;, newline=False)
+            inventory = self.findTriggers(part)
+
+            for trigger, data in inventory.items():
+                occs = data.get(trigger, {}).get(&#34;&#34;, [])
+                items.append((trigger, occs))
+
+        for (trigger, occs) in sorted(
+            items,
+            key=lambda x: (&#34;, &#34;.join(sorted(triggerScopes[x[0]])), x[0].lower()),
+        ):
+            uncovered += (
+                0 if self.diagnoseTrigger(trigger, occs, detail=detail) else 1
+            )
+
+        self.console(&#34;&#34;)
+
+        return uncovered
+
+    def diagnoseTrigger(self, trigger, occs, detail=True):
+        app = self.app
+        L = app.api.L
+        triggerBySlot = self.triggerBySlot
+        sheetData = self.getSheetData()
+        triggerScopes = sheetData.triggerScopes
+
+        uncoveredSlots = set()
+        coveredBy = {}
+
+        for slots in occs:
+            for slot in slots:
+                cTrigger = triggerBySlot.get(slot, None)
+
+                if cTrigger is None:
+                    uncoveredSlots.add(slot)
+                else:
+                    coveredBy.setdefault(cTrigger, set()).add(slot)
+
+        properHits = {}
+
+        nUncoveredSlots = len(uncoveredSlots)
+        ok = nUncoveredSlots == 0
+
+        if nUncoveredSlots:
+            for slot in sorted(uncoveredSlots):
+                heading = app.sectionStrFromNode(L.u(slot, otype=&#34;chunk&#34;)[0])
+                occ = properHits.setdefault(heading, [[]])
+
+                if len(occ[-1]) == 0 or occ[-1][-1] + 1 == slot:
+                    occ[-1].append(slot)
+                else:
+                    occ.append([slot])
+
+        nMissedHits = 0
+        properOccsDiag = []
+        properOccsDiagCompact = []
+
+        for heading, occs in properHits.items():
+            nOccs = len(occs)
+            nMissedHits += nOccs
+            properOccsDiag.append(f&#34;\t\t{heading}: {nOccs} x&#34;)
+            properOccsDiagCompact.append(f&#34;{heading} x {nOccs}&#34;)
+
+        properOccsDiag[0:0] = [f&#34;\tuncovered: {nMissedHits} x&#34;]
+
+        coveredOccsDiag = []
+
+        for cTrigger in sorted(coveredBy, key=lambda x: x.lower()):
+            thisCoveredOccsDiag = []
+            coveredSlots = sorted(coveredBy[cTrigger])
+
+            coveredHits = {}
+
+            for slot in sorted(coveredSlots):
+                heading = app.sectionStrFromNode(L.u(slot, otype=&#34;chunk&#34;)[0])
+                occ = coveredHits.setdefault(heading, [[]])
+
+                if len(occ[-1]) == 0 or occ[-1][-1] + 1 == slot:
+                    occ[-1].append(slot)
+                else:
+                    occ.append([slot])
+
+            nCoveredHits = 0
+
+            for heading, occs in coveredHits.items():
+                nOccs = len(occs)
+                nCoveredHits += nOccs
+                thisCoveredOccsDiag.append(f&#34;\t\t{heading}: {nOccs} x&#34;)
+
+            thisCoveredOccsDiag[0:0] = [f&#34;\tcovered by: {cTrigger}: {nCoveredHits} x&#34;]
+
+            coveredOccsDiag.extend(thisCoveredOccsDiag)
+
+        scopeRep = f&#34;({&#39;, &#39;.join(sorted(triggerScopes[trigger]))})&#34;
+
+        if detail:
+            console(f&#34;{trigger} {scopeRep}:&#34;)
+
+            for line in properOccsDiag:
+                console(line)
+
+            for line in coveredOccsDiag:
+                console(line)
+
+        else:
+            if nUncoveredSlots == 0:
+                if False:
+                    console(f&#34;{trigger} {scopeRep}: covered by other triggers&#34;)
+            else:
+                missedHits = []
+
+                i = 0
+                for occRep in properOccsDiagCompact:
+                    if i == 0:
+                        missedHits.append([occRep])
+                    else:
+                        missedHits[-1].append(occRep)
+
+                    i += 1
+                    if i == 5:
+                        i = 0
+
+                missedHitsRep = &#39;, &#39;.join(missedHits[0])
+                console(f&#34;{trigger:&lt;40} {scopeRep:&lt;12}: {missedHitsRep}&#34;, error=True)
+
+                for m in missedHits[1:]:
+                    missedHitsRep = &#34;, &#34;.join(m)
+                    console(f&#34;{&#39; &#39; * 55}{missedHitsRep}&#34;, error=True)
+
+        return ok
 
     def findOccs(self):
         &#34;&#34;&#34;Finds the occurrences of multiple triggers.
@@ -1523,8 +2389,7 @@ browser. This will influence how results are reported back.</dd>
 
         buckets = setData.buckets or ()
 
-        sheetName = self.sheetName
-        sheetData = self.sheets[sheetName]
+        sheetData = self.getSheetData()
         instructions = sheetData.instructions
         caseSensitive = sheetData.caseSensitive
         sheetData.inventory = occMatch(
@@ -1797,37 +2662,21 @@ browser. This will influence how results are reported back.</dd>
             return
 
         silent = self.silent if silent is None else silent
-        sheetName = self.sheetName
-        sheetData = self.sheets[sheetName]
-
         getHeadings = self.getHeadings
-        nameMap = sheetData.nameMap
+        sheetData = self.getSheetData()
+        allTriggers = sheetData.allTriggers
         inventory = sheetData.inventory
-        instructions = sheetData.instructions
 
         setName = self.setName
         annoDir = self.annoDir
         setDir = f&#34;{annoDir}/{setName}&#34;
         reportFile = f&#34;{setDir}/hits.tsv&#34;
-
-        allTriggers = set()
-
-        for intv, data in instructions.items():
-            idMap = data[&#34;idMap&#34;]
-            tMap = data[&#34;tMap&#34;]
-
-            for trigger, scope in tMap.items():
-                eidkind = idMap.get(trigger, None)
-
-                if eidkind is None:
-                    continue
-
-                name = nameMap[eidkind]
-                allTriggers.add((name, eidkind, trigger, scope))
+        reportTriggerBySlotFile = f&#34;{setDir}/triggerBySlot.tsv&#34;
 
         hitData = []
         names = set()
         noHits = set()
+        triggersBySlot = {}
 
         for e in sorted(allTriggers):
             (name, eidkind, trigger, scope) = e
@@ -1862,25 +2711,47 @@ browser. This will influence how results are reported back.</dd>
             sectionInfo = collections.Counter()
 
             for slots in occs:
+                for slot in slots:
+                    triggersBySlot.setdefault(slot, set()).add(trigger)
+
                 section = &#34;.&#34;.join(str(x) for x in getHeadings(slots[0]))
                 sectionInfo[section] += 1
 
             for section, hits in sorted(sectionInfo.items()):
                 hitData.append((&#34;OK&#34;, *entry, section, hits))
 
+        multipleTriggers = {}
+        triggerBySlot = {}
+        self.triggerBySlot = triggerBySlot
+
+        for slot, triggers in triggersBySlot.items():
+            if len(triggers) &gt; 1:
+                multipleTriggers[slot] = triggers
+
+            triggerBySlot[slot] = list(triggers)[0]
+
+        if len(multipleTriggers) == 0:
+            self.console(&#34;No slot is covered by more than one trigger&#34;)
+        else:
+            console(
+                f&#34;Slots covered by multiple triggers: {len(multipleTriggers)}&#34;,
+                error=True,
+            )
+            for slot, triggers in multipleTriggers.items():
+                triggersRep = &#34;, &#34;.join(f&#34;«{trigger}»&#34; for trigger in sorted(triggers))
+                self.console(f&#34;{slot:&gt;7}: {triggersRep}&#34;, error=True)
+
         trigWithout = len(noHits)
 
         if showNoHits and (trigWithout &gt; 0):
+            uncovered = 0
             console(
                 &#34;Triggers without hits: &#34; f&#34;{trigWithout}x:&#34;,
                 error=True,
             )
 
             if len(noHits):
-                console(&#34;  triggers without hits:&#34;)
-
-                for trigger in sorted(noHits):
-                    console(f&#34;    {trigger}&#34;, error=True)
+                uncovered = self.diagnoseTriggers(noHits, detail=False)
 
         with fileOpen(reportFile, &#34;w&#34;) as rh:
             rh.write(&#34;label\tname\ttrigger\tsheet\tsection\thits\n&#34;)
@@ -1888,6 +2759,14 @@ browser. This will influence how results are reported back.</dd>
             for h in sorted(hitData):
                 line = &#34;\t&#34;.join(str(c) for c in h)
                 rh.write(f&#34;{line}\n&#34;)
+
+        with fileOpen(reportTriggerBySlotFile, &#34;w&#34;) as rh:
+            rh.write(&#34;slot\ttrigger\n&#34;)
+
+            for slot, trigger in sorted(
+                triggerBySlot.items(), key=lambda x: (x[1], x[0])
+            ):
+                rh.write(f&#34;{slot}\t{trigger}\n&#34;)
 
         nEnt = len(names)
         nTriggers = len(allTriggers)
@@ -1898,13 +2777,16 @@ browser. This will influence how results are reported back.</dd>
             if silent
             else dedent(
                 f&#34;&#34;&#34;
-                Entities targeted:     {nEnt:&gt;5}
-                Triggers searched for: {nTriggers:&gt;5}
-                Triggers without hits: {trigWithout:&gt;5}
-                Triggers with hits:    {nTriggers - trigWithout:&gt;5}
-                Total hits:            {nHits:&gt;5}
+                Entities targeted:          {nEnt:&gt;5}
+                Triggers searched for:      {nTriggers:&gt;5}
+                Triggers without hits:      {trigWithout:&gt;5}
+                 - completely covered:      {trigWithout - uncovered:&gt;5}
+                 - missing hits:            {uncovered:&gt;5}
+                Triggers with hits:         {nTriggers - trigWithout:&gt;5}
+                Total hits:                 {nHits:&gt;5}
 
-                All hits in report file: {reportFile}
+                All hits in report file:      {reportFile}
+                Triggers by slot in file:     {reportTriggerBySlotFile}
                 &#34;&#34;&#34;
             )
         )
@@ -2082,6 +2964,18 @@ TF dataset.</p>
 with this string.</dd>
 </dl></div>
 </dd>
+<dt id="tf.browser.ner.ner.NER.diagnoseTrigger"><code class="name flex">
+<span>def <span class="ident">diagnoseTrigger</span></span>(<span>self, trigger, occs, detail=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.browser.ner.ner.NER.diagnoseTriggers"><code class="name flex">
+<span>def <span class="ident">diagnoseTriggers</span></span>(<span>self, triggers, detail=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="tf.browser.ner.ner.NER.filterContent"><code class="name flex">
 <span>def <span class="ident">filterContent</span></span>(<span>self, buckets=None, node=None, bFind=None, bFindC=None, bFindRe=None, anyEnt=None, eVals=None, trigger=None, qTokens=None, valSelect=None, freeState=None, showStats=None)</span>
 </code></dt>
@@ -2201,6 +3095,12 @@ the value is the name of that entity in the context indicated by path.</p></div>
 <dd>
 <div class="desc"></div>
 </dd>
+<dt id="tf.browser.ner.ner.NER.findTriggers"><code class="name flex">
+<span>def <span class="ident">findTriggers</span></span>(<span>self, triggers)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="tf.browser.ner.ner.NER.getMeta"><code class="name flex">
 <span>def <span class="ident">getMeta</span></span>(<span>self)</span>
 </code></dt>
@@ -2213,6 +3113,18 @@ the value is the name of that entity in the context indicated by path.</p></div>
 <dd>
 <div class="desc"></div>
 </dd>
+<dt id="tf.browser.ner.ner.NER.getToTokensFunc"><code class="name flex">
+<span>def <span class="ident">getToTokensFunc</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.browser.ner.ner.NER.partitionTriggers"><code class="name flex">
+<span>def <span class="ident">partitionTriggers</span></span>(<span>self, triggers)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="tf.browser.ner.ner.NER.reportHits"><code class="name flex">
 <span>def <span class="ident">reportHits</span></span>(<span>self, silent=None, showNoHits=False)</span>
 </code></dt>
@@ -2220,10 +3132,39 @@ the value is the name of that entity in the context indicated by path.</p></div>
 <div class="desc"><p>Reports the inventory.</p></div>
 </dd>
 <dt id="tf.browser.ner.ner.NER.setTask"><code class="name flex">
-<span>def <span class="ident">setTask</span></span>(<span>self, task, force=False, caseSensitive=False)</span>
+<span>def <span class="ident">setTask</span></span>(<span>self, task, force=False, caseSensitive=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+</dd>
+<dt id="tf.browser.ner.ner.NER.triggerInterference"><code class="name flex">
+<span>def <span class="ident">triggerInterference</span></span>(<span>self, alsoInternal=False, alsoExpected=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Produce a report of interferences between triggers.</p>
+<p>Triggers interfere if they have matches that intersect, i.e. there is a match
+m1 of trigger t1 and a match m2 of trigger t2 such that m1 and m2 intersect.</p>
+<p>Triggers may interfere <em>potentially</em>: if the triggers overlap they can have
+intersecting matches. But it does not mean that the corpus contains overlapping
+matches, i.e. that the triggers conflict actually.</p>
+<p>We report <em>actually</em> interfering triggers.</p>
+<p>Triggers within one row are associated to the same entity and work in the same
+row. It is not bad if they are conflicting with each other. If there
+are conflicting matches, the trigger that wins still flags the same entity.
+The worst thing is that some of these triggers are superfluous, but there is
+no reason to be picky on superfluous triggers.</p>
+<p>When one trigger is a proper part of another, this is mostly intentional.
+If the longer trigger matches, it wins it from the shorter trigger, unless
+the shorter trigger's match starts before the longer trigger's match.</p>
+<p>We think the user expects the longer trigger to win, but it may surprise him
+if the shorter triggers wins because it starts earlier.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>alsoInternal</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Also report interference between triggers on the same row.</dd>
+<dt><strong><code>alsoExpected</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Also report expected interferences.</dd>
+</dl></div>
 </dd>
 </dl>
 <h3>Inherited members</h3>
@@ -2232,6 +3173,7 @@ the value is the name of that entity in the context indicated by path.</p></div>
 <ul class="hlist">
 <li><code><a title="tf.browser.ner.sheets.Sheets.getSheetData" href="sheets.html#tf.browser.ner.sheets.Sheets.getSheetData">getSheetData</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.loadSheetData" href="sheets.html#tf.browser.ner.sheets.Sheets.loadSheetData">loadSheetData</a></code></li>
+<li><code><a title="tf.browser.ner.sheets.Sheets.readSheetData" href="sheets.html#tf.browser.ner.sheets.Sheets.readSheetData">readSheetData</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.readSheets" href="sheets.html#tf.browser.ner.sheets.Sheets.readSheets">readSheets</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.setSheet" href="sheets.html#tf.browser.ner.sheets.Sheets.setSheet">setSheet</a></code></li>
 <li><code><a title="tf.browser.ner.sheets.Sheets.sheetName" href="sheets.html#tf.browser.ner.sheets.Sheets.sheetName">sheetName</a></code></li>
@@ -2372,13 +3314,19 @@ setTimeout(() => input.focus(), 100);
 <h4><code><a title="tf.browser.ner.ner.NER" href="#tf.browser.ner.ner.NER">NER</a></code></h4>
 <ul class="two-column">
 <li><code><a title="tf.browser.ner.ner.NER.bakeEntities" href="#tf.browser.ner.ner.NER.bakeEntities">bakeEntities</a></code></li>
+<li><code><a title="tf.browser.ner.ner.NER.diagnoseTrigger" href="#tf.browser.ner.ner.NER.diagnoseTrigger">diagnoseTrigger</a></code></li>
+<li><code><a title="tf.browser.ner.ner.NER.diagnoseTriggers" href="#tf.browser.ner.ner.NER.diagnoseTriggers">diagnoseTriggers</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.filterContent" href="#tf.browser.ner.ner.NER.filterContent">filterContent</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.findOccs" href="#tf.browser.ner.ner.NER.findOccs">findOccs</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.findTrigger" href="#tf.browser.ner.ner.NER.findTrigger">findTrigger</a></code></li>
+<li><code><a title="tf.browser.ner.ner.NER.findTriggers" href="#tf.browser.ner.ner.NER.findTriggers">findTriggers</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.getMeta" href="#tf.browser.ner.ner.NER.getMeta">getMeta</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.getTasks" href="#tf.browser.ner.ner.NER.getTasks">getTasks</a></code></li>
+<li><code><a title="tf.browser.ner.ner.NER.getToTokensFunc" href="#tf.browser.ner.ner.NER.getToTokensFunc">getToTokensFunc</a></code></li>
+<li><code><a title="tf.browser.ner.ner.NER.partitionTriggers" href="#tf.browser.ner.ner.NER.partitionTriggers">partitionTriggers</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.reportHits" href="#tf.browser.ner.ner.NER.reportHits">reportHits</a></code></li>
 <li><code><a title="tf.browser.ner.ner.NER.setTask" href="#tf.browser.ner.ner.NER.setTask">setTask</a></code></li>
+<li><code><a title="tf.browser.ner.ner.NER.triggerInterference" href="#tf.browser.ner.ner.NER.triggerInterference">triggerInterference</a></code></li>
 </ul>
 </li>
 </ul>
