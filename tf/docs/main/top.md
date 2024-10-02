@@ -127,10 +127,10 @@ Papers:
 
 Presentations:
 
-[Hands on with Dead Sea Scrolls, Old Babylonian Tablets, and the Quran](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/lorentz2020/start.ipynb)
+[Hands on with Dead Sea Scrolls, Old Babylonian Tablets, and the Quran](https://nbviewer.jupyter.org/github/annotation/text-fabric/blob/master/conferences/Lorentz2020/start.ipynb)
 (Lorentz Leiden 2020)
 
-[Text-Fabric in Context](https://www.slideshare.net/dirkroorda/tf-incontext)
+[Text-Fabric in Context](https://github.com./annotation/text-fabric/blob/master/conferences/Lorentz2020/TF-in-context.pdf)
 (Lorentz Leiden 2020)
 
 [Data Analysis in Ancient
