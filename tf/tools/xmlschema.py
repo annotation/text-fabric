@@ -38,7 +38,7 @@ you pass an optional customised TEI schema, it will be analysed separately, and
 the result will be used to override the result of analysing the complete TEI
 schema.  The complete TEI schema is part of this package, you do not have to
 provide it.  It has been generated on with the online
-[`TEI-Roma` tool](https://roma.tei-c.org/startroma.php).
+[TEI-Roma tool](https://roma.tei-c.org/startroma.php).
 
 !!! note "Caution"
     This code has only been tested on a single XSD, converted from a RelaxNG

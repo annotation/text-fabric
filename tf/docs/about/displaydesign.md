@@ -74,7 +74,7 @@ Here is an example from the Hebrew Bible:
 ![discontinuity](../images/DisplayDesign/DisplayDesign.002.png)
 
 > [Genesis 4:14](https://shebanq.ancient-data.org/hebrew/text?book=Genesis&chapter=4&verse=14&version=c&mr=m&qw=q&tp=txt_p&tr=hb&wget=v&qget=v&nget=vt),
-> example taken from this [notebook](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/zz_test/030-bhsa.ipynb).
+> How to find gaps is explained in this [tutorial](https://nbviewer.org/github/ETCBC/bhsa/blob/master/tutorial/searchGaps.ipynb).
 
 You see a sentence fragment with two clauses, of which the second is engulfed by the first
 one, while remaining completely disjoint.
@@ -97,8 +97,8 @@ Here is an example from a corpus of Old Babylonian letters (cuneiform):
 
 ![overlap](../images/DisplayDesign/DisplayDesign.004.png)
 
-> [`Tablet P509373 reverse:6'`](https://cdli.ucla.edu/search/search_results.php?SearchMode=Text&ObjectID=P509373),
-> example taken from [notebook](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/zz_test/062-obb-clusters.ipynb).
+> [Tablet P509373 reverse:6'](https://cdli.ucla.edu/search/search_results.php?SearchMode=Text&ObjectID=P509373),
+> See more examples in this [tutorial](https://nbviewer.org/github/Nino-cunei/oldbabylonian/blob/master/tutorial/display.ipynb).
 
 Here you see a cluster that does not respect a word boundary.
 

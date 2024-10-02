@@ -178,7 +178,7 @@ Read `m -sub> s` as: there is a `sub`-arrow from `m` to `s`.
 
 Edge features may have values.
 For example, the
-[`crossref` feature](https://github.com/ETCBC/parallels)
+[crossref feature](https://github.com/ETCBC/parallels)
 is a set of edges between parallel verses, with the levels of confidence
 as values. This number is an integer between 0 and 100.
 We can ask for parallel verses in an unqualified way:

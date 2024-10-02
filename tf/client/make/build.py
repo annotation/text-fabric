@@ -20,7 +20,7 @@ after which it is usable for everyone.
 1.  An accompanying repository in the same organization, with the same name
     but with `-search` appended to the name.
 1.  Within that `-search` repo, a subdirectory
-    [`layeredsearch`](https://github.com/CambridgeSemiticsLab/nena_tf-search/tree/master/layeredsearch)
+    [layeredsearch](https://github.com/CambridgeSemiticsLab/nena_tf-search/tree/master/layeredsearch)
     with definitions of search interfaces
     (you can define multiple search interfaces for one dataset).
     Within this directory:

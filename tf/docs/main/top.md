@@ -139,7 +139,7 @@ Presentations:
 *   (San Antonio 2016)
     [Text-Fabric](https://github.com./annotation/text-fabric/blob/master/conferences/SBL2016/Text-Fabric.pdf),
     A motivational presentation given just before
-    [SBL 2016](https://global-learning.org/mod/forum/discuss.php?d=22)
+    [SBL 2016](https://www.sbl-site.org/meetings/Congresses_Abstracts.aspx?MeetingId=29)
     in the Lutheran Church of San Antonio.
     The day after this presentation, during the SBL conference, sitting in one
     of the broad corridors of the building, I started with the first code of

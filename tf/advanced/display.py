@@ -355,9 +355,9 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
 
     !!! hint "Examples"
         See for detailed examples the
-        [`exportExcel` (`ETCBC/bhsa`)](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/exportExcel.ipynb)
+        [exportExcel (ETCBC/bhsa)](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/exportExcel.ipynb)
         and
-        [`exportExcel` (`Nino-cunei/oldbabylonian`)](https://nbviewer.jupyter.org/github/Nino-cunei/oldbabylonian/blob/master/tutorial/exportExcel.ipynb)
+        [exportExcel (Nino-cunei/oldbabylonian)](https://nbviewer.jupyter.org/github/Nino-cunei/oldbabylonian/blob/master/tutorial/exportExcel.ipynb)
         notebooks.
 
     Parameters

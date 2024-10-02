@@ -26,7 +26,7 @@ Probably the corpus will be enlarged when new tests are being implemented.
 ## Framework
 
 We use the
-[`unittest`](https://docs.python.org/3/library/unittest.html#module-unittest)
+[unittest](https://docs.python.org/3/library/unittest.html#module-unittest)
 framework that comes with Python.
 
 It is just a few lines to setup a test class, hence we have not yet separated the code

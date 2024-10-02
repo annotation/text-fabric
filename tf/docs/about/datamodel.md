@@ -70,7 +70,7 @@ to the set of slots that have an occurrence of that lexeme.
 ## Fabric metaphor
 
 ![Loom](../images/loom.png)
-[AD 1425 Hausbücher der Nürnberger Zwölfbrüderstiftungen](http://www.nuernberger-hausbuecher.de/75-Amb-2-317-4-v/data)
+[AD 1425 Hausbücher der Nürnberger Zwölfbrüderstiftungen](https://online-service.nuernberg.de/viewer/hausbuecher/)
 
 Before we go on, we invite you to look at a few basic terms in the craft of
 [weaving](https://en.wikipedia.org/wiki/Weaving).

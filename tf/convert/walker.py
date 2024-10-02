@@ -106,7 +106,7 @@ after sorting, and all edges that start from or arrive at slots will do that aft
 the sorting.
 
 For an example, see
-[`lowfat.py`](https://github.com/ETCBC/nestle1904/blob/master/programs/lowfat.py).
+[lowfat.py](https://github.com/ETCBC/nestle1904/blob/master/programs/lowfat.py).
 
 ## Dynamic Metadata
 

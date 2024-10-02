@@ -461,7 +461,7 @@ As a consequence
 
 When the browser remembers your previous jobs,
 it does not use cookies for it but
-[`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage),
+[localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage),
 which other sites cannot read.
 
 # Making this app
@@ -477,7 +477,7 @@ and write a small piece of code to generate the data for the layers
 from the corresponding TF dataset.
 
 See e.g.
-[`app-nena/layeredsearch`](https://github.com/CambridgeSemiticsLab/nena_tf/tree/master/app).
+[app-nena/layeredsearch](https://github.com/CambridgeSemiticsLab/nena_tf/tree/master/app).
 
 All the rest (building, shipping, and deploying the app) is then automatic,
 See `tf.client.make.build`.

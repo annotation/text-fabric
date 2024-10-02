@@ -119,7 +119,7 @@ See `tf.about.releases`.
 *   New function `A.publishRelease()` by which you can publish a release of a TF
     dataset straight from your program or notebook, without clicking around in
     a browser. See `tf.advanced.repo.publishRelease()` or the
-    [`annotation/mondriaan`](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/publish.ipynb)
+    [annotation/mondriaan](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/publish.ipynb)
     example.
 
 
@@ -149,13 +149,13 @@ Small fixes to the XML conversion.
 
 *   The `tf.convert.walker` conversion can now reorder slot nodes.
     In the conversion of the Greek syntax trees from LOWFAT XML,
-    see [`ETCBC/nestle1904`](https://github.com/ETCBC/nestle1904),
+    see [ETCBC/nestle1904](https://github.com/ETCBC/nestle1904),
     the words are not in sentence order, but in a word-group-hierarchy order.
     By passing a suitable key to `cv.slot()`, we can let TF reorder the word nodes
     while keeping all linkage intact. We get interrupted word groups then.
     See this code to see how that is done:
 
-    [`lowfat.py`](https://github.com/ETCBC/nestle1904/blob/master/programs/lowfat.py)
+    [lowfat.py](https://github.com/ETCBC/nestle1904/blob/master/programs/lowfat.py)
 *   You can tweak how attribute values are reported when you run preliminary checks.
 
 #### 11.4.10
@@ -180,7 +180,7 @@ The XML converter is now easier to use:
 *   If you need custom code to handle the XML, you can now supply it much more
     easily and feed it to the converter.
 *   For an example, see the
-    [`ETCBC/nestle1904` dataset](https://nbviewer.org/github/ETCBC/nestle1904/blob/master/programs/tfFromLowfat.ipynb)
+    [ETCBC/nestle1904 dataset](https://nbviewer.org/github/ETCBC/nestle1904/blob/master/programs/tfFromLowfat.ipynb)
     (Greek New Testament)
 
 #### 11.4.8
@@ -362,7 +362,7 @@ The following workflow is now supported by means of simple commands.
     that is character-based and make the tokens the new slot type and cause all
     character nodes to be discarded. This can be done in one go.
 *   Examples are in the Mondriaan test garden:
-    [`annotation/mondriaan`](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/convertExpress.ipynb)
+    [annotation/mondriaan](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/convertPlain.ipynb)
     in three levels of detail.
 
 ### 11.3
@@ -431,7 +431,7 @@ The following workflow is now supported by means of simple commands.
 *   New conversion from TF to `tf.convert.pandas`, callable as
     `A.exportPandas()`. For examples see:
     [BHSA](https://nbviewer.org/github/ETCBC/bhsa/blob/master/tutorial/export.ipynb)
-    [Moby Dick](https://nbviewer.org/github/CLARIAH/wp6-mobydick/blob/main/tutorial/export.ipynb)
+    [Moby Dick](https://nbviewer.org/github/annotation/mobydick/blob/main/tutorial/exportPandas.ipynb)
     [Ferdinand Huyck](https://nbviewer.org/github/CLARIAH/wp6-ferdinandhuyck/blob/main/tutorial/export.ipynb)
 
 *   The function `importMQL()` must be called in a different way. The function
@@ -680,7 +680,7 @@ there is no difference in the reported file names.
 2022-11-18
 
 Small fixes: the newest version of the
-[`pygithub`](https://pygithub.readthedocs.io/en/latest/introduction.html)
+[pygithub](https://pygithub.readthedocs.io/en/latest/introduction.html)
 module issues slightly different errors.
 TF did not catch some of them, and went on after failures,
 which led to unspeakable and incomprehensible further errors.
@@ -1039,7 +1039,7 @@ of a list of subsection items (setting `browseContentPretty` in `tf.advanced.set
 did not respond to the display options, because in this particular case the options 
 were not passed to the `tf.advanced.display.pretty()` function. That has been
 remedied. The only corpus that makes use of this setting (that I know of) is the
-[`Nino-cunei/uruk`](https://github.com/Nino-cunei/uruk) corpus.
+[Nino-cunei/uruk](https://github.com/Nino-cunei/uruk) corpus.
 
 #### 9.3.0-1
 
@@ -1259,7 +1259,7 @@ after loading the main dataset.
 In TF apps, in the config.yaml where you specify an online location based on
 section headings, you can configure the app to put leading zeroes before 
 section headings.
-See [`webUrlZeros`](https://annotation.github.io/text-fabric/tf/advanced/settings.html#weburlzeros).
+See [webUrlZeros](https://annotation.github.io/text-fabric/tf/advanced/settings.html#weburlzeros).
 Small fixes in the handling of these configuration settings.
 
 #### 9.1.1
@@ -1529,7 +1529,7 @@ The documentation has now a working search interface.
 
 Added logic to map nodes between versions of TF datasets.
 This logic existed in a notebook that explores versions of the Hebrew Bible:
-[`versionMappings`](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/programs/versionMappings.ipynb).
+[versionMappings](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/programs/versionMappings.ipynb).
 Whereas the code to map slots between versions is highly dependent on the dataset in
 question, the code to extend a slot mapping to a node mapping is generic.
 That code is now in "tf.compose.nodemaps" (as of version 9 in `tf.dataset.nodemaps`).
@@ -2053,6 +2053,9 @@ TF in such a way that the position of nodes in that text is stored.
 Then you can annotate the plain text in some tool, e.g. BRAT,
 and after that, the Recorder can turn those annotations into TF features.
 
+> (2024-10-02). The documentation is in `tf.convert.recorder` and 
+the following notebook does not exist anymore.
+
 It is not documented yet, but this 
 [notebook](https://nbviewer.jupyter.org/github/annotation/text-fabric/blob/master/test/varia/recorder.ipynb) 
 shows you a complete example.
@@ -2236,12 +2239,12 @@ The performance of the machinery has been tuned with new parameters, and all BHS
 queries in the tutorials have been tested.
 
 There was a pair of queries in
-[`searchGaps`](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/searchGaps.ipynb)
+[searchGaps](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/searchGaps.ipynb)
 that
 either took 9 seconds or 40, randomly. Now it is consistently 9 seconds.
 
 See
-[`searchRough`](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/searchRough.ipynb)
+[searchRough](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/searchRough.ipynb)
 at the end where the performance parameters are tweaked.
 
 #### 7.7.6-8
@@ -2850,7 +2853,7 @@ Now you can also export to Excel from a notebook,
 using `A.export(results)`.
 
 Jump to the tutorial:
-[`exportExcel`](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/exportExcel.ipynb)
+[exportExcel](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/exportExcel.ipynb)
 
 For more info: see [#38](https://github.com/annotation/text-fabric/issues/38) 
 
@@ -3248,6 +3251,8 @@ A big update with several changes:
 
 This change was needed for the TF browser, in order to represent
 *lexemes* in exported files.
+
+> (2024-10-02 The following links are broken, these files no longer exist)
 
 !!! hint "Showcase: BHSA dictionary"
     Here is how you can collect the BHSA lexemes in an Excel sheet.
@@ -4177,7 +4182,7 @@ MQL for version 3 of the [BHSA](https://github.com/ETCBC/bhsa).
 
 Little tweak in the `tf.convert.mql.importMQL` function so that it can handle
 more patterns in the MQL dump file. The issue arose when converting MQL for
-[`extrabiblical`](https://github.com/ETCBC/extrabiblical) material.
+[extrabiblical](https://github.com/ETCBC/extrabiblical) material.
 
 #### 3.0.2, 3.0.3
 
@@ -4270,6 +4275,10 @@ Loading TF was not completely silent if `silent=True` was passed. Better now.
 
 *   Small fix in Search: the implementation of the relation operator `||`
     (disjoint slot sets) was faulty. Repaired.
+
+> (2024-10-02) The following tutorial no longer exists. What comes closest is the
+[BHSA searchGaps tutorial](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/searchGaps.ipynb)
+
 *   The
     [search tutorial](https://github.com/annotation/text-fabric/blob/master/docs/searchTutorial.ipynb)
     got an extra example: how to look for gaps. Gaps are not a primitive in the TF
@@ -4370,6 +4379,9 @@ Small fixes.
 
 The API has a new member: `sortKey`
 
+> (2024-10-02) The following tutorial no longer exists. What comes closest is the
+[BHSA search tutorial](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/search.ipynb)
+
 New relationships in templates: `nearness`. See for examples the end of the
 [search tutorial](https://github.com/annotation/text-fabric/blob/master/docs/searchTutorial.ipynb).
 Thanks to James Cuénod for requesting nearness operators.
@@ -4409,6 +4421,9 @@ The data that feeds them is pre-computed and available as `C.boundary`.
 You can now easily make extra constraints in search templates without naming
 atoms.
 
+> (2024-10-02) The following tutorial no longer exists. What comes closest is the
+[BHSA search tutorial](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/search.ipynb)
+
 See the
 [search tutorial](https://github.com/annotation/text-fabric/blob/master/docs/searchTutorial.ipynb)
 for an updated exposition on searching.
@@ -4431,6 +4446,9 @@ TF just got a powerful search facility, based on (graph)-templates.
 
 It is still very fresh, and more experimentation will be needed. Feedback is
 welcome.
+
+> (2024-10-02) The following tutorial no longer exists. What comes closest is the
+[BHSA search tutorial](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/search.ipynb)
 
 Start with the
 [tutorial](https://github.com/annotation/text-fabric/blob/master/docs/searchTutorial.ipynb).

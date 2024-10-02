@@ -263,9 +263,9 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 
 ## [Protestant Theological University](https://github.com/pthu)
 
-[Greek Literature](https://nbviewer.jupyter.org/github/pthu/greek_literature/blob/master/tutorial/start.ipynb)
+[Greek Literature](https://github.com/pthu/greek_literature)
 :   *Greek*
-    [Literature, -400 - +400](https://github.com/pthu/greek_literature),
+    Literature, -400 - +400,
     [Perseus Digital Library](https://github.com/PerseusDL/canonical-greekLit) and 
     [Open Greek and Latin Project](https://github.com/OpenGreekAndLatin/First1KGreek)
     The result of a massive conversion effort by Ernst Boogert.
@@ -291,14 +291,6 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
     Fusus Al Hikam,  1165- 2000,
     **editions (Lakhnawi and Afifi) of Ibn Arabi's Fusus plus commentaries in the centuries thereafter**,
     Cornelis van Lit, Dirk Roorda
-
-### Intentions
-
-Old Royal
-:   *Akkadian-Sumerian cuneiform*
-    Bilingual royal inscriptions, 2000 - 1600,
-    **more info to come**, Martijn Kokken, Dirk Roorda
-
 
 ## Get corpora
 

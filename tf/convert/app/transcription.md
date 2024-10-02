@@ -356,7 +356,7 @@ and hyphens.
 
 1.  What is alphanumeric is determined by the UNICODE class of the character,
     see the Python documentation of the function
-    [`isalnum()`](https://docs.python.org/3/library/stdtypes.html#text-sequence-type-str)
+    [isalnum()](https://docs.python.org/3/library/stdtypes.html#text-sequence-type-str)
 1.  Hyphens are UNICODE characters 002D (ASCII hyphen) and 2010 (UNICODE hyphen).
 1.  Words get the following features:
     *   `str`: the alphanumeric string that is the word;

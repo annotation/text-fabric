@@ -64,7 +64,7 @@ automatically.
 
 Further development in converting TF data to WATM (see `tf.convert.watm`), including
 generating IIIF manifests for page scans.
-This is work in progress and the documentation is lagging behind.
+This is work in progress.
 The work is targeted at the
 [Suriano Letters](https://annotation.github.io/text-fabric/tf/about/corpora.html#knawhuygensing-and-gitlabhucknawnl).
 
@@ -257,7 +257,7 @@ Improvements in `tf.convert.watm`: the resulting data is much more compact, beca
     This is a bit of a limited and ad hoc extension of the functionality of this function.
     I needed a quick fix to add nodes for entities and entity occurrences at the same time
     and link them with edges. This is for the corpus
-    [`CLARIAH/wp6-missieven`](https://github.com/CLARIAH/wp6-missieven).
+    [CLARIAH/wp6-missieven](https://github.com/CLARIAH/wp6-missieven).
 
 *   fix: the express download of a dataset (complete.zip) was nit triggered in all
     cases where it should.
@@ -533,7 +533,7 @@ With this property you can prevent
 the browser to do the expensive rendering of content that is not visible on the screen.
 That makes it possible to load a lot of content in a single page without tripping up
 the browser. You also need the
-[`IntersectionObserver` API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API),
+[IntersectionObserver API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API),
 but that is generally supported by browsers. With the help of that API you can
 restrict the binding of event listeners to elements that are visible on the screen.
 

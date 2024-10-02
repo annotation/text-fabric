@@ -125,7 +125,7 @@ The *checkout specifier* part is a keyword:
     commit on back-end.
 
 For a demo, see
-[`banks/repo`](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb).
+[banks/repo](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb).
 
 ## Specifying app and / or data
 
@@ -277,7 +277,7 @@ explicitly.
 ### Sets
 
 They are named node sets, that, when imported, can be used in
-[search templates](https://annotation.github.io/text-fabric/tf/about/searchusage.html#simple-indent-nameotype-or-set-features)
+[search templates](https://annotation.github.io/text-fabric/tf/about/searchusage.html#simple-indent-namenode-type-or-set-features)
 as if they were node types.
 You can construct them in a Python program and then write them to disk
 with `tf.lib.writeSets`. 
@@ -306,7 +306,7 @@ The list of possible settings is spelled out in
     come to the rescue.
 
     A good example is in
-    [`clariah/wp6-missieven`](https://nbviewer.org/github/clariah/wp6-missieven/blob/master/tutorial/annotate.ipynb)
+    [clariah/wp6-missieven](https://nbviewer.org/github/clariah/wp6-missieven/blob/master/tutorial/annotate.ipynb)
     which resided in `annotation/clariah-gm` before, and in `Dans-labs/clariah-gm` even earlier.
 
     When we want to migrate manual annotations made against the 0.4 version to the 0.7

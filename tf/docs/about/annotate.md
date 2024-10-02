@@ -43,7 +43,7 @@ And where that is not sufficient, details are put in `ner/config.yaml`, which
 can be put next to the corpus.
 
 I have tested it for the
-[`ETCBC/bhsa` (Hebrew Bible) corpus](https://github.com/ETCBC/bhsa), and the
+[ETCBC/bhsa (Hebrew Bible) corpus](https://github.com/ETCBC/bhsa), and the
 machinery works.
 But it remains to be seen whether the tools is sufficiently *ergonomic* for that
 corpus.
