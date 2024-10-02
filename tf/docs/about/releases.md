@@ -22,11 +22,15 @@ pip install -e .
 
 #### 12.5.5
 
-2024-??-??
+2024-10-??
 
 New functions in NER to help analyze triggers that do not find named entities.
 Also to add spelling variants of triggers automatically to the spreadsheets
 of names and triggers.
+
+* Fix: in the `use()` command, the loading of an additional data module triggered the
+express download of `complete.zip` and eventually did not try to download the
+additional module. This has been fixed.
 
 #### 12.5.4
 

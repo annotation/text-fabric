@@ -399,7 +399,7 @@ import base64
 from zipfile import ZipFile
 from subprocess import check_output, run
 import urllib.request as ur
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 import ssl
 
 import requests
@@ -472,6 +472,8 @@ def getFinalUrl(url):
         response = ur.urlopen(url)
         finalUrl = response.geturl()
     except HTTPError as e:
+        msg = str(e)
+    except URLError as e:
         msg = str(e)
 
     return (False, msg) if finalUrl is None else (True, finalUrl)
@@ -1058,20 +1060,6 @@ class Checkout:
             result = "latest release or commit"
         return f"{result}{extra}"
 
-    def isClone(self):
-        return self.local == "clone"
-
-    def isOffline(self):
-        return self.local in {"clone", "local"}
-
-    def isExpress(self):
-        return (
-            self.local is None
-            and not self.versionOverride
-            and not self.commitChk
-            and not self.releaseChk
-        )
-
     def __init__(
         self,
         backend,
@@ -1089,6 +1077,7 @@ class Checkout:
         version=None,
         versionOverride=False,
         label="data",
+        allowExpress=True,
     ):
         self.backend = backend
         onGithub = backend == GH
@@ -1139,6 +1128,8 @@ class Checkout:
 
         self.silent = silentConvert(silent)
 
+        self.allowExpress = allowExpress
+
         self.repoOnline = None
         self.localBase = False
         self.localDir = None
@@ -1151,6 +1142,21 @@ class Checkout:
         else:
             self.fixInfo()
             self.readInfo()
+
+    def isClone(self):
+        return self.local == "clone"
+
+    def isOffline(self):
+        return self.local in {"clone", "local"}
+
+    def isExpress(self):
+        return (
+            self.allowExpress
+            and self.local is None
+            and not self.versionOverride
+            and not self.commitChk
+            and not self.releaseChk
+        )
 
     def login(self):
         onGithub = self.onGithub
@@ -1469,21 +1475,35 @@ class Checkout:
             state = (
                 "requested"
                 if askExact
-                else "latest release"
-                if rChk == "" and canOnline and self.releaseOff
-                else "latest? release"
-                if rChk == "" and not canOnline and self.releaseOff
-                else "latest commit"
-                if cChk == "" and canOnline and self.commitOff
-                else "latest? commit"
-                if cChk == "" and not canOnline and self.commitOff
-                else "local release"
-                if self.local == "local" and self.releaseOff
-                else "local commit"
-                if self.local == "local" and self.commitOff
-                else "local github"
-                if self.local == "clone"
-                else "for whatever reason"
+                else (
+                    "latest release"
+                    if rChk == "" and canOnline and self.releaseOff
+                    else (
+                        "latest? release"
+                        if rChk == "" and not canOnline and self.releaseOff
+                        else (
+                            "latest commit"
+                            if cChk == "" and canOnline and self.commitOff
+                            else (
+                                "latest? commit"
+                                if cChk == "" and not canOnline and self.commitOff
+                                else (
+                                    "local release"
+                                    if self.local == "local" and self.releaseOff
+                                    else (
+                                        "local commit"
+                                        if self.local == "local" and self.commitOff
+                                        else (
+                                            "local github"
+                                            if self.local == "clone"
+                                            else "for whatever reason"
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
             )
             offString = self.toString(
                 self.commitOff,
@@ -2083,6 +2103,7 @@ def checkoutRepo(
     version="",
     versionOverride=False,
     checkout="",
+    allowExpress=True,
     source=None,
     dest=None,
     withPaths=True,
@@ -2140,6 +2161,11 @@ def checkoutRepo(
         See the
         [repo](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb)
         notebook for an exhaustive demo of all the checkout options.
+
+    allowExpress: boolean, optional True
+        Whether an express download of all data is allowed.
+        Typically, this should be set to True for app and main data and standard module
+        data, and False for optional module data.
 
     source: string, optional empty string
         The base of your local repository clones.
@@ -2225,6 +2251,7 @@ def checkoutRepo(
             version=version,
             versionOverride=versionOverride,
             label=label,
+            allowExpress=allowExpress,
         )
         rData.makeSureLocal(attempt=attempt)
         return (

@@ -99,6 +99,7 @@ class AppData:
             checkout,
             isBase=True,
             versionOverride=app.versionOverride,
+            allowExpress=True,
         ):
             self.good = False
 
@@ -150,6 +151,7 @@ class AppData:
                 backend=theBackend,
                 specs=m,
                 versionOverride=app.versionOverride,
+                allowExpress=True,
             ):
                 self.good = False
 
@@ -194,6 +196,7 @@ class AppData:
             backend=backend,
             isExtra=True,
             versionOverride=app.versionOverride,
+            allowExpress=True,
         ):
             self.good = False
 
@@ -227,6 +230,7 @@ class AppData:
                 *parts[0:-1],
                 backend=theBackend,
                 versionOverride=app.versionOverride,
+                allowExpress=False,
             ):
                 self.good = False
 
@@ -298,6 +302,7 @@ class AppData:
         isExtra=False,
         specs=None,
         versionOverride=False,
+        allowExpress=True,
     ):
         """Prepare to load a single module.
 
@@ -328,6 +333,8 @@ class AppData:
             Additional informational attributes of the module, e.g. a DOI
         versionOverride: boolean, optional False
             Whether we ask for the data of a non-standard version
+        allowExpress: boolean, optional True
+            Whether express downloading of the whole corpus may be triggered
         """
 
         backend = self.backend if backend is None else backendRep(backend, "norm")
@@ -367,6 +374,7 @@ class AppData:
                 withPaths=True if isExtra else False,
                 keep=True if isExtra else False,
                 silent=silent,
+                allowExpress=allowExpress,
             )
             if not localBase:
                 return False
