@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57f429578f811e68000d50034a8bbf4565ea36c7/tf/advanced/data.py#L1-L440" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6c9f29425595e78abd804472330a1ed3b0bf0439/tf/advanced/data.py#L1-L448" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from ..core.helpers import itemize
 from ..core.files import backendRep, expandDir, prefixSlash, normpath
@@ -134,6 +134,7 @@ class AppData:
             checkout,
             isBase=True,
             versionOverride=app.versionOverride,
+            allowExpress=True,
         ):
             self.good = False
 
@@ -185,6 +186,7 @@ class AppData:
                 backend=theBackend,
                 specs=m,
                 versionOverride=app.versionOverride,
+                allowExpress=True,
             ):
                 self.good = False
 
@@ -229,6 +231,7 @@ class AppData:
             backend=backend,
             isExtra=True,
             versionOverride=app.versionOverride,
+            allowExpress=True,
         ):
             self.good = False
 
@@ -262,6 +265,7 @@ class AppData:
                 *parts[0:-1],
                 backend=theBackend,
                 versionOverride=app.versionOverride,
+                allowExpress=False,
             ):
                 self.good = False
 
@@ -333,6 +337,7 @@ class AppData:
         isExtra=False,
         specs=None,
         versionOverride=False,
+        allowExpress=True,
     ):
         &#34;&#34;&#34;Prepare to load a single module.
 
@@ -363,6 +368,8 @@ class AppData:
             Additional informational attributes of the module, e.g. a DOI
         versionOverride: boolean, optional False
             Whether we ask for the data of a non-standard version
+        allowExpress: boolean, optional True
+            Whether express downloading of the whole corpus may be triggered
         &#34;&#34;&#34;
 
         backend = self.backend if backend is None else backendRep(backend, &#34;norm&#34;)
@@ -402,6 +409,7 @@ class AppData:
                 withPaths=True if isExtra else False,
                 keep=True if isExtra else False,
                 silent=silent,
+                allowExpress=allowExpress,
             )
             if not localBase:
                 return False
@@ -533,7 +541,7 @@ level just below the search locations.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57f429578f811e68000d50034a8bbf4565ea36c7/tf/advanced/data.py#L11-L421" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6c9f29425595e78abd804472330a1ed3b0bf0439/tf/advanced/data.py#L11-L429" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AppData:
     def __init__(
@@ -626,6 +634,7 @@ level just below the search locations.</dd>
             checkout,
             isBase=True,
             versionOverride=app.versionOverride,
+            allowExpress=True,
         ):
             self.good = False
 
@@ -677,6 +686,7 @@ level just below the search locations.</dd>
                 backend=theBackend,
                 specs=m,
                 versionOverride=app.versionOverride,
+                allowExpress=True,
             ):
                 self.good = False
 
@@ -721,6 +731,7 @@ level just below the search locations.</dd>
             backend=backend,
             isExtra=True,
             versionOverride=app.versionOverride,
+            allowExpress=True,
         ):
             self.good = False
 
@@ -754,6 +765,7 @@ level just below the search locations.</dd>
                 *parts[0:-1],
                 backend=theBackend,
                 versionOverride=app.versionOverride,
+                allowExpress=False,
             ):
                 self.good = False
 
@@ -825,6 +837,7 @@ level just below the search locations.</dd>
         isExtra=False,
         specs=None,
         versionOverride=False,
+        allowExpress=True,
     ):
         &#34;&#34;&#34;Prepare to load a single module.
 
@@ -855,6 +868,8 @@ level just below the search locations.</dd>
             Additional informational attributes of the module, e.g. a DOI
         versionOverride: boolean, optional False
             Whether we ask for the data of a non-standard version
+        allowExpress: boolean, optional True
+            Whether express downloading of the whole corpus may be triggered
         &#34;&#34;&#34;
 
         backend = self.backend if backend is None else backendRep(backend, &#34;norm&#34;)
@@ -894,6 +909,7 @@ level just below the search locations.</dd>
                 withPaths=True if isExtra else False,
                 keep=True if isExtra else False,
                 silent=silent,
+                allowExpress=allowExpress,
             )
             if not localBase:
                 return False
@@ -978,7 +994,7 @@ It probably is not even TF data.</p>
 </dl></div>
 </dd>
 <dt id="tf.advanced.data.AppData.getModule"><code class="name flex">
-<span>def <span class="ident">getModule</span></span>(<span>self, org, repo, relative, checkout, backend=None, isBase=False, isExtra=False, specs=None, versionOverride=False)</span>
+<span>def <span class="ident">getModule</span></span>(<span>self, org, repo, relative, checkout, backend=None, isBase=False, isExtra=False, specs=None, versionOverride=False, allowExpress=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Prepare to load a single module.</p>
@@ -1007,6 +1023,8 @@ The data must be obtained, but not loaded.</dd>
 <dd>Additional informational attributes of the module, e.g. a DOI</dd>
 <dt><strong><code>versionOverride</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>Whether we ask for the data of a non-standard version</dd>
+<dt><strong><code>allowExpress</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>Whether express downloading of the whole corpus may be triggered</dd>
 </dl></div>
 </dd>
 <dt id="tf.advanced.data.AppData.getModules"><code class="name flex">

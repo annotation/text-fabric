@@ -295,7 +295,7 @@ is being obtained.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57f429578f811e68000d50034a8bbf4565ea36c7/tf/advanced/repo.py#L1-L2247" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6c9f29425595e78abd804472330a1ed3b0bf0439/tf/advanced/repo.py#L1-L2274" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Auto downloading from a back-end repository
@@ -698,7 +698,7 @@ import base64
 from zipfile import ZipFile
 from subprocess import check_output, run
 import urllib.request as ur
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 import ssl
 
 import requests
@@ -771,6 +771,8 @@ def getFinalUrl(url):
         response = ur.urlopen(url)
         finalUrl = response.geturl()
     except HTTPError as e:
+        msg = str(e)
+    except URLError as e:
         msg = str(e)
 
     return (False, msg) if finalUrl is None else (True, finalUrl)
@@ -1357,20 +1359,6 @@ class Checkout:
             result = &#34;latest release or commit&#34;
         return f&#34;{result}{extra}&#34;
 
-    def isClone(self):
-        return self.local == &#34;clone&#34;
-
-    def isOffline(self):
-        return self.local in {&#34;clone&#34;, &#34;local&#34;}
-
-    def isExpress(self):
-        return (
-            self.local is None
-            and not self.versionOverride
-            and not self.commitChk
-            and not self.releaseChk
-        )
-
     def __init__(
         self,
         backend,
@@ -1388,6 +1376,7 @@ class Checkout:
         version=None,
         versionOverride=False,
         label=&#34;data&#34;,
+        allowExpress=True,
     ):
         self.backend = backend
         onGithub = backend == GH
@@ -1438,6 +1427,8 @@ class Checkout:
 
         self.silent = silentConvert(silent)
 
+        self.allowExpress = allowExpress
+
         self.repoOnline = None
         self.localBase = False
         self.localDir = None
@@ -1450,6 +1441,21 @@ class Checkout:
         else:
             self.fixInfo()
             self.readInfo()
+
+    def isClone(self):
+        return self.local == &#34;clone&#34;
+
+    def isOffline(self):
+        return self.local in {&#34;clone&#34;, &#34;local&#34;}
+
+    def isExpress(self):
+        return (
+            self.allowExpress
+            and self.local is None
+            and not self.versionOverride
+            and not self.commitChk
+            and not self.releaseChk
+        )
 
     def login(self):
         onGithub = self.onGithub
@@ -1768,21 +1774,35 @@ class Checkout:
             state = (
                 &#34;requested&#34;
                 if askExact
-                else &#34;latest release&#34;
-                if rChk == &#34;&#34; and canOnline and self.releaseOff
-                else &#34;latest? release&#34;
-                if rChk == &#34;&#34; and not canOnline and self.releaseOff
-                else &#34;latest commit&#34;
-                if cChk == &#34;&#34; and canOnline and self.commitOff
-                else &#34;latest? commit&#34;
-                if cChk == &#34;&#34; and not canOnline and self.commitOff
-                else &#34;local release&#34;
-                if self.local == &#34;local&#34; and self.releaseOff
-                else &#34;local commit&#34;
-                if self.local == &#34;local&#34; and self.commitOff
-                else &#34;local github&#34;
-                if self.local == &#34;clone&#34;
-                else &#34;for whatever reason&#34;
+                else (
+                    &#34;latest release&#34;
+                    if rChk == &#34;&#34; and canOnline and self.releaseOff
+                    else (
+                        &#34;latest? release&#34;
+                        if rChk == &#34;&#34; and not canOnline and self.releaseOff
+                        else (
+                            &#34;latest commit&#34;
+                            if cChk == &#34;&#34; and canOnline and self.commitOff
+                            else (
+                                &#34;latest? commit&#34;
+                                if cChk == &#34;&#34; and not canOnline and self.commitOff
+                                else (
+                                    &#34;local release&#34;
+                                    if self.local == &#34;local&#34; and self.releaseOff
+                                    else (
+                                        &#34;local commit&#34;
+                                        if self.local == &#34;local&#34; and self.commitOff
+                                        else (
+                                            &#34;local github&#34;
+                                            if self.local == &#34;clone&#34;
+                                            else &#34;for whatever reason&#34;
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
             )
             offString = self.toString(
                 self.commitOff,
@@ -2382,6 +2402,7 @@ def checkoutRepo(
     version=&#34;&#34;,
     versionOverride=False,
     checkout=&#34;&#34;,
+    allowExpress=True,
     source=None,
     dest=None,
     withPaths=True,
@@ -2439,6 +2460,11 @@ def checkoutRepo(
         See the
         [repo](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb)
         notebook for an exhaustive demo of all the checkout options.
+
+    allowExpress: boolean, optional True
+        Whether an express download of all data is allowed.
+        Typically, this should be set to True for app and main data and standard module
+        data, and False for optional module data.
 
     source: string, optional empty string
         The base of your local repository clones.
@@ -2524,6 +2550,7 @@ def checkoutRepo(
             version=version,
             versionOverride=versionOverride,
             label=label,
+            allowExpress=allowExpress,
         )
         rData.makeSureLocal(attempt=attempt)
         return (
@@ -2572,7 +2599,7 @@ def checkoutRepo(
 <div class="desc"></div>
 </dd>
 <dt id="tf.advanced.repo.checkoutRepo"><code class="name flex">
-<span>def <span class="ident">checkoutRepo</span></span>(<span>backend, org='annotation', repo='banks', folder='/tf', version='', versionOverride=False, checkout='', source=None, dest=None, withPaths=True, keep=True, silent='auto', label='data')</span>
+<span>def <span class="ident">checkoutRepo</span></span>(<span>backend, org='annotation', repo='banks', folder='/tf', version='', versionOverride=False, checkout='', allowExpress=True, source=None, dest=None, withPaths=True, keep=True, silent='auto', label='data')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Checks out TF data from an (online) repository.</p>
@@ -2618,6 +2645,10 @@ has been fetched from online</li>
 <a href="https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb">repo</a>
 notebook for an exhaustive demo of all the checkout options.</p>
 </dd>
+<dt><strong><code>allowExpress</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>Whether an express download of all data is allowed.
+Typically, this should be set to True for app and main data and standard module
+data, and False for optional module data.</dd>
 <dt><strong><code>source</code></strong> :&ensp;<code>string</code>, optional <code>empty string</code></dt>
 <dd>The base of your local repository clones.
 If given, it overrides the semi-baked in <code>~/github</code> value.</dd>
@@ -2784,14 +2815,14 @@ The way in which the release version should be increased:</p>
 <dl>
 <dt id="tf.advanced.repo.Checkout"><code class="flex name class">
 <span>class <span class="ident">Checkout</span></span>
-<span>(</span><span>backend, org, repo, relative, checkout, source, dest, keep, withPaths, silent, _browse, inNb, version=None, versionOverride=False, label='data')</span>
+<span>(</span><span>backend, org, repo, relative, checkout, source, dest, keep, withPaths, silent, _browse, inNb, version=None, versionOverride=False, label='data', allowExpress=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Auxiliary class for <code><a title="tf.advanced.repo.checkoutRepo" href="#tf.advanced.repo.checkoutRepo">checkoutRepo()</a></code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57f429578f811e68000d50034a8bbf4565ea36c7/tf/advanced/repo.py#L1003-L2074" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6c9f29425595e78abd804472330a1ed3b0bf0439/tf/advanced/repo.py#L1005-L2094" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Checkout:
     &#34;&#34;&#34;Auxiliary class for `checkoutRepo`&#34;&#34;&#34;
@@ -2851,20 +2882,6 @@ The way in which the release version should be increased:</p>
             result = &#34;latest release or commit&#34;
         return f&#34;{result}{extra}&#34;
 
-    def isClone(self):
-        return self.local == &#34;clone&#34;
-
-    def isOffline(self):
-        return self.local in {&#34;clone&#34;, &#34;local&#34;}
-
-    def isExpress(self):
-        return (
-            self.local is None
-            and not self.versionOverride
-            and not self.commitChk
-            and not self.releaseChk
-        )
-
     def __init__(
         self,
         backend,
@@ -2882,6 +2899,7 @@ The way in which the release version should be increased:</p>
         version=None,
         versionOverride=False,
         label=&#34;data&#34;,
+        allowExpress=True,
     ):
         self.backend = backend
         onGithub = backend == GH
@@ -2932,6 +2950,8 @@ The way in which the release version should be increased:</p>
 
         self.silent = silentConvert(silent)
 
+        self.allowExpress = allowExpress
+
         self.repoOnline = None
         self.localBase = False
         self.localDir = None
@@ -2944,6 +2964,21 @@ The way in which the release version should be increased:</p>
         else:
             self.fixInfo()
             self.readInfo()
+
+    def isClone(self):
+        return self.local == &#34;clone&#34;
+
+    def isOffline(self):
+        return self.local in {&#34;clone&#34;, &#34;local&#34;}
+
+    def isExpress(self):
+        return (
+            self.allowExpress
+            and self.local is None
+            and not self.versionOverride
+            and not self.commitChk
+            and not self.releaseChk
+        )
 
     def login(self):
         onGithub = self.onGithub
@@ -3262,21 +3297,35 @@ The way in which the release version should be increased:</p>
             state = (
                 &#34;requested&#34;
                 if askExact
-                else &#34;latest release&#34;
-                if rChk == &#34;&#34; and canOnline and self.releaseOff
-                else &#34;latest? release&#34;
-                if rChk == &#34;&#34; and not canOnline and self.releaseOff
-                else &#34;latest commit&#34;
-                if cChk == &#34;&#34; and canOnline and self.commitOff
-                else &#34;latest? commit&#34;
-                if cChk == &#34;&#34; and not canOnline and self.commitOff
-                else &#34;local release&#34;
-                if self.local == &#34;local&#34; and self.releaseOff
-                else &#34;local commit&#34;
-                if self.local == &#34;local&#34; and self.commitOff
-                else &#34;local github&#34;
-                if self.local == &#34;clone&#34;
-                else &#34;for whatever reason&#34;
+                else (
+                    &#34;latest release&#34;
+                    if rChk == &#34;&#34; and canOnline and self.releaseOff
+                    else (
+                        &#34;latest? release&#34;
+                        if rChk == &#34;&#34; and not canOnline and self.releaseOff
+                        else (
+                            &#34;latest commit&#34;
+                            if cChk == &#34;&#34; and canOnline and self.commitOff
+                            else (
+                                &#34;latest? commit&#34;
+                                if cChk == &#34;&#34; and not canOnline and self.commitOff
+                                else (
+                                    &#34;local release&#34;
+                                    if self.local == &#34;local&#34; and self.releaseOff
+                                    else (
+                                        &#34;local commit&#34;
+                                        if self.local == &#34;local&#34; and self.commitOff
+                                        else (
+                                            &#34;local github&#34;
+                                            if self.local == &#34;clone&#34;
+                                            else &#34;for whatever reason&#34;
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
             )
             offString = self.toString(
                 self.commitOff,
@@ -4062,7 +4111,7 @@ The way in which the release version should be increased:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/57f429578f811e68000d50034a8bbf4565ea36c7/tf/advanced/repo.py#L540-L813" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6c9f29425595e78abd804472330a1ed3b0bf0439/tf/advanced/repo.py#L542-L815" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Repo:
     &#34;&#34;&#34;Auxiliary class for `releaseData`&#34;&#34;&#34;
