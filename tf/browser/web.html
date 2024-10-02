@@ -71,7 +71,7 @@ directory by the <code>pip</code> installer.</p>
 </table>
 <h2 id="templates">Templates</h2>
 <p>There are two templates in
-<a href="https://github.com/annotation/text-fabric/tree/master/tf/browser/views">views</a>
+<a href="https://github.com/annotation/text-fabric/tree/master/tf/browser/templates">templates</a>
 :</p>
 <ul>
 <li><em>index</em>: the normal template for returning responses
@@ -92,14 +92,14 @@ of work done, with DOI links to the corpus and to TF.</li>
 for pretty displays;</li>
 <li><a href="https://github.com/annotation/text-fabric/blob/master/tf/browser/static/index.css">index.css</a>:
 the formatting of the <em>index</em> web page with which the user interacts;</li>
-<li><a href="https://github.com/annotation/text-fabric/blob/master/tf/browser/views/export.css">export.css</a>
+<li><a href="https://github.com/annotation/text-fabric/blob/master/tf/browser/templates/export.css">export.css</a>
 the formatting of the export page;</li>
-<li><a href="https://github.com/annotation/text-fabric/blob/master/tf/browser/views/base.css">base.css</a>
+<li><a href="https://github.com/annotation/text-fabric/blob/master/tf/browser/templates/base.css">base.css</a>
 shared formatting between the index and export pages.</li>
 </ul>
 <h2 id="javascript">JavaScript</h2>
 <p>We use a
-<a href="https://github.com/annotation/text-fabric/blob/master/tf/browser/static/tf.js">modest amount of JavaScript</a>
+<a href="https://github.com/annotation/text-fabric/blob/master/tf/browser/static/tf3.0.js">modest amount of JavaScript</a>
 on top of
 <a href="https://api.jquery.com">JQuery</a>.</p>
 <p>For collapsing and expanding elements we use the
@@ -114,7 +114,7 @@ browsers, not even Edge.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c128427745ab6f0f38a36826159814abc5c7c205/tf/browser/web.py#L1-L274" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/34f0a551bb6b7ded5a9141adc6e62cee31d2b927/tf/browser/web.py#L1-L274" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Web interface
@@ -151,7 +151,7 @@ anything else | submits the form with user data and return the processed request
 ## Templates
 
 There are two templates in
-[views](https://github.com/annotation/text-fabric/tree/master/tf/browser/views)
+[templates](https://github.com/annotation/text-fabric/tree/master/tf/browser/templates)
 :
 
 *   *index*: the normal template for returning responses
@@ -174,15 +174,15 @@ There are several sources of CSS formatting:
     for pretty displays;
 *   [index.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/static/index.css):
     the formatting of the *index* web page with which the user interacts;
-*   [export.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/views/export.css)
+*   [export.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/templates/export.css)
     the formatting of the export page;
-*   [base.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/views/base.css)
+*   [base.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/templates/base.css)
     shared formatting between the index and export pages.
 
 ## JavaScript
 
 We use a
-[modest amount of JavaScript](https://github.com/annotation/text-fabric/blob/master/tf/browser/static/tf.js)
+[modest amount of JavaScript](https://github.com/annotation/text-fabric/blob/master/tf/browser/static/tf3.0.js)
 on top of
 [JQuery](https://api.jquery.com).
 
@@ -431,7 +431,7 @@ def runWeb(webapp, debug, portWeb):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c128427745ab6f0f38a36826159814abc5c7c205/tf/browser/web.py#L112-L122" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/34f0a551bb6b7ded5a9141adc6e62cee31d2b927/tf/browser/web.py#L112-L122" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Web:
     def __init__(self, kernelApi):

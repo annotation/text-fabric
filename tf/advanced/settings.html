@@ -32,11 +32,11 @@ crossorigin>
 <p>Developers can create corpus apps by specifying a <code>config.yaml</code> with settings.
 These settings will be read, checked, and transformed into configuration data
 that is read by the app, see <code><a title="tf.advanced.settings.showContext" href="#tf.advanced.settings.showContext">showContext()</a></code></p>
-<p>See for examples:
-*
-<a href="https://github.com/etcbc/bhsa/blob/master/app/config.yaml"><code>ETCBC/bhsa</code></a>.
-*
-<a href="https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml"><code>Nino-cunei/uruk</code></a>.</p>
+<p>See for examples:</p>
+<ul>
+<li><a href="https://github.com/etcbc/bhsa/blob/master/app/config.yaml">ETCBC/bhsa</a>.</li>
+<li><a href="https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml">Nino-cunei/uruk</a>.</li>
+</ul>
 <h1 id="config-specs">Config specs</h1>
 <p>Here is a specification of all settings you can configure for an app.</p>
 <p>Each section below corresponds to a main key in the <code>config.yaml</code> of an app.</p>
@@ -616,7 +616,7 @@ If there are no such node types, we pick the slot type, but this is pathological
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>Use this if you want to exclude particular nodes of some type, e.g. in
-<a href="https://github.com/etcbc/dss/blob/master/app/config.yaml"><code>ETCBC/dss</code></a>.
+<a href="https://github.com/etcbc/dss/blob/master/app/config.yaml">ETCBC/dss</a>.
 where we want to prevent line terminator signs.</p>
 </div>
 <p>The value is a dictionary of feature name - value pairs.</p>
@@ -668,7 +668,7 @@ type.</p>
 <pre><code class="language-python">getGraphics(isPretty, node, nodeType, isOuter)
 </code></pre>
 <p>results in HTML code for sourcing the graphics.</p>
-<p>See <a href="https://github.com/Nino-cunei/uruk/blob/master/app/app.py"><code>Nino-cunei/uruk</code></a>.</p>
+<p>See <a href="https://github.com/Nino-cunei/uruk/blob/master/app/app.py">Nino-cunei/uruk</a>.</p>
 <dl>
 <dt>Default</dt>
 <dd>boolean <code>null</code></dd>
@@ -762,7 +762,7 @@ to their stacking.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>For some types in
-<a href="https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml"><code>Nino-cunei/uruk</code></a>
+<a href="https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml">Nino-cunei/uruk</a>
 it is needed to deviate from the default.</p>
 </div>
 <hr>
@@ -812,7 +812,7 @@ In your app code you have to implement:</p>
 <p>The default is:
 <code>true</code> for the lowest section type, if there are section types in <code>otext.tf</code>.</p>
 <p>But more types can be declared as verse-like, e.g. <code>halfverse</code> in the
-<a href="https://github.com/etcbc/bhsa/blob/master/app/config.yaml"><code>bhsa</code></a>.</p>
+<a href="https://github.com/etcbc/bhsa/blob/master/app/config.yaml">ETCBC/bhsa</a>.</p>
 <hr>
 <h3 id="wrap"><code>wrap</code></h3>
 <p>Pretty: whether the child displays may be wrapped.</p>
@@ -830,7 +830,7 @@ such columns may not be wrapped (into several columns)</li>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>For some types in
-<a href="https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml"><code>Nino-cunei/uruk</code></a>
+<a href="https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml">Nino-cunei/uruk</a>
 it is needed to deviate from the default.</p>
 </div>
 <hr>
@@ -844,7 +844,7 @@ it is needed to deviate from the default.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c128427745ab6f0f38a36826159814abc5c7c205/tf/advanced/settings.py#L1-L1999" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/34f0a551bb6b7ded5a9141adc6e62cee31d2b927/tf/advanced/settings.py#L1-L2000" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # App settings
@@ -854,8 +854,9 @@ These settings will be read, checked, and transformed into configuration data
 that is read by the app, see `tf.advanced.settings.showContext`
 
 See for examples:
-*   [`ETCBC/bhsa`](https://github.com/etcbc/bhsa/blob/master/app/config.yaml).
-*   [`Nino-cunei/uruk`](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml).
+
+*   [ETCBC/bhsa](https://github.com/etcbc/bhsa/blob/master/app/config.yaml).
+*   [Nino-cunei/uruk](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml).
 
 # Config specs
 
@@ -1561,7 +1562,7 @@ All nodes that satisfy at least one of these conditions will be left out.
 
 !!! hint
     Use this if you want to exclude particular nodes of some type, e.g. in
-    [`ETCBC/dss`](https://github.com/etcbc/dss/blob/master/app/config.yaml).
+    [ETCBC/dss](https://github.com/etcbc/dss/blob/master/app/config.yaml).
     where we want to prevent line terminator signs.
 
 The value is a dictionary of feature name - value pairs.
@@ -1627,7 +1628,7 @@ getGraphics(isPretty, node, nodeType, isOuter)
 
 results in HTML code for sourcing the graphics.
 
-See [`Nino-cunei/uruk`](https://github.com/Nino-cunei/uruk/blob/master/app/app.py).
+See [Nino-cunei/uruk](https://github.com/Nino-cunei/uruk/blob/master/app/app.py).
 
 Default
 :   boolean `null`
@@ -1734,7 +1735,7 @@ Default
 
 !!! hint
     For some types in
-    [`Nino-cunei/uruk`](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml)
+    [Nino-cunei/uruk](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml)
     it is needed to deviate from the default.
 
 ---
@@ -1804,7 +1805,7 @@ The default is:
 `true` for the lowest section type, if there are section types in `otext.tf`.
 
 But more types can be declared as verse-like, e.g. `halfverse` in the
-[`bhsa`](https://github.com/etcbc/bhsa/blob/master/app/config.yaml).
+[ETCBC/bhsa](https://github.com/etcbc/bhsa/blob/master/app/config.yaml).
 
 ---
 
@@ -1821,7 +1822,7 @@ Default:
 
 !!! hint
     For some types in
-    [`Nino-cunei/uruk`](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml)
+    [Nino-cunei/uruk](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml)
     it is needed to deviate from the default.
 
 ---
@@ -2936,7 +2937,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c128427745ab6f0f38a36826159814abc5c7c205/tf/advanced/settings.py#L1183-L1199" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/34f0a551bb6b7ded5a9141adc6e62cee31d2b927/tf/advanced/settings.py#L1184-L1200" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AppCurrent:
     def __init__(self, specs):
@@ -2987,7 +2988,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c128427745ab6f0f38a36826159814abc5c7c205/tf/advanced/settings.py#L1202-L1391" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/34f0a551bb6b7ded5a9141adc6e62cee31d2b927/tf/advanced/settings.py#L1203-L1392" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Check:
     def __init__(self, app, withApi):

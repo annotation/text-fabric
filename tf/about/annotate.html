@@ -54,7 +54,7 @@ These annotations consist of a new nodes of a new type (<code>ent</code>, or <co
 features that give information about those nodes.</p>
 <h2 id="supported-corpora">Supported corpora</h2>
 <p>This tool is being developed against the
-<a href="https://github.com/HuygensING/suriano"><code>HuygensING/suriano</code> corpus</a>.
+<a href="https://gitlab.huc.knaw.nl/suriano/letters">Suriano/letters</a> corpus.
 Yet it is meant to be usable for all TF corpora. No corpus knowledge is baked in.
 If corpus specifics are needed, it will be fetched from the already present TF
 configuration of that corpus.
@@ -70,8 +70,8 @@ corpus.</p>
 <li>
 <p>Suriano</p>
 <ul>
-<li><a href="https://nbviewer.org/github/HuygensING/suriano/blob/main/programs/nerTest.ipynb">basic annotation API</a></li>
-<li><a href="https://nbviewer.org/github/HuygensING/suriano/blob/main/programs/ner.ipynb">using a spreadsheet with instructions</a></li>
+<li><a href="https://nbviewer.org/urls/gitlab.huc.knaw.nl/suriano/letters/-/raw/main/programs/ner.ipynb/%3Fref_type%3Dheads%26inline%3Dfalse">basic annotation API</a></li>
+<li><a href="https://nbviewer.org/urls/gitlab.huc.knaw.nl/suriano/letters/-/raw/main/programs/convertPlain.ipynb/%3Fref_type%3Dheads%26inline%3Dfalse">using a spreadsheet with instructions</a></li>
 </ul>
 </li>
 <li>
@@ -89,8 +89,8 @@ It is a balancing act between automating as much as possible, but not so much th
 you miss the fine points in your corpus.</p>
 <p>We need to gather experience in order to arrive at a truly usable tool.</p>
 <p>We are going to mark up the
-<a href="https://github.com/HuygensING/suriano"><code>HuygensING/suriano</code> corpus</a> in this way and hope
-to acquire a lot of experience in the process.</p>
+<a href="https://gitlab.huc.knaw.nl/suriano/letters">Suriano/letters</a> corpus in this
+way and hope to acquire a lot of experience in the process.</p>
 <h2 id="delivery-of-annotation-data">Delivery of annotation data</h2>
 <p>But how exactly are those new nodes and features delivered?</p>
 <p>This is work in progress!</p>
@@ -188,7 +188,7 @@ directory is located next to the <code>ner</code> directory that holds the input
 They are corpus specific, so they must be specified in a YAML file in the corpus
 repository.</p>
 <p>As an example, we refer to the
-<a href="https://github.com/HuygensING/suriano">Suriano corpus</a>.</p>
+<a href="https://gitlab.huc.knaw.nl/suriano/letters">Suriano/letters</a> corpus:</p>
 <ul>
 <li><code>config.yaml</code> in directory <code>ner</code>;</li>
 <li>optional Excel sheets in directory <code>ner/sheets</code> with instructions to
@@ -298,7 +298,7 @@ I intend to write functions to make this task easier.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c128427745ab6f0f38a36826159814abc5c7c205/tf/about/annotate.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/34f0a551bb6b7ded5a9141adc6e62cee31d2b927/tf/about/annotate.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/annotate.md
