@@ -39,7 +39,7 @@ settings for a corpus, and possibly some supporting application code and CSS sty
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6c9f29425595e78abd804472330a1ed3b0bf0439/tf/app.py#L1-L56" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/91ebbb59a01f27542f7e6d66cc84a65773d35213/tf/app.py#L1-L72" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Make use of a corpus.
@@ -57,9 +57,6 @@ For a detailed description, see `tf.about.usefunc`.
 &#34;&#34;&#34;
 
 from .advanced.app import findApp, useApp
-
-
-# START AN APP
 
 
 def use(appName, *args, backend=None, **kwargs):
@@ -96,7 +93,26 @@ def use(appName, *args, backend=None, **kwargs):
 
     (appName, checkoutApp, dataLoc, backend) = useApp(appName, backend)
 
-    return findApp(appName, checkoutApp, dataLoc, backend, False, *args, **kwargs)</code></pre>
+    return findApp(appName, checkoutApp, dataLoc, backend, False, *args, **kwargs)
+
+
+def collect(backend, org, repo):
+    &#34;&#34;&#34;Collect the data of the corpus in a zip file.
+
+    The app, main data, data of standard modules of a corpus will be zipped
+    into a file `complete.zip` and saved in your downloads folder,
+    in a nested folder by backend, org and repo.
+
+    It is assumed that you have cloned the repo of the corpus and the repos
+    of all of its standard modules.
+
+    The latest version will be used.
+    &#34;&#34;&#34;
+
+    A = use(f&#34;{org}/{repo}:clone&#34;, checkout=&#34;clone&#34;, backend=backend)
+    A.indent(reset=True)
+    msg = A.zipAll()
+    A.info(msg)</code></pre>
 </details>
 </section>
 <section>
@@ -106,6 +122,18 @@ def use(appName, *args, backend=None, **kwargs):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="tf.app.collect"><code class="name flex">
+<span>def <span class="ident">collect</span></span>(<span>backend, org, repo)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Collect the data of the corpus in a zip file.</p>
+<p>The app, main data, data of standard modules of a corpus will be zipped
+into a file <code>complete.zip</code> and saved in your downloads folder,
+in a nested folder by backend, org and repo.</p>
+<p>It is assumed that you have cloned the repo of the corpus and the repos
+of all of its standard modules.</p>
+<p>The latest version will be used.</p></div>
+</dd>
 <dt id="tf.app.use"><code class="name flex">
 <span>def <span class="ident">use</span></span>(<span>appName, *args, backend=None, **kwargs)</span>
 </code></dt>
@@ -204,6 +232,7 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="tf.app.collect" href="#tf.app.collect">collect</a></code></li>
 <li><code><a title="tf.app.use" href="#tf.app.use">use</a></code></li>
 </ul>
 </li>

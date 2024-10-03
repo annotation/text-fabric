@@ -44,10 +44,12 @@ and in its top-level directory run the command:</strong></p>
 <h2 id="12">12</h2>
 <h3 id="125">12.5</h3>
 <h4 id="1255">12.5.5</h4>
-<p>2024-10-??</p>
+<p>2024-10-03</p>
 <p>New functions in NER to help analyze triggers that do not find named entities.
 Also to add spelling variants of triggers automatically to the spreadsheets
 of names and triggers.</p>
+<p>New function <code><a title="tf.app.collect" href="../app.html#tf.app.collect">collect()</a></code> to make a complete zip of the data, modules and app
+of a corpus, to attach it to a github release.</p>
 <ul>
 <li>Fix: in the <code>use()</code> command, the loading of an additional data module triggered the
 express download of <code>complete.zip</code> and eventually did not try to download the
@@ -548,7 +550,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6c9f29425595e78abd804472330a1ed3b0bf0439/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/91ebbb59a01f27542f7e6d66cc84a65773d35213/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
