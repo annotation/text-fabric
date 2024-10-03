@@ -1,25 +1,24 @@
 """Rendering of corpus extracts with annotations.
-
-To see how this fits among all the modules of this package, see
-`tf.browser.ner.ner` .
 """
 
 from itertools import chain
 
-from ...advanced.helpers import dh
+from ..advanced.helpers import dh
 
-from .helpers import repIdent, repSummary, toAscii
-from ..html import H
-
-from .settings import (
+from ..browser.html import H
+from ..browser.ner.websettings import (
+    repIdent,
+    repSummary,
     SORT_DEFAULT,
     SORTKEY_DEFAULT,
     SORTDIR_DEFAULT,
     SORTDIR_DESC,
     LIMIT_BROWSER,
     LIMIT_NB,
-    SET_SHEET,
 )
+
+from .helpers import toAscii
+from .settings import SET_SHEET
 
 
 class Show:
@@ -408,7 +407,7 @@ class Show:
         these entities are present in the input parameter `buckets`.
 
         It is recommended to apply this function to the outcome of
-        `tf.browser.ner.ner.NER.filterContent`
+        `tf.ner.ner.NER.filterContent`
 
         !!! caution "Truncated"
             Unless the user has selected an entity or forced a start and end
@@ -421,7 +420,7 @@ class Show:
             A selection of buckets (chunks / paragraphs) of the corpus.
             Each bucket is given as a tuple.
             The exact form is this data structure is equal to what the
-            function `tf.browser.ner.ner.NER.filterContent`
+            function `tf.ner.ner.NER.filterContent`
             returns.
 
         activeEntity: tuple, optional None

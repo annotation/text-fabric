@@ -3,77 +3,31 @@
 As a preparation, read `tf.about.annotate` first, since it explains the concepts, and
 guides you to set up the configuration for your corpus.
 
-The main task of this module is to find occurrences of annotations
-on the basis of criteria.
+The class `tf.ner.ner.NER` in this module is the central class of this tool whose main
+task is to find occurrences of annotations on the basis of criteria.
 
-But this is just the tip of the iceberg, since this module inherits
-from a number of other modules that inherit form yet other modules:
+This module inherits from a number of other modules:
 
-*   `tf.browser.ner.show`: generate HTML for annotated buckets of the corpus;
-*   `tf.browser.ner.sets`: manage annotation sets;
-*   `tf.browser.ner.data`: manage annotation data: loading, adding/deleting
-    annotations;
-*   `tf.browser.ner.settings`: manage the specifics of a TF corpus and have
-    access to its data.
+*   `tf.ner.match`: to filter individual buckets on the basis of criteria.
+*   `tf.ner.sets`: manage annotation sets;
+*   `tf.ner.data`: manage annotation data: loading, adding/deleting annotations;
+*   `tf.ner.show`: generate HTML for annotated buckets of the corpus;
+*   `tf.ner.settings`: manage the specifics of a TF corpus and have access to its data.
+*   `tf.ner.helpers`: a variety of context-free data jugglers;
 
-It also uses
+The NER machinery can be used by
 
-*   `tf.browser.ner.match`: to filter individual buckets on the basis of
-    criteria.
-
-Hence, `Annotation` is the central class of this tool, whose methods are relevant
-for:
-
-*   `tf.browser.ner.ner`: the API for users to manipulate annotations in their
-    own programs, especially in a Jupyter notebook.
+*   users to manipulate annotations in their own programs, especially in a
+    Jupyter notebook.
 *   `tf.browser.ner.web`: Flask app that routes URLs to controller functions.
 
-`web` makes use of the following modules that are not needed by `ner`:
+The browsing experience is further supported by:
 
 *   `tf.browser.ner.serve`: define the controllers of the web app
-
-Again, this is a top of an iceberg, since it inherits from:
-
 *   `tf.browser.ner.request`: manage the data of a request;
+*   `tf.browser.ner.form`: retrieve form values into typed and structured values.
 *   `tf.browser.ner.fragments`: generate HTML for widgets on the page;
-
-`request` also uses `form` to retrieve form values into typed and structured values.
-
-Both `web` and `ner` make use of the following modules in as far as they are not
-already mentioned under `annotate` and its parent classes:
-
-*   `tf.browser.ner.helpers`: a variety of context-free data jugglers;
-*   `tf.browser.html`: a generic library to generate HTML using Pythonic
-    syntax.
-This module contains the top-level methods for applying annotation rules to a corpus.
-
-!!! note "Class hierarchy"
-    The classes `Settings`, `Corpus`, `Data`, `Sets`, `Show`, `NER`
-    form one hierarchy.
-    So an object of class `NER` has access to all methods of these classes.
-
-    The classes `Serve`, `Request`, `Fragments`, `From` form a separate hierarchy.
-    It will create an `NER` instance which will be stored in a `Serve` instance.
-
-Here is an overview how the modules hang together.
-
-A `|` denotes inheritance, parent classes above child classes.
-
-A `<-<` arrow denotes dependency by importing code.
-
-```
-Browser                           |   Api-hierarchy
-----------------------------------------------------------------
-web <-----< Serve <-----------------< NER              <-< match
-            |   |                 |     |
-       Request Fragments <-< html |   Sets Sheets Show <-< html
-          |                       |     |
-        Form                      |   Data
-                                  |     |
-                                  |   Corpus
-                                  |     |
-                                  |   Settings
-```
+*   `tf.browser.html`: a generic library to generate HTML using Pythonic syntax.
 
 # Programmatic annotation done in a Jupyter Notebook
 
@@ -215,7 +169,7 @@ Entities that are in the spreadsheet, but not in the corpus are skipped.
 
 ## Inspection
 
-We now revert to lower-level methods from the `tf.browser.ner.ner` class to
+We now revert to lower-level methods from the `tf.ner.ner` class to
 inspect some of the results.
 
 ``` python
@@ -267,28 +221,17 @@ from textwrap import dedent
 import collections
 from itertools import chain
 
-from ...dataset import modify
-from ...core.generic import AttrDict
-from ...core.helpers import console
-from ...core.files import (
-    fileOpen,
-    dirRemove,
-    dirNm,
-    dirExists,
-    APP_CONFIG,
-)
-from ...core.timestamp import SILENT_D, DEEP
-from .sheets import Sheets
-from .helpers import (
-    findCompile,
-    toTokens,
-    makePartitions,
-    interference,
-    locInScopes,
-)
+from ..dataset import modify
+from ..core.generic import AttrDict
+from ..core.helpers import console
+from ..core.timestamp import SILENT_D, DEEP
+from ..core.files import fileOpen, dirRemove, dirNm, dirExists, APP_CONFIG
+
 from .sets import Sets
-from .show import Show
+from .sheets import Sheets
 from .match import entityMatch, occMatch
+from .show import Show
+from .helpers import findCompile, toTokens, makePartitions, interference, locInScopes
 
 
 class NER(Sheets, Sets, Show):
@@ -754,13 +697,11 @@ class NER(Sheets, Sets, Show):
                 occs = data.get(trigger, {}).get("", [])
                 items.append((trigger, occs))
 
-        for (trigger, occs) in sorted(
+        for trigger, occs in sorted(
             items,
             key=lambda x: (", ".join(sorted(triggerScopes[x[0]])), x[0].lower()),
         ):
-            uncovered += (
-                0 if self.diagnoseTrigger(trigger, occs, detail=detail) else 1
-            )
+            uncovered += 0 if self.diagnoseTrigger(trigger, occs, detail=detail) else 1
 
         self.console("")
 
@@ -869,7 +810,7 @@ class NER(Sheets, Sets, Show):
                     if i == 5:
                         i = 0
 
-                missedHitsRep = ', '.join(missedHits[0])
+                missedHitsRep = ", ".join(missedHits[0])
                 console(f"{trigger:<40} {scopeRep:<12}: {missedHitsRep}", error=True)
 
                 for m in missedHits[1:]:

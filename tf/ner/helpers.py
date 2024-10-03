@@ -1,17 +1,11 @@
 """Auxiliary functions.
-
-To see how this fits among all the modules of this package, see
-`tf.browser.ner.ner` .
-‹›
 """
 
 import re
 import unicodedata
 import functools
 
-from ...core.helpers import console
-from ..html import H
-from .settings import STYLES
+from ..core.helpers import console
 
 
 WHITE_STRIP_RE = re.compile(r"""(?:\s|[​‌‍])+""")
@@ -157,48 +151,6 @@ def toSmallId(text, transform={}):
     return ".".join(result)
 
 
-def repIdent(features, vals, active=""):
-    """Represents an identifier in HTML.
-
-    Parameters
-    ----------
-    vals: iterable
-        The material is given as a list of feature values.
-    active: string, optional ""
-        A CSS class name to add to the HTML representation.
-        Can be used to mark the entity as active.
-    """
-    return H.join(
-        (H.span(val, cls=f"{feat} {active}") for (feat, val) in zip(features, vals)),
-        sep=" ",
-    )
-
-
-def repSummary(keywordFeatures, vals, active=""):
-    """Represents an keyword value in HTML.
-
-    Parameters
-    ----------
-    vals: iterable
-        The material is given as a list of values of keyword features.
-    active: string, optional ""
-        A CSS class name to add to the HTML representation.
-        Can be used to mark the entity as active.
-    """
-    return H.join(
-        (
-            H.span(val, cls=f"{feat} {active}")
-            for (feat, val) in zip(keywordFeatures, vals)
-        ),
-        sep=" ",
-    )
-
-
-def valRep(features, fVals):
-    """HTML representation of an entity as a sequence of `feat=val` strings."""
-    return ", ".join(f"<i>{feat}</i>={val}" for (feat, val) in zip(features, fVals))
-
-
 def findCompile(bFind, bFindC):
     """Compiles a regular expression out of a search pattern.
 
@@ -228,65 +180,6 @@ def findCompile(bFind, bFindC):
             errorMsg = str(e)
 
     return (bFind, bFindRe, errorMsg)
-
-
-def makeCss(features, keywordFeatures):
-    """Generates CSS for the tool.
-
-    The CSS for this tool has a part that depends on the choice of entity features.
-    For now, the dependency is mild: keyword features such as `kind` are formatted
-    differently than features with an unbounded set of values, such as `eid`.
-
-    Parameters
-    ----------
-    features, keywordFeatures: iterable
-        What the features are and what the keyword features are.
-        These derive ultimately from the corpus-dependent `ner/config.yaml`.
-    """
-    propMap = dict(
-        ff="font-family",
-        fz="font-size",
-        fw="font-weight",
-        fg="color",
-        bg="background-color",
-        bw="border-width",
-        bs="border-style",
-        bc="border-color",
-        br="border-radius",
-        p="padding",
-        m="margin",
-    )
-
-    def makeBlock(manner):
-        props = STYLES[manner]
-        defs = [f"\t{propMap[abb]}: {val};\n" for (abb, val) in props.items()]
-        return H.join(defs)
-
-    def makeCssDef(selector, *blocks):
-        return selector + " {\n" + H.join(blocks) + "}\n"
-
-    css = []
-
-    for feat in features:
-        manner = "keyword" if feat in keywordFeatures else "free"
-
-        plain = makeBlock(manner)
-        bordered = makeBlock(f"{manner}_bordered")
-        active = makeBlock(f"{manner}_active")
-        borderedActive = makeBlock(f"{manner}_bordered_active")
-
-        css.extend(
-            [
-                makeCssDef(f".{feat}", plain),
-                makeCssDef(f".{feat}.active", active),
-                makeCssDef(f"span.{feat}_sel,button.{feat}_sel", plain, bordered),
-                makeCssDef(f"button.{feat}_sel[st=v]", borderedActive, active),
-            ]
-        )
-
-    featureCss = H.join(css, sep="\n")
-    allCss = H.style(featureCss, type="text/css")
-    return allCss
 
 
 def getIntvIndex(buckets, instructions, getHeadings):
@@ -429,7 +322,7 @@ def hasCommon(tokensA, tokensB):
     Test:
 
     ```
-    from tf.browser.ner.helpers import hasCommon
+    from tf.ner.helpers import hasCommon
 
     tokensA = list("abcd")
     tokensB = list("cdef")

@@ -3,10 +3,8 @@
 All form data comes as key value pairs where the values are strings.
 We need more streamlined values, in several data types and organizations.
 Also we need defaults for missing and / or empty values.
-
-To see how this fits among all the modules of this package, see
-`tf.browser.ner.ner` .
 """
+
 from urllib.parse import unquote
 
 from flask import request
@@ -34,7 +32,7 @@ class Form:
         ----------
         features: list
             The entity features in the tool; derives ultimately from
-            `tf.browser.ner.settings.Settings`, which reads the
+            `tf.ner.settings.Settings`, which reads the
             `ner/config.yaml` file.
         defaults: dict
             Provides default values for form keys with a missing or empty value.
@@ -105,11 +103,7 @@ class Form:
         """
         formValue = self.fgets(k)
 
-        return (
-            AttrDict()
-            if formValue == ""
-            else readJson(text=unquote(formValue))
-        )
+        return AttrDict() if formValue == "" else readJson(text=unquote(formValue))
 
     def fill(self):
         """Fill a dictionary with interpreted form values.

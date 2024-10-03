@@ -3,8 +3,12 @@ import time
 import pickle
 import gzip
 
-from ...parameters import GZIP_LEVEL, PICKLE_PROTOCOL
-from ...capable import CheckImport
+from ..parameters import GZIP_LEVEL, PICKLE_PROTOCOL
+from ..capable import CheckImport
+from ..core.generic import AttrDict
+from ..core.helpers import console
+from ..core.files import fileOpen, dirContents, extNm, fileExists, mTime
+
 from .helpers import (
     tnorm,
     normalize,
@@ -14,9 +18,6 @@ from .helpers import (
     parseScopes,
     partitionScopes,
 )
-from ...core.generic import AttrDict
-from ...core.helpers import console
-from ...core.files import fileOpen, dirContents, extNm, fileExists, mTime
 
 
 DS_STORE = ".DS_Store"

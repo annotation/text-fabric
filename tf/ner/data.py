@@ -2,9 +2,6 @@
 
 This module manages the data of annotation sets.
 
-To see how this fits among all the modules of this package, see
-`tf.browser.ner.ner` .
-
 Annotation sets are either the sets of pre-existing entities in the corpus or the
 result of actions by the user of this tool, whether he uses the TF browser, or the API
 in his own programs.
@@ -20,14 +17,10 @@ processed if they are needed and out of date.
 import collections
 import time
 
-from ...core.generic import AttrDict
-from ...core.helpers import console
-from ...core.files import (
-    fileOpen,
-    mTime,
-    fileExists,
-    initTree,
-)
+from ..core.generic import AttrDict
+from ..core.helpers import console
+from ..core.files import fileOpen, mTime, fileExists, initTree
+
 from .corpus import Corpus
 
 
@@ -55,7 +48,7 @@ class Data(Corpus):
 
             We have set up the web server in such a way that it incorporates the
             annotation sets. The web server will pass them to the
-            `tf.browser.ner.ner.NER` object initializer, which passes
+            `tf.ner.ner.NER` object initializer, which passes
             it to the initializer here.
 
             In that way, the `Data` object can start with the sets already in memory.
@@ -91,8 +84,7 @@ class Data(Corpus):
         self.processSet(changed)
 
     def _clearSetData(self):
-        """Clears the current annotation set data from memory.
-        """
+        """Clears the current annotation set data from memory."""
         if not self.properlySetup:
             return
 
@@ -157,9 +149,11 @@ class Data(Corpus):
                     slots = getSlots(e)
                     entities[e] = (
                         tuple(
-                            getFVal(feat, e)
-                            if hasFeature[feat]
-                            else featureDefault[feat](slots)
+                            (
+                                getFVal(feat, e)
+                                if hasFeature[feat]
+                                else featureDefault[feat](slots)
+                            )
                             for feat in features
                         ),
                         tuple(slots),
@@ -451,7 +445,7 @@ class Data(Corpus):
             `deletions` or contained in it.
         buckets: iterable of list
             This is typically the result of
-            `tf.browser.ner.ner.NER.filterContent()`.
+            `tf.ner.ner.NER.filterContent()`.
             The only important thing is that member 2 of each bucket is the list
             of entity matches in that bucket.
             Only entities that occupy these places will be removed.
@@ -738,7 +732,7 @@ class Data(Corpus):
             `additions` or contained in it.
         buckets: iterable of list
             This is typically the result of
-            `tf.browser.ner.ner.NER.filterContent()`.
+            `tf.ner.ner.NER.filterContent()`.
             The only important thing is that member 2 of each bucket is the list
             of entity matches in that bucket.
             Entities will only be added at these places.
@@ -920,7 +914,7 @@ class Data(Corpus):
         """Export an annotation set to a file.
 
         This function is used when a set has to be duplicated:
-        `tf.browser.ner.sets.Sets.setDup()`.
+        `tf.ner.sets.Sets.setDup()`.
 
         Parameters
         ----------

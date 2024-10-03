@@ -2,9 +2,6 @@
 
 Contains a bunch of instant methods to access corpus material.
 
-To see how this fits among all the modules of this package, see
-`tf.browser.ner.ner` .
-
 All access to the TF API should happen through methods in this class.
 
 At this point we have the information from the settings and from the corpus.
@@ -14,9 +11,9 @@ control over how to customize the annotator for different corpora.
 
 import re
 
-from .settings import Settings, TOOLKEY
-from .helpers import makeCss
-from ...core.files import annotateDir
+from ..core.files import annotateDir
+
+from .settings import Settings, TOOLKEY, makeCss
 
 
 WHITE_RE = re.compile(r"""\s{2,}""", re.S)

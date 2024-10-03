@@ -2,17 +2,11 @@
 
 Annotation sets contain the annotations that the user generates by using
 the tool.
-
-To see how this fits among all the modules of this package, see
-`tf.browser.ner.ner` .
 """
 
-from .data import Data
-
-
-from ...core.generic import AttrDict
-from ...core.helpers import console
-from ...core.files import (
+from ..core.generic import AttrDict
+from ..core.helpers import console
+from ..core.files import (
     fileExists,
     initTree,
     dirExists,
@@ -23,6 +17,7 @@ from ...core.files import (
     dirMove,
 )
 
+from .data import Data
 from .settings import ERROR, SET_ENT, SET_SHEET, SET_MAIN
 
 

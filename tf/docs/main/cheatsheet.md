@@ -1273,7 +1273,7 @@ tf {org}/{repo} --tool=ner
 NE = A.makeNer()
 ```
 :   Sets up the 'manual' annotation API for the corpus in `A`.
-:   `tf.browser.ner.ner`
+:   `tf.ner.ner`
 :   More info and examples in `tf.about.annotate` .
 
 ---

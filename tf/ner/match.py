@@ -1,7 +1,4 @@
 """Match functions.
-
-To see how this fits among all the modules of this package, see
-`tf.browser.ner.ner` .
 """
 
 from .settings import NONE
@@ -21,9 +18,9 @@ def occMatch(
     Parameters
     ----------
     getTokens: function
-        See `tf.browser.ner.corpus.Corpus.getTokens`
+        See `tf.ner.corpus.Corpus.getTokens`
     getHeadings: function
-        See `tf.browser.ner.corpus.Corpus.getHeadings`
+        See `tf.ner.corpus.Corpus.getHeadings`
     buckets: tuple of integer
         The bucket nodes in question
     instructions: dict, optional None
@@ -181,15 +178,15 @@ def entityMatch(
     Parameters
     ----------
     entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex: object
-        Various kinds of processed entity data, see `tf.browser.ner.data`
+        Various kinds of processed entity data, see `tf.ner.data`
     getTextR: function
-        See `tf.browser.ner.corpus.Corpus.getTextR`
+        See `tf.ner.corpus.Corpus.getTextR`
     getTokens: function
-        See `tf.browser.ner.corpus.Corpus.getTokens`
+        See `tf.ner.corpus.Corpus.getTokens`
     b: integer
         The node of the bucket in question
     bFindRe, anyEnt, eVals, trigger, qTokens, valSelect, freeState: object
-        As in `tf.browser.ner.ner.NER.filterContent`
+        As in `tf.ner.ner.NER.filterContent`
 
     Returns
     -------

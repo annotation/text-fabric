@@ -1,12 +1,12 @@
 """Corpus dependent setup of the annotation tool.
-
-To see how this fits among all the modules of this package, see
-`tf.browser.ner.ner` .
 """
 
+from ..browser.html import H
+from ..core.helpers import console
+from ..core.files import readYaml, fileExists, APP_CONFIG
 
-from ...core.helpers import console
-from ...core.files import readYaml, fileExists, APP_CONFIG
+
+ERROR = "error"
 
 TOOLKEY = "ner"
 """The name of this annotation tool.
@@ -17,6 +17,32 @@ This name is used
 *   as a key to address the in-memory data that belongs to this tool;
 *   as a prefix to modularize the Flask app for this tool within the encompassing
     TF browser Flask app and also it CSS files.
+"""
+
+SET_ENT = "🟰"
+SET_SHEET = "🧾"
+SET_MAIN = "🖍️"
+
+DEFAULT_SETTINGS = """
+entityType: ent
+entitySet: "{entityType}-nodes"
+
+bucketType: chunk
+
+strFeature: str
+afterFeature: after
+
+features:
+  - eid
+  - kind
+
+keywordFeatures:
+  - kind
+
+defaultValues:
+  kind: PER
+
+spaceEscaped: false
 """
 
 NONE = "⌀"
@@ -32,42 +58,6 @@ EMPTY = "␀"
 If an entity feature has the empty string as value, and we want to create a button for
 it, this is the label we draw on that button.
 """
-
-LIMIT_BROWSER = 100
-"""Limit of amount of buckets to load on one page when in the TF browser.
-
-This is not a hard limit. We only use it if the page contains the whole corpus or
-a filtered subset of it.
-
-But as soon we have selected a token string or an entity, we show all buckets
-that contain it, no matter how many there are.
-
-!!! note "Performance"
-    We use the
-    [CSS device *content-visibility*](https://developer.mozilla.org/en-US/docs/Web/CSS/content-visibility)
-    to restrict rendering to the material that is visible in the viewport. However,
-    this is not supported in Safari, so the performance may suffer in Safari if we load
-    the whole corpus on a single page.
-
-    In practice, even in browsers that support this device are not happy with a big
-    chunk of HTML on the page, since they do have to build a large DOM, including
-    event listeners.
-
-    That's why we restrict the page to a limited amount of buckets.
-
-    But when a selection has been made, it is more important to show the whole,
-    untruncated result set, than to incur a performance penalty.
-    Moreover, it is hardly the case that a selected entity of occurrence occurs in a
-    very large number of buckets.
-"""
-
-LIMIT_NB = 20
-"""Limit of amount of buckets to load on one page when in a Jupyter notebook.
-
-See also `LIMIT_BROWSER` .
-"""
-
-ERROR = "error"
 
 STYLES = dict(
     minus=dict(bg="#ffaaaa;"),
@@ -144,53 +134,63 @@ only place of configuration is that YAML file, and not this file.
 """
 
 
-SORTDIR_DESC = "d"
-"""Value that indicates the descending sort direction."""
+def makeCss(features, keywordFeatures):
+    """Generates CSS for the tool.
 
-SORTDIR_ASC = "a"
-"""Value that indicates the ascending sort direction."""
+    The CSS for this tool has a part that depends on the choice of entity features.
+    For now, the dependency is mild: keyword features such as `kind` are formatted
+    differently than features with an unbounded set of values, such as `eid`.
 
-SORTDIR_DEFAULT = SORTDIR_ASC
-"""Default sort direction."""
+    Parameters
+    ----------
+    features, keywordFeatures: iterable
+        What the features are and what the keyword features are.
+        These derive ultimately from the corpus-dependent `ner/config.yaml`.
+    """
+    propMap = dict(
+        ff="font-family",
+        fz="font-size",
+        fw="font-weight",
+        fg="color",
+        bg="background-color",
+        bw="border-width",
+        bs="border-style",
+        bc="border-color",
+        br="border-radius",
+        p="padding",
+        m="margin",
+    )
 
-SORTKEY_DEFAULT = "freqsort"
-"""Default sort key."""
+    def makeBlock(manner):
+        props = STYLES[manner]
+        defs = [f"\t{propMap[abb]}: {val};\n" for (abb, val) in props.items()]
+        return H.join(defs)
 
-SORT_DEFAULT = (SORTKEY_DEFAULT, SORTDIR_DESC)
-"""Default sort key plus sort direction combination."""
+    def makeCssDef(selector, *blocks):
+        return selector + " {\n" + H.join(blocks) + "}\n"
 
-SC_ALL = "a"
-"""Value that indicates *all* buckets."""
+    css = []
 
-SC_FILT = "f"
-"""Value that indicates *filtered* buckets."""
+    for feat in features:
+        manner = "keyword" if feat in keywordFeatures else "free"
 
+        plain = makeBlock(manner)
+        bordered = makeBlock(f"{manner}_bordered")
+        active = makeBlock(f"{manner}_active")
+        borderedActive = makeBlock(f"{manner}_bordered_active")
 
-DEFAULT_SETTINGS = """
-entityType: ent
-entitySet: "{entityType}-nodes"
+        css.extend(
+            [
+                makeCssDef(f".{feat}", plain),
+                makeCssDef(f".{feat}.active", active),
+                makeCssDef(f"span.{feat}_sel,button.{feat}_sel", plain, bordered),
+                makeCssDef(f"button.{feat}_sel[st=v]", borderedActive, active),
+            ]
+        )
 
-bucketType: chunk
-
-strFeature: str
-afterFeature: after
-
-features:
-  - eid
-  - kind
-
-keywordFeatures:
-  - kind
-
-defaultValues:
-  kind: PER
-
-spaceEscaped: false
-"""
-
-SET_ENT = "🟰"
-SET_SHEET = "🧾"
-SET_MAIN = "🖍️"
+    featureCss = H.join(css, sep="\n")
+    allCss = H.style(featureCss, type="text/css")
+    return allCss
 
 
 class Settings:

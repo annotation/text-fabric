@@ -1,13 +1,13 @@
 """
 Enable manual annotation APIs.
 
-Currently only `tf.browser.ner.ner` is supported here,
+Currently only `tf.ner.ner` is supported here,
 but other annotation tools might be added in the future.
 """
 
 import types
 
-from ..browser.ner.ner import NER
+from ..ner.ner import NER
 
 
 def makeNer(app, silent=False, **kwargs):

@@ -1,14 +1,20 @@
 """Wraps various pieces into HTML.
 
 This module generates HTML for various controls that appear in the TF browser.
-
-To see how this fits among all the modules of this package, see
-`tf.browser.ner.ner` .
 """
 
-from .settings import EMPTY, NONE, SORTDIR_ASC, SORTDIR_DEFAULT, SORTKEY_DEFAULT, SORT_DEFAULT
+from ...ner.settings import EMPTY, NONE
+
 from ..html import H
-from .helpers import repIdent, valRep
+
+from .websettings import (
+    SORTDIR_ASC,
+    SORTDIR_DEFAULT,
+    SORTKEY_DEFAULT,
+    SORT_DEFAULT,
+    repIdent,
+    valRep,
+)
 
 
 class Fragments:
@@ -143,9 +149,7 @@ class Fragments:
             + (
                 "given in the source"
                 if setIsSrc
-                else "specified by a spreadsheet"
-                if setIsRo
-                else "marked up by hand"
+                else "specified by a spreadsheet" if setIsRo else "marked up by hand"
             )
         )
 
@@ -212,18 +216,22 @@ class Fragments:
                             value="v" if formattingState[feat] else "x",
                         ),
                         H.button(
-                            "stats"
-                            if feat == "_stat_"
-                            else "underlining"
-                            if feat == "_entity_"
-                            else feat,
+                            (
+                                "stats"
+                                if feat == "_stat_"
+                                else "underlining" if feat == "_entity_" else feat
+                            ),
                             feat=feat,
                             type="button",
-                            title="toggle display of statistics"
-                            if feat == "_stat_"
-                            else "toggle formatting of entities"
-                            if feat == "_entity"
-                            else f"toggle formatting for feature {feat}",
+                            title=(
+                                "toggle display of statistics"
+                                if feat == "_stat_"
+                                else (
+                                    "toggle formatting of entities"
+                                    if feat == "_entity"
+                                    else f"toggle formatting for feature {feat}"
+                                )
+                            ),
                             cls="active" if formattingState[feat] else "",
                         ),
                     )
@@ -270,9 +278,11 @@ class Fragments:
                             "C" if bFindC else "¢",
                             type="submit",
                             id="bfindb",
-                            title="using case SENSITIVE search"
-                            if bFindC
-                            else "using case INSENSITIVE search",
+                            title=(
+                                "using case SENSITIVE search"
+                                if bFindC
+                                else "using case INSENSITIVE search"
+                            ),
                             cls="mono",
                         ),
                         " ",
@@ -289,11 +299,11 @@ class Fragments:
                             value="" if anyEnt is None else "v" if anyEnt else "x",
                         ),
                         H.button(
-                            "with or without"
-                            if anyEnt is None
-                            else "with"
-                            if anyEnt
-                            else "without",
+                            (
+                                "with or without"
+                                if anyEnt is None
+                                else "with" if anyEnt else "without"
+                            ),
                             type="submit",
                             id="anyentbutton",
                             cls="mono",
@@ -437,15 +447,19 @@ class Fragments:
                 id="subtlefilter",
                 value="" if subtleFilter is None else "v" if subtleFilter else "x",
             ),
-            "" if not setIsX else H.button(
-                "all scopes"
-                if subtleFilter is None
-                else "scoped"
-                if subtleFilter
-                else "unscoped",
-                type="submit",
-                id="subtlefilterbutton",
-                cls="mono",
+            (
+                ""
+                if not setIsX
+                else H.button(
+                    (
+                        "all scopes"
+                        if subtleFilter is None
+                        else "scoped" if subtleFilter else "unscoped"
+                    ),
+                    type="submit",
+                    id="subtlefilterbutton",
+                    cls="mono",
+                )
             ),
             cls="subtlefilter",
         )
@@ -494,11 +508,11 @@ class Fragments:
                                 value=freeState,
                             ),
                             H.button(
-                                "⚭ intersecting"
-                                if freeState == "bound"
-                                else "⚯ free"
-                                if freeState == "free"
-                                else "⚬ all",
+                                (
+                                    "⚭ intersecting"
+                                    if freeState == "bound"
+                                    else "⚯ free" if freeState == "free" else "⚬ all"
+                                ),
                                 type="submit",
                                 id="freebutton",
                                 cls="mono",
@@ -538,9 +552,11 @@ class Fragments:
         hasEnt = eTxt != ""
 
         featuresW = {
-            feat: valSelect[feat]
-            if hasEnt
-            else setData.entityTextVal[feat].get(txt, set())
+            feat: (
+                valSelect[feat]
+                if hasEnt
+                else setData.entityTextVal[feat].get(txt, set())
+            )
             for feat in features
         }
         content = []
@@ -570,9 +586,11 @@ class Fragments:
                             name=val or EMPTY,
                             cls=f"{feat}_sel alt",
                             st="v" if val in thisValSelect else "x",
-                            title=f"{feat} not marked"
-                            if val == NONE
-                            else f"{feat} marked as {val}",
+                            title=(
+                                f"{feat} not marked"
+                                if val == NONE
+                                else f"{feat} marked as {val}"
+                            ),
                         )
                     )
                 titleContent = H.div(H.i(f"{feat}:"), cls="feattitle")
@@ -585,17 +603,19 @@ class Fragments:
         v.selectentities = (
             H.div(
                 H.join(inputContent),
-                H.div(
-                    H.span("" if setIsX else H.b("Select"), scopeInit, scopeFilter),
-                    H.span(H.span(f"{total} {bucketType}(s)")),
-                )
-                if hasEnt
-                else H.join(
+                (
                     H.div(
-                        H.p(H.b("Select"), scopeInit, scopeFilter),
-                        H.p(H.span(f"{total} {bucketType}(s)")),
-                    ),
-                    H.div(content, id="selectsubwidget"),
+                        H.span("" if setIsX else H.b("Select"), scopeInit, scopeFilter),
+                        H.span(H.span(f"{total} {bucketType}(s)")),
+                    )
+                    if hasEnt
+                    else H.join(
+                        H.div(
+                            H.p(H.b("Select"), scopeInit, scopeFilter),
+                            H.p(H.span(f"{total} {bucketType}(s)")),
+                        ),
+                        H.div(content, id="selectsubwidget"),
+                    )
                 ),
                 id="selectwidget",
             )
@@ -756,9 +776,11 @@ class Fragments:
                 default = (
                     activeEntity[i]
                     if hasEnt
-                    else featureDefault[feat](range(tokenStart, tokenEnd + 1))
-                    if hasOcc
-                    else {}
+                    else (
+                        featureDefault[feat](range(tokenStart, tokenEnd + 1))
+                        if hasOcc
+                        else {}
+                    )
                 )
 
                 titleContent = H.div(
@@ -777,9 +799,7 @@ class Fragments:
                     addSt = (
                         "plus"
                         if val in addVals
-                        else "plus"
-                        if val == default and freeVal != default
-                        else "x"
+                        else "plus" if val == default and freeVal != default else "x"
                     )
 
                     if occurs:
@@ -816,22 +836,24 @@ class Fragments:
                 val = (
                     addVals[0]
                     if len(addVals) and submitter in {"lookupn", "freebutton"}
-                    else init
-                    if submitter == "lookupq"
-                    else freeVal
-                    if freeVal is not None
-                    else init
+                    else (
+                        init
+                        if submitter == "lookupq"
+                        else freeVal if freeVal is not None else init
+                    )
                 )
                 addSt = (
                     "plus"
                     if val and len(addVals) and submitter in {"lookupn", "freebutton"}
-                    else "plus"
-                    if submitter == "lookupq" and val
-                    else "plus"
-                    if val == freeVal
-                    else "plus"
-                    if init and len(theseVals) == 0
-                    else "x"
+                    else (
+                        "plus"
+                        if submitter == "lookupq" and val
+                        else (
+                            "plus"
+                            if val == freeVal
+                            else "plus" if init and len(theseVals) == 0 else "x"
+                        )
+                    )
                 )
                 if (isKeyword and val in allVals) or val is None:
                     val = ""
@@ -995,12 +1017,14 @@ class Fragments:
         label = "Deletion" if kind == "del" else "Addition" if kind == "add" else ""
         v[f"report{kind}"] = H.join(
             H.div(
-                H.join(
-                    H.div(f"{label}: {n} x {valRep(features, fVals)}")
-                    for (fVals, n) in line
-                )
-                if type(line) is tuple
-                else line,
+                (
+                    H.join(
+                        H.div(f"{label}: {n} x {valRep(features, fVals)}")
+                        for (fVals, n) in line
+                    )
+                    if type(line) is tuple
+                    else line
+                ),
                 cls="report",
             )
             for line in report

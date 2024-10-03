@@ -310,7 +310,7 @@ For that purpose, there is also a way of annotating-by-programming, where you ru
 annotator tool in a Jupyter Notebook, driven by a spreadsheet with names and
 surface forms.
 
-See `tf.browser.ner.ner`.
+See `tf.ner.ner`.
 
 You can then still use this tool after the fact to check the entity assignments
 and make fine-tuning corrections.

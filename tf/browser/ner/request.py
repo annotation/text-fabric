@@ -1,14 +1,13 @@
 """Auxiliary functions for managing request data.
-
-To see how this fits among all the modules of this package, see
-`tf.browser.ner.ner` .
 """
 
-
 from ...core.generic import AttrDict
-from .settings import TOOLKEY, EMPTY, NONE, SC_ALL
+from ...ner.settings import TOOLKEY
+from ...ner.helpers import findCompile
+from ...ner.settings import EMPTY, NONE
+
+from .websettings import SC_ALL
 from .form import Form
-from .helpers import findCompile
 
 
 class Request(Form):

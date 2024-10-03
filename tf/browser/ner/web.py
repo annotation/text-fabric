@@ -1,14 +1,13 @@
 """Flask sub web app in the TF browser.
-
-To see how this fits among all the modules of this package, see
-`tf.browser.ner.ner` .
 """
+
 from flask import Blueprint, send_file
 
 from ...core.generic import AttrDict
 from ...core.files import abspath, fileExists, dirNm
-from .settings import TOOLKEY
-from .ner import NER
+from ...ner.settings import TOOLKEY
+from ...ner.ner import NER
+
 from .serve import serveNer, serveNerContext
 
 
@@ -25,7 +24,7 @@ def factory(web):
     which is built into Flask itself.
 
     Before starting the actual serving of pages, we initialize a
-    `tf.browser.ner.ner.NER` object, and store it under attribute `ner`.
+    `tf.ner.ner.NER` object, and store it under attribute `ner`.
 
     In order to do so, we pick up a handle to the loaded TF corpus,
     and a handle to the tool data, both present in the `web` object (see parameters

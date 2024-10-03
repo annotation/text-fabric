@@ -2,14 +2,13 @@
 
 This module contains the controllers that Flask invokes when serving
 the annotation tool in the TF browser.
-
-To see how this fits among all the modules of this package, see
-`tf.browser.ner.ner` .
 """
 
 from flask import render_template
 
-from .settings import TOOLKEY, SC_ALL
+from ...ner.settings import TOOLKEY
+
+from .websettings import SC_ALL
 from .request import Request
 from .fragments import Fragments
 
@@ -22,7 +21,7 @@ class Serve(Request, Fragments):
         ----------
         web: object
             This represents the Flask website that is the TF browser.
-            It has initialized a `tf.browser.ner.ner.NER` object,
+            It has initialized a `tf.ner.ner.NER` object,
             and has stored it under attribute `ner`.
             See `tf.browser.ner.web.factory` and `tf.browser.web.factory`.
 
@@ -153,7 +152,7 @@ class Serve(Request, Fragments):
         We further modify the selection by two additional parameters.
 
         The resulting list of buckets is obtained by
-        `tf.browser.ner.ner.NER.filterContent`, and each member in the bucket
+        `tf.ner.ner.NER.filterContent`, and each member in the bucket
         list is a tuple as indicated in the `filterContent` function.
         The list is stored in the `Serve` object.
         Additionally, statistics about these buckets and how many entity values

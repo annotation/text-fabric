@@ -1,26 +1,106 @@
-# Manual Annotation
+# Named Entity Recognition
+
+## What kind of NER detection does TF support?
 
 Named Entity Recognition is a task for which automated tools exist.
 But in a smallish, well-known corpus, such tools tend to create more noise than signal.
 If you know which names to expect and in what forms they occur in the corpus,
-it might be easier to mark them by hand.
+it might be easier to mark them by means of a set of triggers, or even by hand.
 
 TF contains a tool to help you with that. The basic thing it does is
-to find all occurrences of a pattern you specify, and then assign an identifier and
-a kind to all those occurrences.
+to find all occurrences of a set of patterns you specify, and then assign identifiers
+and other attributes to all occurrences of those patterns.
 
-For example, it finds all `Ernesto di Nassau` occurrences and it assigns
-identity `ernesto.di.nassau` and kind `PER` to them.
+For example, it finds all `Gio. Ernesto di Nassau` occurrences and it assigns
+identity `gio.ernesto.di.nassau` and kind `PER` to them.
 
-There are two interfaces. One runs inside the TF browser, and it
-enables you to search and mark repeatedly, to apply additions and
-deletions of named entities to restricted sets of occurrences, so that you can
-make individual exceptions to the rules.
+There are two interfaces:
 
-The other is an API, that you can call, typically from inside a Jupyter notebook,
-by which you can automate things to the next level.
-You can prepare a spreadsheet with entities and surface forms and have the tool
-*execute* that spreadsheet against the corpus.
+*   a spreadsheet for bulk assignment, operated from a Jupyter Notebook or
+    Python program;
+*   the TF browser for inspection and manual assignment of entities.
+
+## How do you tackle NER with TF?
+
+The recommended scenario is this:
+
+* prepare a spreadsheet where named entities are linked to *triggers*;
+* TF can load such a spreadsheet and find those entities in the corpus;
+* TF will check the spreadsheet for various mistakes, and reports on the outcomes;
+* Depending on the reports, adapt the spreadsheet and load it again;
+* Optionally run analiticcl to find spelling variants;
+* Check the variants and put the wrong ones in an exception list;
+* Use TF to merge the variants with the original triggers into a new spreadsheet;
+* Load the merged spreadsheet;
+* Check the reports and adapt the original or the merged spreadsheet;
+* Iterate until the outcome is optimal, use the TF browser to inspect special cases;
+* Optionally use the TF browser to add/delete individual entity occurrences;
+* Use TF to bake the entities with the corpus into a new TF dataset.
+
+See
+
+*   `tf.ner.ner` for how to work with spreadsheets;
+*   `tf.browser.ner.web` for how to work with the browser interface.
+
+## How well does it work?
+
+We applied this method on the
+[corpus of letters of Suriano](https://gitlab.huc.knaw.nl/suriano/letters),
+using a spreadsheet with over 700 named entities and over 2000 triggers leading to
+12,500 marked entities.
+
+TF is performant, it looks up all those triggers in one pass over the corpus.
+Later, when it diagnoses the outcome, it needs to search for those triggers in isolation
+because triggers may interfere with each other in unexpected ways. TF will then search
+for them in as few passes over the corpus as possible.
+
+## Is it subtle enough?
+
+It is quite common that a trigger stands for various entities depending on the context.
+For example, `il papa` (the pope) may refer to one person when it occurs in a letter of
+1617, and another person when it occurs in a letter of 1620.
+
+TF allows *scoped* triggers: for each set of triggers you can supply a scope, in the
+form of ranges of sections for which the trigger should be looked up.
+
+There is also an implicit rule that no piece of text falls under two entities.
+When two triggers fight for a match, the trigger that has the match that starts earlier
+wins. If they start at the same spot, the longer trigger wins. Because a longer trigger
+is more specific than a shorter trigger.
+
+Yet it is quite an art to fill such a spreadsheet with triggers, and some trial and
+error is needed. TF helps with that in two ways:
+
+*   it provides a lot of feedback on problem cases;
+*   the process of loading a spreadsheet, searching for the triggers, and producing
+    reports takes only a few seconds.
+
+## Is it generic?
+
+Yes. It only makes use of those characteristics of a corpus that it can glean from
+the TF dataset. If your corpus is in TF, these methods will work.
+
+However, as the software is not yet completely mature, it might be the case that you
+bump into some details that will conflict with the characteristics of your corpus.
+
+Currently I am aware of only this:
+
+*   We assume that the section headings are integers at all levels, so that we can
+    meaningfully refer to ranges of sections, e.g. `1.2-3.4.5`.
+    If your corpus has strings as section headings, the current version of `tf.ner`
+    will not work.
+
+Later I intend to work around it by using the index of sections (that already is
+part of the TF dataset), so that ranges like `Genesis 1-Exodus 2:3` become
+meaningful.
+
+See `tf.core.prepare.sections`
+
+## How exactly are the entities delivered?
+
+The first product is a `.tsv` file
+
+
 
 Here is what the browser interface looks like:
 
@@ -166,7 +246,7 @@ Go to the manual for annotating in the TF browser:
 ## For programming annotators
 
 Go to the manual for annotating in in a Jupyter Notebook, using the API:
-`tf.browser.ner.ner`
+`tf.ner.ner`
 Or see this
 [example notebook](https://nbviewer.jupyter.org/github/HuygensING/suriano/blob/main/programs/ner.ipynb).
 
@@ -249,7 +329,7 @@ Concerning `ner/config.yaml`: it has the following information:
 
 Concerning the Excel sheets in `ner/sheets`:
 
-*   they can be read by `tf.browser.ner.ner.NER.setSheet`;
+*   they can be read by `tf.ner.ner.NER.setSheet`;
 
 *   you might need to `pip install openpyxl` first;
 
