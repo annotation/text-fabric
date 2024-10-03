@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.11.1" />
-<title>tf.browser.ner.helpers API documentation</title>
-<meta name="description" content="Auxiliary functions …" />
+<title>tf.ner.helpers API documentation</title>
+<meta name="description" content="Auxiliary functions." />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css"
 integrity="sha512-kcbluZFacWN57NgWZ4aH6eUMBEaTyErFhIFD3y5qYZbKuuyImH0K/AKsBbfXlivh2z5C+3IDTIhI11YmKomzmA=="
@@ -25,32 +25,23 @@ crossorigin>
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.browser.ner.helpers</code></h1>
+<h1 class="title">Module <code>tf.ner.helpers</code></h1>
 </header>
 <section id="section-intro">
 <p>Auxiliary functions.</p>
-<p>To see how this fits among all the modules of this package, see
-<code><a title="tf.browser.ner.ner" href="ner.html">tf.browser.ner.ner</a></code> .
-‹›</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/daf3d9735cb5e691f16215e7eba449f2aa8758b6/tf/browser/ner/helpers.py#L1-L971" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/ner/helpers.py#L1-L864" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Auxiliary functions.
-
-To see how this fits among all the modules of this package, see
-`tf.browser.ner.ner` .
-‹›
 &#34;&#34;&#34;
 
 import re
 import unicodedata
 import functools
 
-from ...core.helpers import console
-from ..html import H
-from .settings import STYLES
+from ..core.helpers import console
 
 
 WHITE_STRIP_RE = re.compile(r&#34;&#34;&#34;(?:\s|[​‌‍])+&#34;&#34;&#34;)
@@ -196,48 +187,6 @@ def toSmallId(text, transform={}):
     return &#34;.&#34;.join(result)
 
 
-def repIdent(features, vals, active=&#34;&#34;):
-    &#34;&#34;&#34;Represents an identifier in HTML.
-
-    Parameters
-    ----------
-    vals: iterable
-        The material is given as a list of feature values.
-    active: string, optional &#34;&#34;
-        A CSS class name to add to the HTML representation.
-        Can be used to mark the entity as active.
-    &#34;&#34;&#34;
-    return H.join(
-        (H.span(val, cls=f&#34;{feat} {active}&#34;) for (feat, val) in zip(features, vals)),
-        sep=&#34; &#34;,
-    )
-
-
-def repSummary(keywordFeatures, vals, active=&#34;&#34;):
-    &#34;&#34;&#34;Represents an keyword value in HTML.
-
-    Parameters
-    ----------
-    vals: iterable
-        The material is given as a list of values of keyword features.
-    active: string, optional &#34;&#34;
-        A CSS class name to add to the HTML representation.
-        Can be used to mark the entity as active.
-    &#34;&#34;&#34;
-    return H.join(
-        (
-            H.span(val, cls=f&#34;{feat} {active}&#34;)
-            for (feat, val) in zip(keywordFeatures, vals)
-        ),
-        sep=&#34; &#34;,
-    )
-
-
-def valRep(features, fVals):
-    &#34;&#34;&#34;HTML representation of an entity as a sequence of `feat=val` strings.&#34;&#34;&#34;
-    return &#34;, &#34;.join(f&#34;&lt;i&gt;{feat}&lt;/i&gt;={val}&#34; for (feat, val) in zip(features, fVals))
-
-
 def findCompile(bFind, bFindC):
     &#34;&#34;&#34;Compiles a regular expression out of a search pattern.
 
@@ -267,65 +216,6 @@ def findCompile(bFind, bFindC):
             errorMsg = str(e)
 
     return (bFind, bFindRe, errorMsg)
-
-
-def makeCss(features, keywordFeatures):
-    &#34;&#34;&#34;Generates CSS for the tool.
-
-    The CSS for this tool has a part that depends on the choice of entity features.
-    For now, the dependency is mild: keyword features such as `kind` are formatted
-    differently than features with an unbounded set of values, such as `eid`.
-
-    Parameters
-    ----------
-    features, keywordFeatures: iterable
-        What the features are and what the keyword features are.
-        These derive ultimately from the corpus-dependent `ner/config.yaml`.
-    &#34;&#34;&#34;
-    propMap = dict(
-        ff=&#34;font-family&#34;,
-        fz=&#34;font-size&#34;,
-        fw=&#34;font-weight&#34;,
-        fg=&#34;color&#34;,
-        bg=&#34;background-color&#34;,
-        bw=&#34;border-width&#34;,
-        bs=&#34;border-style&#34;,
-        bc=&#34;border-color&#34;,
-        br=&#34;border-radius&#34;,
-        p=&#34;padding&#34;,
-        m=&#34;margin&#34;,
-    )
-
-    def makeBlock(manner):
-        props = STYLES[manner]
-        defs = [f&#34;\t{propMap[abb]}: {val};\n&#34; for (abb, val) in props.items()]
-        return H.join(defs)
-
-    def makeCssDef(selector, *blocks):
-        return selector + &#34; {\n&#34; + H.join(blocks) + &#34;}\n&#34;
-
-    css = []
-
-    for feat in features:
-        manner = &#34;keyword&#34; if feat in keywordFeatures else &#34;free&#34;
-
-        plain = makeBlock(manner)
-        bordered = makeBlock(f&#34;{manner}_bordered&#34;)
-        active = makeBlock(f&#34;{manner}_active&#34;)
-        borderedActive = makeBlock(f&#34;{manner}_bordered_active&#34;)
-
-        css.extend(
-            [
-                makeCssDef(f&#34;.{feat}&#34;, plain),
-                makeCssDef(f&#34;.{feat}.active&#34;, active),
-                makeCssDef(f&#34;span.{feat}_sel,button.{feat}_sel&#34;, plain, bordered),
-                makeCssDef(f&#34;button.{feat}_sel[st=v]&#34;, borderedActive, active),
-            ]
-        )
-
-    featureCss = H.join(css, sep=&#34;\n&#34;)
-    allCss = H.style(featureCss, type=&#34;text/css&#34;)
-    return allCss
 
 
 def getIntvIndex(buckets, instructions, getHeadings):
@@ -468,7 +358,7 @@ def hasCommon(tokensA, tokensB):
     Test:
 
     ```
-    from tf.browser.ner.helpers import hasCommon
+    from tf.ner.helpers import hasCommon
 
     tokensA = list(&#34;abcd&#34;)
     tokensB = list(&#34;cdef&#34;)
@@ -1015,15 +905,15 @@ def testScopes(scopeStrs):
 <section>
 <h2 class="section-title" id="header-variables">Global variables</h2>
 <dl>
-<dt id="tf.browser.ner.helpers.CUT_OFF"><code class="name">var <span class="ident">CUT_OFF</span></code></dt>
+<dt id="tf.ner.helpers.CUT_OFF"><code class="name">var <span class="ident">CUT_OFF</span></code></dt>
 <dd>
 <div class="desc"><p>Maximum length of entity identifiers.</p></div>
 </dd>
-<dt id="tf.browser.ner.helpers.PART_CUT_OFF"><code class="name">var <span class="ident">PART_CUT_OFF</span></code></dt>
+<dt id="tf.ner.helpers.PART_CUT_OFF"><code class="name">var <span class="ident">PART_CUT_OFF</span></code></dt>
 <dd>
 <div class="desc"><p>Maximum length of parts of entity identifiers.</p></div>
 </dd>
-<dt id="tf.browser.ner.helpers.TO_ASCII_DEF"><code class="name">var <span class="ident">TO_ASCII_DEF</span></code></dt>
+<dt id="tf.ner.helpers.TO_ASCII_DEF"><code class="name">var <span class="ident">TO_ASCII_DEF</span></code></dt>
 <dd>
 <div class="desc"><p>Undecomposable UNICODE characters mapped to their related ASCII characters.</p></div>
 </dd>
@@ -1032,7 +922,7 @@ def testScopes(scopeStrs):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.browser.ner.helpers.findCompile"><code class="name flex">
+<dt id="tf.ner.helpers.findCompile"><code class="name flex">
 <span>def <span class="ident">findCompile</span></span>(<span>bFind, bFindC)</span>
 </code></dt>
 <dd>
@@ -1052,24 +942,24 @@ the regular expression object, if successful, otherwise None;
 the error message if the re-compilation was not successful.</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.helpers.fromTokens"><code class="name flex">
+<dt id="tf.ner.helpers.fromTokens"><code class="name flex">
 <span>def <span class="ident">fromTokens</span></span>(<span>tokens, spaceEscaped=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>The inverse of <code><a title="tf.browser.ner.helpers.toTokens" href="#tf.browser.ner.helpers.toTokens">toTokens()</a></code>.</p>
+<div class="desc"><p>The inverse of <code><a title="tf.ner.helpers.toTokens" href="#tf.ner.helpers.toTokens">toTokens()</a></code>.</p>
 <p>Doing first toTokens and then fromTokens is idempotent.
 So if you have to revert back from tokens to text,
 make sure that you have done a combo of toTokens and
 fromTokens first.
-You can use <code><a title="tf.browser.ner.helpers.tnorm" href="#tf.browser.ner.helpers.tnorm">tnorm()</a></code> for that.</p></div>
+You can use <code><a title="tf.ner.helpers.tnorm" href="#tf.ner.helpers.tnorm">tnorm()</a></code> for that.</p></div>
 </dd>
-<dt id="tf.browser.ner.helpers.getIntvIndex"><code class="name flex">
+<dt id="tf.ner.helpers.getIntvIndex"><code class="name flex">
 <span>def <span class="ident">getIntvIndex</span></span>(<span>buckets, instructions, getHeadings)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.helpers.hasCommon"><code class="name flex">
+<dt id="tf.ner.helpers.hasCommon"><code class="name flex">
 <span>def <span class="ident">hasCommon</span></span>(<span>tokensA, tokensB)</span>
 </code></dt>
 <dd>
@@ -1143,7 +1033,7 @@ end of tokensA.</p>
 </li>
 </ol>
 <p>Test:</p>
-<pre><code>from tf.browser.ner.helpers import hasCommon
+<pre><code>from tf.ner.helpers import hasCommon
 
 tokensA = list(&quot;abcd&quot;)
 tokensB = list(&quot;cdef&quot;)
@@ -1185,46 +1075,31 @@ assert hasCommon(tokensA, tokensF) == None, hasCommon(tokensA, tokensF)
 assert hasCommon(tokensF, tokensA) == None, hasCommon(tokensF, tokensA)
 </code></pre></div>
 </dd>
-<dt id="tf.browser.ner.helpers.interference"><code class="name flex">
+<dt id="tf.ner.helpers.interference"><code class="name flex">
 <span>def <span class="ident">interference</span></span>(<span>rowMap, triggerScopes, myToTokens, alsoInternal=False, alsoExpected=False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.helpers.intersectScopes"><code class="name flex">
+<dt id="tf.ner.helpers.intersectScopes"><code class="name flex">
 <span>def <span class="ident">intersectScopes</span></span>(<span>*scopeStrs)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.helpers.locInScope"><code class="name flex">
+<dt id="tf.ner.helpers.locInScope"><code class="name flex">
 <span>def <span class="ident">locInScope</span></span>(<span>loc, scope)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.helpers.locInScopes"><code class="name flex">
+<dt id="tf.ner.helpers.locInScopes"><code class="name flex">
 <span>def <span class="ident">locInScopes</span></span>(<span>loc, scopes)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.helpers.makeCss"><code class="name flex">
-<span>def <span class="ident">makeCss</span></span>(<span>features, keywordFeatures)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Generates CSS for the tool.</p>
-<p>The CSS for this tool has a part that depends on the choice of entity features.
-For now, the dependency is mild: keyword features such as <code>kind</code> are formatted
-differently than features with an unbounded set of values, such as <code>eid</code>.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>features</code></strong>, <strong><code>keywordFeatures</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>What the features are and what the keyword features are.
-These derive ultimately from the corpus-dependent <code>ner/config.yaml</code>.</dd>
-</dl></div>
-</dd>
-<dt id="tf.browser.ner.helpers.makePartitions"><code class="name flex">
+<dt id="tf.ner.helpers.makePartitions"><code class="name flex">
 <span>def <span class="ident">makePartitions</span></span>(<span>triggers, myToTokens)</span>
 </code></dt>
 <dd>
@@ -1236,113 +1111,85 @@ that can not interact with each other: triggers whose tokens are pairwise
 disjoint. A hit of one trigger can then never be part of a hit of any other
 trigger in the group.</p></div>
 </dd>
-<dt id="tf.browser.ner.helpers.normalize"><code class="name flex">
+<dt id="tf.ner.helpers.normalize"><code class="name flex">
 <span>def <span class="ident">normalize</span></span>(<span>text)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Normalize white-space in a text.</p></div>
 </dd>
-<dt id="tf.browser.ner.helpers.parseLoc"><code class="name flex">
+<dt id="tf.ner.helpers.parseLoc"><code class="name flex">
 <span>def <span class="ident">parseLoc</span></span>(<span>locStr, plain=True)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.helpers.parseScope"><code class="name flex">
+<dt id="tf.ner.helpers.parseScope"><code class="name flex">
 <span>def <span class="ident">parseScope</span></span>(<span>scopeStr, plain=True)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.helpers.parseScopes"><code class="name flex">
+<dt id="tf.ner.helpers.parseScopes"><code class="name flex">
 <span>def <span class="ident">parseScopes</span></span>(<span>scopeStr, plain=True)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.helpers.partitionScopes"><code class="name flex">
+<dt id="tf.ner.helpers.partitionScopes"><code class="name flex">
 <span>def <span class="ident">partitionScopes</span></span>(<span>scopesDict)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.helpers.repIdent"><code class="name flex">
-<span>def <span class="ident">repIdent</span></span>(<span>features, vals, active='')</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Represents an identifier in HTML.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>vals</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>The material is given as a list of feature values.</dd>
-<dt><strong><code>active</code></strong> :&ensp;<code>string</code>, optional <code>""</code></dt>
-<dd>A CSS class name to add to the HTML representation.
-Can be used to mark the entity as active.</dd>
-</dl></div>
-</dd>
-<dt id="tf.browser.ner.helpers.repLoc"><code class="name flex">
+<dt id="tf.ner.helpers.repLoc"><code class="name flex">
 <span>def <span class="ident">repLoc</span></span>(<span>loc)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.helpers.repScope"><code class="name flex">
+<dt id="tf.ner.helpers.repScope"><code class="name flex">
 <span>def <span class="ident">repScope</span></span>(<span>scope)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.helpers.repScopes"><code class="name flex">
+<dt id="tf.ner.helpers.repScopes"><code class="name flex">
 <span>def <span class="ident">repScopes</span></span>(<span>scopes)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.helpers.repSet"><code class="name flex">
+<dt id="tf.ner.helpers.repSet"><code class="name flex">
 <span>def <span class="ident">repSet</span></span>(<span>s)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.helpers.repSummary"><code class="name flex">
-<span>def <span class="ident">repSummary</span></span>(<span>keywordFeatures, vals, active='')</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Represents an keyword value in HTML.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>vals</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>The material is given as a list of values of keyword features.</dd>
-<dt><strong><code>active</code></strong> :&ensp;<code>string</code>, optional <code>""</code></dt>
-<dd>A CSS class name to add to the HTML representation.
-Can be used to mark the entity as active.</dd>
-</dl></div>
-</dd>
-<dt id="tf.browser.ner.helpers.sortLocs"><code class="name flex">
+<dt id="tf.ner.helpers.sortLocs"><code class="name flex">
 <span>def <span class="ident">sortLocs</span></span>(<span>locs)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.helpers.sortScopes"><code class="name flex">
+<dt id="tf.ner.helpers.sortScopes"><code class="name flex">
 <span>def <span class="ident">sortScopes</span></span>(<span>scopes)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.helpers.testScopes"><code class="name flex">
+<dt id="tf.ner.helpers.testScopes"><code class="name flex">
 <span>def <span class="ident">testScopes</span></span>(<span>scopeStrs)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.helpers.tnorm"><code class="name flex">
+<dt id="tf.ner.helpers.tnorm"><code class="name flex">
 <span>def <span class="ident">tnorm</span></span>(<span>text, spaceEscaped=False, caseSensitive=False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.helpers.toAscii"><code class="name flex">
+<dt id="tf.ner.helpers.toAscii"><code class="name flex">
 <span>def <span class="ident">toAscii</span></span>(<span>text)</span>
 </code></dt>
 <dd>
@@ -1350,27 +1197,27 @@ Can be used to mark the entity as active.</dd>
 <p>Characters with diacritics are replaced by their base character.
 Some characters with diacritics are considered by UNICODE to be undecomposable
 characters, such as <code>ø</code> and <code>ñ</code>.
-We use a table (<code><a title="tf.browser.ner.helpers.TO_ASCII_DEF" href="#tf.browser.ner.helpers.TO_ASCII_DEF">TO_ASCII_DEF</a></code>) to map these on their related ASCII characters.</p></div>
+We use a table (<code><a title="tf.ner.helpers.TO_ASCII_DEF" href="#tf.ner.helpers.TO_ASCII_DEF">TO_ASCII_DEF</a></code>) to map these on their related ASCII characters.</p></div>
 </dd>
-<dt id="tf.browser.ner.helpers.toId"><code class="name flex">
+<dt id="tf.ner.helpers.toId"><code class="name flex">
 <span>def <span class="ident">toId</span></span>(<span>text)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Transforms text to an identifier string.</p>
 <p>Tokens are lower-cased, separated by <code>.</code>, reduced to ASCII.</p></div>
 </dd>
-<dt id="tf.browser.ner.helpers.toSmallId"><code class="name flex">
+<dt id="tf.ner.helpers.toSmallId"><code class="name flex">
 <span>def <span class="ident">toSmallId</span></span>(<span>text, transform={})</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Transforms text to a smaller identifier string.</p>
-<p>As <code><a title="tf.browser.ner.helpers.toId" href="#tf.browser.ner.helpers.toId">toId()</a></code>, but now certain parts of the resulting identifier are
+<p>As <code><a title="tf.ner.helpers.toId" href="#tf.ner.helpers.toId">toId()</a></code>, but now certain parts of the resulting identifier are
 either left out or replaced by shorter strings.</p>
 <p>This transformation is defined by the <code>transform</code> dictionary,
 which ultimately is provided in the corpus-dependent
 <code>ner/config.yaml</code> .</p></div>
 </dd>
-<dt id="tf.browser.ner.helpers.toTokens"><code class="name flex">
+<dt id="tf.ner.helpers.toTokens"><code class="name flex">
 <span>def <span class="ident">toTokens</span></span>(<span>text, spaceEscaped=False, caseSensitive=False)</span>
 </code></dt>
 <dd>
@@ -1384,13 +1231,7 @@ and individual non-word characters.</p>
 <dd>If True, it is assumed that if a <code>_</code> occurs in a token string, a space is meant.</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.helpers.valRep"><code class="name flex">
-<span>def <span class="ident">valRep</span></span>(<span>features, fVals)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>HTML representation of an entity as a sequence of <code>feat=val</code> strings.</p></div>
-</dd>
-<dt id="tf.browser.ner.helpers.xstrip"><code class="name flex">
+<dt id="tf.ner.helpers.xstrip"><code class="name flex">
 <span>def <span class="ident">xstrip</span></span>(<span>x)</span>
 </code></dt>
 <dd>
@@ -1402,10 +1243,10 @@ and individual non-word characters.</p>
 </section>
 </article>
 <nav id="sidebar">
-<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../../tf/images/tf-small.png" alt="annotation"></a></p>
-<p><a href="../../../tf/index.html">tf home</a> -
-<a href="../../../tf/cheatsheet.html">cheat sheet</a> -
-<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
 </p>
 <form>
 <input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
@@ -1441,7 +1282,7 @@ const query = new URL(window.location).searchParams.get('q');
 if (query)
 search(query);
 function search(query) {
-const url = '../../../doc-search.html#' + encodeURIComponent(query);
+const url = '../../doc-search.html#' + encodeURIComponent(query);
 new tingle.modal({
 cssClass: ['modal-dialog'],
 onClose: () => {
@@ -1460,49 +1301,45 @@ setTimeout(() => input.focus(), 100);
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf.browser.ner" href="index.html">tf.browser.ner</a></code></li>
+<li><code><a title="tf.ner" href="index.html">tf.ner</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-variables">Global variables</a></h3>
 <ul class="">
-<li><code><a title="tf.browser.ner.helpers.CUT_OFF" href="#tf.browser.ner.helpers.CUT_OFF">CUT_OFF</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.PART_CUT_OFF" href="#tf.browser.ner.helpers.PART_CUT_OFF">PART_CUT_OFF</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.TO_ASCII_DEF" href="#tf.browser.ner.helpers.TO_ASCII_DEF">TO_ASCII_DEF</a></code></li>
+<li><code><a title="tf.ner.helpers.CUT_OFF" href="#tf.ner.helpers.CUT_OFF">CUT_OFF</a></code></li>
+<li><code><a title="tf.ner.helpers.PART_CUT_OFF" href="#tf.ner.helpers.PART_CUT_OFF">PART_CUT_OFF</a></code></li>
+<li><code><a title="tf.ner.helpers.TO_ASCII_DEF" href="#tf.ner.helpers.TO_ASCII_DEF">TO_ASCII_DEF</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="two-column">
-<li><code><a title="tf.browser.ner.helpers.findCompile" href="#tf.browser.ner.helpers.findCompile">findCompile</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.fromTokens" href="#tf.browser.ner.helpers.fromTokens">fromTokens</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.getIntvIndex" href="#tf.browser.ner.helpers.getIntvIndex">getIntvIndex</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.hasCommon" href="#tf.browser.ner.helpers.hasCommon">hasCommon</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.interference" href="#tf.browser.ner.helpers.interference">interference</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.intersectScopes" href="#tf.browser.ner.helpers.intersectScopes">intersectScopes</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.locInScope" href="#tf.browser.ner.helpers.locInScope">locInScope</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.locInScopes" href="#tf.browser.ner.helpers.locInScopes">locInScopes</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.makeCss" href="#tf.browser.ner.helpers.makeCss">makeCss</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.makePartitions" href="#tf.browser.ner.helpers.makePartitions">makePartitions</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.normalize" href="#tf.browser.ner.helpers.normalize">normalize</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.parseLoc" href="#tf.browser.ner.helpers.parseLoc">parseLoc</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.parseScope" href="#tf.browser.ner.helpers.parseScope">parseScope</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.parseScopes" href="#tf.browser.ner.helpers.parseScopes">parseScopes</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.partitionScopes" href="#tf.browser.ner.helpers.partitionScopes">partitionScopes</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.repIdent" href="#tf.browser.ner.helpers.repIdent">repIdent</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.repLoc" href="#tf.browser.ner.helpers.repLoc">repLoc</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.repScope" href="#tf.browser.ner.helpers.repScope">repScope</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.repScopes" href="#tf.browser.ner.helpers.repScopes">repScopes</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.repSet" href="#tf.browser.ner.helpers.repSet">repSet</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.repSummary" href="#tf.browser.ner.helpers.repSummary">repSummary</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.sortLocs" href="#tf.browser.ner.helpers.sortLocs">sortLocs</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.sortScopes" href="#tf.browser.ner.helpers.sortScopes">sortScopes</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.testScopes" href="#tf.browser.ner.helpers.testScopes">testScopes</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.tnorm" href="#tf.browser.ner.helpers.tnorm">tnorm</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.toAscii" href="#tf.browser.ner.helpers.toAscii">toAscii</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.toId" href="#tf.browser.ner.helpers.toId">toId</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.toSmallId" href="#tf.browser.ner.helpers.toSmallId">toSmallId</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.toTokens" href="#tf.browser.ner.helpers.toTokens">toTokens</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.valRep" href="#tf.browser.ner.helpers.valRep">valRep</a></code></li>
-<li><code><a title="tf.browser.ner.helpers.xstrip" href="#tf.browser.ner.helpers.xstrip">xstrip</a></code></li>
+<li><code><a title="tf.ner.helpers.findCompile" href="#tf.ner.helpers.findCompile">findCompile</a></code></li>
+<li><code><a title="tf.ner.helpers.fromTokens" href="#tf.ner.helpers.fromTokens">fromTokens</a></code></li>
+<li><code><a title="tf.ner.helpers.getIntvIndex" href="#tf.ner.helpers.getIntvIndex">getIntvIndex</a></code></li>
+<li><code><a title="tf.ner.helpers.hasCommon" href="#tf.ner.helpers.hasCommon">hasCommon</a></code></li>
+<li><code><a title="tf.ner.helpers.interference" href="#tf.ner.helpers.interference">interference</a></code></li>
+<li><code><a title="tf.ner.helpers.intersectScopes" href="#tf.ner.helpers.intersectScopes">intersectScopes</a></code></li>
+<li><code><a title="tf.ner.helpers.locInScope" href="#tf.ner.helpers.locInScope">locInScope</a></code></li>
+<li><code><a title="tf.ner.helpers.locInScopes" href="#tf.ner.helpers.locInScopes">locInScopes</a></code></li>
+<li><code><a title="tf.ner.helpers.makePartitions" href="#tf.ner.helpers.makePartitions">makePartitions</a></code></li>
+<li><code><a title="tf.ner.helpers.normalize" href="#tf.ner.helpers.normalize">normalize</a></code></li>
+<li><code><a title="tf.ner.helpers.parseLoc" href="#tf.ner.helpers.parseLoc">parseLoc</a></code></li>
+<li><code><a title="tf.ner.helpers.parseScope" href="#tf.ner.helpers.parseScope">parseScope</a></code></li>
+<li><code><a title="tf.ner.helpers.parseScopes" href="#tf.ner.helpers.parseScopes">parseScopes</a></code></li>
+<li><code><a title="tf.ner.helpers.partitionScopes" href="#tf.ner.helpers.partitionScopes">partitionScopes</a></code></li>
+<li><code><a title="tf.ner.helpers.repLoc" href="#tf.ner.helpers.repLoc">repLoc</a></code></li>
+<li><code><a title="tf.ner.helpers.repScope" href="#tf.ner.helpers.repScope">repScope</a></code></li>
+<li><code><a title="tf.ner.helpers.repScopes" href="#tf.ner.helpers.repScopes">repScopes</a></code></li>
+<li><code><a title="tf.ner.helpers.repSet" href="#tf.ner.helpers.repSet">repSet</a></code></li>
+<li><code><a title="tf.ner.helpers.sortLocs" href="#tf.ner.helpers.sortLocs">sortLocs</a></code></li>
+<li><code><a title="tf.ner.helpers.sortScopes" href="#tf.ner.helpers.sortScopes">sortScopes</a></code></li>
+<li><code><a title="tf.ner.helpers.testScopes" href="#tf.ner.helpers.testScopes">testScopes</a></code></li>
+<li><code><a title="tf.ner.helpers.tnorm" href="#tf.ner.helpers.tnorm">tnorm</a></code></li>
+<li><code><a title="tf.ner.helpers.toAscii" href="#tf.ner.helpers.toAscii">toAscii</a></code></li>
+<li><code><a title="tf.ner.helpers.toId" href="#tf.ner.helpers.toId">toId</a></code></li>
+<li><code><a title="tf.ner.helpers.toSmallId" href="#tf.ner.helpers.toSmallId">toSmallId</a></code></li>
+<li><code><a title="tf.ner.helpers.toTokens" href="#tf.ner.helpers.toTokens">toTokens</a></code></li>
+<li><code><a title="tf.ner.helpers.xstrip" href="#tf.ner.helpers.xstrip">xstrip</a></code></li>
 </ul>
 </li>
 </ul>
@@ -1510,7 +1347,7 @@ setTimeout(() => input.focus(), 100);
 </main>
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
-<a href="https://huc.knaw.nl"><img alt="HuC" src="../../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
 <p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>

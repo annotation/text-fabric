@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.11.1" />
 <title>tf.about.annotate API documentation</title>
-<meta name="description" content="Manual Annotation …" />
+<meta name="description" content="Named Entity Recognition …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css"
 integrity="sha512-kcbluZFacWN57NgWZ4aH6eUMBEaTyErFhIFD3y5qYZbKuuyImH0K/AKsBbfXlivh2z5C+3IDTIhI11YmKomzmA=="
@@ -28,24 +28,88 @@ crossorigin>
 <h1 class="title">Module <code>tf.about.annotate</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="manual-annotation">Manual Annotation</h1>
+<h1 id="named-entity-recognition">Named Entity Recognition</h1>
+<h2 id="what-kind-of-ner-detection-does-tf-support">What kind of NER detection does TF support?</h2>
 <p>Named Entity Recognition is a task for which automated tools exist.
 But in a smallish, well-known corpus, such tools tend to create more noise than signal.
 If you know which names to expect and in what forms they occur in the corpus,
-it might be easier to mark them by hand.</p>
+it might be easier to mark them by means of a set of triggers, or even by hand.</p>
 <p>TF contains a tool to help you with that. The basic thing it does is
-to find all occurrences of a pattern you specify, and then assign an identifier and
-a kind to all those occurrences.</p>
-<p>For example, it finds all <code>Ernesto di Nassau</code> occurrences and it assigns
-identity <code>ernesto.di.nassau</code> and kind <code>PER</code> to them.</p>
-<p>There are two interfaces. One runs inside the TF browser, and it
-enables you to search and mark repeatedly, to apply additions and
-deletions of named entities to restricted sets of occurrences, so that you can
-make individual exceptions to the rules.</p>
-<p>The other is an API, that you can call, typically from inside a Jupyter notebook,
-by which you can automate things to the next level.
-You can prepare a spreadsheet with entities and surface forms and have the tool
-<em>execute</em> that spreadsheet against the corpus.</p>
+to find all occurrences of a set of patterns you specify, and then assign identifiers
+and other attributes to all occurrences of those patterns.</p>
+<p>For example, it finds all <code>Gio. Ernesto di Nassau</code> occurrences and it assigns
+identity <code>gio.ernesto.di.nassau</code> and kind <code>PER</code> to them.</p>
+<p>There are two interfaces:</p>
+<ul>
+<li>a spreadsheet for bulk assignment, operated from a Jupyter Notebook or
+Python program;</li>
+<li>the TF browser for inspection and manual assignment of entities.</li>
+</ul>
+<h2 id="how-do-you-tackle-ner-with-tf">How do you tackle NER with TF?</h2>
+<p>The recommended scenario is this:</p>
+<ul>
+<li>prepare a spreadsheet where named entities are linked to <em>triggers</em>;</li>
+<li>TF can load such a spreadsheet and find those entities in the corpus;</li>
+<li>TF will check the spreadsheet for various mistakes, and reports on the outcomes;</li>
+<li>Depending on the reports, adapt the spreadsheet and load it again;</li>
+<li>Optionally run analiticcl to find spelling variants;</li>
+<li>Check the variants and put the wrong ones in an exception list;</li>
+<li>Use TF to merge the variants with the original triggers into a new spreadsheet;</li>
+<li>Load the merged spreadsheet;</li>
+<li>Check the reports and adapt the original or the merged spreadsheet;</li>
+<li>Iterate until the outcome is optimal, use the TF browser to inspect special cases;</li>
+<li>Optionally use the TF browser to add/delete individual entity occurrences;</li>
+<li>Use TF to bake the entities with the corpus into a new TF dataset.</li>
+</ul>
+<p>See</p>
+<ul>
+<li><code><a title="tf.ner.ner" href="../ner/ner.html">tf.ner.ner</a></code> for how to work with spreadsheets;</li>
+<li><code><a title="tf.browser.ner.web" href="../browser/ner/web.html">tf.browser.ner.web</a></code> for how to work with the browser interface.</li>
+</ul>
+<h2 id="how-well-does-it-work">How well does it work?</h2>
+<p>We applied this method on the
+<a href="https://gitlab.huc.knaw.nl/suriano/letters">corpus of letters of Suriano</a>,
+using a spreadsheet with over 700 named entities and over 2000 triggers leading to
+12,500 marked entities.</p>
+<p>TF is performant, it looks up all those triggers in one pass over the corpus.
+Later, when it diagnoses the outcome, it needs to search for those triggers in isolation
+because triggers may interfere with each other in unexpected ways. TF will then search
+for them in as few passes over the corpus as possible.</p>
+<h2 id="is-it-subtle-enough">Is it subtle enough?</h2>
+<p>It is quite common that a trigger stands for various entities depending on the context.
+For example, <code>il papa</code> (the pope) may refer to one person when it occurs in a letter of
+1617, and another person when it occurs in a letter of 1620.</p>
+<p>TF allows <em>scoped</em> triggers: for each set of triggers you can supply a scope, in the
+form of ranges of sections for which the trigger should be looked up.</p>
+<p>There is also an implicit rule that no piece of text falls under two entities.
+When two triggers fight for a match, the trigger that has the match that starts earlier
+wins. If they start at the same spot, the longer trigger wins. Because a longer trigger
+is more specific than a shorter trigger.</p>
+<p>Yet it is quite an art to fill such a spreadsheet with triggers, and some trial and
+error is needed. TF helps with that in two ways:</p>
+<ul>
+<li>it provides a lot of feedback on problem cases;</li>
+<li>the process of loading a spreadsheet, searching for the triggers, and producing
+reports takes only a few seconds.</li>
+</ul>
+<h2 id="is-it-generic">Is it generic?</h2>
+<p>Yes. It only makes use of those characteristics of a corpus that it can glean from
+the TF dataset. If your corpus is in TF, these methods will work.</p>
+<p>However, as the software is not yet completely mature, it might be the case that you
+bump into some details that will conflict with the characteristics of your corpus.</p>
+<p>Currently I am aware of only this:</p>
+<ul>
+<li>We assume that the section headings are integers at all levels, so that we can
+meaningfully refer to ranges of sections, e.g. <code>1.2-3.4.5</code>.
+If your corpus has strings as section headings, the current version of <code><a title="tf.ner" href="../ner/index.html">tf.ner</a></code>
+will not work.</li>
+</ul>
+<p>Later I intend to work around it by using the index of sections (that already is
+part of the TF dataset), so that ranges like <code>Genesis 1-Exodus 2:3</code> become
+meaningful.</p>
+<p>See <code><a title="tf.core.prepare.sections" href="../core/prepare.html#tf.core.prepare.sections">sections()</a></code></p>
+<h2 id="how-exactly-are-the-entities-delivered">How exactly are the entities delivered?</h2>
+<p>The first product is a <code>.tsv</code> file</p>
 <p>Here is what the browser interface looks like:</p>
 <p><img alt="browser" src="../images/Ner/browser.png"></p>
 <h1 id="work-in-progress">Work-in-progress</h1>
@@ -159,7 +223,7 @@ You can give this a name, and the data you create will be stored under that name
 <code><a title="tf.about.annotateBrowser" href="annotateBrowser.html">tf.about.annotateBrowser</a></code></p>
 <h2 id="for-programming-annotators">For programming annotators</h2>
 <p>Go to the manual for annotating in in a Jupyter Notebook, using the API:
-<code><a title="tf.browser.ner.ner" href="../browser/ner/ner.html">tf.browser.ner.ner</a></code>
+<code><a title="tf.ner.ner" href="../ner/ner.html">tf.ner.ner</a></code>
 Or see this
 <a href="https://nbviewer.jupyter.org/github/HuygensING/suriano/blob/main/programs/ner.ipynb">example notebook</a>.</p>
 <h2 id="for-corpus-maintainers">For corpus maintainers</h2>
@@ -241,7 +305,7 @@ name parts that are very generic, such as <code>de</code>, <code>van</code>, <co
 <p>Concerning the Excel sheets in <code>ner/sheets</code>:</p>
 <ul>
 <li>
-<p>they can be read by <code><a title="tf.browser.ner.ner.NER.setSheet" href="../browser/ner/sheets.html#tf.browser.ner.sheets.Sheets.setSheet">Sheets.setSheet()</a></code>;</p>
+<p>they can be read by <code><a title="tf.ner.ner.NER.setSheet" href="../ner/sheets.html#tf.ner.sheets.Sheets.setSheet">Sheets.setSheet()</a></code>;</p>
 </li>
 <li>
 <p>you might need to <code>pip install openpyxl</code> first;</p>
@@ -298,7 +362,7 @@ I intend to write functions to make this task easier.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/daf3d9735cb5e691f16215e7eba449f2aa8758b6/tf/about/annotate.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/about/annotate.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/annotate.md
@@ -369,7 +433,15 @@ setTimeout(() => input.focus(), 100);
 <h1>Index</h1>
 <div class="toc">
 <ul>
-<li><a href="#manual-annotation">Manual Annotation</a></li>
+<li><a href="#named-entity-recognition">Named Entity Recognition</a><ul>
+<li><a href="#what-kind-of-ner-detection-does-tf-support">What kind of NER detection does TF support?</a></li>
+<li><a href="#how-do-you-tackle-ner-with-tf">How do you tackle NER with TF?</a></li>
+<li><a href="#how-well-does-it-work">How well does it work?</a></li>
+<li><a href="#is-it-subtle-enough">Is it subtle enough?</a></li>
+<li><a href="#is-it-generic">Is it generic?</a></li>
+<li><a href="#how-exactly-are-the-entities-delivered">How exactly are the entities delivered?</a></li>
+</ul>
+</li>
 <li><a href="#work-in-progress">Work-in-progress</a><ul>
 <li><a href="#supported-corpora">Supported corpora</a></li>
 <li><a href="#ergonomics-of-annotation">Ergonomics of annotation</a></li>

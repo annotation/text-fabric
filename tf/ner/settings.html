@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.11.1" />
-<title>tf.browser.ner.settings API documentation</title>
-<meta name="description" content="Corpus dependent setup of the annotation tool …" />
+<title>tf.ner.settings API documentation</title>
+<meta name="description" content="Corpus dependent setup of the annotation tool." />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css"
 integrity="sha512-kcbluZFacWN57NgWZ4aH6eUMBEaTyErFhIFD3y5qYZbKuuyImH0K/AKsBbfXlivh2z5C+3IDTIhI11YmKomzmA=="
@@ -25,26 +25,24 @@ crossorigin>
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.browser.ner.settings</code></h1>
+<h1 class="title">Module <code>tf.ner.settings</code></h1>
 </header>
 <section id="section-intro">
 <p>Corpus dependent setup of the annotation tool.</p>
-<p>To see how this fits among all the modules of this package, see
-<code><a title="tf.browser.ner.ner" href="ner.html">tf.browser.ner.ner</a></code> .</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/daf3d9735cb5e691f16215e7eba449f2aa8758b6/tf/browser/ner/settings.py#L1-L255" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/ner/settings.py#L1-L255" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Corpus dependent setup of the annotation tool.
-
-To see how this fits among all the modules of this package, see
-`tf.browser.ner.ner` .
 &#34;&#34;&#34;
 
+from ..browser.html import H
+from ..core.helpers import console
+from ..core.files import readYaml, fileExists, APP_CONFIG
 
-from ...core.helpers import console
-from ...core.files import readYaml, fileExists, APP_CONFIG
+
+ERROR = &#34;error&#34;
 
 TOOLKEY = &#34;ner&#34;
 &#34;&#34;&#34;The name of this annotation tool.
@@ -55,6 +53,32 @@ This name is used
 *   as a key to address the in-memory data that belongs to this tool;
 *   as a prefix to modularize the Flask app for this tool within the encompassing
     TF browser Flask app and also it CSS files.
+&#34;&#34;&#34;
+
+SET_ENT = &#34;🟰&#34;
+SET_SHEET = &#34;🧾&#34;
+SET_MAIN = &#34;🖍️&#34;
+
+DEFAULT_SETTINGS = &#34;&#34;&#34;
+entityType: ent
+entitySet: &#34;{entityType}-nodes&#34;
+
+bucketType: chunk
+
+strFeature: str
+afterFeature: after
+
+features:
+  - eid
+  - kind
+
+keywordFeatures:
+  - kind
+
+defaultValues:
+  kind: PER
+
+spaceEscaped: false
 &#34;&#34;&#34;
 
 NONE = &#34;⌀&#34;
@@ -70,42 +94,6 @@ EMPTY = &#34;␀&#34;
 If an entity feature has the empty string as value, and we want to create a button for
 it, this is the label we draw on that button.
 &#34;&#34;&#34;
-
-LIMIT_BROWSER = 100
-&#34;&#34;&#34;Limit of amount of buckets to load on one page when in the TF browser.
-
-This is not a hard limit. We only use it if the page contains the whole corpus or
-a filtered subset of it.
-
-But as soon we have selected a token string or an entity, we show all buckets
-that contain it, no matter how many there are.
-
-!!! note &#34;Performance&#34;
-    We use the
-    [CSS device *content-visibility*](https://developer.mozilla.org/en-US/docs/Web/CSS/content-visibility)
-    to restrict rendering to the material that is visible in the viewport. However,
-    this is not supported in Safari, so the performance may suffer in Safari if we load
-    the whole corpus on a single page.
-
-    In practice, even in browsers that support this device are not happy with a big
-    chunk of HTML on the page, since they do have to build a large DOM, including
-    event listeners.
-
-    That&#39;s why we restrict the page to a limited amount of buckets.
-
-    But when a selection has been made, it is more important to show the whole,
-    untruncated result set, than to incur a performance penalty.
-    Moreover, it is hardly the case that a selected entity of occurrence occurs in a
-    very large number of buckets.
-&#34;&#34;&#34;
-
-LIMIT_NB = 20
-&#34;&#34;&#34;Limit of amount of buckets to load on one page when in a Jupyter notebook.
-
-See also `LIMIT_BROWSER` .
-&#34;&#34;&#34;
-
-ERROR = &#34;error&#34;
 
 STYLES = dict(
     minus=dict(bg=&#34;#ffaaaa;&#34;),
@@ -182,53 +170,63 @@ only place of configuration is that YAML file, and not this file.
 &#34;&#34;&#34;
 
 
-SORTDIR_DESC = &#34;d&#34;
-&#34;&#34;&#34;Value that indicates the descending sort direction.&#34;&#34;&#34;
+def makeCss(features, keywordFeatures):
+    &#34;&#34;&#34;Generates CSS for the tool.
 
-SORTDIR_ASC = &#34;a&#34;
-&#34;&#34;&#34;Value that indicates the ascending sort direction.&#34;&#34;&#34;
+    The CSS for this tool has a part that depends on the choice of entity features.
+    For now, the dependency is mild: keyword features such as `kind` are formatted
+    differently than features with an unbounded set of values, such as `eid`.
 
-SORTDIR_DEFAULT = SORTDIR_ASC
-&#34;&#34;&#34;Default sort direction.&#34;&#34;&#34;
+    Parameters
+    ----------
+    features, keywordFeatures: iterable
+        What the features are and what the keyword features are.
+        These derive ultimately from the corpus-dependent `ner/config.yaml`.
+    &#34;&#34;&#34;
+    propMap = dict(
+        ff=&#34;font-family&#34;,
+        fz=&#34;font-size&#34;,
+        fw=&#34;font-weight&#34;,
+        fg=&#34;color&#34;,
+        bg=&#34;background-color&#34;,
+        bw=&#34;border-width&#34;,
+        bs=&#34;border-style&#34;,
+        bc=&#34;border-color&#34;,
+        br=&#34;border-radius&#34;,
+        p=&#34;padding&#34;,
+        m=&#34;margin&#34;,
+    )
 
-SORTKEY_DEFAULT = &#34;freqsort&#34;
-&#34;&#34;&#34;Default sort key.&#34;&#34;&#34;
+    def makeBlock(manner):
+        props = STYLES[manner]
+        defs = [f&#34;\t{propMap[abb]}: {val};\n&#34; for (abb, val) in props.items()]
+        return H.join(defs)
 
-SORT_DEFAULT = (SORTKEY_DEFAULT, SORTDIR_DESC)
-&#34;&#34;&#34;Default sort key plus sort direction combination.&#34;&#34;&#34;
+    def makeCssDef(selector, *blocks):
+        return selector + &#34; {\n&#34; + H.join(blocks) + &#34;}\n&#34;
 
-SC_ALL = &#34;a&#34;
-&#34;&#34;&#34;Value that indicates *all* buckets.&#34;&#34;&#34;
+    css = []
 
-SC_FILT = &#34;f&#34;
-&#34;&#34;&#34;Value that indicates *filtered* buckets.&#34;&#34;&#34;
+    for feat in features:
+        manner = &#34;keyword&#34; if feat in keywordFeatures else &#34;free&#34;
 
+        plain = makeBlock(manner)
+        bordered = makeBlock(f&#34;{manner}_bordered&#34;)
+        active = makeBlock(f&#34;{manner}_active&#34;)
+        borderedActive = makeBlock(f&#34;{manner}_bordered_active&#34;)
 
-DEFAULT_SETTINGS = &#34;&#34;&#34;
-entityType: ent
-entitySet: &#34;{entityType}-nodes&#34;
+        css.extend(
+            [
+                makeCssDef(f&#34;.{feat}&#34;, plain),
+                makeCssDef(f&#34;.{feat}.active&#34;, active),
+                makeCssDef(f&#34;span.{feat}_sel,button.{feat}_sel&#34;, plain, bordered),
+                makeCssDef(f&#34;button.{feat}_sel[st=v]&#34;, borderedActive, active),
+            ]
+        )
 
-bucketType: chunk
-
-strFeature: str
-afterFeature: after
-
-features:
-  - eid
-  - kind
-
-keywordFeatures:
-  - kind
-
-defaultValues:
-  kind: PER
-
-spaceEscaped: false
-&#34;&#34;&#34;
-
-SET_ENT = &#34;🟰&#34;
-SET_SHEET = &#34;🧾&#34;
-SET_MAIN = &#34;🖍️&#34;
+    featureCss = H.join(css, sep=&#34;\n&#34;)
+    allCss = H.style(featureCss, type=&#34;text/css&#34;)
+    return allCss
 
 
 class Settings:
@@ -298,76 +296,19 @@ class Settings:
 <section>
 <h2 class="section-title" id="header-variables">Global variables</h2>
 <dl>
-<dt id="tf.browser.ner.settings.EMPTY"><code class="name">var <span class="ident">EMPTY</span></code></dt>
+<dt id="tf.ner.settings.EMPTY"><code class="name">var <span class="ident">EMPTY</span></code></dt>
 <dd>
 <div class="desc"><p>GUI representation of the empty string.</p>
 <p>If an entity feature has the empty string as value, and we want to create a button for
 it, this is the label we draw on that button.</p></div>
 </dd>
-<dt id="tf.browser.ner.settings.LIMIT_BROWSER"><code class="name">var <span class="ident">LIMIT_BROWSER</span></code></dt>
-<dd>
-<div class="desc"><p>Limit of amount of buckets to load on one page when in the TF browser.</p>
-<p>This is not a hard limit. We only use it if the page contains the whole corpus or
-a filtered subset of it.</p>
-<p>But as soon we have selected a token string or an entity, we show all buckets
-that contain it, no matter how many there are.</p>
-<div class="admonition note">
-<p class="admonition-title">Performance</p>
-<p>We use the
-<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/content-visibility">CSS device <em>content-visibility</em></a>
-to restrict rendering to the material that is visible in the viewport. However,
-this is not supported in Safari, so the performance may suffer in Safari if we load
-the whole corpus on a single page.</p>
-<p>In practice, even in browsers that support this device are not happy with a big
-chunk of HTML on the page, since they do have to build a large DOM, including
-event listeners.</p>
-<p>That's why we restrict the page to a limited amount of buckets.</p>
-<p>But when a selection has been made, it is more important to show the whole,
-untruncated result set, than to incur a performance penalty.
-Moreover, it is hardly the case that a selected entity of occurrence occurs in a
-very large number of buckets.</p>
-</div></div>
-</dd>
-<dt id="tf.browser.ner.settings.LIMIT_NB"><code class="name">var <span class="ident">LIMIT_NB</span></code></dt>
-<dd>
-<div class="desc"><p>Limit of amount of buckets to load on one page when in a Jupyter notebook.</p>
-<p>See also <code><a title="tf.browser.ner.settings.LIMIT_BROWSER" href="#tf.browser.ner.settings.LIMIT_BROWSER">LIMIT_BROWSER</a></code> .</p></div>
-</dd>
-<dt id="tf.browser.ner.settings.NONE"><code class="name">var <span class="ident">NONE</span></code></dt>
+<dt id="tf.ner.settings.NONE"><code class="name">var <span class="ident">NONE</span></code></dt>
 <dd>
 <div class="desc"><p>GUI representiation of an empty value.</p>
 <p>Used to mark the fact that an occurrence does not have a value for an entity feature.
 That happens when an occurrence is not part of an entity.</p></div>
 </dd>
-<dt id="tf.browser.ner.settings.SC_ALL"><code class="name">var <span class="ident">SC_ALL</span></code></dt>
-<dd>
-<div class="desc"><p>Value that indicates <em>all</em> buckets.</p></div>
-</dd>
-<dt id="tf.browser.ner.settings.SC_FILT"><code class="name">var <span class="ident">SC_FILT</span></code></dt>
-<dd>
-<div class="desc"><p>Value that indicates <em>filtered</em> buckets.</p></div>
-</dd>
-<dt id="tf.browser.ner.settings.SORTDIR_ASC"><code class="name">var <span class="ident">SORTDIR_ASC</span></code></dt>
-<dd>
-<div class="desc"><p>Value that indicates the ascending sort direction.</p></div>
-</dd>
-<dt id="tf.browser.ner.settings.SORTDIR_DEFAULT"><code class="name">var <span class="ident">SORTDIR_DEFAULT</span></code></dt>
-<dd>
-<div class="desc"><p>Default sort direction.</p></div>
-</dd>
-<dt id="tf.browser.ner.settings.SORTDIR_DESC"><code class="name">var <span class="ident">SORTDIR_DESC</span></code></dt>
-<dd>
-<div class="desc"><p>Value that indicates the descending sort direction.</p></div>
-</dd>
-<dt id="tf.browser.ner.settings.SORTKEY_DEFAULT"><code class="name">var <span class="ident">SORTKEY_DEFAULT</span></code></dt>
-<dd>
-<div class="desc"><p>Default sort key.</p></div>
-</dd>
-<dt id="tf.browser.ner.settings.SORT_DEFAULT"><code class="name">var <span class="ident">SORT_DEFAULT</span></code></dt>
-<dd>
-<div class="desc"><p>Default sort key plus sort direction combination.</p></div>
-</dd>
-<dt id="tf.browser.ner.settings.STYLES"><code class="name">var <span class="ident">STYLES</span></code></dt>
+<dt id="tf.ner.settings.STYLES"><code class="name">var <span class="ident">STYLES</span></code></dt>
 <dd>
 <div class="desc"><p>CSS style configuration for entity features.</p>
 <p>Here we define properties of the styling of the entity features and their
@@ -383,7 +324,7 @@ to easily configure the formatting of them.</p>
 <p>However, we should move these definitions to the <code>ner.yaml</code> file then, so that the
 only place of configuration is that YAML file, and not this file.</p></div>
 </dd>
-<dt id="tf.browser.ner.settings.TOOLKEY"><code class="name">var <span class="ident">TOOLKEY</span></code></dt>
+<dt id="tf.ner.settings.TOOLKEY"><code class="name">var <span class="ident">TOOLKEY</span></code></dt>
 <dd>
 <div class="desc"><p>The name of this annotation tool.</p>
 <p>This name is used</p>
@@ -397,11 +338,29 @@ TF browser Flask app and also it CSS files.</li>
 </dl>
 </section>
 <section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.ner.settings.makeCss"><code class="name flex">
+<span>def <span class="ident">makeCss</span></span>(<span>features, keywordFeatures)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generates CSS for the tool.</p>
+<p>The CSS for this tool has a part that depends on the choice of entity features.
+For now, the dependency is mild: keyword features such as <code>kind</code> are formatted
+differently than features with an unbounded set of values, such as <code>eid</code>.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>features</code></strong>, <strong><code>keywordFeatures</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>What the features are and what the keyword features are.
+These derive ultimately from the corpus-dependent <code>ner/config.yaml</code>.</dd>
+</dl></div>
+</dd>
+</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="tf.browser.ner.settings.Settings"><code class="flex name class">
+<dt id="tf.ner.settings.Settings"><code class="flex name class">
 <span>class <span class="ident">Settings</span></span>
 </code></dt>
 <dd>
@@ -412,11 +371,11 @@ other modules can import.</p>
 <p>There is also customisable configuration, meant to adapt the tool to the
 specifics of a corpus.
 Those configuration values are read from a YAML file, located in a directory
-<code>ner</code> next to the <code><a title="tf" href="../../index.html">tf</a></code> data of the corpus.</p></div>
+<code>ner</code> next to the <code><a title="tf" href="../index.html">tf</a></code> data of the corpus.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/daf3d9735cb5e691f16215e7eba449f2aa8758b6/tf/browser/ner/settings.py#L196-L255" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/ner/settings.py#L196-L255" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Settings:
     def __init__(self):
@@ -481,19 +440,19 @@ Those configuration values are read from a YAML file, located in a directory
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
-<li><a title="tf.browser.ner.corpus.Corpus" href="corpus.html#tf.browser.ner.corpus.Corpus">Corpus</a></li>
+<li><a title="tf.ner.corpus.Corpus" href="corpus.html#tf.ner.corpus.Corpus">Corpus</a></li>
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="tf.browser.ner.settings.Settings.console"><code class="name flex">
+<dt id="tf.ner.settings.Settings.console"><code class="name flex">
 <span>def <span class="ident">console</span></span>(<span>self, msg, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Print something to the output.</p>
-<p>This works exactly as <code><a title="tf.core.helpers.console" href="../../core/helpers.html#tf.core.helpers.console">console()</a></code></p>
+<p>This works exactly as <code><a title="tf.core.helpers.console" href="../core/helpers.html#tf.core.helpers.console">console()</a></code></p>
 <p>When the silent member of the object is True, the message will be suppressed.</p></div>
 </dd>
-<dt id="tf.browser.ner.settings.Settings.consoleLine"><code class="name flex">
+<dt id="tf.ner.settings.Settings.consoleLine"><code class="name flex">
 <span>def <span class="ident">consoleLine</span></span>(<span>self, isError, indent, msg)</span>
 </code></dt>
 <dd>
@@ -505,10 +464,10 @@ Those configuration values are read from a YAML file, located in a directory
 </section>
 </article>
 <nav id="sidebar">
-<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../../tf/images/tf-small.png" alt="annotation"></a></p>
-<p><a href="../../../tf/index.html">tf home</a> -
-<a href="../../../tf/cheatsheet.html">cheat sheet</a> -
-<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
 </p>
 <form>
 <input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
@@ -544,7 +503,7 @@ const query = new URL(window.location).searchParams.get('q');
 if (query)
 search(query);
 function search(query) {
-const url = '../../../doc-search.html#' + encodeURIComponent(query);
+const url = '../../doc-search.html#' + encodeURIComponent(query);
 new tingle.modal({
 cssClass: ['modal-dialog'],
 onClose: () => {
@@ -563,33 +522,29 @@ setTimeout(() => input.focus(), 100);
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf.browser.ner" href="index.html">tf.browser.ner</a></code></li>
+<li><code><a title="tf.ner" href="index.html">tf.ner</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-variables">Global variables</a></h3>
-<ul class="two-column">
-<li><code><a title="tf.browser.ner.settings.EMPTY" href="#tf.browser.ner.settings.EMPTY">EMPTY</a></code></li>
-<li><code><a title="tf.browser.ner.settings.LIMIT_BROWSER" href="#tf.browser.ner.settings.LIMIT_BROWSER">LIMIT_BROWSER</a></code></li>
-<li><code><a title="tf.browser.ner.settings.LIMIT_NB" href="#tf.browser.ner.settings.LIMIT_NB">LIMIT_NB</a></code></li>
-<li><code><a title="tf.browser.ner.settings.NONE" href="#tf.browser.ner.settings.NONE">NONE</a></code></li>
-<li><code><a title="tf.browser.ner.settings.SC_ALL" href="#tf.browser.ner.settings.SC_ALL">SC_ALL</a></code></li>
-<li><code><a title="tf.browser.ner.settings.SC_FILT" href="#tf.browser.ner.settings.SC_FILT">SC_FILT</a></code></li>
-<li><code><a title="tf.browser.ner.settings.SORTDIR_ASC" href="#tf.browser.ner.settings.SORTDIR_ASC">SORTDIR_ASC</a></code></li>
-<li><code><a title="tf.browser.ner.settings.SORTDIR_DEFAULT" href="#tf.browser.ner.settings.SORTDIR_DEFAULT">SORTDIR_DEFAULT</a></code></li>
-<li><code><a title="tf.browser.ner.settings.SORTDIR_DESC" href="#tf.browser.ner.settings.SORTDIR_DESC">SORTDIR_DESC</a></code></li>
-<li><code><a title="tf.browser.ner.settings.SORTKEY_DEFAULT" href="#tf.browser.ner.settings.SORTKEY_DEFAULT">SORTKEY_DEFAULT</a></code></li>
-<li><code><a title="tf.browser.ner.settings.SORT_DEFAULT" href="#tf.browser.ner.settings.SORT_DEFAULT">SORT_DEFAULT</a></code></li>
-<li><code><a title="tf.browser.ner.settings.STYLES" href="#tf.browser.ner.settings.STYLES">STYLES</a></code></li>
-<li><code><a title="tf.browser.ner.settings.TOOLKEY" href="#tf.browser.ner.settings.TOOLKEY">TOOLKEY</a></code></li>
+<ul class="">
+<li><code><a title="tf.ner.settings.EMPTY" href="#tf.ner.settings.EMPTY">EMPTY</a></code></li>
+<li><code><a title="tf.ner.settings.NONE" href="#tf.ner.settings.NONE">NONE</a></code></li>
+<li><code><a title="tf.ner.settings.STYLES" href="#tf.ner.settings.STYLES">STYLES</a></code></li>
+<li><code><a title="tf.ner.settings.TOOLKEY" href="#tf.ner.settings.TOOLKEY">TOOLKEY</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.ner.settings.makeCss" href="#tf.ner.settings.makeCss">makeCss</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="tf.browser.ner.settings.Settings" href="#tf.browser.ner.settings.Settings">Settings</a></code></h4>
+<h4><code><a title="tf.ner.settings.Settings" href="#tf.ner.settings.Settings">Settings</a></code></h4>
 <ul class="">
-<li><code><a title="tf.browser.ner.settings.Settings.console" href="#tf.browser.ner.settings.Settings.console">console</a></code></li>
-<li><code><a title="tf.browser.ner.settings.Settings.consoleLine" href="#tf.browser.ner.settings.Settings.consoleLine">consoleLine</a></code></li>
+<li><code><a title="tf.ner.settings.Settings.console" href="#tf.ner.settings.Settings.console">console</a></code></li>
+<li><code><a title="tf.ner.settings.Settings.consoleLine" href="#tf.ner.settings.Settings.consoleLine">consoleLine</a></code></li>
 </ul>
 </li>
 </ul>
@@ -599,7 +554,7 @@ setTimeout(() => input.focus(), 100);
 </main>
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
-<a href="https://huc.knaw.nl"><img alt="HuC" src="../../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
 <p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>

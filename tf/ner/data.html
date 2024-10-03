@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.11.1" />
-<title>tf.browser.ner.data API documentation</title>
+<title>tf.ner.data API documentation</title>
 <meta name="description" content="Annotation data module …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css"
@@ -25,13 +25,11 @@ crossorigin>
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.browser.ner.data</code></h1>
+<h1 class="title">Module <code>tf.ner.data</code></h1>
 </header>
 <section id="section-intro">
 <p>Annotation data module.</p>
 <p>This module manages the data of annotation sets.</p>
-<p>To see how this fits among all the modules of this package, see
-<code><a title="tf.browser.ner.ner" href="ner.html">tf.browser.ner.ner</a></code> .</p>
 <p>Annotation sets are either the sets of pre-existing entities in the corpus or the
 result of actions by the user of this tool, whether he uses the TF browser, or the API
 in his own programs.</p>
@@ -43,14 +41,11 @@ processed if they are needed and out of date.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/daf3d9735cb5e691f16215e7eba449f2aa8758b6/tf/browser/ner/data.py#L1-L938" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/ner/data.py#L1-L932" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Annotation data module.
 
 This module manages the data of annotation sets.
-
-To see how this fits among all the modules of this package, see
-`tf.browser.ner.ner` .
 
 Annotation sets are either the sets of pre-existing entities in the corpus or the
 result of actions by the user of this tool, whether he uses the TF browser, or the API
@@ -67,14 +62,10 @@ processed if they are needed and out of date.
 import collections
 import time
 
-from ...core.generic import AttrDict
-from ...core.helpers import console
-from ...core.files import (
-    fileOpen,
-    mTime,
-    fileExists,
-    initTree,
-)
+from ..core.generic import AttrDict
+from ..core.helpers import console
+from ..core.files import fileOpen, mTime, fileExists, initTree
+
 from .corpus import Corpus
 
 
@@ -102,7 +93,7 @@ class Data(Corpus):
 
             We have set up the web server in such a way that it incorporates the
             annotation sets. The web server will pass them to the
-            `tf.browser.ner.ner.NER` object initializer, which passes
+            `tf.ner.ner.NER` object initializer, which passes
             it to the initializer here.
 
             In that way, the `Data` object can start with the sets already in memory.
@@ -138,8 +129,7 @@ class Data(Corpus):
         self.processSet(changed)
 
     def _clearSetData(self):
-        &#34;&#34;&#34;Clears the current annotation set data from memory.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Clears the current annotation set data from memory.&#34;&#34;&#34;
         if not self.properlySetup:
             return
 
@@ -204,9 +194,11 @@ class Data(Corpus):
                     slots = getSlots(e)
                     entities[e] = (
                         tuple(
-                            getFVal(feat, e)
-                            if hasFeature[feat]
-                            else featureDefault[feat](slots)
+                            (
+                                getFVal(feat, e)
+                                if hasFeature[feat]
+                                else featureDefault[feat](slots)
+                            )
                             for feat in features
                         ),
                         tuple(slots),
@@ -498,7 +490,7 @@ class Data(Corpus):
             `deletions` or contained in it.
         buckets: iterable of list
             This is typically the result of
-            `tf.browser.ner.ner.NER.filterContent()`.
+            `tf.ner.ner.NER.filterContent()`.
             The only important thing is that member 2 of each bucket is the list
             of entity matches in that bucket.
             Only entities that occupy these places will be removed.
@@ -785,7 +777,7 @@ class Data(Corpus):
             `additions` or contained in it.
         buckets: iterable of list
             This is typically the result of
-            `tf.browser.ner.ner.NER.filterContent()`.
+            `tf.ner.ner.NER.filterContent()`.
             The only important thing is that member 2 of each bucket is the list
             of entity matches in that bucket.
             Entities will only be added at these places.
@@ -967,7 +959,7 @@ class Data(Corpus):
         &#34;&#34;&#34;Export an annotation set to a file.
 
         This function is used when a set has to be duplicated:
-        `tf.browser.ner.sets.Sets.setDup()`.
+        `tf.ner.sets.Sets.setDup()`.
 
         Parameters
         ----------
@@ -994,7 +986,7 @@ class Data(Corpus):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="tf.browser.ner.data.Data"><code class="flex name class">
+<dt id="tf.ner.data.Data"><code class="flex name class">
 <span>class <span class="ident">Data</span></span>
 <span>(</span><span>sets=None)</span>
 </code></dt>
@@ -1012,20 +1004,20 @@ perform a data load from the update file.</p>
 <p>Entity sets to start with.
 If None, a fresh store of sets will be created.</p>
 <p>When the tool runs in browser context, each request will create a
-<code><a title="tf.browser.ner.data.Data" href="#tf.browser.ner.data.Data">Data</a></code> object from scratch. If no sets are passed to the initializer,
+<code><a title="tf.ner.data.Data" href="#tf.ner.data.Data">Data</a></code> object from scratch. If no sets are passed to the initializer,
 it will need to load the required sets from file.
 This is wasteful.</p>
 <p>We have set up the web server in such a way that it incorporates the
 annotation sets. The web server will pass them to the
-<code><a title="tf.browser.ner.ner.NER" href="ner.html#tf.browser.ner.ner.NER">NER</a></code> object initializer, which passes
+<code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code> object initializer, which passes
 it to the initializer here.</p>
-<p>In that way, the <code><a title="tf.browser.ner.data.Data" href="#tf.browser.ner.data.Data">Data</a></code> object can start with the sets already in memory.</p>
+<p>In that way, the <code><a title="tf.ner.data.Data" href="#tf.ner.data.Data">Data</a></code> object can start with the sets already in memory.</p>
 </dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/daf3d9735cb5e691f16215e7eba449f2aa8758b6/tf/browser/ner/data.py#L34-L938" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/ner/data.py#L27-L932" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Data(Corpus):
     def __init__(self, sets=None):
@@ -1051,7 +1043,7 @@ it to the initializer here.</p>
 
             We have set up the web server in such a way that it incorporates the
             annotation sets. The web server will pass them to the
-            `tf.browser.ner.ner.NER` object initializer, which passes
+            `tf.ner.ner.NER` object initializer, which passes
             it to the initializer here.
 
             In that way, the `Data` object can start with the sets already in memory.
@@ -1087,8 +1079,7 @@ it to the initializer here.</p>
         self.processSet(changed)
 
     def _clearSetData(self):
-        &#34;&#34;&#34;Clears the current annotation set data from memory.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Clears the current annotation set data from memory.&#34;&#34;&#34;
         if not self.properlySetup:
             return
 
@@ -1153,9 +1144,11 @@ it to the initializer here.</p>
                     slots = getSlots(e)
                     entities[e] = (
                         tuple(
-                            getFVal(feat, e)
-                            if hasFeature[feat]
-                            else featureDefault[feat](slots)
+                            (
+                                getFVal(feat, e)
+                                if hasFeature[feat]
+                                else featureDefault[feat](slots)
+                            )
                             for feat in features
                         ),
                         tuple(slots),
@@ -1447,7 +1440,7 @@ it to the initializer here.</p>
             `deletions` or contained in it.
         buckets: iterable of list
             This is typically the result of
-            `tf.browser.ner.ner.NER.filterContent()`.
+            `tf.ner.ner.NER.filterContent()`.
             The only important thing is that member 2 of each bucket is the list
             of entity matches in that bucket.
             Only entities that occupy these places will be removed.
@@ -1734,7 +1727,7 @@ it to the initializer here.</p>
             `additions` or contained in it.
         buckets: iterable of list
             This is typically the result of
-            `tf.browser.ner.ner.NER.filterContent()`.
+            `tf.ner.ner.NER.filterContent()`.
             The only important thing is that member 2 of each bucket is the list
             of entity matches in that bucket.
             Entities will only be added at these places.
@@ -1916,7 +1909,7 @@ it to the initializer here.</p>
         &#34;&#34;&#34;Export an annotation set to a file.
 
         This function is used when a set has to be duplicated:
-        `tf.browser.ner.sets.Sets.setDup()`.
+        `tf.ner.sets.Sets.setDup()`.
 
         Parameters
         ----------
@@ -1935,16 +1928,16 @@ it to the initializer here.</p>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="tf.browser.ner.corpus.Corpus" href="corpus.html#tf.browser.ner.corpus.Corpus">Corpus</a></li>
-<li><a title="tf.browser.ner.settings.Settings" href="settings.html#tf.browser.ner.settings.Settings">Settings</a></li>
+<li><a title="tf.ner.corpus.Corpus" href="corpus.html#tf.ner.corpus.Corpus">Corpus</a></li>
+<li><a title="tf.ner.settings.Settings" href="settings.html#tf.ner.settings.Settings">Settings</a></li>
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
-<li><a title="tf.browser.ner.sets.Sets" href="sets.html#tf.browser.ner.sets.Sets">Sets</a></li>
+<li><a title="tf.ner.sets.Sets" href="sets.html#tf.ner.sets.Sets">Sets</a></li>
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="tf.browser.ner.data.Data.addEntities"><code class="name flex">
+<dt id="tf.ner.data.Data.addEntities"><code class="name flex">
 <span>def <span class="ident">addEntities</span></span>(<span>self, newEntities, returns=True)</span>
 </code></dt>
 <dd>
@@ -1975,7 +1968,7 @@ asked to be deleted and the number of actually deleted entities.</p>
 <pre><code>If the operation is not allowed, both integers above are set to -1.
 </code></pre></div>
 </dd>
-<dt id="tf.browser.ner.data.Data.addEntity"><code class="name flex">
+<dt id="tf.ner.data.Data.addEntity"><code class="name flex">
 <span>def <span class="ident">addEntity</span></span>(<span>self, vals, allMatches, returns=True)</span>
 </code></dt>
 <dd>
@@ -2005,7 +1998,7 @@ asked to be deleted and the number of actually deleted entities.</p>
 <pre><code>If the operation is not allowed, both integers above are set to -1.
 </code></pre></div>
 </dd>
-<dt id="tf.browser.ner.data.Data.addEntityRich"><code class="name flex">
+<dt id="tf.ner.data.Data.addEntityRich"><code class="name flex">
 <span>def <span class="ident">addEntityRich</span></span>(<span>self, additions, buckets, excludedTokens=set())</span>
 </code></dt>
 <dd>
@@ -2013,7 +2006,7 @@ asked to be deleted and the number of actually deleted entities.</p>
 <p>This operation is not allowed if the current set is the read-only set with the
 empty name.</p>
 <p>This function has more detailed instructions as to which entities
-should be added than <code><a title="tf.browser.ner.data.Data.addEntity" href="#tf.browser.ner.data.Data.addEntity">Data.addEntity()</a></code> .</p>
+should be added than <code><a title="tf.ner.data.Data.addEntity" href="#tf.ner.data.Data.addEntity">Data.addEntity()</a></code> .</p>
 <p>It is a handy function for the TF browser to call, but not so much when you
 are manipulating entities yourself in a Jupyter notebook.</p>
 <h2 id="parameters">Parameters</h2>
@@ -2027,7 +2020,7 @@ have values that are either equal to the corresponding member of
 <code>additions</code> or contained in it.</dd>
 <dt><strong><code>buckets</code></strong> :&ensp;<code>iterable</code> of <code>list</code></dt>
 <dd>This is typically the result of
-<code><a title="tf.browser.ner.ner.NER.filterContent" href="ner.html#tf.browser.ner.ner.NER.filterContent">NER.filterContent()</a></code>.
+<code><a title="tf.ner.ner.NER.filterContent" href="ner.html#tf.ner.ner.NER.filterContent">NER.filterContent()</a></code>.
 The only important thing is that member 2 of each bucket is the list
 of entity matches in that bucket.
 Entities will only be added at these places.</dd>
@@ -2037,7 +2030,7 @@ receive new entities. If the last slot of an entity is in this set,
 no entity will be added there.</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.data.Data.delEntity"><code class="name flex">
+<dt id="tf.ner.data.Data.delEntity"><code class="name flex">
 <span>def <span class="ident">delEntity</span></span>(<span>self, vals, allMatches=None, returns=True)</span>
 </code></dt>
 <dd>
@@ -2069,7 +2062,7 @@ asked to be deleted and the number of actually deleted entities.</p>
 <pre><code>If the operation is not allowed, both integers above are set to -1.
 </code></pre></div>
 </dd>
-<dt id="tf.browser.ner.data.Data.delEntityRich"><code class="name flex">
+<dt id="tf.ner.data.Data.delEntityRich"><code class="name flex">
 <span>def <span class="ident">delEntityRich</span></span>(<span>self, deletions, buckets, excludedTokens=set())</span>
 </code></dt>
 <dd>
@@ -2077,7 +2070,7 @@ asked to be deleted and the number of actually deleted entities.</p>
 <p>This operation is not allowed if the current set is the read-only set with the
 empty name.</p>
 <p>This function has more detailed instructions as to which entities
-should be deleted than <code><a title="tf.browser.ner.data.Data.delEntity" href="#tf.browser.ner.data.Data.delEntity">Data.delEntity()</a></code> .</p>
+should be deleted than <code><a title="tf.ner.data.Data.delEntity" href="#tf.ner.data.Data.delEntity">Data.delEntity()</a></code> .</p>
 <p>It is a handy function for the TF browser to call, but not so much when you
 are manipulating entities yourself in a Jupyter notebook.</p>
 <h2 id="parameters">Parameters</h2>
@@ -2091,7 +2084,7 @@ have values that are either equal to the corresponding member of
 <code>deletions</code> or contained in it.</dd>
 <dt><strong><code>buckets</code></strong> :&ensp;<code>iterable</code> of <code>list</code></dt>
 <dd>This is typically the result of
-<code><a title="tf.browser.ner.ner.NER.filterContent" href="ner.html#tf.browser.ner.ner.NER.filterContent">NER.filterContent()</a></code>.
+<code><a title="tf.ner.ner.NER.filterContent" href="ner.html#tf.ner.ner.NER.filterContent">NER.filterContent()</a></code>.
 The only important thing is that member 2 of each bucket is the list
 of entity matches in that bucket.
 Only entities that occupy these places will be removed.</dd>
@@ -2101,7 +2094,7 @@ skipped from deletion. If the last slot of an entity is in this set,
 the entity will not be deleted.</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.data.Data.fromSourceSet"><code class="name flex">
+<dt id="tf.ner.data.Data.fromSourceSet"><code class="name flex">
 <span>def <span class="ident">fromSourceSet</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2120,18 +2113,18 @@ each entity specifies a tuple of feature values and a list of slots
 that are part of the entity.</li>
 </ul></div>
 </dd>
-<dt id="tf.browser.ner.data.Data.loadSetData"><code class="name flex">
+<dt id="tf.ner.data.Data.loadSetData"><code class="name flex">
 <span>def <span class="ident">loadSetData</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Loads the current annotation set into memory.</p>
 <p>It has two phases:</p>
 <ul>
-<li>loading the source set (see <code><a title="tf.browser.ner.data.Data.fromSourceSet" href="#tf.browser.ner.data.Data.fromSourceSet">Data.fromSourceSet()</a></code>)</li>
-<li>processing the loaded set (see <code><a title="tf.browser.ner.data.Data.processSet" href="#tf.browser.ner.data.Data.processSet">Data.processSet()</a></code>)</li>
+<li>loading the source set (see <code><a title="tf.ner.data.Data.fromSourceSet" href="#tf.ner.data.Data.fromSourceSet">Data.fromSourceSet()</a></code>)</li>
+<li>processing the loaded set (see <code><a title="tf.ner.data.Data.processSet" href="#tf.ner.data.Data.processSet">Data.processSet()</a></code>)</li>
 </ul></div>
 </dd>
-<dt id="tf.browser.ner.data.Data.mergeEntities"><code class="name flex">
+<dt id="tf.ner.data.Data.mergeEntities"><code class="name flex">
 <span>def <span class="ident">mergeEntities</span></span>(<span>self, newEntities)</span>
 </code></dt>
 <dd>
@@ -2145,7 +2138,7 @@ empty name.</p>
 and an iterable of slot tuples where the entity is located.</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.data.Data.processSet"><code class="name flex">
+<dt id="tf.ner.data.Data.processSet"><code class="name flex">
 <span>def <span class="ident">processSet</span></span>(<span>self, changed)</span>
 </code></dt>
 <dd>
@@ -2201,20 +2194,20 @@ entities in the surrounding context of tokens.</p>
 <dd>Whether the set has changed since last processing.</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.data.Data.saveEntitiesAs"><code class="name flex">
+<dt id="tf.ner.data.Data.saveEntitiesAs"><code class="name flex">
 <span>def <span class="ident">saveEntitiesAs</span></span>(<span>self, dataFile)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Export an annotation set to a file.</p>
 <p>This function is used when a set has to be duplicated:
-<code><a title="tf.browser.ner.sets.Sets.setDup" href="sets.html#tf.browser.ner.sets.Sets.setDup">Sets.setDup()</a></code>.</p>
+<code><a title="tf.ner.sets.Sets.setDup" href="sets.html#tf.ner.sets.Sets.setDup">Sets.setDup()</a></code>.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>dataFile</code></strong> :&ensp;<code>string</code></dt>
 <dd>The path of the file to write to.</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.data.Data.weedEntities"><code class="name flex">
+<dt id="tf.ner.data.Data.weedEntities"><code class="name flex">
 <span>def <span class="ident">weedEntities</span></span>(<span>self, delEntities)</span>
 </code></dt>
 <dd>
@@ -2231,29 +2224,29 @@ and an iterable of slot tuples where the entity is located.</dd>
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="tf.browser.ner.corpus.Corpus" href="corpus.html#tf.browser.ner.corpus.Corpus">Corpus</a></b></code>:
+<li><code><b><a title="tf.ner.corpus.Corpus" href="corpus.html#tf.ner.corpus.Corpus">Corpus</a></b></code>:
 <ul class="hlist">
-<li><code><a title="tf.browser.ner.corpus.Corpus.checkBuckets" href="corpus.html#tf.browser.ner.corpus.Corpus.checkBuckets">checkBuckets</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.checkFeature" href="corpus.html#tf.browser.ner.corpus.Corpus.checkFeature">checkFeature</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.console" href="settings.html#tf.browser.ner.settings.Settings.console">console</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.featureDefault" href="corpus.html#tf.browser.ner.corpus.Corpus.featureDefault">featureDefault</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.get0" href="corpus.html#tf.browser.ner.corpus.Corpus.get0">get0</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.get1" href="corpus.html#tf.browser.ner.corpus.Corpus.get1">get1</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getAfter" href="corpus.html#tf.browser.ner.corpus.Corpus.getAfter">getAfter</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getBucketNodes" href="corpus.html#tf.browser.ner.corpus.Corpus.getBucketNodes">getBucketNodes</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getContext" href="corpus.html#tf.browser.ner.corpus.Corpus.getContext">getContext</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getEntityNodes" href="corpus.html#tf.browser.ner.corpus.Corpus.getEntityNodes">getEntityNodes</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getFVal" href="corpus.html#tf.browser.ner.corpus.Corpus.getFVal">getFVal</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getHeadings" href="corpus.html#tf.browser.ner.corpus.Corpus.getHeadings">getHeadings</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getSlots" href="corpus.html#tf.browser.ner.corpus.Corpus.getSlots">getSlots</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getStr" href="corpus.html#tf.browser.ner.corpus.Corpus.getStr">getStr</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getStrings" href="corpus.html#tf.browser.ner.corpus.Corpus.getStrings">getStrings</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getText" href="corpus.html#tf.browser.ner.corpus.Corpus.getText">getText</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getTextR" href="corpus.html#tf.browser.ner.corpus.Corpus.getTextR">getTextR</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getTokens" href="corpus.html#tf.browser.ner.corpus.Corpus.getTokens">getTokens</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.properlySetup" href="corpus.html#tf.browser.ner.corpus.Corpus.properlySetup">properlySetup</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.sectionHead" href="corpus.html#tf.browser.ner.corpus.Corpus.sectionHead">sectionHead</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.slotType" href="corpus.html#tf.browser.ner.corpus.Corpus.slotType">slotType</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.checkBuckets" href="corpus.html#tf.ner.corpus.Corpus.checkBuckets">checkBuckets</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.checkFeature" href="corpus.html#tf.ner.corpus.Corpus.checkFeature">checkFeature</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.console" href="settings.html#tf.ner.settings.Settings.console">console</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.featureDefault" href="corpus.html#tf.ner.corpus.Corpus.featureDefault">featureDefault</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.get0" href="corpus.html#tf.ner.corpus.Corpus.get0">get0</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.get1" href="corpus.html#tf.ner.corpus.Corpus.get1">get1</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getAfter" href="corpus.html#tf.ner.corpus.Corpus.getAfter">getAfter</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getBucketNodes" href="corpus.html#tf.ner.corpus.Corpus.getBucketNodes">getBucketNodes</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getContext" href="corpus.html#tf.ner.corpus.Corpus.getContext">getContext</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getEntityNodes" href="corpus.html#tf.ner.corpus.Corpus.getEntityNodes">getEntityNodes</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getFVal" href="corpus.html#tf.ner.corpus.Corpus.getFVal">getFVal</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getHeadings" href="corpus.html#tf.ner.corpus.Corpus.getHeadings">getHeadings</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getSlots" href="corpus.html#tf.ner.corpus.Corpus.getSlots">getSlots</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getStr" href="corpus.html#tf.ner.corpus.Corpus.getStr">getStr</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getStrings" href="corpus.html#tf.ner.corpus.Corpus.getStrings">getStrings</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getText" href="corpus.html#tf.ner.corpus.Corpus.getText">getText</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getTextR" href="corpus.html#tf.ner.corpus.Corpus.getTextR">getTextR</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getTokens" href="corpus.html#tf.ner.corpus.Corpus.getTokens">getTokens</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.properlySetup" href="corpus.html#tf.ner.corpus.Corpus.properlySetup">properlySetup</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.sectionHead" href="corpus.html#tf.ner.corpus.Corpus.sectionHead">sectionHead</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.slotType" href="corpus.html#tf.ner.corpus.Corpus.slotType">slotType</a></code></li>
 </ul>
 </li>
 </ul>
@@ -2262,10 +2255,10 @@ and an iterable of slot tuples where the entity is located.</dd>
 </section>
 </article>
 <nav id="sidebar">
-<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../../tf/images/tf-small.png" alt="annotation"></a></p>
-<p><a href="../../../tf/index.html">tf home</a> -
-<a href="../../../tf/cheatsheet.html">cheat sheet</a> -
-<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
 </p>
 <form>
 <input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
@@ -2301,7 +2294,7 @@ const query = new URL(window.location).searchParams.get('q');
 if (query)
 search(query);
 function search(query) {
-const url = '../../../doc-search.html#' + encodeURIComponent(query);
+const url = '../../doc-search.html#' + encodeURIComponent(query);
 new tingle.modal({
 cssClass: ['modal-dialog'],
 onClose: () => {
@@ -2320,25 +2313,25 @@ setTimeout(() => input.focus(), 100);
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf.browser.ner" href="index.html">tf.browser.ner</a></code></li>
+<li><code><a title="tf.ner" href="index.html">tf.ner</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="tf.browser.ner.data.Data" href="#tf.browser.ner.data.Data">Data</a></code></h4>
+<h4><code><a title="tf.ner.data.Data" href="#tf.ner.data.Data">Data</a></code></h4>
 <ul class="two-column">
-<li><code><a title="tf.browser.ner.data.Data.addEntities" href="#tf.browser.ner.data.Data.addEntities">addEntities</a></code></li>
-<li><code><a title="tf.browser.ner.data.Data.addEntity" href="#tf.browser.ner.data.Data.addEntity">addEntity</a></code></li>
-<li><code><a title="tf.browser.ner.data.Data.addEntityRich" href="#tf.browser.ner.data.Data.addEntityRich">addEntityRich</a></code></li>
-<li><code><a title="tf.browser.ner.data.Data.delEntity" href="#tf.browser.ner.data.Data.delEntity">delEntity</a></code></li>
-<li><code><a title="tf.browser.ner.data.Data.delEntityRich" href="#tf.browser.ner.data.Data.delEntityRich">delEntityRich</a></code></li>
-<li><code><a title="tf.browser.ner.data.Data.fromSourceSet" href="#tf.browser.ner.data.Data.fromSourceSet">fromSourceSet</a></code></li>
-<li><code><a title="tf.browser.ner.data.Data.loadSetData" href="#tf.browser.ner.data.Data.loadSetData">loadSetData</a></code></li>
-<li><code><a title="tf.browser.ner.data.Data.mergeEntities" href="#tf.browser.ner.data.Data.mergeEntities">mergeEntities</a></code></li>
-<li><code><a title="tf.browser.ner.data.Data.processSet" href="#tf.browser.ner.data.Data.processSet">processSet</a></code></li>
-<li><code><a title="tf.browser.ner.data.Data.saveEntitiesAs" href="#tf.browser.ner.data.Data.saveEntitiesAs">saveEntitiesAs</a></code></li>
-<li><code><a title="tf.browser.ner.data.Data.weedEntities" href="#tf.browser.ner.data.Data.weedEntities">weedEntities</a></code></li>
+<li><code><a title="tf.ner.data.Data.addEntities" href="#tf.ner.data.Data.addEntities">addEntities</a></code></li>
+<li><code><a title="tf.ner.data.Data.addEntity" href="#tf.ner.data.Data.addEntity">addEntity</a></code></li>
+<li><code><a title="tf.ner.data.Data.addEntityRich" href="#tf.ner.data.Data.addEntityRich">addEntityRich</a></code></li>
+<li><code><a title="tf.ner.data.Data.delEntity" href="#tf.ner.data.Data.delEntity">delEntity</a></code></li>
+<li><code><a title="tf.ner.data.Data.delEntityRich" href="#tf.ner.data.Data.delEntityRich">delEntityRich</a></code></li>
+<li><code><a title="tf.ner.data.Data.fromSourceSet" href="#tf.ner.data.Data.fromSourceSet">fromSourceSet</a></code></li>
+<li><code><a title="tf.ner.data.Data.loadSetData" href="#tf.ner.data.Data.loadSetData">loadSetData</a></code></li>
+<li><code><a title="tf.ner.data.Data.mergeEntities" href="#tf.ner.data.Data.mergeEntities">mergeEntities</a></code></li>
+<li><code><a title="tf.ner.data.Data.processSet" href="#tf.ner.data.Data.processSet">processSet</a></code></li>
+<li><code><a title="tf.ner.data.Data.saveEntitiesAs" href="#tf.ner.data.Data.saveEntitiesAs">saveEntitiesAs</a></code></li>
+<li><code><a title="tf.ner.data.Data.weedEntities" href="#tf.ner.data.Data.weedEntities">weedEntities</a></code></li>
 </ul>
 </li>
 </ul>
@@ -2348,7 +2341,7 @@ setTimeout(() => input.focus(), 100);
 </main>
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
-<a href="https://huc.knaw.nl"><img alt="HuC" src="../../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
 <p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.11.1" />
-<title>tf.browser.ner.ner API documentation</title>
+<title>tf.ner.ner API documentation</title>
 <meta name="description" content="API for Named Entity marking …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css"
@@ -25,77 +25,37 @@ crossorigin>
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.browser.ner.ner</code></h1>
+<h1 class="title">Module <code>tf.ner.ner</code></h1>
 </header>
 <section id="section-intro">
 <p>API for Named Entity marking.</p>
-<p>As a preparation, read <code><a title="tf.about.annotate" href="../../about/annotate.html">tf.about.annotate</a></code> first, since it explains the concepts, and
+<p>As a preparation, read <code><a title="tf.about.annotate" href="../about/annotate.html">tf.about.annotate</a></code> first, since it explains the concepts, and
 guides you to set up the configuration for your corpus.</p>
-<p>The main task of this module is to find occurrences of annotations
-on the basis of criteria.</p>
-<p>But this is just the tip of the iceberg, since this module inherits
-from a number of other modules that inherit form yet other modules:</p>
+<p>The class <code><a title="tf.ner.ner.NER" href="#tf.ner.ner.NER">NER</a></code> in this module is the central class of this tool whose main
+task is to find occurrences of annotations on the basis of criteria.</p>
+<p>This module inherits from a number of other modules:</p>
 <ul>
-<li><code><a title="tf.browser.ner.show" href="show.html">tf.browser.ner.show</a></code>: generate HTML for annotated buckets of the corpus;</li>
-<li><code><a title="tf.browser.ner.sets" href="sets.html">tf.browser.ner.sets</a></code>: manage annotation sets;</li>
-<li><code><a title="tf.browser.ner.data" href="data.html">tf.browser.ner.data</a></code>: manage annotation data: loading, adding/deleting
-annotations;</li>
-<li><code><a title="tf.browser.ner.settings" href="settings.html">tf.browser.ner.settings</a></code>: manage the specifics of a TF corpus and have
-access to its data.</li>
+<li><code><a title="tf.ner.match" href="match.html">tf.ner.match</a></code>: to filter individual buckets on the basis of criteria.</li>
+<li><code><a title="tf.ner.sets" href="sets.html">tf.ner.sets</a></code>: manage annotation sets;</li>
+<li><code><a title="tf.ner.data" href="data.html">tf.ner.data</a></code>: manage annotation data: loading, adding/deleting annotations;</li>
+<li><code><a title="tf.ner.show" href="show.html">tf.ner.show</a></code>: generate HTML for annotated buckets of the corpus;</li>
+<li><code><a title="tf.ner.settings" href="settings.html">tf.ner.settings</a></code>: manage the specifics of a TF corpus and have access to its data.</li>
+<li><code><a title="tf.ner.helpers" href="helpers.html">tf.ner.helpers</a></code>: a variety of context-free data jugglers;</li>
 </ul>
-<p>It also uses</p>
+<p>The NER machinery can be used by</p>
 <ul>
-<li><code><a title="tf.browser.ner.match" href="match.html">tf.browser.ner.match</a></code>: to filter individual buckets on the basis of
-criteria.</li>
+<li>users to manipulate annotations in their own programs, especially in a
+Jupyter notebook.</li>
+<li><code><a title="tf.browser.ner.web" href="../browser/ner/web.html">tf.browser.ner.web</a></code>: Flask app that routes URLs to controller functions.</li>
 </ul>
-<p>Hence, <code>Annotation</code> is the central class of this tool, whose methods are relevant
-for:</p>
+<p>The browsing experience is further supported by:</p>
 <ul>
-<li><code><a title="tf.browser.ner.ner" href="#tf.browser.ner.ner">tf.browser.ner.ner</a></code>: the API for users to manipulate annotations in their
-own programs, especially in a Jupyter notebook.</li>
-<li><code><a title="tf.browser.ner.web" href="web.html">tf.browser.ner.web</a></code>: Flask app that routes URLs to controller functions.</li>
+<li><code><a title="tf.browser.ner.serve" href="../browser/ner/serve.html">tf.browser.ner.serve</a></code>: define the controllers of the web app</li>
+<li><code><a title="tf.browser.ner.request" href="../browser/ner/request.html">tf.browser.ner.request</a></code>: manage the data of a request;</li>
+<li><code><a title="tf.browser.ner.form" href="../browser/ner/form.html">tf.browser.ner.form</a></code>: retrieve form values into typed and structured values.</li>
+<li><code><a title="tf.browser.ner.fragments" href="../browser/ner/fragments.html">tf.browser.ner.fragments</a></code>: generate HTML for widgets on the page;</li>
+<li><code><a title="tf.browser.html" href="../browser/html.html">tf.browser.html</a></code>: a generic library to generate HTML using Pythonic syntax.</li>
 </ul>
-<p><code>web</code> makes use of the following modules that are not needed by <code>ner</code>:</p>
-<ul>
-<li><code><a title="tf.browser.ner.serve" href="serve.html">tf.browser.ner.serve</a></code>: define the controllers of the web app</li>
-</ul>
-<p>Again, this is a top of an iceberg, since it inherits from:</p>
-<ul>
-<li><code><a title="tf.browser.ner.request" href="request.html">tf.browser.ner.request</a></code>: manage the data of a request;</li>
-<li><code><a title="tf.browser.ner.fragments" href="fragments.html">tf.browser.ner.fragments</a></code>: generate HTML for widgets on the page;</li>
-</ul>
-<p><code>request</code> also uses <code>form</code> to retrieve form values into typed and structured values.</p>
-<p>Both <code>web</code> and <code>ner</code> make use of the following modules in as far as they are not
-already mentioned under <code>annotate</code> and its parent classes:</p>
-<ul>
-<li><code><a title="tf.browser.ner.helpers" href="helpers.html">tf.browser.ner.helpers</a></code>: a variety of context-free data jugglers;</li>
-<li><code><a title="tf.browser.html" href="../html.html">tf.browser.html</a></code>: a generic library to generate HTML using Pythonic
-syntax.
-This module contains the top-level methods for applying annotation rules to a corpus.</li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title">Class hierarchy</p>
-<p>The classes <code>Settings</code>, <code>Corpus</code>, <code>Data</code>, <code>Sets</code>, <code>Show</code>, <code><a title="tf.browser.ner.ner.NER" href="#tf.browser.ner.ner.NER">NER</a></code>
-form one hierarchy.
-So an object of class <code><a title="tf.browser.ner.ner.NER" href="#tf.browser.ner.ner.NER">NER</a></code> has access to all methods of these classes.</p>
-<p>The classes <code>Serve</code>, <code>Request</code>, <code>Fragments</code>, <code>From</code> form a separate hierarchy.
-It will create an <code><a title="tf.browser.ner.ner.NER" href="#tf.browser.ner.ner.NER">NER</a></code> instance which will be stored in a <code>Serve</code> instance.</p>
-</div>
-<p>Here is an overview how the modules hang together.</p>
-<p>A <code>|</code> denotes inheritance, parent classes above child classes.</p>
-<p>A <code>&lt;-&lt;</code> arrow denotes dependency by importing code.</p>
-<pre><code>Browser                           |   Api-hierarchy
-----------------------------------------------------------------
-web &lt;-----&lt; Serve &lt;-----------------&lt; NER              &lt;-&lt; match
-            |   |                 |     |
-       Request Fragments &lt;-&lt; html |   Sets Sheets Show &lt;-&lt; html
-          |                       |     |
-        Form                      |   Data
-                                  |     |
-                                  |   Corpus
-                                  |     |
-                                  |   Settings
-</code></pre>
 <h1 id="programmatic-annotation-done-in-a-jupyter-notebook">Programmatic annotation done in a Jupyter Notebook</h1>
 <p>If you have a spreadsheet with named entities, and for each entity a list of surface forms,
 then this module takes care to read that spreadsheet, translate it to YAML,
@@ -206,7 +166,7 @@ Total 150
 </code></pre>
 <p>Entities that are in the spreadsheet, but not in the corpus are skipped.</p>
 <h2 id="inspection">Inspection</h2>
-<p>We now revert to lower-level methods from the <code><a title="tf.browser.ner.ner" href="#tf.browser.ner.ner">tf.browser.ner.ner</a></code> class to
+<p>We now revert to lower-level methods from the <code><a title="tf.ner.ner" href="#tf.ner.ner">tf.ner.ner</a></code> class to
 inspect some of the results.</p>
 <pre><code class="language-python">results = NE.filterContent(bFind=&quot;pach&quot;, bFindC=False, anyEnt=True, showStats=None)
 </code></pre>
@@ -244,84 +204,38 @@ slots.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/daf3d9735cb5e691f16215e7eba449f2aa8758b6/tf/browser/ner/ner.py#L1-L1460" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/ner/ner.py#L1-L1401" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;API for Named Entity marking.
 
 As a preparation, read `tf.about.annotate` first, since it explains the concepts, and
 guides you to set up the configuration for your corpus.
 
-The main task of this module is to find occurrences of annotations
-on the basis of criteria.
+The class `tf.ner.ner.NER` in this module is the central class of this tool whose main
+task is to find occurrences of annotations on the basis of criteria.
 
-But this is just the tip of the iceberg, since this module inherits
-from a number of other modules that inherit form yet other modules:
+This module inherits from a number of other modules:
 
-*   `tf.browser.ner.show`: generate HTML for annotated buckets of the corpus;
-*   `tf.browser.ner.sets`: manage annotation sets;
-*   `tf.browser.ner.data`: manage annotation data: loading, adding/deleting
-    annotations;
-*   `tf.browser.ner.settings`: manage the specifics of a TF corpus and have
-    access to its data.
+*   `tf.ner.match`: to filter individual buckets on the basis of criteria.
+*   `tf.ner.sets`: manage annotation sets;
+*   `tf.ner.data`: manage annotation data: loading, adding/deleting annotations;
+*   `tf.ner.show`: generate HTML for annotated buckets of the corpus;
+*   `tf.ner.settings`: manage the specifics of a TF corpus and have access to its data.
+*   `tf.ner.helpers`: a variety of context-free data jugglers;
 
-It also uses
+The NER machinery can be used by
 
-*   `tf.browser.ner.match`: to filter individual buckets on the basis of
-    criteria.
-
-Hence, `Annotation` is the central class of this tool, whose methods are relevant
-for:
-
-*   `tf.browser.ner.ner`: the API for users to manipulate annotations in their
-    own programs, especially in a Jupyter notebook.
+*   users to manipulate annotations in their own programs, especially in a
+    Jupyter notebook.
 *   `tf.browser.ner.web`: Flask app that routes URLs to controller functions.
 
-`web` makes use of the following modules that are not needed by `ner`:
+The browsing experience is further supported by:
 
 *   `tf.browser.ner.serve`: define the controllers of the web app
-
-Again, this is a top of an iceberg, since it inherits from:
-
 *   `tf.browser.ner.request`: manage the data of a request;
+*   `tf.browser.ner.form`: retrieve form values into typed and structured values.
 *   `tf.browser.ner.fragments`: generate HTML for widgets on the page;
-
-`request` also uses `form` to retrieve form values into typed and structured values.
-
-Both `web` and `ner` make use of the following modules in as far as they are not
-already mentioned under `annotate` and its parent classes:
-
-*   `tf.browser.ner.helpers`: a variety of context-free data jugglers;
-*   `tf.browser.html`: a generic library to generate HTML using Pythonic
-    syntax.
-This module contains the top-level methods for applying annotation rules to a corpus.
-
-!!! note &#34;Class hierarchy&#34;
-    The classes `Settings`, `Corpus`, `Data`, `Sets`, `Show`, `NER`
-    form one hierarchy.
-    So an object of class `NER` has access to all methods of these classes.
-
-    The classes `Serve`, `Request`, `Fragments`, `From` form a separate hierarchy.
-    It will create an `NER` instance which will be stored in a `Serve` instance.
-
-Here is an overview how the modules hang together.
-
-A `|` denotes inheritance, parent classes above child classes.
-
-A `&lt;-&lt;` arrow denotes dependency by importing code.
-
-```
-Browser                           |   Api-hierarchy
-----------------------------------------------------------------
-web &lt;-----&lt; Serve &lt;-----------------&lt; NER              &lt;-&lt; match
-            |   |                 |     |
-       Request Fragments &lt;-&lt; html |   Sets Sheets Show &lt;-&lt; html
-          |                       |     |
-        Form                      |   Data
-                                  |     |
-                                  |   Corpus
-                                  |     |
-                                  |   Settings
-```
+*   `tf.browser.html`: a generic library to generate HTML using Pythonic syntax.
 
 # Programmatic annotation done in a Jupyter Notebook
 
@@ -463,7 +377,7 @@ Entities that are in the spreadsheet, but not in the corpus are skipped.
 
 ## Inspection
 
-We now revert to lower-level methods from the `tf.browser.ner.ner` class to
+We now revert to lower-level methods from the `tf.ner.ner` class to
 inspect some of the results.
 
 ``` python
@@ -515,28 +429,17 @@ from textwrap import dedent
 import collections
 from itertools import chain
 
-from ...dataset import modify
-from ...core.generic import AttrDict
-from ...core.helpers import console
-from ...core.files import (
-    fileOpen,
-    dirRemove,
-    dirNm,
-    dirExists,
-    APP_CONFIG,
-)
-from ...core.timestamp import SILENT_D, DEEP
-from .sheets import Sheets
-from .helpers import (
-    findCompile,
-    toTokens,
-    makePartitions,
-    interference,
-    locInScopes,
-)
+from ..dataset import modify
+from ..core.generic import AttrDict
+from ..core.helpers import console
+from ..core.timestamp import SILENT_D, DEEP
+from ..core.files import fileOpen, dirRemove, dirNm, dirExists, APP_CONFIG
+
 from .sets import Sets
-from .show import Show
+from .sheets import Sheets
 from .match import entityMatch, occMatch
+from .show import Show
+from .helpers import findCompile, toTokens, makePartitions, interference, locInScopes
 
 
 class NER(Sheets, Sets, Show):
@@ -1002,13 +905,11 @@ class NER(Sheets, Sets, Show):
                 occs = data.get(trigger, {}).get(&#34;&#34;, [])
                 items.append((trigger, occs))
 
-        for (trigger, occs) in sorted(
+        for trigger, occs in sorted(
             items,
             key=lambda x: (&#34;, &#34;.join(sorted(triggerScopes[x[0]])), x[0].lower()),
         ):
-            uncovered += (
-                0 if self.diagnoseTrigger(trigger, occs, detail=detail) else 1
-            )
+            uncovered += 0 if self.diagnoseTrigger(trigger, occs, detail=detail) else 1
 
         self.console(&#34;&#34;)
 
@@ -1117,7 +1018,7 @@ class NER(Sheets, Sets, Show):
                     if i == 5:
                         i = 0
 
-                missedHitsRep = &#39;, &#39;.join(missedHits[0])
+                missedHitsRep = &#34;, &#34;.join(missedHits[0])
                 console(f&#34;{trigger:&lt;40} {scopeRep:&lt;12}: {missedHitsRep}&#34;, error=True)
 
                 for m in missedHits[1:]:
@@ -1717,7 +1618,7 @@ class NER(Sheets, Sets, Show):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="tf.browser.ner.ner.NER"><code class="flex name class">
+<dt id="tf.ner.ner.NER"><code class="flex name class">
 <span>class <span class="ident">NER</span></span>
 <span>(</span><span>app, normalizeChars=None, data=None, browse=False, caseSensitive=False, silent=False)</span>
 </code></dt>
@@ -1768,7 +1669,7 @@ browser. This will influence how results are reported back.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/daf3d9735cb5e691f16215e7eba449f2aa8758b6/tf/browser/ner/ner.py#L294-L1460" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/ner/ner.py#L237-L1401" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Sheets, Sets, Show):
     def __init__(
@@ -2233,13 +2134,11 @@ browser. This will influence how results are reported back.</dd>
                 occs = data.get(trigger, {}).get(&#34;&#34;, [])
                 items.append((trigger, occs))
 
-        for (trigger, occs) in sorted(
+        for trigger, occs in sorted(
             items,
             key=lambda x: (&#34;, &#34;.join(sorted(triggerScopes[x[0]])), x[0].lower()),
         ):
-            uncovered += (
-                0 if self.diagnoseTrigger(trigger, occs, detail=detail) else 1
-            )
+            uncovered += 0 if self.diagnoseTrigger(trigger, occs, detail=detail) else 1
 
         self.console(&#34;&#34;)
 
@@ -2348,7 +2247,7 @@ browser. This will influence how results are reported back.</dd>
                     if i == 5:
                         i = 0
 
-                missedHitsRep = &#39;, &#39;.join(missedHits[0])
+                missedHitsRep = &#34;, &#34;.join(missedHits[0])
                 console(f&#34;{trigger:&lt;40} {scopeRep:&lt;12}: {missedHitsRep}&#34;, error=True)
 
                 for m in missedHits[1:]:
@@ -2940,16 +2839,16 @@ browser. This will influence how results are reported back.</dd>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="tf.browser.ner.sheets.Sheets" href="sheets.html#tf.browser.ner.sheets.Sheets">Sheets</a></li>
-<li><a title="tf.browser.ner.sets.Sets" href="sets.html#tf.browser.ner.sets.Sets">Sets</a></li>
-<li><a title="tf.browser.ner.data.Data" href="data.html#tf.browser.ner.data.Data">Data</a></li>
-<li><a title="tf.browser.ner.corpus.Corpus" href="corpus.html#tf.browser.ner.corpus.Corpus">Corpus</a></li>
-<li><a title="tf.browser.ner.settings.Settings" href="settings.html#tf.browser.ner.settings.Settings">Settings</a></li>
-<li><a title="tf.browser.ner.show.Show" href="show.html#tf.browser.ner.show.Show">Show</a></li>
+<li><a title="tf.ner.sheets.Sheets" href="sheets.html#tf.ner.sheets.Sheets">Sheets</a></li>
+<li><a title="tf.ner.sets.Sets" href="sets.html#tf.ner.sets.Sets">Sets</a></li>
+<li><a title="tf.ner.data.Data" href="data.html#tf.ner.data.Data">Data</a></li>
+<li><a title="tf.ner.corpus.Corpus" href="corpus.html#tf.ner.corpus.Corpus">Corpus</a></li>
+<li><a title="tf.ner.settings.Settings" href="settings.html#tf.ner.settings.Settings">Settings</a></li>
+<li><a title="tf.ner.show.Show" href="show.html#tf.ner.show.Show">Show</a></li>
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="tf.browser.ner.ner.NER.bakeEntities"><code class="name flex">
+<dt id="tf.ner.ner.NER.bakeEntities"><code class="name flex">
 <span>def <span class="ident">bakeEntities</span></span>(<span>self, versionExtension='e')</span>
 </code></dt>
 <dd>
@@ -2964,19 +2863,19 @@ TF dataset.</p>
 with this string.</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.ner.NER.diagnoseTrigger"><code class="name flex">
+<dt id="tf.ner.ner.NER.diagnoseTrigger"><code class="name flex">
 <span>def <span class="ident">diagnoseTrigger</span></span>(<span>self, trigger, occs, detail=True)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.ner.NER.diagnoseTriggers"><code class="name flex">
+<dt id="tf.ner.ner.NER.diagnoseTriggers"><code class="name flex">
 <span>def <span class="ident">diagnoseTriggers</span></span>(<span>self, triggers, detail=True)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.ner.NER.filterContent"><code class="name flex">
+<dt id="tf.ner.ner.NER.filterContent"><code class="name flex">
 <span>def <span class="ident">filterContent</span></span>(<span>self, buckets=None, node=None, bFind=None, bFindC=None, bFindRe=None, anyEnt=None, eVals=None, trigger=None, qTokens=None, valSelect=None, freeState=None, showStats=None)</span>
 </code></dt>
 <dd>
@@ -3072,7 +2971,7 @@ of results.</p>
 </dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.ner.NER.findOccs"><code class="name flex">
+<dt id="tf.ner.ner.NER.findOccs"><code class="name flex">
 <span>def <span class="ident">findOccs</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3089,55 +2988,55 @@ A single occurrence is represented as a tuple of slots.</p>
 <p><code>names</code>: keyed by tuples (eid, kind) and then path,
 the value is the name of that entity in the context indicated by path.</p></div>
 </dd>
-<dt id="tf.browser.ner.ner.NER.findTrigger"><code class="name flex">
+<dt id="tf.ner.ner.NER.findTrigger"><code class="name flex">
 <span>def <span class="ident">findTrigger</span></span>(<span>self, trigger, show=True)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.ner.NER.findTriggers"><code class="name flex">
+<dt id="tf.ner.ner.NER.findTriggers"><code class="name flex">
 <span>def <span class="ident">findTriggers</span></span>(<span>self, triggers)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.ner.NER.getMeta"><code class="name flex">
+<dt id="tf.ner.ner.NER.getMeta"><code class="name flex">
 <span>def <span class="ident">getMeta</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Retrieves the metadata of the current sheet.</p></div>
 </dd>
-<dt id="tf.browser.ner.ner.NER.getTasks"><code class="name flex">
+<dt id="tf.ner.ner.NER.getTasks"><code class="name flex">
 <span>def <span class="ident">getTasks</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.ner.NER.getToTokensFunc"><code class="name flex">
+<dt id="tf.ner.ner.NER.getToTokensFunc"><code class="name flex">
 <span>def <span class="ident">getToTokensFunc</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.ner.NER.partitionTriggers"><code class="name flex">
+<dt id="tf.ner.ner.NER.partitionTriggers"><code class="name flex">
 <span>def <span class="ident">partitionTriggers</span></span>(<span>self, triggers)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.ner.NER.reportHits"><code class="name flex">
+<dt id="tf.ner.ner.NER.reportHits"><code class="name flex">
 <span>def <span class="ident">reportHits</span></span>(<span>self, silent=None, showNoHits=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Reports the inventory.</p></div>
 </dd>
-<dt id="tf.browser.ner.ner.NER.setTask"><code class="name flex">
+<dt id="tf.ner.ner.NER.setTask"><code class="name flex">
 <span>def <span class="ident">setTask</span></span>(<span>self, task, force=False, caseSensitive=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.ner.NER.triggerInterference"><code class="name flex">
+<dt id="tf.ner.ner.NER.triggerInterference"><code class="name flex">
 <span>def <span class="ident">triggerInterference</span></span>(<span>self, alsoInternal=False, alsoExpected=False)</span>
 </code></dt>
 <dd>
@@ -3169,68 +3068,68 @@ if the shorter triggers wins because it starts earlier.</p>
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="tf.browser.ner.sheets.Sheets" href="sheets.html#tf.browser.ner.sheets.Sheets">Sheets</a></b></code>:
+<li><code><b><a title="tf.ner.sheets.Sheets" href="sheets.html#tf.ner.sheets.Sheets">Sheets</a></b></code>:
 <ul class="hlist">
-<li><code><a title="tf.browser.ner.sheets.Sheets.getSheetData" href="sheets.html#tf.browser.ner.sheets.Sheets.getSheetData">getSheetData</a></code></li>
-<li><code><a title="tf.browser.ner.sheets.Sheets.loadSheetData" href="sheets.html#tf.browser.ner.sheets.Sheets.loadSheetData">loadSheetData</a></code></li>
-<li><code><a title="tf.browser.ner.sheets.Sheets.readSheetData" href="sheets.html#tf.browser.ner.sheets.Sheets.readSheetData">readSheetData</a></code></li>
-<li><code><a title="tf.browser.ner.sheets.Sheets.readSheets" href="sheets.html#tf.browser.ner.sheets.Sheets.readSheets">readSheets</a></code></li>
-<li><code><a title="tf.browser.ner.sheets.Sheets.setSheet" href="sheets.html#tf.browser.ner.sheets.Sheets.setSheet">setSheet</a></code></li>
-<li><code><a title="tf.browser.ner.sheets.Sheets.sheetName" href="sheets.html#tf.browser.ner.sheets.Sheets.sheetName">sheetName</a></code></li>
-<li><code><a title="tf.browser.ner.sheets.Sheets.sheetNames" href="sheets.html#tf.browser.ner.sheets.Sheets.sheetNames">sheetNames</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.getSheetData" href="sheets.html#tf.ner.sheets.Sheets.getSheetData">getSheetData</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.loadSheetData" href="sheets.html#tf.ner.sheets.Sheets.loadSheetData">loadSheetData</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.readSheetData" href="sheets.html#tf.ner.sheets.Sheets.readSheetData">readSheetData</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.readSheets" href="sheets.html#tf.ner.sheets.Sheets.readSheets">readSheets</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.setSheet" href="sheets.html#tf.ner.sheets.Sheets.setSheet">setSheet</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.sheetName" href="sheets.html#tf.ner.sheets.Sheets.sheetName">sheetName</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.sheetNames" href="sheets.html#tf.ner.sheets.Sheets.sheetNames">sheetNames</a></code></li>
 </ul>
 </li>
-<li><code><b><a title="tf.browser.ner.sets.Sets" href="sets.html#tf.browser.ner.sets.Sets">Sets</a></b></code>:
+<li><code><b><a title="tf.ner.sets.Sets" href="sets.html#tf.ner.sets.Sets">Sets</a></b></code>:
 <ul class="hlist">
-<li><code><a title="tf.browser.ner.sets.Sets.addEntities" href="data.html#tf.browser.ner.data.Data.addEntities">addEntities</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.addEntity" href="data.html#tf.browser.ner.data.Data.addEntity">addEntity</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.addEntityRich" href="data.html#tf.browser.ner.data.Data.addEntityRich">addEntityRich</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.checkBuckets" href="corpus.html#tf.browser.ner.corpus.Corpus.checkBuckets">checkBuckets</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.checkFeature" href="corpus.html#tf.browser.ner.corpus.Corpus.checkFeature">checkFeature</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.console" href="settings.html#tf.browser.ner.settings.Settings.console">console</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.delEntity" href="data.html#tf.browser.ner.data.Data.delEntity">delEntity</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.delEntityRich" href="data.html#tf.browser.ner.data.Data.delEntityRich">delEntityRich</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.featureDefault" href="corpus.html#tf.browser.ner.corpus.Corpus.featureDefault">featureDefault</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.fromSourceSet" href="data.html#tf.browser.ner.data.Data.fromSourceSet">fromSourceSet</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.get0" href="corpus.html#tf.browser.ner.corpus.Corpus.get0">get0</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.get1" href="corpus.html#tf.browser.ner.corpus.Corpus.get1">get1</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.getAfter" href="corpus.html#tf.browser.ner.corpus.Corpus.getAfter">getAfter</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.getBucketNodes" href="corpus.html#tf.browser.ner.corpus.Corpus.getBucketNodes">getBucketNodes</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.getContext" href="corpus.html#tf.browser.ner.corpus.Corpus.getContext">getContext</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.getEntityNodes" href="corpus.html#tf.browser.ner.corpus.Corpus.getEntityNodes">getEntityNodes</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.getFVal" href="corpus.html#tf.browser.ner.corpus.Corpus.getFVal">getFVal</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.getHeadings" href="corpus.html#tf.browser.ner.corpus.Corpus.getHeadings">getHeadings</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.getSetData" href="sets.html#tf.browser.ner.sets.Sets.getSetData">getSetData</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.getSlots" href="corpus.html#tf.browser.ner.corpus.Corpus.getSlots">getSlots</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.getStr" href="corpus.html#tf.browser.ner.corpus.Corpus.getStr">getStr</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.getStrings" href="corpus.html#tf.browser.ner.corpus.Corpus.getStrings">getStrings</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.getText" href="corpus.html#tf.browser.ner.corpus.Corpus.getText">getText</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.getTextR" href="corpus.html#tf.browser.ner.corpus.Corpus.getTextR">getTextR</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.getTokens" href="corpus.html#tf.browser.ner.corpus.Corpus.getTokens">getTokens</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.loadSetData" href="data.html#tf.browser.ner.data.Data.loadSetData">loadSetData</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.mergeEntities" href="data.html#tf.browser.ner.data.Data.mergeEntities">mergeEntities</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.processSet" href="data.html#tf.browser.ner.data.Data.processSet">processSet</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.properlySetup" href="corpus.html#tf.browser.ner.corpus.Corpus.properlySetup">properlySetup</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.readSets" href="sets.html#tf.browser.ner.sets.Sets.readSets">readSets</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.resetSet" href="sets.html#tf.browser.ner.sets.Sets.resetSet">resetSet</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.saveEntitiesAs" href="data.html#tf.browser.ner.data.Data.saveEntitiesAs">saveEntitiesAs</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.sectionHead" href="corpus.html#tf.browser.ner.corpus.Corpus.sectionHead">sectionHead</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.setDel" href="sets.html#tf.browser.ner.sets.Sets.setDel">setDel</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.setDup" href="sets.html#tf.browser.ner.sets.Sets.setDup">setDup</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.setMove" href="sets.html#tf.browser.ner.sets.Sets.setMove">setMove</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.setName" href="sets.html#tf.browser.ner.sets.Sets.setName">setName</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.setNames" href="sets.html#tf.browser.ner.sets.Sets.setNames">setNames</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.setSet" href="sets.html#tf.browser.ner.sets.Sets.setSet">setSet</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.slotType" href="corpus.html#tf.browser.ner.corpus.Corpus.slotType">slotType</a></code></li>
-<li><code><a title="tf.browser.ner.sets.Sets.weedEntities" href="data.html#tf.browser.ner.data.Data.weedEntities">weedEntities</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.addEntities" href="data.html#tf.ner.data.Data.addEntities">addEntities</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.addEntity" href="data.html#tf.ner.data.Data.addEntity">addEntity</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.addEntityRich" href="data.html#tf.ner.data.Data.addEntityRich">addEntityRich</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.checkBuckets" href="corpus.html#tf.ner.corpus.Corpus.checkBuckets">checkBuckets</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.checkFeature" href="corpus.html#tf.ner.corpus.Corpus.checkFeature">checkFeature</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.console" href="settings.html#tf.ner.settings.Settings.console">console</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.delEntity" href="data.html#tf.ner.data.Data.delEntity">delEntity</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.delEntityRich" href="data.html#tf.ner.data.Data.delEntityRich">delEntityRich</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.featureDefault" href="corpus.html#tf.ner.corpus.Corpus.featureDefault">featureDefault</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.fromSourceSet" href="data.html#tf.ner.data.Data.fromSourceSet">fromSourceSet</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.get0" href="corpus.html#tf.ner.corpus.Corpus.get0">get0</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.get1" href="corpus.html#tf.ner.corpus.Corpus.get1">get1</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getAfter" href="corpus.html#tf.ner.corpus.Corpus.getAfter">getAfter</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getBucketNodes" href="corpus.html#tf.ner.corpus.Corpus.getBucketNodes">getBucketNodes</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getContext" href="corpus.html#tf.ner.corpus.Corpus.getContext">getContext</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getEntityNodes" href="corpus.html#tf.ner.corpus.Corpus.getEntityNodes">getEntityNodes</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getFVal" href="corpus.html#tf.ner.corpus.Corpus.getFVal">getFVal</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getHeadings" href="corpus.html#tf.ner.corpus.Corpus.getHeadings">getHeadings</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getSetData" href="sets.html#tf.ner.sets.Sets.getSetData">getSetData</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getSlots" href="corpus.html#tf.ner.corpus.Corpus.getSlots">getSlots</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getStr" href="corpus.html#tf.ner.corpus.Corpus.getStr">getStr</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getStrings" href="corpus.html#tf.ner.corpus.Corpus.getStrings">getStrings</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getText" href="corpus.html#tf.ner.corpus.Corpus.getText">getText</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getTextR" href="corpus.html#tf.ner.corpus.Corpus.getTextR">getTextR</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getTokens" href="corpus.html#tf.ner.corpus.Corpus.getTokens">getTokens</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.loadSetData" href="data.html#tf.ner.data.Data.loadSetData">loadSetData</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.mergeEntities" href="data.html#tf.ner.data.Data.mergeEntities">mergeEntities</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.processSet" href="data.html#tf.ner.data.Data.processSet">processSet</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.properlySetup" href="corpus.html#tf.ner.corpus.Corpus.properlySetup">properlySetup</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.readSets" href="sets.html#tf.ner.sets.Sets.readSets">readSets</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.resetSet" href="sets.html#tf.ner.sets.Sets.resetSet">resetSet</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.saveEntitiesAs" href="data.html#tf.ner.data.Data.saveEntitiesAs">saveEntitiesAs</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.sectionHead" href="corpus.html#tf.ner.corpus.Corpus.sectionHead">sectionHead</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.setDel" href="sets.html#tf.ner.sets.Sets.setDel">setDel</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.setDup" href="sets.html#tf.ner.sets.Sets.setDup">setDup</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.setMove" href="sets.html#tf.ner.sets.Sets.setMove">setMove</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.setName" href="sets.html#tf.ner.sets.Sets.setName">setName</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.setNames" href="sets.html#tf.ner.sets.Sets.setNames">setNames</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.setSet" href="sets.html#tf.ner.sets.Sets.setSet">setSet</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.slotType" href="corpus.html#tf.ner.corpus.Corpus.slotType">slotType</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.weedEntities" href="data.html#tf.ner.data.Data.weedEntities">weedEntities</a></code></li>
 </ul>
 </li>
-<li><code><b><a title="tf.browser.ner.show.Show" href="show.html#tf.browser.ner.show.Show">Show</a></b></code>:
+<li><code><b><a title="tf.ner.show.Show" href="show.html#tf.ner.show.Show">Show</a></b></code>:
 <ul class="hlist">
-<li><code><a title="tf.browser.ner.show.Show.showContent" href="show.html#tf.browser.ner.show.Show.showContent">showContent</a></code></li>
-<li><code><a title="tf.browser.ner.show.Show.showEntities" href="show.html#tf.browser.ner.show.Show.showEntities">showEntities</a></code></li>
-<li><code><a title="tf.browser.ner.show.Show.showEntityOverview" href="show.html#tf.browser.ner.show.Show.showEntityOverview">showEntityOverview</a></code></li>
-<li><code><a title="tf.browser.ner.show.Show.showTriggers" href="show.html#tf.browser.ner.show.Show.showTriggers">showTriggers</a></code></li>
+<li><code><a title="tf.ner.show.Show.showContent" href="show.html#tf.ner.show.Show.showContent">showContent</a></code></li>
+<li><code><a title="tf.ner.show.Show.showEntities" href="show.html#tf.ner.show.Show.showEntities">showEntities</a></code></li>
+<li><code><a title="tf.ner.show.Show.showEntityOverview" href="show.html#tf.ner.show.Show.showEntityOverview">showEntityOverview</a></code></li>
+<li><code><a title="tf.ner.show.Show.showTriggers" href="show.html#tf.ner.show.Show.showTriggers">showTriggers</a></code></li>
 </ul>
 </li>
 </ul>
@@ -3239,10 +3138,10 @@ if the shorter triggers wins because it starts earlier.</p>
 </section>
 </article>
 <nav id="sidebar">
-<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../../tf/images/tf-small.png" alt="annotation"></a></p>
-<p><a href="../../../tf/index.html">tf home</a> -
-<a href="../../../tf/cheatsheet.html">cheat sheet</a> -
-<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
 </p>
 <form>
 <input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
@@ -3278,7 +3177,7 @@ const query = new URL(window.location).searchParams.get('q');
 if (query)
 search(query);
 function search(query) {
-const url = '../../../doc-search.html#' + encodeURIComponent(query);
+const url = '../../doc-search.html#' + encodeURIComponent(query);
 new tingle.modal({
 cssClass: ['modal-dialog'],
 onClose: () => {
@@ -3305,28 +3204,28 @@ setTimeout(() => input.focus(), 100);
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf.browser.ner" href="index.html">tf.browser.ner</a></code></li>
+<li><code><a title="tf.ner" href="index.html">tf.ner</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="tf.browser.ner.ner.NER" href="#tf.browser.ner.ner.NER">NER</a></code></h4>
+<h4><code><a title="tf.ner.ner.NER" href="#tf.ner.ner.NER">NER</a></code></h4>
 <ul class="two-column">
-<li><code><a title="tf.browser.ner.ner.NER.bakeEntities" href="#tf.browser.ner.ner.NER.bakeEntities">bakeEntities</a></code></li>
-<li><code><a title="tf.browser.ner.ner.NER.diagnoseTrigger" href="#tf.browser.ner.ner.NER.diagnoseTrigger">diagnoseTrigger</a></code></li>
-<li><code><a title="tf.browser.ner.ner.NER.diagnoseTriggers" href="#tf.browser.ner.ner.NER.diagnoseTriggers">diagnoseTriggers</a></code></li>
-<li><code><a title="tf.browser.ner.ner.NER.filterContent" href="#tf.browser.ner.ner.NER.filterContent">filterContent</a></code></li>
-<li><code><a title="tf.browser.ner.ner.NER.findOccs" href="#tf.browser.ner.ner.NER.findOccs">findOccs</a></code></li>
-<li><code><a title="tf.browser.ner.ner.NER.findTrigger" href="#tf.browser.ner.ner.NER.findTrigger">findTrigger</a></code></li>
-<li><code><a title="tf.browser.ner.ner.NER.findTriggers" href="#tf.browser.ner.ner.NER.findTriggers">findTriggers</a></code></li>
-<li><code><a title="tf.browser.ner.ner.NER.getMeta" href="#tf.browser.ner.ner.NER.getMeta">getMeta</a></code></li>
-<li><code><a title="tf.browser.ner.ner.NER.getTasks" href="#tf.browser.ner.ner.NER.getTasks">getTasks</a></code></li>
-<li><code><a title="tf.browser.ner.ner.NER.getToTokensFunc" href="#tf.browser.ner.ner.NER.getToTokensFunc">getToTokensFunc</a></code></li>
-<li><code><a title="tf.browser.ner.ner.NER.partitionTriggers" href="#tf.browser.ner.ner.NER.partitionTriggers">partitionTriggers</a></code></li>
-<li><code><a title="tf.browser.ner.ner.NER.reportHits" href="#tf.browser.ner.ner.NER.reportHits">reportHits</a></code></li>
-<li><code><a title="tf.browser.ner.ner.NER.setTask" href="#tf.browser.ner.ner.NER.setTask">setTask</a></code></li>
-<li><code><a title="tf.browser.ner.ner.NER.triggerInterference" href="#tf.browser.ner.ner.NER.triggerInterference">triggerInterference</a></code></li>
+<li><code><a title="tf.ner.ner.NER.bakeEntities" href="#tf.ner.ner.NER.bakeEntities">bakeEntities</a></code></li>
+<li><code><a title="tf.ner.ner.NER.diagnoseTrigger" href="#tf.ner.ner.NER.diagnoseTrigger">diagnoseTrigger</a></code></li>
+<li><code><a title="tf.ner.ner.NER.diagnoseTriggers" href="#tf.ner.ner.NER.diagnoseTriggers">diagnoseTriggers</a></code></li>
+<li><code><a title="tf.ner.ner.NER.filterContent" href="#tf.ner.ner.NER.filterContent">filterContent</a></code></li>
+<li><code><a title="tf.ner.ner.NER.findOccs" href="#tf.ner.ner.NER.findOccs">findOccs</a></code></li>
+<li><code><a title="tf.ner.ner.NER.findTrigger" href="#tf.ner.ner.NER.findTrigger">findTrigger</a></code></li>
+<li><code><a title="tf.ner.ner.NER.findTriggers" href="#tf.ner.ner.NER.findTriggers">findTriggers</a></code></li>
+<li><code><a title="tf.ner.ner.NER.getMeta" href="#tf.ner.ner.NER.getMeta">getMeta</a></code></li>
+<li><code><a title="tf.ner.ner.NER.getTasks" href="#tf.ner.ner.NER.getTasks">getTasks</a></code></li>
+<li><code><a title="tf.ner.ner.NER.getToTokensFunc" href="#tf.ner.ner.NER.getToTokensFunc">getToTokensFunc</a></code></li>
+<li><code><a title="tf.ner.ner.NER.partitionTriggers" href="#tf.ner.ner.NER.partitionTriggers">partitionTriggers</a></code></li>
+<li><code><a title="tf.ner.ner.NER.reportHits" href="#tf.ner.ner.NER.reportHits">reportHits</a></code></li>
+<li><code><a title="tf.ner.ner.NER.setTask" href="#tf.ner.ner.NER.setTask">setTask</a></code></li>
+<li><code><a title="tf.ner.ner.NER.triggerInterference" href="#tf.ner.ner.NER.triggerInterference">triggerInterference</a></code></li>
 </ul>
 </li>
 </ul>
@@ -3336,7 +3235,7 @@ setTimeout(() => input.focus(), 100);
 </main>
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
-<a href="https://huc.knaw.nl"><img alt="HuC" src="../../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
 <p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>

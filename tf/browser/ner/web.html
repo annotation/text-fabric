@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.11.1" />
 <title>tf.browser.ner.web API documentation</title>
-<meta name="description" content="Flask sub web app in the TF browser …" />
+<meta name="description" content="Flask sub web app in the TF browser." />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css"
 integrity="sha512-kcbluZFacWN57NgWZ4aH6eUMBEaTyErFhIFD3y5qYZbKuuyImH0K/AKsBbfXlivh2z5C+3IDTIhI11YmKomzmA=="
@@ -29,24 +29,21 @@ crossorigin>
 </header>
 <section id="section-intro">
 <p>Flask sub web app in the TF browser.</p>
-<p>To see how this fits among all the modules of this package, see
-<code><a title="tf.browser.ner.ner" href="ner.html">tf.browser.ner.ner</a></code> .</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/daf3d9735cb5e691f16215e7eba449f2aa8758b6/tf/browser/ner/web.py#L1-L92" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/browser/ner/web.py#L1-L91" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Flask sub web app in the TF browser.
-
-To see how this fits among all the modules of this package, see
-`tf.browser.ner.ner` .
 &#34;&#34;&#34;
+
 from flask import Blueprint, send_file
 
 from ...core.generic import AttrDict
 from ...core.files import abspath, fileExists, dirNm
-from .settings import TOOLKEY
-from .ner import NER
+from ...ner.settings import TOOLKEY
+from ...ner.ner import NER
+
 from .serve import serveNer, serveNerContext
 
 
@@ -63,7 +60,7 @@ def factory(web):
     which is built into Flask itself.
 
     Before starting the actual serving of pages, we initialize a
-    `tf.browser.ner.ner.NER` object, and store it under attribute `ner`.
+    `tf.ner.ner.NER` object, and store it under attribute `ner`.
 
     In order to do so, we pick up a handle to the loaded TF corpus,
     and a handle to the tool data, both present in the `web` object (see parameters
@@ -146,7 +143,7 @@ def factory(web):
 of <a href="https://flask.palletsprojects.com/en/2.3.x/blueprints/">BluePrint</a>,
 which is built into Flask itself.</p>
 <p>Before starting the actual serving of pages, we initialize a
-<code><a title="tf.browser.ner.ner.NER" href="ner.html#tf.browser.ner.ner.NER">NER</a></code> object, and store it under attribute <code>ner</code>.</p>
+<code><a title="tf.ner.ner.NER" href="../../ner/ner.html#tf.ner.ner.NER">NER</a></code> object, and store it under attribute <code>ner</code>.</p>
 <p>In order to do so, we pick up a handle to the loaded TF corpus,
 and a handle to the tool data, both present in the <code>web</code> object (see parameters
 below).</p>

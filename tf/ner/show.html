@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.11.1" />
-<title>tf.browser.ner.show API documentation</title>
-<meta name="description" content="Rendering of corpus extracts with annotations …" />
+<title>tf.ner.show API documentation</title>
+<meta name="description" content="Rendering of corpus extracts with annotations." />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css"
 integrity="sha512-kcbluZFacWN57NgWZ4aH6eUMBEaTyErFhIFD3y5qYZbKuuyImH0K/AKsBbfXlivh2z5C+3IDTIhI11YmKomzmA=="
@@ -25,39 +25,36 @@ crossorigin>
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.browser.ner.show</code></h1>
+<h1 class="title">Module <code>tf.ner.show</code></h1>
 </header>
 <section id="section-intro">
 <p>Rendering of corpus extracts with annotations.</p>
-<p>To see how this fits among all the modules of this package, see
-<code><a title="tf.browser.ner.ner" href="ner.html">tf.browser.ner.ner</a></code> .</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/daf3d9735cb5e691f16215e7eba449f2aa8758b6/tf/browser/ner/show.py#L1-L631" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/ner/show.py#L1-L630" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Rendering of corpus extracts with annotations.
-
-To see how this fits among all the modules of this package, see
-`tf.browser.ner.ner` .
 &#34;&#34;&#34;
 
 from itertools import chain
 
-from ...advanced.helpers import dh
+from ..advanced.helpers import dh
 
-from .helpers import repIdent, repSummary, toAscii
-from ..html import H
-
-from .settings import (
+from ..browser.html import H
+from ..browser.ner.websettings import (
+    repIdent,
+    repSummary,
     SORT_DEFAULT,
     SORTKEY_DEFAULT,
     SORTDIR_DEFAULT,
     SORTDIR_DESC,
     LIMIT_BROWSER,
     LIMIT_NB,
-    SET_SHEET,
 )
+
+from .helpers import toAscii
+from .settings import SET_SHEET
 
 
 class Show:
@@ -446,7 +443,7 @@ class Show:
         these entities are present in the input parameter `buckets`.
 
         It is recommended to apply this function to the outcome of
-        `tf.browser.ner.ner.NER.filterContent`
+        `tf.ner.ner.NER.filterContent`
 
         !!! caution &#34;Truncated&#34;
             Unless the user has selected an entity or forced a start and end
@@ -459,7 +456,7 @@ class Show:
             A selection of buckets (chunks / paragraphs) of the corpus.
             Each bucket is given as a tuple.
             The exact form is this data structure is equal to what the
-            function `tf.browser.ner.ner.NER.filterContent`
+            function `tf.ner.ner.NER.filterContent`
             returns.
 
         activeEntity: tuple, optional None
@@ -678,7 +675,7 @@ class Show:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="tf.browser.ner.show.Show"><code class="flex name class">
+<dt id="tf.ner.show.Show"><code class="flex name class">
 <span>class <span class="ident">Show</span></span>
 </code></dt>
 <dd>
@@ -686,7 +683,7 @@ class Show:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/daf3d9735cb5e691f16215e7eba449f2aa8758b6/tf/browser/ner/show.py#L25-L631" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/ner/show.py#L24-L630" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Show:
     def showEntityOverview(self):
@@ -1074,7 +1071,7 @@ class Show:
         these entities are present in the input parameter `buckets`.
 
         It is recommended to apply this function to the outcome of
-        `tf.browser.ner.ner.NER.filterContent`
+        `tf.ner.ner.NER.filterContent`
 
         !!! caution &#34;Truncated&#34;
             Unless the user has selected an entity or forced a start and end
@@ -1087,7 +1084,7 @@ class Show:
             A selection of buckets (chunks / paragraphs) of the corpus.
             Each bucket is given as a tuple.
             The exact form is this data structure is equal to what the
-            function `tf.browser.ner.ner.NER.filterContent`
+            function `tf.ner.ner.NER.filterContent`
             returns.
 
         activeEntity: tuple, optional None
@@ -1298,11 +1295,11 @@ class Show:
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
-<li><a title="tf.browser.ner.ner.NER" href="ner.html#tf.browser.ner.ner.NER">NER</a></li>
+<li><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></li>
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="tf.browser.ner.show.Show.showContent"><code class="name flex">
+<dt id="tf.ner.show.Show.showContent"><code class="name flex">
 <span>def <span class="ident">showContent</span></span>(<span>self, buckets, activeEntity=None, activeTrigger=None, excludedTokens=set(), mayLimit=True, start=None, end=None, withNodes=False)</span>
 </code></dt>
 <dd>
@@ -1310,7 +1307,7 @@ class Show:
 <p>The corpus text will be marked up with entities, the positions of
 these entities are present in the input parameter <code>buckets</code>.</p>
 <p>It is recommended to apply this function to the outcome of
-<code><a title="tf.browser.ner.ner.NER.filterContent" href="ner.html#tf.browser.ner.ner.NER.filterContent">NER.filterContent()</a></code></p>
+<code><a title="tf.ner.ner.NER.filterContent" href="ner.html#tf.ner.ner.NER.filterContent">NER.filterContent()</a></code></p>
 <div class="admonition caution">
 <p class="admonition-title">Truncated</p>
 <p>Unless the user has selected an entity or forced a start and end
@@ -1323,7 +1320,7 @@ See the parameter <code>mayLimit</code> below.</p>
 <dd>A selection of buckets (chunks / paragraphs) of the corpus.
 Each bucket is given as a tuple.
 The exact form is this data structure is equal to what the
-function <code><a title="tf.browser.ner.ner.NER.filterContent" href="ner.html#tf.browser.ner.ner.NER.filterContent">NER.filterContent()</a></code>
+function <code><a title="tf.ner.ner.NER.filterContent" href="ner.html#tf.ner.ner.NER.filterContent">NER.filterContent()</a></code>
 returns.</dd>
 <dt><strong><code>activeEntity</code></strong> :&ensp;<code>tuple</code>, optional <code>None</code></dt>
 <dd>The entity that must be highlighted.</dd>
@@ -1361,7 +1358,7 @@ Otherwise, it displays the HTML string in the output, assuming
 it is a cell in a Jupyter Notebook.</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.show.Show.showEntities"><code class="name flex">
+<dt id="tf.ner.show.Show.showEntities"><code class="name flex">
 <span>def <span class="ident">showEntities</span></span>(<span>self, activeEntity=None, sortKey=None, sortDir=None, cutOffFreq=None)</span>
 </code></dt>
 <dd>
@@ -1410,7 +1407,7 @@ Otherwise, it displays the HTML string in the output, assuming
 it is a cell in a Jupyter Notebook.</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.show.Show.showEntityOverview"><code class="name flex">
+<dt id="tf.ner.show.Show.showEntityOverview"><code class="name flex">
 <span>def <span class="ident">showEntityOverview</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1425,7 +1422,7 @@ Otherwise, it displays the HTML string in the output, assuming
 it is a cell in a Jupyter Notebook.</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.show.Show.showTriggers"><code class="name flex">
+<dt id="tf.ner.show.Show.showTriggers"><code class="name flex">
 <span>def <span class="ident">showTriggers</span></span>(<span>self, activeEntity=None, activeTrigger=None, sortKey=None, sortDir=None, subtleFilter=None, zeroFilter=0)</span>
 </code></dt>
 <dd>
@@ -1491,10 +1488,10 @@ it is a cell in a Jupyter Notebook.</dd>
 </section>
 </article>
 <nav id="sidebar">
-<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../../tf/images/tf-small.png" alt="annotation"></a></p>
-<p><a href="../../../tf/index.html">tf home</a> -
-<a href="../../../tf/cheatsheet.html">cheat sheet</a> -
-<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
 </p>
 <form>
 <input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
@@ -1530,7 +1527,7 @@ const query = new URL(window.location).searchParams.get('q');
 if (query)
 search(query);
 function search(query) {
-const url = '../../../doc-search.html#' + encodeURIComponent(query);
+const url = '../../doc-search.html#' + encodeURIComponent(query);
 new tingle.modal({
 cssClass: ['modal-dialog'],
 onClose: () => {
@@ -1549,18 +1546,18 @@ setTimeout(() => input.focus(), 100);
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf.browser.ner" href="index.html">tf.browser.ner</a></code></li>
+<li><code><a title="tf.ner" href="index.html">tf.ner</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="tf.browser.ner.show.Show" href="#tf.browser.ner.show.Show">Show</a></code></h4>
+<h4><code><a title="tf.ner.show.Show" href="#tf.ner.show.Show">Show</a></code></h4>
 <ul class="">
-<li><code><a title="tf.browser.ner.show.Show.showContent" href="#tf.browser.ner.show.Show.showContent">showContent</a></code></li>
-<li><code><a title="tf.browser.ner.show.Show.showEntities" href="#tf.browser.ner.show.Show.showEntities">showEntities</a></code></li>
-<li><code><a title="tf.browser.ner.show.Show.showEntityOverview" href="#tf.browser.ner.show.Show.showEntityOverview">showEntityOverview</a></code></li>
-<li><code><a title="tf.browser.ner.show.Show.showTriggers" href="#tf.browser.ner.show.Show.showTriggers">showTriggers</a></code></li>
+<li><code><a title="tf.ner.show.Show.showContent" href="#tf.ner.show.Show.showContent">showContent</a></code></li>
+<li><code><a title="tf.ner.show.Show.showEntities" href="#tf.ner.show.Show.showEntities">showEntities</a></code></li>
+<li><code><a title="tf.ner.show.Show.showEntityOverview" href="#tf.ner.show.Show.showEntityOverview">showEntityOverview</a></code></li>
+<li><code><a title="tf.ner.show.Show.showTriggers" href="#tf.ner.show.Show.showTriggers">showTriggers</a></code></li>
 </ul>
 </li>
 </ul>
@@ -1570,7 +1567,7 @@ setTimeout(() => input.focus(), 100);
 </main>
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
-<a href="https://huc.knaw.nl"><img alt="HuC" src="../../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
 <p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>

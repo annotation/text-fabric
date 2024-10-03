@@ -32,22 +32,18 @@ crossorigin>
 <p>All form data comes as key value pairs where the values are strings.
 We need more streamlined values, in several data types and organizations.
 Also we need defaults for missing and / or empty values.</p>
-<p>To see how this fits among all the modules of this package, see
-<code><a title="tf.browser.ner.ner" href="ner.html">tf.browser.ner.ner</a></code> .</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/daf3d9735cb5e691f16215e7eba449f2aa8758b6/tf/browser/ner/form.py#L1-L156" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/browser/ner/form.py#L1-L150" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Machinery for request reading.
 
 All form data comes as key value pairs where the values are strings.
 We need more streamlined values, in several data types and organizations.
 Also we need defaults for missing and / or empty values.
-
-To see how this fits among all the modules of this package, see
-`tf.browser.ner.ner` .
 &#34;&#34;&#34;
+
 from urllib.parse import unquote
 
 from flask import request
@@ -75,7 +71,7 @@ class Form:
         ----------
         features: list
             The entity features in the tool; derives ultimately from
-            `tf.browser.ner.settings.Settings`, which reads the
+            `tf.ner.settings.Settings`, which reads the
             `ner/config.yaml` file.
         defaults: dict
             Provides default values for form keys with a missing or empty value.
@@ -146,11 +142,7 @@ class Form:
         &#34;&#34;&#34;
         formValue = self.fgets(k)
 
-        return (
-            AttrDict()
-            if formValue == &#34;&#34;
-            else readJson(text=unquote(formValue))
-        )
+        return AttrDict() if formValue == &#34;&#34; else readJson(text=unquote(formValue))
 
     def fill(self):
         &#34;&#34;&#34;Fill a dictionary with interpreted form values.
@@ -216,7 +208,7 @@ class Form:
 <dl>
 <dt><strong><code>features</code></strong> :&ensp;<code>list</code></dt>
 <dd>The entity features in the tool; derives ultimately from
-<code><a title="tf.browser.ner.settings.Settings" href="settings.html#tf.browser.ner.settings.Settings">Settings</a></code>, which reads the
+<code><a title="tf.ner.settings.Settings" href="../../ner/settings.html#tf.ner.settings.Settings">Settings</a></code>, which reads the
 <code>ner/config.yaml</code> file.</dd>
 <dt><strong><code>defaults</code></strong> :&ensp;<code>dict</code></dt>
 <dd>Provides default values for form keys with a missing or empty value.
@@ -229,7 +221,7 @@ See <code><a title="tf.browser.ner.request.Request" href="request.html#tf.browse
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/daf3d9735cb5e691f16215e7eba449f2aa8758b6/tf/browser/ner/form.py#L18-L156" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/browser/ner/form.py#L16-L150" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Form:
     def __init__(
@@ -250,7 +242,7 @@ See <code><a title="tf.browser.ner.request.Request" href="request.html#tf.browse
         ----------
         features: list
             The entity features in the tool; derives ultimately from
-            `tf.browser.ner.settings.Settings`, which reads the
+            `tf.ner.settings.Settings`, which reads the
             `ner/config.yaml` file.
         defaults: dict
             Provides default values for form keys with a missing or empty value.
@@ -321,11 +313,7 @@ See <code><a title="tf.browser.ner.request.Request" href="request.html#tf.browse
         &#34;&#34;&#34;
         formValue = self.fgets(k)
 
-        return (
-            AttrDict()
-            if formValue == &#34;&#34;
-            else readJson(text=unquote(formValue))
-        )
+        return AttrDict() if formValue == &#34;&#34; else readJson(text=unquote(formValue))
 
     def fill(self):
         &#34;&#34;&#34;Fill a dictionary with interpreted form values.

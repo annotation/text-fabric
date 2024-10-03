@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.11.1" />
 <title>tf.browser.ner.request API documentation</title>
-<meta name="description" content="Auxiliary functions for managing request data …" />
+<meta name="description" content="Auxiliary functions for managing request data." />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css"
 integrity="sha512-kcbluZFacWN57NgWZ4aH6eUMBEaTyErFhIFD3y5qYZbKuuyImH0K/AKsBbfXlivh2z5C+3IDTIhI11YmKomzmA=="
@@ -29,24 +29,21 @@ crossorigin>
 </header>
 <section id="section-intro">
 <p>Auxiliary functions for managing request data.</p>
-<p>To see how this fits among all the modules of this package, see
-<code><a title="tf.browser.ner.ner" href="ner.html">tf.browser.ner.ner</a></code> .</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/daf3d9735cb5e691f16215e7eba449f2aa8758b6/tf/browser/ner/request.py#L1-L313" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/browser/ner/request.py#L1-L312" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Auxiliary functions for managing request data.
-
-To see how this fits among all the modules of this package, see
-`tf.browser.ner.ner` .
 &#34;&#34;&#34;
 
-
 from ...core.generic import AttrDict
-from .settings import TOOLKEY, EMPTY, NONE, SC_ALL
+from ...ner.settings import TOOLKEY
+from ...ner.helpers import findCompile
+from ...ner.settings import EMPTY, NONE
+
+from .websettings import SC_ALL
 from .form import Form
-from .helpers import findCompile
 
 
 class Request(Form):
@@ -386,7 +383,7 @@ several related keys in the form as a dictionary value under a new key.</p></div
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/daf3d9735cb5e691f16215e7eba449f2aa8758b6/tf/browser/ner/request.py#L14-L313" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/browser/ner/request.py#L13-L312" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Request(Form):
     def __init__(self):

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.11.1" />
-<title>tf.browser.ner.sheets API documentation</title>
+<title>tf.ner.sheets API documentation</title>
 <meta name="description" content="" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css"
@@ -25,21 +25,25 @@ crossorigin>
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.browser.ner.sheets</code></h1>
+<h1 class="title">Module <code>tf.ner.sheets</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/daf3d9735cb5e691f16215e7eba449f2aa8758b6/tf/browser/ner/sheets.py#L1-L980" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/ner/sheets.py#L1-L981" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 import time
 import pickle
 import gzip
 
-from ...parameters import GZIP_LEVEL, PICKLE_PROTOCOL
-from ...capable import CheckImport
+from ..parameters import GZIP_LEVEL, PICKLE_PROTOCOL
+from ..capable import CheckImport
+from ..core.generic import AttrDict
+from ..core.helpers import console
+from ..core.files import fileOpen, dirContents, extNm, fileExists, mTime
+
 from .helpers import (
     tnorm,
     normalize,
@@ -49,9 +53,6 @@ from .helpers import (
     parseScopes,
     partitionScopes,
 )
-from ...core.generic import AttrDict
-from ...core.helpers import console
-from ...core.files import fileOpen, dirContents, extNm, fileExists, mTime
 
 
 DS_STORE = &#34;.DS_Store&#34;
@@ -1024,7 +1025,7 @@ class Sheets:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="tf.browser.ner.sheets.Sheets"><code class="flex name class">
+<dt id="tf.ner.sheets.Sheets"><code class="flex name class">
 <span>class <span class="ident">Sheets</span></span>
 <span>(</span><span>sheets=None)</span>
 </code></dt>
@@ -1033,7 +1034,7 @@ class Sheets:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/daf3d9735cb5e691f16215e7eba449f2aa8758b6/tf/browser/ner/sheets.py#L47-L980" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/ner/sheets.py#L48-L981" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Sheets:
     def __init__(self, sheets=None):
@@ -1972,28 +1973,28 @@ class Sheets:
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
-<li><a title="tf.browser.ner.ner.NER" href="ner.html#tf.browser.ner.ner.NER">NER</a></li>
+<li><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="tf.browser.ner.sheets.Sheets.sheetName"><code class="name">var <span class="ident">sheetName</span></code></dt>
+<dt id="tf.ner.sheets.Sheets.sheetName"><code class="name">var <span class="ident">sheetName</span></code></dt>
 <dd>
 <div class="desc"><p>The current ner sheet.</p></div>
 </dd>
-<dt id="tf.browser.ner.sheets.Sheets.sheetNames"><code class="name">var <span class="ident">sheetNames</span></code></dt>
+<dt id="tf.ner.sheets.Sheets.sheetNames"><code class="name">var <span class="ident">sheetNames</span></code></dt>
 <dd>
 <div class="desc"><p>The set of names of ner sheets that are present on the file system.</p></div>
 </dd>
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="tf.browser.ner.sheets.Sheets.getSheetData"><code class="name flex">
+<dt id="tf.ner.sheets.Sheets.getSheetData"><code class="name flex">
 <span>def <span class="ident">getSheetData</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Deliver the current sheet.</p></div>
 </dd>
-<dt id="tf.browser.ner.sheets.Sheets.loadSheetData"><code class="name flex">
+<dt id="tf.ner.sheets.Sheets.loadSheetData"><code class="name flex">
 <span>def <span class="ident">loadSheetData</span></span>(<span>self, force=False, caseSensitive=False)</span>
 </code></dt>
 <dd>
@@ -2008,25 +2009,25 @@ on disk. If so, it will be loaded.</p>
 <p>Otherwise, the data will be computed from scratch and saved to disk,
 with a time stamp.</p></div>
 </dd>
-<dt id="tf.browser.ner.sheets.Sheets.log"><code class="name flex">
+<dt id="tf.ner.sheets.Sheets.log"><code class="name flex">
 <span>def <span class="ident">log</span></span>(<span>self, isError, indent, msg)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.sheets.Sheets.makeSheetOfSingleTokens"><code class="name flex">
+<dt id="tf.ner.sheets.Sheets.makeSheetOfSingleTokens"><code class="name flex">
 <span>def <span class="ident">makeSheetOfSingleTokens</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.browser.ner.sheets.Sheets.readSheetData"><code class="name flex">
+<dt id="tf.ner.sheets.Sheets.readSheetData"><code class="name flex">
 <span>def <span class="ident">readSheetData</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Read the data of the spreadsheet and deliver it as a list of lists</p></div>
 </dd>
-<dt id="tf.browser.ner.sheets.Sheets.readSheets"><code class="name flex">
+<dt id="tf.ner.sheets.Sheets.readSheets"><code class="name flex">
 <span>def <span class="ident">readSheets</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2034,7 +2035,7 @@ with a time stamp.</p></div>
 <p>Use this when you change ner sheets outside the NER browser, e.g.
 by editing the spreadsheets in Excel.</p></div>
 </dd>
-<dt id="tf.browser.ner.sheets.Sheets.setSheet"><code class="name flex">
+<dt id="tf.ner.sheets.Sheets.setSheet"><code class="name flex">
 <span>def <span class="ident">setSheet</span></span>(<span>self, newSheet, force=False, caseSensitive=None)</span>
 </code></dt>
 <dd>
@@ -2046,7 +2047,7 @@ by editing the spreadsheets in Excel.</p></div>
 <dd>The name of the new ner sheet to switch to.</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.sheets.Sheets.writeSheetData"><code class="name flex">
+<dt id="tf.ner.sheets.Sheets.writeSheetData"><code class="name flex">
 <span>def <span class="ident">writeSheetData</span></span>(<span>self, rows, asFile=None)</span>
 </code></dt>
 <dd>
@@ -2058,10 +2059,10 @@ by editing the spreadsheets in Excel.</p></div>
 </section>
 </article>
 <nav id="sidebar">
-<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../../tf/images/tf-small.png" alt="annotation"></a></p>
-<p><a href="../../../tf/index.html">tf home</a> -
-<a href="../../../tf/cheatsheet.html">cheat sheet</a> -
-<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
 </p>
 <form>
 <input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
@@ -2097,7 +2098,7 @@ const query = new URL(window.location).searchParams.get('q');
 if (query)
 search(query);
 function search(query) {
-const url = '../../../doc-search.html#' + encodeURIComponent(query);
+const url = '../../doc-search.html#' + encodeURIComponent(query);
 new tingle.modal({
 cssClass: ['modal-dialog'],
 onClose: () => {
@@ -2116,24 +2117,24 @@ setTimeout(() => input.focus(), 100);
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf.browser.ner" href="index.html">tf.browser.ner</a></code></li>
+<li><code><a title="tf.ner" href="index.html">tf.ner</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="tf.browser.ner.sheets.Sheets" href="#tf.browser.ner.sheets.Sheets">Sheets</a></code></h4>
+<h4><code><a title="tf.ner.sheets.Sheets" href="#tf.ner.sheets.Sheets">Sheets</a></code></h4>
 <ul class="">
-<li><code><a title="tf.browser.ner.sheets.Sheets.getSheetData" href="#tf.browser.ner.sheets.Sheets.getSheetData">getSheetData</a></code></li>
-<li><code><a title="tf.browser.ner.sheets.Sheets.loadSheetData" href="#tf.browser.ner.sheets.Sheets.loadSheetData">loadSheetData</a></code></li>
-<li><code><a title="tf.browser.ner.sheets.Sheets.log" href="#tf.browser.ner.sheets.Sheets.log">log</a></code></li>
-<li><code><a title="tf.browser.ner.sheets.Sheets.makeSheetOfSingleTokens" href="#tf.browser.ner.sheets.Sheets.makeSheetOfSingleTokens">makeSheetOfSingleTokens</a></code></li>
-<li><code><a title="tf.browser.ner.sheets.Sheets.readSheetData" href="#tf.browser.ner.sheets.Sheets.readSheetData">readSheetData</a></code></li>
-<li><code><a title="tf.browser.ner.sheets.Sheets.readSheets" href="#tf.browser.ner.sheets.Sheets.readSheets">readSheets</a></code></li>
-<li><code><a title="tf.browser.ner.sheets.Sheets.setSheet" href="#tf.browser.ner.sheets.Sheets.setSheet">setSheet</a></code></li>
-<li><code><a title="tf.browser.ner.sheets.Sheets.sheetName" href="#tf.browser.ner.sheets.Sheets.sheetName">sheetName</a></code></li>
-<li><code><a title="tf.browser.ner.sheets.Sheets.sheetNames" href="#tf.browser.ner.sheets.Sheets.sheetNames">sheetNames</a></code></li>
-<li><code><a title="tf.browser.ner.sheets.Sheets.writeSheetData" href="#tf.browser.ner.sheets.Sheets.writeSheetData">writeSheetData</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.getSheetData" href="#tf.ner.sheets.Sheets.getSheetData">getSheetData</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.loadSheetData" href="#tf.ner.sheets.Sheets.loadSheetData">loadSheetData</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.log" href="#tf.ner.sheets.Sheets.log">log</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.makeSheetOfSingleTokens" href="#tf.ner.sheets.Sheets.makeSheetOfSingleTokens">makeSheetOfSingleTokens</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.readSheetData" href="#tf.ner.sheets.Sheets.readSheetData">readSheetData</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.readSheets" href="#tf.ner.sheets.Sheets.readSheets">readSheets</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.setSheet" href="#tf.ner.sheets.Sheets.setSheet">setSheet</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.sheetName" href="#tf.ner.sheets.Sheets.sheetName">sheetName</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.sheetNames" href="#tf.ner.sheets.Sheets.sheetNames">sheetNames</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.writeSheetData" href="#tf.ner.sheets.Sheets.writeSheetData">writeSheetData</a></code></li>
 </ul>
 </li>
 </ul>
@@ -2143,7 +2144,7 @@ setTimeout(() => input.focus(), 100);
 </main>
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
-<a href="https://huc.knaw.nl"><img alt="HuC" src="../../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
 <p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>

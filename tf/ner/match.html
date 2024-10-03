@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.11.1" />
-<title>tf.browser.ner.match API documentation</title>
-<meta name="description" content="Match functions …" />
+<title>tf.ner.match API documentation</title>
+<meta name="description" content="Match functions." />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css"
 integrity="sha512-kcbluZFacWN57NgWZ4aH6eUMBEaTyErFhIFD3y5qYZbKuuyImH0K/AKsBbfXlivh2z5C+3IDTIhI11YmKomzmA=="
@@ -25,21 +25,16 @@ crossorigin>
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.browser.ner.match</code></h1>
+<h1 class="title">Module <code>tf.ner.match</code></h1>
 </header>
 <section id="section-intro">
 <p>Match functions.</p>
-<p>To see how this fits among all the modules of this package, see
-<code><a title="tf.browser.ner.ner" href="ner.html">tf.browser.ner.ner</a></code> .</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/daf3d9735cb5e691f16215e7eba449f2aa8758b6/tf/browser/ner/match.py#L1-L356" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/ner/match.py#L1-L353" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Match functions.
-
-To see how this fits among all the modules of this package, see
-`tf.browser.ner.ner` .
 &#34;&#34;&#34;
 
 from .settings import NONE
@@ -59,9 +54,9 @@ def occMatch(
     Parameters
     ----------
     getTokens: function
-        See `tf.browser.ner.corpus.Corpus.getTokens`
+        See `tf.ner.corpus.Corpus.getTokens`
     getHeadings: function
-        See `tf.browser.ner.corpus.Corpus.getHeadings`
+        See `tf.ner.corpus.Corpus.getHeadings`
     buckets: tuple of integer
         The bucket nodes in question
     instructions: dict, optional None
@@ -219,15 +214,15 @@ def entityMatch(
     Parameters
     ----------
     entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex: object
-        Various kinds of processed entity data, see `tf.browser.ner.data`
+        Various kinds of processed entity data, see `tf.ner.data`
     getTextR: function
-        See `tf.browser.ner.corpus.Corpus.getTextR`
+        See `tf.ner.corpus.Corpus.getTextR`
     getTokens: function
-        See `tf.browser.ner.corpus.Corpus.getTokens`
+        See `tf.ner.corpus.Corpus.getTokens`
     b: integer
         The node of the bucket in question
     bFindRe, anyEnt, eVals, trigger, qTokens, valSelect, freeState: object
-        As in `tf.browser.ner.ner.NER.filterContent`
+        As in `tf.ner.ner.NER.filterContent`
 
     Returns
     -------
@@ -401,7 +396,7 @@ def entityMatch(
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.browser.ner.match.entityMatch"><code class="name flex">
+<dt id="tf.ner.match.entityMatch"><code class="name flex">
 <span>def <span class="ident">entityMatch</span></span>(<span>entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex, triggerFromMatch, getTextR, getTokens, b, bFindRe, anyEnt, eVals, trigger, qTokens, valSelect, freeState, fValStats)</span>
 </code></dt>
 <dd>
@@ -410,15 +405,15 @@ def entityMatch(
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>entityIndex</code></strong>, <strong><code>eStarts</code></strong>, <strong><code>entitySlotVal</code></strong>, <strong><code>entitySlotAll</code></strong>, <strong><code>entitySlotIndex</code></strong> :&ensp;<code>object</code></dt>
-<dd>Various kinds of processed entity data, see <code><a title="tf.browser.ner.data" href="data.html">tf.browser.ner.data</a></code></dd>
+<dd>Various kinds of processed entity data, see <code><a title="tf.ner.data" href="data.html">tf.ner.data</a></code></dd>
 <dt><strong><code>getTextR</code></strong> :&ensp;<code>function</code></dt>
-<dd>See <code><a title="tf.browser.ner.corpus.Corpus.getTextR" href="corpus.html#tf.browser.ner.corpus.Corpus.getTextR">Corpus.getTextR</a></code></dd>
+<dd>See <code><a title="tf.ner.corpus.Corpus.getTextR" href="corpus.html#tf.ner.corpus.Corpus.getTextR">Corpus.getTextR</a></code></dd>
 <dt><strong><code>getTokens</code></strong> :&ensp;<code>function</code></dt>
-<dd>See <code><a title="tf.browser.ner.corpus.Corpus.getTokens" href="corpus.html#tf.browser.ner.corpus.Corpus.getTokens">Corpus.getTokens</a></code></dd>
+<dd>See <code><a title="tf.ner.corpus.Corpus.getTokens" href="corpus.html#tf.ner.corpus.Corpus.getTokens">Corpus.getTokens</a></code></dd>
 <dt><strong><code>b</code></strong> :&ensp;<code>integer</code></dt>
 <dd>The node of the bucket in question</dd>
 <dt><strong><code>bFindRe</code></strong>, <strong><code>anyEnt</code></strong>, <strong><code>eVals</code></strong>, <strong><code>trigger</code></strong>, <strong><code>qTokens</code></strong>, <strong><code>valSelect</code></strong>, <strong><code>freeState</code></strong> :&ensp;<code>object</code></dt>
-<dd>As in <code><a title="tf.browser.ner.ner.NER.filterContent" href="ner.html#tf.browser.ner.ner.NER.filterContent">NER.filterContent()</a></code></dd>
+<dd>As in <code><a title="tf.ner.ner.NER.filterContent" href="ner.html#tf.ner.ner.NER.filterContent">NER.filterContent()</a></code></dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -440,7 +435,7 @@ of its slot number (position) and string value;</li>
 </dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.match.occMatch"><code class="name flex">
+<dt id="tf.ner.match.occMatch"><code class="name flex">
 <span>def <span class="ident">occMatch</span></span>(<span>getTokens, getHeadings, buckets, instructions, spaceEscaped, caseSensitive=False)</span>
 </code></dt>
 <dd>
@@ -448,9 +443,9 @@ of its slot number (position) and string value;</li>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>getTokens</code></strong> :&ensp;<code>function</code></dt>
-<dd>See <code><a title="tf.browser.ner.corpus.Corpus.getTokens" href="corpus.html#tf.browser.ner.corpus.Corpus.getTokens">Corpus.getTokens</a></code></dd>
+<dd>See <code><a title="tf.ner.corpus.Corpus.getTokens" href="corpus.html#tf.ner.corpus.Corpus.getTokens">Corpus.getTokens</a></code></dd>
 <dt><strong><code>getHeadings</code></strong> :&ensp;<code>function</code></dt>
-<dd>See <code><a title="tf.browser.ner.corpus.Corpus.getHeadings" href="corpus.html#tf.browser.ner.corpus.Corpus.getHeadings">Corpus.getHeadings</a></code></dd>
+<dd>See <code><a title="tf.ner.corpus.Corpus.getHeadings" href="corpus.html#tf.ner.corpus.Corpus.getHeadings">Corpus.getHeadings</a></code></dd>
 <dt><strong><code>buckets</code></strong> :&ensp;<code>tuple</code> of <code>integer</code></dt>
 <dd>The bucket nodes in question</dd>
 <dt><strong><code>instructions</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>
@@ -480,10 +475,10 @@ the value is a list of occurrences, where each occurrence is a tuple of slots.</
 </section>
 </article>
 <nav id="sidebar">
-<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../../tf/images/tf-small.png" alt="annotation"></a></p>
-<p><a href="../../../tf/index.html">tf home</a> -
-<a href="../../../tf/cheatsheet.html">cheat sheet</a> -
-<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
 </p>
 <form>
 <input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
@@ -519,7 +514,7 @@ const query = new URL(window.location).searchParams.get('q');
 if (query)
 search(query);
 function search(query) {
-const url = '../../../doc-search.html#' + encodeURIComponent(query);
+const url = '../../doc-search.html#' + encodeURIComponent(query);
 new tingle.modal({
 cssClass: ['modal-dialog'],
 onClose: () => {
@@ -538,13 +533,13 @@ setTimeout(() => input.focus(), 100);
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf.browser.ner" href="index.html">tf.browser.ner</a></code></li>
+<li><code><a title="tf.ner" href="index.html">tf.ner</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="tf.browser.ner.match.entityMatch" href="#tf.browser.ner.match.entityMatch">entityMatch</a></code></li>
-<li><code><a title="tf.browser.ner.match.occMatch" href="#tf.browser.ner.match.occMatch">occMatch</a></code></li>
+<li><code><a title="tf.ner.match.entityMatch" href="#tf.ner.match.entityMatch">entityMatch</a></code></li>
+<li><code><a title="tf.ner.match.occMatch" href="#tf.ner.match.occMatch">occMatch</a></code></li>
 </ul>
 </li>
 </ul>
@@ -552,7 +547,7 @@ setTimeout(() => input.focus(), 100);
 </main>
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
-<a href="https://huc.knaw.nl"><img alt="HuC" src="../../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
 <p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>

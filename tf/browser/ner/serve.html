@@ -31,25 +31,22 @@ crossorigin>
 <p>Main controller for Flask</p>
 <p>This module contains the controllers that Flask invokes when serving
 the annotation tool in the TF browser.</p>
-<p>To see how this fits among all the modules of this package, see
-<code><a title="tf.browser.ner.ner" href="ner.html">tf.browser.ner.ner</a></code> .</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/daf3d9735cb5e691f16215e7eba449f2aa8758b6/tf/browser/ner/serve.py#L1-L366" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/browser/ner/serve.py#L1-L365" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Main controller for Flask
 
 This module contains the controllers that Flask invokes when serving
 the annotation tool in the TF browser.
-
-To see how this fits among all the modules of this package, see
-`tf.browser.ner.ner` .
 &#34;&#34;&#34;
 
 from flask import render_template
 
-from .settings import TOOLKEY, SC_ALL
+from ...ner.settings import TOOLKEY
+
+from .websettings import SC_ALL
 from .request import Request
 from .fragments import Fragments
 
@@ -62,7 +59,7 @@ class Serve(Request, Fragments):
         ----------
         web: object
             This represents the Flask website that is the TF browser.
-            It has initialized a `tf.browser.ner.ner.NER` object,
+            It has initialized a `tf.ner.ner.NER` object,
             and has stored it under attribute `ner`.
             See `tf.browser.ner.web.factory` and `tf.browser.web.factory`.
 
@@ -193,7 +190,7 @@ class Serve(Request, Fragments):
         We further modify the selection by two additional parameters.
 
         The resulting list of buckets is obtained by
-        `tf.browser.ner.ner.NER.filterContent`, and each member in the bucket
+        `tf.ner.ner.NER.filterContent`, and each member in the bucket
         list is a tuple as indicated in the `filterContent` function.
         The list is stored in the `Serve` object.
         Additionally, statistics about these buckets and how many entity values
@@ -453,14 +450,14 @@ def serveNerContext(web, node):
 <dl>
 <dt><strong><code>web</code></strong> :&ensp;<code>object</code></dt>
 <dd>This represents the Flask website that is the TF browser.
-It has initialized a <code><a title="tf.browser.ner.ner.NER" href="ner.html#tf.browser.ner.ner.NER">NER</a></code> object,
+It has initialized a <code><a title="tf.ner.ner.NER" href="../../ner/ner.html#tf.ner.ner.NER">NER</a></code> object,
 and has stored it under attribute <code>ner</code>.
 See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.web.factory">factory()</a></code> and <code><a title="tf.browser.web.factory" href="../web.html#tf.browser.web.factory">factory()</a></code>.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/daf3d9735cb5e691f16215e7eba449f2aa8758b6/tf/browser/ner/serve.py#L17-L334" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/browser/ner/serve.py#L16-L333" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Serve(Request, Fragments):
     def __init__(self, web):
@@ -470,7 +467,7 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
         ----------
         web: object
             This represents the Flask website that is the TF browser.
-            It has initialized a `tf.browser.ner.ner.NER` object,
+            It has initialized a `tf.ner.ner.NER` object,
             and has stored it under attribute `ner`.
             See `tf.browser.ner.web.factory` and `tf.browser.web.factory`.
 
@@ -601,7 +598,7 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
         We further modify the selection by two additional parameters.
 
         The resulting list of buckets is obtained by
-        `tf.browser.ner.ner.NER.filterContent`, and each member in the bucket
+        `tf.ner.ner.NER.filterContent`, and each member in the bucket
         list is a tuple as indicated in the `filterContent` function.
         The list is stored in the `Serve` object.
         Additionally, statistics about these buckets and how many entity values
@@ -817,7 +814,7 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
 <p>The selection is defined in the <code>v</code>.</p>
 <p>We further modify the selection by two additional parameters.</p>
 <p>The resulting list of buckets is obtained by
-<code><a title="tf.browser.ner.ner.NER.filterContent" href="ner.html#tf.browser.ner.ner.NER.filterContent">NER.filterContent()</a></code>, and each member in the bucket
+<code><a title="tf.ner.ner.NER.filterContent" href="../../ner/ner.html#tf.ner.ner.NER.filterContent">NER.filterContent()</a></code>, and each member in the bucket
 list is a tuple as indicated in the <code>filterContent</code> function.
 The list is stored in the <code><a title="tf.browser.ner.serve.Serve" href="#tf.browser.ner.serve.Serve">Serve</a></code> object.
 Additionally, statistics about these buckets and how many entity values

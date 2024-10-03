@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.11.1" />
-<title>tf.browser.ner.corpus API documentation</title>
+<title>tf.ner.corpus API documentation</title>
 <meta name="description" content="Access to the corpus …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css"
@@ -25,13 +25,11 @@ crossorigin>
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.browser.ner.corpus</code></h1>
+<h1 class="title">Module <code>tf.ner.corpus</code></h1>
 </header>
 <section id="section-intro">
 <p>Access to the corpus.</p>
 <p>Contains a bunch of instant methods to access corpus material.</p>
-<p>To see how this fits among all the modules of this package, see
-<code><a title="tf.browser.ner.ner" href="ner.html">tf.browser.ner.ner</a></code> .</p>
 <p>All access to the TF API should happen through methods in this class.</p>
 <p>At this point we have the information from the settings and from the corpus.
 By collecting all corpus access methods in one class, we have good conceptual
@@ -39,14 +37,11 @@ control over how to customize the annotator for different corpora.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/daf3d9735cb5e691f16215e7eba449f2aa8758b6/tf/browser/ner/corpus.py#L1-L399" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/ner/corpus.py#L1-L396" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Access to the corpus.
 
 Contains a bunch of instant methods to access corpus material.
-
-To see how this fits among all the modules of this package, see
-`tf.browser.ner.ner` .
 
 All access to the TF API should happen through methods in this class.
 
@@ -57,9 +52,9 @@ control over how to customize the annotator for different corpora.
 
 import re
 
-from .settings import Settings, TOOLKEY
-from .helpers import makeCss
-from ...core.files import annotateDir
+from ..core.files import annotateDir
+
+from .settings import Settings, TOOLKEY, makeCss
 
 
 WHITE_RE = re.compile(r&#34;&#34;&#34;\s{2,}&#34;&#34;&#34;, re.S)
@@ -451,7 +446,7 @@ class Corpus(Settings):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="tf.browser.ner.corpus.Corpus"><code class="flex name class">
+<dt id="tf.ner.corpus.Corpus"><code class="flex name class">
 <span>class <span class="ident">Corpus</span></span>
 </code></dt>
 <dd>
@@ -466,7 +461,7 @@ flag.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/daf3d9735cb5e691f16215e7eba449f2aa8758b6/tf/browser/ner/corpus.py#L26-L399" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/ner/corpus.py#L23-L396" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Corpus(Settings):
     def __init__(self):
@@ -845,15 +840,15 @@ flag.</p></div>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="tf.browser.ner.settings.Settings" href="settings.html#tf.browser.ner.settings.Settings">Settings</a></li>
+<li><a title="tf.ner.settings.Settings" href="settings.html#tf.ner.settings.Settings">Settings</a></li>
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
-<li><a title="tf.browser.ner.data.Data" href="data.html#tf.browser.ner.data.Data">Data</a></li>
+<li><a title="tf.ner.data.Data" href="data.html#tf.ner.data.Data">Data</a></li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="tf.browser.ner.corpus.Corpus.checkBuckets"><code class="name">var <span class="ident">checkBuckets</span></code></dt>
+<dt id="tf.ner.corpus.Corpus.checkBuckets"><code class="name">var <span class="ident">checkBuckets</span></code></dt>
 <dd>
 <div class="desc"><p>Given a set of nodes, return the set of only its bucket nodes.</p>
 <h2 id="parameters">Parameters</h2>
@@ -867,7 +862,7 @@ flag.</p></div>
 <dd>&nbsp;</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.corpus.Corpus.checkFeature"><code class="name">var <span class="ident">checkFeature</span></code></dt>
+<dt id="tf.ner.corpus.Corpus.checkFeature"><code class="name">var <span class="ident">checkFeature</span></code></dt>
 <dd>
 <div class="desc"><p>Checks whether a feature is loaded in the corpus.</p>
 <h2 id="parameters">Parameters</h2>
@@ -881,11 +876,11 @@ flag.</p></div>
 <dd>Whether the feature is loaded in this corpus.</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.corpus.Corpus.featureDefault"><code class="name">var <span class="ident">featureDefault</span></code></dt>
+<dt id="tf.ner.corpus.Corpus.featureDefault"><code class="name">var <span class="ident">featureDefault</span></code></dt>
 <dd>
 <div class="desc"><p>Functions that deliver default values for the entity features.</p></div>
 </dd>
-<dt id="tf.browser.ner.corpus.Corpus.get0"><code class="name">var <span class="ident">get0</span></code></dt>
+<dt id="tf.ner.corpus.Corpus.get0"><code class="name">var <span class="ident">get0</span></code></dt>
 <dd>
 <div class="desc"><p>Makes an identifier value out of a number of slots.</p>
 <p>This acts as the default value for the <code>eid</code> feature of new
@@ -894,13 +889,13 @@ entities.</p>
 the string is lowercased, non-alphanumeric characters are stripped,
 and spaces are replaced by dots.</p></div>
 </dd>
-<dt id="tf.browser.ner.corpus.Corpus.get1"><code class="name">var <span class="ident">get1</span></code></dt>
+<dt id="tf.ner.corpus.Corpus.get1"><code class="name">var <span class="ident">get1</span></code></dt>
 <dd>
 <div class="desc"><p>Return a fixed value specified in the corpus-dependent settings.</p>
 <p>This acts as the default value ofr the <code>kind</code> feature of new
 entities.</p></div>
 </dd>
-<dt id="tf.browser.ner.corpus.Corpus.getAfter"><code class="name">var <span class="ident">getAfter</span></code></dt>
+<dt id="tf.ner.corpus.Corpus.getAfter"><code class="name">var <span class="ident">getAfter</span></code></dt>
 <dd>
 <div class="desc"><p>Delivers a function that retrieves the material after a slot.</p>
 <h2 id="returns">Returns</h2>
@@ -911,11 +906,11 @@ of the <em>after</em> feature, which is configured in <code>ner/config.yaml</cod
 under key <code>afterFeature</code> .</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.corpus.Corpus.getBucketNodes"><code class="name">var <span class="ident">getBucketNodes</span></code></dt>
+<dt id="tf.ner.corpus.Corpus.getBucketNodes"><code class="name">var <span class="ident">getBucketNodes</span></code></dt>
 <dd>
 <div class="desc"><p>Return all bucket nodes.</p></div>
 </dd>
-<dt id="tf.browser.ner.corpus.Corpus.getContext"><code class="name">var <span class="ident">getContext</span></code></dt>
+<dt id="tf.ner.corpus.Corpus.getContext"><code class="name">var <span class="ident">getContext</span></code></dt>
 <dd>
 <div class="desc"><p>Gets the context buckets around a node.</p>
 <p>We start from a node and find the section node of intermediate level
@@ -932,11 +927,11 @@ section.</p>
 <dd>&nbsp;</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.corpus.Corpus.getEntityNodes"><code class="name">var <span class="ident">getEntityNodes</span></code></dt>
+<dt id="tf.ner.corpus.Corpus.getEntityNodes"><code class="name">var <span class="ident">getEntityNodes</span></code></dt>
 <dd>
 <div class="desc"><p>Return all entity nodes.</p></div>
 </dd>
-<dt id="tf.browser.ner.corpus.Corpus.getFVal"><code class="name">var <span class="ident">getFVal</span></code></dt>
+<dt id="tf.ner.corpus.Corpus.getFVal"><code class="name">var <span class="ident">getFVal</span></code></dt>
 <dd>
 <div class="desc"><p>Retrieves the value of a feature for a node.</p>
 <h2 id="parameters">Parameters</h2>
@@ -952,7 +947,7 @@ section.</p>
 <dd>The value of the feature for that node, if there is a value.</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.corpus.Corpus.getHeadings"><code class="name">var <span class="ident">getHeadings</span></code></dt>
+<dt id="tf.ner.corpus.Corpus.getHeadings"><code class="name">var <span class="ident">getHeadings</span></code></dt>
 <dd>
 <div class="desc"><p>Gets the heading tuple of the section of a node.</p>
 <h2 id="parameters">Parameters</h2>
@@ -970,7 +965,7 @@ the heading of the given node.
 We convert numbers to strings and strip leading zeros.</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.corpus.Corpus.getSlots"><code class="name">var <span class="ident">getSlots</span></code></dt>
+<dt id="tf.ner.corpus.Corpus.getSlots"><code class="name">var <span class="ident">getSlots</span></code></dt>
 <dd>
 <div class="desc"><p>Gets the slot nodes contained in a node.</p>
 <h2 id="parameters">Parameters</h2>
@@ -984,7 +979,7 @@ We convert numbers to strings and strip leading zeros.</dd>
 <dd>The slots in the container.</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.corpus.Corpus.getStr"><code class="name">var <span class="ident">getStr</span></code></dt>
+<dt id="tf.ner.corpus.Corpus.getStr"><code class="name">var <span class="ident">getStr</span></code></dt>
 <dd>
 <div class="desc"><p>Delivers a function that retrieves the material of a slot.</p>
 <h2 id="returns">Returns</h2>
@@ -995,7 +990,7 @@ of the <em>str</em> feature, which is configured in <code>ner/config.yaml</code>
 under key <code>strFeature</code> .</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.corpus.Corpus.getStrings"><code class="name">var <span class="ident">getStrings</span></code></dt>
+<dt id="tf.ner.corpus.Corpus.getStrings"><code class="name">var <span class="ident">getStrings</span></code></dt>
 <dd>
 <div class="desc"><p>Gets the text of the tokens occupying a sequence of slots.</p>
 <h2 id="parameters">Parameters</h2>
@@ -1013,7 +1008,7 @@ as far as these values are not purely white-space.
 Also, the string values are stripped from leading and trailing white-space.</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.corpus.Corpus.getText"><code class="name">var <span class="ident">getText</span></code></dt>
+<dt id="tf.ner.corpus.Corpus.getText"><code class="name">var <span class="ident">getText</span></code></dt>
 <dd>
 <div class="desc"><p>Gets the text of a number of slots.</p>
 <h2 id="parameters">Parameters</h2>
@@ -1039,7 +1034,7 @@ white-space, also in corpora that may have zero space between words.</p>
 </dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.corpus.Corpus.getTextR"><code class="name">var <span class="ident">getTextR</span></code></dt>
+<dt id="tf.ner.corpus.Corpus.getTextR"><code class="name">var <span class="ident">getTextR</span></code></dt>
 <dd>
 <div class="desc"><p>Gets the text for a non-slot node.</p>
 <p>It first determines the slots contained in a node, and then uses
@@ -1055,7 +1050,7 @@ white-space, also in corpora that may have zero space between words.</p>
 <dd>&nbsp;</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.corpus.Corpus.getTokens"><code class="name">var <span class="ident">getTokens</span></code></dt>
+<dt id="tf.ner.corpus.Corpus.getTokens"><code class="name">var <span class="ident">getTokens</span></code></dt>
 <dd>
 <div class="desc"><p>Gets the tokens contained in node.</p>
 <h2 id="parameters">Parameters</h2>
@@ -1070,7 +1065,7 @@ white-space, also in corpora that may have zero space between words.</p>
 string value. If there is no string value, the empty string is taken.</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.corpus.Corpus.properlySetup"><code class="name">var <span class="ident">properlySetup</span></code></dt>
+<dt id="tf.ner.corpus.Corpus.properlySetup"><code class="name">var <span class="ident">properlySetup</span></code></dt>
 <dd>
 <div class="desc"><p>Whether the tool has been properly set up.</p>
 <p>This means that the configuration in <code>ner/config.yaml</code> or the
@@ -1080,7 +1075,7 @@ from working: they fail silently.</p>
 <p>So users of corpora without any need for this tool will not be bothered
 by it.</p></div>
 </dd>
-<dt id="tf.browser.ner.corpus.Corpus.sectionHead"><code class="name">var <span class="ident">sectionHead</span></code></dt>
+<dt id="tf.ner.corpus.Corpus.sectionHead"><code class="name">var <span class="ident">sectionHead</span></code></dt>
 <dd>
 <div class="desc"><p>Provide a section heading.</p>
 <h2 id="parameters">Parameters</h2>
@@ -1094,16 +1089,16 @@ by it.</p></div>
 <dd>&nbsp;</dd>
 </dl></div>
 </dd>
-<dt id="tf.browser.ner.corpus.Corpus.slotType"><code class="name">var <span class="ident">slotType</span></code></dt>
+<dt id="tf.ner.corpus.Corpus.slotType"><code class="name">var <span class="ident">slotType</span></code></dt>
 <dd>
 <div class="desc"><p>The node type of the slots in the corpus.</p></div>
 </dd>
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="tf.browser.ner.settings.Settings" href="settings.html#tf.browser.ner.settings.Settings">Settings</a></b></code>:
+<li><code><b><a title="tf.ner.settings.Settings" href="settings.html#tf.ner.settings.Settings">Settings</a></b></code>:
 <ul class="hlist">
-<li><code><a title="tf.browser.ner.settings.Settings.console" href="settings.html#tf.browser.ner.settings.Settings.console">console</a></code></li>
+<li><code><a title="tf.ner.settings.Settings.console" href="settings.html#tf.ner.settings.Settings.console">console</a></code></li>
 </ul>
 </li>
 </ul>
@@ -1112,10 +1107,10 @@ by it.</p></div>
 </section>
 </article>
 <nav id="sidebar">
-<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../../tf/images/tf-small.png" alt="annotation"></a></p>
-<p><a href="../../../tf/index.html">tf home</a> -
-<a href="../../../tf/cheatsheet.html">cheat sheet</a> -
-<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
 </p>
 <form>
 <input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
@@ -1151,7 +1146,7 @@ const query = new URL(window.location).searchParams.get('q');
 if (query)
 search(query);
 function search(query) {
-const url = '../../../doc-search.html#' + encodeURIComponent(query);
+const url = '../../doc-search.html#' + encodeURIComponent(query);
 new tingle.modal({
 cssClass: ['modal-dialog'],
 onClose: () => {
@@ -1170,34 +1165,34 @@ setTimeout(() => input.focus(), 100);
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf.browser.ner" href="index.html">tf.browser.ner</a></code></li>
+<li><code><a title="tf.ner" href="index.html">tf.ner</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="tf.browser.ner.corpus.Corpus" href="#tf.browser.ner.corpus.Corpus">Corpus</a></code></h4>
+<h4><code><a title="tf.ner.corpus.Corpus" href="#tf.ner.corpus.Corpus">Corpus</a></code></h4>
 <ul class="two-column">
-<li><code><a title="tf.browser.ner.corpus.Corpus.checkBuckets" href="#tf.browser.ner.corpus.Corpus.checkBuckets">checkBuckets</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.checkFeature" href="#tf.browser.ner.corpus.Corpus.checkFeature">checkFeature</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.featureDefault" href="#tf.browser.ner.corpus.Corpus.featureDefault">featureDefault</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.get0" href="#tf.browser.ner.corpus.Corpus.get0">get0</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.get1" href="#tf.browser.ner.corpus.Corpus.get1">get1</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getAfter" href="#tf.browser.ner.corpus.Corpus.getAfter">getAfter</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getBucketNodes" href="#tf.browser.ner.corpus.Corpus.getBucketNodes">getBucketNodes</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getContext" href="#tf.browser.ner.corpus.Corpus.getContext">getContext</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getEntityNodes" href="#tf.browser.ner.corpus.Corpus.getEntityNodes">getEntityNodes</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getFVal" href="#tf.browser.ner.corpus.Corpus.getFVal">getFVal</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getHeadings" href="#tf.browser.ner.corpus.Corpus.getHeadings">getHeadings</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getSlots" href="#tf.browser.ner.corpus.Corpus.getSlots">getSlots</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getStr" href="#tf.browser.ner.corpus.Corpus.getStr">getStr</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getStrings" href="#tf.browser.ner.corpus.Corpus.getStrings">getStrings</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getText" href="#tf.browser.ner.corpus.Corpus.getText">getText</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getTextR" href="#tf.browser.ner.corpus.Corpus.getTextR">getTextR</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.getTokens" href="#tf.browser.ner.corpus.Corpus.getTokens">getTokens</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.properlySetup" href="#tf.browser.ner.corpus.Corpus.properlySetup">properlySetup</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.sectionHead" href="#tf.browser.ner.corpus.Corpus.sectionHead">sectionHead</a></code></li>
-<li><code><a title="tf.browser.ner.corpus.Corpus.slotType" href="#tf.browser.ner.corpus.Corpus.slotType">slotType</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.checkBuckets" href="#tf.ner.corpus.Corpus.checkBuckets">checkBuckets</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.checkFeature" href="#tf.ner.corpus.Corpus.checkFeature">checkFeature</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.featureDefault" href="#tf.ner.corpus.Corpus.featureDefault">featureDefault</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.get0" href="#tf.ner.corpus.Corpus.get0">get0</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.get1" href="#tf.ner.corpus.Corpus.get1">get1</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getAfter" href="#tf.ner.corpus.Corpus.getAfter">getAfter</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getBucketNodes" href="#tf.ner.corpus.Corpus.getBucketNodes">getBucketNodes</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getContext" href="#tf.ner.corpus.Corpus.getContext">getContext</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getEntityNodes" href="#tf.ner.corpus.Corpus.getEntityNodes">getEntityNodes</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getFVal" href="#tf.ner.corpus.Corpus.getFVal">getFVal</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getHeadings" href="#tf.ner.corpus.Corpus.getHeadings">getHeadings</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getSlots" href="#tf.ner.corpus.Corpus.getSlots">getSlots</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getStr" href="#tf.ner.corpus.Corpus.getStr">getStr</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getStrings" href="#tf.ner.corpus.Corpus.getStrings">getStrings</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getText" href="#tf.ner.corpus.Corpus.getText">getText</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getTextR" href="#tf.ner.corpus.Corpus.getTextR">getTextR</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getTokens" href="#tf.ner.corpus.Corpus.getTokens">getTokens</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.properlySetup" href="#tf.ner.corpus.Corpus.properlySetup">properlySetup</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.sectionHead" href="#tf.ner.corpus.Corpus.sectionHead">sectionHead</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.slotType" href="#tf.ner.corpus.Corpus.slotType">slotType</a></code></li>
 </ul>
 </li>
 </ul>
@@ -1207,7 +1202,7 @@ setTimeout(() => input.focus(), 100);
 </main>
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
-<a href="https://huc.knaw.nl"><img alt="HuC" src="../../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
 <p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
