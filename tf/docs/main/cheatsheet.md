@@ -911,6 +911,21 @@ A.publishRelease(increase, message=None, description=None,,...)
     complete zipped data to it.
 :   `tf.advanced.repo.publishRelease`
 
+## Export to ZIP
+
+``` python
+A.zipAll()
+```
+:   store the complete corpus data in a file *complete.zip*
+:   `tf.advanced.zipdata.zipAll`
+
+``` python
+from tf.app import collect
+collect(backend, org, repo)
+```
+:   same as `A.zipAll()` above, assuming the data is in a Github clone
+:   `tf.app.collect`
+
 ---
 
 ## House keeping
@@ -1021,16 +1036,6 @@ A.export(results, ...)
 ```
 :   export formatted data
 :   `tf.advanced.display.export`
-
----
-
-## Export to ZIP
-
-``` python
-A.zipAll()
-```
-:   store the complete corpus data in a file *complete.zip*
-:   `tf.advanced.zipdata.zipAll`
 
 ---
 

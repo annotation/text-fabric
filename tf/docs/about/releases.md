@@ -22,11 +22,14 @@ pip install -e .
 
 #### 12.5.5
 
-2024-10-??
+2024-10-03
 
 New functions in NER to help analyze triggers that do not find named entities.
 Also to add spelling variants of triggers automatically to the spreadsheets
 of names and triggers.
+
+New function `tf.app.collect` to make a complete zip of the data, modules and app
+of a corpus, to attach it to a github release.
 
 * Fix: in the `use()` command, the loading of an additional data module triggered the
 express download of `complete.zip` and eventually did not try to download the

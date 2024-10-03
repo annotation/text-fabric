@@ -16,9 +16,6 @@ For a detailed description, see `tf.about.usefunc`.
 from .advanced.app import findApp, useApp
 
 
-# START AN APP
-
-
 def use(appName, *args, backend=None, **kwargs):
     """Make use of a corpus.
 
@@ -54,3 +51,22 @@ def use(appName, *args, backend=None, **kwargs):
     (appName, checkoutApp, dataLoc, backend) = useApp(appName, backend)
 
     return findApp(appName, checkoutApp, dataLoc, backend, False, *args, **kwargs)
+
+
+def collect(backend, org, repo):
+    """Collect the data of the corpus in a zip file.
+
+    The app, main data, data of standard modules of a corpus will be zipped
+    into a file `complete.zip` and saved in your downloads folder,
+    in a nested folder by backend, org and repo.
+
+    It is assumed that you have cloned the repo of the corpus and the repos
+    of all of its standard modules.
+
+    The latest version will be used.
+    """
+
+    A = use(f"{org}/{repo}:clone", checkout="clone", backend=backend)
+    A.indent(reset=True)
+    msg = A.zipAll()
+    A.info(msg)

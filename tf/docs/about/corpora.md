@@ -132,11 +132,17 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 
 ## [Digital Theologians of the University of Copenhagen](https://github.com/DT-UCPH)
 
-[DT-UCPH/sp](https://github.com/DT-UCPH)
+[DT-UCPH/sp](https://github.com/DT-UCPH/sp)
 :   *Hebrew*
     [Samaritan Pentateuch](https://en.wikipedia.org/wiki/Samaritan_Pentateuch)
     , 516 BCE - 70 AD,
     **MS Dublin Chester Beatty Library 751 + MS Garizim 1**,
+    Martijn Naaijer, Christian Canu Højgaard
+
+[DT-UCPH/cuc](https://github.com/DT-UCPH/cuc)
+:   *Hebrew*
+    Copenhagen Ugaritic Corpus, 1223 BCE - 1172 AD,
+    **[selected clay tablets](https://en.wikipedia.org/wiki/Keilalphabetische_Texte_aus_Ugarit)**,
     Martijn Naaijer, Christian Canu Højgaard
 
 ## [Eep Talstra Center for Bible and Computer](https://github.com/ETCBC)
