@@ -204,7 +204,7 @@ slots.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/ner/ner.py#L1-L1401" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/54f8fc70db27df28d334280982b28290fa009c46/tf/ner/ner.py#L1-L1493" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;API for Named Entity marking.
 
@@ -439,7 +439,8 @@ from .sets import Sets
 from .sheets import Sheets
 from .match import entityMatch, occMatch
 from .show import Show
-from .helpers import findCompile, toTokens, makePartitions, interference, locInScopes
+from .scopes import locInScopes
+from .helpers import findCompile, toTokens, makePartitions, hasCommon
 
 
 class NER(Sheets, Sets, Show):
@@ -565,7 +566,7 @@ class NER(Sheets, Sets, Show):
 
         setData = self.getSetData()
         getTokens = self.getTokens
-        getHeadings = self.getHeadings
+        seqFromNode = self.seqFromNode
 
         buckets = setData.buckets or ()
         sheetData = self.getSheetData()
@@ -590,7 +591,7 @@ class NER(Sheets, Sets, Show):
 
         inventory = occMatch(
             getTokens,
-            getHeadings,
+            seqFromNode,
             buckets,
             instructions,
             spaceEscaped,
@@ -611,7 +612,7 @@ class NER(Sheets, Sets, Show):
 
         setData = self.getSetData()
         getTokens = self.getTokens
-        getHeadings = self.getHeadings
+        seqFromNode = self.seqFromNode
 
         buckets = setData.buckets or ()
         sheetData = self.getSheetData()
@@ -632,7 +633,7 @@ class NER(Sheets, Sets, Show):
 
         inventory = occMatch(
             getTokens,
-            getHeadings,
+            seqFromNode,
             buckets,
             instructions,
             spaceEscaped,
@@ -721,10 +722,11 @@ class NER(Sheets, Sets, Show):
         rowMap = sheetData.rowMap
         triggerScopes = sheetData.triggerScopes
 
-        interferences, parts = interference(
+        interferences, parts = self.interference(
             rowMap,
             triggerScopes,
             self.getToTokensFunc(),
+            self.seqFromStr,
             alsoInternal=alsoInternal,
             alsoExpected=alsoExpected,
         )
@@ -1027,6 +1029,96 @@ class NER(Sheets, Sets, Show):
 
         return ok
 
+    def interference(
+        self,
+        rowMap,
+        triggerScopes,
+        myToTokens,
+        seqFromStr,
+        alsoInternal=False,
+        alsoExpected=False,
+    ):
+        triggers = list(rowMap)
+
+        triggerTokens, parts = makePartitions(triggers, myToTokens)
+
+        nParts = len(parts)
+
+        interferences = []
+
+        intersections = {}
+
+        for i, part in enumerate(parts):
+            if i == nParts - 1:
+                break
+
+            for otherPart in parts[i + 1 : nParts]:
+                for triggerA in part:
+                    for triggerB in otherPart:
+                        tokensA = triggerTokens[triggerA]
+                        tokensB = triggerTokens[triggerB]
+
+                        if not alsoInternal:
+                            rowsA = set(rowMap[triggerA])
+                            rowsB = set(rowMap[triggerB])
+                            if rowsA == rowsB:
+                                continue
+
+                        scopesA = &#34;,&#34;.join(sorted(triggerScopes[triggerA]))
+                        scopesB = &#34;,&#34;.join(sorted(triggerScopes[triggerB]))
+                        commonScopes = intersections.get((triggerA, triggerB), None)
+
+                        if commonScopes is None:
+                            commonScopes = self.intersectScopes(scopesA, scopesB)
+                            intersections[(triggerA, triggerB)] = commonScopes
+
+                        if len(commonScopes) == 0:
+                            continue
+
+                        common = hasCommon(tokensA, tokensB)
+
+                        if common is None:
+                            continue
+
+                        ref, pos, length = common
+                        nTokensA = len(tokensA)
+                        nTokensB = len(tokensB)
+
+                        nTokensLatter = nTokensB if ref == 1 else nTokensA
+
+                        expected = length == nTokensLatter
+
+                        if expected and not alsoExpected:
+                            continue
+
+                        if ref == 1:
+                            nB = len(tokensB)
+                            union = tokensA
+
+                            if length &lt; nB:
+                                union += tokensB[length:]
+                        else:
+                            nA = len(tokensA)
+                            union = tokensB
+
+                            if length &lt; nA:
+                                union += tokensA[length:]
+
+                        interferences.append(
+                            (
+                                triggerA,
+                                triggerB,
+                                &#34; &#34;.join(union),
+                                scopesA,
+                                scopesB,
+                                commonScopes,
+                            )
+                        )
+
+        parts = makePartitions([x[2] for x in interferences], myToTokens)[1]
+
+        return interferences, parts
+
     def findOccs(self):
         &#34;&#34;&#34;Finds the occurrences of multiple triggers.
 
@@ -1055,7 +1147,7 @@ class NER(Sheets, Sets, Show):
 
         setData = self.getSetData()
         getTokens = self.getTokens
-        getHeadings = self.getHeadings
+        seqFromNode = self.seqFromNode
 
         buckets = setData.buckets or ()
 
@@ -1064,7 +1156,7 @@ class NER(Sheets, Sets, Show):
         caseSensitive = sheetData.caseSensitive
         sheetData.inventory = occMatch(
             getTokens,
-            getHeadings,
+            seqFromNode,
             buckets,
             instructions,
             spaceEscaped,
@@ -1332,7 +1424,7 @@ class NER(Sheets, Sets, Show):
             return
 
         silent = self.silent if silent is None else silent
-        getHeadings = self.getHeadings
+        sectionHead = self.sectionHead
         sheetData = self.getSheetData()
         allTriggers = sheetData.allTriggers
         inventory = sheetData.inventory
@@ -1384,7 +1476,7 @@ class NER(Sheets, Sets, Show):
                 for slot in slots:
                     triggersBySlot.setdefault(slot, set()).add(trigger)
 
-                section = &#34;.&#34;.join(str(x) for x in getHeadings(slots[0]))
+                section = sectionHead(slots[0])
                 sectionInfo[section] += 1
 
             for section, hits in sorted(sectionInfo.items()):
@@ -1669,7 +1761,7 @@ browser. This will influence how results are reported back.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/ner/ner.py#L237-L1401" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/54f8fc70db27df28d334280982b28290fa009c46/tf/ner/ner.py#L238-L1493" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Sheets, Sets, Show):
     def __init__(
@@ -1794,7 +1886,7 @@ browser. This will influence how results are reported back.</dd>
 
         setData = self.getSetData()
         getTokens = self.getTokens
-        getHeadings = self.getHeadings
+        seqFromNode = self.seqFromNode
 
         buckets = setData.buckets or ()
         sheetData = self.getSheetData()
@@ -1819,7 +1911,7 @@ browser. This will influence how results are reported back.</dd>
 
         inventory = occMatch(
             getTokens,
-            getHeadings,
+            seqFromNode,
             buckets,
             instructions,
             spaceEscaped,
@@ -1840,7 +1932,7 @@ browser. This will influence how results are reported back.</dd>
 
         setData = self.getSetData()
         getTokens = self.getTokens
-        getHeadings = self.getHeadings
+        seqFromNode = self.seqFromNode
 
         buckets = setData.buckets or ()
         sheetData = self.getSheetData()
@@ -1861,7 +1953,7 @@ browser. This will influence how results are reported back.</dd>
 
         inventory = occMatch(
             getTokens,
-            getHeadings,
+            seqFromNode,
             buckets,
             instructions,
             spaceEscaped,
@@ -1950,10 +2042,11 @@ browser. This will influence how results are reported back.</dd>
         rowMap = sheetData.rowMap
         triggerScopes = sheetData.triggerScopes
 
-        interferences, parts = interference(
+        interferences, parts = self.interference(
             rowMap,
             triggerScopes,
             self.getToTokensFunc(),
+            self.seqFromStr,
             alsoInternal=alsoInternal,
             alsoExpected=alsoExpected,
         )
@@ -2256,6 +2349,96 @@ browser. This will influence how results are reported back.</dd>
 
         return ok
 
+    def interference(
+        self,
+        rowMap,
+        triggerScopes,
+        myToTokens,
+        seqFromStr,
+        alsoInternal=False,
+        alsoExpected=False,
+    ):
+        triggers = list(rowMap)
+
+        triggerTokens, parts = makePartitions(triggers, myToTokens)
+
+        nParts = len(parts)
+
+        interferences = []
+
+        intersections = {}
+
+        for i, part in enumerate(parts):
+            if i == nParts - 1:
+                break
+
+            for otherPart in parts[i + 1 : nParts]:
+                for triggerA in part:
+                    for triggerB in otherPart:
+                        tokensA = triggerTokens[triggerA]
+                        tokensB = triggerTokens[triggerB]
+
+                        if not alsoInternal:
+                            rowsA = set(rowMap[triggerA])
+                            rowsB = set(rowMap[triggerB])
+                            if rowsA == rowsB:
+                                continue
+
+                        scopesA = &#34;,&#34;.join(sorted(triggerScopes[triggerA]))
+                        scopesB = &#34;,&#34;.join(sorted(triggerScopes[triggerB]))
+                        commonScopes = intersections.get((triggerA, triggerB), None)
+
+                        if commonScopes is None:
+                            commonScopes = self.intersectScopes(scopesA, scopesB)
+                            intersections[(triggerA, triggerB)] = commonScopes
+
+                        if len(commonScopes) == 0:
+                            continue
+
+                        common = hasCommon(tokensA, tokensB)
+
+                        if common is None:
+                            continue
+
+                        ref, pos, length = common
+                        nTokensA = len(tokensA)
+                        nTokensB = len(tokensB)
+
+                        nTokensLatter = nTokensB if ref == 1 else nTokensA
+
+                        expected = length == nTokensLatter
+
+                        if expected and not alsoExpected:
+                            continue
+
+                        if ref == 1:
+                            nB = len(tokensB)
+                            union = tokensA
+
+                            if length &lt; nB:
+                                union += tokensB[length:]
+                        else:
+                            nA = len(tokensA)
+                            union = tokensB
+
+                            if length &lt; nA:
+                                union += tokensA[length:]
+
+                        interferences.append(
+                            (
+                                triggerA,
+                                triggerB,
+                                &#34; &#34;.join(union),
+                                scopesA,
+                                scopesB,
+                                commonScopes,
+                            )
+                        )
+
+        parts = makePartitions([x[2] for x in interferences], myToTokens)[1]
+
+        return interferences, parts
+
     def findOccs(self):
         &#34;&#34;&#34;Finds the occurrences of multiple triggers.
 
@@ -2284,7 +2467,7 @@ browser. This will influence how results are reported back.</dd>
 
         setData = self.getSetData()
         getTokens = self.getTokens
-        getHeadings = self.getHeadings
+        seqFromNode = self.seqFromNode
 
         buckets = setData.buckets or ()
 
@@ -2293,7 +2476,7 @@ browser. This will influence how results are reported back.</dd>
         caseSensitive = sheetData.caseSensitive
         sheetData.inventory = occMatch(
             getTokens,
-            getHeadings,
+            seqFromNode,
             buckets,
             instructions,
             spaceEscaped,
@@ -2561,7 +2744,7 @@ browser. This will influence how results are reported back.</dd>
             return
 
         silent = self.silent if silent is None else silent
-        getHeadings = self.getHeadings
+        sectionHead = self.sectionHead
         sheetData = self.getSheetData()
         allTriggers = sheetData.allTriggers
         inventory = sheetData.inventory
@@ -2613,7 +2796,7 @@ browser. This will influence how results are reported back.</dd>
                 for slot in slots:
                     triggersBySlot.setdefault(slot, set()).add(trigger)
 
-                section = &#34;.&#34;.join(str(x) for x in getHeadings(slots[0]))
+                section = sectionHead(slots[0])
                 sectionInfo[section] += 1
 
             for section, hits in sorted(sectionInfo.items()):
@@ -2840,6 +3023,7 @@ browser. This will influence how results are reported back.</dd>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="tf.ner.sheets.Sheets" href="sheets.html#tf.ner.sheets.Sheets">Sheets</a></li>
+<li><a title="tf.ner.scopes.Scopes" href="scopes.html#tf.ner.scopes.Scopes">Scopes</a></li>
 <li><a title="tf.ner.sets.Sets" href="sets.html#tf.ner.sets.Sets">Sets</a></li>
 <li><a title="tf.ner.data.Data" href="data.html#tf.ner.data.Data">Data</a></li>
 <li><a title="tf.ner.corpus.Corpus" href="corpus.html#tf.ner.corpus.Corpus">Corpus</a></li>
@@ -3018,6 +3202,12 @@ the value is the name of that entity in the context indicated by path.</p></div>
 <dd>
 <div class="desc"></div>
 </dd>
+<dt id="tf.ner.ner.NER.interference"><code class="name flex">
+<span>def <span class="ident">interference</span></span>(<span>self, rowMap, triggerScopes, myToTokens, seqFromStr, alsoInternal=False, alsoExpected=False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="tf.ner.ner.NER.partitionTriggers"><code class="name flex">
 <span>def <span class="ident">partitionTriggers</span></span>(<span>self, triggers)</span>
 </code></dt>
@@ -3098,7 +3288,6 @@ if the shorter triggers wins because it starts earlier.</p>
 <li><code><a title="tf.ner.sets.Sets.getContext" href="corpus.html#tf.ner.corpus.Corpus.getContext">getContext</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.getEntityNodes" href="corpus.html#tf.ner.corpus.Corpus.getEntityNodes">getEntityNodes</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.getFVal" href="corpus.html#tf.ner.corpus.Corpus.getFVal">getFVal</a></code></li>
-<li><code><a title="tf.ner.sets.Sets.getHeadings" href="corpus.html#tf.ner.corpus.Corpus.getHeadings">getHeadings</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.getSetData" href="sets.html#tf.ner.sets.Sets.getSetData">getSetData</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.getSlots" href="corpus.html#tf.ner.corpus.Corpus.getSlots">getSlots</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.getStr" href="corpus.html#tf.ner.corpus.Corpus.getStr">getStr</a></code></li>
@@ -3113,7 +3302,11 @@ if the shorter triggers wins because it starts earlier.</p>
 <li><code><a title="tf.ner.sets.Sets.readSets" href="sets.html#tf.ner.sets.Sets.readSets">readSets</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.resetSet" href="sets.html#tf.ner.sets.Sets.resetSet">resetSet</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.saveEntitiesAs" href="data.html#tf.ner.data.Data.saveEntitiesAs">saveEntitiesAs</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.secFromSeq" href="corpus.html#tf.ner.corpus.Corpus.secFromSeq">secFromSeq</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.sectionHead" href="corpus.html#tf.ner.corpus.Corpus.sectionHead">sectionHead</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.seqFromNode" href="corpus.html#tf.ner.corpus.Corpus.seqFromNode">seqFromNode</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.seqFromSec" href="corpus.html#tf.ner.corpus.Corpus.seqFromSec">seqFromSec</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.seqFromStr" href="corpus.html#tf.ner.corpus.Corpus.seqFromStr">seqFromStr</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.setDel" href="sets.html#tf.ner.sets.Sets.setDel">setDel</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.setDup" href="sets.html#tf.ner.sets.Sets.setDup">setDup</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.setMove" href="sets.html#tf.ner.sets.Sets.setMove">setMove</a></code></li>
@@ -3121,6 +3314,7 @@ if the shorter triggers wins because it starts earlier.</p>
 <li><code><a title="tf.ner.sets.Sets.setNames" href="sets.html#tf.ner.sets.Sets.setNames">setNames</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.setSet" href="sets.html#tf.ner.sets.Sets.setSet">setSet</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.slotType" href="corpus.html#tf.ner.corpus.Corpus.slotType">slotType</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.strFromSeq" href="corpus.html#tf.ner.corpus.Corpus.strFromSeq">strFromSeq</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.weedEntities" href="data.html#tf.ner.data.Data.weedEntities">weedEntities</a></code></li>
 </ul>
 </li>
@@ -3222,6 +3416,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.ner.ner.NER.getMeta" href="#tf.ner.ner.NER.getMeta">getMeta</a></code></li>
 <li><code><a title="tf.ner.ner.NER.getTasks" href="#tf.ner.ner.NER.getTasks">getTasks</a></code></li>
 <li><code><a title="tf.ner.ner.NER.getToTokensFunc" href="#tf.ner.ner.NER.getToTokensFunc">getToTokensFunc</a></code></li>
+<li><code><a title="tf.ner.ner.NER.interference" href="#tf.ner.ner.NER.interference">interference</a></code></li>
 <li><code><a title="tf.ner.ner.NER.partitionTriggers" href="#tf.ner.ner.NER.partitionTriggers">partitionTriggers</a></code></li>
 <li><code><a title="tf.ner.ner.NER.reportHits" href="#tf.ner.ner.NER.reportHits">reportHits</a></code></li>
 <li><code><a title="tf.ner.ner.NER.setTask" href="#tf.ner.ner.NER.setTask">setTask</a></code></li>

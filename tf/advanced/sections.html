@@ -49,7 +49,7 @@ without regard for how they are to be displayed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/advanced/sections.py#L1-L202" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/54f8fc70db27df28d334280982b28290fa009c46/tf/advanced/sections.py#L1-L208" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Section
 
@@ -142,6 +142,7 @@ def nodeFromSectionStr(app, sectionStr, lang=&#34;en&#34;):
     msg = f&#39;Not a valid passage: &#34;{sectionStr}&#34;&#39;
     msgi = &#39;{} &#34;{}&#34; is not a number&#39;
     section = sectionStr.split(sep1)
+
     if len(section) &gt; 2:
         return msg
     elif len(section) == 2:
@@ -149,10 +150,12 @@ def nodeFromSectionStr(app, sectionStr, lang=&#34;en&#34;):
         if len(section2) &gt; 2:
             return msg
         section = [section[0]] + section2
+
     dataTypes = T.sectionFeatureTypes
     sectionTypes = T.sectionTypes
     sectionTyped = []
     msgs = []
+
     for (i, sectionPart) in enumerate(section):
         if dataTypes[i] == &#34;int&#34;:
             try:
@@ -162,11 +165,14 @@ def nodeFromSectionStr(app, sectionStr, lang=&#34;en&#34;):
                 part = None
         else:
             part = sectionPart
+
         sectionTyped.append(part)
+
     if msgs:
         return &#34;\n&#34;.join(msgs)
 
     sectionNode = T.nodeFromSection(sectionTyped, lang=lang)
+
     if sectionNode is None:
         return msg
     return sectionNode

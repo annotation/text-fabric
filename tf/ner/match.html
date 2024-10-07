@@ -32,18 +32,19 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/ner/match.py#L1-L353" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/54f8fc70db27df28d334280982b28290fa009c46/tf/ner/match.py#L1-L354" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Match functions.
 &#34;&#34;&#34;
 
 from .settings import NONE
-from .helpers import fromTokens, getIntvIndex, xstrip
+from .scopes import getIntvIndex
+from .helpers import fromTokens, xstrip
 
 
 def occMatch(
     getTokens,
-    getHeadings,
+    seqFromNode,
     buckets,
     instructions,
     spaceEscaped,
@@ -55,8 +56,8 @@ def occMatch(
     ----------
     getTokens: function
         See `tf.ner.corpus.Corpus.getTokens`
-    getHeadings: function
-        See `tf.ner.corpus.Corpus.getHeadings`
+    seqFromNode: function
+        See `tf.ner.corpus.Corpus.seqFromNode`
     buckets: tuple of integer
         The bucket nodes in question
     instructions: dict, optional None
@@ -98,7 +99,7 @@ def occMatch(
 
     results = {}
 
-    intvIndex = getIntvIndex(buckets, instructions, getHeadings)
+    intvIndex = getIntvIndex(buckets, instructions, seqFromNode)
 
     for b in buckets:
         intv = intvIndex[b]
@@ -436,7 +437,7 @@ of its slot number (position) and string value;</li>
 </dl></div>
 </dd>
 <dt id="tf.ner.match.occMatch"><code class="name flex">
-<span>def <span class="ident">occMatch</span></span>(<span>getTokens, getHeadings, buckets, instructions, spaceEscaped, caseSensitive=False)</span>
+<span>def <span class="ident">occMatch</span></span>(<span>getTokens, seqFromNode, buckets, instructions, spaceEscaped, caseSensitive=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Finds the occurrences of multiple sequences of tokens in a single bucket.</p>
@@ -444,8 +445,8 @@ of its slot number (position) and string value;</li>
 <dl>
 <dt><strong><code>getTokens</code></strong> :&ensp;<code>function</code></dt>
 <dd>See <code><a title="tf.ner.corpus.Corpus.getTokens" href="corpus.html#tf.ner.corpus.Corpus.getTokens">Corpus.getTokens</a></code></dd>
-<dt><strong><code>getHeadings</code></strong> :&ensp;<code>function</code></dt>
-<dd>See <code><a title="tf.ner.corpus.Corpus.getHeadings" href="corpus.html#tf.ner.corpus.Corpus.getHeadings">Corpus.getHeadings</a></code></dd>
+<dt><strong><code>seqFromNode</code></strong> :&ensp;<code>function</code></dt>
+<dd>See <code><a title="tf.ner.corpus.Corpus.seqFromNode" href="corpus.html#tf.ner.corpus.Corpus.seqFromNode">Corpus.seqFromNode</a></code></dd>
 <dt><strong><code>buckets</code></strong> :&ensp;<code>tuple</code> of <code>integer</code></dt>
 <dd>The bucket nodes in question</dd>
 <dt><strong><code>instructions</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>

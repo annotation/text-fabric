@@ -1,0 +1,790 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.11.1" />
+<title>tf.ner.scopes API documentation</title>
+<meta name="description" content="" />
+<!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css"
+integrity="sha512-kcbluZFacWN57NgWZ4aH6eUMBEaTyErFhIFD3y5qYZbKuuyImH0K/AKsBbfXlivh2z5C+3IDTIhI11YmKomzmA=="
+crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css"
+integrity="sha512-uVeAgzAmieLUTGba0qr9vXQgVD7fko2kcbYIKIraXUIDg9iJLxveTFUrg3DJhqn3cAf3HFDbgmhq0eGko5wEAA=="
+crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.ner.scopes</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/54f8fc70db27df28d334280982b28290fa009c46/tf/ner/scopes.py#L1-L385" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">import functools
+
+from ..core.helpers import console
+
+
+def _prevLoc(x):
+    # only for locs that can start a scope
+
+    if x[2] != 0:
+        return (x[0], x[1], x[2] - 1)
+
+    if x[1] != 0:
+        return (x[0], x[1] - 1, -1)
+
+    if x[0] != 0:
+        return (x[0] - 1, -1, -1)
+
+    return (0, 0, 0)
+
+
+def _nextLoc(x):
+    # only for locs that can end a scope
+
+    if x[2] != -1:
+        return (x[0], x[1], x[2] + 1)
+
+    if x[1] != -1:
+        return (x[0], x[1] + 1, 0)
+
+    if x[0] != -1:
+        return (x[0] + 1, 0, 0)
+
+    return (-1, -1, -1)
+
+
+def _pointCmp(x, y):
+    return 0 if x == y else -1 if y == -1 or (x != -1 and x &lt; y) else 1
+
+
+def _locCmp(xLoc, yLoc):
+    for x, y in zip(xLoc, yLoc):
+        if x != y:
+            eq = _pointCmp(x, y)
+
+            if eq != 0:
+                return eq
+
+    return 0
+
+
+def _locMax(xLoc, yLoc):
+    return xLoc if _locCmp(xLoc, yLoc) == 1 else yLoc
+
+
+def _locMin(xLoc, yLoc):
+    return xLoc if _locCmp(xLoc, yLoc) == -1 else yLoc
+
+
+def _sameLoc(xLoc, yLoc):
+    return all(
+        xc == yc or ((xc == -1 or xc == 0) and (yc == -1 or yc == 0))
+        for (xc, yc) in zip(xLoc, yLoc)
+    )
+
+
+def _scopeBefore(xScope, yScope):
+    (xB, xE) = xScope
+    (yB, yE) = yScope
+
+    eqx = _locCmp(xB, yB)
+
+    return _locCmp(yE, xE) if eqx == 0 else eqx
+
+
+_locSort = functools.cmp_to_key(_locCmp)
+_scopeSort = functools.cmp_to_key(_scopeBefore)
+
+
+def _sortLocs(locs):
+    return tuple(sorted(locs, key=_locSort))
+
+
+def _sortScopes(scopes):
+    return tuple(sorted(scopes, key=_scopeSort))
+
+
+def _locInScope(loc, scope):
+    (b, e) = scope
+    return _locCmp(b, loc) &lt;= 0 and _locCmp(loc, e) &lt;= 0
+
+
+def locInScopes(loc, scopes):
+    if not len(scopes):
+        return False
+
+    return any(_locInScope(loc, scope) for scope in scopes)
+
+
+def partitionScopes(scopesDict):
+    scopeFromStr = {}
+    strFromScope = {}
+    boundaries = {}
+    intervals = []
+
+    for scopeStr, scopes in scopesDict.items():
+        for scope in scopes:
+            (b, e) = scope
+            boundaries.setdefault(b, {}).setdefault(&#34;b&#34;, set()).add(scope)
+            boundaries.setdefault(e, {}).setdefault(&#34;e&#34;, set()).add(scope)
+
+            scopeFromStr.setdefault(scopeStr, set()).add(scope)
+            strFromScope.setdefault(scope, set()).add(scopeStr)
+
+    curScopes = set()
+    inScope = False
+
+    for x in _sortLocs(boundaries):
+        beginScopes = boundaries[x].get(&#34;b&#34;, set())
+        endScopes = boundaries[x].get(&#34;e&#34;, set())
+
+        inScope = len(curScopes) &gt; 0
+
+        hasB = len(beginScopes) &gt; 0
+        hasE = len(endScopes) &gt; 0
+
+        if hasB and hasE:
+            intervals[-1][1] = _prevLoc(x)
+            if intervals[-1][1] &lt; intervals[-1][0]:
+                intervals.pop()
+            curScopes |= beginScopes
+            intervals.append([x, x, _sortScopes(curScopes)])
+            curScopes -= endScopes
+            inScope = len(curScopes) &gt; 0
+            if inScope:
+                intervals.append([_nextLoc(x), None, _sortScopes(curScopes)])
+        elif hasB:
+            if inScope:
+                intervals[-1][1] = _prevLoc(x)
+                if intervals[-1][1] &lt; intervals[-1][0]:
+                    intervals.pop()
+            curScopes |= beginScopes
+            intervals.append([x, None, _sortScopes(curScopes)])
+        elif hasE:
+            intervals[-1][1] = x
+            curScopes -= endScopes
+            inScope = len(curScopes) &gt; 0
+            if inScope:
+                intervals.append([_nextLoc(x), None, _sortScopes(curScopes)])
+
+    if inScope:
+        intervals[-1][1] = x
+
+    for x in intervals:
+        newX = []
+        seen = set()
+
+        for scope in x[2]:
+            for scopeStr in strFromScope[scope]:
+                if scopeStr in seen:
+                    continue
+
+                seen.add(scopeStr)
+                newX.append(scopeStr)
+
+        x[2] = tuple(newX)
+
+    return intervals
+
+
+def getIntvIndex(buckets, instructions, seqFromNode):
+    intervals = _sortScopes(x for x in instructions if x != ())
+
+    nIntervals = len(intervals)
+
+    if nIntervals == 0:
+        return {bucket: () for bucket in buckets}
+
+    intvIndex = {}
+    i = 0
+    intv = intervals[i]
+    (b, e) = intv
+
+    for bucket in buckets:
+        hd = seqFromNode(bucket)
+
+        assigned = False
+
+        if _locCmp(b, hd) == 1:
+            intvIndex[bucket] = ()
+            continue
+
+        while i &lt; nIntervals:
+            if _locCmp(e, hd) == -1:
+                i += 1
+
+                if i &lt; nIntervals:
+                    intv = intervals[i]
+                    (b, e) = intv
+                else:
+                    intvIndex[bucket] = ()
+                    assigned = True
+                    break
+            else:
+                intvIndex[bucket] = () if _locCmp(b, hd) == 1 else intv
+                assigned = True
+                break
+
+        if not assigned:
+            intvIndex[bucket] = ()
+
+    return intvIndex
+
+
+class Scopes:
+    def repLoc(self, loc):
+        strFromSeq = self.strFromSeq
+
+        return strFromSeq(tuple(x for x in loc if x != 0 and x != -1))
+
+    def parseLoc(self, locStr, plain=True):
+        seqFromStr = self.seqFromStr
+
+        locStr = locStr.strip()
+
+        if not locStr:
+            result = ()
+            return (
+                ()
+                if plain
+                else dict(result=(), warning=None, normal=self.repLoc(result))
+            )
+
+        (error, result) = seqFromStr(locStr)
+
+        if error:
+            result = None
+            normal = None
+            warning = error
+        else:
+            normal = self.repLoc(result)
+            warning = None
+
+        return result if plain else dict(result=result, warning=warning, normal=normal)
+
+    def repScope(self, scope):
+        if scope is None or len(scope) == 0:
+            return &#34;()&#34;
+
+        (b, e) = scope
+        return (
+            self.repLoc(b) if _sameLoc(b, e) else f&#34;{self.repLoc(b)}-{self.repLoc(e)}&#34;
+        )
+
+    def repScopes(self, scopes):
+        return &#34;, &#34;.join(self.repScope(scope) for scope in scopes)
+
+    def parseScope(self, scopeStr, plain=True):
+        result = None
+        warnings = []
+
+        scopeStr = scopeStr.strip()
+
+        if not scopeStr:
+            result = ((0, 0, 0), (-1, -1, -1))
+            return (
+                result
+                if plain
+                else dict(result=result, warning=warnings, normal=self.repScope(result))
+            )
+
+        parts = scopeStr.split(&#34;-&#34;, 1)
+
+        if len(parts) == 1:
+            info = self.parseLoc(scopeStr, plain=False)
+            w = info[&#34;warning&#34;]
+
+            if w:
+                warnings.append(w)
+            else:
+                s = info[&#34;result&#34;]
+                result = (
+                    (s + (0, 0, 0))[0:3],
+                    (s + (-1, -1, -1))[0:3],
+                )
+        else:
+            part = parts[0].strip()
+            info1 = self.parseLoc(part, plain=False)
+            w1 = info1[&#34;warning&#34;]
+
+            part = parts[1].strip()
+            info2 = self.parseLoc(part, plain=False)
+            w2 = info2[&#34;warning&#34;]
+
+            if w1 or w2:
+                if w1:
+                    warnings.append(w1)
+                if w2:
+                    warnings.append(w2)
+            else:
+                s1 = info1[&#34;result&#34;]
+                s2 = info2[&#34;result&#34;]
+                result = (
+                    (s1 + (0, 0, 0))[0:3],
+                    (s2 + (-1, -1, -1))[0:3],
+                )
+
+        normal = None if result is None else self.repScope(result)
+
+        return result if plain else dict(result=result, warning=warnings, normal=normal)
+
+    def parseScopes(self, scopeStr, plain=True):
+        results = []
+        warnings = []
+
+        if not scopeStr:
+            return () if plain else dict(result=(), warning=warnings, normal=&#34;&#34;)
+
+        for scopeStrPart in scopeStr.split(&#34;,&#34;):
+
+            if not scopeStrPart:
+                continue
+
+            info = self.parseScope(scopeStrPart, plain=plain)
+            result = info if plain else info[&#34;result&#34;]
+
+            if result is None:
+                if not plain:
+                    warnings.extend(info[&#34;warning&#34;])
+                continue
+
+            results.append(result)
+
+        results = tuple(_sortScopes(results))
+
+        return (
+            results
+            if plain
+            else dict(result=results, warning=warnings, normal=self.repScopes(results))
+        )
+
+    def intersectScopes(self, *scopeStrs):
+        curIntersection = [self.parseScope(&#34;&#34;)]
+
+        for scopeStr in scopeStrs:
+            newIntersection = []
+            for bLoc, eLoc in self.parseScopes(scopeStr):
+
+                for ibLoc, ieLoc in curIntersection:
+                    if _locCmp(ieLoc, bLoc) == -1:
+                        # ieLoc &lt; bLoc
+                        continue
+                    if _locCmp(ibLoc, eLoc) == 1:
+                        # ibLoc &gt; eLoc
+                        break
+
+                    # now
+                    # bLoc &lt;= ieLoc
+                    # ibLoc &lt;= eLoc
+                    newIbLoc = _locMax(ibLoc, bLoc)
+                    newIeLoc = _locMin(ieLoc, eLoc)
+                    newIntersection.append((newIbLoc, newIeLoc))
+
+            curIntersection = newIntersection
+
+        return tuple(curIntersection)
+
+    def testScopes(self, scopeStrs, seqFromStr):
+        scopeIndex = {}
+
+        for scopeStr in scopeStrs:
+            info = self.parseScopes(scopeStr, plain=False)
+            warning = info[&#34;warning&#34;]
+
+            if len(warning):
+                console(f&#34;Errors in {scopeStr}: {&#39;; &#39;.join(warning)}&#34;)
+            else:
+                scopes = info[&#34;result&#34;]
+                normScopeStr = info[&#34;normal&#34;]
+                console(
+                    f&#34;{scopeStr} =&gt; {normScopeStr}\n&#34;
+                    f&#34;\t{self.repScopes(_sortScopes(scopes))}&#34;
+                )
+                scopeIndex[normScopeStr] = scopes
+
+        partitionScopes(scopeIndex)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.ner.scopes.getIntvIndex"><code class="name flex">
+<span>def <span class="ident">getIntvIndex</span></span>(<span>buckets, instructions, seqFromNode)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.ner.scopes.locInScopes"><code class="name flex">
+<span>def <span class="ident">locInScopes</span></span>(<span>loc, scopes)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.ner.scopes.partitionScopes"><code class="name flex">
+<span>def <span class="ident">partitionScopes</span></span>(<span>scopesDict)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.ner.scopes.Scopes"><code class="flex name class">
+<span>class <span class="ident">Scopes</span></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/54f8fc70db27df28d334280982b28290fa009c46/tf/ner/scopes.py#L214-L385" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class Scopes:
+    def repLoc(self, loc):
+        strFromSeq = self.strFromSeq
+
+        return strFromSeq(tuple(x for x in loc if x != 0 and x != -1))
+
+    def parseLoc(self, locStr, plain=True):
+        seqFromStr = self.seqFromStr
+
+        locStr = locStr.strip()
+
+        if not locStr:
+            result = ()
+            return (
+                ()
+                if plain
+                else dict(result=(), warning=None, normal=self.repLoc(result))
+            )
+
+        (error, result) = seqFromStr(locStr)
+
+        if error:
+            result = None
+            normal = None
+            warning = error
+        else:
+            normal = self.repLoc(result)
+            warning = None
+
+        return result if plain else dict(result=result, warning=warning, normal=normal)
+
+    def repScope(self, scope):
+        if scope is None or len(scope) == 0:
+            return &#34;()&#34;
+
+        (b, e) = scope
+        return (
+            self.repLoc(b) if _sameLoc(b, e) else f&#34;{self.repLoc(b)}-{self.repLoc(e)}&#34;
+        )
+
+    def repScopes(self, scopes):
+        return &#34;, &#34;.join(self.repScope(scope) for scope in scopes)
+
+    def parseScope(self, scopeStr, plain=True):
+        result = None
+        warnings = []
+
+        scopeStr = scopeStr.strip()
+
+        if not scopeStr:
+            result = ((0, 0, 0), (-1, -1, -1))
+            return (
+                result
+                if plain
+                else dict(result=result, warning=warnings, normal=self.repScope(result))
+            )
+
+        parts = scopeStr.split(&#34;-&#34;, 1)
+
+        if len(parts) == 1:
+            info = self.parseLoc(scopeStr, plain=False)
+            w = info[&#34;warning&#34;]
+
+            if w:
+                warnings.append(w)
+            else:
+                s = info[&#34;result&#34;]
+                result = (
+                    (s + (0, 0, 0))[0:3],
+                    (s + (-1, -1, -1))[0:3],
+                )
+        else:
+            part = parts[0].strip()
+            info1 = self.parseLoc(part, plain=False)
+            w1 = info1[&#34;warning&#34;]
+
+            part = parts[1].strip()
+            info2 = self.parseLoc(part, plain=False)
+            w2 = info2[&#34;warning&#34;]
+
+            if w1 or w2:
+                if w1:
+                    warnings.append(w1)
+                if w2:
+                    warnings.append(w2)
+            else:
+                s1 = info1[&#34;result&#34;]
+                s2 = info2[&#34;result&#34;]
+                result = (
+                    (s1 + (0, 0, 0))[0:3],
+                    (s2 + (-1, -1, -1))[0:3],
+                )
+
+        normal = None if result is None else self.repScope(result)
+
+        return result if plain else dict(result=result, warning=warnings, normal=normal)
+
+    def parseScopes(self, scopeStr, plain=True):
+        results = []
+        warnings = []
+
+        if not scopeStr:
+            return () if plain else dict(result=(), warning=warnings, normal=&#34;&#34;)
+
+        for scopeStrPart in scopeStr.split(&#34;,&#34;):
+
+            if not scopeStrPart:
+                continue
+
+            info = self.parseScope(scopeStrPart, plain=plain)
+            result = info if plain else info[&#34;result&#34;]
+
+            if result is None:
+                if not plain:
+                    warnings.extend(info[&#34;warning&#34;])
+                continue
+
+            results.append(result)
+
+        results = tuple(_sortScopes(results))
+
+        return (
+            results
+            if plain
+            else dict(result=results, warning=warnings, normal=self.repScopes(results))
+        )
+
+    def intersectScopes(self, *scopeStrs):
+        curIntersection = [self.parseScope(&#34;&#34;)]
+
+        for scopeStr in scopeStrs:
+            newIntersection = []
+            for bLoc, eLoc in self.parseScopes(scopeStr):
+
+                for ibLoc, ieLoc in curIntersection:
+                    if _locCmp(ieLoc, bLoc) == -1:
+                        # ieLoc &lt; bLoc
+                        continue
+                    if _locCmp(ibLoc, eLoc) == 1:
+                        # ibLoc &gt; eLoc
+                        break
+
+                    # now
+                    # bLoc &lt;= ieLoc
+                    # ibLoc &lt;= eLoc
+                    newIbLoc = _locMax(ibLoc, bLoc)
+                    newIeLoc = _locMin(ieLoc, eLoc)
+                    newIntersection.append((newIbLoc, newIeLoc))
+
+            curIntersection = newIntersection
+
+        return tuple(curIntersection)
+
+    def testScopes(self, scopeStrs, seqFromStr):
+        scopeIndex = {}
+
+        for scopeStr in scopeStrs:
+            info = self.parseScopes(scopeStr, plain=False)
+            warning = info[&#34;warning&#34;]
+
+            if len(warning):
+                console(f&#34;Errors in {scopeStr}: {&#39;; &#39;.join(warning)}&#34;)
+            else:
+                scopes = info[&#34;result&#34;]
+                normScopeStr = info[&#34;normal&#34;]
+                console(
+                    f&#34;{scopeStr} =&gt; {normScopeStr}\n&#34;
+                    f&#34;\t{self.repScopes(_sortScopes(scopes))}&#34;
+                )
+                scopeIndex[normScopeStr] = scopes
+
+        partitionScopes(scopeIndex)</code></pre>
+</details>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="tf.ner.sheets.Sheets" href="sheets.html#tf.ner.sheets.Sheets">Sheets</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.ner.scopes.Scopes.intersectScopes"><code class="name flex">
+<span>def <span class="ident">intersectScopes</span></span>(<span>self, *scopeStrs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.ner.scopes.Scopes.parseLoc"><code class="name flex">
+<span>def <span class="ident">parseLoc</span></span>(<span>self, locStr, plain=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.ner.scopes.Scopes.parseScope"><code class="name flex">
+<span>def <span class="ident">parseScope</span></span>(<span>self, scopeStr, plain=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.ner.scopes.Scopes.parseScopes"><code class="name flex">
+<span>def <span class="ident">parseScopes</span></span>(<span>self, scopeStr, plain=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.ner.scopes.Scopes.repLoc"><code class="name flex">
+<span>def <span class="ident">repLoc</span></span>(<span>self, loc)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.ner.scopes.Scopes.repScope"><code class="name flex">
+<span>def <span class="ident">repScope</span></span>(<span>self, scope)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.ner.scopes.Scopes.repScopes"><code class="name flex">
+<span>def <span class="ident">repScopes</span></span>(<span>self, scopes)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.ner.scopes.Scopes.testScopes"><code class="name flex">
+<span>def <span class="ident">testScopes</span></span>(<span>self, scopeStrs, seqFromStr)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.ner" href="index.html">tf.ner</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.ner.scopes.getIntvIndex" href="#tf.ner.scopes.getIntvIndex">getIntvIndex</a></code></li>
+<li><code><a title="tf.ner.scopes.locInScopes" href="#tf.ner.scopes.locInScopes">locInScopes</a></code></li>
+<li><code><a title="tf.ner.scopes.partitionScopes" href="#tf.ner.scopes.partitionScopes">partitionScopes</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.ner.scopes.Scopes" href="#tf.ner.scopes.Scopes">Scopes</a></code></h4>
+<ul class="two-column">
+<li><code><a title="tf.ner.scopes.Scopes.intersectScopes" href="#tf.ner.scopes.Scopes.intersectScopes">intersectScopes</a></code></li>
+<li><code><a title="tf.ner.scopes.Scopes.parseLoc" href="#tf.ner.scopes.Scopes.parseLoc">parseLoc</a></code></li>
+<li><code><a title="tf.ner.scopes.Scopes.parseScope" href="#tf.ner.scopes.Scopes.parseScope">parseScope</a></code></li>
+<li><code><a title="tf.ner.scopes.Scopes.parseScopes" href="#tf.ner.scopes.Scopes.parseScopes">parseScopes</a></code></li>
+<li><code><a title="tf.ner.scopes.Scopes.repLoc" href="#tf.ner.scopes.Scopes.repLoc">repLoc</a></code></li>
+<li><code><a title="tf.ner.scopes.Scopes.repScope" href="#tf.ner.scopes.Scopes.repScope">repScope</a></code></li>
+<li><code><a title="tf.ner.scopes.Scopes.repScopes" href="#tf.ner.scopes.Scopes.repScopes">repScopes</a></code></li>
+<li><code><a title="tf.ner.scopes.Scopes.testScopes" href="#tf.ner.scopes.Scopes.testScopes">testScopes</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+</footer>
+</body>
+</html>

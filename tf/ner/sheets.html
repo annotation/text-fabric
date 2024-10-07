@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/ner/sheets.py#L1-L981" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/54f8fc70db27df28d334280982b28290fa009c46/tf/ner/sheets.py#L1-L975" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 import time
@@ -44,15 +44,9 @@ from ..core.generic import AttrDict
 from ..core.helpers import console
 from ..core.files import fileOpen, dirContents, extNm, fileExists, mTime
 
-from .helpers import (
-    tnorm,
-    normalize,
-    toSmallId,
-    toTokens,
-    repScope,
-    parseScopes,
-    partitionScopes,
-)
+from .helpers import tnorm, normalize, toSmallId, toTokens
+
+from .scopes import Scopes, partitionScopes
 
 
 DS_STORE = &#34;.DS_Store&#34;
@@ -80,7 +74,7 @@ CLEAR_KEYS = &#34;&#34;&#34;
 &#34;&#34;&#34;.strip().split()
 
 
-class Sheets:
+class Sheets(Scopes):
     def __init__(self, sheets=None):
         CI = CheckImport(&#34;openpyxl&#34;)
         if CI.importOK(hint=True):
@@ -582,7 +576,7 @@ class Sheets:
                 msg = f&#34;r{r + 1:&gt;3}: &#34; f&#34;no kind name, supplied {defaultKind}&#34;
                 log(msg)
 
-            info = parseScopes(scopeStr, plain=False)
+            info = self.parseScopes(scopeStr, plain=False)
             warnings = info[&#34;warning&#34;]
 
             if len(warnings):
@@ -701,7 +695,7 @@ class Sheets:
             scopeStrSet = {&#34;&#34;} if scopeStrs is None else set(scopeStrs)
             intv = (b, e) if b is not None and e is not None else ()
 
-            spec(repScope(intv))
+            spec(self.repScope(intv))
 
             thisCompiled = AttrDict()
             compiled[intv] = thisCompiled
@@ -1034,9 +1028,9 @@ class Sheets:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/ner/sheets.py#L48-L981" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/54f8fc70db27df28d334280982b28290fa009c46/tf/ner/sheets.py#L42-L975" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">class Sheets:
+<pre><code class="python">class Sheets(Scopes):
     def __init__(self, sheets=None):
         CI = CheckImport(&#34;openpyxl&#34;)
         if CI.importOK(hint=True):
@@ -1538,7 +1532,7 @@ class Sheets:
                 msg = f&#34;r{r + 1:&gt;3}: &#34; f&#34;no kind name, supplied {defaultKind}&#34;
                 log(msg)
 
-            info = parseScopes(scopeStr, plain=False)
+            info = self.parseScopes(scopeStr, plain=False)
             warnings = info[&#34;warning&#34;]
 
             if len(warnings):
@@ -1657,7 +1651,7 @@ class Sheets:
             scopeStrSet = {&#34;&#34;} if scopeStrs is None else set(scopeStrs)
             intv = (b, e) if b is not None and e is not None else ()
 
-            spec(repScope(intv))
+            spec(self.repScope(intv))
 
             thisCompiled = AttrDict()
             compiled[intv] = thisCompiled
@@ -1971,6 +1965,10 @@ class Sheets:
         if not browse:
             self.consoleLine(isError, indent, msg)</code></pre>
 </details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="tf.ner.scopes.Scopes" href="scopes.html#tf.ner.scopes.Scopes">Scopes</a></li>
+</ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
 <li><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></li>

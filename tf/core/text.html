@@ -374,7 +374,7 @@ in the file once!)</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/core/text.py#L1-L1273" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/54f8fc70db27df28d334280982b28290fa009c46/tf/core/text.py#L1-L1275" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Text API
@@ -1013,7 +1013,9 @@ class Text:
         sTypes = self.sectionTypes
         if len(sTypes) == 0:
             return None
-        (sec1, sec2) = self.api.C.sections.data
+        cData = self.api.C.sections.data
+        sec1 = cData[&#34;sec1&#34;]
+        sec2 = cData[&#34;sec2&#34;]
         sec0node = self._sec0Node(section[0], lang=lang)
         if len(section) == 1:
             return sec0node
@@ -1683,7 +1685,7 @@ and <code>lang='en'</code> the language of the book name.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/core/text.py#L366-L1273" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/54f8fc70db27df28d334280982b28290fa009c46/tf/core/text.py#L366-L1275" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Text:
     &#34;&#34;&#34;Low level text representation, including section headings.
@@ -1957,7 +1959,9 @@ and <code>lang='en'</code> the language of the book name.</p>
         sTypes = self.sectionTypes
         if len(sTypes) == 0:
             return None
-        (sec1, sec2) = self.api.C.sections.data
+        cData = self.api.C.sections.data
+        sec1 = cData[&#34;sec1&#34;]
+        sec2 = cData[&#34;sec2&#34;]
         sec0node = self._sec0Node(section[0], lang=lang)
         if len(section) == 1:
             return sec0node

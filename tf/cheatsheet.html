@@ -1039,10 +1039,21 @@ functions</p>
 <dd>
 <p><code><a title="tf.core.prepare.characters" href="core/prepare.html#tf.core.prepare.characters">characters()</a></code></p>
 </dd>
-<dt><pre><code class="language-python">C.sections.data
+<dt><pre><code class="language-python">C.sections.data[&quot;sec1&quot;]
+C.sections.data[&quot;sec2&quot;]
 </code></pre></dt>
 <dd>
 <p>feeds the section part of <code><a title="tf.core.text" href="core/text.html">tf.core.text</a></code></p>
+</dd>
+<dd>
+<p><code><a title="tf.core.prepare.sections" href="core/prepare.html#tf.core.prepare.sections">sections()</a></code></p>
+</dd>
+<dt><pre><code class="language-python">C.sections.data[&quot;seqFromSec&quot;]
+C.sections.data[&quot;secFromSeq&quot;]
+</code></pre></dt>
+<dd>
+<p>maps tuples of heading nodes to their corresponding tuples of sequence numbers
+and vice versa. Only if there are 3 section levels.</p>
 </dd>
 <dd>
 <p><code><a title="tf.core.prepare.sections" href="core/prepare.html#tf.core.prepare.sections">sections()</a></code></p>
@@ -1677,7 +1688,7 @@ after running Spacy to get them.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5d256add1d12664610c5ae49d7297f3dbac4ebd6/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/54f8fc70db27df28d334280982b28290fa009c46/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: docs/main/cheatsheet.md
