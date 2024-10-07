@@ -86,7 +86,7 @@ PRECOMPUTE = (
         2,
         "__sections__",
         sections,
-        (OTYPE, OSLOTS, OTEXT) + ("__levUp__", "__levels__"),
+        (OTYPE, OSLOTS, OTEXT) + ("__levUp__", "__levDown__", "__levels__"),
     ),
     (
         2,

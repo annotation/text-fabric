@@ -793,9 +793,18 @@ C.characters.data
 :   `tf.core.prepare.characters`
 
 ``` python
-C.sections.data
+C.sections.data["sec1"]
+C.sections.data["sec2"]
 ```
 :   feeds the section part of `tf.core.text`
+:   `tf.core.prepare.sections`
+
+``` python
+C.sections.data["seqFromSec"]
+C.sections.data["secFromSeq"]
+```
+:   maps tuples of heading nodes to their corresponding tuples of sequence numbers
+    and vice versa. Only if there are 3 section levels.
 :   `tf.core.prepare.sections`
 
 ``` python

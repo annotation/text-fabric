@@ -128,7 +128,7 @@ def levels(info, error, otype, oslots, otext):
             resultIndex = {r[0]: i for (i, r) in enumerate(result)}
 
     info("results:")
-    for (otp, av, omin, omax) in result:
+    for otp, av, omin, omax in result:
         info(f"{otp:<15}: {round(av, 2):>8} {{{omin}-{omax}}}", tm=False)
     return tuple(result)
 
@@ -191,9 +191,7 @@ def order(info, error, otype, oslots, levels):
             return (
                 (-1 if na < nb else 1 if na > nb else 0)
                 if oa == ob
-                else -1
-                if oa > ob
-                else 1
+                else -1 if oa > ob else 1
             )
         if sa > sb:
             return -1
@@ -286,7 +284,7 @@ def levUp(info, error, otype, oslots, rank):
     oslots = oslots[0]
     info("making inverse of edge feature oslots")
     oslotsInv = {}
-    for (k, mList) in enumerate(oslots):
+    for k, mList in enumerate(oslots):
         for m in mList:
             oslotsInv.setdefault(m, set()).add(k + 1 + maxSlot)
     info("listing embedders of all nodes")
@@ -417,24 +415,24 @@ def characters(info, error, otext, tFormats, *tFeats):
 
     charFreqsByFeature = {}
 
-    for (tFeat, data) in tFeats:
+    for tFeat, data in tFeats:
         freqList = collections.Counter()
         if data is not None:
             for v in data.values():
                 freqList[v] += 1
         charFreq = collections.defaultdict(lambda: 0)
-        for (v, freq) in freqList.items():
+        for v, freq in freqList.items():
             for c in str(v):
                 charFreq[c] += freq
         charFreqsByFeature[tFeat] = charFreq
 
     charFreqsByFmt = {}
 
-    for (fmt, tFeatures) in sorted(tFormats.items()):
+    for fmt, tFeatures in sorted(tFormats.items()):
         charFreq = collections.defaultdict(lambda: 0)
         for tFeat in tFeatures:
             thisCharFreq = charFreqsByFeature[tFeat]
-            for (c, freq) in thisCharFreq.items():
+            for c, freq in thisCharFreq.items():
                 charFreq[c] += freq
         charFreqsByFmt[fmt] = sorted(x for x in charFreq.items())
 
@@ -486,7 +484,7 @@ def boundary(info, error, otype, oslots, rank):
     firstSlotsD = {}
     lastSlotsD = {}
 
-    for (node, slots) in enumerate(oslots):
+    for node, slots in enumerate(oslots):
         realNode = node + 1 + maxSlot
         firstSlotsD.setdefault(slots[0], []).append(realNode)
         lastSlotsD.setdefault(slots[-1], []).append(realNode)
@@ -506,7 +504,7 @@ def boundary(info, error, otype, oslots, rank):
     return (firstSlots, lastSlots)
 
 
-def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
+def sections(info, error, otype, oslots, otext, levUp, levDown, levels, *sFeats):
     """Computes section data.
 
     TF datasets may define up to three section levels, roughly corresponding
@@ -520,6 +518,11 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     at one level lower. It must also be able to map section headings
     to nodes. For this, the section features are needed, since they
     contain the section headings.
+
+    We also map the sections to sequence numbers and back, at each level, e.g.
+    in the Hebrew Bible `Genesis` is mapped to 1, `Exodus` to 2, etc.
+    We also do it for integer values components, and we make sure that the first section
+    at each level gets sequence number `1`.
 
     Parameters
     ----------
@@ -535,6 +538,8 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
         The data of the `otext` feature.
     levUp: tuple
         The data of the `levUp` pre-computation step.
+    levDown: tuple
+        The data of the `levDown` pre-computation step.
     levels: tuple
         The data of the `levels` pre-computation step.
     sFeats: iterable
@@ -542,14 +547,24 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
 
     Returns
     -------
-    tuple
-        *   `sec1`
+    dict
+        We have the following items:
+
+        *   `sec1`:
             Mapping from section-level-1 nodes to mappings from
             section-level-2 headings to section-level-2 nodes.
-        *   `sec2`
+        *   `sec2`:
             Mapping from section-level-1 nodes to mappings from
             section-level-2 headings to mappings from
             section-level-3 headings to section-level-3 nodes.
+        *   `seqFromSec`:
+            Mapping from tuples of section nodes to tuples of sequence numbers.
+            Only if there are precisely 3 section levels, otherwise this is an
+            empty dictionary.
+        *   `secFromSeq`:
+            Mapping from tuples of section sequence numbers to tuples of nodes.
+            Only if there are precisely 3 section levels, otherwise this is an
+            empty dictionary.
 
     Warnings
     --------
@@ -565,6 +580,8 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     sTypes = itemize(otext["sectionTypes"], ",")
     sec1 = {}
     sec2 = {}
+    seqFromSec = {}
+    secFromSeq = {}
     nestingProblems = collections.Counter()
 
     if len(sTypes) < 2:
@@ -629,10 +646,41 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
         info(f"{c1} {sTypes[1]}s and {c2} {sTypes[2]}s indexed")
 
     if nestingProblems:
-        for (msg, amount) in sorted(nestingProblems.items()):
+        for msg, amount in sorted(nestingProblems.items()):
             error(f"WARNING: {amount:>4} x {msg}")
 
-    return (sec1, sec2)
+    c0 = 0
+
+    if len(sTypes) == 3:
+        support0 = support[sTypes[0]]
+
+        for n0 in range(support0[0], support0[1] + 1):
+            c0 += 1
+            seqFromSec[n0] = (c0,)
+            secFromSeq[(c0,)] = n0
+
+            c1 = 0
+
+            for n1 in (
+                x
+                for x in levDown[n0 - maxSlot - 1]
+                if otype[x - maxSlot - 1] == sTypes[1]
+            ):
+                c1 += 1
+                c2 = 0
+                seqFromSec[n1] = (c0, c1)
+                secFromSeq[(c0, c1)] = n1
+
+                for n2 in (
+                    x
+                    for x in levDown[n1 - maxSlot - 1]
+                    if otype[x - maxSlot - 1] == sTypes[2]
+                ):
+                    c2 += 1
+                    seqFromSec[n2] = (c0, c1, c2)
+                    secFromSeq[(c0, c1, c2)] = n2
+
+    return dict(sec1=sec1, sec2=sec2, seqFromSec=seqFromSec, secFromSeq=secFromSeq)
 
 
 def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
@@ -706,7 +754,7 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
         return ({}, {})
 
     higherTypes = collections.defaultdict(set)
-    for (i, highType) in enumerate(sTypeList):
+    for i, highType in enumerate(sTypeList):
         for lowType in sTypeList[i:]:
             higherTypes[lowType].add(highType)
 
@@ -752,7 +800,7 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
     )
 
     up = {}
-    for (n, heading) in headingFromNode.items():
+    for n, heading in headingFromNode.items():
         lHeading = len(heading)
         if lHeading == 1:
             continue
@@ -765,7 +813,7 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
                 break
 
     down = {}
-    for (n, heading) in headingFromNode.items():
+    for n, heading in headingFromNode.items():
         if len(heading) == 1:
             continue
         down.setdefault(up[n], []).append(n)

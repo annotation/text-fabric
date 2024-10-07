@@ -55,10 +55,22 @@ class Corpus(Settings):
         Fs = api.Fs
         L = api.L
         T = api.T
+        C = api.C
+
         slotType = F.otype.slotType
 
         self.slotType = slotType
         """The node type of the slots in the corpus."""
+
+        seqFromSec = C.sections.data["seqFromSec"]
+        self.seqFromSec = seqFromSec
+        """Maps headings as tuples of sequence numbers to tuples of nodes.
+        """
+
+        secFromSeq = C.sections.data["secFromSeq"]
+        self.secFromSeq = secFromSeq
+        """Maps headings as tuples of nodes to tuples of sequence numbers.
+        """
 
         settings = self.settings
         features = settings.features
@@ -145,8 +157,20 @@ class Corpus(Settings):
         def getContext(node):
             return L.d(T.sectionTuple(node)[1], otype=bucketType)
 
-        def getHeadings(node):
-            return tuple(int(str(x).lstrip("0")) for x in T.sectionFromNode(node))
+        def seqFromNode(node):
+            return seqFromSec[T.sectionTuple(node)[-1]]
+
+        def seqFromStr(string):
+            result = app.nodeFromSectionStr(string)
+
+            if type(result) is str:
+                return (result, ())
+
+            return ("", seqFromSec[result])
+
+        def strFromSeq(seq):
+            node = secFromSeq[seq]
+            return app.sectionStrFromNode(node)
 
         def get0(slots):
             text = getText(slots)
@@ -288,8 +312,14 @@ class Corpus(Settings):
             string value. If there is no string value, the empty string is taken.
         """
 
-        self.getHeadings = getHeadings
+        self.seqFromNode = seqFromNode
         """Gets the heading tuple of the section of a node.
+
+        We need to treat headings as section numbers. So whatever the section features
+        deliver for each level, integers or strings, we convert it in to integers,
+        so that the first section gets number one, the second section number two,
+        and so on. This we do for each level, so every section is mapped onto a tuple
+        of integers.
 
         Parameters
         ----------
@@ -299,11 +329,44 @@ class Corpus(Settings):
         Returns
         -------
         tuple
-            The tuple consists of headings strings per
-            level, the most significant sections first.
+            The tuple consists of sequence numbers per level, the most significant
+            sections first.
             If the node itself is a section node, the last element is
             the heading of the given node.
-            We convert numbers to strings and strip leading zeros.
+        """
+
+        self.seqFromStr = seqFromStr
+        """Gets the heading tuple of a section string.
+
+        As `seqFromNode`, but the input section is now given as a string.
+
+        Parameters
+        ----------
+        string: string
+            The heading, represented as string of the section we want.
+
+        Returns
+        -------
+        string, tuple
+            The tuple consists of sequence numbers per level, the most significant
+            sections first.
+            If there is an error, the string part will contain the error message,
+            and the tuple part is the empty tuple.
+            In case of no error, the string part is the empty string.
+        """
+
+        self.strFromSeq = strFromSeq
+        """Gets the heading string from a sequence number tuple of a section.
+
+        Parameters
+        ----------
+        seq: tuple
+            The heading, represented as tuple of sequence numbers
+
+        Returns
+        -------
+        string
+            The heading string of the section
         """
 
         self.getStrings = getStrings

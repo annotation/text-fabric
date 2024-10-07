@@ -231,7 +231,8 @@ from .sets import Sets
 from .sheets import Sheets
 from .match import entityMatch, occMatch
 from .show import Show
-from .helpers import findCompile, toTokens, makePartitions, interference, locInScopes
+from .scopes import locInScopes
+from .helpers import findCompile, toTokens, makePartitions, hasCommon
 
 
 class NER(Sheets, Sets, Show):
@@ -357,7 +358,7 @@ class NER(Sheets, Sets, Show):
 
         setData = self.getSetData()
         getTokens = self.getTokens
-        getHeadings = self.getHeadings
+        seqFromNode = self.seqFromNode
 
         buckets = setData.buckets or ()
         sheetData = self.getSheetData()
@@ -382,7 +383,7 @@ class NER(Sheets, Sets, Show):
 
         inventory = occMatch(
             getTokens,
-            getHeadings,
+            seqFromNode,
             buckets,
             instructions,
             spaceEscaped,
@@ -403,7 +404,7 @@ class NER(Sheets, Sets, Show):
 
         setData = self.getSetData()
         getTokens = self.getTokens
-        getHeadings = self.getHeadings
+        seqFromNode = self.seqFromNode
 
         buckets = setData.buckets or ()
         sheetData = self.getSheetData()
@@ -424,7 +425,7 @@ class NER(Sheets, Sets, Show):
 
         inventory = occMatch(
             getTokens,
-            getHeadings,
+            seqFromNode,
             buckets,
             instructions,
             spaceEscaped,
@@ -513,10 +514,11 @@ class NER(Sheets, Sets, Show):
         rowMap = sheetData.rowMap
         triggerScopes = sheetData.triggerScopes
 
-        interferences, parts = interference(
+        interferences, parts = self.interference(
             rowMap,
             triggerScopes,
             self.getToTokensFunc(),
+            self.seqFromStr,
             alsoInternal=alsoInternal,
             alsoExpected=alsoExpected,
         )
@@ -819,6 +821,96 @@ class NER(Sheets, Sets, Show):
 
         return ok
 
+    def interference(
+        self,
+        rowMap,
+        triggerScopes,
+        myToTokens,
+        seqFromStr,
+        alsoInternal=False,
+        alsoExpected=False,
+    ):
+        triggers = list(rowMap)
+
+        triggerTokens, parts = makePartitions(triggers, myToTokens)
+
+        nParts = len(parts)
+
+        interferences = []
+
+        intersections = {}
+
+        for i, part in enumerate(parts):
+            if i == nParts - 1:
+                break
+
+            for otherPart in parts[i + 1 : nParts]:
+                for triggerA in part:
+                    for triggerB in otherPart:
+                        tokensA = triggerTokens[triggerA]
+                        tokensB = triggerTokens[triggerB]
+
+                        if not alsoInternal:
+                            rowsA = set(rowMap[triggerA])
+                            rowsB = set(rowMap[triggerB])
+                            if rowsA == rowsB:
+                                continue
+
+                        scopesA = ",".join(sorted(triggerScopes[triggerA]))
+                        scopesB = ",".join(sorted(triggerScopes[triggerB]))
+                        commonScopes = intersections.get((triggerA, triggerB), None)
+
+                        if commonScopes is None:
+                            commonScopes = self.intersectScopes(scopesA, scopesB)
+                            intersections[(triggerA, triggerB)] = commonScopes
+
+                        if len(commonScopes) == 0:
+                            continue
+
+                        common = hasCommon(tokensA, tokensB)
+
+                        if common is None:
+                            continue
+
+                        ref, pos, length = common
+                        nTokensA = len(tokensA)
+                        nTokensB = len(tokensB)
+
+                        nTokensLatter = nTokensB if ref == 1 else nTokensA
+
+                        expected = length == nTokensLatter
+
+                        if expected and not alsoExpected:
+                            continue
+
+                        if ref == 1:
+                            nB = len(tokensB)
+                            union = tokensA
+
+                            if length < nB:
+                                union += tokensB[length:]
+                        else:
+                            nA = len(tokensA)
+                            union = tokensB
+
+                            if length < nA:
+                                union += tokensA[length:]
+
+                        interferences.append(
+                            (
+                                triggerA,
+                                triggerB,
+                                " ".join(union),
+                                scopesA,
+                                scopesB,
+                                commonScopes,
+                            )
+                        )
+
+        parts = makePartitions([x[2] for x in interferences], myToTokens)[1]
+
+        return interferences, parts
+
     def findOccs(self):
         """Finds the occurrences of multiple triggers.
 
@@ -847,7 +939,7 @@ class NER(Sheets, Sets, Show):
 
         setData = self.getSetData()
         getTokens = self.getTokens
-        getHeadings = self.getHeadings
+        seqFromNode = self.seqFromNode
 
         buckets = setData.buckets or ()
 
@@ -856,7 +948,7 @@ class NER(Sheets, Sets, Show):
         caseSensitive = sheetData.caseSensitive
         sheetData.inventory = occMatch(
             getTokens,
-            getHeadings,
+            seqFromNode,
             buckets,
             instructions,
             spaceEscaped,
@@ -1124,7 +1216,7 @@ class NER(Sheets, Sets, Show):
             return
 
         silent = self.silent if silent is None else silent
-        getHeadings = self.getHeadings
+        sectionHead = self.sectionHead
         sheetData = self.getSheetData()
         allTriggers = sheetData.allTriggers
         inventory = sheetData.inventory
@@ -1176,7 +1268,7 @@ class NER(Sheets, Sets, Show):
                 for slot in slots:
                     triggersBySlot.setdefault(slot, set()).add(trigger)
 
-                section = ".".join(str(x) for x in getHeadings(slots[0]))
+                section = sectionHead(slots[0])
                 sectionInfo[section] += 1
 
             for section, hits in sorted(sectionInfo.items()):

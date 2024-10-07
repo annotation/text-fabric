@@ -9,15 +9,9 @@ from ..core.generic import AttrDict
 from ..core.helpers import console
 from ..core.files import fileOpen, dirContents, extNm, fileExists, mTime
 
-from .helpers import (
-    tnorm,
-    normalize,
-    toSmallId,
-    toTokens,
-    repScope,
-    parseScopes,
-    partitionScopes,
-)
+from .helpers import tnorm, normalize, toSmallId, toTokens
+
+from .scopes import Scopes, partitionScopes
 
 
 DS_STORE = ".DS_Store"
@@ -45,7 +39,7 @@ CLEAR_KEYS = """
 """.strip().split()
 
 
-class Sheets:
+class Sheets(Scopes):
     def __init__(self, sheets=None):
         CI = CheckImport("openpyxl")
         if CI.importOK(hint=True):
@@ -547,7 +541,7 @@ class Sheets:
                 msg = f"r{r + 1:>3}: " f"no kind name, supplied {defaultKind}"
                 log(msg)
 
-            info = parseScopes(scopeStr, plain=False)
+            info = self.parseScopes(scopeStr, plain=False)
             warnings = info["warning"]
 
             if len(warnings):
@@ -666,7 +660,7 @@ class Sheets:
             scopeStrSet = {""} if scopeStrs is None else set(scopeStrs)
             intv = (b, e) if b is not None and e is not None else ()
 
-            spec(repScope(intv))
+            spec(self.repScope(intv))
 
             thisCompiled = AttrDict()
             compiled[intv] = thisCompiled

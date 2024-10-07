@@ -22,7 +22,7 @@ NAME = "Text-Fabric"
 
 BANNER = f"This is {NAME} {VERSION}"
 
-PACK_VERSION = "3"
+PACK_VERSION = "4"
 """Data serialization version.
 
 Plain text feature files will be compressed to zipped, `pickled` data structures

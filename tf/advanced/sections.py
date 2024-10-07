@@ -89,6 +89,7 @@ def nodeFromSectionStr(app, sectionStr, lang="en"):
     msg = f'Not a valid passage: "{sectionStr}"'
     msgi = '{} "{}" is not a number'
     section = sectionStr.split(sep1)
+
     if len(section) > 2:
         return msg
     elif len(section) == 2:
@@ -96,10 +97,12 @@ def nodeFromSectionStr(app, sectionStr, lang="en"):
         if len(section2) > 2:
             return msg
         section = [section[0]] + section2
+
     dataTypes = T.sectionFeatureTypes
     sectionTypes = T.sectionTypes
     sectionTyped = []
     msgs = []
+
     for (i, sectionPart) in enumerate(section):
         if dataTypes[i] == "int":
             try:
@@ -109,11 +112,14 @@ def nodeFromSectionStr(app, sectionStr, lang="en"):
                 part = None
         else:
             part = sectionPart
+
         sectionTyped.append(part)
+
     if msgs:
         return "\n".join(msgs)
 
     sectionNode = T.nodeFromSection(sectionTyped, lang=lang)
+
     if sectionNode is None:
         return msg
     return sectionNode

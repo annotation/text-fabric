@@ -635,7 +635,9 @@ class Text:
         sTypes = self.sectionTypes
         if len(sTypes) == 0:
             return None
-        (sec1, sec2) = self.api.C.sections.data
+        cData = self.api.C.sections.data
+        sec1 = cData["sec1"]
+        sec2 = cData["sec2"]
         sec0node = self._sec0Node(section[0], lang=lang)
         if len(section) == 1:
             return sec0node

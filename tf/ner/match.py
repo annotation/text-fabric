@@ -2,12 +2,13 @@
 """
 
 from .settings import NONE
-from .helpers import fromTokens, getIntvIndex, xstrip
+from .scopes import getIntvIndex
+from .helpers import fromTokens, xstrip
 
 
 def occMatch(
     getTokens,
-    getHeadings,
+    seqFromNode,
     buckets,
     instructions,
     spaceEscaped,
@@ -19,8 +20,8 @@ def occMatch(
     ----------
     getTokens: function
         See `tf.ner.corpus.Corpus.getTokens`
-    getHeadings: function
-        See `tf.ner.corpus.Corpus.getHeadings`
+    seqFromNode: function
+        See `tf.ner.corpus.Corpus.seqFromNode`
     buckets: tuple of integer
         The bucket nodes in question
     instructions: dict, optional None
@@ -62,7 +63,7 @@ def occMatch(
 
     results = {}
 
-    intvIndex = getIntvIndex(buckets, instructions, getHeadings)
+    intvIndex = getIntvIndex(buckets, instructions, seqFromNode)
 
     for b in buckets:
         intv = intvIndex[b]
