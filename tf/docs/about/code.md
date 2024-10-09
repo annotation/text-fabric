@@ -5,11 +5,14 @@ each with their own, identifiable task.
 
 Some parts of the code are covered by unit tests (`tf.about.tests`).
 
+There is also a
+[count of code lines per module and language](https://annotation.github.io/text-fabric/tf/stats/index.html)
+
 ## Base
 
 (`tf.core`) The core API is responsible for:
 
-Data management
+Feature management
 :   TF data consists of *feature files*.
     TF must be able to load them, save them, import / export from MQL.
 
@@ -45,7 +48,7 @@ Search versus hand coding
 (`tf.advanced`) TF contains an advanced API geared to auto-downloading
 corpus data and displaying corpus materials in useful ways.
 
-## Web interface
+## Dynamic Web interface
 
 (`tf.browser`) TF contains a browser interface for interacting
 with your corpus without programming.
@@ -59,6 +62,12 @@ with the results:
 
 This interface be served by a local web server provided with data from a TF app.
 (`tf.browser.start`, `tf.browser.kernel` and `tf.browser.web`).
+
+## Static Web interface
+
+(`tf.client`) There is also a static browser interface: you can build a set of
+static HTML pages with Javascript files out of a corpus, which has a search interface
+of a different kind than `tf.search`.
 
 ## Volumes and collections
 
@@ -85,3 +94,9 @@ There is also some support for round-trips of TF data into other annotation tool
 
 (`tf.writing`) TF supports several writing systems by means of transliterations
 and conversions between them and UNICODE.
+
+## NER
+
+(`tf.ner` and `tf.browser.ner`) This is machinery and an interface to do Named
+Entity Recognition, based on patterns you specify. These patterns can be supplied ad
+hoc in a web interface, or systematically in a spreadsheet.

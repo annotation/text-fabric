@@ -338,7 +338,53 @@ class Sheets(Scopes):
         wb.save(asFile)
 
     def readSheetData(self):
-        """Read the data of the spreadsheet and deliver it as a list of lists"""
+        """Read the data of the spreadsheet and deliver it as a list of field lists.
+
+        Concerning the Excel sheets in `ner/sheets`:
+
+        *   they will be read by `tf.ner.ner.NER.setSheet()`;
+        *   you might need to `pip install openpyxl` first;
+
+        Each row in the spreadsheet specifies a set of triggers for a named entity
+        in a certain scope. The row may have additional metadata, which will be linked
+        to the named entity.
+        If you need several scopes for the same named entity, make sure the metadata
+        in those rows is identical. Otherwise it is unpredictable from which row the
+        metadata will be taken.
+
+        The first row is a header row, but the names are only important for the columns
+        marked as metadata columns.
+
+        The second row will be ignored, you can use it as an explanation or subtitle
+        of the column titles in the header row.
+
+        Here is a specification of the columns. We only specify the first so many
+        columns. The remaining columns are treated as metadata.
+
+        1.  **comment**. If this cell starts with a `#` the whole row will be
+            skipped and ignored. Otherwise, the value is taken as a comment, that you
+            are free to fill in or leave empty.
+
+        1.  **name**. The full name of the entity, as it occurs in articles and
+            reference works.
+
+        1.  **kind**. A label that indicates what type of entity it is, e.g. `PER` for
+            person and `LOC` for location and `ORG` for organization. But you are free
+            to chose the labels.
+
+        1.  **scope**. A string that indicates portions in the corpus where the
+            triggers for this entity are valid. The scope specifies zero or more
+            intervals of sections in the corpus, where an empty scope denotes the
+            whole corpus. See `tf.ner.scopes.Scopes.parseScopes()`
+            for the syntax of scope specifiers.
+
+        1.  **triggers**. A list of triggers, i.e. textual strings that occur in the
+            corpus and trigger the detection of the entity named in the **name**
+            column.
+
+        The remaining columns are metadata columns. This metadata can be retrieved
+        by means of the function `tf.ner.ner.NER.getMeta()`
+        """
         sheetName = self.sheetName
         sheetDir = self.sheetDir
         loadXls = self.loadXls

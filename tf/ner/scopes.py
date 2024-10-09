@@ -309,6 +309,66 @@ class Scopes:
         return result if plain else dict(result=result, warning=warnings, normal=normal)
 
     def parseScopes(self, scopeStr, plain=True):
+        """Parse a scope specification into logical specifiers of regions in the corpus.
+
+        A scope specification is a comma-separated list of scope strings.
+
+        A scope string is either a section or an interval between two sections.
+
+        A section is written as a section heading, an interval as two section headings
+        with a `-` in between.
+
+        An interval is taken from the start of the first section to the end of the
+        second section.
+
+        A section on its own is taken from its start to its end.
+
+        Examples:
+
+        *   `3` is the whole of section `3`
+        *   `3-3.4` is from the start of section `3` to the end of section `3.4`
+        *   `3.4-3` is from the start of section `3.4` to the end of section `3`
+        *   `3.4-5` is from the start of section `3.4`, through the rest of section `3`,
+            through the whole of section `4`, till the end of section `5`
+
+        A section heading is written as it appears when TF represents sections.
+        If you browse the corpus in the TF browser you'll see how those
+        sections are represented. Even if section headings are not numeric, TF knows
+        which sections you mean:
+
+        *   `Genesis 1:5-Deuteronomy 26:6` if from the start of book Genesis
+            chapter 1 verse 5, through the rest of Genesis, through the books of
+            Exodus and Leviticus, till the end of Deuteronomy chapter 26 verse 6.
+
+        Even if the headings given at the boundaries of an interval are numeric, TF
+        knows the exact ordering of all sections, and will fill them in.
+
+        Suppose in a corpus you have main sections `1`, `4`, `3`, `3b`, `5` in that
+        order, then:
+
+        *   `1-5` is from the start of `1`, through `4`, `3`, `3b`, to the end of `5`
+        *   `1-4` is sections `1` and `4` *only*
+        *   `1-3` is sections `1`, `4`, `3` *only*
+        *   `3-5` is sections `3`, `3b` and `5` *only*
+
+        Implementation detail: Text-Fabric pre-computes the sequence of all sections
+        in your corpus, and maps them onto a legal numbering system, where each
+        section corresponds to a tuple of sequence numbers. For example, in the
+        [Hebrew Bible](https://github.com/ETCBC/bhsa),
+        `Exodus 3:4` is mapped to `(2, 3, 4)` since `Exodus` is the
+        second top level section in that corpus.
+
+        In the [Suriano letters](https://gitlab.huc.knaw.nl/suriano/letters),
+        `04@027:5` is mapped to `(3, 27, 5)`, since the main sections start at
+        `02`, there is no `01`.
+
+        The inverse mapping is also present in the pre-computed data of the corpus.
+        These mappings are from section nodes to legal number tuples and back.
+        The mapping from section node to heading string and back is is done by
+        TF functions `tf.advanced.sections.sectionStrFromNode()` and
+        `tf.advanced.sections.nodeFromSectionStr()`.
+        """
+
         results = []
         warnings = []
 

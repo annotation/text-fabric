@@ -18,6 +18,34 @@ pip install -e .
 
 ## 12
 
+### 12.6
+
+#### 12.6.0
+
+2024-10-08
+
+Something has changed in the representation of the corpus data: we store something
+extra about sections in the precomputed data: a mapping from section nodes to their
+*legal* numbering, i.e. each section is assigned a tuple of integers with sequence
+numbers for each level of containing sections and itself. The new data is accessible
+as follows:
+
+``` python
+C.sections.data["seqFromSec"]
+C.sections.data["secFromSeq"]
+```
+
+See also `tf.core.prepare.sections`
+
+This means that older precomputed data can no longer used with this version of
+Text-Fabric. When you run this new version, it will automatically precompute your
+corpus data again upon first usage, without removing the older precomputed data, so you
+can still switch back and forth between TF versions. 
+See `tf.parameters.PACK_VERSION`, which has been bumped from `3` to `4` in this version.
+
+The reason is that the `tf.ner` facility needs to handle sections in a generic way,
+it needs to work with intervals of sections and intersections of those.
+
 ### 12.5
 
 #### 12.5.5

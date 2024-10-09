@@ -210,6 +210,8 @@ def pdoc3(pkg):
     # rmtree(f"{SITE}/{pkg}")
     console("Copy over the images")
     copytree(f"{pkg}/docs/images", f"{SITE}/{pkg}/images", dirs_exist_ok=True)
+    console("Copy over the stats")
+    copytree(f"{pkg}/docs/stats", f"{SITE}/{pkg}/stats", dirs_exist_ok=True)
 
     # a link from the old docs URL to the new one
     copyfile(f"{pkg}/docs/index.html", f"{SITE}/index.html")

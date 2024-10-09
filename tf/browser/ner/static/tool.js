@@ -73,11 +73,16 @@ const setControls = () => {
 
   aDup.off("click").click(e => {
     const setName = seth.val()
-    const newName = suggestName(setName, true)
+    const realSetName = setName.startsWith(".") ? setName.substring(1) : setName
+    let newName = suggestName(realSetName, true)
     if (newName == null) {
       e.preventDefault()
       return
     }
+    if (newName.startsWith(".")) {
+      newName = newName.substring(1)
+    }
+
     duseth.val(newName)
     storeForm()
   })

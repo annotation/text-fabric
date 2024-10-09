@@ -26,12 +26,17 @@ You need not go to a specific directory.
 Give the command
 
 ``` sh
-tf HuygensING/suriano --tool=ner --chrome
+tf HuygensING/suriano --tool=ner
 ```
 
 The tool opens in a new window in the Chrome browser.
 Currently the tool works best in Chrome, but it is not required.
-If you leave out the `--chrome` bit, the tool starts in your default browser.
+
+``` sh
+tf HuygensING/suriano --tool=ner --chrome
+```
+
+lets the tool starts in Chrome.
 
 You can restart the tool without navigating away from the web page as follows:
 
@@ -63,6 +68,10 @@ The start-up window looks like this:
     So, if the existing set is a good one, requiring only a few tweaks,
     this is a good way to start.
 
+    Some of the sets may have a spreadsheet behind it, which specifies the triggers
+    by which entities are looked up. If there are diagnostic messages coming
+    from reading and parsing the spreadsheet, you will see them in this column.
+
 *   **Entities column**:
 
     See the entities in the chosen set.
@@ -79,18 +88,23 @@ The start-up window looks like this:
 
     On the right you see all occurrences of this entity, highlighted.
 
+    If the set has a spreadsheet behind it, you not only see the entities, but also
+    their triggers. You can click on a trigger to see its occurrences, and click
+    again to unselect that trigger. You can click on an entity to see the occurrences 
+    of all of its triggers, and click again on the entity to unselect it.
+
 *   **Right column**:
 
     See a list of buckets (i.e. paragraphs in this corpus).
 
-    If you have clicked on an entity, you see the buckets that contain an occurrence
-    of that entity.
+    If you have clicked on an entity or trigger, you see the buckets that
+    contain an occurrence of that entity or trigger.
 
     If you have not clicked on anything, you see the whole corpus, truncated to the
     first 100 buckets.
 
-    We got here by clicking on an entity. If we click the ❌ next to the entity on top,
-    we reset the viewer.
+    If we click the ❌ next to the entity on top, we reset the viewer.
+    If there is no ❌ then click on the selected entity or trigger to reset the viewer.
 
     From this point, we can do a succession of steps.
 
@@ -297,7 +311,7 @@ Whereas the ✅ button fills the `eid` field with a value derived from the occur
 the ❎ leaves the previous value unchanged. So you can just click `add` to mark
 the new occurrences with the values of the same entity as before.
 
-# Programming
+# Spreadsheets
 
 The workflow sketched above works fine if you know what to look for, and if there are
 not too many distinct named entities in the corpus.
@@ -306,11 +320,30 @@ Probably you soon discover that there are quite a bit of distinct named entities
 and each entity has quite a bit of surface forms.
 Then the work load may not feel doable any more.
 
-For that purpose, there is also a way of annotating-by-programming, where you run the
-annotator tool in a Jupyter Notebook, driven by a spreadsheet with names and
-surface forms.
+For that purpose, there is also a way of annotating-by-spreadsheet, where you run the
+annotator tool, driven by a spreadsheet with names and surface forms.
 
 See `tf.ner.ner`.
 
 You can then still use this tool after the fact to check the entity assignments
 and make fine-tuning corrections.
+
+In the tool, you see the annotation sets made by spreadsheets. However,you can not
+edit them, they are read only. What you can do, is to *duplicate* such a set.
+The duplicate is a proper, editable annotation set, and then you can select new
+occurrences and add them, or delete existing occurrences.
+
+The resulting set does not have any intrinsic relationship to the original spreadsheet.
+
+## Ergonomics of annotation
+
+We try to reduce the work of manual annotations as much as possible.
+It is a balancing act between automating as much as possible, but not so much that
+you miss the fine points in your corpus.
+
+We need to gather experience in order to arrive at a truly usable tool.
+
+We are going to mark up the 
+[Suriano/letters](https://gitlab.huc.knaw.nl/suriano/letters) corpus in this
+way and hope to acquire a lot of experience in the process.
+

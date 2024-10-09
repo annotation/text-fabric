@@ -1,44 +1,9 @@
-"""API for Named Entity marking.
+"""Named Entity Recognition by Triggers.
 
 As a preparation, read `tf.about.annotate` first, since it explains the concepts, and
 guides you to set up the configuration for your corpus.
 
-The class `tf.ner.ner.NER` in this module is the central class of this tool whose main
-task is to find occurrences of annotations on the basis of criteria.
-
-This module inherits from a number of other modules:
-
-*   `tf.ner.match`: to filter individual buckets on the basis of criteria.
-*   `tf.ner.sets`: manage annotation sets;
-*   `tf.ner.data`: manage annotation data: loading, adding/deleting annotations;
-*   `tf.ner.show`: generate HTML for annotated buckets of the corpus;
-*   `tf.ner.settings`: manage the specifics of a TF corpus and have access to its data.
-*   `tf.ner.helpers`: a variety of context-free data jugglers;
-
-The NER machinery can be used by
-
-*   users to manipulate annotations in their own programs, especially in a
-    Jupyter notebook.
-*   `tf.browser.ner.web`: Flask app that routes URLs to controller functions.
-
-The browsing experience is further supported by:
-
-*   `tf.browser.ner.serve`: define the controllers of the web app
-*   `tf.browser.ner.request`: manage the data of a request;
-*   `tf.browser.ner.form`: retrieve form values into typed and structured values.
-*   `tf.browser.ner.fragments`: generate HTML for widgets on the page;
-*   `tf.browser.html`: a generic library to generate HTML using Pythonic syntax.
-
-# Programmatic annotation done in a Jupyter Notebook
-
-If you have a spreadsheet with named entities, and for each entity a list of surface forms,
-then this module takes care to read that spreadsheet, translate it to YAML,
-and then use the YAML as instructions to add entity annotations to the corpus.
-
-See this
-[example notebook](https://nbviewer.org/urls/gitlab.huc.knaw.nl/suriano/letters/-/raw/main/programs/ner.ipynb/%3Fref_type%3Dheads%26inline%3Dfalse).
-
-Here are more details.
+We explain here how to work with entity spreadsheets.
 
 ## Starting up
 
@@ -236,6 +201,49 @@ from .helpers import findCompile, toTokens, makePartitions, hasCommon
 
 
 class NER(Sheets, Sets, Show):
+    """API for Named Entity marking.
+
+    This class is the central class of the trigger based Named Entity
+    Recognition tool whose main task is to find occurrences of annotations on
+    the basis of criteria.
+
+    This class inherits from a number of other classes:
+
+    *   `tf.ner.sheets`: manage annotation spreadsheets;
+    *   `tf.ner.sets`: manage annotation sets;
+    *   `tf.ner.show`: generate HTML for annotated buckets of the corpus;
+
+    In turn, these classes inherit from yet other classes:
+
+    *   `tf.ner.sets` from `tf.ner.data`: manage the annotation data in various
+        convenient representations;
+    *   `tf.ner.data` from `tf.ner.corpus`: manage the corpus dependent bits; it uses
+        the TF machinery to extract the specifics of the corpus;
+    *   `tf.ner.corpus` from `tf.ner.settings`: additional settings, some of which
+        derive from a config file;
+    *   `tf.ner.sheets` from `tf.ner.scopes`: support the concept of scope in
+        the corpus;
+
+    The NER machinery can be used by
+
+    *   users to manipulate annotations in their own programs, especially in a
+        Jupyter notebook.
+    *   `tf.browser.ner.web`: Flask app that routes URLs to controller functions.
+
+    The browsing experience is supported by:
+
+    *   `tf.browser.ner.web`: map urls to the controllers of the web app
+    *   `tf.browser.ner.serve`: implement the controllers of the web app
+    *   `tf.browser.ner.request`: manage the data of a request;
+    *   `tf.browser.ner.form`: retrieve form values into typed and structured values.
+    *   `tf.browser.ner.fragments`: generate HTML for widgets on the page;
+    *   `tf.browser.ner.websettings`: settings for the browser experience;
+    *   `tf.browser.html`: a generic library to generate HTML using Pythonic syntax.
+
+    See this
+    [example notebook](https://nbviewer.org/urls/gitlab.huc.knaw.nl/suriano/letters/-/raw/main/programs/ner.ipynb/%3Fref_type%3Dheads%26inline%3Dfalse).
+    """
+
     def __init__(
         self,
         app,
@@ -245,30 +253,23 @@ class NER(Sheets, Sets, Show):
         caseSensitive=False,
         silent=False,
     ):
-        """Entity annotation.
+        """Top level functions for entity annotation.
 
-        Basic methods to handle the various aspects of entity annotation.
+        This is a high-level class, building on the lower-level tools provided
+        by the Sheets, Sets and Show classes on which it is based.
+
         These methods can be used by code that runs in the TF browser
         and by code that runs in a Jupyter notebook.
 
-        This class handles entity sets, it does not contain code to generate HTML.
-        But it has a parent class, `Show`, that can generate HTML.
+        This class handles entity tasks, which is an abstraction of the concepts of
+        set and sheet.
 
-        This class works with a fixed annotation set.
-        But it has a parent class, `Sets` that has method to manipulate such sets
-        and switch between them.
+        It does not handle HTML generation, but its parent class, `Show`, does that.
 
         We consider the corpus as a list of buckets (typically level-3 sectional
         units; in TEI-derived corpora called `chunk`, being generalizations of
         `p` (paragraph) elements). What type exactly the buckets are is configured
         in the `ner/config.yaml` file.
-
-        Contains methods to translate spreadsheets to YAML files with markup
-        instructions; to locate all relevant occurrences; and to mark them up
-        properly.
-
-        It is a high-level class, building on the lower-level tools provided
-        by the Sheets, Sets and Show classes on which it is based.
 
         Parameters
         ----------
@@ -292,8 +293,11 @@ class NER(Sheets, Sets, Show):
         browse: boolean, optional False
             If True, the object is informed that it is run by the TF
             browser. This will influence how results are reported back.
+        caseSensitive: boolean, optional False
+            Whether the lookup of entities should be case-sensitive. For spreadsheets
+            it specifies whether the triggers should be treated case-sensitively.
         silent: boolean, optional False
-            Where to keep most operations silent
+            Whether to keep most operations silent.
         """
         if data is None:
             data = AttrDict()
@@ -505,7 +509,7 @@ class NER(Sheets, Sets, Show):
         setName = self.setName
         annoDir = self.annoDir
         setDir = f"{annoDir}/{setName}"
-        reportFile = f"{setDir}/interference.tsv"
+        reportFile = f"{setDir}/interference.txt"
 
         app = self.app
         L = app.api.L
@@ -1308,7 +1312,7 @@ class NER(Sheets, Sets, Show):
                 uncovered = self.diagnoseTriggers(noHits, detail=False)
 
         with fileOpen(reportFile, "w") as rh:
-            rh.write("label\tname\ttrigger\tsheet\tsection\thits\n")
+            rh.write("label\tname\ttrigger\tscope\tsection\thits\n")
 
             for h in sorted(hitData):
                 line = "\t".join(str(c) for c in h)

@@ -1,5 +1,63 @@
 # Named Entity Recognition
 
+## Entities
+
+An *entity* is a thing in the real world that is referenced by specific pieces of
+text in the corpus. Think of persons, places, organizations. 
+
+We mark up those text occurrences by creating nodes for those locations in the corpus
+and assigning feature values to the features `eid` (entity identifier) and `kind`
+(entity kind such as `PER`, `LOC`, `ORG`).
+
+We also make nodes for the groups of occurrences that have the same `eid` *and* the
+same *kind*. So `entity` nodes stand for individual persons, places or organizations,
+and `ent` nodes stand of single occurrences of them in the corpus.
+
+## Occurrences and identifiers
+
+`ent` nodes mark the text occurrences that refer to outside entities in the world.
+Different occurrences have different entity nodes, but they may refer to the same
+entity in the world. It is the entity identifier in combination with the kind of entity
+that unifies the various occurrences that refer to the same entity in the world.
+`entity`correspond 1-1 to the real world entities.
+
+The same occurrence may have multiple `ent` nodes.
+For example, if an occurrence `Amsterdam` refers to a location, a city council,
+and a ship at the same time, you might mark it up as
+
+*   `('amsterdam', 'LOC')`
+*   `('amsterdam', 'ORG')`
+*   `('amsterdam', 'SHIP')`
+
+Here you see that an entity in the real word is not solely identified by the
+`eid` feature, but by the *combination* of the `eid` and `kind` features.
+
+Of course, you are free to make the identifiers distinct if the same name refers
+to entities of different kinds.
+
+## How entities exist in a corpus
+
+Your corpus may already have entities, marked up by an automatic tool such as
+Spacy (see `tf.tools.myspacy`). In that case there is already a node type
+`ent` and features `eid` and `kind`.
+
+When you make manual annotations, the annotations are saved as TSV files.
+In order to create nodes for them in your corpus, you can use those TSV files,
+to bake the corresponding `ent` and `entity` nodes into your corpus.
+See `tf.ner.ner.NER.bakeEntities()`
+
+## Entity sets
+
+When you are in the process of manual marking entities, you create an entity *set*.
+You can give this a name, and the data you create will be stored under that name.
+
+## Sheets
+
+When you start by writing a spreadsheet with names, kinds and triggers and additional
+entity metadata, TF can read that, and it will create a name for the entity set
+based on the name of the spreadsheet, and preceded by a `.`. TF will recognize
+these sets as belonging to a spreadsheet as opposed to a manual annotation set.
+
 ## What kind of NER detection does TF support?
 
 Named Entity Recognition is a task for which automated tools exist.
@@ -17,8 +75,9 @@ identity `gio.ernesto.di.nassau` and kind `PER` to them.
 There are two interfaces:
 
 *   a spreadsheet for bulk assignment, operated from a Jupyter Notebook or
-    Python program;
-*   the TF browser for inspection and manual assignment of entities.
+    Python program; see `tf.ner.ner`
+*   the TF browser for inspection and manual assignment of entities;
+    see `tf.about.annotateBrowser`
 
 ## How do you tackle NER with TF?
 
@@ -37,10 +96,32 @@ The recommended scenario is this:
 * Optionally use the TF browser to add/delete individual entity occurrences;
 * Use TF to bake the entities with the corpus into a new TF dataset.
 
+However, you can also start right away in the TF browser and build up entity sets
+by hand.
+
 See
 
 *   `tf.ner.ner` for how to work with spreadsheets;
-*   `tf.browser.ner.web` for how to work with the browser interface.
+*   `tf.about.annotateBrowser` for how to work with the browser interface.
+    Here is what the browser interface looks like:
+    ![browser](../images/Ner/browser.png)
+
+
+### How do I prepare my input?
+
+There are several bits of information needed to set up the annotation tool.
+They are corpus specific, so they must be specified in a YAML file in the corpus
+repository.
+
+You need:
+
+*   a configuration file `config.yaml` in the directory `ner` of your repo;
+    see `tf.ner.settings.Settings`
+*   one or more spreadsheets in the directory `ner/specs` of your repo;
+    see `tf.ner.sheets.Sheets.readSheetData()`
+
+As an example, we refer to the
+[Suriano/letters](https://gitlab.huc.knaw.nl/suriano/letters) corpus.
 
 ## How well does it work?
 
@@ -83,34 +164,64 @@ the TF dataset. If your corpus is in TF, these methods will work.
 However, as the software is not yet completely mature, it might be the case that you
 bump into some details that will conflict with the characteristics of your corpus.
 
-Currently I am aware of only this:
-
-*   We assume that the section headings are integers at all levels, so that we can
-    meaningfully refer to ranges of sections, e.g. `1.2-3.4.5`.
-    If your corpus has strings as section headings, the current version of `tf.ner`
-    will not work.
-
-Later I intend to work around it by using the index of sections (that already is
-part of the TF dataset), so that ranges like `Genesis 1-Exodus 2:3` become
-meaningful.
+Currently I am not aware of corpus-dependent issues, though.
 
 See `tf.core.prepare.sections`
 
 ## How exactly are the entities delivered?
 
-The first product is a `.tsv` file
+*   As additional non-TF data accompanying a TF dataset;
+    you can find it in your repo, in directory
+    `_temp/ner/`*version*`/.`*name-of-set*;
+    in there is a file data.gz which contains zipped pickled data described in
+    `tf.ner.data`;
+    based on this data you can see the entities displayed in your corpus in the TF
+    browser and you can also show them in a Jupyter notebook, or treat them in an
+    arbitrary Python program.
 
+*   You can *bake* an entity set into the TF corpus. When you do this, a new TF dataset
+    will be created for your corpus, with new nodes for entities and entity occurrences
+    and features for entity id and entity kind.
 
+    **N.B.:** in order to perform this operation, you have to do it in a Jupyter
+    notebook or a Python program.
 
-Here is what the browser interface looks like:
+*   There are also less hidden results in the same directory:
 
-![browser](../images/Ner/browser.png)
+    *   entities.tsv: each line corresponds to an entity occurrence, it has columns for
+        the entity id, the entity kind, and one column for each slot the
+        occurrence occupies in the TF dataset;
 
-# Work-in-progress
+        This is the file whose information is used to bake the entity information into
+        a new dataset.
 
-This is a tool where you can add entity annotations to a corpus.
-These annotations consist of a new nodes of a new type (`ent`, or `entity`) and
-features that give information about those nodes.
+*   If you have produced the entities by means of a spreadsheet with triggers, you
+    see in the same directory the following files:
+
+    *   hits.tsv: each line corresponds to a number of hits and has the fields:
+
+        *   **label**: indicates the succes of the trigger
+        *   **name**: the entity that this trigger belongs to
+        *   **trigger**: the trigger that produced these hits
+        *   **scope**: the scope of the trigger (the sections in which it is activated)
+        *   **section**: the section in which the hits occur
+        *   **hits**: the number of hits in this section
+
+        This file is mainly meant to check and debug your triggers and scopes.
+
+    *   triggerBySlot.tsv: each line corresponds to a slot that is part of a result
+        of a trigger. The columns are:
+
+        *   **slot**: the slot number
+        *   **trigger**: the trigger that correponds to the hit of which the slot is
+            a part.
+
+        Note that a all hits are disjoint, and that a hit can only belong to
+        one trigger.
+
+    *   interference.txt: reports on the interference between triggers. Only triggers
+        of different entities that have actually interfered. 
+
 
 ## Supported corpora
 
@@ -121,6 +232,8 @@ If corpus specifics are needed, it will be fetched from the already present TF
 configuration of that corpus.
 And where that is not sufficient, details are put in `ner/config.yaml`, which 
 can be put next to the corpus.
+These corpus-dependent traits are collected by the module `tf.ner.corpus` and the
+rest of the program uses those traits through this module. 
 
 I have tested it for the
 [ETCBC/bhsa (Hebrew Bible) corpus](https://github.com/ETCBC/bhsa), and the
@@ -138,117 +251,6 @@ See also the following Jupyter Notebooks that show the work-in-progress:
     *   [basic annotation API](https://nbviewer.org/github/ETCBC/bhsa/blob/master/programs/nerTest.ipynb)
     *   [using a spreadsheet with instructions](https://nbviewer.org/github/ETCBC/bhsa/blob/master/programs/ner.ipynb)
     *   [cookbook recipe](https://nbviewer.org/github/ETCBC/bhsa/blob/master/tutorial/cookbook/nerByTheBook.ipynb)
-
-## Ergonomics of annotation
-
-We try to reduce the work of manual annotations as much as possible.
-It is a balancing act between automating as much as possible, but not so much that
-you miss the fine points in your corpus.
-
-We need to gather experience in order to arrive at a truly usable tool.
-
-We are going to mark up the 
-[Suriano/letters](https://gitlab.huc.knaw.nl/suriano/letters) corpus in this
-way and hope to acquire a lot of experience in the process.
-
-## Delivery of annotation data
-
-But how exactly are those new nodes and features delivered?
-
-This is work in progress!
-
-Currently, TF supports data modules on top of a corpus, provided the modules
-consist of features that annotate the existing nodes in the corpus.
-
-Here we have a new situation: we not only have new features, but also a new node type.
-
-TF has not (yet) a module system by which you can invoke such data modules on top of
-an existing TF dataset.
-
-What do we have, though?
-
-TF has already functions to *add* new types with their features to a dataset:
-`tf.dataset.modify`. This will create a completely new and separate data set out of
-the existing dataset and the new nodes and features.
-
-We deliver the annotation data as TSV files, where each line specifies
-a new (entity) node, and the columns specify the values of the entity features for
-that node, plus the slots that are linked to that node.
-
-With this information in hand, it is possible
-
-*   to call the `tf.dataset.modify` function **or**
-*   work in a Jupyter notebook and use the entity data in whatever way you like.
-
-In the future I intend to broaden the concept of data module to modules that introduce
-new node types. In order to do that I have to write code for TF to include
-the module data in the existing `otype` and `oslots` features and, most of all,
-to generate adapted computed features such as `__levup__` and `__levdown__`.
-See `tf.core.prepare` .
-
-# Concepts
-
-## Entities
-
-An *entity* is a thing in the real world that is referenced by specific pieces of
-text in the corpus. Think of persons, places, organizations. 
-
-We mark up those text occurrences by creating nodes for those locations in the corpus
-and assigning feature values to the features `eid` (entity identifier) and `kind`
-(entity kind such as `PER`, `LOC`, `ORG`).
-
-## How entities exist in a corpus
-
-Your corpus may already have entities, marked up by an automatic tool such as
-Spacy (see `tf.tools.myspacy`). In that case there is already a node type
-`ent` and features `eid` and `kind`.
-
-When you make manual annotations, the annotations are saved as TSV files.
-In order to create nodes for them in your corpus, you can use those TSV files,
-read off the feature information, and invoke `tf.dataset.modify` function to
-generate new nodes and add them to your corpus.
-
-In a next iteration, we'll include a function that will do this for you.
-
-## Occurrences and identifiers
-
-Entity nodes mark the text occurrences that refer to outside entities in the world.
-Different occurrences have different entity nodes, but they may refer to the same
-entity in the world. It is the entity identifier that unifies the various occurrences
-that refer to the same entity in the world.
-We do not have nodes in the corpus that correspond 1-1 to the real world entities.
-The entity nodes correspond to the occurrences.
-
-The same occurrence may have multiple entity nodes.
-For example, if an occurrence `Amsterdam` refers to a location, a city council,
-and a ship at the same time, you might mark it up as
-
-*   `('amsterdam', 'LOC')`
-*   `('amsterdam', 'ORG')`
-*   `('amsterdam', 'SHIP')`
-
-In fact, an entity in the real word is not solely identified by the `eid` feature,
-but by the *combination* of the `eid` and `kind` features.
-
-Of course, you are free to make the identifiers distinct if the same name refers
-to entities of different kinds.
-
-## Entity sets
-
-When you are in the process of marking entities, you create an entity *set*.
-You can give this a name, and the data you create will be stored under that name.
-
-## For annotators
-
-Go to the manual for annotating in the TF browser:
-`tf.about.annotateBrowser`
-
-## For programming annotators
-
-Go to the manual for annotating in in a Jupyter Notebook, using the API:
-`tf.ner.ner`
-Or see this
-[example notebook](https://nbviewer.jupyter.org/github/HuygensING/suriano/blob/main/programs/ner.ipynb).
 
 ## For corpus maintainers
 
@@ -277,66 +279,6 @@ Note that
 
 The *output* data can be found a directory `_temp/ner` where the `_temp`
 directory is located next to the `ner` directory that holds the input data.
-
-
-### Input data
-
-There are several bits of information needed to set up the annotation tool.
-They are corpus specific, so they must be specified in a YAML file in the corpus
-repository.
-
-As an example, we refer to the
-[Suriano/letters](https://gitlab.huc.knaw.nl/suriano/letters) corpus:
-
-*   `config.yaml` in directory `ner`;
-*   optional Excel sheets in directory `ner/sheets` with instructions to
-    bulk-annotate entities.
-
-Concerning `ner/config.yaml`: it has the following information:
-
-*   `entityType`: the node type of entities that are already in the corpus,
-    possibly generated by a tool like Spacy;
-
-*   `entitySet`: a name for the pre-existing set of entities;
-
-*   `bucketType`: the annotation works with paragraph-like chunks of text
-    of your corpus. These units are called *buckets*.
-    Here you can specify which node type must be taken as the buckets.
-
-*   `features`: the features that contain essential information about
-    the entities. Currently, we specify only 2 features. You may rename these
-    features, but we advise not modify the number of features.
-    Probably, in later releases, you'll have more choice here.
-
-*   `keywordFeatures`: some features have a limited set of values, e.g.
-    the kind of entity. Those features are mentioned under this key.
-
-*   `defaultValues`: provide default values for the keyword features.
-    The tool also provides a default for the first feature, the entity
-    identifier, basically a lower case version of the full name where
-    the parts of the name are separated by dots.
-
-*   `spaceEscaped`: set this to True if your corpus as tokens with spaces in it.
-    You can then escape spaces with `_`, for example in spreadsheets where you
-    specify annotation instructions.
-
-*   `transform`: the tool can read a spreadsheet with full names and per name
-    a list of occurrences that should be marked as entities for that name.
-    When the full name is turned into an identifier, the identifier might
-    become longer than is convenient. Here you can specify a replacement
-    table for name parts. You can use it to shorten or repress certain
-    name parts that are very generic, such as `de`, `van`, `von`. 
-
-Concerning the Excel sheets in `ner/sheets`:
-
-*   they can be read by `tf.ner.ner.NER.setSheet`;
-
-*   you might need to `pip install openpyxl` first;
-
-*   only the first two columns of the sheet are read, the first column is
-    expected to have the full names, the second column is a list of 
-    surface forms that trigger the marking of an entity with this name, separated
-    by semicolons.
 
 ### Good practice
 
@@ -383,13 +325,3 @@ The output data is tightly coupled to a specific version of the corpus.
     generate a mapping file from the nodes of the new corpus to the old corpus.
     That will enable the migration of the annotations.
     See `tf.dataset.nodemaps` .
-
-### Recommended practice
-
-When the annotators are done, you need to ask them to dig out their data files and send
-them to you.
-
-Then you can turn that data into new entity nodes and features and merge
-them into the corpus.
-This is not trivial, it involves using `tf.dataset.modify`.
-I intend to write functions to make this task easier.
