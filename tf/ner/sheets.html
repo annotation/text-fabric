@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/54f8fc70db27df28d334280982b28290fa009c46/tf/ner/sheets.py#L1-L975" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/94858b4d83d560e89985ab83802ba1c9f2d3d1f6/tf/ner/sheets.py#L1-L1021" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 import time
@@ -373,7 +373,53 @@ class Sheets(Scopes):
         wb.save(asFile)
 
     def readSheetData(self):
-        &#34;&#34;&#34;Read the data of the spreadsheet and deliver it as a list of lists&#34;&#34;&#34;
+        &#34;&#34;&#34;Read the data of the spreadsheet and deliver it as a list of field lists.
+
+        Concerning the Excel sheets in `ner/sheets`:
+
+        *   they will be read by `tf.ner.ner.NER.setSheet()`;
+        *   you might need to `pip install openpyxl` first;
+
+        Each row in the spreadsheet specifies a set of triggers for a named entity
+        in a certain scope. The row may have additional metadata, which will be linked
+        to the named entity.
+        If you need several scopes for the same named entity, make sure the metadata
+        in those rows is identical. Otherwise it is unpredictable from which row the
+        metadata will be taken.
+
+        The first row is a header row, but the names are only important for the columns
+        marked as metadata columns.
+
+        The second row will be ignored, you can use it as an explanation or subtitle
+        of the column titles in the header row.
+
+        Here is a specification of the columns. We only specify the first so many
+        columns. The remaining columns are treated as metadata.
+
+        1.  **comment**. If this cell starts with a `#` the whole row will be
+            skipped and ignored. Otherwise, the value is taken as a comment, that you
+            are free to fill in or leave empty.
+
+        1.  **name**. The full name of the entity, as it occurs in articles and
+            reference works.
+
+        1.  **kind**. A label that indicates what type of entity it is, e.g. `PER` for
+            person and `LOC` for location and `ORG` for organization. But you are free
+            to chose the labels.
+
+        1.  **scope**. A string that indicates portions in the corpus where the
+            triggers for this entity are valid. The scope specifies zero or more
+            intervals of sections in the corpus, where an empty scope denotes the
+            whole corpus. See `tf.ner.scopes.Scopes.parseScopes()`
+            for the syntax of scope specifiers.
+
+        1.  **triggers**. A list of triggers, i.e. textual strings that occur in the
+            corpus and trigger the detection of the entity named in the **name**
+            column.
+
+        The remaining columns are metadata columns. This metadata can be retrieved
+        by means of the function `tf.ner.ner.NER.getMeta()`
+        &#34;&#34;&#34;
         sheetName = self.sheetName
         sheetDir = self.sheetDir
         loadXls = self.loadXls
@@ -1028,7 +1074,7 @@ class Sheets(Scopes):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/54f8fc70db27df28d334280982b28290fa009c46/tf/ner/sheets.py#L42-L975" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/94858b4d83d560e89985ab83802ba1c9f2d3d1f6/tf/ner/sheets.py#L42-L1021" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Sheets(Scopes):
     def __init__(self, sheets=None):
@@ -1329,7 +1375,53 @@ class Sheets(Scopes):
         wb.save(asFile)
 
     def readSheetData(self):
-        &#34;&#34;&#34;Read the data of the spreadsheet and deliver it as a list of lists&#34;&#34;&#34;
+        &#34;&#34;&#34;Read the data of the spreadsheet and deliver it as a list of field lists.
+
+        Concerning the Excel sheets in `ner/sheets`:
+
+        *   they will be read by `tf.ner.ner.NER.setSheet()`;
+        *   you might need to `pip install openpyxl` first;
+
+        Each row in the spreadsheet specifies a set of triggers for a named entity
+        in a certain scope. The row may have additional metadata, which will be linked
+        to the named entity.
+        If you need several scopes for the same named entity, make sure the metadata
+        in those rows is identical. Otherwise it is unpredictable from which row the
+        metadata will be taken.
+
+        The first row is a header row, but the names are only important for the columns
+        marked as metadata columns.
+
+        The second row will be ignored, you can use it as an explanation or subtitle
+        of the column titles in the header row.
+
+        Here is a specification of the columns. We only specify the first so many
+        columns. The remaining columns are treated as metadata.
+
+        1.  **comment**. If this cell starts with a `#` the whole row will be
+            skipped and ignored. Otherwise, the value is taken as a comment, that you
+            are free to fill in or leave empty.
+
+        1.  **name**. The full name of the entity, as it occurs in articles and
+            reference works.
+
+        1.  **kind**. A label that indicates what type of entity it is, e.g. `PER` for
+            person and `LOC` for location and `ORG` for organization. But you are free
+            to chose the labels.
+
+        1.  **scope**. A string that indicates portions in the corpus where the
+            triggers for this entity are valid. The scope specifies zero or more
+            intervals of sections in the corpus, where an empty scope denotes the
+            whole corpus. See `tf.ner.scopes.Scopes.parseScopes()`
+            for the syntax of scope specifiers.
+
+        1.  **triggers**. A list of triggers, i.e. textual strings that occur in the
+            corpus and trigger the detection of the entity named in the **name**
+            column.
+
+        The remaining columns are metadata columns. This metadata can be retrieved
+        by means of the function `tf.ner.ner.NER.getMeta()`
+        &#34;&#34;&#34;
         sheetName = self.sheetName
         sheetDir = self.sheetDir
         loadXls = self.loadXls
@@ -2023,7 +2115,54 @@ with a time stamp.</p></div>
 <span>def <span class="ident">readSheetData</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Read the data of the spreadsheet and deliver it as a list of lists</p></div>
+<div class="desc"><p>Read the data of the spreadsheet and deliver it as a list of field lists.</p>
+<p>Concerning the Excel sheets in <code>ner/sheets</code>:</p>
+<ul>
+<li>they will be read by <code><a title="tf.ner.ner.NER.setSheet" href="#tf.ner.sheets.Sheets.setSheet">Sheets.setSheet()</a></code>;</li>
+<li>you might need to <code>pip install openpyxl</code> first;</li>
+</ul>
+<p>Each row in the spreadsheet specifies a set of triggers for a named entity
+in a certain scope. The row may have additional metadata, which will be linked
+to the named entity.
+If you need several scopes for the same named entity, make sure the metadata
+in those rows is identical. Otherwise it is unpredictable from which row the
+metadata will be taken.</p>
+<p>The first row is a header row, but the names are only important for the columns
+marked as metadata columns.</p>
+<p>The second row will be ignored, you can use it as an explanation or subtitle
+of the column titles in the header row.</p>
+<p>Here is a specification of the columns. We only specify the first so many
+columns. The remaining columns are treated as metadata.</p>
+<ol>
+<li>
+<p><strong>comment</strong>. If this cell starts with a <code>#</code> the whole row will be
+skipped and ignored. Otherwise, the value is taken as a comment, that you
+are free to fill in or leave empty.</p>
+</li>
+<li>
+<p><strong>name</strong>. The full name of the entity, as it occurs in articles and
+reference works.</p>
+</li>
+<li>
+<p><strong>kind</strong>. A label that indicates what type of entity it is, e.g. <code>PER</code> for
+person and <code>LOC</code> for location and <code>ORG</code> for organization. But you are free
+to chose the labels.</p>
+</li>
+<li>
+<p><strong>scope</strong>. A string that indicates portions in the corpus where the
+triggers for this entity are valid. The scope specifies zero or more
+intervals of sections in the corpus, where an empty scope denotes the
+whole corpus. See <code><a title="tf.ner.scopes.Scopes.parseScopes" href="scopes.html#tf.ner.scopes.Scopes.parseScopes">Scopes.parseScopes()</a></code>
+for the syntax of scope specifiers.</p>
+</li>
+<li>
+<p><strong>triggers</strong>. A list of triggers, i.e. textual strings that occur in the
+corpus and trigger the detection of the entity named in the <strong>name</strong>
+column.</p>
+</li>
+</ol>
+<p>The remaining columns are metadata columns. This metadata can be retrieved
+by means of the function <code><a title="tf.ner.ner.NER.getMeta" href="ner.html#tf.ner.ner.NER.getMeta">NER.getMeta()</a></code></p></div>
 </dd>
 <dt id="tf.ner.sheets.Sheets.readSheets"><code class="name flex">
 <span>def <span class="ident">readSheets</span></span>(<span>self)</span>
@@ -2052,6 +2191,14 @@ by editing the spreadsheets in Excel.</p></div>
 <div class="desc"></div>
 </dd>
 </dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="tf.ner.scopes.Scopes" href="scopes.html#tf.ner.scopes.Scopes">Scopes</a></b></code>:
+<ul class="hlist">
+<li><code><a title="tf.ner.scopes.Scopes.parseScopes" href="scopes.html#tf.ner.scopes.Scopes.parseScopes">parseScopes</a></code></li>
+</ul>
+</li>
+</ul>
 </dd>
 </dl>
 </section>

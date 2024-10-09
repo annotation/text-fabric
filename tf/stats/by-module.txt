@@ -1,0 +1,19 @@
+
+--------------------------------------------------------------------------------------------
+File                                      files          blank        comment           code
+--------------------------------------------------------------------------------------------
+tf/docs/stats/mod/docs.txt                   54           4244            805          14290
+tf/docs/stats/mod/browser.txt                82           2396           1196          13954
+tf/docs/stats/mod/convert.txt                22           3651           4490          10339
+tf/docs/stats/mod/advanced.txt               22           2333           3230           7023
+tf/docs/stats/mod/client.txt                 28            791           6553           5116
+tf/docs/stats/mod/core.txt                   18           1395           2548           3954
+tf/docs/stats/mod/search.txt                  9            821            633           3907
+tf/docs/stats/mod/ner.txt                    10           1503           1564           3334
+tf/docs/stats/mod/dataset.txt                 3            406            609           1207
+tf/docs/stats/mod/volumes.txt                 3            274            435            937
+tf/docs/stats/mod/writing.txt                 8            196            390            633
+tf/docs/stats/mod/about.txt                  26              1             79              0
+--------------------------------------------------------------------------------------------
+SUM:                                        285          18011          22532          64694
+--------------------------------------------------------------------------------------------

@@ -51,11 +51,13 @@ say</p>
 <p>Start a terminal or command prompt.
 You need not go to a specific directory.
 Give the command</p>
-<pre><code class="language-sh">tf HuygensING/suriano --tool=ner --chrome
+<pre><code class="language-sh">tf HuygensING/suriano --tool=ner
 </code></pre>
 <p>The tool opens in a new window in the Chrome browser.
-Currently the tool works best in Chrome, but it is not required.
-If you leave out the <code>--chrome</code> bit, the tool starts in your default browser.</p>
+Currently the tool works best in Chrome, but it is not required.</p>
+<pre><code class="language-sh">tf HuygensING/suriano --tool=ner --chrome
+</code></pre>
+<p>lets the tool starts in Chrome.</p>
 <p>You can restart the tool without navigating away from the web page as follows:</p>
 <pre><code class="language-sh">tf HuygensING/suriano --tool=ner --chrome -noweb
 </code></pre>
@@ -77,6 +79,9 @@ or modify its annotations.</p>
 <p>However, you can duplicate this set, and the copy can be modified.
 So, if the existing set is a good one, requiring only a few tweaks,
 this is a good way to start.</p>
+<p>Some of the sets may have a spreadsheet behind it, which specifies the triggers
+by which entities are looked up. If there are diagnostic messages coming
+from reading and parsing the spreadsheet, you will see them in this column.</p>
 </li>
 <li>
 <p><strong>Entities column</strong>:</p>
@@ -88,16 +93,20 @@ controls in between.</p>
 <p>You can click on each entity. Let's click on <code>Francia</code>:</p>
 <p><img alt="browser" src="../images/Ner/browser-entity.png"></p>
 <p>On the right you see all occurrences of this entity, highlighted.</p>
+<p>If the set has a spreadsheet behind it, you not only see the entities, but also
+their triggers. You can click on a trigger to see its occurrences, and click
+again to unselect that trigger. You can click on an entity to see the occurrences
+of all of its triggers, and click again on the entity to unselect it.</p>
 </li>
 <li>
 <p><strong>Right column</strong>:</p>
 <p>See a list of buckets (i.e. paragraphs in this corpus).</p>
-<p>If you have clicked on an entity, you see the buckets that contain an occurrence
-of that entity.</p>
+<p>If you have clicked on an entity or trigger, you see the buckets that
+contain an occurrence of that entity or trigger.</p>
 <p>If you have not clicked on anything, you see the whole corpus, truncated to the
 first 100 buckets.</p>
-<p>We got here by clicking on an entity. If we click the ❌ next to the entity on top,
-we reset the viewer.</p>
+<p>If we click the ❌ next to the entity on top, we reset the viewer.
+If there is no ❌ then click on the selected entity or trigger to reset the viewer.</p>
 <p>From this point, we can do a succession of steps.</p>
 </li>
 </ul>
@@ -252,22 +261,34 @@ in the corpus, but the differences are in what happens below the <code>add</code
 Whereas the ✅ button fills the <code>eid</code> field with a value derived from the occurrence,
 the ❎ leaves the previous value unchanged. So you can just click <code>add</code> to mark
 the new occurrences with the values of the same entity as before.</p>
-<h1 id="programming">Programming</h1>
+<h1 id="spreadsheets">Spreadsheets</h1>
 <p>The workflow sketched above works fine if you know what to look for, and if there are
 not too many distinct named entities in the corpus.</p>
 <p>Probably you soon discover that there are quite a bit of distinct named entities,
 and each entity has quite a bit of surface forms.
 Then the work load may not feel doable any more.</p>
-<p>For that purpose, there is also a way of annotating-by-programming, where you run the
-annotator tool in a Jupyter Notebook, driven by a spreadsheet with names and
-surface forms.</p>
+<p>For that purpose, there is also a way of annotating-by-spreadsheet, where you run the
+annotator tool, driven by a spreadsheet with names and surface forms.</p>
 <p>See <code><a title="tf.ner.ner" href="../ner/ner.html">tf.ner.ner</a></code>.</p>
 <p>You can then still use this tool after the fact to check the entity assignments
 and make fine-tuning corrections.</p>
+<p>In the tool, you see the annotation sets made by spreadsheets. However,you can not
+edit them, they are read only. What you can do, is to <em>duplicate</em> such a set.
+The duplicate is a proper, editable annotation set, and then you can select new
+occurrences and add them, or delete existing occurrences.</p>
+<p>The resulting set does not have any intrinsic relationship to the original spreadsheet.</p>
+<h2 id="ergonomics-of-annotation">Ergonomics of annotation</h2>
+<p>We try to reduce the work of manual annotations as much as possible.
+It is a balancing act between automating as much as possible, but not so much that
+you miss the fine points in your corpus.</p>
+<p>We need to gather experience in order to arrive at a truly usable tool.</p>
+<p>We are going to mark up the
+<a href="https://gitlab.huc.knaw.nl/suriano/letters">Suriano/letters</a> corpus in this
+way and hope to acquire a lot of experience in the process.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/54f8fc70db27df28d334280982b28290fa009c46/tf/about/annotateBrowser.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/94858b4d83d560e89985ab83802ba1c9f2d3d1f6/tf/about/annotateBrowser.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/annotateBrowser.md
@@ -349,7 +370,10 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#sophistication">Sophistication</a></li>
 </ul>
 </li>
-<li><a href="#programming">Programming</a></li>
+<li><a href="#spreadsheets">Spreadsheets</a><ul>
+<li><a href="#ergonomics-of-annotation">Ergonomics of annotation</a></li>
+</ul>
+</li>
 </ul>
 </div>
 <ul id="index">
