@@ -158,16 +158,16 @@ it is difficult to keep track of all the tricky interactions between triggers.
 
 For that reason we have a few diagnostic functions that help you to spot them:
 
-*   `tf.ner.ner.Ner.triggerInterference()` will list the triggers belonging to
+*   `tf.ner.triggers.Triggers.triggerInterference()` will list the triggers belonging to
     different entities that overlap and for which there are occurrences where this
     overlap is problematic;
 
-*   `tf.ner.ner.Ner.reportHits()` will list the triggers without hits while they do
-    occur in the corpus; it will give diagnostic info about those triggers; it also
-    produces statistics about the inventory of entities that has been collected on the
-    basis of the triggers; finally it produces a file that lists the number of hits
-    per entity, per trigger, per scope and per section where the occurrences have
-    been found.
+*   `tf.ner.triggers.Triggers.reportHits()` will list the triggers without hits
+    while they do occur in the corpus; it will give diagnostic info about those
+    triggers; it also produces statistics about the inventory of entities that
+    has been collected on the basis of the triggers; finally it produces a file
+    that lists the number of hits per entity, per trigger, per scope and per
+    section where the occurrences have been found.
 """
 
 import collections
@@ -256,7 +256,7 @@ class NER(Sheets, Sets, Show):
         We consider the corpus as a list of buckets (lowest level sectional
         units; in TEI-derived corpora called `chunk`, being generalizations of
         `p` (paragraph) elements). We read this type off from the TF dataset,
-        see `tf.ner.corpus.bucketType`
+        see `tf.ner.corpus.Corpus.bucketType`
 
         Parameters
         ----------
