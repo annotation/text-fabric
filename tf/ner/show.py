@@ -465,7 +465,7 @@ class Show:
         """
 
         settings = self.settings
-        bucketType = settings.bucketType
+        bucketType = self.bucketType
         features = settings.features
         style = self.style
         ltr = self.ltr

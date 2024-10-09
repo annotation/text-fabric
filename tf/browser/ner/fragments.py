@@ -536,8 +536,8 @@ class Fragments:
         v = self.v
         ner = self.ner
         setIsX = ner.setIsX
+        bucketType = ner.bucketType
         settings = ner.settings
-        bucketType = settings.bucketType
         features = settings.features
 
         setData = ner.getSetData()
@@ -668,8 +668,7 @@ class Fragments:
         txt = v.txt
         eTxt = v.etxt
         ner = self.ner
-        settings = ner.settings
-        bucketType = settings.bucketType
+        bucketType = ner.bucketType
         setIsRo = ner.setIsRo
         hasOcc = txt != ""
         hasEnt = eTxt != ""

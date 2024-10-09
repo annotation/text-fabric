@@ -12,6 +12,7 @@ from ..core.files import fileOpen, dirContents, extNm, fileExists, mTime
 from .helpers import tnorm, normalize, toSmallId, toTokens
 
 from .scopes import Scopes, partitionScopes
+from .triggers import Triggers
 
 
 DS_STORE = ".DS_Store"
@@ -39,7 +40,7 @@ CLEAR_KEYS = """
 """.strip().split()
 
 
-class Sheets(Scopes):
+class Sheets(Scopes, Triggers):
     def __init__(self, sheets=None):
         CI = CheckImport("openpyxl")
         if CI.importOK(hint=True):
@@ -73,6 +74,19 @@ class Sheets(Scopes):
         """The set of names of ner sheets that are present on the file system."""
 
         self.readSheets()
+
+    def getToTokensFunc(self):
+        settings = self.settings
+        spaceEscaped = settings.spaceEscaped
+        sheetData = self.getSheetData()
+        caseSensitive = sheetData.caseSensitive
+
+        def myToTokens(trigger):
+            return toTokens(
+                trigger, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
+            )
+
+        return myToTokens
 
     def readSheets(self):
         """Read the list current ner sheets (again).
@@ -380,10 +394,18 @@ class Sheets(Scopes):
 
         1.  **triggers**. A list of triggers, i.e. textual strings that occur in the
             corpus and trigger the detection of the entity named in the **name**
-            column.
+            column. The individual triggers must be separated by a `;`. Triggers may
+            contain multiple words, and even `,`s. It is recommended not to use
+            newlines in the trigger cells. When the triggers are read, white-space
+            will be trimmed, and some character replacements will take place, which
+            are dependent on the corpus. Think of replacing various kinds of quotes
+            by ASCII quotes.
 
         The remaining columns are metadata columns. This metadata can be retrieved
         by means of the function `tf.ner.ner.NER.getMeta()`
+
+        A good, real-world example of such a spreadsheet is *people.xlsx* in the
+        [Suriano corpus](https://gitlab.huc.knaw.nl/suriano/letters/-/tree/main/ner/specs?ref_type=heads)
         """
         sheetName = self.sheetName
         sheetDir = self.sheetDir
@@ -435,6 +457,11 @@ class Sheets(Scopes):
                 fields.append(value)
 
         return result
+
+    def getMeta(self):
+        """Retrieves the metadata of the current sheet."""
+        sheetData = self.getSheetData()
+        return (sheetData.metaFields, sheetData.metaData)
 
     def _readSheet(self):
         """Read all the spreadsheets, the main one and the tweaks.

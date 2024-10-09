@@ -58,9 +58,16 @@ class Corpus(Settings):
         C = api.C
 
         slotType = F.otype.slotType
-
         self.slotType = slotType
         """The node type of the slots in the corpus."""
+
+        bucketType = T.sectionTypes[-1]
+        self.bucketType = bucketType
+        """The node type of the lowest level of sections.
+
+        This wil be used as the *bucketType* into which the corpus is divided for
+        the purpose of scoping and display in the entity browser.
+        """
 
         seqFromSec = C.sections.data["seqFromSec"]
         self.seqFromSec = seqFromSec
@@ -75,7 +82,6 @@ class Corpus(Settings):
         settings = self.settings
         features = settings.features
         keywordFeatures = settings.keywordFeatures
-        bucketType = settings.bucketType
         lineType = settings.lineType
         entityType = settings.entityType
         strFeature = settings.strFeature

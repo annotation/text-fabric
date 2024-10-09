@@ -1,6 +1,9 @@
 """Corpus dependent setup of the annotation tool.
 """
 
+import sys
+from importlib import util
+
 from ..browser.html import H
 from ..core.helpers import console
 from ..core.files import readYaml, fileExists, APP_CONFIG
@@ -26,8 +29,6 @@ SET_MAIN = "🖍️"
 DEFAULT_SETTINGS = """
 entityType: ent
 entitySet: "{entityType}-nodes"
-
-bucketType: chunk
 
 strFeature: str
 afterFeature: after
@@ -213,10 +214,6 @@ class Settings:
 
         *   `entitySet`: a name for the pre-existing set of entities;
 
-        *   `bucketType`: the annotation works with paragraph-like chunks of text
-            of your corpus. These units are called *buckets*.
-            Here you can specify which node type must be taken as the buckets.
-
         *   `features`: the features that contain essential information about
             the entities. Currently, we specify only 2 features. You may rename these
             features, but we advise not modify the number of features.
@@ -244,6 +241,34 @@ class Settings:
         specDir = self.specDir
 
         nerSpec = f"{specDir}/{APP_CONFIG}"
+        nerCode = f"{specDir}/code.py"
+
+        normalizeChars = None
+
+        if fileExists(nerCode):
+            try:
+                spec = util.spec_from_file_location("nerutils", nerCode)
+                code = util.module_from_spec(spec)
+                sys.path.insert(0, specDir)
+                spec.loader.exec_module(code)
+                sys.path.pop(0)
+                normalizeChars = code.normalizeChars
+                self.console(f"normalizeChars() loaded from {nerCode}")
+            except Exception as e:
+                normalizeChars = None
+                console(
+                    f"normalizeChars() could not be loaded from existing {nerCode}",
+                    error=True,
+                )
+                console(str(e), error=True)
+
+        if normalizeChars is None:
+            self.console(
+                "normalizeChars() not found. No normalization will take place."
+            )
+
+        self.normalizeChars = normalizeChars
+
         kwargs = (
             dict(asFile=nerSpec) if fileExists(nerSpec) else dict(text=DEFAULT_SETTINGS)
         )

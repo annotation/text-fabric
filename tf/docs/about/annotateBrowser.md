@@ -298,7 +298,8 @@ You can also select or deselect all occurrences in one go.
 
 **N.B.**
 If you have filtered the paragraphs, and under **select** you have chosen to work with
-`all` results, selecting and deselecting only work for the occurrences in the filtered paragraphs.
+`all` results, selecting and deselecting only work for the occurrences in the
+filtered paragraphs.
 The other results are not selectable or deselectable, and will all be
 affected.
 

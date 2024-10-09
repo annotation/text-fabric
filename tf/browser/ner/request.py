@@ -219,8 +219,8 @@ class Request(Form):
         `form` dictionary to values that are stored in the `v` dictionary.
         """
         ner = self.ner
+        bucketType = ner.bucketType
         settings = ner.settings
-        bucketType = settings.bucketType
         features = settings.features
 
         appName = ner.appName
