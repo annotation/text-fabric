@@ -37,7 +37,7 @@ control over how to customize the annotator for different corpora.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/94858b4d83d560e89985ab83802ba1c9f2d3d1f6/tf/ner/corpus.py#L1-L459" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9eca24336097ff19bbabbb452d43c1706049ba50/tf/ner/corpus.py#L1-L465" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Access to the corpus.
 
@@ -99,9 +99,16 @@ class Corpus(Settings):
         C = api.C
 
         slotType = F.otype.slotType
-
         self.slotType = slotType
         &#34;&#34;&#34;The node type of the slots in the corpus.&#34;&#34;&#34;
+
+        bucketType = T.sectionTypes[-1]
+        self.bucketType = bucketType
+        &#34;&#34;&#34;The node type of the lowest level of sections.
+
+        This wil be used as the *bucketType* into which the corpus is divided for
+        the purpose of scoping and display in the entity browser.
+        &#34;&#34;&#34;
 
         seqFromSec = C.sections.data[&#34;seqFromSec&#34;]
         self.seqFromSec = seqFromSec
@@ -116,7 +123,6 @@ class Corpus(Settings):
         settings = self.settings
         features = settings.features
         keywordFeatures = settings.keywordFeatures
-        bucketType = settings.bucketType
         lineType = settings.lineType
         entityType = settings.entityType
         strFeature = settings.strFeature
@@ -524,7 +530,7 @@ flag.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/94858b4d83d560e89985ab83802ba1c9f2d3d1f6/tf/ner/corpus.py#L23-L459" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9eca24336097ff19bbabbb452d43c1706049ba50/tf/ner/corpus.py#L23-L465" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Corpus(Settings):
     def __init__(self):
@@ -564,9 +570,16 @@ flag.</p></div>
         C = api.C
 
         slotType = F.otype.slotType
-
         self.slotType = slotType
         &#34;&#34;&#34;The node type of the slots in the corpus.&#34;&#34;&#34;
+
+        bucketType = T.sectionTypes[-1]
+        self.bucketType = bucketType
+        &#34;&#34;&#34;The node type of the lowest level of sections.
+
+        This wil be used as the *bucketType* into which the corpus is divided for
+        the purpose of scoping and display in the entity browser.
+        &#34;&#34;&#34;
 
         seqFromSec = C.sections.data[&#34;seqFromSec&#34;]
         self.seqFromSec = seqFromSec
@@ -581,7 +594,6 @@ flag.</p></div>
         settings = self.settings
         features = settings.features
         keywordFeatures = settings.keywordFeatures
-        bucketType = settings.bucketType
         lineType = settings.lineType
         entityType = settings.entityType
         strFeature = settings.strFeature
@@ -974,6 +986,12 @@ flag.</p></div>
 </ul>
 <h3>Instance variables</h3>
 <dl>
+<dt id="tf.ner.corpus.Corpus.bucketType"><code class="name">var <span class="ident">bucketType</span></code></dt>
+<dd>
+<div class="desc"><p>The node type of the lowest level of sections.</p>
+<p>This wil be used as the <em>bucketType</em> into which the corpus is divided for
+the purpose of scoping and display in the entity browser.</p></div>
+</dd>
 <dt id="tf.ner.corpus.Corpus.checkBuckets"><code class="name">var <span class="ident">checkBuckets</span></code></dt>
 <dd>
 <div class="desc"><p>Given a set of nodes, return the set of only its bucket nodes.</p>
@@ -1344,6 +1362,7 @@ setTimeout(() => input.focus(), 100);
 <li>
 <h4><code><a title="tf.ner.corpus.Corpus" href="#tf.ner.corpus.Corpus">Corpus</a></code></h4>
 <ul class="two-column">
+<li><code><a title="tf.ner.corpus.Corpus.bucketType" href="#tf.ner.corpus.Corpus.bucketType">bucketType</a></code></li>
 <li><code><a title="tf.ner.corpus.Corpus.checkBuckets" href="#tf.ner.corpus.Corpus.checkBuckets">checkBuckets</a></code></li>
 <li><code><a title="tf.ner.corpus.Corpus.checkFeature" href="#tf.ner.corpus.Corpus.checkFeature">checkFeature</a></code></li>
 <li><code><a title="tf.ner.corpus.Corpus.featureDefault" href="#tf.ner.corpus.Corpus.featureDefault">featureDefault</a></code></li>

@@ -32,7 +32,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/94858b4d83d560e89985ab83802ba1c9f2d3d1f6/tf/ner/show.py#L1-L630" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9eca24336097ff19bbabbb452d43c1706049ba50/tf/ner/show.py#L1-L630" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Rendering of corpus extracts with annotations.
 &#34;&#34;&#34;
@@ -501,7 +501,7 @@ class Show:
         &#34;&#34;&#34;
 
         settings = self.settings
-        bucketType = settings.bucketType
+        bucketType = self.bucketType
         features = settings.features
         style = self.style
         ltr = self.ltr
@@ -683,7 +683,7 @@ class Show:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/94858b4d83d560e89985ab83802ba1c9f2d3d1f6/tf/ner/show.py#L24-L630" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9eca24336097ff19bbabbb452d43c1706049ba50/tf/ner/show.py#L24-L630" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Show:
     def showEntityOverview(self):
@@ -1129,7 +1129,7 @@ class Show:
         &#34;&#34;&#34;
 
         settings = self.settings
-        bucketType = settings.bucketType
+        bucketType = self.bucketType
         features = settings.features
         style = self.style
         ltr = self.ltr

@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/94858b4d83d560e89985ab83802ba1c9f2d3d1f6/tf/ner/sheets.py#L1-L1021" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9eca24336097ff19bbabbb452d43c1706049ba50/tf/ner/sheets.py#L1-L1048" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 import time
@@ -47,6 +47,7 @@ from ..core.files import fileOpen, dirContents, extNm, fileExists, mTime
 from .helpers import tnorm, normalize, toSmallId, toTokens
 
 from .scopes import Scopes, partitionScopes
+from .triggers import Triggers
 
 
 DS_STORE = &#34;.DS_Store&#34;
@@ -74,7 +75,7 @@ CLEAR_KEYS = &#34;&#34;&#34;
 &#34;&#34;&#34;.strip().split()
 
 
-class Sheets(Scopes):
+class Sheets(Scopes, Triggers):
     def __init__(self, sheets=None):
         CI = CheckImport(&#34;openpyxl&#34;)
         if CI.importOK(hint=True):
@@ -108,6 +109,19 @@ class Sheets(Scopes):
         &#34;&#34;&#34;The set of names of ner sheets that are present on the file system.&#34;&#34;&#34;
 
         self.readSheets()
+
+    def getToTokensFunc(self):
+        settings = self.settings
+        spaceEscaped = settings.spaceEscaped
+        sheetData = self.getSheetData()
+        caseSensitive = sheetData.caseSensitive
+
+        def myToTokens(trigger):
+            return toTokens(
+                trigger, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
+            )
+
+        return myToTokens
 
     def readSheets(self):
         &#34;&#34;&#34;Read the list current ner sheets (again).
@@ -415,10 +429,18 @@ class Sheets(Scopes):
 
         1.  **triggers**. A list of triggers, i.e. textual strings that occur in the
             corpus and trigger the detection of the entity named in the **name**
-            column.
+            column. The individual triggers must be separated by a `;`. Triggers may
+            contain multiple words, and even `,`s. It is recommended not to use
+            newlines in the trigger cells. When the triggers are read, white-space
+            will be trimmed, and some character replacements will take place, which
+            are dependent on the corpus. Think of replacing various kinds of quotes
+            by ASCII quotes.
 
         The remaining columns are metadata columns. This metadata can be retrieved
         by means of the function `tf.ner.ner.NER.getMeta()`
+
+        A good, real-world example of such a spreadsheet is *people.xlsx* in the
+        [Suriano corpus](https://gitlab.huc.knaw.nl/suriano/letters/-/tree/main/ner/specs?ref_type=heads)
         &#34;&#34;&#34;
         sheetName = self.sheetName
         sheetDir = self.sheetDir
@@ -470,6 +492,11 @@ class Sheets(Scopes):
                 fields.append(value)
 
         return result
+
+    def getMeta(self):
+        &#34;&#34;&#34;Retrieves the metadata of the current sheet.&#34;&#34;&#34;
+        sheetData = self.getSheetData()
+        return (sheetData.metaFields, sheetData.metaData)
 
     def _readSheet(self):
         &#34;&#34;&#34;Read all the spreadsheets, the main one and the tweaks.
@@ -1074,9 +1101,9 @@ class Sheets(Scopes):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/94858b4d83d560e89985ab83802ba1c9f2d3d1f6/tf/ner/sheets.py#L42-L1021" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9eca24336097ff19bbabbb452d43c1706049ba50/tf/ner/sheets.py#L43-L1048" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">class Sheets(Scopes):
+<pre><code class="python">class Sheets(Scopes, Triggers):
     def __init__(self, sheets=None):
         CI = CheckImport(&#34;openpyxl&#34;)
         if CI.importOK(hint=True):
@@ -1110,6 +1137,19 @@ class Sheets(Scopes):
         &#34;&#34;&#34;The set of names of ner sheets that are present on the file system.&#34;&#34;&#34;
 
         self.readSheets()
+
+    def getToTokensFunc(self):
+        settings = self.settings
+        spaceEscaped = settings.spaceEscaped
+        sheetData = self.getSheetData()
+        caseSensitive = sheetData.caseSensitive
+
+        def myToTokens(trigger):
+            return toTokens(
+                trigger, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
+            )
+
+        return myToTokens
 
     def readSheets(self):
         &#34;&#34;&#34;Read the list current ner sheets (again).
@@ -1417,10 +1457,18 @@ class Sheets(Scopes):
 
         1.  **triggers**. A list of triggers, i.e. textual strings that occur in the
             corpus and trigger the detection of the entity named in the **name**
-            column.
+            column. The individual triggers must be separated by a `;`. Triggers may
+            contain multiple words, and even `,`s. It is recommended not to use
+            newlines in the trigger cells. When the triggers are read, white-space
+            will be trimmed, and some character replacements will take place, which
+            are dependent on the corpus. Think of replacing various kinds of quotes
+            by ASCII quotes.
 
         The remaining columns are metadata columns. This metadata can be retrieved
         by means of the function `tf.ner.ner.NER.getMeta()`
+
+        A good, real-world example of such a spreadsheet is *people.xlsx* in the
+        [Suriano corpus](https://gitlab.huc.knaw.nl/suriano/letters/-/tree/main/ner/specs?ref_type=heads)
         &#34;&#34;&#34;
         sheetName = self.sheetName
         sheetDir = self.sheetDir
@@ -1472,6 +1520,11 @@ class Sheets(Scopes):
                 fields.append(value)
 
         return result
+
+    def getMeta(self):
+        &#34;&#34;&#34;Retrieves the metadata of the current sheet.&#34;&#34;&#34;
+        sheetData = self.getSheetData()
+        return (sheetData.metaFields, sheetData.metaData)
 
     def _readSheet(self):
         &#34;&#34;&#34;Read all the spreadsheets, the main one and the tweaks.
@@ -2060,6 +2113,7 @@ class Sheets(Scopes):
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="tf.ner.scopes.Scopes" href="scopes.html#tf.ner.scopes.Scopes">Scopes</a></li>
+<li><a title="tf.ner.triggers.Triggers" href="triggers.html#tf.ner.triggers.Triggers">Triggers</a></li>
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -2078,11 +2132,23 @@ class Sheets(Scopes):
 </dl>
 <h3>Methods</h3>
 <dl>
+<dt id="tf.ner.sheets.Sheets.getMeta"><code class="name flex">
+<span>def <span class="ident">getMeta</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Retrieves the metadata of the current sheet.</p></div>
+</dd>
 <dt id="tf.ner.sheets.Sheets.getSheetData"><code class="name flex">
 <span>def <span class="ident">getSheetData</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Deliver the current sheet.</p></div>
+</dd>
+<dt id="tf.ner.sheets.Sheets.getToTokensFunc"><code class="name flex">
+<span>def <span class="ident">getToTokensFunc</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
 </dd>
 <dt id="tf.ner.sheets.Sheets.loadSheetData"><code class="name flex">
 <span>def <span class="ident">loadSheetData</span></span>(<span>self, force=False, caseSensitive=False)</span>
@@ -2158,11 +2224,18 @@ for the syntax of scope specifiers.</p>
 <li>
 <p><strong>triggers</strong>. A list of triggers, i.e. textual strings that occur in the
 corpus and trigger the detection of the entity named in the <strong>name</strong>
-column.</p>
+column. The individual triggers must be separated by a <code>;</code>. Triggers may
+contain multiple words, and even <code>,</code>s. It is recommended not to use
+newlines in the trigger cells. When the triggers are read, white-space
+will be trimmed, and some character replacements will take place, which
+are dependent on the corpus. Think of replacing various kinds of quotes
+by ASCII quotes.</p>
 </li>
 </ol>
 <p>The remaining columns are metadata columns. This metadata can be retrieved
-by means of the function <code><a title="tf.ner.ner.NER.getMeta" href="ner.html#tf.ner.ner.NER.getMeta">NER.getMeta()</a></code></p></div>
+by means of the function <code><a title="tf.ner.ner.NER.getMeta" href="#tf.ner.sheets.Sheets.getMeta">Sheets.getMeta()</a></code></p>
+<p>A good, real-world example of such a spreadsheet is <em>people.xlsx</em> in the
+<a href="https://gitlab.huc.knaw.nl/suriano/letters/-/tree/main/ner/specs?ref_type=heads">Suriano corpus</a></p></div>
 </dd>
 <dt id="tf.ner.sheets.Sheets.readSheets"><code class="name flex">
 <span>def <span class="ident">readSheets</span></span>(<span>self)</span>
@@ -2196,6 +2269,12 @@ by editing the spreadsheets in Excel.</p></div>
 <li><code><b><a title="tf.ner.scopes.Scopes" href="scopes.html#tf.ner.scopes.Scopes">Scopes</a></b></code>:
 <ul class="hlist">
 <li><code><a title="tf.ner.scopes.Scopes.parseScopes" href="scopes.html#tf.ner.scopes.Scopes.parseScopes">parseScopes</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="tf.ner.triggers.Triggers" href="triggers.html#tf.ner.triggers.Triggers">Triggers</a></b></code>:
+<ul class="hlist">
+<li><code><a title="tf.ner.triggers.Triggers.reportHits" href="triggers.html#tf.ner.triggers.Triggers.reportHits">reportHits</a></code></li>
+<li><code><a title="tf.ner.triggers.Triggers.triggerInterference" href="triggers.html#tf.ner.triggers.Triggers.triggerInterference">triggerInterference</a></code></li>
 </ul>
 </li>
 </ul>
@@ -2270,7 +2349,9 @@ setTimeout(() => input.focus(), 100);
 <li>
 <h4><code><a title="tf.ner.sheets.Sheets" href="#tf.ner.sheets.Sheets">Sheets</a></code></h4>
 <ul class="">
+<li><code><a title="tf.ner.sheets.Sheets.getMeta" href="#tf.ner.sheets.Sheets.getMeta">getMeta</a></code></li>
 <li><code><a title="tf.ner.sheets.Sheets.getSheetData" href="#tf.ner.sheets.Sheets.getSheetData">getSheetData</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.getToTokensFunc" href="#tf.ner.sheets.Sheets.getToTokensFunc">getToTokensFunc</a></code></li>
 <li><code><a title="tf.ner.sheets.Sheets.loadSheetData" href="#tf.ner.sheets.Sheets.loadSheetData">loadSheetData</a></code></li>
 <li><code><a title="tf.ner.sheets.Sheets.log" href="#tf.ner.sheets.Sheets.log">log</a></code></li>
 <li><code><a title="tf.ner.sheets.Sheets.makeSheetOfSingleTokens" href="#tf.ner.sheets.Sheets.makeSheetOfSingleTokens">makeSheetOfSingleTokens</a></code></li>

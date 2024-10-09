@@ -33,7 +33,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/94858b4d83d560e89985ab83802ba1c9f2d3d1f6/tf/browser/ner/fragments.py#L1-L1032" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9eca24336097ff19bbabbb452d43c1706049ba50/tf/browser/ner/fragments.py#L1-L1031" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Wraps various pieces into HTML.
 
@@ -573,8 +573,8 @@ class Fragments:
         v = self.v
         ner = self.ner
         setIsX = ner.setIsX
+        bucketType = ner.bucketType
         settings = ner.settings
-        bucketType = settings.bucketType
         features = settings.features
 
         setData = ner.getSetData()
@@ -705,8 +705,7 @@ class Fragments:
         txt = v.txt
         eTxt = v.etxt
         ner = self.ner
-        settings = ner.settings
-        bucketType = settings.bucketType
+        bucketType = ner.bucketType
         setIsRo = ner.setIsRo
         hasOcc = txt != &#34;&#34;
         hasEnt = eTxt != &#34;&#34;
@@ -1086,7 +1085,7 @@ class Fragments:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/94858b4d83d560e89985ab83802ba1c9f2d3d1f6/tf/browser/ner/fragments.py#L20-L1032" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9eca24336097ff19bbabbb452d43c1706049ba50/tf/browser/ner/fragments.py#L20-L1031" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Fragments:
     def wrapMessages(self):
@@ -1607,8 +1606,8 @@ class Fragments:
         v = self.v
         ner = self.ner
         setIsX = ner.setIsX
+        bucketType = ner.bucketType
         settings = ner.settings
-        bucketType = settings.bucketType
         features = settings.features
 
         setData = ner.getSetData()
@@ -1739,8 +1738,7 @@ class Fragments:
         txt = v.txt
         eTxt = v.etxt
         ner = self.ner
-        settings = ner.settings
-        bucketType = settings.bucketType
+        bucketType = ner.bucketType
         setIsRo = ner.setIsRo
         hasOcc = txt != &#34;&#34;
         hasEnt = eTxt != &#34;&#34;

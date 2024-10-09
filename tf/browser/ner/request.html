@@ -32,7 +32,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/94858b4d83d560e89985ab83802ba1c9f2d3d1f6/tf/browser/ner/request.py#L1-L312" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9eca24336097ff19bbabbb452d43c1706049ba50/tf/browser/ner/request.py#L1-L312" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Auxiliary functions for managing request data.
 &#34;&#34;&#34;
@@ -255,8 +255,8 @@ class Request(Form):
         `form` dictionary to values that are stored in the `v` dictionary.
         &#34;&#34;&#34;
         ner = self.ner
+        bucketType = ner.bucketType
         settings = ner.settings
-        bucketType = settings.bucketType
         features = settings.features
 
         appName = ner.appName
@@ -383,7 +383,7 @@ several related keys in the form as a dictionary value under a new key.</p></div
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/94858b4d83d560e89985ab83802ba1c9f2d3d1f6/tf/browser/ner/request.py#L13-L312" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9eca24336097ff19bbabbb452d43c1706049ba50/tf/browser/ner/request.py#L13-L312" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Request(Form):
     def __init__(self):
@@ -594,8 +594,8 @@ several related keys in the form as a dictionary value under a new key.</p></div
         `form` dictionary to values that are stored in the `v` dictionary.
         &#34;&#34;&#34;
         ner = self.ner
+        bucketType = ner.bucketType
         settings = ner.settings
-        bucketType = settings.bucketType
         features = settings.features
 
         appName = ner.appName

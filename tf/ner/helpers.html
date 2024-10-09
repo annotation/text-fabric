@@ -32,7 +32,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/94858b4d83d560e89985ab83802ba1c9f2d3d1f6/tf/ner/helpers.py#L1-L396" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9eca24336097ff19bbabbb452d43c1706049ba50/tf/ner/helpers.py#L1-L340" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Auxiliary functions.
 &#34;&#34;&#34;
@@ -373,63 +373,7 @@ def hasCommon(tokensA, tokensB):
             ref = -1 if i &gt; 0 else -1 if nB &gt;= nA else 1
             return (ref, i, end)
 
-    return None
-
-
-def makePartitions(triggers, myToTokens):
-    &#34;&#34;&#34;Partition a set of triggers into groups where triggers are pairwise disjoint.
-
-    The intention is to explore all triggers that apparently do not have hits.
-    We need to look them up in isolation, because then they might have hits.
-
-    But searching per trigger is expensive. We want to group triggers together
-    that can not interact with each other: triggers whose tokens are pairwise
-    disjoint. A hit of one trigger can then never be part of a hit of any other
-    trigger in the group.
-    &#34;&#34;&#34;
-
-    triggerTokens = {}
-    nTriggerTokens = {}
-
-    for trigger in triggers:
-        tokens = myToTokens(trigger)
-        triggerTokens[trigger] = tokens
-        nTriggerTokens.setdefault(len(tokens), {})[trigger] = tokens
-
-    singleTokenTriggers = list(nTriggerTokens[1]) if 1 in nTriggerTokens else []
-
-    partition = [singleTokenTriggers]
-
-    for n in sorted(nTriggerTokens):
-        if n == 1:
-            continue
-        for triggerA, tokensA in nTriggerTokens[n].items():
-            added = False
-
-            for part in partition:
-                common = False
-
-                for triggerB in part:
-                    tokensB = triggerTokens[triggerB]
-
-                    if hasCommon(tokensA, tokensB):
-                        common = True
-                        break
-
-                if common:
-                    continue
-
-                part.append(triggerA)
-                added = True
-                break
-
-            if not added:
-                partition.append([triggerA])
-
-    return (triggerTokens, partition)
-
-
-# SCOPES</code></pre>
+    return None</code></pre>
 </details>
 </section>
 <section>
@@ -601,18 +545,6 @@ assert hasCommon(tokensA, tokensF) == None, hasCommon(tokensA, tokensF)
 assert hasCommon(tokensF, tokensA) == None, hasCommon(tokensF, tokensA)
 </code></pre></div>
 </dd>
-<dt id="tf.ner.helpers.makePartitions"><code class="name flex">
-<span>def <span class="ident">makePartitions</span></span>(<span>triggers, myToTokens)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Partition a set of triggers into groups where triggers are pairwise disjoint.</p>
-<p>The intention is to explore all triggers that apparently do not have hits.
-We need to look them up in isolation, because then they might have hits.</p>
-<p>But searching per trigger is expensive. We want to group triggers together
-that can not interact with each other: triggers whose tokens are pairwise
-disjoint. A hit of one trigger can then never be part of a hit of any other
-trigger in the group.</p></div>
-</dd>
 <dt id="tf.ner.helpers.normalize"><code class="name flex">
 <span>def <span class="ident">normalize</span></span>(<span>text)</span>
 </code></dt>
@@ -758,7 +690,6 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.ner.helpers.findCompile" href="#tf.ner.helpers.findCompile">findCompile</a></code></li>
 <li><code><a title="tf.ner.helpers.fromTokens" href="#tf.ner.helpers.fromTokens">fromTokens</a></code></li>
 <li><code><a title="tf.ner.helpers.hasCommon" href="#tf.ner.helpers.hasCommon">hasCommon</a></code></li>
-<li><code><a title="tf.ner.helpers.makePartitions" href="#tf.ner.helpers.makePartitions">makePartitions</a></code></li>
 <li><code><a title="tf.ner.helpers.normalize" href="#tf.ner.helpers.normalize">normalize</a></code></li>
 <li><code><a title="tf.ner.helpers.repSet" href="#tf.ner.helpers.repSet">repSet</a></code></li>
 <li><code><a title="tf.ner.helpers.tnorm" href="#tf.ner.helpers.tnorm">tnorm</a></code></li>

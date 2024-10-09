@@ -32,8 +32,59 @@ crossorigin>
 <p>As a preparation, read <code><a title="tf.about.annotate" href="../about/annotate.html">tf.about.annotate</a></code> first, since it explains the concepts, and
 guides you to set up the configuration for your corpus.</p>
 <p>We explain here how to work with entity spreadsheets.</p>
+<p>In a spreadsheet you can assign <em>triggers</em> to entities.
+Triggers are strings to search for in the corpus.
+You can limit the scope of these triggers to specific portions in the corpus.</p>
+<p>The specification of the content and organization of such a entity sheet is in
+<code><a title="tf.ner.sheets.Sheets.readSheetData" href="sheets.html#tf.ner.sheets.Sheets.readSheetData">Sheets.readSheetData()</a></code>.</p>
+<p>You can place entity sheets in the directory <code>ner/specs</code> at the toplevel of the repo,
+or, if you are not working from the repo, you can look up the corpus
+under your <code>text-fabric-data</code> directory, and find a <code>ner</code> directory there.</p>
+<p>The output data of the tool ends up in the <code>_temp</code> directory, which ends up next
+to the <code>ner</code> directory.</p>
+<h2 id="for-corpus-designers">For corpus designers</h2>
+<p>If you are a corpus designer, you can declare this <code>ner</code> directory as an extra
+data module. Then it will packaged with the TF dataset of your corpus, and users
+that use your corpus also get this directory, and can work with the NER tool
+in the TF browser.</p>
+<p>The way to declare this <code>ner</code> data module is by making sure that <code>app/config.yaml</code>
+has this:</p>
+<pre><code>provenanceSpec:
+    ...
+    extraData: ner
+    ...
+</code></pre>
+<p>Additionally, you can create a file <code>ner/config.yaml</code> with some settings for the
+NER process. See <code><a title="tf.ner.settings.Settings" href="settings.html#tf.ner.settings.Settings">Settings</a></code>.</p>
+<p>You can also put a file <code>code.py</code> there in which you implement the function
+<code>normalizeChars(string): string</code></p>
+<p>If you implement it, it will be invoked as a text transformation function upon
+reading string data from spreadsheets.
+The idea is that if the corpus is normalized for certain characters,
+you can normalize the search terms and names in the spreadsheet in the
+same way. For example, in the Suriano corpus, all incarnations of an
+apostrophe, such as <code>’</code> or <code>'</code> or <code>‘</code> have been normalized to <code>’</code>.
+But the spreadsheet might still use the unwanted the variants.
+By providing a suitable function you can prevent that.</p>
 <h2 id="starting-up">Starting up</h2>
-<p>Load the relevant Python modules:</p>
+<h3 id="in-the-tf-browser">In the TF browser</h3>
+<p>On the command line say:</p>
+<pre><code>tf org/repo --tool=ner
+</code></pre>
+<p>If you are at the top level of the repo, you can even say</p>
+<pre><code>tf --tool=ner
+</code></pre>
+<p>Then use the chooser at the top right of the interface to select an annotation
+set. There are three kinds of sets:</p>
+<ul>
+<li><strong>=</strong> The (readonly) set of entities that are already baked in into the TF dataset;</li>
+<li><strong>🧾</strong> (readonly) sets of entities defined by a spreadsheet;</li>
+<li><strong>🖍️</strong> (mutable) sets of entities created manually by the user with the NER tool
+in the TF browser.</li>
+</ul>
+<p><img alt="browser" src="../../images/Ner/select2.png"></p>
+<h3 id="in-a-program">In a program</h3>
+<p>Import the relevant Python modules:</p>
 <pre><code class="language-python">from tf.app import use
 </code></pre>
 <p>Load your corpus. There are two ways:</p>
@@ -52,128 +103,69 @@ guides you to set up the configuration for your corpus.</p>
 <p>Load the <code>Ner</code> module:</p>
 <pre><code class="language-python">NE = A.makeNer()
 </code></pre>
-<p>The tool expects some input data to be present: configuration and spreadsheets with
-instructions. They can be found in the <code>ner</code> directory.
-If you work with a local GitHub clone, that data resides in
-<code>~/github/HuygensING/suriano</code>
-and if you work with an auto-downloaded copy of the data, it is in
-<code>~/text-fabric-data/github/HuygensING/suriano</code>.</p>
-<p>The output data of the tool ends up in the <code>_temp</code> directory, which ends up next
-to the <code>ner</code> directory.</p>
-<h2 id="the-entity-spreadsheets">The entity spreadsheets</h2>
-<p>Here is an example:</p>
-<p><img alt="browser" src="../../images/Ner/spreadsheet.png"></p>
-<p>In our example, the name of the spreadsheet containing this information is
-<code>people.xlsx</code> and it can be found as <code>ner/sheets/people.xlsx</code></p>
-<p>The spreadsheet will be read as follows:</p>
-<ul>
-<li>the first two rows will be skipped</li>
-<li>after that, each row is taken to describe exactly one entity</li>
-<li>the first column has the full and unique name for that entity</li>
-<li>the second column contains the kind of the entity (you may choose your
-keywords freely for this)</li>
-<li>the third column contains a number of surface forms for this entity,
-separated by <code>;</code></li>
-<li>when the surface forms are peeled out, leading and trailing white-space will be
-stripped</li>
-<li>all other columns will be ignored for the moment; in later versions we may use
-the information in those columns to fill in extra data about the entities;
-but probably that information will not end up in TF features.</li>
-</ul>
-<p>During translation from XLSX to YAML the following happens:</p>
-<ul>
-<li>An identifier is distilled from the name of the entity;</li>
-<li>Missing kind fields are filled with the default kind.</li>
-</ul>
-<p>These steps need some configuration information from the <code>ner/config.yaml</code> file.</p>
-<p>Translation is done by</p>
+<p>You can now load a spreadsheet by</p>
 <pre><code class="language-python">NE.setTask(&quot;.people&quot;)
 </code></pre>
-<p>The resulting YAML ends up next to the
-spreadsheet, and it looks like this:</p>
-<pre><code class="language-yaml">christoffel.sticke:
-  kind: PER
-  name: Christoffel Sticke
-  occSpecs: []
-diederik.sticke:
-  kind: PER
-  name: Diederik Sticke
-  occSpecs:
-  - Dierck
-  - Dirk
-dirck.hartog:
-  kind: PER
-  name: Dirck Hartog
-  occSpecs:
-  - Dirich Hartocson
-  - Hertocson
-jan.baptist.roelants:
-  kind: PER
-  name: Jan-Baptist Roelants
-  occSpecs:
-  - Roelans
-  - Rolans
-</code></pre>
-<h2 id="inventory">Inventory</h2>
-<p>A first step is to find out how many occurrences we find in the corpus for these
-surface forms:</p>
-<pre><code class="language-python">NE.reportHits()
-</code></pre>
-<p>and the output looks like this</p>
-<pre><code>...
-
-cornelis.adriaensz       PER   Pach                     7 x Cornelis Adriaensz. Pack
-david.marlot             PER   Morlot                   1 x David de Marlot
-erick.dimmer             PER   Dimer                   11 x Erick Dimmer
-erycius.puteanus         PER   Potiano                  2 x Erycius Puteanus
-francesco.giustiniani    PER   Giustiniano             11 x Francesco Giustiniani
-francois.doubleth        PER   Doublet                  2 x François Doubleth
-
-...
-
-Total 150
-</code></pre>
-<p>Entities that are in the spreadsheet, but not in the corpus are skipped.</p>
-<h2 id="inspection">Inspection</h2>
-<p>We now revert to lower-level methods from the <code><a title="tf.ner.ner" href="#tf.ner.ner">tf.ner.ner</a></code> class to
-inspect some of the results.</p>
-<pre><code class="language-python">results = NE.filterContent(bFind=&quot;pach&quot;, bFindC=False, anyEnt=True, showStats=None)
-</code></pre>
-<p>Here we filtered the chunks (paragraphs) to those that contain the string <code>pach</code>,
-in a case-insensitive way, and that contain at least one entity.</p>
-<p>There 6 of them, and we can show them:</p>
-<pre><code class="language-python">NE.showContent(results)
-</code></pre>
-<p><img alt="browser" src="../../images/Ner/pach.png"></p>
-<p>The resulting entities are in <code>_temp/power/entities.tsv</code> and look like this:</p>
-<pre><code>erick.dimmer    PER     160196
-isabella.clara.eugenia  PER     142613
-gaspar.iii.coligny      PER     7877
-isabella.clara.eugenia  PER     210499
-john.vere       PER     94659
-antonio.lando   PER     267755
-isabella.clara.eugenia  PER     107069
-isabella.clara.eugenia  PER     9162
-michiel.pagani  PER     94366
-isabella.clara.eugenia  PER     179208
-isabella.clara.eugenia  PER     258933
-hans.meinhard   PER     75039
-
-...
-</code></pre>
-<p>Each line corresponds to a marked entity occurrence.
-Lines consist of tab separated fields:</p>
+<p><strong>N.B.:</strong> The leading <code>.</code> in the name signifies that this set is coupled with a
+spreadsheet.</p>
+<h2 id="trigger-investigations">Trigger investigations</h2>
+<p>We now assume that you are working with a program, ideally in a Jupyter notebook.</p>
+<p>There are a few rule in trigger based entity search:</p>
 <ul>
-<li>entity identifier</li>
-<li>entity kind</li>
-<li>remaining fields: slots, i.e. the textual positions occupied by the occurrence.
-Some entity occurrences consist of multiple words / tokens, hence have multiple
-slots.</li>
+<li>the corpus is searched from beginning to end;</li>
+<li>if at some place in the corpus multiple triggers match, the longest match
+counts, and the others are discarded;</li>
+<li>if at some place, a trigger has matched, searching continues past the end of
+the match.</li>
+</ul>
+<p>A consequence of these rules is that at no token in the corpus is part of a double
+match.</p>
+<p>The idea behind this is that if you have two triggers, that the more specific trigger
+takes precedence above the lesser specific one.</p>
+<p>However, the rules also have some pitfalls, which can lead to triggers that
+have unexpectedly no results, or less results than expected.</p>
+<p>Here are a few caveats:</p>
+<ul>
+<li>
+<p>Overlapping triggers: if you have the following triggers:</p>
+<ul>
+<li><code>the mayor</code></li>
+<li><code>mayor of London</code></li>
+</ul>
+<p>then the second one looks more specific than the first one. but if you have this
+passage in the corpus:</p>
+<p><code>the mayor of London</code></p>
+<p>then <code>mayor of London</code> will not be found. Because before it can be found,
+<code>the mayor</code> will be found, after which searching continues at <code>of London</code>, and
+this does not match the trigger <code>mayor of London</code>.</p>
+<p>The solution to cases like this is: <code>the mayor</code> is a rather generic trigger, and
+it will only be valid in specific spots in the corpus.</p>
+<p>So add a scope to this trigger, and make sure that <code>the mayor of London</code> is outside
+that scope.</p>
+</li>
+</ul>
+<p>When the entity spreadsheet is big, with over a thousand triggers for hundreds of names,
+it is difficult to keep track of all the tricky interactions between triggers.</p>
+<p>For that reason we have a few diagnostic functions that help you to spot them:</p>
+<ul>
+<li>
+<p><code>tf.ner.ner.Ner.triggerInterference()</code> will list the triggers belonging to
+different entities that overlap and for which there are occurrences where this
+overlap is problematic;</p>
+</li>
+<li>
+<p><code>tf.ner.ner.Ner.reportHits()</code> will list the triggers without hits while they do
+occur in the corpus; it will give diagnostic info about those triggers; it also
+produces statistics about the inventory of entities that has been collected on the
+basis of the triggers; finally it produces a file that lists the number of hits
+per entity, per trigger, per scope and per section where the occurrences have
+been found.</p>
+</li>
 </ul>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/94858b4d83d560e89985ab83802ba1c9f2d3d1f6/tf/ner/ner.py#L1-L1497" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9eca24336097ff19bbabbb452d43c1706049ba50/tf/ner/ner.py#L1-L772" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Named Entity Recognition by Triggers.
 
@@ -182,9 +174,81 @@ guides you to set up the configuration for your corpus.
 
 We explain here how to work with entity spreadsheets.
 
+In a spreadsheet you can assign *triggers* to entities.
+Triggers are strings to search for in the corpus.
+You can limit the scope of these triggers to specific portions in the corpus.
+
+The specification of the content and organization of such a entity sheet is in
+`tf.ner.sheets.Sheets.readSheetData()`.
+
+You can place entity sheets in the directory `ner/specs` at the toplevel of the repo,
+or, if you are not working from the repo, you can look up the corpus
+under your `text-fabric-data` directory, and find a `ner` directory there.
+
+The output data of the tool ends up in the `_temp` directory, which ends up next
+to the `ner` directory.
+
+## For corpus designers
+
+If you are a corpus designer, you can declare this `ner` directory as an extra
+data module. Then it will packaged with the TF dataset of your corpus, and users
+that use your corpus also get this directory, and can work with the NER tool
+in the TF browser.
+
+The way to declare this `ner` data module is by making sure that `app/config.yaml`
+has this:
+
+```
+provenanceSpec:
+    ...
+    extraData: ner
+    ...
+```
+
+Additionally, you can create a file `ner/config.yaml` with some settings for the
+NER process. See `tf.ner.settings.Settings`.
+
+You can also put a file `code.py` there in which you implement the function
+`normalizeChars(string): string`
+
+If you implement it, it will be invoked as a text transformation function upon
+reading string data from spreadsheets.
+The idea is that if the corpus is normalized for certain characters,
+you can normalize the search terms and names in the spreadsheet in the
+same way. For example, in the Suriano corpus, all incarnations of an
+apostrophe, such as `’` or `&#39;` or `‘` have been normalized to `’`.
+But the spreadsheet might still use the unwanted the variants.
+By providing a suitable function you can prevent that.
+
 ## Starting up
 
-Load the relevant Python modules:
+### In the TF browser
+
+On the command line say:
+
+```
+tf org/repo --tool=ner
+```
+
+If you are at the top level of the repo, you can even say
+
+```
+tf --tool=ner
+```
+
+Then use the chooser at the top right of the interface to select an annotation
+set. There are three kinds of sets:
+
+*   **=** The (readonly) set of entities that are already baked in into the TF dataset;
+*   **🧾** (readonly) sets of entities defined by a spreadsheet;
+*   **🖍️** (mutable) sets of entities created manually by the user with the NER tool
+    in the TF browser.
+
+![browser](../../images/Ner/select2.png)
+
+### In a program
+
+Import the relevant Python modules:
 
 ``` python
 from tf.app import use
@@ -206,160 +270,75 @@ Load the `Ner` module:
 NE = A.makeNer()
 ```
 
-The tool expects some input data to be present: configuration and spreadsheets with
-instructions. They can be found in the `ner` directory.
-If you work with a local GitHub clone, that data resides in
-`~/github/HuygensING/suriano`
-and if you work with an auto-downloaded copy of the data, it is in
-`~/text-fabric-data/github/HuygensING/suriano`.
-
-The output data of the tool ends up in the `_temp` directory, which ends up next
-to the `ner` directory.
-
-## The entity spreadsheets
-
-Here is an example:
-
-![browser](../../images/Ner/spreadsheet.png)
-
-In our example, the name of the spreadsheet containing this information is
-`people.xlsx` and it can be found as `ner/sheets/people.xlsx`
-
-The spreadsheet will be read as follows:
-
-*   the first two rows will be skipped
-*   after that, each row is taken to describe exactly one entity
-*   the first column has the full and unique name for that entity
-*   the second column contains the kind of the entity (you may choose your
-    keywords freely for this)
-*   the third column contains a number of surface forms for this entity,
-    separated by `;`
-*   when the surface forms are peeled out, leading and trailing white-space will be
-    stripped
-*   all other columns will be ignored for the moment; in later versions we may use
-    the information in those columns to fill in extra data about the entities;
-    but probably that information will not end up in TF features.
-
-During translation from XLSX to YAML the following happens:
-
-*   An identifier is distilled from the name of the entity;
-*   Missing kind fields are filled with the default kind.
-
-These steps need some configuration information from the `ner/config.yaml` file.
-
-Translation is done by
+You can now load a spreadsheet by
 
 ``` python
 NE.setTask(&#34;.people&#34;)
 ```
 
-The resulting YAML ends up next to the
-spreadsheet, and it looks like this:
+**N.B.:** The leading `.` in the name signifies that this set is coupled with a
+spreadsheet.
 
-``` yaml
-christoffel.sticke:
-  kind: PER
-  name: Christoffel Sticke
-  occSpecs: []
-diederik.sticke:
-  kind: PER
-  name: Diederik Sticke
-  occSpecs:
-  - Dierck
-  - Dirk
-dirck.hartog:
-  kind: PER
-  name: Dirck Hartog
-  occSpecs:
-  - Dirich Hartocson
-  - Hertocson
-jan.baptist.roelants:
-  kind: PER
-  name: Jan-Baptist Roelants
-  occSpecs:
-  - Roelans
-  - Rolans
-```
+## Trigger investigations
 
-## Inventory
+We now assume that you are working with a program, ideally in a Jupyter notebook.
 
-A first step is to find out how many occurrences we find in the corpus for these
-surface forms:
+There are a few rule in trigger based entity search:
 
-``` python
-NE.reportHits()
-```
+*   the corpus is searched from beginning to end;
+*   if at some place in the corpus multiple triggers match, the longest match
+    counts, and the others are discarded;
+*   if at some place, a trigger has matched, searching continues past the end of
+    the match.
 
-and the output looks like this
+A consequence of these rules is that at no token in the corpus is part of a double
+match.
 
-```
-...
+The idea behind this is that if you have two triggers, that the more specific trigger
+takes precedence above the lesser specific one.
 
-cornelis.adriaensz       PER   Pach                     7 x Cornelis Adriaensz. Pack
-david.marlot             PER   Morlot                   1 x David de Marlot
-erick.dimmer             PER   Dimer                   11 x Erick Dimmer
-erycius.puteanus         PER   Potiano                  2 x Erycius Puteanus
-francesco.giustiniani    PER   Giustiniano             11 x Francesco Giustiniani
-francois.doubleth        PER   Doublet                  2 x François Doubleth
+However, the rules also have some pitfalls, which can lead to triggers that
+have unexpectedly no results, or less results than expected.
 
-...
+Here are a few caveats:
 
-Total 150
-```
+*   Overlapping triggers: if you have the following triggers:
 
-Entities that are in the spreadsheet, but not in the corpus are skipped.
+    *   `the mayor`
+    *   `mayor of London`
 
-## Inspection
+    then the second one looks more specific than the first one. but if you have this
+    passage in the corpus:
 
-We now revert to lower-level methods from the `tf.ner.ner` class to
-inspect some of the results.
+    `the mayor of London`
 
-``` python
-results = NE.filterContent(bFind=&#34;pach&#34;, bFindC=False, anyEnt=True, showStats=None)
-```
+    then `mayor of London` will not be found. Because before it can be found,
+    `the mayor` will be found, after which searching continues at `of London`, and
+    this does not match the trigger `mayor of London`.
 
-Here we filtered the chunks (paragraphs) to those that contain the string `pach`,
-in a case-insensitive way, and that contain at least one entity.
+    The solution to cases like this is: `the mayor` is a rather generic trigger, and
+    it will only be valid in specific spots in the corpus.
 
-There 6 of them, and we can show them:
+    So add a scope to this trigger, and make sure that `the mayor of London` is outside
+    that scope.
 
-``` python
-NE.showContent(results)
-```
+When the entity spreadsheet is big, with over a thousand triggers for hundreds of names,
+it is difficult to keep track of all the tricky interactions between triggers.
 
-![browser](../../images/Ner/pach.png)
+For that reason we have a few diagnostic functions that help you to spot them:
 
-The resulting entities are in `_temp/power/entities.tsv` and look like this:
+*   `tf.ner.ner.Ner.triggerInterference()` will list the triggers belonging to
+    different entities that overlap and for which there are occurrences where this
+    overlap is problematic;
 
-```
-erick.dimmer    PER     160196
-isabella.clara.eugenia  PER     142613
-gaspar.iii.coligny      PER     7877
-isabella.clara.eugenia  PER     210499
-john.vere       PER     94659
-antonio.lando   PER     267755
-isabella.clara.eugenia  PER     107069
-isabella.clara.eugenia  PER     9162
-michiel.pagani  PER     94366
-isabella.clara.eugenia  PER     179208
-isabella.clara.eugenia  PER     258933
-hans.meinhard   PER     75039
-
-...
-```
-
-Each line corresponds to a marked entity occurrence.
-Lines consist of tab separated fields:
-
-*   entity identifier
-*   entity kind
-*   remaining fields: slots, i.e. the textual positions occupied by the occurrence.
-    Some entity occurrences consist of multiple words / tokens, hence have multiple
-    slots.
-
+*   `tf.ner.ner.Ner.reportHits()` will list the triggers without hits while they do
+    occur in the corpus; it will give diagnostic info about those triggers; it also
+    produces statistics about the inventory of entities that has been collected on the
+    basis of the triggers; finally it produces a file that lists the number of hits
+    per entity, per trigger, per scope and per section where the occurrences have
+    been found.
 &#34;&#34;&#34;
 
-from textwrap import dedent
 import collections
 from itertools import chain
 
@@ -373,8 +352,7 @@ from .sets import Sets
 from .sheets import Sheets
 from .match import entityMatch, occMatch
 from .show import Show
-from .scopes import locInScopes
-from .helpers import findCompile, toTokens, makePartitions, hasCommon
+from .helpers import findCompile
 
 
 class NER(Sheets, Sets, Show):
@@ -398,8 +376,10 @@ class NER(Sheets, Sets, Show):
         the TF machinery to extract the specifics of the corpus;
     *   `tf.ner.corpus` from `tf.ner.settings`: additional settings, some of which
         derive from a config file;
-    *   `tf.ner.sheets` from `tf.ner.scopes`: support the concept of scope in
-        the corpus;
+    *   `tf.ner.sheets` from:
+
+        *   `tf.ner.scopes`: support the concept of scope in the corpus;
+        *   `tf.ner.triggers`: support the concept of trigger;
 
     The NER machinery can be used by
 
@@ -424,7 +404,6 @@ class NER(Sheets, Sets, Show):
     def __init__(
         self,
         app,
-        normalizeChars=None,
         data=None,
         browse=False,
         caseSensitive=False,
@@ -443,24 +422,15 @@ class NER(Sheets, Sets, Show):
 
         It does not handle HTML generation, but its parent class, `Show`, does that.
 
-        We consider the corpus as a list of buckets (typically level-3 sectional
+        We consider the corpus as a list of buckets (lowest level sectional
         units; in TEI-derived corpora called `chunk`, being generalizations of
-        `p` (paragraph) elements). What type exactly the buckets are is configured
-        in the `ner/config.yaml` file.
+        `p` (paragraph) elements). We read this type off from the TF dataset,
+        see `tf.ner.corpus.bucketType`
 
         Parameters
         ----------
         app: object
             The object that corresponds to a loaded TF app for a corpus.
-        normalizeChars: function, optional None
-            If passed, it is a text transformation function that will be applied
-            when reading string data from spreadsheets.
-            The idea is that if the corpus is normalized for certain characters,
-            you can normalize the search terms and names in the spreadsheet in the
-            same way. For example, in the Suriano corpus, all incarnations of an
-            apaostrophe, such as `’` or `&#39;` or `‘` have been normalized to `’`.
-            But the spreadsheet might introduce the variants again. By providing a
-            suitable function you can prevent that.
         data: object, optional None
             Entity data to start with. If this class is initialized by the browser,
             the browser hands over the in-memory data that the tool needs.
@@ -488,7 +458,7 @@ class NER(Sheets, Sets, Show):
         self.silent = silent
         self.browse = browse
         self.app = app
-        self.normalizeChars = normalizeChars
+
         self.caseSensitive = caseSensitive
 
         Sets.__init__(self, sets=data.sets)
@@ -524,573 +494,6 @@ class NER(Sheets, Sets, Show):
             )
 
         return tasks
-
-    def getMeta(self):
-        &#34;&#34;&#34;Retrieves the metadata of the current sheet.&#34;&#34;&#34;
-        sheetData = self.getSheetData()
-        return (sheetData.metaFields, sheetData.metaData)
-
-    def findTriggers(self, triggers):
-        if not self.properlySetup:
-            return []
-
-        settings = self.settings
-        spaceEscaped = settings.spaceEscaped
-
-        setData = self.getSetData()
-        getTokens = self.getTokens
-        seqFromNode = self.seqFromNode
-
-        buckets = setData.buckets or ()
-        sheetData = self.getSheetData()
-
-        caseSensitive = sheetData.caseSensitive
-
-        idMap = {trigger: trigger for trigger in triggers}
-        tMap = {trigger: &#34;&#34; for trigger in triggers}
-        tPos = {}
-        triggerSet = set()
-        instructions = {(): dict(tPos=tPos, tMap=tMap, idMap=idMap)}
-
-        for trigger in triggers:
-            triggerT = toTokens(
-                trigger, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
-            )
-            triggerSet.add(triggerT)
-
-        for triggerT in triggerSet:
-            for i, token in enumerate(triggerT):
-                tPos.setdefault(i, {}).setdefault(token, set()).add(triggerT)
-
-        inventory = occMatch(
-            getTokens,
-            seqFromNode,
-            buckets,
-            instructions,
-            spaceEscaped,
-            caseSensitive=caseSensitive,
-        )
-
-        return inventory
-
-    def findTrigger(self, trigger, show=True):
-        if not self.properlySetup:
-            return []
-
-        app = self.app
-        L = app.api.L
-
-        settings = self.settings
-        spaceEscaped = settings.spaceEscaped
-
-        setData = self.getSetData()
-        getTokens = self.getTokens
-        seqFromNode = self.seqFromNode
-
-        buckets = setData.buckets or ()
-        sheetData = self.getSheetData()
-
-        caseSensitive = sheetData.caseSensitive
-
-        triggerT = toTokens(
-            trigger, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
-        )
-        idMap = {trigger: trigger}
-        tMap = {trigger: &#34;&#34;}
-        tPos = {}
-
-        for i, token in enumerate(triggerT):
-            tPos.setdefault(i, {}).setdefault(token, set()).add(triggerT)
-
-        instructions = {(): dict(tPos=tPos, tMap=tMap, idMap=idMap)}
-
-        inventory = occMatch(
-            getTokens,
-            seqFromNode,
-            buckets,
-            instructions,
-            spaceEscaped,
-            caseSensitive=caseSensitive,
-        )
-
-        occs = inventory.get(trigger, {}).get(trigger, {}).get(&#34;&#34;, [])
-
-        if show:
-            nOccs = len(occs)
-            plural = &#34;&#34; if nOccs == 1 else &#34;s&#34;
-            app.dm(f&#34;**{nOccs} occurrence{plural}**\n&#34;)
-
-            if nOccs:
-                headings = set()
-                highlights = set()
-
-                for occ in occs:
-                    headings.add(L.u(occ[0], otype=&#34;chunk&#34;)[0])
-
-                    for slot in occ:
-                        highlights.add(slot)
-
-                for hd in sorted(headings):
-                    app.plain(hd, highlights=highlights)
-        else:
-            return occs
-
-    def getToTokensFunc(self):
-        settings = self.settings
-        spaceEscaped = settings.spaceEscaped
-        sheetData = self.getSheetData()
-        caseSensitive = sheetData.caseSensitive
-
-        def myToTokens(trigger):
-            return toTokens(
-                trigger, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
-            )
-
-        return myToTokens
-
-    def partitionTriggers(self, triggers):
-        return makePartitions(triggers, self.getToTokensFunc())[1]
-
-    def triggerInterference(self, alsoInternal=False, alsoExpected=False):
-        &#34;&#34;&#34;Produce a report of interferences between triggers.
-
-        Triggers interfere if they have matches that intersect, i.e. there is a match
-        m1 of trigger t1 and a match m2 of trigger t2 such that m1 and m2 intersect.
-
-        Triggers may interfere *potentially*: if the triggers overlap they can have
-        intersecting matches. But it does not mean that the corpus contains overlapping
-        matches, i.e. that the triggers conflict actually.
-
-        We report *actually* interfering triggers.
-
-        Triggers within one row are associated to the same entity and work in the same
-        row. It is not bad if they are conflicting with each other. If there
-        are conflicting matches, the trigger that wins still flags the same entity.
-        The worst thing is that some of these triggers are superfluous, but there is
-        no reason to be picky on superfluous triggers.
-
-        When one trigger is a proper part of another, this is mostly intentional.
-        If the longer trigger matches, it wins it from the shorter trigger, unless
-        the shorter trigger&#39;s match starts before the longer trigger&#39;s match.
-
-        We think the user expects the longer trigger to win, but it may surprise him
-        if the shorter triggers wins because it starts earlier.
-
-        Parameters
-        ----------
-        alsoInternal: boolean, optional False
-            Also report interference between triggers on the same row.
-        alsoExpected: boolean, optional False
-            Also report expected interferences.
-        &#34;&#34;&#34;
-        setName = self.setName
-        annoDir = self.annoDir
-        setDir = f&#34;{annoDir}/{setName}&#34;
-        reportFile = f&#34;{setDir}/interference.txt&#34;
-
-        app = self.app
-        L = app.api.L
-        T = app.api.T
-        sheetData = self.getSheetData()
-        rowMap = sheetData.rowMap
-        triggerScopes = sheetData.triggerScopes
-
-        interferences, parts = self.interference(
-            rowMap,
-            triggerScopes,
-            self.getToTokensFunc(),
-            self.seqFromStr,
-            alsoInternal=alsoInternal,
-            alsoExpected=alsoExpected,
-        )
-
-        messages = []
-        witnessed = {}
-
-        nParts = len(parts)
-        plural = &#34;&#34; if nParts == 1 else &#34;es&#34;
-        self.console(
-            f&#34;Looking up {len(interferences)} potential interferences &#34;
-            f&#34;in {len(parts)} pass{plural} over the corpus &#34;,
-            newline=False,
-        )
-
-        for part in parts:
-            self.console(&#34;.&#34;, newline=False)
-            inventory = self.findTriggers(part)
-
-            for trigger, data in inventory.items():
-                occs = data.get(trigger, {}).get(&#34;&#34;, [])
-                nOccs = len(occs)
-
-                if nOccs:
-                    witnessed[trigger] = occs
-
-        self.console(&#34;&#34;)
-
-        msg = (
-            f&#34;{len(witnessed)} potential conflicting trigger pairs with &#34;
-            f&#34;{sum(len(x) for x in witnessed.values())} conflicts&#34;
-        )
-        console(msg)
-        messages.append(msg)
-
-        conflicts = {}
-
-        for (
-            triggerA,
-            triggerB,
-            triggerC,
-            scopeRepA,
-            scopeRepB,
-            commonScopes,
-        ) in interferences:
-            if triggerC not in witnessed:
-                continue
-
-            rowA = sorted(set(rowMap[triggerA]))
-            rowB = sorted(set(rowMap[triggerB]))
-            key = &#34;same row&#34; if rowA == rowB else &#34;different rows&#34;
-            conflicts.setdefault(key, []).append(
-                (
-                    rowA,
-                    rowB,
-                    triggerA,
-                    triggerB,
-                    witnessed[triggerC],
-                    scopeRepA,
-                    scopeRepB,
-                    commonScopes,
-                )
-            )
-
-        for key, confls in conflicts.items():
-            newConfls = []
-
-            for (
-                rowA,
-                rowB,
-                triggerA,
-                triggerB,
-                occs,
-                scopeRepA,
-                scopeRepB,
-                commonScopes,
-            ) in confls:
-                hits = {}
-
-                for occ in sorted(occs):
-                    sectionNode = L.u(occ[0], otype=&#34;chunk&#34;)[0]
-                    heading = tuple(
-                        int(x if type(x) is int else x.lstrip(&#34;0&#34;) or &#34;0&#34;)
-                        for x in T.sectionFromNode(sectionNode, fillup=True)
-                    )
-
-                    if not locInScopes(heading, commonScopes):
-                        continue
-
-                    heading = app.sectionStrFromNode(sectionNode)
-                    hits.setdefault(heading, []).append(occ)
-
-                if len(hits) == 0:
-                    continue
-
-                newConfls.append(
-                    (rowA, rowB, triggerA, triggerB, hits, scopeRepA, scopeRepB)
-                )
-
-            msg = f&#34;{key} ({len(newConfls)} pairs)&#34;
-            msg = f&#34;----------\n{msg}\n----------&#34;
-            console(msg)
-            messages.append(msg)
-
-            for (
-                rowA,
-                rowB,
-                triggerA,
-                triggerB,
-                hits,
-                scopeRepA,
-                scopeRepB,
-            ) in newConfls:
-                rowRepA = &#34;,&#34;.join(str(r) for r in rowA)
-                rowRepB = &#34;,&#34;.join(str(r) for r in rowB)
-                msg = (
-                    f&#34;{rowRepA:&lt;12} ({scopeRepA:&lt;12}): «{triggerA}»\n&#34;
-                    f&#34;{rowRepB:&lt;12} ({scopeRepB:&lt;12}): «{triggerB}»&#34;
-                )
-                console(msg)
-                messages.append(msg)
-                console(f&#34;{hits=}&#34;)
-
-                diags = []
-
-                i = 0
-
-                for heading, occs in sorted(hits.items()):
-                    nOccs = len(occs)
-
-                    if i == 0:
-                        diags.append([])
-
-                    diags[-1].append(f&#34;{heading} x {nOccs}&#34;)
-                    i += 1
-
-                    if i == 5:
-                        i = 0
-
-                first = True
-
-                for batch in diags:
-                    label = f&#34;{&#39;occurrences&#39;:&gt;25}: &#34; if first else (&#34; &#34; * 27)
-                    first = False
-                    msg = f&#34;{label} {&#39;, &#39;.join(batch)}&#34;
-                    console(msg)
-                    messages.append(msg)
-
-        with fileOpen(reportFile, &#34;w&#34;) as fh:
-            for msg in messages:
-                fh.write(f&#34;{msg}\n&#34;)
-
-        console(f&#34;Diagnostic trigger interferences written to {reportFile}&#34;)
-
-    def diagnoseTriggers(self, triggers, detail=True):
-        sheetData = self.getSheetData()
-        triggerScopes = sheetData.triggerScopes
-
-        parts = self.partitionTriggers(triggers)
-
-        uncovered = 0
-
-        nParts = len(parts)
-        plural = &#34;&#34; if nParts == 1 else &#34;es&#34;
-        self.console(
-            f&#34;Looking up {len(triggers)} triggers &#34;
-            f&#34;in {len(parts)} pass{plural} over the corpus &#34;,
-            newline=False,
-        )
-
-        items = []
-
-        for part in parts:
-            self.console(&#34;.&#34;, newline=False)
-            inventory = self.findTriggers(part)
-
-            for trigger, data in inventory.items():
-                occs = data.get(trigger, {}).get(&#34;&#34;, [])
-                items.append((trigger, occs))
-
-        for trigger, occs in sorted(
-            items,
-            key=lambda x: (&#34;, &#34;.join(sorted(triggerScopes[x[0]])), x[0].lower()),
-        ):
-            uncovered += 0 if self.diagnoseTrigger(trigger, occs, detail=detail) else 1
-
-        self.console(&#34;&#34;)
-
-        return uncovered
-
-    def diagnoseTrigger(self, trigger, occs, detail=True):
-        app = self.app
-        L = app.api.L
-        triggerBySlot = self.triggerBySlot
-        sheetData = self.getSheetData()
-        triggerScopes = sheetData.triggerScopes
-
-        uncoveredSlots = set()
-        coveredBy = {}
-
-        for slots in occs:
-            for slot in slots:
-                cTrigger = triggerBySlot.get(slot, None)
-
-                if cTrigger is None:
-                    uncoveredSlots.add(slot)
-                else:
-                    coveredBy.setdefault(cTrigger, set()).add(slot)
-
-        properHits = {}
-
-        nUncoveredSlots = len(uncoveredSlots)
-        ok = nUncoveredSlots == 0
-
-        if nUncoveredSlots:
-            for slot in sorted(uncoveredSlots):
-                heading = app.sectionStrFromNode(L.u(slot, otype=&#34;chunk&#34;)[0])
-                occ = properHits.setdefault(heading, [[]])
-
-                if len(occ[-1]) == 0 or occ[-1][-1] + 1 == slot:
-                    occ[-1].append(slot)
-                else:
-                    occ.append([slot])
-
-        nMissedHits = 0
-        properOccsDiag = []
-        properOccsDiagCompact = []
-
-        for heading, occs in properHits.items():
-            nOccs = len(occs)
-            nMissedHits += nOccs
-            properOccsDiag.append(f&#34;\t\t{heading}: {nOccs} x&#34;)
-            properOccsDiagCompact.append(f&#34;{heading} x {nOccs}&#34;)
-
-        properOccsDiag[0:0] = [f&#34;\tuncovered: {nMissedHits} x&#34;]
-
-        coveredOccsDiag = []
-
-        for cTrigger in sorted(coveredBy, key=lambda x: x.lower()):
-            thisCoveredOccsDiag = []
-            coveredSlots = sorted(coveredBy[cTrigger])
-
-            coveredHits = {}
-
-            for slot in sorted(coveredSlots):
-                heading = app.sectionStrFromNode(L.u(slot, otype=&#34;chunk&#34;)[0])
-                occ = coveredHits.setdefault(heading, [[]])
-
-                if len(occ[-1]) == 0 or occ[-1][-1] + 1 == slot:
-                    occ[-1].append(slot)
-                else:
-                    occ.append([slot])
-
-            nCoveredHits = 0
-
-            for heading, occs in coveredHits.items():
-                nOccs = len(occs)
-                nCoveredHits += nOccs
-                thisCoveredOccsDiag.append(f&#34;\t\t{heading}: {nOccs} x&#34;)
-
-            thisCoveredOccsDiag[0:0] = [f&#34;\tcovered by: {cTrigger}: {nCoveredHits} x&#34;]
-
-            coveredOccsDiag.extend(thisCoveredOccsDiag)
-
-        scopeRep = f&#34;({&#39;, &#39;.join(sorted(triggerScopes[trigger]))})&#34;
-
-        if detail:
-            console(f&#34;{trigger} {scopeRep}:&#34;)
-
-            for line in properOccsDiag:
-                console(line)
-
-            for line in coveredOccsDiag:
-                console(line)
-
-        else:
-            if nUncoveredSlots == 0:
-                if False:
-                    console(f&#34;{trigger} {scopeRep}: covered by other triggers&#34;)
-            else:
-                missedHits = []
-
-                i = 0
-                for occRep in properOccsDiagCompact:
-                    if i == 0:
-                        missedHits.append([occRep])
-                    else:
-                        missedHits[-1].append(occRep)
-
-                    i += 1
-                    if i == 5:
-                        i = 0
-
-                missedHitsRep = &#34;, &#34;.join(missedHits[0])
-                console(f&#34;{trigger:&lt;40} {scopeRep:&lt;12}: {missedHitsRep}&#34;, error=True)
-
-                for m in missedHits[1:]:
-                    missedHitsRep = &#34;, &#34;.join(m)
-                    console(f&#34;{&#39; &#39; * 55}{missedHitsRep}&#34;, error=True)
-
-        return ok
-
-    def interference(
-        self,
-        rowMap,
-        triggerScopes,
-        myToTokens,
-        seqFromStr,
-        alsoInternal=False,
-        alsoExpected=False,
-    ):
-        triggers = list(rowMap)
-
-        triggerTokens, parts = makePartitions(triggers, myToTokens)
-
-        nParts = len(parts)
-
-        interferences = []
-
-        intersections = {}
-
-        for i, part in enumerate(parts):
-            if i == nParts - 1:
-                break
-
-            for otherPart in parts[i + 1 : nParts]:
-                for triggerA in part:
-                    for triggerB in otherPart:
-                        tokensA = triggerTokens[triggerA]
-                        tokensB = triggerTokens[triggerB]
-
-                        if not alsoInternal:
-                            rowsA = set(rowMap[triggerA])
-                            rowsB = set(rowMap[triggerB])
-                            if rowsA == rowsB:
-                                continue
-
-                        scopesA = &#34;,&#34;.join(sorted(triggerScopes[triggerA]))
-                        scopesB = &#34;,&#34;.join(sorted(triggerScopes[triggerB]))
-                        commonScopes = intersections.get((triggerA, triggerB), None)
-
-                        if commonScopes is None:
-                            commonScopes = self.intersectScopes(scopesA, scopesB)
-                            intersections[(triggerA, triggerB)] = commonScopes
-
-                        if len(commonScopes) == 0:
-                            continue
-
-                        common = hasCommon(tokensA, tokensB)
-
-                        if common is None:
-                            continue
-
-                        ref, pos, length = common
-                        nTokensA = len(tokensA)
-                        nTokensB = len(tokensB)
-
-                        nTokensLatter = nTokensB if ref == 1 else nTokensA
-
-                        expected = length == nTokensLatter
-
-                        if expected and not alsoExpected:
-                            continue
-
-                        if ref == 1:
-                            nB = len(tokensB)
-                            union = tokensA
-
-                            if length &lt; nB:
-                                union += tokensB[length:]
-                        else:
-                            nA = len(tokensA)
-                            union = tokensB
-
-                            if length &lt; nA:
-                                union += tokensA[length:]
-
-                        interferences.append(
-                            (
-                                triggerA,
-                                triggerB,
-                                &#34; &#34;.join(union),
-                                scopesA,
-                                scopesB,
-                                commonScopes,
-                            )
-                        )
-
-        parts = makePartitions([x[2] for x in interferences], myToTokens)[1]
-
-        return interferences, parts
 
     def findOccs(self):
         &#34;&#34;&#34;Finds the occurrences of multiple triggers.
@@ -1252,8 +655,8 @@ class NER(Sheets, Sets, Show):
         if not self.properlySetup:
             return []
 
+        bucketType = self.bucketType
         settings = self.settings
-        bucketType = settings.bucketType
         features = settings.features
 
         getTextR = self.getTextR
@@ -1390,142 +793,6 @@ class NER(Sheets, Sets, Show):
             pluralR = &#34;&#34; if nResults == 1 else &#34;s&#34;
             self.console(f&#34;{nResults} {bucketType}{pluralR}&#34;)
         return results
-
-    def reportHits(self, silent=None, showNoHits=False):
-        &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
-        if not self.properlySetup:
-            return
-
-        silent = self.silent if silent is None else silent
-        sectionHead = self.sectionHead
-        sheetData = self.getSheetData()
-        allTriggers = sheetData.allTriggers
-        inventory = sheetData.inventory
-
-        setName = self.setName
-        annoDir = self.annoDir
-        setDir = f&#34;{annoDir}/{setName}&#34;
-        reportFile = f&#34;{setDir}/hits.tsv&#34;
-        reportTriggerBySlotFile = f&#34;{setDir}/triggerBySlot.tsv&#34;
-
-        hitData = []
-        names = set()
-        noHits = set()
-        triggersBySlot = {}
-
-        for e in sorted(allTriggers):
-            (name, eidkind, trigger, scope) = e
-
-            names.add(name)
-
-            entry = (name, trigger, scope)
-            section = &#34;&#34;
-            hits = &#34;&#34;
-
-            entInfo = inventory.get(eidkind, None)
-
-            if entInfo is None:
-                hitData.append((&#34;!E&#34;, *entry, &#34;&#34;, 0))
-                noHits.add(trigger)
-                continue
-
-            triggerInfo = entInfo.get(trigger, None)
-
-            if triggerInfo is None:
-                hitData.append((&#34;!T&#34;, *entry, &#34;&#34;, 0))
-                noHits.add(trigger)
-                continue
-
-            occs = triggerInfo.get(scope, None)
-
-            if occs is None or len(occs) == 0:
-                hitData.append((&#34;!P&#34;, *entry, &#34;&#34;, 0))
-                noHits.add(trigger)
-                continue
-
-            sectionInfo = collections.Counter()
-
-            for slots in occs:
-                for slot in slots:
-                    triggersBySlot.setdefault(slot, set()).add(trigger)
-
-                section = sectionHead(slots[0])
-                sectionInfo[section] += 1
-
-            for section, hits in sorted(sectionInfo.items()):
-                hitData.append((&#34;OK&#34;, *entry, section, hits))
-
-        multipleTriggers = {}
-        triggerBySlot = {}
-        self.triggerBySlot = triggerBySlot
-
-        for slot, triggers in triggersBySlot.items():
-            if len(triggers) &gt; 1:
-                multipleTriggers[slot] = triggers
-
-            triggerBySlot[slot] = list(triggers)[0]
-
-        if len(multipleTriggers) == 0:
-            self.console(&#34;No slot is covered by more than one trigger&#34;)
-        else:
-            console(
-                f&#34;Slots covered by multiple triggers: {len(multipleTriggers)}&#34;,
-                error=True,
-            )
-            for slot, triggers in multipleTriggers.items():
-                triggersRep = &#34;, &#34;.join(f&#34;«{trigger}»&#34; for trigger in sorted(triggers))
-                self.console(f&#34;{slot:&gt;7}: {triggersRep}&#34;, error=True)
-
-        trigWithout = len(noHits)
-
-        if showNoHits and (trigWithout &gt; 0):
-            uncovered = 0
-            console(
-                &#34;Triggers without hits: &#34; f&#34;{trigWithout}x:&#34;,
-                error=True,
-            )
-
-            if len(noHits):
-                uncovered = self.diagnoseTriggers(noHits, detail=False)
-
-        with fileOpen(reportFile, &#34;w&#34;) as rh:
-            rh.write(&#34;label\tname\ttrigger\tscope\tsection\thits\n&#34;)
-
-            for h in sorted(hitData):
-                line = &#34;\t&#34;.join(str(c) for c in h)
-                rh.write(f&#34;{line}\n&#34;)
-
-        with fileOpen(reportTriggerBySlotFile, &#34;w&#34;) as rh:
-            rh.write(&#34;slot\ttrigger\n&#34;)
-
-            for slot, trigger in sorted(
-                triggerBySlot.items(), key=lambda x: (x[1], x[0])
-            ):
-                rh.write(f&#34;{slot}\t{trigger}\n&#34;)
-
-        nEnt = len(names)
-        nTriggers = len(allTriggers)
-        nHits = sum(e[-1] for e in hitData)
-
-        msg = (
-            f&#34;\t{nEnt} entities targeted with {nHits} occurrences. See {reportFile}&#34;
-            if silent
-            else dedent(
-                f&#34;&#34;&#34;
-                Entities targeted:          {nEnt:&gt;5}
-                Triggers searched for:      {nTriggers:&gt;5}
-                Triggers without hits:      {trigWithout:&gt;5}
-                 - completely covered:      {trigWithout - uncovered:&gt;5}
-                 - missing hits:            {uncovered:&gt;5}
-                Triggers with hits:         {nTriggers - trigWithout:&gt;5}
-                Total hits:                 {nHits:&gt;5}
-
-                All hits in report file:      {reportFile}
-                Triggers by slot in file:     {reportTriggerBySlotFile}
-                &#34;&#34;&#34;
-            )
-        )
-        console(msg)
 
     def bakeEntities(self, versionExtension=&#34;e&#34;):
         &#34;&#34;&#34;Consolidates the current entities as nodes into a new TF data source.
@@ -1685,7 +952,7 @@ class NER(Sheets, Sets, Show):
 <dl>
 <dt id="tf.ner.ner.NER"><code class="flex name class">
 <span>class <span class="ident">NER</span></span>
-<span>(</span><span>app, normalizeChars=None, data=None, browse=False, caseSensitive=False, silent=False)</span>
+<span>(</span><span>app, data=None, browse=False, caseSensitive=False, silent=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>API for Named Entity marking.</p>
@@ -1706,8 +973,13 @@ convenient representations;</li>
 the TF machinery to extract the specifics of the corpus;</li>
 <li><code><a title="tf.ner.corpus" href="corpus.html">tf.ner.corpus</a></code> from <code><a title="tf.ner.settings" href="settings.html">tf.ner.settings</a></code>: additional settings, some of which
 derive from a config file;</li>
-<li><code><a title="tf.ner.sheets" href="sheets.html">tf.ner.sheets</a></code> from <code><a title="tf.ner.scopes" href="scopes.html">tf.ner.scopes</a></code>: support the concept of scope in
-the corpus;</li>
+<li>
+<p><code><a title="tf.ner.sheets" href="sheets.html">tf.ner.sheets</a></code> from:</p>
+<ul>
+<li><code><a title="tf.ner.scopes" href="scopes.html">tf.ner.scopes</a></code>: support the concept of scope in the corpus;</li>
+<li><code><a title="tf.ner.triggers" href="triggers.html">tf.ner.triggers</a></code>: support the concept of trigger;</li>
+</ul>
+</li>
 </ul>
 <p>The NER machinery can be used by</p>
 <ul>
@@ -1735,23 +1007,14 @@ and by code that runs in a Jupyter notebook.</p>
 <p>This class handles entity tasks, which is an abstraction of the concepts of
 set and sheet.</p>
 <p>It does not handle HTML generation, but its parent class, <code>Show</code>, does that.</p>
-<p>We consider the corpus as a list of buckets (typically level-3 sectional
+<p>We consider the corpus as a list of buckets (lowest level sectional
 units; in TEI-derived corpora called <code>chunk</code>, being generalizations of
-<code>p</code> (paragraph) elements). What type exactly the buckets are is configured
-in the <code>ner/config.yaml</code> file.</p>
+<code>p</code> (paragraph) elements). We read this type off from the TF dataset,
+see <code>tf.ner.corpus.bucketType</code></p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
 <dd>The object that corresponds to a loaded TF app for a corpus.</dd>
-<dt><strong><code>normalizeChars</code></strong> :&ensp;<code>function</code>, optional <code>None</code></dt>
-<dd>If passed, it is a text transformation function that will be applied
-when reading string data from spreadsheets.
-The idea is that if the corpus is normalized for certain characters,
-you can normalize the search terms and names in the spreadsheet in the
-same way. For example, in the Suriano corpus, all incarnations of an
-apaostrophe, such as <code>’</code> or <code>'</code> or <code>‘</code> have been normalized to <code>’</code>.
-But the spreadsheet might introduce the variants again. By providing a
-suitable function you can prevent that.</dd>
 <dt><strong><code>data</code></strong> :&ensp;<code>object</code>, optional <code>None</code></dt>
 <dd>Entity data to start with. If this class is initialized by the browser,
 the browser hands over the in-memory data that the tool needs.
@@ -1770,7 +1033,7 @@ it specifies whether the triggers should be treated case-sensitively.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/94858b4d83d560e89985ab83802ba1c9f2d3d1f6/tf/ner/ner.py#L203-L1497" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9eca24336097ff19bbabbb452d43c1706049ba50/tf/ner/ner.py#L189-L772" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Sheets, Sets, Show):
     &#34;&#34;&#34;API for Named Entity marking.
@@ -1793,8 +1056,10 @@ it specifies whether the triggers should be treated case-sensitively.</dd>
         the TF machinery to extract the specifics of the corpus;
     *   `tf.ner.corpus` from `tf.ner.settings`: additional settings, some of which
         derive from a config file;
-    *   `tf.ner.sheets` from `tf.ner.scopes`: support the concept of scope in
-        the corpus;
+    *   `tf.ner.sheets` from:
+
+        *   `tf.ner.scopes`: support the concept of scope in the corpus;
+        *   `tf.ner.triggers`: support the concept of trigger;
 
     The NER machinery can be used by
 
@@ -1819,7 +1084,6 @@ it specifies whether the triggers should be treated case-sensitively.</dd>
     def __init__(
         self,
         app,
-        normalizeChars=None,
         data=None,
         browse=False,
         caseSensitive=False,
@@ -1838,24 +1102,15 @@ it specifies whether the triggers should be treated case-sensitively.</dd>
 
         It does not handle HTML generation, but its parent class, `Show`, does that.
 
-        We consider the corpus as a list of buckets (typically level-3 sectional
+        We consider the corpus as a list of buckets (lowest level sectional
         units; in TEI-derived corpora called `chunk`, being generalizations of
-        `p` (paragraph) elements). What type exactly the buckets are is configured
-        in the `ner/config.yaml` file.
+        `p` (paragraph) elements). We read this type off from the TF dataset,
+        see `tf.ner.corpus.bucketType`
 
         Parameters
         ----------
         app: object
             The object that corresponds to a loaded TF app for a corpus.
-        normalizeChars: function, optional None
-            If passed, it is a text transformation function that will be applied
-            when reading string data from spreadsheets.
-            The idea is that if the corpus is normalized for certain characters,
-            you can normalize the search terms and names in the spreadsheet in the
-            same way. For example, in the Suriano corpus, all incarnations of an
-            apaostrophe, such as `’` or `&#39;` or `‘` have been normalized to `’`.
-            But the spreadsheet might introduce the variants again. By providing a
-            suitable function you can prevent that.
         data: object, optional None
             Entity data to start with. If this class is initialized by the browser,
             the browser hands over the in-memory data that the tool needs.
@@ -1883,7 +1138,7 @@ it specifies whether the triggers should be treated case-sensitively.</dd>
         self.silent = silent
         self.browse = browse
         self.app = app
-        self.normalizeChars = normalizeChars
+
         self.caseSensitive = caseSensitive
 
         Sets.__init__(self, sets=data.sets)
@@ -1919,573 +1174,6 @@ it specifies whether the triggers should be treated case-sensitively.</dd>
             )
 
         return tasks
-
-    def getMeta(self):
-        &#34;&#34;&#34;Retrieves the metadata of the current sheet.&#34;&#34;&#34;
-        sheetData = self.getSheetData()
-        return (sheetData.metaFields, sheetData.metaData)
-
-    def findTriggers(self, triggers):
-        if not self.properlySetup:
-            return []
-
-        settings = self.settings
-        spaceEscaped = settings.spaceEscaped
-
-        setData = self.getSetData()
-        getTokens = self.getTokens
-        seqFromNode = self.seqFromNode
-
-        buckets = setData.buckets or ()
-        sheetData = self.getSheetData()
-
-        caseSensitive = sheetData.caseSensitive
-
-        idMap = {trigger: trigger for trigger in triggers}
-        tMap = {trigger: &#34;&#34; for trigger in triggers}
-        tPos = {}
-        triggerSet = set()
-        instructions = {(): dict(tPos=tPos, tMap=tMap, idMap=idMap)}
-
-        for trigger in triggers:
-            triggerT = toTokens(
-                trigger, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
-            )
-            triggerSet.add(triggerT)
-
-        for triggerT in triggerSet:
-            for i, token in enumerate(triggerT):
-                tPos.setdefault(i, {}).setdefault(token, set()).add(triggerT)
-
-        inventory = occMatch(
-            getTokens,
-            seqFromNode,
-            buckets,
-            instructions,
-            spaceEscaped,
-            caseSensitive=caseSensitive,
-        )
-
-        return inventory
-
-    def findTrigger(self, trigger, show=True):
-        if not self.properlySetup:
-            return []
-
-        app = self.app
-        L = app.api.L
-
-        settings = self.settings
-        spaceEscaped = settings.spaceEscaped
-
-        setData = self.getSetData()
-        getTokens = self.getTokens
-        seqFromNode = self.seqFromNode
-
-        buckets = setData.buckets or ()
-        sheetData = self.getSheetData()
-
-        caseSensitive = sheetData.caseSensitive
-
-        triggerT = toTokens(
-            trigger, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
-        )
-        idMap = {trigger: trigger}
-        tMap = {trigger: &#34;&#34;}
-        tPos = {}
-
-        for i, token in enumerate(triggerT):
-            tPos.setdefault(i, {}).setdefault(token, set()).add(triggerT)
-
-        instructions = {(): dict(tPos=tPos, tMap=tMap, idMap=idMap)}
-
-        inventory = occMatch(
-            getTokens,
-            seqFromNode,
-            buckets,
-            instructions,
-            spaceEscaped,
-            caseSensitive=caseSensitive,
-        )
-
-        occs = inventory.get(trigger, {}).get(trigger, {}).get(&#34;&#34;, [])
-
-        if show:
-            nOccs = len(occs)
-            plural = &#34;&#34; if nOccs == 1 else &#34;s&#34;
-            app.dm(f&#34;**{nOccs} occurrence{plural}**\n&#34;)
-
-            if nOccs:
-                headings = set()
-                highlights = set()
-
-                for occ in occs:
-                    headings.add(L.u(occ[0], otype=&#34;chunk&#34;)[0])
-
-                    for slot in occ:
-                        highlights.add(slot)
-
-                for hd in sorted(headings):
-                    app.plain(hd, highlights=highlights)
-        else:
-            return occs
-
-    def getToTokensFunc(self):
-        settings = self.settings
-        spaceEscaped = settings.spaceEscaped
-        sheetData = self.getSheetData()
-        caseSensitive = sheetData.caseSensitive
-
-        def myToTokens(trigger):
-            return toTokens(
-                trigger, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
-            )
-
-        return myToTokens
-
-    def partitionTriggers(self, triggers):
-        return makePartitions(triggers, self.getToTokensFunc())[1]
-
-    def triggerInterference(self, alsoInternal=False, alsoExpected=False):
-        &#34;&#34;&#34;Produce a report of interferences between triggers.
-
-        Triggers interfere if they have matches that intersect, i.e. there is a match
-        m1 of trigger t1 and a match m2 of trigger t2 such that m1 and m2 intersect.
-
-        Triggers may interfere *potentially*: if the triggers overlap they can have
-        intersecting matches. But it does not mean that the corpus contains overlapping
-        matches, i.e. that the triggers conflict actually.
-
-        We report *actually* interfering triggers.
-
-        Triggers within one row are associated to the same entity and work in the same
-        row. It is not bad if they are conflicting with each other. If there
-        are conflicting matches, the trigger that wins still flags the same entity.
-        The worst thing is that some of these triggers are superfluous, but there is
-        no reason to be picky on superfluous triggers.
-
-        When one trigger is a proper part of another, this is mostly intentional.
-        If the longer trigger matches, it wins it from the shorter trigger, unless
-        the shorter trigger&#39;s match starts before the longer trigger&#39;s match.
-
-        We think the user expects the longer trigger to win, but it may surprise him
-        if the shorter triggers wins because it starts earlier.
-
-        Parameters
-        ----------
-        alsoInternal: boolean, optional False
-            Also report interference between triggers on the same row.
-        alsoExpected: boolean, optional False
-            Also report expected interferences.
-        &#34;&#34;&#34;
-        setName = self.setName
-        annoDir = self.annoDir
-        setDir = f&#34;{annoDir}/{setName}&#34;
-        reportFile = f&#34;{setDir}/interference.txt&#34;
-
-        app = self.app
-        L = app.api.L
-        T = app.api.T
-        sheetData = self.getSheetData()
-        rowMap = sheetData.rowMap
-        triggerScopes = sheetData.triggerScopes
-
-        interferences, parts = self.interference(
-            rowMap,
-            triggerScopes,
-            self.getToTokensFunc(),
-            self.seqFromStr,
-            alsoInternal=alsoInternal,
-            alsoExpected=alsoExpected,
-        )
-
-        messages = []
-        witnessed = {}
-
-        nParts = len(parts)
-        plural = &#34;&#34; if nParts == 1 else &#34;es&#34;
-        self.console(
-            f&#34;Looking up {len(interferences)} potential interferences &#34;
-            f&#34;in {len(parts)} pass{plural} over the corpus &#34;,
-            newline=False,
-        )
-
-        for part in parts:
-            self.console(&#34;.&#34;, newline=False)
-            inventory = self.findTriggers(part)
-
-            for trigger, data in inventory.items():
-                occs = data.get(trigger, {}).get(&#34;&#34;, [])
-                nOccs = len(occs)
-
-                if nOccs:
-                    witnessed[trigger] = occs
-
-        self.console(&#34;&#34;)
-
-        msg = (
-            f&#34;{len(witnessed)} potential conflicting trigger pairs with &#34;
-            f&#34;{sum(len(x) for x in witnessed.values())} conflicts&#34;
-        )
-        console(msg)
-        messages.append(msg)
-
-        conflicts = {}
-
-        for (
-            triggerA,
-            triggerB,
-            triggerC,
-            scopeRepA,
-            scopeRepB,
-            commonScopes,
-        ) in interferences:
-            if triggerC not in witnessed:
-                continue
-
-            rowA = sorted(set(rowMap[triggerA]))
-            rowB = sorted(set(rowMap[triggerB]))
-            key = &#34;same row&#34; if rowA == rowB else &#34;different rows&#34;
-            conflicts.setdefault(key, []).append(
-                (
-                    rowA,
-                    rowB,
-                    triggerA,
-                    triggerB,
-                    witnessed[triggerC],
-                    scopeRepA,
-                    scopeRepB,
-                    commonScopes,
-                )
-            )
-
-        for key, confls in conflicts.items():
-            newConfls = []
-
-            for (
-                rowA,
-                rowB,
-                triggerA,
-                triggerB,
-                occs,
-                scopeRepA,
-                scopeRepB,
-                commonScopes,
-            ) in confls:
-                hits = {}
-
-                for occ in sorted(occs):
-                    sectionNode = L.u(occ[0], otype=&#34;chunk&#34;)[0]
-                    heading = tuple(
-                        int(x if type(x) is int else x.lstrip(&#34;0&#34;) or &#34;0&#34;)
-                        for x in T.sectionFromNode(sectionNode, fillup=True)
-                    )
-
-                    if not locInScopes(heading, commonScopes):
-                        continue
-
-                    heading = app.sectionStrFromNode(sectionNode)
-                    hits.setdefault(heading, []).append(occ)
-
-                if len(hits) == 0:
-                    continue
-
-                newConfls.append(
-                    (rowA, rowB, triggerA, triggerB, hits, scopeRepA, scopeRepB)
-                )
-
-            msg = f&#34;{key} ({len(newConfls)} pairs)&#34;
-            msg = f&#34;----------\n{msg}\n----------&#34;
-            console(msg)
-            messages.append(msg)
-
-            for (
-                rowA,
-                rowB,
-                triggerA,
-                triggerB,
-                hits,
-                scopeRepA,
-                scopeRepB,
-            ) in newConfls:
-                rowRepA = &#34;,&#34;.join(str(r) for r in rowA)
-                rowRepB = &#34;,&#34;.join(str(r) for r in rowB)
-                msg = (
-                    f&#34;{rowRepA:&lt;12} ({scopeRepA:&lt;12}): «{triggerA}»\n&#34;
-                    f&#34;{rowRepB:&lt;12} ({scopeRepB:&lt;12}): «{triggerB}»&#34;
-                )
-                console(msg)
-                messages.append(msg)
-                console(f&#34;{hits=}&#34;)
-
-                diags = []
-
-                i = 0
-
-                for heading, occs in sorted(hits.items()):
-                    nOccs = len(occs)
-
-                    if i == 0:
-                        diags.append([])
-
-                    diags[-1].append(f&#34;{heading} x {nOccs}&#34;)
-                    i += 1
-
-                    if i == 5:
-                        i = 0
-
-                first = True
-
-                for batch in diags:
-                    label = f&#34;{&#39;occurrences&#39;:&gt;25}: &#34; if first else (&#34; &#34; * 27)
-                    first = False
-                    msg = f&#34;{label} {&#39;, &#39;.join(batch)}&#34;
-                    console(msg)
-                    messages.append(msg)
-
-        with fileOpen(reportFile, &#34;w&#34;) as fh:
-            for msg in messages:
-                fh.write(f&#34;{msg}\n&#34;)
-
-        console(f&#34;Diagnostic trigger interferences written to {reportFile}&#34;)
-
-    def diagnoseTriggers(self, triggers, detail=True):
-        sheetData = self.getSheetData()
-        triggerScopes = sheetData.triggerScopes
-
-        parts = self.partitionTriggers(triggers)
-
-        uncovered = 0
-
-        nParts = len(parts)
-        plural = &#34;&#34; if nParts == 1 else &#34;es&#34;
-        self.console(
-            f&#34;Looking up {len(triggers)} triggers &#34;
-            f&#34;in {len(parts)} pass{plural} over the corpus &#34;,
-            newline=False,
-        )
-
-        items = []
-
-        for part in parts:
-            self.console(&#34;.&#34;, newline=False)
-            inventory = self.findTriggers(part)
-
-            for trigger, data in inventory.items():
-                occs = data.get(trigger, {}).get(&#34;&#34;, [])
-                items.append((trigger, occs))
-
-        for trigger, occs in sorted(
-            items,
-            key=lambda x: (&#34;, &#34;.join(sorted(triggerScopes[x[0]])), x[0].lower()),
-        ):
-            uncovered += 0 if self.diagnoseTrigger(trigger, occs, detail=detail) else 1
-
-        self.console(&#34;&#34;)
-
-        return uncovered
-
-    def diagnoseTrigger(self, trigger, occs, detail=True):
-        app = self.app
-        L = app.api.L
-        triggerBySlot = self.triggerBySlot
-        sheetData = self.getSheetData()
-        triggerScopes = sheetData.triggerScopes
-
-        uncoveredSlots = set()
-        coveredBy = {}
-
-        for slots in occs:
-            for slot in slots:
-                cTrigger = triggerBySlot.get(slot, None)
-
-                if cTrigger is None:
-                    uncoveredSlots.add(slot)
-                else:
-                    coveredBy.setdefault(cTrigger, set()).add(slot)
-
-        properHits = {}
-
-        nUncoveredSlots = len(uncoveredSlots)
-        ok = nUncoveredSlots == 0
-
-        if nUncoveredSlots:
-            for slot in sorted(uncoveredSlots):
-                heading = app.sectionStrFromNode(L.u(slot, otype=&#34;chunk&#34;)[0])
-                occ = properHits.setdefault(heading, [[]])
-
-                if len(occ[-1]) == 0 or occ[-1][-1] + 1 == slot:
-                    occ[-1].append(slot)
-                else:
-                    occ.append([slot])
-
-        nMissedHits = 0
-        properOccsDiag = []
-        properOccsDiagCompact = []
-
-        for heading, occs in properHits.items():
-            nOccs = len(occs)
-            nMissedHits += nOccs
-            properOccsDiag.append(f&#34;\t\t{heading}: {nOccs} x&#34;)
-            properOccsDiagCompact.append(f&#34;{heading} x {nOccs}&#34;)
-
-        properOccsDiag[0:0] = [f&#34;\tuncovered: {nMissedHits} x&#34;]
-
-        coveredOccsDiag = []
-
-        for cTrigger in sorted(coveredBy, key=lambda x: x.lower()):
-            thisCoveredOccsDiag = []
-            coveredSlots = sorted(coveredBy[cTrigger])
-
-            coveredHits = {}
-
-            for slot in sorted(coveredSlots):
-                heading = app.sectionStrFromNode(L.u(slot, otype=&#34;chunk&#34;)[0])
-                occ = coveredHits.setdefault(heading, [[]])
-
-                if len(occ[-1]) == 0 or occ[-1][-1] + 1 == slot:
-                    occ[-1].append(slot)
-                else:
-                    occ.append([slot])
-
-            nCoveredHits = 0
-
-            for heading, occs in coveredHits.items():
-                nOccs = len(occs)
-                nCoveredHits += nOccs
-                thisCoveredOccsDiag.append(f&#34;\t\t{heading}: {nOccs} x&#34;)
-
-            thisCoveredOccsDiag[0:0] = [f&#34;\tcovered by: {cTrigger}: {nCoveredHits} x&#34;]
-
-            coveredOccsDiag.extend(thisCoveredOccsDiag)
-
-        scopeRep = f&#34;({&#39;, &#39;.join(sorted(triggerScopes[trigger]))})&#34;
-
-        if detail:
-            console(f&#34;{trigger} {scopeRep}:&#34;)
-
-            for line in properOccsDiag:
-                console(line)
-
-            for line in coveredOccsDiag:
-                console(line)
-
-        else:
-            if nUncoveredSlots == 0:
-                if False:
-                    console(f&#34;{trigger} {scopeRep}: covered by other triggers&#34;)
-            else:
-                missedHits = []
-
-                i = 0
-                for occRep in properOccsDiagCompact:
-                    if i == 0:
-                        missedHits.append([occRep])
-                    else:
-                        missedHits[-1].append(occRep)
-
-                    i += 1
-                    if i == 5:
-                        i = 0
-
-                missedHitsRep = &#34;, &#34;.join(missedHits[0])
-                console(f&#34;{trigger:&lt;40} {scopeRep:&lt;12}: {missedHitsRep}&#34;, error=True)
-
-                for m in missedHits[1:]:
-                    missedHitsRep = &#34;, &#34;.join(m)
-                    console(f&#34;{&#39; &#39; * 55}{missedHitsRep}&#34;, error=True)
-
-        return ok
-
-    def interference(
-        self,
-        rowMap,
-        triggerScopes,
-        myToTokens,
-        seqFromStr,
-        alsoInternal=False,
-        alsoExpected=False,
-    ):
-        triggers = list(rowMap)
-
-        triggerTokens, parts = makePartitions(triggers, myToTokens)
-
-        nParts = len(parts)
-
-        interferences = []
-
-        intersections = {}
-
-        for i, part in enumerate(parts):
-            if i == nParts - 1:
-                break
-
-            for otherPart in parts[i + 1 : nParts]:
-                for triggerA in part:
-                    for triggerB in otherPart:
-                        tokensA = triggerTokens[triggerA]
-                        tokensB = triggerTokens[triggerB]
-
-                        if not alsoInternal:
-                            rowsA = set(rowMap[triggerA])
-                            rowsB = set(rowMap[triggerB])
-                            if rowsA == rowsB:
-                                continue
-
-                        scopesA = &#34;,&#34;.join(sorted(triggerScopes[triggerA]))
-                        scopesB = &#34;,&#34;.join(sorted(triggerScopes[triggerB]))
-                        commonScopes = intersections.get((triggerA, triggerB), None)
-
-                        if commonScopes is None:
-                            commonScopes = self.intersectScopes(scopesA, scopesB)
-                            intersections[(triggerA, triggerB)] = commonScopes
-
-                        if len(commonScopes) == 0:
-                            continue
-
-                        common = hasCommon(tokensA, tokensB)
-
-                        if common is None:
-                            continue
-
-                        ref, pos, length = common
-                        nTokensA = len(tokensA)
-                        nTokensB = len(tokensB)
-
-                        nTokensLatter = nTokensB if ref == 1 else nTokensA
-
-                        expected = length == nTokensLatter
-
-                        if expected and not alsoExpected:
-                            continue
-
-                        if ref == 1:
-                            nB = len(tokensB)
-                            union = tokensA
-
-                            if length &lt; nB:
-                                union += tokensB[length:]
-                        else:
-                            nA = len(tokensA)
-                            union = tokensB
-
-                            if length &lt; nA:
-                                union += tokensA[length:]
-
-                        interferences.append(
-                            (
-                                triggerA,
-                                triggerB,
-                                &#34; &#34;.join(union),
-                                scopesA,
-                                scopesB,
-                                commonScopes,
-                            )
-                        )
-
-        parts = makePartitions([x[2] for x in interferences], myToTokens)[1]
-
-        return interferences, parts
 
     def findOccs(self):
         &#34;&#34;&#34;Finds the occurrences of multiple triggers.
@@ -2647,8 +1335,8 @@ it specifies whether the triggers should be treated case-sensitively.</dd>
         if not self.properlySetup:
             return []
 
+        bucketType = self.bucketType
         settings = self.settings
-        bucketType = settings.bucketType
         features = settings.features
 
         getTextR = self.getTextR
@@ -2785,142 +1473,6 @@ it specifies whether the triggers should be treated case-sensitively.</dd>
             pluralR = &#34;&#34; if nResults == 1 else &#34;s&#34;
             self.console(f&#34;{nResults} {bucketType}{pluralR}&#34;)
         return results
-
-    def reportHits(self, silent=None, showNoHits=False):
-        &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
-        if not self.properlySetup:
-            return
-
-        silent = self.silent if silent is None else silent
-        sectionHead = self.sectionHead
-        sheetData = self.getSheetData()
-        allTriggers = sheetData.allTriggers
-        inventory = sheetData.inventory
-
-        setName = self.setName
-        annoDir = self.annoDir
-        setDir = f&#34;{annoDir}/{setName}&#34;
-        reportFile = f&#34;{setDir}/hits.tsv&#34;
-        reportTriggerBySlotFile = f&#34;{setDir}/triggerBySlot.tsv&#34;
-
-        hitData = []
-        names = set()
-        noHits = set()
-        triggersBySlot = {}
-
-        for e in sorted(allTriggers):
-            (name, eidkind, trigger, scope) = e
-
-            names.add(name)
-
-            entry = (name, trigger, scope)
-            section = &#34;&#34;
-            hits = &#34;&#34;
-
-            entInfo = inventory.get(eidkind, None)
-
-            if entInfo is None:
-                hitData.append((&#34;!E&#34;, *entry, &#34;&#34;, 0))
-                noHits.add(trigger)
-                continue
-
-            triggerInfo = entInfo.get(trigger, None)
-
-            if triggerInfo is None:
-                hitData.append((&#34;!T&#34;, *entry, &#34;&#34;, 0))
-                noHits.add(trigger)
-                continue
-
-            occs = triggerInfo.get(scope, None)
-
-            if occs is None or len(occs) == 0:
-                hitData.append((&#34;!P&#34;, *entry, &#34;&#34;, 0))
-                noHits.add(trigger)
-                continue
-
-            sectionInfo = collections.Counter()
-
-            for slots in occs:
-                for slot in slots:
-                    triggersBySlot.setdefault(slot, set()).add(trigger)
-
-                section = sectionHead(slots[0])
-                sectionInfo[section] += 1
-
-            for section, hits in sorted(sectionInfo.items()):
-                hitData.append((&#34;OK&#34;, *entry, section, hits))
-
-        multipleTriggers = {}
-        triggerBySlot = {}
-        self.triggerBySlot = triggerBySlot
-
-        for slot, triggers in triggersBySlot.items():
-            if len(triggers) &gt; 1:
-                multipleTriggers[slot] = triggers
-
-            triggerBySlot[slot] = list(triggers)[0]
-
-        if len(multipleTriggers) == 0:
-            self.console(&#34;No slot is covered by more than one trigger&#34;)
-        else:
-            console(
-                f&#34;Slots covered by multiple triggers: {len(multipleTriggers)}&#34;,
-                error=True,
-            )
-            for slot, triggers in multipleTriggers.items():
-                triggersRep = &#34;, &#34;.join(f&#34;«{trigger}»&#34; for trigger in sorted(triggers))
-                self.console(f&#34;{slot:&gt;7}: {triggersRep}&#34;, error=True)
-
-        trigWithout = len(noHits)
-
-        if showNoHits and (trigWithout &gt; 0):
-            uncovered = 0
-            console(
-                &#34;Triggers without hits: &#34; f&#34;{trigWithout}x:&#34;,
-                error=True,
-            )
-
-            if len(noHits):
-                uncovered = self.diagnoseTriggers(noHits, detail=False)
-
-        with fileOpen(reportFile, &#34;w&#34;) as rh:
-            rh.write(&#34;label\tname\ttrigger\tscope\tsection\thits\n&#34;)
-
-            for h in sorted(hitData):
-                line = &#34;\t&#34;.join(str(c) for c in h)
-                rh.write(f&#34;{line}\n&#34;)
-
-        with fileOpen(reportTriggerBySlotFile, &#34;w&#34;) as rh:
-            rh.write(&#34;slot\ttrigger\n&#34;)
-
-            for slot, trigger in sorted(
-                triggerBySlot.items(), key=lambda x: (x[1], x[0])
-            ):
-                rh.write(f&#34;{slot}\t{trigger}\n&#34;)
-
-        nEnt = len(names)
-        nTriggers = len(allTriggers)
-        nHits = sum(e[-1] for e in hitData)
-
-        msg = (
-            f&#34;\t{nEnt} entities targeted with {nHits} occurrences. See {reportFile}&#34;
-            if silent
-            else dedent(
-                f&#34;&#34;&#34;
-                Entities targeted:          {nEnt:&gt;5}
-                Triggers searched for:      {nTriggers:&gt;5}
-                Triggers without hits:      {trigWithout:&gt;5}
-                 - completely covered:      {trigWithout - uncovered:&gt;5}
-                 - missing hits:            {uncovered:&gt;5}
-                Triggers with hits:         {nTriggers - trigWithout:&gt;5}
-                Total hits:                 {nHits:&gt;5}
-
-                All hits in report file:      {reportFile}
-                Triggers by slot in file:     {reportTriggerBySlotFile}
-                &#34;&#34;&#34;
-            )
-        )
-        console(msg)
 
     def bakeEntities(self, versionExtension=&#34;e&#34;):
         &#34;&#34;&#34;Consolidates the current entities as nodes into a new TF data source.
@@ -3072,6 +1624,7 @@ it specifies whether the triggers should be treated case-sensitively.</dd>
 <ul class="hlist">
 <li><a title="tf.ner.sheets.Sheets" href="sheets.html#tf.ner.sheets.Sheets">Sheets</a></li>
 <li><a title="tf.ner.scopes.Scopes" href="scopes.html#tf.ner.scopes.Scopes">Scopes</a></li>
+<li><a title="tf.ner.triggers.Triggers" href="triggers.html#tf.ner.triggers.Triggers">Triggers</a></li>
 <li><a title="tf.ner.sets.Sets" href="sets.html#tf.ner.sets.Sets">Sets</a></li>
 <li><a title="tf.ner.data.Data" href="data.html#tf.ner.data.Data">Data</a></li>
 <li><a title="tf.ner.corpus.Corpus" href="corpus.html#tf.ner.corpus.Corpus">Corpus</a></li>
@@ -3094,18 +1647,6 @@ TF dataset.</p>
 <dd>The new dataset gets a version like the original dataset, but extended
 with this string.</dd>
 </dl></div>
-</dd>
-<dt id="tf.ner.ner.NER.diagnoseTrigger"><code class="name flex">
-<span>def <span class="ident">diagnoseTrigger</span></span>(<span>self, trigger, occs, detail=True)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="tf.ner.ner.NER.diagnoseTriggers"><code class="name flex">
-<span>def <span class="ident">diagnoseTriggers</span></span>(<span>self, triggers, detail=True)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
 </dd>
 <dt id="tf.ner.ner.NER.filterContent"><code class="name flex">
 <span>def <span class="ident">filterContent</span></span>(<span>self, buckets=None, node=None, bFind=None, bFindC=None, bFindRe=None, anyEnt=None, eVals=None, trigger=None, qTokens=None, valSelect=None, freeState=None, showStats=None)</span>
@@ -3220,53 +1761,11 @@ A single occurrence is represented as a tuple of slots.</p>
 <p><code>names</code>: keyed by tuples (eid, kind) and then path,
 the value is the name of that entity in the context indicated by path.</p></div>
 </dd>
-<dt id="tf.ner.ner.NER.findTrigger"><code class="name flex">
-<span>def <span class="ident">findTrigger</span></span>(<span>self, trigger, show=True)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="tf.ner.ner.NER.findTriggers"><code class="name flex">
-<span>def <span class="ident">findTriggers</span></span>(<span>self, triggers)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="tf.ner.ner.NER.getMeta"><code class="name flex">
-<span>def <span class="ident">getMeta</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Retrieves the metadata of the current sheet.</p></div>
-</dd>
 <dt id="tf.ner.ner.NER.getTasks"><code class="name flex">
 <span>def <span class="ident">getTasks</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-</dd>
-<dt id="tf.ner.ner.NER.getToTokensFunc"><code class="name flex">
-<span>def <span class="ident">getToTokensFunc</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="tf.ner.ner.NER.interference"><code class="name flex">
-<span>def <span class="ident">interference</span></span>(<span>self, rowMap, triggerScopes, myToTokens, seqFromStr, alsoInternal=False, alsoExpected=False)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="tf.ner.ner.NER.partitionTriggers"><code class="name flex">
-<span>def <span class="ident">partitionTriggers</span></span>(<span>self, triggers)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="tf.ner.ner.NER.reportHits"><code class="name flex">
-<span>def <span class="ident">reportHits</span></span>(<span>self, silent=None, showNoHits=False)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Reports the inventory.</p></div>
 </dd>
 <dt id="tf.ner.ner.NER.setTask"><code class="name flex">
 <span>def <span class="ident">setTask</span></span>(<span>self, task, force=False, caseSensitive=None)</span>
@@ -3274,48 +1773,22 @@ the value is the name of that entity in the context indicated by path.</p></div>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.ner.ner.NER.triggerInterference"><code class="name flex">
-<span>def <span class="ident">triggerInterference</span></span>(<span>self, alsoInternal=False, alsoExpected=False)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Produce a report of interferences between triggers.</p>
-<p>Triggers interfere if they have matches that intersect, i.e. there is a match
-m1 of trigger t1 and a match m2 of trigger t2 such that m1 and m2 intersect.</p>
-<p>Triggers may interfere <em>potentially</em>: if the triggers overlap they can have
-intersecting matches. But it does not mean that the corpus contains overlapping
-matches, i.e. that the triggers conflict actually.</p>
-<p>We report <em>actually</em> interfering triggers.</p>
-<p>Triggers within one row are associated to the same entity and work in the same
-row. It is not bad if they are conflicting with each other. If there
-are conflicting matches, the trigger that wins still flags the same entity.
-The worst thing is that some of these triggers are superfluous, but there is
-no reason to be picky on superfluous triggers.</p>
-<p>When one trigger is a proper part of another, this is mostly intentional.
-If the longer trigger matches, it wins it from the shorter trigger, unless
-the shorter trigger's match starts before the longer trigger's match.</p>
-<p>We think the user expects the longer trigger to win, but it may surprise him
-if the shorter triggers wins because it starts earlier.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>alsoInternal</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>Also report interference between triggers on the same row.</dd>
-<dt><strong><code>alsoExpected</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>Also report expected interferences.</dd>
-</dl></div>
-</dd>
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
 <li><code><b><a title="tf.ner.sheets.Sheets" href="sheets.html#tf.ner.sheets.Sheets">Sheets</a></b></code>:
 <ul class="hlist">
+<li><code><a title="tf.ner.sheets.Sheets.getMeta" href="sheets.html#tf.ner.sheets.Sheets.getMeta">getMeta</a></code></li>
 <li><code><a title="tf.ner.sheets.Sheets.getSheetData" href="sheets.html#tf.ner.sheets.Sheets.getSheetData">getSheetData</a></code></li>
 <li><code><a title="tf.ner.sheets.Sheets.loadSheetData" href="sheets.html#tf.ner.sheets.Sheets.loadSheetData">loadSheetData</a></code></li>
 <li><code><a title="tf.ner.sheets.Sheets.parseScopes" href="scopes.html#tf.ner.scopes.Scopes.parseScopes">parseScopes</a></code></li>
 <li><code><a title="tf.ner.sheets.Sheets.readSheetData" href="sheets.html#tf.ner.sheets.Sheets.readSheetData">readSheetData</a></code></li>
 <li><code><a title="tf.ner.sheets.Sheets.readSheets" href="sheets.html#tf.ner.sheets.Sheets.readSheets">readSheets</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.reportHits" href="triggers.html#tf.ner.triggers.Triggers.reportHits">reportHits</a></code></li>
 <li><code><a title="tf.ner.sheets.Sheets.setSheet" href="sheets.html#tf.ner.sheets.Sheets.setSheet">setSheet</a></code></li>
 <li><code><a title="tf.ner.sheets.Sheets.sheetName" href="sheets.html#tf.ner.sheets.Sheets.sheetName">sheetName</a></code></li>
 <li><code><a title="tf.ner.sheets.Sheets.sheetNames" href="sheets.html#tf.ner.sheets.Sheets.sheetNames">sheetNames</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.triggerInterference" href="triggers.html#tf.ner.triggers.Triggers.triggerInterference">triggerInterference</a></code></li>
 </ul>
 </li>
 <li><code><b><a title="tf.ner.sets.Sets" href="sets.html#tf.ner.sets.Sets">Sets</a></b></code>:
@@ -3323,6 +1796,7 @@ if the shorter triggers wins because it starts earlier.</p>
 <li><code><a title="tf.ner.sets.Sets.addEntities" href="data.html#tf.ner.data.Data.addEntities">addEntities</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.addEntity" href="data.html#tf.ner.data.Data.addEntity">addEntity</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.addEntityRich" href="data.html#tf.ner.data.Data.addEntityRich">addEntityRich</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.bucketType" href="corpus.html#tf.ner.corpus.Corpus.bucketType">bucketType</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.checkBuckets" href="corpus.html#tf.ner.corpus.Corpus.checkBuckets">checkBuckets</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.checkFeature" href="corpus.html#tf.ner.corpus.Corpus.checkFeature">checkFeature</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.console" href="settings.html#tf.ner.settings.Settings.console">console</a></code></li>
@@ -3435,10 +1909,13 @@ setTimeout(() => input.focus(), 100);
 <h1>Index</h1>
 <div class="toc">
 <ul>
-<li><a href="#starting-up">Starting up</a></li>
-<li><a href="#the-entity-spreadsheets">The entity spreadsheets</a></li>
-<li><a href="#inventory">Inventory</a></li>
-<li><a href="#inspection">Inspection</a></li>
+<li><a href="#for-corpus-designers">For corpus designers</a></li>
+<li><a href="#starting-up">Starting up</a><ul>
+<li><a href="#in-the-tf-browser">In the TF browser</a></li>
+<li><a href="#in-a-program">In a program</a></li>
+</ul>
+</li>
+<li><a href="#trigger-investigations">Trigger investigations</a></li>
 </ul>
 </div>
 <ul id="index">
@@ -3451,22 +1928,12 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li>
 <h4><code><a title="tf.ner.ner.NER" href="#tf.ner.ner.NER">NER</a></code></h4>
-<ul class="two-column">
+<ul class="">
 <li><code><a title="tf.ner.ner.NER.bakeEntities" href="#tf.ner.ner.NER.bakeEntities">bakeEntities</a></code></li>
-<li><code><a title="tf.ner.ner.NER.diagnoseTrigger" href="#tf.ner.ner.NER.diagnoseTrigger">diagnoseTrigger</a></code></li>
-<li><code><a title="tf.ner.ner.NER.diagnoseTriggers" href="#tf.ner.ner.NER.diagnoseTriggers">diagnoseTriggers</a></code></li>
 <li><code><a title="tf.ner.ner.NER.filterContent" href="#tf.ner.ner.NER.filterContent">filterContent</a></code></li>
 <li><code><a title="tf.ner.ner.NER.findOccs" href="#tf.ner.ner.NER.findOccs">findOccs</a></code></li>
-<li><code><a title="tf.ner.ner.NER.findTrigger" href="#tf.ner.ner.NER.findTrigger">findTrigger</a></code></li>
-<li><code><a title="tf.ner.ner.NER.findTriggers" href="#tf.ner.ner.NER.findTriggers">findTriggers</a></code></li>
-<li><code><a title="tf.ner.ner.NER.getMeta" href="#tf.ner.ner.NER.getMeta">getMeta</a></code></li>
 <li><code><a title="tf.ner.ner.NER.getTasks" href="#tf.ner.ner.NER.getTasks">getTasks</a></code></li>
-<li><code><a title="tf.ner.ner.NER.getToTokensFunc" href="#tf.ner.ner.NER.getToTokensFunc">getToTokensFunc</a></code></li>
-<li><code><a title="tf.ner.ner.NER.interference" href="#tf.ner.ner.NER.interference">interference</a></code></li>
-<li><code><a title="tf.ner.ner.NER.partitionTriggers" href="#tf.ner.ner.NER.partitionTriggers">partitionTriggers</a></code></li>
-<li><code><a title="tf.ner.ner.NER.reportHits" href="#tf.ner.ner.NER.reportHits">reportHits</a></code></li>
 <li><code><a title="tf.ner.ner.NER.setTask" href="#tf.ner.ner.NER.setTask">setTask</a></code></li>
-<li><code><a title="tf.ner.ner.NER.triggerInterference" href="#tf.ner.ner.NER.triggerInterference">triggerInterference</a></code></li>
 </ul>
 </li>
 </ul>
