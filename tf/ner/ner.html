@@ -149,23 +149,23 @@ it is difficult to keep track of all the tricky interactions between triggers.</
 <p>For that reason we have a few diagnostic functions that help you to spot them:</p>
 <ul>
 <li>
-<p><code>tf.ner.ner.Ner.triggerInterference()</code> will list the triggers belonging to
+<p><code><a title="tf.ner.triggers.Triggers.triggerInterference" href="triggers.html#tf.ner.triggers.Triggers.triggerInterference">Triggers.triggerInterference()</a></code> will list the triggers belonging to
 different entities that overlap and for which there are occurrences where this
 overlap is problematic;</p>
 </li>
 <li>
-<p><code>tf.ner.ner.Ner.reportHits()</code> will list the triggers without hits while they do
-occur in the corpus; it will give diagnostic info about those triggers; it also
-produces statistics about the inventory of entities that has been collected on the
-basis of the triggers; finally it produces a file that lists the number of hits
-per entity, per trigger, per scope and per section where the occurrences have
-been found.</p>
+<p><code><a title="tf.ner.triggers.Triggers.reportHits" href="triggers.html#tf.ner.triggers.Triggers.reportHits">Triggers.reportHits()</a></code> will list the triggers without hits
+while they do occur in the corpus; it will give diagnostic info about those
+triggers; it also produces statistics about the inventory of entities that
+has been collected on the basis of the triggers; finally it produces a file
+that lists the number of hits per entity, per trigger, per scope and per
+section where the occurrences have been found.</p>
 </li>
 </ul>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9eca24336097ff19bbabbb452d43c1706049ba50/tf/ner/ner.py#L1-L772" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/618cf9d8b4775d721d5e3c1e2a30462a6626db67/tf/ner/ner.py#L1-L772" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Named Entity Recognition by Triggers.
 
@@ -327,16 +327,16 @@ it is difficult to keep track of all the tricky interactions between triggers.
 
 For that reason we have a few diagnostic functions that help you to spot them:
 
-*   `tf.ner.ner.Ner.triggerInterference()` will list the triggers belonging to
+*   `tf.ner.triggers.Triggers.triggerInterference()` will list the triggers belonging to
     different entities that overlap and for which there are occurrences where this
     overlap is problematic;
 
-*   `tf.ner.ner.Ner.reportHits()` will list the triggers without hits while they do
-    occur in the corpus; it will give diagnostic info about those triggers; it also
-    produces statistics about the inventory of entities that has been collected on the
-    basis of the triggers; finally it produces a file that lists the number of hits
-    per entity, per trigger, per scope and per section where the occurrences have
-    been found.
+*   `tf.ner.triggers.Triggers.reportHits()` will list the triggers without hits
+    while they do occur in the corpus; it will give diagnostic info about those
+    triggers; it also produces statistics about the inventory of entities that
+    has been collected on the basis of the triggers; finally it produces a file
+    that lists the number of hits per entity, per trigger, per scope and per
+    section where the occurrences have been found.
 &#34;&#34;&#34;
 
 import collections
@@ -425,7 +425,7 @@ class NER(Sheets, Sets, Show):
         We consider the corpus as a list of buckets (lowest level sectional
         units; in TEI-derived corpora called `chunk`, being generalizations of
         `p` (paragraph) elements). We read this type off from the TF dataset,
-        see `tf.ner.corpus.bucketType`
+        see `tf.ner.corpus.Corpus.bucketType`
 
         Parameters
         ----------
@@ -1010,7 +1010,7 @@ set and sheet.</p>
 <p>We consider the corpus as a list of buckets (lowest level sectional
 units; in TEI-derived corpora called <code>chunk</code>, being generalizations of
 <code>p</code> (paragraph) elements). We read this type off from the TF dataset,
-see <code>tf.ner.corpus.bucketType</code></p>
+see <code><a title="tf.ner.corpus.Corpus.bucketType" href="corpus.html#tf.ner.corpus.Corpus.bucketType">Corpus.bucketType</a></code></p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
@@ -1033,7 +1033,7 @@ it specifies whether the triggers should be treated case-sensitively.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9eca24336097ff19bbabbb452d43c1706049ba50/tf/ner/ner.py#L189-L772" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/618cf9d8b4775d721d5e3c1e2a30462a6626db67/tf/ner/ner.py#L189-L772" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Sheets, Sets, Show):
     &#34;&#34;&#34;API for Named Entity marking.
@@ -1105,7 +1105,7 @@ it specifies whether the triggers should be treated case-sensitively.</dd>
         We consider the corpus as a list of buckets (lowest level sectional
         units; in TEI-derived corpora called `chunk`, being generalizations of
         `p` (paragraph) elements). We read this type off from the TF dataset,
-        see `tf.ner.corpus.bucketType`
+        see `tf.ner.corpus.Corpus.bucketType`
 
         Parameters
         ----------
