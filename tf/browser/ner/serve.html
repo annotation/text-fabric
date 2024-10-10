@@ -34,7 +34,7 @@ the annotation tool in the TF browser.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/618cf9d8b4775d721d5e3c1e2a30462a6626db67/tf/browser/ner/serve.py#L1-L365" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/browser/ner/serve.py#L1-L367" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Main controller for Flask
 
@@ -236,7 +236,9 @@ class Serve(Request, Fragments):
             v.activetrigger = None
 
         qTokens = (
-            ner.getStrings(tokenStart, tokenEnd) if tokenStart and tokenEnd else None
+            ner.stringsFromTokens(tokenStart, tokenEnd)
+            if tokenStart and tokenEnd
+            else None
         )
 
         (
@@ -457,7 +459,7 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/618cf9d8b4775d721d5e3c1e2a30462a6626db67/tf/browser/ner/serve.py#L16-L333" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/browser/ner/serve.py#L16-L335" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Serve(Request, Fragments):
     def __init__(self, web):
@@ -644,7 +646,9 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
             v.activetrigger = None
 
         qTokens = (
-            ner.getStrings(tokenStart, tokenEnd) if tokenStart and tokenEnd else None
+            ner.stringsFromTokens(tokenStart, tokenEnd)
+            if tokenStart and tokenEnd
+            else None
         )
 
         (
@@ -814,7 +818,7 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
 <p>The selection is defined in the <code>v</code>.</p>
 <p>We further modify the selection by two additional parameters.</p>
 <p>The resulting list of buckets is obtained by
-<code><a title="tf.ner.ner.NER.filterContent" href="../../ner/ner.html#tf.ner.ner.NER.filterContent">NER.filterContent()</a></code>, and each member in the bucket
+<code><a title="tf.ner.ner.NER.filterContent" href="../../ner/corpus.html#tf.ner.corpus.Corpus.filterContent">Corpus.filterContent()</a></code>, and each member in the bucket
 list is a tuple as indicated in the <code>filterContent</code> function.
 The list is stored in the <code><a title="tf.browser.ner.serve.Serve" href="#tf.browser.ner.serve.Serve">Serve</a></code> object.
 Additionally, statistics about these buckets and how many entity values

@@ -33,7 +33,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/618cf9d8b4775d721d5e3c1e2a30462a6626db67/tf/browser/ner/fragments.py#L1-L1031" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/browser/ner/fragments.py#L1-L1031" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Wraps various pieces into HTML.
 
@@ -390,7 +390,7 @@ class Fragments:
             v.activeentity = None
             v.activetrigger = None
             txt = (
-                ner.getText(range(tokenStart, tokenEnd + 1))
+                ner.textFromSlots(range(tokenStart, tokenEnd + 1))
                 if tokenStart and tokenEnd
                 else &#34;&#34;
             )
@@ -1085,7 +1085,7 @@ class Fragments:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/618cf9d8b4775d721d5e3c1e2a30462a6626db67/tf/browser/ner/fragments.py#L20-L1031" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/browser/ner/fragments.py#L20-L1031" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Fragments:
     def wrapMessages(self):
@@ -1423,7 +1423,7 @@ class Fragments:
             v.activeentity = None
             v.activetrigger = None
             txt = (
-                ner.getText(range(tokenStart, tokenEnd + 1))
+                ner.textFromSlots(range(tokenStart, tokenEnd + 1))
                 if tokenStart and tokenEnd
                 else &#34;&#34;
             )

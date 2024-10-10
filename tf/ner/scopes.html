@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/618cf9d8b4775d721d5e3c1e2a30462a6626db67/tf/ner/scopes.py#L1-L445" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/ner/scopes.py#L1-L445" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import functools
 
@@ -202,7 +202,7 @@ def partitionScopes(scopesDict):
     return intervals
 
 
-def getIntvIndex(buckets, instructions, seqFromNode):
+def getIntvIndex(buckets, instructions, getSeqFromNode):
     intervals = _sortScopes(x for x in instructions if x != ())
 
     nIntervals = len(intervals)
@@ -216,7 +216,7 @@ def getIntvIndex(buckets, instructions, seqFromNode):
     (b, e) = intv
 
     for bucket in buckets:
-        hd = seqFromNode(bucket)
+        hd = getSeqFromNode(bucket)
 
         assigned = False
 
@@ -248,12 +248,12 @@ def getIntvIndex(buckets, instructions, seqFromNode):
 
 class Scopes:
     def repLoc(self, loc):
-        strFromSeq = self.strFromSeq
+        getStrFromSeq = self.getStrFromSeq
 
-        return strFromSeq(tuple(x for x in loc if x != 0 and x != -1))
+        return getStrFromSeq(tuple(x for x in loc if x != 0 and x != -1))
 
     def parseLoc(self, locStr, plain=True):
-        seqFromStr = self.seqFromStr
+        getSeqFromStr = self.getSeqFromStr
 
         locStr = locStr.strip()
 
@@ -265,7 +265,7 @@ class Scopes:
                 else dict(result=(), warning=None, normal=self.repLoc(result))
             )
 
-        (error, result) = seqFromStr(locStr)
+        (error, result) = getSeqFromStr(locStr)
 
         if error:
             result = None
@@ -459,7 +459,7 @@ class Scopes:
 
         return tuple(curIntersection)
 
-    def testScopes(self, scopeStrs, seqFromStr):
+    def testScopes(self, scopeStrs):
         scopeIndex = {}
 
         for scopeStr in scopeStrs:
@@ -488,7 +488,7 @@ class Scopes:
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.ner.scopes.getIntvIndex"><code class="name flex">
-<span>def <span class="ident">getIntvIndex</span></span>(<span>buckets, instructions, seqFromNode)</span>
+<span>def <span class="ident">getIntvIndex</span></span>(<span>buckets, instructions, getSeqFromNode)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -518,16 +518,16 @@ class Scopes:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/618cf9d8b4775d721d5e3c1e2a30462a6626db67/tf/ner/scopes.py#L214-L445" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/ner/scopes.py#L214-L445" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Scopes:
     def repLoc(self, loc):
-        strFromSeq = self.strFromSeq
+        getStrFromSeq = self.getStrFromSeq
 
-        return strFromSeq(tuple(x for x in loc if x != 0 and x != -1))
+        return getStrFromSeq(tuple(x for x in loc if x != 0 and x != -1))
 
     def parseLoc(self, locStr, plain=True):
-        seqFromStr = self.seqFromStr
+        getSeqFromStr = self.getSeqFromStr
 
         locStr = locStr.strip()
 
@@ -539,7 +539,7 @@ class Scopes:
                 else dict(result=(), warning=None, normal=self.repLoc(result))
             )
 
-        (error, result) = seqFromStr(locStr)
+        (error, result) = getSeqFromStr(locStr)
 
         if error:
             result = None
@@ -733,7 +733,7 @@ class Scopes:
 
         return tuple(curIntersection)
 
-    def testScopes(self, scopeStrs, seqFromStr):
+    def testScopes(self, scopeStrs):
         scopeIndex = {}
 
         for scopeStr in scopeStrs:
@@ -850,7 +850,7 @@ TF functions <code><a title="tf.advanced.sections.sectionStrFromNode" href="../a
 <div class="desc"></div>
 </dd>
 <dt id="tf.ner.scopes.Scopes.testScopes"><code class="name flex">
-<span>def <span class="ident">testScopes</span></span>(<span>self, scopeStrs, seqFromStr)</span>
+<span>def <span class="ident">testScopes</span></span>(<span>self, scopeStrs)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>

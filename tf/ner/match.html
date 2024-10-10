@@ -32,7 +32,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/618cf9d8b4775d721d5e3c1e2a30462a6626db67/tf/ner/match.py#L1-L354" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/ner/match.py#L1-L354" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Match functions.
 &#34;&#34;&#34;
@@ -43,8 +43,8 @@ from .helpers import fromTokens, xstrip
 
 
 def occMatch(
-    getTokens,
-    seqFromNode,
+    tokensFromNode,
+    getSeqFromNode,
     buckets,
     instructions,
     spaceEscaped,
@@ -54,10 +54,10 @@ def occMatch(
 
     Parameters
     ----------
-    getTokens: function
-        See `tf.ner.corpus.Corpus.getTokens`
-    seqFromNode: function
-        See `tf.ner.corpus.Corpus.seqFromNode`
+    tokensFromNode: function
+        See `tf.ner.corpus.Corpus.tokensFromNode`
+    getSeqFromNode: function
+        See `tf.ner.corpus.Corpus.getSeqFromNode`
     buckets: tuple of integer
         The bucket nodes in question
     instructions: dict, optional None
@@ -99,7 +99,7 @@ def occMatch(
 
     results = {}
 
-    intvIndex = getIntvIndex(buckets, instructions, seqFromNode)
+    intvIndex = getIntvIndex(buckets, instructions, getSeqFromNode)
 
     for b in buckets:
         intv = intvIndex[b]
@@ -110,8 +110,8 @@ def occMatch(
         idMap = data[&#34;idMap&#34;]
 
         # compile the bucket into logical tokens
-        (lineEnds, bTokensAll) = getTokens(b, lineBoundaries=True)
-        # bTokensAll = getTokens(b, lineBoundaries=False)
+        (lineEnds, bTokensAll) = tokensFromNode(b, lineBoundaries=True)
+        # bTokensAll = tokensFromNode(b, lineBoundaries=False)
         bTokens = [x for x in bTokensAll if xstrip(x[1] or &#34;&#34;)]
         bStrings = []
         bStringFirst = {}
@@ -196,8 +196,8 @@ def entityMatch(
     entitySlotAll,
     entitySlotIndex,
     triggerFromMatch,
-    getTextR,
-    getTokens,
+    textFromNode,
+    tokensFromNode,
     b,
     bFindRe,
     anyEnt,
@@ -216,10 +216,10 @@ def entityMatch(
     ----------
     entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex: object
         Various kinds of processed entity data, see `tf.ner.data`
-    getTextR: function
-        See `tf.ner.corpus.Corpus.getTextR`
-    getTokens: function
-        See `tf.ner.corpus.Corpus.getTokens`
+    textFromNode: function
+        See `tf.ner.corpus.Corpus.textFromNode`
+    tokensFromNode: function
+        See `tf.ner.corpus.Corpus.tokensFromNode`
     b: integer
         The node of the bucket in question
     bFindRe, anyEnt, eVals, trigger, qTokens, valSelect, freeState: object
@@ -246,13 +246,13 @@ def entityMatch(
 
     if bFindRe:
         fits = False
-        sText = getTextR(b)
+        sText = textFromNode(b)
 
         for match in bFindRe.finditer(sText):
             positions |= set(range(match.start(), match.end()))
             fits = True
 
-    bTokensAll = getTokens(b)
+    bTokensAll = tokensFromNode(b)
     bTokens = [x for x in bTokensAll if xstrip(x[1] or &#34;&#34;)]
 
     if fits is None or fits:
@@ -398,7 +398,7 @@ def entityMatch(
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.ner.match.entityMatch"><code class="name flex">
-<span>def <span class="ident">entityMatch</span></span>(<span>entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex, triggerFromMatch, getTextR, getTokens, b, bFindRe, anyEnt, eVals, trigger, qTokens, valSelect, freeState, fValStats)</span>
+<span>def <span class="ident">entityMatch</span></span>(<span>entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex, triggerFromMatch, textFromNode, tokensFromNode, b, bFindRe, anyEnt, eVals, trigger, qTokens, valSelect, freeState, fValStats)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Checks whether a bucket satisfies a variety of criteria.</p>
@@ -407,14 +407,14 @@ def entityMatch(
 <dl>
 <dt><strong><code>entityIndex</code></strong>, <strong><code>eStarts</code></strong>, <strong><code>entitySlotVal</code></strong>, <strong><code>entitySlotAll</code></strong>, <strong><code>entitySlotIndex</code></strong> :&ensp;<code>object</code></dt>
 <dd>Various kinds of processed entity data, see <code><a title="tf.ner.data" href="data.html">tf.ner.data</a></code></dd>
-<dt><strong><code>getTextR</code></strong> :&ensp;<code>function</code></dt>
-<dd>See <code><a title="tf.ner.corpus.Corpus.getTextR" href="corpus.html#tf.ner.corpus.Corpus.getTextR">Corpus.getTextR</a></code></dd>
-<dt><strong><code>getTokens</code></strong> :&ensp;<code>function</code></dt>
-<dd>See <code><a title="tf.ner.corpus.Corpus.getTokens" href="corpus.html#tf.ner.corpus.Corpus.getTokens">Corpus.getTokens</a></code></dd>
+<dt><strong><code>textFromNode</code></strong> :&ensp;<code>function</code></dt>
+<dd>See <code>tf.ner.corpus.Corpus.textFromNode</code></dd>
+<dt><strong><code>tokensFromNode</code></strong> :&ensp;<code>function</code></dt>
+<dd>See <code>tf.ner.corpus.Corpus.tokensFromNode</code></dd>
 <dt><strong><code>b</code></strong> :&ensp;<code>integer</code></dt>
 <dd>The node of the bucket in question</dd>
 <dt><strong><code>bFindRe</code></strong>, <strong><code>anyEnt</code></strong>, <strong><code>eVals</code></strong>, <strong><code>trigger</code></strong>, <strong><code>qTokens</code></strong>, <strong><code>valSelect</code></strong>, <strong><code>freeState</code></strong> :&ensp;<code>object</code></dt>
-<dd>As in <code><a title="tf.ner.ner.NER.filterContent" href="ner.html#tf.ner.ner.NER.filterContent">NER.filterContent()</a></code></dd>
+<dd>As in <code><a title="tf.ner.ner.NER.filterContent" href="corpus.html#tf.ner.corpus.Corpus.filterContent">Corpus.filterContent()</a></code></dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -437,16 +437,16 @@ of its slot number (position) and string value;</li>
 </dl></div>
 </dd>
 <dt id="tf.ner.match.occMatch"><code class="name flex">
-<span>def <span class="ident">occMatch</span></span>(<span>getTokens, seqFromNode, buckets, instructions, spaceEscaped, caseSensitive=False)</span>
+<span>def <span class="ident">occMatch</span></span>(<span>tokensFromNode, getSeqFromNode, buckets, instructions, spaceEscaped, caseSensitive=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Finds the occurrences of multiple sequences of tokens in a single bucket.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>getTokens</code></strong> :&ensp;<code>function</code></dt>
-<dd>See <code><a title="tf.ner.corpus.Corpus.getTokens" href="corpus.html#tf.ner.corpus.Corpus.getTokens">Corpus.getTokens</a></code></dd>
-<dt><strong><code>seqFromNode</code></strong> :&ensp;<code>function</code></dt>
-<dd>See <code><a title="tf.ner.corpus.Corpus.seqFromNode" href="corpus.html#tf.ner.corpus.Corpus.seqFromNode">Corpus.seqFromNode</a></code></dd>
+<dt><strong><code>tokensFromNode</code></strong> :&ensp;<code>function</code></dt>
+<dd>See <code>tf.ner.corpus.Corpus.tokensFromNode</code></dd>
+<dt><strong><code>getSeqFromNode</code></strong> :&ensp;<code>function</code></dt>
+<dd>See <code>tf.ner.corpus.Corpus.getSeqFromNode</code></dd>
 <dt><strong><code>buckets</code></strong> :&ensp;<code>tuple</code> of <code>integer</code></dt>
 <dd>The bucket nodes in question</dd>
 <dt><strong><code>instructions</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>

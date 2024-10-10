@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/618cf9d8b4775d721d5e3c1e2a30462a6626db67/tf/ner/triggers.py#L1-L749" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/ner/triggers.py#L1-L793" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import collections
 from textwrap import dedent
@@ -101,6 +101,50 @@ class Triggers:
     def partitionTriggers(self, triggers):
         return makePartitions(triggers, self.getToTokensFunc())[1]
 
+    def findOccs(self):
+        &#34;&#34;&#34;Finds the occurrences of multiple triggers.
+
+        This is meant to efficiently list all occurrences of many token
+        sequences in the corpus.
+
+        The triggers are in member `instructions`, which must first
+        be constructed by reading a number of excel files.
+
+        It adds the member `inventory` to the object, which is a dict
+        with subdicts:
+
+        `occurrences`: keyed by tuples (eid, kind), the values are
+        the occurrences of that entity in the corpus.
+        A single occurrence is represented as a tuple of slots.
+
+        `names`: keyed by tuples (eid, kind) and then path,
+        the value is the name of that entity in the context indicated by path.
+
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            return []
+
+        settings = self.settings
+        spaceEscaped = settings.spaceEscaped
+
+        setData = self.getSetData()
+        tokensFromNode = self.tokensFromNode
+        getSeqFromNode = self.getSeqFromNode
+
+        buckets = setData.buckets or ()
+
+        sheetData = self.getSheetData()
+        instructions = sheetData.instructions
+        caseSensitive = sheetData.caseSensitive
+        sheetData.inventory = occMatch(
+            tokensFromNode,
+            getSeqFromNode,
+            buckets,
+            instructions,
+            spaceEscaped,
+            caseSensitive=caseSensitive,
+        )
+
     def reportHits(self, silent=None, showNoHits=False):
         &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
         if not self.properlySetup:
@@ -285,7 +329,7 @@ class Triggers:
             rowMap,
             triggerScopes,
             self.getToTokensFunc(),
-            self.seqFromStr,
+            self.getSeqFromStr,
             alsoInternal=alsoInternal,
             alsoExpected=alsoExpected,
         )
@@ -593,7 +637,7 @@ class Triggers:
         rowMap,
         triggerScopes,
         myToTokens,
-        seqFromStr,
+        getSeqFromStr,
         alsoInternal=False,
         alsoExpected=False,
     ):
@@ -686,8 +730,8 @@ class Triggers:
         spaceEscaped = settings.spaceEscaped
 
         setData = self.getSetData()
-        getTokens = self.getTokens
-        seqFromNode = self.seqFromNode
+        tokensFromNode = self.tokensFromNode
+        getSeqFromNode = self.getSeqFromNode
 
         buckets = setData.buckets or ()
         sheetData = self.getSheetData()
@@ -711,8 +755,8 @@ class Triggers:
                 tPos.setdefault(i, {}).setdefault(token, set()).add(triggerT)
 
         inventory = occMatch(
-            getTokens,
-            seqFromNode,
+            tokensFromNode,
+            getSeqFromNode,
             buckets,
             instructions,
             spaceEscaped,
@@ -732,8 +776,8 @@ class Triggers:
         spaceEscaped = settings.spaceEscaped
 
         setData = self.getSetData()
-        getTokens = self.getTokens
-        seqFromNode = self.seqFromNode
+        tokensFromNode = self.tokensFromNode
+        getSeqFromNode = self.getSeqFromNode
 
         buckets = setData.buckets or ()
         sheetData = self.getSheetData()
@@ -753,8 +797,8 @@ class Triggers:
         instructions = {(): dict(tPos=tPos, tMap=tMap, idMap=idMap)}
 
         inventory = occMatch(
-            getTokens,
-            seqFromNode,
+            tokensFromNode,
+            getSeqFromNode,
             buckets,
             instructions,
             spaceEscaped,
@@ -816,11 +860,55 @@ trigger in the group.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/618cf9d8b4775d721d5e3c1e2a30462a6626db67/tf/ner/triggers.py#L65-L749" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/ner/triggers.py#L65-L793" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Triggers:
     def partitionTriggers(self, triggers):
         return makePartitions(triggers, self.getToTokensFunc())[1]
+
+    def findOccs(self):
+        &#34;&#34;&#34;Finds the occurrences of multiple triggers.
+
+        This is meant to efficiently list all occurrences of many token
+        sequences in the corpus.
+
+        The triggers are in member `instructions`, which must first
+        be constructed by reading a number of excel files.
+
+        It adds the member `inventory` to the object, which is a dict
+        with subdicts:
+
+        `occurrences`: keyed by tuples (eid, kind), the values are
+        the occurrences of that entity in the corpus.
+        A single occurrence is represented as a tuple of slots.
+
+        `names`: keyed by tuples (eid, kind) and then path,
+        the value is the name of that entity in the context indicated by path.
+
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            return []
+
+        settings = self.settings
+        spaceEscaped = settings.spaceEscaped
+
+        setData = self.getSetData()
+        tokensFromNode = self.tokensFromNode
+        getSeqFromNode = self.getSeqFromNode
+
+        buckets = setData.buckets or ()
+
+        sheetData = self.getSheetData()
+        instructions = sheetData.instructions
+        caseSensitive = sheetData.caseSensitive
+        sheetData.inventory = occMatch(
+            tokensFromNode,
+            getSeqFromNode,
+            buckets,
+            instructions,
+            spaceEscaped,
+            caseSensitive=caseSensitive,
+        )
 
     def reportHits(self, silent=None, showNoHits=False):
         &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
@@ -1006,7 +1094,7 @@ trigger in the group.</p></div>
             rowMap,
             triggerScopes,
             self.getToTokensFunc(),
-            self.seqFromStr,
+            self.getSeqFromStr,
             alsoInternal=alsoInternal,
             alsoExpected=alsoExpected,
         )
@@ -1314,7 +1402,7 @@ trigger in the group.</p></div>
         rowMap,
         triggerScopes,
         myToTokens,
-        seqFromStr,
+        getSeqFromStr,
         alsoInternal=False,
         alsoExpected=False,
     ):
@@ -1407,8 +1495,8 @@ trigger in the group.</p></div>
         spaceEscaped = settings.spaceEscaped
 
         setData = self.getSetData()
-        getTokens = self.getTokens
-        seqFromNode = self.seqFromNode
+        tokensFromNode = self.tokensFromNode
+        getSeqFromNode = self.getSeqFromNode
 
         buckets = setData.buckets or ()
         sheetData = self.getSheetData()
@@ -1432,8 +1520,8 @@ trigger in the group.</p></div>
                 tPos.setdefault(i, {}).setdefault(token, set()).add(triggerT)
 
         inventory = occMatch(
-            getTokens,
-            seqFromNode,
+            tokensFromNode,
+            getSeqFromNode,
             buckets,
             instructions,
             spaceEscaped,
@@ -1453,8 +1541,8 @@ trigger in the group.</p></div>
         spaceEscaped = settings.spaceEscaped
 
         setData = self.getSetData()
-        getTokens = self.getTokens
-        seqFromNode = self.seqFromNode
+        tokensFromNode = self.tokensFromNode
+        getSeqFromNode = self.getSeqFromNode
 
         buckets = setData.buckets or ()
         sheetData = self.getSheetData()
@@ -1474,8 +1562,8 @@ trigger in the group.</p></div>
         instructions = {(): dict(tPos=tPos, tMap=tMap, idMap=idMap)}
 
         inventory = occMatch(
-            getTokens,
-            seqFromNode,
+            tokensFromNode,
+            getSeqFromNode,
             buckets,
             instructions,
             spaceEscaped,
@@ -1522,6 +1610,23 @@ trigger in the group.</p></div>
 <dd>
 <div class="desc"></div>
 </dd>
+<dt id="tf.ner.triggers.Triggers.findOccs"><code class="name flex">
+<span>def <span class="ident">findOccs</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Finds the occurrences of multiple triggers.</p>
+<p>This is meant to efficiently list all occurrences of many token
+sequences in the corpus.</p>
+<p>The triggers are in member <code>instructions</code>, which must first
+be constructed by reading a number of excel files.</p>
+<p>It adds the member <code>inventory</code> to the object, which is a dict
+with subdicts:</p>
+<p><code>occurrences</code>: keyed by tuples (eid, kind), the values are
+the occurrences of that entity in the corpus.
+A single occurrence is represented as a tuple of slots.</p>
+<p><code>names</code>: keyed by tuples (eid, kind) and then path,
+the value is the name of that entity in the context indicated by path.</p></div>
+</dd>
 <dt id="tf.ner.triggers.Triggers.findTrigger"><code class="name flex">
 <span>def <span class="ident">findTrigger</span></span>(<span>self, trigger, show=True)</span>
 </code></dt>
@@ -1535,7 +1640,7 @@ trigger in the group.</p></div>
 <div class="desc"></div>
 </dd>
 <dt id="tf.ner.triggers.Triggers.interference"><code class="name flex">
-<span>def <span class="ident">interference</span></span>(<span>self, rowMap, triggerScopes, myToTokens, seqFromStr, alsoInternal=False, alsoExpected=False)</span>
+<span>def <span class="ident">interference</span></span>(<span>self, rowMap, triggerScopes, myToTokens, getSeqFromStr, alsoInternal=False, alsoExpected=False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1660,6 +1765,7 @@ setTimeout(() => input.focus(), 100);
 <ul class="two-column">
 <li><code><a title="tf.ner.triggers.Triggers.diagnoseTrigger" href="#tf.ner.triggers.Triggers.diagnoseTrigger">diagnoseTrigger</a></code></li>
 <li><code><a title="tf.ner.triggers.Triggers.diagnoseTriggers" href="#tf.ner.triggers.Triggers.diagnoseTriggers">diagnoseTriggers</a></code></li>
+<li><code><a title="tf.ner.triggers.Triggers.findOccs" href="#tf.ner.triggers.Triggers.findOccs">findOccs</a></code></li>
 <li><code><a title="tf.ner.triggers.Triggers.findTrigger" href="#tf.ner.triggers.Triggers.findTrigger">findTrigger</a></code></li>
 <li><code><a title="tf.ner.triggers.Triggers.findTriggers" href="#tf.ner.triggers.Triggers.findTriggers">findTriggers</a></code></li>
 <li><code><a title="tf.ner.triggers.Triggers.interference" href="#tf.ner.triggers.Triggers.interference">interference</a></code></li>
