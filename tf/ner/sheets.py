@@ -42,7 +42,22 @@ CLEAR_KEYS = """
 
 class Sheets(Scopes, Triggers):
     def __init__(self, sheets=None):
+        """Handling of NER spreadsheets.
+
+        A NER spreadsheet contains entity information; in particular it links
+        named entities to triggers by which they can be found in the corpus.
+
+        See `readSheetData()` for the description of the shape of the spreadsheet,
+        which is expected to be an Excel sheet.
+
+        Parameters
+        ----------
+        sheets: dict, optional None
+            Sheet data to start with. Relevant for when the TF browser uses this class.
+            See `tf.ner.ner.NER`
+        """
         CI = CheckImport("openpyxl")
+
         if CI.importOK(hint=True):
             openpyxl = CI.importGet()
             self.loadXls = openpyxl.load_workbook

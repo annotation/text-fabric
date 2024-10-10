@@ -71,7 +71,7 @@ class Show:
         Parameters
         ----------
         activeEntity: tuple, optional None
-            The entity that must be highlighted.
+            The entity that must be highlighted, given as entity id and entity kind.
 
         sortKey: string, optional None
             The key by which the entity list is sorted.
@@ -191,7 +191,7 @@ class Show:
         activeEntity: tuple, optional None
             The entity that must be highlighted.
 
-        activeTriggetrigger: tuple, optional None
+        activeTrigger: tuple, optional None
             The entity that must be highlighted.
 
         sortKey: string, optional None
@@ -407,7 +407,7 @@ class Show:
         these entities are present in the input parameter `buckets`.
 
         It is recommended to apply this function to the outcome of
-        `tf.ner.ner.NER.filterContent`
+        `tf.ner.corpus.Corpus.filterContent`
 
         !!! caution "Truncated"
             Unless the user has selected an entity or forced a start and end
@@ -419,8 +419,8 @@ class Show:
         buckets: iterable of tuple
             A selection of buckets (chunks / paragraphs) of the corpus.
             Each bucket is given as a tuple.
-            The exact form is this data structure is equal to what the
-            function `tf.ner.ner.NER.filterContent`
+            The exact form of this data structure is equal to what the
+            function `tf.ner.corpus.Corpus.filterContent`
             returns.
 
         activeEntity: tuple, optional None

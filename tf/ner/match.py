@@ -187,7 +187,7 @@ def entityMatch(
     b: integer
         The node of the bucket in question
     bFindRe, anyEnt, eVals, trigger, qTokens, valSelect, freeState: object
-        As in `tf.ner.ner.NER.filterContent`
+        As in `tf.ner.corpus.Corpus.filterContent`
 
     Returns
     -------

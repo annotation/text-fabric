@@ -19,6 +19,15 @@ def makePartitions(triggers, myToTokens):
     that can not interact with each other: triggers whose tokens are pairwise
     disjoint. A hit of one trigger can then never be part of a hit of any other
     trigger in the group.
+
+    Parameters
+    ----------
+    triggers: iterable of string
+        The triggers that must be partitioned
+    myToTokens: function
+        Takes a trigger (string) and produces a sequence of tokens.
+        Here you can pass a function that corresponds to how the strings in the corpus
+        are divided up into tokens.
     """
 
     triggerTokens = {}
