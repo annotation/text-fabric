@@ -66,6 +66,50 @@ class Triggers:
     def partitionTriggers(self, triggers):
         return makePartitions(triggers, self.getToTokensFunc())[1]
 
+    def findOccs(self):
+        """Finds the occurrences of multiple triggers.
+
+        This is meant to efficiently list all occurrences of many token
+        sequences in the corpus.
+
+        The triggers are in member `instructions`, which must first
+        be constructed by reading a number of excel files.
+
+        It adds the member `inventory` to the object, which is a dict
+        with subdicts:
+
+        `occurrences`: keyed by tuples (eid, kind), the values are
+        the occurrences of that entity in the corpus.
+        A single occurrence is represented as a tuple of slots.
+
+        `names`: keyed by tuples (eid, kind) and then path,
+        the value is the name of that entity in the context indicated by path.
+
+        """
+        if not self.properlySetup:
+            return []
+
+        settings = self.settings
+        spaceEscaped = settings.spaceEscaped
+
+        setData = self.getSetData()
+        tokensFromNode = self.tokensFromNode
+        getSeqFromNode = self.getSeqFromNode
+
+        buckets = setData.buckets or ()
+
+        sheetData = self.getSheetData()
+        instructions = sheetData.instructions
+        caseSensitive = sheetData.caseSensitive
+        sheetData.inventory = occMatch(
+            tokensFromNode,
+            getSeqFromNode,
+            buckets,
+            instructions,
+            spaceEscaped,
+            caseSensitive=caseSensitive,
+        )
+
     def reportHits(self, silent=None, showNoHits=False):
         """Reports the inventory."""
         if not self.properlySetup:
@@ -250,7 +294,7 @@ class Triggers:
             rowMap,
             triggerScopes,
             self.getToTokensFunc(),
-            self.seqFromStr,
+            self.getSeqFromStr,
             alsoInternal=alsoInternal,
             alsoExpected=alsoExpected,
         )
@@ -558,7 +602,7 @@ class Triggers:
         rowMap,
         triggerScopes,
         myToTokens,
-        seqFromStr,
+        getSeqFromStr,
         alsoInternal=False,
         alsoExpected=False,
     ):
@@ -651,8 +695,8 @@ class Triggers:
         spaceEscaped = settings.spaceEscaped
 
         setData = self.getSetData()
-        getTokens = self.getTokens
-        seqFromNode = self.seqFromNode
+        tokensFromNode = self.tokensFromNode
+        getSeqFromNode = self.getSeqFromNode
 
         buckets = setData.buckets or ()
         sheetData = self.getSheetData()
@@ -676,8 +720,8 @@ class Triggers:
                 tPos.setdefault(i, {}).setdefault(token, set()).add(triggerT)
 
         inventory = occMatch(
-            getTokens,
-            seqFromNode,
+            tokensFromNode,
+            getSeqFromNode,
             buckets,
             instructions,
             spaceEscaped,
@@ -697,8 +741,8 @@ class Triggers:
         spaceEscaped = settings.spaceEscaped
 
         setData = self.getSetData()
-        getTokens = self.getTokens
-        seqFromNode = self.seqFromNode
+        tokensFromNode = self.tokensFromNode
+        getSeqFromNode = self.getSeqFromNode
 
         buckets = setData.buckets or ()
         sheetData = self.getSheetData()
@@ -718,8 +762,8 @@ class Triggers:
         instructions = {(): dict(tPos=tPos, tMap=tMap, idMap=idMap)}
 
         inventory = occMatch(
-            getTokens,
-            seqFromNode,
+            tokensFromNode,
+            getSeqFromNode,
             buckets,
             instructions,
             spaceEscaped,

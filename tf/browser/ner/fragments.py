@@ -353,7 +353,7 @@ class Fragments:
             v.activeentity = None
             v.activetrigger = None
             txt = (
-                ner.getText(range(tokenStart, tokenEnd + 1))
+                ner.textFromSlots(range(tokenStart, tokenEnd + 1))
                 if tokenStart and tokenEnd
                 else ""
             )

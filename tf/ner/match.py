@@ -7,8 +7,8 @@ from .helpers import fromTokens, xstrip
 
 
 def occMatch(
-    getTokens,
-    seqFromNode,
+    tokensFromNode,
+    getSeqFromNode,
     buckets,
     instructions,
     spaceEscaped,
@@ -18,10 +18,10 @@ def occMatch(
 
     Parameters
     ----------
-    getTokens: function
-        See `tf.ner.corpus.Corpus.getTokens`
-    seqFromNode: function
-        See `tf.ner.corpus.Corpus.seqFromNode`
+    tokensFromNode: function
+        See `tf.ner.corpus.Corpus.tokensFromNode`
+    getSeqFromNode: function
+        See `tf.ner.corpus.Corpus.getSeqFromNode`
     buckets: tuple of integer
         The bucket nodes in question
     instructions: dict, optional None
@@ -63,7 +63,7 @@ def occMatch(
 
     results = {}
 
-    intvIndex = getIntvIndex(buckets, instructions, seqFromNode)
+    intvIndex = getIntvIndex(buckets, instructions, getSeqFromNode)
 
     for b in buckets:
         intv = intvIndex[b]
@@ -74,8 +74,8 @@ def occMatch(
         idMap = data["idMap"]
 
         # compile the bucket into logical tokens
-        (lineEnds, bTokensAll) = getTokens(b, lineBoundaries=True)
-        # bTokensAll = getTokens(b, lineBoundaries=False)
+        (lineEnds, bTokensAll) = tokensFromNode(b, lineBoundaries=True)
+        # bTokensAll = tokensFromNode(b, lineBoundaries=False)
         bTokens = [x for x in bTokensAll if xstrip(x[1] or "")]
         bStrings = []
         bStringFirst = {}
@@ -160,8 +160,8 @@ def entityMatch(
     entitySlotAll,
     entitySlotIndex,
     triggerFromMatch,
-    getTextR,
-    getTokens,
+    textFromNode,
+    tokensFromNode,
     b,
     bFindRe,
     anyEnt,
@@ -180,10 +180,10 @@ def entityMatch(
     ----------
     entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex: object
         Various kinds of processed entity data, see `tf.ner.data`
-    getTextR: function
-        See `tf.ner.corpus.Corpus.getTextR`
-    getTokens: function
-        See `tf.ner.corpus.Corpus.getTokens`
+    textFromNode: function
+        See `tf.ner.corpus.Corpus.textFromNode`
+    tokensFromNode: function
+        See `tf.ner.corpus.Corpus.tokensFromNode`
     b: integer
         The node of the bucket in question
     bFindRe, anyEnt, eVals, trigger, qTokens, valSelect, freeState: object
@@ -210,13 +210,13 @@ def entityMatch(
 
     if bFindRe:
         fits = False
-        sText = getTextR(b)
+        sText = textFromNode(b)
 
         for match in bFindRe.finditer(sText):
             positions |= set(range(match.start(), match.end()))
             fits = True
 
-    bTokensAll = getTokens(b)
+    bTokensAll = tokensFromNode(b)
     bTokens = [x for x in bTokensAll if xstrip(x[1] or "")]
 
     if fits is None or fits:

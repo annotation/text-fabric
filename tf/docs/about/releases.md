@@ -31,8 +31,8 @@ numbers for each level of containing sections and itself. The new data is access
 as follows:
 
 ``` python
-C.sections.data["seqFromSec"]
-C.sections.data["secFromSeq"]
+C.sections.data["seqFromNode"]
+C.sections.data["nodeFromSeq"]
 ```
 
 See also `tf.core.prepare.sections`

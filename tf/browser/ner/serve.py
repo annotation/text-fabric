@@ -198,7 +198,9 @@ class Serve(Request, Fragments):
             v.activetrigger = None
 
         qTokens = (
-            ner.getStrings(tokenStart, tokenEnd) if tokenStart and tokenEnd else None
+            ner.stringsFromTokens(tokenStart, tokenEnd)
+            if tokenStart and tokenEnd
+            else None
         )
 
         (

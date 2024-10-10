@@ -557,11 +557,11 @@ def sections(info, error, otype, oslots, otext, levUp, levDown, levels, *sFeats)
             Mapping from section-level-1 nodes to mappings from
             section-level-2 headings to mappings from
             section-level-3 headings to section-level-3 nodes.
-        *   `seqFromSec`:
+        *   `seqFromNode`:
             Mapping from tuples of section nodes to tuples of sequence numbers.
             Only if there are precisely 3 section levels, otherwise this is an
             empty dictionary.
-        *   `secFromSeq`:
+        *   `nodeFromSeq`:
             Mapping from tuples of section sequence numbers to tuples of nodes.
             Only if there are precisely 3 section levels, otherwise this is an
             empty dictionary.
@@ -580,8 +580,8 @@ def sections(info, error, otype, oslots, otext, levUp, levDown, levels, *sFeats)
     sTypes = itemize(otext["sectionTypes"], ",")
     sec1 = {}
     sec2 = {}
-    seqFromSec = {}
-    secFromSeq = {}
+    seqFromNode = {}
+    nodeFromSeq = {}
     nestingProblems = collections.Counter()
 
     if len(sTypes) < 2:
@@ -656,8 +656,8 @@ def sections(info, error, otype, oslots, otext, levUp, levDown, levels, *sFeats)
 
         for n0 in range(support0[0], support0[1] + 1):
             c0 += 1
-            seqFromSec[n0] = (c0,)
-            secFromSeq[(c0,)] = n0
+            seqFromNode[n0] = (c0,)
+            nodeFromSeq[(c0,)] = n0
 
             c1 = 0
 
@@ -668,8 +668,8 @@ def sections(info, error, otype, oslots, otext, levUp, levDown, levels, *sFeats)
             ):
                 c1 += 1
                 c2 = 0
-                seqFromSec[n1] = (c0, c1)
-                secFromSeq[(c0, c1)] = n1
+                seqFromNode[n1] = (c0, c1)
+                nodeFromSeq[(c0, c1)] = n1
 
                 for n2 in (
                     x
@@ -677,10 +677,10 @@ def sections(info, error, otype, oslots, otext, levUp, levDown, levels, *sFeats)
                     if otype[x - maxSlot - 1] == sTypes[2]
                 ):
                     c2 += 1
-                    seqFromSec[n2] = (c0, c1, c2)
-                    secFromSeq[(c0, c1, c2)] = n2
+                    seqFromNode[n2] = (c0, c1, c2)
+                    nodeFromSeq[(c0, c1, c2)] = n2
 
-    return dict(sec1=sec1, sec2=sec2, seqFromSec=seqFromSec, secFromSeq=secFromSeq)
+    return dict(sec1=sec1, sec2=sec2, seqFromNode=seqFromNode, nodeFromSeq=nodeFromSeq)
 
 
 def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):

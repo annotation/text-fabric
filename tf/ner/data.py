@@ -130,8 +130,8 @@ class Data(Corpus):
         nF = len(features)
 
         checkFeature = self.checkFeature
-        getFVal = self.getFVal
-        getSlots = self.getSlots
+        fvalFromNode = self.fvalFromNode
+        slotsFromNode = self.slotsFromNode
 
         setFile = f"{annoDir}/{setName}/entities.tsv"
 
@@ -146,11 +146,11 @@ class Data(Corpus):
                 hasFeature = {feat: checkFeature(feat) for feat in features}
 
                 for e in self.getEntityNodes():
-                    slots = getSlots(e)
+                    slots = slotsFromNode(e)
                     entities[e] = (
                         tuple(
                             (
-                                getFVal(feat, e)
+                                fvalFromNode(feat, e)
                                 if hasFeature[feat]
                                 else featureDefault[feat](slots)
                             )
@@ -244,8 +244,8 @@ class Data(Corpus):
             return
 
         settings = self.settings
+        textFromSlots = self.textFromSlots
         features = settings.features
-        getText = self.getText
         summaryIndices = settings.summaryIndices
 
         setName = self.setName
@@ -285,7 +285,7 @@ class Data(Corpus):
             entitySlotIndex = {}
 
             for e, (fVals, slots) in entityItems:
-                txt = getText(slots)
+                txt = textFromSlots(slots)
                 ident = fVals
                 summary = tuple(fVals[i] for i in summaryIndices)
 
@@ -445,7 +445,7 @@ class Data(Corpus):
             `deletions` or contained in it.
         buckets: iterable of list
             This is typically the result of
-            `tf.ner.ner.NER.filterContent()`.
+            `tf.ner.corpus.Corpus.filterContent()`.
             The only important thing is that member 2 of each bucket is the list
             of entity matches in that bucket.
             Only entities that occupy these places will be removed.
@@ -732,7 +732,7 @@ class Data(Corpus):
             `additions` or contained in it.
         buckets: iterable of list
             This is typically the result of
-            `tf.ner.ner.NER.filterContent()`.
+            `tf.ner.corpus.Corpus.filterContent()`.
             The only important thing is that member 2 of each bucket is the list
             of entity matches in that bucket.
             Entities will only be added at these places.

@@ -167,7 +167,7 @@ def partitionScopes(scopesDict):
     return intervals
 
 
-def getIntvIndex(buckets, instructions, seqFromNode):
+def getIntvIndex(buckets, instructions, getSeqFromNode):
     intervals = _sortScopes(x for x in instructions if x != ())
 
     nIntervals = len(intervals)
@@ -181,7 +181,7 @@ def getIntvIndex(buckets, instructions, seqFromNode):
     (b, e) = intv
 
     for bucket in buckets:
-        hd = seqFromNode(bucket)
+        hd = getSeqFromNode(bucket)
 
         assigned = False
 
@@ -213,12 +213,12 @@ def getIntvIndex(buckets, instructions, seqFromNode):
 
 class Scopes:
     def repLoc(self, loc):
-        strFromSeq = self.strFromSeq
+        getStrFromSeq = self.getStrFromSeq
 
-        return strFromSeq(tuple(x for x in loc if x != 0 and x != -1))
+        return getStrFromSeq(tuple(x for x in loc if x != 0 and x != -1))
 
     def parseLoc(self, locStr, plain=True):
-        seqFromStr = self.seqFromStr
+        getSeqFromStr = self.getSeqFromStr
 
         locStr = locStr.strip()
 
@@ -230,7 +230,7 @@ class Scopes:
                 else dict(result=(), warning=None, normal=self.repLoc(result))
             )
 
-        (error, result) = seqFromStr(locStr)
+        (error, result) = getSeqFromStr(locStr)
 
         if error:
             result = None
@@ -424,7 +424,7 @@ class Scopes:
 
         return tuple(curIntersection)
 
-    def testScopes(self, scopeStrs, seqFromStr):
+    def testScopes(self, scopeStrs):
         scopeIndex = {}
 
         for scopeStr in scopeStrs:

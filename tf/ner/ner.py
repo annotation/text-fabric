@@ -170,7 +170,6 @@ For that reason we have a few diagnostic functions that help you to spot them:
     section where the occurrences have been found.
 """
 
-import collections
 from itertools import chain
 
 from ..dataset import modify
@@ -181,9 +180,7 @@ from ..core.files import fileOpen, dirRemove, dirNm, dirExists, APP_CONFIG
 
 from .sets import Sets
 from .sheets import Sheets
-from .match import entityMatch, occMatch
 from .show import Show
-from .helpers import findCompile
 
 
 class NER(Sheets, Sets, Show):
@@ -201,16 +198,18 @@ class NER(Sheets, Sets, Show):
 
     In turn, these classes inherit from yet other classes:
 
-    *   `tf.ner.sets` from `tf.ner.data`: manage the annotation data in various
-        convenient representations;
-    *   `tf.ner.data` from `tf.ner.corpus`: manage the corpus dependent bits; it uses
-        the TF machinery to extract the specifics of the corpus;
-    *   `tf.ner.corpus` from `tf.ner.settings`: additional settings, some of which
-        derive from a config file;
-    *   `tf.ner.sheets` from:
-
-        *   `tf.ner.scopes`: support the concept of scope in the corpus;
-        *   `tf.ner.triggers`: support the concept of trigger;
+    *   `tf.ner.sets`:
+        *   from `tf.ner.data`: manage the annotation data in various
+            convenient representations;
+    *   `tf.ner.data`:
+        *   from `tf.ner.corpus`: manage the corpus dependent bits; it uses
+            the TF machinery to extract the specifics of the corpus;
+    *   `tf.ner.corpus`:
+        *   from `tf.ner.settings`: additional settings, some of which
+            derive from a config file;
+    *   `tf.ner.sheets`:
+        *   from `tf.ner.scopes`: support the concept of scope in the corpus;
+        *   from `tf.ner.triggers`: support the concept of trigger.
 
     The NER machinery can be used by
 
@@ -243,13 +242,39 @@ class NER(Sheets, Sets, Show):
         """Top level functions for entity annotation.
 
         This is a high-level class, building on the lower-level tools provided
-        by the Sheets, Sets and Show classes on which it is based.
+        by the Sheets, Sets and Show classes on which it is based and on the classes
+        that these are based on in turn.
 
         These methods can be used by code that runs in the TF browser
         and by code that runs in a Jupyter notebook.
 
-        This class handles entity tasks, which is an abstraction of the concepts of
-        set and sheet.
+        Entities are collected in sets. There are three kind of sets:
+
+        *   entities that are already part of the TF data as nodes and features; this
+            is a *readonly* set. However, you can duplicate it, and the copy is a
+            modifiable set;
+
+        *   entities that have been looked up on the basis of triggers specified in a
+            spreadsheet; these are also *readonly* sets, and also these can be
+            duplicated in modifiable sets;
+
+        *   entities that have been found by hand; these are *modifiable* sets.
+
+        The concept of entity *task* stands for entity sets, of all three kinds.
+        In shorthand, we say a task is either a set, or a sheet, or the given
+        entity set.
+
+        Underneath, the given entity set looks like a set, but in fact there is
+        no other representation of them than the nodes and features that are already
+        in the TF dataset.
+
+        Sheets have  corresponding sets, but there is a bit of logic around sheets
+        that prevent the set from being modified, among other things.
+
+        Sets are the lowest level of data corresponding to entities.
+
+        This class handles *tasks*, which is an abstraction of the three concepts of
+        entity collections.
 
         It does not handle HTML generation, but its parent class, `Show`, does that.
 
@@ -269,8 +294,8 @@ class NER(Sheets, Sets, Show):
             If None, no data is handed over, and a fresh data store will be
             created by an ancestor class (Data)
         browse: boolean, optional False
-            If True, the object is informed that it is run by the TF
-            browser. This will influence how results are reported back.
+            If True, the object is informed that it is run by the TF browser.
+            This will influence how results are reported back.
         caseSensitive: boolean, optional False
             Whether the lookup of entities should be case-sensitive. For spreadsheets
             it specifies whether the triggers should be treated case-sensitively.
@@ -301,6 +326,29 @@ class NER(Sheets, Sets, Show):
             return
 
     def setTask(self, task, force=False, caseSensitive=None):
+        """Switch to a named NER task.
+
+        After the switch, the data associated with this task will be looked up
+        from disk if it is not already in memory. If no data can be found, the data will
+        be generated and stored.
+
+        Parameters
+        ----------
+        task: string
+            The name of the NER task to switch to.
+        force: boolean, optional False
+            If True, the data for this task will be generated from scratch, bypassing
+            earlier stored data.
+        caseSenstive: boolean, optional None
+            Whether to use the triggers of sheets in a case-sensitive way.
+            If `None`, the value is taken from the NER instance, otherwise you can
+            override it here.
+
+            **N.B.:** Case sensitivity is only relevant for sheets. When the task is
+            a sheet, it is associated with potentially two *sets*, one for the sheet
+            taken in a case-sensitive way, and one for the sheet taken in a
+            case-insensitive way.
+        """
         if caseSensitive is None:
             caseSensitive = self.caseSensitive
 
@@ -313,6 +361,11 @@ class NER(Sheets, Sets, Show):
         )
 
     def getTasks(self):
+        """Get a list of task names.
+
+        Sheets will be listed by just their main name, although they are associated
+        with two sets, due to the optional case sensitivity.
+        """
         setNames = self.setNames
 
         tasks = set()
@@ -325,305 +378,6 @@ class NER(Sheets, Sets, Show):
             )
 
         return tasks
-
-    def findOccs(self):
-        """Finds the occurrences of multiple triggers.
-
-        This is meant to efficiently list all occurrences of many token
-        sequences in the corpus.
-
-        The triggers are in member `instructions`, which must first
-        be constructed by reading a number of excel files.
-
-        It adds the member `inventory` to the object, which is a dict
-        with subdicts:
-
-        `occurrences`: keyed by tuples (eid, kind), the values are
-        the occurrences of that entity in the corpus.
-        A single occurrence is represented as a tuple of slots.
-
-        `names`: keyed by tuples (eid, kind) and then path,
-        the value is the name of that entity in the context indicated by path.
-
-        """
-        if not self.properlySetup:
-            return []
-
-        settings = self.settings
-        spaceEscaped = settings.spaceEscaped
-
-        setData = self.getSetData()
-        getTokens = self.getTokens
-        seqFromNode = self.seqFromNode
-
-        buckets = setData.buckets or ()
-
-        sheetData = self.getSheetData()
-        instructions = sheetData.instructions
-        caseSensitive = sheetData.caseSensitive
-        sheetData.inventory = occMatch(
-            getTokens,
-            seqFromNode,
-            buckets,
-            instructions,
-            spaceEscaped,
-            caseSensitive=caseSensitive,
-        )
-
-    def filterContent(
-        self,
-        buckets=None,
-        node=None,
-        bFind=None,
-        bFindC=None,
-        bFindRe=None,
-        anyEnt=None,
-        eVals=None,
-        trigger=None,
-        qTokens=None,
-        valSelect=None,
-        freeState=None,
-        showStats=None,
-    ):
-        """Filter the buckets according to a variety of criteria.
-
-        Either the buckets of the whole corpus are filtered, or a given subset
-        of buckets, or a subset of buckets, namely those contained in a
-        particular node, see parameters `node`, and `buckets`.
-
-        **Bucket filtering**
-
-        The parameters `bFind`, `bFindC`, `bFindRe`  specify a regular expression
-        search on the texts of the buckets.
-
-        The positions of the found occurrences is included in the result.
-
-        The parameter `anyEnt` is a filter on the presence or absence of entities in
-        buckets in general.
-
-        **Entity filtering**
-
-        The parameter `eVals` holds the values of a specific entity to look for.
-
-        **Occurrence filtering**
-
-        The parameter `qTokens` is a sequence of tokens to look for.
-        The occurrences that are found, can be filtered further by `valSelect`
-        and `freeState`.
-
-        In entity filtering and occurrence filtering, the matching occurrences
-        are included in the result.
-
-        Parameters
-        ----------
-        buckets: set of integer, optional None
-            The set of buckets to filter, instead of the whole corpus.
-            Works also if the parameter `node` is specified, which also restricts
-            the buckets to filter. If both are specified, their effect will be
-            combined.
-        node: integer, optional None
-            Gets the context of the node, typically the intermediate-level section
-            in which the node occurs. Then restricts the filtering to the buckets
-            contained in the context, instead of the whole corpus.
-        bFind: string, optional None
-            A search pattern that filters the buckets, before applying the search
-            for a token sequence.
-        bFindC: string, optional None
-            Whether the search is case sensitive or not.
-        bFindRe: object, optional None
-            A compiled regular expression.
-            This function searches on `bFindRe`, but if it is None, it compiles
-            `bFind` as regular expression and searches on that. If `bFind` itself
-            is not None, of course.
-        anyEnt: boolean, optional None
-            If True, it wants all buckets that contain at least one already
-            marked entity; if False, it wants all buckets that do not contain any
-            already marked entity.
-        eVals: tuple, optional None
-            A sequence of values corresponding with the entity features `eid`
-            and `kind`. If given, the function wants buckets that contain at least
-            an entity with those properties.
-        trigger: string, optional None
-            If given, the function wants buckets that contain at least an
-            entity that is triggered by this string. The entity in question must
-            be the one given by the parameter `evals`.
-        qTokens: tuple, optional None
-            A sequence of tokens whose occurrences in the corpus will be looked up.
-        valSelect: dict, optional None
-            If present, the keys are the entity features (`eid` and `kind`),
-            and the values are iterables of values that are allowed.
-
-            The feature values to filter on.
-            The results of searching for `eVals` or `qTokens` are filtered further.
-            If a result is also an instance of an already marked entity,
-            the properties of that entity will be compared feature by feature with
-            the allowed values that `valSelect` specifies for that feature.
-        freeState: boolean, optional None
-            If True, found occurrences may not intersect with already marked up
-            features.
-            If False, found occurrences must intersect with already marked up features.
-        showStats: boolean, optional None
-            Whether to show statistics of the find.
-            If None, it only shows gross totals, if False, it shows nothing,
-            if True, it shows totals by feature.
-
-        Returns
-        -------
-        list of tuples
-            For each bucket that passes the filter, a tuple with the following
-            members is added to the list:
-
-            *   the TF node of the bucket;
-            *   tokens: the tokens of the bucket, each token is a tuple consisting
-                of the TF slot of the token and its string value;
-            *   matches: the match positions of the found occurrences or entity;
-            *   positions: the token positions of where the text of the bucket
-                starts matching the `bFindRe`;
-
-            If `browse` is True, also some stats are passed next to the list
-            of results.
-        """
-        if not self.properlySetup:
-            return []
-
-        bucketType = self.bucketType
-        settings = self.settings
-        features = settings.features
-
-        getTextR = self.getTextR
-        getTokens = self.getTokens
-
-        browse = self.browse
-        setIsX = self.setIsX
-        setData = self.getSetData()
-        entityIndex = setData.entityIndex
-        entityVal = setData.entityVal
-        entitySlotVal = setData.entitySlotVal
-        entitySlotAll = setData.entitySlotAll
-        entitySlotIndex = setData.entitySlotIndex
-
-        if setIsX:
-            sheetData = self.getSheetData()
-            triggerFromMatch = sheetData.triggerFromMatch
-        else:
-            triggerFromMatch = None
-
-        bucketUniverse = (
-            setData.buckets
-            if buckets is None
-            else tuple(sorted(self.checkBuckets(buckets)))
-        )
-        buckets = (
-            bucketUniverse
-            if node is None
-            else tuple(sorted(set(bucketUniverse) & set(self.getContext(node))))
-        )
-
-        nFind = 0
-        nEnt = {feat: collections.Counter() for feat in ("",) + features}
-        nVisible = {feat: collections.Counter() for feat in ("",) + features}
-
-        if bFindRe is None:
-            if bFind is not None:
-                (bFind, bFindRe, errorMsg) = findCompile(bFind, bFindC)
-                if errorMsg:
-                    console(errorMsg, error=True)
-
-        hasEnt = eVals is not None
-        hasQTokens = qTokens is not None and len(qTokens)
-        hasOcc = not hasEnt and hasQTokens
-
-        if hasEnt and eVals in entityVal:
-            eSlots = entityVal[eVals]
-            eStarts = {s[0]: s[-1] for s in eSlots}
-        else:
-            eStarts = {}
-
-        useQTokens = qTokens if hasOcc else None
-
-        requireFree = (
-            True if freeState == "free" else False if freeState == "bound" else None
-        )
-
-        results = []
-
-        for b in buckets:
-            fValStats = {feat: collections.Counter() for feat in features}
-            (fits, result) = entityMatch(
-                entityIndex,
-                eStarts,
-                entitySlotVal,
-                entitySlotAll,
-                entitySlotIndex,
-                triggerFromMatch,
-                getTextR,
-                getTokens,
-                b,
-                bFindRe,
-                anyEnt,
-                eVals,
-                trigger,
-                useQTokens,
-                valSelect,
-                requireFree,
-                fValStats,
-            )
-
-            blocked = fits is not None and not fits
-
-            if not blocked:
-                nFind += 1
-
-            for feat in features:
-                theseStats = fValStats[feat]
-                if len(theseStats):
-                    theseNEnt = nEnt[feat]
-                    theseNVisible = nVisible[feat]
-
-                    for ek, n in theseStats.items():
-                        theseNEnt[ek] += n
-                        if not blocked:
-                            theseNVisible[ek] += n
-
-            nMatches = len(result[1])
-
-            if nMatches:
-                nEnt[""][None] += nMatches
-                if not blocked:
-                    nVisible[""][None] += nMatches
-
-            if node is None:
-                if fits is not None and not fits:
-                    continue
-
-                if (hasEnt or hasQTokens) and nMatches == 0:
-                    continue
-
-            results.append((b, *result))
-
-        if browse:
-            return (results, nFind, nVisible, nEnt)
-
-        nResults = len(results)
-
-        if showStats:
-            pluralF = "" if nFind == 1 else "s"
-            self.console(f"{nFind} {bucketType}{pluralF} satisfy the filter")
-            for feat in ("",) + (() if anyEnt else features):
-                if feat == "":
-                    self.console("Combined features match:")
-                    for ek, n in sorted(nEnt[feat].items()):
-                        v = nVisible[feat][ek]
-                        self.console(f"\t{v:>5} of {n:>5} x")
-                else:
-                    self.console(f"Feature {feat}: found the following values:")
-                    for ek, n in sorted(nEnt[feat].items()):
-                        v = nVisible[feat][ek]
-                        self.console(f"\t{v:>5} of {n:>5} x {ek}")
-        if showStats or showStats is None:
-            pluralR = "" if nResults == 1 else "s"
-            self.console(f"{nResults} {bucketType}{pluralR}")
-        return results
 
     def bakeEntities(self, versionExtension="e"):
         """Consolidates the current entities as nodes into a new TF data source.

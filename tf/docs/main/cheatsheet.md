@@ -800,8 +800,8 @@ C.sections.data["sec2"]
 :   `tf.core.prepare.sections`
 
 ``` python
-C.sections.data["seqFromSec"]
-C.sections.data["secFromSeq"]
+C.sections.data["seqFromNode"]
+C.sections.data["nodeFromSeq"]
 ```
 :   maps tuples of heading nodes to their corresponding tuples of sequence numbers
     and vice versa. Only if there are 3 section levels.
