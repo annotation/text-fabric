@@ -60,6 +60,8 @@ def toTokens(text, spaceEscaped=False, caseSensitive=False):
     ----------
     spaceEscaped: boolean, optional False
         If True, it is assumed that if a `_` occurs in a token string, a space is meant.
+    caseSensitive: boolean, optional False
+        If True, return all tokens in lower case.
     """
     result = TOKEN_RE.findall(normalize(text))
     result = tuple((t.replace("_", " ") for t in result) if spaceEscaped else result)

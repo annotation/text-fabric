@@ -83,14 +83,26 @@ class Sheets(Scopes, Triggers):
         self.defaultKind = defaultValues.get(kindFeature, "")
 
         self.sheetName = None
-        """The current ner sheet."""
+        """The current NER sheet."""
 
         self.sheetNames = set()
-        """The set of names of ner sheets that are present on the file system."""
+        """The set of names of NER sheets that are present on the file system."""
 
         self.readSheets()
 
     def getToTokensFunc(self):
+        """Make a tokenize function.
+
+        Produce a function that can tokenize strings in the same way as the corpus
+        has been tokenized.
+
+        Returns
+        -------
+        function
+            This function takes a string and returns an iterable of tokens.
+            The tokenization is aware of whether the current sheet works
+            case-sensitively, and whether spaces have been escaped as underscores.
+        """
         settings = self.settings
         spaceEscaped = settings.spaceEscaped
         sheetData = self.getSheetData()
@@ -130,6 +142,12 @@ class Sheets(Scopes, Triggers):
         ----------
         newSheet: string
             The name of the new ner sheet to switch to.
+        force: boolean, optional False
+            If True, do not load from cached data, but do all computations afresh.
+        caseSensitive: boolean, optional None
+            Whether to work with the spreadsheet in a case-sensitive way.
+            If `None`, the value is taken from the current instance of this class.
+
         """
         if not self.properlySetup:
             return
@@ -174,8 +192,15 @@ class Sheets(Scopes, Triggers):
         Otherwise, it will be checked wether an uptodate version of its data exists
         on disk. If so, it will be loaded.
 
-        Otherwise, the data will be computed from scratch and saved to disk,
-        with a time stamp.
+        Otherwise, or if `force=True` is passed, the data will be computed from
+        scratch and saved to disk, with a time stamp.
+
+        Parameters
+        ----------
+        force: boolean, optional False
+            If True, do not load from cached data, but do all computations afresh.
+        caseSensitive: boolean, optional False
+            Whether to work with the spreadsheet in a case-sensitive way.
         """
         if not self.properlySetup:
             return
@@ -296,6 +321,22 @@ class Sheets(Scopes, Triggers):
                 self.consoleLine(*x)
 
     def makeSheetOfSingleTokens(self):
+        """Make a derived sheet based on the individual tokens in the triggers.
+
+        The current sheet will be used to make a new sheet with a row for every
+        token in every trigger on the original sheet.
+        In this way all tokens in triggers will be searched individually.
+        Since tokens do not overlap, the tokens as triggers do not interfere with
+        each other.
+        This can be a convenient debugging tool for the entity spreadsheet in the
+        case of triggers without hits.
+
+        Note however, that there are also other functions that help with debugging
+        the spreadsheet:
+
+        *   `tf.ner.triggers.Triggers.triggerInterference`
+        *   `tf.ner.triggers.Triggers.reportHits`
+        """
         Workbook = self.Workbook
         sheetName = self.sheetName
         sheetDir = self.sheetDir
@@ -341,7 +382,108 @@ class Sheets(Scopes, Triggers):
 
         wb.save(sheetPath)
 
+    def mergeTriggers(self, matches, mergedFile, exclusionFile=None):
+        """Merge spelling variants of triggers into a NER sheet.
+
+        When we have found spelling variants of triggers, we want to include
+        them in the entity lookup. This function places the variants in the same
+        cells as the triggers they are variants of. However, it will not
+        overwrite the original spreadsheet, but create a new, enriched spreadsheet.
+
+        Parameters
+        ----------
+        matches: dict
+            The spelling variants are keys, and their values are again dicts, keyed
+            by the words in the triggers that come closest, and valued by a measure
+            of the proximity.
+            It is assumed that all of these variants are good variants, in that the
+            scores are always above a certain threshold, e.g. 0.8 .
+            One way of obtaining the variants is by the tool
+            [analiticcl](https://github.com/proycon/analiticcl/tree/master) by Martin
+            Reynaert and Maarten van Gompel.
+        mergedFile: string
+            The path of the new spreadsheet with the merged triggers
+        exclusionFile: string, optional None
+            The path of a file with exclusions, one per line.
+            Variants that occur in the exclusion list will not be merged in.
+        """
+        trigI = self.trigI
+        commentI = self.commentI
+
+        noVariant = set()
+
+        if exclusionFile is not None and fileExists(exclusionFile):
+            with open(exclusionFile) as fh:
+                for line in fh:
+                    noVariant.add(line.strip())
+
+            nNoVariant = len(noVariant)
+            pl = "" if nNoVariant == 1 else "s"
+            console(f"{nNoVariant} excluded variant{pl} found in {exclusionFile}")
+        else:
+            console(f"File with excluded variants not found: {exclusionFile}")
+
+        mapping = {}
+        excluded = 0
+
+        for text, candidates in matches.items():
+            if text in noVariant:
+                excluded += 1
+                continue
+            for cand in candidates:
+                mapping.setdefault(cand, set()).add(text)
+
+        rows = self.readSheetData()
+
+        nAdded = 0
+        totAdded = 0
+
+        for r, row in enumerate(rows):
+            if r == 0 or r == 1 or row[commentI].startswith("#"):
+                continue
+
+            triggers = set(row[trigI])
+            nPrev = len(triggers)
+
+            newTriggers = []
+
+            for trigger in triggers:
+                newTriggers.append(trigger)
+
+                for variant in mapping.get(trigger, []):
+                    newTriggers.append(variant)
+
+            newTriggers = sorted(set(newTriggers))
+            row[trigI] = newTriggers
+            nPost = len(newTriggers)
+
+            nDiff = nPost - nPrev
+
+            if nDiff != 0:
+                nAdded += 1
+                totAdded += nDiff
+
+        self.writeSheetData(rows, asFile=mergedFile)
+        ple = "" if excluded == 1 else "s"
+        pls = "" if nAdded == 1 else "s"
+        plt = "" if totAdded == 1 else "s"
+        console(f"{excluded} variant{ple} excluded as trigger")
+        console(f"{nAdded} triggerset{pls} expanded with {totAdded} trigger{plt}")
+        console(f"Wrote merged triggers to sheet {mergedFile}")
+
     def writeSheetData(self, rows, asFile=None):
+        """Write a spreadsheet.
+
+        When the data for a spreadsheet has been gathered, you can write it to Excel
+        by means of this function.
+
+        Parameters
+        ----------
+        rows: iterable of iterables
+            The rows, each row an interable of fields
+        asFile: string, optional None
+            The path of the file to write the Excel data to.
+        """
         if not asFile:
             console("Pass the path of a destination file in param asFile")
             return
@@ -421,6 +563,11 @@ class Sheets(Scopes, Triggers):
 
         A good, real-world example of such a spreadsheet is *people.xlsx* in the
         [Suriano corpus](https://gitlab.huc.knaw.nl/suriano/letters/-/tree/main/ner/specs?ref_type=heads)
+
+        Returns
+        -------
+        list of list
+            Rows which are lists of fields.
         """
         sheetName = self.sheetName
         sheetDir = self.sheetDir
@@ -474,12 +621,29 @@ class Sheets(Scopes, Triggers):
         return result
 
     def getMeta(self):
-        """Retrieves the metadata of the current sheet."""
+        """Retrieves the metadata of the current sheet.
+
+        The metadata of each entity is stored in the extra fields in its row.
+        The writer of the NER sheet is free to chose additional rows.
+
+        Returns
+        -------
+        tuple
+            The first member is a list of the names of the metadata columns,
+            taken from the first row of the spreadsheet.
+            The second member is a dict with the metadata itself.
+            The keys are strings of the form *entity identifier*`-`*entity kind*.
+            The values are tuples, where the i-th member is the value for the i-th
+            name in the list of metadata fields.
+            i in the
+        """
         sheetData = self.getSheetData()
         return (sheetData.metaFields, sheetData.metaData)
 
     def _readSheet(self):
         """Read all the spreadsheets, the main one and the tweaks.
+
+        Several checks on the sanity of the data will be performed.
 
         Store the results in a hierarchy that mimicks the way they are organized in the
         file system.
@@ -563,6 +727,11 @@ class Sheets(Scopes, Triggers):
         scopeMistakes = {}
 
         def myNormalize(x):
+            """Normalization function that performs additional replacements.
+
+            The replacements are coded in the function `normalizeChars()`,
+            which can be passed to the instance of this class.
+            """
             return normalize(
                 str(x) if normalizeChars is None else normalizeChars(str(x))
             )
@@ -687,19 +856,12 @@ class Sheets(Scopes, Triggers):
                     err(f"{n} row{plural} {label}:\n\te.g.: {rep}")
 
     def _compileSheet(self):
-        """Compiles the info in tweaked sheets into complete sheets.
+        """Compiles the info in tweaked sheets according to the scopes in it.
 
-        For every tweak spreadsheet, a copy of its parent sheet will be made,
-        and the info of the tweak sheet will be applied to that copy,
-        adding to or overriding the parent sheet.
-
-        A sheet is basically a mapping of triggers to names.
-
-        We also maintain a mapping from tweak sheets to triggers, so that we can
-        know later on which sheet assigned which trigger to which name.
-
-        The tweak may remove triggers from the sheet. We have to adapt the tMap
-        for that.
+        On the basis of the scopes that are given for the triggers, we partition
+        the corpus in maximal intervals in which no trigger goes into or out of scope.
+        During these intervals we have a fixed set of triggers that must be looked up,
+        and we can check for the consistency of these triggers.
         """
         sheetData = self.getSheetData()
         compiled = AttrDict()
@@ -862,39 +1024,9 @@ class Sheets(Scopes, Triggers):
     def _prepareSheet(self):
         """Transform the sheets into instructions.
 
-        Now we have complete sheets for every context, the inheritance is resolved.
-        Every sheet specifies a mapping from triggers to names, and remembers
-        which (possibly other) sheet mapped a specific trigger to its name.
-
-        We perform additional checks on the consistency and completeness of the
-        resulting sheets.
-
-        Then we generate instructions out of the sheets: info that the search
+        Now we have intervals with fixed sets of triggers,
+        we can generate instructions out of the sheets: info that the search
         algorithm needs to do its work.
-
-        For each path to tweaked sheet we collect a portion of info:
-
-        *   `tPos`: a compilation of all triggers in the sheet, so that
-            we can search for them simultaneously;
-        *   `tMap`: a mapping from triggers to the path of the sheet that defined this
-            trigger;
-        *   `idMap`: a mapping from triggers their corresponding entities.
-
-        So every portion of info is addressed by a `path` key. This key is a tuple
-        of section/subsection/subsubsection heading.
-
-        By means of this key we can select the proper search instructions for specific
-        parts of the corpus.
-
-        About reporting:
-
-        We report the entities without triggers.
-        When we report the tweaks, only those triggerless entities are reported that
-        were not already triggerless in the main sheet.
-
-        We report the ambiguus triggers.
-        When we report the tweaks, only those triggers that are redefined in that tweak
-        are reported.
         """
 
         spaceEscaped = self.spaceEscaped
@@ -954,15 +1086,10 @@ class Sheets(Scopes, Triggers):
                 triggerScopes.setdefault(trigger, set()).add(scope)
 
     def _processSheet(self):
-        """Generates derived data structures out of the source sheet.
+        """Carries out the search instructions that have been compiled from the sheet.
 
-        After loading we process the set into derived data structures.
-
-        For each such set we produce several data structures, which we store
-        under the following keys:
-
-        *   `inventory`: result of looking up all triggers
-
+        We look up the occurrences, organize the hits of the triggers, and store them
+        as entities.
         """
         if not self.properlySetup:
             return
@@ -984,7 +1111,10 @@ class Sheets(Scopes, Triggers):
         self._markEntities()
 
     def _collectHits(self):
-        """Reports the inventory."""
+        """Stores the trigger hits.
+
+        The hits will be stored under the key `hitData` in the sheet data.
+        """
         if not self.properlySetup:
             return
 
@@ -1041,7 +1171,12 @@ class Sheets(Scopes, Triggers):
         self._addToSet(newEntities)
 
     def getSheetData(self):
-        """Deliver the current sheet."""
+        """Deliver the current sheet.
+
+        Returns
+        -------
+        dict
+        """
         sheetName = self.sheetName
         sheetsData = self.sheets
 
