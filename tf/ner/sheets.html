@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/ner/sheets.py#L1-L1048" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/ner/sheets.py#L1-L1109" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 import time
@@ -77,7 +77,22 @@ CLEAR_KEYS = &#34;&#34;&#34;
 
 class Sheets(Scopes, Triggers):
     def __init__(self, sheets=None):
+        &#34;&#34;&#34;Handling of NER spreadsheets.
+
+        A NER spreadsheet contains entity information; in particular it links
+        named entities to triggers by which they can be found in the corpus.
+
+        See `readSheetData()` for the description of the shape of the spreadsheet,
+        which is expected to be an Excel sheet.
+
+        Parameters
+        ----------
+        sheets: dict, optional None
+            Sheet data to start with. Relevant for when the TF browser uses this class.
+            See `tf.ner.ner.NER`
+        &#34;&#34;&#34;
         CI = CheckImport(&#34;openpyxl&#34;)
+
         if CI.importOK(hint=True):
             openpyxl = CI.importGet()
             self.loadXls = openpyxl.load_workbook
@@ -103,14 +118,26 @@ class Sheets(Scopes, Triggers):
         self.defaultKind = defaultValues.get(kindFeature, &#34;&#34;)
 
         self.sheetName = None
-        &#34;&#34;&#34;The current ner sheet.&#34;&#34;&#34;
+        &#34;&#34;&#34;The current NER sheet.&#34;&#34;&#34;
 
         self.sheetNames = set()
-        &#34;&#34;&#34;The set of names of ner sheets that are present on the file system.&#34;&#34;&#34;
+        &#34;&#34;&#34;The set of names of NER sheets that are present on the file system.&#34;&#34;&#34;
 
         self.readSheets()
 
     def getToTokensFunc(self):
+        &#34;&#34;&#34;Make a tokenize function.
+
+        Produce a function that can tokenize strings in the same way as the corpus
+        has been tokenized.
+
+        Returns
+        -------
+        function
+            This function takes a string and returns an iterable of tokens.
+            The tokenization is aware of whether the current sheet works
+            case-sensitively, and whether spaces have been escaped as underscores.
+        &#34;&#34;&#34;
         settings = self.settings
         spaceEscaped = settings.spaceEscaped
         sheetData = self.getSheetData()
@@ -150,6 +177,12 @@ class Sheets(Scopes, Triggers):
         ----------
         newSheet: string
             The name of the new ner sheet to switch to.
+        force: boolean, optional False
+            If True, do not load from cached data, but do all computations afresh.
+        caseSensitive: boolean, optional None
+            Whether to work with the spreadsheet in a case-sensitive way.
+            If `None`, the value is taken from the current instance of this class.
+
         &#34;&#34;&#34;
         if not self.properlySetup:
             return
@@ -194,8 +227,15 @@ class Sheets(Scopes, Triggers):
         Otherwise, it will be checked wether an uptodate version of its data exists
         on disk. If so, it will be loaded.
 
-        Otherwise, the data will be computed from scratch and saved to disk,
-        with a time stamp.
+        Otherwise, or if `force=True` is passed, the data will be computed from
+        scratch and saved to disk, with a time stamp.
+
+        Parameters
+        ----------
+        force: boolean, optional False
+            If True, do not load from cached data, but do all computations afresh.
+        caseSensitive: boolean, optional False
+            Whether to work with the spreadsheet in a case-sensitive way.
         &#34;&#34;&#34;
         if not self.properlySetup:
             return
@@ -316,6 +356,22 @@ class Sheets(Scopes, Triggers):
                 self.consoleLine(*x)
 
     def makeSheetOfSingleTokens(self):
+        &#34;&#34;&#34;Make a derived sheet based on the individual tokens in the triggers.
+
+        The current sheet will be used to make a new sheet with a row for every
+        token in every trigger on the original sheet.
+        In this way all tokens in triggers will be searched individually.
+        Since tokens do not overlap, the tokens as triggers do not interfere with
+        each other.
+        This can be a convenient debugging tool for the entity spreadsheet in the
+        case of triggers without hits.
+
+        Note however, that there are also other functions that help with debugging
+        the spreadsheet:
+
+        *   `tf.ner.triggers.Triggers.triggerInterference`
+        *   `tf.ner.triggers.Triggers.reportHits`
+        &#34;&#34;&#34;
         Workbook = self.Workbook
         sheetName = self.sheetName
         sheetDir = self.sheetDir
@@ -362,6 +418,18 @@ class Sheets(Scopes, Triggers):
         wb.save(sheetPath)
 
     def writeSheetData(self, rows, asFile=None):
+        &#34;&#34;&#34;Write a spreadsheet.
+
+        When the data for a spreadsheet has been gathered, you can write it to Excel
+        by means of this function.
+
+        Parameters
+        ----------
+        rows: iterable of iterables
+            The rows, each row an interable of fields
+        asFile: string, optional None
+            The path of the file to write the Excel data to.
+        &#34;&#34;&#34;
         if not asFile:
             console(&#34;Pass the path of a destination file in param asFile&#34;)
             return
@@ -441,6 +509,11 @@ class Sheets(Scopes, Triggers):
 
         A good, real-world example of such a spreadsheet is *people.xlsx* in the
         [Suriano corpus](https://gitlab.huc.knaw.nl/suriano/letters/-/tree/main/ner/specs?ref_type=heads)
+
+        Returns
+        -------
+        list of list
+            Rows which are lists of fields.
         &#34;&#34;&#34;
         sheetName = self.sheetName
         sheetDir = self.sheetDir
@@ -494,12 +567,29 @@ class Sheets(Scopes, Triggers):
         return result
 
     def getMeta(self):
-        &#34;&#34;&#34;Retrieves the metadata of the current sheet.&#34;&#34;&#34;
+        &#34;&#34;&#34;Retrieves the metadata of the current sheet.
+
+        The metadata of each entity is stored in the extra fields in its row.
+        The writer of the NER sheet is free to chose additional rows.
+
+        Returns
+        -------
+        tuple
+            The first member is a list of the names of the metadata columns,
+            taken from the first row of the spreadsheet.
+            The second member is a dict with the metadata itself.
+            The keys are strings of the form *entity identifier*`-`*entity kind*.
+            The values are tuples, where the i-th member is the value for the i-th
+            name in the list of metadata fields.
+            i in the
+        &#34;&#34;&#34;
         sheetData = self.getSheetData()
         return (sheetData.metaFields, sheetData.metaData)
 
     def _readSheet(self):
         &#34;&#34;&#34;Read all the spreadsheets, the main one and the tweaks.
+
+        Several checks on the sanity of the data will be performed.
 
         Store the results in a hierarchy that mimicks the way they are organized in the
         file system.
@@ -583,6 +673,11 @@ class Sheets(Scopes, Triggers):
         scopeMistakes = {}
 
         def myNormalize(x):
+            &#34;&#34;&#34;Normalization function that performs additional replacements.
+
+            The replacements are coded in the function `normalizeChars()`,
+            which can be passed to the instance of this class.
+            &#34;&#34;&#34;
             return normalize(
                 str(x) if normalizeChars is None else normalizeChars(str(x))
             )
@@ -707,19 +802,12 @@ class Sheets(Scopes, Triggers):
                     err(f&#34;{n} row{plural} {label}:\n\te.g.: {rep}&#34;)
 
     def _compileSheet(self):
-        &#34;&#34;&#34;Compiles the info in tweaked sheets into complete sheets.
+        &#34;&#34;&#34;Compiles the info in tweaked sheets according to the scopes in it.
 
-        For every tweak spreadsheet, a copy of its parent sheet will be made,
-        and the info of the tweak sheet will be applied to that copy,
-        adding to or overriding the parent sheet.
-
-        A sheet is basically a mapping of triggers to names.
-
-        We also maintain a mapping from tweak sheets to triggers, so that we can
-        know later on which sheet assigned which trigger to which name.
-
-        The tweak may remove triggers from the sheet. We have to adapt the tMap
-        for that.
+        On the basis of the scopes that are given for the triggers, we partition
+        the corpus in maximal intervals in which no trigger goes into or out of scope.
+        During these intervals we have a fixed set of triggers that must be looked up,
+        and we can check for the consistency of these triggers.
         &#34;&#34;&#34;
         sheetData = self.getSheetData()
         compiled = AttrDict()
@@ -882,39 +970,9 @@ class Sheets(Scopes, Triggers):
     def _prepareSheet(self):
         &#34;&#34;&#34;Transform the sheets into instructions.
 
-        Now we have complete sheets for every context, the inheritance is resolved.
-        Every sheet specifies a mapping from triggers to names, and remembers
-        which (possibly other) sheet mapped a specific trigger to its name.
-
-        We perform additional checks on the consistency and completeness of the
-        resulting sheets.
-
-        Then we generate instructions out of the sheets: info that the search
+        Now we have intervals with fixed sets of triggers,
+        we can generate instructions out of the sheets: info that the search
         algorithm needs to do its work.
-
-        For each path to tweaked sheet we collect a portion of info:
-
-        *   `tPos`: a compilation of all triggers in the sheet, so that
-            we can search for them simultaneously;
-        *   `tMap`: a mapping from triggers to the path of the sheet that defined this
-            trigger;
-        *   `idMap`: a mapping from triggers their corresponding entities.
-
-        So every portion of info is addressed by a `path` key. This key is a tuple
-        of section/subsection/subsubsection heading.
-
-        By means of this key we can select the proper search instructions for specific
-        parts of the corpus.
-
-        About reporting:
-
-        We report the entities without triggers.
-        When we report the tweaks, only those triggerless entities are reported that
-        were not already triggerless in the main sheet.
-
-        We report the ambiguus triggers.
-        When we report the tweaks, only those triggers that are redefined in that tweak
-        are reported.
         &#34;&#34;&#34;
 
         spaceEscaped = self.spaceEscaped
@@ -974,15 +1032,10 @@ class Sheets(Scopes, Triggers):
                 triggerScopes.setdefault(trigger, set()).add(scope)
 
     def _processSheet(self):
-        &#34;&#34;&#34;Generates derived data structures out of the source sheet.
+        &#34;&#34;&#34;Carries out the search instructions that have been compiled from the sheet.
 
-        After loading we process the set into derived data structures.
-
-        For each such set we produce several data structures, which we store
-        under the following keys:
-
-        *   `inventory`: result of looking up all triggers
-
+        We look up the occurrences, organize the hits of the triggers, and store them
+        as entities.
         &#34;&#34;&#34;
         if not self.properlySetup:
             return
@@ -1004,7 +1057,10 @@ class Sheets(Scopes, Triggers):
         self._markEntities()
 
     def _collectHits(self):
-        &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
+        &#34;&#34;&#34;Stores the trigger hits.
+
+        The hits will be stored under the key `hitData` in the sheet data.
+        &#34;&#34;&#34;
         if not self.properlySetup:
             return
 
@@ -1061,7 +1117,12 @@ class Sheets(Scopes, Triggers):
         self._addToSet(newEntities)
 
     def getSheetData(self):
-        &#34;&#34;&#34;Deliver the current sheet.&#34;&#34;&#34;
+        &#34;&#34;&#34;Deliver the current sheet.
+
+        Returns
+        -------
+        dict
+        &#34;&#34;&#34;
         sheetName = self.sheetName
         sheetsData = self.sheets
 
@@ -1097,15 +1158,40 @@ class Sheets(Scopes, Triggers):
 <span>(</span><span>sheets=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Handling of NER spreadsheets.</p>
+<p>A NER spreadsheet contains entity information; in particular it links
+named entities to triggers by which they can be found in the corpus.</p>
+<p>See <code>readSheetData()</code> for the description of the shape of the spreadsheet,
+which is expected to be an Excel sheet.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>sheets</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>
+<dd>Sheet data to start with. Relevant for when the TF browser uses this class.
+See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code></dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/ner/sheets.py#L43-L1048" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/ner/sheets.py#L43-L1109" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Sheets(Scopes, Triggers):
     def __init__(self, sheets=None):
+        &#34;&#34;&#34;Handling of NER spreadsheets.
+
+        A NER spreadsheet contains entity information; in particular it links
+        named entities to triggers by which they can be found in the corpus.
+
+        See `readSheetData()` for the description of the shape of the spreadsheet,
+        which is expected to be an Excel sheet.
+
+        Parameters
+        ----------
+        sheets: dict, optional None
+            Sheet data to start with. Relevant for when the TF browser uses this class.
+            See `tf.ner.ner.NER`
+        &#34;&#34;&#34;
         CI = CheckImport(&#34;openpyxl&#34;)
+
         if CI.importOK(hint=True):
             openpyxl = CI.importGet()
             self.loadXls = openpyxl.load_workbook
@@ -1131,14 +1217,26 @@ class Sheets(Scopes, Triggers):
         self.defaultKind = defaultValues.get(kindFeature, &#34;&#34;)
 
         self.sheetName = None
-        &#34;&#34;&#34;The current ner sheet.&#34;&#34;&#34;
+        &#34;&#34;&#34;The current NER sheet.&#34;&#34;&#34;
 
         self.sheetNames = set()
-        &#34;&#34;&#34;The set of names of ner sheets that are present on the file system.&#34;&#34;&#34;
+        &#34;&#34;&#34;The set of names of NER sheets that are present on the file system.&#34;&#34;&#34;
 
         self.readSheets()
 
     def getToTokensFunc(self):
+        &#34;&#34;&#34;Make a tokenize function.
+
+        Produce a function that can tokenize strings in the same way as the corpus
+        has been tokenized.
+
+        Returns
+        -------
+        function
+            This function takes a string and returns an iterable of tokens.
+            The tokenization is aware of whether the current sheet works
+            case-sensitively, and whether spaces have been escaped as underscores.
+        &#34;&#34;&#34;
         settings = self.settings
         spaceEscaped = settings.spaceEscaped
         sheetData = self.getSheetData()
@@ -1178,6 +1276,12 @@ class Sheets(Scopes, Triggers):
         ----------
         newSheet: string
             The name of the new ner sheet to switch to.
+        force: boolean, optional False
+            If True, do not load from cached data, but do all computations afresh.
+        caseSensitive: boolean, optional None
+            Whether to work with the spreadsheet in a case-sensitive way.
+            If `None`, the value is taken from the current instance of this class.
+
         &#34;&#34;&#34;
         if not self.properlySetup:
             return
@@ -1222,8 +1326,15 @@ class Sheets(Scopes, Triggers):
         Otherwise, it will be checked wether an uptodate version of its data exists
         on disk. If so, it will be loaded.
 
-        Otherwise, the data will be computed from scratch and saved to disk,
-        with a time stamp.
+        Otherwise, or if `force=True` is passed, the data will be computed from
+        scratch and saved to disk, with a time stamp.
+
+        Parameters
+        ----------
+        force: boolean, optional False
+            If True, do not load from cached data, but do all computations afresh.
+        caseSensitive: boolean, optional False
+            Whether to work with the spreadsheet in a case-sensitive way.
         &#34;&#34;&#34;
         if not self.properlySetup:
             return
@@ -1344,6 +1455,22 @@ class Sheets(Scopes, Triggers):
                 self.consoleLine(*x)
 
     def makeSheetOfSingleTokens(self):
+        &#34;&#34;&#34;Make a derived sheet based on the individual tokens in the triggers.
+
+        The current sheet will be used to make a new sheet with a row for every
+        token in every trigger on the original sheet.
+        In this way all tokens in triggers will be searched individually.
+        Since tokens do not overlap, the tokens as triggers do not interfere with
+        each other.
+        This can be a convenient debugging tool for the entity spreadsheet in the
+        case of triggers without hits.
+
+        Note however, that there are also other functions that help with debugging
+        the spreadsheet:
+
+        *   `tf.ner.triggers.Triggers.triggerInterference`
+        *   `tf.ner.triggers.Triggers.reportHits`
+        &#34;&#34;&#34;
         Workbook = self.Workbook
         sheetName = self.sheetName
         sheetDir = self.sheetDir
@@ -1390,6 +1517,18 @@ class Sheets(Scopes, Triggers):
         wb.save(sheetPath)
 
     def writeSheetData(self, rows, asFile=None):
+        &#34;&#34;&#34;Write a spreadsheet.
+
+        When the data for a spreadsheet has been gathered, you can write it to Excel
+        by means of this function.
+
+        Parameters
+        ----------
+        rows: iterable of iterables
+            The rows, each row an interable of fields
+        asFile: string, optional None
+            The path of the file to write the Excel data to.
+        &#34;&#34;&#34;
         if not asFile:
             console(&#34;Pass the path of a destination file in param asFile&#34;)
             return
@@ -1469,6 +1608,11 @@ class Sheets(Scopes, Triggers):
 
         A good, real-world example of such a spreadsheet is *people.xlsx* in the
         [Suriano corpus](https://gitlab.huc.knaw.nl/suriano/letters/-/tree/main/ner/specs?ref_type=heads)
+
+        Returns
+        -------
+        list of list
+            Rows which are lists of fields.
         &#34;&#34;&#34;
         sheetName = self.sheetName
         sheetDir = self.sheetDir
@@ -1522,12 +1666,29 @@ class Sheets(Scopes, Triggers):
         return result
 
     def getMeta(self):
-        &#34;&#34;&#34;Retrieves the metadata of the current sheet.&#34;&#34;&#34;
+        &#34;&#34;&#34;Retrieves the metadata of the current sheet.
+
+        The metadata of each entity is stored in the extra fields in its row.
+        The writer of the NER sheet is free to chose additional rows.
+
+        Returns
+        -------
+        tuple
+            The first member is a list of the names of the metadata columns,
+            taken from the first row of the spreadsheet.
+            The second member is a dict with the metadata itself.
+            The keys are strings of the form *entity identifier*`-`*entity kind*.
+            The values are tuples, where the i-th member is the value for the i-th
+            name in the list of metadata fields.
+            i in the
+        &#34;&#34;&#34;
         sheetData = self.getSheetData()
         return (sheetData.metaFields, sheetData.metaData)
 
     def _readSheet(self):
         &#34;&#34;&#34;Read all the spreadsheets, the main one and the tweaks.
+
+        Several checks on the sanity of the data will be performed.
 
         Store the results in a hierarchy that mimicks the way they are organized in the
         file system.
@@ -1611,6 +1772,11 @@ class Sheets(Scopes, Triggers):
         scopeMistakes = {}
 
         def myNormalize(x):
+            &#34;&#34;&#34;Normalization function that performs additional replacements.
+
+            The replacements are coded in the function `normalizeChars()`,
+            which can be passed to the instance of this class.
+            &#34;&#34;&#34;
             return normalize(
                 str(x) if normalizeChars is None else normalizeChars(str(x))
             )
@@ -1735,19 +1901,12 @@ class Sheets(Scopes, Triggers):
                     err(f&#34;{n} row{plural} {label}:\n\te.g.: {rep}&#34;)
 
     def _compileSheet(self):
-        &#34;&#34;&#34;Compiles the info in tweaked sheets into complete sheets.
+        &#34;&#34;&#34;Compiles the info in tweaked sheets according to the scopes in it.
 
-        For every tweak spreadsheet, a copy of its parent sheet will be made,
-        and the info of the tweak sheet will be applied to that copy,
-        adding to or overriding the parent sheet.
-
-        A sheet is basically a mapping of triggers to names.
-
-        We also maintain a mapping from tweak sheets to triggers, so that we can
-        know later on which sheet assigned which trigger to which name.
-
-        The tweak may remove triggers from the sheet. We have to adapt the tMap
-        for that.
+        On the basis of the scopes that are given for the triggers, we partition
+        the corpus in maximal intervals in which no trigger goes into or out of scope.
+        During these intervals we have a fixed set of triggers that must be looked up,
+        and we can check for the consistency of these triggers.
         &#34;&#34;&#34;
         sheetData = self.getSheetData()
         compiled = AttrDict()
@@ -1910,39 +2069,9 @@ class Sheets(Scopes, Triggers):
     def _prepareSheet(self):
         &#34;&#34;&#34;Transform the sheets into instructions.
 
-        Now we have complete sheets for every context, the inheritance is resolved.
-        Every sheet specifies a mapping from triggers to names, and remembers
-        which (possibly other) sheet mapped a specific trigger to its name.
-
-        We perform additional checks on the consistency and completeness of the
-        resulting sheets.
-
-        Then we generate instructions out of the sheets: info that the search
+        Now we have intervals with fixed sets of triggers,
+        we can generate instructions out of the sheets: info that the search
         algorithm needs to do its work.
-
-        For each path to tweaked sheet we collect a portion of info:
-
-        *   `tPos`: a compilation of all triggers in the sheet, so that
-            we can search for them simultaneously;
-        *   `tMap`: a mapping from triggers to the path of the sheet that defined this
-            trigger;
-        *   `idMap`: a mapping from triggers their corresponding entities.
-
-        So every portion of info is addressed by a `path` key. This key is a tuple
-        of section/subsection/subsubsection heading.
-
-        By means of this key we can select the proper search instructions for specific
-        parts of the corpus.
-
-        About reporting:
-
-        We report the entities without triggers.
-        When we report the tweaks, only those triggerless entities are reported that
-        were not already triggerless in the main sheet.
-
-        We report the ambiguus triggers.
-        When we report the tweaks, only those triggers that are redefined in that tweak
-        are reported.
         &#34;&#34;&#34;
 
         spaceEscaped = self.spaceEscaped
@@ -2002,15 +2131,10 @@ class Sheets(Scopes, Triggers):
                 triggerScopes.setdefault(trigger, set()).add(scope)
 
     def _processSheet(self):
-        &#34;&#34;&#34;Generates derived data structures out of the source sheet.
+        &#34;&#34;&#34;Carries out the search instructions that have been compiled from the sheet.
 
-        After loading we process the set into derived data structures.
-
-        For each such set we produce several data structures, which we store
-        under the following keys:
-
-        *   `inventory`: result of looking up all triggers
-
+        We look up the occurrences, organize the hits of the triggers, and store them
+        as entities.
         &#34;&#34;&#34;
         if not self.properlySetup:
             return
@@ -2032,7 +2156,10 @@ class Sheets(Scopes, Triggers):
         self._markEntities()
 
     def _collectHits(self):
-        &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
+        &#34;&#34;&#34;Stores the trigger hits.
+
+        The hits will be stored under the key `hitData` in the sheet data.
+        &#34;&#34;&#34;
         if not self.properlySetup:
             return
 
@@ -2089,7 +2216,12 @@ class Sheets(Scopes, Triggers):
         self._addToSet(newEntities)
 
     def getSheetData(self):
-        &#34;&#34;&#34;Deliver the current sheet.&#34;&#34;&#34;
+        &#34;&#34;&#34;Deliver the current sheet.
+
+        Returns
+        -------
+        dict
+        &#34;&#34;&#34;
         sheetName = self.sheetName
         sheetsData = self.sheets
 
@@ -2123,11 +2255,11 @@ class Sheets(Scopes, Triggers):
 <dl>
 <dt id="tf.ner.sheets.Sheets.sheetName"><code class="name">var <span class="ident">sheetName</span></code></dt>
 <dd>
-<div class="desc"><p>The current ner sheet.</p></div>
+<div class="desc"><p>The current NER sheet.</p></div>
 </dd>
 <dt id="tf.ner.sheets.Sheets.sheetNames"><code class="name">var <span class="ident">sheetNames</span></code></dt>
 <dd>
-<div class="desc"><p>The set of names of ner sheets that are present on the file system.</p></div>
+<div class="desc"><p>The set of names of NER sheets that are present on the file system.</p></div>
 </dd>
 </dl>
 <h3>Methods</h3>
@@ -2136,19 +2268,46 @@ class Sheets(Scopes, Triggers):
 <span>def <span class="ident">getMeta</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Retrieves the metadata of the current sheet.</p></div>
+<div class="desc"><p>Retrieves the metadata of the current sheet.</p>
+<p>The metadata of each entity is stored in the extra fields in its row.
+The writer of the NER sheet is free to chose additional rows.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>The first member is a list of the names of the metadata columns,
+taken from the first row of the spreadsheet.
+The second member is a dict with the metadata itself.
+The keys are strings of the form <em>entity identifier</em><code>-</code><em>entity kind</em>.
+The values are tuples, where the i-th member is the value for the i-th
+name in the list of metadata fields.
+i in the</dd>
+</dl></div>
 </dd>
 <dt id="tf.ner.sheets.Sheets.getSheetData"><code class="name flex">
 <span>def <span class="ident">getSheetData</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Deliver the current sheet.</p></div>
+<div class="desc"><p>Deliver the current sheet.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>dict</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
 </dd>
 <dt id="tf.ner.sheets.Sheets.getToTokensFunc"><code class="name flex">
 <span>def <span class="ident">getToTokensFunc</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Make a tokenize function.</p>
+<p>Produce a function that can tokenize strings in the same way as the corpus
+has been tokenized.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>function</code></dt>
+<dd>This function takes a string and returns an iterable of tokens.
+The tokenization is aware of whether the current sheet works
+case-sensitively, and whether spaces have been escaped as underscores.</dd>
+</dl></div>
 </dd>
 <dt id="tf.ner.sheets.Sheets.loadSheetData"><code class="name flex">
 <span>def <span class="ident">loadSheetData</span></span>(<span>self, force=False, caseSensitive=False)</span>
@@ -2162,8 +2321,15 @@ into instructions, if needed.</p>
 in memory and uptotdate, in that case nothing will be done.</p>
 <p>Otherwise, it will be checked wether an uptodate version of its data exists
 on disk. If so, it will be loaded.</p>
-<p>Otherwise, the data will be computed from scratch and saved to disk,
-with a time stamp.</p></div>
+<p>Otherwise, or if <code>force=True</code> is passed, the data will be computed from
+scratch and saved to disk, with a time stamp.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>force</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, do not load from cached data, but do all computations afresh.</dd>
+<dt><strong><code>caseSensitive</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to work with the spreadsheet in a case-sensitive way.</dd>
+</dl></div>
 </dd>
 <dt id="tf.ner.sheets.Sheets.log"><code class="name flex">
 <span>def <span class="ident">log</span></span>(<span>self, isError, indent, msg)</span>
@@ -2175,7 +2341,20 @@ with a time stamp.</p></div>
 <span>def <span class="ident">makeSheetOfSingleTokens</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Make a derived sheet based on the individual tokens in the triggers.</p>
+<p>The current sheet will be used to make a new sheet with a row for every
+token in every trigger on the original sheet.
+In this way all tokens in triggers will be searched individually.
+Since tokens do not overlap, the tokens as triggers do not interfere with
+each other.
+This can be a convenient debugging tool for the entity spreadsheet in the
+case of triggers without hits.</p>
+<p>Note however, that there are also other functions that help with debugging
+the spreadsheet:</p>
+<ul>
+<li><code><a title="tf.ner.triggers.Triggers.triggerInterference" href="triggers.html#tf.ner.triggers.Triggers.triggerInterference">Triggers.triggerInterference()</a></code></li>
+<li><code><a title="tf.ner.triggers.Triggers.reportHits" href="triggers.html#tf.ner.triggers.Triggers.reportHits">Triggers.reportHits()</a></code></li>
+</ul></div>
 </dd>
 <dt id="tf.ner.sheets.Sheets.readSheetData"><code class="name flex">
 <span>def <span class="ident">readSheetData</span></span>(<span>self)</span>
@@ -2235,7 +2414,12 @@ by ASCII quotes.</p>
 <p>The remaining columns are metadata columns. This metadata can be retrieved
 by means of the function <code><a title="tf.ner.ner.NER.getMeta" href="#tf.ner.sheets.Sheets.getMeta">Sheets.getMeta()</a></code></p>
 <p>A good, real-world example of such a spreadsheet is <em>people.xlsx</em> in the
-<a href="https://gitlab.huc.knaw.nl/suriano/letters/-/tree/main/ner/specs?ref_type=heads">Suriano corpus</a></p></div>
+<a href="https://gitlab.huc.knaw.nl/suriano/letters/-/tree/main/ner/specs?ref_type=heads">Suriano corpus</a></p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code> of <code>list</code></dt>
+<dd>Rows which are lists of fields.</dd>
+</dl></div>
 </dd>
 <dt id="tf.ner.sheets.Sheets.readSheets"><code class="name flex">
 <span>def <span class="ident">readSheets</span></span>(<span>self)</span>
@@ -2255,13 +2439,27 @@ by editing the spreadsheets in Excel.</p></div>
 <dl>
 <dt><strong><code>newSheet</code></strong> :&ensp;<code>string</code></dt>
 <dd>The name of the new ner sheet to switch to.</dd>
+<dt><strong><code>force</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, do not load from cached data, but do all computations afresh.</dd>
+<dt><strong><code>caseSensitive</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
+<dd>Whether to work with the spreadsheet in a case-sensitive way.
+If <code>None</code>, the value is taken from the current instance of this class.</dd>
 </dl></div>
 </dd>
 <dt id="tf.ner.sheets.Sheets.writeSheetData"><code class="name flex">
 <span>def <span class="ident">writeSheetData</span></span>(<span>self, rows, asFile=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Write a spreadsheet.</p>
+<p>When the data for a spreadsheet has been gathered, you can write it to Excel
+by means of this function.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>rows</code></strong> :&ensp;<code>iterable</code> of <code>iterables</code></dt>
+<dd>The rows, each row an interable of fields</dd>
+<dt><strong><code>asFile</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>The path of the file to write the Excel data to.</dd>
+</dl></div>
 </dd>
 </dl>
 <h3>Inherited members</h3>

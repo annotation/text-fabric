@@ -32,7 +32,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/ner/helpers.py#L1-L340" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/ner/helpers.py#L1-L342" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Auxiliary functions.
 &#34;&#34;&#34;
@@ -96,6 +96,8 @@ def toTokens(text, spaceEscaped=False, caseSensitive=False):
     ----------
     spaceEscaped: boolean, optional False
         If True, it is assumed that if a `_` occurs in a token string, a space is meant.
+    caseSensitive: boolean, optional False
+        If True, return all tokens in lower case.
     &#34;&#34;&#34;
     result = TOKEN_RE.findall(normalize(text))
     result = tuple((t.replace(&#34;_&#34;, &#34; &#34;) for t in result) if spaceEscaped else result)
@@ -603,6 +605,8 @@ and individual non-word characters.</p>
 <dl>
 <dt><strong><code>spaceEscaped</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>If True, it is assumed that if a <code>_</code> occurs in a token string, a space is meant.</dd>
+<dt><strong><code>caseSensitive</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, return all tokens in lower case.</dd>
 </dl></div>
 </dd>
 <dt id="tf.ner.helpers.xstrip"><code class="name flex">

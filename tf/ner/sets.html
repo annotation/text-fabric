@@ -34,7 +34,7 @@ the tool.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/ner/sets.py#L1-L377" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/ner/sets.py#L1-L377" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Annotation set management.
 
@@ -451,7 +451,7 @@ If None, a fresh store of sets will be created by a parent class (Data).</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/ner/sets.py#L24-L377" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/ner/sets.py#L24-L377" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Sets(Data):
     def __init__(self, sets=None):
@@ -928,16 +928,24 @@ After the switch, the new set will be loaded into memory.</p>
 <li><code><a title="tf.ner.data.Data.addEntityRich" href="data.html#tf.ner.data.Data.addEntityRich">addEntityRich</a></code></li>
 <li><code><a title="tf.ner.data.Data.bucketType" href="corpus.html#tf.ner.corpus.Corpus.bucketType">bucketType</a></code></li>
 <li><code><a title="tf.ner.data.Data.checkBuckets" href="corpus.html#tf.ner.corpus.Corpus.checkBuckets">checkBuckets</a></code></li>
+<li><code><a title="tf.ner.data.Data.checkFeature" href="corpus.html#tf.ner.corpus.Corpus.checkFeature">checkFeature</a></code></li>
 <li><code><a title="tf.ner.data.Data.console" href="settings.html#tf.ner.settings.Settings.console">console</a></code></li>
 <li><code><a title="tf.ner.data.Data.delEntity" href="data.html#tf.ner.data.Data.delEntity">delEntity</a></code></li>
 <li><code><a title="tf.ner.data.Data.delEntityRich" href="data.html#tf.ner.data.Data.delEntityRich">delEntityRich</a></code></li>
 <li><code><a title="tf.ner.data.Data.featureDefault" href="corpus.html#tf.ner.corpus.Corpus.featureDefault">featureDefault</a></code></li>
 <li><code><a title="tf.ner.data.Data.filterContent" href="corpus.html#tf.ner.corpus.Corpus.filterContent">filterContent</a></code></li>
 <li><code><a title="tf.ner.data.Data.fromSourceSet" href="data.html#tf.ner.data.Data.fromSourceSet">fromSourceSet</a></code></li>
-<li><code><a title="tf.ner.data.Data.get0" href="corpus.html#tf.ner.corpus.Corpus.get0">get0</a></code></li>
-<li><code><a title="tf.ner.data.Data.get1" href="corpus.html#tf.ner.corpus.Corpus.get1">get1</a></code></li>
+<li><code><a title="tf.ner.data.Data.fvalFromNode" href="corpus.html#tf.ner.corpus.Corpus.fvalFromNode">fvalFromNode</a></code></li>
+<li><code><a title="tf.ner.data.Data.getAfter" href="corpus.html#tf.ner.corpus.Corpus.getAfter">getAfter</a></code></li>
 <li><code><a title="tf.ner.data.Data.getBucketNodes" href="corpus.html#tf.ner.corpus.Corpus.getBucketNodes">getBucketNodes</a></code></li>
+<li><code><a title="tf.ner.data.Data.getContext" href="corpus.html#tf.ner.corpus.Corpus.getContext">getContext</a></code></li>
+<li><code><a title="tf.ner.data.Data.getEid" href="corpus.html#tf.ner.corpus.Corpus.getEid">getEid</a></code></li>
 <li><code><a title="tf.ner.data.Data.getEntityNodes" href="corpus.html#tf.ner.corpus.Corpus.getEntityNodes">getEntityNodes</a></code></li>
+<li><code><a title="tf.ner.data.Data.getKind" href="corpus.html#tf.ner.corpus.Corpus.getKind">getKind</a></code></li>
+<li><code><a title="tf.ner.data.Data.getSeqFromNode" href="corpus.html#tf.ner.corpus.Corpus.getSeqFromNode">getSeqFromNode</a></code></li>
+<li><code><a title="tf.ner.data.Data.getSeqFromStr" href="corpus.html#tf.ner.corpus.Corpus.getSeqFromStr">getSeqFromStr</a></code></li>
+<li><code><a title="tf.ner.data.Data.getStr" href="corpus.html#tf.ner.corpus.Corpus.getStr">getStr</a></code></li>
+<li><code><a title="tf.ner.data.Data.getStrFromSeq" href="corpus.html#tf.ner.corpus.Corpus.getStrFromSeq">getStrFromSeq</a></code></li>
 <li><code><a title="tf.ner.data.Data.loadSetData" href="data.html#tf.ner.data.Data.loadSetData">loadSetData</a></code></li>
 <li><code><a title="tf.ner.data.Data.mergeEntities" href="data.html#tf.ner.data.Data.mergeEntities">mergeEntities</a></code></li>
 <li><code><a title="tf.ner.data.Data.processSet" href="data.html#tf.ner.data.Data.processSet">processSet</a></code></li>
@@ -945,6 +953,11 @@ After the switch, the new set will be loaded into memory.</p>
 <li><code><a title="tf.ner.data.Data.saveEntitiesAs" href="data.html#tf.ner.data.Data.saveEntitiesAs">saveEntitiesAs</a></code></li>
 <li><code><a title="tf.ner.data.Data.sectionHead" href="corpus.html#tf.ner.corpus.Corpus.sectionHead">sectionHead</a></code></li>
 <li><code><a title="tf.ner.data.Data.slotType" href="corpus.html#tf.ner.corpus.Corpus.slotType">slotType</a></code></li>
+<li><code><a title="tf.ner.data.Data.slotsFromNode" href="corpus.html#tf.ner.corpus.Corpus.slotsFromNode">slotsFromNode</a></code></li>
+<li><code><a title="tf.ner.data.Data.stringsFromTokens" href="corpus.html#tf.ner.corpus.Corpus.stringsFromTokens">stringsFromTokens</a></code></li>
+<li><code><a title="tf.ner.data.Data.textFromNode" href="corpus.html#tf.ner.corpus.Corpus.textFromNode">textFromNode</a></code></li>
+<li><code><a title="tf.ner.data.Data.textFromSlots" href="corpus.html#tf.ner.corpus.Corpus.textFromSlots">textFromSlots</a></code></li>
+<li><code><a title="tf.ner.data.Data.tokensFromNode" href="corpus.html#tf.ner.corpus.Corpus.tokensFromNode">tokensFromNode</a></code></li>
 <li><code><a title="tf.ner.data.Data.weedEntities" href="data.html#tf.ner.data.Data.weedEntities">weedEntities</a></code></li>
 </ul>
 </li>

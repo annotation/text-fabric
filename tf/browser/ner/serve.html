@@ -34,7 +34,7 @@ the annotation tool in the TF browser.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/browser/ner/serve.py#L1-L367" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/browser/ner/serve.py#L1-L367" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Main controller for Flask
 
@@ -190,7 +190,7 @@ class Serve(Request, Fragments):
         We further modify the selection by two additional parameters.
 
         The resulting list of buckets is obtained by
-        `tf.ner.ner.NER.filterContent`, and each member in the bucket
+        `tf.ner.corpus.Corpus.filterContent`, and each member in the bucket
         list is a tuple as indicated in the `filterContent` function.
         The list is stored in the `Serve` object.
         Additionally, statistics about these buckets and how many entity values
@@ -459,7 +459,7 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/browser/ner/serve.py#L16-L335" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/browser/ner/serve.py#L16-L335" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Serve(Request, Fragments):
     def __init__(self, web):
@@ -600,7 +600,7 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
         We further modify the selection by two additional parameters.
 
         The resulting list of buckets is obtained by
-        `tf.ner.ner.NER.filterContent`, and each member in the bucket
+        `tf.ner.corpus.Corpus.filterContent`, and each member in the bucket
         list is a tuple as indicated in the `filterContent` function.
         The list is stored in the `Serve` object.
         Additionally, statistics about these buckets and how many entity values
@@ -818,7 +818,7 @@ See <code><a title="tf.browser.ner.web.factory" href="web.html#tf.browser.ner.we
 <p>The selection is defined in the <code>v</code>.</p>
 <p>We further modify the selection by two additional parameters.</p>
 <p>The resulting list of buckets is obtained by
-<code><a title="tf.ner.ner.NER.filterContent" href="../../ner/corpus.html#tf.ner.corpus.Corpus.filterContent">Corpus.filterContent()</a></code>, and each member in the bucket
+<code><a title="tf.ner.corpus.Corpus.filterContent" href="../../ner/corpus.html#tf.ner.corpus.Corpus.filterContent">Corpus.filterContent()</a></code>, and each member in the bucket
 list is a tuple as indicated in the <code>filterContent</code> function.
 The list is stored in the <code><a title="tf.browser.ner.serve.Serve" href="#tf.browser.ner.serve.Serve">Serve</a></code> object.
 Additionally, statistics about these buckets and how many entity values

@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/ner/triggers.py#L1-L793" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/ner/triggers.py#L1-L802" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import collections
 from textwrap import dedent
@@ -54,6 +54,15 @@ def makePartitions(triggers, myToTokens):
     that can not interact with each other: triggers whose tokens are pairwise
     disjoint. A hit of one trigger can then never be part of a hit of any other
     trigger in the group.
+
+    Parameters
+    ----------
+    triggers: iterable of string
+        The triggers that must be partitioned
+    myToTokens: function
+        Takes a trigger (string) and produces a sequence of tokens.
+        Here you can pass a function that corresponds to how the strings in the corpus
+        are divided up into tokens.
     &#34;&#34;&#34;
 
     triggerTokens = {}
@@ -845,7 +854,16 @@ We need to look them up in isolation, because then they might have hits.</p>
 <p>But searching per trigger is expensive. We want to group triggers together
 that can not interact with each other: triggers whose tokens are pairwise
 disjoint. A hit of one trigger can then never be part of a hit of any other
-trigger in the group.</p></div>
+trigger in the group.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>triggers</code></strong> :&ensp;<code>iterable</code> of <code>string</code></dt>
+<dd>The triggers that must be partitioned</dd>
+<dt><strong><code>myToTokens</code></strong> :&ensp;<code>function</code></dt>
+<dd>Takes a trigger (string) and produces a sequence of tokens.
+Here you can pass a function that corresponds to how the strings in the corpus
+are divided up into tokens.</dd>
+</dl></div>
 </dd>
 </dl>
 </section>
@@ -860,7 +878,7 @@ trigger in the group.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/ner/triggers.py#L65-L793" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/ner/triggers.py#L74-L802" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Triggers:
     def partitionTriggers(self, triggers):

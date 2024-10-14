@@ -37,7 +37,7 @@ control over how to customize the annotator for different corpora.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/ner/corpus.py#L1-L717" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/ner/corpus.py#L1-L752" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Access to the corpus.
 
@@ -126,85 +126,85 @@ class Corpus(Settings):
         afterFeature = settings.afterFeature
 
         def slotsFromNode(node):
-            &#34;&#34;&#34;Gets the slot nodes contained in a node.
-
-            Parameters
-            ----------
-            node: integer
-                The container node.
-
-            Returns
-            -------
-            list of integer
-                The slots in the container.
-            &#34;&#34;&#34;
             return L.d(node, otype=slotType)
 
         self.slotsFromNode = slotsFromNode
+        &#34;&#34;&#34;Gets the slot nodes contained in a node.
+
+        Parameters
+        ----------
+        node: integer
+            The container node.
+
+        Returns
+        -------
+        list of integer
+            The slots in the container.
+        &#34;&#34;&#34;
 
         def checkFeature(feat):
-            &#34;&#34;&#34;Checks whether a feature is loaded in the corpus.
-
-            Parameters
-            ----------
-            feat: string
-                The name of the feature
-
-            Returns
-            -------
-            boolean
-                Whether the feature is loaded in this corpus.
-            &#34;&#34;&#34;
             return api.isLoaded(feat, pretty=False)[feat] is not None
 
         self.checkFeature = checkFeature
+        &#34;&#34;&#34;Checks whether a feature is loaded in the corpus.
+
+        Parameters
+        ----------
+        feat: string
+            The name of the feature
+
+        Returns
+        -------
+        boolean
+            Whether the feature is loaded in this corpus.
+        &#34;&#34;&#34;
 
         def fvalFromNode(feat, node):
-            &#34;&#34;&#34;Retrieves the value of a feature for a node.
-
-            Parameters
-            ----------
-            feat: string
-                The name of the feature
-            node: int
-                The node whose feature value we need
-
-            Returns
-            -------
-            string or integer or void
-                The value of the feature for that node, if there is a value.
-            &#34;&#34;&#34;
             return Fs(feat).v(node)
 
         self.fvalFromNode = fvalFromNode
+        &#34;&#34;&#34;Retrieves the value of a feature for a node.
+
+        Parameters
+        ----------
+        feat: string
+            The name of the feature
+        node: int
+            The node whose feature value we need
+
+        Returns
+        -------
+        string or integer or void
+            The value of the feature for that node, if there is a value.
+        &#34;&#34;&#34;
 
         def getAfter():
-            &#34;&#34;&#34;Delivers a function that retrieves the material after a slot.
-
-            Returns
-            -------
-            function
-                It accepts integers, presumably slots, and delivers the value
-                of the *after* feature, which is configured in `ner/config.yaml`
-                under key `afterFeature` .
-            &#34;&#34;&#34;
             return Fs(afterFeature).v
 
         self.getAfter = getAfter
+        &#34;&#34;&#34;Delivers a function that retrieves the material after a slot.
+
+        Returns
+        -------
+        function
+            It accepts integers, presumably slots, and delivers the value
+            of the *after* feature, which is configured in `ner/config.yaml`
+            under key `afterFeature` .
+        &#34;&#34;&#34;
 
         def getStr():
-            &#34;&#34;&#34;Delivers a function that retrieves the material of a slot.
-
-            Returns
-            -------
-            function
-                It accepts integers, presumably slots, and delivers the value
-                of the *str* feature, which is configured in `ner/config.yaml`
-                under key `strFeature` .
-            &#34;&#34;&#34;
             return Fs(strFeature).v
 
         self.getStr = getStr
+        &#34;&#34;&#34;Delivers a function that retrieves the material of a slot.
+
+        Returns
+        -------
+        function
+            It accepts integers, presumably slots, and delivers the value
+            of the *str* feature, which is configured in `ner/config.yaml`
+            under key `strFeature` .
+        &#34;&#34;&#34;
 
         if not checkFeature(strFeature) or not checkFeature(afterFeature):
             self.properlySetup = False
@@ -232,68 +232,55 @@ class Corpus(Settings):
         afterv = getAfter()
 
         def textFromSlots(slots):
-            &#34;&#34;&#34;Gets the text of a number of slots.
-
-            Parameters
-            ----------
-            slots: iterable of integer
-
-            Returns
-            -------
-            string
-                The concatenation of the representation of the individual slots.
-                These representations are white-space trimmed at both sides,
-                and the concatenation adds a single space between each adjacent pair
-                of them.
-
-                !!! caution &#34;Space between slots&#34;
-                    Leading and trailing white-space is stripped, and inner white-space is
-                    normalized to a single space.
-                    The text of the individual slots is joined by means of a single
-                    white-space, also in corpora that may have zero space between words.
-            &#34;&#34;&#34;
             text = &#34;&#34;.join(f&#34;&#34;&#34;{strv(s)}{afterv(s) or &#34;&#34;}&#34;&#34;&#34; for s in slots).strip()
             # text = WHITE_RE.sub(&#34; &#34;, text)
             return text
 
         self.textFromSlots = textFromSlots
+        &#34;&#34;&#34;Gets the text of a number of slots.
+
+        Parameters
+        ----------
+        slots: iterable of integer
+
+        Returns
+        -------
+        string
+            The concatenation of the representation of the individual slots.
+            These representations are white-space trimmed at both sides,
+            and the concatenation adds a single space between each adjacent pair
+            of them.
+
+            !!! caution &#34;Space between slots&#34;
+                Leading and trailing white-space is stripped, and inner white-space is
+                normalized to a single space.
+                The text of the individual slots is joined by means of a single
+                white-space, also in corpora that may have zero space between words.
+        &#34;&#34;&#34;
 
         def textFromNode(node):
-            &#34;&#34;&#34;Gets the text for a non-slot node.
-
-            It first determines the slots contained in a node, and then uses
-            `textFromSlots()` to return the text of those slots.
-
-            Parameters
-            ----------
-            node: integer
-                The nodes for whose slots we want the text.
-
-            Returns
-            -------
-            string
-            &#34;&#34;&#34;
             slots = L.d(node, otype=slotType)
             text = &#34;&#34;.join(f&#34;&#34;&#34;{strv(s)}{afterv(s) or &#34;&#34;}&#34;&#34;&#34; for s in slots).strip()
             # text = WHITE_RE.sub(&#34; &#34;, text)
             return text
 
         self.textFromNode = textFromNode
+        &#34;&#34;&#34;Gets the text for a non-slot node.
+
+        It first determines the slots contained in a node, and then uses
+        `textFromSlots()` to return the text of those slots.
+
+        Parameters
+        ----------
+        node: integer
+            The nodes for whose slots we want the text.
+
+        Returns
+        -------
+        string
+        &#34;&#34;&#34;
 
         def tokensFromNode(node, lineBoundaries=False):
-            &#34;&#34;&#34;Gets the tokens contained in node.
-
-            Parameters
-            ----------
-            node: integer
-                The nodes whose slots we want.
-
-            Returns
-            -------
-            list of tuple
-                Each tuple is a pair of the slot number of the token and its
-                string value. If there is no string value, the empty string is taken.
-            &#34;&#34;&#34;
             if lineBoundaries and lineType is None:
                 lineBoundaries = False
 
@@ -309,24 +296,21 @@ class Corpus(Settings):
             return (lineEnds, tokens)
 
         self.tokensFromNode = tokensFromNode
+        &#34;&#34;&#34;Gets the tokens contained in node.
+
+        Parameters
+        ----------
+        node: integer
+            The nodes whose slots we want.
+
+        Returns
+        -------
+        list of tuple
+            Each tuple is a pair of the slot number of the token and its
+            string value. If there is no string value, the empty string is taken.
+        &#34;&#34;&#34;
 
         def stringsFromTokens(tokenStart, tokenEnd):
-            &#34;&#34;&#34;Gets the text of the tokens occupying a sequence of slots.
-
-            Parameters
-            ----------
-            tokenStart: integer
-                The position of the starting token.
-            tokenEnd: integer
-                The position of the ending token.
-
-            Returns
-            -------
-            tuple
-                The members consist of the string values of the tokens in question,
-                as far as these values are not purely white-space.
-                Also, the string values are stripped from leading and trailing white-space.
-            &#34;&#34;&#34;
             return tuple(
                 token
                 for t in range(tokenStart, tokenEnd + 1)
@@ -334,71 +318,69 @@ class Corpus(Settings):
             )
 
         self.stringsFromTokens = stringsFromTokens
+        &#34;&#34;&#34;Gets the text of the tokens occupying a sequence of slots.
+
+        Parameters
+        ----------
+        tokenStart: integer
+            The position of the starting token.
+        tokenEnd: integer
+            The position of the ending token.
+
+        Returns
+        -------
+        tuple
+            The members consist of the string values of the tokens in question,
+            as far as these values are not purely white-space.
+            Also, the string values are stripped from leading and trailing white-space.
+        &#34;&#34;&#34;
 
         def getContext(node):
-            &#34;&#34;&#34;Gets the context buckets around a node.
-
-            We start from a node and find the section node of intermediate level
-            that contains that node. Then we return all buckets contained in that
-            section.
-
-            Parameters
-            ----------
-            node: int
-
-            Returns
-            -------
-            tuple of int
-            &#34;&#34;&#34;
             return L.d(T.sectionTuple(node)[1], otype=bucketType)
 
         self.getContext = getContext
+        &#34;&#34;&#34;Gets the context buckets around a node.
+
+        We start from a node and find the section node of intermediate level
+        that contains that node. Then we return all buckets contained in that
+        section.
+
+        Parameters
+        ----------
+        node: int
+
+        Returns
+        -------
+        tuple of int
+        &#34;&#34;&#34;
 
         def getSeqFromNode(node):
-            &#34;&#34;&#34;Gets the heading tuple of the section of a node.
-
-            We need to treat headings as section numbers. So whatever the section features
-            deliver for each level, integers or strings, we convert it in to integers,
-            so that the first section gets number one, the second section number two,
-            and so on. This we do for each level, so every section is mapped onto a tuple
-            of integers.
-
-            Parameters
-            ----------
-            node: integer
-                The nodes whose heading we want.
-
-            Returns
-            -------
-            tuple
-                The tuple consists of sequence numbers per level, the most significant
-                sections first.
-                If the node itself is a section node, the last element is
-                the heading of the given node.
-            &#34;&#34;&#34;
             return seqFromNode[T.sectionTuple(node)[-1]]
 
         self.getSeqFromNode = getSeqFromNode
+        &#34;&#34;&#34;Gets the heading tuple of the section of a node.
+
+        We need to treat headings as section numbers. So whatever the section features
+        deliver for each level, integers or strings, we convert it in to integers,
+        so that the first section gets number one, the second section number two,
+        and so on. This we do for each level, so every section is mapped onto a tuple
+        of integers.
+
+        Parameters
+        ----------
+        node: integer
+            The nodes whose heading we want.
+
+        Returns
+        -------
+        tuple
+            The tuple consists of sequence numbers per level, the most significant
+            sections first.
+            If the node itself is a section node, the last element is
+            the heading of the given node.
+        &#34;&#34;&#34;
 
         def getSeqFromStr(string):
-            &#34;&#34;&#34;Gets the heading tuple of a section string.
-
-            As `getSeqFromNode`, but the input section is now given as a string.
-
-            Parameters
-            ----------
-            string: string
-                The heading, represented as string of the section we want.
-
-            Returns
-            -------
-            string, tuple
-                The tuple consists of sequence numbers per level, the most significant
-                sections first.
-                If there is an error, the string part will contain the error message,
-                and the tuple part is the empty tuple.
-                In case of no error, the string part is the empty string.
-            &#34;&#34;&#34;
             result = app.nodeFromSectionStr(string)
 
             if type(result) is str:
@@ -407,47 +389,50 @@ class Corpus(Settings):
             return (&#34;&#34;, seqFromNode[result])
 
         self.getSeqFromStr = getSeqFromStr
+        &#34;&#34;&#34;Gets the heading tuple of a section string.
+
+        As `getSeqFromNode`, but the input section is now given as a string.
+
+        Parameters
+        ----------
+        string: string
+            The heading, represented as string of the section we want.
+
+        Returns
+        -------
+        string, tuple
+            The tuple consists of sequence numbers per level, the most significant
+            sections first.
+            If there is an error, the string part will contain the error message,
+            and the tuple part is the empty tuple.
+            In case of no error, the string part is the empty string.
+        &#34;&#34;&#34;
 
         def getStrFromSeq(seq):
-            &#34;&#34;&#34;Gets the heading string from a sequence number tuple of a section.
-
-            Parameters
-            ----------
-            seq: tuple
-                The heading, represented as tuple of sequence numbers
-
-            Returns
-            -------
-            string
-                The heading string of the section
-            &#34;&#34;&#34;
             node = nodeFromSeq[seq]
             return app.sectionStrFromNode(node)
 
         self.getStrFromSeq = getStrFromSeq
+        &#34;&#34;&#34;Gets the heading string from a sequence number tuple of a section.
 
-        def get0(slots):
+        Parameters
+        ----------
+        seq: tuple
+            The heading, represented as tuple of sequence numbers
+
+        Returns
+        -------
+        string
+            The heading string of the section
+        &#34;&#34;&#34;
+
+        def getEid(slots):
             text = textFromSlots(slots)
             text = NON_ALPHA_RE.sub(&#34;&#34;, text)
             text = text.replace(&#34; &#34;, &#34;.&#34;).strip(&#34;.&#34;).lower()
             return text
 
-        def get1(slots):
-            return settings.defaultValues[features[1]]
-
-        def getBucketNodes():
-            return F.otype.s(bucketType)
-
-        def getEntityNodes():
-            return F.otype.s(entityType)
-
-        def sectionHead(node):
-            return app.sectionStrFromNode(node)
-
-        def checkBuckets(nodes):
-            return {node for node in nodes if F.otype.v(node) == bucketType}
-
-        self.get0 = get0
+        self.getEid = getEid
         &#34;&#34;&#34;Makes an identifier value out of a number of slots.
 
         This acts as the default value for the `eid` feature of new
@@ -456,20 +441,65 @@ class Corpus(Settings):
         Starting with the white-space-normalized text of a number of slots,
         the string is lowercased, non-alphanumeric characters are stripped,
         and spaces are replaced by dots.
+
+        Parameters
+        ----------
+        slots: iterable of integer
+            The slots that contain the tokens to make an identifier from
+
+        Returns
+        -------
+        string
+            The identifier
         &#34;&#34;&#34;
 
-        self.get1 = get1
+        def getKind(slots):
+            return settings.defaultValues[features[1]]
+
+        self.getKind = getKind
         &#34;&#34;&#34;Return a fixed value specified in the corpus-dependent settings.
 
-        This acts as the default value ofr the `kind` feature of new
+        This acts as the default value of the `kind` feature of new
         entities.
+
+        Parameters
+        ----------
+        slots: iterable of integer
+            Unlike in `getEid`, the result is not dependent on the text content,
+            so this parameter is not used. It is here for uniformity.
+
+        Returns
+        -------
+        string
+            The default value for the *kind* feature for new entities.
         &#34;&#34;&#34;
 
+        def getBucketNodes():
+            return F.otype.s(bucketType)
+
         self.getBucketNodes = getBucketNodes
-        &#34;&#34;&#34;Return all bucket nodes.&#34;&#34;&#34;
+        &#34;&#34;&#34;Return all bucket nodes.
+
+        Returns
+        -------
+        tuple
+            All nodes of the bucket type.
+        &#34;&#34;&#34;
+
+        def getEntityNodes():
+            return F.otype.s(entityType)
 
         self.getEntityNodes = getEntityNodes
-        &#34;&#34;&#34;Return all entity nodes.&#34;&#34;&#34;
+        &#34;&#34;&#34;Return all entity nodes.
+
+        Returns
+        -------
+        tuple
+            All nodes of the entity type
+        &#34;&#34;&#34;
+
+        def sectionHead(node):
+            return app.sectionStrFromNode(node)
 
         self.sectionHead = sectionHead
         &#34;&#34;&#34;Provide a section heading.
@@ -484,6 +514,9 @@ class Corpus(Settings):
         string
         &#34;&#34;&#34;
 
+        def checkBuckets(nodes):
+            return {node for node in nodes if F.otype.v(node) == bucketType}
+
         self.checkBuckets = checkBuckets
         &#34;&#34;&#34;Given a set of nodes, return the set of only its bucket nodes.
 
@@ -497,8 +530,8 @@ class Corpus(Settings):
         &#34;&#34;&#34;
 
         self.featureDefault = {
-            features[0]: get0,
-            features[1]: get1,
+            features[0]: getEid,
+            features[1]: getKind,
         }
         &#34;&#34;&#34;Functions that deliver default values for the entity features.&#34;&#34;&#34;
 
@@ -520,7 +553,7 @@ class Corpus(Settings):
         &#34;&#34;&#34;Filter the buckets according to a variety of criteria.
 
         Either the buckets of the whole corpus are filtered, or a given subset
-        of buckets, or a subset of buckets, namely those contained in a
+        of buckets, or the set of buckets contained in a
         particular node, see parameters `node`, and `buckets`.
 
         **Bucket filtering**
@@ -528,7 +561,7 @@ class Corpus(Settings):
         The parameters `bFind`, `bFindC`, `bFindRe`  specify a regular expression
         search on the texts of the buckets.
 
-        The positions of the found occurrences is included in the result.
+        The positions of the found occurrences are included in the result.
 
         The parameter `anyEnt` is a filter on the presence or absence of entities in
         buckets in general.
@@ -536,6 +569,7 @@ class Corpus(Settings):
         **Entity filtering**
 
         The parameter `eVals` holds the values of a specific entity to look for.
+        It is a tuple consisting of an entity id and an entity kind.
 
         **Occurrence filtering**
 
@@ -551,7 +585,7 @@ class Corpus(Settings):
         buckets: set of integer, optional None
             The set of buckets to filter, instead of the whole corpus.
             Works also if the parameter `node` is specified, which also restricts
-            the buckets to filter. If both are specified, their effect will be
+            the buckets. If both are specified, their effect will be
             combined.
         node: integer, optional None
             Gets the context of the node, typically the intermediate-level section
@@ -571,6 +605,7 @@ class Corpus(Settings):
             If True, it wants all buckets that contain at least one already
             marked entity; if False, it wants all buckets that do not contain any
             already marked entity.
+            If None, no filtering on existing entities is performed.
         eVals: tuple, optional None
             A sequence of values corresponding with the entity features `eid`
             and `kind`. If given, the function wants buckets that contain at least
@@ -782,7 +817,7 @@ flag.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/ner/corpus.py#L27-L717" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/ner/corpus.py#L27-L752" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Corpus(Settings):
     def __init__(self):
@@ -845,85 +880,85 @@ flag.</p></div>
         afterFeature = settings.afterFeature
 
         def slotsFromNode(node):
-            &#34;&#34;&#34;Gets the slot nodes contained in a node.
-
-            Parameters
-            ----------
-            node: integer
-                The container node.
-
-            Returns
-            -------
-            list of integer
-                The slots in the container.
-            &#34;&#34;&#34;
             return L.d(node, otype=slotType)
 
         self.slotsFromNode = slotsFromNode
+        &#34;&#34;&#34;Gets the slot nodes contained in a node.
+
+        Parameters
+        ----------
+        node: integer
+            The container node.
+
+        Returns
+        -------
+        list of integer
+            The slots in the container.
+        &#34;&#34;&#34;
 
         def checkFeature(feat):
-            &#34;&#34;&#34;Checks whether a feature is loaded in the corpus.
-
-            Parameters
-            ----------
-            feat: string
-                The name of the feature
-
-            Returns
-            -------
-            boolean
-                Whether the feature is loaded in this corpus.
-            &#34;&#34;&#34;
             return api.isLoaded(feat, pretty=False)[feat] is not None
 
         self.checkFeature = checkFeature
+        &#34;&#34;&#34;Checks whether a feature is loaded in the corpus.
+
+        Parameters
+        ----------
+        feat: string
+            The name of the feature
+
+        Returns
+        -------
+        boolean
+            Whether the feature is loaded in this corpus.
+        &#34;&#34;&#34;
 
         def fvalFromNode(feat, node):
-            &#34;&#34;&#34;Retrieves the value of a feature for a node.
-
-            Parameters
-            ----------
-            feat: string
-                The name of the feature
-            node: int
-                The node whose feature value we need
-
-            Returns
-            -------
-            string or integer or void
-                The value of the feature for that node, if there is a value.
-            &#34;&#34;&#34;
             return Fs(feat).v(node)
 
         self.fvalFromNode = fvalFromNode
+        &#34;&#34;&#34;Retrieves the value of a feature for a node.
+
+        Parameters
+        ----------
+        feat: string
+            The name of the feature
+        node: int
+            The node whose feature value we need
+
+        Returns
+        -------
+        string or integer or void
+            The value of the feature for that node, if there is a value.
+        &#34;&#34;&#34;
 
         def getAfter():
-            &#34;&#34;&#34;Delivers a function that retrieves the material after a slot.
-
-            Returns
-            -------
-            function
-                It accepts integers, presumably slots, and delivers the value
-                of the *after* feature, which is configured in `ner/config.yaml`
-                under key `afterFeature` .
-            &#34;&#34;&#34;
             return Fs(afterFeature).v
 
         self.getAfter = getAfter
+        &#34;&#34;&#34;Delivers a function that retrieves the material after a slot.
+
+        Returns
+        -------
+        function
+            It accepts integers, presumably slots, and delivers the value
+            of the *after* feature, which is configured in `ner/config.yaml`
+            under key `afterFeature` .
+        &#34;&#34;&#34;
 
         def getStr():
-            &#34;&#34;&#34;Delivers a function that retrieves the material of a slot.
-
-            Returns
-            -------
-            function
-                It accepts integers, presumably slots, and delivers the value
-                of the *str* feature, which is configured in `ner/config.yaml`
-                under key `strFeature` .
-            &#34;&#34;&#34;
             return Fs(strFeature).v
 
         self.getStr = getStr
+        &#34;&#34;&#34;Delivers a function that retrieves the material of a slot.
+
+        Returns
+        -------
+        function
+            It accepts integers, presumably slots, and delivers the value
+            of the *str* feature, which is configured in `ner/config.yaml`
+            under key `strFeature` .
+        &#34;&#34;&#34;
 
         if not checkFeature(strFeature) or not checkFeature(afterFeature):
             self.properlySetup = False
@@ -951,68 +986,55 @@ flag.</p></div>
         afterv = getAfter()
 
         def textFromSlots(slots):
-            &#34;&#34;&#34;Gets the text of a number of slots.
-
-            Parameters
-            ----------
-            slots: iterable of integer
-
-            Returns
-            -------
-            string
-                The concatenation of the representation of the individual slots.
-                These representations are white-space trimmed at both sides,
-                and the concatenation adds a single space between each adjacent pair
-                of them.
-
-                !!! caution &#34;Space between slots&#34;
-                    Leading and trailing white-space is stripped, and inner white-space is
-                    normalized to a single space.
-                    The text of the individual slots is joined by means of a single
-                    white-space, also in corpora that may have zero space between words.
-            &#34;&#34;&#34;
             text = &#34;&#34;.join(f&#34;&#34;&#34;{strv(s)}{afterv(s) or &#34;&#34;}&#34;&#34;&#34; for s in slots).strip()
             # text = WHITE_RE.sub(&#34; &#34;, text)
             return text
 
         self.textFromSlots = textFromSlots
+        &#34;&#34;&#34;Gets the text of a number of slots.
+
+        Parameters
+        ----------
+        slots: iterable of integer
+
+        Returns
+        -------
+        string
+            The concatenation of the representation of the individual slots.
+            These representations are white-space trimmed at both sides,
+            and the concatenation adds a single space between each adjacent pair
+            of them.
+
+            !!! caution &#34;Space between slots&#34;
+                Leading and trailing white-space is stripped, and inner white-space is
+                normalized to a single space.
+                The text of the individual slots is joined by means of a single
+                white-space, also in corpora that may have zero space between words.
+        &#34;&#34;&#34;
 
         def textFromNode(node):
-            &#34;&#34;&#34;Gets the text for a non-slot node.
-
-            It first determines the slots contained in a node, and then uses
-            `textFromSlots()` to return the text of those slots.
-
-            Parameters
-            ----------
-            node: integer
-                The nodes for whose slots we want the text.
-
-            Returns
-            -------
-            string
-            &#34;&#34;&#34;
             slots = L.d(node, otype=slotType)
             text = &#34;&#34;.join(f&#34;&#34;&#34;{strv(s)}{afterv(s) or &#34;&#34;}&#34;&#34;&#34; for s in slots).strip()
             # text = WHITE_RE.sub(&#34; &#34;, text)
             return text
 
         self.textFromNode = textFromNode
+        &#34;&#34;&#34;Gets the text for a non-slot node.
+
+        It first determines the slots contained in a node, and then uses
+        `textFromSlots()` to return the text of those slots.
+
+        Parameters
+        ----------
+        node: integer
+            The nodes for whose slots we want the text.
+
+        Returns
+        -------
+        string
+        &#34;&#34;&#34;
 
         def tokensFromNode(node, lineBoundaries=False):
-            &#34;&#34;&#34;Gets the tokens contained in node.
-
-            Parameters
-            ----------
-            node: integer
-                The nodes whose slots we want.
-
-            Returns
-            -------
-            list of tuple
-                Each tuple is a pair of the slot number of the token and its
-                string value. If there is no string value, the empty string is taken.
-            &#34;&#34;&#34;
             if lineBoundaries and lineType is None:
                 lineBoundaries = False
 
@@ -1028,24 +1050,21 @@ flag.</p></div>
             return (lineEnds, tokens)
 
         self.tokensFromNode = tokensFromNode
+        &#34;&#34;&#34;Gets the tokens contained in node.
+
+        Parameters
+        ----------
+        node: integer
+            The nodes whose slots we want.
+
+        Returns
+        -------
+        list of tuple
+            Each tuple is a pair of the slot number of the token and its
+            string value. If there is no string value, the empty string is taken.
+        &#34;&#34;&#34;
 
         def stringsFromTokens(tokenStart, tokenEnd):
-            &#34;&#34;&#34;Gets the text of the tokens occupying a sequence of slots.
-
-            Parameters
-            ----------
-            tokenStart: integer
-                The position of the starting token.
-            tokenEnd: integer
-                The position of the ending token.
-
-            Returns
-            -------
-            tuple
-                The members consist of the string values of the tokens in question,
-                as far as these values are not purely white-space.
-                Also, the string values are stripped from leading and trailing white-space.
-            &#34;&#34;&#34;
             return tuple(
                 token
                 for t in range(tokenStart, tokenEnd + 1)
@@ -1053,71 +1072,69 @@ flag.</p></div>
             )
 
         self.stringsFromTokens = stringsFromTokens
+        &#34;&#34;&#34;Gets the text of the tokens occupying a sequence of slots.
+
+        Parameters
+        ----------
+        tokenStart: integer
+            The position of the starting token.
+        tokenEnd: integer
+            The position of the ending token.
+
+        Returns
+        -------
+        tuple
+            The members consist of the string values of the tokens in question,
+            as far as these values are not purely white-space.
+            Also, the string values are stripped from leading and trailing white-space.
+        &#34;&#34;&#34;
 
         def getContext(node):
-            &#34;&#34;&#34;Gets the context buckets around a node.
-
-            We start from a node and find the section node of intermediate level
-            that contains that node. Then we return all buckets contained in that
-            section.
-
-            Parameters
-            ----------
-            node: int
-
-            Returns
-            -------
-            tuple of int
-            &#34;&#34;&#34;
             return L.d(T.sectionTuple(node)[1], otype=bucketType)
 
         self.getContext = getContext
+        &#34;&#34;&#34;Gets the context buckets around a node.
+
+        We start from a node and find the section node of intermediate level
+        that contains that node. Then we return all buckets contained in that
+        section.
+
+        Parameters
+        ----------
+        node: int
+
+        Returns
+        -------
+        tuple of int
+        &#34;&#34;&#34;
 
         def getSeqFromNode(node):
-            &#34;&#34;&#34;Gets the heading tuple of the section of a node.
-
-            We need to treat headings as section numbers. So whatever the section features
-            deliver for each level, integers or strings, we convert it in to integers,
-            so that the first section gets number one, the second section number two,
-            and so on. This we do for each level, so every section is mapped onto a tuple
-            of integers.
-
-            Parameters
-            ----------
-            node: integer
-                The nodes whose heading we want.
-
-            Returns
-            -------
-            tuple
-                The tuple consists of sequence numbers per level, the most significant
-                sections first.
-                If the node itself is a section node, the last element is
-                the heading of the given node.
-            &#34;&#34;&#34;
             return seqFromNode[T.sectionTuple(node)[-1]]
 
         self.getSeqFromNode = getSeqFromNode
+        &#34;&#34;&#34;Gets the heading tuple of the section of a node.
+
+        We need to treat headings as section numbers. So whatever the section features
+        deliver for each level, integers or strings, we convert it in to integers,
+        so that the first section gets number one, the second section number two,
+        and so on. This we do for each level, so every section is mapped onto a tuple
+        of integers.
+
+        Parameters
+        ----------
+        node: integer
+            The nodes whose heading we want.
+
+        Returns
+        -------
+        tuple
+            The tuple consists of sequence numbers per level, the most significant
+            sections first.
+            If the node itself is a section node, the last element is
+            the heading of the given node.
+        &#34;&#34;&#34;
 
         def getSeqFromStr(string):
-            &#34;&#34;&#34;Gets the heading tuple of a section string.
-
-            As `getSeqFromNode`, but the input section is now given as a string.
-
-            Parameters
-            ----------
-            string: string
-                The heading, represented as string of the section we want.
-
-            Returns
-            -------
-            string, tuple
-                The tuple consists of sequence numbers per level, the most significant
-                sections first.
-                If there is an error, the string part will contain the error message,
-                and the tuple part is the empty tuple.
-                In case of no error, the string part is the empty string.
-            &#34;&#34;&#34;
             result = app.nodeFromSectionStr(string)
 
             if type(result) is str:
@@ -1126,47 +1143,50 @@ flag.</p></div>
             return (&#34;&#34;, seqFromNode[result])
 
         self.getSeqFromStr = getSeqFromStr
+        &#34;&#34;&#34;Gets the heading tuple of a section string.
+
+        As `getSeqFromNode`, but the input section is now given as a string.
+
+        Parameters
+        ----------
+        string: string
+            The heading, represented as string of the section we want.
+
+        Returns
+        -------
+        string, tuple
+            The tuple consists of sequence numbers per level, the most significant
+            sections first.
+            If there is an error, the string part will contain the error message,
+            and the tuple part is the empty tuple.
+            In case of no error, the string part is the empty string.
+        &#34;&#34;&#34;
 
         def getStrFromSeq(seq):
-            &#34;&#34;&#34;Gets the heading string from a sequence number tuple of a section.
-
-            Parameters
-            ----------
-            seq: tuple
-                The heading, represented as tuple of sequence numbers
-
-            Returns
-            -------
-            string
-                The heading string of the section
-            &#34;&#34;&#34;
             node = nodeFromSeq[seq]
             return app.sectionStrFromNode(node)
 
         self.getStrFromSeq = getStrFromSeq
+        &#34;&#34;&#34;Gets the heading string from a sequence number tuple of a section.
 
-        def get0(slots):
+        Parameters
+        ----------
+        seq: tuple
+            The heading, represented as tuple of sequence numbers
+
+        Returns
+        -------
+        string
+            The heading string of the section
+        &#34;&#34;&#34;
+
+        def getEid(slots):
             text = textFromSlots(slots)
             text = NON_ALPHA_RE.sub(&#34;&#34;, text)
             text = text.replace(&#34; &#34;, &#34;.&#34;).strip(&#34;.&#34;).lower()
             return text
 
-        def get1(slots):
-            return settings.defaultValues[features[1]]
-
-        def getBucketNodes():
-            return F.otype.s(bucketType)
-
-        def getEntityNodes():
-            return F.otype.s(entityType)
-
-        def sectionHead(node):
-            return app.sectionStrFromNode(node)
-
-        def checkBuckets(nodes):
-            return {node for node in nodes if F.otype.v(node) == bucketType}
-
-        self.get0 = get0
+        self.getEid = getEid
         &#34;&#34;&#34;Makes an identifier value out of a number of slots.
 
         This acts as the default value for the `eid` feature of new
@@ -1175,20 +1195,65 @@ flag.</p></div>
         Starting with the white-space-normalized text of a number of slots,
         the string is lowercased, non-alphanumeric characters are stripped,
         and spaces are replaced by dots.
+
+        Parameters
+        ----------
+        slots: iterable of integer
+            The slots that contain the tokens to make an identifier from
+
+        Returns
+        -------
+        string
+            The identifier
         &#34;&#34;&#34;
 
-        self.get1 = get1
+        def getKind(slots):
+            return settings.defaultValues[features[1]]
+
+        self.getKind = getKind
         &#34;&#34;&#34;Return a fixed value specified in the corpus-dependent settings.
 
-        This acts as the default value ofr the `kind` feature of new
+        This acts as the default value of the `kind` feature of new
         entities.
+
+        Parameters
+        ----------
+        slots: iterable of integer
+            Unlike in `getEid`, the result is not dependent on the text content,
+            so this parameter is not used. It is here for uniformity.
+
+        Returns
+        -------
+        string
+            The default value for the *kind* feature for new entities.
         &#34;&#34;&#34;
 
+        def getBucketNodes():
+            return F.otype.s(bucketType)
+
         self.getBucketNodes = getBucketNodes
-        &#34;&#34;&#34;Return all bucket nodes.&#34;&#34;&#34;
+        &#34;&#34;&#34;Return all bucket nodes.
+
+        Returns
+        -------
+        tuple
+            All nodes of the bucket type.
+        &#34;&#34;&#34;
+
+        def getEntityNodes():
+            return F.otype.s(entityType)
 
         self.getEntityNodes = getEntityNodes
-        &#34;&#34;&#34;Return all entity nodes.&#34;&#34;&#34;
+        &#34;&#34;&#34;Return all entity nodes.
+
+        Returns
+        -------
+        tuple
+            All nodes of the entity type
+        &#34;&#34;&#34;
+
+        def sectionHead(node):
+            return app.sectionStrFromNode(node)
 
         self.sectionHead = sectionHead
         &#34;&#34;&#34;Provide a section heading.
@@ -1203,6 +1268,9 @@ flag.</p></div>
         string
         &#34;&#34;&#34;
 
+        def checkBuckets(nodes):
+            return {node for node in nodes if F.otype.v(node) == bucketType}
+
         self.checkBuckets = checkBuckets
         &#34;&#34;&#34;Given a set of nodes, return the set of only its bucket nodes.
 
@@ -1216,8 +1284,8 @@ flag.</p></div>
         &#34;&#34;&#34;
 
         self.featureDefault = {
-            features[0]: get0,
-            features[1]: get1,
+            features[0]: getEid,
+            features[1]: getKind,
         }
         &#34;&#34;&#34;Functions that deliver default values for the entity features.&#34;&#34;&#34;
 
@@ -1239,7 +1307,7 @@ flag.</p></div>
         &#34;&#34;&#34;Filter the buckets according to a variety of criteria.
 
         Either the buckets of the whole corpus are filtered, or a given subset
-        of buckets, or a subset of buckets, namely those contained in a
+        of buckets, or the set of buckets contained in a
         particular node, see parameters `node`, and `buckets`.
 
         **Bucket filtering**
@@ -1247,7 +1315,7 @@ flag.</p></div>
         The parameters `bFind`, `bFindC`, `bFindRe`  specify a regular expression
         search on the texts of the buckets.
 
-        The positions of the found occurrences is included in the result.
+        The positions of the found occurrences are included in the result.
 
         The parameter `anyEnt` is a filter on the presence or absence of entities in
         buckets in general.
@@ -1255,6 +1323,7 @@ flag.</p></div>
         **Entity filtering**
 
         The parameter `eVals` holds the values of a specific entity to look for.
+        It is a tuple consisting of an entity id and an entity kind.
 
         **Occurrence filtering**
 
@@ -1270,7 +1339,7 @@ flag.</p></div>
         buckets: set of integer, optional None
             The set of buckets to filter, instead of the whole corpus.
             Works also if the parameter `node` is specified, which also restricts
-            the buckets to filter. If both are specified, their effect will be
+            the buckets. If both are specified, their effect will be
             combined.
         node: integer, optional None
             Gets the context of the node, typically the intermediate-level section
@@ -1290,6 +1359,7 @@ flag.</p></div>
             If True, it wants all buckets that contain at least one already
             marked entity; if False, it wants all buckets that do not contain any
             already marked entity.
+            If None, no filtering on existing entities is performed.
         eVals: tuple, optional None
             A sequence of values corresponding with the entity features `eid`
             and `kind`. If given, the function wants buckets that contain at least
@@ -1506,32 +1576,187 @@ the purpose of scoping and display in the entity browser.</p></div>
 <dd>&nbsp;</dd>
 </dl></div>
 </dd>
+<dt id="tf.ner.corpus.Corpus.checkFeature"><code class="name">var <span class="ident">checkFeature</span></code></dt>
+<dd>
+<div class="desc"><p>Checks whether a feature is loaded in the corpus.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>feat</code></strong> :&ensp;<code>string</code></dt>
+<dd>The name of the feature</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>boolean</code></dt>
+<dd>Whether the feature is loaded in this corpus.</dd>
+</dl></div>
+</dd>
 <dt id="tf.ner.corpus.Corpus.featureDefault"><code class="name">var <span class="ident">featureDefault</span></code></dt>
 <dd>
 <div class="desc"><p>Functions that deliver default values for the entity features.</p></div>
 </dd>
-<dt id="tf.ner.corpus.Corpus.get0"><code class="name">var <span class="ident">get0</span></code></dt>
+<dt id="tf.ner.corpus.Corpus.fvalFromNode"><code class="name">var <span class="ident">fvalFromNode</span></code></dt>
+<dd>
+<div class="desc"><p>Retrieves the value of a feature for a node.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>feat</code></strong> :&ensp;<code>string</code></dt>
+<dd>The name of the feature</dd>
+<dt><strong><code>node</code></strong> :&ensp;<code>int</code></dt>
+<dd>The node whose feature value we need</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>string</code> or <code>integer</code> or <code>void</code></dt>
+<dd>The value of the feature for that node, if there is a value.</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.corpus.Corpus.getAfter"><code class="name">var <span class="ident">getAfter</span></code></dt>
+<dd>
+<div class="desc"><p>Delivers a function that retrieves the material after a slot.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>function</code></dt>
+<dd>It accepts integers, presumably slots, and delivers the value
+of the <em>after</em> feature, which is configured in <code>ner/config.yaml</code>
+under key <code>afterFeature</code> .</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.corpus.Corpus.getBucketNodes"><code class="name">var <span class="ident">getBucketNodes</span></code></dt>
+<dd>
+<div class="desc"><p>Return all bucket nodes.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>All nodes of the bucket type.</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.corpus.Corpus.getContext"><code class="name">var <span class="ident">getContext</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the context buckets around a node.</p>
+<p>We start from a node and find the section node of intermediate level
+that contains that node. Then we return all buckets contained in that
+section.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node</code></strong> :&ensp;<code>int</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code> of <code>int</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.corpus.Corpus.getEid"><code class="name">var <span class="ident">getEid</span></code></dt>
 <dd>
 <div class="desc"><p>Makes an identifier value out of a number of slots.</p>
 <p>This acts as the default value for the <code>eid</code> feature of new
 entities.</p>
 <p>Starting with the white-space-normalized text of a number of slots,
 the string is lowercased, non-alphanumeric characters are stripped,
-and spaces are replaced by dots.</p></div>
-</dd>
-<dt id="tf.ner.corpus.Corpus.get1"><code class="name">var <span class="ident">get1</span></code></dt>
-<dd>
-<div class="desc"><p>Return a fixed value specified in the corpus-dependent settings.</p>
-<p>This acts as the default value ofr the <code>kind</code> feature of new
-entities.</p></div>
-</dd>
-<dt id="tf.ner.corpus.Corpus.getBucketNodes"><code class="name">var <span class="ident">getBucketNodes</span></code></dt>
-<dd>
-<div class="desc"><p>Return all bucket nodes.</p></div>
+and spaces are replaced by dots.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>slots</code></strong> :&ensp;<code>iterable</code> of <code>integer</code></dt>
+<dd>The slots that contain the tokens to make an identifier from</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>string</code></dt>
+<dd>The identifier</dd>
+</dl></div>
 </dd>
 <dt id="tf.ner.corpus.Corpus.getEntityNodes"><code class="name">var <span class="ident">getEntityNodes</span></code></dt>
 <dd>
-<div class="desc"><p>Return all entity nodes.</p></div>
+<div class="desc"><p>Return all entity nodes.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>All nodes of the entity type</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.corpus.Corpus.getKind"><code class="name">var <span class="ident">getKind</span></code></dt>
+<dd>
+<div class="desc"><p>Return a fixed value specified in the corpus-dependent settings.</p>
+<p>This acts as the default value of the <code>kind</code> feature of new
+entities.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>slots</code></strong> :&ensp;<code>iterable</code> of <code>integer</code></dt>
+<dd>Unlike in <code>getEid</code>, the result is not dependent on the text content,
+so this parameter is not used. It is here for uniformity.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>string</code></dt>
+<dd>The default value for the <em>kind</em> feature for new entities.</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.corpus.Corpus.getSeqFromNode"><code class="name">var <span class="ident">getSeqFromNode</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the heading tuple of the section of a node.</p>
+<p>We need to treat headings as section numbers. So whatever the section features
+deliver for each level, integers or strings, we convert it in to integers,
+so that the first section gets number one, the second section number two,
+and so on. This we do for each level, so every section is mapped onto a tuple
+of integers.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node</code></strong> :&ensp;<code>integer</code></dt>
+<dd>The nodes whose heading we want.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>The tuple consists of sequence numbers per level, the most significant
+sections first.
+If the node itself is a section node, the last element is
+the heading of the given node.</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.corpus.Corpus.getSeqFromStr"><code class="name">var <span class="ident">getSeqFromStr</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the heading tuple of a section string.</p>
+<p>As <code>getSeqFromNode</code>, but the input section is now given as a string.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>string</code></strong> :&ensp;<code>string</code></dt>
+<dd>The heading, represented as string of the section we want.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>string, tuple</code></dt>
+<dd>The tuple consists of sequence numbers per level, the most significant
+sections first.
+If there is an error, the string part will contain the error message,
+and the tuple part is the empty tuple.
+In case of no error, the string part is the empty string.</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.corpus.Corpus.getStr"><code class="name">var <span class="ident">getStr</span></code></dt>
+<dd>
+<div class="desc"><p>Delivers a function that retrieves the material of a slot.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>function</code></dt>
+<dd>It accepts integers, presumably slots, and delivers the value
+of the <em>str</em> feature, which is configured in <code>ner/config.yaml</code>
+under key <code>strFeature</code> .</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.corpus.Corpus.getStrFromSeq"><code class="name">var <span class="ident">getStrFromSeq</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the heading string from a sequence number tuple of a section.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>seq</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>The heading, represented as tuple of sequence numbers</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>string</code></dt>
+<dd>The heading string of the section</dd>
+</dl></div>
 </dd>
 <dt id="tf.ner.corpus.Corpus.properlySetup"><code class="name">var <span class="ident">properlySetup</span></code></dt>
 <dd>
@@ -1561,6 +1786,95 @@ by it.</p></div>
 <dd>
 <div class="desc"><p>The node type of the slots in the corpus.</p></div>
 </dd>
+<dt id="tf.ner.corpus.Corpus.slotsFromNode"><code class="name">var <span class="ident">slotsFromNode</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the slot nodes contained in a node.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node</code></strong> :&ensp;<code>integer</code></dt>
+<dd>The container node.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code> of <code>integer</code></dt>
+<dd>The slots in the container.</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.corpus.Corpus.stringsFromTokens"><code class="name">var <span class="ident">stringsFromTokens</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the text of the tokens occupying a sequence of slots.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>tokenStart</code></strong> :&ensp;<code>integer</code></dt>
+<dd>The position of the starting token.</dd>
+<dt><strong><code>tokenEnd</code></strong> :&ensp;<code>integer</code></dt>
+<dd>The position of the ending token.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>The members consist of the string values of the tokens in question,
+as far as these values are not purely white-space.
+Also, the string values are stripped from leading and trailing white-space.</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.corpus.Corpus.textFromNode"><code class="name">var <span class="ident">textFromNode</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the text for a non-slot node.</p>
+<p>It first determines the slots contained in a node, and then uses
+<code>textFromSlots()</code> to return the text of those slots.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node</code></strong> :&ensp;<code>integer</code></dt>
+<dd>The nodes for whose slots we want the text.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>string</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.corpus.Corpus.textFromSlots"><code class="name">var <span class="ident">textFromSlots</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the text of a number of slots.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>slots</code></strong> :&ensp;<code>iterable</code> of <code>integer</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>string</code></dt>
+<dd>
+<p>The concatenation of the representation of the individual slots.
+These representations are white-space trimmed at both sides,
+and the concatenation adds a single space between each adjacent pair
+of them.</p>
+<div class="admonition caution">
+<p class="admonition-title">Space between slots</p>
+<p>Leading and trailing white-space is stripped, and inner white-space is
+normalized to a single space.
+The text of the individual slots is joined by means of a single
+white-space, also in corpora that may have zero space between words.</p>
+</div>
+</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.corpus.Corpus.tokensFromNode"><code class="name">var <span class="ident">tokensFromNode</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the tokens contained in node.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node</code></strong> :&ensp;<code>integer</code></dt>
+<dd>The nodes whose slots we want.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code> of <code>tuple</code></dt>
+<dd>Each tuple is a pair of the slot number of the token and its
+string value. If there is no string value, the empty string is taken.</dd>
+</dl></div>
+</dd>
 </dl>
 <h3>Methods</h3>
 <dl>
@@ -1570,17 +1884,18 @@ by it.</p></div>
 <dd>
 <div class="desc"><p>Filter the buckets according to a variety of criteria.</p>
 <p>Either the buckets of the whole corpus are filtered, or a given subset
-of buckets, or a subset of buckets, namely those contained in a
+of buckets, or the set of buckets contained in a
 particular node, see parameters <code>node</code>, and <code>buckets</code>.</p>
 <p><strong>Bucket filtering</strong></p>
 <p>The parameters <code>bFind</code>, <code>bFindC</code>, <code>bFindRe</code>
 specify a regular expression
 search on the texts of the buckets.</p>
-<p>The positions of the found occurrences is included in the result.</p>
+<p>The positions of the found occurrences are included in the result.</p>
 <p>The parameter <code>anyEnt</code> is a filter on the presence or absence of entities in
 buckets in general.</p>
 <p><strong>Entity filtering</strong></p>
-<p>The parameter <code>eVals</code> holds the values of a specific entity to look for.</p>
+<p>The parameter <code>eVals</code> holds the values of a specific entity to look for.
+It is a tuple consisting of an entity id and an entity kind.</p>
 <p><strong>Occurrence filtering</strong></p>
 <p>The parameter <code>qTokens</code> is a sequence of tokens to look for.
 The occurrences that are found, can be filtered further by <code>valSelect</code>
@@ -1592,7 +1907,7 @@ are included in the result.</p>
 <dt><strong><code>buckets</code></strong> :&ensp;<code>set</code> of <code>integer</code>, optional <code>None</code></dt>
 <dd>The set of buckets to filter, instead of the whole corpus.
 Works also if the parameter <code>node</code> is specified, which also restricts
-the buckets to filter. If both are specified, their effect will be
+the buckets. If both are specified, their effect will be
 combined.</dd>
 <dt><strong><code>node</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
 <dd>Gets the context of the node, typically the intermediate-level section
@@ -1611,7 +1926,8 @@ is not None, of course.</dd>
 <dt><strong><code>anyEnt</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
 <dd>If True, it wants all buckets that contain at least one already
 marked entity; if False, it wants all buckets that do not contain any
-already marked entity.</dd>
+already marked entity.
+If None, no filtering on existing entities is performed.</dd>
 <dt><strong><code>eVals</code></strong> :&ensp;<code>tuple</code>, optional <code>None</code></dt>
 <dd>A sequence of values corresponding with the entity features <code>eid</code>
 and <code>kind</code>. If given, the function wants buckets that contain at least
@@ -1742,15 +2058,28 @@ setTimeout(() => input.focus(), 100);
 <ul class="two-column">
 <li><code><a title="tf.ner.corpus.Corpus.bucketType" href="#tf.ner.corpus.Corpus.bucketType">bucketType</a></code></li>
 <li><code><a title="tf.ner.corpus.Corpus.checkBuckets" href="#tf.ner.corpus.Corpus.checkBuckets">checkBuckets</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.checkFeature" href="#tf.ner.corpus.Corpus.checkFeature">checkFeature</a></code></li>
 <li><code><a title="tf.ner.corpus.Corpus.featureDefault" href="#tf.ner.corpus.Corpus.featureDefault">featureDefault</a></code></li>
 <li><code><a title="tf.ner.corpus.Corpus.filterContent" href="#tf.ner.corpus.Corpus.filterContent">filterContent</a></code></li>
-<li><code><a title="tf.ner.corpus.Corpus.get0" href="#tf.ner.corpus.Corpus.get0">get0</a></code></li>
-<li><code><a title="tf.ner.corpus.Corpus.get1" href="#tf.ner.corpus.Corpus.get1">get1</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.fvalFromNode" href="#tf.ner.corpus.Corpus.fvalFromNode">fvalFromNode</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getAfter" href="#tf.ner.corpus.Corpus.getAfter">getAfter</a></code></li>
 <li><code><a title="tf.ner.corpus.Corpus.getBucketNodes" href="#tf.ner.corpus.Corpus.getBucketNodes">getBucketNodes</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getContext" href="#tf.ner.corpus.Corpus.getContext">getContext</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getEid" href="#tf.ner.corpus.Corpus.getEid">getEid</a></code></li>
 <li><code><a title="tf.ner.corpus.Corpus.getEntityNodes" href="#tf.ner.corpus.Corpus.getEntityNodes">getEntityNodes</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getKind" href="#tf.ner.corpus.Corpus.getKind">getKind</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getSeqFromNode" href="#tf.ner.corpus.Corpus.getSeqFromNode">getSeqFromNode</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getSeqFromStr" href="#tf.ner.corpus.Corpus.getSeqFromStr">getSeqFromStr</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getStr" href="#tf.ner.corpus.Corpus.getStr">getStr</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.getStrFromSeq" href="#tf.ner.corpus.Corpus.getStrFromSeq">getStrFromSeq</a></code></li>
 <li><code><a title="tf.ner.corpus.Corpus.properlySetup" href="#tf.ner.corpus.Corpus.properlySetup">properlySetup</a></code></li>
 <li><code><a title="tf.ner.corpus.Corpus.sectionHead" href="#tf.ner.corpus.Corpus.sectionHead">sectionHead</a></code></li>
 <li><code><a title="tf.ner.corpus.Corpus.slotType" href="#tf.ner.corpus.Corpus.slotType">slotType</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.slotsFromNode" href="#tf.ner.corpus.Corpus.slotsFromNode">slotsFromNode</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.stringsFromTokens" href="#tf.ner.corpus.Corpus.stringsFromTokens">stringsFromTokens</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.textFromNode" href="#tf.ner.corpus.Corpus.textFromNode">textFromNode</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.textFromSlots" href="#tf.ner.corpus.Corpus.textFromSlots">textFromSlots</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.tokensFromNode" href="#tf.ner.corpus.Corpus.tokensFromNode">tokensFromNode</a></code></li>
 </ul>
 </li>
 </ul>

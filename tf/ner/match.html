@@ -32,7 +32,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/ner/match.py#L1-L354" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/ner/match.py#L1-L354" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Match functions.
 &#34;&#34;&#34;
@@ -223,7 +223,7 @@ def entityMatch(
     b: integer
         The node of the bucket in question
     bFindRe, anyEnt, eVals, trigger, qTokens, valSelect, freeState: object
-        As in `tf.ner.ner.NER.filterContent`
+        As in `tf.ner.corpus.Corpus.filterContent`
 
     Returns
     -------
@@ -408,13 +408,13 @@ def entityMatch(
 <dt><strong><code>entityIndex</code></strong>, <strong><code>eStarts</code></strong>, <strong><code>entitySlotVal</code></strong>, <strong><code>entitySlotAll</code></strong>, <strong><code>entitySlotIndex</code></strong> :&ensp;<code>object</code></dt>
 <dd>Various kinds of processed entity data, see <code><a title="tf.ner.data" href="data.html">tf.ner.data</a></code></dd>
 <dt><strong><code>textFromNode</code></strong> :&ensp;<code>function</code></dt>
-<dd>See <code>tf.ner.corpus.Corpus.textFromNode</code></dd>
+<dd>See <code><a title="tf.ner.corpus.Corpus.textFromNode" href="corpus.html#tf.ner.corpus.Corpus.textFromNode">Corpus.textFromNode</a></code></dd>
 <dt><strong><code>tokensFromNode</code></strong> :&ensp;<code>function</code></dt>
-<dd>See <code>tf.ner.corpus.Corpus.tokensFromNode</code></dd>
+<dd>See <code><a title="tf.ner.corpus.Corpus.tokensFromNode" href="corpus.html#tf.ner.corpus.Corpus.tokensFromNode">Corpus.tokensFromNode</a></code></dd>
 <dt><strong><code>b</code></strong> :&ensp;<code>integer</code></dt>
 <dd>The node of the bucket in question</dd>
 <dt><strong><code>bFindRe</code></strong>, <strong><code>anyEnt</code></strong>, <strong><code>eVals</code></strong>, <strong><code>trigger</code></strong>, <strong><code>qTokens</code></strong>, <strong><code>valSelect</code></strong>, <strong><code>freeState</code></strong> :&ensp;<code>object</code></dt>
-<dd>As in <code><a title="tf.ner.ner.NER.filterContent" href="corpus.html#tf.ner.corpus.Corpus.filterContent">Corpus.filterContent()</a></code></dd>
+<dd>As in <code><a title="tf.ner.corpus.Corpus.filterContent" href="corpus.html#tf.ner.corpus.Corpus.filterContent">Corpus.filterContent()</a></code></dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -444,9 +444,9 @@ of its slot number (position) and string value;</li>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>tokensFromNode</code></strong> :&ensp;<code>function</code></dt>
-<dd>See <code>tf.ner.corpus.Corpus.tokensFromNode</code></dd>
+<dd>See <code><a title="tf.ner.corpus.Corpus.tokensFromNode" href="corpus.html#tf.ner.corpus.Corpus.tokensFromNode">Corpus.tokensFromNode</a></code></dd>
 <dt><strong><code>getSeqFromNode</code></strong> :&ensp;<code>function</code></dt>
-<dd>See <code>tf.ner.corpus.Corpus.getSeqFromNode</code></dd>
+<dd>See <code><a title="tf.ner.corpus.Corpus.getSeqFromNode" href="corpus.html#tf.ner.corpus.Corpus.getSeqFromNode">Corpus.getSeqFromNode</a></code></dd>
 <dt><strong><code>buckets</code></strong> :&ensp;<code>tuple</code> of <code>integer</code></dt>
 <dd>The bucket nodes in question</dd>
 <dt><strong><code>instructions</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>

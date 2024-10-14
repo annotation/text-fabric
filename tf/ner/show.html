@@ -32,7 +32,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/ner/show.py#L1-L630" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/ner/show.py#L1-L630" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Rendering of corpus extracts with annotations.
 &#34;&#34;&#34;
@@ -107,7 +107,7 @@ class Show:
         Parameters
         ----------
         activeEntity: tuple, optional None
-            The entity that must be highlighted.
+            The entity that must be highlighted, given as entity id and entity kind.
 
         sortKey: string, optional None
             The key by which the entity list is sorted.
@@ -227,7 +227,7 @@ class Show:
         activeEntity: tuple, optional None
             The entity that must be highlighted.
 
-        activeTriggetrigger: tuple, optional None
+        activeTrigger: tuple, optional None
             The entity that must be highlighted.
 
         sortKey: string, optional None
@@ -443,7 +443,7 @@ class Show:
         these entities are present in the input parameter `buckets`.
 
         It is recommended to apply this function to the outcome of
-        `tf.ner.ner.NER.filterContent`
+        `tf.ner.corpus.Corpus.filterContent`
 
         !!! caution &#34;Truncated&#34;
             Unless the user has selected an entity or forced a start and end
@@ -455,8 +455,8 @@ class Show:
         buckets: iterable of tuple
             A selection of buckets (chunks / paragraphs) of the corpus.
             Each bucket is given as a tuple.
-            The exact form is this data structure is equal to what the
-            function `tf.ner.ner.NER.filterContent`
+            The exact form of this data structure is equal to what the
+            function `tf.ner.corpus.Corpus.filterContent`
             returns.
 
         activeEntity: tuple, optional None
@@ -683,7 +683,7 @@ class Show:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/ner/show.py#L24-L630" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/ner/show.py#L24-L630" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Show:
     def showEntityOverview(self):
@@ -735,7 +735,7 @@ class Show:
         Parameters
         ----------
         activeEntity: tuple, optional None
-            The entity that must be highlighted.
+            The entity that must be highlighted, given as entity id and entity kind.
 
         sortKey: string, optional None
             The key by which the entity list is sorted.
@@ -855,7 +855,7 @@ class Show:
         activeEntity: tuple, optional None
             The entity that must be highlighted.
 
-        activeTriggetrigger: tuple, optional None
+        activeTrigger: tuple, optional None
             The entity that must be highlighted.
 
         sortKey: string, optional None
@@ -1071,7 +1071,7 @@ class Show:
         these entities are present in the input parameter `buckets`.
 
         It is recommended to apply this function to the outcome of
-        `tf.ner.ner.NER.filterContent`
+        `tf.ner.corpus.Corpus.filterContent`
 
         !!! caution &#34;Truncated&#34;
             Unless the user has selected an entity or forced a start and end
@@ -1083,8 +1083,8 @@ class Show:
         buckets: iterable of tuple
             A selection of buckets (chunks / paragraphs) of the corpus.
             Each bucket is given as a tuple.
-            The exact form is this data structure is equal to what the
-            function `tf.ner.ner.NER.filterContent`
+            The exact form of this data structure is equal to what the
+            function `tf.ner.corpus.Corpus.filterContent`
             returns.
 
         activeEntity: tuple, optional None
@@ -1307,7 +1307,7 @@ class Show:
 <p>The corpus text will be marked up with entities, the positions of
 these entities are present in the input parameter <code>buckets</code>.</p>
 <p>It is recommended to apply this function to the outcome of
-<code><a title="tf.ner.ner.NER.filterContent" href="corpus.html#tf.ner.corpus.Corpus.filterContent">Corpus.filterContent()</a></code></p>
+<code><a title="tf.ner.corpus.Corpus.filterContent" href="corpus.html#tf.ner.corpus.Corpus.filterContent">Corpus.filterContent()</a></code></p>
 <div class="admonition caution">
 <p class="admonition-title">Truncated</p>
 <p>Unless the user has selected an entity or forced a start and end
@@ -1319,8 +1319,8 @@ See the parameter <code>mayLimit</code> below.</p>
 <dt><strong><code>buckets</code></strong> :&ensp;<code>iterable</code> of <code>tuple</code></dt>
 <dd>A selection of buckets (chunks / paragraphs) of the corpus.
 Each bucket is given as a tuple.
-The exact form is this data structure is equal to what the
-function <code><a title="tf.ner.ner.NER.filterContent" href="corpus.html#tf.ner.corpus.Corpus.filterContent">Corpus.filterContent()</a></code>
+The exact form of this data structure is equal to what the
+function <code><a title="tf.ner.corpus.Corpus.filterContent" href="corpus.html#tf.ner.corpus.Corpus.filterContent">Corpus.filterContent()</a></code>
 returns.</dd>
 <dt><strong><code>activeEntity</code></strong> :&ensp;<code>tuple</code>, optional <code>None</code></dt>
 <dd>The entity that must be highlighted.</dd>
@@ -1369,7 +1369,7 @@ the kind and frequency of the entities.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>activeEntity</code></strong> :&ensp;<code>tuple</code>, optional <code>None</code></dt>
-<dd>The entity that must be highlighted.</dd>
+<dd>The entity that must be highlighted, given as entity id and entity kind.</dd>
 <dt><strong><code>sortKey</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
 <dd>
 <p>The key by which the entity list is sorted.</p>
@@ -1431,7 +1431,7 @@ it is a cell in a Jupyter Notebook.</dd>
 <dl>
 <dt><strong><code>activeEntity</code></strong> :&ensp;<code>tuple</code>, optional <code>None</code></dt>
 <dd>The entity that must be highlighted.</dd>
-<dt><strong><code>activeTriggetrigger</code></strong> :&ensp;<code>tuple</code>, optional <code>None</code></dt>
+<dt><strong><code>activeTrigger</code></strong> :&ensp;<code>tuple</code>, optional <code>None</code></dt>
 <dd>The entity that must be highlighted.</dd>
 <dt><strong><code>sortKey</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
 <dd>

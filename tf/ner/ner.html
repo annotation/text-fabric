@@ -165,7 +165,7 @@ section where the occurrences have been found.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/ner/ner.py#L1-L526" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/ner/ner.py#L1-L536" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Named Entity Recognition by Triggers.
 
@@ -350,6 +350,7 @@ from ..core.files import fileOpen, dirRemove, dirNm, dirExists, APP_CONFIG
 from .sets import Sets
 from .sheets import Sheets
 from .show import Show
+from .variants import Detect
 
 
 class NER(Sheets, Sets, Show):
@@ -692,7 +693,16 @@ class NER(Sheets, Sets, Show):
 
         self.console(&#34;The dataset with entities is now the standard version&#34;)
 
-        return True</code></pre>
+        return True
+
+    def variantDetection(self):
+        setIsX = self.setIsX
+
+        if not setIsX:
+            console(&#34;You can only do variant analysis on sheets&#34;, error=True)
+            return None
+
+        return Detect(self)</code></pre>
 </details>
 </section>
 <section>
@@ -821,7 +831,7 @@ it specifies whether the triggers should be treated case-sensitively.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4005a2fde526c2c107d9faa23c58dce3c55ec9dc/tf/ner/ner.py#L186-L526" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/ner/ner.py#L187-L536" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Sheets, Sets, Show):
     &#34;&#34;&#34;API for Named Entity marking.
@@ -1163,7 +1173,16 @@ it specifies whether the triggers should be treated case-sensitively.</dd>
 
         self.console(&#34;The dataset with entities is now the standard version&#34;)
 
-        return True</code></pre>
+        return True
+
+    def variantDetection(self):
+        setIsX = self.setIsX
+
+        if not setIsX:
+            console(&#34;You can only do variant analysis on sheets&#34;, error=True)
+            return None
+
+        return Detect(self)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1228,6 +1247,12 @@ case-insensitive way.</p>
 </dd>
 </dl></div>
 </dd>
+<dt id="tf.ner.ner.NER.variantDetection"><code class="name flex">
+<span>def <span class="ident">variantDetection</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
@@ -1236,7 +1261,9 @@ case-insensitive way.</p>
 <li><code><a title="tf.ner.sheets.Sheets.findOccs" href="triggers.html#tf.ner.triggers.Triggers.findOccs">findOccs</a></code></li>
 <li><code><a title="tf.ner.sheets.Sheets.getMeta" href="sheets.html#tf.ner.sheets.Sheets.getMeta">getMeta</a></code></li>
 <li><code><a title="tf.ner.sheets.Sheets.getSheetData" href="sheets.html#tf.ner.sheets.Sheets.getSheetData">getSheetData</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.getToTokensFunc" href="sheets.html#tf.ner.sheets.Sheets.getToTokensFunc">getToTokensFunc</a></code></li>
 <li><code><a title="tf.ner.sheets.Sheets.loadSheetData" href="sheets.html#tf.ner.sheets.Sheets.loadSheetData">loadSheetData</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.makeSheetOfSingleTokens" href="sheets.html#tf.ner.sheets.Sheets.makeSheetOfSingleTokens">makeSheetOfSingleTokens</a></code></li>
 <li><code><a title="tf.ner.sheets.Sheets.parseScopes" href="scopes.html#tf.ner.scopes.Scopes.parseScopes">parseScopes</a></code></li>
 <li><code><a title="tf.ner.sheets.Sheets.readSheetData" href="sheets.html#tf.ner.sheets.Sheets.readSheetData">readSheetData</a></code></li>
 <li><code><a title="tf.ner.sheets.Sheets.readSheets" href="sheets.html#tf.ner.sheets.Sheets.readSheets">readSheets</a></code></li>
@@ -1245,6 +1272,7 @@ case-insensitive way.</p>
 <li><code><a title="tf.ner.sheets.Sheets.sheetName" href="sheets.html#tf.ner.sheets.Sheets.sheetName">sheetName</a></code></li>
 <li><code><a title="tf.ner.sheets.Sheets.sheetNames" href="sheets.html#tf.ner.sheets.Sheets.sheetNames">sheetNames</a></code></li>
 <li><code><a title="tf.ner.sheets.Sheets.triggerInterference" href="triggers.html#tf.ner.triggers.Triggers.triggerInterference">triggerInterference</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.writeSheetData" href="sheets.html#tf.ner.sheets.Sheets.writeSheetData">writeSheetData</a></code></li>
 </ul>
 </li>
 <li><code><b><a title="tf.ner.sets.Sets" href="sets.html#tf.ner.sets.Sets">Sets</a></b></code>:
@@ -1254,17 +1282,25 @@ case-insensitive way.</p>
 <li><code><a title="tf.ner.sets.Sets.addEntityRich" href="data.html#tf.ner.data.Data.addEntityRich">addEntityRich</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.bucketType" href="corpus.html#tf.ner.corpus.Corpus.bucketType">bucketType</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.checkBuckets" href="corpus.html#tf.ner.corpus.Corpus.checkBuckets">checkBuckets</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.checkFeature" href="corpus.html#tf.ner.corpus.Corpus.checkFeature">checkFeature</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.console" href="settings.html#tf.ner.settings.Settings.console">console</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.delEntity" href="data.html#tf.ner.data.Data.delEntity">delEntity</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.delEntityRich" href="data.html#tf.ner.data.Data.delEntityRich">delEntityRich</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.featureDefault" href="corpus.html#tf.ner.corpus.Corpus.featureDefault">featureDefault</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.filterContent" href="corpus.html#tf.ner.corpus.Corpus.filterContent">filterContent</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.fromSourceSet" href="data.html#tf.ner.data.Data.fromSourceSet">fromSourceSet</a></code></li>
-<li><code><a title="tf.ner.sets.Sets.get0" href="corpus.html#tf.ner.corpus.Corpus.get0">get0</a></code></li>
-<li><code><a title="tf.ner.sets.Sets.get1" href="corpus.html#tf.ner.corpus.Corpus.get1">get1</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.fvalFromNode" href="corpus.html#tf.ner.corpus.Corpus.fvalFromNode">fvalFromNode</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getAfter" href="corpus.html#tf.ner.corpus.Corpus.getAfter">getAfter</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.getBucketNodes" href="corpus.html#tf.ner.corpus.Corpus.getBucketNodes">getBucketNodes</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getContext" href="corpus.html#tf.ner.corpus.Corpus.getContext">getContext</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getEid" href="corpus.html#tf.ner.corpus.Corpus.getEid">getEid</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.getEntityNodes" href="corpus.html#tf.ner.corpus.Corpus.getEntityNodes">getEntityNodes</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getKind" href="corpus.html#tf.ner.corpus.Corpus.getKind">getKind</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getSeqFromNode" href="corpus.html#tf.ner.corpus.Corpus.getSeqFromNode">getSeqFromNode</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getSeqFromStr" href="corpus.html#tf.ner.corpus.Corpus.getSeqFromStr">getSeqFromStr</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.getSetData" href="sets.html#tf.ner.sets.Sets.getSetData">getSetData</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getStr" href="corpus.html#tf.ner.corpus.Corpus.getStr">getStr</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getStrFromSeq" href="corpus.html#tf.ner.corpus.Corpus.getStrFromSeq">getStrFromSeq</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.loadSetData" href="data.html#tf.ner.data.Data.loadSetData">loadSetData</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.mergeEntities" href="data.html#tf.ner.data.Data.mergeEntities">mergeEntities</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.processSet" href="data.html#tf.ner.data.Data.processSet">processSet</a></code></li>
@@ -1280,6 +1316,11 @@ case-insensitive way.</p>
 <li><code><a title="tf.ner.sets.Sets.setNames" href="sets.html#tf.ner.sets.Sets.setNames">setNames</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.setSet" href="sets.html#tf.ner.sets.Sets.setSet">setSet</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.slotType" href="corpus.html#tf.ner.corpus.Corpus.slotType">slotType</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.slotsFromNode" href="corpus.html#tf.ner.corpus.Corpus.slotsFromNode">slotsFromNode</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.stringsFromTokens" href="corpus.html#tf.ner.corpus.Corpus.stringsFromTokens">stringsFromTokens</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.textFromNode" href="corpus.html#tf.ner.corpus.Corpus.textFromNode">textFromNode</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.textFromSlots" href="corpus.html#tf.ner.corpus.Corpus.textFromSlots">textFromSlots</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.tokensFromNode" href="corpus.html#tf.ner.corpus.Corpus.tokensFromNode">tokensFromNode</a></code></li>
 <li><code><a title="tf.ner.sets.Sets.weedEntities" href="data.html#tf.ner.data.Data.weedEntities">weedEntities</a></code></li>
 </ul>
 </li>
@@ -1374,6 +1415,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.ner.ner.NER.bakeEntities" href="#tf.ner.ner.NER.bakeEntities">bakeEntities</a></code></li>
 <li><code><a title="tf.ner.ner.NER.getTasks" href="#tf.ner.ner.NER.getTasks">getTasks</a></code></li>
 <li><code><a title="tf.ner.ner.NER.setTask" href="#tf.ner.ner.NER.setTask">setTask</a></code></li>
+<li><code><a title="tf.ner.ner.NER.variantDetection" href="#tf.ner.ner.NER.variantDetection">variantDetection</a></code></li>
 </ul>
 </li>
 </ul>
