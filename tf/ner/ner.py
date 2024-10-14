@@ -181,6 +181,7 @@ from ..core.files import fileOpen, dirRemove, dirNm, dirExists, APP_CONFIG
 from .sets import Sets
 from .sheets import Sheets
 from .show import Show
+from .variants import Detect
 
 
 class NER(Sheets, Sets, Show):
@@ -524,3 +525,12 @@ class NER(Sheets, Sets, Show):
         self.console("The dataset with entities is now the standard version")
 
         return True
+
+    def variantDetection(self):
+        setIsX = self.setIsX
+
+        if not setIsX:
+            console("You can only do variant analysis on sheets", error=True)
+            return None
+
+        return Detect(self)
