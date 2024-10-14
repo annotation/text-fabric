@@ -107,13 +107,21 @@ def mdEsc(val, math=False):
         Whether retain TeX notation.
         If True, `$` is not escaped, if False, it is not escaped.
     """
-    return (
-        ""
-        if val is None
-        else (str(val).replace("|", "&#124;"))
-        if math
-        else (str(val).replace("|", "&#124;").replace("$", "<span>$</span>"))
+    if val is None:
+        return ""
+
+    val = (
+        str(val)
+        .replace("!", "&#33;")
+        .replace("#", "&#35;")
+        .replace("*", "&#42;")
+        .replace("[", "&#91;")
+        .replace("_", "&#95;")
+        .replace("|", "&#124;")
+        .replace("~", "&#126;")
     )
+
+    return val if math else val.replace("$", "<span>$</span>")
 
 
 def htmlEsc(val, math=False):
@@ -134,14 +142,16 @@ def htmlEsc(val, math=False):
     return (
         ""
         if val is None
-        else (str(val).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
-        if math
         else (
-            str(val)
-            .replace("&", "&amp;")
-            .replace("<", "&lt;")
-            .replace(">", "&gt;")
-            .replace("$", "<span>$</span>")
+            (str(val).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
+            if math
+            else (
+                str(val)
+                .replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("$", "<span>$</span>")
+            )
         )
     )
 
@@ -186,20 +196,22 @@ def mdhtmlEsc(val, math=False):
         ""
         if val is None
         else (
-            str(val)
-            .replace("&", "&amp;")
-            .replace("<", "&lt;")
-            .replace(">", "&gt;")
-            .replace("|", "&#124;")
-        )
-        if math
-        else (
-            str(val)
-            .replace("&", "&amp;")
-            .replace("<", "&lt;")
-            .replace(">", "&gt;")
-            .replace("|", "&#124;")
-            .replace("$", "<span>$</span>")
+            (
+                str(val)
+                .replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("|", "&#124;")
+            )
+            if math
+            else (
+                str(val)
+                .replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("|", "&#124;")
+                .replace("$", "<span>$</span>")
+            )
         )
     )
 

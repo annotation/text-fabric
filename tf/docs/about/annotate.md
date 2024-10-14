@@ -87,7 +87,7 @@ The recommended scenario is this:
 * TF can load such a spreadsheet and find those entities in the corpus;
 * TF will check the spreadsheet for various mistakes, and reports on the outcomes;
 * Depending on the reports, adapt the spreadsheet and load it again;
-* Optionally run analiticcl to find spelling variants;
+* Optionally run a program to find spelling variants and add them to the spreadsheet;
 * Check the variants and put the wrong ones in an exception list;
 * Use TF to merge the variants with the original triggers into a new spreadsheet;
 * Load the merged spreadsheet;
@@ -102,6 +102,7 @@ by hand.
 See
 
 *   `tf.ner.ner` for how to work with spreadsheets;
+*   `tf.ner.variants` for how to add spelling variants to spreadsheets;
 *   `tf.about.annotateBrowser` for how to work with the browser interface.
     Here is what the browser interface looks like:
     ![browser](../images/Ner/browser.png)

@@ -1,3 +1,14 @@
+"""Detect name variants in the corpus.
+
+We provide a class can detect variants of the triggers in a NER spreadsheet,
+that is variants as they occur in the corpus.
+
+One way (and the way supported here) of obtaining the variants is
+by the tool
+[analiticcl](https://github.com/proycon/analiticcl) by Martin
+Reynaert and Maarten van Gompel.
+"""
+
 import collections
 import re
 
@@ -26,19 +37,11 @@ HTML_POST = """
 
 class Detect:
     def __init__(self, NE, sheet=None):
-        """Detect name variants in the corpus.
-
-        This class can detect variants of the triggers in a NER spreadsheet, that is
-        variants as they occur in the corpus.
-
-        One way (and the way supported here) of obtaining the variants is
-        by the tool
-        [analiticcl](https://github.com/proycon/analiticcl) by Martin
-        Reynaert and Maarten van Gompel.
+        """Detect spelling variants.
 
         In order to use this class you may have to install analiticcl. First
         you have to make sure you have the programming language Rust operational on
-        yoour machine, and then you have to install analiticcl as a Rust program,
+        your machine, and then you have to install analiticcl as a Rust program,
         and finally you have to do
 
         ```
@@ -145,6 +148,11 @@ class Detect:
             console(f"  {n} tokens: {len(trigs):>3} names e.g.:\n      {examples}")
 
     def prepare(self):
+        """Prepare the data for the search of spelling variants.
+
+        We construct an alphabet and a plain text out of the corpus,
+        and we construct a lexicon from the triggers in the current spreadsheet.
+        """
         if not self.ok:
             console("This instance is not properly set up", error=True)
             return
@@ -154,7 +162,41 @@ class Detect:
         self.makeLexicon()
         self.setupAnaliticcl()
 
-    def search(self, start=None, end=None, score_threshold=0.8, force=0):
+    def search(self, start=None, end=None, force=0):
+        """Search for spelling variants in the corpus.
+
+        We search part of the corpus or the whole corpus for spelling variants.
+        The process has two stages:
+
+        1.  a run of analaticcl
+        2. filtering of the results
+
+        The run of analiticcl is expensive, more than 10 minutes on the
+        [Suriano corpus](https://gitlab.huc.knaw.nl/suriano/letters).
+
+        The results of stage 1 will be cached. For every choice of search parameters
+        and boundary points in the corpus there is a separate cache.
+
+        A number of analiticcl-specific parameters will influence the search.
+        They can be tweaked in the config file of the NER module, under the variants
+        section.
+
+        Parameters
+        ----------
+        start: integer, optional None
+            The place in the corpus where the search has to start; it is the offset
+            in the plain text. If `None`, start from the beginning of the corpus.
+        end: integer, optional None
+            The place in the corpus where the search must end; it is the offset
+            in the plain text. If `None`, the search will be performed till the end
+            of the corpus.
+        force: integer, optional 0
+            Valid values are `0`, `1`, `2`.
+            Meaning: `0`: use the cached result, if it is available.
+            `1`: use the cached result for stage 1, if available, but perform the
+            filtering (again).
+            `2`: do not use the cache, but compute everything again.
+        """
         if not self.ok:
             console("This instance is not properly set up", error=True)
             return
@@ -232,7 +274,7 @@ class Detect:
                 candidates = {
                     cand["text"]: s
                     for cand in candidates
-                    if (s := cand["score"]) >= score_threshold
+                    if (s := cand["score"]) >= sthreshold
                 }
 
                 if len(candidates) == 0:
@@ -428,6 +470,22 @@ class Detect:
         console(f"Wrote merged triggers to sheet {mergedFile}")
 
     def listResults(self, start=None, end=None):
+        """List the search results to the console.
+
+        Show (part of) the variants found on the console as a plain text table.
+
+        This content will also be written to the file `variants.txt` in the
+        work directory.
+
+        Parameters
+        ----------
+        start: integer, optional None
+            The sequence number of the first result to show.
+            If `None`, start with the first result.
+        end: integer, optional None
+            The sequence number of the last result to show.
+            If `None`, continue to the last result.
+        """
         if not self.ok:
             console("This instance is not properly set up", error=True)
             return
@@ -462,6 +520,19 @@ class Detect:
         console(f"{len(matches)} variants found and written to {file}")
 
     def showResults(self, start=None, end=None):
+        """Show the search results to the console.
+
+        Show (part of) the variants found on the console with additional context.
+
+        Parameters
+        ----------
+        start: integer, optional None
+            The sequence number of the first result to show.
+            If `None`, start with the first result.
+        end: integer, optional None
+            The sequence number of the last result to show.
+            If `None`, continue to the last result.
+        """
         if not self.ok:
             console("This instance is not properly set up", error=True)
             return
@@ -511,6 +582,25 @@ class Detect:
             console("-----")
 
     def displayResults(self, start=None, end=None, asFile=None):
+        """Display the results as HTML files.
+
+        This content will also be written to the files under the subdirectory
+        `extra` in the work directory.
+
+        Parameters
+        ----------
+        start: integer, optional None
+            The sequence number of the first result to show.
+            If `None`, start with the first result.
+        end: integer, optional None
+            The sequence number of the last result to show.
+            If `None`, continue to the last result.
+        asFile: string, optional None
+            If None, the results will be displayed as HTML on the console.
+            Otherwise, the results will be written down as a set of HTML files,
+            whose names start with this string.
+        """
+
         if not self.ok:
             console("This instance is not properly set up", error=True)
             return
@@ -648,6 +738,13 @@ class Detect:
                 console(f"Extra triggers written to {extraFile}")
 
     def makeAlphabet(self):
+        """Gathers the alphabet on which the corpus is based.
+
+        The characters of the corpus have already been collected by Text-Fabric,
+        and that is from where we pick them up.
+
+        We separate the digits from the rest.
+        """
         if not self.ok:
             console("This instance is not properly set up", error=True)
             return
@@ -677,6 +774,11 @@ class Detect:
         console(f"Alphabet written to {alphabetFile}")
 
     def makeText(self):
+        """Generate a plain text from the corpus.
+
+        We make sure that we resolve the hyphenation of words across line
+        boundaries.
+        """
         if not self.ok:
             console("This instance is not properly set up", error=True)
             return
@@ -730,6 +832,8 @@ class Detect:
         console(f"Text written to {textFile} - {len(textComplete)} characters")
 
     def makeLexicon(self):
+        """Make a lexicon out of the triggers of a spreadsheet.
+        """
         if not self.ok:
             console("This instance is not properly set up", error=True)
             return
@@ -795,6 +899,14 @@ class Detect:
         console(f"Lexicon written to {lexiconFile}")
 
     def setupAnaliticcl(self):
+        """Configure analiticcl for the big search.
+
+        We gather the parameters from the variants section of the NER
+        config file (see `tf.ner.settings`).
+
+        For the description of the parameters, see the
+        [analiticcl tutorial](https://github.com/proycon/analiticcl/blob/master/tutorial.ipynb)
+        """
         if not self.ok:
             console("This instance is not properly set up", error=True)
             return

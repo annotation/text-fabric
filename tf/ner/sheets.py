@@ -33,6 +33,27 @@ SHEET_KEYS = """
     allTriggers
     hitData
 """.strip().split()
+"""Keys by which the data of a NER sheet is organized.
+
+*   `caseSensitive`: boolean, whether to look for triggers in the corpus in a
+    case-sensitive way;
+*   `metaFields`: the list of colums in the NER spreadsheet that are not involved
+    in entity lookup: this is the metadata of an entity;
+*   `metaData`: the metadata of an entity as dictionary;
+*   `logData`: the collected messages issues while reading and processing a NER sheet;
+*   `nameMap`: mapping from entities to names;
+*   `scopeMap`: mapping from scope strings to scope data structures;
+*   `rowMap`: mapping from triggers to the rows where they occur;
+*   `instructions`: compiled search instructions to search for all triggers
+    simultaneously;
+*   `inventory`: complete result of the search for triggers;
+*   `triggerFromMatch`: mapping for each match in the corpus which trigger was matched
+    in what scope;
+*   `triggerScopes`: for each trigger, the set of its scopes where it is used is stored;
+*   `allTriggers`: the set of all triggers, more precisely, the set of all
+    trigger-entity-scope combinations;
+*   `hitData`: overview of the inventory (see above).
+"""
 
 CLEAR_KEYS = """
     raw
@@ -604,6 +625,10 @@ class Sheets(Scopes, Triggers):
 
         rowMap = {}
         sheetData.rowMap = rowMap
+        """Will contain a mapping from triggers to row.
+
+        For each trigger we store the row in the NER sheet where that trigger occurs.
+        """
 
         for k in CLEAR_KEYS:
             if k in sheetData:
@@ -618,6 +643,11 @@ class Sheets(Scopes, Triggers):
 
         scopeMap = {}
         sheetData.scopeMap = scopeMap
+        """Will contain a mapping from scope specifiers to logical scopes.
+
+        Scope specifiers are strings, logical scopes are the data structures
+        that you get when you parse those strings.
+        """
 
         sheetPath = f"{sheetDir}/{sheetName}.xlsx"
 
@@ -773,6 +803,14 @@ class Sheets(Scopes, Triggers):
         the corpus in maximal intervals in which no trigger goes into or out of scope.
         During these intervals we have a fixed set of triggers that must be looked up,
         and we can check for the consistency of these triggers.
+
+        In every scope we may find two kinds of problems with triggers and scopes:
+
+        *   ambiguous trigger: a trigger is used by multiple entities in that scope.
+        *   clashing triggers: a trigger occurs in more than one row for a specific
+            entity and a specific scope.
+
+        These problems are detected and reported.
         """
         sheetData = self.getSheetData()
         compiled = AttrDict()
@@ -938,6 +976,8 @@ class Sheets(Scopes, Triggers):
         Now we have intervals with fixed sets of triggers,
         we can generate instructions out of the sheets: info that the search
         algorithm needs to do its work.
+
+        This info is such that it supports simultaneous searching for multiple triggers.
         """
 
         spaceEscaped = self.spaceEscaped
@@ -1000,7 +1040,7 @@ class Sheets(Scopes, Triggers):
         """Carries out the search instructions that have been compiled from the sheet.
 
         We look up the occurrences, organize the hits of the triggers, and store them
-        as entities.
+        as entities in the current set.
         """
         if not self.properlySetup:
             return
@@ -1059,7 +1099,7 @@ class Sheets(Scopes, Triggers):
         have to be assigned to the surface forms.
 
         The inventory knows where the occurrences of the surface forms are.
-        If there is no inventory yet, it will be created.
+        All these occurrences will be added to the current entity set.
         """
         if not self.properlySetup:
             return
@@ -1082,7 +1122,10 @@ class Sheets(Scopes, Triggers):
         self._addToSet(newEntities)
 
     def getSheetData(self):
-        """Deliver the current sheet.
+        """Deliver the data of current sheet.
+
+        Sheet data is `tf.core.generic.AttrDict` with various kinds of data under
+        various keys, which are listed in `tf.ner.sheets.SHEET_KEYS`.
 
         Returns
         -------
@@ -1094,6 +1137,20 @@ class Sheets(Scopes, Triggers):
         return sheetsData.setdefault(sheetName, AttrDict())
 
     def log(self, isError, indent, msg):
+        """Issue a message to the user.
+
+        Depending on the `silent` member of the instance and on whether the message
+        is an error message, it can be inhibited.
+
+        Parameters
+        ----------
+        isError: boolean
+            Whether it is an error message or a normal message
+        indent: integer
+            How far (in tabs) the message should be indented
+        msg: string
+            The actual message
+        """
         silent = self.silent
 
         if silent and not isError:

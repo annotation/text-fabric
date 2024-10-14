@@ -120,7 +120,16 @@ class Triggers:
         )
 
     def reportHits(self, silent=None, showNoHits=False):
-        """Reports the inventory."""
+        """Reports the inventory.
+
+        Parameters
+        ----------
+        silent: boolean, optional None
+            Whether to be silent. If None, it is taken from the corresponding member
+            of the instance.
+        showNoHits: boolean, optional False
+            Whether to show which triggers do not have hits.
+        """
         if not self.properlySetup:
             return
 
@@ -459,6 +468,8 @@ class Triggers:
         console(f"Diagnostic trigger interferences written to {reportFile}")
 
     def diagnoseTriggers(self, triggers, detail=True):
+        """Diagnose triggers.
+        """
         sheetData = self.getSheetData()
         triggerScopes = sheetData.triggerScopes
 

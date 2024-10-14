@@ -20,6 +20,14 @@ pip install -e .
 
 ### 12.6
 
+#### 12.6.1
+
+2024-10-??
+
+In the function `tf.core.helpers.mdEsc()` more markdown characters will be escaped.
+
+For the rest: mostly a documentation update.
+
 #### 12.6.0
 
 2024-10-08
