@@ -43,6 +43,16 @@ and in its top-level directory run the command:</strong></p>
 </code></pre>
 <h2 id="12">12</h2>
 <h3 id="126">12.6</h3>
+<h4 id="1261">12.6.1</h4>
+<p>2024-10-??</p>
+<p>In the function <code><a title="tf.core.helpers.mdEsc" href="../core/helpers.html#tf.core.helpers.mdEsc">mdEsc()</a></code> more markdown characters will be escaped.</p>
+<p>The function <code><a title="tf.advanced.sections.sectionStrFromNode" href="../advanced/sections.html#tf.advanced.sections.sectionStrFromNode">sectionStrFromNode()</a></code> has an additional optional
+argument <code>level</code>, which chooses the level of the enclosing section around the node.
+Instead of picking the section around that node with the deepest level, we take the
+section at the specified level.</p>
+<p>Better reporting of what happens when we merge spelling variants into a NER sheet,
+see <code><a title="tf.ner.variants.Detect.mergeTriggers" href="../ner/variants.html#tf.ner.variants.Detect.mergeTriggers">Detect.mergeTriggers()</a></code>.</p>
+<p>For the rest: mostly a documentation update.</p>
 <h4 id="1260">12.6.0</h4>
 <p>2024-10-08</p>
 <p>Something has changed in the representation of the corpus data: we store something
@@ -569,7 +579,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -643,6 +653,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
 <li><a href="#126">12.6</a><ul>
+<li><a href="#1261">12.6.1</a></li>
 <li><a href="#1260">12.6.0</a></li>
 </ul>
 </li>

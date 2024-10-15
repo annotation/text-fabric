@@ -37,7 +37,7 @@ control over how to customize the annotator for different corpora.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/ner/corpus.py#L1-L752" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/ner/corpus.py#L1-L754" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Access to the corpus.
 
@@ -498,8 +498,8 @@ class Corpus(Settings):
             All nodes of the entity type
         &#34;&#34;&#34;
 
-        def sectionHead(node):
-            return app.sectionStrFromNode(node)
+        def sectionHead(node, level=None):
+            return app.sectionStrFromNode(node, level=level)
 
         self.sectionHead = sectionHead
         &#34;&#34;&#34;Provide a section heading.
@@ -508,6 +508,8 @@ class Corpus(Settings):
         ----------
         node: integer
             The node whose section head we need.
+        level: integer, optional None
+            If passed, the containing section of that level will be taken.
 
         Returns
         -------
@@ -817,7 +819,7 @@ flag.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/ner/corpus.py#L27-L752" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/ner/corpus.py#L27-L754" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Corpus(Settings):
     def __init__(self):
@@ -1252,8 +1254,8 @@ flag.</p></div>
             All nodes of the entity type
         &#34;&#34;&#34;
 
-        def sectionHead(node):
-            return app.sectionStrFromNode(node)
+        def sectionHead(node, level=None):
+            return app.sectionStrFromNode(node, level=level)
 
         self.sectionHead = sectionHead
         &#34;&#34;&#34;Provide a section heading.
@@ -1262,6 +1264,8 @@ flag.</p></div>
         ----------
         node: integer
             The node whose section head we need.
+        level: integer, optional None
+            If passed, the containing section of that level will be taken.
 
         Returns
         -------
@@ -1775,6 +1779,8 @@ by it.</p></div>
 <dl>
 <dt><strong><code>node</code></strong> :&ensp;<code>integer</code></dt>
 <dd>The node whose section head we need.</dd>
+<dt><strong><code>level</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>If passed, the containing section of that level will be taken.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>

@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/ner/triggers.py#L1-L802" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/ner/triggers.py#L1-L813" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import collections
 from textwrap import dedent
@@ -155,7 +155,16 @@ class Triggers:
         )
 
     def reportHits(self, silent=None, showNoHits=False):
-        &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
+        &#34;&#34;&#34;Reports the inventory.
+
+        Parameters
+        ----------
+        silent: boolean, optional None
+            Whether to be silent. If None, it is taken from the corresponding member
+            of the instance.
+        showNoHits: boolean, optional False
+            Whether to show which triggers do not have hits.
+        &#34;&#34;&#34;
         if not self.properlySetup:
             return
 
@@ -494,6 +503,8 @@ class Triggers:
         console(f&#34;Diagnostic trigger interferences written to {reportFile}&#34;)
 
     def diagnoseTriggers(self, triggers, detail=True):
+        &#34;&#34;&#34;Diagnose triggers.
+        &#34;&#34;&#34;
         sheetData = self.getSheetData()
         triggerScopes = sheetData.triggerScopes
 
@@ -878,7 +889,7 @@ are divided up into tokens.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/ner/triggers.py#L74-L802" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/ner/triggers.py#L74-L813" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Triggers:
     def partitionTriggers(self, triggers):
@@ -929,7 +940,16 @@ are divided up into tokens.</dd>
         )
 
     def reportHits(self, silent=None, showNoHits=False):
-        &#34;&#34;&#34;Reports the inventory.&#34;&#34;&#34;
+        &#34;&#34;&#34;Reports the inventory.
+
+        Parameters
+        ----------
+        silent: boolean, optional None
+            Whether to be silent. If None, it is taken from the corresponding member
+            of the instance.
+        showNoHits: boolean, optional False
+            Whether to show which triggers do not have hits.
+        &#34;&#34;&#34;
         if not self.properlySetup:
             return
 
@@ -1268,6 +1288,8 @@ are divided up into tokens.</dd>
         console(f&#34;Diagnostic trigger interferences written to {reportFile}&#34;)
 
     def diagnoseTriggers(self, triggers, detail=True):
+        &#34;&#34;&#34;Diagnose triggers.
+        &#34;&#34;&#34;
         sheetData = self.getSheetData()
         triggerScopes = sheetData.triggerScopes
 
@@ -1626,7 +1648,7 @@ are divided up into tokens.</dd>
 <span>def <span class="ident">diagnoseTriggers</span></span>(<span>self, triggers, detail=True)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Diagnose triggers.</p></div>
 </dd>
 <dt id="tf.ner.triggers.Triggers.findOccs"><code class="name flex">
 <span>def <span class="ident">findOccs</span></span>(<span>self)</span>
@@ -1673,7 +1695,15 @@ the value is the name of that entity in the context indicated by path.</p></div>
 <span>def <span class="ident">reportHits</span></span>(<span>self, silent=None, showNoHits=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Reports the inventory.</p></div>
+<div class="desc"><p>Reports the inventory.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
+<dd>Whether to be silent. If None, it is taken from the corresponding member
+of the instance.</dd>
+<dt><strong><code>showNoHits</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to show which triggers do not have hits.</dd>
+</dl></div>
 </dd>
 <dt id="tf.ner.triggers.Triggers.triggerInterference"><code class="name flex">
 <span>def <span class="ident">triggerInterference</span></span>(<span>self, alsoInternal=False, alsoExpected=False)</span>

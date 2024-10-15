@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/core/helpers.py#L1-L682" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/core/helpers.py#L1-L694" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import sys
@@ -142,13 +142,21 @@ def mdEsc(val, math=False):
         Whether retain TeX notation.
         If True, `$` is not escaped, if False, it is not escaped.
     &#34;&#34;&#34;
-    return (
-        &#34;&#34;
-        if val is None
-        else (str(val).replace(&#34;|&#34;, &#34;&amp;#124;&#34;))
-        if math
-        else (str(val).replace(&#34;|&#34;, &#34;&amp;#124;&#34;).replace(&#34;$&#34;, &#34;&lt;span&gt;$&lt;/span&gt;&#34;))
+    if val is None:
+        return &#34;&#34;
+
+    val = (
+        str(val)
+        .replace(&#34;!&#34;, &#34;&amp;#33;&#34;)
+        .replace(&#34;#&#34;, &#34;&amp;#35;&#34;)
+        .replace(&#34;*&#34;, &#34;&amp;#42;&#34;)
+        .replace(&#34;[&#34;, &#34;&amp;#91;&#34;)
+        .replace(&#34;_&#34;, &#34;&amp;#95;&#34;)
+        .replace(&#34;|&#34;, &#34;&amp;#124;&#34;)
+        .replace(&#34;~&#34;, &#34;&amp;#126;&#34;)
     )
+
+    return val if math else val.replace(&#34;$&#34;, &#34;&lt;span&gt;$&lt;/span&gt;&#34;)
 
 
 def htmlEsc(val, math=False):
@@ -169,14 +177,16 @@ def htmlEsc(val, math=False):
     return (
         &#34;&#34;
         if val is None
-        else (str(val).replace(&#34;&amp;&#34;, &#34;&amp;amp;&#34;).replace(&#34;&lt;&#34;, &#34;&amp;lt;&#34;).replace(&#34;&gt;&#34;, &#34;&amp;gt;&#34;))
-        if math
         else (
-            str(val)
-            .replace(&#34;&amp;&#34;, &#34;&amp;amp;&#34;)
-            .replace(&#34;&lt;&#34;, &#34;&amp;lt;&#34;)
-            .replace(&#34;&gt;&#34;, &#34;&amp;gt;&#34;)
-            .replace(&#34;$&#34;, &#34;&lt;span&gt;$&lt;/span&gt;&#34;)
+            (str(val).replace(&#34;&amp;&#34;, &#34;&amp;amp;&#34;).replace(&#34;&lt;&#34;, &#34;&amp;lt;&#34;).replace(&#34;&gt;&#34;, &#34;&amp;gt;&#34;))
+            if math
+            else (
+                str(val)
+                .replace(&#34;&amp;&#34;, &#34;&amp;amp;&#34;)
+                .replace(&#34;&lt;&#34;, &#34;&amp;lt;&#34;)
+                .replace(&#34;&gt;&#34;, &#34;&amp;gt;&#34;)
+                .replace(&#34;$&#34;, &#34;&lt;span&gt;$&lt;/span&gt;&#34;)
+            )
         )
     )
 
@@ -221,20 +231,22 @@ def mdhtmlEsc(val, math=False):
         &#34;&#34;
         if val is None
         else (
-            str(val)
-            .replace(&#34;&amp;&#34;, &#34;&amp;amp;&#34;)
-            .replace(&#34;&lt;&#34;, &#34;&amp;lt;&#34;)
-            .replace(&#34;&gt;&#34;, &#34;&amp;gt;&#34;)
-            .replace(&#34;|&#34;, &#34;&amp;#124;&#34;)
-        )
-        if math
-        else (
-            str(val)
-            .replace(&#34;&amp;&#34;, &#34;&amp;amp;&#34;)
-            .replace(&#34;&lt;&#34;, &#34;&amp;lt;&#34;)
-            .replace(&#34;&gt;&#34;, &#34;&amp;gt;&#34;)
-            .replace(&#34;|&#34;, &#34;&amp;#124;&#34;)
-            .replace(&#34;$&#34;, &#34;&lt;span&gt;$&lt;/span&gt;&#34;)
+            (
+                str(val)
+                .replace(&#34;&amp;&#34;, &#34;&amp;amp;&#34;)
+                .replace(&#34;&lt;&#34;, &#34;&amp;lt;&#34;)
+                .replace(&#34;&gt;&#34;, &#34;&amp;gt;&#34;)
+                .replace(&#34;|&#34;, &#34;&amp;#124;&#34;)
+            )
+            if math
+            else (
+                str(val)
+                .replace(&#34;&amp;&#34;, &#34;&amp;amp;&#34;)
+                .replace(&#34;&lt;&#34;, &#34;&amp;lt;&#34;)
+                .replace(&#34;&gt;&#34;, &#34;&amp;gt;&#34;)
+                .replace(&#34;|&#34;, &#34;&amp;#124;&#34;)
+                .replace(&#34;$&#34;, &#34;&lt;span&gt;$&lt;/span&gt;&#34;)
+            )
         )
     )
 

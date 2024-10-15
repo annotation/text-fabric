@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.11.1" />
 <title>tf.ner.variants API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Detect name variants in the corpus …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css"
 integrity="sha512-kcbluZFacWN57NgWZ4aH6eUMBEaTyErFhIFD3y5qYZbKuuyImH0K/AKsBbfXlivh2z5C+3IDTIhI11YmKomzmA=="
@@ -28,19 +28,38 @@ crossorigin>
 <h1 class="title">Module <code>tf.ner.variants</code></h1>
 </header>
 <section id="section-intro">
+<p>Detect name variants in the corpus.</p>
+<p>We provide a class can detect variants of the triggers in a NER spreadsheet,
+that is variants as they occur in the corpus.</p>
+<p>One way (and the way supported here) of obtaining the variants is
+by the tool
+<a href="https://github.com/proycon/analiticcl">analiticcl</a> by Martin
+Reynaert and Maarten van Gompel.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/ner/variants.py#L1-L821" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/ner/variants.py#L1-L999" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">import collections
+<pre><code class="python">&#34;&#34;&#34;Detect name variants in the corpus.
+
+We provide a class can detect variants of the triggers in a NER spreadsheet,
+that is variants as they occur in the corpus.
+
+One way (and the way supported here) of obtaining the variants is
+by the tool
+[analiticcl](https://github.com/proycon/analiticcl) by Martin
+Reynaert and Maarten van Gompel.
+&#34;&#34;&#34;
+
+import collections
 import re
 
-from analiticcl import VariantModel, Weights, SearchParameters
+# from analiticcl import VariantModel, Weights, SearchParameters
 
-from tf.core.files import initTree, fileExists, readJson, writeJson
-from tf.core.helpers import console
-from tf.convert.recorder import Recorder
+from ..capable import CheckImport
+from ..core.files import initTree, fileExists, readJson, writeJson, fileOpen
+from ..core.helpers import console
+from ..convert.recorder import Recorder
 
 
 HTML_PRE = &#34;&#34;&#34;&lt;html&gt;
@@ -61,19 +80,11 @@ HTML_POST = &#34;&#34;&#34;
 
 class Detect:
     def __init__(self, NE, sheet=None):
-        &#34;&#34;&#34;Detect name variants in the corpus.
-
-        This class can detect variants of the triggers in a NER spreadsheet, that is
-        variants as they occur in the corpus.
-
-        One way (and the way supported here) of obtaining the variants is
-        by the tool
-        [analiticcl](https://github.com/proycon/analiticcl) by Martin
-        Reynaert and Maarten van Gompel.
+        &#34;&#34;&#34;Detect spelling variants.
 
         In order to use this class you may have to install analiticcl. First
         you have to make sure you have the programming language Rust operational on
-        yoour machine, and then you have to install analiticcl as a Rust program,
+        your machine, and then you have to install analiticcl as a Rust program,
         and finally you have to do
 
         ```
@@ -131,11 +142,24 @@ class Detect:
             sure we do so in case sesnsitive mode (even if we have used the sheet
             in case insensitive mode for the lookup).
         &#34;&#34;&#34;
+        CI = CheckImport(&#34;analiticcl&#34;)
+
+        if CI.importOK(hint=True):
+            an = CI.importGet()
+            self.VariantModel = an.VariantModel
+            self.Weights = an.Weights
+            self.SearchParameters = an.SearchParameters
+        else:
+            self.properlySetup = False
+            return None
+
+        self.properlySetup = True
+
         self.NE = NE
-        self.ok = True
 
         if sheet is None:
             sheet = NE.sheetName
+            NE.setSheet(sheet, caseSensitive=True, force=True, forceSilent=True)
         else:
             NE.setSheet(sheet, caseSensitive=True, force=True)
 
@@ -147,10 +171,9 @@ class Detect:
                 ),
                 error=True,
             )
-            self.ok = False
+            self.properlySetup = False
             return
 
-        NE.setSheet(sheet, caseSensitive=True, force=True)
         self.sheet = sheet
         self.sheetData = NE.getSheetData()
 
@@ -167,7 +190,7 @@ class Detect:
         NE.setSheet(sheet, caseSensitive=True, force=True)
         sheetData = NE.getSheetData()
 
-        console(&#34;Overview of names by length:&#34;)
+        NE.console(&#34;Overview of names by length:&#34;)
         triggers = set(sheetData.rowMap)
 
         lengths = collections.defaultdict(list)
@@ -177,10 +200,15 @@ class Detect:
 
         for n, trigs in sorted(lengths.items(), key=lambda x: -x[0]):
             examples = &#34;\n      &#34;.join(sorted(trigs, key=lambda x: x.lower())[0:5])
-            console(f&#34;  {n} tokens: {len(trigs):&gt;3} names e.g.:\n      {examples}&#34;)
+            NE.console(f&#34;  {n} tokens: {len(trigs):&gt;3} names e.g.:\n      {examples}&#34;)
 
     def prepare(self):
-        if not self.ok:
+        &#34;&#34;&#34;Prepare the data for the search of spelling variants.
+
+        We construct an alphabet and a plain text out of the corpus,
+        and we construct a lexicon from the triggers in the current spreadsheet.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
             console(&#34;This instance is not properly set up&#34;, error=True)
             return
 
@@ -189,11 +217,46 @@ class Detect:
         self.makeLexicon()
         self.setupAnaliticcl()
 
-    def search(self, start=None, end=None, score_threshold=0.8, force=0):
-        if not self.ok:
+    def search(self, start=None, end=None, force=0):
+        &#34;&#34;&#34;Search for spelling variants in the corpus.
+
+        We search part of the corpus or the whole corpus for spelling variants.
+        The process has two stages:
+
+        1.  a run of analaticcl
+        2. filtering of the results
+
+        The run of analiticcl is expensive, more than 10 minutes on the
+        [Suriano corpus](https://gitlab.huc.knaw.nl/suriano/letters).
+
+        The results of stage 1 will be cached. For every choice of search parameters
+        and boundary points in the corpus there is a separate cache.
+
+        A number of analiticcl-specific parameters will influence the search.
+        They can be tweaked in the config file of the NER module, under the variants
+        section.
+
+        Parameters
+        ----------
+        start: integer, optional None
+            The place in the corpus where the search has to start; it is the offset
+            in the plain text. If `None`, start from the beginning of the corpus.
+        end: integer, optional None
+            The place in the corpus where the search must end; it is the offset
+            in the plain text. If `None`, the search will be performed till the end
+            of the corpus.
+        force: integer, optional 0
+            Valid values are `0`, `1`, `2`.
+            Meaning: `0`: use the cached result, if it is available.
+            `1`: use the cached result for stage 1, if available, but perform the
+            filtering (again).
+            `2`: do not use the cache, but compute everything again.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
             console(&#34;This instance is not properly set up&#34;, error=True)
             return
 
+        SearchParameters = self.SearchParameters
         ansettings = self.settings.analiticcl
         searchParams = ansettings.searchParams
         suoffsets = searchParams.unicodeoffsets
@@ -202,6 +265,7 @@ class Detect:
         scoring = ansettings.scoring
         sthreshold = scoring.threshold
 
+        NE = self.NE
         app = self.app
         model = self.model
         rec = self.rec
@@ -214,8 +278,8 @@ class Detect:
 
         offset = 0 if start is None else nText + start if start &lt; 0 else start
 
-        console(f&#34;{nText:&gt;8} text  length&#34;)
-        console(f&#34;{offset:&gt;8} offset in complete text&#34;)
+        NE.console(f&#34;{nText:&gt;8} text  length&#34;)
+        NE.console(f&#34;{offset:&gt;8} offset in complete text&#34;)
 
         slug = (
             f&#34;{suoffsets}-{smaxngram}-{sfreqweight}-{sthreshold}-&#34;
@@ -267,7 +331,7 @@ class Detect:
                 candidates = {
                     cand[&#34;text&#34;]: s
                     for cand in candidates
-                    if (s := cand[&#34;score&#34;]) &gt;= score_threshold
+                    if (s := cand[&#34;score&#34;]) &gt;= sthreshold
                 }
 
                 if len(candidates) == 0:
@@ -355,7 +419,7 @@ class Detect:
         self.matches = matches
         self.matchPositions = matchPositions
 
-    def mergeTriggers(self):
+    def mergeTriggers(self, level=1):
         &#34;&#34;&#34;Merge spelling variants of triggers into a NER sheet.
 
         When we have found spelling variants of triggers, we want to include
@@ -381,8 +445,15 @@ class Detect:
             Variants that occur in the exclusion list will not be merged in.
             The file sits next to the original spreadsheet, but with an extension such
             as `-notmerged` (this is configurable) and file extension `.txt`.
+
+        Parameters
+        ----------
+        level: integer, optional 1
+            Only relevant for reporting the new variants. Occurrences of the
+            new variants are counted by section. This parameter specifies the
+            level of those sections. It should be 1, 2 or 3.
         &#34;&#34;&#34;
-        if not self.ok:
+        if not self.properlySetup:
             console(&#34;This instance is not properly set up&#34;, error=True)
             return
 
@@ -391,6 +462,7 @@ class Detect:
         commentI = NE.commentI
         sheetDir = NE.sheetDir
         sheetName = NE.sheetName
+        workDir = self.workDir
         settings = self.settings
         mergedExtension = settings.mergedExtension
         notMergedExtension = settings.notMergedExtension
@@ -398,21 +470,23 @@ class Detect:
         exclusionFile = f&#34;{sheetDir}/{sheetName}{notMergedExtension}.txt&#34;
 
         if not fileExists(exclusionFile):
-            console(f&#34;File with excluded variants not found: {exclusionFile}&#34;)
+            NE.console(f&#34;File with excluded variants not found: {exclusionFile}&#34;)
             exclusionFile = None
 
         matches = self.matches
+        matchPositions = self.matchPositions
+        sectionHead = NE.sectionHead
 
         noVariant = set()
 
         if exclusionFile is not None and fileExists(exclusionFile):
-            with open(exclusionFile) as fh:
+            with fileOpen(exclusionFile) as fh:
                 for line in fh:
                     noVariant.add(line.strip())
 
             nNoVariant = len(noVariant)
             pl = &#34;&#34; if nNoVariant == 1 else &#34;s&#34;
-            console(f&#34;{nNoVariant} excluded variant{pl} found in {exclusionFile}&#34;)
+            NE.console(f&#34;{nNoVariant} excluded variant{pl} found in {exclusionFile}&#34;)
 
         mapping = {}
         excluded = 0
@@ -424,15 +498,21 @@ class Detect:
             for cand in candidates:
                 mapping.setdefault(cand, set()).add(text)
 
+        ple = &#34;&#34; if excluded == 1 else &#34;s&#34;
+        NE.console(f&#34;{excluded} variant{ple} excluded as trigger&#34;)
+
         rows = NE.readSheetData()
 
         nAdded = 0
         totAdded = 0
 
+        variantsAdded = {}
+
         for r, row in enumerate(rows):
             if r == 0 or r == 1 or row[commentI].startswith(&#34;#&#34;):
                 continue
 
+            rn = r + 1
             triggers = set(row[trigI])
             nPrev = len(triggers)
 
@@ -443,6 +523,7 @@ class Detect:
 
                 for variant in mapping.get(trigger, []):
                     newTriggers.append(variant)
+                    variantsAdded.setdefault(rn, []).append((variant, trigger))
 
             newTriggers = sorted(set(newTriggers))
             row[trigI] = newTriggers
@@ -454,16 +535,62 @@ class Detect:
                 nAdded += 1
                 totAdded += nDiff
 
-        NE.writeSheetData(rows, asFile=mergedFile)
-        ple = &#34;&#34; if excluded == 1 else &#34;s&#34;
+        lines = [(&#34;row&#34;, &#34;trigger&#34;, &#34;variant&#34;, &#34;occurences&#34;)]
+
+        for rn in sorted(variantsAdded):
+            for variant, trigger in variantsAdded[rn]:
+                sectionInfo = collections.Counter()
+
+                for occ in matchPositions[variant]:
+                    slot = occ[0]
+
+                    section = sectionHead(slot, level=level)
+                    sectionInfo[section] += 1
+
+                hitData = [
+                    f&#34;{section}x{hits}&#34; for section, hits in sorted(sectionInfo.items())
+                ]
+                for hits in hitData:
+                    lines.append((rn, trigger, variant, hits))
+
+        reportFile = f&#34;{workDir}/merged.tsv&#34;
+
+        with fileOpen(reportFile, &#34;w&#34;) as fh:
+            nLines = len(lines)
+
+            for (i, line) in enumerate(lines):
+                if i &lt; 10 or i &gt; nLines - 10:
+                    (row, trigger, variant, hits) = line
+                    NE.console(f&#34;{row:&lt;4} {trigger:&lt;40} ~&gt; {variant:&lt;40} = {hits}&#34;)
+
+                fh.write(f&#34;{&#39;\t&#39;.join(str(x) for x in line)}\n&#34;)
+
         pls = &#34;&#34; if nAdded == 1 else &#34;s&#34;
         plt = &#34;&#34; if totAdded == 1 else &#34;s&#34;
-        console(f&#34;{excluded} variant{ple} excluded as trigger&#34;)
-        console(f&#34;{nAdded} triggerset{pls} expanded with {totAdded} trigger{plt}&#34;)
-        console(f&#34;Wrote merged triggers to sheet {mergedFile}&#34;)
+        NE.console(f&#34;{nAdded} triggerset{pls} expanded with {totAdded} trigger{plt}&#34;)
+        NE.console(f&#34;Wrote merge report to file {reportFile}&#34;)
+
+        NE.writeSheetData(rows, asFile=mergedFile)
+        NE.console(f&#34;Wrote merged triggers to sheet {mergedFile}&#34;)
 
     def listResults(self, start=None, end=None):
-        if not self.ok:
+        &#34;&#34;&#34;List the search results to the console.
+
+        Show (part of) the variants found on the console as a plain text table.
+
+        This content will also be written to the file `variants.txt` in the
+        work directory.
+
+        Parameters
+        ----------
+        start: integer, optional None
+            The sequence number of the first result to show.
+            If `None`, start with the first result.
+        end: integer, optional None
+            The sequence number of the last result to show.
+            If `None`, continue to the last result.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
             console(&#34;This instance is not properly set up&#34;, error=True)
             return
 
@@ -489,7 +616,7 @@ class Detect:
 
         file = f&#34;{workDir}/variants.tsv&#34;
 
-        with open(file, &#34;w&#34;) as fh:
+        with fileOpen(file, &#34;w&#34;) as fh:
             fh.write(f&#34;{&#39;\t&#39;.join(head)}\n&#34;)
             for text, score, cand in lines:
                 fh.write(f&#34;{text}\t{score:4.2f}\t{cand}\n&#34;)
@@ -497,7 +624,20 @@ class Detect:
         console(f&#34;{len(matches)} variants found and written to {file}&#34;)
 
     def showResults(self, start=None, end=None):
-        if not self.ok:
+        &#34;&#34;&#34;Show the search results to the console.
+
+        Show (part of) the variants found on the console with additional context.
+
+        Parameters
+        ----------
+        start: integer, optional None
+            The sequence number of the first result to show.
+            If `None`, start with the first result.
+        end: integer, optional None
+            The sequence number of the last result to show.
+            If `None`, continue to the last result.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
             console(&#34;This instance is not properly set up&#34;, error=True)
             return
 
@@ -546,7 +686,26 @@ class Detect:
             console(&#34;-----&#34;)
 
     def displayResults(self, start=None, end=None, asFile=None):
-        if not self.ok:
+        &#34;&#34;&#34;Display the results as HTML files.
+
+        This content will also be written to the files under the subdirectory
+        `extra` in the work directory.
+
+        Parameters
+        ----------
+        start: integer, optional None
+            The sequence number of the first result to show.
+            If `None`, start with the first result.
+        end: integer, optional None
+            The sequence number of the last result to show.
+            If `None`, continue to the last result.
+        asFile: string, optional None
+            If None, the results will be displayed as HTML on the console.
+            Otherwise, the results will be written down as a set of HTML files,
+            whose names start with this string.
+        &#34;&#34;&#34;
+
+        if not self.properlySetup:
             console(&#34;This instance is not properly set up&#34;, error=True)
             return
 
@@ -677,13 +836,20 @@ class Detect:
             for i, material in enumerate(content):
                 extraFile = f&#34;{extraFileBase}/{asFile}{i + 1:&gt;02}.html&#34;
 
-                with open(extraFile, &#34;w&#34;) as fh:
+                with fileOpen(extraFile, &#34;w&#34;) as fh:
                     fh.write(&#34;\n&#34;.join(material))
 
                 console(f&#34;Extra triggers written to {extraFile}&#34;)
 
     def makeAlphabet(self):
-        if not self.ok:
+        &#34;&#34;&#34;Gathers the alphabet on which the corpus is based.
+
+        The characters of the corpus have already been collected by Text-Fabric,
+        and that is from where we pick them up.
+
+        We separate the digits from the rest.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
             console(&#34;This instance is not properly set up&#34;, error=True)
             return
 
@@ -694,7 +860,7 @@ class Detect:
         alphabetFile = f&#34;{workDir}/alphabet.tsv&#34;
         self.alphabetFile = alphabetFile
 
-        with open(alphabetFile, &#34;w&#34;) as fh:
+        with fileOpen(alphabetFile, &#34;w&#34;) as fh:
             # This file will consist of one character per line,
             # for each distinct alpha character in the corpus, ordered by frequency.
             # Numeric characters will be put on a single line, with tabs in between.
@@ -712,10 +878,16 @@ class Detect:
         console(f&#34;Alphabet written to {alphabetFile}&#34;)
 
     def makeText(self):
-        if not self.ok:
+        &#34;&#34;&#34;Generate a plain text from the corpus.
+
+        We make sure that we resolve the hyphenation of words across line
+        boundaries.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
             console(&#34;This instance is not properly set up&#34;, error=True)
             return
 
+        NE = self.NE
         app = self.app
         api = app.api
         F = app.api.F
@@ -759,16 +931,18 @@ class Detect:
 
         textFile = f&#34;{workDir}/text.txt&#34;
 
-        with open(textFile, &#34;w&#34;) as fh:
+        with fileOpen(textFile, &#34;w&#34;) as fh:
             fh.write(textComplete)
 
-        console(f&#34;Text written to {textFile} - {len(textComplete)} characters&#34;)
+        NE.console(f&#34;Text written to {textFile} - {len(textComplete)} characters&#34;)
 
     def makeLexicon(self):
-        if not self.ok:
+        &#34;&#34;&#34;Make a lexicon out of the triggers of a spreadsheet.&#34;&#34;&#34;
+        if not self.properlySetup:
             console(&#34;This instance is not properly set up&#34;, error=True)
             return
 
+        NE = self.NE
         app = self.app
         workDir = self.workDir
 
@@ -811,29 +985,40 @@ class Detect:
         sortedLexicon = sorted(lexicon.items(), key=lambda x: (-x[1], x[0].lower()))
 
         for name, n in sortedLexicon[0:10]:
-            console(f&#34;  {n:&gt;3} x {name}&#34;)
+            NE.console(f&#34;  {n:&gt;3} x {name}&#34;)
 
-        console(&#34;  ...&#34;)
+        NE.console(&#34;  ...&#34;)
 
         for name, n in sortedLexicon[-10:]:
-            console(f&#34;  {n:&gt;3} x {name}&#34;)
+            NE.console(f&#34;  {n:&gt;3} x {name}&#34;)
 
-        console(f&#34;{len(lexicon):&gt;8} lexicon length&#34;)
+        NE.console(f&#34;{len(lexicon):&gt;8} lexicon length&#34;)
 
         lexiconFile = f&#34;{workDir}/lexicon.tsv&#34;
         self.lexiconFile = lexiconFile
 
-        with open(lexiconFile, &#34;w&#34;) as fh:
+        with fileOpen(lexiconFile, &#34;w&#34;) as fh:
             for name, n in sorted(lexicon.items()):
                 fh.write(f&#34;{name}\t{n}\n&#34;)
 
-        console(f&#34;Lexicon written to {lexiconFile}&#34;)
+        NE.console(f&#34;Lexicon written to {lexiconFile}&#34;)
 
     def setupAnaliticcl(self):
-        if not self.ok:
+        &#34;&#34;&#34;Configure analiticcl for the big search.
+
+        We gather the parameters from the variants section of the NER
+        config file (see `tf.ner.settings`).
+
+        For the description of the parameters, see the
+        [analiticcl tutorial](https://github.com/proycon/analiticcl/blob/master/tutorial.ipynb)
+        &#34;&#34;&#34;
+        if not self.properlySetup:
             console(&#34;This instance is not properly set up&#34;, error=True)
             return
 
+        NE = self.NE
+        VariantModel = self.VariantModel
+        Weights = self.Weights
         ansettings = self.settings.analiticcl
         weights = ansettings.weights
         wld = weights.ld
@@ -845,7 +1030,7 @@ class Detect:
         alphabetFile = self.alphabetFile
         lexiconFile = self.lexiconFile
 
-        console(&#34;Set up analiticcl&#34;)
+        NE.console(&#34;Set up analiticcl&#34;)
 
         model = VariantModel(
             alphabetFile,
@@ -870,16 +1055,10 @@ class Detect:
 <span>(</span><span>NE, sheet=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Detect name variants in the corpus.</p>
-<p>This class can detect variants of the triggers in a NER spreadsheet, that is
-variants as they occur in the corpus.</p>
-<p>One way (and the way supported here) of obtaining the variants is
-by the tool
-<a href="https://github.com/proycon/analiticcl">analiticcl</a> by Martin
-Reynaert and Maarten van Gompel.</p>
+<div class="desc"><p>Detect spelling variants.</p>
 <p>In order to use this class you may have to install analiticcl. First
 you have to make sure you have the programming language Rust operational on
-yoour machine, and then you have to install analiticcl as a Rust program,
+your machine, and then you have to install analiticcl as a Rust program,
 and finally you have to do</p>
 <pre><code>pip install analiticcl
 </code></pre>
@@ -923,23 +1102,15 @@ in case insensitive mode for the lookup).</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/ner/variants.py#L27-L821" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/ner/variants.py#L39-L999" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Detect:
     def __init__(self, NE, sheet=None):
-        &#34;&#34;&#34;Detect name variants in the corpus.
-
-        This class can detect variants of the triggers in a NER spreadsheet, that is
-        variants as they occur in the corpus.
-
-        One way (and the way supported here) of obtaining the variants is
-        by the tool
-        [analiticcl](https://github.com/proycon/analiticcl) by Martin
-        Reynaert and Maarten van Gompel.
+        &#34;&#34;&#34;Detect spelling variants.
 
         In order to use this class you may have to install analiticcl. First
         you have to make sure you have the programming language Rust operational on
-        yoour machine, and then you have to install analiticcl as a Rust program,
+        your machine, and then you have to install analiticcl as a Rust program,
         and finally you have to do
 
         ```
@@ -997,11 +1168,24 @@ in case insensitive mode for the lookup).</dd>
             sure we do so in case sesnsitive mode (even if we have used the sheet
             in case insensitive mode for the lookup).
         &#34;&#34;&#34;
+        CI = CheckImport(&#34;analiticcl&#34;)
+
+        if CI.importOK(hint=True):
+            an = CI.importGet()
+            self.VariantModel = an.VariantModel
+            self.Weights = an.Weights
+            self.SearchParameters = an.SearchParameters
+        else:
+            self.properlySetup = False
+            return None
+
+        self.properlySetup = True
+
         self.NE = NE
-        self.ok = True
 
         if sheet is None:
             sheet = NE.sheetName
+            NE.setSheet(sheet, caseSensitive=True, force=True, forceSilent=True)
         else:
             NE.setSheet(sheet, caseSensitive=True, force=True)
 
@@ -1013,10 +1197,9 @@ in case insensitive mode for the lookup).</dd>
                 ),
                 error=True,
             )
-            self.ok = False
+            self.properlySetup = False
             return
 
-        NE.setSheet(sheet, caseSensitive=True, force=True)
         self.sheet = sheet
         self.sheetData = NE.getSheetData()
 
@@ -1033,7 +1216,7 @@ in case insensitive mode for the lookup).</dd>
         NE.setSheet(sheet, caseSensitive=True, force=True)
         sheetData = NE.getSheetData()
 
-        console(&#34;Overview of names by length:&#34;)
+        NE.console(&#34;Overview of names by length:&#34;)
         triggers = set(sheetData.rowMap)
 
         lengths = collections.defaultdict(list)
@@ -1043,10 +1226,15 @@ in case insensitive mode for the lookup).</dd>
 
         for n, trigs in sorted(lengths.items(), key=lambda x: -x[0]):
             examples = &#34;\n      &#34;.join(sorted(trigs, key=lambda x: x.lower())[0:5])
-            console(f&#34;  {n} tokens: {len(trigs):&gt;3} names e.g.:\n      {examples}&#34;)
+            NE.console(f&#34;  {n} tokens: {len(trigs):&gt;3} names e.g.:\n      {examples}&#34;)
 
     def prepare(self):
-        if not self.ok:
+        &#34;&#34;&#34;Prepare the data for the search of spelling variants.
+
+        We construct an alphabet and a plain text out of the corpus,
+        and we construct a lexicon from the triggers in the current spreadsheet.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
             console(&#34;This instance is not properly set up&#34;, error=True)
             return
 
@@ -1055,11 +1243,46 @@ in case insensitive mode for the lookup).</dd>
         self.makeLexicon()
         self.setupAnaliticcl()
 
-    def search(self, start=None, end=None, score_threshold=0.8, force=0):
-        if not self.ok:
+    def search(self, start=None, end=None, force=0):
+        &#34;&#34;&#34;Search for spelling variants in the corpus.
+
+        We search part of the corpus or the whole corpus for spelling variants.
+        The process has two stages:
+
+        1.  a run of analaticcl
+        2. filtering of the results
+
+        The run of analiticcl is expensive, more than 10 minutes on the
+        [Suriano corpus](https://gitlab.huc.knaw.nl/suriano/letters).
+
+        The results of stage 1 will be cached. For every choice of search parameters
+        and boundary points in the corpus there is a separate cache.
+
+        A number of analiticcl-specific parameters will influence the search.
+        They can be tweaked in the config file of the NER module, under the variants
+        section.
+
+        Parameters
+        ----------
+        start: integer, optional None
+            The place in the corpus where the search has to start; it is the offset
+            in the plain text. If `None`, start from the beginning of the corpus.
+        end: integer, optional None
+            The place in the corpus where the search must end; it is the offset
+            in the plain text. If `None`, the search will be performed till the end
+            of the corpus.
+        force: integer, optional 0
+            Valid values are `0`, `1`, `2`.
+            Meaning: `0`: use the cached result, if it is available.
+            `1`: use the cached result for stage 1, if available, but perform the
+            filtering (again).
+            `2`: do not use the cache, but compute everything again.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
             console(&#34;This instance is not properly set up&#34;, error=True)
             return
 
+        SearchParameters = self.SearchParameters
         ansettings = self.settings.analiticcl
         searchParams = ansettings.searchParams
         suoffsets = searchParams.unicodeoffsets
@@ -1068,6 +1291,7 @@ in case insensitive mode for the lookup).</dd>
         scoring = ansettings.scoring
         sthreshold = scoring.threshold
 
+        NE = self.NE
         app = self.app
         model = self.model
         rec = self.rec
@@ -1080,8 +1304,8 @@ in case insensitive mode for the lookup).</dd>
 
         offset = 0 if start is None else nText + start if start &lt; 0 else start
 
-        console(f&#34;{nText:&gt;8} text  length&#34;)
-        console(f&#34;{offset:&gt;8} offset in complete text&#34;)
+        NE.console(f&#34;{nText:&gt;8} text  length&#34;)
+        NE.console(f&#34;{offset:&gt;8} offset in complete text&#34;)
 
         slug = (
             f&#34;{suoffsets}-{smaxngram}-{sfreqweight}-{sthreshold}-&#34;
@@ -1133,7 +1357,7 @@ in case insensitive mode for the lookup).</dd>
                 candidates = {
                     cand[&#34;text&#34;]: s
                     for cand in candidates
-                    if (s := cand[&#34;score&#34;]) &gt;= score_threshold
+                    if (s := cand[&#34;score&#34;]) &gt;= sthreshold
                 }
 
                 if len(candidates) == 0:
@@ -1221,7 +1445,7 @@ in case insensitive mode for the lookup).</dd>
         self.matches = matches
         self.matchPositions = matchPositions
 
-    def mergeTriggers(self):
+    def mergeTriggers(self, level=1):
         &#34;&#34;&#34;Merge spelling variants of triggers into a NER sheet.
 
         When we have found spelling variants of triggers, we want to include
@@ -1247,8 +1471,15 @@ in case insensitive mode for the lookup).</dd>
             Variants that occur in the exclusion list will not be merged in.
             The file sits next to the original spreadsheet, but with an extension such
             as `-notmerged` (this is configurable) and file extension `.txt`.
+
+        Parameters
+        ----------
+        level: integer, optional 1
+            Only relevant for reporting the new variants. Occurrences of the
+            new variants are counted by section. This parameter specifies the
+            level of those sections. It should be 1, 2 or 3.
         &#34;&#34;&#34;
-        if not self.ok:
+        if not self.properlySetup:
             console(&#34;This instance is not properly set up&#34;, error=True)
             return
 
@@ -1257,6 +1488,7 @@ in case insensitive mode for the lookup).</dd>
         commentI = NE.commentI
         sheetDir = NE.sheetDir
         sheetName = NE.sheetName
+        workDir = self.workDir
         settings = self.settings
         mergedExtension = settings.mergedExtension
         notMergedExtension = settings.notMergedExtension
@@ -1264,21 +1496,23 @@ in case insensitive mode for the lookup).</dd>
         exclusionFile = f&#34;{sheetDir}/{sheetName}{notMergedExtension}.txt&#34;
 
         if not fileExists(exclusionFile):
-            console(f&#34;File with excluded variants not found: {exclusionFile}&#34;)
+            NE.console(f&#34;File with excluded variants not found: {exclusionFile}&#34;)
             exclusionFile = None
 
         matches = self.matches
+        matchPositions = self.matchPositions
+        sectionHead = NE.sectionHead
 
         noVariant = set()
 
         if exclusionFile is not None and fileExists(exclusionFile):
-            with open(exclusionFile) as fh:
+            with fileOpen(exclusionFile) as fh:
                 for line in fh:
                     noVariant.add(line.strip())
 
             nNoVariant = len(noVariant)
             pl = &#34;&#34; if nNoVariant == 1 else &#34;s&#34;
-            console(f&#34;{nNoVariant} excluded variant{pl} found in {exclusionFile}&#34;)
+            NE.console(f&#34;{nNoVariant} excluded variant{pl} found in {exclusionFile}&#34;)
 
         mapping = {}
         excluded = 0
@@ -1290,15 +1524,21 @@ in case insensitive mode for the lookup).</dd>
             for cand in candidates:
                 mapping.setdefault(cand, set()).add(text)
 
+        ple = &#34;&#34; if excluded == 1 else &#34;s&#34;
+        NE.console(f&#34;{excluded} variant{ple} excluded as trigger&#34;)
+
         rows = NE.readSheetData()
 
         nAdded = 0
         totAdded = 0
 
+        variantsAdded = {}
+
         for r, row in enumerate(rows):
             if r == 0 or r == 1 or row[commentI].startswith(&#34;#&#34;):
                 continue
 
+            rn = r + 1
             triggers = set(row[trigI])
             nPrev = len(triggers)
 
@@ -1309,6 +1549,7 @@ in case insensitive mode for the lookup).</dd>
 
                 for variant in mapping.get(trigger, []):
                     newTriggers.append(variant)
+                    variantsAdded.setdefault(rn, []).append((variant, trigger))
 
             newTriggers = sorted(set(newTriggers))
             row[trigI] = newTriggers
@@ -1320,16 +1561,62 @@ in case insensitive mode for the lookup).</dd>
                 nAdded += 1
                 totAdded += nDiff
 
-        NE.writeSheetData(rows, asFile=mergedFile)
-        ple = &#34;&#34; if excluded == 1 else &#34;s&#34;
+        lines = [(&#34;row&#34;, &#34;trigger&#34;, &#34;variant&#34;, &#34;occurences&#34;)]
+
+        for rn in sorted(variantsAdded):
+            for variant, trigger in variantsAdded[rn]:
+                sectionInfo = collections.Counter()
+
+                for occ in matchPositions[variant]:
+                    slot = occ[0]
+
+                    section = sectionHead(slot, level=level)
+                    sectionInfo[section] += 1
+
+                hitData = [
+                    f&#34;{section}x{hits}&#34; for section, hits in sorted(sectionInfo.items())
+                ]
+                for hits in hitData:
+                    lines.append((rn, trigger, variant, hits))
+
+        reportFile = f&#34;{workDir}/merged.tsv&#34;
+
+        with fileOpen(reportFile, &#34;w&#34;) as fh:
+            nLines = len(lines)
+
+            for (i, line) in enumerate(lines):
+                if i &lt; 10 or i &gt; nLines - 10:
+                    (row, trigger, variant, hits) = line
+                    NE.console(f&#34;{row:&lt;4} {trigger:&lt;40} ~&gt; {variant:&lt;40} = {hits}&#34;)
+
+                fh.write(f&#34;{&#39;\t&#39;.join(str(x) for x in line)}\n&#34;)
+
         pls = &#34;&#34; if nAdded == 1 else &#34;s&#34;
         plt = &#34;&#34; if totAdded == 1 else &#34;s&#34;
-        console(f&#34;{excluded} variant{ple} excluded as trigger&#34;)
-        console(f&#34;{nAdded} triggerset{pls} expanded with {totAdded} trigger{plt}&#34;)
-        console(f&#34;Wrote merged triggers to sheet {mergedFile}&#34;)
+        NE.console(f&#34;{nAdded} triggerset{pls} expanded with {totAdded} trigger{plt}&#34;)
+        NE.console(f&#34;Wrote merge report to file {reportFile}&#34;)
+
+        NE.writeSheetData(rows, asFile=mergedFile)
+        NE.console(f&#34;Wrote merged triggers to sheet {mergedFile}&#34;)
 
     def listResults(self, start=None, end=None):
-        if not self.ok:
+        &#34;&#34;&#34;List the search results to the console.
+
+        Show (part of) the variants found on the console as a plain text table.
+
+        This content will also be written to the file `variants.txt` in the
+        work directory.
+
+        Parameters
+        ----------
+        start: integer, optional None
+            The sequence number of the first result to show.
+            If `None`, start with the first result.
+        end: integer, optional None
+            The sequence number of the last result to show.
+            If `None`, continue to the last result.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
             console(&#34;This instance is not properly set up&#34;, error=True)
             return
 
@@ -1355,7 +1642,7 @@ in case insensitive mode for the lookup).</dd>
 
         file = f&#34;{workDir}/variants.tsv&#34;
 
-        with open(file, &#34;w&#34;) as fh:
+        with fileOpen(file, &#34;w&#34;) as fh:
             fh.write(f&#34;{&#39;\t&#39;.join(head)}\n&#34;)
             for text, score, cand in lines:
                 fh.write(f&#34;{text}\t{score:4.2f}\t{cand}\n&#34;)
@@ -1363,7 +1650,20 @@ in case insensitive mode for the lookup).</dd>
         console(f&#34;{len(matches)} variants found and written to {file}&#34;)
 
     def showResults(self, start=None, end=None):
-        if not self.ok:
+        &#34;&#34;&#34;Show the search results to the console.
+
+        Show (part of) the variants found on the console with additional context.
+
+        Parameters
+        ----------
+        start: integer, optional None
+            The sequence number of the first result to show.
+            If `None`, start with the first result.
+        end: integer, optional None
+            The sequence number of the last result to show.
+            If `None`, continue to the last result.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
             console(&#34;This instance is not properly set up&#34;, error=True)
             return
 
@@ -1412,7 +1712,26 @@ in case insensitive mode for the lookup).</dd>
             console(&#34;-----&#34;)
 
     def displayResults(self, start=None, end=None, asFile=None):
-        if not self.ok:
+        &#34;&#34;&#34;Display the results as HTML files.
+
+        This content will also be written to the files under the subdirectory
+        `extra` in the work directory.
+
+        Parameters
+        ----------
+        start: integer, optional None
+            The sequence number of the first result to show.
+            If `None`, start with the first result.
+        end: integer, optional None
+            The sequence number of the last result to show.
+            If `None`, continue to the last result.
+        asFile: string, optional None
+            If None, the results will be displayed as HTML on the console.
+            Otherwise, the results will be written down as a set of HTML files,
+            whose names start with this string.
+        &#34;&#34;&#34;
+
+        if not self.properlySetup:
             console(&#34;This instance is not properly set up&#34;, error=True)
             return
 
@@ -1543,13 +1862,20 @@ in case insensitive mode for the lookup).</dd>
             for i, material in enumerate(content):
                 extraFile = f&#34;{extraFileBase}/{asFile}{i + 1:&gt;02}.html&#34;
 
-                with open(extraFile, &#34;w&#34;) as fh:
+                with fileOpen(extraFile, &#34;w&#34;) as fh:
                     fh.write(&#34;\n&#34;.join(material))
 
                 console(f&#34;Extra triggers written to {extraFile}&#34;)
 
     def makeAlphabet(self):
-        if not self.ok:
+        &#34;&#34;&#34;Gathers the alphabet on which the corpus is based.
+
+        The characters of the corpus have already been collected by Text-Fabric,
+        and that is from where we pick them up.
+
+        We separate the digits from the rest.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
             console(&#34;This instance is not properly set up&#34;, error=True)
             return
 
@@ -1560,7 +1886,7 @@ in case insensitive mode for the lookup).</dd>
         alphabetFile = f&#34;{workDir}/alphabet.tsv&#34;
         self.alphabetFile = alphabetFile
 
-        with open(alphabetFile, &#34;w&#34;) as fh:
+        with fileOpen(alphabetFile, &#34;w&#34;) as fh:
             # This file will consist of one character per line,
             # for each distinct alpha character in the corpus, ordered by frequency.
             # Numeric characters will be put on a single line, with tabs in between.
@@ -1578,10 +1904,16 @@ in case insensitive mode for the lookup).</dd>
         console(f&#34;Alphabet written to {alphabetFile}&#34;)
 
     def makeText(self):
-        if not self.ok:
+        &#34;&#34;&#34;Generate a plain text from the corpus.
+
+        We make sure that we resolve the hyphenation of words across line
+        boundaries.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
             console(&#34;This instance is not properly set up&#34;, error=True)
             return
 
+        NE = self.NE
         app = self.app
         api = app.api
         F = app.api.F
@@ -1625,16 +1957,18 @@ in case insensitive mode for the lookup).</dd>
 
         textFile = f&#34;{workDir}/text.txt&#34;
 
-        with open(textFile, &#34;w&#34;) as fh:
+        with fileOpen(textFile, &#34;w&#34;) as fh:
             fh.write(textComplete)
 
-        console(f&#34;Text written to {textFile} - {len(textComplete)} characters&#34;)
+        NE.console(f&#34;Text written to {textFile} - {len(textComplete)} characters&#34;)
 
     def makeLexicon(self):
-        if not self.ok:
+        &#34;&#34;&#34;Make a lexicon out of the triggers of a spreadsheet.&#34;&#34;&#34;
+        if not self.properlySetup:
             console(&#34;This instance is not properly set up&#34;, error=True)
             return
 
+        NE = self.NE
         app = self.app
         workDir = self.workDir
 
@@ -1677,29 +2011,40 @@ in case insensitive mode for the lookup).</dd>
         sortedLexicon = sorted(lexicon.items(), key=lambda x: (-x[1], x[0].lower()))
 
         for name, n in sortedLexicon[0:10]:
-            console(f&#34;  {n:&gt;3} x {name}&#34;)
+            NE.console(f&#34;  {n:&gt;3} x {name}&#34;)
 
-        console(&#34;  ...&#34;)
+        NE.console(&#34;  ...&#34;)
 
         for name, n in sortedLexicon[-10:]:
-            console(f&#34;  {n:&gt;3} x {name}&#34;)
+            NE.console(f&#34;  {n:&gt;3} x {name}&#34;)
 
-        console(f&#34;{len(lexicon):&gt;8} lexicon length&#34;)
+        NE.console(f&#34;{len(lexicon):&gt;8} lexicon length&#34;)
 
         lexiconFile = f&#34;{workDir}/lexicon.tsv&#34;
         self.lexiconFile = lexiconFile
 
-        with open(lexiconFile, &#34;w&#34;) as fh:
+        with fileOpen(lexiconFile, &#34;w&#34;) as fh:
             for name, n in sorted(lexicon.items()):
                 fh.write(f&#34;{name}\t{n}\n&#34;)
 
-        console(f&#34;Lexicon written to {lexiconFile}&#34;)
+        NE.console(f&#34;Lexicon written to {lexiconFile}&#34;)
 
     def setupAnaliticcl(self):
-        if not self.ok:
+        &#34;&#34;&#34;Configure analiticcl for the big search.
+
+        We gather the parameters from the variants section of the NER
+        config file (see `tf.ner.settings`).
+
+        For the description of the parameters, see the
+        [analiticcl tutorial](https://github.com/proycon/analiticcl/blob/master/tutorial.ipynb)
+        &#34;&#34;&#34;
+        if not self.properlySetup:
             console(&#34;This instance is not properly set up&#34;, error=True)
             return
 
+        NE = self.NE
+        VariantModel = self.VariantModel
+        Weights = self.Weights
         ansettings = self.settings.analiticcl
         weights = ansettings.weights
         wld = weights.ld
@@ -1711,7 +2056,7 @@ in case insensitive mode for the lookup).</dd>
         alphabetFile = self.alphabetFile
         lexiconFile = self.lexiconFile
 
-        console(&#34;Set up analiticcl&#34;)
+        NE.console(&#34;Set up analiticcl&#34;)
 
         model = VariantModel(
             alphabetFile,
@@ -1727,34 +2072,66 @@ in case insensitive mode for the lookup).</dd>
 <span>def <span class="ident">displayResults</span></span>(<span>self, start=None, end=None, asFile=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Display the results as HTML files.</p>
+<p>This content will also be written to the files under the subdirectory
+<code>extra</code> in the work directory.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>start</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>The sequence number of the first result to show.
+If <code>None</code>, start with the first result.</dd>
+<dt><strong><code>end</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>The sequence number of the last result to show.
+If <code>None</code>, continue to the last result.</dd>
+<dt><strong><code>asFile</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>If None, the results will be displayed as HTML on the console.
+Otherwise, the results will be written down as a set of HTML files,
+whose names start with this string.</dd>
+</dl></div>
 </dd>
 <dt id="tf.ner.variants.Detect.listResults"><code class="name flex">
 <span>def <span class="ident">listResults</span></span>(<span>self, start=None, end=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>List the search results to the console.</p>
+<p>Show (part of) the variants found on the console as a plain text table.</p>
+<p>This content will also be written to the file <code>variants.txt</code> in the
+work directory.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>start</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>The sequence number of the first result to show.
+If <code>None</code>, start with the first result.</dd>
+<dt><strong><code>end</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>The sequence number of the last result to show.
+If <code>None</code>, continue to the last result.</dd>
+</dl></div>
 </dd>
 <dt id="tf.ner.variants.Detect.makeAlphabet"><code class="name flex">
 <span>def <span class="ident">makeAlphabet</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Gathers the alphabet on which the corpus is based.</p>
+<p>The characters of the corpus have already been collected by Text-Fabric,
+and that is from where we pick them up.</p>
+<p>We separate the digits from the rest.</p></div>
 </dd>
 <dt id="tf.ner.variants.Detect.makeLexicon"><code class="name flex">
 <span>def <span class="ident">makeLexicon</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Make a lexicon out of the triggers of a spreadsheet.</p></div>
 </dd>
 <dt id="tf.ner.variants.Detect.makeText"><code class="name flex">
 <span>def <span class="ident">makeText</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Generate a plain text from the corpus.</p>
+<p>We make sure that we resolve the hyphenation of words across line
+boundaries.</p></div>
 </dd>
 <dt id="tf.ner.variants.Detect.mergeTriggers"><code class="name flex">
-<span>def <span class="ident">mergeTriggers</span></span>(<span>self)</span>
+<span>def <span class="ident">mergeTriggers</span></span>(<span>self, level=1)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Merge spelling variants of triggers into a NER sheet.</p>
@@ -1783,31 +2160,83 @@ Variants that occur in the exclusion list will not be merged in.
 The file sits next to the original spreadsheet, but with an extension such
 as <code>-notmerged</code> (this is configurable) and file extension <code>.txt</code>.</p>
 </li>
-</ul></div>
+</ul>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>level</code></strong> :&ensp;<code>integer</code>, optional <code>1</code></dt>
+<dd>Only relevant for reporting the new variants. Occurrences of the
+new variants are counted by section. This parameter specifies the
+level of those sections. It should be 1, 2 or 3.</dd>
+</dl></div>
 </dd>
 <dt id="tf.ner.variants.Detect.prepare"><code class="name flex">
 <span>def <span class="ident">prepare</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Prepare the data for the search of spelling variants.</p>
+<p>We construct an alphabet and a plain text out of the corpus,
+and we construct a lexicon from the triggers in the current spreadsheet.</p></div>
 </dd>
 <dt id="tf.ner.variants.Detect.search"><code class="name flex">
-<span>def <span class="ident">search</span></span>(<span>self, start=None, end=None, score_threshold=0.8, force=0)</span>
+<span>def <span class="ident">search</span></span>(<span>self, start=None, end=None, force=0)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Search for spelling variants in the corpus.</p>
+<p>We search part of the corpus or the whole corpus for spelling variants.
+The process has two stages:</p>
+<ol>
+<li>a run of analaticcl</li>
+<li>filtering of the results</li>
+</ol>
+<p>The run of analiticcl is expensive, more than 10 minutes on the
+<a href="https://gitlab.huc.knaw.nl/suriano/letters">Suriano corpus</a>.</p>
+<p>The results of stage 1 will be cached. For every choice of search parameters
+and boundary points in the corpus there is a separate cache.</p>
+<p>A number of analiticcl-specific parameters will influence the search.
+They can be tweaked in the config file of the NER module, under the variants
+section.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>start</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>The place in the corpus where the search has to start; it is the offset
+in the plain text. If <code>None</code>, start from the beginning of the corpus.</dd>
+<dt><strong><code>end</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>The place in the corpus where the search must end; it is the offset
+in the plain text. If <code>None</code>, the search will be performed till the end
+of the corpus.</dd>
+<dt><strong><code>force</code></strong> :&ensp;<code>integer</code>, optional <code>0</code></dt>
+<dd>Valid values are <code>0</code>, <code>1</code>, <code>2</code>.
+Meaning: <code>0</code>: use the cached result, if it is available.
+<code>1</code>: use the cached result for stage 1, if available, but perform the
+filtering (again).
+<code>2</code>: do not use the cache, but compute everything again.</dd>
+</dl></div>
 </dd>
 <dt id="tf.ner.variants.Detect.setupAnaliticcl"><code class="name flex">
 <span>def <span class="ident">setupAnaliticcl</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Configure analiticcl for the big search.</p>
+<p>We gather the parameters from the variants section of the NER
+config file (see <code><a title="tf.ner.settings" href="settings.html">tf.ner.settings</a></code>).</p>
+<p>For the description of the parameters, see the
+<a href="https://github.com/proycon/analiticcl/blob/master/tutorial.ipynb">analiticcl tutorial</a></p></div>
 </dd>
 <dt id="tf.ner.variants.Detect.showResults"><code class="name flex">
 <span>def <span class="ident">showResults</span></span>(<span>self, start=None, end=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Show the search results to the console.</p>
+<p>Show (part of) the variants found on the console with additional context.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>start</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>The sequence number of the first result to show.
+If <code>None</code>, start with the first result.</dd>
+<dt><strong><code>end</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>The sequence number of the last result to show.
+If <code>None</code>, continue to the last result.</dd>
+</dl></div>
 </dd>
 </dl>
 </dd>

@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/ner/sheets.py#L1-L1109" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/ner/sheets.py#L1-L1228" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 import time
@@ -68,6 +68,27 @@ SHEET_KEYS = &#34;&#34;&#34;
     allTriggers
     hitData
 &#34;&#34;&#34;.strip().split()
+&#34;&#34;&#34;Keys by which the data of a NER sheet is organized.
+
+*   `caseSensitive`: boolean, whether to look for triggers in the corpus in a
+    case-sensitive way;
+*   `metaFields`: the list of colums in the NER spreadsheet that are not involved
+    in entity lookup: this is the metadata of an entity;
+*   `metaData`: the metadata of an entity as dictionary;
+*   `logData`: the collected messages issues while reading and processing a NER sheet;
+*   `nameMap`: mapping from entities to names;
+*   `scopeMap`: mapping from scope strings to scope data structures;
+*   `rowMap`: mapping from triggers to the rows where they occur;
+*   `instructions`: compiled search instructions to search for all triggers
+    simultaneously;
+*   `inventory`: complete result of the search for triggers;
+*   `triggerFromMatch`: mapping for each match in the corpus which trigger was matched
+    in what scope;
+*   `triggerScopes`: for each trigger, the set of its scopes where it is used is stored;
+*   `allTriggers`: the set of all triggers, more precisely, the set of all
+    trigger-entity-scope combinations;
+*   `hitData`: overview of the inventory (see above).
+&#34;&#34;&#34;
 
 CLEAR_KEYS = &#34;&#34;&#34;
     raw
@@ -168,7 +189,7 @@ class Sheets(Scopes, Triggers):
                 sheetNames.add(sheetName)
                 setNames.add(f&#34;.{sheetName}&#34;)
 
-    def setSheet(self, newSheet, force=False, caseSensitive=None):
+    def setSheet(self, newSheet, force=False, caseSensitive=None, forceSilent=False):
         &#34;&#34;&#34;Switch to a named ner sheet.
 
         After the switch, the new sheet will be loaded into memory.
@@ -182,6 +203,9 @@ class Sheets(Scopes, Triggers):
         caseSensitive: boolean, optional None
             Whether to work with the spreadsheet in a case-sensitive way.
             If `None`, the value is taken from the current instance of this class.
+        forceSilent: boolean, optional False
+            If True, all output is suppressed, irrespective of the `silent` member
+            in the instance. Only show stopping error messages are let through.
 
         &#34;&#34;&#34;
         if not self.properlySetup:
@@ -211,6 +235,7 @@ class Sheets(Scopes, Triggers):
         if caseSensitive is None:
             caseSensitive = self.caseSensitive
 
+        self.forceSilent = True
         self.loadSheetData(force=force, caseSensitive=caseSensitive)
 
     def loadSheetData(self, force=False, caseSensitive=False):
@@ -251,6 +276,7 @@ class Sheets(Scopes, Triggers):
         if sheetName is None:
             return None
 
+        forceSilent = self.forceSilent
         sheets = self.sheets
 
         if sheetName not in sheets:
@@ -319,10 +345,14 @@ class Sheets(Scopes, Triggers):
 
             if loaded:
                 # we have loaded valid, up-to-date, previously compiled spreadsheet data
-                self.console(&#34;SHEET data: loaded from disk&#34;)
+                if not forceSilent:
+                    self.console(&#34;SHEET data: loaded from disk&#34;)
             else:
                 # now we really heave to read and compile the spreadsheet
-                self.console(&#34;SHEET data: computing from scratch ...&#34;, newline=False)
+                if not forceSilent:
+                    self.console(
+                        &#34;SHEET data: computing from scratch ...&#34;, newline=False
+                    )
                 sheetData.logData = []
                 sheetData.caseSensitive = caseSensitive
 
@@ -345,15 +375,19 @@ class Sheets(Scopes, Triggers):
                 with fileOpen(timeFile, &#34;w&#34;) as fh:
                     fh.write(f&#34;{tm}\n&#34;)
 
-                self.console(&#34;done&#34;)
+                if not forceSilent:
+                    self.console(&#34;done&#34;)
                 showLog = False
         else:
             # the compiled spreadsheet data we have in memory is still up to date
-            self.console(&#34;SHEET data: already in memory and uptodate&#34;)
+            if not forceSilent:
+                self.console(&#34;SHEET data: already in memory and uptodate&#34;)
 
-        if showLog and not browse:
+        if showLog and not browse and not forceSilent:
             for x in sheetData.logData:
                 self.consoleLine(*x)
+
+        self.forceSilent = False
 
     def makeSheetOfSingleTokens(self):
         &#34;&#34;&#34;Make a derived sheet based on the individual tokens in the triggers.
@@ -594,6 +628,7 @@ class Sheets(Scopes, Triggers):
         Store the results in a hierarchy that mimicks the way they are organized in the
         file system.
         &#34;&#34;&#34;
+        forceSilent = self.forceSilent
         sheetName = self.sheetName
         sheetDir = self.sheetDir
         loadXls = self.loadXls
@@ -605,15 +640,23 @@ class Sheets(Scopes, Triggers):
         scopeI = self.scopeI
 
         def spec(msg):
+            if forceSilent:
+                return
             self.log(None, 0, msg)
 
         def log(msg):
+            if forceSilent:
+                return
             self.log(False, 0, msg)
 
         def err(msg):
+            if forceSilent:
+                return
             self.log(True, 0, msg)
 
         def err1(msg):
+            if forceSilent:
+                return
             self.log(True, 1, msg)
 
         sheetData = self.getSheetData()
@@ -639,6 +682,10 @@ class Sheets(Scopes, Triggers):
 
         rowMap = {}
         sheetData.rowMap = rowMap
+        &#34;&#34;&#34;Will contain a mapping from triggers to row.
+
+        For each trigger we store the row in the NER sheet where that trigger occurs.
+        &#34;&#34;&#34;
 
         for k in CLEAR_KEYS:
             if k in sheetData:
@@ -653,6 +700,11 @@ class Sheets(Scopes, Triggers):
 
         scopeMap = {}
         sheetData.scopeMap = scopeMap
+        &#34;&#34;&#34;Will contain a mapping from scope specifiers to logical scopes.
+
+        Scope specifiers are strings, logical scopes are the data structures
+        that you get when you parse those strings.
+        &#34;&#34;&#34;
 
         sheetPath = f&#34;{sheetDir}/{sheetName}.xlsx&#34;
 
@@ -661,7 +713,8 @@ class Sheets(Scopes, Triggers):
         maxCol = ws.max_column
         maxRow = ws.max_row
 
-        self.console(f&#34;Sheet with {maxRow} rows and {maxCol} columns&#34;)
+        if not forceSilent:
+            self.console(f&#34;Sheet with {maxRow} rows and {maxCol} columns&#34;)
 
         raw = {}
         sheetData.raw = raw
@@ -778,28 +831,29 @@ class Sheets(Scopes, Triggers):
                 if i not in {0, scopeI, trigI}
             ]
 
-        for diags, isdict, label in (
-            (emptyLines, False, &#34;without a name and triggers&#34;),
-            (multiNames, True, &#34;with a duplicate name&#34;),
-            (noNames, False, &#34;without a name&#34;),
-            (scopeMistakes, True, &#34;with scope mistakes&#34;),
-            (noTrigs, False, &#34;without triggers&#34;),
-        ):
-            n = len(diags)
+        if not forceSilent:
+            for diags, isdict, label in (
+                (emptyLines, False, &#34;without a name and triggers&#34;),
+                (multiNames, True, &#34;with a duplicate name&#34;),
+                (noNames, False, &#34;without a name&#34;),
+                (scopeMistakes, True, &#34;with scope mistakes&#34;),
+                (noTrigs, False, &#34;without triggers&#34;),
+            ):
+                n = len(diags)
 
-            if n &gt; 0:
-                if isdict:
-                    if n &gt; 0:
+                if n &gt; 0:
+                    if isdict:
+                        if n &gt; 0:
+                            plural = &#34;&#34; if n == 1 else &#34;s&#34;
+                            err(f&#34;{n} row{plural} {label}:&#34;)
+
+                            for r in sorted(diags):
+                                msg = diags[r]
+                                err1(f&#34;r{r:&gt;3}: {msg}&#34;)
+                    else:
+                        rep = &#34;, &#34;.join(str(x) for x in sorted(diags)[0:10])
                         plural = &#34;&#34; if n == 1 else &#34;s&#34;
-                        err(f&#34;{n} row{plural} {label}:&#34;)
-
-                        for r in sorted(diags):
-                            msg = diags[r]
-                            err1(f&#34;r{r:&gt;3}: {msg}&#34;)
-                else:
-                    rep = &#34;, &#34;.join(str(x) for x in sorted(diags)[0:10])
-                    plural = &#34;&#34; if n == 1 else &#34;s&#34;
-                    err(f&#34;{n} row{plural} {label}:\n\te.g.: {rep}&#34;)
+                        err(f&#34;{n} row{plural} {label}:\n\te.g.: {rep}&#34;)
 
     def _compileSheet(self):
         &#34;&#34;&#34;Compiles the info in tweaked sheets according to the scopes in it.
@@ -808,24 +862,41 @@ class Sheets(Scopes, Triggers):
         the corpus in maximal intervals in which no trigger goes into or out of scope.
         During these intervals we have a fixed set of triggers that must be looked up,
         and we can check for the consistency of these triggers.
+
+        In every scope we may find two kinds of problems with triggers and scopes:
+
+        *   ambiguous trigger: a trigger is used by multiple entities in that scope.
+        *   clashing triggers: a trigger occurs in more than one row for a specific
+            entity and a specific scope.
+
+        These problems are detected and reported.
         &#34;&#34;&#34;
+        forceSilent = self.forceSilent
         sheetData = self.getSheetData()
         compiled = AttrDict()
         sheetData.compiled = compiled
         nameMap = sheetData.nameMap
 
-        def spec(msg):
-            self.log(None, 0, msg)
+        def spec(msg, cache=None):
+            if forceSilent:
+                return
+            self.log(None, 0, msg, cache=cache)
 
-        def log(msg):
-            self.log(False, 0, msg)
+        def log(msg, cache=None):
+            if forceSilent:
+                return
+            self.log(False, 0, msg, cache=cache)
 
-        def err(msg):
-            self.log(True, 0, msg)
+        def err(msg, cache=None):
+            if forceSilent:
+                return
+            self.log(True, 0, msg, cache=cache)
 
-        def errProblem(problem):
+        def errProblem(problem, cache):
+            if forceSilent:
+                return
             for indent, msg in problem:
-                self.log(True, indent, msg)
+                self.log(True, indent, msg, cache=cache)
 
         tFullMap = {}
 
@@ -844,7 +915,7 @@ class Sheets(Scopes, Triggers):
                     result.append(f&#34;&#39;{tr}&#39;{scopeRep} r{rowRep} for {name}&#34;)
             return result
 
-        spec(&#34;Checking scopes ...&#34;)
+        spec(&#34;Checking scopes&#34;)
 
         raw = sheetData.raw
         scopeMap = sheetData.scopeMap
@@ -856,7 +927,11 @@ class Sheets(Scopes, Triggers):
             scopeStrSet = {&#34;&#34;} if scopeStrs is None else set(scopeStrs)
             intv = (b, e) if b is not None and e is not None else ()
 
-            spec(self.repScope(intv))
+            headCache = []
+            problemCache = []
+
+            msg = self.repScope(intv)
+            spec(msg, cache=headCache)
 
             thisCompiled = AttrDict()
             compiled[intv] = thisCompiled
@@ -959,13 +1034,17 @@ class Sheets(Scopes, Triggers):
                                 clashes += theseClashes
 
                             problems.add(problem)
-                            errProblem(problem)
+                            errProblem(problem, problemCache)
 
             if ambi &gt; 0:
-                err(f&#34;Ambiguous triggers: {ambi} x&#34;)
+                err(f&#34;Ambiguous triggers: {ambi} x&#34;, cache=problemCache)
 
             if clashes &gt; 0:
-                err(f&#34;Reused triggers scope: {clashes} x&#34;)
+                err(f&#34;Reused triggers scope: {clashes} x&#34;, cache=problemCache)
+
+            if len(problemCache) &gt; 0:
+                self.flush(headCache)
+                self.flush(problemCache)
 
     def _prepareSheet(self):
         &#34;&#34;&#34;Transform the sheets into instructions.
@@ -973,8 +1052,9 @@ class Sheets(Scopes, Triggers):
         Now we have intervals with fixed sets of triggers,
         we can generate instructions out of the sheets: info that the search
         algorithm needs to do its work.
-        &#34;&#34;&#34;
 
+        This info is such that it supports simultaneous searching for multiple triggers.
+        &#34;&#34;&#34;
         spaceEscaped = self.spaceEscaped
 
         sheetData = self.getSheetData()
@@ -1035,15 +1115,16 @@ class Sheets(Scopes, Triggers):
         &#34;&#34;&#34;Carries out the search instructions that have been compiled from the sheet.
 
         We look up the occurrences, organize the hits of the triggers, and store them
-        as entities.
+        as entities in the current set.
         &#34;&#34;&#34;
         if not self.properlySetup:
             return
 
+        forceSilent = self.forceSilent
         silent = self.silent
         browse = self.browse
 
-        if not browse and not silent:
+        if not browse and not silent and not forceSilent:
             app = self.app
             app.indent(reset=True)
             app.info(&#34;Looking up occurrences of many candidates ...&#34;)
@@ -1051,7 +1132,7 @@ class Sheets(Scopes, Triggers):
         self.findOccs()
         self._collectHits()
 
-        if not browse and not silent:
+        if not browse and not silent and not forceSilent:
             app.info(&#34;done&#34;)
 
         self._markEntities()
@@ -1064,11 +1145,14 @@ class Sheets(Scopes, Triggers):
         if not self.properlySetup:
             return
 
+        forceSilent = self.forceSilent
         sheetData = self.getSheetData()
         inventory = sheetData.inventory
         instructions = sheetData.instructions
 
         def log(msg):
+            if forceSilent:
+                return
             self.log(False, 0, msg)
 
         hitData = {}
@@ -1094,7 +1178,7 @@ class Sheets(Scopes, Triggers):
         have to be assigned to the surface forms.
 
         The inventory knows where the occurrences of the surface forms are.
-        If there is no inventory yet, it will be created.
+        All these occurrences will be added to the current entity set.
         &#34;&#34;&#34;
         if not self.properlySetup:
             return
@@ -1117,7 +1201,10 @@ class Sheets(Scopes, Triggers):
         self._addToSet(newEntities)
 
     def getSheetData(self):
-        &#34;&#34;&#34;Deliver the current sheet.
+        &#34;&#34;&#34;Deliver the data of current sheet.
+
+        Sheet data is `tf.core.generic.AttrDict` with various kinds of data under
+        various keys, which are listed in `tf.ner.sheets.SHEET_KEYS`.
 
         Returns
         -------
@@ -1128,7 +1215,25 @@ class Sheets(Scopes, Triggers):
 
         return sheetsData.setdefault(sheetName, AttrDict())
 
-    def log(self, isError, indent, msg):
+    def log(self, isError, indent, msg, cache=None):
+        &#34;&#34;&#34;Issue a message to the user.
+
+        Depending on the `silent` member of the instance and on whether the message
+        is an error message, it can be inhibited.
+
+        Parameters
+        ----------
+        isError: boolean
+            Whether it is an error message or a normal message
+        indent: integer
+            How far (in tabs) the message should be indented
+        msg: string
+            The actual message
+        cache: list, optional None
+            If it is a list, the output will not be sent to the console,
+            but appended to the cache.
+            You can save it for later.
+        &#34;&#34;&#34;
         silent = self.silent
 
         if silent and not isError:
@@ -1138,15 +1243,56 @@ class Sheets(Scopes, Triggers):
         sheetData = self.getSheetData()
         logData = sheetData.logData
 
-        logData.append((isError, indent, msg))
+        if cache is None:
+            logData.append((isError, indent, msg))
 
         if not browse:
-            self.consoleLine(isError, indent, msg)</code></pre>
+            if cache is None:
+                self.consoleLine(isError, indent, msg)
+            else:
+                cache.append((isError, indent, msg))
+
+    def flush(self, cache):
+        browse = self.browse
+        sheetData = self.getSheetData()
+        logData = sheetData.logData
+
+        if not browse:
+            for item in cache:
+                logData.append(item)
+                self.consoleLine(*item)</code></pre>
 </details>
 </section>
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-variables">Global variables</h2>
+<dl>
+<dt id="tf.ner.sheets.SHEET_KEYS"><code class="name">var <span class="ident">SHEET_KEYS</span></code></dt>
+<dd>
+<div class="desc"><p>Keys by which the data of a NER sheet is organized.</p>
+<ul>
+<li><code>caseSensitive</code>: boolean, whether to look for triggers in the corpus in a
+case-sensitive way;</li>
+<li><code>metaFields</code>: the list of colums in the NER spreadsheet that are not involved
+in entity lookup: this is the metadata of an entity;</li>
+<li><code>metaData</code>: the metadata of an entity as dictionary;</li>
+<li><code>logData</code>: the collected messages issues while reading and processing a NER sheet;</li>
+<li><code>nameMap</code>: mapping from entities to names;</li>
+<li><code>scopeMap</code>: mapping from scope strings to scope data structures;</li>
+<li><code>rowMap</code>: mapping from triggers to the rows where they occur;</li>
+<li><code>instructions</code>: compiled search instructions to search for all triggers
+simultaneously;</li>
+<li><code>inventory</code>: complete result of the search for triggers;</li>
+<li><code>triggerFromMatch</code>: mapping for each match in the corpus which trigger was matched
+in what scope;</li>
+<li><code>triggerScopes</code>: for each trigger, the set of its scopes where it is used is stored;</li>
+<li><code>allTriggers</code>: the set of all triggers, more precisely, the set of all
+trigger-entity-scope combinations;</li>
+<li><code>hitData</code>: overview of the inventory (see above).</li>
+</ul></div>
+</dd>
+</dl>
 </section>
 <section>
 </section>
@@ -1172,7 +1318,7 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/ner/sheets.py#L43-L1109" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/ner/sheets.py#L64-L1228" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Sheets(Scopes, Triggers):
     def __init__(self, sheets=None):
@@ -1267,7 +1413,7 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
                 sheetNames.add(sheetName)
                 setNames.add(f&#34;.{sheetName}&#34;)
 
-    def setSheet(self, newSheet, force=False, caseSensitive=None):
+    def setSheet(self, newSheet, force=False, caseSensitive=None, forceSilent=False):
         &#34;&#34;&#34;Switch to a named ner sheet.
 
         After the switch, the new sheet will be loaded into memory.
@@ -1281,6 +1427,9 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
         caseSensitive: boolean, optional None
             Whether to work with the spreadsheet in a case-sensitive way.
             If `None`, the value is taken from the current instance of this class.
+        forceSilent: boolean, optional False
+            If True, all output is suppressed, irrespective of the `silent` member
+            in the instance. Only show stopping error messages are let through.
 
         &#34;&#34;&#34;
         if not self.properlySetup:
@@ -1310,6 +1459,7 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
         if caseSensitive is None:
             caseSensitive = self.caseSensitive
 
+        self.forceSilent = True
         self.loadSheetData(force=force, caseSensitive=caseSensitive)
 
     def loadSheetData(self, force=False, caseSensitive=False):
@@ -1350,6 +1500,7 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
         if sheetName is None:
             return None
 
+        forceSilent = self.forceSilent
         sheets = self.sheets
 
         if sheetName not in sheets:
@@ -1418,10 +1569,14 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
 
             if loaded:
                 # we have loaded valid, up-to-date, previously compiled spreadsheet data
-                self.console(&#34;SHEET data: loaded from disk&#34;)
+                if not forceSilent:
+                    self.console(&#34;SHEET data: loaded from disk&#34;)
             else:
                 # now we really heave to read and compile the spreadsheet
-                self.console(&#34;SHEET data: computing from scratch ...&#34;, newline=False)
+                if not forceSilent:
+                    self.console(
+                        &#34;SHEET data: computing from scratch ...&#34;, newline=False
+                    )
                 sheetData.logData = []
                 sheetData.caseSensitive = caseSensitive
 
@@ -1444,15 +1599,19 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
                 with fileOpen(timeFile, &#34;w&#34;) as fh:
                     fh.write(f&#34;{tm}\n&#34;)
 
-                self.console(&#34;done&#34;)
+                if not forceSilent:
+                    self.console(&#34;done&#34;)
                 showLog = False
         else:
             # the compiled spreadsheet data we have in memory is still up to date
-            self.console(&#34;SHEET data: already in memory and uptodate&#34;)
+            if not forceSilent:
+                self.console(&#34;SHEET data: already in memory and uptodate&#34;)
 
-        if showLog and not browse:
+        if showLog and not browse and not forceSilent:
             for x in sheetData.logData:
                 self.consoleLine(*x)
+
+        self.forceSilent = False
 
     def makeSheetOfSingleTokens(self):
         &#34;&#34;&#34;Make a derived sheet based on the individual tokens in the triggers.
@@ -1693,6 +1852,7 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
         Store the results in a hierarchy that mimicks the way they are organized in the
         file system.
         &#34;&#34;&#34;
+        forceSilent = self.forceSilent
         sheetName = self.sheetName
         sheetDir = self.sheetDir
         loadXls = self.loadXls
@@ -1704,15 +1864,23 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
         scopeI = self.scopeI
 
         def spec(msg):
+            if forceSilent:
+                return
             self.log(None, 0, msg)
 
         def log(msg):
+            if forceSilent:
+                return
             self.log(False, 0, msg)
 
         def err(msg):
+            if forceSilent:
+                return
             self.log(True, 0, msg)
 
         def err1(msg):
+            if forceSilent:
+                return
             self.log(True, 1, msg)
 
         sheetData = self.getSheetData()
@@ -1738,6 +1906,10 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
 
         rowMap = {}
         sheetData.rowMap = rowMap
+        &#34;&#34;&#34;Will contain a mapping from triggers to row.
+
+        For each trigger we store the row in the NER sheet where that trigger occurs.
+        &#34;&#34;&#34;
 
         for k in CLEAR_KEYS:
             if k in sheetData:
@@ -1752,6 +1924,11 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
 
         scopeMap = {}
         sheetData.scopeMap = scopeMap
+        &#34;&#34;&#34;Will contain a mapping from scope specifiers to logical scopes.
+
+        Scope specifiers are strings, logical scopes are the data structures
+        that you get when you parse those strings.
+        &#34;&#34;&#34;
 
         sheetPath = f&#34;{sheetDir}/{sheetName}.xlsx&#34;
 
@@ -1760,7 +1937,8 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
         maxCol = ws.max_column
         maxRow = ws.max_row
 
-        self.console(f&#34;Sheet with {maxRow} rows and {maxCol} columns&#34;)
+        if not forceSilent:
+            self.console(f&#34;Sheet with {maxRow} rows and {maxCol} columns&#34;)
 
         raw = {}
         sheetData.raw = raw
@@ -1877,28 +2055,29 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
                 if i not in {0, scopeI, trigI}
             ]
 
-        for diags, isdict, label in (
-            (emptyLines, False, &#34;without a name and triggers&#34;),
-            (multiNames, True, &#34;with a duplicate name&#34;),
-            (noNames, False, &#34;without a name&#34;),
-            (scopeMistakes, True, &#34;with scope mistakes&#34;),
-            (noTrigs, False, &#34;without triggers&#34;),
-        ):
-            n = len(diags)
+        if not forceSilent:
+            for diags, isdict, label in (
+                (emptyLines, False, &#34;without a name and triggers&#34;),
+                (multiNames, True, &#34;with a duplicate name&#34;),
+                (noNames, False, &#34;without a name&#34;),
+                (scopeMistakes, True, &#34;with scope mistakes&#34;),
+                (noTrigs, False, &#34;without triggers&#34;),
+            ):
+                n = len(diags)
 
-            if n &gt; 0:
-                if isdict:
-                    if n &gt; 0:
+                if n &gt; 0:
+                    if isdict:
+                        if n &gt; 0:
+                            plural = &#34;&#34; if n == 1 else &#34;s&#34;
+                            err(f&#34;{n} row{plural} {label}:&#34;)
+
+                            for r in sorted(diags):
+                                msg = diags[r]
+                                err1(f&#34;r{r:&gt;3}: {msg}&#34;)
+                    else:
+                        rep = &#34;, &#34;.join(str(x) for x in sorted(diags)[0:10])
                         plural = &#34;&#34; if n == 1 else &#34;s&#34;
-                        err(f&#34;{n} row{plural} {label}:&#34;)
-
-                        for r in sorted(diags):
-                            msg = diags[r]
-                            err1(f&#34;r{r:&gt;3}: {msg}&#34;)
-                else:
-                    rep = &#34;, &#34;.join(str(x) for x in sorted(diags)[0:10])
-                    plural = &#34;&#34; if n == 1 else &#34;s&#34;
-                    err(f&#34;{n} row{plural} {label}:\n\te.g.: {rep}&#34;)
+                        err(f&#34;{n} row{plural} {label}:\n\te.g.: {rep}&#34;)
 
     def _compileSheet(self):
         &#34;&#34;&#34;Compiles the info in tweaked sheets according to the scopes in it.
@@ -1907,24 +2086,41 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
         the corpus in maximal intervals in which no trigger goes into or out of scope.
         During these intervals we have a fixed set of triggers that must be looked up,
         and we can check for the consistency of these triggers.
+
+        In every scope we may find two kinds of problems with triggers and scopes:
+
+        *   ambiguous trigger: a trigger is used by multiple entities in that scope.
+        *   clashing triggers: a trigger occurs in more than one row for a specific
+            entity and a specific scope.
+
+        These problems are detected and reported.
         &#34;&#34;&#34;
+        forceSilent = self.forceSilent
         sheetData = self.getSheetData()
         compiled = AttrDict()
         sheetData.compiled = compiled
         nameMap = sheetData.nameMap
 
-        def spec(msg):
-            self.log(None, 0, msg)
+        def spec(msg, cache=None):
+            if forceSilent:
+                return
+            self.log(None, 0, msg, cache=cache)
 
-        def log(msg):
-            self.log(False, 0, msg)
+        def log(msg, cache=None):
+            if forceSilent:
+                return
+            self.log(False, 0, msg, cache=cache)
 
-        def err(msg):
-            self.log(True, 0, msg)
+        def err(msg, cache=None):
+            if forceSilent:
+                return
+            self.log(True, 0, msg, cache=cache)
 
-        def errProblem(problem):
+        def errProblem(problem, cache):
+            if forceSilent:
+                return
             for indent, msg in problem:
-                self.log(True, indent, msg)
+                self.log(True, indent, msg, cache=cache)
 
         tFullMap = {}
 
@@ -1943,7 +2139,7 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
                     result.append(f&#34;&#39;{tr}&#39;{scopeRep} r{rowRep} for {name}&#34;)
             return result
 
-        spec(&#34;Checking scopes ...&#34;)
+        spec(&#34;Checking scopes&#34;)
 
         raw = sheetData.raw
         scopeMap = sheetData.scopeMap
@@ -1955,7 +2151,11 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
             scopeStrSet = {&#34;&#34;} if scopeStrs is None else set(scopeStrs)
             intv = (b, e) if b is not None and e is not None else ()
 
-            spec(self.repScope(intv))
+            headCache = []
+            problemCache = []
+
+            msg = self.repScope(intv)
+            spec(msg, cache=headCache)
 
             thisCompiled = AttrDict()
             compiled[intv] = thisCompiled
@@ -2058,13 +2258,17 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
                                 clashes += theseClashes
 
                             problems.add(problem)
-                            errProblem(problem)
+                            errProblem(problem, problemCache)
 
             if ambi &gt; 0:
-                err(f&#34;Ambiguous triggers: {ambi} x&#34;)
+                err(f&#34;Ambiguous triggers: {ambi} x&#34;, cache=problemCache)
 
             if clashes &gt; 0:
-                err(f&#34;Reused triggers scope: {clashes} x&#34;)
+                err(f&#34;Reused triggers scope: {clashes} x&#34;, cache=problemCache)
+
+            if len(problemCache) &gt; 0:
+                self.flush(headCache)
+                self.flush(problemCache)
 
     def _prepareSheet(self):
         &#34;&#34;&#34;Transform the sheets into instructions.
@@ -2072,8 +2276,9 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
         Now we have intervals with fixed sets of triggers,
         we can generate instructions out of the sheets: info that the search
         algorithm needs to do its work.
-        &#34;&#34;&#34;
 
+        This info is such that it supports simultaneous searching for multiple triggers.
+        &#34;&#34;&#34;
         spaceEscaped = self.spaceEscaped
 
         sheetData = self.getSheetData()
@@ -2134,15 +2339,16 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
         &#34;&#34;&#34;Carries out the search instructions that have been compiled from the sheet.
 
         We look up the occurrences, organize the hits of the triggers, and store them
-        as entities.
+        as entities in the current set.
         &#34;&#34;&#34;
         if not self.properlySetup:
             return
 
+        forceSilent = self.forceSilent
         silent = self.silent
         browse = self.browse
 
-        if not browse and not silent:
+        if not browse and not silent and not forceSilent:
             app = self.app
             app.indent(reset=True)
             app.info(&#34;Looking up occurrences of many candidates ...&#34;)
@@ -2150,7 +2356,7 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
         self.findOccs()
         self._collectHits()
 
-        if not browse and not silent:
+        if not browse and not silent and not forceSilent:
             app.info(&#34;done&#34;)
 
         self._markEntities()
@@ -2163,11 +2369,14 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
         if not self.properlySetup:
             return
 
+        forceSilent = self.forceSilent
         sheetData = self.getSheetData()
         inventory = sheetData.inventory
         instructions = sheetData.instructions
 
         def log(msg):
+            if forceSilent:
+                return
             self.log(False, 0, msg)
 
         hitData = {}
@@ -2193,7 +2402,7 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
         have to be assigned to the surface forms.
 
         The inventory knows where the occurrences of the surface forms are.
-        If there is no inventory yet, it will be created.
+        All these occurrences will be added to the current entity set.
         &#34;&#34;&#34;
         if not self.properlySetup:
             return
@@ -2216,7 +2425,10 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
         self._addToSet(newEntities)
 
     def getSheetData(self):
-        &#34;&#34;&#34;Deliver the current sheet.
+        &#34;&#34;&#34;Deliver the data of current sheet.
+
+        Sheet data is `tf.core.generic.AttrDict` with various kinds of data under
+        various keys, which are listed in `tf.ner.sheets.SHEET_KEYS`.
 
         Returns
         -------
@@ -2227,7 +2439,25 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
 
         return sheetsData.setdefault(sheetName, AttrDict())
 
-    def log(self, isError, indent, msg):
+    def log(self, isError, indent, msg, cache=None):
+        &#34;&#34;&#34;Issue a message to the user.
+
+        Depending on the `silent` member of the instance and on whether the message
+        is an error message, it can be inhibited.
+
+        Parameters
+        ----------
+        isError: boolean
+            Whether it is an error message or a normal message
+        indent: integer
+            How far (in tabs) the message should be indented
+        msg: string
+            The actual message
+        cache: list, optional None
+            If it is a list, the output will not be sent to the console,
+            but appended to the cache.
+            You can save it for later.
+        &#34;&#34;&#34;
         silent = self.silent
 
         if silent and not isError:
@@ -2237,10 +2467,24 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
         sheetData = self.getSheetData()
         logData = sheetData.logData
 
-        logData.append((isError, indent, msg))
+        if cache is None:
+            logData.append((isError, indent, msg))
 
         if not browse:
-            self.consoleLine(isError, indent, msg)</code></pre>
+            if cache is None:
+                self.consoleLine(isError, indent, msg)
+            else:
+                cache.append((isError, indent, msg))
+
+    def flush(self, cache):
+        browse = self.browse
+        sheetData = self.getSheetData()
+        logData = sheetData.logData
+
+        if not browse:
+            for item in cache:
+                logData.append(item)
+                self.consoleLine(*item)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -2264,6 +2508,12 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
 </dl>
 <h3>Methods</h3>
 <dl>
+<dt id="tf.ner.sheets.Sheets.flush"><code class="name flex">
+<span>def <span class="ident">flush</span></span>(<span>self, cache)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="tf.ner.sheets.Sheets.getMeta"><code class="name flex">
 <span>def <span class="ident">getMeta</span></span>(<span>self)</span>
 </code></dt>
@@ -2287,7 +2537,9 @@ i in the</dd>
 <span>def <span class="ident">getSheetData</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Deliver the current sheet.</p>
+<div class="desc"><p>Deliver the data of current sheet.</p>
+<p>Sheet data is <code><a title="tf.core.generic.AttrDict" href="../core/generic.html#tf.core.generic.AttrDict">AttrDict</a></code> with various kinds of data under
+various keys, which are listed in <code><a title="tf.ner.sheets.SHEET_KEYS" href="#tf.ner.sheets.SHEET_KEYS">SHEET_KEYS</a></code>.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>dict</code></dt>
@@ -2332,10 +2584,25 @@ scratch and saved to disk, with a time stamp.</p>
 </dl></div>
 </dd>
 <dt id="tf.ner.sheets.Sheets.log"><code class="name flex">
-<span>def <span class="ident">log</span></span>(<span>self, isError, indent, msg)</span>
+<span>def <span class="ident">log</span></span>(<span>self, isError, indent, msg, cache=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Issue a message to the user.</p>
+<p>Depending on the <code>silent</code> member of the instance and on whether the message
+is an error message, it can be inhibited.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>isError</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>Whether it is an error message or a normal message</dd>
+<dt><strong><code>indent</code></strong> :&ensp;<code>integer</code></dt>
+<dd>How far (in tabs) the message should be indented</dd>
+<dt><strong><code>msg</code></strong> :&ensp;<code>string</code></dt>
+<dd>The actual message</dd>
+<dt><strong><code>cache</code></strong> :&ensp;<code>list</code>, optional <code>None</code></dt>
+<dd>If it is a list, the output will not be sent to the console,
+but appended to the cache.
+You can save it for later.</dd>
+</dl></div>
 </dd>
 <dt id="tf.ner.sheets.Sheets.makeSheetOfSingleTokens"><code class="name flex">
 <span>def <span class="ident">makeSheetOfSingleTokens</span></span>(<span>self)</span>
@@ -2430,7 +2697,7 @@ by means of the function <code><a title="tf.ner.ner.NER.getMeta" href="#tf.ner.s
 by editing the spreadsheets in Excel.</p></div>
 </dd>
 <dt id="tf.ner.sheets.Sheets.setSheet"><code class="name flex">
-<span>def <span class="ident">setSheet</span></span>(<span>self, newSheet, force=False, caseSensitive=None)</span>
+<span>def <span class="ident">setSheet</span></span>(<span>self, newSheet, force=False, caseSensitive=None, forceSilent=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Switch to a named ner sheet.</p>
@@ -2444,6 +2711,9 @@ by editing the spreadsheets in Excel.</p></div>
 <dt><strong><code>caseSensitive</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
 <dd>Whether to work with the spreadsheet in a case-sensitive way.
 If <code>None</code>, the value is taken from the current instance of this class.</dd>
+<dt><strong><code>forceSilent</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, all output is suppressed, irrespective of the <code>silent</code> member
+in the instance. Only show stopping error messages are let through.</dd>
 </dl></div>
 </dd>
 <dt id="tf.ner.sheets.Sheets.writeSheetData"><code class="name flex">
@@ -2471,6 +2741,7 @@ by means of this function.</p>
 </li>
 <li><code><b><a title="tf.ner.triggers.Triggers" href="triggers.html#tf.ner.triggers.Triggers">Triggers</a></b></code>:
 <ul class="hlist">
+<li><code><a title="tf.ner.triggers.Triggers.diagnoseTriggers" href="triggers.html#tf.ner.triggers.Triggers.diagnoseTriggers">diagnoseTriggers</a></code></li>
 <li><code><a title="tf.ner.triggers.Triggers.findOccs" href="triggers.html#tf.ner.triggers.Triggers.findOccs">findOccs</a></code></li>
 <li><code><a title="tf.ner.triggers.Triggers.reportHits" href="triggers.html#tf.ner.triggers.Triggers.reportHits">reportHits</a></code></li>
 <li><code><a title="tf.ner.triggers.Triggers.triggerInterference" href="triggers.html#tf.ner.triggers.Triggers.triggerInterference">triggerInterference</a></code></li>
@@ -2543,11 +2814,17 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.ner" href="index.html">tf.ner</a></code></li>
 </ul>
 </li>
+<li><h3><a href="#header-variables">Global variables</a></h3>
+<ul class="">
+<li><code><a title="tf.ner.sheets.SHEET_KEYS" href="#tf.ner.sheets.SHEET_KEYS">SHEET_KEYS</a></code></li>
+</ul>
+</li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
 <h4><code><a title="tf.ner.sheets.Sheets" href="#tf.ner.sheets.Sheets">Sheets</a></code></h4>
 <ul class="">
+<li><code><a title="tf.ner.sheets.Sheets.flush" href="#tf.ner.sheets.Sheets.flush">flush</a></code></li>
 <li><code><a title="tf.ner.sheets.Sheets.getMeta" href="#tf.ner.sheets.Sheets.getMeta">getMeta</a></code></li>
 <li><code><a title="tf.ner.sheets.Sheets.getSheetData" href="#tf.ner.sheets.Sheets.getSheetData">getSheetData</a></code></li>
 <li><code><a title="tf.ner.sheets.Sheets.getToTokensFunc" href="#tf.ner.sheets.Sheets.getToTokensFunc">getToTokensFunc</a></code></li>

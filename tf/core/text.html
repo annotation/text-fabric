@@ -374,7 +374,7 @@ in the file once!)</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/core/text.py#L1-L1275" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/core/text.py#L1-L1281" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Text API
@@ -930,7 +930,7 @@ class Text:
 
         return (r0, r1, r2)
 
-    def sectionFromNode(self, n, lastSlot=False, lang=&#34;en&#34;, fillup=False):
+    def sectionFromNode(self, n, lastSlot=False, lang=&#34;en&#34;, fillup=False, level=None):
         &#34;&#34;&#34;Gives the full heading of a section node.
 
         Parameters
@@ -946,6 +946,8 @@ class Text:
             Must be a 2-letter language code.
         fillup: boolean, optional False
             Whether to fill up the tuple with missing section elements.
+        level: integer, optional None
+            If passed, only the first so many members of the tuple will be returned.
 
         Returns
         -------
@@ -976,7 +978,7 @@ class Text:
 
         sFs = self.sectionFeatures
 
-        return tuple(
+        result = tuple(
             &#34;&#34;
             if n is None
             else self._sec0Name(n, lang=lang)
@@ -984,6 +986,10 @@ class Text:
             else sFs[i].get(n, None)
             for (i, n) in enumerate(sTuple)
         )
+        if level is not None:
+            result = result[0:level]
+
+        return result
 
     def nodeFromSection(self, section, lang=&#34;en&#34;):
         &#34;&#34;&#34;Given a section tuple, return the node of it.
@@ -1685,7 +1691,7 @@ and <code>lang='en'</code> the language of the book name.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/81f703840df3219e1327e63fb41c54be18ffd992/tf/core/text.py#L366-L1275" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/core/text.py#L366-L1281" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Text:
     &#34;&#34;&#34;Low level text representation, including section headings.
@@ -1876,7 +1882,7 @@ and <code>lang='en'</code> the language of the book name.</p>
 
         return (r0, r1, r2)
 
-    def sectionFromNode(self, n, lastSlot=False, lang=&#34;en&#34;, fillup=False):
+    def sectionFromNode(self, n, lastSlot=False, lang=&#34;en&#34;, fillup=False, level=None):
         &#34;&#34;&#34;Gives the full heading of a section node.
 
         Parameters
@@ -1892,6 +1898,8 @@ and <code>lang='en'</code> the language of the book name.</p>
             Must be a 2-letter language code.
         fillup: boolean, optional False
             Whether to fill up the tuple with missing section elements.
+        level: integer, optional None
+            If passed, only the first so many members of the tuple will be returned.
 
         Returns
         -------
@@ -1922,7 +1930,7 @@ and <code>lang='en'</code> the language of the book name.</p>
 
         sFs = self.sectionFeatures
 
-        return tuple(
+        result = tuple(
             &#34;&#34;
             if n is None
             else self._sec0Name(n, lang=lang)
@@ -1930,6 +1938,10 @@ and <code>lang='en'</code> the language of the book name.</p>
             else sFs[i].get(n, None)
             for (i, n) in enumerate(sTuple)
         )
+        if level is not None:
+            result = result[0:level]
+
+        return result
 
     def nodeFromSection(self, section, lang=&#34;en&#34;):
         &#34;&#34;&#34;Given a section tuple, return the node of it.
@@ -2714,7 +2726,7 @@ the result is a level 1 node.</dd>
 </dl></div>
 </dd>
 <dt id="tf.core.text.Text.sectionFromNode"><code class="name flex">
-<span>def <span class="ident">sectionFromNode</span></span>(<span>self, n, lastSlot=False, lang='en', fillup=False)</span>
+<span>def <span class="ident">sectionFromNode</span></span>(<span>self, n, lastSlot=False, lang='en', fillup=False, level=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gives the full heading of a section node.</p>
@@ -2731,6 +2743,8 @@ as far as they are language dependent.
 Must be a 2-letter language code.</dd>
 <dt><strong><code>fillup</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>Whether to fill up the tuple with missing section elements.</dd>
+<dt><strong><code>level</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>If passed, only the first so many members of the tuple will be returned.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
