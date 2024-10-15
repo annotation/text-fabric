@@ -26,6 +26,14 @@ pip install -e .
 
 In the function `tf.core.helpers.mdEsc()` more markdown characters will be escaped.
 
+The function `tf.advanced.sections.sectionStrFromNode()` has an additional optional
+argument `level`, which chooses the level of the enclosing section around the node.
+Instead of picking the section around that node with the deepest level, we take the
+section at the specified level.
+
+Better reporting of what happens when we merge spelling variants into a NER sheet,
+see `tf.ner.variants.Detect.mergeTriggers()`.
+
 For the rest: mostly a documentation update.
 
 #### 12.6.0

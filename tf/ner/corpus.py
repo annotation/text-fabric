@@ -457,8 +457,8 @@ class Corpus(Settings):
             All nodes of the entity type
         """
 
-        def sectionHead(node):
-            return app.sectionStrFromNode(node)
+        def sectionHead(node, level=None):
+            return app.sectionStrFromNode(node, level=level)
 
         self.sectionHead = sectionHead
         """Provide a section heading.
@@ -467,6 +467,8 @@ class Corpus(Settings):
         ----------
         node: integer
             The node whose section head we need.
+        level: integer, optional None
+            If passed, the containing section of that level will be taken.
 
         Returns
         -------

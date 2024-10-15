@@ -552,7 +552,7 @@ class Text:
 
         return (r0, r1, r2)
 
-    def sectionFromNode(self, n, lastSlot=False, lang="en", fillup=False):
+    def sectionFromNode(self, n, lastSlot=False, lang="en", fillup=False, level=None):
         """Gives the full heading of a section node.
 
         Parameters
@@ -568,6 +568,8 @@ class Text:
             Must be a 2-letter language code.
         fillup: boolean, optional False
             Whether to fill up the tuple with missing section elements.
+        level: integer, optional None
+            If passed, only the first so many members of the tuple will be returned.
 
         Returns
         -------
@@ -598,7 +600,7 @@ class Text:
 
         sFs = self.sectionFeatures
 
-        return tuple(
+        result = tuple(
             ""
             if n is None
             else self._sec0Name(n, lang=lang)
@@ -606,6 +608,10 @@ class Text:
             else sFs[i].get(n, None)
             for (i, n) in enumerate(sTuple)
         )
+        if level is not None:
+            result = result[0:level]
+
+        return result
 
     def nodeFromSection(self, section, lang="en"):
         """Given a section tuple, return the node of it.

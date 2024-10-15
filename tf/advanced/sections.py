@@ -103,7 +103,7 @@ def nodeFromSectionStr(app, sectionStr, lang="en"):
     sectionTyped = []
     msgs = []
 
-    for (i, sectionPart) in enumerate(section):
+    for i, sectionPart in enumerate(section):
         if dataTypes[i] == "int":
             try:
                 part = int(sectionPart)
@@ -125,7 +125,7 @@ def nodeFromSectionStr(app, sectionStr, lang="en"):
     return sectionNode
 
 
-def sectionStrFromNode(app, n, lang="en", lastSlot=False, fillup=False):
+def sectionStrFromNode(app, n, lang="en", lastSlot=False, fillup=False, level=None):
     """The heading of a section to which a node belongs.
 
     Compare `tf.core.text.Text.nodeFromSection`.
@@ -144,6 +144,9 @@ def sectionStrFromNode(app, n, lang="en", lastSlot=False, fillup=False):
         Must be a 2-letter language code.
     fillup: boolean, optional False
         Same as for `tf.core.text.Text.sectionTuple`.
+    level: integer, optional None
+        If passed, not the deepest enclosing section will be taken, but the enclosing
+        section at that level.
 
     Returns
     -------
@@ -162,7 +165,9 @@ def sectionStrFromNode(app, n, lang="en", lastSlot=False, fillup=False):
 
     seps = ("", sep1, sep2)
 
-    section = T.sectionFromNode(n, lang=lang, lastSlot=lastSlot, fillup=fillup)
+    section = T.sectionFromNode(
+        n, lang=lang, lastSlot=lastSlot, fillup=fillup, level=level
+    )
     return "".join(
         "" if part is None else f"{seps[i]}{part}" for (i, part) in enumerate(section)
     )
@@ -189,10 +194,10 @@ def structureStrFromNode(app, n):
 
     struct = T.headingFromNode(n)
 
-    sep = ''
-    result = ''
+    sep = ""
+    result = ""
 
-    for (i, part) in enumerate(struct):
+    for i, part in enumerate(struct):
         if part is None:
             continue
         (nType, label) = part
@@ -203,6 +208,4 @@ def structureStrFromNode(app, n):
 
 def _sectionLink(app, n, text=None, clsName=None):
     newClsName = f'rwh {clsName or ""}'
-    return app.webLink(
-        n, clsName=newClsName, text=text, _asString=True, _noUrl=True
-    )
+    return app.webLink(n, clsName=newClsName, text=text, _asString=True, _noUrl=True)

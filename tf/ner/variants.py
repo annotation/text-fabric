@@ -12,11 +12,12 @@ Reynaert and Maarten van Gompel.
 import collections
 import re
 
-from analiticcl import VariantModel, Weights, SearchParameters
+# from analiticcl import VariantModel, Weights, SearchParameters
 
-from tf.core.files import initTree, fileExists, readJson, writeJson
-from tf.core.helpers import console
-from tf.convert.recorder import Recorder
+from ..capable import CheckImport
+from ..core.files import initTree, fileExists, readJson, writeJson, fileOpen
+from ..core.helpers import console
+from ..convert.recorder import Recorder
 
 
 HTML_PRE = """<html>
@@ -99,11 +100,24 @@ class Detect:
             sure we do so in case sesnsitive mode (even if we have used the sheet
             in case insensitive mode for the lookup).
         """
+        CI = CheckImport("analiticcl")
+
+        if CI.importOK(hint=True):
+            an = CI.importGet()
+            self.VariantModel = an.VariantModel
+            self.Weights = an.Weights
+            self.SearchParameters = an.SearchParameters
+        else:
+            self.properlySetup = False
+            return None
+
+        self.properlySetup = True
+
         self.NE = NE
-        self.ok = True
 
         if sheet is None:
             sheet = NE.sheetName
+            NE.setSheet(sheet, caseSensitive=True, force=True, forceSilent=True)
         else:
             NE.setSheet(sheet, caseSensitive=True, force=True)
 
@@ -115,10 +129,9 @@ class Detect:
                 ),
                 error=True,
             )
-            self.ok = False
+            self.properlySetup = False
             return
 
-        NE.setSheet(sheet, caseSensitive=True, force=True)
         self.sheet = sheet
         self.sheetData = NE.getSheetData()
 
@@ -135,7 +148,7 @@ class Detect:
         NE.setSheet(sheet, caseSensitive=True, force=True)
         sheetData = NE.getSheetData()
 
-        console("Overview of names by length:")
+        NE.console("Overview of names by length:")
         triggers = set(sheetData.rowMap)
 
         lengths = collections.defaultdict(list)
@@ -145,7 +158,7 @@ class Detect:
 
         for n, trigs in sorted(lengths.items(), key=lambda x: -x[0]):
             examples = "\n      ".join(sorted(trigs, key=lambda x: x.lower())[0:5])
-            console(f"  {n} tokens: {len(trigs):>3} names e.g.:\n      {examples}")
+            NE.console(f"  {n} tokens: {len(trigs):>3} names e.g.:\n      {examples}")
 
     def prepare(self):
         """Prepare the data for the search of spelling variants.
@@ -153,7 +166,7 @@ class Detect:
         We construct an alphabet and a plain text out of the corpus,
         and we construct a lexicon from the triggers in the current spreadsheet.
         """
-        if not self.ok:
+        if not self.properlySetup:
             console("This instance is not properly set up", error=True)
             return
 
@@ -197,10 +210,11 @@ class Detect:
             filtering (again).
             `2`: do not use the cache, but compute everything again.
         """
-        if not self.ok:
+        if not self.properlySetup:
             console("This instance is not properly set up", error=True)
             return
 
+        SearchParameters = self.SearchParameters
         ansettings = self.settings.analiticcl
         searchParams = ansettings.searchParams
         suoffsets = searchParams.unicodeoffsets
@@ -209,6 +223,7 @@ class Detect:
         scoring = ansettings.scoring
         sthreshold = scoring.threshold
 
+        NE = self.NE
         app = self.app
         model = self.model
         rec = self.rec
@@ -221,8 +236,8 @@ class Detect:
 
         offset = 0 if start is None else nText + start if start < 0 else start
 
-        console(f"{nText:>8} text  length")
-        console(f"{offset:>8} offset in complete text")
+        NE.console(f"{nText:>8} text  length")
+        NE.console(f"{offset:>8} offset in complete text")
 
         slug = (
             f"{suoffsets}-{smaxngram}-{sfreqweight}-{sthreshold}-"
@@ -362,7 +377,7 @@ class Detect:
         self.matches = matches
         self.matchPositions = matchPositions
 
-    def mergeTriggers(self):
+    def mergeTriggers(self, level=1):
         """Merge spelling variants of triggers into a NER sheet.
 
         When we have found spelling variants of triggers, we want to include
@@ -388,8 +403,15 @@ class Detect:
             Variants that occur in the exclusion list will not be merged in.
             The file sits next to the original spreadsheet, but with an extension such
             as `-notmerged` (this is configurable) and file extension `.txt`.
+
+        Parameters
+        ----------
+        level: integer, optional 1
+            Only relevant for reporting the new variants. Occurrences of the
+            new variants are counted by section. This parameter specifies the
+            level of those sections. It should be 1, 2 or 3.
         """
-        if not self.ok:
+        if not self.properlySetup:
             console("This instance is not properly set up", error=True)
             return
 
@@ -398,6 +420,7 @@ class Detect:
         commentI = NE.commentI
         sheetDir = NE.sheetDir
         sheetName = NE.sheetName
+        workDir = self.workDir
         settings = self.settings
         mergedExtension = settings.mergedExtension
         notMergedExtension = settings.notMergedExtension
@@ -405,21 +428,23 @@ class Detect:
         exclusionFile = f"{sheetDir}/{sheetName}{notMergedExtension}.txt"
 
         if not fileExists(exclusionFile):
-            console(f"File with excluded variants not found: {exclusionFile}")
+            NE.console(f"File with excluded variants not found: {exclusionFile}")
             exclusionFile = None
 
         matches = self.matches
+        matchPositions = self.matchPositions
+        sectionHead = NE.sectionHead
 
         noVariant = set()
 
         if exclusionFile is not None and fileExists(exclusionFile):
-            with open(exclusionFile) as fh:
+            with fileOpen(exclusionFile) as fh:
                 for line in fh:
                     noVariant.add(line.strip())
 
             nNoVariant = len(noVariant)
             pl = "" if nNoVariant == 1 else "s"
-            console(f"{nNoVariant} excluded variant{pl} found in {exclusionFile}")
+            NE.console(f"{nNoVariant} excluded variant{pl} found in {exclusionFile}")
 
         mapping = {}
         excluded = 0
@@ -431,15 +456,21 @@ class Detect:
             for cand in candidates:
                 mapping.setdefault(cand, set()).add(text)
 
+        ple = "" if excluded == 1 else "s"
+        NE.console(f"{excluded} variant{ple} excluded as trigger")
+
         rows = NE.readSheetData()
 
         nAdded = 0
         totAdded = 0
 
+        variantsAdded = {}
+
         for r, row in enumerate(rows):
             if r == 0 or r == 1 or row[commentI].startswith("#"):
                 continue
 
+            rn = r + 1
             triggers = set(row[trigI])
             nPrev = len(triggers)
 
@@ -450,6 +481,7 @@ class Detect:
 
                 for variant in mapping.get(trigger, []):
                     newTriggers.append(variant)
+                    variantsAdded.setdefault(rn, []).append((variant, trigger))
 
             newTriggers = sorted(set(newTriggers))
             row[trigI] = newTriggers
@@ -461,13 +493,43 @@ class Detect:
                 nAdded += 1
                 totAdded += nDiff
 
-        NE.writeSheetData(rows, asFile=mergedFile)
-        ple = "" if excluded == 1 else "s"
+        lines = [("row", "trigger", "variant", "occurences")]
+
+        for rn in sorted(variantsAdded):
+            for variant, trigger in variantsAdded[rn]:
+                sectionInfo = collections.Counter()
+
+                for occ in matchPositions[variant]:
+                    slot = occ[0]
+
+                    section = sectionHead(slot, level=level)
+                    sectionInfo[section] += 1
+
+                hitData = [
+                    f"{section}x{hits}" for section, hits in sorted(sectionInfo.items())
+                ]
+                for hits in hitData:
+                    lines.append((rn, trigger, variant, hits))
+
+        reportFile = f"{workDir}/merged.tsv"
+
+        with fileOpen(reportFile, "w") as fh:
+            nLines = len(lines)
+
+            for (i, line) in enumerate(lines):
+                if i < 10 or i > nLines - 10:
+                    (row, trigger, variant, hits) = line
+                    NE.console(f"{row:<4} {trigger:<40} ~> {variant:<40} = {hits}")
+
+                fh.write(f"{'\t'.join(str(x) for x in line)}\n")
+
         pls = "" if nAdded == 1 else "s"
         plt = "" if totAdded == 1 else "s"
-        console(f"{excluded} variant{ple} excluded as trigger")
-        console(f"{nAdded} triggerset{pls} expanded with {totAdded} trigger{plt}")
-        console(f"Wrote merged triggers to sheet {mergedFile}")
+        NE.console(f"{nAdded} triggerset{pls} expanded with {totAdded} trigger{plt}")
+        NE.console(f"Wrote merge report to file {reportFile}")
+
+        NE.writeSheetData(rows, asFile=mergedFile)
+        NE.console(f"Wrote merged triggers to sheet {mergedFile}")
 
     def listResults(self, start=None, end=None):
         """List the search results to the console.
@@ -486,7 +548,7 @@ class Detect:
             The sequence number of the last result to show.
             If `None`, continue to the last result.
         """
-        if not self.ok:
+        if not self.properlySetup:
             console("This instance is not properly set up", error=True)
             return
 
@@ -512,7 +574,7 @@ class Detect:
 
         file = f"{workDir}/variants.tsv"
 
-        with open(file, "w") as fh:
+        with fileOpen(file, "w") as fh:
             fh.write(f"{'\t'.join(head)}\n")
             for text, score, cand in lines:
                 fh.write(f"{text}\t{score:4.2f}\t{cand}\n")
@@ -533,7 +595,7 @@ class Detect:
             The sequence number of the last result to show.
             If `None`, continue to the last result.
         """
-        if not self.ok:
+        if not self.properlySetup:
             console("This instance is not properly set up", error=True)
             return
 
@@ -601,7 +663,7 @@ class Detect:
             whose names start with this string.
         """
 
-        if not self.ok:
+        if not self.properlySetup:
             console("This instance is not properly set up", error=True)
             return
 
@@ -732,7 +794,7 @@ class Detect:
             for i, material in enumerate(content):
                 extraFile = f"{extraFileBase}/{asFile}{i + 1:>02}.html"
 
-                with open(extraFile, "w") as fh:
+                with fileOpen(extraFile, "w") as fh:
                     fh.write("\n".join(material))
 
                 console(f"Extra triggers written to {extraFile}")
@@ -745,7 +807,7 @@ class Detect:
 
         We separate the digits from the rest.
         """
-        if not self.ok:
+        if not self.properlySetup:
             console("This instance is not properly set up", error=True)
             return
 
@@ -756,7 +818,7 @@ class Detect:
         alphabetFile = f"{workDir}/alphabet.tsv"
         self.alphabetFile = alphabetFile
 
-        with open(alphabetFile, "w") as fh:
+        with fileOpen(alphabetFile, "w") as fh:
             # This file will consist of one character per line,
             # for each distinct alpha character in the corpus, ordered by frequency.
             # Numeric characters will be put on a single line, with tabs in between.
@@ -779,10 +841,11 @@ class Detect:
         We make sure that we resolve the hyphenation of words across line
         boundaries.
         """
-        if not self.ok:
+        if not self.properlySetup:
             console("This instance is not properly set up", error=True)
             return
 
+        NE = self.NE
         app = self.app
         api = app.api
         F = app.api.F
@@ -826,18 +889,18 @@ class Detect:
 
         textFile = f"{workDir}/text.txt"
 
-        with open(textFile, "w") as fh:
+        with fileOpen(textFile, "w") as fh:
             fh.write(textComplete)
 
-        console(f"Text written to {textFile} - {len(textComplete)} characters")
+        NE.console(f"Text written to {textFile} - {len(textComplete)} characters")
 
     def makeLexicon(self):
-        """Make a lexicon out of the triggers of a spreadsheet.
-        """
-        if not self.ok:
+        """Make a lexicon out of the triggers of a spreadsheet."""
+        if not self.properlySetup:
             console("This instance is not properly set up", error=True)
             return
 
+        NE = self.NE
         app = self.app
         workDir = self.workDir
 
@@ -880,23 +943,23 @@ class Detect:
         sortedLexicon = sorted(lexicon.items(), key=lambda x: (-x[1], x[0].lower()))
 
         for name, n in sortedLexicon[0:10]:
-            console(f"  {n:>3} x {name}")
+            NE.console(f"  {n:>3} x {name}")
 
-        console("  ...")
+        NE.console("  ...")
 
         for name, n in sortedLexicon[-10:]:
-            console(f"  {n:>3} x {name}")
+            NE.console(f"  {n:>3} x {name}")
 
-        console(f"{len(lexicon):>8} lexicon length")
+        NE.console(f"{len(lexicon):>8} lexicon length")
 
         lexiconFile = f"{workDir}/lexicon.tsv"
         self.lexiconFile = lexiconFile
 
-        with open(lexiconFile, "w") as fh:
+        with fileOpen(lexiconFile, "w") as fh:
             for name, n in sorted(lexicon.items()):
                 fh.write(f"{name}\t{n}\n")
 
-        console(f"Lexicon written to {lexiconFile}")
+        NE.console(f"Lexicon written to {lexiconFile}")
 
     def setupAnaliticcl(self):
         """Configure analiticcl for the big search.
@@ -907,10 +970,13 @@ class Detect:
         For the description of the parameters, see the
         [analiticcl tutorial](https://github.com/proycon/analiticcl/blob/master/tutorial.ipynb)
         """
-        if not self.ok:
+        if not self.properlySetup:
             console("This instance is not properly set up", error=True)
             return
 
+        NE = self.NE
+        VariantModel = self.VariantModel
+        Weights = self.Weights
         ansettings = self.settings.analiticcl
         weights = ansettings.weights
         wld = weights.ld
@@ -922,7 +988,7 @@ class Detect:
         alphabetFile = self.alphabetFile
         lexiconFile = self.lexiconFile
 
-        console("Set up analiticcl")
+        NE.console("Set up analiticcl")
 
         model = VariantModel(
             alphabetFile,

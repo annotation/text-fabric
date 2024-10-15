@@ -154,7 +154,7 @@ class Sheets(Scopes, Triggers):
                 sheetNames.add(sheetName)
                 setNames.add(f".{sheetName}")
 
-    def setSheet(self, newSheet, force=False, caseSensitive=None):
+    def setSheet(self, newSheet, force=False, caseSensitive=None, forceSilent=False):
         """Switch to a named ner sheet.
 
         After the switch, the new sheet will be loaded into memory.
@@ -168,6 +168,9 @@ class Sheets(Scopes, Triggers):
         caseSensitive: boolean, optional None
             Whether to work with the spreadsheet in a case-sensitive way.
             If `None`, the value is taken from the current instance of this class.
+        forceSilent: boolean, optional False
+            If True, all output is suppressed, irrespective of the `silent` member
+            in the instance. Only show stopping error messages are let through.
 
         """
         if not self.properlySetup:
@@ -197,6 +200,7 @@ class Sheets(Scopes, Triggers):
         if caseSensitive is None:
             caseSensitive = self.caseSensitive
 
+        self.forceSilent = True
         self.loadSheetData(force=force, caseSensitive=caseSensitive)
 
     def loadSheetData(self, force=False, caseSensitive=False):
@@ -237,6 +241,7 @@ class Sheets(Scopes, Triggers):
         if sheetName is None:
             return None
 
+        forceSilent = self.forceSilent
         sheets = self.sheets
 
         if sheetName not in sheets:
@@ -305,10 +310,14 @@ class Sheets(Scopes, Triggers):
 
             if loaded:
                 # we have loaded valid, up-to-date, previously compiled spreadsheet data
-                self.console("SHEET data: loaded from disk")
+                if not forceSilent:
+                    self.console("SHEET data: loaded from disk")
             else:
                 # now we really heave to read and compile the spreadsheet
-                self.console("SHEET data: computing from scratch ...", newline=False)
+                if not forceSilent:
+                    self.console(
+                        "SHEET data: computing from scratch ...", newline=False
+                    )
                 sheetData.logData = []
                 sheetData.caseSensitive = caseSensitive
 
@@ -331,15 +340,19 @@ class Sheets(Scopes, Triggers):
                 with fileOpen(timeFile, "w") as fh:
                     fh.write(f"{tm}\n")
 
-                self.console("done")
+                if not forceSilent:
+                    self.console("done")
                 showLog = False
         else:
             # the compiled spreadsheet data we have in memory is still up to date
-            self.console("SHEET data: already in memory and uptodate")
+            if not forceSilent:
+                self.console("SHEET data: already in memory and uptodate")
 
-        if showLog and not browse:
+        if showLog and not browse and not forceSilent:
             for x in sheetData.logData:
                 self.consoleLine(*x)
+
+        self.forceSilent = False
 
     def makeSheetOfSingleTokens(self):
         """Make a derived sheet based on the individual tokens in the triggers.
@@ -580,6 +593,7 @@ class Sheets(Scopes, Triggers):
         Store the results in a hierarchy that mimicks the way they are organized in the
         file system.
         """
+        forceSilent = self.forceSilent
         sheetName = self.sheetName
         sheetDir = self.sheetDir
         loadXls = self.loadXls
@@ -591,15 +605,23 @@ class Sheets(Scopes, Triggers):
         scopeI = self.scopeI
 
         def spec(msg):
+            if forceSilent:
+                return
             self.log(None, 0, msg)
 
         def log(msg):
+            if forceSilent:
+                return
             self.log(False, 0, msg)
 
         def err(msg):
+            if forceSilent:
+                return
             self.log(True, 0, msg)
 
         def err1(msg):
+            if forceSilent:
+                return
             self.log(True, 1, msg)
 
         sheetData = self.getSheetData()
@@ -656,7 +678,8 @@ class Sheets(Scopes, Triggers):
         maxCol = ws.max_column
         maxRow = ws.max_row
 
-        self.console(f"Sheet with {maxRow} rows and {maxCol} columns")
+        if not forceSilent:
+            self.console(f"Sheet with {maxRow} rows and {maxCol} columns")
 
         raw = {}
         sheetData.raw = raw
@@ -773,28 +796,29 @@ class Sheets(Scopes, Triggers):
                 if i not in {0, scopeI, trigI}
             ]
 
-        for diags, isdict, label in (
-            (emptyLines, False, "without a name and triggers"),
-            (multiNames, True, "with a duplicate name"),
-            (noNames, False, "without a name"),
-            (scopeMistakes, True, "with scope mistakes"),
-            (noTrigs, False, "without triggers"),
-        ):
-            n = len(diags)
+        if not forceSilent:
+            for diags, isdict, label in (
+                (emptyLines, False, "without a name and triggers"),
+                (multiNames, True, "with a duplicate name"),
+                (noNames, False, "without a name"),
+                (scopeMistakes, True, "with scope mistakes"),
+                (noTrigs, False, "without triggers"),
+            ):
+                n = len(diags)
 
-            if n > 0:
-                if isdict:
-                    if n > 0:
+                if n > 0:
+                    if isdict:
+                        if n > 0:
+                            plural = "" if n == 1 else "s"
+                            err(f"{n} row{plural} {label}:")
+
+                            for r in sorted(diags):
+                                msg = diags[r]
+                                err1(f"r{r:>3}: {msg}")
+                    else:
+                        rep = ", ".join(str(x) for x in sorted(diags)[0:10])
                         plural = "" if n == 1 else "s"
-                        err(f"{n} row{plural} {label}:")
-
-                        for r in sorted(diags):
-                            msg = diags[r]
-                            err1(f"r{r:>3}: {msg}")
-                else:
-                    rep = ", ".join(str(x) for x in sorted(diags)[0:10])
-                    plural = "" if n == 1 else "s"
-                    err(f"{n} row{plural} {label}:\n\te.g.: {rep}")
+                        err(f"{n} row{plural} {label}:\n\te.g.: {rep}")
 
     def _compileSheet(self):
         """Compiles the info in tweaked sheets according to the scopes in it.
@@ -812,23 +836,32 @@ class Sheets(Scopes, Triggers):
 
         These problems are detected and reported.
         """
+        forceSilent = self.forceSilent
         sheetData = self.getSheetData()
         compiled = AttrDict()
         sheetData.compiled = compiled
         nameMap = sheetData.nameMap
 
-        def spec(msg):
-            self.log(None, 0, msg)
+        def spec(msg, cache=None):
+            if forceSilent:
+                return
+            self.log(None, 0, msg, cache=cache)
 
-        def log(msg):
-            self.log(False, 0, msg)
+        def log(msg, cache=None):
+            if forceSilent:
+                return
+            self.log(False, 0, msg, cache=cache)
 
-        def err(msg):
-            self.log(True, 0, msg)
+        def err(msg, cache=None):
+            if forceSilent:
+                return
+            self.log(True, 0, msg, cache=cache)
 
-        def errProblem(problem):
+        def errProblem(problem, cache):
+            if forceSilent:
+                return
             for indent, msg in problem:
-                self.log(True, indent, msg)
+                self.log(True, indent, msg, cache=cache)
 
         tFullMap = {}
 
@@ -847,7 +880,7 @@ class Sheets(Scopes, Triggers):
                     result.append(f"'{tr}'{scopeRep} r{rowRep} for {name}")
             return result
 
-        spec("Checking scopes ...")
+        spec("Checking scopes")
 
         raw = sheetData.raw
         scopeMap = sheetData.scopeMap
@@ -859,7 +892,11 @@ class Sheets(Scopes, Triggers):
             scopeStrSet = {""} if scopeStrs is None else set(scopeStrs)
             intv = (b, e) if b is not None and e is not None else ()
 
-            spec(self.repScope(intv))
+            headCache = []
+            problemCache = []
+
+            msg = self.repScope(intv)
+            spec(msg, cache=headCache)
 
             thisCompiled = AttrDict()
             compiled[intv] = thisCompiled
@@ -962,13 +999,17 @@ class Sheets(Scopes, Triggers):
                                 clashes += theseClashes
 
                             problems.add(problem)
-                            errProblem(problem)
+                            errProblem(problem, problemCache)
 
             if ambi > 0:
-                err(f"Ambiguous triggers: {ambi} x")
+                err(f"Ambiguous triggers: {ambi} x", cache=problemCache)
 
             if clashes > 0:
-                err(f"Reused triggers scope: {clashes} x")
+                err(f"Reused triggers scope: {clashes} x", cache=problemCache)
+
+            if len(problemCache) > 0:
+                self.flush(headCache)
+                self.flush(problemCache)
 
     def _prepareSheet(self):
         """Transform the sheets into instructions.
@@ -979,7 +1020,6 @@ class Sheets(Scopes, Triggers):
 
         This info is such that it supports simultaneous searching for multiple triggers.
         """
-
         spaceEscaped = self.spaceEscaped
 
         sheetData = self.getSheetData()
@@ -1045,10 +1085,11 @@ class Sheets(Scopes, Triggers):
         if not self.properlySetup:
             return
 
+        forceSilent = self.forceSilent
         silent = self.silent
         browse = self.browse
 
-        if not browse and not silent:
+        if not browse and not silent and not forceSilent:
             app = self.app
             app.indent(reset=True)
             app.info("Looking up occurrences of many candidates ...")
@@ -1056,7 +1097,7 @@ class Sheets(Scopes, Triggers):
         self.findOccs()
         self._collectHits()
 
-        if not browse and not silent:
+        if not browse and not silent and not forceSilent:
             app.info("done")
 
         self._markEntities()
@@ -1069,11 +1110,14 @@ class Sheets(Scopes, Triggers):
         if not self.properlySetup:
             return
 
+        forceSilent = self.forceSilent
         sheetData = self.getSheetData()
         inventory = sheetData.inventory
         instructions = sheetData.instructions
 
         def log(msg):
+            if forceSilent:
+                return
             self.log(False, 0, msg)
 
         hitData = {}
@@ -1136,7 +1180,7 @@ class Sheets(Scopes, Triggers):
 
         return sheetsData.setdefault(sheetName, AttrDict())
 
-    def log(self, isError, indent, msg):
+    def log(self, isError, indent, msg, cache=None):
         """Issue a message to the user.
 
         Depending on the `silent` member of the instance and on whether the message
@@ -1150,6 +1194,10 @@ class Sheets(Scopes, Triggers):
             How far (in tabs) the message should be indented
         msg: string
             The actual message
+        cache: list, optional None
+            If it is a list, the output will not be sent to the console,
+            but appended to the cache.
+            You can save it for later.
         """
         silent = self.silent
 
@@ -1160,7 +1208,21 @@ class Sheets(Scopes, Triggers):
         sheetData = self.getSheetData()
         logData = sheetData.logData
 
-        logData.append((isError, indent, msg))
+        if cache is None:
+            logData.append((isError, indent, msg))
 
         if not browse:
-            self.consoleLine(isError, indent, msg)
+            if cache is None:
+                self.consoleLine(isError, indent, msg)
+            else:
+                cache.append((isError, indent, msg))
+
+    def flush(self, cache):
+        browse = self.browse
+        sheetData = self.getSheetData()
+        logData = sheetData.logData
+
+        if not browse:
+            for item in cache:
+                logData.append(item)
+                self.consoleLine(*item)
