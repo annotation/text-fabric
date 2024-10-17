@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/convert/pagexml.py#L1-L1023" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/49cd56e44884583c9aafa3eca8b04ea854033245/tf/convert/pagexml.py#L1-L1024" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 from subprocess import run
@@ -211,7 +211,8 @@ class PageXML(CheckImport):
         self,
         sourceDir,
         repoDir,
-        source=PARAMS[&#34;source&#34;][1],
+        source=PARAMS[&#34;sourceBase&#34;][1],
+        reportDir=PARAMS[&#34;reportDir&#34;][1],
         tf=PARAMS[&#34;tf&#34;][1],
         verbose=FLAGS[&#34;verbose&#34;][1],
         doc=FLAGS[&#34;doc&#34;][1],
@@ -1125,7 +1126,7 @@ nodes by node type.</p>
 <dl>
 <dt id="tf.convert.pagexml.PageXML"><code class="flex name class">
 <span>class <span class="ident">PageXML</span></span>
-<span>(</span><span>sourceDir, repoDir, source='latest', tf='latest', verbose=-1, doc=None)</span>
+<span>(</span><span>sourceDir, repoDir, source='', reportDir='', tf='latest', verbose=-1, doc=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Converts PageXML to TF.</p>
@@ -1229,14 +1230,15 @@ relevant TF version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/convert/pagexml.py#L174-L1006" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/49cd56e44884583c9aafa3eca8b04ea854033245/tf/convert/pagexml.py#L174-L1007" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PageXML(CheckImport):
     def __init__(
         self,
         sourceDir,
         repoDir,
-        source=PARAMS[&#34;source&#34;][1],
+        source=PARAMS[&#34;sourceBase&#34;][1],
+        reportDir=PARAMS[&#34;reportDir&#34;][1],
         tf=PARAMS[&#34;tf&#34;][1],
         verbose=FLAGS[&#34;verbose&#34;][1],
         doc=FLAGS[&#34;doc&#34;][1],

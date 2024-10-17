@@ -32,7 +32,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/ner/show.py#L1-L630" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/49cd56e44884583c9aafa3eca8b04ea854033245/tf/ner/show.py#L1-L631" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Rendering of corpus extracts with annotations.
 &#34;&#34;&#34;
@@ -584,6 +584,7 @@ class Show:
 
                 if info is not None:
                     inEntity = True
+
                     for item in sorted(
                         (x for x in info if x is not None), key=lambda z: z[1]
                     ):
@@ -683,7 +684,7 @@ class Show:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/ner/show.py#L24-L630" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/49cd56e44884583c9aafa3eca8b04ea854033245/tf/ner/show.py#L24-L631" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Show:
     def showEntityOverview(self):
@@ -1212,6 +1213,7 @@ class Show:
 
                 if info is not None:
                     inEntity = True
+
                     for item in sorted(
                         (x for x in info if x is not None), key=lambda z: z[1]
                     ):

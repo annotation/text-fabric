@@ -461,7 +461,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/convert/tei.py#L1-L4721" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/49cd56e44884583c9aafa3eca8b04ea854033245/tf/convert/tei.py#L1-L4722" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -1333,6 +1333,7 @@ class TEI(CheckImport):
     def __init__(
         self,
         sourceBase=PARAMS[&#34;sourceBase&#34;][1],
+        reportDir=PARAMS[&#34;reportDir&#34;][1],
         tei=PARAMS[&#34;tei&#34;][1],
         tf=PARAMS[&#34;tf&#34;][1],
         validate=PARAMS[&#34;validate&#34;][1],
@@ -1526,7 +1527,7 @@ class TEI(CheckImport):
 
         sourceRefDir = sourceBase if sourceBase else refDir
         teiDir = f&#34;{sourceRefDir}/tei&#34;
-        reportDir = f&#34;{sourceRefDir}/report&#34;
+        reportDir = reportDir if reportDir else f&#34;{sourceRefDir}/report&#34;
         schemaDir = f&#34;{sourceRefDir}/schema&#34;
         self.schemaDir = schemaDir
 
@@ -5218,7 +5219,7 @@ if __name__ == &#34;__main__&#34;:
 <dl>
 <dt id="tf.convert.tei.TEI"><code class="flex name class">
 <span>class <span class="ident">TEI</span></span>
-<span>(</span><span>sourceBase='', tei='latest', tf='latest', validate=True, verbose=-1)</span>
+<span>(</span><span>sourceBase='', reportDir='', tei='latest', tf='latest', validate=True, verbose=-1)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Converts TEI to TF.</p>
@@ -5344,12 +5345,13 @@ relevant TF version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/convert/tei.py#L867-L4704" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/49cd56e44884583c9aafa3eca8b04ea854033245/tf/convert/tei.py#L867-L4705" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI(CheckImport):
     def __init__(
         self,
         sourceBase=PARAMS[&#34;sourceBase&#34;][1],
+        reportDir=PARAMS[&#34;reportDir&#34;][1],
         tei=PARAMS[&#34;tei&#34;][1],
         tf=PARAMS[&#34;tf&#34;][1],
         validate=PARAMS[&#34;validate&#34;][1],
@@ -5543,7 +5545,7 @@ relevant TF version:</p>
 
         sourceRefDir = sourceBase if sourceBase else refDir
         teiDir = f&#34;{sourceRefDir}/tei&#34;
-        reportDir = f&#34;{sourceRefDir}/report&#34;
+        reportDir = reportDir if reportDir else f&#34;{sourceRefDir}/report&#34;
         schemaDir = f&#34;{sourceRefDir}/schema&#34;
         self.schemaDir = schemaDir
 

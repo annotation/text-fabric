@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/convert/makewatm.py#L1-L517" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/49cd56e44884583c9aafa3eca8b04ea854033245/tf/convert/makewatm.py#L1-L521" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 from textwrap import dedent
@@ -145,6 +145,7 @@ class MakeWATM:
         )
         self.BASE_PARAMS = dict(
             sourceBase=&#34;Base directory under which the sources are&#34;,
+            reportDir=&#34;Directory to write report files to&#34;,
         )
         self.BASE_TASKS = (&#34;tei2tf&#34;, &#34;page2tf&#34;, &#34;watm&#34;, &#34;watms&#34;)
         self.TF_VERSION = &#34;0.0.0test&#34;
@@ -175,6 +176,7 @@ class MakeWATM:
         ),
         paramSpecs=(
             (&#34;sourceBase&#34;, None),
+            (&#34;reportDir&#34;, None),
         ),
         intro=None,
         **kwargs,
@@ -378,6 +380,7 @@ class MakeWATM:
     def doTask_tei2tf(self):
         good = self.good
         sourceBase = self.param_sourceBase
+        reportDir = self.param_reportDir
         silent = self.flag_silent
         relaxed = self.flag_relaxed
         usenlp = self.flag_usenlp
@@ -396,6 +399,7 @@ class MakeWATM:
         Tei = TEI(
             verbose=verbose,
             sourceBase=sourceBase,
+            reportDir=reportDir,
             tei=srcVersion,
             tf=f&#34;{tfVersion}pre&#34; if usenlp else tfVersion,
         )
@@ -609,7 +613,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/convert/makewatm.py#L18-L517" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/49cd56e44884583c9aafa3eca8b04ea854033245/tf/convert/makewatm.py#L18-L521" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class MakeWATM:
     &#34;&#34;&#34;Base class for running conversions to WATM.
@@ -706,6 +710,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
         )
         self.BASE_PARAMS = dict(
             sourceBase=&#34;Base directory under which the sources are&#34;,
+            reportDir=&#34;Directory to write report files to&#34;,
         )
         self.BASE_TASKS = (&#34;tei2tf&#34;, &#34;page2tf&#34;, &#34;watm&#34;, &#34;watms&#34;)
         self.TF_VERSION = &#34;0.0.0test&#34;
@@ -736,6 +741,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
         ),
         paramSpecs=(
             (&#34;sourceBase&#34;, None),
+            (&#34;reportDir&#34;, None),
         ),
         intro=None,
         **kwargs,
@@ -939,6 +945,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
     def doTask_tei2tf(self):
         good = self.good
         sourceBase = self.param_sourceBase
+        reportDir = self.param_reportDir
         silent = self.flag_silent
         relaxed = self.flag_relaxed
         usenlp = self.flag_usenlp
@@ -957,6 +964,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
         Tei = TEI(
             verbose=verbose,
             sourceBase=sourceBase,
+            reportDir=reportDir,
             tei=srcVersion,
             tf=f&#34;{tfVersion}pre&#34; if usenlp else tfVersion,
         )
@@ -1157,7 +1165,7 @@ doing it is localized in the <code>programs</code> directory in a corpus repo.</
 <div class="desc"></div>
 </dd>
 <dt id="tf.convert.makewatm.MakeWATM.setOptions"><code class="name flex">
-<span>def <span class="ident">setOptions</span></span>(<span>self, taskSpecs=(('tei2tf', None), ('watm', None)), flagSpecs=(('silent', True), ('relaxed', None), ('usenlp', None), ('prod', True), ('force', None)), paramSpecs=(('sourceBase', None),), intro=None, **kwargs)</span>
+<span>def <span class="ident">setOptions</span></span>(<span>self, taskSpecs=(('tei2tf', None), ('watm', None)), flagSpecs=(('silent', True), ('relaxed', None), ('usenlp', None), ('prod', True), ('force', None)), paramSpecs=(('sourceBase', None), ('reportDir', None)), intro=None, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>

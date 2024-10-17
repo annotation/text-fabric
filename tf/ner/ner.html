@@ -165,7 +165,7 @@ section where the occurrences have been found.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/ner/ner.py#L1-L536" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/49cd56e44884583c9aafa3eca8b04ea854033245/tf/ner/ner.py#L1-L564" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Named Entity Recognition by Triggers.
 
@@ -556,6 +556,21 @@ class NER(Sheets, Sets, Show):
         empty name, because these entities are already present as nodes in the
         TF dataset.
 
+        Entities and entity occurrences are stored as nodes of type `entity` and `ent`
+        respectively.
+
+        Nodes of both types will get the features `eid` (entity id) and `kind` (type
+        of entity, e.g. `PER`, `LOC`).
+
+        Additionally, nodes of type `entity` will also get the feature `ename`: the
+        full name of the entity. But this can be done only if the set of entities
+        belongs to a spreadsheet.
+
+        There will also be an edge feature `eoccs` that goes from `entity` nddes to
+        the `ent` nodes that correspond to their occurrences.
+
+        `entity` nodes will also be linked to all slots occupied by their occurrences.
+
         Parameters
         ----------
         versionExtension: string, optional &#34;e&#34;
@@ -568,6 +583,7 @@ class NER(Sheets, Sets, Show):
         silent = self.silent
         setNameRep = self.setNameRep
         setIsSrc = self.setIsSrc
+        setIsX = self.setIsX
 
         if setIsSrc:
             console(f&#34;Entity consolidation not meaningful on {setNameRep}&#34;, error=True)
@@ -579,6 +595,19 @@ class NER(Sheets, Sets, Show):
         featureMeta = settings.featureMeta
         setData = self.getSetData()
 
+        slotLink = {}
+        nodeFeatures = AttrDict({feat: {} for feat in features})
+        edgeFeatures = AttrDict(eoccs={})
+        entities = {}
+
+        if setIsX:
+            sheetData = self.getSheetData()
+            nameMap = sheetData.nameMap
+            eNameFeature = settings.eNameFeature
+            eNameFeat = list(eNameFeature)[0]
+            featureMeta[eNameFeat] = eNameFeature[eNameFeat]
+            nodeFeatures[eNameFeat] = {}
+
         # Data preparation for the modify function
 
         entityOccs = sorted(set(setData.entities.values()))
@@ -586,11 +615,6 @@ class NER(Sheets, Sets, Show):
             f&#34;Entity consolidation for {len(entityOccs)} entity occurrences &#34;
             f&#34;into version {version}{versionExtension}&#34;
         )
-
-        slotLink = {}
-        nodeFeatures = AttrDict({feat: {} for feat in features})
-        edgeFeatures = AttrDict(eoccs={})
-        entities = {}
 
         n = 0
 
@@ -613,6 +637,10 @@ class NER(Sheets, Sets, Show):
 
             for feat, fVal in zip(features, fVals):
                 nodeFeatures[feat][n] = fVal
+
+            if setIsX:
+                eName = nameMap[fVals]
+                nodeFeatures[eNameFeat][n] = eName
 
         nEntities = len(entities)
 
@@ -831,7 +859,7 @@ it specifies whether the triggers should be treated case-sensitively.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/ner/ner.py#L187-L536" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/49cd56e44884583c9aafa3eca8b04ea854033245/tf/ner/ner.py#L187-L564" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Sheets, Sets, Show):
     &#34;&#34;&#34;API for Named Entity marking.
@@ -1036,6 +1064,21 @@ it specifies whether the triggers should be treated case-sensitively.</dd>
         empty name, because these entities are already present as nodes in the
         TF dataset.
 
+        Entities and entity occurrences are stored as nodes of type `entity` and `ent`
+        respectively.
+
+        Nodes of both types will get the features `eid` (entity id) and `kind` (type
+        of entity, e.g. `PER`, `LOC`).
+
+        Additionally, nodes of type `entity` will also get the feature `ename`: the
+        full name of the entity. But this can be done only if the set of entities
+        belongs to a spreadsheet.
+
+        There will also be an edge feature `eoccs` that goes from `entity` nddes to
+        the `ent` nodes that correspond to their occurrences.
+
+        `entity` nodes will also be linked to all slots occupied by their occurrences.
+
         Parameters
         ----------
         versionExtension: string, optional &#34;e&#34;
@@ -1048,6 +1091,7 @@ it specifies whether the triggers should be treated case-sensitively.</dd>
         silent = self.silent
         setNameRep = self.setNameRep
         setIsSrc = self.setIsSrc
+        setIsX = self.setIsX
 
         if setIsSrc:
             console(f&#34;Entity consolidation not meaningful on {setNameRep}&#34;, error=True)
@@ -1059,6 +1103,19 @@ it specifies whether the triggers should be treated case-sensitively.</dd>
         featureMeta = settings.featureMeta
         setData = self.getSetData()
 
+        slotLink = {}
+        nodeFeatures = AttrDict({feat: {} for feat in features})
+        edgeFeatures = AttrDict(eoccs={})
+        entities = {}
+
+        if setIsX:
+            sheetData = self.getSheetData()
+            nameMap = sheetData.nameMap
+            eNameFeature = settings.eNameFeature
+            eNameFeat = list(eNameFeature)[0]
+            featureMeta[eNameFeat] = eNameFeature[eNameFeat]
+            nodeFeatures[eNameFeat] = {}
+
         # Data preparation for the modify function
 
         entityOccs = sorted(set(setData.entities.values()))
@@ -1066,11 +1123,6 @@ it specifies whether the triggers should be treated case-sensitively.</dd>
             f&#34;Entity consolidation for {len(entityOccs)} entity occurrences &#34;
             f&#34;into version {version}{versionExtension}&#34;
         )
-
-        slotLink = {}
-        nodeFeatures = AttrDict({feat: {} for feat in features})
-        edgeFeatures = AttrDict(eoccs={})
-        entities = {}
 
         n = 0
 
@@ -1093,6 +1145,10 @@ it specifies whether the triggers should be treated case-sensitively.</dd>
 
             for feat, fVal in zip(features, fVals):
                 nodeFeatures[feat][n] = fVal
+
+            if setIsX:
+                eName = nameMap[fVals]
+                nodeFeatures[eNameFeat][n] = eName
 
         nEntities = len(entities)
 
@@ -1205,6 +1261,16 @@ it specifies whether the triggers should be treated case-sensitively.</dd>
 <p>This operation is not allowed if the current set is the read-only set with the
 empty name, because these entities are already present as nodes in the
 TF dataset.</p>
+<p>Entities and entity occurrences are stored as nodes of type <code>entity</code> and <code>ent</code>
+respectively.</p>
+<p>Nodes of both types will get the features <code>eid</code> (entity id) and <code>kind</code> (type
+of entity, e.g. <code>PER</code>, <code>LOC</code>).</p>
+<p>Additionally, nodes of type <code>entity</code> will also get the feature <code>ename</code>: the
+full name of the entity. But this can be done only if the set of entities
+belongs to a spreadsheet.</p>
+<p>There will also be an edge feature <code>eoccs</code> that goes from <code>entity</code> nddes to
+the <code>ent</code> nodes that correspond to their occurrences.</p>
+<p><code>entity</code> nodes will also be linked to all slots occupied by their occurrences.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>versionExtension</code></strong> :&ensp;<code>string</code>, optional <code>"e"</code></dt>

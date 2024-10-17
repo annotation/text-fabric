@@ -135,7 +135,7 @@ conversion code is demonstrated in the Greek New Testament:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/convert/xml.py#L1-L1249" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/49cd56e44884583c9aafa3eca8b04ea854033245/tf/convert/xml.py#L1-L1250" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # XML import
@@ -339,6 +339,7 @@ class XML(CheckImport):
         keywordAtts=set(),
         renameAtts={},
         sourceBase=PARAMS[&#34;sourceBase&#34;][1],
+        reportDir=PARAMS[&#34;reportDir&#34;][1],
         xml=PARAMS[&#34;xml&#34;][1],
         tf=PARAMS[&#34;tf&#34;][1],
         verbose=FLAGS[&#34;verbose&#34;][1],
@@ -513,7 +514,7 @@ class XML(CheckImport):
 
         sourceRefDir = sourceBase if sourceBase else refDir
         xmlDir = f&#34;{sourceRefDir}/xml&#34;
-        reportDir = f&#34;{sourceRefDir}/report&#34;
+        reportDir = reportDir if reportDir else f&#34;{sourceRefDir}/report&#34;
 
         settings = readYaml(asFile=convertSpec, plain=True)
 
@@ -1408,7 +1409,7 @@ if __name__ == &#34;__main__&#34;:
 <dl>
 <dt id="tf.convert.xml.XML"><code class="flex name class">
 <span>class <span class="ident">XML</span></span>
-<span>(</span><span>convertTaskCustom=None, trimAtts=set(), keywordAtts=set(), renameAtts={}, sourceBase='', xml='latest', tf='latest', verbose=-1)</span>
+<span>(</span><span>convertTaskCustom=None, trimAtts=set(), keywordAtts=set(), renameAtts={}, sourceBase='', reportDir='', xml='latest', tf='latest', verbose=-1)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Converts XML to TF.</p>
@@ -1526,7 +1527,7 @@ relevant TF version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/convert/xml.py#L195-L1232" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/49cd56e44884583c9aafa3eca8b04ea854033245/tf/convert/xml.py#L195-L1233" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class XML(CheckImport):
     def __init__(
@@ -1536,6 +1537,7 @@ relevant TF version:</p>
         keywordAtts=set(),
         renameAtts={},
         sourceBase=PARAMS[&#34;sourceBase&#34;][1],
+        reportDir=PARAMS[&#34;reportDir&#34;][1],
         xml=PARAMS[&#34;xml&#34;][1],
         tf=PARAMS[&#34;tf&#34;][1],
         verbose=FLAGS[&#34;verbose&#34;][1],
@@ -1710,7 +1712,7 @@ relevant TF version:</p>
 
         sourceRefDir = sourceBase if sourceBase else refDir
         xmlDir = f&#34;{sourceRefDir}/xml&#34;
-        reportDir = f&#34;{sourceRefDir}/report&#34;
+        reportDir = reportDir if reportDir else f&#34;{sourceRefDir}/report&#34;
 
         settings = readYaml(asFile=convertSpec, plain=True)
 

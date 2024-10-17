@@ -38,7 +38,7 @@ Reynaert and Maarten van Gompel.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/ner/variants.py#L1-L999" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/49cd56e44884583c9aafa3eca8b04ea854033245/tf/ner/variants.py#L1-L999" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Detect name variants in the corpus.
 
@@ -418,6 +418,57 @@ class Detect:
 
         self.matches = matches
         self.matchPositions = matchPositions
+        console(f&#34;{len(matches)} variants found&#34;)
+
+    def listVariants(self, start=None, end=None):
+        &#34;&#34;&#34;List the search results to the console.
+
+        Show (part of) the variants found on the console as a plain text table.
+
+        This content will also be written to the file `variants.txt` in the
+        work directory.
+
+        Parameters
+        ----------
+        start: integer, optional None
+            The sequence number of the first result to show.
+            If `None`, start with the first result.
+        end: integer, optional None
+            The sequence number of the last result to show.
+            If `None`, continue to the last result.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            console(&#34;This instance is not properly set up&#34;, error=True)
+            return
+
+        workDir = self.workDir
+        matches = self.matches
+
+        lines = []
+
+        head = (&#34;variant&#34;, &#34;score&#34;, &#34;candidate&#34;)
+        dash = f&#34;{&#39;-&#39; * 4} | {&#39;-&#39; * 25} | {&#39;-&#39; * 5} | {&#39;-&#39; * 25}&#34;
+        console(f&#34;{&#39;i&#39;:&gt;4} | {head[0]:&lt;25} | {head[1]} | {head[2]}&#34;)
+        console(f&#34;{dash}&#34;)
+        startN = start or 0
+
+        for text, candidates in sorted(matches.items(), key=lambda x: x[0].lower()):
+            for cand, score in sorted(candidates.items(), key=lambda x: x[0].lower()):
+                lines.append((text, score, cand))
+
+        for i, (text, score, cand) in enumerate(lines[start:end]):
+            console(f&#34;{i + startN:&gt;4} | {text:&lt;25} |  {score:4.2f} | {cand}&#34;)
+
+        console(f&#34;{dash}&#34;)
+
+        file = f&#34;{workDir}/variants.tsv&#34;
+
+        with fileOpen(file, &#34;w&#34;) as fh:
+            fh.write(f&#34;{&#39;\t&#39;.join(head)}\n&#34;)
+            for text, score, cand in lines:
+                fh.write(f&#34;{text}\t{score:4.2f}\t{cand}\n&#34;)
+
+        console(f&#34;{len(matches)} variants found and written to {file}&#34;)
 
     def mergeTriggers(self, level=1):
         &#34;&#34;&#34;Merge spelling variants of triggers into a NER sheet.
@@ -430,7 +481,6 @@ class Detect:
         We collect the necessary information as follows:
 
         *   `matches: dict`:
-
             The spelling variants are keys, and their values are again dicts, keyed
             by the words in the triggers that come closest, and valued by a measure
             of the proximity.
@@ -445,6 +495,8 @@ class Detect:
             Variants that occur in the exclusion list will not be merged in.
             The file sits next to the original spreadsheet, but with an extension such
             as `-notmerged` (this is configurable) and file extension `.txt`.
+
+        This function will also produce several reports:
 
         Parameters
         ----------
@@ -462,11 +514,11 @@ class Detect:
         commentI = NE.commentI
         sheetDir = NE.sheetDir
         sheetName = NE.sheetName
-        workDir = self.workDir
         settings = self.settings
         mergedExtension = settings.mergedExtension
         notMergedExtension = settings.notMergedExtension
         mergedFile = f&#34;{sheetDir}/{sheetName}{mergedExtension}.xlsx&#34;
+        mergedReportFile = f&#34;{sheetDir}/{sheetName}{mergedExtension}-report.tsv&#34;
         exclusionFile = f&#34;{sheetDir}/{sheetName}{notMergedExtension}.txt&#34;
 
         if not fileExists(exclusionFile):
@@ -553,9 +605,7 @@ class Detect:
                 for hits in hitData:
                     lines.append((rn, trigger, variant, hits))
 
-        reportFile = f&#34;{workDir}/merged.tsv&#34;
-
-        with fileOpen(reportFile, &#34;w&#34;) as fh:
+        with fileOpen(mergedReportFile, &#34;w&#34;) as fh:
             nLines = len(lines)
 
             for (i, line) in enumerate(lines):
@@ -568,60 +618,10 @@ class Detect:
         pls = &#34;&#34; if nAdded == 1 else &#34;s&#34;
         plt = &#34;&#34; if totAdded == 1 else &#34;s&#34;
         NE.console(f&#34;{nAdded} triggerset{pls} expanded with {totAdded} trigger{plt}&#34;)
-        NE.console(f&#34;Wrote merge report to file {reportFile}&#34;)
+        NE.console(f&#34;Wrote merge report to file {mergedReportFile}&#34;)
 
         NE.writeSheetData(rows, asFile=mergedFile)
         NE.console(f&#34;Wrote merged triggers to sheet {mergedFile}&#34;)
-
-    def listResults(self, start=None, end=None):
-        &#34;&#34;&#34;List the search results to the console.
-
-        Show (part of) the variants found on the console as a plain text table.
-
-        This content will also be written to the file `variants.txt` in the
-        work directory.
-
-        Parameters
-        ----------
-        start: integer, optional None
-            The sequence number of the first result to show.
-            If `None`, start with the first result.
-        end: integer, optional None
-            The sequence number of the last result to show.
-            If `None`, continue to the last result.
-        &#34;&#34;&#34;
-        if not self.properlySetup:
-            console(&#34;This instance is not properly set up&#34;, error=True)
-            return
-
-        workDir = self.workDir
-        matches = self.matches
-
-        lines = []
-
-        head = (&#34;variant&#34;, &#34;score&#34;, &#34;candidate&#34;)
-        dash = f&#34;{&#39;-&#39; * 4} | {&#39;-&#39; * 25} | {&#39;-&#39; * 5} | {&#39;-&#39; * 25}&#34;
-        console(f&#34;{&#39;i&#39;:&gt;4} | {head[0]:&lt;25} | {head[1]} | {head[2]}&#34;)
-        console(f&#34;{dash}&#34;)
-        startN = start or 0
-
-        for text, candidates in sorted(matches.items(), key=lambda x: x[0].lower()):
-            for cand, score in sorted(candidates.items(), key=lambda x: x[0].lower()):
-                lines.append((text, score, cand))
-
-        for i, (text, score, cand) in enumerate(lines[start:end]):
-            console(f&#34;{i + startN:&gt;4} | {text:&lt;25} |  {score:4.2f} | {cand}&#34;)
-
-        console(f&#34;{dash}&#34;)
-
-        file = f&#34;{workDir}/variants.tsv&#34;
-
-        with fileOpen(file, &#34;w&#34;) as fh:
-            fh.write(f&#34;{&#39;\t&#39;.join(head)}\n&#34;)
-            for text, score, cand in lines:
-                fh.write(f&#34;{text}\t{score:4.2f}\t{cand}\n&#34;)
-
-        console(f&#34;{len(matches)} variants found and written to {file}&#34;)
 
     def showResults(self, start=None, end=None):
         &#34;&#34;&#34;Show the search results to the console.
@@ -1102,7 +1102,7 @@ in case insensitive mode for the lookup).</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/028eb82ce376faaf8fcdd3f0f9c0b09a835bab6f/tf/ner/variants.py#L39-L999" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/49cd56e44884583c9aafa3eca8b04ea854033245/tf/ner/variants.py#L39-L999" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Detect:
     def __init__(self, NE, sheet=None):
@@ -1444,6 +1444,57 @@ in case insensitive mode for the lookup).</dd>
 
         self.matches = matches
         self.matchPositions = matchPositions
+        console(f&#34;{len(matches)} variants found&#34;)
+
+    def listVariants(self, start=None, end=None):
+        &#34;&#34;&#34;List the search results to the console.
+
+        Show (part of) the variants found on the console as a plain text table.
+
+        This content will also be written to the file `variants.txt` in the
+        work directory.
+
+        Parameters
+        ----------
+        start: integer, optional None
+            The sequence number of the first result to show.
+            If `None`, start with the first result.
+        end: integer, optional None
+            The sequence number of the last result to show.
+            If `None`, continue to the last result.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            console(&#34;This instance is not properly set up&#34;, error=True)
+            return
+
+        workDir = self.workDir
+        matches = self.matches
+
+        lines = []
+
+        head = (&#34;variant&#34;, &#34;score&#34;, &#34;candidate&#34;)
+        dash = f&#34;{&#39;-&#39; * 4} | {&#39;-&#39; * 25} | {&#39;-&#39; * 5} | {&#39;-&#39; * 25}&#34;
+        console(f&#34;{&#39;i&#39;:&gt;4} | {head[0]:&lt;25} | {head[1]} | {head[2]}&#34;)
+        console(f&#34;{dash}&#34;)
+        startN = start or 0
+
+        for text, candidates in sorted(matches.items(), key=lambda x: x[0].lower()):
+            for cand, score in sorted(candidates.items(), key=lambda x: x[0].lower()):
+                lines.append((text, score, cand))
+
+        for i, (text, score, cand) in enumerate(lines[start:end]):
+            console(f&#34;{i + startN:&gt;4} | {text:&lt;25} |  {score:4.2f} | {cand}&#34;)
+
+        console(f&#34;{dash}&#34;)
+
+        file = f&#34;{workDir}/variants.tsv&#34;
+
+        with fileOpen(file, &#34;w&#34;) as fh:
+            fh.write(f&#34;{&#39;\t&#39;.join(head)}\n&#34;)
+            for text, score, cand in lines:
+                fh.write(f&#34;{text}\t{score:4.2f}\t{cand}\n&#34;)
+
+        console(f&#34;{len(matches)} variants found and written to {file}&#34;)
 
     def mergeTriggers(self, level=1):
         &#34;&#34;&#34;Merge spelling variants of triggers into a NER sheet.
@@ -1456,7 +1507,6 @@ in case insensitive mode for the lookup).</dd>
         We collect the necessary information as follows:
 
         *   `matches: dict`:
-
             The spelling variants are keys, and their values are again dicts, keyed
             by the words in the triggers that come closest, and valued by a measure
             of the proximity.
@@ -1471,6 +1521,8 @@ in case insensitive mode for the lookup).</dd>
             Variants that occur in the exclusion list will not be merged in.
             The file sits next to the original spreadsheet, but with an extension such
             as `-notmerged` (this is configurable) and file extension `.txt`.
+
+        This function will also produce several reports:
 
         Parameters
         ----------
@@ -1488,11 +1540,11 @@ in case insensitive mode for the lookup).</dd>
         commentI = NE.commentI
         sheetDir = NE.sheetDir
         sheetName = NE.sheetName
-        workDir = self.workDir
         settings = self.settings
         mergedExtension = settings.mergedExtension
         notMergedExtension = settings.notMergedExtension
         mergedFile = f&#34;{sheetDir}/{sheetName}{mergedExtension}.xlsx&#34;
+        mergedReportFile = f&#34;{sheetDir}/{sheetName}{mergedExtension}-report.tsv&#34;
         exclusionFile = f&#34;{sheetDir}/{sheetName}{notMergedExtension}.txt&#34;
 
         if not fileExists(exclusionFile):
@@ -1579,9 +1631,7 @@ in case insensitive mode for the lookup).</dd>
                 for hits in hitData:
                     lines.append((rn, trigger, variant, hits))
 
-        reportFile = f&#34;{workDir}/merged.tsv&#34;
-
-        with fileOpen(reportFile, &#34;w&#34;) as fh:
+        with fileOpen(mergedReportFile, &#34;w&#34;) as fh:
             nLines = len(lines)
 
             for (i, line) in enumerate(lines):
@@ -1594,60 +1644,10 @@ in case insensitive mode for the lookup).</dd>
         pls = &#34;&#34; if nAdded == 1 else &#34;s&#34;
         plt = &#34;&#34; if totAdded == 1 else &#34;s&#34;
         NE.console(f&#34;{nAdded} triggerset{pls} expanded with {totAdded} trigger{plt}&#34;)
-        NE.console(f&#34;Wrote merge report to file {reportFile}&#34;)
+        NE.console(f&#34;Wrote merge report to file {mergedReportFile}&#34;)
 
         NE.writeSheetData(rows, asFile=mergedFile)
         NE.console(f&#34;Wrote merged triggers to sheet {mergedFile}&#34;)
-
-    def listResults(self, start=None, end=None):
-        &#34;&#34;&#34;List the search results to the console.
-
-        Show (part of) the variants found on the console as a plain text table.
-
-        This content will also be written to the file `variants.txt` in the
-        work directory.
-
-        Parameters
-        ----------
-        start: integer, optional None
-            The sequence number of the first result to show.
-            If `None`, start with the first result.
-        end: integer, optional None
-            The sequence number of the last result to show.
-            If `None`, continue to the last result.
-        &#34;&#34;&#34;
-        if not self.properlySetup:
-            console(&#34;This instance is not properly set up&#34;, error=True)
-            return
-
-        workDir = self.workDir
-        matches = self.matches
-
-        lines = []
-
-        head = (&#34;variant&#34;, &#34;score&#34;, &#34;candidate&#34;)
-        dash = f&#34;{&#39;-&#39; * 4} | {&#39;-&#39; * 25} | {&#39;-&#39; * 5} | {&#39;-&#39; * 25}&#34;
-        console(f&#34;{&#39;i&#39;:&gt;4} | {head[0]:&lt;25} | {head[1]} | {head[2]}&#34;)
-        console(f&#34;{dash}&#34;)
-        startN = start or 0
-
-        for text, candidates in sorted(matches.items(), key=lambda x: x[0].lower()):
-            for cand, score in sorted(candidates.items(), key=lambda x: x[0].lower()):
-                lines.append((text, score, cand))
-
-        for i, (text, score, cand) in enumerate(lines[start:end]):
-            console(f&#34;{i + startN:&gt;4} | {text:&lt;25} |  {score:4.2f} | {cand}&#34;)
-
-        console(f&#34;{dash}&#34;)
-
-        file = f&#34;{workDir}/variants.tsv&#34;
-
-        with fileOpen(file, &#34;w&#34;) as fh:
-            fh.write(f&#34;{&#39;\t&#39;.join(head)}\n&#34;)
-            for text, score, cand in lines:
-                fh.write(f&#34;{text}\t{score:4.2f}\t{cand}\n&#34;)
-
-        console(f&#34;{len(matches)} variants found and written to {file}&#34;)
 
     def showResults(self, start=None, end=None):
         &#34;&#34;&#34;Show the search results to the console.
@@ -2089,8 +2089,8 @@ Otherwise, the results will be written down as a set of HTML files,
 whose names start with this string.</dd>
 </dl></div>
 </dd>
-<dt id="tf.ner.variants.Detect.listResults"><code class="name flex">
-<span>def <span class="ident">listResults</span></span>(<span>self, start=None, end=None)</span>
+<dt id="tf.ner.variants.Detect.listVariants"><code class="name flex">
+<span>def <span class="ident">listVariants</span></span>(<span>self, start=None, end=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>List the search results to the console.</p>
@@ -2141,26 +2141,23 @@ cells as the triggers they are variants of. However, it will not
 overwrite the original spreadsheet, but create a new, enriched spreadsheet.</p>
 <p>We collect the necessary information as follows:</p>
 <ul>
-<li>
-<p><code>matches: dict</code>:</p>
-<p>The spelling variants are keys, and their values are again dicts, keyed
+<li><code>matches: dict</code>:
+The spelling variants are keys, and their values are again dicts, keyed
 by the words in the triggers that come closest, and valued by a measure
 of the proximity.
 It is assumed that all of these variants are good variants, in that the
-scores are always above a certain threshold, e.g. 0.8 .
-*
-<code>mergedFile: string</code>:
+scores are always above a certain threshold, e.g. 0.8 .</li>
+<li><code>mergedFile: string</code>:
 The path of the new spreadsheet with the merged triggers: it will sit next
 to the original spreadsheet, but with an extension such as <code>-merged</code> added
-to its name (this can be configured in the NER config file near the corpus).
-*
-<code>exclusionFile: string, optional None</code>
+to its name (this can be configured in the NER config file near the corpus).</li>
+<li><code>exclusionFile: string, optional None</code>
 The path to an optional file with exclusions, one per line.
 Variants that occur in the exclusion list will not be merged in.
 The file sits next to the original spreadsheet, but with an extension such
-as <code>-notmerged</code> (this is configurable) and file extension <code>.txt</code>.</p>
-</li>
+as <code>-notmerged</code> (this is configurable) and file extension <code>.txt</code>.</li>
 </ul>
+<p>This function will also produce several reports:</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>level</code></strong> :&ensp;<code>integer</code>, optional <code>1</code></dt>
@@ -2311,7 +2308,7 @@ setTimeout(() => input.focus(), 100);
 <h4><code><a title="tf.ner.variants.Detect" href="#tf.ner.variants.Detect">Detect</a></code></h4>
 <ul class="two-column">
 <li><code><a title="tf.ner.variants.Detect.displayResults" href="#tf.ner.variants.Detect.displayResults">displayResults</a></code></li>
-<li><code><a title="tf.ner.variants.Detect.listResults" href="#tf.ner.variants.Detect.listResults">listResults</a></code></li>
+<li><code><a title="tf.ner.variants.Detect.listVariants" href="#tf.ner.variants.Detect.listVariants">listVariants</a></code></li>
 <li><code><a title="tf.ner.variants.Detect.makeAlphabet" href="#tf.ner.variants.Detect.makeAlphabet">makeAlphabet</a></code></li>
 <li><code><a title="tf.ner.variants.Detect.makeLexicon" href="#tf.ner.variants.Detect.makeLexicon">makeLexicon</a></code></li>
 <li><code><a title="tf.ner.variants.Detect.makeText" href="#tf.ner.variants.Detect.makeText">makeText</a></code></li>
