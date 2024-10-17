@@ -110,6 +110,7 @@ class MakeWATM:
         )
         self.BASE_PARAMS = dict(
             sourceBase="Base directory under which the sources are",
+            reportDir="Directory to write report files to",
         )
         self.BASE_TASKS = ("tei2tf", "page2tf", "watm", "watms")
         self.TF_VERSION = "0.0.0test"
@@ -140,6 +141,7 @@ class MakeWATM:
         ),
         paramSpecs=(
             ("sourceBase", None),
+            ("reportDir", None),
         ),
         intro=None,
         **kwargs,
@@ -343,6 +345,7 @@ class MakeWATM:
     def doTask_tei2tf(self):
         good = self.good
         sourceBase = self.param_sourceBase
+        reportDir = self.param_reportDir
         silent = self.flag_silent
         relaxed = self.flag_relaxed
         usenlp = self.flag_usenlp
@@ -361,6 +364,7 @@ class MakeWATM:
         Tei = TEI(
             verbose=verbose,
             sourceBase=sourceBase,
+            reportDir=reportDir,
             tei=srcVersion,
             tf=f"{tfVersion}pre" if usenlp else tfVersion,
         )

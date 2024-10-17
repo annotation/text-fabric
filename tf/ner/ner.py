@@ -387,6 +387,21 @@ class NER(Sheets, Sets, Show):
         empty name, because these entities are already present as nodes in the
         TF dataset.
 
+        Entities and entity occurrences are stored as nodes of type `entity` and `ent`
+        respectively.
+
+        Nodes of both types will get the features `eid` (entity id) and `kind` (type
+        of entity, e.g. `PER`, `LOC`).
+
+        Additionally, nodes of type `entity` will also get the feature `ename`: the
+        full name of the entity. But this can be done only if the set of entities
+        belongs to a spreadsheet.
+
+        There will also be an edge feature `eoccs` that goes from `entity` nddes to
+        the `ent` nodes that correspond to their occurrences.
+
+        `entity` nodes will also be linked to all slots occupied by their occurrences.
+
         Parameters
         ----------
         versionExtension: string, optional "e"
@@ -399,6 +414,7 @@ class NER(Sheets, Sets, Show):
         silent = self.silent
         setNameRep = self.setNameRep
         setIsSrc = self.setIsSrc
+        setIsX = self.setIsX
 
         if setIsSrc:
             console(f"Entity consolidation not meaningful on {setNameRep}", error=True)
@@ -410,6 +426,19 @@ class NER(Sheets, Sets, Show):
         featureMeta = settings.featureMeta
         setData = self.getSetData()
 
+        slotLink = {}
+        nodeFeatures = AttrDict({feat: {} for feat in features})
+        edgeFeatures = AttrDict(eoccs={})
+        entities = {}
+
+        if setIsX:
+            sheetData = self.getSheetData()
+            nameMap = sheetData.nameMap
+            eNameFeature = settings.eNameFeature
+            eNameFeat = list(eNameFeature)[0]
+            featureMeta[eNameFeat] = eNameFeature[eNameFeat]
+            nodeFeatures[eNameFeat] = {}
+
         # Data preparation for the modify function
 
         entityOccs = sorted(set(setData.entities.values()))
@@ -417,11 +446,6 @@ class NER(Sheets, Sets, Show):
             f"Entity consolidation for {len(entityOccs)} entity occurrences "
             f"into version {version}{versionExtension}"
         )
-
-        slotLink = {}
-        nodeFeatures = AttrDict({feat: {} for feat in features})
-        edgeFeatures = AttrDict(eoccs={})
-        entities = {}
 
         n = 0
 
@@ -444,6 +468,10 @@ class NER(Sheets, Sets, Show):
 
             for feat, fVal in zip(features, fVals):
                 nodeFeatures[feat][n] = fVal
+
+            if setIsX:
+                eName = nameMap[fVals]
+                nodeFeatures[eNameFeat][n] = eName
 
         nEntities = len(entities)
 

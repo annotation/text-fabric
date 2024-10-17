@@ -548,6 +548,7 @@ class Show:
 
                 if info is not None:
                     inEntity = True
+
                     for item in sorted(
                         (x for x in info if x is not None), key=lambda z: z[1]
                     ):

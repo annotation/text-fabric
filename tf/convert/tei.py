@@ -868,6 +868,7 @@ class TEI(CheckImport):
     def __init__(
         self,
         sourceBase=PARAMS["sourceBase"][1],
+        reportDir=PARAMS["reportDir"][1],
         tei=PARAMS["tei"][1],
         tf=PARAMS["tf"][1],
         validate=PARAMS["validate"][1],
@@ -1061,7 +1062,7 @@ class TEI(CheckImport):
 
         sourceRefDir = sourceBase if sourceBase else refDir
         teiDir = f"{sourceRefDir}/tei"
-        reportDir = f"{sourceRefDir}/report"
+        reportDir = reportDir if reportDir else f"{sourceRefDir}/report"
         schemaDir = f"{sourceRefDir}/schema"
         self.schemaDir = schemaDir
 

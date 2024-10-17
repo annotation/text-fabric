@@ -377,7 +377,14 @@ def setUp(kind):
         ),
         "sourceBase": (
             (
-                "empty: refDir/{kind};\n\t\t"
+                "empty: refDir/{kind.lower()};\n\t\t"
+                "any directory of choice."
+            ),
+            "",
+        ),
+        "reportDir": (
+            (
+                "empty: refDir/report;\n\t\t"
                 "any directory of choice."
             ),
             "",

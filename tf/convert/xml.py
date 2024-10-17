@@ -200,6 +200,7 @@ class XML(CheckImport):
         keywordAtts=set(),
         renameAtts={},
         sourceBase=PARAMS["sourceBase"][1],
+        reportDir=PARAMS["reportDir"][1],
         xml=PARAMS["xml"][1],
         tf=PARAMS["tf"][1],
         verbose=FLAGS["verbose"][1],
@@ -374,7 +375,7 @@ class XML(CheckImport):
 
         sourceRefDir = sourceBase if sourceBase else refDir
         xmlDir = f"{sourceRefDir}/xml"
-        reportDir = f"{sourceRefDir}/report"
+        reportDir = reportDir if reportDir else f"{sourceRefDir}/report"
 
         settings = readYaml(asFile=convertSpec, plain=True)
 

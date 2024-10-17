@@ -223,10 +223,10 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
     From the TF a stream of annotations is generated
     (WATM) that drives the publishing machinery of
     [HuC Team Text](https://di.huc.knaw.nl/text-analysis-en.html)
+    leading to the website
+    [edition.suriano.huygens.knaw.nl](https://edition.suriano.huygens.knaw.nl).
     Nina Lamal, Helmer Helmers, Sebastiaan van Dalen, Bram Buitendijk, Hayco de Jong,
     Hennie Brugman, Dirk Roorda
-
-    **Work in progress.**
 
     **with additional meta data, named entities, and page scans.**
 

@@ -376,6 +376,57 @@ class Detect:
 
         self.matches = matches
         self.matchPositions = matchPositions
+        console(f"{len(matches)} variants found")
+
+    def listVariants(self, start=None, end=None):
+        """List the search results to the console.
+
+        Show (part of) the variants found on the console as a plain text table.
+
+        This content will also be written to the file `variants.txt` in the
+        work directory.
+
+        Parameters
+        ----------
+        start: integer, optional None
+            The sequence number of the first result to show.
+            If `None`, start with the first result.
+        end: integer, optional None
+            The sequence number of the last result to show.
+            If `None`, continue to the last result.
+        """
+        if not self.properlySetup:
+            console("This instance is not properly set up", error=True)
+            return
+
+        workDir = self.workDir
+        matches = self.matches
+
+        lines = []
+
+        head = ("variant", "score", "candidate")
+        dash = f"{'-' * 4} | {'-' * 25} | {'-' * 5} | {'-' * 25}"
+        console(f"{'i':>4} | {head[0]:<25} | {head[1]} | {head[2]}")
+        console(f"{dash}")
+        startN = start or 0
+
+        for text, candidates in sorted(matches.items(), key=lambda x: x[0].lower()):
+            for cand, score in sorted(candidates.items(), key=lambda x: x[0].lower()):
+                lines.append((text, score, cand))
+
+        for i, (text, score, cand) in enumerate(lines[start:end]):
+            console(f"{i + startN:>4} | {text:<25} |  {score:4.2f} | {cand}")
+
+        console(f"{dash}")
+
+        file = f"{workDir}/variants.tsv"
+
+        with fileOpen(file, "w") as fh:
+            fh.write(f"{'\t'.join(head)}\n")
+            for text, score, cand in lines:
+                fh.write(f"{text}\t{score:4.2f}\t{cand}\n")
+
+        console(f"{len(matches)} variants found and written to {file}")
 
     def mergeTriggers(self, level=1):
         """Merge spelling variants of triggers into a NER sheet.
@@ -388,7 +439,6 @@ class Detect:
         We collect the necessary information as follows:
 
         *   `matches: dict`:
-
             The spelling variants are keys, and their values are again dicts, keyed
             by the words in the triggers that come closest, and valued by a measure
             of the proximity.
@@ -403,6 +453,8 @@ class Detect:
             Variants that occur in the exclusion list will not be merged in.
             The file sits next to the original spreadsheet, but with an extension such
             as `-notmerged` (this is configurable) and file extension `.txt`.
+
+        This function will also produce several reports:
 
         Parameters
         ----------
@@ -420,11 +472,11 @@ class Detect:
         commentI = NE.commentI
         sheetDir = NE.sheetDir
         sheetName = NE.sheetName
-        workDir = self.workDir
         settings = self.settings
         mergedExtension = settings.mergedExtension
         notMergedExtension = settings.notMergedExtension
         mergedFile = f"{sheetDir}/{sheetName}{mergedExtension}.xlsx"
+        mergedReportFile = f"{sheetDir}/{sheetName}{mergedExtension}-report.tsv"
         exclusionFile = f"{sheetDir}/{sheetName}{notMergedExtension}.txt"
 
         if not fileExists(exclusionFile):
@@ -511,9 +563,7 @@ class Detect:
                 for hits in hitData:
                     lines.append((rn, trigger, variant, hits))
 
-        reportFile = f"{workDir}/merged.tsv"
-
-        with fileOpen(reportFile, "w") as fh:
+        with fileOpen(mergedReportFile, "w") as fh:
             nLines = len(lines)
 
             for (i, line) in enumerate(lines):
@@ -526,60 +576,10 @@ class Detect:
         pls = "" if nAdded == 1 else "s"
         plt = "" if totAdded == 1 else "s"
         NE.console(f"{nAdded} triggerset{pls} expanded with {totAdded} trigger{plt}")
-        NE.console(f"Wrote merge report to file {reportFile}")
+        NE.console(f"Wrote merge report to file {mergedReportFile}")
 
         NE.writeSheetData(rows, asFile=mergedFile)
         NE.console(f"Wrote merged triggers to sheet {mergedFile}")
-
-    def listResults(self, start=None, end=None):
-        """List the search results to the console.
-
-        Show (part of) the variants found on the console as a plain text table.
-
-        This content will also be written to the file `variants.txt` in the
-        work directory.
-
-        Parameters
-        ----------
-        start: integer, optional None
-            The sequence number of the first result to show.
-            If `None`, start with the first result.
-        end: integer, optional None
-            The sequence number of the last result to show.
-            If `None`, continue to the last result.
-        """
-        if not self.properlySetup:
-            console("This instance is not properly set up", error=True)
-            return
-
-        workDir = self.workDir
-        matches = self.matches
-
-        lines = []
-
-        head = ("variant", "score", "candidate")
-        dash = f"{'-' * 4} | {'-' * 25} | {'-' * 5} | {'-' * 25}"
-        console(f"{'i':>4} | {head[0]:<25} | {head[1]} | {head[2]}")
-        console(f"{dash}")
-        startN = start or 0
-
-        for text, candidates in sorted(matches.items(), key=lambda x: x[0].lower()):
-            for cand, score in sorted(candidates.items(), key=lambda x: x[0].lower()):
-                lines.append((text, score, cand))
-
-        for i, (text, score, cand) in enumerate(lines[start:end]):
-            console(f"{i + startN:>4} | {text:<25} |  {score:4.2f} | {cand}")
-
-        console(f"{dash}")
-
-        file = f"{workDir}/variants.tsv"
-
-        with fileOpen(file, "w") as fh:
-            fh.write(f"{'\t'.join(head)}\n")
-            for text, score, cand in lines:
-                fh.write(f"{text}\t{score:4.2f}\t{cand}\n")
-
-        console(f"{len(matches)} variants found and written to {file}")
 
     def showResults(self, start=None, end=None):
         """Show the search results to the console.
