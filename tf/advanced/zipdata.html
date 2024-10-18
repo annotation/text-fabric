@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/49cd56e44884583c9aafa3eca8b04ea854033245/tf/advanced/zipdata.py#L1-L423" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd2f7a2343d12ca0649d8988176f22f0d264b18b/tf/advanced/zipdata.py#L1-L432" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 import types
@@ -125,6 +125,15 @@ def zipAll(app):
 
     The data will be zipped in a file complete.zip which can be unpacked
     in the `~/text-fabric-data` directory.
+
+    Go to the toplevel of your local clone and say:
+
+    ```
+    tf-zipall
+    ```
+
+    The complete.zip is created in your downloads folder, under your backend,
+    org, and repo.
 
     !!! hint
         You can attach this file straight to the latest release of of dataset
@@ -478,7 +487,7 @@ if __name__ == &#34;__main__&#34;:
 <div class="desc"></div>
 </dd>
 <dt id="tf.advanced.zipdata.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.12/bin/pdoc3', '--force', '--html', '--output-dir', 'site', '--template-dir', 'tf/docs/templates', 'tf'])</span>
+<span>def <span class="ident">main</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.13/bin/pdoc3', '--force', '--html', '--output-dir', 'site', '--template-dir', 'tf/docs/templates', 'tf'])</span>
 </code></dt>
 <dd>
 <div class="desc"><h3 id="usage">USAGE</h3>
@@ -518,6 +527,11 @@ and the are named <code>relative-version.zip</code>
 </ul>
 <p>The data will be zipped in a file complete.zip which can be unpacked
 in the <code>~/text-fabric-data</code> directory.</p>
+<p>Go to the toplevel of your local clone and say:</p>
+<pre><code>tf-zipall
+</code></pre>
+<p>The complete.zip is created in your downloads folder, under your backend,
+org, and repo.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>You can attach this file straight to the latest release of of dataset

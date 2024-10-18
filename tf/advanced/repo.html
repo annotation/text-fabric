@@ -53,6 +53,10 @@ produce a zip file of your complete dataset, and then attach it to the latest
 release on GitHub.
 Then TF will find this file and download it automatically if needed, without ever
 using the GitHub API, so your users do not have to do the things described below!</p>
+<p>Go to the toplevel of your local clone and say:</p>
+<p><code>tf-zipall</code></p>
+<p>The complete.zip is created in your downloads folder, under your backend,
+org, and repo.</p>
 </div>
 <h2 id="increase-the-rate-limit">Increase the rate limit</h2>
 <p>If you use this function in an application of yours that uses it very often,
@@ -295,7 +299,7 @@ is being obtained.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/49cd56e44884583c9aafa3eca8b04ea854033245/tf/advanced/repo.py#L1-L2274" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd2f7a2343d12ca0649d8988176f22f0d264b18b/tf/advanced/repo.py#L1-L2283" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Auto downloading from a back-end repository
@@ -333,6 +337,15 @@ This can be too restrictive, and here are two ways to keep working nevertheless.
     release on GitHub.
     Then TF will find this file and download it automatically if needed, without ever
     using the GitHub API, so your users do not have to do the things described below!
+
+    Go to the toplevel of your local clone and say:
+
+    ```
+    tf-zipall
+    ```
+
+    The complete.zip is created in your downloads folder, under your backend,
+    org, and repo.
 
 ## Increase the rate limit
 
@@ -2822,7 +2835,7 @@ The way in which the release version should be increased:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/49cd56e44884583c9aafa3eca8b04ea854033245/tf/advanced/repo.py#L1005-L2094" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd2f7a2343d12ca0649d8988176f22f0d264b18b/tf/advanced/repo.py#L1014-L2103" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Checkout:
     &#34;&#34;&#34;Auxiliary class for `checkoutRepo`&#34;&#34;&#34;
@@ -4111,7 +4124,7 @@ The way in which the release version should be increased:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/49cd56e44884583c9aafa3eca8b04ea854033245/tf/advanced/repo.py#L542-L815" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd2f7a2343d12ca0649d8988176f22f0d264b18b/tf/advanced/repo.py#L551-L824" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Repo:
     &#34;&#34;&#34;Auxiliary class for `releaseData`&#34;&#34;&#34;

@@ -39,7 +39,7 @@ settings for a corpus, and possibly some supporting application code and CSS sty
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/49cd56e44884583c9aafa3eca8b04ea854033245/tf/app.py#L1-L72" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd2f7a2343d12ca0649d8988176f22f0d264b18b/tf/app.py#L1-L83" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Make use of a corpus.
@@ -107,6 +107,17 @@ def collect(backend, org, repo):
     of all of its standard modules.
 
     The latest version will be used.
+
+    You can also do this completely from the command line.
+
+    Go to the toplevel of your local clone and say:
+
+    ```
+    tf-zipall
+    ```
+
+    The complete.zip is created in your downloads folder, under your backend,
+    org, and repo.
     &#34;&#34;&#34;
 
     A = use(f&#34;{org}/{repo}:clone&#34;, checkout=&#34;clone&#34;, backend=backend)
@@ -132,7 +143,13 @@ into a file <code>complete.zip</code> and saved in your downloads folder,
 in a nested folder by backend, org and repo.</p>
 <p>It is assumed that you have cloned the repo of the corpus and the repos
 of all of its standard modules.</p>
-<p>The latest version will be used.</p></div>
+<p>The latest version will be used.</p>
+<p>You can also do this completely from the command line.</p>
+<p>Go to the toplevel of your local clone and say:</p>
+<pre><code>tf-zipall
+</code></pre>
+<p>The complete.zip is created in your downloads folder, under your backend,
+org, and repo.</p></div>
 </dd>
 <dt id="tf.app.use"><code class="name flex">
 <span>def <span class="ident">use</span></span>(<span>appName, *args, backend=None, **kwargs)</span>
