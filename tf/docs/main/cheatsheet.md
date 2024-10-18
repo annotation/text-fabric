@@ -922,6 +922,14 @@ A.publishRelease(increase, message=None, description=None,,...)
 
 ## Export to ZIP
 
+``` sh
+cd ~/backend/org/repo
+tf-zipall
+```
+:   store the complete corpus data in a file *complete.zip*
+:   `tf.advanced.zipdata.zipAll`
+
+
 ``` python
 A.zipAll()
 ```

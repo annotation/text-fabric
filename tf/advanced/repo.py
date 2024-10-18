@@ -35,6 +35,15 @@ This can be too restrictive, and here are two ways to keep working nevertheless.
     Then TF will find this file and download it automatically if needed, without ever
     using the GitHub API, so your users do not have to do the things described below!
 
+    Go to the toplevel of your local clone and say:
+
+    ```
+    tf-zipall
+    ```
+
+    The complete.zip is created in your downloads folder, under your backend,
+    org, and repo.
+
 ## Increase the rate limit
 
 If you use this function in an application of yours that uses it very often,

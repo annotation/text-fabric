@@ -216,7 +216,7 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 
     *with NLP output from Spacy woven in*
 
-[suriano/letters](https://gitlab.huc.knaw.nl/suriano/letters)
+[HuygensING/suriano](https://github.com/HuygensING/suriano)
 :   *Italian*
     Correspondence of Christofforo Suriano , 1616-1623.
     Complex conversion from DOCX through simple TEI to TF,

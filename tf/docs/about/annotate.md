@@ -292,10 +292,11 @@ under `provenanceSpecs`:
 
 When you make a new release on GitHub of the repo, do not forget to run
 
-``` python
-A = use("HuygensING/suriano:clone", checkout="clone")
-A.zipAll()
+``` sh
+cd ~/github/HuygensING/suriano
+tf-zipall
 ```
+
 
 Then pick up the new `~/Downloads/github/HuygensING/suriano/complete.zip`
 and attach it to your new release on GitHub.

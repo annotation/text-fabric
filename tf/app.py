@@ -64,6 +64,17 @@ def collect(backend, org, repo):
     of all of its standard modules.
 
     The latest version will be used.
+
+    You can also do this completely from the command line.
+
+    Go to the toplevel of your local clone and say:
+
+    ```
+    tf-zipall
+    ```
+
+    The complete.zip is created in your downloads folder, under your backend,
+    org, and repo.
     """
 
     A = use(f"{org}/{repo}:clone", checkout="clone", backend=backend)

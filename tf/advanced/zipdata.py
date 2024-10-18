@@ -91,6 +91,15 @@ def zipAll(app):
     The data will be zipped in a file complete.zip which can be unpacked
     in the `~/text-fabric-data` directory.
 
+    Go to the toplevel of your local clone and say:
+
+    ```
+    tf-zipall
+    ```
+
+    The complete.zip is created in your downloads folder, under your backend,
+    org, and repo.
+
     !!! hint
         You can attach this file straight to the latest release of of dataset
         on GitHub. This makes that users can download the dataset from GitHub
