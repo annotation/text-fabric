@@ -75,7 +75,7 @@ set. There are three kinds of sets:
 *   **🖍️** (mutable) sets of entities created manually by the user with the NER tool
     in the TF browser.
 
-![browser](../../images/Ner/select2.png)
+![browser](../images/Ner/select2.png)
 
 ### In a program
 
