@@ -214,6 +214,14 @@ class Settings:
 
         *   `entitySet`: a name for the pre-existing set of entities;
 
+        *   `lineType`: the name of the node type for individual lines; this is needed
+            to deal with words that are split across a line boundary;
+
+        *   `strFeature`: the name of the feature that has the string values of tokens;
+
+        *   `afterFeature`: the name of the feature that has the string values of the
+            text between tokens, usually a space, it is on the preceding token;
+
         *   `features`: the features that contain essential information about
             the entities. Currently, we specify only 2 features. You may rename these
             features, but we advise not modify the number of features.
@@ -227,7 +235,14 @@ class Settings:
             identifier, basically a lower case version of the full name where
             the parts of the name are separated by dots.
 
-        *   `spaceEscaped`: set this to True if your corpus as tokens with spaces in it.
+        *   `featureMeta`: metadata of the features specified in `features`;
+
+        *   `eNameFeature`: the name and metadata of the feature that has the
+            full name of an entity; this is only available for annotation sets
+            that correspond to a NER sheet;
+
+        *   `spaceEscaped`: set this to True if your corpus has tokens with
+            spaces in it.
             You can then escape spaces with `_`, for example in spreadsheets where you
             specify annotation instructions.
 
@@ -237,6 +252,10 @@ class Settings:
             become longer than is convenient. Here you can specify a replacement
             table for name parts. You can use it to shorten or repress certain
             name parts that are very generic, such as `de`, `van`, `von`.
+
+        *   `variants`: for sheet-based sets, the tool can compute spelling variants
+            of the triggers. This is done by *analiticcl*. Here the parameters for
+            running that program are specified. See `tf.ner.variants`
         """
         specDir = self.specDir
 
@@ -297,6 +316,23 @@ class Settings:
             console(msg, **kwargs)
 
     def consoleLine(self, isError, indent, msg):
+        """Print a formatted line to the output.
+
+        When the silent member of the object is True, the message will be suppressed,
+        if it is not an error message.
+
+        Parameters
+        ----------
+        isError: boolean or void
+            If True, it the message is an error message, and it will be shown.
+            If False, the message, if it is shown, will be shown as a normal message.
+            If None, the message, if it is shown, will be preceded and followed by
+            some decoration to make it more conspicuous.
+        indent: integer
+            The number of quads to indent the message with. A quad is two spaces.
+        msg: string
+            The text of the message.
+        """
         silent = self.silent
 
         if silent and not isError:

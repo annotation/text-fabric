@@ -1,4 +1,11 @@
 """Match functions.
+
+In this module we define an efficient search for multiple strings in one pass
+over the corpus.
+We also define a search for a single entity.
+
+All corpus-specific functions that we need must be passed as arguments.
+And the portions of the corpus in which we search must be given by a set of nodes.
 """
 
 from .settings import NONE
@@ -25,23 +32,16 @@ def occMatch(
     buckets: tuple of integer
         The bucket nodes in question
     instructions: dict, optional None
-        A nested dict, keyed by section headings, with trigger information per section.
-        Generic trigger information is present under key `""`.
-        The idea is that trigger info under nested keys override trigger info
-        at parent keys.
-        The value at a key is a dict with keys:
-
-        `sheet`: The information about the triggers;
-
-        `tPos`: A compilation of all triggers into a mapping so that you can
-
-        read off, given a position and a token, the set of all triggers that
-        have that token at that position.
+        Datastructure that encodes the trigger information in a spreadsheet.
+        The structure is described in `tf.ner.sheets.SHEET_KEYS`.
+    spaceEscaped: boolean
+        A corpus property indicating whether tokens in the corpus may contain
+        escaped spaces
 
     Returns
     -------
     dict
-        A multiply nested dict, first keyed by tuples of entity identifier and kind,
+        A multiply nested dict, first keyed by entity identifier/kind tuples,
         then by its triggers then by the scope of such a trigger, and then
         the value is a list of occurrences, where each occurrence is a tuple of slots.
 
@@ -179,7 +179,10 @@ def entityMatch(
     Parameters
     ----------
     entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex: object
-        Various kinds of processed entity data, see `tf.ner.data`
+        Various kinds of processed entity data, see `tf.ner.data.Data.processSet()`
+    triggerFromMatch: dict
+        Mapping from matches to triggers, part of sheet data,
+        see `tf.ner.sheets.SHEET_KEYS`
     textFromNode: function
         See `tf.ner.corpus.Corpus.textFromNode`
     tokensFromNode: function
@@ -188,6 +191,9 @@ def entityMatch(
         The node of the bucket in question
     bFindRe, anyEnt, eVals, trigger, qTokens, valSelect, freeState: object
         As in `tf.ner.corpus.Corpus.filterContent`
+    fValStats: dict
+        Dictionary to collect statistics of entities that are encountered;
+        this is a result of the function!
 
     Returns
     -------

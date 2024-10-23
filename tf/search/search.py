@@ -84,7 +84,7 @@ class Search:
         Parameters
         ----------
 
-        yarnRatio: float
+        yarnRatio: real
             The `yarnRatio` is the minimal factor between the sizes of
             the smallest and the biggest set of candidates of the nodes at both ends of
             the edge. And that divided by the spread of the relation as estimated
@@ -483,7 +483,7 @@ class Search:
 
         Parameters
         ----------
-        tup: tuple of int
+        tup: tuple of integer
             The tuple of nodes in question.
 
         Returns

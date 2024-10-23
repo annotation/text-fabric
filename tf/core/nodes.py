@@ -254,7 +254,7 @@ class Nodes:
 
         Parameters
         ----------
-        nodes: iterable of int, optional None
+        nodes: iterable of integer, optional None
             If `None`, walks through all nodes of the corpus in canonical order.
             Otherwise, walks through the given nodes in canonical order.
         events: boolean, optional False
@@ -262,7 +262,7 @@ class Nodes:
 
         Returns
         -------
-        nodes: int
+        nodes: integer
             One at a time.
         """
 

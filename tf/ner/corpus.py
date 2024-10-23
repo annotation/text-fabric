@@ -37,6 +37,11 @@ class Corpus(Settings):
 
         All methods that might fail because of this, are guarded by a check on this
         flag.
+
+        These corpus dependent functions will be defined as local functions and put
+        into a data member of the instance, rather than a method. Then we can pass
+        those functions on to functional contexts where they can be executed faster
+        than methods can.
         """
         app = self.app
         context = app.context
@@ -128,7 +133,7 @@ class Corpus(Settings):
         ----------
         feat: string
             The name of the feature
-        node: int
+        node: integer
             The node whose feature value we need
 
         Returns
@@ -306,11 +311,11 @@ class Corpus(Settings):
 
         Parameters
         ----------
-        node: int
+        node: integer
 
         Returns
         -------
-        tuple of int
+        tuple of integer
         """
 
         def getSeqFromNode(node):
@@ -483,7 +488,7 @@ class Corpus(Settings):
 
         Parameters
         ----------
-        nodes: set of int
+        nodes: set of integer
 
         Returns
         -------
@@ -581,7 +586,7 @@ class Corpus(Settings):
             If present, the keys are the entity features (`eid` and `kind`),
             and the values are iterables of values that are allowed.
 
-            The feature values to filter on.
+            These are additional feature values that we need to filter on.
             The results of searching for `eVals` or `qTokens` are filtered further.
             If a result is also an instance of an already marked entity,
             the properties of that entity will be compared feature by feature with

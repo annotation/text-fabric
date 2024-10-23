@@ -62,6 +62,11 @@ def toTokens(text, spaceEscaped=False, caseSensitive=False):
         If True, it is assumed that if a `_` occurs in a token string, a space is meant.
     caseSensitive: boolean, optional False
         If True, return all tokens in lower case.
+
+    Returns
+    -------
+    tuple of string
+        The sequence of tokens to which the text has decomposed
     """
     result = TOKEN_RE.findall(normalize(text))
     result = tuple((t.replace("_", " ") for t in result) if spaceEscaped else result)
@@ -75,11 +80,24 @@ def toTokens(text, spaceEscaped=False, caseSensitive=False):
 def fromTokens(tokens, spaceEscaped=False):
     """The inverse of `toTokens()`.
 
-    Doing first toTokens and then fromTokens is idempotent.
+    Doing first toTokens and then fromTokens is idempotent (provided you do it in
+    a case-sensitive way).
     So if you have to revert back from tokens to text,
     make sure that you have done a combo of toTokens and
     fromTokens first.
     You can use `tnorm()` for that.
+
+    Parameters
+    ----------
+    spaceEscaped: boolean, optional False
+        If True, it all ` ` in token strings will be escaped as `-`
+    caseSensitive: boolean, optional False
+        If True, return all tokens in lower case.
+
+    Returns
+    -------
+    tuple of string
+        The sequence of tokens to which the text has decomposed
     """
     return " ".join(
         tuple(t.replace(" ", "_") for t in tokens) if spaceEscaped else tokens
@@ -87,6 +105,23 @@ def fromTokens(tokens, spaceEscaped=False):
 
 
 def tnorm(text, spaceEscaped=False, caseSensitive=False):
+    """Normalize text.
+
+    Split a text into tokens and then recombine to text again.
+    This will result in a normalized version of the text with respect to whitespace.
+
+    Parameters
+    ----------
+    spaceEscaped: boolean, optional False
+        If your corpus has tokens with spaces in it, pass True, otherwise False.
+    caseSensitive: boolean, optional False
+        If True, case sensitivity is preserved, otherwise all uppercase will be
+        converted to lowercase.
+
+    Returns
+    -------
+    string
+    """
     return fromTokens(
         toTokens(text, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive),
         spaceEscaped=spaceEscaped,
@@ -100,6 +135,16 @@ def toAscii(text):
     Some characters with diacritics are considered by UNICODE to be undecomposable
     characters, such as `ø` and `ñ`.
     We use a table (`TO_ASCII_DEF`) to map these on their related ASCII characters.
+
+    Parameters
+    ----------
+    text: string
+        The text to be translated
+
+    Returns
+    -------
+    string
+        The translated text.
     """
     return "".join(
         TO_ASCII.get(c, c)
@@ -112,6 +157,15 @@ def toId(text):
     """Transforms text to an identifier string.
 
     Tokens are lower-cased, separated by `.`, reduced to ASCII.
+
+    Parameters
+    ----------
+    text: string
+        The text to be transformed
+
+    Returns
+    -------
+        The identifier string based on `text`
     """
     return NON_WORD.sub(".", toAscii(text.lower())).strip(".")
 
@@ -125,6 +179,18 @@ def toSmallId(text, transform={}):
     This transformation is defined by the `transform` dictionary,
     which ultimately is provided in the corpus-dependent
     `ner/config.yaml` .
+
+    Parameters
+    ----------
+    text: string
+        The text to be transformed
+    transform: dict, optional {}
+        Custom transformations to be applied; usually this is the omission of frequent
+        non-content words in the language.
+
+    Returns
+    -------
+        The identifier string based on `text`
     """
     eid = toId(text)
 
@@ -179,164 +245,3 @@ def findCompile(bFind, bFindC):
             errorMsg = str(e)
 
     return (bFind, bFindRe, errorMsg)
-
-
-def repSet(s):
-    return "{" + ", ".join(str(x) for x in sorted(s)) + "}"
-
-
-# COMMON TOKENS
-
-
-def hasCommon(tokensA, tokensB):
-    """Whether one sequence of tokens interferes with another.
-
-    The idea is: we want to determine whether matches for tokensA may interfere
-    with matches for tokensB.
-
-    This happens if tokensB is a sublist of tokensA, or if an initial segment of
-    tokensB forms a tail inside tokensA.
-
-    Or the same with tokensA and tokensB reversed.
-
-    Proposition: tokensA en tokensB have something in common (in the above sense)
-    if and only if you can make a text where tokensA and tokensB have overlapping
-    matches. Proof follows.
-
-    We return a result consisting of 3 integers: `ref`, `pos`, `length`
-
-    *   `ref` is either 0, 1 or -1.
-
-        It is 0 if tokensA and tokensB are identical.
-        It is 1 if tokensA properly contains B or if tokensB starts somewhere
-        in tokensA.
-        It is -1 otherwise.
-
-    Proof:
-
-    (direction =>)
-
-    Suppose tokensA and tokensB have something in common.
-
-    Let i, j be the start-end position of the (part of) tokensB that occur in tokensA.
-    Construct a match for the combination of tokensA and tokensB as follows:
-
-    tokensA[0:i] + tokensA[i:j] + xxx
-
-    Two cases:
-
-    1.  tokensB is fully contained in tokensA.
-        Then take for xxx: tokensA[j:].
-        The result is a match for tokensA and hence for tokensB.
-    2.  tokensB is only contained in A up to index k. By definition of common, this
-        means that tokensB[0:k] is equal to tokensA[-k:] and hence
-        that j == len(tokensA).
-        Then take for xxx: tokensB[k:].
-        We then have:
-
-        tokensA + tokensB[k:] =
-
-        tokensA[0:i] + tokensA[i:] + tokensB[k:]
-
-        tkoensA[0:i] + tokensA[i:j] + tokensB[k:] = (because j == len(tokensA))
-
-        tokensA[0:i] + tokensA[i:j] + tokensB[k:] =
-
-        tokensA[0:i] + tokensB[0:k] + tokensB[k:] =
-
-        tokensA[0:i] + tokensB
-
-        So, this text is a match for tokensA and for tokensB
-
-        (direction <=)
-
-        Suppose we have a text T with an overlapping match for tokensA and tokensB.
-
-        Suppose T[i:j] is a match for tokensA and T[n:m] is a match for tokensB, and
-        T[i:j] and T[m:n] overlap.
-
-        Two cases:
-
-        1.  one match is contained in the other. We consider T[m:n] is
-            contained in T[i:j]. For the reverse case, the argument is the same
-            with tokensA and tokensB interchanged.
-
-            T[m:n] is part of a match of tokensA, so T[m:n] occurs in tokensA.
-            T[m:n] is also a match for tokensB, so tokensB == T[m:n], so tokensB
-            is a part of tokensA, hence, by definition: tokensA and tokensB
-            have something in common.
-        2.  the two matches have a region in common, but none is contained in the
-            other.
-            We consider the case where m is between i and j. The case where i is
-            between m and n is analogous, with tokensA and tokensB interchanged.
-
-            Now T[m:j] is part of a match for tokensA and for tokensB.
-            Then T[m:j] is at the end of T[i:j], so part of tokensB is at the
-            end of tokensA.
-
-    Test:
-
-    ```
-    from tf.ner.helpers import hasCommon
-
-    tokensA = list("abcd")
-    tokensB = list("cdef")
-    tokensC = list("defg")
-    tokensD = list("bc")
-    tokensE = list("ab")
-    tokensF = list("cd")
-    tokensG = list("a")
-    assert hasCommon(tokensA, tokensA) == (0, 0, 4), hasCommon(tokensA, tokensA)
-    assert hasCommon(tokensA, tokensB) == (1, 2, 2), hasCommon(tokensA, tokensB)
-    assert hasCommon(tokensB, tokensA) == (-1, 2, 2), hasCommon(tokensB, tokensA)
-    assert hasCommon(tokensA, tokensC) == (1, 3, 1), hasCommon(tokensA, tokensC)
-    assert hasCommon(tokensC, tokensA) == (-1, 3, 1), hasCommon(tokensC, tokensA)
-    assert hasCommon(tokensA, tokensD) == (1, 1, 2), hasCommon(tokensA, tokensD)
-    assert hasCommon(tokensD, tokensA) == (-1, 1, 2), hasCommon(tokensD, tokensA)
-    assert hasCommon(tokensA, tokensE) == (1, 0, 2), hasCommon(tokensA, tokensE)
-    assert hasCommon(tokensE, tokensA) == (-1, 0, 2), hasCommon(tokensE, tokensA)
-    assert hasCommon(tokensA, tokensF) == (1, 2, 2), hasCommon(tokensA, tokensF)
-    assert hasCommon(tokensF, tokensA) == (-1, 2, 2), hasCommon(tokensF, tokensA)
-    assert hasCommon(tokensE, tokensG) == (1, 0, 1), hasCommon(tokensE, tokensG)
-    assert hasCommon(tokensG, tokensE) == (-1, 0, 1), hasCommon(tokensG, tokensE)
-
-    tokensA = list("abcd")
-    tokensB = list("cef")
-    tokensC = list("efg")
-    tokensD = list("bd")
-    tokensE = list("ac")
-    tokensF = list("ad")
-
-    assert hasCommon(tokensA, tokensB) == None, hasCommon(tokensA, tokensB)
-    assert hasCommon(tokensB, tokensA) == None, hasCommon(tokensB, tokensA)
-    assert hasCommon(tokensA, tokensC) == None, hasCommon(tokensA, tokensC)
-    assert hasCommon(tokensC, tokensA) == None, hasCommon(tokensC, tokensA)
-    assert hasCommon(tokensA, tokensD) == None, hasCommon(tokensA, tokensD)
-    assert hasCommon(tokensD, tokensA) == None, hasCommon(tokensD, tokensA)
-    assert hasCommon(tokensA, tokensE) == None, hasCommon(tokensA, tokensE)
-    assert hasCommon(tokensE, tokensA) == None, hasCommon(tokensE, tokensA)
-    assert hasCommon(tokensA, tokensF) == None, hasCommon(tokensA, tokensF)
-    assert hasCommon(tokensF, tokensA) == None, hasCommon(tokensF, tokensA)
-    ```
-    """
-    nA = len(tokensA)
-    nB = len(tokensB)
-
-    if tokensA == tokensB:
-        return (0, 0, nA)
-
-    for i in range(nA - 1, -1, -1):
-        end = min((nB, nA - i))
-
-        if tokensA[i : i + end] == tokensB[0:end]:
-            ref = 1 if i > 0 else 1 if nA >= nB else -1
-            return (ref, i, end)
-
-    for i in range(nB - 1, -1, -1):
-        end = min((nA, nB - i))
-
-        if tokensB[i : i + end] == tokensA[0:end]:
-            ref = -1 if i > 0 else -1 if nB >= nA else 1
-            return (ref, i, end)
-
-    return None

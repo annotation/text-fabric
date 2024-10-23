@@ -209,7 +209,7 @@ def composeP(
 
     Parameters
     ----------
-    items: int or list of int
+    items: integer or list of integer
         A node or list of nodes.
         Some corpora require a passage to be shown as a pretty display of the
         section node in question, and then items is a single node.

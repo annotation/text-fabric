@@ -1,24 +1,206 @@
+"""Management of triggers in NER spreadsheets.
+
+Triggers in NER spreadsheets may have unexpected interactions with each other, and
+with the scopes in which they are defined.
+
+When NER sheets grow large, we need extra tooling to diagnose these interactions,
+so that the user gets the proper feedback on for improving the sheet.
+"""
+
 import collections
 from textwrap import dedent
 
 from ..core.files import fileOpen
 from ..core.helpers import console
 
-from .helpers import hasCommon, toTokens
+from .helpers import toTokens
 from .match import occMatch
-from .scopes import locInScopes
+from .scopes import locInScope
 
 
-def makePartitions(triggers, myToTokens):
-    """Partition a set of triggers into groups where triggers are pairwise disjoint.
+def hasCommon(tokensA, tokensB):
+    """Whether one sequence of tokens interferes with another.
+
+    The idea is: we want to determine whether matches for `tokensA` may interfere
+    with matches for `tokensB`.
+
+    This happens if `tokensB` is a sublist of `tokensA`, or if an initial segment of
+    `tokensB` coincides with a final segment of `tokensA`.
+
+    Or the same with `tokensA` and `tokensB` reversed.
+
+    **Proposition:** *`tokensA` en `tokensB` have something in common (in the above sense)
+    if and only if you can make a text where `tokensA` and `tokensB` have overlapping
+    matches.*
+
+    $$Proof**:
+
+    (direction `=>`)
+
+    Suppose `tokensA` and `tokensB` have something in common.
+
+    Let `i`, `j` be the start-end position of the (part of) `tokensB` that occur in
+    `tokensA`.  Construct a match for the combination of `tokensA` and
+    `tokensB` as follows:
+
+    ```
+    tokensA[0:i] + tokensA[i:j] + xxx
+    ```
+
+    Two cases:
+
+    1.  `tokensB` is fully contained in `tokensA`.
+        Then take for `xxx`: `tokensA[j:]`.
+        The result is a match for `tokensA` and hence for `tokensB`.
+    2.  `tokensB` is only contained in `tokensA` up to index `k`. By definition
+        of common, this means that `tokensB[0:k]` is equal to `tokensA[-k:]` and hence
+        that `j == len(tokensA)`.
+        Then take for `xxx`: `tokensB[k:]`.
+
+        We then have:
+
+        ```
+        tokensA + tokensB[k:] =
+        tokensA[0:i] + tokensA[i:] + tokensB[k:]
+        tokensA[0:i] + tokensA[i:j] + tokensB[k:] =
+        ```
+
+        because `j == len(tokensA)` :
+
+        ```
+        tokensA[0:i] + tokensA[i:j] + tokensB[k:] =
+        tokensA[0:i] + tokensB[0:k] + tokensB[k:] =
+        tokensA[0:i] + tokensB
+        ```
+
+        So, this text is a match for `tokensA` and for `tokensB`
+
+        (direction `<=`)
+
+        Suppose we have a text `T` with an overlapping match for `tokensA` and
+        `tokensB`.
+
+        Suppose `T[i:j]` is a match for `tokensA` and `T[n:m]` is a match for
+        `tokensB`, and `T[i:j]` and `T[m:n]` overlap.
+
+        Two cases:
+
+        1.  one match is contained in the other. We consider `T[m:n]` is
+            contained in `T[i:j]`. For the reverse case, the argument is the same
+            with `tokensA` and `tokensB` interchanged.
+
+            `T[m:n]` is part of a match of `tokensA`, so `T[m:n]` occurs in `tokensA`.
+            `T[m:n]` is also a match for `tokensB`, so `tokensB == T[m:n]`, so `tokensB`
+            is a part of `tokensA`, hence, by definition: `tokensA` and `tokensB`
+            have something in common.
+        2.  the two matches have a region in common, but none is contained in the
+            other.
+            We consider the case where m is between i and j. The case where i is
+            between m and n is analogous, with `tokensA` and `tokensB` interchanged.
+
+            Now `T[m:j]` is part of a match for `tokensA` and for `tokensB`.
+            Then `T[m:j]` is at the end of `T[i:j]`, so an initial part of
+            `tokensB` is a final part of `tokensA`.
+
+    Parameters
+    ----------
+    tokensA: iterable of string
+        first operand
+    tokensB: iterable of string
+        second operand
+
+    Returns
+    -------
+    tuple of integer
+        We return a result consisting of 3 integers: `ref`, `pos`, `length`
+
+        `ref`: 0 if the two operands are identical; 1 if the first operand
+        properly contains the second one or if the second one starts somewhere
+        in the first one; -1 otherwise.
+
+        `pos`: the position in the one operand where the other starts.
+
+        `length`: the length of the common part of the two operands.
+    """
+    nA = len(tokensA)
+    nB = len(tokensB)
+
+    if tokensA == tokensB:
+        return (0, 0, nA)
+
+    for i in range(nA - 1, -1, -1):
+        end = min((nB, nA - i))
+
+        if tokensA[i : i + end] == tokensB[0:end]:
+            ref = 1 if i > 0 else 1 if nA >= nB else -1
+            return (ref, i, end)
+
+    for i in range(nB - 1, -1, -1):
+        end = min((nA, nB - i))
+
+        if tokensB[i : i + end] == tokensA[0:end]:
+            ref = -1 if i > 0 else -1 if nB >= nA else 1
+            return (ref, i, end)
+
+    return None
+
+
+def testCommon():
+    """Test suite for testing the `hasCommon()` function."""
+
+    tokensA = list("abcd")
+    tokensB = list("cdef")
+    tokensC = list("defg")
+    tokensD = list("bc")
+    tokensE = list("ab")
+    tokensF = list("cd")
+    tokensG = list("a")
+    assert hasCommon(tokensA, tokensA) == (0, 0, 4), hasCommon(tokensA, tokensA)
+    assert hasCommon(tokensA, tokensB) == (1, 2, 2), hasCommon(tokensA, tokensB)
+    assert hasCommon(tokensB, tokensA) == (-1, 2, 2), hasCommon(tokensB, tokensA)
+    assert hasCommon(tokensA, tokensC) == (1, 3, 1), hasCommon(tokensA, tokensC)
+    assert hasCommon(tokensC, tokensA) == (-1, 3, 1), hasCommon(tokensC, tokensA)
+    assert hasCommon(tokensA, tokensD) == (1, 1, 2), hasCommon(tokensA, tokensD)
+    assert hasCommon(tokensD, tokensA) == (-1, 1, 2), hasCommon(tokensD, tokensA)
+    assert hasCommon(tokensA, tokensE) == (1, 0, 2), hasCommon(tokensA, tokensE)
+    assert hasCommon(tokensE, tokensA) == (-1, 0, 2), hasCommon(tokensE, tokensA)
+    assert hasCommon(tokensA, tokensF) == (1, 2, 2), hasCommon(tokensA, tokensF)
+    assert hasCommon(tokensF, tokensA) == (-1, 2, 2), hasCommon(tokensF, tokensA)
+    assert hasCommon(tokensE, tokensG) == (1, 0, 1), hasCommon(tokensE, tokensG)
+    assert hasCommon(tokensG, tokensE) == (-1, 0, 1), hasCommon(tokensG, tokensE)
+
+    tokensA = list("abcd")
+    tokensB = list("cef")
+    tokensC = list("efg")
+    tokensD = list("bd")
+    tokensE = list("ac")
+    tokensF = list("ad")
+
+    assert hasCommon(tokensA, tokensB) is None, hasCommon(tokensA, tokensB)
+    assert hasCommon(tokensB, tokensA) is None, hasCommon(tokensB, tokensA)
+    assert hasCommon(tokensA, tokensC) is None, hasCommon(tokensA, tokensC)
+    assert hasCommon(tokensC, tokensA) is None, hasCommon(tokensC, tokensA)
+    assert hasCommon(tokensA, tokensD) is None, hasCommon(tokensA, tokensD)
+    assert hasCommon(tokensD, tokensA) is None, hasCommon(tokensD, tokensA)
+    assert hasCommon(tokensA, tokensE) is None, hasCommon(tokensA, tokensE)
+    assert hasCommon(tokensE, tokensA) is None, hasCommon(tokensE, tokensA)
+    assert hasCommon(tokensA, tokensF) is None, hasCommon(tokensA, tokensF)
+    assert hasCommon(tokensF, tokensA) is None, hasCommon(tokensF, tokensA)
+
+
+def makePartition(triggers, myToTokens):
+    """Partition a set of triggers into groups of pairwise non-interfering triggers.
 
     The intention is to explore all triggers that apparently do not have hits.
-    We need to look them up in isolation, because then they might have hits.
+    We need to look them up in isolation, because then they might have hits on
+    their own that are overshadowed by other triggers.
 
     But searching per trigger is expensive. We want to group triggers together
-    that can not interact with each other: triggers whose tokens are pairwise
-    disjoint. A hit of one trigger can then never be part of a hit of any other
-    trigger in the group.
+    that can not interact with each other.
+    A hit of one trigger can then never be part of a hit of any other trigger
+    in the group.
+
+    "Not being able to interact" is captured by the function `hasCommon()`.
 
     Parameters
     ----------
@@ -28,6 +210,15 @@ def makePartitions(triggers, myToTokens):
         Takes a trigger (string) and produces a sequence of tokens.
         Here you can pass a function that corresponds to how the strings in the corpus
         are divided up into tokens.
+
+    Returns
+    -------
+    tuple
+        The first member is a dict, mapping triggers to sequences of the tokens of which
+        they consist;
+
+        the second member is the partition itself, which is a list of parts, where each
+        part is a list of triggers that do not have conflicting pairs of triggers.
     """
 
     triggerTokens = {}
@@ -73,7 +264,22 @@ def makePartitions(triggers, myToTokens):
 
 class Triggers:
     def partitionTriggers(self, triggers):
-        return makePartitions(triggers, self.getToTokensFunc())[1]
+        """Wrapper around the partitioning function.
+
+        This function calls `tf.ner.triggers.makePartition()` with the corpus
+        dependent parameter for turning strings into tokens.
+
+        Parameters
+        ----------
+        triggers: iterable of string
+            A sequence of triggers.
+
+        Returns
+        -------
+        tuple
+            The same as what `tf.ner.triggers.makePartition()` returns.
+        """
+        return makePartition(triggers, self.getToTokensFunc())[1]
 
     def findOccs(self):
         """Finds the occurrences of multiple triggers.
@@ -96,7 +302,7 @@ class Triggers:
 
         """
         if not self.properlySetup:
-            return []
+            return
 
         settings = self.settings
         spaceEscaped = settings.spaceEscaped
@@ -106,10 +312,10 @@ class Triggers:
         getSeqFromNode = self.getSeqFromNode
 
         buckets = setData.buckets or ()
-
         sheetData = self.getSheetData()
-        instructions = sheetData.instructions
         caseSensitive = sheetData.caseSensitive
+        instructions = sheetData.instructions
+
         sheetData.inventory = occMatch(
             tokensFromNode,
             getSeqFromNode,
@@ -121,6 +327,8 @@ class Triggers:
 
     def reportHits(self, silent=None, showNoHits=False):
         """Reports the inventory.
+
+        It diagnoses all triggers by means of `diagnoseTriggers()`.
 
         Parameters
         ----------
@@ -268,17 +476,19 @@ class Triggers:
         """Produce a report of interferences between triggers.
 
         Triggers interfere if they have matches that intersect, i.e. there is a match
-        m1 of trigger t1 and a match m2 of trigger t2 such that m1 and m2 intersect.
+        `m1` of trigger `t1` and a match `m2` of trigger `t2` such that `m1` and
+        `m2` intersect (see `tf.ner.triggers.hasCommon()`.
 
-        Triggers may interfere *potentially*: if the triggers overlap they can have
-        intersecting matches. But it does not mean that the corpus contains overlapping
-        matches, i.e. that the triggers conflict actually.
+        Triggers may interfere *potentially*: if the triggers have something in
+        common they can have overlapping matches. But it does not mean that
+        the corpus contains these overlapping matches, i.e. that the triggers conflict
+        *actually*.
 
-        We report *actually* interfering triggers.
+        We report the *actually* interfering triggers only.
 
         Triggers within one row are associated to the same entity and work in the same
-        row. It is not bad if they are conflicting with each other. If there
-        are conflicting matches, the trigger that wins still flags the same entity.
+        row. It is not bad if they are interfering with each other. If there
+        are overlapping matches, the trigger that wins still flags the same entity.
         The worst thing is that some of these triggers are superfluous, but there is
         no reason to be picky on superfluous triggers.
 
@@ -296,6 +506,9 @@ class Triggers:
         alsoExpected: boolean, optional False
             Also report expected interferences.
         """
+        if not self.properlySetup:
+            return
+
         setName = self.setName
         annoDir = self.annoDir
         setDir = f"{annoDir}/{setName}"
@@ -399,7 +612,7 @@ class Triggers:
                         for x in T.sectionFromNode(sectionNode, fillup=True)
                     )
 
-                    if not locInScopes(heading, commonScopes):
+                    if not locInScope(heading, commonScopes):
                         continue
 
                     heading = app.sectionStrFromNode(sectionNode)
@@ -467,15 +680,39 @@ class Triggers:
 
         console(f"Diagnostic trigger interferences written to {reportFile}")
 
-    def diagnoseTriggers(self, triggers, detail=True):
-        """Diagnose triggers.
+    def diagnoseTriggers(self, triggers, detail=False):
+        """Diagnose triggers individually.
+
+        !!! Caution
+            This method will be called by `reportHits()` and should not be called
+            on its own, since it expects the instance member `triggerBySlot` which
+            is constructed by `reportHits()`
+
+        Here we have a closer look to each trigger individually, not focussing on the
+        interaction with other triggers.
+
+        The triggers will be partitioned and each part of the partition will be looked
+        up in a separate pass over the corpus.
+
+        Parameters
+        ----------
+        triggers: iterable of string
+            The triggers that must be diagnosed.
+        detail: boolean, optional False
+            If True, produces more detail per trigger, see `diagnoseTrigger()`
+
+        Returns
+        -------
+        int
+            The number of triggers with uncovered occurrences, see `diagnoseTrigger()`
         """
+        if not self.properlySetup:
+            return None
+
         sheetData = self.getSheetData()
         triggerScopes = sheetData.triggerScopes
 
         parts = self.partitionTriggers(triggers)
-
-        uncovered = 0
 
         nParts = len(parts)
         plural = "" if nParts == 1 else "es"
@@ -495,6 +732,8 @@ class Triggers:
                 occs = data.get(trigger, {}).get("", [])
                 items.append((trigger, occs))
 
+        uncovered = 0
+
         for trigger, occs in sorted(
             items,
             key=lambda x: (", ".join(sorted(triggerScopes[x[0]])), x[0].lower()),
@@ -505,7 +744,52 @@ class Triggers:
 
         return uncovered
 
-    def diagnoseTrigger(self, trigger, occs, detail=True):
+    def diagnoseTrigger(self, trigger, occs, detail=False):
+        """Diagnoses an individual trigger.
+
+        !!! Caution
+            This method will be called by `diagnoseTriggers()` and should not be called
+            on its own, since it expects the instance member `triggerBySlot` which
+            is constructed by `reportHits()`, which calls `diagnoseTriggers()`.
+
+        All occurrences of the trigger will be checked: is every slot in such
+        an occurrence part of a match according to the original spreadsheet?
+
+        If not so, we check whether it is a match of the trigger in question, or of
+        another trigger.
+
+        In this way we can detect where the potential but unrealized matches are.
+
+        If there are matches of the trigger in isolation that contain slots that are
+        not part of any match of any trigger in the original search, we say that
+        the trigger has uncovered occurrences. It will be returned as the result of this
+        function whether this is the case.
+
+        These uncovered occurrences are reported as missing hits.
+
+        It can also be the case that the trigger in isolation has matches that
+        are completely covered by matches of other triggers in the original search.
+        We can also list these, but since these are probably intentional, we suppress
+        these cases unless `detail=True` is passed.
+
+        Parameters
+        ----------
+        trigger: string
+            The trigger to be diagnosed.
+        occs: iterable of tuple of integer
+            The occurrences of this trigger in the whole corpus, irrespective of scope;
+        detail: boolean, optional False
+            If True, produces complete diagnostics.
+            Otherwise, only produces output if there are missed hits.
+
+        Returns
+        -------
+        boolean
+            Whether there are uncovered occurrences.
+        """
+        if not self.properlySetup:
+            return None
+
         app = self.app
         L = app.api.L
         triggerBySlot = self.triggerBySlot
@@ -524,7 +808,7 @@ class Triggers:
                 else:
                     coveredBy.setdefault(cTrigger, set()).add(slot)
 
-        properHits = {}
+        uncoveredOccs = {}
 
         nUncoveredSlots = len(uncoveredSlots)
         ok = nUncoveredSlots == 0
@@ -532,7 +816,7 @@ class Triggers:
         if nUncoveredSlots:
             for slot in sorted(uncoveredSlots):
                 heading = app.sectionStrFromNode(L.u(slot, otype="chunk")[0])
-                occ = properHits.setdefault(heading, [[]])
+                occ = uncoveredOccs.setdefault(heading, [[]])
 
                 if len(occ[-1]) == 0 or occ[-1][-1] + 1 == slot:
                     occ[-1].append(slot)
@@ -540,16 +824,16 @@ class Triggers:
                     occ.append([slot])
 
         nMissedHits = 0
-        properOccsDiag = []
-        properOccsDiagCompact = []
+        uncoveredOccsDiag = []
+        uncoveredOccsDiagCompact = []
 
-        for heading, occs in properHits.items():
+        for heading, occs in uncoveredOccs.items():
             nOccs = len(occs)
             nMissedHits += nOccs
-            properOccsDiag.append(f"\t\t{heading}: {nOccs} x")
-            properOccsDiagCompact.append(f"{heading} x {nOccs}")
+            uncoveredOccsDiag.append(f"\t\t{heading}: {nOccs} x")
+            uncoveredOccsDiagCompact.append(f"{heading} x {nOccs}")
 
-        properOccsDiag[0:0] = [f"\tuncovered: {nMissedHits} x"]
+        uncoveredOccsDiag[0:0] = [f"\tuncovered: {nMissedHits} x"]
 
         coveredOccsDiag = []
 
@@ -584,7 +868,7 @@ class Triggers:
         if detail:
             console(f"{trigger} {scopeRep}:")
 
-            for line in properOccsDiag:
+            for line in uncoveredOccsDiag:
                 console(line)
 
             for line in coveredOccsDiag:
@@ -598,7 +882,7 @@ class Triggers:
                 missedHits = []
 
                 i = 0
-                for occRep in properOccsDiagCompact:
+                for occRep in uncoveredOccsDiagCompact:
                     if i == 0:
                         missedHits.append([occRep])
                     else:
@@ -626,9 +910,63 @@ class Triggers:
         alsoInternal=False,
         alsoExpected=False,
     ):
+        """Workhorse to calculate interference of triggers.
+
+        This function is used by method `triggerInterference()` for calculating the
+        *potential* interferences within a set of triggers, irrespective whether
+        the corpus contains instances of these interferences.
+
+        When two triggers interfere, you can build a combined trigger out of them
+        whose matches are exactly the points of interference. We call this the
+        *combined* trigger of the interference.
+
+        Parameters
+        ----------
+        rowMap: dict
+            mapping from triggers to the rows where they occur in the spreadsheet.
+            We take the set of triggers from here, so that we can issue proper
+            diagnostic information later, i.e. we can mentoin the row in the spreadsheet
+            where the offending triggers are.
+        triggerScopes: dict
+            mapping from triggers to the scopes for which they are defined.
+        myToTokens: function
+            corpus dependent function for parsing a trigger, which is a string,
+            to tokens, in the same way as the text of the corpus is parsed into tokens.
+        getSeqfromStr: function
+            corpus dependent function that can translate a section heading into a
+            tuple of integers that represents the same heading in the "legal" numbering
+            system.
+        alsoInternal: boolean, optional False
+            Whether to report interfering triggers even if they belong to the
+            same entity
+        alsoExpected: boolean, optional False
+            Whether to report interfering triggers even if one is a proper
+            initial part of the other.
+
+        Returns
+        -------
+        tuple
+            There are two parts:
+
+            *interferences*: a list of interfering pairs of triggers, where each
+            interference has these components:
+
+            *   *triggerA* the first trigger in the pair;
+            *   *triggerB* the second trigger in the pair;
+            *   *triggerC* the combined trigger of the interference;
+            *   *scopeRepA* the scope of the first trigger;
+            *   *scopeRepB* the scope of the second trigger;
+            *   *commonScopes* the intersection of the scopes of both triggers.
+
+            *parts*: a partition of the combined triggers of all interferences so that
+            within each part none of these interfere.
+        """
+        if not self.properlySetup:
+            return (None, None)
+
         triggers = list(rowMap)
 
-        triggerTokens, parts = makePartitions(triggers, myToTokens)
+        triggerTokens, parts = makePartition(triggers, myToTokens)
 
         nParts = len(parts)
 
@@ -703,13 +1041,38 @@ class Triggers:
                             )
                         )
 
-        parts = makePartitions([x[2] for x in interferences], myToTokens)[1]
+        parts = makePartition([x[2] for x in interferences], myToTokens)[1]
 
         return interferences, parts
 
     def findTriggers(self, triggers):
+        """Looks up occurrences of multiple triggers efficiently.
+
+        This is a lot like `findOccs()`, but where as `findOccs()` finds
+        its search instructions in the sheet data and stores its search results in the
+        sheet data, this function makes its own instructions and returns the search
+        results.
+
+        We use this function when we need to investigate what triggers do in isolation
+        and without scope restrictions.
+
+        So, the instructions generated by this functions are derived from the
+        spreadsheet, but ignore all scope restrictions.
+
+        Parameters
+        ----------
+        triggers: iterable of string
+            These are the triggers to be looked up. Typically they come from one
+            part of a partition of triggers, but not necessarily so.
+
+        Returns
+        -------
+        dict
+            The inventory of occurrences of the triggers, as returned by
+            `tf.ner.match.occMatch()`.
+        """
         if not self.properlySetup:
-            return []
+            return {}
 
         settings = self.settings
         spaceEscaped = settings.spaceEscaped
@@ -720,7 +1083,6 @@ class Triggers:
 
         buckets = setData.buckets or ()
         sheetData = self.getSheetData()
-
         caseSensitive = sheetData.caseSensitive
 
         idMap = {trigger: trigger for trigger in triggers}
@@ -751,6 +1113,33 @@ class Triggers:
         return inventory
 
     def findTrigger(self, trigger, show=True):
+        """Looks up occurrences of a single triggers.
+
+        This is a lot like `findTriggers()`, but where as `findTriggers()` looks up
+        multiple triggers, this one looks up a single trigger.
+
+        Like `findTriggers()` the search is done without scope restrictions.
+
+        We use this function when we need to investigate what a single trigger
+        does in isolation and without scope restrictions.
+
+        So, the instructions generated by this functions are derived from the
+        spreadsheet, but ignore all scope restrictions.
+
+        Parameters
+        ----------
+        trigger: string
+            This is the trigger to be looked up.
+        show: boolean, optional True
+            If True, it shows the result on the console, otherwise it returns
+            the result.
+
+        Returns
+        -------
+        list or void
+            The list of occurrences of the trigger, provided `show=False` is passed,
+            else there is no function result.
+        """
         if not self.properlySetup:
             return []
 
@@ -766,7 +1155,6 @@ class Triggers:
 
         buckets = setData.buckets or ()
         sheetData = self.getSheetData()
-
         caseSensitive = sheetData.caseSensitive
 
         triggerT = toTokens(

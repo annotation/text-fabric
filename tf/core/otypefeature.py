@@ -80,12 +80,12 @@ class OtypeFeature:
 
         Parameters
         ----------
-        val: int | string
+        val: integer | string
             The node type that all resulting nodes have.
 
         Returns
         -------
-        tuple of int
+        tuple of integer
             All nodes that have this node type, sorted in the canonical order.
             (`tf.core.nodes`)
         """
@@ -117,12 +117,12 @@ class OtypeFeature:
 
         Parameters
         ----------
-        val: int | string
+        val: integer | string
             The node type in question.
 
         Returns
         -------
-        2-tuple of int
+        2-tuple of integer
             The start and end node of the interval of nodes with this type.
         """
 

@@ -476,7 +476,7 @@ class Text:
             Whether to fill up the tuple with missing section elements.
         Returns
         -------
-        section: tuple of int
+        section: tuple of integer
             If `n` is not a section node, a reference node `r` will be taken
             according to the `lastSlot` parameter.
 
@@ -946,7 +946,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
 
         Returns
         -------
-        node: int
+        node: integer
             If there is more than one node that corresponds to the heading,
             only the last one in the corpus will be returned.
             `hdMult` contains all such cases.

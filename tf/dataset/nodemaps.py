@@ -343,7 +343,7 @@ class Versions:
 
         Parameters
         ----------
-        node: string | int, optional None
+        node: string | integer, optional None
             The node or node type that you want to diagnose.
             If a string, it is a node type, and you get information about the nodes
             of that node type.

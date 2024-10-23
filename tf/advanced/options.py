@@ -109,7 +109,7 @@ edgeHighlights: dict
 
     There are no edge highlights in plain display.
 
-end: int, optional None
+end: integer, optional None
     `end` is the end point in the iterable of results.
     If `None`, displaying will stop after the end of the iterable.
 

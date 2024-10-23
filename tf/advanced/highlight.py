@@ -114,7 +114,7 @@ def getTupleHighlights(api, tup, highlights, colorMap, condenseType):
     ----------
     app: obj
         The high-level API object
-    tup: tuple of int
+    tup: tuple of integer
         The tuple of nodes to be highlighted
     colorMap: dict
         A mapping of tuple positions to colours.
@@ -166,7 +166,7 @@ def getPassageHighlights(app, node, query, colorMap, cache):
     ----------
     app: obj
         The high-level API object
-    node: int
+    node: integer
         The node of a passage (typically a chapter, or something that is occupies a
         page in the browser)
     query: string

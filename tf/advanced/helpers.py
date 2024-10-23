@@ -530,7 +530,7 @@ def getResultsX(app, results, features, condenseType, fmt=None):
 
     Parameters
     ----------
-    results: iterable of tuple of int
+    results: iterable of tuple of integer
         A uniform `isUniform` sequence of tuples of nodes
     features: key value pairs
         features per index position of the tuples.
@@ -614,7 +614,7 @@ def getTuplesX(app, results, condenseType, fmt=None):
 
     Parameters
     ----------
-    results: iterable of tuple of int
+    results: iterable of tuple of integer
         A uniform `isUniform` sequence of tuples of nodes
     condenseType: string
         A node type. Types smaller or equal than this type will have their text

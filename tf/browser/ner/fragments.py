@@ -139,6 +139,7 @@ class Fragments:
         v.tasks = H.p(content1, content2)
 
     def wrapCaption(self):
+        """HTML for the caption of the entity list."""
         v = self.v
         ner = self.ner
         setNameRep = ner.setNameRep
@@ -154,6 +155,7 @@ class Fragments:
         )
 
     def wrapLogs(self):
+        """HTML for the log messages produced when processing a sheet."""
         v = self.v
         ner = self.ner
         sheetData = ner.getSheetData()
@@ -435,6 +437,7 @@ class Fragments:
         return H.p(content)
 
     def wrapSubtle(self):
+        """HTML for the button to filter the entity list by scoped/nonscoped triggers."""
         v = self.v
         subtleFilter = v.subtlefilter
         ner = self.ner

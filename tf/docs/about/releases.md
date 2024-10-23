@@ -20,25 +20,9 @@ pip install -e .
 
 ### 12.6
 
-#### 12.6.1
-
-2024-10-??
-
-In the function `tf.core.helpers.mdEsc()` more markdown characters will be escaped.
-
-The function `tf.advanced.sections.sectionStrFromNode()` has an additional optional
-argument `level`, which chooses the level of the enclosing section around the node.
-Instead of picking the section around that node with the deepest level, we take the
-section at the specified level.
-
-Better reporting of what happens when we merge spelling variants into a NER sheet,
-see `tf.ner.variants.Detect.mergeTriggers()`.
-
-For the rest: mostly a documentation update.
-
 #### 12.6.0
 
-2024-10-08
+2024-10-23
 
 Something has changed in the representation of the corpus data: we store something
 extra about sections in the precomputed data: a mapping from section nodes to their
@@ -53,14 +37,27 @@ C.sections.data["nodeFromSeq"]
 
 See also `tf.core.prepare.sections`
 
-This means that older precomputed data can no longer used with this version of
+**This means that older precomputed data can no longer used with this version of
 Text-Fabric. When you run this new version, it will automatically precompute your
 corpus data again upon first usage, without removing the older precomputed data, so you
-can still switch back and forth between TF versions. 
+can still switch back and forth between TF versions.**
+ 
 See `tf.parameters.PACK_VERSION`, which has been bumped from `3` to `4` in this version.
 
 The reason is that the `tf.ner` facility needs to handle sections in a generic way,
 it needs to work with intervals of sections and intersections of those.
+
+In the function `tf.core.helpers.mdEsc()` more markdown characters will be escaped.
+
+The function `tf.advanced.sections.sectionStrFromNode()` has an additional optional
+argument `level`, which chooses the level of the enclosing section around the node.
+Instead of picking the section around that node with the deepest level, we take the
+section at the specified level.
+
+Better reporting of what happens when we merge spelling variants into a NER sheet,
+see `tf.ner.variants.Detect.mergeTriggers()`.
+
+For the rest: mostly refactorings and documentation updates.
 
 ### 12.5
 

@@ -750,7 +750,7 @@ class CV:
         ----------
         nType: string
             A node type, not the slot type
-        slots: iterable of int, optional None
+        slots: iterable of integer, optional None
             The slots to assign to this node.
             If left out, the node is left as an embedding node and
             subsequent slots will be added to it automatically.

@@ -63,7 +63,7 @@ class Locality:
 
         Returns
         -------
-        tuple of int
+        tuple of integer
             The tuple nodes is sorted in the
             canonical order (`tf.core.nodes`).
 
@@ -121,7 +121,7 @@ class Locality:
 
         Returns
         -------
-        tuple of int
+        tuple of integer
             The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
             but *reversed*: right and small embedders before left and big embedders.
 
@@ -167,7 +167,7 @@ class Locality:
 
         Returns
         -------
-        tuple of int
+        tuple of integer
             The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
             left and big embeddees before right and small embeddees.
 
@@ -229,7 +229,7 @@ class Locality:
 
         Returns
         -------
-        tuple of int
+        tuple of integer
             The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
             but *reversed*: right and small embedders before left and big embedders.
         """
@@ -277,7 +277,7 @@ class Locality:
 
         Returns
         -------
-        tuple of int
+        tuple of integer
             The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
             left and big embeddees before right and small embeddees.
         """

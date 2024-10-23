@@ -1,4 +1,4 @@
-"""Rendering of corpus extracts with annotations.
+"""Rendering of corpus material with annotations.
 """
 
 from itertools import chain

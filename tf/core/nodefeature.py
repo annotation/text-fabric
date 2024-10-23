@@ -83,12 +83,12 @@ class NodeFeature:
 
         Parameters
         ----------
-        value: int | string
+        value: integer | string
             The feature value that all resulting nodes have.
 
         Returns
         -------
-        tuple of int
+        tuple of integer
             All nodes that have this value for this feature,
             sorted in the canonical order.
             (`tf.core.nodes`)

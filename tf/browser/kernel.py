@@ -108,19 +108,19 @@ def makeTfKernel(app, appName):
             query: string
                 The query whose results should be highlighted in the passage display.
 
-            sec0: string | int
+            sec0: string | integer
                 The level 0 section (book)-like label in which the passage occurs.
 
-            sec1: string | int, optional None
+            sec1: string | integer, optional None
                 The level 1 section (chapter)-like label to fetch
 
-            sec2: string | int, optional None
+            sec2: string | integer, optional None
                 The level 2 section (verse-like) label that should get focus.
 
             opened: set, optional, `set()`
                 The set of items that are currently expanded into pretty display.
 
-            getx: string | int, optional None
+            getx: string | integer, optional None
                 If given, only a single `sec2` (verse) will be fetched, but in pretty
                 display.
                 `getx` is the identifier (section label, verse number) of the item.
@@ -250,7 +250,7 @@ def makeTfKernel(app, appName):
             opened: set, optional, `set()`
                 The set of items that are currently expanded into pretty display.
 
-            getx: string | int, optional None
+            getx: string | integer, optional None
                 If given, only a single `sec2` (verse) will be fetched, but in pretty
                 display.
                 `getx` is the identifier (section label, verse number) of the item.
@@ -314,7 +314,7 @@ def makeTfKernel(app, appName):
                 The query whose results should be highlighted in the passage display.
                 Typically coming from the *search pad* in the browser.
 
-            batch: int
+            batch: integer
                 The number of table rows to show on one page in the browser.
 
             position: integer, optional 1
@@ -330,7 +330,7 @@ def makeTfKernel(app, appName):
                 but for the opened ones information is gathered for
                 pretty displays.
 
-            getx: string | int, optional None
+            getx: string | integer, optional None
                 If given, only a single `sec2` (verse) will be fetched, but in pretty
                 display.
                 `getx` is the identifier (section label, verse number) of the item.

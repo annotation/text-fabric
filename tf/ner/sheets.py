@@ -1,3 +1,9 @@
+"""Management of NER spreadsheets.
+
+NER spreadsheets contain information about named entities and the
+trigger strings by which they can be found in the corpus.
+"""
+
 import re
 import time
 import pickle
@@ -45,7 +51,20 @@ SHEET_KEYS = """
 *   `scopeMap`: mapping from scope strings to scope data structures;
 *   `rowMap`: mapping from triggers to the rows where they occur;
 *   `instructions`: compiled search instructions to search for all triggers
-    simultaneously;
+    simultaneously; more precisely, it is a mapping from intervals to tuples of
+    three dictionaries:
+
+    *   `tPos`: dictionary that maps positions to tokens that a trigger may
+        have in that position to the set of triggers that have that token in
+        that position;
+    *   `tMap`: a mapping from triggers to scopes; the idea is that in every
+        interval all triggers that are active in that interval have exactly one scope
+        that includes that interval; the mapping gives that scope;
+    *   `idMap`: a mapping from triggers to entities; given a trigger that is
+        active in an interval, and given its scope in that interval, there is
+        exactly one entity that is triggered; the eid and kind of that entity
+        identify it and is the value;
+
 *   `inventory`: complete result of the search for triggers;
 *   `triggerFromMatch`: mapping for each match in the corpus which trigger was matched
     in what scope;
@@ -157,7 +176,8 @@ class Sheets(Scopes, Triggers):
     def setSheet(self, newSheet, force=False, caseSensitive=None, forceSilent=False):
         """Switch to a named ner sheet.
 
-        After the switch, the new sheet will be loaded into memory.
+        After the switch, the new sheet will be loaded into memory, processed, and
+        executed.
 
         Parameters
         ----------
@@ -491,7 +511,7 @@ class Sheets(Scopes, Triggers):
         1.  **scope**. A string that indicates portions in the corpus where the
             triggers for this entity are valid. The scope specifies zero or more
             intervals of sections in the corpus, where an empty scope denotes the
-            whole corpus. See `tf.ner.scopes.Scopes.parseScopes()`
+            whole corpus. See `tf.ner.scopes.Scopes.parseScope()`
             for the syntax of scope specifiers.
 
         1.  **triggers**. A list of triggers, i.e. textual strings that occur in the
@@ -576,11 +596,11 @@ class Sheets(Scopes, Triggers):
         tuple
             The first member is a list of the names of the metadata columns,
             taken from the first row of the spreadsheet.
+
             The second member is a dict with the metadata itself.
             The keys are strings of the form *entity identifier*`-`*entity kind*.
             The values are tuples, where the i-th member is the value for the i-th
             name in the list of metadata fields.
-            i in the
         """
         sheetData = self.getSheetData()
         return (sheetData.metaFields, sheetData.metaData)
@@ -762,7 +782,7 @@ class Sheets(Scopes, Triggers):
                 msg = f"r{r + 1:>3}: " f"no kind name, supplied {defaultKind}"
                 log(msg)
 
-            info = self.parseScopes(scopeStr, plain=False)
+            info = self.parseScope(scopeStr, plain=False)
             warnings = info["warning"]
 
             if len(warnings):
@@ -883,8 +903,8 @@ class Sheets(Scopes, Triggers):
         spec("Checking scopes")
 
         raw = sheetData.raw
-        scopeMap = sheetData.scopeMap
-        intervals = partitionScopes(scopeMap)
+        intvMap = sheetData.scopeMap
+        intervals = partitionScopes(intvMap)
 
         problems = set()
 
@@ -895,7 +915,7 @@ class Sheets(Scopes, Triggers):
             headCache = []
             problemCache = []
 
-            msg = self.repScope(intv)
+            msg = self.repInterval(intv)
             spec(msg, cache=headCache)
 
             thisCompiled = AttrDict()
@@ -1218,6 +1238,13 @@ class Sheets(Scopes, Triggers):
                 cache.append((isError, indent, msg))
 
     def flush(self, cache):
+        """Flushes the cache of log messages.
+
+        Parameters
+        ----------
+        cache: list
+            The items in the cache
+        """
         browse = self.browse
         sheetData = self.getSheetData()
         logData = sheetData.logData
