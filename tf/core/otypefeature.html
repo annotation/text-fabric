@@ -35,7 +35,7 @@ in any TF dataset, this pays off.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cd2f7a2343d12ca0649d8988176f22f0d264b18b/tf/core/otypefeature.py#L1-L133" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b70bb20edb0d54825bab78d1e3601a7fa09952c/tf/core/otypefeature.py#L1-L133" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Access to `otype` feature data.
@@ -119,12 +119,12 @@ class OtypeFeature:
 
         Parameters
         ----------
-        val: int | string
+        val: integer | string
             The node type that all resulting nodes have.
 
         Returns
         -------
-        tuple of int
+        tuple of integer
             All nodes that have this node type, sorted in the canonical order.
             (`tf.core.nodes`)
         &#34;&#34;&#34;
@@ -156,12 +156,12 @@ class OtypeFeature:
 
         Parameters
         ----------
-        val: int | string
+        val: integer | string
             The node type in question.
 
         Returns
         -------
-        2-tuple of int
+        2-tuple of integer
             The start and end node of the interval of nodes with this type.
         &#34;&#34;&#34;
 
@@ -190,7 +190,7 @@ class OtypeFeature:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cd2f7a2343d12ca0649d8988176f22f0d264b18b/tf/core/otypefeature.py#L11-L133" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b70bb20edb0d54825bab78d1e3601a7fa09952c/tf/core/otypefeature.py#L11-L133" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class OtypeFeature:
     def __init__(self, api, metaData, data):
@@ -264,12 +264,12 @@ class OtypeFeature:
 
         Parameters
         ----------
-        val: int | string
+        val: integer | string
             The node type that all resulting nodes have.
 
         Returns
         -------
-        tuple of int
+        tuple of integer
             All nodes that have this node type, sorted in the canonical order.
             (`tf.core.nodes`)
         &#34;&#34;&#34;
@@ -301,12 +301,12 @@ class OtypeFeature:
 
         Parameters
         ----------
-        val: int | string
+        val: integer | string
             The node type in question.
 
         Returns
         -------
-        2-tuple of int
+        2-tuple of integer
             The start and end node of the interval of nodes with this type.
         &#34;&#34;&#34;
 
@@ -358,12 +358,12 @@ in the <code>.<a title="tf" href="../index.html">tf</a></code> feature file.</p>
 <code><a title="tf.core.nodes.Nodes.walk" href="nodes.html#tf.core.nodes.Nodes.walk">Nodes.walk()</a></code>.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>val</code></strong> :&ensp;<code>int | string</code></dt>
+<dt><strong><code>val</code></strong> :&ensp;<code>integer | string</code></dt>
 <dd>The node type that all resulting nodes have.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>tuple</code> of <code>int</code></dt>
+<dt><code>tuple</code> of <code>integer</code></dt>
 <dd>All nodes that have this node type, sorted in the canonical order.
 (<code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code>)</dd>
 </dl></div>
@@ -378,12 +378,12 @@ For each type there is only one such interval.
 The first interval, <code>1:maxSlot + 1</code> is reserved for the slot type.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>val</code></strong> :&ensp;<code>int | string</code></dt>
+<dt><strong><code>val</code></strong> :&ensp;<code>integer | string</code></dt>
 <dd>The node type in question.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>2-tuple</code> of <code>int</code></dt>
+<dt><code>2-tuple</code> of <code>integer</code></dt>
 <dd>The start and end node of the interval of nodes with this type.</dd>
 </dl></div>
 </dd>

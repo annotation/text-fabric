@@ -43,18 +43,8 @@ and in its top-level directory run the command:</strong></p>
 </code></pre>
 <h2 id="12">12</h2>
 <h3 id="126">12.6</h3>
-<h4 id="1261">12.6.1</h4>
-<p>2024-10-??</p>
-<p>In the function <code><a title="tf.core.helpers.mdEsc" href="../core/helpers.html#tf.core.helpers.mdEsc">mdEsc()</a></code> more markdown characters will be escaped.</p>
-<p>The function <code><a title="tf.advanced.sections.sectionStrFromNode" href="../advanced/sections.html#tf.advanced.sections.sectionStrFromNode">sectionStrFromNode()</a></code> has an additional optional
-argument <code>level</code>, which chooses the level of the enclosing section around the node.
-Instead of picking the section around that node with the deepest level, we take the
-section at the specified level.</p>
-<p>Better reporting of what happens when we merge spelling variants into a NER sheet,
-see <code><a title="tf.ner.variants.Detect.mergeTriggers" href="../ner/variants.html#tf.ner.variants.Detect.mergeTriggers">Detect.mergeTriggers()</a></code>.</p>
-<p>For the rest: mostly a documentation update.</p>
 <h4 id="1260">12.6.0</h4>
-<p>2024-10-08</p>
+<p>2024-10-23</p>
 <p>Something has changed in the representation of the corpus data: we store something
 extra about sections in the precomputed data: a mapping from section nodes to their
 <em>legal</em> numbering, i.e. each section is assigned a tuple of integers with sequence
@@ -64,13 +54,21 @@ as follows:</p>
 C.sections.data[&quot;nodeFromSeq&quot;]
 </code></pre>
 <p>See also <code><a title="tf.core.prepare.sections" href="../core/prepare.html#tf.core.prepare.sections">sections()</a></code></p>
-<p>This means that older precomputed data can no longer used with this version of
+<p><strong>This means that older precomputed data can no longer used with this version of
 Text-Fabric. When you run this new version, it will automatically precompute your
 corpus data again upon first usage, without removing the older precomputed data, so you
-can still switch back and forth between TF versions.
-See <code><a title="tf.parameters.PACK_VERSION" href="../parameters.html#tf.parameters.PACK_VERSION">PACK_VERSION</a></code>, which has been bumped from <code>3</code> to <code>4</code> in this version.</p>
+can still switch back and forth between TF versions.</strong></p>
+<p>See <code><a title="tf.parameters.PACK_VERSION" href="../parameters.html#tf.parameters.PACK_VERSION">PACK_VERSION</a></code>, which has been bumped from <code>3</code> to <code>4</code> in this version.</p>
 <p>The reason is that the <code><a title="tf.ner" href="../ner/index.html">tf.ner</a></code> facility needs to handle sections in a generic way,
 it needs to work with intervals of sections and intersections of those.</p>
+<p>In the function <code><a title="tf.core.helpers.mdEsc" href="../core/helpers.html#tf.core.helpers.mdEsc">mdEsc()</a></code> more markdown characters will be escaped.</p>
+<p>The function <code><a title="tf.advanced.sections.sectionStrFromNode" href="../advanced/sections.html#tf.advanced.sections.sectionStrFromNode">sectionStrFromNode()</a></code> has an additional optional
+argument <code>level</code>, which chooses the level of the enclosing section around the node.
+Instead of picking the section around that node with the deepest level, we take the
+section at the specified level.</p>
+<p>Better reporting of what happens when we merge spelling variants into a NER sheet,
+see <code><a title="tf.ner.variants.Detect.mergeTriggers" href="../ner/variants.html#tf.ner.variants.Detect.mergeTriggers">Detect.mergeTriggers()</a></code>.</p>
+<p>For the rest: mostly refactorings and documentation updates.</p>
 <h3 id="125">12.5</h3>
 <h4 id="1255">12.5.5</h4>
 <p>2024-10-03</p>
@@ -579,7 +577,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cd2f7a2343d12ca0649d8988176f22f0d264b18b/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b70bb20edb0d54825bab78d1e3601a7fa09952c/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -653,7 +651,6 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
 <li><a href="#126">12.6</a><ul>
-<li><a href="#1261">12.6.1</a></li>
 <li><a href="#1260">12.6.0</a></li>
 </ul>
 </li>

@@ -37,7 +37,7 @@ control over how to customize the annotator for different corpora.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cd2f7a2343d12ca0649d8988176f22f0d264b18b/tf/ner/corpus.py#L1-L754" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b70bb20edb0d54825bab78d1e3601a7fa09952c/tf/ner/corpus.py#L1-L759" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Access to the corpus.
 
@@ -78,6 +78,11 @@ class Corpus(Settings):
 
         All methods that might fail because of this, are guarded by a check on this
         flag.
+
+        These corpus dependent functions will be defined as local functions and put
+        into a data member of the instance, rather than a method. Then we can pass
+        those functions on to functional contexts where they can be executed faster
+        than methods can.
         &#34;&#34;&#34;
         app = self.app
         context = app.context
@@ -169,7 +174,7 @@ class Corpus(Settings):
         ----------
         feat: string
             The name of the feature
-        node: int
+        node: integer
             The node whose feature value we need
 
         Returns
@@ -347,11 +352,11 @@ class Corpus(Settings):
 
         Parameters
         ----------
-        node: int
+        node: integer
 
         Returns
         -------
-        tuple of int
+        tuple of integer
         &#34;&#34;&#34;
 
         def getSeqFromNode(node):
@@ -524,7 +529,7 @@ class Corpus(Settings):
 
         Parameters
         ----------
-        nodes: set of int
+        nodes: set of integer
 
         Returns
         -------
@@ -622,7 +627,7 @@ class Corpus(Settings):
             If present, the keys are the entity features (`eid` and `kind`),
             and the values are iterables of values that are allowed.
 
-            The feature values to filter on.
+            These are additional feature values that we need to filter on.
             The results of searching for `eVals` or `qTokens` are filtered further.
             If a result is also an instance of an already marked entity,
             the properties of that entity will be compared feature by feature with
@@ -815,11 +820,15 @@ is collected here.</p>
 features to use for text representation, then we flag to the object
 instance that it is not properly set up.</p>
 <p>All methods that might fail because of this, are guarded by a check on this
-flag.</p></div>
+flag.</p>
+<p>These corpus dependent functions will be defined as local functions and put
+into a data member of the instance, rather than a method. Then we can pass
+those functions on to functional contexts where they can be executed faster
+than methods can.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cd2f7a2343d12ca0649d8988176f22f0d264b18b/tf/ner/corpus.py#L27-L754" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b70bb20edb0d54825bab78d1e3601a7fa09952c/tf/ner/corpus.py#L27-L759" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Corpus(Settings):
     def __init__(self):
@@ -834,6 +843,11 @@ flag.</p></div>
 
         All methods that might fail because of this, are guarded by a check on this
         flag.
+
+        These corpus dependent functions will be defined as local functions and put
+        into a data member of the instance, rather than a method. Then we can pass
+        those functions on to functional contexts where they can be executed faster
+        than methods can.
         &#34;&#34;&#34;
         app = self.app
         context = app.context
@@ -925,7 +939,7 @@ flag.</p></div>
         ----------
         feat: string
             The name of the feature
-        node: int
+        node: integer
             The node whose feature value we need
 
         Returns
@@ -1103,11 +1117,11 @@ flag.</p></div>
 
         Parameters
         ----------
-        node: int
+        node: integer
 
         Returns
         -------
-        tuple of int
+        tuple of integer
         &#34;&#34;&#34;
 
         def getSeqFromNode(node):
@@ -1280,7 +1294,7 @@ flag.</p></div>
 
         Parameters
         ----------
-        nodes: set of int
+        nodes: set of integer
 
         Returns
         -------
@@ -1378,7 +1392,7 @@ flag.</p></div>
             If present, the keys are the entity features (`eid` and `kind`),
             and the values are iterables of values that are allowed.
 
-            The feature values to filter on.
+            These are additional feature values that we need to filter on.
             The results of searching for `eVals` or `qTokens` are filtered further.
             If a result is also an instance of an already marked entity,
             the properties of that entity will be compared feature by feature with
@@ -1571,7 +1585,7 @@ the purpose of scoping and display in the entity browser.</p></div>
 <div class="desc"><p>Given a set of nodes, return the set of only its bucket nodes.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>nodes</code></strong> :&ensp;<code>set</code> of <code>int</code></dt>
+<dt><strong><code>nodes</code></strong> :&ensp;<code>set</code> of <code>integer</code></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -1605,7 +1619,7 @@ the purpose of scoping and display in the entity browser.</p></div>
 <dl>
 <dt><strong><code>feat</code></strong> :&ensp;<code>string</code></dt>
 <dd>The name of the feature</dd>
-<dt><strong><code>node</code></strong> :&ensp;<code>int</code></dt>
+<dt><strong><code>node</code></strong> :&ensp;<code>integer</code></dt>
 <dd>The node whose feature value we need</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -1642,12 +1656,12 @@ that contains that node. Then we return all buckets contained in that
 section.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>node</code></strong> :&ensp;<code>int</code></dt>
+<dt><strong><code>node</code></strong> :&ensp;<code>integer</code></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>tuple</code> of <code>int</code></dt>
+<dt><code>tuple</code> of <code>integer</code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
 </dd>
@@ -1948,7 +1962,7 @@ be the one given by the parameter <code>evals</code>.</dd>
 <dd>
 <p>If present, the keys are the entity features (<code>eid</code> and <code>kind</code>),
 and the values are iterables of values that are allowed.</p>
-<p>The feature values to filter on.
+<p>These are additional feature values that we need to filter on.
 The results of searching for <code>eVals</code> or <code>qTokens</code> are filtered further.
 If a result is also an instance of an already marked entity,
 the properties of that entity will be compared feature by feature with
@@ -1988,6 +2002,7 @@ of results.</p>
 <li><code><b><a title="tf.ner.settings.Settings" href="settings.html#tf.ner.settings.Settings">Settings</a></b></code>:
 <ul class="hlist">
 <li><code><a title="tf.ner.settings.Settings.console" href="settings.html#tf.ner.settings.Settings.console">console</a></code></li>
+<li><code><a title="tf.ner.settings.Settings.consoleLine" href="settings.html#tf.ner.settings.Settings.consoleLine">consoleLine</a></code></li>
 </ul>
 </li>
 </ul>

@@ -32,7 +32,7 @@ crossorigin>
 <p>This module manages the data of annotation sets.</p>
 <p>Annotation sets are either the sets of pre-existing entities in the corpus or the
 result of actions by the user of this tool, whether he uses the TF browser, or the API
-in his own programs.</p>
+in his own programs, or the result of looking op the triggers in a spreadsheet.</p>
 <p>Annotation sets must be stored on file, must be read from file,
 and must be represented in memory in various ways in order to make the
 API functions of the tool efficient.</p>
@@ -41,7 +41,7 @@ processed if they are needed and out of date.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cd2f7a2343d12ca0649d8988176f22f0d264b18b/tf/ner/data.py#L1-L932" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b70bb20edb0d54825bab78d1e3601a7fa09952c/tf/ner/data.py#L1-L956" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Annotation data module.
 
@@ -49,7 +49,7 @@ This module manages the data of annotation sets.
 
 Annotation sets are either the sets of pre-existing entities in the corpus or the
 result of actions by the user of this tool, whether he uses the TF browser, or the API
-in his own programs.
+in his own programs, or the result of looking op the triggers in a spreadsheet.
 
 Annotation sets must be stored on file, must be read from file,
 and must be represented in memory in various ways in order to make the
@@ -108,7 +108,7 @@ class Data(Corpus):
         annoDir = self.annoDir
         initTree(annoDir, fresh=False)
 
-    def loadSetData(self, _lowlevel=False):
+    def loadSetData(self):
         &#34;&#34;&#34;Loads the current annotation set into memory.
 
         It has two phases:
@@ -257,6 +257,9 @@ class Data(Corpus):
         *   `entityFreq`: dict of counters, a counter for each feature name; the
             counter gives the number of times each value of that feature occurs in an
             entity;
+        *   `entityIdentFirst`: dict, keyed by entity id, and valued by the number
+            of that entity in the list. If multiple entities in the list happen to
+            have this id, the number of the first entity of them is chosen as value;
         *   `entityIndex`: dict of dict, a dict for each feature name; the sub-dict
             gives for each position the values that entities occupying that position
             can have; positions are tuples of slots;
@@ -306,6 +309,7 @@ class Data(Corpus):
             or &#34;entityTextVal&#34; not in setData
             or &#34;entitySummary&#34; not in setData
             or &#34;entityIdent&#34; not in setData
+            or &#34;entityIdentFirst&#34; not in setData
             or &#34;entityFreq&#34; not in setData
             or &#34;entityIndex&#34; not in setData
             or &#34;entityVal&#34; not in setData
@@ -388,8 +392,8 @@ class Data(Corpus):
     def delEntity(self, vals, allMatches=None, returns=True):
         &#34;&#34;&#34;Delete entity occurrences from the current set.
 
-        This operation is not allowed if the current set is the read-only set with the
-        empty name.
+        This operation is not allowed if the current set is a read-only set
+        (from a spreadsheet or the already baked-in entities).
 
         The entities to delete are selected by their feature values.
         So you can use this function to delete all entities with a certain
@@ -403,13 +407,14 @@ class Data(Corpus):
         vals: tuple
             For each entity feature it has a value of that feature. This specifies
             which entities have to go.
-        allMatches: iterable of tuple of int, optional None
+        allMatches: iterable of tuple of integer, optional None
             A number of slot tuples. They are the locations from which the candidate
             entities will be deleted.
             If it is None, the entity candidates will be removed wherever they occur.
         returns: boolean, optional False
-            Reports how many entities have been deleted and how many were not present
-            in the specified locations.
+            If False, the function reports how many entities have been deleted
+            and how many were not present in the specified locations.
+            Otherwise, these numbers are returned.
 
         Returns
         -------
@@ -457,7 +462,7 @@ class Data(Corpus):
             deleted += 1
 
         if len(delEntities):
-            self.weedEntities(delEntities)
+            self._weedEntities(delEntities)
 
         self.loadSetData()
 
@@ -470,8 +475,8 @@ class Data(Corpus):
     def delEntityRich(self, deletions, buckets, excludedTokens=set()):
         &#34;&#34;&#34;Delete specified entity occurrences from the current set.
 
-        This operation is not allowed if the current set is the read-only set with the
-        empty name.
+        This operation is not allowed if the current set is a read-only set
+        (from a spreadsheet or the already baked-in entities).
 
         This function has more detailed instructions as to which entities
         should be deleted than `Data.delEntity()` .
@@ -489,6 +494,7 @@ class Data(Corpus):
             have values that are either equal to the corresponding member of
             `deletions` or contained in it.
         buckets: iterable of list
+            Restricts the scope where entities should be removed.
             This is typically the result of
             `tf.ner.corpus.Corpus.filterContent()`.
             The only important thing is that member 2 of each bucket is the list
@@ -575,7 +581,7 @@ class Data(Corpus):
                 report.append(f&#34;Deletion: occurrences excluded: {excl}&#34;)
 
         if len(delEntities):
-            self.weedEntities(delEntities)
+            self._weedEntities(delEntities)
 
         if browse:
             return report
@@ -597,8 +603,8 @@ class Data(Corpus):
     def addEntity(self, vals, allMatches, returns=True):
         &#34;&#34;&#34;Add entity occurrences to the current set.
 
-        This operation is not allowed if the current set is the read-only set with the
-        empty name.
+        This operation is not allowed if the current set is a read-only set
+        (from a spreadsheet or the already baked-in entities).
 
         The entities to add are specified by their feature values.
         So you can use this function to add entities with a certain
@@ -611,12 +617,13 @@ class Data(Corpus):
         vals: tuple
             For each entity feature it has a value of that feature. This specifies
             which entities have will be added.
-        allMatches: iterable of tuple of int
+        allMatches: iterable of tuple of integer
             A number of slot tuples. They are the locations where the entities will be
             added.
         returns: boolean, optional False
-            Reports how many entities have been added and how many were already present
-            in the specified locations.
+            If True, reports how many entities have been added and how many
+            were already present in the specified locations.
+            Otherwise, these numbers are returned by the function.
 
         Returns
         -------
@@ -664,7 +671,7 @@ class Data(Corpus):
                 added += 1
 
         if len(addE):
-            self.mergeEntities(addE)
+            self._mergeEntities(addE)
 
         self.loadSetData()
 
@@ -677,8 +684,8 @@ class Data(Corpus):
     def addEntities(self, newEntities, returns=True, _lowlevel=False):
         &#34;&#34;&#34;Add multiple entities efficiently to the current set.
 
-        This operation is not allowed if the current set is the read-only set with the
-        empty name.
+        This operation is not allowed if the current set is a read-only set, unless
+        `_lowlevel` is True.
 
         If you have multiple entities to add, it is wasteful to do multiple passes over
         the corpus to find them.
@@ -693,9 +700,19 @@ class Data(Corpus):
             *   a tuple of entity feature values, specifying the entity to add
             *   a list of slot tuples, specifying where to add this entity
 
+        _lowlevel: boolean, optional False
+            Whether this function is executed in low-level mode.
+            Some calls of this function are done in specific contexts, where certain
+            conditions are known to be fulfilled and do not have to be checked.
+            The intention is that only this codebase will ever pass `_lowlevel=True`,
+            and that outside functions never pass this parameter.
+
         returns: boolean, optional False
-            Reports how many entities have been added and how many were already present
-            in the specified locations.
+            If True, eports how many entities have been added and how many were
+            already present in the specified locations.
+            Otherwise it returns these numbers, unless `_lowlevel` is True, in which
+
+            case it returns nothing.
 
         Returns
         -------
@@ -741,7 +758,7 @@ class Data(Corpus):
                     addE.add((fVals, slots))
 
         if len(addE):
-            self.mergeEntities(addE, _lowlevel=_lowlevel)
+            self._mergeEntities(addE, _lowlevel=_lowlevel)
 
         self.loadSetData()
 
@@ -757,8 +774,8 @@ class Data(Corpus):
     def addEntityRich(self, additions, buckets, excludedTokens=set()):
         &#34;&#34;&#34;Add specified entity occurrences to the current set.
 
-        This operation is not allowed if the current set is the read-only set with the
-        empty name.
+        This operation is not allowed if the current set is a read-only set
+        (from a spreadsheet or the already baked-in entities).
 
         This function has more detailed instructions as to which entities
         should be added than `Data.addEntity()` .
@@ -856,7 +873,7 @@ class Data(Corpus):
                 report.append(f&#34;Addition: occurrences excluded: {excl}&#34;)
 
         if len(addEnts):
-            self.mergeEntities(addEnts)
+            self._mergeEntities(addEnts)
 
         if browse:
             return report
@@ -874,11 +891,32 @@ class Data(Corpus):
         if len(rest):
             self.console(&#34;\n&#34;.join(rest))
 
-    def weedEntities(self, delEntities):
+    def saveEntitiesAs(self, dataFile):
+        &#34;&#34;&#34;Export an annotation set to a file.
+
+        This function is used when a set has to be duplicated:
+        `tf.ner.sets.Sets.setDup()`.
+
+        Parameters
+        ----------
+        dataFile: string
+            The path of the file to write to.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
+        setData = self.getSetData()
+        entities = setData.entities
+
+        with fileOpen(dataFile, mode=&#34;a&#34;) as fh:
+            for fVals, slots in entities.values():
+                fh.write(&#34;\t&#34;.join(str(x) for x in (*fVals, *slots)) + &#34;\n&#34;)
+
+    def _weedEntities(self, delEntities):
         &#34;&#34;&#34;Performs deletions to the current annotation set.
 
-        This operation is not allowed if the current set is the read-only set with the
-        empty name.
+        This operation is not allowed if the current set is a read-only set
+        (from a spreadsheet or the already baked-in entities).
 
         Parameters
         ----------
@@ -920,7 +958,7 @@ class Data(Corpus):
         with fileOpen(dataFile, mode=&#34;w&#34;) as fh:
             fh.write(&#34;&#34;.join(newEntities))
 
-    def mergeEntities(self, newEntities, _lowlevel=False):
+    def _mergeEntities(self, newEntities, _lowlevel=False):
         &#34;&#34;&#34;Performs additions to the current annotation set.
 
         This operation is not allowed if the current set is the read-only set with the
@@ -931,6 +969,13 @@ class Data(Corpus):
         newEntities: set
             The set consists of entity specs: a tuple of values of entity features,
             and an iterable of slot tuples where the entity is located.
+
+        _lowlevel: boolean, optional False
+            Whether this function is executed in low-level mode.
+            Some calls of this function are done in specific contexts, where certain
+            conditions are known to be fulfilled and do not have to be checked.
+            The intention is that only this codebase will ever pass `_lowlevel=True`,
+            and that outside functions never pass this parameter.
         &#34;&#34;&#34;
         if not self.properlySetup:
             return
@@ -953,27 +998,6 @@ class Data(Corpus):
 
         with fileOpen(dataFile, mode=&#34;w&#34; if _lowlevel else &#34;a&#34;) as fh:
             for fVals, slots in newEntities:
-                fh.write(&#34;\t&#34;.join(str(x) for x in (*fVals, *slots)) + &#34;\n&#34;)
-
-    def saveEntitiesAs(self, dataFile):
-        &#34;&#34;&#34;Export an annotation set to a file.
-
-        This function is used when a set has to be duplicated:
-        `tf.ner.sets.Sets.setDup()`.
-
-        Parameters
-        ----------
-        dataFile: string
-            The path of the file to write to.
-        &#34;&#34;&#34;
-        if not self.properlySetup:
-            return
-
-        setData = self.getSetData()
-        entities = setData.entities
-
-        with fileOpen(dataFile, mode=&#34;a&#34;) as fh:
-            for fVals, slots in entities.values():
                 fh.write(&#34;\t&#34;.join(str(x) for x in (*fVals, *slots)) + &#34;\n&#34;)</code></pre>
 </details>
 </section>
@@ -1017,7 +1041,7 @@ it to the initializer here.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cd2f7a2343d12ca0649d8988176f22f0d264b18b/tf/ner/data.py#L27-L932" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b70bb20edb0d54825bab78d1e3601a7fa09952c/tf/ner/data.py#L27-L956" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Data(Corpus):
     def __init__(self, sets=None):
@@ -1058,7 +1082,7 @@ it to the initializer here.</p>
         annoDir = self.annoDir
         initTree(annoDir, fresh=False)
 
-    def loadSetData(self, _lowlevel=False):
+    def loadSetData(self):
         &#34;&#34;&#34;Loads the current annotation set into memory.
 
         It has two phases:
@@ -1207,6 +1231,9 @@ it to the initializer here.</p>
         *   `entityFreq`: dict of counters, a counter for each feature name; the
             counter gives the number of times each value of that feature occurs in an
             entity;
+        *   `entityIdentFirst`: dict, keyed by entity id, and valued by the number
+            of that entity in the list. If multiple entities in the list happen to
+            have this id, the number of the first entity of them is chosen as value;
         *   `entityIndex`: dict of dict, a dict for each feature name; the sub-dict
             gives for each position the values that entities occupying that position
             can have; positions are tuples of slots;
@@ -1256,6 +1283,7 @@ it to the initializer here.</p>
             or &#34;entityTextVal&#34; not in setData
             or &#34;entitySummary&#34; not in setData
             or &#34;entityIdent&#34; not in setData
+            or &#34;entityIdentFirst&#34; not in setData
             or &#34;entityFreq&#34; not in setData
             or &#34;entityIndex&#34; not in setData
             or &#34;entityVal&#34; not in setData
@@ -1338,8 +1366,8 @@ it to the initializer here.</p>
     def delEntity(self, vals, allMatches=None, returns=True):
         &#34;&#34;&#34;Delete entity occurrences from the current set.
 
-        This operation is not allowed if the current set is the read-only set with the
-        empty name.
+        This operation is not allowed if the current set is a read-only set
+        (from a spreadsheet or the already baked-in entities).
 
         The entities to delete are selected by their feature values.
         So you can use this function to delete all entities with a certain
@@ -1353,13 +1381,14 @@ it to the initializer here.</p>
         vals: tuple
             For each entity feature it has a value of that feature. This specifies
             which entities have to go.
-        allMatches: iterable of tuple of int, optional None
+        allMatches: iterable of tuple of integer, optional None
             A number of slot tuples. They are the locations from which the candidate
             entities will be deleted.
             If it is None, the entity candidates will be removed wherever they occur.
         returns: boolean, optional False
-            Reports how many entities have been deleted and how many were not present
-            in the specified locations.
+            If False, the function reports how many entities have been deleted
+            and how many were not present in the specified locations.
+            Otherwise, these numbers are returned.
 
         Returns
         -------
@@ -1407,7 +1436,7 @@ it to the initializer here.</p>
             deleted += 1
 
         if len(delEntities):
-            self.weedEntities(delEntities)
+            self._weedEntities(delEntities)
 
         self.loadSetData()
 
@@ -1420,8 +1449,8 @@ it to the initializer here.</p>
     def delEntityRich(self, deletions, buckets, excludedTokens=set()):
         &#34;&#34;&#34;Delete specified entity occurrences from the current set.
 
-        This operation is not allowed if the current set is the read-only set with the
-        empty name.
+        This operation is not allowed if the current set is a read-only set
+        (from a spreadsheet or the already baked-in entities).
 
         This function has more detailed instructions as to which entities
         should be deleted than `Data.delEntity()` .
@@ -1439,6 +1468,7 @@ it to the initializer here.</p>
             have values that are either equal to the corresponding member of
             `deletions` or contained in it.
         buckets: iterable of list
+            Restricts the scope where entities should be removed.
             This is typically the result of
             `tf.ner.corpus.Corpus.filterContent()`.
             The only important thing is that member 2 of each bucket is the list
@@ -1525,7 +1555,7 @@ it to the initializer here.</p>
                 report.append(f&#34;Deletion: occurrences excluded: {excl}&#34;)
 
         if len(delEntities):
-            self.weedEntities(delEntities)
+            self._weedEntities(delEntities)
 
         if browse:
             return report
@@ -1547,8 +1577,8 @@ it to the initializer here.</p>
     def addEntity(self, vals, allMatches, returns=True):
         &#34;&#34;&#34;Add entity occurrences to the current set.
 
-        This operation is not allowed if the current set is the read-only set with the
-        empty name.
+        This operation is not allowed if the current set is a read-only set
+        (from a spreadsheet or the already baked-in entities).
 
         The entities to add are specified by their feature values.
         So you can use this function to add entities with a certain
@@ -1561,12 +1591,13 @@ it to the initializer here.</p>
         vals: tuple
             For each entity feature it has a value of that feature. This specifies
             which entities have will be added.
-        allMatches: iterable of tuple of int
+        allMatches: iterable of tuple of integer
             A number of slot tuples. They are the locations where the entities will be
             added.
         returns: boolean, optional False
-            Reports how many entities have been added and how many were already present
-            in the specified locations.
+            If True, reports how many entities have been added and how many
+            were already present in the specified locations.
+            Otherwise, these numbers are returned by the function.
 
         Returns
         -------
@@ -1614,7 +1645,7 @@ it to the initializer here.</p>
                 added += 1
 
         if len(addE):
-            self.mergeEntities(addE)
+            self._mergeEntities(addE)
 
         self.loadSetData()
 
@@ -1627,8 +1658,8 @@ it to the initializer here.</p>
     def addEntities(self, newEntities, returns=True, _lowlevel=False):
         &#34;&#34;&#34;Add multiple entities efficiently to the current set.
 
-        This operation is not allowed if the current set is the read-only set with the
-        empty name.
+        This operation is not allowed if the current set is a read-only set, unless
+        `_lowlevel` is True.
 
         If you have multiple entities to add, it is wasteful to do multiple passes over
         the corpus to find them.
@@ -1643,9 +1674,19 @@ it to the initializer here.</p>
             *   a tuple of entity feature values, specifying the entity to add
             *   a list of slot tuples, specifying where to add this entity
 
+        _lowlevel: boolean, optional False
+            Whether this function is executed in low-level mode.
+            Some calls of this function are done in specific contexts, where certain
+            conditions are known to be fulfilled and do not have to be checked.
+            The intention is that only this codebase will ever pass `_lowlevel=True`,
+            and that outside functions never pass this parameter.
+
         returns: boolean, optional False
-            Reports how many entities have been added and how many were already present
-            in the specified locations.
+            If True, eports how many entities have been added and how many were
+            already present in the specified locations.
+            Otherwise it returns these numbers, unless `_lowlevel` is True, in which
+
+            case it returns nothing.
 
         Returns
         -------
@@ -1691,7 +1732,7 @@ it to the initializer here.</p>
                     addE.add((fVals, slots))
 
         if len(addE):
-            self.mergeEntities(addE, _lowlevel=_lowlevel)
+            self._mergeEntities(addE, _lowlevel=_lowlevel)
 
         self.loadSetData()
 
@@ -1707,8 +1748,8 @@ it to the initializer here.</p>
     def addEntityRich(self, additions, buckets, excludedTokens=set()):
         &#34;&#34;&#34;Add specified entity occurrences to the current set.
 
-        This operation is not allowed if the current set is the read-only set with the
-        empty name.
+        This operation is not allowed if the current set is a read-only set
+        (from a spreadsheet or the already baked-in entities).
 
         This function has more detailed instructions as to which entities
         should be added than `Data.addEntity()` .
@@ -1806,7 +1847,7 @@ it to the initializer here.</p>
                 report.append(f&#34;Addition: occurrences excluded: {excl}&#34;)
 
         if len(addEnts):
-            self.mergeEntities(addEnts)
+            self._mergeEntities(addEnts)
 
         if browse:
             return report
@@ -1824,11 +1865,32 @@ it to the initializer here.</p>
         if len(rest):
             self.console(&#34;\n&#34;.join(rest))
 
-    def weedEntities(self, delEntities):
+    def saveEntitiesAs(self, dataFile):
+        &#34;&#34;&#34;Export an annotation set to a file.
+
+        This function is used when a set has to be duplicated:
+        `tf.ner.sets.Sets.setDup()`.
+
+        Parameters
+        ----------
+        dataFile: string
+            The path of the file to write to.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
+        setData = self.getSetData()
+        entities = setData.entities
+
+        with fileOpen(dataFile, mode=&#34;a&#34;) as fh:
+            for fVals, slots in entities.values():
+                fh.write(&#34;\t&#34;.join(str(x) for x in (*fVals, *slots)) + &#34;\n&#34;)
+
+    def _weedEntities(self, delEntities):
         &#34;&#34;&#34;Performs deletions to the current annotation set.
 
-        This operation is not allowed if the current set is the read-only set with the
-        empty name.
+        This operation is not allowed if the current set is a read-only set
+        (from a spreadsheet or the already baked-in entities).
 
         Parameters
         ----------
@@ -1870,7 +1932,7 @@ it to the initializer here.</p>
         with fileOpen(dataFile, mode=&#34;w&#34;) as fh:
             fh.write(&#34;&#34;.join(newEntities))
 
-    def mergeEntities(self, newEntities, _lowlevel=False):
+    def _mergeEntities(self, newEntities, _lowlevel=False):
         &#34;&#34;&#34;Performs additions to the current annotation set.
 
         This operation is not allowed if the current set is the read-only set with the
@@ -1881,6 +1943,13 @@ it to the initializer here.</p>
         newEntities: set
             The set consists of entity specs: a tuple of values of entity features,
             and an iterable of slot tuples where the entity is located.
+
+        _lowlevel: boolean, optional False
+            Whether this function is executed in low-level mode.
+            Some calls of this function are done in specific contexts, where certain
+            conditions are known to be fulfilled and do not have to be checked.
+            The intention is that only this codebase will ever pass `_lowlevel=True`,
+            and that outside functions never pass this parameter.
         &#34;&#34;&#34;
         if not self.properlySetup:
             return
@@ -1903,27 +1972,6 @@ it to the initializer here.</p>
 
         with fileOpen(dataFile, mode=&#34;w&#34; if _lowlevel else &#34;a&#34;) as fh:
             for fVals, slots in newEntities:
-                fh.write(&#34;\t&#34;.join(str(x) for x in (*fVals, *slots)) + &#34;\n&#34;)
-
-    def saveEntitiesAs(self, dataFile):
-        &#34;&#34;&#34;Export an annotation set to a file.
-
-        This function is used when a set has to be duplicated:
-        `tf.ner.sets.Sets.setDup()`.
-
-        Parameters
-        ----------
-        dataFile: string
-            The path of the file to write to.
-        &#34;&#34;&#34;
-        if not self.properlySetup:
-            return
-
-        setData = self.getSetData()
-        entities = setData.entities
-
-        with fileOpen(dataFile, mode=&#34;a&#34;) as fh:
-            for fVals, slots in entities.values():
                 fh.write(&#34;\t&#34;.join(str(x) for x in (*fVals, *slots)) + &#34;\n&#34;)</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -1942,8 +1990,8 @@ it to the initializer here.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Add multiple entities efficiently to the current set.</p>
-<p>This operation is not allowed if the current set is the read-only set with the
-empty name.</p>
+<p>This operation is not allowed if the current set is a read-only set, unless
+<code>_lowlevel</code> is True.</p>
 <p>If you have multiple entities to add, it is wasteful to do multiple passes over
 the corpus to find them.</p>
 <p>This method does them all in one fell swoop.</p>
@@ -1957,9 +2005,19 @@ the corpus to find them.</p>
 <li>a list of slot tuples, specifying where to add this entity</li>
 </ul>
 </dd>
+<dt><strong><code>_lowlevel</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether this function is executed in low-level mode.
+Some calls of this function are done in specific contexts, where certain
+conditions are known to be fulfilled and do not have to be checked.
+The intention is that only this codebase will ever pass <code>_lowlevel=True</code>,
+and that outside functions never pass this parameter.</dd>
 <dt><strong><code>returns</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>Reports how many entities have been added and how many were already present
-in the specified locations.</dd>
+<dd>
+<p>If True, eports how many entities have been added and how many were
+already present in the specified locations.
+Otherwise it returns these numbers, unless <code>_lowlevel</code> is True, in which</p>
+<p>case it returns nothing.</p>
+</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <p>(int, int) or void
@@ -1973,8 +2031,8 @@ asked to be deleted and the number of actually deleted entities.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Add entity occurrences to the current set.</p>
-<p>This operation is not allowed if the current set is the read-only set with the
-empty name.</p>
+<p>This operation is not allowed if the current set is a read-only set
+(from a spreadsheet or the already baked-in entities).</p>
 <p>The entities to add are specified by their feature values.
 So you can use this function to add entities with a certain
 entity id and kind.</p>
@@ -1984,12 +2042,13 @@ entity id and kind.</p>
 <dt><strong><code>vals</code></strong> :&ensp;<code>tuple</code></dt>
 <dd>For each entity feature it has a value of that feature. This specifies
 which entities have will be added.</dd>
-<dt><strong><code>allMatches</code></strong> :&ensp;<code>iterable</code> of <code>tuple</code> of <code>int</code></dt>
+<dt><strong><code>allMatches</code></strong> :&ensp;<code>iterable</code> of <code>tuple</code> of <code>integer</code></dt>
 <dd>A number of slot tuples. They are the locations where the entities will be
 added.</dd>
 <dt><strong><code>returns</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>Reports how many entities have been added and how many were already present
-in the specified locations.</dd>
+<dd>If True, reports how many entities have been added and how many
+were already present in the specified locations.
+Otherwise, these numbers are returned by the function.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <p>(int, int) or void
@@ -2003,8 +2062,8 @@ asked to be deleted and the number of actually deleted entities.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Add specified entity occurrences to the current set.</p>
-<p>This operation is not allowed if the current set is the read-only set with the
-empty name.</p>
+<p>This operation is not allowed if the current set is a read-only set
+(from a spreadsheet or the already baked-in entities).</p>
 <p>This function has more detailed instructions as to which entities
 should be added than <code><a title="tf.ner.data.Data.addEntity" href="#tf.ner.data.Data.addEntity">Data.addEntity()</a></code> .</p>
 <p>It is a handy function for the TF browser to call, but not so much when you
@@ -2035,8 +2094,8 @@ no entity will be added there.</dd>
 </code></dt>
 <dd>
 <div class="desc"><p>Delete entity occurrences from the current set.</p>
-<p>This operation is not allowed if the current set is the read-only set with the
-empty name.</p>
+<p>This operation is not allowed if the current set is a read-only set
+(from a spreadsheet or the already baked-in entities).</p>
 <p>The entities to delete are selected by their feature values.
 So you can use this function to delete all entities with a certain
 entity id and kind.</p>
@@ -2047,13 +2106,14 @@ removal to the entities that occupy those locations.</p>
 <dt><strong><code>vals</code></strong> :&ensp;<code>tuple</code></dt>
 <dd>For each entity feature it has a value of that feature. This specifies
 which entities have to go.</dd>
-<dt><strong><code>allMatches</code></strong> :&ensp;<code>iterable</code> of <code>tuple</code> of <code>int</code>, optional <code>None</code></dt>
+<dt><strong><code>allMatches</code></strong> :&ensp;<code>iterable</code> of <code>tuple</code> of <code>integer</code>, optional <code>None</code></dt>
 <dd>A number of slot tuples. They are the locations from which the candidate
 entities will be deleted.
 If it is None, the entity candidates will be removed wherever they occur.</dd>
 <dt><strong><code>returns</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>Reports how many entities have been deleted and how many were not present
-in the specified locations.</dd>
+<dd>If False, the function reports how many entities have been deleted
+and how many were not present in the specified locations.
+Otherwise, these numbers are returned.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <p>(int, int) or void
@@ -2067,8 +2127,8 @@ asked to be deleted and the number of actually deleted entities.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Delete specified entity occurrences from the current set.</p>
-<p>This operation is not allowed if the current set is the read-only set with the
-empty name.</p>
+<p>This operation is not allowed if the current set is a read-only set
+(from a spreadsheet or the already baked-in entities).</p>
 <p>This function has more detailed instructions as to which entities
 should be deleted than <code><a title="tf.ner.data.Data.delEntity" href="#tf.ner.data.Data.delEntity">Data.delEntity()</a></code> .</p>
 <p>It is a handy function for the TF browser to call, but not so much when you
@@ -2083,7 +2143,8 @@ The tuple together specifies a set of entities whose entity features
 have values that are either equal to the corresponding member of
 <code>deletions</code> or contained in it.</dd>
 <dt><strong><code>buckets</code></strong> :&ensp;<code>iterable</code> of <code>list</code></dt>
-<dd>This is typically the result of
+<dd>Restricts the scope where entities should be removed.
+This is typically the result of
 <code><a title="tf.ner.corpus.Corpus.filterContent" href="corpus.html#tf.ner.corpus.Corpus.filterContent">Corpus.filterContent()</a></code>.
 The only important thing is that member 2 of each bucket is the list
 of entity matches in that bucket.
@@ -2124,20 +2185,6 @@ that are part of the entity.</li>
 <li>processing the loaded set (see <code><a title="tf.ner.data.Data.processSet" href="#tf.ner.data.Data.processSet">Data.processSet()</a></code>)</li>
 </ul></div>
 </dd>
-<dt id="tf.ner.data.Data.mergeEntities"><code class="name flex">
-<span>def <span class="ident">mergeEntities</span></span>(<span>self, newEntities)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Performs additions to the current annotation set.</p>
-<p>This operation is not allowed if the current set is the read-only set with the
-empty name.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>newEntities</code></strong> :&ensp;<code>set</code></dt>
-<dd>The set consists of entity specs: a tuple of values of entity features,
-and an iterable of slot tuples where the entity is located.</dd>
-</dl></div>
-</dd>
 <dt id="tf.ner.data.Data.processSet"><code class="name flex">
 <span>def <span class="ident">processSet</span></span>(<span>self, changed)</span>
 </code></dt>
@@ -2164,6 +2211,9 @@ entity feature values (these tuples are identifying for an entity);</li>
 <li><code>entityFreq</code>: dict of counters, a counter for each feature name; the
 counter gives the number of times each value of that feature occurs in an
 entity;</li>
+<li><code>entityIdentFirst</code>: dict, keyed by entity id, and valued by the number
+of that entity in the list. If multiple entities in the list happen to
+have this id, the number of the first entity of them is chosen as value;</li>
 <li><code>entityIndex</code>: dict of dict, a dict for each feature name; the sub-dict
 gives for each position the values that entities occupying that position
 can have; positions are tuples of slots;</li>
@@ -2207,20 +2257,6 @@ entities in the surrounding context of tokens.</p>
 <dd>The path of the file to write to.</dd>
 </dl></div>
 </dd>
-<dt id="tf.ner.data.Data.weedEntities"><code class="name flex">
-<span>def <span class="ident">weedEntities</span></span>(<span>self, delEntities)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Performs deletions to the current annotation set.</p>
-<p>This operation is not allowed if the current set is the read-only set with the
-empty name.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>delEntities</code></strong> :&ensp;<code>set</code></dt>
-<dd>The set consists of entity specs: a tuple of values of entity features,
-and an iterable of slot tuples where the entity is located.</dd>
-</dl></div>
-</dd>
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
@@ -2230,6 +2266,7 @@ and an iterable of slot tuples where the entity is located.</dd>
 <li><code><a title="tf.ner.corpus.Corpus.checkBuckets" href="corpus.html#tf.ner.corpus.Corpus.checkBuckets">checkBuckets</a></code></li>
 <li><code><a title="tf.ner.corpus.Corpus.checkFeature" href="corpus.html#tf.ner.corpus.Corpus.checkFeature">checkFeature</a></code></li>
 <li><code><a title="tf.ner.corpus.Corpus.console" href="settings.html#tf.ner.settings.Settings.console">console</a></code></li>
+<li><code><a title="tf.ner.corpus.Corpus.consoleLine" href="settings.html#tf.ner.settings.Settings.consoleLine">consoleLine</a></code></li>
 <li><code><a title="tf.ner.corpus.Corpus.featureDefault" href="corpus.html#tf.ner.corpus.Corpus.featureDefault">featureDefault</a></code></li>
 <li><code><a title="tf.ner.corpus.Corpus.filterContent" href="corpus.html#tf.ner.corpus.Corpus.filterContent">filterContent</a></code></li>
 <li><code><a title="tf.ner.corpus.Corpus.fvalFromNode" href="corpus.html#tf.ner.corpus.Corpus.fvalFromNode">fvalFromNode</a></code></li>
@@ -2332,10 +2369,8 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.ner.data.Data.delEntityRich" href="#tf.ner.data.Data.delEntityRich">delEntityRich</a></code></li>
 <li><code><a title="tf.ner.data.Data.fromSourceSet" href="#tf.ner.data.Data.fromSourceSet">fromSourceSet</a></code></li>
 <li><code><a title="tf.ner.data.Data.loadSetData" href="#tf.ner.data.Data.loadSetData">loadSetData</a></code></li>
-<li><code><a title="tf.ner.data.Data.mergeEntities" href="#tf.ner.data.Data.mergeEntities">mergeEntities</a></code></li>
 <li><code><a title="tf.ner.data.Data.processSet" href="#tf.ner.data.Data.processSet">processSet</a></code></li>
 <li><code><a title="tf.ner.data.Data.saveEntitiesAs" href="#tf.ner.data.Data.saveEntitiesAs">saveEntitiesAs</a></code></li>
-<li><code><a title="tf.ner.data.Data.weedEntities" href="#tf.ner.data.Data.weedEntities">weedEntities</a></code></li>
 </ul>
 </li>
 </ul>

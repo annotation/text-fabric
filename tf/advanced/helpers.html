@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cd2f7a2343d12ca0649d8988176f22f0d264b18b/tf/advanced/helpers.py#L1-L814" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b70bb20edb0d54825bab78d1e3601a7fa09952c/tf/advanced/helpers.py#L1-L814" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import collections
 from textwrap import dedent
@@ -565,7 +565,7 @@ def getResultsX(app, results, features, condenseType, fmt=None):
 
     Parameters
     ----------
-    results: iterable of tuple of int
+    results: iterable of tuple of integer
         A uniform `isUniform` sequence of tuples of nodes
     features: key value pairs
         features per index position of the tuples.
@@ -649,7 +649,7 @@ def getTuplesX(app, results, condenseType, fmt=None):
 
     Parameters
     ----------
-    results: iterable of tuple of int
+    results: iterable of tuple of integer
         A uniform `isUniform` sequence of tuples of nodes
     condenseType: string
         A node type. Types smaller or equal than this type will have their text
@@ -929,7 +929,7 @@ else the raw markdown is printed to the output.</dd>
 <div class="desc"><p>Transform a uniform iterable of nodes into a table with extra information.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>results</code></strong> :&ensp;<code>iterable</code> of <code>tuple</code> of <code>int</code></dt>
+<dt><strong><code>results</code></strong> :&ensp;<code>iterable</code> of <code>tuple</code> of <code>integer</code></dt>
 <dd>A uniform <code><a title="tf.advanced.helpers.isUniform" href="#tf.advanced.helpers.isUniform">isUniform()</a></code> sequence of tuples of nodes</dd>
 <dt><strong><code>features</code></strong> :&ensp;<code>key value pairs</code></dt>
 <dd>features per index position of the tuples.
@@ -965,7 +965,7 @@ be richer then when the tuples are not uniform.</p></div>
 <div class="desc"><p>Transform a non-uniform iterable of nodes into a table with extra information.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>results</code></strong> :&ensp;<code>iterable</code> of <code>tuple</code> of <code>int</code></dt>
+<dt><strong><code>results</code></strong> :&ensp;<code>iterable</code> of <code>tuple</code> of <code>integer</code></dt>
 <dd>A uniform <code><a title="tf.advanced.helpers.isUniform" href="#tf.advanced.helpers.isUniform">isUniform()</a></code> sequence of tuples of nodes</dd>
 <dt><strong><code>condenseType</code></strong> :&ensp;<code>string</code></dt>
 <dd>A node type. Types smaller or equal than this type will have their text

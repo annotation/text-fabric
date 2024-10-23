@@ -33,7 +33,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cd2f7a2343d12ca0649d8988176f22f0d264b18b/tf/browser/ner/fragments.py#L1-L1031" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b70bb20edb0d54825bab78d1e3601a7fa09952c/tf/browser/ner/fragments.py#L1-L1034" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Wraps various pieces into HTML.
 
@@ -176,6 +176,7 @@ class Fragments:
         v.tasks = H.p(content1, content2)
 
     def wrapCaption(self):
+        &#34;&#34;&#34;HTML for the caption of the entity list.&#34;&#34;&#34;
         v = self.v
         ner = self.ner
         setNameRep = ner.setNameRep
@@ -191,6 +192,7 @@ class Fragments:
         )
 
     def wrapLogs(self):
+        &#34;&#34;&#34;HTML for the log messages produced when processing a sheet.&#34;&#34;&#34;
         v = self.v
         ner = self.ner
         sheetData = ner.getSheetData()
@@ -472,6 +474,7 @@ class Fragments:
         return H.p(content)
 
     def wrapSubtle(self):
+        &#34;&#34;&#34;HTML for the button to filter the entity list by scoped/nonscoped triggers.&#34;&#34;&#34;
         v = self.v
         subtleFilter = v.subtlefilter
         ner = self.ner
@@ -1085,7 +1088,7 @@ class Fragments:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cd2f7a2343d12ca0649d8988176f22f0d264b18b/tf/browser/ner/fragments.py#L20-L1031" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b70bb20edb0d54825bab78d1e3601a7fa09952c/tf/browser/ner/fragments.py#L20-L1034" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Fragments:
     def wrapMessages(self):
@@ -1209,6 +1212,7 @@ class Fragments:
         v.tasks = H.p(content1, content2)
 
     def wrapCaption(self):
+        &#34;&#34;&#34;HTML for the caption of the entity list.&#34;&#34;&#34;
         v = self.v
         ner = self.ner
         setNameRep = ner.setNameRep
@@ -1224,6 +1228,7 @@ class Fragments:
         )
 
     def wrapLogs(self):
+        &#34;&#34;&#34;HTML for the log messages produced when processing a sheet.&#34;&#34;&#34;
         v = self.v
         ner = self.ner
         sheetData = ner.getSheetData()
@@ -1505,6 +1510,7 @@ class Fragments:
         return H.p(content)
 
     def wrapSubtle(self):
+        &#34;&#34;&#34;HTML for the button to filter the entity list by scoped/nonscoped triggers.&#34;&#34;&#34;
         v = self.v
         subtleFilter = v.subtlefilter
         ner = self.ner
@@ -2124,7 +2130,7 @@ appear: with or without underlining, identifier, kind, frequency.</p></div>
 <span>def <span class="ident">wrapCaption</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>HTML for the caption of the entity list.</p></div>
 </dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapEntity"><code class="name flex">
 <span>def <span class="ident">wrapEntity</span></span>(<span>self)</span>
@@ -2211,7 +2217,7 @@ buckets.</p></div>
 <span>def <span class="ident">wrapLogs</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>HTML for the log messages produced when processing a sheet.</p></div>
 </dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapMessages"><code class="name flex">
 <span>def <span class="ident">wrapMessages</span></span>(<span>self)</span>
@@ -2256,7 +2262,7 @@ features.</p>
 <span>def <span class="ident">wrapSubtle</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>HTML for the button to filter the entity list by scoped/nonscoped triggers.</p></div>
 </dd>
 </dl>
 </dd>

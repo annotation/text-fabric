@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.11.1" />
 <title>tf.ner.sheets API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Management of NER spreadsheets …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css"
 integrity="sha512-kcbluZFacWN57NgWZ4aH6eUMBEaTyErFhIFD3y5qYZbKuuyImH0K/AKsBbfXlivh2z5C+3IDTIhI11YmKomzmA=="
@@ -28,12 +28,21 @@ crossorigin>
 <h1 class="title">Module <code>tf.ner.sheets</code></h1>
 </header>
 <section id="section-intro">
+<p>Management of NER spreadsheets.</p>
+<p>NER spreadsheets contain information about named entities and the
+trigger strings by which they can be found in the corpus.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cd2f7a2343d12ca0649d8988176f22f0d264b18b/tf/ner/sheets.py#L1-L1228" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b70bb20edb0d54825bab78d1e3601a7fa09952c/tf/ner/sheets.py#L1-L1255" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">import re
+<pre><code class="python">&#34;&#34;&#34;Management of NER spreadsheets.
+
+NER spreadsheets contain information about named entities and the
+trigger strings by which they can be found in the corpus.
+&#34;&#34;&#34;
+
+import re
 import time
 import pickle
 import gzip
@@ -80,7 +89,20 @@ SHEET_KEYS = &#34;&#34;&#34;
 *   `scopeMap`: mapping from scope strings to scope data structures;
 *   `rowMap`: mapping from triggers to the rows where they occur;
 *   `instructions`: compiled search instructions to search for all triggers
-    simultaneously;
+    simultaneously; more precisely, it is a mapping from intervals to tuples of
+    three dictionaries:
+
+    *   `tPos`: dictionary that maps positions to tokens that a trigger may
+        have in that position to the set of triggers that have that token in
+        that position;
+    *   `tMap`: a mapping from triggers to scopes; the idea is that in every
+        interval all triggers that are active in that interval have exactly one scope
+        that includes that interval; the mapping gives that scope;
+    *   `idMap`: a mapping from triggers to entities; given a trigger that is
+        active in an interval, and given its scope in that interval, there is
+        exactly one entity that is triggered; the eid and kind of that entity
+        identify it and is the value;
+
 *   `inventory`: complete result of the search for triggers;
 *   `triggerFromMatch`: mapping for each match in the corpus which trigger was matched
     in what scope;
@@ -192,7 +214,8 @@ class Sheets(Scopes, Triggers):
     def setSheet(self, newSheet, force=False, caseSensitive=None, forceSilent=False):
         &#34;&#34;&#34;Switch to a named ner sheet.
 
-        After the switch, the new sheet will be loaded into memory.
+        After the switch, the new sheet will be loaded into memory, processed, and
+        executed.
 
         Parameters
         ----------
@@ -526,7 +549,7 @@ class Sheets(Scopes, Triggers):
         1.  **scope**. A string that indicates portions in the corpus where the
             triggers for this entity are valid. The scope specifies zero or more
             intervals of sections in the corpus, where an empty scope denotes the
-            whole corpus. See `tf.ner.scopes.Scopes.parseScopes()`
+            whole corpus. See `tf.ner.scopes.Scopes.parseScope()`
             for the syntax of scope specifiers.
 
         1.  **triggers**. A list of triggers, i.e. textual strings that occur in the
@@ -611,11 +634,11 @@ class Sheets(Scopes, Triggers):
         tuple
             The first member is a list of the names of the metadata columns,
             taken from the first row of the spreadsheet.
+
             The second member is a dict with the metadata itself.
             The keys are strings of the form *entity identifier*`-`*entity kind*.
             The values are tuples, where the i-th member is the value for the i-th
             name in the list of metadata fields.
-            i in the
         &#34;&#34;&#34;
         sheetData = self.getSheetData()
         return (sheetData.metaFields, sheetData.metaData)
@@ -797,7 +820,7 @@ class Sheets(Scopes, Triggers):
                 msg = f&#34;r{r + 1:&gt;3}: &#34; f&#34;no kind name, supplied {defaultKind}&#34;
                 log(msg)
 
-            info = self.parseScopes(scopeStr, plain=False)
+            info = self.parseScope(scopeStr, plain=False)
             warnings = info[&#34;warning&#34;]
 
             if len(warnings):
@@ -918,8 +941,8 @@ class Sheets(Scopes, Triggers):
         spec(&#34;Checking scopes&#34;)
 
         raw = sheetData.raw
-        scopeMap = sheetData.scopeMap
-        intervals = partitionScopes(scopeMap)
+        intvMap = sheetData.scopeMap
+        intervals = partitionScopes(intvMap)
 
         problems = set()
 
@@ -930,7 +953,7 @@ class Sheets(Scopes, Triggers):
             headCache = []
             problemCache = []
 
-            msg = self.repScope(intv)
+            msg = self.repInterval(intv)
             spec(msg, cache=headCache)
 
             thisCompiled = AttrDict()
@@ -1253,6 +1276,13 @@ class Sheets(Scopes, Triggers):
                 cache.append((isError, indent, msg))
 
     def flush(self, cache):
+        &#34;&#34;&#34;Flushes the cache of log messages.
+
+        Parameters
+        ----------
+        cache: list
+            The items in the cache
+        &#34;&#34;&#34;
         browse = self.browse
         sheetData = self.getSheetData()
         logData = sheetData.logData
@@ -1281,9 +1311,26 @@ in entity lookup: this is the metadata of an entity;</li>
 <li><code>nameMap</code>: mapping from entities to names;</li>
 <li><code>scopeMap</code>: mapping from scope strings to scope data structures;</li>
 <li><code>rowMap</code>: mapping from triggers to the rows where they occur;</li>
-<li><code>instructions</code>: compiled search instructions to search for all triggers
-simultaneously;</li>
-<li><code>inventory</code>: complete result of the search for triggers;</li>
+<li>
+<p><code>instructions</code>: compiled search instructions to search for all triggers
+simultaneously; more precisely, it is a mapping from intervals to tuples of
+three dictionaries:</p>
+<ul>
+<li><code>tPos</code>: dictionary that maps positions to tokens that a trigger may
+have in that position to the set of triggers that have that token in
+that position;</li>
+<li><code>tMap</code>: a mapping from triggers to scopes; the idea is that in every
+interval all triggers that are active in that interval have exactly one scope
+that includes that interval; the mapping gives that scope;</li>
+<li><code>idMap</code>: a mapping from triggers to entities; given a trigger that is
+active in an interval, and given its scope in that interval, there is
+exactly one entity that is triggered; the eid and kind of that entity
+identify it and is the value;</li>
+</ul>
+</li>
+<li>
+<p><code>inventory</code>: complete result of the search for triggers;</p>
+</li>
 <li><code>triggerFromMatch</code>: mapping for each match in the corpus which trigger was matched
 in what scope;</li>
 <li><code>triggerScopes</code>: for each trigger, the set of its scopes where it is used is stored;</li>
@@ -1304,7 +1351,9 @@ trigger-entity-scope combinations;</li>
 <span>(</span><span>sheets=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Handling of NER spreadsheets.</p>
+<div class="desc"><p>Functions that do scope handling.</p>
+<p>These functions will be added as methods to the class that inherits this class.</p>
+<p>Handling of NER spreadsheets.</p>
 <p>A NER spreadsheet contains entity information; in particular it links
 named entities to triggers by which they can be found in the corpus.</p>
 <p>See <code>readSheetData()</code> for the description of the shape of the spreadsheet,
@@ -1318,7 +1367,7 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cd2f7a2343d12ca0649d8988176f22f0d264b18b/tf/ner/sheets.py#L64-L1228" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b70bb20edb0d54825bab78d1e3601a7fa09952c/tf/ner/sheets.py#L83-L1255" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Sheets(Scopes, Triggers):
     def __init__(self, sheets=None):
@@ -1416,7 +1465,8 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
     def setSheet(self, newSheet, force=False, caseSensitive=None, forceSilent=False):
         &#34;&#34;&#34;Switch to a named ner sheet.
 
-        After the switch, the new sheet will be loaded into memory.
+        After the switch, the new sheet will be loaded into memory, processed, and
+        executed.
 
         Parameters
         ----------
@@ -1750,7 +1800,7 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
         1.  **scope**. A string that indicates portions in the corpus where the
             triggers for this entity are valid. The scope specifies zero or more
             intervals of sections in the corpus, where an empty scope denotes the
-            whole corpus. See `tf.ner.scopes.Scopes.parseScopes()`
+            whole corpus. See `tf.ner.scopes.Scopes.parseScope()`
             for the syntax of scope specifiers.
 
         1.  **triggers**. A list of triggers, i.e. textual strings that occur in the
@@ -1835,11 +1885,11 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
         tuple
             The first member is a list of the names of the metadata columns,
             taken from the first row of the spreadsheet.
+
             The second member is a dict with the metadata itself.
             The keys are strings of the form *entity identifier*`-`*entity kind*.
             The values are tuples, where the i-th member is the value for the i-th
             name in the list of metadata fields.
-            i in the
         &#34;&#34;&#34;
         sheetData = self.getSheetData()
         return (sheetData.metaFields, sheetData.metaData)
@@ -2021,7 +2071,7 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
                 msg = f&#34;r{r + 1:&gt;3}: &#34; f&#34;no kind name, supplied {defaultKind}&#34;
                 log(msg)
 
-            info = self.parseScopes(scopeStr, plain=False)
+            info = self.parseScope(scopeStr, plain=False)
             warnings = info[&#34;warning&#34;]
 
             if len(warnings):
@@ -2142,8 +2192,8 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
         spec(&#34;Checking scopes&#34;)
 
         raw = sheetData.raw
-        scopeMap = sheetData.scopeMap
-        intervals = partitionScopes(scopeMap)
+        intvMap = sheetData.scopeMap
+        intervals = partitionScopes(intvMap)
 
         problems = set()
 
@@ -2154,7 +2204,7 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
             headCache = []
             problemCache = []
 
-            msg = self.repScope(intv)
+            msg = self.repInterval(intv)
             spec(msg, cache=headCache)
 
             thisCompiled = AttrDict()
@@ -2477,6 +2527,13 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
                 cache.append((isError, indent, msg))
 
     def flush(self, cache):
+        &#34;&#34;&#34;Flushes the cache of log messages.
+
+        Parameters
+        ----------
+        cache: list
+            The items in the cache
+        &#34;&#34;&#34;
         browse = self.browse
         sheetData = self.getSheetData()
         logData = sheetData.logData
@@ -2512,7 +2569,12 @@ See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code
 <span>def <span class="ident">flush</span></span>(<span>self, cache)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Flushes the cache of log messages.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>cache</code></strong> :&ensp;<code>list</code></dt>
+<dd>The items in the cache</dd>
+</dl></div>
 </dd>
 <dt id="tf.ner.sheets.Sheets.getMeta"><code class="name flex">
 <span>def <span class="ident">getMeta</span></span>(<span>self)</span>
@@ -2524,13 +2586,14 @@ The writer of the NER sheet is free to chose additional rows.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>tuple</code></dt>
-<dd>The first member is a list of the names of the metadata columns,
-taken from the first row of the spreadsheet.
-The second member is a dict with the metadata itself.
+<dd>
+<p>The first member is a list of the names of the metadata columns,
+taken from the first row of the spreadsheet.</p>
+<p>The second member is a dict with the metadata itself.
 The keys are strings of the form <em>entity identifier</em><code>-</code><em>entity kind</em>.
 The values are tuples, where the i-th member is the value for the i-th
-name in the list of metadata fields.
-i in the</dd>
+name in the list of metadata fields.</p>
+</dd>
 </dl></div>
 </dd>
 <dt id="tf.ner.sheets.Sheets.getSheetData"><code class="name flex">
@@ -2664,7 +2727,7 @@ to chose the labels.</p>
 <p><strong>scope</strong>. A string that indicates portions in the corpus where the
 triggers for this entity are valid. The scope specifies zero or more
 intervals of sections in the corpus, where an empty scope denotes the
-whole corpus. See <code><a title="tf.ner.scopes.Scopes.parseScopes" href="scopes.html#tf.ner.scopes.Scopes.parseScopes">Scopes.parseScopes()</a></code>
+whole corpus. See <code><a title="tf.ner.scopes.Scopes.parseScope" href="scopes.html#tf.ner.scopes.Scopes.parseScope">Scopes.parseScope()</a></code>
 for the syntax of scope specifiers.</p>
 </li>
 <li>
@@ -2701,7 +2764,8 @@ by editing the spreadsheets in Excel.</p></div>
 </code></dt>
 <dd>
 <div class="desc"><p>Switch to a named ner sheet.</p>
-<p>After the switch, the new sheet will be loaded into memory.</p>
+<p>After the switch, the new sheet will be loaded into memory, processed, and
+executed.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>newSheet</code></strong> :&ensp;<code>string</code></dt>
@@ -2736,13 +2800,25 @@ by means of this function.</p>
 <ul class="hlist">
 <li><code><b><a title="tf.ner.scopes.Scopes" href="scopes.html#tf.ner.scopes.Scopes">Scopes</a></b></code>:
 <ul class="hlist">
-<li><code><a title="tf.ner.scopes.Scopes.parseScopes" href="scopes.html#tf.ner.scopes.Scopes.parseScopes">parseScopes</a></code></li>
+<li><code><a title="tf.ner.scopes.Scopes.intersectScopes" href="scopes.html#tf.ner.scopes.Scopes.intersectScopes">intersectScopes</a></code></li>
+<li><code><a title="tf.ner.scopes.Scopes.parseInterval" href="scopes.html#tf.ner.scopes.Scopes.parseInterval">parseInterval</a></code></li>
+<li><code><a title="tf.ner.scopes.Scopes.parseLoc" href="scopes.html#tf.ner.scopes.Scopes.parseLoc">parseLoc</a></code></li>
+<li><code><a title="tf.ner.scopes.Scopes.parseScope" href="scopes.html#tf.ner.scopes.Scopes.parseScope">parseScope</a></code></li>
+<li><code><a title="tf.ner.scopes.Scopes.repInterval" href="scopes.html#tf.ner.scopes.Scopes.repInterval">repInterval</a></code></li>
+<li><code><a title="tf.ner.scopes.Scopes.repLoc" href="scopes.html#tf.ner.scopes.Scopes.repLoc">repLoc</a></code></li>
+<li><code><a title="tf.ner.scopes.Scopes.repScope" href="scopes.html#tf.ner.scopes.Scopes.repScope">repScope</a></code></li>
+<li><code><a title="tf.ner.scopes.Scopes.testPartitioning" href="scopes.html#tf.ner.scopes.Scopes.testPartitioning">testPartitioning</a></code></li>
 </ul>
 </li>
 <li><code><b><a title="tf.ner.triggers.Triggers" href="triggers.html#tf.ner.triggers.Triggers">Triggers</a></b></code>:
 <ul class="hlist">
+<li><code><a title="tf.ner.triggers.Triggers.diagnoseTrigger" href="triggers.html#tf.ner.triggers.Triggers.diagnoseTrigger">diagnoseTrigger</a></code></li>
 <li><code><a title="tf.ner.triggers.Triggers.diagnoseTriggers" href="triggers.html#tf.ner.triggers.Triggers.diagnoseTriggers">diagnoseTriggers</a></code></li>
 <li><code><a title="tf.ner.triggers.Triggers.findOccs" href="triggers.html#tf.ner.triggers.Triggers.findOccs">findOccs</a></code></li>
+<li><code><a title="tf.ner.triggers.Triggers.findTrigger" href="triggers.html#tf.ner.triggers.Triggers.findTrigger">findTrigger</a></code></li>
+<li><code><a title="tf.ner.triggers.Triggers.findTriggers" href="triggers.html#tf.ner.triggers.Triggers.findTriggers">findTriggers</a></code></li>
+<li><code><a title="tf.ner.triggers.Triggers.interference" href="triggers.html#tf.ner.triggers.Triggers.interference">interference</a></code></li>
+<li><code><a title="tf.ner.triggers.Triggers.partitionTriggers" href="triggers.html#tf.ner.triggers.Triggers.partitionTriggers">partitionTriggers</a></code></li>
 <li><code><a title="tf.ner.triggers.Triggers.reportHits" href="triggers.html#tf.ner.triggers.Triggers.reportHits">reportHits</a></code></li>
 <li><code><a title="tf.ner.triggers.Triggers.triggerInterference" href="triggers.html#tf.ner.triggers.Triggers.triggerInterference">triggerInterference</a></code></li>
 </ul>

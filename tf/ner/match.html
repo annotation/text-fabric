@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.11.1" />
 <title>tf.ner.match API documentation</title>
-<meta name="description" content="Match functions." />
+<meta name="description" content="Match functions …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css"
 integrity="sha512-kcbluZFacWN57NgWZ4aH6eUMBEaTyErFhIFD3y5qYZbKuuyImH0K/AKsBbfXlivh2z5C+3IDTIhI11YmKomzmA=="
@@ -29,12 +29,24 @@ crossorigin>
 </header>
 <section id="section-intro">
 <p>Match functions.</p>
+<p>In this module we define an efficient search for multiple strings in one pass
+over the corpus.
+We also define a search for a single entity.</p>
+<p>All corpus-specific functions that we need must be passed as arguments.
+And the portions of the corpus in which we search must be given by a set of nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cd2f7a2343d12ca0649d8988176f22f0d264b18b/tf/ner/match.py#L1-L354" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5b70bb20edb0d54825bab78d1e3601a7fa09952c/tf/ner/match.py#L1-L360" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Match functions.
+
+In this module we define an efficient search for multiple strings in one pass
+over the corpus.
+We also define a search for a single entity.
+
+All corpus-specific functions that we need must be passed as arguments.
+And the portions of the corpus in which we search must be given by a set of nodes.
 &#34;&#34;&#34;
 
 from .settings import NONE
@@ -61,23 +73,16 @@ def occMatch(
     buckets: tuple of integer
         The bucket nodes in question
     instructions: dict, optional None
-        A nested dict, keyed by section headings, with trigger information per section.
-        Generic trigger information is present under key `&#34;&#34;`.
-        The idea is that trigger info under nested keys override trigger info
-        at parent keys.
-        The value at a key is a dict with keys:
-
-        `sheet`: The information about the triggers;
-
-        `tPos`: A compilation of all triggers into a mapping so that you can
-
-        read off, given a position and a token, the set of all triggers that
-        have that token at that position.
+        Datastructure that encodes the trigger information in a spreadsheet.
+        The structure is described in `tf.ner.sheets.SHEET_KEYS`.
+    spaceEscaped: boolean
+        A corpus property indicating whether tokens in the corpus may contain
+        escaped spaces
 
     Returns
     -------
     dict
-        A multiply nested dict, first keyed by tuples of entity identifier and kind,
+        A multiply nested dict, first keyed by entity identifier/kind tuples,
         then by its triggers then by the scope of such a trigger, and then
         the value is a list of occurrences, where each occurrence is a tuple of slots.
 
@@ -215,7 +220,10 @@ def entityMatch(
     Parameters
     ----------
     entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex: object
-        Various kinds of processed entity data, see `tf.ner.data`
+        Various kinds of processed entity data, see `tf.ner.data.Data.processSet()`
+    triggerFromMatch: dict
+        Mapping from matches to triggers, part of sheet data,
+        see `tf.ner.sheets.SHEET_KEYS`
     textFromNode: function
         See `tf.ner.corpus.Corpus.textFromNode`
     tokensFromNode: function
@@ -224,6 +232,9 @@ def entityMatch(
         The node of the bucket in question
     bFindRe, anyEnt, eVals, trigger, qTokens, valSelect, freeState: object
         As in `tf.ner.corpus.Corpus.filterContent`
+    fValStats: dict
+        Dictionary to collect statistics of entities that are encountered;
+        this is a result of the function!
 
     Returns
     -------
@@ -406,7 +417,10 @@ def entityMatch(
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>entityIndex</code></strong>, <strong><code>eStarts</code></strong>, <strong><code>entitySlotVal</code></strong>, <strong><code>entitySlotAll</code></strong>, <strong><code>entitySlotIndex</code></strong> :&ensp;<code>object</code></dt>
-<dd>Various kinds of processed entity data, see <code><a title="tf.ner.data" href="data.html">tf.ner.data</a></code></dd>
+<dd>Various kinds of processed entity data, see <code><a title="tf.ner.data.Data.processSet" href="data.html#tf.ner.data.Data.processSet">Data.processSet()</a></code></dd>
+<dt><strong><code>triggerFromMatch</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Mapping from matches to triggers, part of sheet data,
+see <code><a title="tf.ner.sheets.SHEET_KEYS" href="sheets.html#tf.ner.sheets.SHEET_KEYS">SHEET_KEYS</a></code></dd>
 <dt><strong><code>textFromNode</code></strong> :&ensp;<code>function</code></dt>
 <dd>See <code><a title="tf.ner.corpus.Corpus.textFromNode" href="corpus.html#tf.ner.corpus.Corpus.textFromNode">Corpus.textFromNode</a></code></dd>
 <dt><strong><code>tokensFromNode</code></strong> :&ensp;<code>function</code></dt>
@@ -415,6 +429,9 @@ def entityMatch(
 <dd>The node of the bucket in question</dd>
 <dt><strong><code>bFindRe</code></strong>, <strong><code>anyEnt</code></strong>, <strong><code>eVals</code></strong>, <strong><code>trigger</code></strong>, <strong><code>qTokens</code></strong>, <strong><code>valSelect</code></strong>, <strong><code>freeState</code></strong> :&ensp;<code>object</code></dt>
 <dd>As in <code><a title="tf.ner.corpus.Corpus.filterContent" href="corpus.html#tf.ner.corpus.Corpus.filterContent">Corpus.filterContent()</a></code></dd>
+<dt><strong><code>fValStats</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Dictionary to collect statistics of entities that are encountered;
+this is a result of the function!</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -450,22 +467,16 @@ of its slot number (position) and string value;</li>
 <dt><strong><code>buckets</code></strong> :&ensp;<code>tuple</code> of <code>integer</code></dt>
 <dd>The bucket nodes in question</dd>
 <dt><strong><code>instructions</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>
-<dd>
-<p>A nested dict, keyed by section headings, with trigger information per section.
-Generic trigger information is present under key <code>""</code>.
-The idea is that trigger info under nested keys override trigger info
-at parent keys.
-The value at a key is a dict with keys:</p>
-<p><code>sheet</code>: The information about the triggers;</p>
-<p><code>tPos</code>: A compilation of all triggers into a mapping so that you can</p>
-<p>read off, given a position and a token, the set of all triggers that
-have that token at that position.</p>
-</dd>
+<dd>Datastructure that encodes the trigger information in a spreadsheet.
+The structure is described in <code><a title="tf.ner.sheets.SHEET_KEYS" href="sheets.html#tf.ner.sheets.SHEET_KEYS">SHEET_KEYS</a></code>.</dd>
+<dt><strong><code>spaceEscaped</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>A corpus property indicating whether tokens in the corpus may contain
+escaped spaces</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>dict</code></dt>
-<dd>A multiply nested dict, first keyed by tuples of entity identifier and kind,
+<dd>A multiply nested dict, first keyed by entity identifier/kind tuples,
 then by its triggers then by the scope of such a trigger, and then
 the value is a list of occurrences, where each occurrence is a tuple of slots.</dd>
 </dl></div>
