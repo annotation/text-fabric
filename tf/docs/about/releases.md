@@ -20,6 +20,14 @@ pip install -e .
 
 ### 12.6
 
+#### 12.6.2
+
+2024-11-04
+
+The code contained some constructs that are only legal from Python 3.12 onwards,
+while TF requires Python 3.9. I have removed those dependencies, so TF still
+works with Python 3.9. It also works with all newer versions up till now (3.13.0).
+
 #### 12.6.0, 12.6.1
 
 2024-10-23

@@ -422,7 +422,8 @@ class Detect:
         file = f"{workDir}/variants.tsv"
 
         with fileOpen(file, "w") as fh:
-            fh.write(f"{'\t'.join(head)}\n")
+            headStr = "\t".join(head)
+            fh.write(f"{headStr}\n")
             for text, score, cand in lines:
                 fh.write(f"{text}\t{score:4.2f}\t{cand}\n")
 
@@ -566,12 +567,13 @@ class Detect:
         with fileOpen(mergedReportFile, "w") as fh:
             nLines = len(lines)
 
-            for (i, line) in enumerate(lines):
+            for i, line in enumerate(lines):
                 if i < 10 or i > nLines - 10:
                     (row, trigger, variant, hits) = line
                     NE.console(f"{row:<4} {trigger:<40} ~> {variant:<40} = {hits}")
 
-                fh.write(f"{'\t'.join(str(x) for x in line)}\n")
+                lineStr = "\t".join(str(x) for x in line)
+                fh.write(f"{lineStr}\n")
 
         pls = "" if nAdded == 1 else "s"
         plt = "" if totAdded == 1 else "s"
