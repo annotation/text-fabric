@@ -38,7 +38,7 @@ Reynaert and Maarten van Gompel.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86e40e7b0aa4f96b01306c4aebcef60c1ff4916b/tf/ner/variants.py#L1-L999" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/bba7d245341786fc367f29ac5a15453beaa5bdb4/tf/ner/variants.py#L1-L1001" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Detect name variants in the corpus.
 
@@ -464,7 +464,8 @@ class Detect:
         file = f&#34;{workDir}/variants.tsv&#34;
 
         with fileOpen(file, &#34;w&#34;) as fh:
-            fh.write(f&#34;{&#39;\t&#39;.join(head)}\n&#34;)
+            headStr = &#34;\t&#34;.join(head)
+            fh.write(f&#34;{headStr}\n&#34;)
             for text, score, cand in lines:
                 fh.write(f&#34;{text}\t{score:4.2f}\t{cand}\n&#34;)
 
@@ -608,12 +609,13 @@ class Detect:
         with fileOpen(mergedReportFile, &#34;w&#34;) as fh:
             nLines = len(lines)
 
-            for (i, line) in enumerate(lines):
+            for i, line in enumerate(lines):
                 if i &lt; 10 or i &gt; nLines - 10:
                     (row, trigger, variant, hits) = line
                     NE.console(f&#34;{row:&lt;4} {trigger:&lt;40} ~&gt; {variant:&lt;40} = {hits}&#34;)
 
-                fh.write(f&#34;{&#39;\t&#39;.join(str(x) for x in line)}\n&#34;)
+                lineStr = &#34;\t&#34;.join(str(x) for x in line)
+                fh.write(f&#34;{lineStr}\n&#34;)
 
         pls = &#34;&#34; if nAdded == 1 else &#34;s&#34;
         plt = &#34;&#34; if totAdded == 1 else &#34;s&#34;
@@ -1102,7 +1104,7 @@ in case insensitive mode for the lookup).</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86e40e7b0aa4f96b01306c4aebcef60c1ff4916b/tf/ner/variants.py#L39-L999" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/bba7d245341786fc367f29ac5a15453beaa5bdb4/tf/ner/variants.py#L39-L1001" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Detect:
     def __init__(self, NE, sheet=None):
@@ -1490,7 +1492,8 @@ in case insensitive mode for the lookup).</dd>
         file = f&#34;{workDir}/variants.tsv&#34;
 
         with fileOpen(file, &#34;w&#34;) as fh:
-            fh.write(f&#34;{&#39;\t&#39;.join(head)}\n&#34;)
+            headStr = &#34;\t&#34;.join(head)
+            fh.write(f&#34;{headStr}\n&#34;)
             for text, score, cand in lines:
                 fh.write(f&#34;{text}\t{score:4.2f}\t{cand}\n&#34;)
 
@@ -1634,12 +1637,13 @@ in case insensitive mode for the lookup).</dd>
         with fileOpen(mergedReportFile, &#34;w&#34;) as fh:
             nLines = len(lines)
 
-            for (i, line) in enumerate(lines):
+            for i, line in enumerate(lines):
                 if i &lt; 10 or i &gt; nLines - 10:
                     (row, trigger, variant, hits) = line
                     NE.console(f&#34;{row:&lt;4} {trigger:&lt;40} ~&gt; {variant:&lt;40} = {hits}&#34;)
 
-                fh.write(f&#34;{&#39;\t&#39;.join(str(x) for x in line)}\n&#34;)
+                lineStr = &#34;\t&#34;.join(str(x) for x in line)
+                fh.write(f&#34;{lineStr}\n&#34;)
 
         pls = &#34;&#34; if nAdded == 1 else &#34;s&#34;
         plt = &#34;&#34; if totAdded == 1 else &#34;s&#34;
