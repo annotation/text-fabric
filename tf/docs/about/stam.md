@@ -8,7 +8,7 @@ and uses it (among other use cases) to build a
 from a corpus of letters by P.C. Hooft in Folia format to text segments and
 web annotations.
 
-![stam](../../images/stam.png)
+![stam](../images/stam.png)
 
 We now have two sytems,
 [STAM](https://github.com/annotation/stam)

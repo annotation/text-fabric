@@ -5,6 +5,7 @@ import re
 from itertools import chain
 from collections import deque
 from subprocess import run as run_cmd, CalledProcessError
+from datetime import datetime as dt, UTC
 
 
 from ..parameters import OMAP
@@ -49,6 +50,10 @@ MSG_LINE_RE = re.compile(r"^( *[0-9]+) (.*)$")
 NUM_ALFA_RE = re.compile(r"^([0-9]*)([^0-9]*)(.*)$")
 
 QUAD = "    "
+
+
+def utcnow():
+    return dt.now(UTC)
 
 
 def versionSort(x):

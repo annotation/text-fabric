@@ -20,6 +20,12 @@ pip install -e .
 
 ### 12.6
 
+#### 12.6.3 Upcoming
+
+2024-12-??
+
+Improvements in various conversion modules (`tf.convert.tei`).
+
 #### 12.6.2
 
 2024-11-04

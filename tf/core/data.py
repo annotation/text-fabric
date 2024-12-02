@@ -5,7 +5,6 @@ from pickletools import optimize
 import gzip
 import collections
 import time
-from datetime import datetime
 from ..parameters import PACK_VERSION, PICKLE_PROTOCOL, GZIP_LEVEL, OTYPE, OSLOTS, OTEXT
 from .helpers import (
     setFromSpec,
@@ -15,6 +14,7 @@ from .helpers import (
     rangesFromSet,
     check32,
     console,
+    utcnow,
 )
 from .files import (
     fileOpen,
@@ -344,11 +344,7 @@ class Data:
                 value = (
                     int(valTf)
                     if isNum and valTf != ""
-                    else None
-                    if isNum
-                    else ""
-                    if valTf == ""
-                    else valueFromTf(valTf)
+                    else None if isNum else "" if valTf == "" else valueFromTf(valTf)
                 )
             if isEdge:
                 for n in nodes:
@@ -416,15 +412,15 @@ class Data:
                 seen = {}
                 datax = {}
                 if edgeValues:
-                    for (n, ms) in data.items():
+                    for n, ms in data.items():
                         msx = {}
-                        for (m, v) in ms.items():
+                        for m, v in ms.items():
                             if v not in seen:
                                 seen[v] = v
                             msx[m] = seen[v]
                         datax[n] = msx
                 else:
-                    for (n, ms) in data.items():
+                    for n, ms in data.items():
                         msx = frozenset(ms)
                         if msx not in seen:
                             seen[msx] = msx
@@ -433,7 +429,7 @@ class Data:
             else:
                 seen = {}
                 datax = {}
-                for (n, ms) in data.items():
+                for n, ms in data.items():
                     if ms not in seen:
                         seen[ms] = ms
                     datax[n] = seen[ms]
@@ -468,9 +464,11 @@ class Data:
             info,
             error,
             *[
-                (dep.metaData if dep.fileName == OTEXT else dep.data)
-                if isinstance(dep, Data)
-                else dep
+                (
+                    (dep.metaData if dep.fileName == OTEXT else dep.data)
+                    if isinstance(dep, Data)
+                    else dep
+                )
                 for dep in self.dependencies
             ],
         )
@@ -527,7 +525,7 @@ class Data:
         fh.write("@writtenBy=Text-Fabric\n")
         fh.write(
             "@dateWritten={}\n".format(
-                datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
+                utcnow().replace(microsecond=0).isoformat() + "Z"
             )
         )
         fh.write("\n")
@@ -575,7 +573,7 @@ class Data:
                 if edgeValues:
                     for m in thisData:
                         sets.setdefault(thisData[m], set()).add(m)
-                    for (value, mset) in sorted(sets.items()):
+                    for value, mset in sorted(sets.items()):
                         nodeSpec2 = specFromRanges(rangesFromSet(mset))
                         nodeSpec = "" if n == implicitNode else n
                         implicitNode = n + 1
@@ -610,7 +608,7 @@ class Data:
                 for n in sorted(data):
                     sets.setdefault(data[n], []).append(n)
                 implicitNode = 1
-                for (value, nset) in sorted(
+                for value, nset in sorted(
                     sets.items(), key=lambda x: (x[1][0], x[1][-1])
                 ):
                     if len(nset) == 1 and nset[0] == implicitNode:

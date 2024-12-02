@@ -184,6 +184,46 @@ we can do the analysis, and we will use it also for validation.
 
 See also [JING-TRANG](https://code.google.com/archive/p/jing-trang/downloads).
 
+Suppose we have a model declared like so:
+
+```
+models:
+  - suriano
+```
+
+The model is typically referenced in the TEI source file like so (it calls for the
+`suriano` model):
+
+```
+<?xml-model
+    href="https://xmlschema.huygens.knaw.nl/suriano.rng"
+    type="application/xml"
+    schematypens="http://relaxng.org/ns/structure/1.0"
+?>
+```
+
+The convertor matches the `href` attribute with the `suriano` model by picking the
+trailing part without extension from the href attribute.
+
+In cases where this fails, you can specify the model as a dict in the yaml file.
+
+Suppose we have a href attribute like this, which refers to the `dracor` model:
+
+```
+<?xml-model
+    href="https://dracor.org/schema.rng"
+    type="application/xml"
+    schematypens="http://relaxng.org/ns/structure/1.0"
+?>
+```
+
+You can specify this in the yaml file as follows:
+
+```
+models:
+  - dracor: https://dracor.org/schema.rng
+```
+
 ### `templates`
 
 list, optional `[]`
@@ -432,6 +472,23 @@ element, we generate an extra page node without features.
 
 dict, optional `{}`
 
+In model I, there are three section levels in total.
+The corpus is divided in folders (section level 1), files (section level 2),
+and chunks within files. The parameter `levels` allows you to choose names for the
+node types of these section levels.
+
+In model II, there are 2 section levels in total.
+The corpus consists of a single file, and section nodes will be added
+for nodes at various levels, mainly outermost `<div>` and `<p>` elements and their
+siblings of other element types.
+The section heading for the second level is taken from elements in the neighbourhood,
+whose name is given in the parameter `element`, but only if they carry some attributes,
+which can be specified in the `attributes` parameter.
+
+In model III, there are 3 section levels in total.
+The corpus consists of a single folder with several files (section level 1),
+with two levels of sections per file, as in model II.
+
 If not passed, or an empty dict, section model I is assumed.
 A section model must be specified with the parameters relevant for the
 model:
@@ -440,6 +497,17 @@ model:
 dict(
     model="II",
     levels=["chapter", "chunk"],
+    element="head",
+    attributes=dict(rend="h3"),
+)
+```
+
+or
+
+``` python
+dict(
+    model="III",
+    levels=["file", "part", "chunk"],
     element="head",
     attributes=dict(rend="h3"),
 )
@@ -481,18 +549,13 @@ levels=["chapter", "chunk"],
 attributes={}
 ```
 
-In model I, there are three section levels in total.
-The corpus is divided in folders (section level 1), files (section level 2),
-and chunks within files. The parameter `levels` allows you to choose names for the
-node types of these section levels.
+For model III, the default parameters are:
 
-In model II, there are 2 section levels in total.
-The corpus consists of a single file, and section nodes will be added
-for nodes at various levels, mainly outermost `<div>` and `<p>` elements and their
-siblings of other element types.
-The section heading for the second level is taken from elements in the neighbourhood,
-whose name is given in the parameter `element`, but only if they carry some attributes,
-which can be specified in the `attributes` parameter.
+``` python
+element="head"
+levels=["file", "part", "chunk"],
+attributes={}
+```
 
 
 # Usage
@@ -1170,6 +1233,7 @@ class TEI(CheckImport):
 
         sectionModel = settings.get("sectionModel", {})
         sectionModel = checkModel("section", sectionModel, verbose)
+
         if not sectionModel:
             self.good = False
             return
@@ -1177,6 +1241,7 @@ class TEI(CheckImport):
         sectionProperties = sectionModel["properties"]
         sectionModel = sectionModel["model"]
         self.sectionModel = sectionModel
+        self.sectionIs23 = sectionModel in {"II", "III"}
         self.sectionProperties = sectionProperties
 
         self.generic = generic
@@ -1290,7 +1355,9 @@ class TEI(CheckImport):
             teiStatusRep = (
                 "most recent"
                 if teiStatus == 0
-                else "previous" if teiStatus == 1 else f"{teiStatus - 1} before previous"
+                else (
+                    "previous" if teiStatus == 1 else f"{teiStatus - 1} before previous"
+                )
             )
             if teiStatus == len(teiVersions) - 1 and len(teiVersions) > 1:
                 teiStatusRep = "oldest"
@@ -1377,6 +1444,10 @@ class TEI(CheckImport):
         if sectionModel == "II":
             self.chapterSection = levelNames[0]
             self.chunkSection = levelNames[1]
+        elif sectionModel == "III":
+            self.fileSection = levelNames[0]
+            self.chapterSection = levelNames[1]
+            self.chunkSection = levelNames[2]
         else:
             self.folderSection = levelNames[0]
             self.fileSection = levelNames[1]
@@ -1473,6 +1544,14 @@ class TEI(CheckImport):
                 conversionMethod=CM_PROV,
                 conversionCode=CONVERSION_METHODS[CM_PROV],
             )
+        elif sectionModel == "III":
+            fileSection = self.fileSection
+            chapterSection = self.chapterSection
+            featureMeta[chapterSection] = dict(
+                description=f"name of {chapterSection}",
+                conversionMethod=CM_PROV,
+                conversionCode=CONVERSION_METHODS[CM_PROV],
+            )
         else:
             folderSection = self.folderSection
             fileSection = self.fileSection
@@ -1488,6 +1567,7 @@ class TEI(CheckImport):
             )
 
         self.featureMeta = featureMeta
+        models = self.models
 
         generic["sourceFormat"] = "TEI"
         generic["version"] = tfVersion
@@ -1542,6 +1622,10 @@ class TEI(CheckImport):
     def readSchemas(self):
         schemaDir = self.schemaDir
         models = self.models
+        modelMap = {}
+        newModels = []
+        self.modelMap = modelMap
+
         A = self.A
 
         schemaFiles = dict(rng={}, xsd={})
@@ -1554,6 +1638,13 @@ class TEI(CheckImport):
         self.modelInv = modelInv
 
         for model in [None] + models:
+            if type(model) is dict:
+                (model, href) = list(model.items())[0]
+                modelMap[href] = model
+
+            if model is not None:
+                newModels.append(model)
+
             for kind in ("rng", "xsd"):
                 schemaFile = (
                     A.getBaseSchema()[kind]
@@ -1573,6 +1664,9 @@ class TEI(CheckImport):
                 A.fromrelax(schemaFiles["rng"][model], schemaFileXsd)
                 schemaFiles["xsd"][model] = schemaFileXsd
 
+        models = newModels
+        self.models = models
+
         baseSchema = schemaFiles["xsd"][None]
         modelXsd[None] = baseSchema
         modelInv[(baseSchema, None)] = None
@@ -1585,6 +1679,7 @@ class TEI(CheckImport):
     def getSwitches(self, xmlPath):
         verbose = self.verbose
         models = self.models
+        modelMap = self.modelMap
         adaptations = self.adaptations
         templates = self.templates
         triggers = self.triggers
@@ -1606,7 +1701,7 @@ class TEI(CheckImport):
             found[kind] = None
 
             if kind == "model":
-                result = A.getModel(text)
+                result = A.getModel(text, modelMap)
                 if result is None or result == "tei_all":
                     result = None
             else:
@@ -1653,7 +1748,7 @@ class TEI(CheckImport):
 
         Returns
         -------
-        tuple of tuple | string
+        tuple of tuple | tuple of string | string
             If section model I is in force:
 
             The outer tuple has sorted entries corresponding to folders under the
@@ -1664,10 +1759,15 @@ class TEI(CheckImport):
             If section model II is in force:
 
             It is the name of the single XML file.
+
+            If section model III is in force:
+
+            It is a tuple of multiple XML files
         """
         verbose = self.verbose
         teiPath = self.teiPath
         sectionModel = self.sectionModel
+
         if verbose == 1:
             console(f"Section model {sectionModel}")
 
@@ -1681,6 +1781,7 @@ class TEI(CheckImport):
             with scanDir(teiPath) as dh:
                 for folder in dh:
                     folderName = folder.name
+
                     if folderName == IGNORE:
                         continue
                     if not folder.is_dir():
@@ -1688,6 +1789,7 @@ class TEI(CheckImport):
                     with scanDir(f"{teiPath}/{folderName}") as fh:
                         for file in fh:
                             fileName = file.name
+
                             if not (
                                 fileName.lower().endswith(".xml") and file.is_file()
                             ):
@@ -1714,14 +1816,31 @@ class TEI(CheckImport):
 
         if sectionModel == "II":
             xmlFile = None
+
             with scanDir(teiPath) as fh:
                 for file in fh:
                     fileName = file.name
+
                     if not (fileName.lower().endswith(".xml") and file.is_file()):
                         continue
+
                     xmlFile = fileName
                     break
             return xmlFile
+
+        if sectionModel == "III":
+            xmlFiles = []
+
+            with scanDir(teiPath) as fh:
+                for file in fh:
+                    fileName = file.name
+
+                    if not (fileName.lower().endswith(".xml") and file.is_file()):
+                        continue
+
+                    xmlFiles.append(fileName)
+
+            return tuple(sorted(xmlFiles))
 
     def checkTask(self):
         """Implementation of the "check" task.
@@ -1919,7 +2038,7 @@ class TEI(CheckImport):
                     if newFile:
                         nFiles += 1
 
-                    if kind == "error":
+                    if kind in {"error", "fatal"}:
                         nErrors += 1
 
                     indent1 = f"{folder}\n\t" if newFolder else "\t"
@@ -2091,12 +2210,16 @@ class TEI(CheckImport):
                         tagLines.append((tag, [model], typRep, mixedRep))
 
             reportFile = f"{reportPath}/types.txt"
+
             with fileOpen(reportFile, mode="w") as fh:
                 for tag in sorted(tagReport):
                     tagLines = tagReport[tag]
+
                     for tag, mds, typ, mixed in tagLines:
                         model = ",".join(mds)
-                        fh.write(f"{tag:<18} {model:<18} {typ:<7} {mixed:<5}\n")
+                        fh.write(
+                            f"{tag:<18} {model:<18} {typ or '':<7} {mixed or '':<5}\n"
+                        )
 
             if verbose >= 0:
                 console(
@@ -2329,7 +2452,12 @@ class TEI(CheckImport):
             )
 
         def doXMLFile(xmlPath):
-            tree = etree.parse(xmlPath, parser)
+            try:
+                tree = etree.parse(xmlPath, parser)
+            except Exception as e:
+                console(str(e), error=True)
+                return
+
             root = tree.getroot()
             xmlFile = fileNm(xmlPath)
             ids[xmlFile][""] = 1
@@ -2339,6 +2467,7 @@ class TEI(CheckImport):
 
         if sectionModel == "I":
             i = 0
+
             for xmlFolder, xmlFiles in self.getXML():
                 msg = "Start " if verbose >= 0 else "\t"
 
@@ -2352,9 +2481,11 @@ class TEI(CheckImport):
                 for xmlFile in xmlFiles:
                     i += 1
                     j += 1
+
                     if j > PROGRESS_LIMIT:
                         cr = "\r"
                         nl = False
+
                     xmlPath = f"{teiPath}/{xmlFolder}/{xmlFile}"
                     (model, adapt, tpl) = self.getSwitches(xmlPath)
                     mdRep = model or "TEI"
@@ -2364,8 +2495,10 @@ class TEI(CheckImport):
                     label = f"{mdRep:<12} {tplRep:<12} {adRep:<12}"
 
                     if verbose >= 0:
-                        console(f"\t\t{cr}{i:>4} {label} {xmlFile:<50}", newline=nl)
+                        console(f"{cr}\t\t{i:>4} {label} {xmlFile:<50}", newline=nl)
+
                     xmlFilesByModel[model].append(xmlPath)
+
                 if verbose >= 0:
                     console("")
                     console(f"End   folder {xmlFolder}")
@@ -2379,6 +2512,34 @@ class TEI(CheckImport):
             xmlPath = f"{teiPath}/{xmlFile}"
             (model, adapt, tpl) = self.getSwitches(xmlPath)
             xmlFilesByModel[model].append(xmlPath)
+
+        elif sectionModel == "III":
+            j = 0
+            cr = ""
+            nl = True
+
+            for xmlFile in self.getXML():
+                j += 1
+
+                if j > PROGRESS_LIMIT:
+                    cr = "\r"
+                    nl = False
+
+                xmlPath = f"{teiPath}/{xmlFile}"
+                (model, adapt, tpl) = self.getSwitches(xmlPath)
+                mdRep = model or "TEI"
+                tplRep = tpl or ""
+                adRep = adapt or ""
+
+                label = f"{mdRep:<12} {tplRep:<12} {adRep:<12}"
+
+                if verbose >= 0:
+                    console(f"{cr}\t{j:>4} {label} {xmlFile:<50}", newline=nl)
+
+                xmlFilesByModel[model].append(xmlPath)
+
+            if verbose >= 0:
+                console("")
 
         good = True
 
@@ -2413,6 +2574,7 @@ class TEI(CheckImport):
 
             if verbose >= 0:
                 console("\tMaking inventory ...")
+
             for xmlPath in xmlPaths:
                 doXMLFile(xmlPath)
 
@@ -2730,6 +2892,10 @@ class TEI(CheckImport):
 
             Chapters are the highest section level (the only lower level is chunks).
 
+            ## Model III
+
+            Chapters are the intermediate section level (the only lower level is chunks).
+
             Chapters come in two kinds:
 
             *   the TEI header;
@@ -2748,9 +2914,9 @@ class TEI(CheckImport):
             -------
             boolean
             """
-            sectionModel = self.sectionModel
+            sectionIs23 = self.sectionIs23
 
-            if sectionModel == "II":
+            if sectionIs23:
                 nest = cur[XNEST]
                 nNest = len(nest)
 
@@ -2781,7 +2947,7 @@ class TEI(CheckImport):
             It depends on the section model, but also on the template.
 
             Note that we only can have distinct templates if we deal with
-            multiple files, so only when we are in section model I.
+            multiple files, so only when we are in section model I or III.
 
             ## Model I
 
@@ -2822,6 +2988,19 @@ class TEI(CheckImport):
             *   If a chapter is a mixed content node, then it is also a chunk.
                 and its subelements are not chunks
 
+            ## Model III
+
+            Chunks are the lowest section level (the higher levels are chapters
+            and then files)
+
+            Chunks are the immediate children of the chapters, and they come in two
+            kinds: the ones that are `<p>` elements, and the rest.
+
+            Deviation from this rule:
+
+            *   If a chapter is a mixed content node, then it is also a chunk.
+                and its subelements are not chunks
+
             Parameters
             ----------
             cur: dict
@@ -2833,6 +3012,7 @@ class TEI(CheckImport):
             boolean
             """
             sectionModel = self.sectionModel
+            sectionIs23 = self.sectionIs23
 
             nest = cur[XNEST]
             nNest = len(nest)
@@ -2843,7 +3023,7 @@ class TEI(CheckImport):
 
             thisTag = nest[-1][0]
 
-            if sectionModel == "II":
+            if sectionIs23:
                 if nNest == 1:
                     outcome = False
                 else:
@@ -3349,6 +3529,7 @@ class TEI(CheckImport):
                 The tag of the LXML node.
             """
             beforeTagCustom = getattr(self, "beforeTagCustom", None)
+
             if beforeTagCustom is not None:
                 beforeTagCustom(cv, cur, xnode, tag, atts)
 
@@ -3406,10 +3587,10 @@ class TEI(CheckImport):
                         # the page starts with the container
                         cur[NODE][pageType] = cv.node(pageType)
 
-            sectionModel = self.sectionModel
             sectionProperties = self.sectionProperties
+            sectionIs23 = self.sectionIs23
 
-            if sectionModel == "II":
+            if sectionIs23:
                 chapterSection = self.chapterSection
                 chunkSection = self.chunkSection
 
@@ -3468,9 +3649,11 @@ class TEI(CheckImport):
 
             if tag == TEI_HEADER:
                 cur["inHeader"] = True
-                if sectionModel == "II":
+
+                if sectionIs23:
                     value = {chapterSection: "TEI header"}
                     cv.feature(cur[NODE][chapterSection], **value)
+
             if tag in NOTE_LIKE:
                 cur["inNote"] = True
                 if not tokenAsSlot:
@@ -3530,11 +3713,13 @@ class TEI(CheckImport):
                                 )
 
             beforeChildrenCustom = getattr(self, "beforeChildrenCustom", None)
+
             if beforeChildrenCustom is not None:
                 beforeChildrenCustom(cv, cur, xnode, tag, atts)
 
             if not hasattr(xnode, "target") and xnode.text:
                 textMaterial = WHITE_TRIM_RE.sub(" ", xnode.text)
+
                 if isPure(cur):
                     if textMaterial and textMaterial != " ":
                         console(
@@ -3592,9 +3777,9 @@ class TEI(CheckImport):
                 pageType = pageProperties["nodeType"]
                 keepPb = pageProperties["keepPb"]  # only defined if makePageElems
 
-            sectionModel = self.sectionModel
+            sectionIs23 = self.sectionIs23
 
-            if sectionModel == "II":
+            if sectionIs23:
                 chapterSection = self.chapterSection
 
             extraInstructions = self.extraInstructions
@@ -3606,6 +3791,7 @@ class TEI(CheckImport):
             isChnk = isChunk(cur)
 
             afterChildrenCustom = getattr(self, "afterChildrenCustom", None)
+
             if afterChildrenCustom is not None:
                 afterChildrenCustom(cv, cur, xnode, tag, atts)
 
@@ -3675,12 +3861,13 @@ class TEI(CheckImport):
 
                 if empty:
                     lastSlot = addEmpty(cv, cur, "")
+
                     if cur["inHeader"]:
                         cv.feature(lastSlot, is_meta=1)
                     if cur["inNote"]:
                         cv.feature(lastSlot, is_note=1)
 
-                    # take care that this empty slot falls under all sections
+                    # take care that this empty slot falls under all sections;
                     # for folders and files this is already guaranteed
                     # We need only to watch out for chapters and chunks
                     # If there is no previous chunk we create a new chunk
@@ -3689,12 +3876,20 @@ class TEI(CheckImport):
                         prevChunk = cur.get("prevChunk", None)
 
                         if prevChunk is None:
-                            cur["chunkNum"] += 1
+                            if sectionIs23:
+                                cur["chunkONum"] -= 1
+                            else:
+                                cur["chunkNum"] += 1
+
                             cur["prevChunk"] = cur[NODE].get(chunkSection, None)
                             newChunk = cv.node(chunkSection)
                             cur[NODE][chunkSection] = newChunk
                             cv.link(newChunk, [lastSlot[1]])
-                            value = {chunkSection: cur["chunkNum"]}
+                            value = {
+                                chunkSection: cur[
+                                    "chunkONum" if sectionIs23 else "chunkNum"
+                                ]
+                            }
                             cv.feature(newChunk, **value)
                             cv.terminate(newChunk)
                             del cur[NODE][chunkSection]
@@ -3716,7 +3911,7 @@ class TEI(CheckImport):
                 cv.terminate(cur[NODE][chunkSection])
                 del cur[NODE][chunkSection]
 
-            if sectionModel == "II":
+            if sectionIs23:
                 if isChap:
                     if tokenAsSlot:
                         slots = cv.linked(cur[NODE][chapterSection])
@@ -3849,8 +4044,10 @@ class TEI(CheckImport):
                 fileSection = self.fileSection
 
                 i = 0
+
                 for xmlFolder, xmlFiles in self.getXML():
                     msg = "Start " if verbose >= 0 else "\t"
+
                     if verbose >= 0:
                         console(f"\t{msg}folder {xmlFolder}:")
 
@@ -3865,6 +4062,7 @@ class TEI(CheckImport):
                     for xmlFile in xmlFiles:
                         i += 1
                         j += 1
+
                         if j > PROGRESS_LIMIT:
                             cr = "\r"
                             nl = False
@@ -3879,9 +4077,10 @@ class TEI(CheckImport):
                         tplRep = tpl or ""
                         adRep = adapt or ""
                         label = f"{modelRep:<12} {adRep:<12} {tplRep:<12}"
+
                         if verbose >= 0:
                             console(
-                                f"\t\t{cr}{i:>4} {label} {xmlFile:<50}",
+                                f"{cr}\t\t{i:>4} {label} {xmlFile:<50}",
                                 newline=nl,
                             )
 
@@ -3889,12 +4088,14 @@ class TEI(CheckImport):
                         ids[xmlFile][""] = cur[NODE][fileSection]
                         value = {fileSection: xmlFile.removesuffix(".xml")}
                         cv.feature(cur[NODE][fileSection], **value)
+
                         if tpl:
                             cur[NODE][tpl] = cv.node(tpl)
                             cv.feature(cur[NODE][tpl], **value)
 
                         with fileOpen(xmlPath) as fh:
                             text = fh.read()
+
                             if transformFunc is not None:
                                 text = transformFunc(text)
                             tree = etree.parse(text, parser)
@@ -3912,6 +4113,7 @@ class TEI(CheckImport):
 
                             if not tokenAsSlot:
                                 cur[NODE][WORD] = None
+
                             cur["inHeader"] = False
                             cur["inNote"] = False
                             cur[XNEST] = []
@@ -3924,6 +4126,7 @@ class TEI(CheckImport):
                             cur["afterStr"] = ""
                             cur["afterSpace"] = True
                             cur["chunkElems"] = set()
+
                             walkNode(cv, cur, root)
 
                         if not tokenAsSlot:
@@ -3944,6 +4147,7 @@ class TEI(CheckImport):
 
             elif sectionModel == "II":
                 xmlFile = self.getXML()
+
                 if xmlFile is None:
                     console("No XML files found!", error=True)
                     return False
@@ -3956,8 +4160,10 @@ class TEI(CheckImport):
                 with fileOpen(f"{teiPath}/{xmlFile}") as fh:
                     cur["xmlFile"] = xmlFile
                     text = fh.read()
+
                     if transformFunc is not None:
                         text = transformFunc(text)
+
                     tree = etree.parse(text, parser)
                     root = tree.getroot()
 
@@ -3973,6 +4179,7 @@ class TEI(CheckImport):
 
                     if not tokenAsSlot:
                         cur[NODE][WORD] = None
+
                     cur["inHeader"] = False
                     cur["inNote"] = False
                     cur[XNEST] = []
@@ -3989,11 +4196,104 @@ class TEI(CheckImport):
                     cur["afterSpace"] = True
                     cur["chunkElems"] = set()
                     cur["chapterElems"] = set()
+
                     for child in root.iterchildren(tag=etree.Element):
                         walkNode(cv, cur, child)
 
                 if not tokenAsSlot:
                     addSlot(cv, cur, None)
+
+            elif sectionModel == "III":
+                fileSection = self.fileSection
+
+                for xmlFiles in self.getXML():
+                    j = 0
+                    cr = ""
+                    nl = True
+
+                    j += 1
+
+                    if j > PROGRESS_LIMIT:
+                        cr = "\r"
+                        nl = False
+
+                    cur["xmlFile"] = xmlFile
+                    xmlPath = f"{teiPath}/{xmlFolder}/{xmlFile}"
+                    (model, adapt, tpl) = self.getSwitches(xmlPath)
+                    cur["model"] = model
+                    cur["template"] = tpl
+                    cur["adaptation"] = adapt
+                    modelRep = model or "TEI"
+                    tplRep = tpl or ""
+                    adRep = adapt or ""
+                    label = f"{modelRep:<12} {adRep:<12} {tplRep:<12}"
+
+                    if verbose >= 0:
+                        console(
+                            f"{cr}\t\t{j:>4} {label} {xmlFile:<50}",
+                            newline=nl,
+                        )
+
+                    cur[NODE][fileSection] = cv.node(fileSection)
+                    ids[xmlFile][""] = cur[NODE][fileSection]
+                    value = {fileSection: xmlFile.removesuffix(".xml")}
+                    cv.feature(cur[NODE][fileSection], **value)
+
+                    if tpl:
+                        cur[NODE][tpl] = cv.node(tpl)
+                        cv.feature(cur[NODE][tpl], **value)
+
+                    with fileOpen(xmlPath) as fh:
+                        text = fh.read()
+
+                        if transformFunc is not None:
+                            text = transformFunc(text)
+
+                        tree = etree.parse(text, parser)
+                        root = tree.getroot()
+
+                        if makeLineElems:
+                            cur[NODE][lineType] = None
+                            cur["inLine"] = False
+                            cur["lineAtts"] = None
+
+                        if makePageElems:
+                            cur[NODE][pageType] = None
+                            cur["inPage"] = False
+                            cur["pageAtts"] = None
+
+                        if not tokenAsSlot:
+                            cur[NODE][WORD] = None
+
+                        cur["inHeader"] = False
+                        cur["inNote"] = False
+                        cur[XNEST] = []
+                        cur[TNEST] = []
+                        cur[TSIB] = []
+                        cur["chapterNum"] = 0
+                        cur["chunkPNum"] = 0
+                        cur["chunkONum"] = 0
+                        cur["prevChunk"] = None
+                        cur["prevChapter"] = None
+                        cur["prevWord"] = None
+                        cur["wordStr"] = ""
+                        cur["afterStr"] = ""
+                        cur["afterSpace"] = True
+                        cur["chunkElems"] = set()
+                        cur["chapterElems"] = set()
+
+                        for child in root.iterchildren(tag=etree.Element):
+                            walkNode(cv, cur, child)
+
+                    if not tokenAsSlot:
+                        addSlot(cv, cur, None)
+
+                    if tpl:
+                        cv.terminate(cur[NODE][tpl])
+                        del cur[NODE][tpl]
+
+                    cv.terminate(cur[NODE][fileSection])
+                    del cur[NODE][fileSection]
 
             if verbose >= 0:
                 console("")

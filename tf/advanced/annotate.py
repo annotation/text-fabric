@@ -11,6 +11,7 @@ from ..ner.ner import NER
 
 
 def makeNer(app, silent=False, **kwargs):
+    """Produce an instance of the NER class."""
     return NER(app, silent=silent, **kwargs)
 
 

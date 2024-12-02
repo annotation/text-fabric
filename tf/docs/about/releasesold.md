@@ -301,16 +301,16 @@ major version 12.
 
 Here is a table of the commands in question
 
-current | new | description
---- | --- | ---
-not yet available | `tf-fromtei` | converts a TEI source in the repo of the current directory to TF
-not yet available | `tf-zipall` | makes a complete zip of the dataset in the repo of the current directory
-`text-fabric` | `tf` | starts the TF browser
-`text-fabric-zip` | `tf-zip` | zips TF files into versioned zip files
-`text-fabric-make` | `tf-make` | builds a client-side search interface for a dataset
-`nbconvert` | `tf-nbconvert` | converts a directory with Jupyter notebooks to HTML
-`xmlschema` | `tf-xmlschema` | extracts useful information from XML schemas
-`addnlp` | `tf-addnlp` | feeds a dataset to Spacy and adds results to it
+ current            | new            | description                                                              
+--------------------|----------------|--------------------------------------------------------------------------
+ not yet available  | `tf-fromtei`   | converts a TEI source in the repo of the current directory to TF         
+ not yet available  | `tf-zipall`    | makes a complete zip of the dataset in the repo of the current directory 
+ `text-fabric`      | `tf`           | starts the TF browser                                                    
+ `text-fabric-zip`  | `tf-zip`       | zips TF files into versioned zip files                                   
+ `text-fabric-make` | `tf-make`      | builds a client-side search interface for a dataset                      
+ `nbconvert`        | `tf-nbconvert` | converts a directory with Jupyter notebooks to HTML                      
+ `xmlschema`        | `tf-xmlschema` | extracts useful information from XML schemas                             
+ `addnlp`           | `tf-addnlp`    | feeds a dataset to Spacy and adds results to it                          
 
 The usage of `tf-fromtei` and `tf-addnlp` is now highly streamlined: you 
 can pass them arguments which are

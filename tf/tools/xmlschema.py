@@ -424,7 +424,7 @@ class Elements(CheckImport):
                 self.showElems()
             self.resolve(definitions)
 
-            for (name, odef) in definitions.items():
+            for name, odef in definitions.items():
 
                 oKind = self.repKind(odef.get("kind", None))
                 oMixed = self.repMixed(odef.get("mixed", None))
@@ -436,11 +436,15 @@ class Elements(CheckImport):
                     transRep = (
                         f"{baseKind} {baseMixed} ==> {oKind} {oMixed}"
                         if baseKind != oKind and baseMixed != oMixed
-                        else f"{baseKind} ==> {oKind}"
-                        if baseKind != oKind
-                        else f"{baseMixed} ==> {oMixed}"
-                        if baseMixed != oMixed
-                        else None
+                        else (
+                            f"{baseKind} ==> {oKind}"
+                            if baseKind != oKind
+                            else (
+                                f"{baseMixed} ==> {oMixed}"
+                                if baseMixed != oMixed
+                                else None
+                            )
+                        )
                     )
                     if transRep is not None:
                         baseDefinitions[name] = odef
@@ -523,7 +527,7 @@ class Elements(CheckImport):
 
         def infer():
             changed = 0
-            for (name, info) in definitions.items():
+            for name, info in definitions.items():
                 if info["mixed"]:
                     continue
 
@@ -576,7 +580,7 @@ class Elements(CheckImport):
         definitions = self.definitions
         redefinitions = self.redefinitions
 
-        for (name, info) in sorted(definitions.items(), key=self.eKey):
+        for name, info in sorted(definitions.items(), key=self.eKey):
             tag = info["tag"]
             mixed = "mixed" if info["mixed"] else "-----"
             abstract = "abstract" if info["abstract"] else "--------"
@@ -591,7 +595,7 @@ class Elements(CheckImport):
             )
 
         console("=============================================")
-        for (name, amount) in sorted(redefinitions.items()):
+        for name, amount in sorted(redefinitions.items()):
             console(f"{amount:>3}x {name}")
 
     def showOverrides(self):
@@ -608,7 +612,7 @@ class Elements(CheckImport):
             if verbose >= 0:
                 console(f"{distinct:>3} changing override(s)")
         if verbose >= 0:
-            for (name, trans) in sorted(
+            for name, trans in sorted(
                 x for x in self.overrides.items() if x[1] is not None
             ):
                 console(f"\t{name} {trans}")
@@ -676,7 +680,7 @@ class Analysis(CheckImport):
 
         return dict(rng=f"{myDir}/tei/tei_all.rng", xsd=f"{myDir}/tei/tei_all.xsd")
 
-    def getModel(self, xmlContent):
+    def getModel(self, xmlContent, modelMap):
         modelRe = self.modelRe
         modelSnsRe = self.modelSnsRe
         modelHrefRe = self.modelHrefRe
@@ -686,12 +690,19 @@ class Analysis(CheckImport):
 
         for modelPi in modelPis:
             modelSns = modelSnsRe.search(modelPi)
+
             if modelSns:
                 modelSns = modelSns.group(2)
                 if "relaxng.org" in modelSns:
-                    modelHref = modelHrefRe.search(modelPi)
-                    if modelHref:
-                        model = modelHref.group(2).split("/")[-1].removesuffix(".rng")
+                    modelHrefResult = modelHrefRe.search(modelPi)
+
+                    if modelHrefResult:
+                        modelHref = modelHrefResult.group(2)
+                        model = (
+                            modelMap[modelHref]
+                            if modelHref in modelMap
+                            else modelHref.split("/")[-1].removesuffix(".rng")
+                        )
 
         return model
 
@@ -781,17 +792,14 @@ class Analysis(CheckImport):
                 (file, line, col) = (
                     (file, None, None)
                     if len(fileComps) == 1
-                    else (*fileComps[0:2], None)
-                    if len(fileComps) == 2
-                    else fileComps
+                    else (*fileComps[0:2], None) if len(fileComps) == 2 else fileComps
                 )
                 errors.append((folder, file, line, col, kind, text))
 
         return (good, info, errors)
 
     def analyser(self, baseSchema, override):
-        """Initializes an analyser for a schema.
-        """
+        """Initializes an analyser for a schema."""
         if not self.importOK():
             return
 

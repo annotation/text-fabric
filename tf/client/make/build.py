@@ -53,7 +53,7 @@ import types
 import webbrowser
 
 from textwrap import dedent
-from datetime import datetime as dt
+from datetime import datetime as dt, UTC
 from subprocess import Popen, PIPE
 from time import sleep
 from zipfile import ZipFile
@@ -1210,7 +1210,7 @@ class Make:
         lsVersion = C.lsVersion
         parts = lsVersion.split("@", 1)
         v = int(parts[0].lstrip("v").lstrip("0"), base=10)
-        now = dt.utcnow().isoformat(timespec="seconds")
+        now = dt.now(UTC).isoformat(timespec="seconds")
         self.lsVersion = f"v{v + 1:>03}@{now}"
         C.lsVersion = self.lsVersion
 

@@ -65,6 +65,11 @@ SECTION_MODELS = dict(
         element=(str, "head"),
         attributes=(dict, {}),
     ),
+    III=dict(
+        levels=(list, [FILE, CHAPTER, CHUNK]),
+        element=(str, "head"),
+        attributes=(dict, {}),
+    ),
 )
 """Models for sections.
 
@@ -337,6 +342,7 @@ def matchModel(properties, tag, atts):
     if tag == properties["element"]:
         criticalAtts = properties["attributes"]
         match = True
+
         for k, cVal in criticalAtts.items():
             aVal = atts.get(k, None)
 
@@ -492,6 +498,21 @@ def tweakTrans(
             if attributes
             else "\t*\t*no attribute properties*\n"
         )
+    elif sectionModel == "III":
+        nLevels = "3"
+        fileSection = levelNames[0]
+        chapterSection = levelNames[1]
+        chunkSection = levelNames[2]
+        head = sectionProperties["element"]
+        attributes = sectionProperties["attributes"]
+        propertiesRaw = repr(sectionProperties)
+        properties = (
+            "".join(
+                f"\t*\t`{att}` = `{val}`\n" for (att, val) in sorted(attributes.items())
+            )
+            if attributes
+            else "\t*\t*no attribute properties*\n"
+        )
     else:
         nLevels = "3"
         folderSection = levelNames[0]
@@ -533,6 +554,15 @@ def tweakTrans(
     if sectionModel == "II":
         text = (
             text.replace("«head»", head)
+            .replace("«properties»", properties)
+            .replace("«propertiesRaw»", propertiesRaw)
+            .replace("«chapter»", chapterSection)
+            .replace("«chunk»", chunkSection)
+        )
+    elif sectionModel == "III":
+        text = (
+            text.replace("«file»", fileSection)
+            .text.replace("«head»", head)
             .replace("«properties»", properties)
             .replace("«propertiesRaw»", propertiesRaw)
             .replace("«chapter»", chapterSection)

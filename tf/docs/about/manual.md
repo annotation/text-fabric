@@ -278,22 +278,22 @@ Keyboard shortcuts need to be pressed with modifier keys.
 It depends on your browser which ones.
 Here is the list, by browser and platform:
 
-browser | Windows | - | Linux | - | Mac
---- | --- | --- | --- | --- | ---
-Firefox | <kbd>Alt</kbd> + <kbd>Shift</kbd> | | <kbd>Alt</kbd> + <kbd>Shift</kbd> | | <kbd>Ctrl</kbd> + <kbd>Option</kbd> 
-Chrome | <kbd>Alt</kbd> + <kbd>Shift</kbd> | | <kbd>Alt</kbd> | | <kbd>Ctrl</kbd> + <kbd>Option</kbd> 
-Edge | <kbd>Alt</kbd> + <kbd>Shift</kbd> | | | | <kbd>Ctrl</kbd> + <kbd>Option</kbd> 
-Safari | | | | | <kbd>Ctrl</kbd> + <kbd>Option</kbd> 
+| browser | Windows                           |   | Linux                             |   | Mac                                 |
+|---------|-----------------------------------|---|-----------------------------------|---|-------------------------------------|
+| Firefox | <kbd>Alt</kbd> + <kbd>Shift</kbd> |   | <kbd>Alt</kbd> + <kbd>Shift</kbd> |   | <kbd>Ctrl</kbd> + <kbd>Option</kbd> |
+| Chrome  | <kbd>Alt</kbd> + <kbd>Shift</kbd> |   | <kbd>Alt</kbd>                    |   | <kbd>Ctrl</kbd> + <kbd>Option</kbd> |
+| Edge    | <kbd>Alt</kbd> + <kbd>Shift</kbd> |   |                                   |   | <kbd>Ctrl</kbd> + <kbd>Option</kbd> |
+| Safari  |                                   |   |                                   |   | <kbd>Ctrl</kbd> + <kbd>Option</kbd> |
 
 Having figured that out, you can use those modifier keys together with a letter
 to perform the following actions:
 
-shortcut | action
---- | ---
-`n` | next position
-`p` | previous position
-`b` | back a batch
-`f` | forward a batch
-`s` | start
-`e` | end
-`m` | manually type the position in the box
+| shortcut | action                                |
+|----------|---------------------------------------|
+| `n`      | next position                         |
+| `p`      | previous position                     |
+| `b`      | back a batch                          |
+| `f`      | forward a batch                       |
+| `s`      | start                                 |
+| `e`      | end                                   |
+| `m`      | manually type the position in the box |

@@ -66,9 +66,9 @@ the TEI source files to a TF data set.
 
 **Features**
 
-feature | description
---- | ---
-`«folder»` | name of the subdirectory
+ feature    | description              
+------------|--------------------------
+ `«folder»` | name of the subdirectory 
 
 ### node type `«file»`
 
@@ -78,9 +78,9 @@ feature | description
 
 **Features**
 
-feature | description
---- | ---
-`«file»` | name of the file, without the `.xml` extension. Other extensions are included.
+ feature  | description                                                                    
+----------|--------------------------------------------------------------------------------
+ `«file»` | name of the file, without the `.xml` extension. Other extensions are included. 
 
 «endModelI»
 
@@ -94,9 +94,9 @@ feature | description
 
 **Features**
 
-feature | description
---- | ---
-`«chapter»` | heading of the «chapter»
+ feature     | description              
+-------------|--------------------------
+ `«chapter»` | heading of the «chapter» 
 
 «endModelII»
 
@@ -116,17 +116,17 @@ feature | description
 
 «beginModelI»
 
-feature | description
---- | ---
-`«chunk»` | sequence number of the «chunk» within the «file», starting with 1.
+ feature   | description                                                        
+-----------|--------------------------------------------------------------------
+ `«chunk»` | sequence number of the «chunk» within the «file», starting with 1. 
 
 «endModelI»
 
 «beginModelII»
 
-feature | description
---- | ---
-`«chunk»` | sequence number of the «chunk» within the «chapter», positive for `<p>` «chunk»s, negative for other «chunk»s.
+ feature   | description                                                                                                    
+-----------|----------------------------------------------------------------------------------------------------------------
+ `«chunk»` | sequence number of the «chunk» within the «chapter», positive for `<p>` «chunk»s, negative for other «chunk»s. 
 
 «endModelII»
 
@@ -135,9 +135,9 @@ feature | description
 
 *Sentences, i.e. material between full stops and several other punctuation marks*.
 
-feature | description
---- | ---
-`nsent` | the sequence number of the sentence within the corpus
+ feature | description                                           
+---------|-------------------------------------------------------
+ `nsent` | the sequence number of the sentence within the corpus 
 
 «endTokenYes»
 
@@ -156,14 +156,14 @@ feature | description
 
 **Features**
 
-feature | description
---- | ---
-`str` | the characters of the «tokenWord», without soft hyphens.
-«beginTokenNo»`after` | the non-word characters after the word, up till the next word.
-«endTokenNo»«beginTokenYes»`after` | the space after the word, if present, otherwise the empty string.
-«endTokenYes»`is_meta` | whether a «tokenWord» is in the `teiHeader` element
-`is_note` | whether a «tokenWord» is in a note element
-`rend_r` | whether a «tokenWord» is under the influence of a `rend="r"` attribute.
+ feature                            | description                                                             
+------------------------------------|-------------------------------------------------------------------------
+ `str`                              | the characters of the «tokenWord», without soft hyphens.                
+ «beginTokenNo»`after`              | the non-word characters after the word, up till the next word.          
+ «endTokenNo»«beginTokenYes»`after` | the space after the word, if present, otherwise the empty string.       
+ «endTokenYes»`is_meta`             | whether a «tokenWord» is in the `teiHeader` element                     
+ `is_note`                          | whether a «tokenWord» is in a note element                              
+ `rend_r`                           | whether a «tokenWord» is under the influence of a `rend="r"` attribute. 
 
 «beginTokenNo»
 «beginSlotchar»
@@ -180,14 +180,14 @@ Meaningful white-space has been condensed to single spaces.
 
 **Features**
 
-feature | description
---- | ---
-`ch` | the UNICODE character in that «slot».
-`empty` | whether a «slot» has been inserted in an empty element
-`extraspace` | whether this is an extra space or newline, added by the conversion
-`is_meta` | whether a character is in the `teiHeader` element
-`is_note` | whether a character is in a note element
-`rend_r` | whether a character is under the influence of a `rend="r"` attribute.
+ feature      | description                                                           
+--------------|-----------------------------------------------------------------------
+ `ch`         | the UNICODE character in that «slot».                                 
+ `empty`      | whether a «slot» has been inserted in an empty element                
+ `extraspace` | whether this is an extra space or newline, added by the conversion    
+ `is_meta`    | whether a character is in the `teiHeader` element                     
+ `is_note`    | whether a character is in a note element                              
+ `rend_r`     | whether a character is under the influence of a `rend="r"` attribute. 
 
 «endSlotchar»
 «endTokenNo»
@@ -477,8 +477,8 @@ are for their first character.
 Special formatting for the `rend_r` features is supported for some values of `r`.
 The conversion supports these out-of-the-box:
 
-value | description
---- | ---
+ value | description 
+-------|-------------
 «rendDesc»
 
 It is possible for the corpus designer to add more formatting on a per-corpus

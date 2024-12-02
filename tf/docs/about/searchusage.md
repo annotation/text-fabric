@@ -384,16 +384,16 @@ and the `valueSpec`.
 The `valueSpec` may have the following forms and
 meanings:
 
-form | the feature *name* ...
----- | ---
-` ` (empty) | has any value except `None`
-`#` | has value `None`
-`*` | has arbitrary value
-`=`*values* | has one of the values specified
-`#`*values* | has none of the values specified
-`>`*value* | is greater than *value*
-`<`*value* | is less than *value*
-`~`*regular expression* | has a value and it matches *regular expression*
+ form                    | the feature *name* ...                          
+-------------------------|-------------------------------------------------
+ ` ` (empty)             | has any value except `None`                     
+ `#`                     | has value `None`                                
+ `*`                     | has arbitrary value                             
+ `=`*values*             | has one of the values specified                 
+ `#`*values*             | has none of the values specified                
+ `>`*value*              | is greater than *value*                         
+ `<`*value*              | is less than *value*                            
+ `~`*regular expression* | has a value and it matches *regular expression* 
 
 !!! hint "Why `*` ?"
     The operator `*` after a feature name does not pose any restriction at all.

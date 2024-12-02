@@ -23,12 +23,12 @@ terminate and are correct. Yet it remains a metaphor, and the fit is not exact.
 
 The basic pattern of search is this:
 
-textile | text | example
-------- | ---- | -------
-take several fleeces | pick the nodes corresponding to a node type | `word`, `phrase`, `clause`, `verse`
-spin thick yarns from them | filter by feature conditions | `part-of-speech=verb` gender=`f` `book=Genesis` `vt`
-spin the yarns further into thin yarns | throw away nodes that do not have the right connections | feature conditions on a verse also affect the search space for sentences, clauses, etc., and vice versa
-stitch the yarns together with thread | build results by selecting a member for every filtered node set | `word` node `123456` in `phrase` node `657890` in `clause` node `490567` in `verse` node `1403456`
+ textile                                | text                                                            | example                                                                                                 
+----------------------------------------|-----------------------------------------------------------------|---------------------------------------------------------------------------------------------------------
+ take several fleeces                   | pick the nodes corresponding to a node type                     | `word`, `phrase`, `clause`, `verse`                                                                     
+ spin thick yarns from them             | filter by feature conditions                                    | `part-of-speech=verb` gender=`f` `book=Genesis` `vt`                                                    
+ spin the yarns further into thin yarns | throw away nodes that do not have the right connections         | feature conditions on a verse also affect the search space for sentences, clauses, etc., and vice versa 
+ stitch the yarns together with thread  | build results by selecting a member for every filtered node set | `word` node `123456` in `phrase` node `657890` in `clause` node `490567` in `verse` node `1403456`      
 
 We will explain the stages of the fabrication process in detail.
 
