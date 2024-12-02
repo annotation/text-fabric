@@ -58,3 +58,4 @@ dist
 #########################################
 .jekyll-metadata
 .obsidian*
+.idea/
