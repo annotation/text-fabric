@@ -1867,6 +1867,20 @@ class TEI(CheckImport):
 
         *   `errors.txt`: validation errors
         *   `elements.txt`: element / attribute inventory.
+
+        !!! caution "Thoroughness of validation"
+            If the validate parameter is True, all xml files for the same model will be
+            validated by a single call to the validator. This is fast, but the
+            consequence is that after a fatal error the process terminates without
+            validating the remaining files. So the number of errors can be
+            quite misleading.
+
+            If the validate parameter is the number 1, each file will be individually
+            validated. This will result in much more validation errors, but it is
+            much slower.
+
+            It is recommended to pass `1` when in the initial stages, but as soon as
+            validation is more or less OK, use the value `True`.
         """
         if not self.importOK():
             return
@@ -2103,6 +2117,7 @@ class TEI(CheckImport):
 
         def writeReport():
             reportFile = f"{reportPath}/elements.txt"
+
             with fileOpen(reportFile, mode="w") as fh:
                 fh.write(
                     "Inventory of tags and attributes in the source XML file(s).\n"
@@ -2383,6 +2398,7 @@ class TEI(CheckImport):
             elUrlPrefix = f"{teiUrl}/ref-"
             attUrlPrefix = f"{teiUrl}/REF-ATTS.html#"
             docFile = f"{docsDir}/elements.md"
+
             with fileOpen(docFile, mode="w") as fh:
                 fh.write(
                     dedent(
@@ -2562,7 +2578,9 @@ class TEI(CheckImport):
                         good = None
                     continue
 
-                (thisGood, info, theseErrors) = A.validate(schemaFile, xmlPaths)
+                (thisGood, info, theseErrors) = A.validate(
+                    validate, schemaFile, xmlPaths
+                )
 
                 for line in info:
                     if verbose >= 0:
@@ -2571,8 +2589,9 @@ class TEI(CheckImport):
             if not thisGood:
                 good = False
                 errors.extend(theseErrors)
+                continue
 
-            if verbose >= 0:
+            if good and verbose >= 0:
                 console("\tMaking inventory ...")
 
             for xmlPath in xmlPaths:
@@ -2583,13 +2602,17 @@ class TEI(CheckImport):
 
         if verbose >= 0:
             console("")
-        writeErrors()
-        writeReport()
+
         writeElemTypes()
-        writeDoc()
-        writeNamespaces()
-        writeIdRefs()
-        writeLbParents()
+
+        writeErrors()
+
+        if good:
+            writeNamespaces()
+            writeReport()
+            writeIdRefs()
+            writeLbParents()
+            writeDoc()
 
     # SET UP CONVERSION
 

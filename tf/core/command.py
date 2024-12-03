@@ -50,15 +50,18 @@ def readArgs(
 
     taskArgs = set()
     helpTasks = []
+
     for (task, helpStr) in possibleTasks.items():
         helpTasks.append(f"\t{task}:\n\t\t{helpStr}\n")
         taskArgs.add(task)
+
     notInAllRep = f" except {', '.join(notInAll)}" if len(notInAll) else ""
     helpTasks.append(f"all:\n\t\tall tasks{notInAllRep}")
     taskArgs.add("all")
 
     paramArgsDef = {}
     helpParams = []
+
     for (param, (helpStr, default)) in possibleParams.items():
         helpParams.append(f"\t{param}={default}:\n\t\t{helpStr}\n")
         paramArgsDef[param] = default
@@ -66,6 +69,7 @@ def readArgs(
     flagArgsDef = {}
     flagArgs = {}
     helpFlags = []
+
     for (flag, (helpStr, default, nValues)) in possibleFlags.items():
         helpFlags.append(f"\t{flag}={default}:\n\t\t{helpStr}\n")
         valueCoding = (

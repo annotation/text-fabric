@@ -382,17 +382,11 @@ def setUp(kind):
             "latest",
         ),
         "sourceBase": (
-            (
-                "empty: refDir/{kind.lower()};\n\t\t"
-                "any directory of choice."
-            ),
+            ("empty: refDir/{kind.lower()};\n\t\t" "any directory of choice."),
             "",
         ),
         "reportDir": (
-            (
-                "empty: refDir/report;\n\t\t"
-                "any directory of choice."
-            ),
+            ("empty: refDir/report;\n\t\t" "any directory of choice."),
             "",
         ),
         kind.lower(): (
@@ -404,7 +398,10 @@ def setUp(kind):
             ),
             "latest",
         ),
-        "validate": ("Whether to validate the XML input", True),
+        "validate": (
+            "Whether to validate the XML input (use 1 for validation per file)",
+            True,
+        ),
     }
 
     flagSpec = dict(

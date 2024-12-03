@@ -744,11 +744,14 @@ class Analysis(CheckImport):
                 console(stdErr)
         return good
 
-    def validate(self, schema, instances):
+    def validate(self, mode, schema, instances):
         """Validates an instance against a schema.
 
         Parameters
         ----------
+        mode: boolean | integer
+            If `True`, validates as many files as possible in one call to the validator,
+            if `1`, treat each file individually.
         schema: string
             The schema to validate against.
         instances: list
@@ -758,24 +761,49 @@ class Analysis(CheckImport):
         -------
         """
         myDir = self.myDir
+        verbose = self.verbose
 
         jing = f"{myDir}/jing/jing.jar"
-        instancesRep = " ".join(f'"{instance}"' for instance in instances)
-        (good, stdOut, stdErr) = run(
-            f"""java -jar {jing} -t "{schema}" {instancesRep}""",
-            workDir=None,
-        )
+
+        if type(mode) is int and mode == 1:
+            good = True
+            outputLines = []
+
+            for instance in instances:
+                if verbose:
+                    instanceName = instance.rsplit("/", 1)[-1]
+                    console(f"\r\t\t{instanceName:<40} ...", newline=False)
+
+                (thisGood, stdOut, stdErr) = run(
+                    f"""java -jar {jing} -t "{schema}" "{instance}" """,
+                    workDir=None,
+                )
+                if not thisGood:
+                    good = False
+
+                outputLines.extend((stdOut + stdErr).strip().split("\n"))
+
+            if verbose:
+                console("")
+
+        elif mode is True:
+            instancesRep = " ".join(f'"{instance}"' for instance in instances)
+            (good, stdOut, stdErr) = run(
+                f"""java -jar {jing} -t "{schema}" {instancesRep}""",
+                workDir=None,
+            )
+            outputLines = (stdOut + stdErr).strip().split("\n")
+
         info = []
         errors = []
 
-        outputLines = (stdOut + stdErr).strip().split("\n")
-
         for line in outputLines:
             if line.startswith("Elapsed"):
-                info.append(line)
+                # info.append(line)
                 continue
 
             fields = line.split(" ", 2)
+
             if len(fields) == 1:
                 console(f"INFO: {line}")
                 errors.append((None, None, None, None, "info", line))
