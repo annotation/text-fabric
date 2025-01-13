@@ -73,7 +73,6 @@ from tf.core.files import (
     URL_TFDOC,
     APP_CONFIG,
     fileExists,
-    dirExists,
     dirNm,
     dirMake,
     fileCopy,
@@ -388,7 +387,7 @@ class Make:
 
         if client is not None:
             clientConfigFile = c["clientConfigFile"]
-            if not dirExists(clientConfigFile):
+            if not fileExists(clientConfigFile):
                 console(
                     f"No {APP_CONFIG} found for {org}/{repo}:{client}: {clientConfigFile}"
                 )
@@ -855,7 +854,7 @@ class Make:
                     fh.write(thisData)
                     fh.write("`")
                 else:
-                    writeJson.dump(
+                    writeJson(
                         thisData,
                         asFile=fh,
                         indent=None,
