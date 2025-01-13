@@ -294,6 +294,7 @@ tf/about/releases.py
 tf/about/releasesold.py
 tf/about/searchdesign.py
 tf/about/searchusage.py
+tf/about/stam.py
 tf/about/tests.py
 tf/about/use.py
 tf/about/usefunc.py

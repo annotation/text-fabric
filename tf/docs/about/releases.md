@@ -22,9 +22,10 @@ pip install -e .
 
 #### 12.6.3 Upcoming
 
-2024-12-??
+2025-01-13
 
-Improvements in various conversion modules (`tf.convert.tei`).
+*   Improvements in various conversion modules (`tf.convert.tei`).
+*   Small fixes in building and serving layered search clients
 
 #### 12.6.2
 
