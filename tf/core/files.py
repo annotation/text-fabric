@@ -784,7 +784,7 @@ def writeJson(data, asFile=None, **kwargs):
         asFile.write(dumped)
 
 
-def readYaml(text=None, plain=False, asFile=None, preferTuples=True):
+def readYaml(text=None, plain=False, asFile=None, preferTuples=True, preferLists=True):
     """Read a YAML file or string.
 
     The input data is either a text string or a file name or a file handle.

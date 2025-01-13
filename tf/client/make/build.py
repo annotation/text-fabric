@@ -1185,7 +1185,7 @@ class Make:
 
         console(f"HTTP serving files in {C.siteDir} on port {port}")
         server = Popen(
-            ["python3", "-m", "http.browser", str(port)],
+            ["python3", "-m", "http.server", str(port)],
             stdout=PIPE,
             bufsize=1,
             encoding="utf-8",

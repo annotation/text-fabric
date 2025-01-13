@@ -612,6 +612,7 @@ def getResultDir(baseDir, headPart, version, prod, silent):
     prodRep = "production" if prod else "development"
     prodFix = "prod" if prod else "dev"
     resultDirBase = f"{baseDir}{headPart}/{TT_NAME}"
+    initTree(resultDirBase, fresh=False)
     latestFile = f"{resultDirBase}/latest"
 
     prefix = f"{version}-"
@@ -735,7 +736,9 @@ class WATM:
         self.cfg = cfg
 
         settings = readYaml(asFile=IIIF_FILE, plain=True)
-        self.scanInfo = operationalize(parseIIIF(settings, prod, "scans"))
+        self.scanInfo = (
+            operationalize(parseIIIF(settings, prod, "scans")) if settings else {}
+        )
 
         self.error = False
 
@@ -1397,7 +1400,7 @@ class WATM:
 
         # extra files
 
-        for extraDir, files in extra.items():
+        for extraDir, files in (extra or {}).items():
             for file in files:
                 fileCopy(f"{baseDir}/{extraDir}/{file}", f"{resultDir}/{file}")
                 self.console(

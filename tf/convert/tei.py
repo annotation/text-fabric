@@ -394,6 +394,8 @@ The attributes of the `<lb>` elements become features of the `ln` node that star
 with that `<lb>` element. If there is no explicit `<lb>` element at the start of
 a paragraph, the first `ln` node of that paragraph gets no features.
 
+We do not create lines for `<lb>` outside `<p>` elements.
+
 
 ### `pageModel`
 
@@ -1242,6 +1244,7 @@ class TEI(CheckImport):
         sectionModel = sectionModel["model"]
         self.sectionModel = sectionModel
         self.sectionIs23 = sectionModel in {"II", "III"}
+        self.sectionIs3 = sectionModel == "III"
         self.sectionProperties = sectionProperties
 
         self.generic = generic
@@ -3195,6 +3198,26 @@ class TEI(CheckImport):
             model = cur["model"]
             return len(nest) > 1 and nest[-2][0] in cur["pureElems"][model]
 
+        def hasParaAncestor(cur):
+            """Whether the current tag has a p element as ancestor.
+
+            We use this to determine whether `<lb>` elements occur in a
+            paragraph. Only such `<lb>` elements will be used to generate
+            line elements, if the line model prescribes it.
+
+            Parameters
+            ----------
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+
+            Returns
+            -------
+            boolean
+            """
+            nest = cur[XNEST]
+            return any(n[0] == "p" for n in nest[0:-1])
+
         def hasMixedAncestor(cur):
             """Whether the current tag has an ancestor with mixed content.
 
@@ -3573,7 +3596,7 @@ class TEI(CheckImport):
             atts: string
                 The attributes of the LXML node, with namespaces stripped.
             """
-            makeLineElems = self.makeLineElems
+            makeLineElems = self.makeLineElems and hasParaAncestor(cur)
 
             if makeLineElems:
                 lineProperties = self.lineProperties
@@ -3658,7 +3681,8 @@ class TEI(CheckImport):
                     chapterNum = cur["chapterNum"]
                     if verbose >= 0:
                         console(
-                            f"\rchapter {chapterNum:>4} {heading:<50}", newline=False
+                            f"\r{chapterSection} {chapterNum:>4} {heading:<50}",
+                            newline=False,
                         )
             else:
                 chunkSection = self.chunkSection
@@ -3785,7 +3809,7 @@ class TEI(CheckImport):
                 The attributes of the LXML node, with namespaces stripped.
             """
             chunkSection = self.chunkSection
-            makeLineElems = self.makeLineElems
+            makeLineElems = self.makeLineElems and hasParaAncestor(cur)
 
             if makeLineElems:
                 lineProperties = self.lineProperties
@@ -3983,7 +4007,7 @@ class TEI(CheckImport):
                             cur["rend"][q].pop()
 
             if xnode.tail:
-                if tag == "lb" and self.makeLineElems:
+                if tag == "lb" and self.makeLineElems and hasParaAncestor(cur):
                     tail = xnode.tail.lstrip()
                     if not wordAsSlot:
                         pass
@@ -4229,8 +4253,9 @@ class TEI(CheckImport):
             elif sectionModel == "III":
                 fileSection = self.fileSection
 
-                for xmlFiles in self.getXML():
-                    j = 0
+                j = 0
+
+                for xmlFile in self.getXML():
                     cr = ""
                     nl = True
 
@@ -4241,7 +4266,7 @@ class TEI(CheckImport):
                         nl = False
 
                     cur["xmlFile"] = xmlFile
-                    xmlPath = f"{teiPath}/{xmlFolder}/{xmlFile}"
+                    xmlPath = f"{teiPath}/{xmlFile}"
                     (model, adapt, tpl) = self.getSwitches(xmlPath)
                     cur["model"] = model
                     cur["template"] = tpl
@@ -4438,6 +4463,7 @@ class TEI(CheckImport):
 
         makeLineElems = self.makeLineElems
         lineModel = self.lineModel
+
         if makeLineElems:
             lineProperties = self.lineProperties
             lineType = lineProperties["nodeType"]

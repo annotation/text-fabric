@@ -559,7 +559,7 @@ def tweakTrans(
     elif sectionModel == "III":
         text = (
             text.replace("«file»", fileSection)
-            .text.replace("«head»", head)
+            .replace("«head»", head)
             .replace("«properties»", properties)
             .replace("«propertiesRaw»", propertiesRaw)
             .replace("«chapter»", chapterSection)
